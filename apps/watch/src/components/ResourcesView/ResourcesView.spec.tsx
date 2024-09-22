@@ -7,8 +7,8 @@ import { useHits, useRefinementList, useSearchBox } from 'react-instantsearch'
 
 import { fetchCountryMock } from '@core/journeys/ui/SearchBar/data'
 
-import { StrategiesView } from './StrategiesView'
-import { strategyItems } from './StrategySections/StrategySection/data'
+import { resourceItems } from './ResourceSections/ResourceSection/data'
+import { ResourcesView } from './ResourcesView'
 
 global.fetch = jest.fn(fetchCountryMock) as jest.Mock
 
@@ -22,7 +22,7 @@ const mockUseRefinementList = useRefinementList as jest.MockedFunction<
   typeof useRefinementList
 >
 
-describe('StrategiesView', () => {
+describe('ResourcesView', () => {
   const refine = jest.fn()
 
   const useSearchBox = {
@@ -31,7 +31,7 @@ describe('StrategiesView', () => {
   } as unknown as SearchBoxRenderState
 
   const useHits = {
-    hits: strategyItems
+    hits: resourceItems
   } as unknown as HitsRenderState
 
   const useRefinementsList = {
@@ -54,28 +54,28 @@ describe('StrategiesView', () => {
   it('should render interaction text', () => {
     render(
       <MockedProvider>
-        <StrategiesView />
+        <ResourcesView />
       </MockedProvider>
     )
-    expect(screen.getByText('Resource for every')).toBeInTheDocument()
+    expect(screen.getByText('Resources for every')).toBeInTheDocument()
     expect(screen.getByText('interaction')).toBeInTheDocument()
   })
 
   it('should render searchbar', () => {
     render(
       <MockedProvider>
-        <StrategiesView />
+        <ResourcesView />
       </MockedProvider>
     )
     expect(screen.getByTestId('SearchBar')).toBeInTheDocument()
   })
 
-  it('should render strategy sections', () => {
+  it('should render resource sections', () => {
     render(
       <MockedProvider>
-        <StrategiesView />
+        <ResourcesView />
       </MockedProvider>
     )
-    expect(screen.getByTestId('StrategySections')).toBeInTheDocument()
+    expect(screen.getByTestId('ResourceSections')).toBeInTheDocument()
   })
 })

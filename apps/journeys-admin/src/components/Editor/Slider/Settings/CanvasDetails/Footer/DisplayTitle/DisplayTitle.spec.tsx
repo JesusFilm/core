@@ -17,7 +17,11 @@ describe('DisplayTitle', () => {
       <MockedProvider>
         <JourneyProvider
           value={{
-            journey: { ...defaultJourney, displayTitle: 'Display title' }
+            journey: {
+              ...defaultJourney,
+              displayTitle: 'Display title',
+              seoTitle: 'Social title'
+            }
           }}
         >
           <EditorProvider>
@@ -35,6 +39,35 @@ describe('DisplayTitle', () => {
     const input = screen.getByRole('textbox')
     expect(input).toBeVisible()
     expect(input).toHaveValue('Display title')
+  })
+
+  it('should render with initial value of social title', () => {
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: {
+              ...defaultJourney,
+              displayTitle: null,
+              seoTitle: 'Social title'
+            }
+          }}
+        >
+          <EditorProvider>
+            <DisplayTitle />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const accordion = screen.getByRole('button', { name: 'Display Title' })
+    expect(accordion).toBeInTheDocument()
+
+    fireEvent.click(accordion)
+
+    const input = screen.getByRole('textbox')
+    expect(input).toBeVisible()
+    expect(input).toHaveValue('Social title')
   })
 
   it('should update display title', async () => {

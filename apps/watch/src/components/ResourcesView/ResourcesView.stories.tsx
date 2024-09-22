@@ -5,24 +5,24 @@ import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearc
 
 import { watchConfig } from '../../libs/storybook'
 
-import { StrategiesView } from './StrategiesView'
 import {
   emptyResultsHandler,
-  getStrategySectionHandlers
-} from './StrategySections/StrategySection/StrategySection.handlers'
+  getResourceSectionHandlers
+} from './ResourceSections/ResourceSection/ResourceSection.handlers'
+import { ResourcesView } from './ResourcesView'
 
-const StrategiesViewStory: Meta<typeof StrategiesView> = {
+const ResourcesViewStory: Meta<typeof ResourcesView> = {
   ...watchConfig,
-  component: StrategiesView,
-  title: 'Watch/StrategiesView'
+  component: ResourcesView,
+  title: 'Watch/ResourcesView'
 }
 
-type Story = StoryObj<ComponentProps<typeof StrategiesView> & { query: string }>
+type Story = StoryObj<ComponentProps<typeof ResourcesView> & { query: string }>
 
 const Template: Story = {
   render: () => (
     <InstantSearchTestWrapper>
-      <StrategiesView />
+      <ResourcesView />
     </InstantSearchTestWrapper>
   )
 }
@@ -31,7 +31,7 @@ export const Default = {
   ...Template,
   parameters: {
     msw: {
-      handlers: [getStrategySectionHandlers]
+      handlers: [getResourceSectionHandlers]
     }
   }
 }
@@ -48,4 +48,4 @@ export const NoResultsFound = {
   }
 }
 
-export default StrategiesViewStory
+export default ResourcesViewStory
