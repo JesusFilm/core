@@ -43,6 +43,7 @@ import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { Items } from './Items'
 import { CommandRedoItem } from './Items/CommandRedoItem'
 import { CommandUndoItem } from './Items/CommandUndoItem'
+import { PreviewItem } from './Items/PreviewItem'
 import { Menu } from './Menu'
 
 const TitleDescriptionDialog = dynamic(
@@ -171,16 +172,20 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         flexShrink: 0
       }}
     >
-      <Image
-        src={logo}
-        alt="Next Steps"
-        height={32}
-        width={32}
-        style={{
-          maxWidth: '100%',
-          height: 'auto'
-        }}
-      />
+      <NextLink href="/" passHref legacyBehavior>
+        <IconButton data-testid="NextStepsLogo" disableRipple>
+          <Image
+            src={logo}
+            alt="Next Steps"
+            height={32}
+            width={32}
+            style={{
+              maxWidth: '100%',
+              height: 'auto'
+            }}
+          />
+        </IconButton>
+      </NextLink>
       <NextLink href="/" passHref legacyBehavior>
         <Tooltip title="See all journeys" placement="bottom" arrow>
           <IconButton data-testid="ToolbarBackButton">
@@ -244,7 +249,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
             <Box
               flexShrink={1}
               sx={{
-                display: 'inline-flex',
+                display: { xs: 'none', md: 'inline-flex' },
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis'
@@ -316,9 +321,12 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           <Items />
         </>
       )}
-      <Box ref={menuRef}>
+      <Stack ref={menuRef} flexDirection="row">
+        <Box sx={{ display: { xs: 'flex', sm: 'none' }, px: 2 }}>
+          <PreviewItem variant="icon-button" />
+        </Box>
         <Menu user={user} />
-      </Box>
+      </Stack>
       <Box
         ref={helpScoutRef}
         sx={{

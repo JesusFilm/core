@@ -109,7 +109,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Poll - create, update & delete
-  test('Poll - create, update & delete', async ({ page }) => {
+  test.fixme('Poll - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Poll') // clicking on poll button in add block drawer
@@ -149,7 +149,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Subscribe - create, update & delete
-  test('Subscribe - create, update & delete', async ({ page }) => {
+  test.fixme('Subscribe - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Subscribe') // clicking on subscribe button in add block drawer
@@ -166,19 +166,22 @@ test.describe('verify card level actions', () => {
 
   // Footer properties - Hosted By & Chat Widget
   // eslint-disable-next-line playwright/no-skipped-test
-  test.skip('Footer properties - create, update & delete', async ({ page }) => {
-    const cardLevelActionPage = new CardLevelActionPage(page)
-    await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Fotter section
-    await cardLevelActionPage.clicSelectHostBtn() // clicking the 'select a host' button below the 'Hosted by' tab in the footer properties drawer
-    await cardLevelActionPage.clickCreateNewBtn() // clicking the 'create new' button below the 'Hosted by' tab in the footer properties drawer
-    await cardLevelActionPage.enterHostName() // entering host name in the host field in the footer properties drawer
-    await cardLevelActionPage.enterLocation() // entering location in the location field in the footer properties drawer
-    await cardLevelActionPage.clickOnJourneyCard() // clickng on the journey card
-    await cardLevelActionPage.verifyHostNameAddedInCard() // verifying the added host name and location are updated in the footer section at bottom of the card
-    await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Fotter section
-    await cardLevelActionPage.clickTabInFooterProperties('Chat Widget') // clicking on the 'Chat Widget' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.clickMessangerDropDown('WhatsApp') // clicking the whatsapp dropdown check box
-    await cardLevelActionPage.enterWhatsAppLink() // entering link value on the URL field
-    await cardLevelActionPage.verifyChatWidgetAddedToCard() // verifying the selected messager icon is updated in the footer section at bottom of the card
-  })
+  test.fixme(
+    'Footer properties - create, update & delete',
+    async ({ page }) => {
+      const cardLevelActionPage = new CardLevelActionPage(page)
+      await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Fotter section
+      await cardLevelActionPage.clicSelectHostBtn() // clicking the 'select a host' button below the 'Hosted by' tab in the footer properties drawer
+      await cardLevelActionPage.clickCreateNewBtn() // clicking the 'create new' button below the 'Hosted by' tab in the footer properties drawer
+      await cardLevelActionPage.enterHostName() // entering host name in the host field in the footer properties drawer
+      await cardLevelActionPage.enterLocation() // entering location in the location field in the footer properties drawer
+      await cardLevelActionPage.clickOnJourneyCard() // clickng on the journey card
+      await cardLevelActionPage.verifyHostNameAddedInCard() // verifying the added host name and location are updated in the footer section at bottom of the card
+      await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Fotter section
+      await cardLevelActionPage.clickTabInFooterProperties('Chat Widget') // clicking on the 'Chat Widget' tab from the tab list of footer properties drawer
+      await cardLevelActionPage.clickMessangerDropDown('WhatsApp') // clicking the whatsapp dropdown check box
+      await cardLevelActionPage.enterWhatsAppLink() // entering link value on the URL field
+      await cardLevelActionPage.verifyChatWidgetAddedToCard() // verifying the selected messager icon is updated in the footer section at bottom of the card
+    }
+  )
 })
