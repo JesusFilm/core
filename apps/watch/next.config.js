@@ -20,6 +20,7 @@ const nextConfig = {
       // jesusfilm wordpress website
       { protocol: 'https', hostname: 'develop.jesusfilm.org' },
       { protocol: 'https', hostname: 'jesusfilm.org' },
+      { protocol: 'https', hostname: 'www.jesusfilm.org' },
       // arclight image provider - cloudfront
       { protocol: 'https', hostname: 'd1wl257kev7hsz.cloudfront.net' },
       { protocol: 'https', hostname: 'd3s4plubcuq0w9.cloudfront.net' },

@@ -4,37 +4,23 @@ import { Index } from 'react-instantsearch'
 
 import { EmptySearch } from '@core/journeys/ui/EmptySearch'
 
-import { StrategySection } from './StrategySection/StrategySection'
+import { ResourceSection } from './ResourceSection'
 
-const PROD_INDEXES = [
-  'wp_prd_posts_equipment',
-  'wp_prd_posts_training_strategies',
-  'wp_prd_posts_outreach_resources',
-  'wp_prd_posts_prayer_resources',
-  'wp_prd_posts_digital_strategies'
-]
-
-const DEV_INDEXES = [
-  'wp_dev_posts_equipment',
-  'wp_dev_posts_training_strategies',
-  'wp_dev_posts_outreach_resources',
-  'wp_dev_posts_prayer_resources',
-  'wp_dev_posts_digital_strategies'
-]
-
-function getIndexes(): string[] {
-  const isProd = process.env.DOPPLER_ENVIRONMENT === 'prd'
-  return isProd ? PROD_INDEXES : DEV_INDEXES
-}
-
-interface StrategySectionsProps {
+interface ResourceSectionsProps {
   includeIndex?: boolean
 }
 
-export function StrategySections({
+export function ResourceSections({
   includeIndex = false
-}: StrategySectionsProps): ReactElement {
-  const indexes = getIndexes()
+}: ResourceSectionsProps): ReactElement {
+  const indexes = [
+    'wp_prd_posts_equipment',
+    'wp_prd_posts_training_strategies',
+    'wp_prd_posts_outreach_resources',
+    'wp_prd_posts_prayer_resources',
+    'wp_prd_posts_digital_strategies'
+  ]
+
   const [hasResult, setHasResult] = useState<boolean>(true)
 
   const resultsMap = new Map<number, boolean>()
@@ -46,14 +32,14 @@ export function StrategySections({
   }
 
   return (
-    <Stack data-testid="StrategySections" sx={{ pt: 0, gap: 10 }}>
+    <Stack data-testid="ResourceSections" sx={{ pt: 0, gap: 10 }}>
       {!hasResult && <EmptySearch />}
       {includeIndex ? (
         <Index indexName={indexes[0]}>
-          <StrategySection index={0} handleItemSearch={handleItemSearch} />
+          <ResourceSection index={0} handleItemSearch={handleItemSearch} />
           {indexes.slice(1).map((indexName, index) => (
             <Index key={index} indexName={indexName}>
-              <StrategySection
+              <ResourceSection
                 index={index + 1}
                 handleItemSearch={handleItemSearch}
               />
@@ -63,7 +49,7 @@ export function StrategySections({
       ) : (
         <>
           {indexes.map((indexName, index) => (
-            <StrategySection
+            <ResourceSection
               key={indexName}
               index={index + 1}
               handleItemSearch={handleItemSearch}

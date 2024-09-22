@@ -8,17 +8,17 @@ import { SwiperOptions } from 'swiper/types'
 import { ContentCarousel } from '@core/journeys/ui/ContentCarousel'
 
 import { useAlgoliaStrategies } from '../../../../libs/algolia/useAlgoliaStrategies'
-import { StrategyCard } from '../StrategyCard'
+import { ResourceCard } from '../ResourceCard'
 
-export interface StrategySectionProps {
+export interface ResourceSectionProps {
   handleItemSearch: (index: number, value: boolean) => void
   index: number
 }
 
-export function StrategySection({
+export function ResourceSection({
   handleItemSearch,
   index
-}: StrategySectionProps): ReactElement {
+}: ResourceSectionProps): ReactElement {
   const { breakpoints } = useTheme()
 
   const { label, hits: items } = useAlgoliaStrategies()
@@ -58,12 +58,12 @@ export function StrategySection({
   return (
     <>
       {items.length > 0 ? (
-        <Box data-testid="StrategySection">
+        <Box data-testid="ResourceSection">
           <Typography variant="h5">{label}</Typography>
           <Container maxWidth={false}>
             <ContentCarousel
               items={items}
-              renderItem={(itemProps) => <StrategyCard {...itemProps} />}
+              renderItem={(itemProps) => <ResourceCard {...itemProps} />}
               breakpoints={swiperBreakpoints}
               slidesOffsetBefore={-32}
               content="strategies-section"
