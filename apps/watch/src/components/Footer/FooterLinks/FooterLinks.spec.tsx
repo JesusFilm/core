@@ -34,9 +34,9 @@ describe('FooterLinks', () => {
       expect(el).not.toHaveAttribute('target')
     })
 
-    it('should have Strategies and Tools link', () => {
+    it('should have Resources and Tools link', () => {
       const { getByRole } = render(<FooterLinks />)
-      const el = getByRole('link', { name: 'Strategies and Tools' })
+      const el = getByRole('link', { name: 'Resources and Tools' })
       expect(el).toHaveAttribute(
         'href',
         'https://www.jesusfilm.org/partners/resources/'

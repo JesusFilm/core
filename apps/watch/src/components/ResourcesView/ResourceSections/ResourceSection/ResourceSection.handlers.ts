@@ -1,11 +1,11 @@
 import { HttpResponse, http } from 'msw'
 
-import { strategyItems } from './data'
+import { resourceItems } from './data'
 
-export const getStrategySectionHandlers = [
+export const getResourceSectionHandlers = [
   http.post('https://algolia-dsn.algolia.net/1/indexes/*', () => {
     return HttpResponse.json({
-      results: [{ hits: strategyItems }]
+      results: [{ hits: resourceItems }]
     })
   })
 ]
