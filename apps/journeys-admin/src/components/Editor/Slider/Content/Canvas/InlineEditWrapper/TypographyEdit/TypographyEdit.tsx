@@ -45,12 +45,18 @@ export function TypographyEdit({
     state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
+  console.log(selectedBlock)
 
   useEffect(() => {
     if (undo == null || undo.id === commandInput.id) return
     resetCommandInput()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [undo?.id])
+
+  useEffect(() => {
+    if (value !== content) setValue(content)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [content])
 
   function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })
@@ -100,7 +106,6 @@ export function TypographyEdit({
             ...context
           }
         })
-        setValue(content)
       }
     })
   }
