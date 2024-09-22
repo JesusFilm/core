@@ -169,7 +169,7 @@ export const reducer = (
   }
 }
 
-interface SearchBarContextType {
+export interface SearchBarContextType {
   state: SearchBarState
   dispatch: Dispatch<SearchBarAction>
 }

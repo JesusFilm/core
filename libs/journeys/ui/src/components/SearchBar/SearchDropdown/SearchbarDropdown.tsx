@@ -11,8 +11,6 @@ import Globe1 from '@core/shared/ui/icons/Globe1'
 import Search1 from '@core/shared/ui/icons/Search1'
 import { TabPanel } from '@core/shared/ui/TabPanel'
 
-import { LanguageContinentsRecord } from '../../../libs/useLanguagesContinentsQuery/sortLanguageContinents'
-
 import { CountryLanguageSelector } from './CountryLanguageSelector'
 import { RefinementGroups } from './RefinementGroups'
 import { Suggestions } from './Suggestions'
@@ -27,7 +25,7 @@ const StyledTab = styled(Tab)(({ theme }) => ({
     }
   },
 
-  // Hide the text label on small screens
+  //  Hide the text label on small screens
   [theme.breakpoints.down('md')]: {
     '& .tab-label': {
       display: 'none'
@@ -38,7 +36,6 @@ const StyledTab = styled(Tab)(({ theme }) => ({
 interface SearchbarDropdownProps {
   open: boolean
   refinements: RefinementListRenderState
-  languages: LanguageContinentsRecord
   id?: string
   countryCode?: string
   anchorEl?: HTMLElement | null
@@ -49,7 +46,6 @@ interface SearchbarDropdownProps {
 export function SearchbarDropdown({
   open,
   refinements,
-  languages,
   id,
   countryCode,
   anchorEl,
@@ -115,7 +111,7 @@ export function SearchbarDropdown({
           <Suggestions refinements={refinements} />
         </TabPanel>
         <TabPanel name="languages-tab" value={tabValue} index={1} pt={3}>
-          <RefinementGroups refinements={refinements} languages={languages} />
+          <RefinementGroups refinements={refinements} />
         </TabPanel>
       </Box>
     </Popper>

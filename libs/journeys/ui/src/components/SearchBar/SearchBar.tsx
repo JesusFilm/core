@@ -26,10 +26,7 @@ import {
   useSearchBar
 } from '../../libs/algolia/SearchBarProvider'
 import { useLanguagesContinentsLazyQuery } from '../../libs/useLanguagesContinentsQuery'
-import {
-  LanguageContinentsRecord,
-  sortLanguageContinents
-} from '../../libs/useLanguagesContinentsQuery/sortLanguageContinents'
+import { sortLanguageContinents } from '../../libs/useLanguagesContinentsQuery/sortLanguageContinents'
 
 import { LanguageButtons } from './LanguageButtons'
 import { SearchbarDropdown } from './SearchDropdown'
@@ -103,8 +100,6 @@ export function SearchBar({
     setOpen(!open)
   }
 
-  const [allContinentLanguages, setAllContinentLanguages] =
-    useState<LanguageContinentsRecord>({})
   const [isPreparingDropdown, setIsPreparingDropdown] = useState(false)
   const [getLanguages] = useLanguagesContinentsLazyQuery()
 
@@ -115,7 +110,6 @@ export function SearchBar({
     const languages = sortLanguageContinents({
       languages: result.data?.languages ?? []
     })
-    setAllContinentLanguages(languages)
     dispatch({
       type: 'SetAllContinentLanguages',
       allContinentLanguages: languages
@@ -232,7 +226,6 @@ export function SearchBar({
           <SearchbarDropdown
             open={open}
             refinements={refinements}
-            languages={allContinentLanguages}
             countryCode={countryCode}
             id={open ? 'simple-popper' : undefined}
             anchorEl={anchorEl}

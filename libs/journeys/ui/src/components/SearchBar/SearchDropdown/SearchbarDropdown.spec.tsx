@@ -10,7 +10,10 @@ import {
   useSearchBox
 } from 'react-instantsearch'
 
-import { SearchBarProvider } from '../../../libs/algolia/SearchBarProvider'
+import {
+  SearchBarProvider,
+  SearchBarState
+} from '../../../libs/algolia/SearchBarProvider'
 import { sortedLanguageContinents } from '../../../libs/useLanguagesContinentsQuery/sortLanguageContinents/data'
 import { getLanguagesContinentsMock } from '../../../libs/useLanguagesContinentsQuery/useLanguagesContinentsQuery.mock'
 import { languageRefinements } from '../data'
@@ -54,6 +57,11 @@ describe('SearchbarDropdown', () => {
     canRefine: false
   } as unknown as ClearRefinementsRenderState
 
+  const searchBarInitialState: SearchBarState = {
+    continentLanguages: {},
+    allContinentLanguages: sortedLanguageContinents
+  }
+
   beforeEach(() => {
     mockUseSearchBox.mockReturnValue(searchBox)
     mockUseClearRefinements.mockReturnValue(clearRefinements)
@@ -64,11 +72,10 @@ describe('SearchbarDropdown', () => {
   it('should default to dropdown closed', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBarProvider>
+        <SearchBarProvider initialState={searchBarInitialState}>
           <SearchbarDropdown
             open={false}
             refinements={refinements}
-            languages={sortedLanguageContinents}
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
@@ -82,11 +89,10 @@ describe('SearchbarDropdown', () => {
   it('should render tab headers', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBarProvider>
+        <SearchBarProvider initialState={searchBarInitialState}>
           <SearchbarDropdown
             open
             refinements={refinements}
-            languages={sortedLanguageContinents}
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
@@ -99,11 +105,10 @@ describe('SearchbarDropdown', () => {
   it('should default to suggestions tab', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBarProvider>
+        <SearchBarProvider initialState={searchBarInitialState}>
           <SearchbarDropdown
             open
             refinements={refinements}
-            languages={sortedLanguageContinents}
             handleTabValueChange={noop}
           />
         </SearchBarProvider>
@@ -115,11 +120,10 @@ describe('SearchbarDropdown', () => {
   it('should render languages tab when tab index given', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBarProvider>
+        <SearchBarProvider initialState={searchBarInitialState}>
           <SearchbarDropdown
             open
             refinements={refinements}
-            languages={sortedLanguageContinents}
             tabIndex={1}
             handleTabValueChange={noop}
           />
@@ -132,11 +136,10 @@ describe('SearchbarDropdown', () => {
   it('should render the correct continent headers', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBarProvider>
+        <SearchBarProvider initialState={searchBarInitialState}>
           <SearchbarDropdown
             open
             refinements={refinements}
-            languages={sortedLanguageContinents}
             tabIndex={1}
             handleTabValueChange={noop}
           />
@@ -155,11 +158,10 @@ describe('SearchbarDropdown', () => {
   it('should render the correct languages', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBarProvider>
+        <SearchBarProvider initialState={searchBarInitialState}>
           <SearchbarDropdown
             open
             refinements={refinements}
-            languages={sortedLanguageContinents}
             tabIndex={1}
             handleTabValueChange={noop}
           />
@@ -180,11 +182,10 @@ describe('SearchbarDropdown', () => {
   it('should render message if no languages', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBarProvider>
+        <SearchBarProvider initialState={searchBarInitialState}>
           <SearchbarDropdown
             open
             refinements={emptyRefinements}
-            languages={sortedLanguageContinents}
             tabIndex={1}
             handleTabValueChange={noop}
           />
@@ -202,11 +203,10 @@ describe('SearchbarDropdown', () => {
   it('should not render headers if no languages', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBarProvider>
+        <SearchBarProvider initialState={searchBarInitialState}>
           <SearchbarDropdown
             open
             refinements={emptyRefinements}
-            languages={sortedLanguageContinents}
             tabIndex={1}
             handleTabValueChange={noop}
           />
@@ -228,11 +228,10 @@ describe('SearchbarDropdown', () => {
   it('should only render continent headers that have languages', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBarProvider>
+        <SearchBarProvider initialState={searchBarInitialState}>
           <SearchbarDropdown
             open
             refinements={refinements}
-            languages={sortedLanguageContinents}
             tabIndex={1}
             handleTabValueChange={noop}
           />
@@ -250,11 +249,10 @@ describe('SearchbarDropdown', () => {
   it('should call refine on language click', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBarProvider>
+        <SearchBarProvider initialState={searchBarInitialState}>
           <SearchbarDropdown
             open
             refinements={refinements}
-            languages={sortedLanguageContinents}
             tabIndex={1}
             handleTabValueChange={noop}
           />
@@ -270,11 +268,10 @@ describe('SearchbarDropdown', () => {
   it('should refine query when suggestion clicked', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBarProvider>
+        <SearchBarProvider initialState={searchBarInitialState}>
           <SearchbarDropdown
             open
             refinements={refinements}
-            languages={sortedLanguageContinents}
             tabIndex={0}
             handleTabValueChange={noop}
           />
@@ -292,11 +289,10 @@ describe('SearchbarDropdown', () => {
   it('should display number of languages available in tab header', async () => {
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
-        <SearchBarProvider>
+        <SearchBarProvider initialState={searchBarInitialState}>
           <SearchbarDropdown
             open
             refinements={refinements}
-            languages={sortedLanguageContinents}
             tabIndex={1}
             handleTabValueChange={noop}
           />

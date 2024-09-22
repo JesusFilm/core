@@ -3,4 +3,9 @@ export {
   SearchBarProvider,
   languageRefinementProps
 } from './SearchBarProvider'
-export type { Continent, Language } from './SearchBarProvider'
+export type {
+  Continent,
+  Language,
+  SearchBarContextType,
+  SearchBarState
+} from './SearchBarProvider'
