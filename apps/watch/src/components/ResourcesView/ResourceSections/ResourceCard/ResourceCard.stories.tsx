@@ -5,12 +5,12 @@ import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearc
 
 import { watchConfig } from '../../../../libs/storybook'
 
-import { StrategyCard } from './StrategyCard'
+import { ResourceCard } from './ResourceCard'
 
-const StrategyCardStory: Meta<typeof StrategyCard> = {
+const ResourceCardStory: Meta<typeof ResourceCard> = {
   ...watchConfig,
-  component: StrategyCard,
-  title: 'Watch/StrategiesView/StrategySections/StrategyCard'
+  component: ResourceCard,
+  title: 'Watch/ResourcesView/ResourceSections/ResourceCard'
 }
 
 const longDescription =
@@ -19,12 +19,12 @@ const longDescription =
 const imageSrc =
   'https://images.unsplash.com/photo-1508363778367-af363f107cbb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&dl=chester-wade-hLP7lVm4KUE-unsplash.jpg&w=1920'
 
-type Story = StoryObj<ComponentProps<typeof StrategyCard>>
+type Story = StoryObj<ComponentProps<typeof ResourceCard>>
 
 const Template: Story = {
   render: (args) => (
     <InstantSearchTestWrapper>
-      <StrategyCard {...args} />
+      <ResourceCard {...args} />
     </InstantSearchTestWrapper>
   )
 }
@@ -33,7 +33,7 @@ export const Default = {
   ...Template,
   args: {
     item: {
-      title: 'Strategy Title',
+      title: 'Resource Title',
       description: 'Short description',
       id: 'test-id',
       imageUrl: imageSrc,
@@ -46,7 +46,7 @@ export const LongDescription = {
   ...Template,
   args: {
     item: {
-      title: 'Strategy Title',
+      title: 'Resource Title',
       description: longDescription,
       id: 'test-id',
       imageUrl: imageSrc,
@@ -59,7 +59,7 @@ export const WithoutImage = {
   ...Template,
   args: {
     item: {
-      title: 'Strategy Title',
+      title: 'Resource Title',
       description: 'Short description',
       id: 'test-id',
       imageUrl: null,
@@ -68,4 +68,4 @@ export const WithoutImage = {
   }
 }
 
-export default StrategyCardStory
+export default ResourceCardStory

@@ -25,7 +25,7 @@ export function HeaderTabButtons(): ReactElement {
 
   const headerItems = compact([
     strategies
-      ? { label: t('Strategies'), icon: <TerminalIcon />, href: '/strategies' }
+      ? { label: t('Resources'), icon: <TerminalIcon />, href: '/resources' }
       : undefined,
     journeys
       ? { label: t('Journeys'), icon: <JourneysIcon />, href: '/journeys' }

@@ -9,8 +9,8 @@ import {
   useReducer
 } from 'react'
 
-type Continent = string
-type Language = string
+export type Continent = string
+export type Language = string
 
 export interface SearchBarState {
   /**
