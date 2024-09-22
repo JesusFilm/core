@@ -55,6 +55,11 @@ export function ButtonEdit({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [undo?.id])
 
+  useEffect(() => {
+    if (value !== label) setValue(label)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [label])
+
   function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })
   }
@@ -103,7 +108,6 @@ export function ButtonEdit({
             ...context
           }
         })
-        setValue(label)
       }
     })
   }
