@@ -4,13 +4,19 @@ export default async function Handler(
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> {
-  // Log all headers
-  console.log('headers', {
-    headers: Object.fromEntries(Object.entries(req.headers))
-  })
+  const cloudflareIPCountry = req.headers['cf-ipcountry']
+  const vercelIPCountry = req.headers['x-vercel-ip-country']
+
+  console.log(
+    'Using:',
+    cloudflareIPCountry != null
+      ? `Cloudflare Country: ${cloudflareIPCountry as string}`
+      : `Vercel Country: ${vercelIPCountry as string}`
+  )
+
+  const country = cloudflareIPCountry ?? vercelIPCountry
+
   res.status(200).send({
-    country: req.headers['x-vercel-ip-country'],
-    region: req.headers['x-vercel-ip-country-region'],
-    city: req.headers['x-vercel-ip-city']
+    country
   })
 }
