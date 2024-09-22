@@ -45,7 +45,6 @@ export function TypographyEdit({
     state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
-  console.log(selectedBlock)
 
   useEffect(() => {
     if (undo == null || undo.id === commandInput.id) return
