@@ -72,8 +72,8 @@ export function SearchBar({
   showLanguageButton = false,
   props
 }: SearchBarProps): ReactElement {
-  const theme = useTheme()
   const { t } = useTranslation('apps-watch')
+  const theme = useTheme()
 
   const popperRef = useRef(null)
   const [open, setOpen] = useState(false)
@@ -81,6 +81,7 @@ export function SearchBar({
   const [tabValue, setTabValue] = useState<number>(0)
   const [countryCode, setCountryCode] = useState<string>()
 
+  const { dispatch } = useSearchBar()
   const { query, refine } = useSearchBox()
   const refinements = useRefinementList(languageRefinementProps)
 
@@ -102,8 +103,6 @@ export function SearchBar({
 
   const [isPreparingDropdown, setIsPreparingDropdown] = useState(false)
   const [getLanguages] = useLanguagesContinentsLazyQuery()
-
-  const { dispatch } = useSearchBar()
 
   async function getLanguageContinents(): Promise<void> {
     const result = await getLanguages()

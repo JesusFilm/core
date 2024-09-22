@@ -85,6 +85,9 @@ function selectLanguageContinent(
   }
 }
 
+/**
+ * @deprecated The SearchBarProvider useEffect now handles this
+ */
 function setDefaultLanguageContinent(
   state: SearchBarState,
   action: SetDefaultLanguageContinentAction
@@ -128,6 +131,9 @@ function setDefaultLanguageContinent(
   return state
 }
 
+/**
+ * @deprecated The SearchBarProvider useEffect now handles this
+ */
 function removeLanguageContinents(
   state: SearchBarState,
   action: RemoveLanguageContinentsAction
