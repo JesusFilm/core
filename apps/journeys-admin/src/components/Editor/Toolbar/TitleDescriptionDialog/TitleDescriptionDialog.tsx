@@ -32,54 +32,60 @@ export function TitleDescriptionDialog({
     title: string().required(t('Required'))
   })
 
-  const handleUpdateTitleDescription = async (
-    values: FormikValues
-  ): Promise<void> => {
+  function handleUpdateTitleDescription(values: FormikValues): void {
     if (journey == null) return
 
-    try {
-      await journeyUpdate({
-        variables: {
-          id: journey.id,
-          input: {
-            title: values.title,
-            description: values.description,
-            languageId: values.language.id
-          }
-        },
-        optimisticResponse: {
-          journeyUpdate: {
-            ...journey,
-            title: values.title,
-            description: values.description,
-            language: {
-              id: values.language.id,
-              __typename: 'Language'
-            }
+    void journeyUpdate({
+      variables: {
+        id: journey.id,
+        input: {
+          title: values.title,
+          description: values.description,
+          languageId: values.language.id
+        }
+      },
+      optimisticResponse: {
+        journeyUpdate: {
+          ...journey,
+          title: values.title,
+          description: values.description,
+          language: {
+            id: values.language.id,
+            bcp47: null,
+            iso3: null,
+            name: [
+              {
+                value: values.language.nativeName ?? values.language.localName,
+                primary: values.language.nativeName != null,
+                __typename: 'LanguageName'
+              }
+            ],
+            __typename: 'Language'
           }
         }
-      })
-      onClose()
-    } catch (error) {
-      if (error instanceof ApolloError) {
-        if (error.networkError != null) {
-          enqueueSnackbar(
-            t('Field update failed. Reload the page or try again.'),
-            {
-              variant: 'error',
-              preventDuplicate: true
-            }
-          )
-          return
+      },
+      onError(error) {
+        if (error instanceof ApolloError) {
+          if (error.networkError != null) {
+            enqueueSnackbar(
+              t('Field update failed. Reload the page or try again.'),
+              {
+                variant: 'error',
+                preventDuplicate: true
+              }
+            )
+            return
+          }
+        }
+        if (error instanceof Error) {
+          enqueueSnackbar(error.message, {
+            variant: 'error',
+            preventDuplicate: true
+          })
         }
       }
-      if (error instanceof Error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      }
-    }
+    })
+    onClose()
   }
 
   function handleClose(resetForm: (values: FormikValues) => void): () => void {
