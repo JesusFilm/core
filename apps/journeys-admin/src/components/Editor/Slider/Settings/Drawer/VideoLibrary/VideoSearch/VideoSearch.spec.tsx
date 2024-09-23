@@ -20,9 +20,7 @@ describe('VideoSearch', () => {
   })
 
   it('has value in textbox', () => {
-    render(
-      <VideoSearch variant="internal" value="Jesus" onChange={jest.fn()} />
-    )
+    render(<VideoSearch value="Jesus" onChange={jest.fn()} />)
     expect(screen.getByRole('searchbox', { name: 'Search' })).toHaveValue(
       'Jesus'
     )
@@ -30,7 +28,7 @@ describe('VideoSearch', () => {
 
   it('calls onChange on change', async () => {
     const onChange = jest.fn()
-    render(<VideoSearch variant="internal" onChange={onChange} />)
+    render(<VideoSearch onChange={onChange} />)
     const searchBox = screen.getByRole('searchbox', { name: 'Search' })
     await waitFor(() =>
       fireEvent.change(searchBox, {
@@ -42,14 +40,14 @@ describe('VideoSearch', () => {
 
   it('uses the search icon if tab is internal', () => {
     const { getByTestId } = render(
-      <VideoSearch variant="internal" onChange={jest.fn()} icon="search" />
+      <VideoSearch onChange={jest.fn()} icon="search" />
     )
     expect(getByTestId('Search1Icon')).toBeInTheDocument()
   })
 
   it('uses the link icon if tab is youtube', () => {
     const { getByTestId } = render(
-      <VideoSearch variant="youtube" onChange={jest.fn()} icon="link" />
+      <VideoSearch onChange={jest.fn()} icon="link" />
     )
     expect(getByTestId('LinkIcon')).toBeInTheDocument()
   })
