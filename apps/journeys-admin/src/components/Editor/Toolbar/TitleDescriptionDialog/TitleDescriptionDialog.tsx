@@ -8,7 +8,9 @@ import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { Dialog } from '@core/shared/ui/Dialog'
+import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 
@@ -25,6 +27,7 @@ export function TitleDescriptionDialog({
   const [journeyUpdate] = useJourneyUpdateMutation()
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
+  const { data, loading } = useLanguagesQuery({ languageId: '529' })
   const titleSchema = object().shape({
     title: string().required(t('Required'))
   })
@@ -38,13 +41,18 @@ export function TitleDescriptionDialog({
       await journeyUpdate({
         variables: {
           id: journey.id,
-          input: { title: values.title, description: values.description }
+          input: {
+            title: values.title,
+            description: values.description,
+            languageId: values.language.id
+          }
         },
         optimisticResponse: {
           journeyUpdate: {
             ...journey,
             title: values.title,
-            description: values.description
+            description: values.description,
+            language: values.language.id
           }
         }
       })
@@ -77,7 +85,22 @@ export function TitleDescriptionDialog({
       // wait for dialog animation to complete
       setTimeout(() =>
         resetForm({
-          values: { title: journey?.title, description: journey?.description }
+          values: {
+            title: journey?.title,
+            description: journey?.description,
+            language:
+              journey != null
+                ? {
+                    id: journey.language.id,
+                    localName: journey.language.name.find(
+                      ({ primary }) => !primary
+                    )?.value,
+                    nativeName: journey.language.name.find(
+                      ({ primary }) => primary
+                    )?.value
+                  }
+                : undefined
+          }
         })
       )
     }
@@ -89,12 +112,31 @@ export function TitleDescriptionDialog({
         <Formik
           initialValues={{
             title: journey.title,
-            description: journey.description
+            description: journey.description,
+            language:
+              journey != null
+                ? {
+                    id: journey.language.id,
+                    localName: journey.language.name.find(
+                      ({ primary }) => !primary
+                    )?.value,
+                    nativeName: journey.language.name.find(
+                      ({ primary }) => primary
+                    )?.value
+                  }
+                : undefined
           }}
           onSubmit={handleUpdateTitleDescription}
           validationSchema={titleSchema}
         >
-          {({ values, errors, handleChange, handleSubmit, resetForm }) => (
+          {({
+            values,
+            errors,
+            handleChange,
+            handleSubmit,
+            resetForm,
+            setFieldValue
+          }) => (
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
@@ -122,12 +164,21 @@ export function TitleDescriptionDialog({
                     id="description"
                     name="description"
                     label={t('Description')}
+                    helperText={t('Only you and other editors can see this')}
                     fullWidth
                     value={values.description}
                     multiline
                     variant="filled"
                     rows={2}
                     onChange={handleChange}
+                  />
+                  <LanguageAutocomplete
+                    onChange={async (value) =>
+                      await setFieldValue('language', value)
+                    }
+                    value={values.language}
+                    languages={data?.languages}
+                    loading={loading}
                   />
                 </Stack>
               </Form>
