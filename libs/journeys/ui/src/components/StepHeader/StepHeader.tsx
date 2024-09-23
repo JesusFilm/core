@@ -34,7 +34,7 @@ export function StepHeader({
         top: 0,
         alignItems: 'flex-end',
         width: { xs: '100%', lg: 'auto' },
-        py: 4,
+        py: 2,
         ...sx
       }}
       onClick={(e) => {
@@ -93,7 +93,7 @@ export function StepHeader({
       ) : (
         <>
           <PaginationBullets />
-          <InformationButton />
+          <InformationButton sx={{ p: 0, mx: 2 }} />
         </>
       )}
     </Stack>

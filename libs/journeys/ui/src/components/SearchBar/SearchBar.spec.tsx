@@ -178,7 +178,7 @@ describe('SearchBar', () => {
     await waitFor(() =>
       expect(screen.getByTestId('SearchBarDropdown')).toBeInTheDocument()
     )
-    expect(screen.getByText('Europe')).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByText('Asia')).toBeInTheDocument())
   })
 
   it('should not switch back to suggestions after languages button clicked', async () => {
