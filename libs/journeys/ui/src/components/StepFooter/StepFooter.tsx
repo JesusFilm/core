@@ -84,7 +84,7 @@ export function StepFooter({
           gap={4}
         >
           {isWebsite ? (
-            <InformationButton sx={{ m: 0, p: 0 }} />
+            <InformationButton sx={{ p: 0 }} />
           ) : (
             <Stack
               sx={{
