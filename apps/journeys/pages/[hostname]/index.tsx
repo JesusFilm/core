@@ -117,7 +117,6 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
           i18nConfig
         ))
       },
-      journeys: data.journeys,
       notFound: true,
       revalidate: 1
     }
