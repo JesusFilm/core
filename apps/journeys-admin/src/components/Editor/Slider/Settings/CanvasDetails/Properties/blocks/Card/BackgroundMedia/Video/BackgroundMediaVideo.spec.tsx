@@ -276,21 +276,24 @@ const coverBlockRestoreMock: MockedResponse<
 }
 
 describe('BackgroundMediaVideo', () => {
+  const searchBox = {
+    refine: jest.fn()
+  } as unknown as SearchBoxRenderState
+
+  const infiniteHits = {
+    items: videoItems,
+    showMore: jest.fn(),
+    isLastPage: false
+  } as unknown as InfiniteHitsRenderState
+
+  const instantSearch = {
+    status: 'idle'
+  } as unknown as InstantSearchApi
+
   beforeEach(() => {
-    mockUseSearchBox.mockReturnValue({
-      refine: jest.fn()
-    } as unknown as SearchBoxRenderState)
-
-    mockUseInfiniteHits.mockReturnValue({
-      items: videoItems,
-      showMore: jest.fn(),
-      isLastPage: false
-    } as unknown as InfiniteHitsRenderState)
-
-    mockUseInstantSearch.mockReturnValue({
-      status: 'idle'
-    } as unknown as InstantSearchApi)
-
+    mockUseSearchBox.mockReturnValue(searchBox)
+    mockUseInfiniteHits.mockReturnValue(infiniteHits)
+    mockUseInstantSearch.mockReturnValue(instantSearch)
     jest.clearAllMocks()
   })
 

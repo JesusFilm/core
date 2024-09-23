@@ -47,32 +47,43 @@ describe('VideoFromLocal', () => {
     }
   ]
 
+  const searchBox = {
+    query: '',
+    refine: jest.fn()
+  } as unknown as SearchBoxRenderState
+
+  const infiniteHits = {
+    items: [
+      ...items,
+      {
+        ...items[0],
+        titles: ['title2']
+      },
+      {
+        ...items[0],
+        titles: ['title3']
+      }
+    ],
+    showMore: jest.fn(),
+    isLastPage: false
+  } as unknown as InfiniteHitsRenderState
+
+  const instantSearch = {
+    status: 'idle'
+  } as unknown as InstantSearchApi
+
   beforeEach(() => {
     ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
 
-    mockUseSearchBox.mockReturnValue({
-      refine: jest.fn()
-    } as unknown as SearchBoxRenderState)
+    mockUseSearchBox.mockReturnValue(searchBox)
+    mockUseInfiniteHits.mockReturnValue(infiniteHits)
+    mockUseInstantSearch.mockReturnValue(instantSearch)
+  })
 
-    mockUseInfiniteHits.mockReturnValue({
-      items: [
-        ...items,
-        {
-          ...items[0],
-          titles: ['title2']
-        },
-        {
-          ...items[0],
-          titles: ['title3']
-        }
-      ],
-      showMore: jest.fn(),
-      isLastPage: false
-    } as unknown as InfiniteHitsRenderState)
-
-    mockUseInstantSearch.mockReturnValue({
-      status: 'idle'
-    } as unknown as InstantSearchApi)
+  it('should render the placeholder text when there is no search query', () => {
+    render(<VideoFromLocal onSelect={jest.fn()} />)
+    expect(screen.getByText('Featured Videos')).toBeInTheDocument()
+    expect(screen.getByText('Jesus Film Library')).toBeInTheDocument()
   })
 
   it('should render a video list item', async () => {

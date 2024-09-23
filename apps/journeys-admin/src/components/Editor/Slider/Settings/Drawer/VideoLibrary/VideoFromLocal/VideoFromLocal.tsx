@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
 import { VideoBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
@@ -18,8 +18,7 @@ export function VideoFromLocal({
 }: VideoFromLocalProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
-  const { refine } = useSearchBox()
-  const [searchQuery, setSearchQuery] = useState<string>('')
+  const { refine, query } = useSearchBox()
   const { loading, isLastPage, items, showMore } = useAlgoliaLocalVideos()
 
   async function handleFetchMore(): Promise<void> {
@@ -28,14 +27,13 @@ export function VideoFromLocal({
 
   function handleChange(value: string): void {
     refine(value)
-    setSearchQuery(value)
   }
 
   return (
     <>
-      <VideoSearch value={searchQuery} onChange={handleChange} icon="search" />
+      <VideoSearch value={query} onChange={handleChange} icon="search" />
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
-        {searchQuery === '' && (
+        {query === '' && (
           <Box sx={{ pb: 4, px: 6 }}>
             <Typography variant="overline" color="primary">
               {t('Jesus Film Library')}
