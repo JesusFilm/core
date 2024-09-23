@@ -4,15 +4,15 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
+import { getLastActiveTeamIdAndTeamsMock } from '@core/journeys/ui/TeamProvider/TeamProvider.mock'
 
 import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
+import { mockUseCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery/useCurrentUserLazyQuery.mock'
 
 import { TEAM_UPDATE } from './TeamUpdateDialog'
 
 import { TeamUpdateDialog } from '.'
 import '../../../../test/i18n'
-import { getLastActiveTeamIdAndTeamsMock } from '@core/journeys/ui/TeamProvider/TeamProvider.mock'
-import { mockUseCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery/useCurrentUserLazyQuery.mock'
 
 describe('TeamUpdateDialog', () => {
   const teamUpdateMock: MockedResponse<TeamUpdate> = {
