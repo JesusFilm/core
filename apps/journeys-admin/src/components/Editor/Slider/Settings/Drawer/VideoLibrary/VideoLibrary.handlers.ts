@@ -1,7 +1,7 @@
 import { BaseHit, Hit } from 'instantsearch.js'
 import { HttpResponse, delay, http } from 'msw'
 
-const hits = [
+const items = [
   {
     videoId: '1_jf-0-0',
     titles: ['JESUS'],
@@ -242,7 +242,7 @@ const hits = [
 export const getAlgoliaVideosHandlers = [
   http.post('https://algolia-dsn.algolia.net/1/indexes/*', () => {
     return HttpResponse.json({
-      results: [{ hits, nbHits: 10 }]
+      results: [{ items, nbHits: 10 }]
     })
   })
 ]
@@ -251,7 +251,7 @@ export const loadingHandler = [
   http.post('https://algolia-dsn.algolia.net/1/indexes/*', async () => {
     await delay('infinite')
     return HttpResponse.json({
-      results: [{ hits: [], nbHits: 0, loading: true }]
+      results: [{ items: [], nbHits: 0, loading: true }]
     })
   })
 ]
@@ -259,7 +259,7 @@ export const loadingHandler = [
 export const emptyResultsHandler = [
   http.post('https://algolia-dsn.algolia.net/1/indexes/*', () => {
     return HttpResponse.json({
-      results: [{ hits: [], nbHits: 0 }]
+      results: [{ items: [], nbHits: 0 }]
     })
   })
 ]
