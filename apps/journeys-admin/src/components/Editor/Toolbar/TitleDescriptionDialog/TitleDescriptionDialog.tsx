@@ -52,7 +52,10 @@ export function TitleDescriptionDialog({
             ...journey,
             title: values.title,
             description: values.description,
-            language: values.language.id
+            language: {
+              id: values.language.id,
+              __typename: 'Language'
+            }
           }
         }
       })
