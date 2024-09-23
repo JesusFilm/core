@@ -142,7 +142,7 @@ function JourneysPage({ journeys }: JourneysPageProps): ReactElement {
   )
 }
 
-export const GET_JOURNEYS_SUMMARY = gql`
+export const GET_JOURNEYS = gql`
   query GetJourneysSummary($featured: Boolean, $options: JourneysQueryOptions) {
     journeys(
       where: { featured: $featured, template: false }
@@ -163,7 +163,7 @@ export const getStaticProps: GetStaticProps<JourneysPageProps> = async (
     GetJourneysSummary,
     GetJourneysSummaryVariables
   >({
-    query: GET_JOURNEYS_SUMMARY,
+    query: GET_JOURNEYS,
     variables: {
       featured: true
     }
