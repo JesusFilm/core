@@ -25,7 +25,7 @@ const StyledTab = styled(Tab)(({ theme }) => ({
     }
   },
 
-  //  Hide the text label on small screens
+  // Hide the text label on small screens
   [theme.breakpoints.down('md')]: {
     '& .tab-label': {
       display: 'none'
