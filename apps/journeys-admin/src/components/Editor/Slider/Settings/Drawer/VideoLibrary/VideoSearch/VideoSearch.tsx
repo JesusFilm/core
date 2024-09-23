@@ -5,14 +5,12 @@ import { Formik } from 'formik'
 import debounce from 'lodash/debounce'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
-import { useSearchBox } from 'react-instantsearch'
 
 import LinkIcon from '@core/shared/ui/icons/Link'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 interface VideoSearchProps {
-  variant: 'internal' | 'youtube'
   label?: string
   value?: string
   onChange: (value: string) => void
@@ -23,12 +21,9 @@ export function VideoSearch({
   label,
   value,
   onChange,
-  icon,
-  variant
+  icon
 }: VideoSearchProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
-  const { refine } = useSearchBox()
 
   const handleChange = useMemo(() => debounce(onChange, 500), [onChange])
   const [search, setSearch] = useState(value ?? '')
@@ -39,8 +34,7 @@ export function VideoSearch({
 
   function handleSearchChange(values: typeof initialValues): void {
     setSearch(values.title)
-    if (variant === 'internal') refine(values.title)
-    if (variant === 'youtube') handleChange(values.title)
+    handleChange(values.title)
   }
 
   useEffect(() => {

@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
+import { useSearchBox } from 'react-instantsearch'
 
 import { VideoBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
 import { useAlgoliaLocalVideos } from '../utils/useAlgoliaLocalVideos'
@@ -17,6 +18,7 @@ export function VideoFromLocal({
 }: VideoFromLocalProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
+  const { refine } = useSearchBox()
   const [searchQuery, setSearchQuery] = useState<string>('')
   const { loading, isLastPage, items, showMore } = useAlgoliaLocalVideos()
 
@@ -24,14 +26,14 @@ export function VideoFromLocal({
     showMore()
   }
 
+  function handleChange(value: string): void {
+    refine(value)
+    setSearchQuery(value)
+  }
+
   return (
     <>
-      <VideoSearch
-        variant="internal"
-        value={searchQuery}
-        onChange={setSearchQuery}
-        icon="search"
-      />
+      <VideoSearch value={searchQuery} onChange={handleChange} icon="search" />
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
         {searchQuery === '' && (
           <Box sx={{ pb: 4, px: 6 }}>
