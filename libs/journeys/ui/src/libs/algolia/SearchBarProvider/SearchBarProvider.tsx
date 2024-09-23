@@ -1,3 +1,4 @@
+import { RefinementListItem } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import filter from 'lodash/filter'
 import mapValues from 'lodash/mapValues'
 import {
@@ -42,7 +43,7 @@ interface SetDefaultLanguageContinentAction {
 
 interface RemoveLanguageContinentsAction {
   type: 'RemoveLanguageContinents'
-  language: Language
+  languages: Language[]
 }
 
 interface RemoveAllLanguageContinentsAction {
@@ -131,16 +132,15 @@ function setDefaultLanguageContinent(
   return state
 }
 
-/**
- * @deprecated The SearchBarProvider useEffect now handles this
- */
 function removeLanguageContinents(
   state: SearchBarState,
   action: RemoveLanguageContinentsAction
 ): SearchBarState {
-  const { language } = action
-  const updatedLanguages = mapValues(state.continentLanguages, (languages) =>
-    filter(languages, (lang) => lang !== language)
+  const { languages } = action
+  const updatedLanguages = mapValues(
+    state.continentLanguages,
+    (continentLanguage) =>
+      filter(continentLanguage, (lang) => !languages.includes(lang))
   )
   return {
     ...state,
@@ -210,17 +210,12 @@ export function SearchBarProvider({
 
   const updateLanguages = useCallback(() => {
     const refinedItems = items.filter((item) => item.isRefined)
-    if (refinedItems.length > 0) {
-      const languagesSet = Object.values(state.continentLanguages).flat()
-      if (languagesSet.length < refinedItems.length) {
-        const languagesNotSet = refinedItems
-          .map((item) => item.label)
-          .filter((language) => !languagesSet.includes(language))
-        dispatch({
-          type: 'SetDefaultLanguageContinent',
-          refinedItems: languagesNotSet
-        })
-      }
+    const languagesSet = Object.values(state.continentLanguages).flat()
+    if (languagesSet.length < refinedItems.length) {
+      setLanguages(refinedItems, languagesSet)
+    }
+    if (languagesSet.length > refinedItems.length) {
+      unsetLanguages(refinedItems, languagesSet)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items])
@@ -239,6 +234,33 @@ export function SearchBarProvider({
       {children}
     </SearchBarContext.Provider>
   )
+
+  function setLanguages(
+    refinedItems: RefinementListItem[],
+    languagesSet: Language[]
+  ): void {
+    const languagesNotSet = refinedItems
+      .map((item) => item.label)
+      .filter((language) => !languagesSet.includes(language))
+    dispatch({
+      type: 'SetDefaultLanguageContinent',
+      refinedItems: languagesNotSet
+    })
+  }
+
+  function unsetLanguages(
+    refinedItems: RefinementListItem[],
+    languagesSet: Language[]
+  ): void {
+    const refinedItemsLabels = refinedItems.map((item) => item.label)
+    const languagesToUnset = languagesSet.filter(
+      (language) => !refinedItemsLabels.includes(language)
+    )
+    dispatch({
+      type: 'RemoveLanguageContinents',
+      languages: languagesToUnset
+    })
+  }
 }
 
 export function useSearchBar(): SearchBarContextType {

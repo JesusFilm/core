@@ -45,12 +45,11 @@ export function RefinementGroups({
   const { refine: clearRefinements, canRefine: canClearRefinements } =
     useClearRefinements()
 
-  const { dispatch, state } = useSearchBar()
+  const { state } = useSearchBar()
   const languages = state.allContinentLanguages
-  
+
   function handleClick(): void {
     clearRefinements()
-    dispatch({ type: 'RemoveAllLanguageContinents' })
   }
 
   const languageEntries = Object.entries(languages)

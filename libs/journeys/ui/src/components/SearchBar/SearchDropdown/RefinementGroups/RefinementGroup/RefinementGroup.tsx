@@ -41,11 +41,13 @@ export function RefinementGroup({
       language,
       isSelected
     })
+
+    refine(language)
+
     if (isLanguageRefined(language)) {
       const strippedQuery = stripLanguageFromQuery(language, query)
       if (query !== strippedQuery) refineQuery(strippedQuery)
     }
-    refine(language)
   }
 
   function isItemChecked(item: { label: string; isRefined: boolean }): boolean {

@@ -158,23 +158,39 @@ describe('SearchBarContext', () => {
     })
 
     describe('RemoveLanguageContinents', () => {
+      const state = {
+        continentLanguages: {
+          Europe: ['English', 'French'],
+          Asia: ['Chinese', 'English']
+        },
+        allContinentLanguages: {}
+      }
+
       it('should remove a language from all continents', () => {
-        const state = {
-          continentLanguages: {
-            Europe: ['English', 'French'],
-            Asia: ['Chinese', 'English']
-          },
-          allContinentLanguages: {}
-        }
         expect(
           reducer(state, {
             type: 'RemoveLanguageContinents',
-            language: 'English'
+            languages: ['English']
           })
         ).toEqual({
           ...state,
           continentLanguages: {
             Europe: ['French'],
+            Asia: ['Chinese']
+          }
+        })
+      })
+
+      it('should remove multiple languages from continents', () => {
+        expect(
+          reducer(state, {
+            type: 'RemoveLanguageContinents',
+            languages: ['English', 'French']
+          })
+        ).toEqual({
+          ...state,
+          continentLanguages: {
+            Europe: [],
             Asia: ['Chinese']
           }
         })

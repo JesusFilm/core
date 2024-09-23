@@ -104,6 +104,7 @@ describe('RefinementGroup', () => {
   })
 
   it('should check the checkbox if title, continent, and refinement match', () => {
+    mockUseRefinementList.mockReturnValue(useRefinementListWithRefinedValue)
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBarProvider
@@ -124,17 +125,7 @@ describe('RefinementGroup', () => {
   })
 
   it('should disable the checkbox if the language is selected in a different continent', () => {
-    const useRefinementListWithRefinedValue = {
-      items: [
-        {
-          label: 'Cantonese',
-          value: 'Cantonese',
-          isRefined: true
-        }
-      ],
-      refine
-    } as unknown as RefinementListRenderState
-
+    mockUseRefinementList.mockReturnValue(useRefinementListWithRefinedValue)
     render(
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBarProvider
