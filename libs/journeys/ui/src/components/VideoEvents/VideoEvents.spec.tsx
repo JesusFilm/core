@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { act, cleanup, render, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 import videojs from 'video.js'
 
@@ -35,15 +35,12 @@ jest.mock('uuid', () => ({
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 mockUuidv4.mockReturnValue('uuid')
 
-jest.mock('react-gtm-module', () => ({
-  __esModule: true,
-  default: {
-    dataLayer: jest.fn()
-  }
+jest.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: jest.fn()
 }))
 
-const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
-  typeof TagManager.dataLayer
+const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+  typeof sendGTMEvent
 >
 
 jest.mock('next-plausible', () => ({
@@ -227,15 +224,13 @@ describe('VideoEvents', () => {
     })
 
     await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'video_start',
-          eventId: 'uuid',
-          blockId: 'video0.id',
-          videoPosition: 0,
-          videoTitle: 'video.title',
-          videoId: 'video.id'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'video_start',
+        eventId: 'uuid',
+        blockId: 'video0.id',
+        videoPosition: 0,
+        videoTitle: 'video.title',
+        videoId: 'video.id'
       })
     )
   })
@@ -337,15 +332,13 @@ describe('VideoEvents', () => {
       props.player.trigger('play')
     })
     await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'video_play',
-          eventId: 'uuid',
-          blockId: 'video0.id',
-          videoPosition: 0.12,
-          videoTitle: 'video.title',
-          videoId: 'video.id'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'video_play',
+        eventId: 'uuid',
+        blockId: 'video0.id',
+        videoPosition: 0.12,
+        videoTitle: 'video.title',
+        videoId: 'video.id'
       })
     )
   })
@@ -447,15 +440,13 @@ describe('VideoEvents', () => {
       props.player.trigger('pause')
     })
     await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'video_pause',
-          eventId: 'uuid',
-          blockId: 'video0.id',
-          videoPosition: 0.34,
-          videoTitle: 'video.title',
-          videoId: 'video.id'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'video_pause',
+        eventId: 'uuid',
+        blockId: 'video0.id',
+        videoPosition: 0.34,
+        videoTitle: 'video.title',
+        videoId: 'video.id'
       })
     )
   })
@@ -557,15 +548,13 @@ describe('VideoEvents', () => {
       props.player.enterFullWindow()
     })
     await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'video_expand',
-          eventId: 'uuid',
-          blockId: 'video0.id',
-          videoPosition: 0.56,
-          videoTitle: 'video.title',
-          videoId: 'video.id'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'video_expand',
+        eventId: 'uuid',
+        blockId: 'video0.id',
+        videoPosition: 0.56,
+        videoTitle: 'video.title',
+        videoId: 'video.id'
       })
     )
   })
@@ -707,15 +696,13 @@ describe('VideoEvents', () => {
       void props.player.exitFullscreen()
     })
     await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'video_collapse',
-          eventId: 'uuid',
-          blockId: 'video0.id',
-          videoPosition: 0.78,
-          videoTitle: 'video.title',
-          videoId: 'video.id'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'video_collapse',
+        eventId: 'uuid',
+        blockId: 'video0.id',
+        videoPosition: 0.78,
+        videoTitle: 'video.title',
+        videoId: 'video.id'
       })
     )
   })
@@ -1081,15 +1068,13 @@ describe('VideoEvents', () => {
       props.player.trigger('timeupdate')
     })
     await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'video_start',
-          eventId: 'uuid',
-          blockId: 'video0.id',
-          videoPosition: 0,
-          videoTitle: 'video.title',
-          videoId: 'video.id'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'video_start',
+        eventId: 'uuid',
+        blockId: 'video0.id',
+        videoPosition: 0,
+        videoTitle: 'video.title',
+        videoId: 'video.id'
       })
     )
 
@@ -1098,16 +1083,14 @@ describe('VideoEvents', () => {
       props.player.trigger('timeupdate')
     })
     await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'video_progress',
-          eventId: 'uuid',
-          blockId: 'video0.id',
-          videoPosition: 25.1,
-          videoProgress: 25,
-          videoTitle: 'video.title',
-          videoId: 'video.id'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'video_progress',
+        eventId: 'uuid',
+        blockId: 'video0.id',
+        videoPosition: 25.1,
+        videoProgress: 25,
+        videoTitle: 'video.title',
+        videoId: 'video.id'
       })
     )
 
@@ -1116,16 +1099,14 @@ describe('VideoEvents', () => {
       props.player.trigger('timeupdate')
     })
     await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'video_progress',
-          eventId: 'uuid',
-          blockId: 'video0.id',
-          videoPosition: 50.2,
-          videoProgress: 50,
-          videoTitle: 'video.title',
-          videoId: 'video.id'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'video_progress',
+        eventId: 'uuid',
+        blockId: 'video0.id',
+        videoPosition: 50.2,
+        videoProgress: 50,
+        videoTitle: 'video.title',
+        videoId: 'video.id'
       })
     )
 
@@ -1134,16 +1115,14 @@ describe('VideoEvents', () => {
       props.player.trigger('timeupdate')
     })
     await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'video_progress',
-          eventId: 'uuid',
-          blockId: 'video0.id',
-          videoPosition: 75.3,
-          videoProgress: 75,
-          videoTitle: 'video.title',
-          videoId: 'video.id'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'video_progress',
+        eventId: 'uuid',
+        blockId: 'video0.id',
+        videoPosition: 75.3,
+        videoProgress: 75,
+        videoTitle: 'video.title',
+        videoId: 'video.id'
       })
     )
 
@@ -1152,15 +1131,13 @@ describe('VideoEvents', () => {
       props.player.trigger('timeupdate')
     })
     await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'video_complete',
-          eventId: 'uuid',
-          blockId: 'video0.id',
-          videoPosition: 102,
-          videoTitle: 'video.title',
-          videoId: 'video.id'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'video_complete',
+        eventId: 'uuid',
+        blockId: 'video0.id',
+        videoPosition: 102,
+        videoTitle: 'video.title',
+        videoId: 'video.id'
       })
     )
   })
