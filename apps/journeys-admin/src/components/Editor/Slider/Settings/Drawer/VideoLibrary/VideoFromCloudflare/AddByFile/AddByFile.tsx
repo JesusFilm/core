@@ -4,7 +4,7 @@ import LinearProgress from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { FileRejection, useDropzone } from 'react-dropzone'
 import { HttpStack } from 'tus-js-client'
 
@@ -30,9 +30,14 @@ export function AddByFile({
   const [tooManyFiles, settooManyFiles] = useState(false)
   const [fileInvalidType, setfileInvalidType] = useState(false)
   const { uploadQueue, uploadCloudflareVideo } = useBackgroundUpload()
-
-  // let uploadQueueItem: string | undefined
   const [activeQueueItem, setActiveQueueItem] = useState<string>('')
+
+  useEffect(() => {
+    if (uploadQueue[activeQueueItem]?.status === UploadStatus.complete) {
+      onChange(activeQueueItem)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uploadQueue[activeQueueItem]?.status])
 
   const onDrop = async (): Promise<void> => {
     setfileTooLarge(false)
@@ -45,8 +50,7 @@ export function AddByFile({
     setActiveQueueItem(
       await uploadCloudflareVideo({
         files,
-        httpStack,
-        onChange
+        httpStack
       })
     )
   }

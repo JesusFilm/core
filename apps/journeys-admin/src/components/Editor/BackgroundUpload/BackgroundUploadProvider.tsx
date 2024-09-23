@@ -50,7 +50,6 @@ export function BackgroundUploadProvider({
   const [uploadQueue, setUploadQueue] = useState<
     Record<string, UploadQueueItem>
   >({})
-  // const uploadQueue: Record<string, UploadQueueItem> = {}
   const [createCloudflareVideoUploadByFile] =
     useMutation<CreateCloudflareVideoUploadByFileMutation>(
       CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION
@@ -64,19 +63,22 @@ export function BackgroundUploadProvider({
           data.getMyCloudflareVideo?.readyToStream &&
           data.getMyCloudflareVideo.id != null
         ) {
-          console.log('ready to stream')
           stopPolling()
-          if (uploadQueue[data.getMyCloudflareVideo.id] != null)
-            uploadQueue[data.getMyCloudflareVideo.id].onChange(
-              data.getMyCloudflareVideo.id
-            )
+          if (uploadQueue[data.getMyCloudflareVideo.id] != null) {
+            setUploadQueue({
+              ...uploadQueue,
+              [data.getMyCloudflareVideo.id]: {
+                ...uploadQueue[data.getMyCloudflareVideo.id],
+                status: UploadStatus.complete
+              }
+            })
+          }
         }
       }
     })
   async function uploadCloudflareVideo({
     files,
-    httpStack = new DefaultHttpStack({}),
-    onChange
+    httpStack = new DefaultHttpStack({})
   }: uploadCloudflareVideoParams): Promise<string> {
     if (files.length > 0) {
       const file = files[0]
@@ -112,8 +114,7 @@ export function BackgroundUploadProvider({
           [id]: {
             id,
             fileName,
-            status: UploadStatus.uploading,
-            onChange
+            status: UploadStatus.uploading
           }
         })
 

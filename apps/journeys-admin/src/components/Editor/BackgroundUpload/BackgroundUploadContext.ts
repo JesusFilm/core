@@ -18,13 +18,13 @@ export interface UploadQueueItem {
   status: UploadStatus
   error?: DetailedError | Error
   progress?: number
-  onChange: (id: string) => void
+  // onChange: (id: string) => void
 }
 
 export interface uploadCloudflareVideoParams {
   files: File[]
   httpStack?: HttpStack
-  onChange: (id: string) => void
+  // onChange: (id: string) => void
 }
 
 export interface Context {
