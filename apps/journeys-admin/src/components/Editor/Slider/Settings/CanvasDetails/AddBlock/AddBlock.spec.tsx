@@ -83,9 +83,6 @@ describe('AddBlock', () => {
       getByTestId('JourneysAdminButtonNewSignUpButton')
     ).toBeInTheDocument()
     expect(getByTestId('JourneysAdminButtonNewButton')).toBeInTheDocument()
-    expect(
-      getByTestId('JourneysAdminButtonNewFormiumFormIcon')
-    ).toBeInTheDocument()
   })
 
   it('does not render FormiumForm button when flag is false', () => {

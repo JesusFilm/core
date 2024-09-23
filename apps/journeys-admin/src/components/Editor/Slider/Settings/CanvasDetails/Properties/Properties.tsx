@@ -83,14 +83,6 @@ const SignUp = dynamic(
   { ssr: false }
 )
 
-const Form = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Form" */ './blocks/Form'
-    ).then((mod) => mod.Form),
-  { ssr: false }
-)
-
 interface PropertiesProps {
   block?: TreeBlock
   step?: TreeBlock<StepBlock>
@@ -110,10 +102,6 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
   switch (selectedBlock?.__typename) {
     case 'CardBlock':
       component = <Card {...selectedBlock} />
-      break
-    case 'FormBlock':
-      title = t('Form Properties')
-      component = <Form {...selectedBlock} />
       break
     case 'StepBlock': {
       const card = selectedBlock.children[0]
