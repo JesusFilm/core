@@ -3,9 +3,11 @@ import ClickAwayListener from '@mui/material/ClickAwayListener'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
 import { styled, useTheme } from '@mui/material/styles'
-import TextField, { TextFieldProps } from '@mui/material/TextField'
+import TextField, {
+  BaseTextFieldProps,
+  TextFieldProps
+} from '@mui/material/TextField'
 import { Formik } from 'formik'
-import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import {
   type ReactElement,
@@ -20,20 +22,24 @@ import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 import { SearchBarProvider } from '../../libs/algolia/SearchBarProvider'
+import { useLanguagesContinentsLazyQuery } from '../../libs/useLanguagesContinentsQuery'
+import {
+  LanguageContinentsRecord,
+  sortLanguageContinents
+} from '../../libs/useLanguagesContinentsQuery/sortLanguageContinents'
 
 import { LanguageButtons } from './LanguageButtons'
+import { SearchbarDropdown } from './SearchDropdown'
 
-const DynamicSearchbarDropdown = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "SearchbarDropdown" */
-      './SearchDropdown'
-    ).then((mod) => mod.SearchbarDropdown)
-)
+interface StyledTextFieldProps extends BaseTextFieldProps {
+  showLanguageButton?: boolean
+}
 
 /* Styles below used to fake a gradient border because the 
 css attributes border-radius and border-image-source are not compatible */
-const StyledTextField = styled(TextField)(({ theme }) => ({
+const StyledTextField = styled(TextField, {
+  shouldForwardProp: (prop) => prop !== 'showLanguageButton'
+})<StyledTextFieldProps>(({ theme, showLanguageButton }) => ({
   '& .MuiOutlinedInput-root': {
     background: theme.palette.background.default,
     borderRadius: 8,
@@ -47,7 +53,7 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
       // Overriding the default set in components.tsx
       transform: 'none'
     },
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down('lg')]: showLanguageButton === true && {
       borderRadius: 0,
       borderTopLeftRadius: 8,
       borderTopRightRadius: 8
@@ -56,11 +62,13 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 }))
 
 interface SearchBarProps {
+  showDropdown?: boolean
   showLanguageButton?: boolean
   props?: TextFieldProps
 }
 
 export function SearchBar({
+  showDropdown = false,
   showLanguageButton = false,
   props
 }: SearchBarProps): ReactElement {
@@ -87,6 +95,7 @@ export function SearchBar({
   }
 
   function openSuggestionsDropdown(): void {
+    void prepareDropdown()
     setAnchorEl(popperRef.current)
     setOpen(true)
   }
@@ -95,6 +104,26 @@ export function SearchBar({
     setAnchorEl(popperRef.current)
     setTabValue(1)
     setOpen(!open)
+  }
+
+  const [allContinentLanguages, setAllContinentLanguages] =
+    useState<LanguageContinentsRecord>({})
+  const [isPreparingDropdown, setIsPreparingDropdown] = useState(false)
+  const [getLanguages] = useLanguagesContinentsLazyQuery()
+
+  async function getLanguageContinents(): Promise<void> {
+    const result = await getLanguages()
+    const languages = sortLanguageContinents({
+      languages: result.data?.languages ?? []
+    })
+    setAllContinentLanguages(languages)
+  }
+
+  async function prepareDropdown(): Promise<void> {
+    if (!isPreparingDropdown) {
+      setIsPreparingDropdown(true)
+      await getLanguageContinents()
+    }
   }
 
   const findUserCountry = useCallback(async () => {
@@ -123,6 +152,10 @@ export function SearchBar({
             }}
             data-testid="SearchBar"
             ref={popperRef}
+            onMouseEnter={prepareDropdown}
+            onTouchStart={prepareDropdown}
+            onClick={prepareDropdown}
+            onFocus={prepareDropdown}
           >
             <Formik
               initialValues={{
@@ -134,6 +167,7 @@ export function SearchBar({
               {({ values, handleChange, handleBlur }) => (
                 <>
                   <StyledTextField
+                    data-testid="SearchBarInput"
                     value={values.title}
                     name="title"
                     type="search"
@@ -149,6 +183,7 @@ export function SearchBar({
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') setOpen(false)
                     }}
+                    showLanguageButton={showLanguageButton}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">
@@ -177,22 +212,25 @@ export function SearchBar({
                 </>
               )}
             </Formik>
-            <Box
-              sx={{
-                [theme.breakpoints.up('lg')]: { display: 'none' }
-              }}
-            >
-              <Divider variant="middle" orientation="horizontal" />
-              <LanguageButtons
-                onClick={handleLanguageClick}
-                refinements={refinements}
-              />
-            </Box>
+            {showLanguageButton && (
+              <Box
+                sx={{
+                  [theme.breakpoints.up('lg')]: { display: 'none' }
+                }}
+              >
+                <Divider variant="middle" orientation="horizontal" />
+                <LanguageButtons
+                  onClick={handleLanguageClick}
+                  refinements={refinements}
+                />
+              </Box>
+            )}
           </Box>
-          {open && (
-            <DynamicSearchbarDropdown
+          {showDropdown && (
+            <SearchbarDropdown
               open={open}
               refinements={refinements}
+              languages={allContinentLanguages}
               countryCode={countryCode}
               id={open ? 'simple-popper' : undefined}
               anchorEl={anchorEl}

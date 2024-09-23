@@ -1,5 +1,4 @@
 import { ApolloProvider, type NormalizedCacheObject, gql } from '@apollo/client'
-import algoliasearch from 'algoliasearch'
 import type { UiState } from 'instantsearch.js'
 import type { RouterProps } from 'instantsearch.js/es/middlewares'
 import type { GetStaticProps } from 'next'
@@ -16,6 +15,7 @@ import {
 } from 'react-instantsearch'
 import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
 
+import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import i18nConfig from '../../next-i18next.config'
@@ -40,13 +40,6 @@ const GET_VIDEOS = gql`
     }
   }
 `
-
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
-  process.env.ALGOLIA_SERVER_API_KEY ??
-    process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ??
-    ''
-)
 
 interface VideosPageProps {
   initialApolloState?: NormalizedCacheObject
@@ -80,21 +73,22 @@ function VideosPage({
   initialApolloState,
   serverState
 }: VideosPageProps): ReactElement {
-  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-
   const client = useApolloClient({
     initialState: initialApolloState
   })
+
+  const searchClient = useInstantSearchClient()
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   return (
     <InstantSearchSSRProvider {...serverState}>
       <ApolloProvider client={client}>
         <InstantSearch
-          insights
-          indexName={indexName}
           searchClient={searchClient}
-          future={{ preserveSharedStateOnUnmount: true }}
+          indexName={indexName}
           stalledSearchDelay={500}
+          future={{ preserveSharedStateOnUnmount: true }}
+          insights
           routing={nextRouter}
         >
           <Configure ruleContexts={['all_videos_page']} />

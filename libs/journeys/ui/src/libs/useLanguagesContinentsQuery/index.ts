@@ -1,1 +1,4 @@
-export { useLanguagesContinentsQuery } from './useLanguagesContinentsQuery'
+export {
+  useLanguagesContinentsQuery,
+  useLanguagesContinentsLazyQuery
+} from './useLanguagesContinentsQuery'
