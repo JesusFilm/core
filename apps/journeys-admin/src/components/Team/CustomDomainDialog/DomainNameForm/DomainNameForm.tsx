@@ -2,7 +2,6 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
-import Tooltip from '@mui/material/Tooltip'
 import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -205,7 +204,6 @@ export function DomainNameForm({
       }) => (
         <>
           <TextField
-            disabled={isSubmitting || currentUserTeamRole === 'member'}
             id="name"
             name="name"
             autoFocus
@@ -217,29 +215,31 @@ export function DomainNameForm({
             error={errors.name != null}
             onChange={handleChange}
             onBlur={handleBlur}
+            disabled={
+              isSubmitting || currentUserTeamRole !== UserTeamRole.manager
+            }
             helperText={
               <>
                 {touched.name != null && errors.name != null
                   ? errors.name
+                  : currentUserTeamRole !== UserTeamRole.manager
+                  ? t('Only team managers can update the custom domain')
                   : ' '}
               </>
             }
             label={t('Domain Name')}
           />
-          <Tooltip
-            title={t('Only team managers can update the custom domain')}
-            arrow
-          >
-            <Box>
-              <Button
-                disabled={isSubmitting || currentUserTeamRole === 'member'}
-                onClick={() => handleSubmit()}
-                sx={{ width: 120, height: 55 }}
-              >
-                {t('Connect')}
-              </Button>
-            </Box>
-          </Tooltip>
+          <Box>
+            <Button
+              disabled={
+                isSubmitting || currentUserTeamRole !== UserTeamRole.manager
+              }
+              onClick={() => handleSubmit()}
+              sx={{ width: 120, height: 55 }}
+            >
+              {t('Connect')}
+            </Button>
+          </Box>
         </>
       )}
     </Formik>
@@ -253,25 +253,27 @@ export function DomainNameForm({
         placeholder="your.nextstep.is"
         variant="filled"
         hiddenLabel
-        InputProps={{ readOnly: true }}
+        helperText={
+          <>
+            {currentUserTeamRole !== UserTeamRole.manager
+              ? t('Only team managers can update the custom domain')
+              : ''}
+          </>
+        }
+        slotProps={{ input: { readOnly: true } }}
       />
 
-      <Tooltip
-        title={t('Only team managers can update the custom domain')}
-        arrow
-      >
-        <Box>
-          <Button
-            disabled={currentUserTeamRole === 'member'}
-            onClick={async () => await handleDisconnect()}
-            sx={{ width: 120, height: 55 }}
-          >
-            {customDomain == null && loading === true
-              ? t('Connect')
-              : t('Disconnect')}
-          </Button>
-        </Box>
-      </Tooltip>
+      <Box>
+        <Button
+          disabled={currentUserTeamRole !== UserTeamRole.manager}
+          onClick={async () => await handleDisconnect()}
+          sx={{ width: 120, height: 55 }}
+        >
+          {customDomain == null && loading === true
+            ? t('Connect')
+            : t('Disconnect')}
+        </Button>
+      </Box>
     </>
   )
 }

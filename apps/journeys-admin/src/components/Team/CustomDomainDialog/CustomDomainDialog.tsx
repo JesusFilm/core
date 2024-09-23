@@ -6,7 +6,7 @@ import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { Dialog } from '@core/shared/ui/Dialog/Dialog'
@@ -16,6 +16,7 @@ import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCir
 import Lightning2Icon from '@core/shared/ui/icons/Lightning2'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../libs/useCustomDomainsQuery'
 
@@ -48,9 +49,11 @@ export function CustomDomainDialog({
     void loadUser()
   }, [activeTeam, refetch, loadUser])
   const customDomain = data?.customDomains[0]
-  const currentUserTeamRole = activeTeam?.userTeams.find(
-    (userTeam) => userTeam.user.email === currentUser.email
-  )?.role
+  const currentUserTeamRole: UserTeamRole | undefined = useMemo(() => {
+    return activeTeam?.userTeams?.find(({ user: { email } }) => {
+      return email === currentUser?.email
+    })?.role
+  }, [activeTeam, currentUser])
 
   return (
     <Dialog
@@ -108,7 +111,7 @@ export function CustomDomainDialog({
                 currentUserTeamRole={currentUserTeamRole}
               />
             </Stack>
-            {currentUserTeamRole === 'manager' &&
+            {currentUserTeamRole === UserTeamRole.manager &&
               currentUserTeamRole != null && (
                 <>
                   <Divider />
