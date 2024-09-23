@@ -1,9 +1,9 @@
 import { gql, useMutation } from '@apollo/client'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import { StepViewEventCreateInput } from '../../../__generated__/globalTypes'
@@ -81,13 +81,11 @@ export function Step({
           }
         })
       }
-      TagManager.dataLayer({
-        dataLayer: {
-          event: 'step_view',
-          eventId: id,
-          blockId,
-          stepName: heading
-        }
+      sendGTMEvent({
+        event: 'step_view',
+        eventId: id,
+        blockId,
+        stepName: heading
       })
     }
   }, [

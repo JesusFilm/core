@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TeamCreateInput } from "./globalTypes";
+import { TeamCreateInput, UserTeamRole } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: TeamCreate
@@ -15,12 +15,14 @@ export interface TeamCreate_teamCreate_userTeams_user {
   firstName: string;
   lastName: string | null;
   imageUrl: string | null;
+  email: string;
 }
 
 export interface TeamCreate_teamCreate_userTeams {
   __typename: "UserTeam";
   id: string;
   user: TeamCreate_teamCreate_userTeams_user;
+  role: UserTeamRole;
 }
 
 export interface TeamCreate_teamCreate_customDomains {

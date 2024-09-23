@@ -251,8 +251,7 @@ export function Slider(): ReactElement {
           height: {
             xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
             md: '100%'
-          },
-          pointerEvents: showAnalytics === true ? 'none' : 'auto'
+          }
         }}
       >
         <Box

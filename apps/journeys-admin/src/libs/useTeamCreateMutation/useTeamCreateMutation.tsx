@@ -25,7 +25,9 @@ export const TEAM_CREATE = gql`
           firstName
           lastName
           imageUrl
+          email
         }
+        role
       }
       customDomains {
         id
