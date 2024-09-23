@@ -8,7 +8,7 @@ import { HotkeysProvider } from 'react-hotkeys-hook'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { blockHistoryVar, useBlocks } from '@core/journeys/ui/block'
+import { useBlocks } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
@@ -50,10 +50,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const theme = useTheme()
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
-
-  useEffect(() => {
-    blockHistoryVar([blocks[0]])
-  }, [blocks])
 
   const activeBlock = blockHistory[
     blockHistory.length - 1

@@ -244,7 +244,7 @@ describe('Conductor', () => {
     )
   })
 
-  it('should sets block history to first block when blocks change', () => {
+  it('should not throw error if no blocks', () => {
     const blocks: TreeBlock[] = []
     render(
       <MockedProvider>
@@ -254,7 +254,7 @@ describe('Conductor', () => {
       </MockedProvider>
     )
     expect(treeBlocksVar()).toBe(blocks)
-    expect(blockHistoryVar()).toStrictEqual([blocks[0]])
+    expect(blockHistoryVar()).toStrictEqual([])
   })
 
   describe('ltr journey', () => {
