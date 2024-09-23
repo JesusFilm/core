@@ -155,9 +155,9 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
             context.locale ?? 'en',
             ['apps-journeys', 'libs-journeys-ui'],
             i18nConfig
-          ))
+          )),
+          journeys: data.journeys
         },
-        journeys: data.journeys,
         notFound: true,
         revalidate: 1
       }
