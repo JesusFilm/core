@@ -86,9 +86,6 @@ function selectLanguageContinent(
   }
 }
 
-/**
- * @deprecated The SearchBarProvider useEffect now handles this
- */
 function setDefaultLanguageContinent(
   state: SearchBarState,
   action: SetDefaultLanguageContinentAction
@@ -98,7 +95,7 @@ function setDefaultLanguageContinent(
 
   if (Object.keys(allContinentLanguages).length === 0) {
     console.warn(
-      'Provider has not recieved all continent languages before trying to set language!'
+      'Provider has not yet recieved all continent languages! Unable to set languages.'
     )
     return state
   }
