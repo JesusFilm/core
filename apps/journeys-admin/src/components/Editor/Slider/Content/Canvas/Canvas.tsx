@@ -64,7 +64,7 @@ export function Canvas(): ReactElement {
     handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [scale])
+  }, [])
 
   function handleFooterClick(): void {
     dispatch({
@@ -163,8 +163,6 @@ export function Canvas(): ReactElement {
         >
           <Stack
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
               height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`
             }}
           >
