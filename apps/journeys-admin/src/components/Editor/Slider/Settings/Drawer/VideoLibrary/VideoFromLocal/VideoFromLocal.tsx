@@ -2,14 +2,10 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-import { useInfiniteHits, useInstantSearch } from 'react-instantsearch'
 
-import {
-  VideoBlockSource,
-  VideoBlockUpdateInput
-} from '../../../../../../../../__generated__/globalTypes'
+import { VideoBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
+import { useAlgoliaLocalVideos } from '../utils/useAlgoliaLocalVideos'
 import { VideoList } from '../VideoList'
-import { VideoListProps } from '../VideoList/VideoList'
 import { VideoSearch } from '../VideoSearch'
 
 interface VideoFromLocalProps {
@@ -22,22 +18,7 @@ export function VideoFromLocal({
   const { t } = useTranslation('apps-journeys-admin')
 
   const [searchQuery, setSearchQuery] = useState<string>('')
-
-  const { status } = useInstantSearch()
-  const { hits, showMore, isLastPage } = useInfiniteHits({})
-
-  function transformItems(items): VideoListProps['videos'] {
-    return items.map((videoVariant) => ({
-      id: videoVariant.videoId,
-      title: videoVariant.titles[0],
-      description: videoVariant.description[0],
-      image: videoVariant.image,
-      duration: videoVariant.duration,
-      source: VideoBlockSource.internal
-    }))
-  }
-
-  const transformedHits = transformItems(hits)
+  const { loading, isLastPage, items, showMore } = useAlgoliaLocalVideos()
 
   async function handleFetchMore(): Promise<void> {
     showMore()
@@ -62,8 +43,8 @@ export function VideoFromLocal({
         )}
         <VideoList
           onSelect={onSelect}
-          loading={status === 'loading' || status === 'stalled'}
-          videos={transformedHits}
+          loading={loading}
+          videos={items}
           fetchMore={handleFetchMore}
           hasMore={!isLastPage}
         />

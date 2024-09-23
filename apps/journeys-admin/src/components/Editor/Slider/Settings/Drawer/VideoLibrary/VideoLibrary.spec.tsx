@@ -13,7 +13,7 @@ import {
 
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 
-import { videoHits } from './data'
+import { videoItems } from './data'
 
 import { VideoLibrary } from '.'
 
@@ -51,7 +51,7 @@ describe('VideoLibrary', () => {
     } as unknown as SearchBoxRenderState)
 
     mockUseInfiniteHits.mockReturnValue({
-      hits: videoHits,
+      items: videoItems,
       showMore: jest.fn(),
       isLastPage: false
     } as unknown as InfiniteHitsRenderState)

@@ -13,7 +13,7 @@ import {
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
-import { videoHits } from '../../VideoLibrary/data'
+import { videoItems } from '../../VideoLibrary/data'
 import { GET_VIDEO } from '../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
 
 import { Source } from '.'
@@ -90,7 +90,7 @@ describe('Source', () => {
     } as unknown as SearchBoxRenderState)
 
     mockUseInfiniteHits.mockReturnValue({
-      hits: videoHits,
+      items: videoItems,
       showMore: jest.fn(),
       isLastPage: false
     } as unknown as InfiniteHitsRenderState)

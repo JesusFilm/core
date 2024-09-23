@@ -1,4 +1,4 @@
-export const videoHits = [
+export const videoItems = [
   {
     videoId: 'videoId',
     titles: ['title1'],

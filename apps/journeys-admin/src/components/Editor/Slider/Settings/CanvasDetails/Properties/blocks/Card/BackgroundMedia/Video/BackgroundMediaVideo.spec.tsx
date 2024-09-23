@@ -48,7 +48,7 @@ import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCover
 import { ThemeProvider } from '../../../../../../../../../ThemeProvider'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
-import { videoHits } from '../../../../../../Drawer/VideoLibrary/data'
+import { videoItems } from '../../../../../../Drawer/VideoLibrary/data'
 import { GET_VIDEO } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
 
 import {
@@ -282,7 +282,7 @@ describe('BackgroundMediaVideo', () => {
     } as unknown as SearchBoxRenderState)
 
     mockUseInfiniteHits.mockReturnValue({
-      hits: videoHits,
+      items: videoItems,
       showMore: jest.fn(),
       isLastPage: false
     } as unknown as InfiniteHitsRenderState)

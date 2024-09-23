@@ -29,7 +29,7 @@ const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
 >
 
 describe('VideoFromLocal', () => {
-  const hits = [
+  const items = [
     {
       videoId: 'videoId',
       titles: ['title1'],
@@ -55,14 +55,14 @@ describe('VideoFromLocal', () => {
     } as unknown as SearchBoxRenderState)
 
     mockUseInfiniteHits.mockReturnValue({
-      hits: [
-        ...hits,
+      items: [
+        ...items,
         {
-          ...hits[0],
+          ...items[0],
           titles: ['title2']
         },
         {
-          ...hits[0],
+          ...items[0],
           titles: ['title3']
         }
       ],
@@ -86,7 +86,7 @@ describe('VideoFromLocal', () => {
   it('should call show more on Load More button click', async () => {
     const showMore = jest.fn()
     mockUseInfiniteHits.mockReturnValue({
-      hits,
+      items,
       showMore,
       isLastPage: false
     } as unknown as InfiniteHitsRenderState)
@@ -100,7 +100,7 @@ describe('VideoFromLocal', () => {
 
   it('should show No More Videos button if last page', async () => {
     mockUseInfiniteHits.mockReturnValue({
-      hits: [],
+      items: [],
       showMore: jest.fn(),
       isLastPage: true
     } as unknown as InfiniteHitsRenderState)
@@ -115,7 +115,7 @@ describe('VideoFromLocal', () => {
 
   it('should render No More Videos if video length is 0', async () => {
     mockUseInfiniteHits.mockReturnValue({
-      hits: [],
+      items: [],
       showMore: jest.fn(),
       isLastPage: false
     } as unknown as InfiniteHitsRenderState)

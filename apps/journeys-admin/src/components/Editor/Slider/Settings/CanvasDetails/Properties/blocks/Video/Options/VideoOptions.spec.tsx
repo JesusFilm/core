@@ -16,7 +16,7 @@ import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../..
 import { VideoBlockSource } from '../../../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
-import { videoHits } from '../../../../../Drawer/VideoLibrary/data'
+import { videoItems } from '../../../../../Drawer/VideoLibrary/data'
 import { GET_VIDEO } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
 
 import { VIDEO_BLOCK_UPDATE, VideoOptions } from './VideoOptions'
@@ -132,7 +132,7 @@ describe('VideoOptions', () => {
     } as unknown as SearchBoxRenderState)
 
     mockUseInfiniteHits.mockReturnValue({
-      hits: videoHits,
+      items: videoItems,
       showMore: jest.fn(),
       isLastPage: false
     } as unknown as InfiniteHitsRenderState)
