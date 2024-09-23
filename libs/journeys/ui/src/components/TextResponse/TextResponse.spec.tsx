@@ -1,8 +1,8 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
-import TagManager from 'react-gtm-module'
 
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import type { TreeBlock } from '../../libs/block'
@@ -16,15 +16,12 @@ import {
   TextResponse
 } from './TextResponse'
 
-jest.mock('react-gtm-module', () => ({
-  __esModule: true,
-  default: {
-    dataLayer: jest.fn()
-  }
+jest.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: jest.fn()
 }))
 
-const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
-  typeof TagManager.dataLayer
+const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+  typeof sendGTMEvent
 >
 
 const block: TreeBlock<TextResponseFields> = {
@@ -238,13 +235,11 @@ describe('TextResponse', () => {
     fireEvent.blur(textField)
 
     await waitFor(() => {
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'text_response_submission',
-          eventId: 'uuid',
-          blockId: 'textResponse0.id',
-          stepName: 'Step {{number}}'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'text_response_submission',
+        eventId: 'uuid',
+        blockId: 'textResponse0.id',
+        stepName: 'Step {{number}}'
       })
     })
   })

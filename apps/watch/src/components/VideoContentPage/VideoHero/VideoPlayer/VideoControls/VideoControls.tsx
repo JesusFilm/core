@@ -16,11 +16,11 @@ import Skeleton from '@mui/material/Skeleton'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { sendGTMEvent } from '@next/third-parties/google'
 import fscreen from 'fscreen'
 import debounce from 'lodash/debounce'
 import dynamic from 'next/dynamic'
 import { MouseEventHandler, ReactElement, useEffect, useState } from 'react'
-import TagManager from 'react-gtm-module'
 import Player from 'video.js/dist/types/player'
 
 import { isMobile } from '@core/shared/ui/deviceUtils'
@@ -52,17 +52,15 @@ function evtToDataLayer(
   seconds,
   percent
 ): void {
-  TagManager.dataLayer({
-    dataLayer: {
-      event: eventType,
-      mcId,
-      langId,
-      title,
-      language,
-      percent,
-      seconds,
-      dateTimeUTC: new Date().toISOString()
-    }
+  sendGTMEvent({
+    event: eventType,
+    mcId,
+    langId,
+    title,
+    language,
+    percent,
+    seconds,
+    dateTimeUTC: new Date().toISOString()
   })
 }
 const eventToDataLayer = debounce(evtToDataLayer, 500)

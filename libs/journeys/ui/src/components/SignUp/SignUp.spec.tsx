@@ -1,9 +1,9 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
-import TagManager from 'react-gtm-module'
 
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { handleAction } from '../../libs/action'
@@ -26,15 +26,12 @@ jest.mock('../../libs/action', () => {
   }
 })
 
-jest.mock('react-gtm-module', () => ({
-  __esModule: true,
-  default: {
-    dataLayer: jest.fn()
-  }
+jest.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: jest.fn()
 }))
 
-const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
-  typeof TagManager.dataLayer
+const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+  typeof sendGTMEvent
 >
 
 jest.mock('next/router', () => ({
@@ -366,13 +363,11 @@ describe('SignUp', () => {
     fireEvent.click(submit)
 
     await waitFor(() => {
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'sign_up_submission',
-          eventId: 'uuid',
-          blockId: 'signUp0.id',
-          stepName: 'Step {{number}}'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'sign_up_submission',
+        eventId: 'uuid',
+        blockId: 'signUp0.id',
+        stepName: 'Step {{number}}'
       })
     })
   })
