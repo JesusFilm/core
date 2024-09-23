@@ -296,7 +296,7 @@ export const reducer = (
                   ({ id }) => id === state.selectedStepId
                 )
               : action.importedSteps[0]
-            : state.steps
+            : state.steps != null
             ? state.steps[0]
             : undefined,
         selectedStepId:

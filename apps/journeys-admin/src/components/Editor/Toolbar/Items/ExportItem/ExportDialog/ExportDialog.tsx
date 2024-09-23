@@ -36,7 +36,7 @@ export function ExportDialog({
     importObj.forEach((importItem) => {
       const exportItem = exportObj.find((item) => item.id === importItem.id)
       if (exportItem) {
-        if (importItem.children) {
+        if (importItem.children?.length > 0) {
           mergeObjects(exportItem.children, importItem.children)
         } else {
           Object.keys(importItem).forEach((key) => {
