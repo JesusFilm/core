@@ -28,6 +28,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
 import { GetPlausibleJourneyFlowViewed } from '../../../../__generated__/GetPlausibleJourneyFlowViewed'
@@ -296,19 +297,45 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                   >
                     {journey.title}
                   </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      maxWidth: 'auto',
-                      overflow: 'hidden',
-                      whiteSpace: 'nowrap',
-                      textOverflow: 'ellipsis',
-                      flexShrink: 1,
-                      fontWeight: 'normal'
-                    }}
-                  >
-                    {journey.description}
-                  </Typography>
+                  <Stack flexDirection="row" alignItems="center" gap={1}>
+                    <Globe1Icon
+                      sx={{
+                        fontSize: 16,
+                        alignItems: 'center',
+                        color: 'secondary.main'
+                      }}
+                    />
+                    <Typography
+                      variant="body2"
+                      sx={{ color: 'secondary.main' }}
+                    >
+                      {
+                        journey.language.name.find(
+                          ({ primary }) => primary != null
+                        )?.value
+                      }
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      •
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        maxWidth: 'auto',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis',
+                        flexShrink: 1,
+                        fontWeight: 'normal',
+                        color: 'text.secondary'
+                      }}
+                    >
+                      {journey.description}
+                    </Typography>
+                  </Stack>
                 </Button>
               </Tooltip>
             </Box>
