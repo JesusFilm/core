@@ -50,7 +50,9 @@ export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = gql`
           firstName
           lastName
           imageUrl
+          email
         }
+        role
       }
       customDomains {
         id
