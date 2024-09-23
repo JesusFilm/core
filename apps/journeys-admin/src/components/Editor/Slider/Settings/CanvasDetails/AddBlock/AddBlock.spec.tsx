@@ -7,7 +7,6 @@ import {
   ActiveCanvasDetailsDrawer,
   EditorProvider
 } from '@core/journeys/ui/EditorProvider'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import {
@@ -61,9 +60,7 @@ describe('AddBlock', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <FlagsProvider flags={{ formiumForm: true }}>
-            <AddBlock />
-          </FlagsProvider>
+          <AddBlock />
         </ThemeProvider>
       </MockedProvider>
     )
@@ -83,21 +80,6 @@ describe('AddBlock', () => {
       getByTestId('JourneysAdminButtonNewSignUpButton')
     ).toBeInTheDocument()
     expect(getByTestId('JourneysAdminButtonNewButton')).toBeInTheDocument()
-  })
-
-  it('does not render FormiumForm button when flag is false', () => {
-    const { queryByTestId } = render(
-      <MockedProvider>
-        <ThemeProvider>
-          <FlagsProvider flags={{ formiumForm: false }}>
-            <AddBlock />
-          </FlagsProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    expect(
-      queryByTestId('JourneysAdminButtonNewFormiumFormIcon')
-    ).not.toBeInTheDocument()
   })
 
   it('should disable NewVideoButton when there are other blocks on the Card', () => {
