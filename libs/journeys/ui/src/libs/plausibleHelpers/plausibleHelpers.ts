@@ -17,7 +17,6 @@ import {
 } from '../../../__generated__/globalTypes'
 import {
   BlockFields_ButtonBlock_action,
-  BlockFields_FormBlock_action,
   BlockFields_RadioOptionBlock_action,
   BlockFields_SignUpBlock_action,
   BlockFields_VideoBlock_action
@@ -121,7 +120,6 @@ type Action =
   | BlockFields_ButtonBlock_action
   | BlockFields_RadioOptionBlock_action
   | BlockFields_SignUpBlock_action
-  | BlockFields_FormBlock_action
   | BlockFields_VideoBlock_action
 
 export function getTargetEventKey(action?: Action | null): string {

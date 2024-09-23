@@ -9,9 +9,6 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
-import { formiumClient } from '@core/shared/ui/formiumClient'
-
-import { OnboardingForm } from '../src/components/OnboardingForm'
 import { OnboardingPageWrapper } from '../src/components/OnboardingPageWrapper'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
 import { useHandleNewAccountRedirect } from '../src/libs/useRedirectNewAccount'
@@ -34,7 +31,7 @@ function OnboardingFormPage({ form }: OnboardingFormPageProps): ReactElement {
         emailSubject={t('a question about onboarding form')}
         user={user}
       >
-        <OnboardingForm form={form} user={user} />
+        <></>
       </OnboardingPageWrapper>
     </>
   )
@@ -54,20 +51,11 @@ export const getServerSideProps = withUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
-  try {
-    const form = await formiumClient.getFormBySlug(
-      process.env.NEXT_PUBLIC_FORMIUM_PROJECT_SLUG ?? ''
-    )
-
-    return {
-      props: {
-        initialApolloState: apolloClient.cache.extract(),
-        form,
-        ...translations
-      }
+  return {
+    props: {
+      initialApolloState: apolloClient.cache.extract(),
+      ...translations
     }
-  } catch (_) {
-    return { redirect: { permanent: false, destination: '/' } }
   }
 })
 
