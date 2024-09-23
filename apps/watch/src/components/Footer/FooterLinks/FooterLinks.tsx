@@ -35,14 +35,14 @@ export function FooterLinks(): ReactElement {
         >
           {t('Section')}
         </Typography>
-        <FooterLink label="Watch" url="https://www.jesusfilm.org/watch/" />
+        <FooterLink label={t('Watch')} url="https://www.jesusfilm.org/watch/" />
         <FooterLink
-          label="Strategies and Tools"
+          label={t('Resources and Tools')}
           url="https://www.jesusfilm.org/partners/resources/"
         />
         <FooterLink label="Blog" url="https://www.jesusfilm.org/blog/" />
         <FooterLink
-          label="How to Help"
+          label={t('How to Help')}
           url="https://www.jesusfilm.org/partners/"
         />
       </Stack>

@@ -45,7 +45,7 @@ export function InformationButton({
           aria-controls="more-info"
           aria-haspopup="true"
           aria-expanded={open ? 'true' : 'false'}
-          sx={{ mx: 2, mt: 1, ...sx }}
+          sx={sx}
           onClick={handleClick}
         >
           <InfoOutlinedIcon

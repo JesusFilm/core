@@ -19,8 +19,7 @@ import Search1 from '@core/shared/ui/icons/Search1'
 import { TabPanel } from '@core/shared/ui/TabPanel'
 
 import { useSearchBar } from '../../../libs/algolia/SearchBarProvider'
-import { useLanguagesContinentsQuery } from '../../../libs/useLanguagesContinentsQuery'
-import { useSortLanguageContinents } from '../../../libs/useSortLanguageContinents'
+import { LanguageContinentsRecord } from '../../../libs/useLanguagesContinentsQuery/sortLanguageContinents/sortLanguageContinents'
 
 import { CountryLanguageSelector } from './CountryLanguageSelector'
 import { RefinementGroups } from './RefinementGroups'
@@ -47,7 +46,9 @@ const StyledTab = styled(Tab)(({ theme }) => ({
 interface SearchbarDropdownProps {
   open: boolean
   refinements: RefinementListRenderState
+  languages: LanguageContinentsRecord
   id?: string
+  countryCode?: string
   anchorEl?: HTMLElement | null
   tabIndex?: number
   handleTabValueChange: Dispatch<SetStateAction<number>>
@@ -56,7 +57,9 @@ interface SearchbarDropdownProps {
 export function SearchbarDropdown({
   open,
   refinements,
+  languages,
   id,
+  countryCode,
   anchorEl,
   tabIndex: tabValue = 0,
   handleTabValueChange: setTabValue
@@ -66,11 +69,6 @@ export function SearchbarDropdown({
     dispatch,
     state: { continentLanguages }
   } = useSearchBar()
-
-  const { data } = useLanguagesContinentsQuery()
-  const languages = useSortLanguageContinents({
-    languages: data?.languages ?? []
-  })
 
   const updateDefaultLanguageContinent = useCallback(() => {
     const refinedItems = refinements.items.filter((item) => item.isRefined)
@@ -119,7 +117,10 @@ export function SearchbarDropdown({
         sx={{ px: 8, pb: 8, bgcolor: 'background.paper', mt: 3 }}
         color="text.primary"
       >
-        <CountryLanguageSelector refinements={refinements} />
+        <CountryLanguageSelector
+          countryCode={countryCode}
+          refinements={refinements}
+        />
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 5 }}>
           <Tabs
             value={tabValue}

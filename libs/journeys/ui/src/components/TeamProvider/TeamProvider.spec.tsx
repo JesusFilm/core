@@ -1,7 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
-import TagManager from 'react-gtm-module'
 
 import {
   GetLastActiveTeamIdAndTeams,
@@ -11,15 +11,12 @@ import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from './TeamProvider'
 
 import { TeamProvider, useTeam } from '.'
 
-jest.mock('react-gtm-module', () => ({
-  __esModule: true,
-  default: {
-    dataLayer: jest.fn()
-  }
+jest.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: jest.fn()
 }))
 
-const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
-  typeof TagManager.dataLayer
+const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+  typeof sendGTMEvent
 >
 
 const TestComponent = (): ReactElement => {
@@ -153,11 +150,9 @@ describe('TeamProvider', () => {
     )
 
     await waitFor(() => {
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'get_teams',
-          teams: 2
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'get_teams',
+        teams: 2
       })
     })
   })
