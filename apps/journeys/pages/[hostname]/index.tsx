@@ -1,15 +1,9 @@
 import { gql } from '@apollo/client'
-import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Fade from '@mui/material/Fade'
-import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
-import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { GetStaticPaths, GetStaticProps } from 'next'
-import Head from 'next/head'
 import Image from 'next/image'
-import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
@@ -27,13 +21,14 @@ import {
 import { ThemeMode, ThemeName } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
 import logo from '../../public/logo.svg'
-import { JourneyPageWrapper } from '../../src/components/JourneyPageWrapper'
-import { JourneyRenderer } from '../../src/components/JourneyRenderer'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import JourneysPage from '../home'
 
-enum PageType {
+import HostJourneyPage from './[journeySlug]'
+
+export enum PageType {
   DefaultJourney = 'DefaultJourney',
-  JourneyColletion = 'JourneyCollection',
+  JourneyCollection = 'JourneyCollection',
   NotFound = 'NotFound'
 }
 
@@ -42,13 +37,12 @@ interface NotFoundPageProps {
 }
 
 interface HostJourneysPageProps {
-  pageType: PageType.JourneyColletion
+  pageType: PageType.JourneyCollection
   journeys: Journey[]
 }
 
 interface DefaulJourneytHostPageProps {
   pageType: PageType.DefaultJourney
-  hostname: string
   host: string
   journey: Journey
   locale: string
@@ -68,8 +62,6 @@ export const GET_JOURNEYS_FIELDS = gql`
   }
 `
 
-const StyledIframe = styled('iframe')(() => ({}))
-
 function HostJourneysPage(
   props: HostJourneysPageProps | NotFoundPageProps | DefaulJourneytHostPageProps
 ): ReactElement {
@@ -77,7 +69,7 @@ function HostJourneysPage(
 
   return (
     <>
-      {props.pageType === 'NotFound' && (
+      {props.pageType === PageType.NotFound && (
         <>
           <NextSeo nofollow noindex />
           <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
@@ -102,104 +94,14 @@ function HostJourneysPage(
           </ThemeProvider>
         </>
       )}
-      {props.pageType === 'JourneyCollection' && (
+      {props.pageType === PageType.JourneyCollection && (
         <>
-          <NextSeo nofollow noindex />
-          <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-            <Container maxWidth="xxl">
-              <Stack spacing={8} py={8}>
-                <Box>
-                  <Grid container spacing={{ xs: 2, sm: 4 }}>
-                    {props.journeys.map(({ id, slug }, index) => (
-                      <Grid item key={id} xs={12} sm={6} md={4} lg={3}>
-                        <Box sx={{ position: 'relative' }}>
-                          <Box
-                            sx={{
-                              position: 'absolute',
-                              top: 0,
-                              right: 0,
-                              bottom: 0,
-                              left: 0,
-                              zIndex: -1,
-                              overflow: 'hidden'
-                            }}
-                          >
-                            <Fade in timeout={(index + 1) * 1000}>
-                              <StyledIframe
-                                src={`/embed/${slug}`}
-                                sx={{
-                                  width: '100%',
-                                  height: 600,
-                                  border: 'none'
-                                }}
-                              />
-                            </Fade>
-                          </Box>
-                          <NextLink href={`/${slug}`} passHref legacyBehavior>
-                            <Box
-                              component="a"
-                              sx={{
-                                display: 'block',
-                                width: '100%',
-                                height: 600
-                              }}
-                            />
-                          </NextLink>
-                        </Box>
-                      </Grid>
-                    ))}
-                  </Grid>
-                </Box>
-              </Stack>
-            </Container>
-          </ThemeProvider>
+          <JourneysPage {...props} />
         </>
       )}
-      {props.pageType === 'DefaultJourney' && (
+      {props.pageType === PageType.DefaultJourney && (
         <>
-          <Head>
-            <link
-              rel="alternate"
-              type="application/json+oembed"
-              href={`https://${
-                process.env.NEXT_PUBLIC_VERCEL_URL ?? 'your.nextstep.is'
-              }/api/oembed?url=https%3A%2F%2F${
-                process.env.NEXT_PUBLIC_VERCEL_URL ?? 'your.nextstep.is'
-              }%2F${props.journey.slug}&format=json`}
-              title={props.journey.seoTitle ?? undefined}
-            />
-          </Head>
-          <NextSeo
-            nofollow
-            noindex
-            title={props.journey.seoTitle ?? undefined}
-            description={props.journey.seoDescription ?? undefined}
-            openGraph={{
-              type: 'website',
-              title: props.journey.seoTitle ?? undefined,
-              url: `https://${props.host}/${props.journey.slug}`,
-              description: props.journey?.seoDescription ?? undefined,
-              images:
-                props.journey.primaryImageBlock?.src != null
-                  ? [
-                      {
-                        url: props.journey.primaryImageBlock.src,
-                        width: props.journey.primaryImageBlock.width,
-                        height: props.journey.primaryImageBlock.height,
-                        alt: props.journey.primaryImageBlock.alt,
-                        type: 'image/jpeg'
-                      }
-                    ]
-                  : []
-            }}
-          />
-          <JourneyPageWrapper
-            journey={props.journey}
-            rtl={props.rtl}
-            locale={props.locale}
-          >
-            <JourneyRenderer />
-          </JourneyPageWrapper>
+          <HostJourneyPage {...props} />
         </>
       )}
     </>
@@ -240,7 +142,6 @@ export const getStaticProps: GetStaticProps<
     const { rtl, locale } = getJourneyRTL(data.journeys[0])
     return {
       props: {
-        hostname: context.params?.hostname?.toString() ?? '',
         host: context.params?.host?.toString() ?? '',
         ...(await serverSideTranslations(
           context.locale ?? 'en',
@@ -263,7 +164,7 @@ export const getStaticProps: GetStaticProps<
           i18nConfig
         )),
         journeys: data.journeys,
-        pageType: PageType.JourneyColletion
+        pageType: PageType.JourneyCollection
       },
       revalidate: 60
     }
