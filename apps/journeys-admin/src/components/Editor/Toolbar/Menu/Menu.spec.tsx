@@ -325,6 +325,8 @@ describe('Toolbar Menu', () => {
               value={{
                 journey: {
                   id: 'journeyId',
+                  title: 'some title',
+                  description: 'some description',
                   slug: 'my-journey',
                   tags: []
                 } as unknown as Journey
@@ -339,16 +341,14 @@ describe('Toolbar Menu', () => {
       )
       fireEvent.click(screen.getByRole('button'))
       expect(
-        screen.getByRole('menuitem', { name: 'Preview' })
+        screen.getByRole('heading', { name: 'some title' })
+      ).toBeInTheDocument()
+      expect(screen.getByText('some description')).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Edit Details' })
       ).toBeInTheDocument()
       expect(
         screen.getByRole('menuitem', { name: 'Manage Access' })
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('menuitem', { name: 'Title' })
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('menuitem', { name: 'Description' })
       ).toBeInTheDocument()
       expect(
         screen.getByRole('menuitem', { name: 'Language' })
@@ -362,10 +362,10 @@ describe('Toolbar Menu', () => {
       expect(
         screen.getByRole('menuitem', { name: 'Share' })
       ).toBeInTheDocument()
-      expect(screen.getByTestId('menu-divider')).toBeInTheDocument()
       expect(
         screen.getByRole('menuitem', { name: 'Copy Link' })
       ).toBeInTheDocument()
+      expect(screen.getByTestId('helpscout-menu-divider')).toBeInTheDocument()
       expect(screen.getByRole('menuitem', { name: 'Help' })).toBeInTheDocument()
     })
   })

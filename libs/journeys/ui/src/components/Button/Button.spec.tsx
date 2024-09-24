@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -37,15 +37,12 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
-jest.mock('react-gtm-module', () => ({
-  __esModule: true,
-  default: {
-    dataLayer: jest.fn()
-  }
+jest.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: jest.fn()
 }))
 
-const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
-  typeof TagManager.dataLayer
+const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+  typeof sendGTMEvent
 >
 
 jest.mock('../../libs/action', () => {
@@ -295,13 +292,11 @@ describe('Button', () => {
     )
     fireEvent.click(screen.getByRole('button'))
     await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'button_click',
-          eventId: 'uuid',
-          blockId: 'button',
-          stepName: 'Step {{number}}'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'button_click',
+        eventId: 'uuid',
+        blockId: 'button',
+        stepName: 'Step {{number}}'
       })
     )
   })
@@ -363,16 +358,14 @@ describe('Button', () => {
 
     fireEvent.click(screen.getByRole('button'))
     await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'outbound_action_click',
-          eventId: 'uuid',
-          blockId: 'button',
-          stepName: 'stepName',
-          buttonLabel: 'This is a button',
-          outboundActionType: GoalType.Bible,
-          outboundActionValue: 'https://bible.com'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'outbound_action_click',
+        eventId: 'uuid',
+        blockId: 'button',
+        stepName: 'stepName',
+        buttonLabel: 'This is a button',
+        outboundActionType: GoalType.Bible,
+        outboundActionValue: 'https://bible.com'
       })
     )
   })

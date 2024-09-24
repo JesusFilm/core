@@ -178,4 +178,7 @@ module "eks" {
   subnet_ids         = concat(module.prod.vpc.internal_subnets, module.prod.vpc.public_subnets)
   security_group_ids = [module.prod.ecs.internal_ecs_security_group_id, module.prod.ecs.public_ecs_security_group_id]
   vpc_id             = module.prod.vpc.id
+  subnet_ids_2a      = ["subnet-0b7c1e14af0ffb3ea", "subnet-036663ddfdb3b94b0"]
+  subnet_ids_2b      = ["subnet-05c389158df4b940a", "subnet-01aa708571a3e499c"]
+  subnet_ids_2c      = ["subnet-02f4c2a33ace122c5", "subnet-0aa10af01283bbcdb"]
 }
