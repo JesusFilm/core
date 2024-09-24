@@ -2,7 +2,7 @@ import type { BaseHit, Hit } from 'instantsearch.js'
 import type { SendEventForHits } from 'instantsearch.js/es/lib/utils'
 import { useInfiniteHits, useInstantSearch } from 'react-instantsearch'
 
-import type { VideoLabel } from '../../../../__generated__/globalTypes'
+import { VideoLabel } from '../../../../__generated__/globalTypes'
 import type {
   VideoChildFields_imageAlt,
   VideoChildFields_snippet,
@@ -25,7 +25,7 @@ export interface AlgoliaVideo extends Hit<BaseHit> {
   objectID: string
 }
 
-export interface CoreVideo extends Hit<BaseHit> {
+export interface CoreVideo extends BaseHit {
   __typename: 'Video'
   id: string
   label: VideoLabel
@@ -38,19 +38,21 @@ export interface CoreVideo extends Hit<BaseHit> {
   childrenCount: number
 }
 
-export function transformItems(items: AlgoliaVideo[]): CoreVideo[] {
+export function transformItemsDefault(items: AlgoliaVideo[]): CoreVideo[] {
   return items.map((videoVariant) => ({
     __typename: 'Video',
     id: videoVariant.videoId,
-    label: videoVariant.label,
+    label: videoVariant.label as VideoLabel,
     title: [
       {
+        __typename: 'VideoTitle',
         value: videoVariant.titles[0]
       }
     ],
     image: videoVariant.image,
     imageAlt: [
       {
+        __typename: 'VideoImageAlt',
         value: videoVariant.imageAlt
       }
     ],
@@ -60,30 +62,35 @@ export function transformItems(items: AlgoliaVideo[]): CoreVideo[] {
       id: videoVariant.objectID,
       duration: videoVariant.duration,
       hls: null,
-      slug: videoVariant.slug
+      slug: videoVariant.slug,
+      __typename: 'VideoVariant'
     },
     childrenCount: videoVariant.childrenCount
-  })) as unknown as CoreVideo[]
+  }))
 }
 
-export function useAlgoliaVideos(): {
+export function useAlgoliaVideos<T = CoreVideo>(options?: {
+  transformItems?: (items: Array<Hit<AlgoliaVideo>>) => T[]
+}): {
   loading: boolean
   noResults: boolean
-  hits: CoreVideo[]
+  items: T[]
   showMore: () => void
   isLastPage: boolean
   sendEvent: SendEventForHits
 } {
   const { status, results } = useInstantSearch()
-  const { hits, showMore, isLastPage, sendEvent } =
+  const { items, showMore, isLastPage, sendEvent } =
     useInfiniteHits<AlgoliaVideo>()
 
-  const transformedHits = transformItems(hits)
+  const transformedHits = (options?.transformItems ?? transformItemsDefault)(
+    items
+  ) as T[]
 
   return {
     loading: status === 'stalled' || status === 'loading',
     noResults: !(results.__isArtificial ?? false) && results.nbHits === 0,
-    hits: transformedHits,
+    items: transformedHits,
     showMore,
     isLastPage,
     sendEvent
