@@ -6,6 +6,7 @@ import { SnackbarProvider } from 'notistack'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import {
   JourneySettingsUpdate,
@@ -20,7 +21,8 @@ const onClose = jest.fn()
 
 function getJourneySettingsUpdateMock(
   title: string,
-  description: string
+  description: string,
+  languageId: string
 ): MockedResponse<JourneySettingsUpdate, JourneySettingsUpdateVariables> {
   return {
     request: {
@@ -29,7 +31,8 @@ function getJourneySettingsUpdateMock(
         id: defaultJourney.id,
         input: {
           title,
-          description
+          description,
+          languageId
         }
       }
     },
@@ -40,8 +43,7 @@ function getJourneySettingsUpdateMock(
           id: defaultJourney.id,
           title,
           description,
-          strategySlug: null,
-          language: journey.language
+          strategySlug: null
         }
       }
     }
@@ -49,8 +51,54 @@ function getJourneySettingsUpdateMock(
 }
 
 describe('TitleDescriptionDialog', () => {
+  const getLanguagesMock = {
+    request: {
+      query: GET_LANGUAGES,
+      variables: {
+        languageId: '529'
+      }
+    },
+    result: {
+      data: {
+        languages: [
+          {
+            __typename: 'Language',
+            id: '529',
+            name: [
+              {
+                value: 'English',
+                primary: true,
+                __typename: 'LanguageName'
+              }
+            ]
+          },
+          {
+            id: '496',
+            __typename: 'Language',
+            name: [
+              {
+                value: 'Français',
+                primary: true,
+                __typename: 'LanguageName'
+              },
+              {
+                value: 'French',
+                primary: false,
+                __typename: 'LanguageName'
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+
   it('should not set journey title on close', async () => {
-    const mock = getJourneySettingsUpdateMock('New Journey', 'Description')
+    const mock = getJourneySettingsUpdateMock(
+      'New Journey',
+      'Description',
+      '529'
+    )
     render(
       <MockedProvider mocks={[{ ...mock }]}>
         <SnackbarProvider>
@@ -71,23 +119,44 @@ describe('TitleDescriptionDialog', () => {
     expect(journey.title).not.toBe('New Journey')
   })
 
-  it('should update journey title and description on submit', async () => {
+  it('should update journey title, description and language on submit', async () => {
     const result = jest.fn(() => ({
       data: {
         journeyUpdate: {
+          ...defaultJourney,
           id: defaultJourney.id,
           __typename: 'Journey',
           title: 'Changed Title',
-          description: 'Changed Description'
+          description: 'Changed Description',
+          language: {
+            __typename: 'Language',
+            id: '496',
+            bcp47: null,
+            iso3: null,
+            name: [
+              {
+                __typename: 'LanguageName',
+                value: 'Français',
+                primary: true
+              },
+              {
+                value: 'French',
+                primary: false,
+                __typename: 'LanguageName'
+              }
+            ]
+          }
         }
       }
     }))
+
     const mock = getJourneySettingsUpdateMock(
       'Changed Title',
-      'Changed Description'
+      'Changed Description',
+      '496'
     )
     render(
-      <MockedProvider mocks={[{ ...mock, result }]}>
+      <MockedProvider mocks={[{ ...mock, result }, getLanguagesMock]}>
         <SnackbarProvider>
           <JourneyProvider
             value={{
@@ -109,6 +178,11 @@ describe('TitleDescriptionDialog', () => {
       target: { value: 'Changed Description' }
     })
 
+    fireEvent.focus(screen.getByRole('combobox'))
+    fireEvent.keyDown(screen.getByRole('combobox'), { key: 'ArrowDown' })
+    await waitFor(() => screen.getByRole('option', { name: 'French Français' }))
+    fireEvent.click(screen.getByRole('option', { name: 'French Français' }))
+
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
 
     await waitFor(() => {
@@ -119,7 +193,8 @@ describe('TitleDescriptionDialog', () => {
   it('shows notistack error alert when title fails to update', async () => {
     const mock = getJourneySettingsUpdateMock(
       'Changed Title',
-      'Changed Description'
+      'Changed Description',
+      '496'
     )
     render(
       <MockedProvider mocks={[{ ...mock }]}>
@@ -158,7 +233,8 @@ describe('TitleDescriptionDialog', () => {
     }))
     const mock = getJourneySettingsUpdateMock(
       'Changed Title',
-      'Changed Description'
+      'Changed Description',
+      '496'
     )
     render(
       <MockedProvider mocks={[{ ...mock }]}>
