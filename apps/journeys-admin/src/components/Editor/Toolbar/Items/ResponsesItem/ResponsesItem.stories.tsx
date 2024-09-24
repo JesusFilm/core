@@ -59,6 +59,22 @@ const Template: StoryObj<typeof ResponsesItem> = {
   )
 }
 
-export const Default = { ...Template }
+export const Default = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: []
+    }
+  }
+}
+
+export const WithCount = {
+  ...Template,
+  parameters: {
+    apolloClient: {
+      mocks: [getVisitorCountMock]
+    }
+  }
+}
 
 export default Demo
