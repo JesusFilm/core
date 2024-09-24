@@ -47,11 +47,11 @@ import { CommandUndoItem } from './Items/CommandUndoItem'
 import { PreviewItem } from './Items/PreviewItem'
 import { Menu } from './Menu'
 
-const TitleDescriptionDialog = dynamic(
+const JourneyDetailsDialog = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/Toolbar/TitleDescriptionDialog" */ './TitleDescriptionDialog/TitleDescriptionDialog'
-    ).then((mod) => mod.TitleDescriptionDialog),
+      /* webpackChunkName: "Editor/Toolbar/JourneyDetailsDialog" */ './JourneyDetailsDialog/JourneyDetailsDialog'
+    ).then((mod) => mod.JourneyDetailsDialog),
   { ssr: false }
 )
 
@@ -152,7 +152,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   }
 
   function handleDialogOpen(): void {
-    setRoute('title')
+    setRoute('journeyDetails')
     setDialogOpen(true)
   }
 
@@ -198,7 +198,6 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         <>
           <CommandUndoItem variant="icon-button" />
           <CommandRedoItem variant="icon-button" />
-
           <Tooltip
             title={t('Social Image')}
             arrow
@@ -245,7 +244,6 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
               </Box>
             </Button>
           </Tooltip>
-
           <Stack flexGrow={1} flexShrink={1} sx={{ minWidth: 0 }}>
             <Box
               flexShrink={1}
@@ -339,8 +337,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                 </Button>
               </Tooltip>
             </Box>
-
-            <TitleDescriptionDialog
+            <JourneyDetailsDialog
               open={dialogOpen}
               onClose={handleDialogClose}
             />

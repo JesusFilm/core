@@ -15,7 +15,7 @@ import {
 import { JOURNEY_SETTINGS_UPDATE } from '../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
 import { journey } from '../../../JourneyList/ActiveJourneyList/ActivePriorityList/ActiveJourneyListData'
 
-import { TitleDescriptionDialog } from '.'
+import { JourneyDetailsDialog } from '.'
 
 const onClose = jest.fn()
 
@@ -50,7 +50,7 @@ function getJourneySettingsUpdateMock(
   }
 }
 
-describe('TitleDescriptionDialog', () => {
+describe('JourneyDetailsDialog', () => {
   const getLanguagesMock = {
     request: {
       query: GET_LANGUAGES,
@@ -108,7 +108,7 @@ describe('TitleDescriptionDialog', () => {
               variant: 'admin'
             }}
           >
-            <TitleDescriptionDialog open onClose={onClose} />
+            <JourneyDetailsDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -164,7 +164,7 @@ describe('TitleDescriptionDialog', () => {
               variant: 'admin'
             }}
           >
-            <TitleDescriptionDialog open onClose={onClose} />
+            <JourneyDetailsDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -205,7 +205,7 @@ describe('TitleDescriptionDialog', () => {
               variant: 'admin'
             }}
           >
-            <TitleDescriptionDialog open onClose={onClose} />
+            <JourneyDetailsDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -246,7 +246,7 @@ describe('TitleDescriptionDialog', () => {
             }}
           >
             <EditorProvider>
-              <TitleDescriptionDialog open onClose={onClose} />
+              <JourneyDetailsDialog open onClose={onClose} />
             </EditorProvider>
           </JourneyProvider>
         </SnackbarProvider>

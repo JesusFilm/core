@@ -9,19 +9,19 @@ import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { JOURNEY_SETTINGS_UPDATE } from '../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
 
-import { TitleDescriptionDialog } from './TitleDescriptionDialog'
+import { JourneyDetailsDialog } from './JourneyDetailsDialog'
 
-const TitleDialogStory: Meta<typeof TitleDescriptionDialog> = {
+const JourneyDetailsDialogStory: Meta<typeof JourneyDetailsDialog> = {
   ...simpleComponentConfig,
-  component: TitleDescriptionDialog,
-  title: 'Journeys-Admin/Editor/Toolbar/TitleDescriptionDialog',
+  component: JourneyDetailsDialog,
+  title: 'Journeys-Admin/Editor/Toolbar/JourneyDetailsDialog',
   parameters: {
     ...simpleComponentConfig.parameters,
     layout: 'fullscreen'
   }
 }
 
-const TitleDescriptionDialogComponent = (args): ReactElement => {
+const JourneyDetailsDialogComponent = (args): ReactElement => {
   const [open, setOpen] = useState(true)
 
   return (
@@ -32,14 +32,14 @@ const TitleDescriptionDialogComponent = (args): ReactElement => {
           variant: 'admin'
         }}
       >
-        <TitleDescriptionDialog open={open} onClose={() => setOpen(false)} />
+        <JourneyDetailsDialog open={open} onClose={() => setOpen(false)} />
       </JourneyProvider>
     </MockedProvider>
   )
 }
 
-const Template: StoryObj<typeof TitleDescriptionDialog> = {
-  render: (args) => <TitleDescriptionDialogComponent args={args} />
+const Template: StoryObj<typeof JourneyDetailsDialog> = {
+  render: (args) => <JourneyDetailsDialogComponent args={args} />
 }
 
 export const Default = {
@@ -98,4 +98,4 @@ export const Error = {
   }
 }
 
-export default TitleDialogStory
+export default JourneyDetailsDialogStory

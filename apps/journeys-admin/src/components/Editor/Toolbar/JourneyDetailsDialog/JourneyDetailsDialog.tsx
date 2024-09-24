@@ -14,15 +14,15 @@ import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 
-interface TitleDialogProps {
+interface JourneyDetailsDialogProps {
   open: boolean
   onClose: () => void
 }
 
-export function TitleDescriptionDialog({
+export function JourneyDetailsDialog({
   open,
   onClose
-}: TitleDialogProps): ReactElement {
+}: JourneyDetailsDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useJourneyUpdateMutation()
   const { journey } = useJourney()
@@ -32,7 +32,7 @@ export function TitleDescriptionDialog({
     title: string().required(t('Required'))
   })
 
-  function handleUpdateTitleDescription(values: FormikValues): void {
+  function handleUpdateJourneyDetails(values: FormikValues): void {
     if (journey == null) return
 
     void journeyUpdate({
@@ -135,7 +135,7 @@ export function TitleDescriptionDialog({
                   }
                 : undefined
           }}
-          onSubmit={handleUpdateTitleDescription}
+          onSubmit={handleUpdateJourneyDetails}
           validationSchema={titleSchema}
         >
           {({
