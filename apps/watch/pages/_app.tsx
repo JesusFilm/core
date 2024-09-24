@@ -1,13 +1,13 @@
 import { ApolloProvider, type NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
+import { GoogleTagManager } from '@next/third-parties/google'
 import type { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import Script from 'next/script'
 import { appWithTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import { type ReactElement, useEffect } from 'react'
-import TagManager from 'react-gtm-module'
 
 import { InstantSearchProvider } from '@core/journeys/ui/algolia/InstantSearchProvider'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
@@ -37,12 +37,6 @@ function WatchApp({
   emotionCache = clientSideEmotionCache
 }: WatchAppProps): ReactElement {
   useEffect(() => {
-    if (
-      process.env.NEXT_PUBLIC_GTM_ID != null &&
-      process.env.NEXT_PUBLIC_GTM_ID !== ''
-    )
-      TagManager.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM_ID })
-
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side')
     if (jssStyles != null) {
@@ -111,6 +105,7 @@ function WatchApp({
             themeMode={ThemeMode.light}
           >
             <InstantSearchProvider>
+              <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''} />
               <Component {...pageProps} />
             </InstantSearchProvider>
           </ThemeProvider>
