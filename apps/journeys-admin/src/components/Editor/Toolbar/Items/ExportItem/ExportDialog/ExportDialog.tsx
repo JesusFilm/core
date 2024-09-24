@@ -82,7 +82,7 @@ export function ExportDialog({
           acc[key] = obj[key]
             .map((item) => stripContent(item, allowedKeys))
             .filter((child) => Object.keys(child).length > 1)
-        } else if (typeof obj[key] === 'object') {
+        } else if (typeof obj[key] === 'object' && obj[key]) {
           const strippedChild = stripContent(obj[key], allowedKeys)
           if (Object.keys(strippedChild).length > 1) {
             acc[key] = strippedChild
@@ -106,7 +106,19 @@ export function ExportDialog({
 
   useEffect(() => {
     const originalJson = JSON.parse(jsonBlocks)
-    const allowedKeys = ['id', 'content', 'label', 'children', 'submitLabel']
+    const allowedKeys = [
+      'id',
+      'children',
+      'content',
+      'label',
+      'submitLabel',
+      'nextBlockId',
+      'action',
+      'email',
+      'url',
+      'blockId',
+      'backgroundColor'
+    ]
 
     const strippedArr = originalJson.map((obj) =>
       stripContent(obj, allowedKeys)
