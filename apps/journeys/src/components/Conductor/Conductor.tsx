@@ -2,8 +2,8 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { ReactElement, useEffect } from 'react'
-import TagManager from 'react-gtm-module'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -105,13 +105,11 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             )
         })
       })
-      TagManager.dataLayer({
-        dataLayer: {
-          event: 'journey_view',
-          journeyId: journey.id,
-          eventId: id,
-          journeyTitle: journey.title
-        }
+      sendGTMEvent({
+        event: 'journey_view',
+        journeyId: journey.id,
+        eventId: id,
+        journeyTitle: journey.title
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,9 +1,9 @@
 import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
 import { ReactElement, ReactNode, useCallback } from 'react'
-import TagManager from 'react-gtm-module'
 import { SwipeEventData, useSwipeable } from 'react-swipeable'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -124,16 +124,13 @@ export function SwipeNavigation({
               })
             }
           })
-
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'step_next',
-            eventId: id,
-            blockId: activeBlock.id,
-            stepName,
-            targetStepId: targetBlock.id,
-            targetStepName
-          }
+        sendGTMEvent({
+          event: 'step_next',
+          eventId: id,
+          blockId: activeBlock.id,
+          stepName,
+          targetStepId: targetBlock.id,
+          targetStepName
         })
       }
       // should always be called with previousActiveBlock()
@@ -191,15 +188,14 @@ export function SwipeNavigation({
               })
             }
           })
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'step_prev',
-            eventId: id,
-            blockId: activeBlock.id,
-            stepName,
-            targetStepId: targetBlock?.id,
-            targetStepName
-          }
+
+        sendGTMEvent({
+          event: 'step_prev',
+          eventId: id,
+          blockId: activeBlock.id,
+          stepName,
+          targetStepId: targetBlock?.id,
+          targetStepName
         })
       }
 
