@@ -12,7 +12,10 @@ import { ResourceSections } from './ResourceSections'
 export function ResourcesView(): ReactElement {
   return (
     <PageWrapper>
-      <Container maxWidth="xxl" sx={{ px: { xs: 0 }, py: { xs: 6, sm: 9 } }}>
+      <Container
+        maxWidth="xxl"
+        sx={{ px: { xs: 0 }, py: { xs: 6, sm: 9 }, overflowX: 'hidden' }}
+      >
         <Stack sx={{ p: 0, gap: 10 }}>
           <ResourceHeading heading="Resources" />
           <SearchBar />
