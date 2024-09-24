@@ -6,4 +6,9 @@ export async function formBlocksDelete(): Promise<void> {
   await prisma.block.deleteMany({
     where: { typename: 'FormBlock' }
   })
+  await prisma.journeyProfile.updateMany({
+    data: {
+      onboardingFormCompletedAt: null
+    }
+  })
 }
