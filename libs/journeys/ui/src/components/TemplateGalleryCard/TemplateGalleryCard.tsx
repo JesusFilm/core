@@ -142,6 +142,7 @@ export function TemplateGalleryCard({
                     src={journey?.primaryImageBlock?.src}
                     alt={journey?.primaryImageBlock.alt}
                     fill
+                    // needed to render appropriate image file size for better LCP score see: https://nextjs.org/docs/pages/api-reference/components/image#sizes
                     sizes={`(max-width: ${
                       theme.breakpoints.values.md - 0.5
                     }px) 130px, (max-width: ${
