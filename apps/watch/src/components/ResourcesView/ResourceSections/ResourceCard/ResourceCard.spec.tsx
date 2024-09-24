@@ -47,12 +47,30 @@ describe('ResourceCard', () => {
   it('should have correct image properties', () => {
     render(
       <ResourceCard
-        item={{ ...item, title: 'New Title', imageUrl: 'newImageUrl' }}
+        item={{
+          ...item,
+          title: 'New Title',
+          imageUrl: 'https://www.newImageUrlSrc.com/High'
+        }}
       />
     )
 
     const image = screen.getByRole('img')
-    expect(image).toHaveAttribute('src', 'newImageUrl')
+    expect(image).toHaveAttribute('src', 'https://www.newimageurlsrc.com/High')
     expect(image).toHaveAttribute('alt', 'New Title')
+  })
+
+  it('should not show image if URL is invalid', () => {
+    render(
+      <ResourceCard
+        item={{
+          ...item,
+          title: 'New Title',
+          imageUrl: 'badURL'
+        }}
+      />
+    )
+
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
   })
 })
