@@ -1,32 +1,44 @@
-import { useQuery } from '@apollo/client'
+import { gql, useLazyQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Inbox2Icon from '@core/shared/ui/icons/Inbox2'
 
-import { GetJourneyVisitorsCount } from '../../../../../../__generated__/GetJourneyVisitorsCount'
-import { GET_JOURNEY_VISITORS_COUNT } from '../../../../../../pages/journeys/[journeyId]/reports/visitors'
-import { Item } from '../Item/Item'
+import {
+  GetJourneyVisitorsCountWithTextResponses,
+  GetJourneyVisitorsCountWithTextResponsesVariables
+} from '../../../../../../__generated__/GetJourneyVisitorsCountWithTextResponses'
+import { Item } from '../Item'
+
+export const GET_JOURNEY_VISITORS_COUNT_WITH_TEXT_RESPONSES = gql`
+  query GetJourneyVisitorsCountWithTextResponses(
+    $filter: JourneyVisitorFilter!
+  ) {
+    journeyVisitorCount(filter: $filter)
+  }
+`
 
 export function ResponsesItem(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const router = useRouter()
-  const journeyId = router.query.journeyId as string
 
-  const { data } = useQuery<GetJourneyVisitorsCount>(
-    GET_JOURNEY_VISITORS_COUNT,
-    {
-      variables: {
-        filter: { journeyId, hasTextResponse: true }
-      }
-    }
-  )
+  const [loadJourneyVisitorsCount, { data }] = useLazyQuery<
+    GetJourneyVisitorsCountWithTextResponses,
+    GetJourneyVisitorsCountWithTextResponsesVariables
+  >(GET_JOURNEY_VISITORS_COUNT_WITH_TEXT_RESPONSES)
+
+  useEffect(() => {
+    if (journey?.id != null)
+      void loadJourneyVisitorsCount({
+        variables: {
+          filter: { journeyId: journey.id, hasTextResponse: true }
+        }
+      })
+  }, [journey?.id, loadJourneyVisitorsCount, data])
 
   return (
     <Stack direction="row" alignItems="center" data-testid="ResponsesItem">
@@ -42,9 +54,7 @@ export function ResponsesItem(): ReactElement {
           icon={<Inbox2Icon />}
         />
       </NextLink>
-      <Typography variant="body2" sx={{ fontWeight: '600' }}>
-        {data?.journeyVisitorCount ?? ''}
-      </Typography>
+      <Typography variant="body2">{data?.journeyVisitorCount ?? ''}</Typography>
     </Stack>
   )
 }

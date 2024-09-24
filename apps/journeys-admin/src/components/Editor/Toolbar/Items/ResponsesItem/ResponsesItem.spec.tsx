@@ -1,42 +1,29 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { GetJourneyVisitorsCount } from '../../../../../../__generated__/GetJourneyVisitorsCount'
-import { GET_JOURNEY_VISITORS_COUNT } from '../../../../../../pages/journeys/[journeyId]/reports/visitors'
+
+import { GET_JOURNEY_VISITORS_COUNT_WITH_TEXT_RESPONSES } from './ResponsesItem'
 
 import { ResponsesItem } from '.'
 
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: jest.fn()
-}))
-
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-
 describe('ResponsesItem', () => {
   it('should link to journey visitors page as an icon button', async () => {
-    mockedUseRouter.mockReturnValue({
-      query: { journeyId: 'journey-id' }
-    } as unknown as NextRouter)
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[]}>
-          <TeamProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney,
-                variant: 'admin'
-              }}
-            >
-              <ResponsesItem />
-            </JourneyProvider>
-          </TeamProvider>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
+            <ResponsesItem />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -46,14 +33,10 @@ describe('ResponsesItem', () => {
     )
   })
 
-  it('should display visitor count next to button', async () => {
-    mockedUseRouter.mockReturnValue({
-      query: { journeyId: 'journey-id' }
-    } as unknown as NextRouter)
-
+  it('should display responses count next to button', async () => {
     const getVisitorCountMock: MockedResponse<GetJourneyVisitorsCount> = {
       request: {
-        query: GET_JOURNEY_VISITORS_COUNT,
+        query: GET_JOURNEY_VISITORS_COUNT_WITH_TEXT_RESPONSES,
         variables: {
           filter: { journeyId: 'journey-id', hasTextResponse: true }
         }
@@ -65,16 +48,14 @@ describe('ResponsesItem', () => {
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[getVisitorCountMock]}>
-          <TeamProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney,
-                variant: 'admin'
-              }}
-            >
-              <ResponsesItem />
-            </JourneyProvider>
-          </TeamProvider>
+          <JourneyProvider
+            value={{
+              journey: defaultJourney,
+              variant: 'admin'
+            }}
+          >
+            <ResponsesItem />
+          </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
