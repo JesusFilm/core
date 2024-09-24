@@ -28,7 +28,7 @@ export interface uploadCloudflareVideoParams {
 }
 
 export interface Context {
-  uploadCloudflareVideo: (uploadCloudflareVideoParams) => Promise<string>
+  uploadCloudflareVideo: (uploadCloudflareVideoParams) => AsyncGenerator<string>
   uploadQueue: Record<string, UploadQueueItem>
   activeUploads: () => number
 }

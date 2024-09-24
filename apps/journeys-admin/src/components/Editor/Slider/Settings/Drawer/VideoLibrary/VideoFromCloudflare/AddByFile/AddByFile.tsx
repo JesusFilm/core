@@ -47,12 +47,12 @@ export function AddByFile({
   }
 
   const onDropAccepted = async (files: File[]): Promise<void> => {
-    setActiveQueueItem(
-      await uploadCloudflareVideo({
-        files,
-        httpStack
-      })
-    )
+    for await (const uploadId of uploadCloudflareVideo({
+      files,
+      httpStack
+    })) {
+      setActiveQueueItem(uploadId)
+    }
   }
 
   const onDropRejected = async (
