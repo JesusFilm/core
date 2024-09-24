@@ -2,6 +2,7 @@ import InsertPhotoRoundedIcon from '@mui/icons-material/InsertPhotoRounded'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
@@ -27,6 +28,20 @@ export function ResourceCard({
 }: ResourceCardProps): ReactElement {
   const { hits, sendEvent } = useHits()
   const hit = hits.filter((hit) => hit.objectID === item?.id)
+
+  const theme = useTheme()
+
+  function getImageUrl(imageUrl: string | undefined): string | null {
+    if (imageUrl == null) return null
+    try {
+      const url = new URL(imageUrl)
+      return url.origin + url.pathname
+    } catch {
+      return null
+    }
+  }
+
+  const imageUrl = getImageUrl(item?.imageUrl)
 
   return (
     <Card
@@ -87,15 +102,21 @@ export function ResourceCard({
               backgroundColor: 'background.default'
             }}
           >
-            {item?.imageUrl != null ? (
+            {imageUrl != null ? (
               <Image
                 rel={priority ? 'preload' : undefined}
                 priority={priority}
                 className="MuiImageBackground-root"
-                src={item?.imageUrl}
+                // needed to render appropriate image file size for better LCP score see: https://nextjs.org/docs/pages/api-reference/components/image#sizes
+                sizes={`(max-width: ${
+                  theme.breakpoints.values.md - 0.5
+                }px) 130px, (max-width: ${
+                  theme.breakpoints.values.xl - 0.5
+                }px) 180px, 280px`}
+                src={imageUrl}
                 alt={item?.title ?? ''}
                 fill
-                objectFit="cover"
+                style={{ objectFit: 'cover' }}
               />
             ) : (
               <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
