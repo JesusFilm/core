@@ -68,7 +68,9 @@ export function SocialPreviewNode(): ReactElement {
     <BaseNode
       id="SocialPreview"
       selected={activeContent === ActiveContent.Social}
-      sourceHandle={HandleVariant.Shown}
+      sourceHandle={
+        showAnalytics === true ? HandleVariant.Disabled : HandleVariant.Shown
+      }
       targetHandle={
         showAnalytics === true ? HandleVariant.Shown : HandleVariant.Hidden
       }
