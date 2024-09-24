@@ -111,7 +111,7 @@ export function SearchBar({
     })
     dispatch({
       type: 'SetAllContinentLanguages',
-      allContinentLanguages: languages
+      continentLanguages: languages
     })
   }
 

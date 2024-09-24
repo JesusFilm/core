@@ -22,10 +22,37 @@ const mockUseRefinementList = useRefinementList as jest.MockedFunction<
 describe('SearchBarContext', () => {
   const initState: SearchBarState = {
     continentLanguages: {},
-    allContinentLanguages: {}
+    selectedContinentLanguages: {}
   }
 
   describe('reducer', () => {
+    describe('SetAllContinentLanguages', () => {
+      it('should set empty continent languages', () => {
+        expect(
+          reducer(initState, {
+            type: 'SetAllContinentLanguages',
+            continentLanguages: {}
+          })
+        ).toEqual(initState)
+      })
+
+      it('should set all continent languages', () => {
+        expect(
+          reducer(initState, {
+            type: 'SetAllContinentLanguages',
+            continentLanguages: {
+              Europe: ['English']
+            }
+          })
+        ).toEqual({
+          ...initState,
+          continentLanguages: {
+            Europe: ['English']
+          }
+        })
+      })
+    })
+
     describe('SelectLanguageContinent', () => {
       it('should set a continent for the selected language', () => {
         expect(
@@ -37,7 +64,7 @@ describe('SearchBarContext', () => {
           })
         ).toEqual({
           ...initState,
-          continentLanguages: {
+          selectedContinentLanguages: {
             Europe: ['English']
           }
         })
@@ -45,10 +72,10 @@ describe('SearchBarContext', () => {
 
       it('should retain more than one language for a continent', () => {
         const state = {
-          continentLanguages: {
+          continentLanguages: {},
+          selectedContinentLanguages: {
             Europe: ['English']
-          },
-          allContinentLanguages: {}
+          }
         }
         expect(
           reducer(state, {
@@ -59,7 +86,7 @@ describe('SearchBarContext', () => {
           })
         ).toEqual({
           ...state,
-          continentLanguages: {
+          selectedContinentLanguages: {
             Europe: ['English', 'French']
           }
         })
@@ -67,10 +94,10 @@ describe('SearchBarContext', () => {
 
       it('should add a language to a different continent', () => {
         const state = {
-          continentLanguages: {
+          continentLanguages: {},
+          selectedContinentLanguages: {
             Europe: ['English']
-          },
-          allContinentLanguages: {}
+          }
         }
         expect(
           reducer(state, {
@@ -81,7 +108,7 @@ describe('SearchBarContext', () => {
           })
         ).toEqual({
           ...state,
-          continentLanguages: {
+          selectedContinentLanguages: {
             Europe: ['English'],
             Asia: ['Chinese']
           }
@@ -90,10 +117,10 @@ describe('SearchBarContext', () => {
 
       it('should remove a language from a continent', () => {
         const state = {
-          continentLanguages: {
+          continentLanguages: {},
+          selectedContinentLanguages: {
             Europe: ['English', 'French']
-          },
-          allContinentLanguages: {}
+          }
         }
         expect(
           reducer(state, {
@@ -104,7 +131,7 @@ describe('SearchBarContext', () => {
           })
         ).toEqual({
           ...state,
-          continentLanguages: {
+          selectedContinentLanguages: {
             Europe: ['English']
           }
         })
@@ -114,11 +141,11 @@ describe('SearchBarContext', () => {
     describe('SetDefaultLanguageContinent', () => {
       it('should set the default language for each continent', () => {
         const state = {
-          continentLanguages: {},
-          allContinentLanguages: {
+          continentLanguages: {
             Europe: ['English'],
             Asia: ['Chinese']
-          }
+          },
+          selectedContinentLanguages: {}
         }
         expect(
           reducer(state, {
@@ -127,7 +154,7 @@ describe('SearchBarContext', () => {
           })
         ).toEqual({
           ...state,
-          continentLanguages: {
+          selectedContinentLanguages: {
             Europe: ['English'],
             Asia: ['Chinese']
           }
@@ -136,12 +163,12 @@ describe('SearchBarContext', () => {
 
       it('should select the first continent the language is found in', () => {
         const state = {
-          continentLanguages: {},
-          allContinentLanguages: {
+          continentLanguages: {
             Africa: ['English'],
             Europe: ['English'],
             Asia: ['English']
-          }
+          },
+          selectedContinentLanguages: {}
         }
         expect(
           reducer(state, {
@@ -150,7 +177,7 @@ describe('SearchBarContext', () => {
           })
         ).toEqual({
           ...state,
-          continentLanguages: {
+          selectedContinentLanguages: {
             Africa: ['English']
           }
         })
@@ -159,11 +186,11 @@ describe('SearchBarContext', () => {
 
     describe('RemoveLanguageContinents', () => {
       const state = {
-        continentLanguages: {
+        continentLanguages: {},
+        selectedContinentLanguages: {
           Europe: ['English', 'French'],
           Asia: ['Chinese', 'English']
-        },
-        allContinentLanguages: {}
+        }
       }
 
       it('should remove a language from all continents', () => {
@@ -174,7 +201,7 @@ describe('SearchBarContext', () => {
           })
         ).toEqual({
           ...state,
-          continentLanguages: {
+          selectedContinentLanguages: {
             Europe: ['French'],
             Asia: ['Chinese']
           }
@@ -189,7 +216,7 @@ describe('SearchBarContext', () => {
           })
         ).toEqual({
           ...state,
-          continentLanguages: {
+          selectedContinentLanguages: {
             Europe: [],
             Asia: ['Chinese']
           }
@@ -200,11 +227,11 @@ describe('SearchBarContext', () => {
     describe('RemoveAllLanguageContinents', () => {
       it('should remove all languages from all continents', () => {
         const state = {
-          continentLanguages: {
+          continentLanguages: {},
+          selectedContinentLanguages: {
             Europe: ['English', 'French'],
             Asia: ['Chinese', 'English']
-          },
-          allContinentLanguages: {}
+          }
         }
         expect(
           reducer(state, {

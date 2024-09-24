@@ -109,7 +109,7 @@ describe('RefinementGroup', () => {
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBarProvider
           initialState={{
-            continentLanguages: {
+            selectedContinentLanguages: {
               Asia: ['Cantonese']
             }
           }}
@@ -130,7 +130,7 @@ describe('RefinementGroup', () => {
       <MockedProvider mocks={[getLanguagesContinentsMock]}>
         <SearchBarProvider
           initialState={{
-            continentLanguages: {
+            selectedContinentLanguages: {
               Europe: ['Cantonese']
             }
           }}

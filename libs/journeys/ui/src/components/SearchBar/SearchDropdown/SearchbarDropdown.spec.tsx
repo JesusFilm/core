@@ -58,8 +58,8 @@ describe('SearchbarDropdown', () => {
   } as unknown as ClearRefinementsRenderState
 
   const searchBarInitialState: SearchBarState = {
-    continentLanguages: {},
-    allContinentLanguages: sortedLanguageContinents
+    continentLanguages: sortedLanguageContinents,
+    selectedContinentLanguages: {}
   }
 
   beforeEach(() => {

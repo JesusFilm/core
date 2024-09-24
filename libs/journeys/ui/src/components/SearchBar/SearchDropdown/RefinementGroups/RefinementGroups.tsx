@@ -45,14 +45,15 @@ export function RefinementGroups({
   const { refine: clearRefinements, canRefine: canClearRefinements } =
     useClearRefinements()
 
-  const { state } = useSearchBar()
-  const languages = state.allContinentLanguages
+  const {
+    state: { continentLanguages }
+  } = useSearchBar()
 
   function handleClick(): void {
     clearRefinements()
   }
 
-  const languageEntries = Object.entries(languages)
+  const languageEntries = Object.entries(continentLanguages)
   const isLoading = languageEntries.length === 0
 
   const hasRefinements = refinements.items.length > 0

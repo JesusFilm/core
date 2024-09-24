@@ -50,8 +50,8 @@ describe('RefinementGroups', () => {
   } as unknown as SearchBoxRenderState
 
   const searchBarInitialState: SearchBarState = {
-    continentLanguages: {},
-    allContinentLanguages: sortedLanguageContinents
+    continentLanguages: sortedLanguageContinents,
+    selectedContinentLanguages: {}
   }
 
   beforeEach(() => {
@@ -185,7 +185,7 @@ describe('RefinementGroups', () => {
   it('should show loading when loading languages', () => {
     const searchBarLoadingState: SearchBarState = {
       continentLanguages: {},
-      allContinentLanguages: {}
+      selectedContinentLanguages: {}
     }
 
     render(

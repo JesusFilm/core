@@ -18,15 +18,18 @@ export type Language = string
 
 export interface SearchBarState {
   /**
-   * selected languages sorted by continent
+   * all languages sorted by continent
    */
   continentLanguages: Record<Continent, Language[]>
-  allContinentLanguages: Record<Continent, Language[]>
+  /**
+   * only the selected languages sorted by continent they are selected in
+   */
+  selectedContinentLanguages: Record<Continent, Language[]>
 }
 
 interface SetAllContinentLanguagesAction {
   type: 'SetAllContinentLanguages'
-  allContinentLanguages: Record<Continent, Language[]>
+  continentLanguages: Record<Continent, Language[]>
 }
 
 interface SelectLanguageContinentAction {
@@ -61,10 +64,10 @@ function setAllContinentLanguages(
   state: SearchBarState,
   action: SetAllContinentLanguagesAction
 ): SearchBarState {
-  const { allContinentLanguages } = action
+  const { continentLanguages } = action
   return {
     ...state,
-    allContinentLanguages
+    continentLanguages
   }
 }
 
@@ -73,14 +76,14 @@ function selectLanguageContinent(
   action: SelectLanguageContinentAction
 ): SearchBarState {
   const { continent, language, isSelected } = action
-  const currentLanguages = state.continentLanguages[continent] ?? []
+  const currentLanguages = state.selectedContinentLanguages[continent] ?? []
   const updatedLanguages = isSelected
     ? [...currentLanguages, language]
     : currentLanguages.filter((lang) => lang !== language)
   return {
     ...state,
-    continentLanguages: {
-      ...state.continentLanguages,
+    selectedContinentLanguages: {
+      ...state.selectedContinentLanguages,
       [continent]: updatedLanguages
     }
   }
@@ -90,10 +93,10 @@ function setDefaultLanguageContinent(
   state: SearchBarState,
   action: SetDefaultLanguageContinentAction
 ): SearchBarState {
-  const { allContinentLanguages } = state
+  const { continentLanguages } = state
   const { refinedItems } = action
 
-  if (Object.keys(allContinentLanguages).length === 0) {
+  if (Object.keys(continentLanguages).length === 0) {
     console.warn(
       'Provider has not yet recieved all continent languages! Unable to set languages.'
     )
@@ -102,8 +105,8 @@ function setDefaultLanguageContinent(
 
   const updatedContinentLanguages = refinedItems.reduce(
     (acc, item) => {
-      const continent = Object.keys(allContinentLanguages).find((continent) =>
-        allContinentLanguages[continent].includes(item)
+      const continent = Object.keys(continentLanguages).find((continent) =>
+        continentLanguages[continent].includes(item)
       )
 
       if (continent != null) {
@@ -117,13 +120,13 @@ function setDefaultLanguageContinent(
 
       return acc
     },
-    { ...state.continentLanguages }
+    { ...state.selectedContinentLanguages }
   )
 
   if (Object.keys(updatedContinentLanguages).length > 0) {
     return {
       ...state,
-      continentLanguages: updatedContinentLanguages
+      selectedContinentLanguages: updatedContinentLanguages
     }
   }
   return state
@@ -135,20 +138,20 @@ function removeLanguageContinents(
 ): SearchBarState {
   const { languages } = action
   const updatedLanguages = mapValues(
-    state.continentLanguages,
+    state.selectedContinentLanguages,
     (continentLanguage) =>
       filter(continentLanguage, (lang) => !languages.includes(lang))
   )
   return {
     ...state,
-    continentLanguages: updatedLanguages
+    selectedContinentLanguages: updatedLanguages
   }
 }
 
 function removeAllLanguageContinents(state: SearchBarState): SearchBarState {
   return {
     ...state,
-    continentLanguages: {}
+    selectedContinentLanguages: {}
   }
 }
 
@@ -199,38 +202,11 @@ export function SearchBarProvider({
 }: SearchBarProviderProps): ReactElement {
   const [state, dispatch] = useReducer(reducer, {
     continentLanguages: {},
-    allContinentLanguages: {},
+    selectedContinentLanguages: {},
     ...initialState
   })
 
   const { items } = useRefinementList(languageRefinementProps)
-
-  const updateLanguages = useCallback(() => {
-    const refinedItems = items.filter((item) => item.isRefined)
-    const languagesSet = Object.values(state.continentLanguages).flat()
-    if (languagesSet.length < refinedItems.length) {
-      setLanguages(refinedItems, languagesSet)
-    }
-    if (languagesSet.length > refinedItems.length) {
-      unsetLanguages(refinedItems, languagesSet)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items])
-
-  useEffect(() => {
-    updateLanguages()
-  }, [updateLanguages])
-
-  return (
-    <SearchBarContext.Provider
-      value={{
-        state,
-        dispatch
-      }}
-    >
-      {children}
-    </SearchBarContext.Provider>
-  )
 
   function setLanguages(
     refinedItems: RefinementListItem[],
@@ -258,6 +234,33 @@ export function SearchBarProvider({
       languages: languagesToUnset
     })
   }
+
+  const updateLanguages = useCallback(() => {
+    const refinedItems = items.filter((item) => item.isRefined)
+    const languagesSet = Object.values(state.selectedContinentLanguages).flat()
+    if (languagesSet.length < refinedItems.length) {
+      setLanguages(refinedItems, languagesSet)
+    }
+    if (languagesSet.length > refinedItems.length) {
+      unsetLanguages(refinedItems, languagesSet)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items])
+
+  useEffect(() => {
+    updateLanguages()
+  }, [updateLanguages])
+
+  return (
+    <SearchBarContext.Provider
+      value={{
+        state,
+        dispatch
+      }}
+    >
+      {children}
+    </SearchBarContext.Provider>
+  )
 }
 
 export function useSearchBar(): SearchBarContextType {
