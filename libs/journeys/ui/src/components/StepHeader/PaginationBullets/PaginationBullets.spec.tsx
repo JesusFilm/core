@@ -159,7 +159,6 @@ describe('PaginationBullets', () => {
       </JourneyProvider>
     )
     expect(screen.getAllByTestId('bullet-active')).toHaveLength(1)
-    expect(screen.getAllByTestId('bullet-adjacent')).toHaveLength(1)
-    expect(screen.getAllByTestId('bullet-default')).toHaveLength(1)
+    expect(screen.getAllByTestId('bullet-adjacent')).toHaveLength(2)
   })
 })

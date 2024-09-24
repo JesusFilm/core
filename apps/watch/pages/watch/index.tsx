@@ -1,5 +1,4 @@
-import { gql } from '@apollo/client'
-import algoliasearch from 'algoliasearch'
+import { ApolloProvider, NormalizedCacheObject, gql } from '@apollo/client'
 import type { UiState } from 'instantsearch.js'
 import type { RouterProps } from 'instantsearch.js/es/middlewares'
 import type { GetStaticProps } from 'next'
@@ -16,8 +15,14 @@ import {
 } from 'react-instantsearch'
 import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
 
+import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
+
 import i18nConfig from '../../next-i18next.config'
 import { WatchHomePage as VideoHomePage } from '../../src/components/WatchHomePage'
+import {
+  createApolloClient,
+  useApolloClient
+} from '../../src/libs/apolloClient'
 import { getFlags } from '../../src/libs/getFlags'
 import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
 
@@ -30,14 +35,8 @@ export const GET_HOME_VIDEOS = gql`
   }
 `
 
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
-  process.env.ALGOLIA_SERVER_API_KEY ??
-    process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ??
-    ''
-)
-
 interface HomePageProps {
+  initialApolloState?: NormalizedCacheObject
   serverState?: InstantSearchServerState
 }
 
@@ -52,9 +51,16 @@ export const nextRouter: RouterProps = {
   }),
   stateMapping: {
     stateToRoute(uiState) {
-      return uiState[
-        process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-      ] as unknown as UiState
+      const indexUiState = uiState[process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? '']
+
+      const stateRoute = {
+        query: indexUiState.query,
+        refinementList: {
+          languageEnglishName: indexUiState.refinementList?.languageEnglishName
+        }
+      } as unknown as UiState
+
+      return stateRoute
     },
     routeToState(routeState) {
       return {
@@ -64,22 +70,32 @@ export const nextRouter: RouterProps = {
   }
 }
 
-function HomePage({ serverState }: HomePageProps): ReactElement {
+function HomePage({
+  initialApolloState,
+  serverState
+}: HomePageProps): ReactElement {
+  const client = useApolloClient({
+    initialState: initialApolloState
+  })
+
+  const searchClient = useInstantSearchClient()
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   return (
     <InstantSearchSSRProvider {...serverState}>
-      <InstantSearch
-        insights
-        indexName={indexName}
-        searchClient={searchClient}
-        future={{ preserveSharedStateOnUnmount: true }}
-        stalledSearchDelay={500}
-        routing={nextRouter}
-      >
-        <Configure ruleContexts={['home_page']} />
-        <VideoHomePage />
-      </InstantSearch>
+      <ApolloProvider client={client}>
+        <InstantSearch
+          searchClient={searchClient}
+          indexName={indexName}
+          stalledSearchDelay={500}
+          future={{ preserveSharedStateOnUnmount: true }}
+          insights
+          routing={nextRouter}
+        >
+          <Configure ruleContexts={['home_page']} />
+          <VideoHomePage />
+        </InstantSearch>
+      </ApolloProvider>
     </InstantSearchSSRProvider>
   )
 }
@@ -91,11 +107,14 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async ({
     renderToString
   })
 
+  const apolloClient = createApolloClient()
+
   return {
     revalidate: 3600,
     props: {
       flags: await getFlags(),
       serverState,
+      initialApolloState: apolloClient.cache.extract(),
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-watch'],

@@ -1,0 +1,1 @@
+export { getTopSpokenLanguages } from './getTopSpokenLanguages'

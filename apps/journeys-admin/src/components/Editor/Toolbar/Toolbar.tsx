@@ -1,3 +1,4 @@
+import { gql, useApolloClient, useMutation } from '@apollo/client'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -13,7 +14,7 @@ import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 
 import {
   openBeacon,
@@ -29,6 +30,11 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
+import { GetPlausibleJourneyFlowViewed } from '../../../../__generated__/GetPlausibleJourneyFlowViewed'
+import {
+  UpdatePlausibleJourneyFlowViewed,
+  UpdatePlausibleJourneyFlowViewedVariables
+} from '../../../../__generated__/UpdatePlausibleJourneyFlowViewed'
 import logo from '../../../../public/taskbar-icon.svg'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { NotificationPopover } from '../../NotificationPopover'
@@ -37,6 +43,7 @@ import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { Items } from './Items'
 import { CommandRedoItem } from './Items/CommandRedoItem'
 import { CommandUndoItem } from './Items/CommandUndoItem'
+import { PreviewItem } from './Items/PreviewItem'
 import { Menu } from './Menu'
 
 const TitleDescriptionDialog = dynamic(
@@ -50,6 +57,26 @@ const TitleDescriptionDialog = dynamic(
 interface ToolbarProps {
   user?: User
 }
+
+export const GET_PLAUSIBLE_JOURNEY_FLOW_VIEWED = gql`
+  query GetPlausibleJourneyFlowViewed {
+    getJourneyProfile {
+      id
+      plausibleJourneyFlowViewed
+    }
+  }
+`
+
+export const UPDATE_PLAUSIBLE_JOURNEY_FLOW_VIEWED = gql`
+  mutation UpdatePlausibleJourneyFlowViewed(
+    $input: JourneyProfileUpdateInput!
+  ) {
+    journeyProfileUpdate(input: $input) {
+      id
+      plausibleJourneyFlowViewed
+    }
+  }
+`
 
 export function Toolbar({ user }: ToolbarProps): ReactElement {
   const router = useRouter()
@@ -67,7 +94,23 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
 
   const helpScoutRef = useRef(null)
   const menuRef = useRef(null)
-  useEffect(() => {
+  const client = useApolloClient()
+
+  const [updatePlausibleJourneyFlowViewed] = useMutation<
+    UpdatePlausibleJourneyFlowViewed,
+    UpdatePlausibleJourneyFlowViewedVariables
+  >(UPDATE_PLAUSIBLE_JOURNEY_FLOW_VIEWED, {
+    variables: {
+      input: {
+        plausibleJourneyFlowViewed: true
+      }
+    }
+  })
+
+  const fetchPlausibleData = useCallback(async () => {
+    const { data } = await client.query<GetPlausibleJourneyFlowViewed>({
+      query: GET_PLAUSIBLE_JOURNEY_FLOW_VIEWED
+    })
     if (showAnalytics === true) {
       setBeaconRoute('/ask/')
       if (smUp) {
@@ -75,9 +118,17 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
       } else {
         setAnchorEl(menuRef.current)
       }
-      setAnchorEl(null)
+      if (data.getJourneyProfile?.plausibleJourneyFlowViewed === true) {
+        setAnchorEl(null)
+      }
     }
-  }, [showAnalytics, smUp, setAnchorEl])
+  }, [client, showAnalytics, smUp])
+
+  useEffect(() => {
+    if (showAnalytics === true) {
+      void fetchPlausibleData()
+    }
+  }, [showAnalytics, smUp, setAnchorEl, fetchPlausibleData])
 
   function setRoute(param: string): void {
     void router.push({ query: { ...router.query, param } }, undefined, {
@@ -121,16 +172,20 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         flexShrink: 0
       }}
     >
-      <Image
-        src={logo}
-        alt="Next Steps"
-        height={32}
-        width={32}
-        style={{
-          maxWidth: '100%',
-          height: 'auto'
-        }}
-      />
+      <NextLink href="/" passHref legacyBehavior>
+        <IconButton data-testid="NextStepsLogo" disableRipple>
+          <Image
+            src={logo}
+            alt="Next Steps"
+            height={32}
+            width={32}
+            style={{
+              maxWidth: '100%',
+              height: 'auto'
+            }}
+          />
+        </IconButton>
+      </NextLink>
       <NextLink href="/" passHref legacyBehavior>
         <Tooltip title="See all journeys" placement="bottom" arrow>
           <IconButton data-testid="ToolbarBackButton">
@@ -194,7 +249,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
             <Box
               flexShrink={1}
               sx={{
-                display: 'inline-flex',
+                display: { xs: 'none', md: 'inline-flex' },
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis'
@@ -266,9 +321,12 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           <Items />
         </>
       )}
-      <Box ref={menuRef}>
+      <Stack ref={menuRef} flexDirection="row">
+        <Box sx={{ display: { xs: 'flex', sm: 'none' }, px: 2 }}>
+          <PreviewItem variant="icon-button" />
+        </Box>
         <Menu user={user} />
-      </Box>
+      </Stack>
       <Box
         ref={helpScoutRef}
         sx={{
@@ -291,7 +349,10 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           open={Boolean(anchorEl)}
           currentRef={anchorEl}
           pointerPosition={smUp ? '92%' : '94%'}
-          handleClose={() => setAnchorEl(null)}
+          handleClose={() => {
+            void updatePlausibleJourneyFlowViewed()
+            setAnchorEl(null)
+          }}
           popoverAction={{
             label: t('Feedback'),
             handleClick: () => {
