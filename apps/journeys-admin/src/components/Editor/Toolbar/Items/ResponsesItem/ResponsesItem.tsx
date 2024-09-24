@@ -26,19 +26,19 @@ export function ResponsesItem(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
-  const [loadJourneyVisitorsCount, { data }] = useLazyQuery<
+  const [loadVisitorsResponseCount, { data }] = useLazyQuery<
     GetJourneyVisitorsCountWithTextResponses,
     GetJourneyVisitorsCountWithTextResponsesVariables
   >(GET_JOURNEY_VISITORS_COUNT_WITH_TEXT_RESPONSES)
 
   useEffect(() => {
     if (journey?.id != null)
-      void loadJourneyVisitorsCount({
+      void loadVisitorsResponseCount({
         variables: {
           filter: { journeyId: journey.id, hasTextResponse: true }
         }
       })
-  }, [journey?.id, loadJourneyVisitorsCount, data])
+  }, [journey?.id, loadVisitorsResponseCount, data])
 
   return (
     <Stack direction="row" alignItems="center" data-testid="ResponsesItem">
