@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Stack from '@mui/material/Stack'
+import Stack, { StackProps } from '@mui/material/Stack'
 import { ReactElement, ReactNode } from 'react'
 import Div100vh from 'react-div-100vh'
 
@@ -11,7 +11,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { Footer } from '../Footer'
 import { Header } from '../Header'
 
-interface PageWrapperProps {
+interface PageWrapperProps extends StackProps {
   hero?: ReactNode
   children?: ReactNode
   hideHeader?: boolean
@@ -26,7 +26,8 @@ export function PageWrapper({
   hideHeader,
   hideHeaderSpacer,
   testId,
-  headerThemeMode
+  headerThemeMode,
+  ...props
 }: PageWrapperProps): ReactElement {
   return (
     <Div100vh>
@@ -37,6 +38,7 @@ export function PageWrapper({
         justifyContent="space-between"
         sx={{ width: '100%', height: '100%' }}
         data-testid={testId}
+        {...props}
       >
         <Container maxWidth={false} disableGutters>
           <ThemeProvider
