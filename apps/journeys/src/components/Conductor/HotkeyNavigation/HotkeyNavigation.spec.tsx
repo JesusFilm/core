@@ -1,8 +1,8 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { act, render, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { usePlausible } from 'next-plausible'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import { blockHistoryVar, treeBlocksVar } from '@core/journeys/ui/block'
@@ -32,15 +32,12 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
-jest.mock('react-gtm-module', () => ({
-  __esModule: true,
-  default: {
-    dataLayer: jest.fn()
-  }
+jest.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: jest.fn()
 }))
 
-const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
-  typeof TagManager.dataLayer
+const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+  typeof sendGTMEvent
 >
 
 jest.mock('next-plausible', () => ({
@@ -175,15 +172,13 @@ describe('HotkeyNavigation', () => {
         })
       }
     })
-    expect(mockedDataLayer).toHaveBeenCalledWith({
-      dataLayer: {
-        event: 'step_next',
-        eventId: 'uuid',
-        blockId: 'step1.id',
-        stepName: 'Step {{number}}',
-        targetStepId: 'step3.id',
-        targetStepName: 'Step {{number}}'
-      }
+    expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+      event: 'step_next',
+      eventId: 'uuid',
+      blockId: 'step1.id',
+      stepName: 'Step {{number}}',
+      targetStepId: 'step3.id',
+      targetStepName: 'Step {{number}}'
     })
   })
 
@@ -224,15 +219,13 @@ describe('HotkeyNavigation', () => {
         })
       }
     })
-    expect(mockedDataLayer).toHaveBeenCalledWith({
-      dataLayer: {
-        event: 'step_prev',
-        eventId: 'uuid',
-        blockId: 'step2.id',
-        stepName: 'Step {{number}}',
-        targetStepId: 'step1.id',
-        targetStepName: 'Step {{number}}'
-      }
+    expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+      event: 'step_prev',
+      eventId: 'uuid',
+      blockId: 'step2.id',
+      stepName: 'Step {{number}}',
+      targetStepId: 'step1.id',
+      targetStepName: 'Step {{number}}'
     })
   })
 

@@ -2,10 +2,10 @@ import { gql, useMutation } from '@apollo/client'
 import Box, { BoxProps } from '@mui/material/Box'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import { styled } from '@mui/material/styles'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
 import { ReactElement, useEffect, useState } from 'react'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import { RadioQuestionSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
@@ -116,15 +116,13 @@ export function RadioQuestion({
           }
         })
       }
-      TagManager.dataLayer({
-        dataLayer: {
-          event: 'radio_question_submission',
-          eventId: id,
-          blockId,
-          radioOptionSelectedId: radioOptionBlockId,
-          radioOptionSelectedLabel: radioOptionLabel,
-          stepName: heading
-        }
+      sendGTMEvent({
+        event: 'radio_question_submission',
+        eventId: id,
+        blockId,
+        radioOptionSelectedId: radioOptionBlockId,
+        radioOptionSelectedLabel: radioOptionLabel,
+        stepName: heading
       })
     }
     setSelectedId(radioOptionBlockId)

@@ -112,14 +112,27 @@ describe('Logo', () => {
 
   function getImageBlockUpdateMock(
     id: string,
-    input: ImageBlockUpdateInput
+    input: ImageBlockUpdateInput,
+    update?: boolean
   ): MockedResponse<ImageBlockUpdate, ImageBlockUpdateVariables> {
+    const updateInput =
+      update === true
+        ? {
+            width: input.width ?? imageBlock.width,
+            height: input.height ?? imageBlock.height,
+            blurhash: input.blurhash ?? imageBlock.blurhash
+          }
+        : {}
+
     return {
       request: {
         query: IMAGE_BLOCK_UPDATE,
         variables: {
           id,
-          input
+          input: {
+            ...input,
+            ...updateInput
+          }
         }
       },
       result: jest.fn(() => ({
@@ -128,7 +141,9 @@ describe('Logo', () => {
             ...imageBlock,
             alt: input.alt ?? imageBlock.alt,
             scale: input.scale ?? imageBlock.scale,
-            id
+            src: input.src ?? imageBlock.src,
+            id,
+            ...updateInput
           }
         }
       }))
@@ -183,7 +198,9 @@ describe('Logo', () => {
 
   it('should undo and redo logo image block create', async () => {
     const createLogoMock = getLogoImageBlockCreateMock()
-    const undoMock = getImageBlockUpdateMock(imageBlock.id, { src: null })
+    const undoMock = getImageBlockUpdateMock(imageBlock.id, {
+      src: null
+    })
     const redoMock = getImageBlockUpdateMock(imageBlock.id, {
       src: imageBlock.src
     })
@@ -237,10 +254,14 @@ describe('Logo', () => {
         src: 'https://imagedelivery.net/cloudflare-key/old-uploadId/public'
       }
     }
-    const updateMock = getImageBlockUpdateMock(imageBlock.id, {
-      src: imageBlock.src,
-      alt: 'public'
-    })
+    const updateMock = getImageBlockUpdateMock(
+      imageBlock.id,
+      {
+        src: imageBlock.src,
+        alt: 'public'
+      },
+      true
+    )
 
     render(
       <MockedProvider
@@ -281,14 +302,22 @@ describe('Logo', () => {
         src: 'https://imagedelivery.net/cloudflare-key/old-uploadId/public'
       }
     }
-    const updateMock = getImageBlockUpdateMock(imageBlock.id, {
-      src: imageBlock.src,
-      alt: 'public'
-    })
-    const undoMock = getImageBlockUpdateMock(imageBlock.id, {
-      src: journey.logoImageBlock.src,
-      alt: 'public'
-    })
+    const updateMock = getImageBlockUpdateMock(
+      imageBlock.id,
+      {
+        src: imageBlock.src,
+        alt: 'public'
+      },
+      true
+    )
+    const undoMock = getImageBlockUpdateMock(
+      imageBlock.id,
+      {
+        src: journey.logoImageBlock.src,
+        alt: 'public'
+      },
+      true
+    )
 
     render(
       <MockedProvider
@@ -331,10 +360,14 @@ describe('Logo', () => {
       ...defaultJourney,
       logoImageBlock: imageBlock
     }
-    const deleteMock = getImageBlockUpdateMock(imageBlock.id, {
-      src: null,
-      alt: ''
-    })
+    const deleteMock = getImageBlockUpdateMock(
+      imageBlock.id,
+      {
+        src: null,
+        alt: ''
+      },
+      true
+    )
 
     render(
       <MockedProvider
@@ -366,14 +399,22 @@ describe('Logo', () => {
       ...defaultJourney,
       logoImageBlock: imageBlock
     }
-    const deleteMock = getImageBlockUpdateMock(imageBlock.id, {
-      src: null,
-      alt: ''
-    })
-    const undoMock = getImageBlockUpdateMock(imageBlock.id, {
-      src: imageBlock.src,
-      alt: imageBlock.alt
-    })
+    const deleteMock = getImageBlockUpdateMock(
+      imageBlock.id,
+      {
+        src: null,
+        alt: ''
+      },
+      true
+    )
+    const undoMock = getImageBlockUpdateMock(
+      imageBlock.id,
+      {
+        src: imageBlock.src,
+        alt: imageBlock.alt
+      },
+      true
+    )
 
     render(
       <MockedProvider
@@ -409,9 +450,13 @@ describe('Logo', () => {
       ...defaultJourney,
       logoImageBlock: imageBlock
     }
-    const updateMock = getImageBlockUpdateMock(imageBlock.id, {
-      scale: 50
-    })
+    const updateMock = getImageBlockUpdateMock(
+      imageBlock.id,
+      {
+        scale: 50
+      },
+      true
+    )
 
     render(
       <MockedProvider
@@ -444,12 +489,20 @@ describe('Logo', () => {
       ...defaultJourney,
       logoImageBlock: imageBlock
     }
-    const updateMock = getImageBlockUpdateMock(imageBlock.id, {
-      scale: 50
-    })
-    const undoMock = getImageBlockUpdateMock(imageBlock.id, {
-      scale: 1
-    })
+    const updateMock = getImageBlockUpdateMock(
+      imageBlock.id,
+      {
+        scale: 50
+      },
+      true
+    )
+    const undoMock = getImageBlockUpdateMock(
+      imageBlock.id,
+      {
+        scale: 1
+      },
+      true
+    )
 
     render(
       <MockedProvider

@@ -1,10 +1,10 @@
 import { gql, useMutation } from '@apollo/client'
 import Paper from '@mui/material/Paper'
 import { useTheme } from '@mui/material/styles'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
 import { MouseEvent, ReactElement, useEffect, useMemo } from 'react'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -185,15 +185,13 @@ export function Card({
           })
         }
       })
-    TagManager.dataLayer({
-      dataLayer: {
-        event: 'step_next',
-        eventId: id,
-        blockId: activeBlock.id,
-        stepName,
-        targetStepId: targetBlock.id,
-        targetStepName
-      }
+    sendGTMEvent({
+      event: 'step_next',
+      eventId: id,
+      blockId: activeBlock.id,
+      stepName,
+      targetStepId: targetBlock.id,
+      targetStepName
     })
   }
   // should always be called with previousActiveBlock()
@@ -251,15 +249,13 @@ export function Card({
           })
         }
       })
-    TagManager.dataLayer({
-      dataLayer: {
-        event: 'step_prev',
-        eventId: id,
-        blockId: activeBlock.id,
-        stepName,
-        targetStepId: targetBlock.id,
-        targetStepName
-      }
+    sendGTMEvent({
+      event: 'step_prev',
+      eventId: id,
+      blockId: activeBlock.id,
+      stepName,
+      targetStepId: targetBlock.id,
+      targetStepName
     })
   }
   const handleNavigation = (e: MouseEvent): void => {
