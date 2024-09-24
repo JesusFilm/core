@@ -53,7 +53,10 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
 
   useEffect(() => {
     blockHistoryVar([blocks[0]])
-  }, [blocks])
+    setTreeBlocks(blocks)
+    // multiple re-renders causes block history to be incorrect so do not pass in 'blocks' variable to deps array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setTreeBlocks, journey?.id])
 
   const activeBlock = blockHistory[
     blockHistory.length - 1
@@ -119,12 +122,6 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [journey])
-
-  useEffect(() => {
-    setTreeBlocks(blocks)
-    // multiple re-renders causes block history to be incorrect so do not pass in 'blocks' variable to deps array
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setTreeBlocks])
 
   const mobileNotchStyling: SxProps = {
     width: {
