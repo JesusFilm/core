@@ -50,7 +50,7 @@ export function ChatButtons(): ReactElement {
     type: 'main' | 'background' = 'main'
   ): string | undefined => {
     if (type === 'background') {
-      return primary ? theme.palette.grey[100] : '#dedfe026'
+      return primary ? theme.palette.grey[100] : '#dedfe040'
     }
     if (type === 'main') {
       return primary ? theme.palette.grey[900] : theme.palette.grey[100]
@@ -118,9 +118,7 @@ export function ChatButtons(): ReactElement {
             },
             boxShadow: (theme) =>
               journey?.website === true
-                ? index === 0
-                  ? `0px 6px 6px ${theme.palette.grey[900]}60`
-                  : `0px 6px 6px ${theme.palette.grey[900]}70`
+                ? `0px 6px 6px ${theme.palette.grey[900]}60`
                 : undefined
           }}
         >
