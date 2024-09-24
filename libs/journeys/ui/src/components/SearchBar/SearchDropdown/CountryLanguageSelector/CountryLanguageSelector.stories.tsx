@@ -1,4 +1,3 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
@@ -21,13 +20,11 @@ const CountryLanguageSelectorStory: Meta<typeof CountryLanguageSelector> = {
 
 const Template: StoryObj<ComponentProps<typeof CountryLanguageSelector>> = {
   render: (args) => (
-    <MockedProvider mocks={[getLanguagesContinentsMock]}>
-      <InstantSearchTestWrapper>
-        <SearchBarProvider>
-          <CountryLanguageSelector {...args} />
-        </SearchBarProvider>
-      </InstantSearchTestWrapper>
-    </MockedProvider>
+    <InstantSearchTestWrapper>
+      <SearchBarProvider>
+        <CountryLanguageSelector {...args} />
+      </SearchBarProvider>
+    </InstantSearchTestWrapper>
   )
 }
 
@@ -36,11 +33,12 @@ export const Default = {
   args: {
     refinements: {
       items: languageRefinements
-    }
+    },
+    countryCode: 'US'
   },
   parameters: {
     apolloClient: {
-      mocks: [getCountryMock]
+      mocks: [getCountryMock, getLanguagesContinentsMock]
     },
     msw: {
       handlers: [emptyResultsHandler]
