@@ -10,12 +10,18 @@ import { ThemeMode } from '@core/shared/ui/themes'
 
 import {
   ThemeName,
+  TypographyAlign,
   TypographyVariant
 } from '../../../__generated__/globalTypes'
 import {
   MENU_BLOCK_X,
   MENU_BLOCK_Y
 } from '../../components/Editor/Slider/Settings/CanvasDetails/Footer/Menu/constants'
+import {
+  mockMenuButton1,
+  mockMenuButton2,
+  mockMenuButton3
+} from '../../components/Editor/Slider/Settings/CanvasDetails/Footer/Menu/MenuActionButton/data'
 
 import { useMenuBlockCreateMutation } from './useMenuBlockCreateMutation'
 import { mockUseMenuBlockCreateMutation } from './useMenuBlockCreateMutation.mock'
@@ -24,25 +30,58 @@ describe('useMenuBlockCreateMutation', () => {
   const input = {
     variables: {
       journeyId: defaultJourney.id,
-      stepBlockCreateInput: {
+      stepInput: {
         id: 'step.id',
         journeyId: defaultJourney.id,
         x: MENU_BLOCK_X,
         y: MENU_BLOCK_Y
       },
-      cardBlockCreateInput: {
+      cardInput: {
         id: 'card.id',
         journeyId: defaultJourney.id,
         parentBlockId: 'step.id',
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base
       },
-      typographyBlockCreateInput: {
-        id: 'typography.id',
+      headingInput: {
+        id: 'heading.id',
         journeyId: defaultJourney.id,
         parentBlockId: 'card.id',
         content: 'Menu',
-        variant: TypographyVariant.h1
+        variant: TypographyVariant.h1,
+        align: TypographyAlign.center
+      },
+      subHeadingInput: {
+        id: 'subHeading.id',
+        journeyId: defaultJourney.id,
+        parentBlockId: 'card.id',
+        content: 'Helping people discover Jesus.',
+        variant: TypographyVariant.subtitle2,
+        align: TypographyAlign.center
+      },
+      button1Input: {
+        id: mockMenuButton1.id,
+        journeyId: defaultJourney.id,
+        parentBlockId: mockMenuButton1.parentBlockId,
+        label: mockMenuButton1.label,
+        size: mockMenuButton1.size,
+        variant: mockMenuButton1.buttonVariant
+      },
+      button2Input: {
+        id: mockMenuButton2.id,
+        journeyId: defaultJourney.id,
+        parentBlockId: mockMenuButton2.parentBlockId,
+        label: mockMenuButton2.label,
+        size: mockMenuButton2.size,
+        variant: mockMenuButton2.buttonVariant
+      },
+      button3Input: {
+        id: mockMenuButton3.id,
+        journeyId: defaultJourney.id,
+        parentBlockId: mockMenuButton3.parentBlockId,
+        label: mockMenuButton3.label,
+        size: mockMenuButton3.size,
+        variant: mockMenuButton3.buttonVariant
       },
       journeyUpdateInput: {
         menuStepBlockId: 'step.id'
@@ -95,7 +134,11 @@ describe('useMenuBlockCreateMutation', () => {
         expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([
           { __ref: 'StepBlock:step.id' },
           { __ref: 'CardBlock:card.id' },
-          { __ref: 'TypographyBlock:typography.id' }
+          { __ref: 'TypographyBlock:heading.id' },
+          { __ref: 'TypographyBlock:subHeading.id' },
+          { __ref: 'ButtonBlock:button1.id' },
+          { __ref: 'ButtonBlock:button2.id' },
+          { __ref: 'ButtonBlock:button3.id' }
         ])
       )
     })
