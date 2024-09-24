@@ -188,6 +188,14 @@ export function TitleDescriptionDialog({
                     value={values.language}
                     languages={data?.languages}
                     loading={loading}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        placeholder="Search Language"
+                        label="Language"
+                        variant="filled"
+                      />
+                    )}
                   />
                 </Stack>
               </Form>
