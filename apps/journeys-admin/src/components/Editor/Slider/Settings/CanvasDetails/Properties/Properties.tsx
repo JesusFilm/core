@@ -186,7 +186,6 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
         borderRadius: 3,
         borderBottomLeftRadius: 0,
         borderBottomRightRadius: 0,
-        display: 'flex',
         overflow: 'hidden'
       }}
       border={1}
