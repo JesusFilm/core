@@ -35,20 +35,16 @@ describe('Reactions', () => {
       </MockedProvider>
     )
 
-    const reactionsAccordion = screen.getByRole('button', { name: 'Reactions' })
-    expect(reactionsAccordion).toBeInTheDocument()
+    const accordion = screen.getByTestId('AccordionSummary')
+    expect(accordion).toBeInTheDocument()
+    expect(within(accordion).getByText('Reactions')).toBeInTheDocument()
+    expect(within(accordion).getByRole('checkbox')).toBeInTheDocument()
 
-    fireEvent.click(reactionsAccordion)
+    fireEvent.click(accordion)
 
-    expect(screen.getByText('Share')).toBeVisible()
-    expect(screen.getByText('Like')).toBeVisible()
-    expect(screen.getByText('Dislike')).toBeVisible()
-
-    const checkboxes = screen.getAllByRole('checkbox')
-
-    expect(checkboxes[0]).toBeChecked() // true
-    expect(checkboxes[1]).not.toBeChecked() // false
-    expect(checkboxes[2]).toBeChecked() // null
+    expect(screen.getByLabelText('Share')).toBeChecked()
+    expect(screen.getByLabelText('Like')).not.toBeChecked()
+    expect(screen.getByLabelText('Dislike')).toBeChecked()
   })
 
   it('should update an option', async () => {
