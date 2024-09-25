@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
+import CircularProgress from '@mui/material/CircularProgress'
 
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import ArrowRightSmIcon from '@core/shared/ui/icons/ArrowRightSm'
@@ -32,17 +33,22 @@ export const JOURNEY_PROFILE_CREATE = gql`
 
 export function TermsAndConditions(): ReactElement {
   const [accepted, setAccepted] = useState(false)
+  const [loading, setLoading] = useState(false)
+
   const [journeyProfileCreate] = useMutation<JourneyProfileCreate>(
     JOURNEY_PROFILE_CREATE
   )
   const router = useRouter()
 
   const handleJourneyProfileCreate = async (): Promise<void> => {
+    setLoading(true)
     await journeyProfileCreate()
+    // TODO: change back to '/onboarding-form' once formium replacement is in
     await router.push({
-      pathname: '/onboarding-form',
+      pathname: '/teams/new',
       query: { redirect: router.query.redirect }
     })
+    setLoading(false)
   }
   const { t } = useTranslation('apps-journeys-admin')
   return (
@@ -102,6 +108,7 @@ export function TermsAndConditions(): ReactElement {
         disabled={!accepted}
         onClick={handleJourneyProfileCreate}
         sx={{
+          height: 54,
           width: '100%',
           borderRadius: '12px',
           bgcolor: 'secondary.dark',
@@ -111,9 +118,9 @@ export function TermsAndConditions(): ReactElement {
             bgcolor: 'secondary.dark'
           }
         }}
-        endIcon={<ArrowRightSmIcon />}
+        endIcon={!loading && <ArrowRightSmIcon />}
       >
-        {t('Next')}
+        {loading ? <CircularProgress size={20} /> : t('Next')}
       </Button>
     </>
   )
