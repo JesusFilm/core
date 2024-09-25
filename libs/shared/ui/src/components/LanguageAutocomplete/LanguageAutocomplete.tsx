@@ -122,6 +122,17 @@ export function LanguageAutocomplete({
       disablePortal={process.env.NODE_ENV === 'test'}
       renderInput={renderInput != null ? renderInput : defaultRenderInput}
       renderOption={renderOption != null ? renderOption : defaultRenderOption}
+      slotProps={{
+        popper: {
+          placement: 'bottom-start',
+          modifiers: [
+            {
+              name: 'flip',
+              enabled: false
+            }
+          ]
+        }
+      }}
     />
   )
 }
