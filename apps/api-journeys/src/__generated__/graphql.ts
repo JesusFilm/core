@@ -829,8 +829,6 @@ export type JourneyProfile = {
   id: Scalars['ID']['output'];
   journeyFlowBackButtonClicked?: Maybe<Scalars['Boolean']['output']>;
   lastActiveTeamId?: Maybe<Scalars['String']['output']>;
-  /** @deprecated no longer used */
-  onboardingFormCompletedAt?: Maybe<Scalars['DateTime']['output']>;
   plausibleDashboardViewed?: Maybe<Scalars['Boolean']['output']>;
   plausibleJourneyFlowViewed?: Maybe<Scalars['Boolean']['output']>;
   userId: Scalars['ID']['output'];
@@ -1216,7 +1214,6 @@ export type Mutation = {
   journeyFeature?: Maybe<Journey>;
   journeyNotificationUpdate: JourneyNotification;
   journeyProfileCreate: JourneyProfile;
-  journeyProfileOnboardingFormComplete: JourneyProfile;
   journeyProfileUpdate: JourneyProfile;
   /** Sets journey status to published */
   journeyPublish?: Maybe<Journey>;

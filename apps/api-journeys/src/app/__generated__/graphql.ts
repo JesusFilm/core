@@ -1045,8 +1045,6 @@ export abstract class IMutation {
 
     abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
 
-    abstract journeyProfileOnboardingFormComplete(): JourneyProfile | Promise<JourneyProfile>;
-
     abstract updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
 
     abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
@@ -1661,7 +1659,6 @@ export class JourneyProfile {
     userId: string;
     acceptedTermsAt?: Nullable<DateTime>;
     lastActiveTeamId?: Nullable<string>;
-    onboardingFormCompletedAt?: Nullable<DateTime>;
     journeyFlowBackButtonClicked?: Nullable<boolean>;
     plausibleJourneyFlowViewed?: Nullable<boolean>;
     plausibleDashboardViewed?: Nullable<boolean>;
