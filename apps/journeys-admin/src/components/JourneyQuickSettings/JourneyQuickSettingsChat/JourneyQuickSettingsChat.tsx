@@ -2,9 +2,9 @@ import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { Chat } from '../../Editor/Slider/Settings/CanvasDetails/Footer/Chat'
-import { HostAvatarsButton } from '../../Editor/Slider/Settings/CanvasDetails/Footer/Host/HostForm/HostAvatarsButton'
-import { HostTitleFieldForm } from '../../Editor/Slider/Settings/CanvasDetails/Footer/Host/HostForm/HostTitleFieldForm'
+import { Chat } from '../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat'
+import { HostAvatarsButton } from '../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Host/HostForm/HostAvatarsButton'
+import { HostTitleFieldForm } from '../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Host/HostForm/HostTitleFieldForm'
 
 interface JourneyQuickSettingsChatProps {
   displayName?: string

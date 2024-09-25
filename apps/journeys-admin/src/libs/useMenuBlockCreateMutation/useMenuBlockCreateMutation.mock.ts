@@ -14,12 +14,12 @@ import {
 import {
   MENU_BLOCK_X,
   MENU_BLOCK_Y
-} from '../../components/Editor/Slider/Settings/CanvasDetails/Footer/Menu/constants'
+} from '../../components/Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Menu/constants'
 import {
   mockMenuCard,
   mockMenuStep,
   mockMenuTypography
-} from '../../components/Editor/Slider/Settings/CanvasDetails/Footer/Menu/MenuActionButton/data'
+} from '../../components/Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Menu/MenuActionButton/data'
 
 import { MENU_BLOCK_CREATE } from './useMenuBlockCreateMutation'
 
