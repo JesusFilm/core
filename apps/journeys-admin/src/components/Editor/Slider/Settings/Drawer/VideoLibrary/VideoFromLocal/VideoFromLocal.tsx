@@ -4,8 +4,9 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { useSearchBox } from 'react-instantsearch'
 
+import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
+
 import { VideoBlockUpdateInput } from '../../../../../../../../__generated__/globalTypes'
-import { useAlgoliaLocalVideos } from '../utils/useAlgoliaLocalVideos'
 import { VideoList } from '../VideoList'
 import { VideoSearch } from '../VideoSearch'
 
@@ -19,7 +20,7 @@ export function VideoFromLocal({
   const { t } = useTranslation('apps-journeys-admin')
 
   const { refine, query } = useSearchBox()
-  const { loading, isLastPage, items, showMore } = useAlgoliaLocalVideos()
+  const { loading, isLastPage, items, showMore } = useAlgoliaVideos()
 
   async function handleFetchMore(): Promise<void> {
     showMore()

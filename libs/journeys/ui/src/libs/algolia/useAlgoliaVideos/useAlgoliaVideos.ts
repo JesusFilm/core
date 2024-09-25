@@ -1,8 +1,16 @@
 import { BaseHit, Hit } from 'instantsearch.js'
 import { useInfiniteHits, useInstantSearch } from 'react-instantsearch'
 
-import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
-import { VideoListProps } from '../../VideoList/VideoList'
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
+
+interface Video {
+  id: string
+  title?: string
+  description?: string
+  image?: string
+  duration?: number
+  source: VideoBlockSource
+}
 
 export interface AlgoliaVideoItem extends Hit<BaseHit> {
   label: string
@@ -18,7 +26,7 @@ type FilterFunction = (item: AlgoliaVideoItem) => boolean
 export function transformItems(
   items: AlgoliaVideoItem[],
   filter: FilterFunction
-): VideoListProps['videos'] {
+): Video[] {
   return items.filter(filter).map((videoVariant) => ({
     id: videoVariant.videoId,
     title: videoVariant.titles[0],
@@ -32,20 +40,20 @@ export function transformItems(
 const defaultFilter: FilterFunction = (item) =>
   item.label !== 'collection' && item.label !== 'series'
 
-interface AlgoliaLocalVideos {
+interface AlgoliaVideos {
   loading: boolean
   isLastPage: boolean
-  items: VideoListProps['videos']
+  items: Video[]
   showMore: () => void
 }
 
-interface UseAlgoliaLocalVideosProps {
+interface UseAlgoliaVideosProps {
   filter?: FilterFunction
 }
 
-export function useAlgoliaLocalVideos({
+export function useAlgoliaVideos({
   filter = defaultFilter
-}: UseAlgoliaLocalVideosProps = {}): AlgoliaLocalVideos {
+}: UseAlgoliaVideosProps = {}): AlgoliaVideos {
   const { status } = useInstantSearch()
   const { items, showMore, isLastPage } = useInfiniteHits<AlgoliaVideoItem>()
 

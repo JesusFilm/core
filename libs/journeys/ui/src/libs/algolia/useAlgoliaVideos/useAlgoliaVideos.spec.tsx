@@ -6,13 +6,13 @@ import {
   useInstantSearch
 } from 'react-instantsearch'
 
-import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 
 import {
   AlgoliaVideoItem,
   transformItems,
-  useAlgoliaLocalVideos
-} from './useAlgoliaLocalVideos'
+  useAlgoliaVideos
+} from './useAlgoliaVideos'
 
 jest.mock('react-instantsearch')
 
@@ -23,7 +23,7 @@ const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
   typeof useInfiniteHits
 >
 
-describe('useAlgoliaLocalVideos', () => {
+describe('useAlgoliaVideos', () => {
   const mockAlgoliaItems = [
     {
       label: 'collection',
@@ -97,7 +97,7 @@ describe('useAlgoliaLocalVideos', () => {
 
   describe('transformItems', () => {
     it('should transform items correctly with default filter', () => {
-      const { result } = renderHook(() => useAlgoliaLocalVideos())
+      const { result } = renderHook(() => useAlgoliaVideos())
       expect(result.current.items).toEqual(transformedItems)
     })
 
@@ -107,15 +107,15 @@ describe('useAlgoliaLocalVideos', () => {
     })
   })
 
-  describe('useAlgoliaLocalVideos', () => {
+  describe('useAlgoliaVideos', () => {
     it('should return transformed items', () => {
-      const { result } = renderHook(() => useAlgoliaLocalVideos())
+      const { result } = renderHook(() => useAlgoliaVideos())
       expect(result.current.items).toEqual(transformedItems)
     })
 
     it('should apply custom filter when provided', () => {
       const { result } = renderHook(() =>
-        useAlgoliaLocalVideos({ filter: customFilter })
+        useAlgoliaVideos({ filter: customFilter })
       )
       expect(result.current.items).toEqual(filterBasedTransformedItems)
     })
@@ -125,17 +125,17 @@ describe('useAlgoliaLocalVideos', () => {
         status: 'loading'
       } as unknown as InstantSearchApi)
 
-      const { result } = renderHook(() => useAlgoliaLocalVideos())
+      const { result } = renderHook(() => useAlgoliaVideos())
       expect(result.current.loading).toBe(true)
     })
 
     it('should return isLastPage', () => {
-      const { result } = renderHook(() => useAlgoliaLocalVideos())
+      const { result } = renderHook(() => useAlgoliaVideos())
       expect(result.current.isLastPage).toBe(false)
     })
 
     it('should return showMore function', () => {
-      const { result } = renderHook(() => useAlgoliaLocalVideos())
+      const { result } = renderHook(() => useAlgoliaVideos())
       expect(result.current.showMore).toBeDefined()
     })
   })
