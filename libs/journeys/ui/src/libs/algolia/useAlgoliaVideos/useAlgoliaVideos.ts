@@ -30,7 +30,13 @@ export interface AlgoliaVideo extends Hit<BaseHit> {
 
 export function transformItemsDefault(items: AlgoliaVideo[]): Video[] {
   return items
-    .filter((item) => item.label !== 'collection' && item.label !== 'series')
+    .filter(
+      (item) =>
+        item.label === 'episode' ||
+        item.label === 'featureFilm' ||
+        item.label === 'segment' ||
+        item.label === 'shortFilm'
+    )
     .map((videoVariant) => ({
       id: videoVariant.videoId,
       title: videoVariant.titles[0],

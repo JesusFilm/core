@@ -7,8 +7,7 @@ import {
   useInstantSearch
 } from 'react-instantsearch'
 
-import { VideoBlockSource } from '../../../../__generated__/globalTypes'
-
+import { algoliaVideos, customTransformedItems, transformedItems } from './data'
 import {
   AlgoliaVideo,
   transformItemsDefault,
@@ -25,65 +24,11 @@ const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
 >
 
 describe('useAlgoliaVideos', () => {
-  const algoliaVideos = [
-    {
-      videoId: 'videoId',
-      titles: ['title'],
-      description: ['description'],
-      duration: 10994,
-      languageId: '529',
-      subtitles: [],
-      slug: 'video-slug/english',
-      label: 'featureFilm',
-      image: 'image.jpg',
-      imageAlt: 'Life of Jesus (Gospel of John)',
-      childrenCount: 49,
-      objectID: '2_529-GOJ-0-0'
-    }
-  ] as unknown as AlgoliaVideo[]
-
-  const transformedItems = [
-    {
-      id: 'videoId',
-      title: 'title',
-      description: 'description',
-      image: 'image.jpg',
-      duration: 10994,
-      source: VideoBlockSource.internal
-    }
-  ]
-
-  const customTransformedItems = [
-    {
-      __typename: 'Video',
-      childrenCount: 49,
-      id: 'videoId',
-      image: 'image.jpg',
-      imageAlt: [
-        {
-          value: 'Life of Jesus (Gospel of John)'
-        }
-      ],
-      label: 'featureFilm',
-      slug: 'video-slug/english',
-      snippet: [],
-      title: [
-        {
-          value: 'title'
-        }
-      ],
-      variant: {
-        duration: 10994,
-        hls: null,
-        id: '2_529-GOJ-0-0',
-        slug: 'video-slug/english'
-      }
-    }
-  ]
+  const items = algoliaVideos.slice(0, 8)
 
   beforeEach(() => {
     mockUseInfiniteHits.mockReturnValue({
-      items: algoliaVideos,
+      items,
       showMore: jest.fn(),
       isLastPage: false
     } as unknown as InfiniteHitsRenderState)
@@ -92,14 +37,14 @@ describe('useAlgoliaVideos', () => {
       status: 'idle',
       results: {
         __isArtificial: false,
-        nbHits: algoliaVideos.length
+        nbHits: items.length
       }
     } as unknown as InstantSearchApi)
   })
 
   describe('transformItemsDefault', () => {
-    it('should transform items correctly with default filter', () => {
-      const result = transformItemsDefault(algoliaVideos)
+    it('should transform items correctly', () => {
+      const result = transformItemsDefault(items)
       expect(result).toEqual(transformedItems)
     })
   })
