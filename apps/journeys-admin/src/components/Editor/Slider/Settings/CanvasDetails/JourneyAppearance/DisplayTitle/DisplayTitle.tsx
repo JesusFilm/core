@@ -9,7 +9,7 @@ import Type3 from '@core/shared/ui/icons/Type3'
 import { useJourneyUpdateMutation } from '../../../../../../../libs/useJourneyUpdateMutation'
 import { TextFieldForm } from '../../../../../../TextFieldForm'
 import { Accordion } from '../../Properties/Accordion'
-import { useToggleJourneyProperty } from '../libs/useToggleJourneyProperty/useToggleJourneyProperty'
+import { useToggleJourneyProperty } from '../libs/useToggleJourneyProperty'
 
 export function DisplayTitle(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
