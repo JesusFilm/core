@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { HostListItem } from './HostListItem'
 
@@ -7,7 +7,7 @@ describe('HostListItem', () => {
     const hostTitle = 'Edmond Shen'
     const hostLocation = 'National Team'
 
-    const { getByText, getAllByRole, queryByTestId } = render(
+    render(
       <HostListItem
         id="hostId"
         title={hostTitle}
@@ -18,13 +18,13 @@ describe('HostListItem', () => {
       />
     )
 
-    expect(getByText(hostTitle)).toBeInTheDocument()
-    expect(getByText(hostLocation)).toBeInTheDocument()
-    const avatars = getAllByRole('img')
+    expect(screen.getByText(hostTitle)).toBeInTheDocument()
+    expect(screen.getByText(hostLocation)).toBeInTheDocument()
+    const avatars = screen.getAllByRole('img')
     expect(avatars).toHaveLength(2)
     expect(avatars[0]).toHaveAttribute('src', 'image')
     expect(avatars[1]).toHaveAttribute('src', 'pic')
-    const adminPlaceholderElement = queryByTestId(
+    const adminPlaceholderElement = screen.queryByTestId(
       'host-avatar-placeholder-solid'
     )
     expect(adminPlaceholderElement).not.toBeInTheDocument()
@@ -33,7 +33,7 @@ describe('HostListItem', () => {
   it('renders placeholder when no images are set', () => {
     const hostTitle = 'Edmond Shen'
 
-    const { queryAllByRole, queryByTestId } = render(
+    render(
       <HostListItem
         id="hostId"
         title={hostTitle}
@@ -44,9 +44,9 @@ describe('HostListItem', () => {
       />
     )
 
-    const avatars = queryAllByRole('img')
+    const avatars = screen.queryAllByRole('img')
     expect(avatars).toHaveLength(0)
-    const adminPlaceholderElement = queryByTestId(
+    const adminPlaceholderElement = screen.queryByTestId(
       'host-avatar-placeholder-solid'
     )
     expect(adminPlaceholderElement).toBeInTheDocument()
@@ -57,7 +57,7 @@ describe('HostListItem', () => {
     const hostTitle = 'Edmond Shen'
     const hostTitleTwo = 'Siyang Diesel'
 
-    const { getByText } = render(
+    render(
       <>
         <HostListItem
           id="hostId"
@@ -78,7 +78,7 @@ describe('HostListItem', () => {
       </>
     )
 
-    fireEvent.click(getByText('Edmond Shen'))
+    fireEvent.click(screen.getByText('Edmond Shen'))
     expect(handleClick).toHaveBeenCalledWith('hostId')
     expect(handleClick).not.toHaveBeenCalledWith('hostIdTwo')
   })

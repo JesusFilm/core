@@ -55,18 +55,18 @@ export function HostAvatars({
       <Placeholder />
     ) : (
       <>
-        {avatarSrc1 != null && (
+        {avatarSrc2 != null && (
           <Avatar
-            src={avatarSrc1}
+            src={avatarSrc2}
             sx={{
               height: size === 'small' ? '30px' : '48px',
               width: size === 'small' ? '30px' : '48px'
             }}
           />
         )}
-        {avatarSrc2 != null && (
+        {avatarSrc1 != null && (
           <Avatar
-            src={avatarSrc2}
+            src={avatarSrc1}
             sx={{
               height: size === 'small' ? '30px' : '48px',
               width: size === 'small' ? '30px' : '48px'
