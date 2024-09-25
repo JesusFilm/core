@@ -124,7 +124,7 @@ export class Register {
   async clickNextBtn() {
     await this.page
       .locator('button[type="button"]', { hasText: 'Next' })
-      .click({ delay: 2000 })
+      .click()
   }
 
   // disable while formium is broken
