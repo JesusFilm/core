@@ -25,7 +25,7 @@ const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
 >
 
 describe('useAlgoliaVideos', () => {
-  const mockAlgoliaItems = [
+  const algoliaVideos = [
     {
       videoId: 'videoId',
       titles: ['title'],
@@ -83,19 +83,23 @@ describe('useAlgoliaVideos', () => {
 
   beforeEach(() => {
     mockUseInfiniteHits.mockReturnValue({
-      items: mockAlgoliaItems,
+      items: algoliaVideos,
       showMore: jest.fn(),
       isLastPage: false
     } as unknown as InfiniteHitsRenderState)
 
     mockUseInstantSearch.mockReturnValue({
-      status: 'idle'
+      status: 'idle',
+      results: {
+        __isArtificial: false,
+        nbHits: algoliaVideos.length
+      }
     } as unknown as InstantSearchApi)
   })
 
   describe('transformItemsDefault', () => {
     it('should transform items correctly with default filter', () => {
-      const result = transformItemsDefault(mockAlgoliaItems)
+      const result = transformItemsDefault(algoliaVideos)
       expect(result).toEqual(transformedItems)
     })
   })
@@ -108,7 +112,11 @@ describe('useAlgoliaVideos', () => {
 
     it('should return correct loading state', () => {
       mockUseInstantSearch.mockReturnValue({
-        status: 'loading'
+        status: 'loading',
+        results: {
+          __isArtificial: false,
+          nbHits: algoliaVideos.length
+        }
       } as unknown as InstantSearchApi)
 
       const { result } = renderHook(() => useAlgoliaVideos())

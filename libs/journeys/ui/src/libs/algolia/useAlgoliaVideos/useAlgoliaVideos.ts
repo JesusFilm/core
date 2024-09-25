@@ -1,4 +1,5 @@
 import { BaseHit, Hit } from 'instantsearch.js'
+import { SendEventForHits } from 'instantsearch.js/es/lib/utils'
 import { useInfiniteHits, useInstantSearch } from 'react-instantsearch'
 
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
@@ -45,27 +46,33 @@ interface useAlgoliaVideosOptions<T> {
 }
 
 interface useAlgoliaVideosResult<T> {
-  loading: boolean
-  isLastPage: boolean
   items: T[]
+  loading: boolean
+  noResults: boolean
+  isLastPage: boolean
   showMore: () => void
+  sendEvent: SendEventForHits
 }
 
 export function useAlgoliaVideos<T = Video>(
   options?: useAlgoliaVideosOptions<T>
 ): useAlgoliaVideosResult<T> {
   const { transformItems } = options ?? {}
-  const { status } = useInstantSearch()
-  const { items, showMore, isLastPage } = useInfiniteHits<AlgoliaVideo>()
+
+  const { status, results } = useInstantSearch()
+  const { items, showMore, isLastPage, sendEvent } =
+    useInfiniteHits<AlgoliaVideo>()
 
   const transformedItems = (transformItems ?? transformItemsDefault)(
     items
   ) as T[]
 
   return {
-    loading: status === 'loading' || status === 'stalled',
+    showMore,
+    sendEvent,
     isLastPage,
     items: transformedItems,
-    showMore
+    loading: status === 'loading' || status === 'stalled',
+    noResults: !(results.__isArtificial ?? false) && results.nbHits === 0
   }
 }

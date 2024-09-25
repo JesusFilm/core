@@ -11,11 +11,15 @@ import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 
+import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
-import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
+import {
+  type CoreVideo,
+  transformAlgoliaVideos as transformItems
+} from '../../libs/algolia/transformAlgoliaVideos'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 
 interface VideoCardProps {
@@ -76,12 +80,12 @@ export function VideoCard({
   )
   const href = getSlug(containerSlug, video?.label, video?.variant?.slug)
 
-  const { hits, sendEvent } = useAlgoliaVideos()
-  const hit = hits.filter((hit) => hit.videoId === video?.id)
+  const { items, sendEvent } = useAlgoliaVideos<CoreVideo>({ transformItems })
+  const item = items.filter((item) => item.id === video?.id)
 
   const handleClick = (event): void => {
     event.stopPropagation()
-    sendEvent('click', hit, 'Video Clicked')
+    sendEvent('click', item, 'Video Clicked')
   }
 
   return (

@@ -1,16 +1,22 @@
 import type { ReactElement } from 'react'
 
-import { useAlgoliaVideos } from '../../../libs/algolia/useAlgoliaVideos'
+import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
+
+import {
+  type CoreVideo,
+  transformAlgoliaVideos as transformItems
+} from '../../../libs/algolia/transformAlgoliaVideos'
 import { VideoGrid, VideoGridProps } from '../VideoGrid'
 
 export function AlgoliaVideoGrid(props: VideoGridProps): ReactElement {
   const {
-    hits: algoliaVideos,
+    items: algoliaVideos,
     showMore,
     isLastPage,
     loading,
     noResults
-  } = useAlgoliaVideos()
+  } = useAlgoliaVideos<CoreVideo>({ transformItems })
+  console.log('algoliaVideos', algoliaVideos)
   return (
     <VideoGrid
       videos={algoliaVideos}
