@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 import Menu1 from '@core/shared/ui/icons/Menu1'
 
 import { Accordion } from '../../Properties/Accordion'
-import { useToggleJourneyProperty } from '../libs/useToggleJourneyProperty/useToggleJourneyProperty'
+import { useToggleJourneyProperty } from '../libs/useToggleJourneyProperty'
 
 import { MenuActionButton } from './MenuActionButton'
 import { MenuIconSelect } from './MenuIconSelect'
