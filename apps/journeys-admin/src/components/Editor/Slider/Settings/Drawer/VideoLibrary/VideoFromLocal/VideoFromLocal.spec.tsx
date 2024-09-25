@@ -69,7 +69,11 @@ describe('VideoFromLocal', () => {
   } as unknown as InfiniteHitsRenderState
 
   const instantSearch = {
-    status: 'idle'
+    status: 'idle',
+    results: {
+      __isArtificial: false,
+      nbHits: items.length
+    }
   } as unknown as InstantSearchApi
 
   beforeEach(() => {

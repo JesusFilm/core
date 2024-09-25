@@ -137,7 +137,11 @@ describe('VideoOptions', () => {
   } as unknown as InfiniteHitsRenderState
 
   const instantSearch = {
-    status: 'idle'
+    status: 'idle',
+    results: {
+      __isArtificial: false,
+      nbHits: videoItems.length
+    }
   } as unknown as InstantSearchApi
 
   beforeEach(() => {

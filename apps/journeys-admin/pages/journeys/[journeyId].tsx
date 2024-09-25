@@ -1,5 +1,4 @@
 import { gql, useQuery } from '@apollo/client'
-import algoliasearch from 'algoliasearch'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -12,6 +11,7 @@ import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch'
 
+import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 import { ActiveContent } from '@core/journeys/ui/EditorProvider'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 
@@ -69,11 +69,6 @@ export const USER_JOURNEY_OPEN = gql`
   }
 `
 
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
-  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
-)
-
 function JourneyEditPage({ status }): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
@@ -84,6 +79,8 @@ function JourneyEditPage({ status }): ReactElement {
       variables: { id: router.query.journeyId as string }
     }
   )
+
+  const searchClient = useInstantSearchClient()
 
   return (
     <InstantSearch

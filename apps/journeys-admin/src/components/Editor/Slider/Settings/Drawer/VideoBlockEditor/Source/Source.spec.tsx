@@ -96,7 +96,11 @@ describe('Source', () => {
     } as unknown as InfiniteHitsRenderState)
 
     mockUseInstantSearch.mockReturnValue({
-      status: 'idle'
+      status: 'idle',
+      results: {
+        __isArtificial: false,
+        nbHits: videoItems.length
+      }
     } as unknown as InstantSearchApi)
 
     jest.clearAllMocks()
