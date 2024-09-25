@@ -4,7 +4,7 @@ import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, ReactNode, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -106,7 +106,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
 
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
-  let component
+  let component: ReactNode | undefined
   let title: string | undefined
 
   if (selectedBlock?.__typename === 'StepBlock') {
@@ -162,9 +162,6 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       title = t('Text Input Properties')
       component = <TextResponse {...selectedBlock} />
       break
-    default:
-      component = <></>
-      break
   }
 
   function onClose(): void {
@@ -177,6 +174,8 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
         activeSlide: mdUp ? ActiveSlide.JourneyFlow : ActiveSlide.Content
       })
   }
+
+  if (component == null) return <></>
 
   return (
     <Stack
@@ -192,6 +191,7 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       }}
       border={1}
       borderColor="divider"
+      data-testId="SettingsDrawer"
     >
       <DrawerTitle title={title} onClose={onClose} />
       <Stack flexGrow={1} sx={{ overflow: 'auto' }}>
