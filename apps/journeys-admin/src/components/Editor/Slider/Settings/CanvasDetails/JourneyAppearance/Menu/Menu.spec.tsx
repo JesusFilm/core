@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -19,10 +19,12 @@ describe('Menu', () => {
       </MockedProvider>
     )
 
-    const menu = screen.getByRole('button', { name: 'Menu' })
-    expect(menu).toBeInTheDocument()
+    const accordion = screen.getByTestId('AccordionSummary')
+    expect(accordion).toBeInTheDocument()
+    expect(within(accordion).getByText('Menu')).toBeInTheDocument()
+    expect(within(accordion).getByRole('checkbox')).toBeInTheDocument()
 
-    fireEvent.click(menu)
+    fireEvent.click(accordion)
 
     expect(screen.getByTestId('MenuIconSelect')).toBeInTheDocument()
     expect(
