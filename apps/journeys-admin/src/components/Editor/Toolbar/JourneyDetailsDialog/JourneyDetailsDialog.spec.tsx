@@ -39,7 +39,6 @@ function getJourneySettingsUpdateMock(
       data: {
         journeyUpdate: {
           ...defaultJourney,
-          id: defaultJourney.id,
           title,
           description,
           strategySlug: null
