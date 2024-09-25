@@ -1,5 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
+import { RouterProps } from 'instantsearch.js/es/middlewares'
 import { GetStaticProps } from 'next'
 import singletonRouter from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
@@ -29,15 +30,22 @@ interface ResourcesPageProps {
   serverState?: InstantSearchServerState
 }
 
+const baseUrl = (process.env.NEXT_PUBLIC_WATCH_URL ?? '').replace('/watch', '')
+const nextRouter: RouterProps = {
+  // Manages the URL paramers with instant search state
+  router: createInstantSearchRouterNext({
+    serverUrl: `${baseUrl}/resources`,
+    singletonRouter,
+    routerOptions: {
+      cleanUrlOnDispose: false
+    }
+  })
+}
+
 function ResourcesPage({
   intitialApolloState,
   serverState
 }: ResourcesPageProps): ReactElement {
-  const baseUrl = (process.env.NEXT_PUBLIC_WATCH_URL ?? '').replace(
-    '/watch',
-    ''
-  )
-
   const client = useApolloClient({
     initialState: intitialApolloState
   })
@@ -53,15 +61,7 @@ function ResourcesPage({
           future={{ preserveSharedStateOnUnmount: true }}
           stalledSearchDelay={500}
           insights
-          routing={{
-            router: createInstantSearchRouterNext({
-              serverUrl: `${baseUrl}/resources`,
-              singletonRouter,
-              routerOptions: {
-                cleanUrlOnDispose: false
-              }
-            })
-          }}
+          routing={nextRouter}
         >
           <ResourcesView />
         </InstantSearch>
