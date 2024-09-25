@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 
@@ -10,7 +10,6 @@ import {
   GetJourneyVisitorsCountWithTextResponses,
   GetJourneyVisitorsCountWithTextResponsesVariables
 } from '../../../../../../__generated__/GetJourneyVisitorsCountWithTextResponses'
-import { ApolloLoadingProvider } from '../../../../../../test/ApolloLoadingProvider'
 
 import {
   GET_JOURNEY_VISITORS_COUNT_WITH_TEXT_RESPONSES,
@@ -40,22 +39,16 @@ const getVisitorCountMock: MockedResponse<
 
 const Template: StoryObj<typeof ResponsesItem> = {
   render: () => (
-    <ApolloLoadingProvider>
-      <MockedProvider mocks={[getVisitorCountMock]}>
-        <JourneyProvider
-          value={{ journey: publishedJourney, variant: 'admin' }}
-        >
-          <Box
-            sx={{
-              p: 6,
-              backgroundColor: 'background.paper'
-            }}
-          >
-            <ResponsesItem />
-          </Box>
-        </JourneyProvider>
-      </MockedProvider>
-    </ApolloLoadingProvider>
+    <JourneyProvider value={{ journey: publishedJourney, variant: 'admin' }}>
+      <Box
+        sx={{
+          p: 6,
+          backgroundColor: 'background.paper'
+        }}
+      >
+        <ResponsesItem />
+      </Box>
+    </JourneyProvider>
   )
 }
 
