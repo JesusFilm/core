@@ -33,7 +33,7 @@ interface HostAvatarsProps {
   size?: 'small' | 'large'
   avatarSrc1?: string | null
   avatarSrc2?: string | null
-  live?: boolean
+  showFallback?: boolean
 }
 
 export function HostAvatars({
@@ -41,7 +41,7 @@ export function HostAvatars({
   size = 'small',
   avatarSrc1,
   avatarSrc2,
-  live
+  showFallback = false
 }: HostAvatarsProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
@@ -51,8 +51,8 @@ export function HostAvatars({
   function render(): ReactElement | null {
     if (isEmpty && size === 'large') return null
 
-    return journey?.showHosts !== true && live !== true ? (
-      <Placeholder />
+    return journey?.showHosts !== true && showFallback ? (
+      <>{hasPlaceholder === true && <Placeholder />}</>
     ) : (
       <>
         {avatarSrc2 != null && (
