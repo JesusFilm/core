@@ -30,7 +30,7 @@ import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { ImageSource } from '../../../Drawer/ImageSource'
 import { Accordion } from '../../Properties/Accordion'
 import { IMAGE_BLOCK_UPDATE } from '../../Properties/blocks/Image/Options/ImageOptions'
-import { useToggleJourneyProperty } from '../libs/useToggleJourneyProperty/useToggleJourneyProperty'
+import { useToggleJourneyProperty } from '../libs/useToggleJourneyProperty'
 
 export const LOGO_BLOCK_CREATE = gql`
   ${IMAGE_FIELDS}
