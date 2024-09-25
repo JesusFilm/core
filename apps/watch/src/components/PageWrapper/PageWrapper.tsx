@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import { SxProps } from '@mui/material/styles'
 import { ReactElement, ReactNode } from 'react'
 import Div100vh from 'react-div-100vh'
 
@@ -19,7 +18,6 @@ interface PageWrapperProps {
   hideHeaderSpacer?: boolean
   testId?: string
   headerThemeMode?: ThemeMode
-  sx?: SxProps
 }
 
 export function PageWrapper({
@@ -28,8 +26,7 @@ export function PageWrapper({
   hideHeader,
   hideHeaderSpacer,
   testId,
-  headerThemeMode,
-  sx
+  headerThemeMode
 }: PageWrapperProps): ReactElement {
   return (
     <Div100vh>
@@ -38,7 +35,7 @@ export function PageWrapper({
       )}
       <Stack
         justifyContent="space-between"
-        sx={{ width: '100%', height: '100%', overflowX: 'clip', ...sx }}
+        sx={{ width: '100%', height: '100%', overflowX: 'clip' }}
         data-testid={testId}
       >
         <Container maxWidth={false} disableGutters>
