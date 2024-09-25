@@ -68,7 +68,7 @@ export function JourneyDetailsDialog({
         if (error instanceof ApolloError) {
           if (error.networkError != null) {
             enqueueSnackbar(
-              t('Field update failed. Reload the page or try again.'),
+              t('Journey details update failed. Reload the page or try again.'),
               {
                 variant: 'error',
                 preventDuplicate: true
@@ -153,7 +153,7 @@ export function JourneyDetailsDialog({
                 onSubmit: handleSubmit,
                 closeLabel: t('Cancel')
               }}
-              testId="TitleDescriptionDialog"
+              testId="JourneyDetailsDialog"
             >
               <Form>
                 <Stack spacing={6}>
@@ -191,8 +191,8 @@ export function JourneyDetailsDialog({
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        placeholder="Search Language"
-                        label="Language"
+                        placeholder={t('Search Language')}
+                        label={t('Language')}
                         variant="filled"
                       />
                     )}

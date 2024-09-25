@@ -3,7 +3,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
@@ -217,7 +216,9 @@ describe('JourneyDetailsDialog', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
     await waitFor(() =>
       expect(
-        screen.getByText('Field update failed. Reload the page or try again.')
+        screen.getByText(
+          'Journey details update failed. Reload the page or try again.'
+        )
       ).toBeInTheDocument()
     )
   })
@@ -245,9 +246,7 @@ describe('JourneyDetailsDialog', () => {
               variant: 'admin'
             }}
           >
-            <EditorProvider>
-              <JourneyDetailsDialog open onClose={onClose} />
-            </EditorProvider>
+            <JourneyDetailsDialog open onClose={onClose} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>

@@ -155,7 +155,7 @@ describe('Toolbar', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Click to edit' }))
     await waitFor(() => {
-      expect(screen.getByTestId('TitleDescriptionDialog')).toBeInTheDocument()
+      expect(screen.getByTestId('JourneyDetailsDialog')).toBeInTheDocument()
     })
   })
 
