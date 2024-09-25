@@ -1,5 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
+import { UiState } from 'instantsearch.js'
 import { RouterProps } from 'instantsearch.js/es/middlewares'
 import { GetStaticProps } from 'next'
 import singletonRouter from 'next/router'
@@ -39,7 +40,23 @@ const nextRouter: RouterProps = {
     routerOptions: {
       cleanUrlOnDispose: false
     }
-  })
+  }),
+  stateMapping: {
+    stateToRoute(uiState) {
+      const indexUiState = uiState[indexes[0]]
+
+      const stateRoute = {
+        query: indexUiState.query
+      } as unknown as UiState
+
+      return stateRoute
+    },
+    routeToState(routeState) {
+      return {
+        [indexes[0]]: routeState
+      }
+    }
+  }
 }
 
 function ResourcesPage({
