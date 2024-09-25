@@ -47,6 +47,7 @@ export function HostListItem({
             avatarSrc1={avatarSrc1}
             avatarSrc2={avatarSrc2}
             hasPlaceholder
+            live
           />
         </Box>
         <Stack sx={{ minWidth: 0, justifyContent: 'center' }}>
