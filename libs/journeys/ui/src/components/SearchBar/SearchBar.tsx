@@ -8,7 +8,6 @@ import TextField, {
   TextFieldProps
 } from '@mui/material/TextField'
 import { Formik } from 'formik'
-import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import {
   type ReactElement,
@@ -23,16 +22,14 @@ import Search1Icon from '@core/shared/ui/icons/Search1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 import { SearchBarProvider } from '../../libs/algolia/SearchBarProvider'
+import { useLanguagesContinentsLazyQuery } from '../../libs/useLanguagesContinentsQuery'
+import {
+  LanguageContinentsRecord,
+  sortLanguageContinents
+} from '../../libs/useLanguagesContinentsQuery/sortLanguageContinents'
 
 import { LanguageButtons } from './LanguageButtons'
-
-const DynamicSearchbarDropdown = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "SearchbarDropdown" */
-      './SearchDropdown'
-    ).then((mod) => mod.SearchbarDropdown)
-)
+import { SearchbarDropdown } from './SearchDropdown'
 
 interface StyledTextFieldProps extends BaseTextFieldProps {
   showLanguageButton?: boolean
@@ -98,6 +95,7 @@ export function SearchBar({
   }
 
   function openSuggestionsDropdown(): void {
+    void prepareDropdown()
     setAnchorEl(popperRef.current)
     setOpen(true)
   }
@@ -106,6 +104,26 @@ export function SearchBar({
     setAnchorEl(popperRef.current)
     setTabValue(1)
     setOpen(!open)
+  }
+
+  const [allContinentLanguages, setAllContinentLanguages] =
+    useState<LanguageContinentsRecord>({})
+  const [isPreparingDropdown, setIsPreparingDropdown] = useState(false)
+  const [getLanguages] = useLanguagesContinentsLazyQuery()
+
+  async function getLanguageContinents(): Promise<void> {
+    const result = await getLanguages()
+    const languages = sortLanguageContinents({
+      languages: result.data?.languages ?? []
+    })
+    setAllContinentLanguages(languages)
+  }
+
+  async function prepareDropdown(): Promise<void> {
+    if (!isPreparingDropdown) {
+      setIsPreparingDropdown(true)
+      await getLanguageContinents()
+    }
   }
 
   const findUserCountry = useCallback(async () => {
@@ -134,6 +152,10 @@ export function SearchBar({
             }}
             data-testid="SearchBar"
             ref={popperRef}
+            onMouseEnter={prepareDropdown}
+            onTouchStart={prepareDropdown}
+            onClick={prepareDropdown}
+            onFocus={prepareDropdown}
           >
             <Formik
               initialValues={{
@@ -204,10 +226,11 @@ export function SearchBar({
               </Box>
             )}
           </Box>
-          {open && showDropdown && (
-            <DynamicSearchbarDropdown
+          {showDropdown && (
+            <SearchbarDropdown
               open={open}
               refinements={refinements}
+              languages={allContinentLanguages}
               countryCode={countryCode}
               id={open ? 'simple-popper' : undefined}
               anchorEl={anchorEl}
