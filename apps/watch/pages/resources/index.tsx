@@ -17,6 +17,7 @@ import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchP
 
 import i18nConfig from '../../next-i18next.config'
 import { ResourcesView } from '../../src/components/ResourcesView'
+import { indexes } from '../../src/components/ResourcesView/ResourceSections/ResourceSections'
 import {
   createApolloClient,
   useApolloClient
@@ -48,6 +49,7 @@ function ResourcesPage({
       <ApolloProvider client={client}>
         <InstantSearch
           searchClient={searchClient}
+          indexName={indexes[0]}
           future={{ preserveSharedStateOnUnmount: true }}
           stalledSearchDelay={500}
           insights
