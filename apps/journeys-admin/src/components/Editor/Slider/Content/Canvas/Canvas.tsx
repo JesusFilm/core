@@ -1,3 +1,4 @@
+import { keyframes } from '@emotion/react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
@@ -35,6 +36,17 @@ import {
   calculateScaledHeight,
   calculateScaledMargin
 } from './utils/calculateDimensions'
+
+const fadeIn = keyframes`
+  from {
+    top: -10px;
+    opacity: 0;
+  }
+  to {
+    top: 0;
+    opacity: 1;
+  }
+`
 
 export function Canvas(): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)
@@ -169,6 +181,8 @@ export function Canvas(): ReactElement {
             <Box
               data-testId="CanvasContainer"
               sx={{
+                animation: (theme) =>
+                  `${fadeIn} ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeInOut} 0.5s backwards`,
                 position: 'relative',
                 width: CARD_WIDTH,
                 height: CARD_HEIGHT,
