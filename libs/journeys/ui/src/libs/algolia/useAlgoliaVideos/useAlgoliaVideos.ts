@@ -12,52 +12,55 @@ interface Video {
   source: VideoBlockSource
 }
 
-export interface AlgoliaVideoItem extends Hit<BaseHit> {
-  label: string
+export interface AlgoliaVideo extends Hit<BaseHit> {
   videoId: string
   titles: string[]
   description: string[]
-  image: string
   duration: number
+  languageId: string
+  subtitles: string[]
+  slug: string
+  label: string
+  image: string
+  imageAlt: string
+  childrenCount: number
+  objectID: string
 }
 
-type FilterFunction = (item: AlgoliaVideoItem) => boolean
-
-export function transformItems(
-  items: AlgoliaVideoItem[],
-  filter: FilterFunction
-): Video[] {
-  return items.filter(filter).map((videoVariant) => ({
-    id: videoVariant.videoId,
-    title: videoVariant.titles[0],
-    description: videoVariant.description[0],
-    image: videoVariant.image,
-    duration: videoVariant.duration,
-    source: VideoBlockSource.internal
-  }))
+export function transformItemsDefault(items: AlgoliaVideo[]): Video[] {
+  return items
+    .filter((item) => item.label !== 'collection' && item.label !== 'series')
+    .map((videoVariant) => ({
+      id: videoVariant.videoId,
+      title: videoVariant.titles[0],
+      description: videoVariant.description[0],
+      image: videoVariant.image,
+      duration: videoVariant.duration,
+      source: VideoBlockSource.internal
+    }))
 }
 
-const defaultFilter: FilterFunction = (item) =>
-  item.label !== 'collection' && item.label !== 'series'
+interface useAlgoliaVideosOptions<T> {
+  transformItems?: (items: Array<Hit<AlgoliaVideo>>) => T[]
+}
 
-interface AlgoliaVideos {
+interface useAlgoliaVideosResult<T> {
   loading: boolean
   isLastPage: boolean
-  items: Video[]
+  items: T[]
   showMore: () => void
 }
 
-interface UseAlgoliaVideosProps {
-  filter?: FilterFunction
-}
-
-export function useAlgoliaVideos({
-  filter = defaultFilter
-}: UseAlgoliaVideosProps = {}): AlgoliaVideos {
+export function useAlgoliaVideos<T = Video>(
+  options?: useAlgoliaVideosOptions<T>
+): useAlgoliaVideosResult<T> {
+  const { transformItems } = options ?? {}
   const { status } = useInstantSearch()
-  const { items, showMore, isLastPage } = useInfiniteHits<AlgoliaVideoItem>()
+  const { items, showMore, isLastPage } = useInfiniteHits<AlgoliaVideo>()
 
-  const transformedItems = transformItems(items, filter)
+  const transformedItems = (transformItems ?? transformItemsDefault)(
+    items
+  ) as T[]
 
   return {
     loading: status === 'loading' || status === 'stalled',

@@ -1,4 +1,5 @@
 import { renderHook } from '@testing-library/react'
+import { Hit } from 'instantsearch.js'
 import type { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
 import {
   InstantSearchApi,
@@ -9,8 +10,8 @@ import {
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 
 import {
-  AlgoliaVideoItem,
-  transformItems,
+  AlgoliaVideo,
+  transformItemsDefault,
   useAlgoliaVideos
 } from './useAlgoliaVideos'
 
@@ -26,62 +27,59 @@ const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
 describe('useAlgoliaVideos', () => {
   const mockAlgoliaItems = [
     {
-      label: 'collection',
-      videoId: 'video1',
-      titles: ['Video 1'],
-      description: ['Description 1'],
-      image: 'image1.jpg',
-      duration: 120
-    },
-    {
-      label: 'series',
-      videoId: 'video2',
-      titles: ['Video 2'],
-      description: ['Description 2'],
-      image: 'image2.jpg',
-      duration: 180
-    },
-    {
-      label: 'other',
-      videoId: 'video3',
-      titles: ['Video 3'],
-      description: ['Description 3'],
-      image: 'image3.jpg',
-      duration: 240
+      videoId: 'videoId',
+      titles: ['title'],
+      description: ['description'],
+      duration: 10994,
+      languageId: '529',
+      subtitles: [],
+      slug: 'video-slug/english',
+      label: 'featureFilm',
+      image: 'image.jpg',
+      imageAlt: 'Life of Jesus (Gospel of John)',
+      childrenCount: 49,
+      objectID: '2_529-GOJ-0-0'
     }
-  ] as unknown as AlgoliaVideoItem[]
+  ] as unknown as AlgoliaVideo[]
 
   const transformedItems = [
     {
-      id: 'video3',
-      title: 'Video 3',
-      description: 'Description 3',
-      image: 'image3.jpg',
-      duration: 240,
+      id: 'videoId',
+      title: 'title',
+      description: 'description',
+      image: 'image.jpg',
+      duration: 10994,
       source: VideoBlockSource.internal
     }
   ]
 
-  const filterBasedTransformedItems = [
+  const customTransformedItems = [
     {
-      id: 'video2',
-      title: 'Video 2',
-      description: 'Description 2',
-      image: 'image2.jpg',
-      duration: 180,
-      source: VideoBlockSource.internal
-    },
-    {
-      id: 'video3',
-      title: 'Video 3',
-      description: 'Description 3',
-      image: 'image3.jpg',
-      duration: 240,
-      source: VideoBlockSource.internal
+      __typename: 'Video',
+      childrenCount: 49,
+      id: 'videoId',
+      image: 'image.jpg',
+      imageAlt: [
+        {
+          value: 'Life of Jesus (Gospel of John)'
+        }
+      ],
+      label: 'featureFilm',
+      slug: 'video-slug/english',
+      snippet: [],
+      title: [
+        {
+          value: 'title'
+        }
+      ],
+      variant: {
+        duration: 10994,
+        hls: null,
+        id: '2_529-GOJ-0-0',
+        slug: 'video-slug/english'
+      }
     }
   ]
-
-  const customFilter = (item: AlgoliaVideoItem): boolean => item.duration > 150
 
   beforeEach(() => {
     mockUseInfiniteHits.mockReturnValue({
@@ -95,15 +93,10 @@ describe('useAlgoliaVideos', () => {
     } as unknown as InstantSearchApi)
   })
 
-  describe('transformItems', () => {
+  describe('transformItemsDefault', () => {
     it('should transform items correctly with default filter', () => {
-      const { result } = renderHook(() => useAlgoliaVideos())
-      expect(result.current.items).toEqual(transformedItems)
-    })
-
-    it('should transform items correct with custom filter', () => {
-      const result = transformItems(mockAlgoliaItems, customFilter)
-      expect(result).toEqual(filterBasedTransformedItems)
+      const result = transformItemsDefault(mockAlgoliaItems)
+      expect(result).toEqual(transformedItems)
     })
   })
 
@@ -111,13 +104,6 @@ describe('useAlgoliaVideos', () => {
     it('should return transformed items', () => {
       const { result } = renderHook(() => useAlgoliaVideos())
       expect(result.current.items).toEqual(transformedItems)
-    })
-
-    it('should apply custom filter when provided', () => {
-      const { result } = renderHook(() =>
-        useAlgoliaVideos({ filter: customFilter })
-      )
-      expect(result.current.items).toEqual(filterBasedTransformedItems)
     })
 
     it('should return correct loading state', () => {
@@ -138,5 +124,38 @@ describe('useAlgoliaVideos', () => {
       const { result } = renderHook(() => useAlgoliaVideos())
       expect(result.current.showMore).toBeDefined()
     })
+
+    it('should accept a custom transform function and return items accordingly', () => {
+      const { result } = renderHook(() => useAlgoliaVideos({ transformItems }))
+      expect(result.current.items).toEqual(customTransformedItems)
+    })
   })
 })
+
+function transformItems<T>(items: Array<Hit<AlgoliaVideo>>): T[] {
+  return items.map((item) => ({
+    __typename: 'Video',
+    id: item.videoId,
+    label: item.label,
+    title: [
+      {
+        value: item.titles[0]
+      }
+    ],
+    image: item.image,
+    imageAlt: [
+      {
+        value: item.imageAlt
+      }
+    ],
+    snippet: [],
+    slug: item.slug,
+    variant: {
+      id: item.objectID,
+      duration: item.duration,
+      hls: null,
+      slug: item.slug
+    },
+    childrenCount: item.childrenCount
+  })) as T[]
+}
