@@ -86,11 +86,13 @@ export function Menu({ user }: MenuProps): ReactElement {
           }
         }}
       >
-        <Stack sx={{ width: 220, display: { xs: 'flex', sm: 'none' } }}>
-          <JourneyDetails />
-        </Stack>
+        {!smUp && (
+          <Stack sx={{ width: 220 }}>
+            <JourneyDetails />
+          </Stack>
+        )}
         <DetailsItem variant="menu-item" onClose={handleCloseMenu} />
-        {!smUp && <Divider />}
+        {!smUp && <Divider data-testid="details-menu-divider" />}
         {journey?.template === true && (
           <TemplateSettingsItem variant="menu-item" onClose={handleCloseMenu} />
         )}
