@@ -110,7 +110,7 @@ export function StepFooter({
                   hasPlaceholder={variant === 'admin'}
                   avatarSrc1={journey?.host?.src1}
                   avatarSrc2={journey?.host?.src2}
-                  live
+                  showFallback
                 />
               )}
               {(title != null || hostDetails) && (

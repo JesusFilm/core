@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import {
   JourneyStatus,
@@ -74,63 +74,67 @@ describe('HostAvatars', () => {
   }
 
   it('renders both avatars if both images are set', () => {
-    const { getByTestId, getAllByRole } = render(
+    render(
       <JourneyProvider value={{ journey }}>
         <HostAvatars avatarSrc1="avatar1.jpg" avatarSrc2="avatar2.jpg" />
       </JourneyProvider>
     )
 
-    const avatarGroupElement = getByTestId('StepFooterHostAvatars')
+    const avatarGroupElement = screen.getByTestId('StepFooterHostAvatars')
     expect(avatarGroupElement).toBeInTheDocument()
-    const avatars = getAllByRole('img')
+    const avatars = screen.getAllByRole('img')
     expect(avatars).toHaveLength(2)
   })
 
   it('renders nothing if no images are set', () => {
-    const { queryAllByRole } = render(
+    render(
       <JourneyProvider value={{ journey }}>
         <HostAvatars />
       </JourneyProvider>
     )
 
-    const avatars = queryAllByRole('img')
+    const avatars = screen.queryAllByRole('img')
     expect(avatars).toHaveLength(0)
   })
 
   it('renders with avatar if one image is set', () => {
-    const { queryAllByRole } = render(
+    render(
       <JourneyProvider value={{ journey }}>
         <HostAvatars avatarSrc1="avatar1.jpg" />
       </JourneyProvider>
     )
 
-    const avatars = queryAllByRole('img')
+    const avatars = screen.queryAllByRole('img')
     expect(avatars).toHaveLength(1)
   })
 
   describe('hasPlaceholder', () => {
     it('renders placeholder if no images are set', () => {
-      const { getByTestId } = render(
+      render(
         <JourneyProvider value={{ journey }}>
           <HostAvatars hasPlaceholder />
         </JourneyProvider>
       )
 
-      const adminPlaceholderElement = getByTestId('host-avatar-placeholder')
+      const adminPlaceholderElement = screen.getByTestId(
+        'host-avatar-placeholder'
+      )
       expect(adminPlaceholderElement).toBeInTheDocument()
     })
 
     it('renders with avatar and placeholder if one image is set', () => {
-      const { getByTestId, getByRole } = render(
+      render(
         <JourneyProvider value={{ journey }}>
           <HostAvatars hasPlaceholder avatarSrc1="avatar1.jpg" />
         </JourneyProvider>
       )
 
-      const avatars = getByRole('img')
+      const avatars = screen.getByRole('img')
       expect(avatars).toBeInTheDocument()
       expect(avatars.getAttribute('src')).toBe('avatar1.jpg')
-      const adminPlaceholderElement = getByTestId('host-avatar-placeholder')
+      const adminPlaceholderElement = screen.getByTestId(
+        'host-avatar-placeholder'
+      )
       expect(adminPlaceholderElement).toBeInTheDocument()
     })
   })
