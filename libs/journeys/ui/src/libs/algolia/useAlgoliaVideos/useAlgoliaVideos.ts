@@ -57,15 +57,13 @@ interface useAlgoliaVideosResult<T> {
 export function useAlgoliaVideos<T = Video>(
   options?: useAlgoliaVideosOptions<T>
 ): useAlgoliaVideosResult<T> {
-  const { transformItems } = options ?? {}
+  const { transformItems = transformItemsDefault } = options ?? {}
 
   const { status, results } = useInstantSearch()
   const { items, showMore, isLastPage, sendEvent } =
     useInfiniteHits<AlgoliaVideo>()
 
-  const transformedItems = (transformItems ?? transformItemsDefault)(
-    items
-  ) as T[]
+  const transformedItems = transformItems(items) as T[]
 
   return {
     showMore,
