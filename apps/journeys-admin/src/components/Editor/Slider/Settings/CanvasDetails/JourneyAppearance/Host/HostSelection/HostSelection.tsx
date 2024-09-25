@@ -40,7 +40,6 @@ export function HostSelection({
                   avatarSrc1={journey.host.src1}
                   avatarSrc2={journey.host.src2}
                   hasPlaceholder
-                  live
                 />
               )
             }}
@@ -54,7 +53,7 @@ export function HostSelection({
             label={t('Select a Host')}
             disabled={!userInTeam}
             slots={{
-              ImageThumbnail: <HostAvatars size="large" hasPlaceholder live />
+              ImageThumbnail: <HostAvatars size="large" hasPlaceholder />
             }}
             onClick={() => {
               handleSelection('list')

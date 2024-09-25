@@ -73,7 +73,7 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  showHosts: null,
+  showHosts: true,
   showChatButtons: null,
   showReactionButtons: null,
   showLogo: null,
