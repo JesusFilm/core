@@ -5,6 +5,7 @@ import {
   HttpLink,
   NormalizedCacheObject
 } from '@apollo/client'
+import { EntityStore, StoreObject } from '@apollo/client/cache'
 import { setContext } from '@apollo/client/link/context'
 import DebounceLink from 'apollo-link-debounce'
 import { getApp } from 'firebase/app'
@@ -67,14 +68,18 @@ export function initializeApollo({
 }: InitializeApolloOptions): ApolloClient<NormalizedCacheObject> {
   const _apolloClient = apolloClient ?? createApolloClient(token)
 
-  // If your page has Next.js data fetching methods that use Apollo Client, the initial state
-  // gets hydrated here
+  // If your page has Next.js data fetching methods that use Apollo Client,
+  // the initial state gets hydrated here
   if (initialState != null) {
-    // Get existing cache, loaded during client side data fetching
-    const existingCache = _apolloClient.extract()
-    // Restore the cache using the data passed from getStaticProps/getServerSideProps
-    // combined with the existing cached data
-    _apolloClient.cache.restore({ ...existingCache, ...initialState })
+    // Restore the cache using the data passed from
+    // getStaticProps/getServerSideProps combined with the existing cached data
+    // https://github.com/apollographql/apollo-client/issues/9797#issuecomment-1156604315
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see gh ^
+    const currentStore: EntityStore = (_apolloClient.cache as any).data
+
+    Object.keys(initialState).forEach((dataId) => {
+      currentStore.merge(dataId, initialState[dataId] as StoreObject)
+    })
   }
   // For SSG and SSR always create a new Apollo Client
   if (typeof window === 'undefined') return _apolloClient
