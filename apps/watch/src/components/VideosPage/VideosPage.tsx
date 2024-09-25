@@ -17,29 +17,11 @@ import { FilterList } from './FilterList'
 import { VideosHero } from './Hero'
 import { VideosSubHero } from './SubHero'
 
-interface VideosPageProps {
-  indexName?: string
-}
-
-export function VideosPage({ indexName }: VideosPageProps): ReactElement {
+export function VideosPage(): ReactElement {
   const { data: languagesData, loading: languagesLoading } =
     useQuery<GetLanguages>(GET_LANGUAGES, {
       variables: { languageId: '529' }
     })
-
-  const videosPageSegment: ReactNode = (
-    <Stack direction={{ xs: 'column', xl: 'row' }} spacing={{ xs: 4, xl: 8 }}>
-      <Box sx={{ minWidth: '278px' }}>
-        <FilterList
-          languagesData={languagesData}
-          languagesLoading={languagesLoading}
-        />
-      </Box>
-      <Box sx={{ width: '100%' }}>
-        <AlgoliaVideoGrid variant="expanded" showLoadMore />
-      </Box>
-    </Stack>
-  )
 
   return (
     <PageWrapper
@@ -53,11 +35,20 @@ export function VideosPage({ indexName }: VideosPageProps): ReactElement {
       </Container>
       <Divider sx={{ height: 2, background: 'rgba(33, 33, 33, 0.08)' }} />
       <Container maxWidth="xxl" sx={{ py: 12 }}>
-        {indexName != null ? (
-          <Index indexName={indexName}>{videosPageSegment}</Index>
-        ) : (
-          <>{videosPageSegment}</>
-        )}
+        <Stack
+          direction={{ xs: 'column', xl: 'row' }}
+          spacing={{ xs: 4, xl: 8 }}
+        >
+          <Box sx={{ minWidth: '278px' }}>
+            <FilterList
+              languagesData={languagesData}
+              languagesLoading={languagesLoading}
+            />
+          </Box>
+          <Box sx={{ width: '100%' }}>
+            <AlgoliaVideoGrid variant="expanded" showLoadMore />
+          </Box>
+        </Stack>
       </Container>
     </PageWrapper>
   )
