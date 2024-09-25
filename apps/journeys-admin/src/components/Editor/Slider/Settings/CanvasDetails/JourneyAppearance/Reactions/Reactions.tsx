@@ -5,11 +5,11 @@ import { ReactElement } from 'react'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
-import Share from '@core/shared/ui/icons/Share'
+import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
 
 import { useJourneyUpdateMutation } from '../../../../../../../libs/useJourneyUpdateMutation'
 import { Accordion } from '../../Properties/Accordion'
-import { useToggleJourneyProperty } from '../libs/useToggleJourneyProperty/useToggleJourneyProperty'
+import { useToggleJourneyProperty } from '../libs/useToggleJourneyProperty'
 
 import { ReactionOption } from './ReactionOption'
 
@@ -63,7 +63,7 @@ export function Reactions(): ReactElement {
   return (
     <Accordion
       id="reactions"
-      icon={<Share />}
+      icon={<ThumbsUp />}
       name={t('Reactions')}
       switchProps={{
         handleToggle: (e) => toggleProperty(e.target.checked),
