@@ -75,7 +75,7 @@ describe('MenuIconSelect', () => {
     fireEvent.mouseDown(screen.getByRole('combobox'))
 
     const options = screen.getAllByRole('option')
-    fireEvent.click(options[6])
+    fireEvent.click(options[5])
 
     await waitFor(() => expect(mockUpdate.result).toHaveBeenCalled())
   })
@@ -150,7 +150,7 @@ describe('MenuIconSelect', () => {
     fireEvent.mouseDown(screen.getByRole('combobox'))
 
     const options = screen.getAllByRole('option')
-    fireEvent.click(options[6])
+    fireEvent.click(options[5])
 
     await waitFor(() => expect(mockUpdate.result).toHaveBeenCalled())
 
