@@ -16,7 +16,6 @@ export function AlgoliaVideoGrid(props: VideoGridProps): ReactElement {
     loading,
     noResults
   } = useAlgoliaVideos<CoreVideo>({ transformItems })
-  console.log('algoliaVideos', algoliaVideos)
   return (
     <VideoGrid
       videos={algoliaVideos}
