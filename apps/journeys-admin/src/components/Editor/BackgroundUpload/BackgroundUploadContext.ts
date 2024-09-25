@@ -4,10 +4,6 @@ import { DetailedError, HttpStack } from 'tus-js-client'
 export enum UploadStatus {
   'uploading',
   'processing',
-  'rejected',
-  'tooLarge',
-  'tooManyFiles',
-  'invalidFileType',
   'error',
   'complete'
 }
@@ -18,13 +14,11 @@ export interface UploadQueueItem {
   status: UploadStatus
   error?: DetailedError | Error
   progress?: number
-  // onChange: (id: string) => void
 }
 
 export interface uploadCloudflareVideoParams {
   files: File[]
   httpStack?: HttpStack
-  // onChange: (id: string) => void
 }
 
 export interface Context {

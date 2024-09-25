@@ -111,6 +111,7 @@ export function BackgroundUploadProvider({
         } else {
           buffer = file
         }
+
         setUploadQueue({
           ...uploadQueue,
           [id]: {
