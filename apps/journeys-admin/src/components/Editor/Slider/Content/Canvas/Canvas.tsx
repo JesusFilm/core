@@ -160,10 +160,8 @@ export function Canvas(): ReactElement {
             justifyContent: 'center'
           }}
         >
-          <Box
+          <Stack
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
               height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`
             }}
           >
@@ -173,6 +171,8 @@ export function Canvas(): ReactElement {
                 position: 'relative',
                 width: CARD_WIDTH,
                 height: CARD_HEIGHT,
+                // minHeight prop is needed for Safari to properly calculate the height of this container
+                minHeight: 0,
                 transform: `scale(${scale})`,
                 margin: `calc(${calculateScaledMargin(CARD_HEIGHT, scale)} + ${
                   scale < 0.65 ? '20px' : '0px'
@@ -320,7 +320,7 @@ export function Canvas(): ReactElement {
               </FramePortal>
             </Box>
             <CanvasFooter scale={scale} />
-          </Box>
+          </Stack>
         </Stack>
       )}
     </Stack>
