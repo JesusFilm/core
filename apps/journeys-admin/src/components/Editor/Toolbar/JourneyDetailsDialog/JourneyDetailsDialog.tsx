@@ -196,6 +196,14 @@ export function JourneyDetailsDialog({
                         variant="filled"
                       />
                     )}
+                    popper={{
+                      modifiers: [
+                        {
+                          name: 'flip',
+                          enabled: false
+                        }
+                      ]
+                    }}
                   />
                 </Stack>
               </Form>
