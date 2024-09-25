@@ -17,7 +17,10 @@ interface DrawerTitleProps {
   onClose?: () => void
 }
 
-function DrawerTitle({ title, onClose }: DrawerTitleProps): ReactElement {
+export function DrawerTitle({
+  title,
+  onClose
+}: DrawerTitleProps): ReactElement {
   return (
     <>
       <AppBar position="static" color="default">
@@ -87,12 +90,12 @@ export function Drawer({
   open,
   onClose
 }: DrawerProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
   return (
     <MuiDrawer
       data-testid="SettingsDrawer"
-      anchor={smUp ? 'right' : 'bottom'}
+      anchor={mdUp ? 'right' : 'bottom'}
       variant={open != null ? 'persistent' : 'permanent'}
       SlideProps={{ appear: true }}
       open={open}
@@ -105,10 +108,10 @@ export function Drawer({
           borderRadius: 3,
           borderBottomLeftRadius: 0,
           borderBottomRightRadius: 0,
-          width: smUp ? DRAWER_WIDTH : 'auto',
+          width: { xs: 'auto', md: DRAWER_WIDTH },
           left: { xs: 0, md: 'auto' },
-          top: { xs: 0, md: 20 },
-          right: { xs: 0, md: 20 },
+          top: { xs: 0, md: 15 },
+          right: { xs: 0, md: 16 },
           bottom: 0,
           height: 'calc(100% - 20px)'
         }
