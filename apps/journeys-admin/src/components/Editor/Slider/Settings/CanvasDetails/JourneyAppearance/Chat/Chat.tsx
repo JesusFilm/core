@@ -9,7 +9,7 @@ import MessageTyping from '@core/shared/ui/icons/MessageTyping'
 
 import { MessagePlatform } from '../../../../../../../../__generated__/globalTypes'
 import { Accordion } from '../../Properties/Accordion'
-import { useToggleJourneyProperty } from '../libs/useToggleJourneyProperty/useToggleJourneyProperty'
+import { useToggleJourneyProperty } from '../libs/useToggleJourneyProperty'
 
 import { ChatOption } from './ChatOption'
 
