@@ -123,7 +123,7 @@ export class Register {
 
   async clickNextBtn() {
     await this.page
-      .locator('button[type="button"]', { hasText: 'Next' })
+      .locator('button[data-testid="TermsAndConditionsNextButton"]')
       .click()
   }
 
