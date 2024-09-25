@@ -42,10 +42,10 @@ function ResourcesPage({
     '/watch',
     ''
   )
-  const nextRouter = createInstantSearchRouter(
-    indexes[0],
-    `${baseUrl}/resources`
-  )
+  const nextRouter = createInstantSearchRouter({
+    indexName: indexes[0],
+    serverUrl: `${baseUrl}/resources`
+  })
 
   return (
     <InstantSearchSSRProvider {...serverState}>

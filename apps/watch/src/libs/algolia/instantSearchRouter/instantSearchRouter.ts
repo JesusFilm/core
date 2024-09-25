@@ -7,10 +7,19 @@ interface NextRouter {
   stateMapping: StateMapping<UiState, UiState>
 }
 
-export function createInstantSearchRouter(
-  indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX as string,
-  serverUrl = process.env.NEXT_PUBLIC_WATCH_URL
-): NextRouter {
+interface createInstantSearchRouterProps {
+  indexName?: string
+  serverUrl?: string
+  mapRefinements?: (indexUiState) => any
+}
+
+export function createInstantSearchRouter({
+  indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? '',
+  serverUrl = process.env.NEXT_PUBLIC_WATCH_URL ?? '',
+  mapRefinements = (indexUiState) => ({
+    languageEnglishName: indexUiState.refinementList?.languageEnglishName
+  })
+}: createInstantSearchRouterProps = {}): NextRouter {
   return {
     // Manages the URL paramers with instant search state
     router: createInstantSearchRouterNext({
@@ -26,10 +35,7 @@ export function createInstantSearchRouter(
 
         const stateRoute = {
           query: indexUiState.query,
-          refinementList: {
-            languageEnglishName:
-              indexUiState.refinementList?.languageEnglishName
-          }
+          refinementList: mapRefinements(indexUiState)
         } as unknown as UiState
 
         return stateRoute
