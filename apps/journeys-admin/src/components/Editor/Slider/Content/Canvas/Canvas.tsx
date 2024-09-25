@@ -78,10 +78,10 @@ export function Canvas(): ReactElement {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  function handleFooterClick(): void {
+  function handleJourneyAppearanceClick(): void {
     dispatch({
       type: 'SetActiveCanvasDetailsDrawerAction',
-      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.JourneyAppearance
     })
     dispatch({
       type: 'SetActiveSlideAction',
@@ -276,7 +276,7 @@ export function Canvas(): ReactElement {
                               sx={{
                                 outline:
                                   activeCanvasDetailsDrawer ===
-                                    ActiveCanvasDetailsDrawer.Footer &&
+                                    ActiveCanvasDetailsDrawer.JourneyAppearance &&
                                   journey?.website === true
                                     ? '2px solid #C52D3A'
                                     : 'none',
@@ -287,7 +287,7 @@ export function Canvas(): ReactElement {
                               }}
                               onHeaderClick={
                                 journey?.website === true
-                                  ? handleFooterClick
+                                  ? handleJourneyAppearanceClick
                                   : undefined
                               }
                             />
@@ -318,14 +318,14 @@ export function Canvas(): ReactElement {
                               sx={{
                                 outline:
                                   activeCanvasDetailsDrawer ===
-                                  ActiveCanvasDetailsDrawer.Footer
+                                  ActiveCanvasDetailsDrawer.JourneyAppearance
                                     ? '2px solid #C52D3A'
                                     : 'none',
                                 outlineOffset: -4,
                                 borderRadius: 5,
                                 cursor: 'pointer'
                               }}
-                              onFooterClick={handleFooterClick}
+                              onFooterClick={handleJourneyAppearanceClick}
                             />
                           </ThemeProvider>
                         </Stack>
