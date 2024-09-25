@@ -59,10 +59,7 @@ describe('Reactions', () => {
       </MockedProvider>
     )
 
-    const reactionsAccordion = screen.getByRole('button', { name: 'Reactions' })
-    expect(reactionsAccordion).toBeInTheDocument()
-
-    fireEvent.click(reactionsAccordion)
+    fireEvent.click(screen.getByTestId('AccordionSummary'))
 
     const share = screen.getByTestId('checkbox-Share')
     fireEvent.click(within(share).getByRole('checkbox'))
@@ -91,7 +88,7 @@ describe('Reactions', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Reactions' }))
+    fireEvent.click(screen.getByTestId('AccordionSummary'))
 
     const share = screen.getByTestId('checkbox-Share')
     fireEvent.click(within(share).getByRole('checkbox'))
