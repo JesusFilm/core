@@ -70,7 +70,7 @@ export function Reactions(): ReactElement {
         checked
       }}
     >
-      <Stack sx={{ pb: 4 }} data-testid="Reactions">
+      <Stack sx={{ pb: 4, pl: 2 }} data-testid="Reactions">
         <ReactionOption
           title={t('Share')}
           active={journey?.showShareButton ?? true}
