@@ -4,6 +4,7 @@ import React, { ComponentProps } from 'react'
 
 import { watchConfig } from '@core/shared/ui/storybook'
 
+import { InstantSearchTestWrapper } from '../../../libs/algolia/InstantSearchTestWrapper'
 import { SearchBarProvider } from '../../../libs/algolia/SearchBarProvider'
 
 import { LanguageButtons } from './LanguageButtons'
@@ -18,9 +19,11 @@ type Story = StoryObj<ComponentProps<typeof LanguageButtons>>
 
 const Template: Story = {
   render: (args) => (
-    <SearchBarProvider>
-      <LanguageButtons {...args} />
-    </SearchBarProvider>
+    <InstantSearchTestWrapper>
+      <SearchBarProvider>
+        <LanguageButtons {...args} />
+      </SearchBarProvider>
+    </InstantSearchTestWrapper>
   )
 }
 
