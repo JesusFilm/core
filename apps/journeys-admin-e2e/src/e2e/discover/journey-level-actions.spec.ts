@@ -40,8 +40,8 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.clickThreeDotOfCreatedJourney(journeyName) // clicking on the three dot of created journey in the journey list
     await journeyLevelActions.clickThreeDotOptions('Edit') // clicking on Edit option of the three dot options
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
-    await journeyPage.clickTitleInThreeDotOptions() // clicking on the title option of the three dot options
-    await journeyLevelActions.enterTitle() // renaming the title on the title field in the 'edit title' popup
+    await journeyPage.clickJourneyDetailsInThreeDotOptions() // clicking on the title option of the three dot options
+    await journeyPage.enterTitle() // entering title on the title field in the 'journey details' popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
     await journeyPage.backIcon() // clicking on the back icon in the custom jouney page
     await journeyLevelActions.verifyJourneyRenamedInActiveList() // verifying the journey is renamed and upadted in the journey list
