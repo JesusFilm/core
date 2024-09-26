@@ -49,6 +49,9 @@ describe('BackgroundUploadProvider', () => {
         }
       }
     }))
+    const file = new File(['file'], 'testFile.mp4', {
+      type: 'video/mp4'
+    })
     const { getByTestId } = render(
       <MockedProvider
         mocks={[
@@ -65,7 +68,7 @@ describe('BackgroundUploadProvider', () => {
         ]}
       >
         <BackgroundUploadProvider>
-          <AddByFile httpStack={testStack} files={} />
+          <AddByFile httpStack={testStack} files={[file]} />
         </BackgroundUploadProvider>
       </MockedProvider>
     )
