@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
@@ -7,54 +7,20 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
 
-import {
-  JourneySettingsUpdate,
-  JourneySettingsUpdateVariables
-} from '../../../../../__generated__/JourneySettingsUpdate'
-import { JOURNEY_SETTINGS_UPDATE } from '../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
+import { getJourneySettingsUpdateMock } from '../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation.mock'
 import { journey } from '../../../JourneyList/ActiveJourneyList/ActivePriorityList/ActiveJourneyListData'
 
 import { JourneyDetailsDialog } from '.'
 
 const onClose = jest.fn()
 
-function getJourneySettingsUpdateMock(
-  title: string,
-  description: string,
-  languageId: string
-): MockedResponse<JourneySettingsUpdate, JourneySettingsUpdateVariables> {
-  return {
-    request: {
-      query: JOURNEY_SETTINGS_UPDATE,
-      variables: {
-        id: defaultJourney.id,
-        input: {
-          title,
-          description,
-          languageId
-        }
-      }
-    },
-    result: {
-      data: {
-        journeyUpdate: {
-          ...defaultJourney,
-          title,
-          description,
-          strategySlug: null
-        }
-      }
-    }
-  }
-}
-
 describe('JourneyDetailsDialog', () => {
   it('should not set journey title on close', async () => {
-    const mock = getJourneySettingsUpdateMock(
-      'New Journey',
-      'Description',
-      '529'
-    )
+    const mock = getJourneySettingsUpdateMock({
+      title: 'New Journey',
+      description: 'Description',
+      languageId: '529'
+    })
     render(
       <MockedProvider mocks={[{ ...mock }]}>
         <SnackbarProvider>
@@ -106,11 +72,11 @@ describe('JourneyDetailsDialog', () => {
       }
     }))
 
-    const mock = getJourneySettingsUpdateMock(
-      'Changed Title',
-      'Changed Description',
-      '496'
-    )
+    const mock = getJourneySettingsUpdateMock({
+      title: 'Changed Title',
+      description: 'Changed Description',
+      languageId: '496'
+    })
     render(
       <MockedProvider mocks={[{ ...mock, result }, getLanguagesMock]}>
         <SnackbarProvider>
@@ -147,11 +113,11 @@ describe('JourneyDetailsDialog', () => {
   })
 
   it('shows notistack error alert when title fails to update', async () => {
-    const mock = getJourneySettingsUpdateMock(
-      'Changed Title',
-      'Changed Description',
-      '496'
-    )
+    const mock = getJourneySettingsUpdateMock({
+      title: 'Changed Title',
+      description: 'Changed Description',
+      languageId: '496'
+    })
     render(
       <MockedProvider mocks={[{ ...mock }]}>
         <SnackbarProvider>
@@ -189,11 +155,11 @@ describe('JourneyDetailsDialog', () => {
         }
       }
     }))
-    const mock = getJourneySettingsUpdateMock(
-      'Changed Title',
-      'Changed Description',
-      '496'
-    )
+    const mock = getJourneySettingsUpdateMock({
+      title: 'Changed Title',
+      description: 'Changed Description',
+      languageId: '496'
+    })
     render(
       <MockedProvider mocks={[{ ...mock }]}>
         <SnackbarProvider>
