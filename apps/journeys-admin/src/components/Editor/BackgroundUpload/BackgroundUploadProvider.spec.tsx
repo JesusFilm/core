@@ -11,7 +11,13 @@ import {
 } from './BackgroundUploadProvider'
 import { TestHttpStack } from './TestHttpStack'
 
-function AddByFile({ httpStack }: { httpStack: HttpStack }): ReactElement {
+function AddByFile({
+  files,
+  httpStack
+}: {
+  files: File[]
+  httpStack: HttpStack
+}): ReactElement {
   const { uploadCloudflareVideo } = useBackgroundUpload()
   return (
     <>
@@ -59,19 +65,12 @@ describe('BackgroundUploadProvider', () => {
         ]}
       >
         <BackgroundUploadProvider>
-          <AddByFile httpStack={testStack} />
+          <AddByFile httpStack={testStack} files={} />
         </BackgroundUploadProvider>
       </MockedProvider>
     )
-    window.URL.createObjectURL = jest.fn().mockImplementation(() => 'url')
-    const input = getByTestId('drop zone')
-    const file = new File(['file'], 'testFile.mp4', {
-      type: 'video/mp4'
-    })
-    Object.defineProperty(input, 'files', {
-      value: [file]
-    })
-    fireEvent.drop(input)
+    const button = getByTestId('upload-button')
+    fireEvent.click(button)
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })
