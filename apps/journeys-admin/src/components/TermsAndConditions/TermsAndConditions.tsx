@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
+import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
@@ -32,17 +33,22 @@ export const JOURNEY_PROFILE_CREATE = gql`
 
 export function TermsAndConditions(): ReactElement {
   const [accepted, setAccepted] = useState(false)
+  const [loading, setLoading] = useState(false)
+
   const [journeyProfileCreate] = useMutation<JourneyProfileCreate>(
     JOURNEY_PROFILE_CREATE
   )
   const router = useRouter()
 
   const handleJourneyProfileCreate = async (): Promise<void> => {
+    setLoading(true)
     await journeyProfileCreate()
+    // TODO: change back to '/onboarding-form' once formium replacement is in
     await router.push({
       pathname: '/teams/new',
       query: { redirect: router.query.redirect }
     })
+    setLoading(false)
   }
   const { t } = useTranslation('apps-journeys-admin')
   return (
@@ -98,10 +104,12 @@ export function TermsAndConditions(): ReactElement {
         </ListItemButton>
       </List>
       <Button
+        data-testid="TermsAndConditionsNextButton"
         variant="contained"
         disabled={!accepted}
         onClick={handleJourneyProfileCreate}
         sx={{
+          height: 54,
           width: '100%',
           borderRadius: '12px',
           bgcolor: 'secondary.dark',
@@ -111,9 +119,9 @@ export function TermsAndConditions(): ReactElement {
             bgcolor: 'secondary.dark'
           }
         }}
-        endIcon={<ArrowRightSmIcon />}
+        endIcon={!loading && <ArrowRightSmIcon />}
       >
-        {t('Next')}
+        {loading ? <CircularProgress size={20} /> : t('Next')}
       </Button>
     </>
   )
