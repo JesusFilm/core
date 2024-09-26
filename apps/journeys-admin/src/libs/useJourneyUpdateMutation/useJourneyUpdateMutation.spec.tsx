@@ -36,7 +36,19 @@ describe('useJourneyUpdateMutation', () => {
           description: 'New Description',
           strategySlug: 'www.example.com/embed',
           tags: [{ __typename: 'Tag', id: 'tagId' }],
-          language: { id: '529', __typename: 'Language' },
+          language: {
+            id: '529',
+            __typename: 'Language',
+            bcp47: null,
+            iso3: null,
+            name: [
+              {
+                __typename: 'LanguageName',
+                value: 'English',
+                primary: true
+              }
+            ]
+          },
           website: true,
           showShareButton: true,
           showLikeButton: true,
