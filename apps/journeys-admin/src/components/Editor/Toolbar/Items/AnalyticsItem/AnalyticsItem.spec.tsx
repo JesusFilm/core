@@ -22,7 +22,7 @@ jest.mock('date-fns', () => {
 
 const mockFormatIso = formatISO as jest.MockedFunction<typeof formatISO>
 
-export const getJourneyPlausibleVisitorsMock: MockedResponse<
+const getJourneyPlausibleVisitorsMock: MockedResponse<
   GetJourneyPlausibleVisitors,
   GetJourneyPlausibleVisitorsVariables
 > = {

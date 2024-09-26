@@ -6,9 +6,14 @@ import { formatISO } from 'date-fns'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { publishedJourney } from '@core/journeys/ui/TemplateView/data'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
-import { AnalyticsItem } from './AnalyticsItem'
-import { getJourneyPlausibleVisitorsMock } from './AnalyticsItem.spec'
+import { AnalyticsItem, GET_JOURNEY_PLAUSIBLE_VISITORS } from './AnalyticsItem'
+import { MockedResponse } from '@apollo/client/testing'
+import {
+  GetJourneyPlausibleVisitors,
+  GetJourneyPlausibleVisitorsVariables
+} from '../../../../../../__generated__/GetJourneyPlausibleVisitors'
 
 const mockFormatISO = fn(formatISO)
 
@@ -23,6 +28,30 @@ const Demo: Meta<typeof AnalyticsItem> = {
     }
   },
   title: 'Journeys-Admin/Editor/Toolbar/Items/AnalyticsItem'
+}
+
+const getJourneyPlausibleVisitorsMock: MockedResponse<
+  GetJourneyPlausibleVisitors,
+  GetJourneyPlausibleVisitorsVariables
+> = {
+  request: {
+    query: GET_JOURNEY_PLAUSIBLE_VISITORS,
+    variables: {
+      id: defaultJourney.id,
+      date: '2024-06-01,2024-09-26'
+    }
+  },
+  result: {
+    data: {
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 10
+        }
+      }
+    }
+  }
 }
 
 const Template: StoryObj<typeof AnalyticsItem> = {
