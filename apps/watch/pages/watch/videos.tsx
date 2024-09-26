@@ -92,7 +92,7 @@ function VideosPage({
           routing={nextRouter}
         >
           <Configure ruleContexts={['all_videos_page']} />
-          <Videos indexName={indexName} />
+          <Videos />
         </InstantSearch>
       </ApolloProvider>
     </InstantSearchSSRProvider>
