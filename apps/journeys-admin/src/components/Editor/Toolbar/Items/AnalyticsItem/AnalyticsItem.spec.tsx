@@ -1,17 +1,18 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, waitFor } from '@testing-library/react'
+import { formatISO } from 'date-fns'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
-import { AnalyticsItem, GET_JOURNEY_PLAUSIBLE_VISITORS } from './AnalyticsItem'
 import {
   GetJourneyPlausibleVisitors,
   GetJourneyPlausibleVisitorsVariables
 } from '../../../../../../__generated__/GetJourneyPlausibleVisitors'
-import { formatISO } from 'date-fns'
+
+import { AnalyticsItem, GET_JOURNEY_PLAUSIBLE_VISITORS } from './AnalyticsItem'
 
 jest.mock('date-fns', () => {
   return {

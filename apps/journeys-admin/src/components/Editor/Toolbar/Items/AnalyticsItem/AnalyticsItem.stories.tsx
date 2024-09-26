@@ -1,19 +1,22 @@
+import { MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { fn } from '@storybook/test'
 import { formatISO } from 'date-fns'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { publishedJourney } from '@core/journeys/ui/TemplateView/data'
+import {
+  defaultJourney,
+  publishedJourney
+} from '@core/journeys/ui/TemplateView/data'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
-import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
-import { AnalyticsItem, GET_JOURNEY_PLAUSIBLE_VISITORS } from './AnalyticsItem'
-import { MockedResponse } from '@apollo/client/testing'
 import {
   GetJourneyPlausibleVisitors,
   GetJourneyPlausibleVisitorsVariables
 } from '../../../../../../__generated__/GetJourneyPlausibleVisitors'
+
+import { AnalyticsItem, GET_JOURNEY_PLAUSIBLE_VISITORS } from './AnalyticsItem'
 
 const mockFormatISO = fn(formatISO)
 
