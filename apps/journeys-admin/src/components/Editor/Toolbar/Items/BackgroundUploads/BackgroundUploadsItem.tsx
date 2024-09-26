@@ -57,10 +57,13 @@ export function BackgroundUploadsItem(): ReactElement {
         {Object.keys(uploadQueue).map((key) => {
           const upload = uploadQueue[key]
           return (
-            <MenuItem key={`upload-background-video-${upload.id}`}>
-              <ListItemText>{upload.fileName}</ListItemText>
-              <ListItemIcon>
-                <Tooltip title={UploadStatus[upload.status]}>
+            <Tooltip
+              title={UploadStatus[upload.status]}
+              key={`upload-background-video-${upload.id}`}
+            >
+              <MenuItem>
+                <ListItemText>{upload.fileName}</ListItemText>
+                <ListItemIcon>
                   {
                     [
                       <FileUploadIcon key={`upload-status-${upload.id}`} />,
@@ -69,9 +72,9 @@ export function BackgroundUploadsItem(): ReactElement {
                       <DownloadDoneIcon key={`upload-status-${upload.id}`} />
                     ][upload.status]
                   }
-                </Tooltip>
-              </ListItemIcon>
-            </MenuItem>
+                </ListItemIcon>
+              </MenuItem>
+            </Tooltip>
           )
         })}
       </Menu>

@@ -1,6 +1,7 @@
 import type { ReadStream } from 'fs'
 
 import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { produce } from 'immer'
 import { ReactElement, ReactNode, useState } from 'react'
 import { DefaultHttpStack, Upload } from 'tus-js-client'
 
@@ -65,13 +66,14 @@ export function BackgroundUploadProvider({
         ) {
           stopPolling()
           if (uploadQueue[data.getMyCloudflareVideo.id] != null) {
-            setUploadQueue({
-              ...uploadQueue,
-              [data.getMyCloudflareVideo.id]: {
-                ...uploadQueue[data.getMyCloudflareVideo.id],
-                status: UploadStatus.complete
-              }
-            })
+            setUploadQueue(
+              produce((draft) => {
+                const upload = draft[data.getMyCloudflareVideo.id]
+                if (upload != null) {
+                  upload.status = UploadStatus.complete
+                }
+              })
+            )
           }
         }
       }
@@ -112,50 +114,48 @@ export function BackgroundUploadProvider({
           buffer = file
         }
 
-        setUploadQueue({
-          ...uploadQueue,
-          [id]: {
-            id,
-            fileName,
-            status: UploadStatus.uploading
-          }
-        })
+        setUploadQueue(
+          produce((draft) => {
+            draft[id] = {
+              id,
+              fileName,
+              status: UploadStatus.uploading
+            }
+          })
+        )
 
         const upload = new Upload(buffer, {
           httpStack: httpStack ?? new DefaultHttpStack({}),
           uploadUrl,
           chunkSize: 150 * 1024 * 1024,
           onSuccess: (): void => {
-            setUploadQueue({
-              ...uploadQueue,
-              [id]: {
-                ...uploadQueue[id],
-                status: UploadStatus.processing
-              }
-            })
+            setUploadQueue(
+              produce((draft) => {
+                const upload = draft[id]
+                upload.status = UploadStatus.processing
+              })
+            )
             void getMyCloudflareVideo({
               variables: { id }
             })
           },
           onError: (err): void => {
-            setUploadQueue({
-              ...uploadQueue,
-              [id]: {
-                ...uploadQueue[id],
-                error: err,
-                status: UploadStatus.error,
-                progress: 0
-              }
-            })
+            setUploadQueue(
+              produce((draft) => {
+                const upload = draft[id]
+                upload.error = err
+                upload.status = UploadStatus.error
+                upload.progress = 0
+              })
+            )
           },
           onProgress(bytesUploaded, bytesTotal): void {
-            setUploadQueue({
-              ...uploadQueue,
-              [id]: {
-                ...uploadQueue[id],
-                progress: (bytesUploaded / bytesTotal) * 100
-              }
-            })
+            setUploadQueue(
+              produce((draft) => {
+                const upload = draft[id]
+                upload.progress = (bytesUploaded / bytesTotal) * 100
+              })
+            )
           }
         })
 

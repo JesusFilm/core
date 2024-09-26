@@ -2,12 +2,21 @@ import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
 
 import {
+  BackgroundUploadProvider,
+  useBackgroundUpload
+} from '../../../../../../BackgroundUpload'
+import { TestHttpStack } from '../../../../../../BackgroundUpload/TestHttpStack'
+
+import {
   CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
   GET_MY_CLOUDFLARE_VIDEO_QUERY
 } from './AddByFile'
-import { TestHttpStack } from './TestHttpStack'
 
 import { AddByFile } from '.'
+
+jest.mock('../../../../../../BackgroundUpload', () => ({
+  useBackgroundUpload: jest.fn()
+}))
 
 describe('AddByFile', () => {
   it('should check if the mutations gets called', async () => {
@@ -23,22 +32,7 @@ describe('AddByFile', () => {
     }))
     const onChange = jest.fn()
     const { getByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
-              variables: {
-                uploadLength: 4,
-                name: 'testFile'
-              }
-            },
-            result
-          }
-        ]}
-      >
-        <AddByFile onChange={onChange} httpStack={testStack} />
-      </MockedProvider>
+      <AddByFile onChange={onChange} httpStack={testStack} />
     )
     window.URL.createObjectURL = jest.fn().mockImplementation(() => 'url')
     const input = getByTestId('drop zone')
@@ -224,7 +218,9 @@ describe('AddByFile', () => {
           }
         ]}
       >
-        <AddByFile onChange={onChange} httpStack={testStack} />
+        <BackgroundUploadProvider>
+          <AddByFile onChange={onChange} httpStack={testStack} />
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
     const input = getByTestId('drop zone')
