@@ -1528,6 +1528,16 @@ export const transformedItems = [
   },
   {
     description:
+      "Reflections of Hope is an eight-lesson Bible study that helps women deepen their understanding of Jesus' love and care for them. They learn of His promise to be with them each step of life's journey. This collection includes seven short clips from Magdalena that correspond with the lessons in the study. It also provides thought provoking questions to help women go deeper into God's Word and find the value that God placed in each one of them.",
+    duration: 0,
+    id: '1_wl7-0-0',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/ROH.mobileCinematicHigh.jpg',
+    source: 'internal',
+    title: 'Reflections of Hope'
+  },
+  {
+    description:
       "They arrive at the place where the crosses are being set up. Others are being tied to their crosses. Jesus is stripped and led to His own cross. They throw Him down on it. There are cries as the others are nailed to their crosses.\n\nThe nails are hammered through Jesus's wrists and feet as He screams. Then slowly, the crosses are erected as Romans pulls the ropes. Jesus is lifted high in the air. He hangs on the cross, tired and in pain. He prays for those in the crowd. He asks God to forgive them because they don't know what they do.\n\nThe crowd murmurs at the feet of the cross. Annas and Caiaphas comment that He saved others. They wonder why He doesn't save Himself. The crowd starts to jeer. They urge Him to save Himself. But He doesn't.",
     duration: 488,
     id: '3_0-8DWJ-WIJ_06-0-0',

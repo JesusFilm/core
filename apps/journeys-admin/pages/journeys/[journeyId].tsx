@@ -88,7 +88,11 @@ function JourneyEditPage({ status }): ReactElement {
       indexName={process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''}
       stalledSearchDelay={500}
     >
-      <Configure ruleContexts={['home_page']} hitsPerPage={5} />
+      <Configure
+        ruleContexts={['home_page']}
+        filters="label:episode OR label:featureFilm OR label:segment OR label:shortFilm"
+        hitsPerPage={5}
+      />
       <NextSeo
         title={
           status === 'noAccess'
