@@ -16,9 +16,6 @@ import {
 import { earliestStatsCollected } from '../../../Slider/JourneyFlow/AnalyticsOverlaySwitch'
 import { Item } from '../Item/Item'
 
-
-
-
 interface AnalyticsItemProps {
   variant: ComponentProps<typeof Item>['variant']
 }
