@@ -304,7 +304,7 @@ describe('Properties', () => {
       </MockedProvider>
     )
 
-    await waitFor(() => expect(container.children[0].childElementCount).toBe(0))
+    await waitFor(() => expect(container.childElementCount).toBe(0))
   })
 
   it('should return to journey map when close icon is clicked', async () => {
