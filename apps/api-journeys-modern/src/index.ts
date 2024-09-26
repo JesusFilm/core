@@ -3,8 +3,6 @@ import { createServer } from 'node:http'
 import { logger } from './logger'
 import { yoga } from './yoga'
 
-import './workers/server'
-
 const port = 4004
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 createServer(yoga).listen(port, () => {
