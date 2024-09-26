@@ -3,6 +3,7 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
@@ -194,157 +195,161 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           </IconButton>
         </Tooltip>
       </NextLink>
-      {journey != null && (
-        <>
-          <CommandUndoItem variant="icon-button" />
-          <CommandRedoItem variant="icon-button" />
-          <Tooltip
-            title={t('Social Image')}
-            arrow
-            PopperProps={{
-              modifiers: [
-                {
-                  name: 'offset',
-                  options: {
-                    offset: [0, -11]
-                  }
-                }
-              ]
-            }}
+      <CommandUndoItem variant="icon-button" />
+      <CommandRedoItem variant="icon-button" />
+      <Tooltip
+        title={t('Social Image')}
+        arrow
+        PopperProps={{
+          modifiers: [
+            {
+              name: 'offset',
+              options: {
+                offset: [0, -11]
+              }
+            }
+          ]
+        }}
+      >
+        <Button
+          onClick={handleSocialImageClick}
+          data-testid="ToolbarSocialImage"
+          style={{ backgroundColor: 'transparent' }}
+          disableRipple
+        >
+          <Box
+            bgcolor={(theme) => theme.palette.background.default}
+            borderRadius="4px"
+            width={50}
+            height={50}
+            justifyContent="center"
+            alignItems="center"
+            sx={{ display: { xs: 'none', sm: 'flex' } }}
           >
-            <Button
-              onClick={handleSocialImageClick}
-              data-testid="ToolbarSocialImage"
-              style={{ backgroundColor: 'transparent' }}
-              disableRipple
-            >
-              <Box
-                bgcolor={(theme) => theme.palette.background.default}
-                borderRadius="4px"
+            {journey?.primaryImageBlock?.src == null ? (
+              <ThumbsUpIcon color="error" />
+            ) : (
+              <Image
+                src={journey.primaryImageBlock.src}
+                alt={journey.primaryImageBlock.alt}
                 width={50}
                 height={50}
-                justifyContent="center"
-                alignItems="center"
-                sx={{ display: { xs: 'none', sm: 'flex' } }}
-              >
-                {journey?.primaryImageBlock?.src == null ? (
-                  <ThumbsUpIcon color="error" />
-                ) : (
-                  <Image
-                    src={journey.primaryImageBlock.src}
-                    alt={journey.primaryImageBlock.alt}
-                    width={50}
-                    height={50}
-                    style={{
-                      borderRadius: '4px',
-                      objectFit: 'cover'
-                    }}
-                  />
-                )}
-              </Box>
-            </Button>
-          </Tooltip>
-          <Stack flexGrow={1} flexShrink={1} sx={{ minWidth: 0 }}>
-            <Box
-              flexShrink={1}
-              sx={{
-                display: { xs: 'none', md: 'inline-flex' },
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis'
+                style={{
+                  borderRadius: '4px',
+                  objectFit: 'cover'
+                }}
+              />
+            )}
+          </Box>
+        </Button>
+      </Tooltip>
+      {journey != null ? (
+        <Stack flexGrow={1} flexShrink={1} sx={{ minWidth: 0 }}>
+          <Box
+            flexShrink={1}
+            sx={{
+              display: { xs: 'none', md: 'inline-flex' },
+              overflow: 'hidden',
+              whiteSpace: 'nowrap',
+              textOverflow: 'ellipsis'
+            }}
+          >
+            <Tooltip
+              title="Click to edit"
+              placement="bottom"
+              arrow
+              PopperProps={{
+                modifiers: [
+                  {
+                    name: 'offset',
+                    options: {
+                      offset: journey.description === '' ? [0, 2] : [0, -10.3]
+                    }
+                  }
+                ]
               }}
             >
-              <Tooltip
-                title="Click to edit"
-                placement="bottom"
-                arrow
-                PopperProps={{
-                  modifiers: [
-                    {
-                      name: 'offset',
-                      options: {
-                        offset: journey.description === '' ? [0, 2] : [0, -10.3]
-                      }
-                    }
-                  ]
+              <Button
+                variant="text"
+                onClick={handleDialogOpen}
+                color="secondary"
+                sx={{
+                  maxWidth: 'auto',
+                  display: 'block',
+                  textAlign: 'left',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                  borderRadius: '8px',
+                  flexShrink: 1
                 }}
               >
-                <Button
-                  variant="text"
-                  onClick={handleDialogOpen}
-                  color="secondary"
+                <Typography
+                  variant="subtitle1"
                   sx={{
-                    maxWidth: 'auto',
-                    display: 'block',
-                    textAlign: 'left',
                     overflow: 'hidden',
                     whiteSpace: 'nowrap',
                     textOverflow: 'ellipsis',
-                    borderRadius: '8px',
                     flexShrink: 1
                   }}
                 >
-                  <Typography
-                    variant="subtitle1"
+                  {journey.title}
+                </Typography>
+                <Stack flexDirection="row" alignItems="center" gap={1}>
+                  <Globe1Icon
                     sx={{
+                      fontSize: 16,
+                      alignItems: 'center',
+                      color: 'secondary.main'
+                    }}
+                  />
+                  <Typography variant="body2" sx={{ color: 'secondary.main' }}>
+                    {
+                      journey.language.name.find(
+                        ({ primary }) => primary != null
+                      )?.value
+                    }
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    •
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      maxWidth: 'auto',
                       overflow: 'hidden',
                       whiteSpace: 'nowrap',
                       textOverflow: 'ellipsis',
-                      flexShrink: 1
+                      flexShrink: 1,
+                      fontWeight: 'normal',
+                      color: 'text.secondary'
                     }}
                   >
-                    {journey.title}
+                    {journey.description}
                   </Typography>
-                  <Stack flexDirection="row" alignItems="center" gap={1}>
-                    <Globe1Icon
-                      sx={{
-                        fontSize: 16,
-                        alignItems: 'center',
-                        color: 'secondary.main'
-                      }}
-                    />
-                    <Typography
-                      variant="body2"
-                      sx={{ color: 'secondary.main' }}
-                    >
-                      {
-                        journey.language.name.find(
-                          ({ primary }) => primary != null
-                        )?.value
-                      }
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: 'text.secondary' }}
-                    >
-                      •
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        maxWidth: 'auto',
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis',
-                        flexShrink: 1,
-                        fontWeight: 'normal',
-                        color: 'text.secondary'
-                      }}
-                    >
-                      {journey.description}
-                    </Typography>
-                  </Stack>
-                </Button>
-              </Tooltip>
-            </Box>
-            <JourneyDetailsDialog
-              open={dialogOpen}
-              onClose={handleDialogClose}
-            />
-          </Stack>
-          <Items />
-        </>
+                </Stack>
+              </Button>
+            </Tooltip>
+          </Box>
+          <JourneyDetailsDialog open={dialogOpen} onClose={handleDialogClose} />
+        </Stack>
+      ) : (
+        <Stack flexGrow={1}>
+          <Typography
+            variant="subtitle1"
+            sx={{ display: { xs: 'none', md: 'block' } }}
+          >
+            <Skeleton width="40%" />
+          </Typography>
+          <Typography
+            variant="caption"
+            sx={{ display: { xs: 'none', md: 'block' } }}
+          >
+            <Skeleton width="80%" />
+          </Typography>
+        </Stack>
       )}
+      <Items />
       <Stack ref={menuRef} flexDirection="row">
         <Box sx={{ display: { xs: 'flex', sm: 'none' }, px: 2 }}>
           <PreviewItem variant="icon-button" />

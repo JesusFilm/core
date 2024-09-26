@@ -1,3 +1,4 @@
+import { keyframes } from '@emotion/react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
@@ -36,6 +37,17 @@ import {
   calculateScaledMargin
 } from './utils/calculateDimensions'
 
+const fadeIn = keyframes`
+  from {
+    top: -10px;
+    opacity: 0;
+  }
+  to {
+    top: 0;
+    opacity: 1;
+  }
+`
+
 export function Canvas(): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -66,10 +78,10 @@ export function Canvas(): ReactElement {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  function handleFooterClick(): void {
+  function handleJourneyAppearanceClick(): void {
     dispatch({
       type: 'SetActiveCanvasDetailsDrawerAction',
-      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.JourneyAppearance
     })
     dispatch({
       type: 'SetActiveSlideAction',
@@ -169,6 +181,8 @@ export function Canvas(): ReactElement {
             <Box
               data-testId="CanvasContainer"
               sx={{
+                animation: (theme) =>
+                  `${fadeIn} ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeInOut} 0.5s backwards`,
                 position: 'relative',
                 width: CARD_WIDTH,
                 height: CARD_HEIGHT,
@@ -262,7 +276,7 @@ export function Canvas(): ReactElement {
                               sx={{
                                 outline:
                                   activeCanvasDetailsDrawer ===
-                                    ActiveCanvasDetailsDrawer.Footer &&
+                                    ActiveCanvasDetailsDrawer.JourneyAppearance &&
                                   journey?.website === true
                                     ? '2px solid #C52D3A'
                                     : 'none',
@@ -273,7 +287,7 @@ export function Canvas(): ReactElement {
                               }}
                               onHeaderClick={
                                 journey?.website === true
-                                  ? handleFooterClick
+                                  ? handleJourneyAppearanceClick
                                   : undefined
                               }
                             />
@@ -304,14 +318,14 @@ export function Canvas(): ReactElement {
                               sx={{
                                 outline:
                                   activeCanvasDetailsDrawer ===
-                                  ActiveCanvasDetailsDrawer.Footer
+                                  ActiveCanvasDetailsDrawer.JourneyAppearance
                                     ? '2px solid #C52D3A'
                                     : 'none',
                                 outlineOffset: -4,
                                 borderRadius: 5,
                                 cursor: 'pointer'
                               }}
-                              onFooterClick={handleFooterClick}
+                              onFooterClick={handleJourneyAppearanceClick}
                             />
                           </ThemeProvider>
                         </Stack>

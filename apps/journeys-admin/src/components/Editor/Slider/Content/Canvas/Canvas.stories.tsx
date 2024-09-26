@@ -719,13 +719,13 @@ export const RTL = {
   }
 }
 
-export const FooterEdit = {
+export const JourneyAppearanceEdit = {
   ...Template,
   args: {
     ...Template.args,
     state: {
       selectedBlock: {},
-      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.JourneyAppearance
     },
     journey: {
       chatButtons: [

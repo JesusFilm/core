@@ -15,7 +15,7 @@ import {
 import {
   MENU_BLOCK_X,
   MENU_BLOCK_Y
-} from '../../components/Editor/Slider/Settings/CanvasDetails/Footer/Menu/constants'
+} from '../../components/Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Menu/constants'
 
 import { useMenuBlockCreateMutation } from './useMenuBlockCreateMutation'
 import { mockUseMenuBlockCreateMutation } from './useMenuBlockCreateMutation.mock'
