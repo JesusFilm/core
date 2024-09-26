@@ -23,7 +23,7 @@ export function RefinementGroup({
 }: RefinementGroupProps): ReactElement {
   const {
     dispatch,
-    state: { continentLanguages }
+    state: { selectedContinentLanguages }
   } = useSearchBar()
   const theme = useTheme()
   const { items, refine } = refinement
@@ -41,22 +41,25 @@ export function RefinementGroup({
       language,
       isSelected
     })
+
+    refine(language)
+
     if (isLanguageRefined(language)) {
       const strippedQuery = stripLanguageFromQuery(language, query)
       if (query !== strippedQuery) refineQuery(strippedQuery)
     }
-    refine(language)
   }
 
   function isItemChecked(item: { label: string; isRefined: boolean }): boolean {
     return (
-      (item.isRefined && continentLanguages[title]?.includes(item.label)) ??
+      (item.isRefined &&
+        selectedContinentLanguages[title]?.includes(item.label)) ??
       false
     )
   }
 
   function isItemDisabled(itemLabel: string): boolean {
-    return Object.entries(continentLanguages).some(
+    return Object.entries(selectedContinentLanguages).some(
       ([continent, languages]) =>
         continent !== title && languages.includes(itemLabel)
     )
