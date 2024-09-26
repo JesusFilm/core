@@ -19,13 +19,10 @@ import { AccessItem } from '../Items/AccessItem'
 import { AnalyticsItem } from '../Items/AnalyticsItem'
 import { CopyLinkItem } from '../Items/CopyLinkItem'
 import { CreateTemplateItem } from '../Items/CreateTemplateItem'
-import { DescriptionItem } from '../Items/DescriptionItem'
 import { DetailsItem } from '../Items/DetailsItem'
-import { LanguageItem } from '../Items/LanguageItem'
 import { ShareItem } from '../Items/ShareItem'
 import { StrategyItem } from '../Items/StrategyItem'
 import { TemplateSettingsItem } from '../Items/TemplateSettingsItem'
-import { TitleItem } from '../Items/TitleItem'
 
 import { JourneyDetails } from './JourneyDetails'
 
@@ -89,24 +86,17 @@ export function Menu({ user }: MenuProps): ReactElement {
           }
         }}
       >
-        <Stack sx={{ width: 220, display: { xs: 'flex', sm: 'none' } }}>
-          <JourneyDetails />
-          <DetailsItem variant="menu-item" onClose={handleCloseMenu} />
-          <Divider />
-        </Stack>
+        {!smUp && (
+          <Stack sx={{ width: 220 }}>
+            <JourneyDetails />
+          </Stack>
+        )}
+        <DetailsItem variant="menu-item" onClose={handleCloseMenu} />
+        {!smUp && <Divider data-testid="details-menu-divider" />}
         {journey?.template === true && (
           <TemplateSettingsItem variant="menu-item" onClose={handleCloseMenu} />
         )}
-        {(journey?.template !== true || isPublisher != null) && (
-          <LanguageItem variant="menu-item" onClose={handleCloseMenu} />
-        )}
         <AccessItem variant="menu-item" onClose={handleCloseMenu} />
-        {smUp && journey?.template !== true && (
-          <TitleItem variant="menu-item" onClose={handleCloseMenu} />
-        )}
-        {smUp && journey?.template !== true && (
-          <DescriptionItem variant="menu-item" onClose={handleCloseMenu} />
-        )}
         {!smUp && journey?.template !== true && (
           <AnalyticsItem variant="menu-item" />
         )}

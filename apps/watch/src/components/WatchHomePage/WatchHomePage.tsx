@@ -20,10 +20,9 @@ import { SeeAllVideos } from './SeeAllVideos'
 
 export function WatchHomePage(): ReactElement {
   const { t } = useTranslation('apps-watch')
+  useAlgoliaRouter()
 
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-
-  useAlgoliaRouter()
 
   return (
     <PageWrapper

@@ -2334,7 +2334,7 @@ type JourneyProfile
   userId: ID!
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
-  onboardingFormCompletedAt: DateTime
+  onboardingFormCompletedAt: DateTime @deprecated(reason: "no longer used")
   journeyFlowBackButtonClicked: Boolean
   plausibleJourneyFlowViewed: Boolean
   plausibleDashboardViewed: Boolean
