@@ -393,7 +393,7 @@ export class CardLevelActionPage {
       .count()
   }
 
-  async clicThreeDotOfCard() {
+  async clickThreeDotOfCard() {
     await this.page.locator('button[data-testid="EditStepFab"]').click()
   }
 
