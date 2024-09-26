@@ -19,6 +19,12 @@ interface JourneyDetailsDialogProps {
   onClose: () => void
 }
 
+interface JourneyLanguage {
+  id: string
+  localName?: string
+  nativeName?: string
+}
+
 export function JourneyDetailsDialog({
   open,
   onClose
@@ -31,6 +37,17 @@ export function JourneyDetailsDialog({
   const titleSchema = object().shape({
     title: string().required(t('Required'))
   })
+
+  const journeyLanguage: JourneyLanguage | undefined =
+    journey != null
+      ? {
+          id: journey.language.id,
+          localName: journey.language.name.find(({ primary }) => !primary)
+            ?.value,
+          nativeName: journey.language.name.find(({ primary }) => primary)
+            ?.value
+        }
+      : undefined
 
   function handleUpdateJourneyDetails(values: FormikValues): void {
     if (journey == null) return
@@ -97,18 +114,7 @@ export function JourneyDetailsDialog({
           values: {
             title: journey?.title,
             description: journey?.description,
-            language:
-              journey != null
-                ? {
-                    id: journey.language.id,
-                    localName: journey.language.name.find(
-                      ({ primary }) => !primary
-                    )?.value,
-                    nativeName: journey.language.name.find(
-                      ({ primary }) => primary
-                    )?.value
-                  }
-                : undefined
+            language: journeyLanguage
           }
         })
       )
@@ -122,18 +128,7 @@ export function JourneyDetailsDialog({
           initialValues={{
             title: journey.title,
             description: journey.description,
-            language:
-              journey != null
-                ? {
-                    id: journey.language.id,
-                    localName: journey.language.name.find(
-                      ({ primary }) => !primary
-                    )?.value,
-                    nativeName: journey.language.name.find(
-                      ({ primary }) => primary
-                    )?.value
-                  }
-                : undefined
+            language: journeyLanguage
           }}
           onSubmit={handleUpdateJourneyDetails}
           validationSchema={titleSchema}
