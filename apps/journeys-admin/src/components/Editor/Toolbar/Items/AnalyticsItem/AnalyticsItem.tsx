@@ -1,4 +1,7 @@
+import { gql, useQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { formatISO } from 'date-fns'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
@@ -6,15 +9,15 @@ import { ComponentProps, ReactElement } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import BarChartSquare3Icon from '@core/shared/ui/icons/BarChartSquare3'
 
-import { Item } from '../Item/Item'
-import { gql, useQuery } from '@apollo/client'
-import { formatISO } from 'date-fns'
-import { earliestStatsCollected } from '../../../Slider/JourneyFlow/AnalyticsOverlaySwitch'
-import Typography from '@mui/material/Typography'
 import {
   GetJourneyPlausibleVisitors,
   GetJourneyPlausibleVisitorsVariables
 } from '../../../../../../__generated__/GetJourneyPlausibleVisitors'
+import { earliestStatsCollected } from '../../../Slider/JourneyFlow/AnalyticsOverlaySwitch'
+import { Item } from '../Item/Item'
+
+
+
 
 interface AnalyticsItemProps {
   variant: ComponentProps<typeof Item>['variant']
