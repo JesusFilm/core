@@ -27,7 +27,7 @@ export interface StepBlockDeleteFromActionWithoutAction_blockDelete_StepBlock {
 export type StepBlockDeleteFromActionWithoutAction_blockDelete = StepBlockDeleteFromActionWithoutAction_blockDelete_ImageBlock | StepBlockDeleteFromActionWithoutAction_blockDelete_StepBlock;
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "RadioQuestionBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioQuestionBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
@@ -64,17 +64,6 @@ export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_SignUp
   action: StepBlockDeleteFromActionWithoutAction_blockDeleteAction_SignUpBlock_action | null;
 }
 
-export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_FormBlock_action {
-  __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction";
-  parentBlockId: string;
-}
-
-export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_FormBlock {
-  __typename: "FormBlock";
-  id: string;
-  action: StepBlockDeleteFromActionWithoutAction_blockDeleteAction_FormBlock_action | null;
-}
-
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_VideoBlock_action {
   __typename: "NavigateToBlockAction" | "LinkAction" | "EmailAction";
   parentBlockId: string;
@@ -89,7 +78,7 @@ export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_VideoB
   action: StepBlockDeleteFromActionWithoutAction_blockDeleteAction_VideoBlock_action | null;
 }
 
-export type StepBlockDeleteFromActionWithoutAction_blockDeleteAction = StepBlockDeleteFromActionWithoutAction_blockDeleteAction_ImageBlock | StepBlockDeleteFromActionWithoutAction_blockDeleteAction_RadioOptionBlock | StepBlockDeleteFromActionWithoutAction_blockDeleteAction_ButtonBlock | StepBlockDeleteFromActionWithoutAction_blockDeleteAction_SignUpBlock | StepBlockDeleteFromActionWithoutAction_blockDeleteAction_FormBlock | StepBlockDeleteFromActionWithoutAction_blockDeleteAction_VideoBlock;
+export type StepBlockDeleteFromActionWithoutAction_blockDeleteAction = StepBlockDeleteFromActionWithoutAction_blockDeleteAction_ImageBlock | StepBlockDeleteFromActionWithoutAction_blockDeleteAction_RadioOptionBlock | StepBlockDeleteFromActionWithoutAction_blockDeleteAction_ButtonBlock | StepBlockDeleteFromActionWithoutAction_blockDeleteAction_SignUpBlock | StepBlockDeleteFromActionWithoutAction_blockDeleteAction_VideoBlock;
 
 export interface StepBlockDeleteFromActionWithoutAction {
   /**
