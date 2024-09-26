@@ -47,13 +47,16 @@ export function ChatButtons(): ReactElement {
 
   const getColor = (
     primary: boolean,
-    type: 'main' | 'background' = 'main'
+    type: 'main' | 'background' | 'website' = 'main'
   ): string | undefined => {
     if (type === 'background') {
       return primary ? theme.palette.grey[100] : '#dedfe040'
     }
     if (type === 'main') {
       return primary ? theme.palette.grey[900] : theme.palette.grey[100]
+    }
+    if (type === 'website') {
+      return primary ? theme.palette.grey[100] : `${theme.palette.grey[900]}88`
     }
   }
 
@@ -112,10 +115,17 @@ export function ChatButtons(): ReactElement {
           sx={{
             height: 44,
             width: 44,
-            backgroundColor: getColor(index === 0, 'background'),
+            backgroundColor: getColor(
+              index === 0,
+              journey?.website === true ? 'website' : 'background'
+            ),
             '&:hover': {
-              backgroundColor: getColor(index === 0, 'background')
+              backgroundColor: getColor(
+                index === 0,
+                journey?.website === true ? 'website' : 'background'
+              )
             },
+            backdropFilter: 'blur(5px)',
             boxShadow: (theme) =>
               journey?.website === true
                 ? `0px 6px 6px ${theme.palette.grey[900]}60`
