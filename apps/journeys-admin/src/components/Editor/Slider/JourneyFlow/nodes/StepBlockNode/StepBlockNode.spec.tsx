@@ -9,7 +9,6 @@ import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
-  BlockFields_FormBlock as FormBlock,
   BlockFields_RadioQuestionBlock as RadioQuestionBlock,
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_StepBlock as StepBlock,
@@ -93,12 +92,6 @@ describe('StepBlockNode', () => {
         }
       ]
     } as unknown as TreeBlock<RadioQuestionBlock>
-    const form = {
-      __typename: 'FormBlock',
-      id: 'form.id',
-      action,
-      children: []
-    } as unknown as TreeBlock<FormBlock>
     const signUp = {
       __typename: 'SignUpBlock',
       id: 'signUp.id',
@@ -140,7 +133,7 @@ describe('StepBlockNode', () => {
           themeName: null,
           themeMode: null,
           fullscreen: false,
-          children: [button, radioQuestion, form, signUp, video, textResponse]
+          children: [button, radioQuestion, signUp, video, textResponse]
         }
       ]
     }
@@ -170,7 +163,6 @@ describe('StepBlockNode', () => {
     expect(
       screen.getByTestId(`ActionButton-${radioQuestion.children[0].id}`)
     ).toBeInTheDocument()
-    expect(screen.getByTestId(`ActionButton-${form.id}`)).toBeInTheDocument()
     expect(screen.getByTestId(`ActionButton-${signUp.id}`)).toBeInTheDocument()
     expect(screen.getByTestId(`ActionButton-${video.id}`)).toBeInTheDocument()
     expect(
