@@ -10,17 +10,17 @@ interface ResourceSectionsProps {
   includeIndex?: boolean
 }
 
+export const indexes = [
+  'wp_prd_posts_equipment',
+  'wp_prd_posts_training_strategies',
+  'wp_prd_posts_outreach_resources',
+  'wp_prd_posts_prayer_resources',
+  'wp_prd_posts_digital_strategies'
+]
+
 export function ResourceSections({
   includeIndex = false
 }: ResourceSectionsProps): ReactElement {
-  const indexes = [
-    'wp_prd_posts_equipment',
-    'wp_prd_posts_training_strategies',
-    'wp_prd_posts_outreach_resources',
-    'wp_prd_posts_prayer_resources',
-    'wp_prd_posts_digital_strategies'
-  ]
-
   const [hasResult, setHasResult] = useState<boolean>(true)
 
   const resultsMap = new Map<number, boolean>()

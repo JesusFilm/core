@@ -12,7 +12,6 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
-  BlockFields_FormBlock as FormBlock,
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
@@ -33,7 +32,6 @@ export function Action(): ReactElement {
   // Add addtional types here to use this component for that block
   const selectedBlock = stateSelectedBlock as
     | TreeBlock<ButtonBlock>
-    | TreeBlock<FormBlock>
     | TreeBlock<SignUpBlock>
     | TreeBlock<VideoBlock>
     | undefined
