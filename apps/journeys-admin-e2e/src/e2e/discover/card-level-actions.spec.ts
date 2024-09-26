@@ -32,8 +32,8 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.waitUntilJourneyCardLoaded() // waiting for custom journey page loaded
     await cardLevelActionPage.clickOnJourneyCard() // clicking on the journey card
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top of right corner of the custom journey page
-    await journeyPage.clickTitleInThreeDotOptions() // clicking on the title option of the thre dot options
-    await journeyPage.enterTitle() // entering title on the title field in the 'edit title' popup
+    await journeyPage.clickJourneyDetailsInThreeDotOptions() // clicking on the title option of the three dot options
+    await journeyPage.enterTitle() // entering title on the title field in the 'journey details' popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
     await journeyPage.backIcon() // clicking back button at top of the left corner in the custom journey page
     await journeyPage.clickOnTheCreatedCustomJourney() // clicking on created journey in the journey list
