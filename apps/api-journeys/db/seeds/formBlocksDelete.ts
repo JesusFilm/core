@@ -36,10 +36,4 @@ export async function formBlocksDelete(): Promise<void> {
   }
 
   await Promise.all(blocks.map(async (block) => await updateSiblings(block)))
-
-  // await prisma.journeyProfile.updateMany({
-  //   data: {
-  //     onboardingFormCompletedAt: null
-  //   }
-  // })
 }
