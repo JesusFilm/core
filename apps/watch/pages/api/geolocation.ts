@@ -5,8 +5,6 @@ export default async function Handler(
   res: NextApiResponse
 ): Promise<void> {
   res.status(200).send({
-    country: req.headers['x-vercel-ip-country'],
-    region: req.headers['x-vercel-ip-country-region'],
-    city: req.headers['x-vercel-ip-city']
+    country: req.headers['cf-ipcountry'] ?? req.headers['x-vercel-ip-country']
   })
 }

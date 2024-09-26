@@ -9,8 +9,8 @@ import { BlockDuplicateIdMap, ButtonVariant, ButtonColor, ButtonSize, ThemeMode,
 // GraphQL mutation operation: StepDuplicate
 // ====================================================
 
-export interface StepDuplicate_blockDuplicate_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+export interface StepDuplicate_blockDuplicate_FormBlock {
+  __typename: "FormBlock" | "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -84,38 +84,6 @@ export interface StepDuplicate_blockDuplicate_CardBlock {
    * background.
    */
   fullscreen: boolean;
-}
-
-export interface StepDuplicate_blockDuplicate_FormBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface StepDuplicate_blockDuplicate_FormBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface StepDuplicate_blockDuplicate_FormBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type StepDuplicate_blockDuplicate_FormBlock_action = StepDuplicate_blockDuplicate_FormBlock_action_NavigateToBlockAction | StepDuplicate_blockDuplicate_FormBlock_action_LinkAction | StepDuplicate_blockDuplicate_FormBlock_action_EmailAction;
-
-export interface StepDuplicate_blockDuplicate_FormBlock {
-  __typename: "FormBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  form: any | null;
-  action: StepDuplicate_blockDuplicate_FormBlock_action | null;
 }
 
 export interface StepDuplicate_blockDuplicate_IconBlock {
@@ -446,7 +414,7 @@ export interface StepDuplicate_blockDuplicate_VideoTriggerBlock {
   triggerAction: StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction;
 }
 
-export type StepDuplicate_blockDuplicate = StepDuplicate_blockDuplicate_GridContainerBlock | StepDuplicate_blockDuplicate_ButtonBlock | StepDuplicate_blockDuplicate_CardBlock | StepDuplicate_blockDuplicate_FormBlock | StepDuplicate_blockDuplicate_IconBlock | StepDuplicate_blockDuplicate_ImageBlock | StepDuplicate_blockDuplicate_RadioOptionBlock | StepDuplicate_blockDuplicate_RadioQuestionBlock | StepDuplicate_blockDuplicate_SignUpBlock | StepDuplicate_blockDuplicate_StepBlock | StepDuplicate_blockDuplicate_TextResponseBlock | StepDuplicate_blockDuplicate_TypographyBlock | StepDuplicate_blockDuplicate_VideoBlock | StepDuplicate_blockDuplicate_VideoTriggerBlock;
+export type StepDuplicate_blockDuplicate = StepDuplicate_blockDuplicate_FormBlock | StepDuplicate_blockDuplicate_ButtonBlock | StepDuplicate_blockDuplicate_CardBlock | StepDuplicate_blockDuplicate_IconBlock | StepDuplicate_blockDuplicate_ImageBlock | StepDuplicate_blockDuplicate_RadioOptionBlock | StepDuplicate_blockDuplicate_RadioQuestionBlock | StepDuplicate_blockDuplicate_SignUpBlock | StepDuplicate_blockDuplicate_StepBlock | StepDuplicate_blockDuplicate_TextResponseBlock | StepDuplicate_blockDuplicate_TypographyBlock | StepDuplicate_blockDuplicate_VideoBlock | StepDuplicate_blockDuplicate_VideoTriggerBlock;
 
 export interface StepDuplicate {
   /**

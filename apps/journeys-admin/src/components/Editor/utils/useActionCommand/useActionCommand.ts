@@ -7,7 +7,6 @@ import {
 import {
   BlockFields,
   BlockFields_ButtonBlock_action,
-  BlockFields_FormBlock_action,
   BlockFields_SignUpBlock_action,
   BlockFields_VideoBlock_action
 } from '../../../../../__generated__/BlockFields'
@@ -18,7 +17,6 @@ import { useBlockActionNavigateToBlockUpdateMutation } from '../../../../libs/us
 
 export type Action =
   | BlockFields_ButtonBlock_action
-  | BlockFields_FormBlock_action
   | BlockFields_SignUpBlock_action
   | BlockFields_VideoBlock_action
   | null

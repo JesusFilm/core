@@ -251,8 +251,7 @@ export function Slider(): ReactElement {
           height: {
             xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
             md: '100%'
-          },
-          pointerEvents: showAnalytics === true ? 'none' : 'auto'
+          }
         }}
       >
         <Box
@@ -316,6 +315,7 @@ export function Slider(): ReactElement {
       <StyledSwiperSlide
         sx={{
           p: { xs: 0, md: 4 },
+          pb: { md: 0 },
           width: (theme) => ({
             xs: '100%',
             md: DRAWER_WIDTH + Number.parseInt(theme.spacing(8)) // 328 DRAWER_WIDTH + 16px * 2 (padding L & R)

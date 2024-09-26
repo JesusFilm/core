@@ -2,13 +2,13 @@ import { ApolloError, gql, useMutation } from '@apollo/client'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import { SxProps } from '@mui/system/styleFunctionSx'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 import { object, string } from 'yup'
 
@@ -132,13 +132,11 @@ export const SignUp = ({
             }
           })
         }
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'sign_up_submission',
-            eventId: id,
-            blockId,
-            stepName: heading
-          }
+        sendGTMEvent({
+          event: 'sign_up_submission',
+          eventId: id,
+          blockId,
+          stepName: heading
         })
       } catch (e) {
         if (e instanceof ApolloError) {
