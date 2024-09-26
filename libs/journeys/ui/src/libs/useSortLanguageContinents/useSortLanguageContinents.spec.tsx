@@ -3,26 +3,14 @@ import {
   GetLanguagesContinents_languages as Languages
 } from '../useLanguagesContinentsQuery/__generated__/GetLanguagesContinents'
 import { languagesContinents } from '../useLanguagesContinentsQuery/data'
+import { sortedLanguageContinents } from '../useLanguagesContinentsQuery/sortLanguageContinents/data'
 
 import { useSortLanguageContinents } from './useSortLanguageContinents'
 
 describe('useSortLanguageContinents', () => {
   it('should return a record of continents and languages', () => {
     const result = useSortLanguageContinents({ languages: languagesContinents })
-    expect(result).toEqual({
-      Africa: ['Deutsch', 'Arabic'],
-      Asia: [
-        'Mandarin',
-        'Japanese',
-        'Cantonese',
-        'Chinese, Simplified',
-        'Chinese, Traditional'
-      ],
-      Europe: ['Français', 'Spanish, Castilian'],
-      Oceania: ['Bislama'],
-      'North America': ['English'],
-      'South America': ['Português', 'Spanish, Latin American']
-    })
+    expect(result).toEqual(sortedLanguageContinents)
   })
 
   it('should handle duplicate languages', () => {

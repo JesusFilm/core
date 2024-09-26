@@ -38,12 +38,7 @@ export function CountryLanguageSelector({
 
     refine(language)
 
-    if (refinedItem === true) {
-      dispatch({
-        type: 'RemoveLanguageContinents',
-        language
-      })
-    } else {
+    if (refinedItem === false) {
       dispatch({
         type: 'SelectLanguageContinent',
         continent,
