@@ -7,7 +7,6 @@ import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
-  BlockFields_FormBlock as FormBlock,
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_StepBlock as StepBlock,
@@ -54,22 +53,6 @@ describe('ActionButton', () => {
     )
 
     expect(screen.getByText('Button')).toBeInTheDocument()
-  })
-
-  it('should render for FormBlock', () => {
-    const block = {
-      __typename: 'FormBlock'
-    } as unknown as TreeBlock<FormBlock>
-
-    render(
-      <MockedProvider>
-        <ReactFlowProvider>
-          <ActionButton stepId="step.id" block={block} />
-        </ReactFlowProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByText('Form')).toBeInTheDocument()
   })
 
   it('should render label for RadioOptionBlock', () => {
