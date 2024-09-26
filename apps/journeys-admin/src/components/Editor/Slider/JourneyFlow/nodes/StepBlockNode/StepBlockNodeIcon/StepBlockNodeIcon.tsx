@@ -36,7 +36,6 @@ export function StepBlockNodeIcon({
         Icon = Play3Icon
         break
       case 'TextResponseBlock':
-      case 'FormBlock':
         background = 'linear-gradient(to bottom, #b849ec, #9415d1)'
         Icon = TextInput1Icon
         break

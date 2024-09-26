@@ -40,7 +40,7 @@ export function TermsAndConditions(): ReactElement {
   const handleJourneyProfileCreate = async (): Promise<void> => {
     await journeyProfileCreate()
     await router.push({
-      pathname: '/onboarding-form',
+      pathname: '/teams/new',
       query: { redirect: router.query.redirect }
     })
   }

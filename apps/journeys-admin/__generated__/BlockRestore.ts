@@ -9,8 +9,8 @@ import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName,
 // GraphQL mutation operation: BlockRestore
 // ====================================================
 
-export interface BlockRestore_blockRestore_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+export interface BlockRestore_blockRestore_FormBlock {
+  __typename: "FormBlock" | "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -84,38 +84,6 @@ export interface BlockRestore_blockRestore_CardBlock {
    * background.
    */
   fullscreen: boolean;
-}
-
-export interface BlockRestore_blockRestore_FormBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface BlockRestore_blockRestore_FormBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface BlockRestore_blockRestore_FormBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type BlockRestore_blockRestore_FormBlock_action = BlockRestore_blockRestore_FormBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_FormBlock_action_LinkAction | BlockRestore_blockRestore_FormBlock_action_EmailAction;
-
-export interface BlockRestore_blockRestore_FormBlock {
-  __typename: "FormBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  form: any | null;
-  action: BlockRestore_blockRestore_FormBlock_action | null;
 }
 
 export interface BlockRestore_blockRestore_IconBlock {
@@ -446,7 +414,7 @@ export interface BlockRestore_blockRestore_VideoTriggerBlock {
   triggerAction: BlockRestore_blockRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockRestore_blockRestore = BlockRestore_blockRestore_GridContainerBlock | BlockRestore_blockRestore_ButtonBlock | BlockRestore_blockRestore_CardBlock | BlockRestore_blockRestore_FormBlock | BlockRestore_blockRestore_IconBlock | BlockRestore_blockRestore_ImageBlock | BlockRestore_blockRestore_RadioOptionBlock | BlockRestore_blockRestore_RadioQuestionBlock | BlockRestore_blockRestore_SignUpBlock | BlockRestore_blockRestore_StepBlock | BlockRestore_blockRestore_TextResponseBlock | BlockRestore_blockRestore_TypographyBlock | BlockRestore_blockRestore_VideoBlock | BlockRestore_blockRestore_VideoTriggerBlock;
+export type BlockRestore_blockRestore = BlockRestore_blockRestore_FormBlock | BlockRestore_blockRestore_ButtonBlock | BlockRestore_blockRestore_CardBlock | BlockRestore_blockRestore_IconBlock | BlockRestore_blockRestore_ImageBlock | BlockRestore_blockRestore_RadioOptionBlock | BlockRestore_blockRestore_RadioQuestionBlock | BlockRestore_blockRestore_SignUpBlock | BlockRestore_blockRestore_StepBlock | BlockRestore_blockRestore_TextResponseBlock | BlockRestore_blockRestore_TypographyBlock | BlockRestore_blockRestore_VideoBlock | BlockRestore_blockRestore_VideoTriggerBlock;
 
 export interface BlockRestore {
   /**

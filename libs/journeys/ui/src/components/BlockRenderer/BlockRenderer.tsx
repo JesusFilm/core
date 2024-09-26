@@ -6,7 +6,6 @@ import {
   BlockFields as Block,
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_CardBlock as CardBlock,
-  BlockFields_FormBlock as FormBlock,
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_RadioQuestionBlock as RadioQuestionBlock,
@@ -29,7 +28,6 @@ export interface WrappersProps {
   Wrapper?: WrapperFn
   ButtonWrapper?: WrapperFn<ButtonBlock>
   CardWrapper?: WrapperFn<CardBlock>
-  FormWrapper?: WrapperFn<FormBlock>
   ImageWrapper?: WrapperFn<ImageBlock>
   RadioOptionWrapper?: WrapperFn<RadioOptionBlock>
   RadioQuestionWrapper?: WrapperFn<RadioQuestionBlock>
@@ -57,14 +55,6 @@ const DynamicCard = dynamic<
       /* webpackChunkName: "Card" */
       '../Card'
     ).then((mod) => mod.Card)
-)
-
-const DynamicForm = dynamic<TreeBlock<FormBlock>>(
-  async () =>
-    await import(
-      /* webpackChunkName: "Form" */
-      '../Form'
-    ).then((mod) => mod.Form)
 )
 
 const DynamicImage = dynamic<TreeBlock<ImageBlock>>(
@@ -140,7 +130,6 @@ export function BlockRenderer({
   const Wrapper = wrappers?.Wrapper ?? DefaultWrapper
   const ButtonWrapper = wrappers?.ButtonWrapper ?? DefaultWrapper
   const CardWrapper = wrappers?.CardWrapper ?? DefaultWrapper
-  const FormWrapper = wrappers?.FormWrapper ?? DefaultWrapper
   const ImageWrapper = wrappers?.ImageWrapper ?? DefaultWrapper
   const RadioOptionWrapper = wrappers?.RadioOptionWrapper ?? DefaultWrapper
   const RadioQuestionWrapper = wrappers?.RadioQuestionWrapper ?? DefaultWrapper
@@ -169,14 +158,6 @@ export function BlockRenderer({
           <CardWrapper block={block}>
             <DynamicCard {...block} wrappers={wrappers} />
           </CardWrapper>
-        </Wrapper>
-      )
-    case 'FormBlock':
-      return (
-        <Wrapper block={block}>
-          <FormWrapper block={block}>
-            <DynamicForm {...block} />
-          </FormWrapper>
         </Wrapper>
       )
     case 'ImageBlock':

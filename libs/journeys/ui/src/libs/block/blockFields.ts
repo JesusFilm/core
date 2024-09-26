@@ -2,7 +2,6 @@ import { gql } from '@apollo/client'
 
 import { BUTTON_FIELDS } from '../../components/Button/buttonFields'
 import { CARD_FIELDS } from '../../components/Card/cardFields'
-import { FORM_FIELDS } from '../../components/Form/formFields'
 import { ICON_FIELDS } from '../../components/Icon/iconFields'
 import { IMAGE_FIELDS } from '../../components/Image/imageFields'
 import { RADIO_OPTION_FIELDS } from '../../components/RadioOption/radioOptionFields'
@@ -17,7 +16,6 @@ import { VIDEO_TRIGGER_FIELDS } from '../../components/VideoTrigger/videoTrigger
 export const BLOCK_FIELDS = gql`
   ${BUTTON_FIELDS}
   ${CARD_FIELDS}
-  ${FORM_FIELDS}
   ${ICON_FIELDS}
   ${IMAGE_FIELDS}
   ${RADIO_OPTION_FIELDS}
@@ -37,9 +35,6 @@ export const BLOCK_FIELDS = gql`
     }
     ... on CardBlock {
       ...CardFields
-    }
-    ... on FormBlock {
-      ...FormFields
     }
     ... on IconBlock {
       ...IconFields
