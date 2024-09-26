@@ -232,7 +232,7 @@ describe('Canvas', () => {
   })
 
   // TODO: Add to E2E tests when complete. Can't test in unit test as iframe doesn't render
-  it.skip('should selected footer on click', () => {
+  it.skip('should selected JourneyAppearance on click', () => {
     render(
       <MockedProvider>
         <ThemeProvider>
@@ -270,7 +270,7 @@ describe('Canvas', () => {
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        `activeCanvasDetailsDrawerAction: ${ActiveCanvasDetailsDrawer.Footer}`
+        `activeCanvasDetailsDrawerAction: ${ActiveCanvasDetailsDrawer.JourneyAppearance}`
       )
     ).toBeInTheDocument()
     expect(screen.getByTestId('JourneysStepFooter')).toHaveStyle({
