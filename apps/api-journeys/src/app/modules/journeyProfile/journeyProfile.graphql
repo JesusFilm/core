@@ -3,7 +3,6 @@ type JourneyProfile @key(fields: "id") {
   userId: ID!
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
-  onboardingFormCompletedAt: DateTime @deprecated(reason: "no longer used")
   journeyFlowBackButtonClicked: Boolean
   plausibleJourneyFlowViewed: Boolean
   plausibleDashboardViewed: Boolean
@@ -23,5 +22,4 @@ input JourneyProfileUpdateInput {
 extend type Mutation {
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
-  journeyProfileOnboardingFormComplete: JourneyProfile!
 }

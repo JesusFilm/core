@@ -64,17 +64,4 @@ export class JourneyProfileResolver {
       data: input
     })
   }
-
-  @Mutation()
-  @UseGuards(AppCaslGuard)
-  async journeyProfileOnboardingFormComplete(
-    @CurrentUserId() userId: string
-  ): Promise<JourneyProfile> {
-    const profile = await this.getJourneyProfile(userId)
-
-    return await this.prismaService.journeyProfile.update({
-      where: { id: profile?.id },
-      data: { onboardingFormCompletedAt: new Date() }
-    })
-  }
 }
