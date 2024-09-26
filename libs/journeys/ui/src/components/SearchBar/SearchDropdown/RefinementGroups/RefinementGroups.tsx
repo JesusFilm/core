@@ -33,12 +33,10 @@ const StyledButton = styled(Button)(({ theme }) => ({
 
 interface RefinementGroupsProps {
   refinements: RefinementListRenderState
-  languages: Record<string, string[]>
 }
 
 export function RefinementGroups({
-  refinements,
-  languages
+  refinements
 }: RefinementGroupsProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const theme = useTheme()
@@ -47,13 +45,15 @@ export function RefinementGroups({
   const { refine: clearRefinements, canRefine: canClearRefinements } =
     useClearRefinements()
 
-  const { dispatch } = useSearchBar()
+  const {
+    state: { continentLanguages }
+  } = useSearchBar()
+
   function handleClick(): void {
     clearRefinements()
-    dispatch({ type: 'RemoveAllLanguageContinents' })
   }
 
-  const languageEntries = Object.entries(languages)
+  const languageEntries = Object.entries(continentLanguages)
   const isLoading = languageEntries.length === 0
 
   const hasRefinements = refinements.items.length > 0

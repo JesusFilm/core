@@ -54,8 +54,7 @@ export async function playwrightUserAccess(): Promise<void> {
     id: journeyProfileId,
     userId,
     acceptedTermsAt: new Date(),
-    lastActiveTeamId: TEAM_ID,
-    onboardingFormCompletedAt: new Date()
+    lastActiveTeamId: TEAM_ID
   }
 
   const userRoleData = {
