@@ -2,7 +2,7 @@
 
 ## What Is Algolia?
 
-[Algolia](https://www.algolia.com) is a powerful hosted search engine that enables developers to build fast and relevant search experiences for their users. It provides a search-as-you-type experience for websites and applications, making data retrieval instantaneous and efficient. Algolia indexes your data so that it can be easily queried and delivered to users in a fraction of a second.
+[Algolia](https://www.algolia.com) is a powerful hosted search engine that enables developers to build fast and relevant search experiences for their users. It provides a search-as-you-type experience for websites and applications, making data retrieval instantaneous and efficient. Algolia indexes your data so that it can be easily queried and delivered to users in a fraction of a second. [Algolia Intro Video](https://youtu.be/pnEzD8KiiBs).
 
 ## Consuming from Algolia
 
@@ -78,6 +78,17 @@ export function transformItems(items: AlgoliaVideo[]): CoreVideo[] {
   }))
 }
 ```
+
+- **Make a Component Use Algolia**: Some tips and tricks that might be useful now that you are ready to create some algolia components. Try to build components that take the data they need to render as a prop. This means the algolia hooks are higher up the component dependency tree meaning less mocking is needed for tests. It also makes things easier when modifying a component that currently uses core data, to also accept algolia data. You can see `AlgoliaVideoGrid.tsx` as an example.
+
+```typescript
+export function AlgoliaVideoGrid(props: VideoGridProps): ReactElement {
+  const { hits: algoliaVideos, showMore, isLastPage, loading, noResults } = useAlgoliaVideos()
+  return <VideoGrid videos={algoliaVideos} loading={loading} showMore={showMore} hasNextPage={!isLastPage} hasNoResults={noResults} {...props} />
+}
+```
+
+By creating an algolia wrapper class, the `<VideoGrid />` component remained relatively unchanged and still able to be used in other places with core videos.
 
 ## Testing
 
