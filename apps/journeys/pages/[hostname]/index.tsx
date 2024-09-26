@@ -1,47 +1,34 @@
-import Container from '@mui/material/Container'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { GetStaticPaths, GetStaticProps } from 'next'
-import Image from 'next/image'
-import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
-import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
-import {
-  GetJourney,
-  GetJourneyVariables,
-  GetJourney_journey as JourneyFields
-} from '../../__generated__/GetJourney'
+import { GetJourney, GetJourneyVariables } from '../../__generated__/GetJourney'
 import {
   GetJourneysSummary,
-  GetJourneysSummaryVariables,
-  GetJourneysSummary_journeys as Journey
+  GetJourneysSummaryVariables
 } from '../../__generated__/GetJourneysSummary'
-import { IdType, ThemeMode, ThemeName } from '../../__generated__/globalTypes'
+import { IdType } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
-import logo from '../../public/logo.svg'
 import { createApolloClient } from '../../src/libs/apolloClient'
 import JourneysPage, { GET_JOURNEYS } from '../home'
 
-import HostJourneyPage from './[journeySlug]'
+import ImportedHostJourneyPage from './[journeySlug]'
 
-interface HostJourneysPageProps {
-  host?: string
-  journeys?: Journey[]
+interface HostJourneyPageProps {
+  journey: GetJourney['journey']
+  host: string | undefined
 }
 
-function getHostJourneyPage(
-  journey: JourneyFields,
-  host: string | undefined
-): ReactElement {
+function HostJourneyPage({
+  journey,
+  host
+}: HostJourneyPageProps): ReactElement {
   const { rtl, locale } = getJourneyRTL(journey)
   return (
-    <HostJourneyPage
+    <ImportedHostJourneyPage
       journey={journey}
       host={host ?? ''}
       locale={locale}
@@ -50,44 +37,21 @@ function getHostJourneyPage(
   )
 }
 
+interface HostJourneysPageProps {
+  host?: string
+  journeys: GetJourneysSummary['journeys']
+  journey?: GetJourney['journey']
+}
+
 function HostJourneysPage({
   journeys,
+  journey,
   host
 }: HostJourneysPageProps): ReactElement {
-  const { t } = useTranslation('apps-journeys')
-
-  return (
-    <>
-      {journeys == null ? (
-        <>
-          <NextSeo nofollow noindex />
-          <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
-            <Container maxWidth="xxl">
-              <Stack spacing={8} py={8}>
-                <Image
-                  src={logo}
-                  alt="Next Steps"
-                  height={68}
-                  width={152}
-                  style={{
-                    maxWidth: '100%',
-                    height: 'auto',
-                    alignSelf: 'center'
-                  }}
-                />
-                <Typography sx={{ textAlign: 'center' }}>
-                  {t("There's nothing here, yet.")}
-                </Typography>
-              </Stack>
-            </Container>
-          </ThemeProvider>
-        </>
-      ) : journeys.length === 1 ? (
-        getHostJourneyPage(journeys[0] as JourneyFields, host)
-      ) : (
-        <JourneysPage journeys={journeys} />
-      )}
-    </>
+  return journey != null ? (
+    <HostJourneyPage journey={journey} host={host} />
+  ) : (
+    <JourneysPage journeys={journeys} />
   )
 }
 
@@ -143,7 +107,8 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
             ['apps-journeys', 'libs-journeys-ui'],
             i18nConfig
           )),
-          journeys: [{ ...journeyData.journey }]
+          journey: journeyData.journey,
+          journeys: []
         },
         revalidate: 60
       }
@@ -154,25 +119,23 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
             context.locale ?? 'en',
             ['apps-journeys', 'libs-journeys-ui'],
             i18nConfig
-          )),
-          journeys: data.journeys
+          ))
         },
         notFound: true,
         revalidate: 1
       }
     }
-  } else {
-    return {
-      props: {
-        ...(await serverSideTranslations(
-          context.locale ?? 'en',
-          ['apps-journeys', 'libs-journeys-ui'],
-          i18nConfig
-        )),
-        journeys: data.journeys
-      },
-      revalidate: 60
-    }
+  }
+  return {
+    props: {
+      ...(await serverSideTranslations(
+        context.locale ?? 'en',
+        ['apps-journeys', 'libs-journeys-ui'],
+        i18nConfig
+      )),
+      journeys: data.journeys
+    },
+    revalidate: 60
   }
 }
 
