@@ -15,7 +15,10 @@ import {
 import { AddByFile } from '.'
 
 jest.mock('../../../../../../BackgroundUpload', () => ({
-  useBackgroundUpload: jest.fn()
+  useBackgroundUpload: jest.fn().mockImplementation(() => ({
+    uploadCloudflareVideo: jest.fn(),
+    uploadQueue: {}
+  }))
 }))
 
 describe('AddByFile', () => {

@@ -13,7 +13,7 @@ import { TestHttpStack } from './TestHttpStack'
 
 function AddByFile({
   files,
-  httpStack
+  httpStack = new TestHttpStack()
 }: {
   files: File[]
   httpStack: HttpStack
@@ -25,8 +25,8 @@ function AddByFile({
         data-testid="upload-button"
         onClick={async () => {
           const upload = uploadCloudflareVideo({
-            files: [],
-            httpStack: new TestHttpStack()
+            files,
+            httpStack
           })
           await upload.next()
         }}
