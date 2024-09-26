@@ -1,5 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
+import { RouterProps } from 'instantsearch.js/es/middlewares'
 import { GetStaticProps } from 'next'
 import singletonRouter from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
@@ -17,6 +18,7 @@ import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchP
 
 import i18nConfig from '../../next-i18next.config'
 import { ResourcesView } from '../../src/components/ResourcesView'
+import { indexes } from '../../src/components/ResourcesView/ResourceSections/ResourceSections'
 import {
   createApolloClient,
   useApolloClient
@@ -28,15 +30,22 @@ interface ResourcesPageProps {
   serverState?: InstantSearchServerState
 }
 
+const baseUrl = (process.env.NEXT_PUBLIC_WATCH_URL ?? '').replace('/watch', '')
+const nextRouter: RouterProps = {
+  // Manages the URL paramers with instant search state
+  router: createInstantSearchRouterNext({
+    serverUrl: `${baseUrl}/resources`,
+    singletonRouter,
+    routerOptions: {
+      cleanUrlOnDispose: false
+    }
+  })
+}
+
 function ResourcesPage({
   intitialApolloState,
   serverState
 }: ResourcesPageProps): ReactElement {
-  const baseUrl = (process.env.NEXT_PUBLIC_WATCH_URL ?? '').replace(
-    '/watch',
-    ''
-  )
-
   const client = useApolloClient({
     initialState: intitialApolloState
   })
@@ -48,18 +57,11 @@ function ResourcesPage({
       <ApolloProvider client={client}>
         <InstantSearch
           searchClient={searchClient}
+          indexName={indexes[0]}
           future={{ preserveSharedStateOnUnmount: true }}
           stalledSearchDelay={500}
           insights
-          routing={{
-            router: createInstantSearchRouterNext({
-              serverUrl: `${baseUrl}/resources`,
-              singletonRouter,
-              routerOptions: {
-                cleanUrlOnDispose: false
-              }
-            })
-          }}
+          routing={nextRouter}
         >
           <ResourcesView />
         </InstantSearch>
