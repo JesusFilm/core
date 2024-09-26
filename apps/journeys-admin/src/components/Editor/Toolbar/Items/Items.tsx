@@ -3,6 +3,7 @@ import { ReactElement } from 'react'
 
 import { AnalyticsItem } from './AnalyticsItem'
 import { PreviewItem } from './PreviewItem'
+import { ResponsesItem } from './ResponsesItem'
 import { ShareItem } from './ShareItem'
 import { StrategyItem } from './StrategyItem'
 
@@ -15,6 +16,7 @@ export function Items(): ReactElement {
       data-testid="ItemsStack"
       alignItems="center"
     >
+      <ResponsesItem />
       <AnalyticsItem variant="icon-button" />
       <StrategyItem variant="button" />
       <ShareItem variant="button" />
