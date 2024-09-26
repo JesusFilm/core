@@ -43,11 +43,18 @@ const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
     paddingRight: 30,
     paddingTop: 12,
     paddingBottom: 12,
-    borderRadius: 8,
     backgroundColor: theme.palette[0],
     '&.Mui-selected': {
       backgroundColor: theme.palette[100],
       color: palette.error
+    },
+    '&.MuiToggleButtonGroup-firstButton': {
+      borderTopLeftRadius: 8,
+      borderBottomLeftRadius: 8
+    },
+    '&.MuiToggleButtonGroup-lastButton': {
+      borderTopRightRadius: 8,
+      borderBottomRightRadius: 8
     }
   }
 }))

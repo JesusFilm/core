@@ -12,17 +12,7 @@ import { NextSeo } from 'next-seo'
 import { ReactElement, useEffect } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
-import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
-import {
-  GetAdminJourneys,
-  GetAdminJourneysVariables
-} from '../__generated__/GetAdminJourneys'
-import { JourneyStatus } from '../__generated__/globalTypes'
-import {
-  UpdateLastActiveTeamId,
-  UpdateLastActiveTeamIdVariables
-} from '../__generated__/UpdateLastActiveTeamId'
 import { HelpScoutBeacon } from '../src/components/HelpScoutBeacon'
 import { JourneyList } from '../src/components/JourneyList'
 import { OnboardingPanel } from '../src/components/OnboardingPanel'
@@ -30,7 +20,6 @@ import { PageWrapper } from '../src/components/PageWrapper'
 import { TeamMenu } from '../src/components/Team/TeamMenu'
 import { TeamSelect } from '../src/components/Team/TeamSelect'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
-import { GET_ADMIN_JOURNEYS } from '../src/libs/useAdminJourneysQuery/useAdminJourneysQuery'
 
 function IndexPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -97,49 +86,6 @@ export const getServerSideProps = withUserTokenSSR({
   })
 
   if (redirect != null) return { redirect }
-
-  let variables: GetAdminJourneysVariables = {}
-
-  switch (query.tab ?? 'active') {
-    case 'active':
-      variables = {
-        // from src/components/JourneyList/ActiveJourneyList useAdminJourneysQuery
-        status: [JourneyStatus.draft, JourneyStatus.published],
-        useLastActiveTeamId: true
-      }
-      break
-    case 'archived':
-      variables = {
-        // from src/components/JourneyList/ArchivedJourneyList useAdminJourneysQuery
-        status: [JourneyStatus.archived],
-        useLastActiveTeamId: true
-      }
-      break
-    case 'trashed':
-      variables = {
-        // from src/components/JourneyList/TrashedJourneyList useAdminJourneysQuery
-        status: [JourneyStatus.trashed],
-        useLastActiveTeamId: true
-      }
-      break
-  }
-
-  if (query?.activeTeam != null) {
-    await apolloClient.mutate<
-      UpdateLastActiveTeamId,
-      UpdateLastActiveTeamIdVariables
-    >({
-      mutation: UPDATE_LAST_ACTIVE_TEAM_ID,
-      variables: {
-        input: { lastActiveTeamId: query.activeTeam as string }
-      }
-    })
-  }
-
-  await apolloClient.query<GetAdminJourneys, GetAdminJourneysVariables>({
-    query: GET_ADMIN_JOURNEYS,
-    variables
-  })
 
   return {
     props: {
