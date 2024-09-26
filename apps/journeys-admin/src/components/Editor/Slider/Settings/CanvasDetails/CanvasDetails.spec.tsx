@@ -68,13 +68,14 @@ describe('CanvasDetails', () => {
     expect(screen.getByText('Add a block')).toBeInTheDocument()
   })
 
-  it('should render footer', () => {
+  it('should render JourneyAppearance', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider
             initialState={{
-              activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
+              activeCanvasDetailsDrawer:
+                ActiveCanvasDetailsDrawer.JourneyAppearance
             }}
           >
             <CanvasDetails />

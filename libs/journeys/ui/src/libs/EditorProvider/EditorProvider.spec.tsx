@@ -43,11 +43,13 @@ describe('EditorContext', () => {
         expect(
           reducer(state, {
             type: 'SetActiveCanvasDetailsDrawerAction',
-            activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
+            activeCanvasDetailsDrawer:
+              ActiveCanvasDetailsDrawer.JourneyAppearance
           })
         ).toEqual({
           ...state,
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
+          activeCanvasDetailsDrawer:
+            ActiveCanvasDetailsDrawer.JourneyAppearance,
           selectedBlock: undefined
         })
       })
@@ -256,7 +258,8 @@ describe('EditorContext', () => {
         }
         const state: EditorState = {
           steps: [step],
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
+          activeCanvasDetailsDrawer:
+            ActiveCanvasDetailsDrawer.JourneyAppearance,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
         }
@@ -368,7 +371,8 @@ describe('EditorContext', () => {
         }
         const state: EditorState = {
           steps: [step, step2],
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
+          activeCanvasDetailsDrawer:
+            ActiveCanvasDetailsDrawer.JourneyAppearance,
           activeSlide: ActiveSlide.JourneyFlow,
           activeContent: ActiveContent.Canvas
         } as unknown as EditorState
@@ -598,7 +602,8 @@ describe('EditorContext', () => {
         }
         expect(
           reducer(state, {
-            activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
+            activeCanvasDetailsDrawer:
+              ActiveCanvasDetailsDrawer.JourneyAppearance,
             activeContent: ActiveContent.Canvas,
             activeSlide: ActiveSlide.Content,
             selectedAttributeId: 'selectedAttributeId',
@@ -610,7 +615,8 @@ describe('EditorContext', () => {
             type: 'SetEditorFocusAction'
           })
         ).toEqual({
-          activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
+          activeCanvasDetailsDrawer:
+            ActiveCanvasDetailsDrawer.JourneyAppearance,
           activeContent: 'canvas',
           activeSlide: ActiveSlide.Content,
           selectedAttributeId: 'selectedAttributeId',
@@ -765,7 +771,8 @@ describe('EditorContext', () => {
         <EditorProvider
           initialState={{
             ...initialState,
-            activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
+            activeCanvasDetailsDrawer:
+              ActiveCanvasDetailsDrawer.JourneyAppearance,
             activeSlide: ActiveSlide.JourneyFlow,
             activeContent: ActiveContent.Social
           }}
@@ -783,7 +790,7 @@ describe('EditorContext', () => {
         selectedBlock: block,
         selectedStepId: 'step0.id',
         selectedBlockId: 'step0.id',
-        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer,
+        activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.JourneyAppearance,
         activeSlide: ActiveSlide.JourneyFlow,
         activeContent: ActiveContent.Social
       })
