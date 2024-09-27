@@ -138,14 +138,13 @@ export function FilterList({
       }
     }
 
-  const handleTitleChange = (values: typeof initialValues): void => {
+  function handleTitleChange(values: typeof initialValues): void {
     refineSearch(values.title)
   }
 
   return (
     <Formik
       initialValues={initialValues}
-      handleSubmit={handleTitleChange}
       onSubmit={handleTitleChange}
       enableReinitialize
     >

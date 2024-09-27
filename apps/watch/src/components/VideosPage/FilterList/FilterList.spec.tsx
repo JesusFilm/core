@@ -132,7 +132,8 @@ describe('FilterList', () => {
           target: { value: 'Jesus' }
         }
       )
-      await waitFor(() => expect(refine).toHaveBeenCalled())
+      await waitFor(() => expect(refine).toHaveBeenCalledTimes(1))
+      expect(refine).toHaveBeenCalledWith('Jesus')
     })
   })
 })
