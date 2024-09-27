@@ -63,10 +63,8 @@ export function StepFooter({
           width: '100%'
         }}
       >
-        {!isWebsite && (
-          <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
-            {journey?.showReactionButtons === true && <FooterButtonList />}
-          </Box>
+        {!isWebsite && journey?.showReactionButtons === true && (
+          <FooterButtonList sx={{ display: { xs: 'flex', sm: 'none' } }} />
         )}
 
         <Stack
@@ -120,9 +118,11 @@ export function StepFooter({
                 {journey?.showHosts === true && <HostTitleLocation />}
               </Stack>
 
-              <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
-                {journey?.showReactionButtons === true && <FooterButtonList />}
-              </Box>
+              {journey?.showReactionButtons === true && (
+                <FooterButtonList
+                  sx={{ display: { xs: 'none', sm: 'flex' } }}
+                />
+              )}
             </Stack>
           )}
 
