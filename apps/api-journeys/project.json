@@ -93,7 +93,7 @@
     "subgraph-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx hive schema:check apps/api-journeys/schema.graphql --registry.accessToken $HIVE_TOKEN --github"
+        "command": "npx hive schema:check apps/api-journeys/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys"
       }
     },
     "fetch-secrets": {
