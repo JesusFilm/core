@@ -1,8 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
-import { RouterProps } from 'instantsearch.js/es/middlewares'
 import { GetStaticProps } from 'next'
-import singletonRouter from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
@@ -12,13 +10,13 @@ import {
   InstantSearchServerState,
   getServerState
 } from 'react-instantsearch'
-import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
 
 import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
 import i18nConfig from '../../next-i18next.config'
 import { ResourcesView } from '../../src/components/ResourcesView'
 import { indexes } from '../../src/components/ResourcesView/ResourceSections/ResourceSections'
+import { createInstantSearchRouter } from '../../src/libs/algolia/instantSearchRouter/instantSearchRouter'
 import {
   createApolloClient,
   useApolloClient
@@ -30,18 +28,6 @@ interface ResourcesPageProps {
   serverState?: InstantSearchServerState
 }
 
-const baseUrl = (process.env.NEXT_PUBLIC_WATCH_URL ?? '').replace('/watch', '')
-const nextRouter: RouterProps = {
-  // Manages the URL paramers with instant search state
-  router: createInstantSearchRouterNext({
-    serverUrl: `${baseUrl}/resources`,
-    singletonRouter,
-    routerOptions: {
-      cleanUrlOnDispose: false
-    }
-  })
-}
-
 function ResourcesPage({
   intitialApolloState,
   serverState
@@ -51,6 +37,15 @@ function ResourcesPage({
   })
 
   const searchClient = useInstantSearchClient()
+
+  const baseUrl = (process.env.NEXT_PUBLIC_WATCH_URL ?? '').replace(
+    '/watch',
+    ''
+  )
+  const nextRouter = createInstantSearchRouter({
+    indexName: indexes[0],
+    serverUrl: `${baseUrl}/resources`
+  })
 
   return (
     <InstantSearchSSRProvider {...serverState}>
