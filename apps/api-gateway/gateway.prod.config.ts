@@ -6,7 +6,7 @@ export const gatewayConfig = defineConfig({
   healthCheckEndpoint: '/health',
   supergraph: {
     type: 'hive',
-    endpoint: process.env.HIVE_CDN_URL!,
+    endpoint: process.env.HIVE_CDN_ENDPOINT!,
     key: process.env.HIVE_CDN_KEY!
   },
   propagateHeaders: {

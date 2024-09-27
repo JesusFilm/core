@@ -4,7 +4,7 @@ locals {
     "APOLLO_GRAPH_REF",
     "APOLLO_KEY",
     "GOOGLE_APPLICATION_JSON",
-    "HIVE_CDN_URL",
+    "HIVE_CDN_ENDPOINT",
     "HIVE_CDN_KEY"
   ]
   service_config = {
