@@ -6,8 +6,9 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
 import debounce from 'lodash/debounce'
+import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
-import { type ReactElement, useMemo } from 'react'
+import { type ReactElement, useMemo, useState } from 'react'
 import { useMenu, useSearchBox } from 'react-instantsearch'
 
 import type { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
@@ -114,9 +115,9 @@ export function FilterList({
     }
   }
 
+  const [title, setTitle] = useState(query ?? '')
   const initialValues = useMemo(
     () => ({
-      title: query ?? '',
       language: languageOptionFromIds([languageId ?? '']),
       subtitleLanguage: languageOptionFromIds([subtitleId ?? ''])
     }),
@@ -139,18 +140,15 @@ export function FilterList({
       }
     }
 
-  function handleTitleChange(value: typeof initialValues.title): void {
+  function handleTitleChange(value: string): void {
+    setTitle(value)
     debounce((value) => {
       refineSearch(value)
     }, 300)(value)
   }
 
   return (
-    <Formik
-      initialValues={initialValues}
-      onSubmit={console.debug}
-      enableReinitialize
-    >
+    <Formik initialValues={initialValues} onSubmit={noop} enableReinitialize>
       {({ values, setFieldValue, handleBlur }) => (
         <Stack data-testid="FilterList" gap={4}>
           <Stack spacing={2}>
@@ -184,12 +182,11 @@ export function FilterList({
               <Typography>{t('Title')}</Typography>
             </Stack>
             <TextField
-              value={values.title}
+              value={title}
               name="title"
               type="search"
               onChange={(e) => {
-                void setFieldValue('title', e.target.value)
-                handleTitleChange(e.target.value) // This ensures refineSearch gets called
+                handleTitleChange(e.target.value)
               }}
               onBlur={handleBlur}
               label="Search Titles"
