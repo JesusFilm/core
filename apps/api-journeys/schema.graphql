@@ -173,8 +173,6 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): CardBlock!
-  formBlockCreate(input: FormBlockCreateInput!): FormBlock!
-  formBlockUpdate(id: ID!, input: FormBlockUpdateInput!): FormBlock
   iconBlockCreate(input: IconBlockCreateInput!): IconBlock!
   iconBlockUpdate(
     id: ID!
@@ -307,7 +305,6 @@ type Mutation {
   journeyNotificationUpdate(input: JourneyNotificationUpdateInput!): JourneyNotification!
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
-  journeyProfileOnboardingFormComplete: JourneyProfile!
   updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference
   teamCreate(input: TeamCreateInput): Team!
   teamUpdate(id: ID!, input: TeamUpdateInput): Team!
@@ -626,48 +623,6 @@ input CardBlockUpdateInput {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
-}
-
-type FormiumProject {
-  """The projectId of the project"""
-  id: String!
-
-  """The name of the project"""
-  name: String!
-}
-
-type FormiumForm {
-  """The formSlug of the form"""
-  slug: String!
-
-  """The name of the form"""
-  name: String!
-}
-
-type FormBlock implements Block {
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
-  action: Action
-  form: Json
-  projects: [FormiumProject!]!
-  projectId: String
-  forms: [FormiumForm!]!
-  formSlug: String
-  apiTokenExists: Boolean!
-}
-
-input FormBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-}
-
-input FormBlockUpdateInput {
-  projectId: String
-  apiToken: String
-  formSlug: String
 }
 
 enum GridDirection {
@@ -2334,7 +2289,6 @@ type JourneyProfile
   userId: ID!
   acceptedTermsAt: DateTime
   lastActiveTeamId: String
-  onboardingFormCompletedAt: DateTime @deprecated(reason: "no longer used")
   journeyFlowBackButtonClicked: Boolean
   plausibleJourneyFlowViewed: Boolean
   plausibleDashboardViewed: Boolean
