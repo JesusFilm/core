@@ -126,4 +126,4 @@ jobs:
 
       - name: Update Hive managed subgraph
         run: |
-          npx hive schema:publish --service ${{ inputs.name }} --url ${{ inputs.endpoint_url }} --schema apps/${{ inputs.name }}/schema.graphql --github
+          npx hive schema:publish apps/${{ inputs.name }}/schema.graphql --service ${{ inputs.name }} --url ${{ inputs.endpoint_url }} --github
