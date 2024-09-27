@@ -9,7 +9,6 @@ import { getJourneyRTL } from '../../libs/rtl'
 import {
   getFooterMobileHeight,
   getTitle,
-  hasChatWidget,
   hasCombinedFooter,
   hasHostAvatar,
   hasHostDetails
@@ -72,11 +71,11 @@ export function StepFooter({
           width: '100%'
         }}
       >
-        {!isWebsite && !combinedFooter && (
-          <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
-            {journey?.showReactionButtons === true && <FooterButtonList />}
-          </Box>
-        )}
+        {!isWebsite &&
+          !combinedFooter &&
+          journey?.showReactionButtons === true && (
+            <FooterButtonList sx={{ display: { xs: 'flex', sm: 'none' } }} />
+          )}
 
         <Stack
           sx={{
@@ -134,9 +133,11 @@ export function StepFooter({
                 </Stack>
               )}
 
-              <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
-                {journey?.showReactionButtons === true && <FooterButtonList />}
-              </Box>
+              {journey?.showReactionButtons === true && (
+                <FooterButtonList
+                  sx={{ display: { xs: 'none', sm: 'flex' } }}
+                />
+              )}
             </Stack>
           )}
 

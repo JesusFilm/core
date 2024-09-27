@@ -32,6 +32,23 @@ describe('FooterButtonList', () => {
     expect(screen.getByTestId('ThumbsDownIcon')).toBeInTheDocument()
   })
 
+  it('should not render if there are no active buttons', () => {
+    const journey = {
+      showShareButton: false,
+      showLikeButton: false,
+      showDislikeButton: false
+    } as unknown as JourneyFields
+
+    render(
+      <SnackbarProvider>
+        <JourneyProvider value={{ journey }}>
+          <FooterButtonList />
+        </JourneyProvider>
+      </SnackbarProvider>
+    )
+    expect(screen.queryByTestId('StepFooterButtonList')).not.toBeInTheDocument()
+  })
+
   it('should only hide a button when value is false', () => {
     const journey = {
       showShareButton: false,
