@@ -43,6 +43,9 @@ export const gatewayConfig = defineConfig({
 
     if (
       [
+        // gateway
+        'https://api-gateway.central.jesusfilm.org',
+        'https://api-gateway.stage.central.jesusfilm.org',
         // apollo studio
         'https://studio.apollographql.com',
         // graphql hive
