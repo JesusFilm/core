@@ -6,6 +6,7 @@ import {
   useMutation
 } from '@apollo/client'
 
+import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
@@ -20,23 +21,40 @@ export const MENU_BLOCK_CREATE = gql`
   ${STEP_FIELDS}
   ${CARD_FIELDS}
   ${TYPOGRAPHY_FIELDS}
+  ${BUTTON_FIELDS}
   mutation MenuBlockCreate(
     $journeyId: ID!
-    $stepBlockCreateInput: StepBlockCreateInput!
-    $cardBlockCreateInput: CardBlockCreateInput!
-    $typographyBlockCreateInput: TypographyBlockCreateInput!
+    $stepInput: StepBlockCreateInput!
+    $cardInput: CardBlockCreateInput!
+    $headingInput: TypographyBlockCreateInput!
+    $subHeadingInput: TypographyBlockCreateInput!
+    $button1Input: ButtonBlockCreateInput!
+    $button2Input: ButtonBlockCreateInput!
+    $button3Input: ButtonBlockCreateInput!
     $journeyUpdateInput: JourneyUpdateInput!
   ) {
-    step: stepBlockCreate(input: $stepBlockCreateInput) {
+    step: stepBlockCreate(input: $stepInput) {
       ...StepFields
       x
       y
     }
-    card: cardBlockCreate(input: $cardBlockCreateInput) {
+    card: cardBlockCreate(input: $cardInput) {
       ...CardFields
     }
-    typography: typographyBlockCreate(input: $typographyBlockCreateInput) {
+    heading: typographyBlockCreate(input: $headingInput) {
       ...TypographyFields
+    }
+    subHeading: typographyBlockCreate(input: $subHeadingInput) {
+      ...TypographyFields
+    }
+    button1: buttonBlockCreate(input: $button1Input) {
+      ...ButtonFields
+    }
+    button2: buttonBlockCreate(input: $button2Input) {
+      ...ButtonFields
+    }
+    button3: buttonBlockCreate(input: $button3Input) {
+      ...ButtonFields
     }
     journeyUpdate(id: $journeyId, input: $journeyUpdateInput) {
       id
@@ -52,13 +70,9 @@ function updateCache(
   data?: MenuBlockCreate | null,
   journeyId?: string | null
 ): void {
-  if (
-    journeyId == null ||
-    data?.step == null ||
-    data?.card == null ||
-    data?.typography == null
-  )
-    return
+  if (data == null) return
+
+  const keys = Object.keys(data).filter((key) => key !== 'journeyUpdate')
 
   cache.modify({
     fields: {
@@ -79,35 +93,20 @@ function updateCache(
     id: cache.identify({ __typename: 'Journey', id: journeyId }),
     fields: {
       blocks(existingBlockRefs) {
-        const newStepBlockRef = cache.writeFragment({
-          data: data.step,
-          fragment: gql`
-            fragment NewBlock on Block {
-              id
-            }
-          `
-        })
-        const newCardBlockRef = cache.writeFragment({
-          data: data.card,
-          fragment: gql`
-            fragment NewBlock on Block {
-              id
-            }
-          `
-        })
-        const newTypographyBlockRef = cache.writeFragment({
-          data: data.typography,
-          fragment: gql`
-            fragment NewBlock on Block {
-              id
-            }
-          `
-        })
+        const NEW_BLOCK_FRAGMENT = gql`
+          fragment NewBlock on Block {
+            id
+          }
+        `
+
         return [
           ...existingBlockRefs,
-          newStepBlockRef,
-          newCardBlockRef,
-          newTypographyBlockRef
+          ...keys.map((key) =>
+            cache.writeFragment({
+              data: data[key],
+              fragment: NEW_BLOCK_FRAGMENT
+            })
+          )
         ]
       }
     }

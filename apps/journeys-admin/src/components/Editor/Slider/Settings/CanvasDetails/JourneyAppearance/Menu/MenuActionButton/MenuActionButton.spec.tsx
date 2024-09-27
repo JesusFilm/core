@@ -14,7 +14,15 @@ import { mockUseMenuBlockRestoreMutation } from '../../../../../../../../libs/us
 import { CommandRedoItem } from '../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../Toolbar/Items/CommandUndoItem'
 
-import { mockMenuCard, mockMenuStep, mockMenuTypography } from './data'
+import {
+  mockMenuButton1,
+  mockMenuButton2,
+  mockMenuButton3,
+  mockMenuCard,
+  mockMenuHeading,
+  mockMenuStep,
+  mockMenuSubHeading
+} from './data'
 
 import { MenuActionButton } from '.'
 
@@ -42,9 +50,13 @@ describe('MenuActionButton', () => {
     })
 
     it('should create menu when clicked', async () => {
-      mockUuidv4.mockReturnValueOnce('step.id')
-      mockUuidv4.mockReturnValueOnce('card.id')
-      mockUuidv4.mockReturnValueOnce('typography.id')
+      mockUuidv4.mockReturnValueOnce(mockMenuStep.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuCard.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuHeading.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuSubHeading.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuButton1.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuButton2.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuButton3.id)
 
       const cache = new InMemoryCache()
       cache.restore({
@@ -72,14 +84,22 @@ describe('MenuActionButton', () => {
       expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([
         { __ref: 'StepBlock:step.id' },
         { __ref: 'CardBlock:card.id' },
-        { __ref: 'TypographyBlock:typography.id' }
+        { __ref: 'TypographyBlock:heading.id' },
+        { __ref: 'TypographyBlock:subHeading.id' },
+        { __ref: 'ButtonBlock:button1.id' },
+        { __ref: 'ButtonBlock:button2.id' },
+        { __ref: 'ButtonBlock:button3.id' }
       ])
     })
 
     it('should handle undo menu card creation', async () => {
       mockUuidv4.mockReturnValueOnce(mockMenuStep.id)
       mockUuidv4.mockReturnValueOnce(mockMenuCard.id)
-      mockUuidv4.mockReturnValueOnce(mockMenuTypography.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuHeading.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuSubHeading.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuButton1.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuButton2.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuButton3.id)
 
       const cache = new InMemoryCache()
       cache.restore({
@@ -114,7 +134,11 @@ describe('MenuActionButton', () => {
       expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([
         { __ref: 'StepBlock:step.id' },
         { __ref: 'CardBlock:card.id' },
-        { __ref: 'TypographyBlock:typography.id' }
+        { __ref: 'TypographyBlock:heading.id' },
+        { __ref: 'TypographyBlock:subHeading.id' },
+        { __ref: 'ButtonBlock:button1.id' },
+        { __ref: 'ButtonBlock:button2.id' },
+        { __ref: 'ButtonBlock:button3.id' }
       ])
 
       fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -127,7 +151,11 @@ describe('MenuActionButton', () => {
     it('should handle undo/redo menu card creation', async () => {
       mockUuidv4.mockReturnValueOnce(mockMenuStep.id)
       mockUuidv4.mockReturnValueOnce(mockMenuCard.id)
-      mockUuidv4.mockReturnValueOnce(mockMenuTypography.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuHeading.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuSubHeading.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuButton1.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuButton2.id)
+      mockUuidv4.mockReturnValueOnce(mockMenuButton3.id)
 
       const cache = new InMemoryCache()
       cache.restore({
@@ -164,7 +192,11 @@ describe('MenuActionButton', () => {
       expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([
         { __ref: 'StepBlock:step.id' },
         { __ref: 'CardBlock:card.id' },
-        { __ref: 'TypographyBlock:typography.id' }
+        { __ref: 'TypographyBlock:heading.id' },
+        { __ref: 'TypographyBlock:subHeading.id' },
+        { __ref: 'ButtonBlock:button1.id' },
+        { __ref: 'ButtonBlock:button2.id' },
+        { __ref: 'ButtonBlock:button3.id' }
       ])
 
       fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
