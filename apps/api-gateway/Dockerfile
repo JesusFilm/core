@@ -4,4 +4,5 @@
 # - inform all developers to run npm i
 FROM  ghcr.io/ardatan/hive-gateway:1.0.5
 COPY ./apps/api-gateway/gateway.prod.config.ts gateway.config.ts
+EXPOSE 4000
 CMD ["supergraph"]
