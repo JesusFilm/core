@@ -45,6 +45,8 @@ export const gatewayConfig = defineConfig({
       [
         // apollo studio
         'https://studio.apollographql.com',
+        // graphql hive
+        'https://app.graphql-hive.com',
         // journeys-admin
         'https://admin.nextstep.is',
         'https://admin-stage.nextstep.is',
