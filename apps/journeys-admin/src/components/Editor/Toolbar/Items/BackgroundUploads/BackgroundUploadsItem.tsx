@@ -5,7 +5,8 @@ import FileUploadIcon from '@mui/icons-material/FileUpload'
 import SyncIcon from '@mui/icons-material/Sync'
 import Badge from '@mui/material/Badge'
 import IconButton from '@mui/material/IconButton'
-import ListItemIcon from '@mui/material/ListItemIcon'
+import LinearProgress from '@mui/material/LinearProgress'
+import ListItemAvatar from '@mui/material/ListItemAvatar'
 import ListItemText from '@mui/material/ListItemText'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -13,17 +14,73 @@ import Tooltip from '@mui/material/Tooltip'
 import { ReactElement, useState } from 'react'
 
 import { useBackgroundUpload } from '../../../BackgroundUpload'
-import { UploadStatus } from '../../../BackgroundUpload/BackgroundUploadContext'
+import {
+  UploadQueueItem,
+  UploadStatus
+} from '../../../BackgroundUpload/BackgroundUploadContext'
 
+export function BackgroundUploadItem({
+  upload
+}: {
+  upload: UploadQueueItem
+}): ReactElement {
+  return (
+    <>
+      <Tooltip title={UploadStatus[upload.status]}>
+        <MenuItem>
+          <ListItemAvatar>
+            {
+              [
+                <FileUploadIcon key={`upload-status-${upload.id}`} />,
+                <SyncIcon key={`upload-status-${upload.id}`} />,
+                <ErrorIcon key={`upload-status-${upload.id}`} />,
+                <DownloadDoneIcon key={`upload-status-${upload.id}`} />
+              ][upload.status]
+            }
+          </ListItemAvatar>
+          <ListItemText
+            primary={upload.fileName}
+            secondary={UploadStatus[upload.status]}
+          />
+        </MenuItem>
+      </Tooltip>
+      {[UploadStatus.processing, UploadStatus.uploading].includes(
+        upload.status
+      ) && (
+        <MenuItem>
+          <LinearProgress
+            variant={
+              upload.status === UploadStatus.processing
+                ? 'indeterminate'
+                : 'determinate'
+            }
+            value={upload.progress}
+            // value={100}
+            sx={{
+              height: 32,
+              width: '100%',
+              borderRadius: 2,
+              mx: 2,
+              my: 1
+            }}
+          />
+        </MenuItem>
+      )}
+    </>
+  )
+}
 export function BackgroundUploadsItem(): ReactElement {
-  const { uploadQueue, activeUploads } = useBackgroundUpload()
+  const { uploadQueue, activeUploads, uploadMenuOpen, setUploadMenuOpen } =
+    useBackgroundUpload()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
+    setUploadMenuOpen(true)
   }
 
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
+    setUploadMenuOpen(false)
   }
   return (
     <>
@@ -39,7 +96,7 @@ export function BackgroundUploadsItem(): ReactElement {
       <Menu
         id="edit-journey-uploads"
         anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
+        open={uploadMenuOpen}
         onClose={handleCloseMenu}
         MenuListProps={{
           'aria-labelledby': 'edit-journey-uploads'
@@ -54,29 +111,12 @@ export function BackgroundUploadsItem(): ReactElement {
         }}
         data-testid="BackgroundUploadMenu"
       >
-        {Object.keys(uploadQueue).map((key) => {
-          const upload = uploadQueue[key]
-          return (
-            <Tooltip
-              title={UploadStatus[upload.status]}
-              key={`upload-background-video-${upload.id}`}
-            >
-              <MenuItem>
-                <ListItemText>{upload.fileName}</ListItemText>
-                <ListItemIcon>
-                  {
-                    [
-                      <FileUploadIcon key={`upload-status-${upload.id}`} />,
-                      <SyncIcon key={`upload-status-${upload.id}`} />,
-                      <ErrorIcon key={`upload-status-${upload.id}`} />,
-                      <DownloadDoneIcon key={`upload-status-${upload.id}`} />
-                    ][upload.status]
-                  }
-                </ListItemIcon>
-              </MenuItem>
-            </Tooltip>
-          )
-        })}
+        {Object.keys(uploadQueue).map((key) => (
+          <BackgroundUploadItem
+            upload={uploadQueue[key]}
+            key={`upload-background-video-${key}`}
+          />
+        ))}
       </Menu>
     </>
   )

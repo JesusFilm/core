@@ -167,7 +167,11 @@ export function BackgroundUploadProvider({
     throw new Error('No file selected')
   }
 
+  const [uploadMenuOpen, setUploadMenuOpen] = useState(false)
+
   const value = {
+    uploadMenuOpen,
+    setUploadMenuOpen,
     uploadCloudflareVideo,
     uploadQueue,
     activeUploads: () =>

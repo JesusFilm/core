@@ -25,6 +25,8 @@ export interface Context {
   uploadCloudflareVideo: (uploadCloudflareVideoParams) => AsyncGenerator<string>
   uploadQueue: Record<string, UploadQueueItem>
   activeUploads: () => number
+  uploadMenuOpen: boolean
+  setUploadMenuOpen: (menuOpen: boolean) => void
 }
 
 export const BackgroundUploadContext = createContext<Context | undefined>(

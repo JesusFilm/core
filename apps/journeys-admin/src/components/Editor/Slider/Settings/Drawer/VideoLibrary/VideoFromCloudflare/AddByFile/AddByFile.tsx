@@ -3,14 +3,13 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { FileRejection, useDropzone } from 'react-dropzone'
 
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
 import { useBackgroundUpload } from '../../../../../../BackgroundUpload'
-import { UploadStatus } from '../../../../../../BackgroundUpload/BackgroundUploadContext'
 
 interface AddByFileProps {
   onChange: (id: string) => void
@@ -23,15 +22,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const [fileTooLarge, setfileTooLarge] = useState(false)
   const [tooManyFiles, settooManyFiles] = useState(false)
   const [fileInvalidType, setfileInvalidType] = useState(false)
-  const { uploadQueue, uploadCloudflareVideo } = useBackgroundUpload()
-  const [activeQueueItem, setActiveQueueItem] = useState<string>('')
-
-  useEffect(() => {
-    if (uploadQueue[activeQueueItem]?.status === UploadStatus.complete) {
-      onChange(activeQueueItem)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uploadQueue[activeQueueItem]?.status])
+  const { uploadCloudflareVideo } = useBackgroundUpload()
 
   const onDrop = async (): Promise<void> => {
     setfileTooLarge(false)
@@ -44,7 +35,9 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     const upload = uploadCloudflareVideo({
       files
     })
-    setActiveQueueItem((await upload.next()).value)
+    const uploadId = (await upload.next()).value
+    void upload.next()
+    onChange(uploadId)
   }
 
   const onDropRejected = async (
@@ -79,11 +72,6 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     }
   })
 
-  const noBorder =
-    uploadQueue[activeQueueItem]?.error != null ||
-    uploadQueue[activeQueueItem]?.status === UploadStatus.uploading ||
-    fileRejected
-
   return (
     <Stack
       alignItems="center"
@@ -98,16 +86,14 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           display: 'flex',
           width: '100%',
           height: 162,
-          borderWidth: noBorder ? undefined : 2,
-          backgroundColor:
-            isDragAccept ||
-            uploadQueue[activeQueueItem]?.status === UploadStatus.uploading
-              ? 'rgba(239, 239, 239, 0.9)'
-              : uploadQueue[activeQueueItem]?.error != null || fileRejected
-              ? 'rgba(197, 45, 58, 0.08)'
-              : 'rgba(239, 239, 239, 0.35)',
+          borderWidth: fileRejected ? undefined : 2,
+          backgroundColor: isDragAccept
+            ? 'rgba(239, 239, 239, 0.9)'
+            : fileRejected
+            ? 'rgba(197, 45, 58, 0.08)'
+            : 'rgba(239, 239, 239, 0.35)',
           borderColor: 'divider',
-          borderStyle: noBorder ? undefined : 'dashed',
+          borderStyle: fileRejected ? undefined : 'dashed',
           borderRadius: 2,
           justifyContent: 'center',
           flexDirection: 'column',
@@ -116,27 +102,14 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
         {...getRootProps({ isDragAccept })}
       >
         <input {...getInputProps()} />
-        {uploadQueue[activeQueueItem]?.error != null || fileRejected ? (
-          <AlertTriangleIcon
-            sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
-          />
-        ) : (
-          <Upload1Icon sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }} />
-        )}
+        <Upload1Icon sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }} />
         <Typography
           variant="body1"
-          color={
-            uploadQueue[activeQueueItem]?.error != null || fileRejected
-              ? 'error.main'
-              : 'secondary.main'
-          }
+          color={fileRejected ? 'error.main' : 'secondary.main'}
           sx={{ pb: 4 }}
         >
           {fileRejected && t('Upload Failed!')}
-          {uploadQueue[activeQueueItem]?.status !== UploadStatus.uploading &&
-            !fileRejected &&
-            uploadQueue[activeQueueItem]?.error == null &&
-            t('Drop a video here')}
+          {!fileRejected && t('Drop a video here')}
         </Typography>
       </Box>
       <Stack
@@ -151,11 +124,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
             display: fileRejected ? 'flex' : 'none'
           }}
         />
-        {uploadQueue[activeQueueItem]?.error != null ? (
-          <Typography variant="caption">
-            {t('Something went wrong, try again')}
-          </Typography>
-        ) : fileRejected ? (
+        {fileRejected ? (
           <Typography variant="caption">
             {fileInvalidType && t('Invalid file type. ')}
             {tooManyFiles && t('Only one file upload at once. ')}

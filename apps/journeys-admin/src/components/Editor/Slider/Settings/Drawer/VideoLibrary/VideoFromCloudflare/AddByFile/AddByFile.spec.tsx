@@ -128,33 +128,11 @@ describe('AddByFile', () => {
   })
 
   it('should show error state on fileRejections', async () => {
-    const testStack = new TestHttpStack()
     const onChange = jest.fn()
     const { getByTestId, getAllByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
-              variables: {
-                uploadLength: 4,
-                name: 'testFile'
-              }
-            },
-            result: {
-              data: {
-                createCloudflareVideoUploadByFile: {
-                  id: 'uploadId',
-                  uploadUrl: 'https://example.com/upload',
-                  __typename: 'CloudflareVideo'
-                }
-              }
-            }
-          }
-        ]}
-      >
+      <MockedProvider>
         <BackgroundUploadProvider>
-          <AddByFile onChange={onChange} httpStack={testStack} />
+          <AddByFile onChange={onChange} />
         </BackgroundUploadProvider>
       </MockedProvider>
     )
