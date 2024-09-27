@@ -113,28 +113,25 @@ export function HostAvatars({
             />
           </Avatar>
         )}
-      {avatarSrc1 == null &&
-        avatarSrc2 == null &&
-        hasPlaceholder === true &&
-        size === 'large' && (
-          <Avatar
-            sx={{
-              color: 'secondary.light',
-              opacity: 0.5,
-              backgroundColor: 'transparent',
-              '&.MuiAvatar-root': {
-                border: (theme) => `2px solid ${theme.palette.grey[700]}`,
-                height: '46px',
-                width: '46px'
-              }
-            }}
-          >
-            <UserProfile3Icon
-              data-testid="host-avatar-placeholder-solid"
-              sx={{ color: (theme) => theme.palette.grey[700] }}
-            />
-          </Avatar>
-        )}
+      {isEmpty && hasPlaceholder === true && size === 'large' && (
+        <Avatar
+          sx={{
+            color: 'secondary.light',
+            opacity: 0.5,
+            backgroundColor: 'transparent',
+            '&.MuiAvatar-root': {
+              border: (theme) => `2px solid ${theme.palette.grey[700]}`,
+              height: '46px',
+              width: '46px'
+            }
+          }}
+        >
+          <UserProfile3Icon
+            data-testid="host-avatar-placeholder-solid"
+            sx={{ color: (theme) => theme.palette.grey[700] }}
+          />
+        </Avatar>
+      )}
     </AvatarGroup>
   )
 }
