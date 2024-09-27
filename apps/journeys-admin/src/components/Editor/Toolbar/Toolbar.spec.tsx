@@ -283,20 +283,22 @@ describe('Toolbar', () => {
             { ...mockGetPlausibleJourneyFlowViewed, result }
           ]}
         >
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney.journey,
-                variant: 'admin'
-              }}
-            >
-              <EditorProvider initialState={initialState}>
-                <TestEditorState />
-                <Toolbar />
-                <Slider />
-              </EditorProvider>
-            </JourneyProvider>
-          </SnackbarProvider>
+          <BackgroundUploadProvider>
+            <SnackbarProvider>
+              <JourneyProvider
+                value={{
+                  journey: defaultJourney.journey,
+                  variant: 'admin'
+                }}
+              >
+                <EditorProvider initialState={initialState}>
+                  <TestEditorState />
+                  <Toolbar />
+                  <Slider />
+                </EditorProvider>
+              </JourneyProvider>
+            </SnackbarProvider>
+          </BackgroundUploadProvider>
         </MockedProvider>
       </FlagsProvider>
     )

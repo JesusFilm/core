@@ -1,12 +1,10 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import LinearProgress from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 import { FileRejection, useDropzone } from 'react-dropzone'
-import { HttpStack } from 'tus-js-client'
 
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
@@ -16,13 +14,9 @@ import { UploadStatus } from '../../../../../../BackgroundUpload/BackgroundUploa
 
 interface AddByFileProps {
   onChange: (id: string) => void
-  httpStack?: HttpStack // required for testing in jest
 }
 
-export function AddByFile({
-  onChange,
-  httpStack
-}: AddByFileProps): ReactElement {
+export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   const [fileRejected, setfileRejected] = useState(false)
@@ -48,8 +42,7 @@ export function AddByFile({
 
   const onDropAccepted = async (files: File[]): Promise<void> => {
     const upload = uploadCloudflareVideo({
-      files,
-      httpStack
+      files
     })
     setActiveQueueItem((await upload.next()).value)
   }
@@ -139,12 +132,7 @@ export function AddByFile({
           }
           sx={{ pb: 4 }}
         >
-          {uploadQueue[activeQueueItem]?.status === UploadStatus.uploading &&
-            t('Uploading...')}
-          {uploadQueue[activeQueueItem]?.status === UploadStatus.processing &&
-            t('Processing...')}
-          {(uploadQueue[activeQueueItem]?.error != null || fileRejected) &&
-            t('Upload Failed!')}
+          {fileRejected && t('Upload Failed!')}
           {uploadQueue[activeQueueItem]?.status !== UploadStatus.uploading &&
             !fileRejected &&
             uploadQueue[activeQueueItem]?.error == null &&
@@ -154,20 +142,13 @@ export function AddByFile({
       <Stack
         direction="row"
         spacing={1}
-        color={
-          uploadQueue[activeQueueItem]?.error != null || fileRejected
-            ? 'error.main'
-            : 'secondary.light'
-        }
+        color={fileRejected ? 'error.main' : 'secondary.light'}
         sx={{ justifyContent: 'center', alignItems: 'center' }}
       >
         <AlertTriangleIcon
           fontSize="small"
           sx={{
-            display:
-              uploadQueue[activeQueueItem]?.error != null || fileRejected
-                ? 'flex'
-                : 'none'
+            display: fileRejected ? 'flex' : 'none'
           }}
         />
         {uploadQueue[activeQueueItem]?.error != null ? (
@@ -185,44 +166,26 @@ export function AddByFile({
         )}
       </Stack>
 
-      {(
-        [UploadStatus.uploading, UploadStatus.processing] as Array<
-          UploadStatus | undefined
+      <Button
+        size="small"
+        color="secondary"
+        variant="outlined"
+        onClick={open}
+        sx={{
+          mt: 4,
+          height: 32,
+          width: '100%',
+          borderRadius: 2
+        }}
+      >
+        <Typography
+          variant="subtitle2"
+          fontSize={14}
+          sx={{ color: 'secondary.main' }}
         >
-      ).includes(uploadQueue[activeQueueItem]?.status) ? (
-        <Box sx={{ width: '100%', mt: 4 }}>
-          <LinearProgress
-            variant={
-              uploadQueue[activeQueueItem]?.status === UploadStatus.processing
-                ? 'indeterminate'
-                : 'determinate'
-            }
-            value={uploadQueue[activeQueueItem]?.progress ?? 0}
-            sx={{ height: 32, borderRadius: 2 }}
-          />
-        </Box>
-      ) : (
-        <Button
-          size="small"
-          color="secondary"
-          variant="outlined"
-          onClick={open}
-          sx={{
-            mt: 4,
-            height: 32,
-            width: '100%',
-            borderRadius: 2
-          }}
-        >
-          <Typography
-            variant="subtitle2"
-            fontSize={14}
-            sx={{ color: 'secondary.main' }}
-          >
-            {t('Upload file')}
-          </Typography>
-        </Button>
-      )}
+          {t('Upload file')}
+        </Typography>
+      </Button>
     </Stack>
   )
 }
