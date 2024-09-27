@@ -3,4 +3,6 @@
 # - update package.json ("@graphql-hive/gateway": "^X.X.X")
 # - inform all developers to run npm i
 FROM  ghcr.io/ardatan/hive-gateway:1.0.5
-COPY ./apps/api-gateway/gateway.prod.config.ts /serve/gateway.config.ts
+COPY ./apps/api-gateway/gateway.prod.config.ts ./gateway.config.ts
+
+CMD supergraph
