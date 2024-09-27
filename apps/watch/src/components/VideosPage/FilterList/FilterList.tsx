@@ -116,6 +116,7 @@ export function FilterList({
   }
 
   const [title, setTitle] = useState(query ?? '')
+
   const initialValues = useMemo(
     () => ({
       language: languageOptionFromIds([languageId ?? '']),
