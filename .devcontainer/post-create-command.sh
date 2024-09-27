@@ -15,9 +15,6 @@ npm install -g nx
 # install Nest CLI tool
 npm install -g @nestjs/cli@^8.1.5
 
-# install Rover CLI tool
-npm install -g @apollo/rover@0.23.0
-
 # install Foreman CLI tool
 npm install -g foreman
 
@@ -26,14 +23,6 @@ npm install -g apollo graphql
 
 # install all dependencies
 npm i
-
-# install router to api gateways
-# when updating router version you'll need to:
-# - update .devcontainer/post-create-command.sh apollo router version (...nix/vX.X.X)
-# - update app/api-gateway/Dockerfile image version (...router/vX.X.X)
-# - inform all developers to rebuild their containers
-curl -sSL https://router.apollo.dev/download/nix/v1.54.0 | sh
-mv router apps/api-gateway/
 
 # update plausible db
 psql -U postgres -h db -d plausible_db < .devcontainer/plausible.sql

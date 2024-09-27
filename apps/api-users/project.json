@@ -53,10 +53,16 @@
         "jestConfig": "apps/api-users/jest.config.ts"
       }
     },
+    "generate-graphql": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "GENERATE_SCHEMA=true npx ts-node -P apps/api-users/tsconfig.app.json -r tsconfig-paths/register apps/api-users/src/schema/index.ts"
+      }
+    },
     "subgraph-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "rover subgraph check API-GATEWAY-0zuda@current --name api-users --schema apps/api-users/schema.graphql"
+        "command": "npx hive schema:check apps/api-users/schema.graphql --registry.accessToken $HIVE_TOKEN --github"
       }
     },
     "fetch-secrets": {
