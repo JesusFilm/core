@@ -5,7 +5,8 @@ locals {
     "APOLLO_KEY",
     "GOOGLE_APPLICATION_JSON",
     "HIVE_CDN_ENDPOINT",
-    "HIVE_CDN_KEY"
+    "HIVE_CDN_KEY",
+    "HIVE_REGISTRY_TOKEN"
   ]
   service_config = {
     name           = "api-gateway"
