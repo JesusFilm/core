@@ -22,7 +22,6 @@ describe('JourneyProfileResolver', () => {
     userId: 'userId',
     acceptedTermsAt: new Date(),
     lastActiveTeamId: null,
-    onboardingFormCompletedAt: null,
     journeyFlowBackButtonClicked: null,
     plausibleJourneyFlowViewed: null,
     plausibleDashboardViewed: null
@@ -80,7 +79,6 @@ describe('JourneyProfileResolver', () => {
         userId: 'newUserId',
         acceptedTermsAt: new Date(),
         lastActiveTeamId: null,
-        onboardingFormCompletedAt: null,
         journeyFlowBackButtonClicked: null,
         plausibleJourneyFlowViewed: null,
         plausibleDashboardViewed: null
