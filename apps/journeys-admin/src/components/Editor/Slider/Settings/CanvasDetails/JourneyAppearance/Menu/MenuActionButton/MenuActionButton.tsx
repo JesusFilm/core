@@ -14,12 +14,17 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronRight from '@core/shared/ui/icons/ChevronRight'
 
 import {
-  BlockFields_CardBlock,
-  BlockFields_StepBlock
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_StepBlock as StepBlock,
+  BlockFields_TypographyBlock as TypographyBlock
 } from '../../../../../../../../../__generated__/BlockFields'
 import {
+  ButtonSize,
+  ButtonVariant,
   ThemeMode,
   ThemeName,
+  TypographyAlign,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
 import { useMenuBlockCreateMutation } from '../../../../../../../../libs/useMenuBlockCreateMutation/useMenuBlockCreateMutation'
@@ -52,7 +57,7 @@ export function MenuActionButton(): ReactElement {
     const stepId = uuidv4()
     const cardId = uuidv4()
 
-    const step: TreeBlock<BlockFields_StepBlock & { x: number; y: number }> = {
+    const step: TreeBlock<StepBlock & { x: number; y: number }> = {
       __typename: 'StepBlock',
       locked: false,
       nextBlockId: null,
@@ -64,7 +69,8 @@ export function MenuActionButton(): ReactElement {
       slug: 'menu',
       children: []
     }
-    const card: BlockFields_CardBlock = {
+
+    const card = {
       __typename: 'CardBlock',
       id: cardId,
       parentBlockId: step.id,
@@ -74,19 +80,81 @@ export function MenuActionButton(): ReactElement {
       coverBlockId: null,
       backgroundColor: null,
       parentOrder: 0
-    }
-    const typography = {
+    } satisfies CardBlock
+
+    const heading = {
       __typename: 'TypographyBlock' as const,
       id: uuidv4(),
       parentBlockId: cardId,
       parentOrder: 0,
-      align: null,
       color: null,
-      content: 'Menu',
-      variant: TypographyVariant.h1
-    }
+      content: t('Menu'),
+      variant: TypographyVariant.h1,
+      align: TypographyAlign.center
+    } satisfies TypographyBlock
 
-    const createdBlocks = [step, card, typography]
+    const subHeading = {
+      __typename: 'TypographyBlock' as const,
+      id: uuidv4(),
+      parentBlockId: cardId,
+      parentOrder: 1,
+      color: null,
+      content: t('Helping people discover Jesus.'),
+      variant: TypographyVariant.subtitle2,
+      align: TypographyAlign.center
+    } satisfies TypographyBlock
+
+    const button1 = {
+      __typename: 'ButtonBlock',
+      id: uuidv4(),
+      parentBlockId: cardId,
+      parentOrder: 2,
+      label: t('About Us'),
+      buttonVariant: ButtonVariant.contained,
+      buttonColor: null,
+      size: ButtonSize.large,
+      startIconId: null,
+      endIconId: null,
+      action: null
+    } satisfies ButtonBlock
+
+    const button2 = {
+      __typename: 'ButtonBlock',
+      id: uuidv4(),
+      parentBlockId: cardId,
+      parentOrder: 3,
+      label: t('Ministries'),
+      buttonVariant: ButtonVariant.contained,
+      buttonColor: null,
+      size: ButtonSize.large,
+      startIconId: null,
+      endIconId: null,
+      action: null
+    } satisfies ButtonBlock
+
+    const button3 = {
+      __typename: 'ButtonBlock' as const,
+      id: uuidv4(),
+      parentBlockId: cardId,
+      parentOrder: 4,
+      label: t('Contact Us'),
+      buttonVariant: ButtonVariant.contained,
+      buttonColor: null,
+      size: ButtonSize.large,
+      startIconId: null,
+      endIconId: null,
+      action: null
+    } satisfies ButtonBlock
+
+    const createdBlocks = [
+      step,
+      card,
+      heading,
+      subHeading,
+      button1,
+      button2,
+      button3
+    ]
 
     if (journey.menuStepBlock == null) {
       add({
@@ -95,25 +163,58 @@ export function MenuActionButton(): ReactElement {
           void menuBlockCreate({
             variables: {
               journeyId: journey.id,
-              stepBlockCreateInput: {
+              stepInput: {
                 id: step.id,
                 journeyId: journey.id,
                 x: step.x,
                 y: step.y
               },
-              cardBlockCreateInput: {
+              cardInput: {
                 id: card.id,
                 journeyId: journey.id,
                 parentBlockId: step.id,
                 themeMode: ThemeMode.dark,
                 themeName: ThemeName.base
               },
-              typographyBlockCreateInput: {
-                id: typography.id,
+              headingInput: {
+                id: heading.id,
                 journeyId: journey.id,
-                parentBlockId: typography.parentBlockId,
-                content: typography.content,
-                variant: typography.variant
+                parentBlockId: heading.parentBlockId,
+                content: heading.content,
+                variant: heading.variant,
+                align: heading.align
+              },
+              subHeadingInput: {
+                id: subHeading.id,
+                journeyId: journey.id,
+                parentBlockId: subHeading.parentBlockId,
+                content: subHeading.content,
+                variant: subHeading.variant,
+                align: subHeading.align
+              },
+              button1Input: {
+                id: button1.id,
+                journeyId: journey.id,
+                parentBlockId: button1.parentBlockId,
+                label: button1.label,
+                size: button1.size,
+                variant: button1.buttonVariant
+              },
+              button2Input: {
+                id: button2.id,
+                journeyId: journey.id,
+                parentBlockId: button2.parentBlockId,
+                label: button2.label,
+                size: button2.size,
+                variant: button2.buttonVariant
+              },
+              button3Input: {
+                id: button3.id,
+                journeyId: journey.id,
+                parentBlockId: button3.parentBlockId,
+                label: button3.label,
+                size: button3.size,
+                variant: button3.buttonVariant
               },
               journeyUpdateInput: {
                 menuStepBlockId: step.id
@@ -122,7 +223,11 @@ export function MenuActionButton(): ReactElement {
             optimisticResponse: {
               step,
               card,
-              typography,
+              heading,
+              subHeading,
+              button1,
+              button2,
+              button3,
               journeyUpdate: {
                 ...journey,
                 menuStepBlock: step

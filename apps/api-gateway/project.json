@@ -7,7 +7,7 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "./apps/api-gateway/router --supergraph apps/api-gateway/schema.graphql --config apps/api-gateway/router.yaml --dev | npx pino-pretty -m message --config .pino-prettyrc.js"
+        "command": "npx hive-gateway supergraph -c ./apps/api-gateway/gateway.config.ts -p 4000"
       }
     },
     "serve-all": {
@@ -26,24 +26,7 @@
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          {
-            "command": "rover supergraph compose --config apps/api-gateway/supergraph.yml --elv2-license=accept > apps/api-gateway/schema.graphql"
-          }
-        ]
-      }
-    },
-    "update-router-schema": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "./apps/api-gateway/router config schema > apps/api-gateway/routerSchema.json"
-          },
-          {
-            "command": "npx prettier apps/api-gateway/routerSchema.json -w"
-          }
-        ]
+        "command": "npx hive dev --service analytics --url http://127.0.0.1:4008/graphql --schema ./apps/api-analytics/schema.graphql --service journeys --url http://127.0.0.1:4001/graphql --schema ./apps/api-journeys/schema.graphql --service users --url http://127.0.0.1:4002/graphql --schema ./apps/api-users/schema.graphql --service languages --url http://127.0.0.1:4003/graphql --schema ./apps/api-languages/schema.graphql --service media --url http://127.0.0.1:4005/graphql --schema ./apps/api-media/schema.graphql --write ./apps/api-gateway/schema.graphql"
       }
     }
   },

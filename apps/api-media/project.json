@@ -57,13 +57,13 @@
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "rover subgraph introspect http://localhost:4005/graphql > apps/api-media/schema.graphql"
+        "command": "GENERATE_SCHEMA=true npx ts-node -P apps/api-media/tsconfig.app.json -r tsconfig-paths/register apps/api-media/src/schema/index.ts"
       }
     },
     "subgraph-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "rover subgraph check API-GATEWAY-0zuda@current --name api-media --schema apps/api-media/schema.graphql"
+        "command": "npx hive schema:check apps/api-media/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-media"
       }
     },
     "fetch-secrets": {

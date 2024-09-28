@@ -7,9 +7,10 @@
     "build": {
       "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "development",
       "options": {
         "outputPath": "dist/apps/api-analytics",
-        "main": "apps/api-analytics/src/main.ts",
+        "main": "apps/api-analytics/src/index.ts",
         "tsConfig": "apps/api-analytics/tsconfig.app.json",
         "compiler": "tsc",
         "target": "node",
@@ -20,17 +21,17 @@
           "generatePackageJson": true,
           "optimization": true,
           "extractLicenses": true,
-          "inspect": false,
-          "fileReplacements": [
-            {
-              "replace": "apps/api-analytics/src/environments/environment.ts",
-              "with": "apps/api-analytics/src/environments/environment.prod.ts"
-            }
-          ]
+          "inspect": false
         }
       }
     },
     "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx _serve api-analytics | npx pino-pretty --config .pino-prettyrc.js"
+      }
+    },
+    "_serve": {
       "executor": "@nx/js:node",
       "options": {
         "buildTarget": "api-analytics:build",
@@ -56,13 +57,13 @@
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apps/api-analytics/src/schema/index.ts"
+        "command": "GENERATE_SCHEMA=true npx ts-node -P apps/api-analytics/tsconfig.app.json -r tsconfig-paths/register apps/api-analytics/src/schema/index.ts"
       }
     },
     "subgraph-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "rover subgraph check API-GATEWAY-0zuda@current --name api-analytics --schema apps/api-analytics/schema.graphql"
+        "command": "npx hive schema:check apps/api-analytics/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-analytics"
       }
     },
     "fetch-secrets": {
