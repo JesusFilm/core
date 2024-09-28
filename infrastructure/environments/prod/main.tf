@@ -21,7 +21,7 @@ locals {
     zone_id = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
     alb_target_group = merge(local.alb_target_group, {
       health_check_path = "/health"
-      health_check_port = "8088"
+      health_check_port = "4000"
     })
   }
 

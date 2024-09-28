@@ -1,6 +1,8 @@
 # when updating router version you'll need to:
-# - update .devcontainer/post-create-command.sh apollo router version (...nix/vX.X.X)
-# - update app/api-gateway/Dockerfile image version (...router/vX.X.X)
-# - inform all developers to rebuild their containers
-FROM ghcr.io/apollographql/router:v1.54.0
-COPY ./apps/api-gateway/router.prod.yaml /dist/config/router.yaml
+# - update Dockerfile image version (ghcr.io/ardatan/hive-gateway:X.X.X)
+# - update package.json ("@graphql-hive/gateway": "^X.X.X")
+# - inform all developers to run npm i
+FROM  ghcr.io/ardatan/hive-gateway:1.0.5
+EXPOSE 4000
+COPY ./apps/api-gateway/gateway.prod.config.ts gateway.config.ts
+CMD ["supergraph"]

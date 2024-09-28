@@ -18,7 +18,6 @@ export type Scalars = {
   Date: { input: any; output: any; }
   DateTime: { input: any; output: any; }
   Json: { input: any; output: any; }
-  join__DirectiveArguments: { input: any; output: any; }
   join__FieldSet: { input: any; output: any; }
   link__Import: { input: any; output: any; }
 };
