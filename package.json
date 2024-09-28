@@ -142,6 +142,7 @@
     "next-logger": "^4.0.0",
     "next-plausible": "^3.12.0",
     "next-seo": "^6.4.0",
+    "node-libcurl": "^4.0.0",
     "nodemailer": "^6.9.9",
     "notistack": "^3.0.1",
     "pino": "^9.3.2",
