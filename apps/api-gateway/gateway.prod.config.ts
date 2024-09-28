@@ -29,7 +29,7 @@ export const gatewayConfig = defineConfig({
   },
   cors(request) {
     const origin = request.headers.get('Origin') ?? ''
-    const defaultCors = {
+    const defaultCors: Parameters<typeof defineConfig>[0]['cors'] = {
       origin: 'https://api-gateway.central.jesusfilm.org/',
       allowedHeaders: [
         'content-type',
@@ -37,8 +37,8 @@ export const gatewayConfig = defineConfig({
         'apollographql-client-name',
         'user-agent'
       ],
-      credentials: true,
-      methods: ['POST']
+      methods: ['GET', 'POST', 'OPTIONS'],
+      maxAge: 86400
     }
 
     if (
