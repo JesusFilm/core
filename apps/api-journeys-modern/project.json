@@ -54,10 +54,16 @@
         "jestConfig": "apps/api-journeys-modern/jest.config.ts"
       }
     },
+    "generate-graphql": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "GENERATE_SCHEMA=true npx ts-node -P apps/api-journeys-modern/tsconfig.app.json -r tsconfig-paths/register apps/api-journeys-modern/src/schema/index.ts"
+      }
+    },
     "subgraph-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "rover subgraph check API-GATEWAY-0zuda@current --name api-journeys-modern --schema apps/api-journeys-modern/schema.graphql"
+        "command": "npx hive schema:check apps/api-journeys-modern/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys-modern"
       }
     },
     "fetch-secrets": {

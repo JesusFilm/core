@@ -4,5 +4,5 @@
 import { builder } from './builder'
 
 export const schema = builder.toSubGraphSchema({
-  linkUrl: 'https://specs.apollo.dev/federation/v2.7'
+  linkUrl: 'https://specs.apollo.dev/federation/v2.6'
 })
