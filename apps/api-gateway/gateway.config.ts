@@ -1,7 +1,6 @@
 import { defineConfig } from '@graphql-hive/gateway'
 
 export const gatewayConfig = defineConfig({
-  cors: false,
   port: 4000,
   healthCheckEndpoint: '/health',
   graphqlEndpoint: '/',
