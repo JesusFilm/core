@@ -424,11 +424,10 @@ model UserRole {
 }
 
 model JourneyProfile {
-  id                           String    @id @default(uuid())
-  userId                       String    @unique
-  acceptedTermsAt              DateTime  @default(now())
+  id                           String   @id @default(uuid())
+  userId                       String   @unique
+  acceptedTermsAt              DateTime @default(now())
   lastActiveTeamId             String?
-  onboardingFormCompletedAt    DateTime?
   journeyFlowBackButtonClicked Boolean?
   plausibleJourneyFlowViewed   Boolean?
   plausibleDashboardViewed     Boolean?
@@ -510,9 +509,6 @@ model Block {
   duration                Int?
   objectFit               VideoBlockObjectFit?
   triggerStart            Int?
-  projectId               String?
-  apiToken                String?
-  formSlug                String?
   x                       Int?
   y                       Int?
   routeId                 String?

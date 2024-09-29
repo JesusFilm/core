@@ -49,7 +49,7 @@ locals {
     }
     alb_target_group = merge(local.alb_target_group, {
       health_check_path = "/health"
-      health_check_port = "8088"
+      health_check_port = "4000"
     })
   }
 
