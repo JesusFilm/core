@@ -20,16 +20,21 @@ import { paramsToRecord } from '../../../lib/paramsToRecord'
 */
 
 const GET_LANGUAGES = graphql(`
-  query GetLanguagesWithTags($limit: Int, $offset: Int) {
-    languages(limit: $limit, offset: $offset) {
-      id
-      iso3
-      bcp47
-      name {
-        value
-      }
+query GetLanguagesWithTags {
+  languages {
+    id
+    iso3
+    bcp47
+    name {
+      value
+    }
+    audioPreview {
+      size
+      value
+      duration
     }
   }
+}
 `)
 
 export async function GET(request: NextRequest): Promise<Response> {
@@ -76,12 +81,16 @@ export async function GET(request: NextRequest): Promise<Response> {
     bcp47: language.bcp47,
     // TODO: investigate
     counts: {},
-    // TODO investigate
-    audioPreview: {},
-    // TODO implement
+    audioPreview: language.audioPreview != null ? {
+      url: language.audioPreview.value,
+      audioBitrate: 'TODO: add bitrate',
+      audioContainer: 'TODO: add container',
+      sizeInBytes: language.audioPreview.size
+    } : null,
+    // TODO: implement api call to get the primary country id
     primaryCountryId: '',
-    name: language.name[0].value,
-    nameNative: language.name[1].value,
+    name: language.name[0]?.value,
+    nameNative: language.name[1]?.value,
     // TODO investigate
     metadataLanguageTag: '',
     _links: {
@@ -95,9 +104,9 @@ export async function GET(request: NextRequest): Promise<Response> {
   const response = {
     page,
     limit,
-    // TODO implement
+    // TODO: implement a formula pased on the total and the limit
     pages: 1234,
-    // TODO implement
+    // TODO: implent an api call in api-languages that gets a count of the total languages
     total: 1234,
     _links: {
       self: {
