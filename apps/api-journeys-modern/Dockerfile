@@ -2,7 +2,7 @@ FROM node:20-alpine
 
 EXPOSE 4004
 
-ENV PRISMA_LOCATION_JOURNEYS_MODERN=/app/node_modules/.prisma/api-journeys-client
+ENV PRISMA_LOCATION_JOURNEYS_MODERN=/app/node_modules/.prisma/api-journeys-modern-client
 
 RUN apk upgrade --update-cache --available && \
     rm -rf /var/cache/apk/*
