@@ -2032,6 +2032,7 @@ type CloudflareImage @join__type(graph: MEDIA)  {
   userId: ID!
   createdAt: Date!
   aspectRatio: ImageAspectRatio
+  url: String!
 }
 
 type CloudflareVideo @join__type(graph: MEDIA)  {
