@@ -9,9 +9,18 @@ import { JourneyUpdateInput, JourneyMenuButtonIcon, ButtonVariant, ButtonColor, 
 // GraphQL mutation operation: JourneySettingsUpdate
 // ====================================================
 
+export interface JourneySettingsUpdate_journeyUpdate_language_name {
+  __typename: "LanguageName";
+  value: string;
+  primary: boolean;
+}
+
 export interface JourneySettingsUpdate_journeyUpdate_language {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
+  iso3: string | null;
+  name: JourneySettingsUpdate_journeyUpdate_language_name[];
 }
 
 export interface JourneySettingsUpdate_journeyUpdate_tags {

@@ -6,8 +6,6 @@ import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refine
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement } from 'react'
 
-import { useSearchBar } from '../../../libs/algolia/SearchBarProvider'
-
 import { LanguageButton } from './LanguageButton'
 
 const MAX_DISPLAYED_LANGUAGES = 2
@@ -24,8 +22,6 @@ export function LanguageButtons({
   const theme = useTheme()
   const { t } = useTranslation('apps-watch')
   const { items, refine } = refinements
-
-  const { dispatch } = useSearchBar()
 
   const refinedItems = items
     .filter((item) => item.isRefined)
@@ -82,10 +78,6 @@ export function LanguageButtons({
               handleClick={(event: MouseEvent<HTMLButtonElement>) => {
                 event.stopPropagation()
                 refine(selectedLanguage)
-                dispatch({
-                  type: 'RemoveLanguageContinents',
-                  language: selectedLanguage
-                })
               }}
             />
           ))}

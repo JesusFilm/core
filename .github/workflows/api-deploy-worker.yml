@@ -16,7 +16,7 @@ on:
         required: true
         type: string
     secrets:
-      APOLLO_KEY:
+      HIVE_TOKEN:
         required: true
       AWS_DEFAULT_REGION:
         required: true
@@ -31,7 +31,7 @@ jobs:
   build-and-deploy:
     environment: Production
     env:
-      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      HIVE_TOKEN: ${{ secrets.HIVE_TOKEN }}
       ENV_SUFFIX: ${{ inputs.branch }}
       ECS_CLUSTER: jfp-ecs-cluster-${{ inputs.env }}
       ECS_SERVICE: ${{ inputs.name}}-${{ inputs.env }}-service
@@ -65,9 +65,6 @@ jobs:
 
       - name: nx Install
         run: npm install -g nx --silent
-
-      - name: rover Install
-        run: npm install -g @apollo/rover@0.22.0
 
       - name: Get affected apps
         run: |
@@ -127,12 +124,6 @@ jobs:
         run: |
           aws ecs update-service --force-new-deployment --service $ECS_SERVICE --cluster $ECS_CLUSTER
 
-      - name: Update stage Apollo managed subgraph
-        if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'stage')
+      - name: Update Hive managed subgraph
         run: |
-          rover subgraph publish API-GATEWAY-0zuda@stage --name ${{ inputs.name }} --routing-url ${{ inputs.endpoint_url }} --schema apps/${{ inputs.name }}/schema.graphql
-
-      - name: Update prod Apollo managed subgraph
-        if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'main')
-        run: |
-          rover subgraph publish API-GATEWAY-0zuda@current --name ${{ inputs.name }} --routing-url ${{ inputs.endpoint_url }} --schema apps/${{ inputs.name }}/schema.graphql
+          npx hive schema:publish apps/${{ inputs.name }}/schema.graphql --service ${{ inputs.name }} --url ${{ inputs.endpoint_url }} --github

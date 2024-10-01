@@ -1,6 +1,7 @@
-// version 12
+// version 13
 // increment to trigger re-seed (ie: files other than seed.ts are changed)
 
+import { formBlocksDelete } from './seeds/formBlocksDelete'
 import { jfpTeam } from './seeds/jfpTeam'
 import { nua1 } from './seeds/nua1'
 import { nua2 } from './seeds/nua2'
@@ -21,6 +22,8 @@ async function main(): Promise<void> {
   await onboarding()
   await onboardingTemplates()
   await playwrightUserAccess()
+
+  await formBlocksDelete()
 }
 main().catch((e) => {
   console.error(e)

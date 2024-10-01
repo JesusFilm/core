@@ -1,5 +1,5 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.7", import: ["@extends", "@external", "@key", "@shareable"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
 type BibleBook {
   id: ID!
@@ -109,6 +109,8 @@ type Query {
   bibleBooks: [BibleBook!]!
   bibleCitations: [BibleCitation!]!
   keywords: [Keyword!]!
+  adminVideo(id: ID!, idType: IdType = databaseId): Video!
+  adminVideos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   video(id: ID!, idType: IdType = databaseId): Video!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   videosCount(where: VideosFilter): Int!
@@ -269,6 +271,7 @@ type Video
   id: ID!
   label: VideoLabel!
   primaryLanguageId: ID!
+  published: Boolean!
   title(languageId: ID, primary: Boolean): [VideoTitle!]!
   snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
   description(languageId: ID, primary: Boolean): [VideoDescription!]!

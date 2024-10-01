@@ -40,9 +40,9 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.clickThreeDotOfCreatedJourney(journeyName) // clicking on the three dot of created journey in the journey list
     await journeyLevelActions.clickThreeDotOptions('Edit') // clicking on Edit option of the three dot options
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
-    await journeyPage.clickTitleInThreeDotOptions() // clicking on the title option of the three dot options
-    await journeyLevelActions.enterTitle() // renaming the title on the title field in the 'edit title' popup
-    await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
+    await journeyPage.clickJourneyDetailsInThreeDotOptions() // clicking on the title option of the three dot options
+    await journeyPage.enterTitle() // entering title on the title field in the 'journey details' popup
+    await journeyPage.clickSaveBtn() // clicking on save button in the 'journey details' popup
     await journeyPage.backIcon() // clicking on the back icon in the custom jouney page
     await journeyLevelActions.verifyJourneyRenamedInActiveList() // verifying the journey is renamed and upadted in the journey list
   })
@@ -97,9 +97,11 @@ test.describe('Journey level actions', () => {
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
     await await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on the created journey in the journey list
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
-    await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage('Title') // clicking on the title option of the thre dot options
-    await journeyLevelActions.enterTitle() // entering title on the title field in the 'edit title' popup
-    await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
+    await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
+      'Edit Details'
+    ) // clicking on the journey details option of the thre dot options
+    await journeyLevelActions.enterTitle() // entering title on the title field in the 'journey details' popup
+    await journeyPage.clickSaveBtn() // clicking on save button in the 'journey details' popup
     await journeyPage.backIcon() // clicking back icon at the top left corner in the custom journey page
     await journeyLevelActions.verifyJourneyRenamedInActiveList() // verifying journey is displaying in the journey list with the entered title
   })
@@ -116,10 +118,10 @@ test.describe('Journey level actions', () => {
     await await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on the created journey in the journey list
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
     await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
-      'Description'
+      'Edit Details'
     ) // clicking on the description option of the three dot options
-    await journeyLevelActions.enterDescription() // entering the description value on the description field in the 'edit description' popup
-    await journeyPage.clickSaveBtn() // clicking on save button in the 'edit description' popup
+    await journeyLevelActions.enterDescription() // entering the description value on the description field in the 'journey details' popup
+    await journeyPage.clickSaveBtn() // clicking on save button in the 'journey details' popup
     await journeyPage.backIcon() // clicking back icon at the top left corner in the custom journey page
     await journeyLevelActions.verifyDescriptionAddedForSelectedJourney() // verifying the journey is displaying in the journey list with added description below the journey title
   })
@@ -135,16 +137,16 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.selectExistingJourney() // clicking on existing journey in the journey list
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
     await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
-      'Language'
-    ) // clicking on the language option of the three dot options
-    await journeyLevelActions.enterLanguage('Tamil') // selecting language in the edit language popup
-    await journeyPage.clickSaveBtn() // clicking on save button in the 'edit language' popup
+      'Edit Details'
+    ) // clicking on the journey details option of the three dot options
+    await journeyLevelActions.enterLanguage('Tamil') // selecting language in the edit 'journey details popup
+    await journeyPage.clickSaveBtn() // clicking on save button in the 'journey details' popup
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
     await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
-      'Language'
+      'Edit Details'
     ) // clicking on the language option of the three dot options
-    await journeyLevelActions.verifySelectedLanguageInLanguagePopup() // verify selecetd language is upadetd in the edit language popup
-    await journeyLevelActions.enterLanguage('English') //  clicking on save button in the 'edit language' popup
+    await journeyLevelActions.verifySelectedLanguageInLanguagePopup() // verify selecetd language is updated in the 'journey details popup
+    await journeyLevelActions.enterLanguage('English') //  selecting language in the edit 'journey details popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit language' popup
   })
 

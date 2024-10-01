@@ -36,11 +36,8 @@ export function OnboardingStepper({
       case '/users/terms-and-conditions':
         step = 1
         break
-      case '/onboarding-form':
-        step = 2
-        break
       case '/teams/new':
-        step = 3
+        step = 2
         break
       default:
         step = 0
@@ -61,11 +58,6 @@ export function OnboardingStepper({
     {
       label: t('Terms and Conditions')
     },
-    quick
-      ? undefined
-      : {
-          label: t('User Insights')
-        },
     quick
       ? undefined
       : {
