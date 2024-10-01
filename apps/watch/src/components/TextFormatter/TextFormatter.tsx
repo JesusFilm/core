@@ -3,8 +3,8 @@ import Typography from '@mui/material/Typography'
 import { ComponentProps, Fragment, ReactElement, ReactNode } from 'react'
 
 function hasProtocol(word: string): boolean {
-  const httpPattern = /^https?:\/\/(.*)/gm
-  return word.match(httpPattern) != null
+  const protocolPattern = /^(http|https):\/\/(.*)/gm
+  return word.match(protocolPattern) != null
 }
 
 function isUrl(word: string): boolean {
