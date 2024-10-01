@@ -76,6 +76,7 @@ model Video {
   id                     String               @id @default(uuid())
   label                  VideoLabel
   primaryLanguageId      String
+  published              Boolean              @default(true)
   title                  VideoTitle[]
   snippet                VideoSnippet[]
   description            VideoDescription[]
@@ -100,6 +101,7 @@ model Video {
 
   @@index(label)
   @@index(childIds)
+  @@index(published(type: Hash))
 }
 
 model VideoTitle {
