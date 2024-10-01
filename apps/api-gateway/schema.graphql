@@ -639,6 +639,8 @@ type Query @join__type(graph: ANALYTICS)  @join__type(graph: JOURNEYS)  @join__t
   bibleBooks: [BibleBook!]! @join__field(graph: MEDIA) 
   bibleCitations: [BibleCitation!]! @join__field(graph: MEDIA) 
   keywords: [Keyword!]! @join__field(graph: MEDIA) 
+  adminVideo(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: MEDIA) 
+  adminVideos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: MEDIA) 
   video(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: MEDIA) 
   videos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: MEDIA) 
   videosCount(where: VideosFilter) : Int! @join__field(graph: MEDIA) 
@@ -835,6 +837,7 @@ type Video @join__type(graph: JOURNEYS, key: "id primaryLanguageId")  @join__typ
   bibleCitations: [BibleCitation!]! @join__field(graph: MEDIA) 
   keywords(languageId: ID) : [Keyword!]! @join__field(graph: MEDIA) 
   label: VideoLabel! @join__field(graph: MEDIA) 
+  published: Boolean! @join__field(graph: MEDIA) 
   title(languageId: ID, primary: Boolean) : [VideoTitle!]! @join__field(graph: MEDIA) 
   snippet(languageId: ID, primary: Boolean) : [VideoSnippet!]! @join__field(graph: MEDIA) 
   description(languageId: ID, primary: Boolean) : [VideoDescription!]! @join__field(graph: MEDIA) 
@@ -2028,6 +2031,7 @@ type CloudflareImage @join__type(graph: MEDIA)  {
   userId: ID!
   createdAt: Date!
   aspectRatio: ImageAspectRatio
+  url: String!
 }
 
 type CloudflareVideo @join__type(graph: MEDIA)  {

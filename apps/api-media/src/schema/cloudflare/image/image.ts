@@ -22,6 +22,13 @@ builder.prismaObject('CloudflareImage', {
     aspectRatio: t.expose('aspectRatio', {
       type: ImageAspectRatio,
       nullable: true
+    }),
+    url: t.field({
+      type: 'String',
+      resolve: ({ id }) =>
+        `https://customer-${
+          process.env.CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
+        }.cloudflarestream.com/${id}`
     })
   })
 })
