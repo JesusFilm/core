@@ -71,6 +71,16 @@ module "api-journeys" {
   }
 }
 
+module "api-journeys-modern" {
+  source        = "../../../apps/api-journeys-modern/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  doppler_token = data.aws_ssm_parameter.doppler_api_journeys_prod_token.value
+  alb = {
+    arn      = module.prod.internal_alb.arn
+    dns_name = module.prod.internal_alb.dns_name
+  }
+}
+
 module "api-languages" {
   source        = "../../../apps/api-languages/infrastructure"
   ecs_config    = local.internal_ecs_config
