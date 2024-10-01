@@ -1,4 +1,5 @@
 import { ResultOf } from 'gql.tada'
+import { GraphQLError } from 'graphql'
 
 import {
   BibleCitation,
@@ -1351,6 +1352,18 @@ describe('video', () => {
       })
       expect(data).toHaveProperty('data.adminVideos', result)
     })
+
+    it('should fail if not publisher', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValueOnce({
+        id: 'userId',
+        userId: 'userId',
+        roles: []
+      })
+      const data = await authClient({
+        document: ADMIN_VIDEOS_QUERY
+      })
+      expect(data).toHaveProperty('data', null)
+    })
   })
 
   describe('adminVideo', () => {
@@ -1419,6 +1432,22 @@ describe('video', () => {
         }
       })
       expect(data).toHaveProperty('data.adminVideo', { id: 'videoId' })
+    })
+
+    it('should fail if not publisher', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValueOnce({
+        id: 'userId',
+        userId: 'userId',
+        roles: []
+      })
+      const data = await authClient({
+        document: ADMIN_VIDEO_QUERY,
+        variables: {
+          id: 'slug',
+          idType: 'slug'
+        }
+      })
+      expect(data).toHaveProperty('data', null)
     })
   })
 
