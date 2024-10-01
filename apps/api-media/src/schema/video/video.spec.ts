@@ -1,5 +1,4 @@
 import { ResultOf } from 'gql.tada'
-import { GraphQLError } from 'graphql'
 
 import {
   BibleCitation,

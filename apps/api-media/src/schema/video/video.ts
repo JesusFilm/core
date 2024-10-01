@@ -25,6 +25,7 @@ const Video = builder.prismaObject('Video', {
     id: t.exposeID('id'),
     label: t.expose('label', { type: VideoLabel }),
     primaryLanguageId: t.exposeID('primaryLanguageId'),
+    published: t.exposeBoolean('published'),
     title: t.relation('title', {
       args: {
         languageId: t.arg.id({ required: false }),
