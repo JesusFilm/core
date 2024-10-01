@@ -16,7 +16,7 @@ export interface CoverVideoBlockUpdate_videoBlockUpdate_video_title {
 
 export interface CoverVideoBlockUpdate_videoBlockUpdate_video_images {
   __typename: "CloudflareImage";
-  id: string;
+  url: string;
 }
 
 export interface CoverVideoBlockUpdate_videoBlockUpdate_video_variant {

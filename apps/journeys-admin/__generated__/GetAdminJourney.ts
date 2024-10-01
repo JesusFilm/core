@@ -255,7 +255,7 @@ export interface GetAdminJourney_journey_blocks_VideoBlock_video_title {
 
 export interface GetAdminJourney_journey_blocks_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  id: string;
+  url: string;
 }
 
 export interface GetAdminJourney_journey_blocks_VideoBlock_video_variant {

@@ -241,7 +241,7 @@ export interface CardQuoteRestore_image_VideoBlock_video_title {
 
 export interface CardQuoteRestore_image_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  id: string;
+  url: string;
 }
 
 export interface CardQuoteRestore_image_VideoBlock_video_variant {
@@ -643,7 +643,7 @@ export interface CardQuoteRestore_subtitle_VideoBlock_video_title {
 
 export interface CardQuoteRestore_subtitle_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  id: string;
+  url: string;
 }
 
 export interface CardQuoteRestore_subtitle_VideoBlock_video_variant {
@@ -1045,7 +1045,7 @@ export interface CardQuoteRestore_title_VideoBlock_video_title {
 
 export interface CardQuoteRestore_title_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  id: string;
+  url: string;
 }
 
 export interface CardQuoteRestore_title_VideoBlock_video_variant {
@@ -1447,7 +1447,7 @@ export interface CardQuoteRestore_body_VideoBlock_video_title {
 
 export interface CardQuoteRestore_body_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  id: string;
+  url: string;
 }
 
 export interface CardQuoteRestore_body_VideoBlock_video_variant {

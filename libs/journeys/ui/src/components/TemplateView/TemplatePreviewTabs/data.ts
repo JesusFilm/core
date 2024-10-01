@@ -41,7 +41,12 @@ export const journeyVideoBlocks: Blocks[] = [
           value: 'Installing the Jesus Film Media App'
         }
       ],
-      images: [{ __typename: 'CloudflareImage', id: 'lrg_cine_install' }],
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          url: 'https://customer-.cloudflarestream.com/lrg_cine_install'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-0-TrainV_1Install',

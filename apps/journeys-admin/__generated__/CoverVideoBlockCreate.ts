@@ -16,7 +16,7 @@ export interface CoverVideoBlockCreate_videoBlockCreate_video_title {
 
 export interface CoverVideoBlockCreate_videoBlockCreate_video_images {
   __typename: "CloudflareImage";
-  id: string;
+  url: string;
 }
 
 export interface CoverVideoBlockCreate_videoBlockCreate_video_variant {

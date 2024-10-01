@@ -19,7 +19,7 @@ export const GET_VIDEOS = gql`
     videos(where: $where, limit: $limit, offset: $offset) {
       id
       images(aspectRatio: hd) {
-        id
+        url
       }
       snippet {
         primary
@@ -67,12 +67,7 @@ export function VideoFromLocal({
           id: video.id,
           title: video.title.find(({ primary }) => primary)?.value,
           description: video.snippet.find(({ primary }) => primary)?.value,
-          image:
-            video.images[0]?.id != null
-              ? `https://customer-${
-                  process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-                }.cloudflarestream.com/${video.images[0].id ?? ''}`
-              : '',
+          image: video.images[0]?.url ?? '',
           duration: video.variant?.duration,
           source: VideoBlockSource.internal
         }))
@@ -96,7 +91,7 @@ export function VideoFromLocal({
           id: video.id,
           title: video.title.find(({ primary }) => primary)?.value,
           description: video.snippet.find(({ primary }) => primary)?.value,
-          image: video.image ?? '',
+          image: video.images[0]?.url ?? '',
           duration: video.variant?.duration,
           source: VideoBlockSource.internal
         }))

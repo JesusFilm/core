@@ -21,7 +21,7 @@ export interface CoverBlockRestore_blockRestore_VideoBlock_video_title {
 
 export interface CoverBlockRestore_blockRestore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  id: string;
+  url: string;
 }
 
 export interface CoverBlockRestore_blockRestore_VideoBlock_video_variant {

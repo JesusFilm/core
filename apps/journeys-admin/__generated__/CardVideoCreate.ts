@@ -16,7 +16,7 @@ export interface CardVideoCreate_video_video_title {
 
 export interface CardVideoCreate_video_video_images {
   __typename: "CloudflareImage";
-  id: string;
+  url: string;
 }
 
 export interface CardVideoCreate_video_video_variant {

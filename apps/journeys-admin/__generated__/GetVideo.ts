@@ -9,7 +9,7 @@
 
 export interface GetVideo_video_images {
   __typename: "CloudflareImage";
-  id: string;
+  url: string;
 }
 
 export interface GetVideo_video_title {

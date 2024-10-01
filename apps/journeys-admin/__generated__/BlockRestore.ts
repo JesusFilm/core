@@ -251,7 +251,7 @@ export interface BlockRestore_blockRestore_VideoBlock_video_title {
 
 export interface BlockRestore_blockRestore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  id: string;
+  url: string;
 }
 
 export interface BlockRestore_blockRestore_VideoBlock_video_variant {

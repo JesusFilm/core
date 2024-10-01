@@ -30,7 +30,7 @@ export const GET_VIDEO = gql`
     video(id: $id) {
       id
       images(aspectRatio: hd) {
-        id
+        url
       }
       primaryLanguageId
       title {

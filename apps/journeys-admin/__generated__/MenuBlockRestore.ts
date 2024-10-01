@@ -251,7 +251,7 @@ export interface MenuBlockRestore_stepRestore_VideoBlock_video_title {
 
 export interface MenuBlockRestore_stepRestore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  id: string;
+  url: string;
 }
 
 export interface MenuBlockRestore_stepRestore_VideoBlock_video_variant {

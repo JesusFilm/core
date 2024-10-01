@@ -20,7 +20,7 @@ export interface CardVideoDelete_video_VideoBlock_video_title {
 
 export interface CardVideoDelete_video_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  id: string;
+  url: string;
 }
 
 export interface CardVideoDelete_video_VideoBlock_video_variant {

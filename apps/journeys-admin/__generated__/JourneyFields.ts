@@ -255,7 +255,7 @@ export interface JourneyFields_blocks_VideoBlock_video_title {
 
 export interface JourneyFields_blocks_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  id: string;
+  url: string;
 }
 
 export interface JourneyFields_blocks_VideoBlock_video_variant {

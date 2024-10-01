@@ -11,7 +11,7 @@ import { VideosFilter } from "./globalTypes";
 
 export interface GetVideos_videos_images {
   __typename: "CloudflareImage";
-  id: string;
+  url: string;
 }
 
 export interface GetVideos_videos_snippet {

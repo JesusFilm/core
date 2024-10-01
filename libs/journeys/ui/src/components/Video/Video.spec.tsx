@@ -46,7 +46,7 @@ const block: TreeBlock<VideoFields> = {
     images: [
       {
         __typename: 'CloudflareImage',
-        id: '2_0-FallingPlates'
+        url: 'https://customer-.cloudflarestream.com/2_0-FallingPlates'
       }
     ],
     variant: {

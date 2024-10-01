@@ -143,7 +143,7 @@ export interface CardIntroCreate_video_video_title {
 
 export interface CardIntroCreate_video_video_images {
   __typename: "CloudflareImage";
-  id: string;
+  url: string;
 }
 
 export interface CardIntroCreate_video_video_variant {
