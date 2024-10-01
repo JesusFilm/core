@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement, useState } from 'react'
 
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { VideoSearch } from './VideoSearch'
@@ -16,14 +17,16 @@ const VideoSearchComponent = (args): ReactElement => {
   const [title, setTitle] = useState<string>()
 
   return (
-    <Box
-      sx={{
-        width: '300px',
-        height: '200px'
-      }}
-    >
-      <VideoSearch value={title} onChange={setTitle} {...args} />
-    </Box>
+    <InstantSearchTestWrapper>
+      <Box
+        sx={{
+          width: '300px',
+          height: '200px'
+        }}
+      >
+        <VideoSearch value={title} onChange={setTitle} {...args} />
+      </Box>
+    </InstantSearchTestWrapper>
   )
 }
 
