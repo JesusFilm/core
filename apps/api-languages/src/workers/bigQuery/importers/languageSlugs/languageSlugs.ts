@@ -50,7 +50,7 @@ export async function importLanguageSlugs(logger?: Logger): Promise<void> {
   const emptySlugs = await prisma.language.findMany({
     where: {
       slug: null,
-      nameLanguage: { some: { languageId: '529' } }
+      name: { some: { languageId: '529' } }
     }
   })
 
