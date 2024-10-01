@@ -253,6 +253,11 @@ export interface JourneyFields_blocks_VideoBlock_video_title {
   value: string;
 }
 
+export interface JourneyFields_blocks_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  id: string;
+}
+
 export interface JourneyFields_blocks_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -275,7 +280,7 @@ export interface JourneyFields_blocks_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: JourneyFields_blocks_VideoBlock_video_title[];
-  image: string | null;
+  images: JourneyFields_blocks_VideoBlock_video_images[];
   variant: JourneyFields_blocks_VideoBlock_video_variant | null;
   variantLanguages: JourneyFields_blocks_VideoBlock_video_variantLanguages[];
 }

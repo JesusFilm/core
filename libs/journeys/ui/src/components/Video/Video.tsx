@@ -97,7 +97,14 @@ export function Video({
     (block) => block.id === posterBlockId && block.__typename === 'ImageBlock'
   ) as TreeBlock<ImageFields> | undefined
 
-  const videoImage = source === VideoBlockSource.internal ? video?.image : image
+  const videoImage =
+    source === VideoBlockSource.internal
+      ? video?.images[0]?.id != null
+        ? `https://customer-${
+            process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
+          }.cloudflarestream.com/${video.images[0].id ?? ''}`
+        : ''
+      : image
 
   const blurBackground = useMemo(() => {
     return posterBlock != null

@@ -65,7 +65,13 @@ function TemplateVideoPreviewItem({
         <DynamicTemplateVideoPlayer
           id={block?.video?.variant?.hls ?? block?.videoId}
           source={block?.source}
-          poster={(block?.image as string) ?? block?.video?.image}
+          poster={
+            (block?.image as string) ?? block?.video?.images[0]?.id != null
+              ? `https://customer-${
+                  process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
+                }.cloudflarestream.com/${block?.video?.images[0].id ?? ''}`
+              : ''
+          }
           startAt={block?.startAt ?? 0}
           endAt={block?.endAt ?? 10000}
         />

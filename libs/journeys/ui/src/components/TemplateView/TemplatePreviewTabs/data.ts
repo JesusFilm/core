@@ -41,8 +41,7 @@ export const journeyVideoBlocks: Blocks[] = [
           value: 'Installing the Jesus Film Media App'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/lrg_cine_install.jpg',
+      images: [{ __typename: 'CloudflareImage', id: 'lrg_cine_install' }],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-0-TrainV_1Install',
@@ -80,8 +79,7 @@ export const journeyVideoBlocks: Blocks[] = [
           value: 'Use this App in Ministry'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/lrg_cine_ministry.jpg',
+      images: [{ __typename: 'CloudflareImage', id: 'lrg_cine_ministry' }],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-0-TrainV_5Ministry',
@@ -119,8 +117,7 @@ export const journeyVideoBlocks: Blocks[] = [
           value: 'StoryClubs: Childhood of Jesus'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl1302-0-0.mobileCinematicHigh.jpg',
+      images: [{ __typename: 'CloudflareImage', id: '1_cl1302-0-0' }],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-cl1302-0-0',
@@ -202,8 +199,7 @@ export const journeyVideoBlocks: Blocks[] = [
           value: 'StoryClubs: Sinful Woman Forgiven'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl1305-0-0.mobileCinematicHigh.jpg',
+      images: [{ __typename: 'CloudflareImage', id: '1_cl1305-0-0' }],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-cl1305-0-0',
