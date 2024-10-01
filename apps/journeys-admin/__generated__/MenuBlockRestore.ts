@@ -249,6 +249,11 @@ export interface MenuBlockRestore_stepRestore_VideoBlock_video_title {
   value: string;
 }
 
+export interface MenuBlockRestore_stepRestore_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  id: string;
+}
+
 export interface MenuBlockRestore_stepRestore_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -271,7 +276,7 @@ export interface MenuBlockRestore_stepRestore_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: MenuBlockRestore_stepRestore_VideoBlock_video_title[];
-  image: string | null;
+  images: MenuBlockRestore_stepRestore_VideoBlock_video_images[];
   variant: MenuBlockRestore_stepRestore_VideoBlock_video_variant | null;
   variantLanguages: MenuBlockRestore_stepRestore_VideoBlock_video_variantLanguages[];
 }

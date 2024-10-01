@@ -249,6 +249,11 @@ export interface StepDuplicate_blockDuplicate_VideoBlock_video_title {
   value: string;
 }
 
+export interface StepDuplicate_blockDuplicate_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  id: string;
+}
+
 export interface StepDuplicate_blockDuplicate_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -271,7 +276,7 @@ export interface StepDuplicate_blockDuplicate_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: StepDuplicate_blockDuplicate_VideoBlock_video_title[];
-  image: string | null;
+  images: StepDuplicate_blockDuplicate_VideoBlock_video_images[];
   variant: StepDuplicate_blockDuplicate_VideoBlock_video_variant | null;
   variantLanguages: StepDuplicate_blockDuplicate_VideoBlock_video_variantLanguages[];
 }

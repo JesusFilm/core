@@ -27,7 +27,9 @@ export const VIDEO_FIELDS = gql`
       title(primary: true) {
         value
       }
-      image
+      images(aspectRatio: hd) {
+        id
+      }
       variant {
         id
         hls

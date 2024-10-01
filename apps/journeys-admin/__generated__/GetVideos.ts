@@ -9,6 +9,11 @@ import { VideosFilter } from "./globalTypes";
 // GraphQL query operation: GetVideos
 // ====================================================
 
+export interface GetVideos_videos_images {
+  __typename: "CloudflareImage";
+  id: string;
+}
+
 export interface GetVideos_videos_snippet {
   __typename: "VideoSnippet";
   primary: boolean;
@@ -30,7 +35,7 @@ export interface GetVideos_videos_variant {
 export interface GetVideos_videos {
   __typename: "Video";
   id: string;
-  image: string | null;
+  images: GetVideos_videos_images[];
   snippet: GetVideos_videos_snippet[];
   title: GetVideos_videos_title[];
   variant: GetVideos_videos_variant | null;

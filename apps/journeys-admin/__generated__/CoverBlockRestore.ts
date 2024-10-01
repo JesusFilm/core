@@ -19,6 +19,11 @@ export interface CoverBlockRestore_blockRestore_VideoBlock_video_title {
   value: string;
 }
 
+export interface CoverBlockRestore_blockRestore_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  id: string;
+}
+
 export interface CoverBlockRestore_blockRestore_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -41,7 +46,7 @@ export interface CoverBlockRestore_blockRestore_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CoverBlockRestore_blockRestore_VideoBlock_video_title[];
-  image: string | null;
+  images: CoverBlockRestore_blockRestore_VideoBlock_video_images[];
   variant: CoverBlockRestore_blockRestore_VideoBlock_video_variant | null;
   variantLanguages: CoverBlockRestore_blockRestore_VideoBlock_video_variantLanguages[];
 }

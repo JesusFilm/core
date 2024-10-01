@@ -239,6 +239,11 @@ export interface CardFormRestore_image_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardFormRestore_image_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  id: string;
+}
+
 export interface CardFormRestore_image_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -261,7 +266,7 @@ export interface CardFormRestore_image_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardFormRestore_image_VideoBlock_video_title[];
-  image: string | null;
+  images: CardFormRestore_image_VideoBlock_video_images[];
   variant: CardFormRestore_image_VideoBlock_video_variant | null;
   variantLanguages: CardFormRestore_image_VideoBlock_video_variantLanguages[];
 }
@@ -636,6 +641,11 @@ export interface CardFormRestore_subtitle_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardFormRestore_subtitle_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  id: string;
+}
+
 export interface CardFormRestore_subtitle_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -658,7 +668,7 @@ export interface CardFormRestore_subtitle_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardFormRestore_subtitle_VideoBlock_video_title[];
-  image: string | null;
+  images: CardFormRestore_subtitle_VideoBlock_video_images[];
   variant: CardFormRestore_subtitle_VideoBlock_video_variant | null;
   variantLanguages: CardFormRestore_subtitle_VideoBlock_video_variantLanguages[];
 }
@@ -1033,6 +1043,11 @@ export interface CardFormRestore_title_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardFormRestore_title_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  id: string;
+}
+
 export interface CardFormRestore_title_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -1055,7 +1070,7 @@ export interface CardFormRestore_title_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardFormRestore_title_VideoBlock_video_title[];
-  image: string | null;
+  images: CardFormRestore_title_VideoBlock_video_images[];
   variant: CardFormRestore_title_VideoBlock_video_variant | null;
   variantLanguages: CardFormRestore_title_VideoBlock_video_variantLanguages[];
 }
@@ -1430,6 +1445,11 @@ export interface CardFormRestore_textResponse_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardFormRestore_textResponse_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  id: string;
+}
+
 export interface CardFormRestore_textResponse_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -1452,7 +1472,7 @@ export interface CardFormRestore_textResponse_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardFormRestore_textResponse_VideoBlock_video_title[];
-  image: string | null;
+  images: CardFormRestore_textResponse_VideoBlock_video_images[];
   variant: CardFormRestore_textResponse_VideoBlock_video_variant | null;
   variantLanguages: CardFormRestore_textResponse_VideoBlock_video_variantLanguages[];
 }
@@ -1827,6 +1847,11 @@ export interface CardFormRestore_body_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardFormRestore_body_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  id: string;
+}
+
 export interface CardFormRestore_body_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -1849,7 +1874,7 @@ export interface CardFormRestore_body_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardFormRestore_body_VideoBlock_video_title[];
-  image: string | null;
+  images: CardFormRestore_body_VideoBlock_video_images[];
   variant: CardFormRestore_body_VideoBlock_video_variant | null;
   variantLanguages: CardFormRestore_body_VideoBlock_video_variantLanguages[];
 }

@@ -253,6 +253,11 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_
   value: string;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  id: string;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -275,7 +280,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video 
   __typename: "Video";
   id: string;
   title: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_title[];
-  image: string | null;
+  images: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_images[];
   variant: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variant | null;
   variantLanguages: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages[];
 }

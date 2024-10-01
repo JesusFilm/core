@@ -239,6 +239,11 @@ export interface BlockFields_VideoBlock_video_title {
   value: string;
 }
 
+export interface BlockFields_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  id: string;
+}
+
 export interface BlockFields_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -261,7 +266,7 @@ export interface BlockFields_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: BlockFields_VideoBlock_video_title[];
-  image: string | null;
+  images: BlockFields_VideoBlock_video_images[];
   variant: BlockFields_VideoBlock_video_variant | null;
   variantLanguages: BlockFields_VideoBlock_video_variantLanguages[];
 }

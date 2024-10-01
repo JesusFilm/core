@@ -29,7 +29,9 @@ export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID!) {
     video(id: $id) {
       id
-      image
+      images(aspectRatio: hd) {
+        id
+      }
       primaryLanguageId
       title {
         primary

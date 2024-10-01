@@ -253,6 +253,11 @@ export interface GetAdminJourney_journey_blocks_VideoBlock_video_title {
   value: string;
 }
 
+export interface GetAdminJourney_journey_blocks_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  id: string;
+}
+
 export interface GetAdminJourney_journey_blocks_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -275,7 +280,7 @@ export interface GetAdminJourney_journey_blocks_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: GetAdminJourney_journey_blocks_VideoBlock_video_title[];
-  image: string | null;
+  images: GetAdminJourney_journey_blocks_VideoBlock_video_images[];
   variant: GetAdminJourney_journey_blocks_VideoBlock_video_variant | null;
   variantLanguages: GetAdminJourney_journey_blocks_VideoBlock_video_variantLanguages[];
 }
