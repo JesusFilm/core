@@ -2,7 +2,7 @@ import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 import { ComponentProps, Fragment, ReactElement, ReactNode } from 'react'
 
-function hasHttp(word: string): boolean {
+function hasProtocol(word: string): boolean {
   const httpPattern = /^https?:\/\/(.*)/gm
   return word.match(httpPattern) != null
 }
@@ -20,7 +20,7 @@ function isEmail(word: string): boolean {
 
 function addMarkup(word: string): ReactElement | string {
   return isUrl(word) ? (
-    <Link href={hasHttp(word) ? word : `https://${word}`} target="_blank">
+    <Link href={hasProtocol(word) ? word : `https://${word}`} target="_blank">
       {word
         .replace('https://', '')
         .replace('http://', '')
