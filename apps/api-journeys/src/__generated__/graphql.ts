@@ -302,6 +302,7 @@ export type CloudflareImage = {
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
   uploadUrl?: Maybe<Scalars['String']['output']>;
+  url: Scalars['String']['output'];
   userId: Scalars['ID']['output'];
 };
 
