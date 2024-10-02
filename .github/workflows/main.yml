@@ -148,9 +148,3 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           targets: codecov
-      - name: Codecov
-        uses: codecov/codecov-action@v4.6.0
-        with:
-          directory: ./coverage/apps/
-          token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
