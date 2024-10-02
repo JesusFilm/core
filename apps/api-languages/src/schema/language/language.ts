@@ -114,5 +114,18 @@ builder.queryFields((t) => ({
         take: limit ?? undefined
       })
     }
+  }),
+
+  languagesCount: t.int({
+    args: { where: t.arg({ type: LanguagesFilter, required: false }) },
+    resolve: async (_parent, { where }) => {
+      const filter: Prisma.LanguageWhereInput = {
+        hasVideos: true
+      }
+      if (where?.ids != null) filter.id = { in: where.ids }
+      return await prisma.language.count({
+        where: filter
+      })
+    }
   })
 }))

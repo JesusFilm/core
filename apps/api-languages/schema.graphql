@@ -79,6 +79,7 @@ input LanguagesFilter {
 type Query {
   language(id: ID!, idType: LanguageIdType = databaseId): Language
   languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]!
+  languagesCount(where: LanguagesFilter): Int!
   country(id: ID!): Country
   countries: [Country!]!
 }

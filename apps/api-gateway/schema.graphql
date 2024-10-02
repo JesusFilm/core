@@ -614,6 +614,7 @@ type Query @join__type(graph: ANALYTICS)  @join__type(graph: JOURNEYS)  @join__t
   visitor(id: ID!) : Visitor! @join__field(graph: JOURNEYS) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter) : [Language!]! @join__field(graph: LANGUAGES) 
+  languagesCount(where: LanguagesFilter) : Int! @join__field(graph: LANGUAGES) 
   country(id: ID!) : Country @join__field(graph: LANGUAGES) 
   countries: [Country!]! @join__field(graph: LANGUAGES) 
   getMyCloudflareImages(offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: MEDIA) 
