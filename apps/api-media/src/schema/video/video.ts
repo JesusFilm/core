@@ -10,6 +10,7 @@ import { Language, LanguageWithSlug } from '../language'
 
 import { VideoLabel } from './enums/videoLabel'
 import { VideosFilter } from './inputs/videosFilter'
+import { VideoUpdateInput } from './inputs/videoUpdate'
 import { videosFilter } from './lib/videosFilter'
 
 const Video = builder.prismaObject('Video', {
@@ -362,6 +363,29 @@ builder.queryFields((t) => ({
       filter.published = true
       return await prisma.video.count({
         where: filter
+      })
+    }
+  })
+}))
+
+builder.mutationFields((t) => ({
+  videoUpdate: t.prismaField({
+    type: 'Video',
+    authScopes: {
+      isPublisher: true
+    },
+    args: {
+      input: t.arg({ type: VideoUpdateInput, required: true })
+    },
+    resolve: async (_query, _parent, { input }) => {
+      const { id, ...inputWithoutId } = input
+
+      return await prisma.video.update({
+        where: { id },
+        data: inputWithoutId,
+        include: {
+          children: true
+        }
       })
     }
   })

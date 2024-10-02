@@ -1,1 +1,2 @@
 import './videosFilter'
+import './videoUpdate'
