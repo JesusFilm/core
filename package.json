@@ -103,6 +103,7 @@
     "canvas": "^2.11.2",
     "cloudflare": "^3.5.0",
     "clsx": "^2.0.0",
+    "codecov": "^3.8.2",
     "core-js": "3.36.1",
     "cors": "^2.8.5",
     "cross-fetch": "^4.0.0",
