@@ -11,13 +11,14 @@ import {
   useSearchBox
 } from 'react-instantsearch'
 
-import type { CoreVideo } from '../../libs/algolia/useAlgoliaVideos'
-import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
+import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
+
+import { type CoreVideo } from '../../libs/algolia/transformAlgoliaVideos'
 
 import { VideosPage } from './VideosPage'
 
 jest.mock('react-instantsearch')
-jest.mock('../../libs/algolia/useAlgoliaVideos')
+jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
 
 const mockUseHits = useHits as jest.MockedFunction<typeof useHits>
 const mockUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
@@ -65,7 +66,7 @@ describe('VideosPage', () => {
     mockUseAlgoliaVideos.mockReturnValue({
       loading: false,
       noResults: false,
-      hits: transformedVideos,
+      items: transformedVideos,
       showMore: jest.fn(),
       isLastPage: false,
       sendEvent: jest.fn()

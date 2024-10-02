@@ -3953,6 +3953,7 @@ export type VisitorsConnection = {
 export enum Join__Graph {
   Analytics = 'ANALYTICS',
   Journeys = 'JOURNEYS',
+  JourneysModern = 'JOURNEYS_MODERN',
   Languages = 'LANGUAGES',
   Media = 'MEDIA',
   Users = 'USERS'
