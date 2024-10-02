@@ -456,7 +456,9 @@ describe('video', () => {
           {
             id: 'imageId',
             aspectRatio: ImageAspectRatio.hd,
-            url: 'https://customer-.cloudflarestream.com/imageId'
+            url: `https://imagedelivery.net/${
+              process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
+            }/imageId`
           }
         ]
       }

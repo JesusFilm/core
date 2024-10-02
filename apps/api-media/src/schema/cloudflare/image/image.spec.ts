@@ -51,6 +51,12 @@ describe('cloudflareImage', () => {
             uploadUrl
             userId
             aspectRatio
+            url
+            mobileCinematicHigh
+            mobileCinematicLow
+            mobileCinematicVeryLow
+            thumbnail
+            videoStill
           }
         }
       `)
@@ -78,7 +84,19 @@ describe('cloudflareImage', () => {
                 id: 'testId',
                 uploadUrl: 'testUrl',
                 userId: 'testUserId',
-                aspectRatio: ImageAspectRatio.hd
+                aspectRatio: ImageAspectRatio.hd,
+                url: `https://imagedelivery.net/${
+                  process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
+                }/testId`,
+                mobileCinematicHigh: null,
+                mobileCinematicLow: null,
+                mobileCinematicVeryLow: null,
+                thumbnail: `https://imagedelivery.net/${
+                  process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
+                }/testId/f=jpg,w=120,h=68,q=95`,
+                videoStill: `https://imagedelivery.net/${
+                  process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
+                }/testId/f=jpg,w=1920,h=1080,q=95`
               }
             ]
           }
@@ -115,7 +133,15 @@ describe('cloudflareImage', () => {
                 id: 'testId',
                 uploadUrl: 'testUrl',
                 userId: 'testUserId',
-                aspectRatio: null
+                aspectRatio: null,
+                url: `https://imagedelivery.net/${
+                  process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
+                }/testId`,
+                mobileCinematicHigh: null,
+                mobileCinematicLow: null,
+                mobileCinematicVeryLow: null,
+                thumbnail: null,
+                videoStill: null
               }
             ]
           }
