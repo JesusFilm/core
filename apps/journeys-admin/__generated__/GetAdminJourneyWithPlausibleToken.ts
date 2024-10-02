@@ -255,7 +255,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_vid
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string | null;
+  mobileCinematicHigh: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_video_variant {

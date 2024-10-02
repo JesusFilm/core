@@ -18,7 +18,7 @@ interface ContainerHeroProps {
 export function ContainerHero({
   openDialog
 }: ContainerHeroProps): ReactElement {
-  const { label: videoLabel, title, childrenCount, image } = useVideo()
+  const { label: videoLabel, title, childrenCount, images } = useVideo()
   const { label, childCountLabel } = getLabelDetails(videoLabel, childrenCount)
 
   return (
@@ -32,9 +32,9 @@ export function ContainerHero({
       }}
       data-testid="ContainerHero"
     >
-      {image != null && (
+      {images[0].mobileCinematicHigh != null && (
         <Image
-          src={image}
+          src={images[0].mobileCinematicHigh}
           alt="Home Hero"
           fill
           sizes="100vw"

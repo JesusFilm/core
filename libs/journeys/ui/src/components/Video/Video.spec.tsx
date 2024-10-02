@@ -46,7 +46,8 @@ const block: TreeBlock<VideoFields> = {
     images: [
       {
         __typename: 'CloudflareImage',
-        url: 'https://customer-.cloudflarestream.com/2_0-FallingPlates'
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
       }
     ],
     variant: {

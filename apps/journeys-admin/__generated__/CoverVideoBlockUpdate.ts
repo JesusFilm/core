@@ -16,7 +16,7 @@ export interface CoverVideoBlockUpdate_videoBlockUpdate_video_title {
 
 export interface CoverVideoBlockUpdate_videoBlockUpdate_video_images {
   __typename: "CloudflareImage";
-  url: string | null;
+  mobileCinematicHigh: string | null;
 }
 
 export interface CoverVideoBlockUpdate_videoBlockUpdate_video_variant {

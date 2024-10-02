@@ -218,8 +218,13 @@ describe('Card', () => {
                   value: 'FallingPlates'
                 }
               ],
-              image:
-                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+              images: [
+                {
+                  __typename: 'CloudflareImage',
+                  mobileCinematicHigh:
+                    'https://imagedelivery.net/testAccount/2_0-FallingPlates'
+                }
+              ],
               variant: {
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',
@@ -291,8 +296,13 @@ describe('Card', () => {
                   value: 'FallingPlates'
                 }
               ],
-              image:
-                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+              images: [
+                {
+                  __typename: 'CloudflareImage',
+                  mobileCinematicHigh:
+                    'https://imagedelivery.net/testAccount/2_0-FallingPlates'
+                }
+              ],
               variant: {
                 __typename: 'VideoVariant',
                 id: '2_0-FallingPlates-529',

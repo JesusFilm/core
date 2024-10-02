@@ -61,7 +61,10 @@ describe('VideoCard', () => {
         <VideoCard video={videos[0]} variant="contained" />
       )
       const img = getByRole('img')
-      expect(img).toHaveAttribute('src', videos[0].image)
+      expect(img).toHaveAttribute(
+        'src',
+        videos[0].images[0].mobileCinematicHigh
+      )
       expect(img).toHaveAttribute('alt', videos[0].title[0].value)
     })
 

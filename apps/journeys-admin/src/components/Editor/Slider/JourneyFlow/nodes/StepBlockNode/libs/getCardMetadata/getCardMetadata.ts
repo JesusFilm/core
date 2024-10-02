@@ -95,7 +95,7 @@ export function getCardMetadata(
     const bgImage =
       // Use posterBlockId image or default poster image on video
       posterBlockImage ??
-      priorityBlock?.video?.image ??
+      priorityBlock?.video?.images[0].mobileCinematicHigh ??
       priorityBlock.image ??
       undefined
 

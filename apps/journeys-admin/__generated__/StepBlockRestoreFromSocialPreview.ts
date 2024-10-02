@@ -251,7 +251,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string | null;
+  mobileCinematicHigh: string | null;
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_variant {

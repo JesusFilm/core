@@ -16,7 +16,7 @@ export interface VideoBlockCreate_videoBlockCreate_video_title {
 
 export interface VideoBlockCreate_videoBlockCreate_video_images {
   __typename: "CloudflareImage";
-  url: string | null;
+  mobileCinematicHigh: string | null;
 }
 
 export interface VideoBlockCreate_videoBlockCreate_video_variant {

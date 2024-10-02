@@ -241,7 +241,7 @@ export interface CardPollRestore_imageRestore_VideoBlock_video_title {
 
 export interface CardPollRestore_imageRestore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string | null;
+  mobileCinematicHigh: string | null;
 }
 
 export interface CardPollRestore_imageRestore_VideoBlock_video_variant {
@@ -643,7 +643,7 @@ export interface CardPollRestore_subtitleRestore_VideoBlock_video_title {
 
 export interface CardPollRestore_subtitleRestore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string | null;
+  mobileCinematicHigh: string | null;
 }
 
 export interface CardPollRestore_subtitleRestore_VideoBlock_video_variant {
@@ -1045,7 +1045,7 @@ export interface CardPollRestore_titleRestore_VideoBlock_video_title {
 
 export interface CardPollRestore_titleRestore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string | null;
+  mobileCinematicHigh: string | null;
 }
 
 export interface CardPollRestore_titleRestore_VideoBlock_video_variant {
@@ -1447,7 +1447,7 @@ export interface CardPollRestore_radioQuestionRestore_VideoBlock_video_title {
 
 export interface CardPollRestore_radioQuestionRestore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string | null;
+  mobileCinematicHigh: string | null;
 }
 
 export interface CardPollRestore_radioQuestionRestore_VideoBlock_video_variant {
@@ -1849,7 +1849,7 @@ export interface CardPollRestore_radioOption1Restore_VideoBlock_video_title {
 
 export interface CardPollRestore_radioOption1Restore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string | null;
+  mobileCinematicHigh: string | null;
 }
 
 export interface CardPollRestore_radioOption1Restore_VideoBlock_video_variant {
@@ -2251,7 +2251,7 @@ export interface CardPollRestore_radioOption2Restore_VideoBlock_video_title {
 
 export interface CardPollRestore_radioOption2Restore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string | null;
+  mobileCinematicHigh: string | null;
 }
 
 export interface CardPollRestore_radioOption2Restore_VideoBlock_video_variant {
@@ -2653,7 +2653,7 @@ export interface CardPollRestore_radioOption3Restore_VideoBlock_video_title {
 
 export interface CardPollRestore_radioOption3Restore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string | null;
+  mobileCinematicHigh: string | null;
 }
 
 export interface CardPollRestore_radioOption3Restore_VideoBlock_video_variant {
@@ -3055,7 +3055,7 @@ export interface CardPollRestore_radioOption4Restore_VideoBlock_video_title {
 
 export interface CardPollRestore_radioOption4Restore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string | null;
+  mobileCinematicHigh: string | null;
 }
 
 export interface CardPollRestore_radioOption4Restore_VideoBlock_video_variant {
@@ -3457,7 +3457,7 @@ export interface CardPollRestore_bodyRestore_VideoBlock_video_title {
 
 export interface CardPollRestore_bodyRestore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string | null;
+  mobileCinematicHigh: string | null;
 }
 
 export interface CardPollRestore_bodyRestore_VideoBlock_video_variant {

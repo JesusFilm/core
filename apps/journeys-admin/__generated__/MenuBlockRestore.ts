@@ -251,7 +251,7 @@ export interface MenuBlockRestore_stepRestore_VideoBlock_video_title {
 
 export interface MenuBlockRestore_stepRestore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string | null;
+  mobileCinematicHigh: string | null;
 }
 
 export interface MenuBlockRestore_stepRestore_VideoBlock_video_variant {

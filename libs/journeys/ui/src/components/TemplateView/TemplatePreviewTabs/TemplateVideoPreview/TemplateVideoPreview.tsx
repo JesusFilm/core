@@ -65,13 +65,19 @@ function TemplateVideoPreviewItem({
         <DynamicTemplateVideoPlayer
           id={block?.video?.variant?.hls ?? block?.videoId}
           source={block?.source}
-          poster={(block?.image as string) ?? block?.video?.images[0]?.url}
+          poster={
+            (block?.image as string) ??
+            block?.video?.images[0]?.mobileCinematicHigh
+          }
           startAt={block?.startAt ?? 0}
           endAt={block?.endAt ?? 10000}
         />
       ) : (
         <Image
-          src={(block?.image as string) ?? block?.video?.image}
+          src={
+            (block?.image as string) ??
+            block?.video?.images[0]?.mobileCinematicHigh
+          }
           alt={block?.video?.title[0]?.value ?? 'video' + ' image'}
           fill
           sizes="100vw"

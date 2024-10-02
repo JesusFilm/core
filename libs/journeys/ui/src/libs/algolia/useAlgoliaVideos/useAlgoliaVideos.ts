@@ -8,7 +8,10 @@ interface Video {
   id: string
   title?: string
   description?: string
-  image?: string
+  images: Array<{
+    __typename: 'CloudflareImage'
+    mobileCinematicHigh: string
+  }>
   duration?: number
   source: VideoBlockSource
 }
@@ -33,7 +36,12 @@ export function transformItemsDefault(items: AlgoliaVideo[]): Video[] {
     id: videoVariant.videoId,
     title: videoVariant.titles[0],
     description: videoVariant.description[0],
-    image: videoVariant.image,
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh: videoVariant.image
+      }
+    ],
     duration: videoVariant.duration,
     source: VideoBlockSource.internal
   }))

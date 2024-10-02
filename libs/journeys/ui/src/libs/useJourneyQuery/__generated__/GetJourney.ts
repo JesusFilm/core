@@ -255,7 +255,7 @@ export interface GetJourney_journey_blocks_VideoBlock_video_title {
 
 export interface GetJourney_journey_blocks_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string;
+  mobileCinematicHigh: string | null;
 }
 
 export interface GetJourney_journey_blocks_VideoBlock_video_variant {

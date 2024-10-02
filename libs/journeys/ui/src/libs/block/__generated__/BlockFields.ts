@@ -241,7 +241,7 @@ export interface BlockFields_VideoBlock_video_title {
 
 export interface BlockFields_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string;
+  mobileCinematicHigh: string | null;
 }
 
 export interface BlockFields_VideoBlock_video_variant {

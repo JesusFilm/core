@@ -26,7 +26,7 @@ interface VideoHeroOverlayProps {
 export function VideoHeroOverlay({
   handlePlay
 }: VideoHeroOverlayProps): ReactElement {
-  const { image, imageAlt, title, variant } = useVideo()
+  const { images, imageAlt, title, variant } = useVideo()
   const [openShare, setOpenShare] = useState(false)
   const [openDownload, setOpenDownload] = useState(false)
   const { t } = useTranslation('apps-watch')
@@ -42,9 +42,9 @@ export function VideoHeroOverlay({
       }}
       data-testid="VideoHeroOverlay"
     >
-      {image != null && (
+      {images[0].mobileCinematicHigh != null && (
         <Image
-          src={image}
+          src={images[0].mobileCinematicHigh}
           alt={imageAlt[0].value}
           fill
           sizes="100vw"

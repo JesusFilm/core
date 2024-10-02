@@ -126,9 +126,9 @@ export function VideoCard({
                 transition: (theme) => theme.transitions.create('transform')
               }}
             >
-              {video?.image != null ? (
+              {video != null && video.images.length > 0 ? (
                 <Image
-                  src={video.image}
+                  src={video.images[0].mobileCinematicHigh ?? ''}
                   alt={video.imageAlt[0].value}
                   fill
                   sizes="100vw"

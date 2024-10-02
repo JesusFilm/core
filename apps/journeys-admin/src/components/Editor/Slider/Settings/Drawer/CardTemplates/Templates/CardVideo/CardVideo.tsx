@@ -105,8 +105,13 @@ export function CardVideo(): ReactElement {
             __typename: 'VideoTitle'
           }
         ],
-        image:
-          'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg?version=2',
+        images: [
+          {
+            __typename: 'CloudflareImage',
+            mobileCinematicHigh:
+              'https://imagedelivery.net/testAccount/1_jf-0-0'
+          }
+        ],
         variant: {
           id: '1_529-jf-0-0',
           hls: 'https://arc.gt/j67rz',

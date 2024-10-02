@@ -27,8 +27,8 @@ export const VIDEO_FIELDS = gql`
       title(primary: true) {
         value
       }
-      images(aspectRatio: hd) {
-        url
+      images(aspectRatio: banner) {
+        mobileCinematicHigh
       }
       variant {
         id

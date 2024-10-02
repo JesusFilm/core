@@ -44,7 +44,8 @@ export const journeyVideoBlocks: Blocks[] = [
       images: [
         {
           __typename: 'CloudflareImage',
-          url: 'https://customer-.cloudflarestream.com/lrg_cine_install'
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/lrg_cine_install.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
         }
       ],
       variant: {
@@ -84,7 +85,13 @@ export const journeyVideoBlocks: Blocks[] = [
           value: 'Use this App in Ministry'
         }
       ],
-      images: [{ __typename: 'CloudflareImage', id: 'lrg_cine_ministry' }],
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/lrg_cine_install.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-0-TrainV_5Ministry',
@@ -122,7 +129,13 @@ export const journeyVideoBlocks: Blocks[] = [
           value: 'StoryClubs: Childhood of Jesus'
         }
       ],
-      images: [{ __typename: 'CloudflareImage', id: '1_cl1302-0-0' }],
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1302-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-cl1302-0-0',
@@ -204,7 +217,13 @@ export const journeyVideoBlocks: Blocks[] = [
           value: 'StoryClubs: Sinful Woman Forgiven'
         }
       ],
-      images: [{ __typename: 'CloudflareImage', id: '1_cl1305-0-0' }],
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1305-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-cl1305-0-0',

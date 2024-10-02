@@ -21,7 +21,7 @@ export interface CoverBlockRestore_blockRestore_VideoBlock_video_title {
 
 export interface CoverBlockRestore_blockRestore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string | null;
+  mobileCinematicHigh: string | null;
 }
 
 export interface CoverBlockRestore_blockRestore_VideoBlock_video_variant {

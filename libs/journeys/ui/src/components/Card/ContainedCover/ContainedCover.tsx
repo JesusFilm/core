@@ -85,7 +85,7 @@ export function ContainedCover({
                 block.__typename === 'ImageBlock'
             ) as TreeBlock<ImageFields>
           ).src
-        : videoBlock?.video?.image
+        : videoBlock?.video?.images[0].mobileCinematicHigh
       : // Use Youtube or Cloudflare set poster image
         videoBlock?.image
 

@@ -28,7 +28,7 @@ export function ShareDialog({
   ...dialogProps
 }: ShareDialogProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
-  const { description, snippet, image, title, variant } = useVideo()
+  const { description, snippet, images, title, variant } = useVideo()
   const [value, setValue] = useState(0)
   const theme = useTheme()
   const router = useRouter()
@@ -116,10 +116,10 @@ export function ShareDialog({
           alignItems="flex-start"
           sx={{ mb: 4 }}
         >
-          {image != null && (
+          {images[0].mobileCinematicHigh != null && (
             <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
               <Image
-                src={image}
+                src={images[0].mobileCinematicHigh}
                 alt={title[0].value}
                 width={240}
                 height={115}
