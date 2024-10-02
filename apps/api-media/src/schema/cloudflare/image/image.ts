@@ -23,12 +23,55 @@ builder.prismaObject('CloudflareImage', {
       type: ImageAspectRatio,
       nullable: true
     }),
-    url: t.field({
+    mobileCinematicHigh: t.field({
       type: 'String',
-      resolve: ({ id }) =>
-        `https://customer-${
-          process.env.CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-        }.cloudflarestream.com/${id}`
+      nullable: true,
+      resolve: ({ id, aspectRatio }) =>
+        aspectRatio === 'banner'
+          ? `https://imagedelivery.net/${
+              process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? ''
+            }/${id}/f=jpg&w=1280&h=600&q=95`
+          : null
+    }),
+    mobileCinematicLow: t.field({
+      type: 'String',
+      nullable: true,
+      resolve: ({ id, aspectRatio }) =>
+        aspectRatio === 'banner'
+          ? `https://imagedelivery.net/${
+              process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? ''
+            }/${id}/f=jpg&w=640&h=300&q=95`
+          : null
+    }),
+    mobileCinematicVeryLow: t.field({
+      type: 'String',
+      nullable: true,
+      resolve: ({ id, aspectRatio }) =>
+        aspectRatio === 'banner'
+          ? `https://imagedelivery.net/${
+              process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? ''
+            }/${id}/f=webp&w=640&h=300&quality=50`
+          : null
+    }),
+    thumbnail: t.field({
+      type: 'String',
+      nullable: true,
+      resolve: ({ id, aspectRatio }) =>
+        aspectRatio === 'hd'
+          ? `https://imagedelivery.net/${
+              process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? ''
+            }/${id}/f=jpg&w=120x68&q=95`
+          : null
+    }),
+    videoStill: t.field({
+      type: 'String',
+      nullable: true,
+      resolve: ({ id, aspectRatio }) =>
+        aspectRatio === 'hd'
+          ? `https://imagedelivery.net/${
+              process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? ''
+            }/${id}/f=jpg&w=1920&h=1080&q=95`
+          : null
     })
   })
 })
