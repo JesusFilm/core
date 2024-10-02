@@ -3187,7 +3187,6 @@ export type Video = {
   childrenCount: Scalars['Int']['output'];
   description: Array<VideoDescription>;
   id: Scalars['ID']['output'];
-  image?: Maybe<Scalars['String']['output']>;
   imageAlt: Array<VideoImageAlt>;
   images: Array<CloudflareImage>;
   keywords: Array<Keyword>;
