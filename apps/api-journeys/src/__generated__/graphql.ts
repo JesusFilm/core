@@ -301,9 +301,14 @@ export type CloudflareImage = {
   aspectRatio?: Maybe<ImageAspectRatio>;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
+  mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
+  mobileCinematicLow?: Maybe<Scalars['String']['output']>;
+  mobileCinematicVeryLow?: Maybe<Scalars['String']['output']>;
+  thumbnail?: Maybe<Scalars['String']['output']>;
   uploadUrl?: Maybe<Scalars['String']['output']>;
-  url: Scalars['String']['output'];
+  url?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
+  videoStill?: Maybe<Scalars['String']['output']>;
 };
 
 export type CloudflareVideo = {
