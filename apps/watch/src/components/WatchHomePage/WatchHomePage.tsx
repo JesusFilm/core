@@ -13,7 +13,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
 import { PageWrapper } from '../PageWrapper'
-import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid/AlgoliaVideoGrid'
+import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
 
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'

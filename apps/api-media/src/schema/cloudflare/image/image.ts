@@ -11,6 +11,12 @@ import {
   deleteImage
 } from './service'
 
+function baseUrl(id: string): string {
+  return `https://imagedelivery.net/${
+    process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
+  }/${id}`
+}
+
 builder.prismaObject('CloudflareImage', {
   fields: (t) => ({
     id: t.exposeID('id'),
@@ -25,10 +31,44 @@ builder.prismaObject('CloudflareImage', {
     }),
     url: t.field({
       type: 'String',
-      resolve: ({ id }) =>
-        `https://customer-${
-          process.env.CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-        }.cloudflarestream.com/${id}`
+      nullable: true,
+      resolve: ({ id }) => baseUrl(id)
+    }),
+    mobileCinematicHigh: t.field({
+      type: 'String',
+      nullable: true,
+      resolve: ({ id, aspectRatio }) =>
+        aspectRatio === 'banner'
+          ? `${baseUrl(id)}/f=jpg,w=1280,h=600,q=95`
+          : null
+    }),
+    mobileCinematicLow: t.field({
+      type: 'String',
+      nullable: true,
+      resolve: ({ id, aspectRatio }) =>
+        aspectRatio === 'banner'
+          ? `${baseUrl(id)}/f=jpg,w=640,h=300,q=95`
+          : null
+    }),
+    mobileCinematicVeryLow: t.field({
+      type: 'String',
+      nullable: true,
+      resolve: ({ id, aspectRatio }) =>
+        aspectRatio === 'banner'
+          ? `${baseUrl(id)}/f=webp,w=640,h=300,quality=50`
+          : null
+    }),
+    thumbnail: t.field({
+      type: 'String',
+      nullable: true,
+      resolve: ({ id, aspectRatio }) =>
+        aspectRatio === 'hd' ? `${baseUrl(id)}/f=jpg,w=120,h=68,q=95` : null
+    }),
+    videoStill: t.field({
+      type: 'String',
+      nullable: true,
+      resolve: ({ id, aspectRatio }) =>
+        aspectRatio === 'hd' ? `${baseUrl(id)}/f=jpg,w=1920,h=1080,q=95` : null
     })
   })
 })
