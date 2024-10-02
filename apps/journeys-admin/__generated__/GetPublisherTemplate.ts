@@ -255,7 +255,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string;
+  url: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variant {

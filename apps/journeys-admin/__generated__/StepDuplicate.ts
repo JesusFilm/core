@@ -251,7 +251,7 @@ export interface StepDuplicate_blockDuplicate_VideoBlock_video_title {
 
 export interface StepDuplicate_blockDuplicate_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string;
+  url: string | null;
 }
 
 export interface StepDuplicate_blockDuplicate_VideoBlock_video_variant {

@@ -241,7 +241,7 @@ export interface CardCtaRestore_imageRestore_VideoBlock_video_title {
 
 export interface CardCtaRestore_imageRestore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string;
+  url: string | null;
 }
 
 export interface CardCtaRestore_imageRestore_VideoBlock_video_variant {
@@ -643,7 +643,7 @@ export interface CardCtaRestore_subtitleRestore_VideoBlock_video_title {
 
 export interface CardCtaRestore_subtitleRestore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string;
+  url: string | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_VideoBlock_video_variant {
@@ -1045,7 +1045,7 @@ export interface CardCtaRestore_titleRestore_VideoBlock_video_title {
 
 export interface CardCtaRestore_titleRestore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string;
+  url: string | null;
 }
 
 export interface CardCtaRestore_titleRestore_VideoBlock_video_variant {
@@ -1447,7 +1447,7 @@ export interface CardCtaRestore_button1Restore_VideoBlock_video_title {
 
 export interface CardCtaRestore_button1Restore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string;
+  url: string | null;
 }
 
 export interface CardCtaRestore_button1Restore_VideoBlock_video_variant {
@@ -1849,7 +1849,7 @@ export interface CardCtaRestore_startIcon1Restore_VideoBlock_video_title {
 
 export interface CardCtaRestore_startIcon1Restore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string;
+  url: string | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_VideoBlock_video_variant {
@@ -2251,7 +2251,7 @@ export interface CardCtaRestore_endIcon1Restore_VideoBlock_video_title {
 
 export interface CardCtaRestore_endIcon1Restore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string;
+  url: string | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_VideoBlock_video_variant {
@@ -2653,7 +2653,7 @@ export interface CardCtaRestore_button2Restore_VideoBlock_video_title {
 
 export interface CardCtaRestore_button2Restore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string;
+  url: string | null;
 }
 
 export interface CardCtaRestore_button2Restore_VideoBlock_video_variant {
@@ -3055,7 +3055,7 @@ export interface CardCtaRestore_startIcon2Restore_VideoBlock_video_title {
 
 export interface CardCtaRestore_startIcon2Restore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string;
+  url: string | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_VideoBlock_video_variant {
@@ -3457,7 +3457,7 @@ export interface CardCtaRestore_endIcon2Restore_VideoBlock_video_title {
 
 export interface CardCtaRestore_endIcon2Restore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string;
+  url: string | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_VideoBlock_video_variant {
@@ -3859,7 +3859,7 @@ export interface CardCtaRestore_button3Restore_VideoBlock_video_title {
 
 export interface CardCtaRestore_button3Restore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string;
+  url: string | null;
 }
 
 export interface CardCtaRestore_button3Restore_VideoBlock_video_variant {
@@ -4261,7 +4261,7 @@ export interface CardCtaRestore_startIcon3Restore_VideoBlock_video_title {
 
 export interface CardCtaRestore_startIcon3Restore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string;
+  url: string | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_VideoBlock_video_variant {
@@ -4663,7 +4663,7 @@ export interface CardCtaRestore_endIcon3Restore_VideoBlock_video_title {
 
 export interface CardCtaRestore_endIcon3Restore_VideoBlock_video_images {
   __typename: "CloudflareImage";
-  url: string;
+  url: string | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_VideoBlock_video_variant {

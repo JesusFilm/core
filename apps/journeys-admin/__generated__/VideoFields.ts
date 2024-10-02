@@ -16,7 +16,7 @@ export interface VideoFields_video_title {
 
 export interface VideoFields_video_images {
   __typename: "CloudflareImage";
-  url: string;
+  url: string | null;
 }
 
 export interface VideoFields_video_variant {
