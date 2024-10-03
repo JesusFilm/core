@@ -87,6 +87,28 @@ describe('Toolbar', () => {
     variant: 'admin'
   }
 
+  const noDescriptionJourney = {
+    journey: {
+      id: 'journeyId',
+      title: 'My Awesome Journey Title',
+      description: '',
+      primaryImageBlock: null,
+      status: JourneyStatus.draft,
+      language: {
+        __typename: 'Language',
+        id: '529',
+        name: [
+          {
+            value: 'English',
+            primary: true,
+            __typename: 'LanguageName'
+          }
+        ]
+      }
+    } as unknown as Journey,
+    variant: 'admin'
+  }
+
   const socialImageJourney = {
     journey: {
       title: 'My Awesome Journey Title',
@@ -148,6 +170,11 @@ describe('Toolbar', () => {
       screen.getAllByText('My Awesome Journey Description')[0]
     ).toBeInTheDocument()
     expect(screen.getAllByRole('paragraph')[0]).toHaveTextContent('English')
+  })
+
+  it('should not show dot if there is no description', () => {
+    render(toolbar(noDescriptionJourney))
+    expect(screen.queryByTestId('DescriptionDot')).not.toBeInTheDocument()
   })
 
   it('should open the title dialog when selected', async () => {

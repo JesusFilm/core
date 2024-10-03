@@ -314,6 +314,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                   </Typography>
                   {journey.description !== '' ? (
                     <Typography
+                      data-testid="DescriptionDot"
                       variant="body2"
                       sx={{ color: 'text.secondary' }}
                     >
