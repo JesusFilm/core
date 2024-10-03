@@ -1505,4 +1505,60 @@ describe('video', () => {
       expect(data).toHaveProperty('data', null)
     })
   })
+
+  describe('adminVideosCount', () => {
+    const ADMIN_VIDEO_COUNT = graphql(`
+      query AdminVideoCount($where: VideosFilter) {
+        adminVideosCount(where: $where)
+      }
+    `)
+
+    it('should return a count of videos', async () => {
+      prismaMock.video.count.mockResolvedValueOnce(1)
+      prismaMock.userMediaRole.findUnique.mockResolvedValueOnce({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher']
+      })
+
+      const data = await authClient({
+        document: ADMIN_VIDEO_COUNT,
+        variables: {
+          where: null
+        }
+      })
+      expect(prismaMock.video.count).toHaveBeenCalledWith({
+        where: {}
+      })
+      expect(data).toHaveProperty('data.adminVideosCount', 1)
+    })
+
+    it('should return a count of videos with where', async () => {
+      prismaMock.video.count.mockResolvedValueOnce(1)
+      prismaMock.userMediaRole.findUnique.mockResolvedValueOnce({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher']
+      })
+
+      const data = await authClient({
+        document: ADMIN_VIDEO_COUNT,
+        variables: {
+          where: {
+            title: 'Jesus'
+          }
+        }
+      })
+      expect(prismaMock.video.count).toHaveBeenCalledWith({
+        where: {
+          id: undefined,
+          label: undefined,
+          published: undefined,
+          title: { some: { value: { search: 'Jesus' } } },
+          variants: undefined
+        }
+      })
+      expect(data).toHaveProperty('data.adminVideosCount', 1)
+    })
+  })
 })
