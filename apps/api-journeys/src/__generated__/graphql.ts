@@ -2125,6 +2125,7 @@ export type Query = {
   adminJourneysReport?: Maybe<PowerBiEmbed>;
   adminVideo: Video;
   adminVideos: Array<Video>;
+  adminVideosCount: Scalars['Int']['output'];
   bibleBooks: Array<BibleBook>;
   bibleCitations: Array<BibleCitation>;
   block: Block;
@@ -2231,6 +2232,11 @@ export type QueryAdminVideoArgs = {
 export type QueryAdminVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<VideosFilter>;
+};
+
+
+export type QueryAdminVideosCountArgs = {
   where?: InputMaybe<VideosFilter>;
 };
 
