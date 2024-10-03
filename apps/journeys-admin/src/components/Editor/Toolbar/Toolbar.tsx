@@ -161,8 +161,6 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
     setDialogOpen(false)
   }
 
-  console.log(journey?.description)
-
   return (
     <Stack
       data-testid="Toolbar"
