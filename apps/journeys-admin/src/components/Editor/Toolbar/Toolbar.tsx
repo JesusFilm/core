@@ -161,6 +161,8 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
     setDialogOpen(false)
   }
 
+  console.log(journey?.description)
+
   return (
     <Stack
       data-testid="Toolbar"
@@ -310,9 +312,14 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                       )?.value
                     }
                   </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    •
-                  </Typography>
+                  {journey.description !== '' ? (
+                    <Typography
+                      variant="body2"
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      •
+                    </Typography>
+                  ) : null}
                   <Typography
                     variant="body2"
                     sx={{
