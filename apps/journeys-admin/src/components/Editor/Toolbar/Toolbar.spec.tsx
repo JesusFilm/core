@@ -89,22 +89,8 @@ describe('Toolbar', () => {
 
   const noDescriptionJourney = {
     journey: {
-      id: 'journeyId',
-      title: 'My Awesome Journey Title',
-      description: '',
-      primaryImageBlock: null,
-      status: JourneyStatus.draft,
-      language: {
-        __typename: 'Language',
-        id: '529',
-        name: [
-          {
-            value: 'English',
-            primary: true,
-            __typename: 'LanguageName'
-          }
-        ]
-      }
+      ...defaultJourney.journey,
+      description: ''
     } as unknown as Journey,
     variant: 'admin'
   }
