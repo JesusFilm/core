@@ -33,6 +33,7 @@ builder.mutationFields((t) => ({
       isPublisher: true
     },
     resolve: async (_query, _parent, { input }) => {
+      console.log(input)
       return await prisma.videoSubtitle.create({
         data: {
           ...input,

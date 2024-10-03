@@ -103,6 +103,32 @@ type Mutation {
   deleteCloudflareVideo(id: ID!): Boolean!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!
+  createVideo(input: VideoCreateInput!): Video!
+  videoUpdate(input: VideoUpdateInput!): Video!
+  createVideoDescription(input: VideoTranslationCreateInput!): VideoDescription!
+  updateVideoDescription(input: VideoTranslationUpdateInput!): VideoDescription!
+  deleteVideoDescription(id: ID!): VideoDescription!
+  createVideoImageAlt(input: VideoTranslationCreateInput!): VideoImageAlt!
+  updateVideoImageAlt(input: VideoTranslationUpdateInput!): VideoImageAlt!
+  deleteVideoImageAlt(id: ID!): VideoImageAlt!
+  createVideoSnippet(input: VideoTranslationCreateInput!): VideoSnippet!
+  updateVideoSnippet(input: VideoTranslationUpdateInput!): VideoSnippet!
+  deleteVideoSnippet(id: ID!): VideoSnippet!
+  createVideoStudyQuestion(input: VideoStudyQuestionCreateInput!): VideoStudyQuestion!
+  updateVideoStudyQuestion(input: VideoStudyQuestionUpdateInput!): VideoStudyQuestion!
+  deleteVideoStudyQuestion(id: ID!): VideoStudyQuestion!
+  createVideoSubtitle(input: VideoSubtitleCreateInput!): VideoSubtitle!
+  updateVideoSubtitle(input: VideoSubtitleUpdateInput!): VideoSubtitle!
+  deleteVideoSubtitle(id: ID!): VideoSubtitle!
+  createVideoTitle(input: VideoTranslationCreateInput!): VideoTitle!
+  updateVideoTitle(input: VideoTranslationUpdateInput!): VideoTitle!
+  deleteVideoTitle(id: ID!): VideoTitle!
+  createVideoVariant(input: VideoVariantCreateInput!): VideoVariant!
+  updateVideoVariant(input: VideoVariantUpdateInput!): VideoVariant!
+  deleteVideoVariant(id: ID!): VideoVariant!
+  createVideoVariantDownload(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
+  updateVideoVariantDownload(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
+  deleteVideoVariantDownload(id: ID!): VideoVariantDownload!
 }
 
 type Query {
@@ -306,6 +332,16 @@ type Video
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
 }
 
+input VideoCreateInput {
+  id: String!
+  label: VideoLabel!
+  primaryLanguageId: String!
+  published: Boolean!
+  slug: String!
+  noIndex: Boolean!
+  childIds: [String!]!
+}
+
 type VideoDescription {
   id: ID!
   value: String!
@@ -345,6 +381,25 @@ type VideoStudyQuestion {
   language: Language!
 }
 
+input VideoStudyQuestionCreateInput {
+  id: ID
+  videoId: String!
+  value: String!
+  primary: Boolean!
+  languageId: String!
+  crowdInId: String
+  order: Int!
+}
+
+input VideoStudyQuestionUpdateInput {
+  id: ID!
+  value: String
+  primary: Boolean
+  languageId: String
+  crowdInId: String
+  order: Int
+}
+
 type VideoSubtitle {
   id: ID!
   languageId: ID!
@@ -356,11 +411,55 @@ type VideoSubtitle {
   language: Language!
 }
 
+input VideoSubtitleCreateInput {
+  id: ID
+  videoId: String!
+  edition: String!
+  vttSrc: String
+  srtSrc: String
+  primary: Boolean!
+  languageId: String!
+}
+
+input VideoSubtitleUpdateInput {
+  id: ID!
+  edition: String!
+  vttSrc: String
+  srtSrc: String
+  primary: Boolean
+  languageId: String
+}
+
 type VideoTitle {
   id: ID!
   value: String!
   primary: Boolean!
   language: Language!
+}
+
+input VideoTranslationCreateInput {
+  id: ID
+  videoId: String!
+  value: String!
+  primary: Boolean!
+  languageId: String!
+}
+
+input VideoTranslationUpdateInput {
+  id: ID!
+  value: String
+  primary: Boolean
+  languageId: String
+}
+
+input VideoUpdateInput {
+  id: String!
+  label: VideoLabel
+  primaryLanguageId: String
+  published: Boolean
+  slug: String
+  noIndex: Boolean
+  childIds: [String!]
 }
 
 type VideoVariant {
@@ -378,6 +477,18 @@ type VideoVariant {
   slug: String!
 }
 
+input VideoVariantCreateInput {
+  id: String!
+  videoId: String!
+  edition: String!
+  hls: String
+  dash: String
+  share: String
+  duration: Int
+  languageId: String!
+  slug: String!
+}
+
 type VideoVariantDownload {
   id: ID!
   quality: VideoVariantDownloadQuality!
@@ -387,9 +498,41 @@ type VideoVariantDownload {
   url: String!
 }
 
+input VideoVariantDownloadCreateInput {
+  id: String
+  videoVariantId: String!
+  quality: VideoVariantDownloadQuality!
+  size: Float
+  height: Int
+  width: Int
+  url: String!
+}
+
 enum VideoVariantDownloadQuality {
   low
   high
+}
+
+input VideoVariantDownloadUpdateInput {
+  id: String!
+  videoVariantId: String
+  quality: VideoVariantDownloadQuality
+  size: Float
+  height: Int
+  width: Int
+  url: String
+}
+
+input VideoVariantUpdateInput {
+  id: String!
+  videoId: String
+  edition: String
+  hls: String
+  dash: String
+  share: String
+  duration: Int
+  languageId: String
+  slug: String
 }
 
 input VideosFilter {

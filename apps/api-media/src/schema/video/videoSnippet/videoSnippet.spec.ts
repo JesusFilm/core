@@ -3,8 +3,9 @@ import { graphql } from 'gql.tada'
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 
-describe('videoSubtitle', () => {
+describe('videoSnippet', () => {
   const client = getClient()
+
   const authClient = getClient({
     headers: {
       authorization: 'token'
@@ -15,41 +16,37 @@ describe('videoSubtitle', () => {
   })
 
   describe('mutations', () => {
-    describe('createVideoSubtitle', () => {
-      const CREATE_VIDEO_SUBTITLE_MUTATION = graphql(`
-        mutation CreateVideoSubtitle($input: VideoSubtitleCreateInput!) {
-          createVideoSubtitle(input: $input) {
+    describe('createVideoSnippet', () => {
+      const CREATE_VIDEO_SNIPPET_MUTATION = graphql(`
+        mutation CreateVideoSnippet($input: VideoTranslationCreateInput!) {
+          createVideoSnippet(input: $input) {
             id
           }
         }
       `)
 
-      it('should create video subtitle', async () => {
-        prismaMock.videoSubtitle.create.mockResolvedValue({
+      it('should create video snippet', async () => {
+        prismaMock.videoSnippet.create.mockResolvedValue({
           id: 'id',
-          edition: 'edition',
           videoId: 'videoId',
-          vttSrc: 'vttSrc',
-          srtSrc: 'srtSrc',
+          value: 'value',
           primary: true,
-          languageId: 'languageId'
+          languageId: '529'
         })
         const result = await authClient({
-          document: CREATE_VIDEO_SUBTITLE_MUTATION,
+          document: CREATE_VIDEO_SNIPPET_MUTATION,
           variables: {
             input: {
               id: 'id',
-              edition: 'edition',
               videoId: 'videoId',
-              vttSrc: 'vttSrc',
-              srtSrc: 'srtSrc',
+              value: 'value',
               primary: true,
               languageId: '529'
             }
           }
         })
-        expect(result).toHaveProperty('data.createVideoSubtitle', {
-          : {
+        expect(result).toHaveProperty('data', {
+          createVideoSnippet: {
             id: 'id'
           }
         })
@@ -57,14 +54,12 @@ describe('videoSubtitle', () => {
 
       it('should reject if not publisher', async () => {
         const result = await client({
-          document: CREATE_VIDEO_SUBTITLE_MUTATION,
+          document: CREATE_VIDEO_SNIPPET_MUTATION,
           variables: {
             input: {
               id: 'id',
-              edition: 'edition',
               videoId: 'videoId',
-              vttSrc: 'vttSrc',
-              srtSrc: 'srtSrc',
+              value: 'value',
               primary: true,
               languageId: 'languageId'
             }
