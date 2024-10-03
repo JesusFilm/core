@@ -7,7 +7,7 @@ ENV PRISMA_LOCATION_JOURNEYS_MODERN=/app/node_modules/.prisma/api-journeys-moder
 RUN apk upgrade --update-cache --available && \
     rm -rf /var/cache/apk/*
 
-RUN apk add --no-cache python3 py3-pip curl-dev python3-dev libressl-dev
+RUN apk add --no-cache python3 py3-pip curl-dev
 
 WORKDIR /app
 COPY ./dist/apps/api-journeys-modern .
