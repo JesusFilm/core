@@ -2,8 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import { useParams } from 'next/navigation'
 
-import { useVideoMock } from '../../../../../../libs/useVideo/useVideo.mock'
 import VideoViewPage from '../page'
+import { NextIntlClientProvider } from 'next-intl'
+import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
@@ -16,11 +17,13 @@ describe('VideoViewPage', () => {
   it('should display video view component', async () => {
     mockUseParams.mockReturnValue({ videoId: 'someId' })
 
-    const result = jest.fn().mockReturnValue(useVideoMock.result)
+    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
 
     render(
-      <MockedProvider mocks={[{ ...useVideoMock, result }]}>
-        <VideoViewPage />
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+        <NextIntlClientProvider locale="en">
+          <VideoViewPage />
+        </NextIntlClientProvider>
       </MockedProvider>
     )
 
