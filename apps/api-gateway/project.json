@@ -28,6 +28,12 @@
       "options": {
         "command": "npx hive dev --service analytics --url http://127.0.0.1:4008/graphql --schema ./apps/api-analytics/schema.graphql --service journeys --url http://127.0.0.1:4001/graphql --schema ./apps/api-journeys/schema.graphql --service users --url http://127.0.0.1:4002/graphql --schema ./apps/api-users/schema.graphql --service languages --url http://127.0.0.1:4003/graphql --schema ./apps/api-languages/schema.graphql --service media --url http://127.0.0.1:4005/graphql --schema ./apps/api-media/schema.graphql --service journeys-modern --url http://127.0.0.1:4004/graphql --schema ./apps/api-journeys-modern/schema.graphql --write ./apps/api-gateway/schema.graphql"
       }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_GATEWAY_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-gateway > apps/api-gateway/.env"
+      }
     }
   },
   "tags": []

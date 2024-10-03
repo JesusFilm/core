@@ -55,7 +55,7 @@ builder.prismaObject('CloudflareImage', {
       nullable: true,
       resolve: ({ id, aspectRatio }) =>
         aspectRatio === 'banner'
-          ? `${baseUrl(id)}/f=webp,w=640,h=300,quality=50`
+          ? `${baseUrl(id)}/f=webp,w=640,h=300,q=50`
           : null
     }),
     thumbnail: t.field({
