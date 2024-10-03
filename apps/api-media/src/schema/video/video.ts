@@ -260,7 +260,8 @@ const Video = builder.prismaObject('Video', {
       query: ({ aspectRatio }) => ({
         where: {
           aspectRatio: aspectRatio ?? undefined
-        }
+        },
+        orderBy: { aspectRatio: 'desc' }
       })
     })
   })

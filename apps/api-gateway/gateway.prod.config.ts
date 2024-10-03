@@ -69,5 +69,8 @@ export const gatewayConfig = defineConfig({
       }
 
     return defaultCors
+  },
+  hmacSignature: {
+    secret: process.env.GATEWAY_HMAC_SECRET!
   }
 })
