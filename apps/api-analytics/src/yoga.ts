@@ -23,9 +23,11 @@ export const yoga = createYoga({
     } satisfies Context
   },
   plugins: [
-    useHmacSignatureValidation({
-      secret: process.env.GATEWAY_HMAC_SECRET ?? ''
-    }),
+    process.env.NODE_ENV !== 'test'
+      ? useHmacSignatureValidation({
+          secret: process.env.GATEWAY_HMAC_SECRET ?? ''
+        })
+      : {},
     authZEnvelopPlugin({ rules }),
     useReadinessCheck({
       endpoint: '/.well-known/apollo/server-health',
