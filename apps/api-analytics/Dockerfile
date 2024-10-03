@@ -5,9 +5,8 @@ EXPOSE 4008
 ENV PRISMA_LOCATION_ANALYTICS=/app/node_modules/.prisma/api-analytics-client
 
 RUN apk upgrade --update-cache --available && \
+    apk add g++ make python3 py3-pip curl-dev && \
     rm -rf /var/cache/apk/*
-
-RUN apk add --no-cache g++ make python3 py3-pip curl-dev
 
 WORKDIR /app
 COPY ./dist/apps/api-analytics .

@@ -5,9 +5,8 @@ EXPOSE 4005
 ENV PRISMA_LOCATION_MEDIA=/app/node_modules/.prisma/api-media-client
 
 RUN apk upgrade --update-cache --available && \
+    apk add g++ make python3 py3-pip curl-dev && \
     rm -rf /var/cache/apk/*
-
-RUN apk add --no-cache g++ make python3 py3-pip curl-dev
 
 WORKDIR /app
 COPY ./dist/apps/api-media .
@@ -21,5 +20,5 @@ RUN npx prisma@^5.2.0 generate --generator client
 
 WORKDIR /app
 
-RUN npm install tslib@^2.6.2 @nestjs/mapped-types prisma@^5.2.0 @prisma/client@^5.2.0 pino-pretty@^10.2.0 form-data@^4.0.0
+RUN npm install prisma@^5.2.0 @prisma/client@^5.2.0
 CMD npx prisma@^5.2.0 migrate deploy --schema /prisma/schema.prisma; node ./main.js

@@ -5,9 +5,8 @@ EXPOSE 4001
 ENV PRISMA_LOCATION_JOURNEYS=/app/node_modules/.prisma/api-journeys-client
 
 RUN apk upgrade --update-cache --available && \
+    apk add g++ make python3 py3-pip curl-dev && \
     rm -rf /var/cache/apk/*
-
-RUN apk add --no-cache g++ make python3 py3-pip curl-dev
 
 WORKDIR /app
 COPY ./dist/apps/api-journeys .
