@@ -10,7 +10,8 @@ locals {
     "NAT_ADDRESSES",
     "PG_DATABASE_URL_USERS",
     "REDIS_PORT",
-    "REDIS_URL"
+    "REDIS_URL",
+    "GATEWAY_HMAC_SECRET"
   ]
   service_config = {
     name           = "api-users"

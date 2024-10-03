@@ -1,3 +1,4 @@
+import { useHmacSignatureValidation } from '@graphql-hive/gateway'
 import {
   createInMemoryCache,
   useResponseCache
@@ -32,6 +33,9 @@ export const yoga = createYoga({
     } satisfies Context
   },
   plugins: [
+    useHmacSignatureValidation({
+      secret: process.env.GATEWAY_HMAC_SECRET ?? ''
+    }),
     useReadinessCheck({
       endpoint: '/.well-known/apollo/server-health',
       check: async () => {
