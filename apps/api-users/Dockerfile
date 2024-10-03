@@ -7,7 +7,7 @@ ENV PRISMA_LOCATION_USERS=/app/node_modules/.prisma/api-users-client
 RUN apk upgrade --update-cache --available && \
     rm -rf /var/cache/apk/*
 
-RUN apk add --no-cache python3 py3-pip
+RUN apk add --no-cache python3 py3-pip curl-dev python3-dev libressl-dev
 
 WORKDIR /app
 COPY ./dist/apps/api-users .
