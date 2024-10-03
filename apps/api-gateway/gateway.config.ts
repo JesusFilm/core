@@ -14,5 +14,8 @@ export const gatewayConfig = defineConfig({
         'interop-token': request.headers.get('interop-token') ?? ''
       }
     }
+  },
+  hmacSignature: {
+    secret: process.env.GATEWAY_HMAC_SECRET!
   }
 })
