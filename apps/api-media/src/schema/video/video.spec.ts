@@ -325,6 +325,7 @@ describe('video', () => {
           images(aspectRatio: $aspectRatio) {
             id
             aspectRatio
+            url
           }
         }
       }
@@ -454,7 +455,10 @@ describe('video', () => {
         images: [
           {
             id: 'imageId',
-            aspectRatio: ImageAspectRatio.hd
+            aspectRatio: ImageAspectRatio.hd,
+            url: `https://imagedelivery.net/${
+              process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
+            }/imageId`
           }
         ]
       }
@@ -561,7 +565,10 @@ describe('video', () => {
               ]
             }
           },
-          images: { where: { aspectRatio: undefined } }
+          images: {
+            where: { aspectRatio: undefined },
+            orderBy: { aspectRatio: 'desc' }
+          }
         }
       })
       expect(data).toHaveProperty('data.videos', result)
@@ -749,7 +756,8 @@ describe('video', () => {
           images: {
             where: {
               aspectRatio: ImageAspectRatio.hd
-            }
+            },
+            orderBy: { aspectRatio: 'desc' }
           }
         }
       })
@@ -1148,7 +1156,10 @@ describe('video', () => {
               ]
             }
           },
-          images: { where: { aspectRatio: undefined } }
+          images: {
+            where: { aspectRatio: undefined },
+            orderBy: { aspectRatio: 'desc' }
+          }
         }
       })
       expect(data).toHaveProperty('data.adminVideos', result)
@@ -1345,7 +1356,8 @@ describe('video', () => {
           images: {
             where: {
               aspectRatio: ImageAspectRatio.hd
-            }
+            },
+            orderBy: { aspectRatio: 'desc' }
           }
         }
       })

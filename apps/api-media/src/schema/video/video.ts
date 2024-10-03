@@ -208,6 +208,7 @@ const Video = builder.prismaObject('Video', {
         const variableValueId =
           (info.variableValues.id as string | undefined) ??
           (info.variableValues.contentId as string | undefined) ??
+          (info.variableValues._1_contentId as string | undefined) ??
           ''
         const requestedLanguage = variableValueId.includes('/')
           ? variableValueId.substring(variableValueId.lastIndexOf('/') + 1)
@@ -257,7 +258,8 @@ const Video = builder.prismaObject('Video', {
       query: ({ aspectRatio }) => ({
         where: {
           aspectRatio: aspectRatio ?? undefined
-        }
+        },
+        orderBy: { aspectRatio: 'desc' }
       })
     })
   })
