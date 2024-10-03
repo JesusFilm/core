@@ -9,6 +9,7 @@ import { IdType, IdTypeShape } from '../enums/idType'
 import { Language, LanguageWithSlug } from '../language'
 
 import { VideoLabel } from './enums/videoLabel'
+import { VideoCreateInput } from './inputs/videoCreate'
 import { VideosFilter } from './inputs/videosFilter'
 import { VideoUpdateInput } from './inputs/videoUpdate'
 import { videosFilter } from './lib/videosFilter'
@@ -369,6 +370,20 @@ builder.queryFields((t) => ({
 }))
 
 builder.mutationFields((t) => ({
+  createVideo: t.prismaField({
+    type: 'Video',
+    args: {
+      input: t.arg({ type: VideoCreateInput, required: true })
+    },
+    authScopes: {
+      isPublisher: true
+    },
+    resolve: async (_query, _parent, { input }) => {
+      return await prisma.video.create({
+        data: input
+      })
+    }
+  }),
   videoUpdate: t.prismaField({
     type: 'Video',
     authScopes: {
@@ -378,11 +393,16 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoUpdateInput, required: true })
     },
     resolve: async (_query, _parent, { input }) => {
-      const { id, ...inputWithoutId } = input
-
       return await prisma.video.update({
-        where: { id },
-        data: inputWithoutId,
+        where: { id: input.id },
+        data: {
+          label: input.label ?? undefined,
+          primaryLanguageId: input.primaryLanguageId ?? undefined,
+          published: input.published ?? undefined,
+          slug: input.slug ?? undefined,
+          noIndex: input.noIndex ?? undefined,
+          childIds: input.childIds ?? undefined
+        },
         include: {
           children: true
         }

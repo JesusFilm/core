@@ -1,0 +1,2 @@
+import './videoDescriptionCreate'
+import './videoDescriptionUpdate'

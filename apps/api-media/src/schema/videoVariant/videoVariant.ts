@@ -1,31 +1,11 @@
 import compact from 'lodash/compact'
 
-import { VideoVariantDownloadQuality as PrismaVideoVariantDownloadQuality } from '.prisma/api-media-client'
-
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 import { Language } from '../language'
 
-const VideoVariantDownloadQuality = builder.enumType(
-  PrismaVideoVariantDownloadQuality,
-  {
-    name: 'VideoVariantDownloadQuality'
-  }
-)
-
-builder.prismaObject('VideoVariantDownload', {
-  fields: (t) => ({
-    id: t.exposeID('id'),
-    quality: t.field({
-      type: VideoVariantDownloadQuality,
-      resolve: ({ quality }) => quality
-    }),
-    size: t.float({ resolve: ({ size }) => size ?? 0 }),
-    height: t.int({ resolve: ({ height }) => height ?? 0 }),
-    width: t.int({ resolve: ({ width }) => width ?? 0 }),
-    url: t.exposeString('url')
-  })
-})
+import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
+import { VideoVariantUpdateInput } from './inputs/videoVariantUpdate'
 
 builder.prismaObject('VideoVariant', {
   fields: (t) => ({
@@ -85,5 +65,59 @@ builder.queryFields((t) => ({
       await prisma.videoVariant.findMany({
         ...query
       })
+  })
+}))
+
+builder.mutationFields((t) => ({
+  createVideoVariant: t.prismaField({
+    type: 'VideoVariant',
+    args: {
+      input: t.arg({ type: VideoVariantCreateInput, required: true })
+    },
+    authScopes: {
+      isPublisher: true
+    },
+    resolve: async (_query, _parent, { input }) => {
+      return await prisma.videoVariant.create({
+        data: input
+      })
+    }
+  }),
+  updateVideoVariant: t.prismaField({
+    type: 'VideoVariant',
+    args: {
+      input: t.arg({ type: VideoVariantUpdateInput, required: true })
+    },
+    authScopes: {
+      isPublisher: true
+    },
+    resolve: async (_query, _parent, { input }) => {
+      return await prisma.videoVariant.update({
+        where: { id: input.id },
+        data: {
+          hls: input.hls ?? undefined,
+          dash: input.dash ?? undefined,
+          share: input.share ?? undefined,
+          duration: input.duration ?? undefined,
+          languageId: input.languageId ?? undefined,
+          slug: input.slug ?? undefined,
+          videoId: input.videoId ?? undefined
+        }
+      })
+    }
+  }),
+  deleteVideoVariant: t.prismaField({
+    type: 'VideoVariant',
+    args: {
+      id: t.arg.id({ required: true })
+    },
+    authScopes: {
+      isPublisher: true
+    },
+    resolve: async (_query, _parent, { id }) => {
+      return await prisma.videoVariant.delete({
+        where: { id }
+      })
+    }
   })
 }))
