@@ -246,8 +246,6 @@ const Video = builder.prismaObject('Video', {
             }
           }
         })
-
-
       }
     }),
     images: t.relation('images', {
