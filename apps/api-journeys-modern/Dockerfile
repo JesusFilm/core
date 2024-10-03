@@ -7,6 +7,8 @@ ENV PRISMA_LOCATION_JOURNEYS_MODERN=/app/node_modules/.prisma/api-journeys-moder
 RUN apk upgrade --update-cache --available && \
     rm -rf /var/cache/apk/*
 
+RUN apk add --no-cache python3 py3-pip
+
 WORKDIR /app
 COPY ./dist/apps/api-journeys-modern .
 
@@ -18,6 +20,6 @@ COPY ./apps/api-journeys-modern/db .
 RUN npx prisma@^5.2.0 generate --generator client
 
 WORKDIR /app
-RUN npm install tslib@^2.6.2 @prisma/client@^5.2.0
 
+RUN npm install tslib@^2.6.2 @prisma/client@^5.2.0
 CMD npx prisma@^5.2.0 migrate deploy --schema /prisma/schema.prisma; node ./main.js
