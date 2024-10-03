@@ -34,6 +34,12 @@ type CloudflareImage {
   userId: ID!
   createdAt: Date!
   aspectRatio: ImageAspectRatio
+  url: String
+  mobileCinematicHigh: String
+  mobileCinematicLow: String
+  mobileCinematicVeryLow: String
+  thumbnail: String
+  videoStill: String
 }
 
 type CloudflareVideo {
