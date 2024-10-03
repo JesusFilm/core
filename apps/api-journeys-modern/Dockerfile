@@ -11,7 +11,7 @@ WORKDIR /app
 COPY ./dist/apps/api-journeys-modern .
 
 # dependencies that nestjs needs
-RUN npm install --production --silent
+RUN npm install --production
 
 WORKDIR /prisma
 COPY ./apps/api-journeys-modern/db .
