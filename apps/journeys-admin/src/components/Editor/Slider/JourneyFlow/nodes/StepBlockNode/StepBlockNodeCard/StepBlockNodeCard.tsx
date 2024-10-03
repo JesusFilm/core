@@ -2,12 +2,14 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Skeleton from '@mui/material/Skeleton'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useMediaQuery } from '@core/shared/ui/useMediaQuery'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -31,6 +33,9 @@ export function StepBlockNodeCard({
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
+  const theme = useTheme()
+
+  const smUp = useMediaQuery(theme.breakpoints.up('sm'))
 
   const card = step?.children[0] as TreeBlock<CardBlock> | undefined
   const {
@@ -44,17 +49,16 @@ export function StepBlockNodeCard({
   } = getCardMetadata(card)
 
   function handleClick(): void {
-    if (selectedStep?.id === step?.id && showAnalytics !== true) {
+    dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
+    if ((selectedStep?.id === step?.id && showAnalytics !== true) || !smUp) {
       dispatch({
         type: 'SetSelectedBlockAction',
-        selectedBlock: selectedStep
+        selectedBlock: step
       })
       dispatch({
         type: 'SetSelectedAttributeIdAction',
         selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
       })
-    } else {
-      dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
     }
   }
 
