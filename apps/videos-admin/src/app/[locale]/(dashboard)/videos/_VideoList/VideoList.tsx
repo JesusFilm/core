@@ -9,6 +9,7 @@ import {
   GridColumnVisibilityModel,
   GridFilterModel,
   GridPaginationModel,
+  GridRenderCellParams,
   GridRowParams,
   GridRowsProp,
   GridToolbar,
@@ -20,6 +21,7 @@ import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
+import { PublishedChip } from '../../../../../components/PublishedChip'
 
 export const GET_ADMIN_VIDEOS_AND_COUNT = graphql(`
   query GetAdminVideosAndCount(
@@ -94,7 +96,8 @@ export function VideoList(): ReactElement {
       return {
         id: video.id,
         title,
-        description
+        description,
+        published: video.published
       }
     }) ?? []
 
@@ -113,6 +116,14 @@ export function VideoList(): ReactElement {
       minWidth: 200,
       filterOperators: getGridStringOperators().filter(
         (operator) => operator.value === 'equals'
+      )
+    },
+    {
+      field: 'published',
+      headerName: t('Published'),
+      minWidth: 150,
+      renderCell: (params: GridRenderCellParams<any, boolean>) => (
+        <PublishedChip published={params.value ?? false} />
       )
     },
     {
