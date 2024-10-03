@@ -115,7 +115,7 @@ describe('cloudflareImage', () => {
             uploadUrl: 'testUrl',
             createdAt: new Date(),
             updatedAt: new Date(),
-            aspectRatio: null,
+            aspectRatio: ImageAspectRatio.banner,
             videoId: null
           }
         ])
@@ -133,13 +133,19 @@ describe('cloudflareImage', () => {
                 id: 'testId',
                 uploadUrl: 'testUrl',
                 userId: 'testUserId',
-                aspectRatio: null,
+                aspectRatio: ImageAspectRatio.banner,
                 url: `https://imagedelivery.net/${
                   process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
                 }/testId`,
-                mobileCinematicHigh: null,
-                mobileCinematicLow: null,
-                mobileCinematicVeryLow: null,
+                mobileCinematicHigh: `https://imagedelivery.net/${
+                  process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
+                }/testId/f=jpg,w=1280,h=600,q=95`,
+                mobileCinematicLow: `https://imagedelivery.net/${
+                  process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
+                }/testId/f=jpg,w=640,h=300,q=95`,
+                mobileCinematicVeryLow: `https://imagedelivery.net/${
+                  process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
+                }/testId/f=webp,w=640,h=300,q=50`,
                 thumbnail: null,
                 videoStill: null
               }
