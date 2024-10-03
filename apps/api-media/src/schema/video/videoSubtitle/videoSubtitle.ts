@@ -1,8 +1,9 @@
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { Language } from '../../language'
-import { VideoSubtitleCreateInput } from '../inputs/videoSubtitleCreate'
-import { VideoSubtitleUpdateInput } from '../inputs/videoSubtitleUpdate'
+
+import { VideoSubtitleCreateInput } from './inputs/videoSubtitleCreate'
+import { VideoSubtitleUpdateInput } from './inputs/videoSubtitleUpdate'
 
 builder.prismaObject('VideoSubtitle', {
   fields: (t) => ({
