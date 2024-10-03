@@ -1,10 +1,12 @@
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { Language } from '../../language'
-import { VideoTranslationCreateInput } from '../inputs/videoTranslationCreate'
-import { VideoTranslationUpdateInput } from '../inputs/videoTranslationUpdate'
 
-builder.prismaObject('VideoDescription', {
+import { VideoStudyQuestionCreateInput } from './inputs/videoStudyQuestionCreate'
+import { VideoStudyQuestionUpdateInput } from './inputs/videoStudyQuestionUpdate'
+
+builder.prismaObject('VideoStudyQuestion', {
+  include: { order: true },
   fields: (t) => ({
     id: t.exposeID('id'),
     value: t.exposeString('value'),
@@ -17,16 +19,16 @@ builder.prismaObject('VideoDescription', {
 })
 
 builder.mutationFields((t) => ({
-  createVideoDescription: t.prismaField({
-    type: 'VideoDescription',
+  createVideoStudyQuestion: t.prismaField({
+    type: 'VideoStudyQuestion',
     args: {
-      input: t.arg({ type: VideoTranslationCreateInput, required: true })
+      input: t.arg({ type: VideoStudyQuestionCreateInput, required: true })
     },
     authScopes: {
       isPublisher: true
     },
     resolve: async (_query, _parent, { input }) => {
-      return await prisma.videoDescription.create({
+      return await prisma.videoStudyQuestion.create({
         data: {
           ...input,
           id: input.id ?? undefined
@@ -34,27 +36,29 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  updateVideoDescription: t.prismaField({
-    type: 'VideoDescription',
+  updateVideoStudyQuestion: t.prismaField({
+    type: 'VideoStudyQuestion',
     args: {
-      input: t.arg({ type: VideoTranslationUpdateInput, required: true })
+      input: t.arg({ type: VideoStudyQuestionUpdateInput, required: true })
     },
     authScopes: {
       isPublisher: true
     },
     resolve: async (_query, _parent, { input }) => {
-      return await prisma.videoDescription.update({
+      return await prisma.videoStudyQuestion.update({
         where: { id: input.id },
         data: {
           value: input.value ?? undefined,
           primary: input.primary ?? undefined,
-          languageId: input.languageId ?? undefined
+          languageId: input.languageId ?? undefined,
+          crowdInId: input.crowdInId ?? undefined,
+          order: input.order ?? undefined
         }
       })
     }
   }),
-  deleteVideoDescription: t.prismaField({
-    type: 'VideoDescription',
+  deleteVideoStudyQuestion: t.prismaField({
+    type: 'VideoStudyQuestion',
     args: {
       id: t.arg.id({ required: true })
     },
@@ -62,7 +66,7 @@ builder.mutationFields((t) => ({
       isPublisher: true
     },
     resolve: async (_query, _parent, { id }) => {
-      return await prisma.videoDescription.delete({
+      return await prisma.videoStudyQuestion.delete({
         where: { id }
       })
     }

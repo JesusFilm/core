@@ -1,7 +1,7 @@
-import { builder } from '../../../builder'
+import { builder } from '../../builder'
 
-export const VideoDescriptionUpdateInput = builder.inputType(
-  'VideoDescriptionUpdateInput',
+export const VideoTranslationUpdateInput = builder.inputType(
+  'VideoTranslationUpdateInput',
   {
     fields: (t) => ({
       id: t.id({ required: true }),

@@ -4,7 +4,7 @@ import { Language } from '../../language'
 import { VideoTranslationCreateInput } from '../inputs/videoTranslationCreate'
 import { VideoTranslationUpdateInput } from '../inputs/videoTranslationUpdate'
 
-builder.prismaObject('VideoDescription', {
+builder.prismaObject('VideoTitle', {
   fields: (t) => ({
     id: t.exposeID('id'),
     value: t.exposeString('value'),
@@ -17,8 +17,8 @@ builder.prismaObject('VideoDescription', {
 })
 
 builder.mutationFields((t) => ({
-  createVideoDescription: t.prismaField({
-    type: 'VideoDescription',
+  createVideoTitle: t.prismaField({
+    type: 'VideoTitle',
     args: {
       input: t.arg({ type: VideoTranslationCreateInput, required: true })
     },
@@ -26,7 +26,7 @@ builder.mutationFields((t) => ({
       isPublisher: true
     },
     resolve: async (_query, _parent, { input }) => {
-      return await prisma.videoDescription.create({
+      return await prisma.videoTitle.create({
         data: {
           ...input,
           id: input.id ?? undefined
@@ -34,8 +34,8 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  updateVideoDescription: t.prismaField({
-    type: 'VideoDescription',
+  updateVideoTitle: t.prismaField({
+    type: 'VideoTitle',
     args: {
       input: t.arg({ type: VideoTranslationUpdateInput, required: true })
     },
@@ -43,7 +43,7 @@ builder.mutationFields((t) => ({
       isPublisher: true
     },
     resolve: async (_query, _parent, { input }) => {
-      return await prisma.videoDescription.update({
+      return await prisma.videoTitle.update({
         where: { id: input.id },
         data: {
           value: input.value ?? undefined,
@@ -53,8 +53,8 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  deleteVideoDescription: t.prismaField({
-    type: 'VideoDescription',
+  deleteVideoTitle: t.prismaField({
+    type: 'VideoTitle',
     args: {
       id: t.arg.id({ required: true })
     },
@@ -62,7 +62,7 @@ builder.mutationFields((t) => ({
       isPublisher: true
     },
     resolve: async (_query, _parent, { id }) => {
-      return await prisma.videoDescription.delete({
+      return await prisma.videoTitle.delete({
         where: { id }
       })
     }

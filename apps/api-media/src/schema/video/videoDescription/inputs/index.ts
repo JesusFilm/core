@@ -1,2 +1,0 @@
-import './videoDescriptionCreate'
-import './videoDescriptionUpdate'
