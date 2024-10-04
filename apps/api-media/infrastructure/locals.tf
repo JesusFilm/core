@@ -19,6 +19,7 @@ locals {
     "REDIS_URL",
     "SEGMIND_API_KEY",
     "UNSPLASH_ACCESS_KEY",
+    "GATEWAY_HMAC_SECRET"
   ]
   service_config = {
     name           = "api-media"
