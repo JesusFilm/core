@@ -32,7 +32,7 @@ describe('useMediaQuery', () => {
     expect(result.current).toBe(false)
   })
 
-  it('should throw error if theme breakpoints is not padded in', () => {
+  it('should throw error if theme breakpoints is not added in', () => {
     expect(() => useMediaQuery('(max-width:600px)')).toThrow(
       "please pass in MUI theme breakpoints e.g. theme.breakpoints.up('sm')"
     )
