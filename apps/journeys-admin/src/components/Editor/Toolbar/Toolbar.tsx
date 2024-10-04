@@ -310,7 +310,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                       )?.value
                     }
                   </Typography>
-                  {journey.description !== '' || journey.description != null ? (
+                  {journey.description !== '' && journey.description != null ? (
                     <Typography
                       data-testid="DescriptionDot"
                       variant="body2"
