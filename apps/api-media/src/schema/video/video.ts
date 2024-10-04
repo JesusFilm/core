@@ -235,7 +235,6 @@ const Video = builder.prismaObject('Video', {
                 }>
               )?.find(({ id }) => id === parent.id)?.primaryLanguageId
 
-        console.log('journeysLanguageIdForBlock', journeysLanguageIdForBlock)
         if (
           info.variableValues.idType !== IdTypeShape.databaseId &&
           !isEmpty(variableValueId) &&
