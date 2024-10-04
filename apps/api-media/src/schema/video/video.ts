@@ -12,21 +12,36 @@ import { VideoLabel } from './enums/videoLabel'
 import { VideosFilter } from './inputs/videosFilter'
 import { videosFilter } from './lib/videosFilter'
 
+interface Info {
+  variableValues:
+    | Record<
+        string,
+        Array<
+          Array<{
+            id: string
+            primaryLanguageId: string
+          }>
+        >
+      >
+    | Array<{ id: string; primaryLanguageId: string }>
+}
+
 export function getLanguageIdFromInfo(
-  info: any,
+  info: unknown,
   parentId: string
 ): string | undefined {
-  return typeof info.variableValues === 'object'
-    ? Object.values(info.variableValues).find(
+  return typeof (info as Info).variableValues === 'object'
+    ? Object.values((info as Info).variableValues).find(
         (inner) =>
-          Array.isArray(inner) && inner.find(({ id }) => id === parentId)
+          Array.isArray(inner) &&
+          inner.find(({ id }: { id: string }) => id === parentId)
       )?.[0].primaryLanguageId
     : (
-        info.variableValues as Array<{
+        (info as Info).variableValues as Array<{
           id: string
           primaryLanguageId: string
         }>
-      )?.find(({ id }) => id === parentId)?.primaryLanguageId
+      )?.find(({ id }: { id: string }) => id === parentId)?.primaryLanguageId
 }
 
 const Video = builder.prismaObject('Video', {
