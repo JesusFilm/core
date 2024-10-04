@@ -45,7 +45,6 @@ export function Item({
             <IconButton
               component={href != null ? 'a' : 'button'}
               target={href != null ? '_blank' : undefined}
-              disabled={href == null}
               href={href}
               onClick={onClick}
               aria-label={label}

@@ -23,35 +23,6 @@ describe('Item', () => {
       expect(IconButtonItem.getAttribute('href')).toBe('https://test.com/')
       expect(IconButtonItem.getAttribute('target')).toBe('_blank')
     })
-
-    it('should be disabled if no href provided', async () => {
-      const { getByRole } = render(
-        <Item
-          variant="icon-button"
-          label="Icon Button"
-          href={undefined}
-          icon={<Edit2Icon />}
-        />
-      )
-      const IconButtonItem = getByRole('button', { name: 'Icon Button' })
-      expect(IconButtonItem).toBeDisabled()
-    })
-
-    it('should not be able to click button', async () => {
-      const handleClick = jest.fn()
-      const { getByRole } = render(
-        <Item
-          variant="icon-button"
-          label="Icon Button"
-          href={undefined}
-          icon={<Edit2Icon />}
-          onClick={handleClick}
-        />
-      )
-      const IconButtonItem = getByRole('button', { name: 'Icon Button' })
-      fireEvent.click(IconButtonItem)
-      await waitFor(() => expect(handleClick).not.toHaveBeenCalled())
-    })
   })
 
   describe('button variant', () => {
