@@ -1508,7 +1508,7 @@ describe('video', () => {
     })
 
     describe('getLanguageIdFromInfo', () => {
-      it('should return languageId from info', () => {
+      it('should return languageId from info when object', () => {
         const parentId = 'videoId'
         const info = {
           variableValues: {
@@ -1525,6 +1525,27 @@ describe('video', () => {
               }
             ]
           }
+        }
+        expect(getLanguageIdFromInfo(info, parentId)).toBe('primaryLanguageId')
+      })
+
+      it('should return languageId from info when array', () => {
+        const parentId = 'videoId'
+        const info = {
+          variableValues: [
+            [
+              {
+                id: 'notVideoId',
+                primaryLanguageId: 'notPrimaryLanguageId'
+              }
+            ],
+            [
+              {
+                id: 'videoId',
+                primaryLanguageId: 'primaryLanguageId'
+              }
+            ]
+          ]
         }
         expect(getLanguageIdFromInfo(info, parentId)).toBe('primaryLanguageId')
       })
