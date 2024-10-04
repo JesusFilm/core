@@ -32,7 +32,8 @@ locals {
     "MAILCHIMP_MARKETING_API_SERVER_PREFIX",
     "VERCEL_JOURNEYS_PROJECT_ID",
     "VERCEL_TEAM_ID",
-    "VERCEL_TOKEN"
+    "VERCEL_TOKEN",
+    "GATEWAY_HMAC_SECRET"
   ]
   service_config = {
     name           = "api-journeys-modern"
