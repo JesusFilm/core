@@ -12,6 +12,23 @@ import { VideoLabel } from './enums/videoLabel'
 import { VideosFilter } from './inputs/videosFilter'
 import { videosFilter } from './lib/videosFilter'
 
+export function getLanguageIdFromInfo(
+  info: GraphQL,
+  parentId: string
+): string | undefined {
+  return typeof info.variableValues === 'object'
+    ? Object.values(info.variableValues).find(
+        (inner) =>
+          Array.isArray(inner) && inner.find(({ id }) => id === parentId)
+      )?.[0].primaryLanguageId
+    : (
+        info.variableValues as Array<{
+          id: string
+          primaryLanguageId: string
+        }>
+      )?.find(({ id }) => id === parentId)?.primaryLanguageId
+}
+
 const Video = builder.prismaObject('Video', {
   shareable: true,
   fields: (t) => ({
@@ -214,26 +231,10 @@ const Video = builder.prismaObject('Video', {
           ? variableValueId.substring(variableValueId.lastIndexOf('/') + 1)
           : ''
 
-        const journeysLanguageIdForBlock =
-          typeof info.variableValues === 'object'
-            ? (
-                Object.values(info.variableValues) as Array<
-                  Array<{
-                    id: string
-                    primaryLanguageId: string
-                  }>
-                >
-              ).find(
-                (inner) =>
-                  Array.isArray(inner) &&
-                  inner.find(({ id }) => id === parent.id)
-              )?.[0].primaryLanguageId
-            : (
-                info.variableValues as Array<{
-                  id: string
-                  primaryLanguageId: string
-                }>
-              )?.find(({ id }) => id === parent.id)?.primaryLanguageId
+        const journeysLanguageIdForBlock = getLanguageIdFromInfo(
+          info,
+          parent.id
+        )
 
         if (
           info.variableValues.idType !== IdTypeShape.databaseId &&

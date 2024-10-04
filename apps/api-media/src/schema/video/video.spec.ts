@@ -19,6 +19,8 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
+import { getLanguageIdFromInfo } from './video'
+
 describe('video', () => {
   const client = getClient()
 
@@ -1503,6 +1505,29 @@ describe('video', () => {
         }
       })
       expect(data).toHaveProperty('data.videosCount', 1)
+    })
+
+    describe('getLanguageIdFromInfo', () => {
+      it('should return languageId from info', () => {
+        const parentId = 'videoId'
+        const info = {
+          variableValues: {
+            456: [
+              {
+                id: 'notVideoId',
+                primaryLanguageId: 'notPrimaryLanguageId'
+              }
+            ],
+            abc: [
+              {
+                id: 'videoId',
+                primaryLanguageId: 'primaryLanguageId'
+              }
+            ]
+          }
+        }
+        expect(getLanguageIdFromInfo(info, parentId)).toBe('primaryLanguageId')
+      })
     })
   })
 })
