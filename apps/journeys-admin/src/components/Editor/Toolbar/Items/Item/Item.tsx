@@ -41,15 +41,19 @@ export function Item({
             ]
           }}
         >
-          <IconButton
-            component={href != null ? 'a' : 'button'}
-            target={href != null ? '_blank' : undefined}
-            href={href}
-            onClick={onClick}
-            {...ButtonProps}
-          >
-            {icon}
-          </IconButton>
+          <span>
+            <IconButton
+              component={href != null ? 'a' : 'button'}
+              target={href != null ? '_blank' : undefined}
+              disabled={href == null}
+              href={href}
+              onClick={onClick}
+              aria-label={label}
+              {...ButtonProps}
+            >
+              {icon}
+            </IconButton>
+          </span>
         </Tooltip>
       )
     case 'button':
