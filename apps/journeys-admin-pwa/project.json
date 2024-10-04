@@ -17,7 +17,7 @@
       }
     },
     "_build": {
-      "executor": "@nx/next:build",
+      "executor": "@nx/remix:build",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/journeys-admin-pwa"
@@ -32,7 +32,7 @@
         "buildTarget": "journeys-admin-pwa:_build",
         "dev": true,
         "hostname": "0.0.0.0",
-        "port": 4200
+        "port": 3000
       },
       "configurations": {
         "production": {

@@ -1,9 +1,4 @@
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
-
-import { createWatchPaths } from '@nx/remix'
-
-const __dirname = dirname(fileURLToPath(import.meta.url))
+const { createWatchPaths } = require('@nx/remix')
 
 /**
  * @type {import('@remix-run/dev').AppConfig}
@@ -17,4 +12,4 @@ const config = {
   watchPaths: () => createWatchPaths(__dirname)
 }
 
-export default config
+module.exports = config
