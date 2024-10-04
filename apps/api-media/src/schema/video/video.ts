@@ -214,11 +214,23 @@ const Video = builder.prismaObject('Video', {
           ? variableValueId.substring(variableValueId.lastIndexOf('/') + 1)
           : ''
 
-        const journeysLanguageIdForBlock = (
-          info.variableValues as {
-            representations: Array<{ id: string; primaryLanguageId: string }>
-          }
-        ).representations?.find(({ id }) => id === parent.id)?.primaryLanguageId
+        const journeysLanguageIdForBlock =
+          typeof info.variableValues === 'object'
+            ? (
+                Object.values(info.variableValues) as Array<
+                  Array<{
+                    id: string
+                    primaryLanguageId: string
+                  }>
+                >
+              ).find((inner) => inner.find(({ id }) => id === parent.id))?.[0]
+                .primaryLanguageId
+            : (
+                info.variableValues as Array<{
+                  id: string
+                  primaryLanguageId: string
+                }>
+              )?.find(({ id }) => id === parent.id)?.primaryLanguageId
 
         if (
           info.variableValues.idType !== IdTypeShape.databaseId &&
