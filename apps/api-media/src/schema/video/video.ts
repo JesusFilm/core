@@ -223,8 +223,11 @@ const Video = builder.prismaObject('Video', {
                     primaryLanguageId: string
                   }>
                 >
-              ).find((inner) => inner.find(({ id }) => id === parent.id))?.[0]
-                .primaryLanguageId
+              ).find(
+                (inner) =>
+                  Array.isArray(inner) &&
+                  inner.find(({ id }) => id === parent.id)
+              )?.[0].primaryLanguageId
             : (
                 info.variableValues as Array<{
                   id: string
@@ -232,6 +235,7 @@ const Video = builder.prismaObject('Video', {
                 }>
               )?.find(({ id }) => id === parent.id)?.primaryLanguageId
 
+        console.log('journeysLanguageIdForBlock', journeysLanguageIdForBlock)
         if (
           info.variableValues.idType !== IdTypeShape.databaseId &&
           !isEmpty(variableValueId) &&
