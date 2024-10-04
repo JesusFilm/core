@@ -299,7 +299,7 @@
     "jest-mock-extended": "^3.0.5",
     "lighthouse": "^9.6.0",
     "mini-css-extract-plugin": "^2.6.1",
-    "msw": "^2.3.1",
+    "msw": "2.4.3",
     "msw-storybook-addon": "^2.0.2",
     "next-compose-plugins": "^2.2.1",
     "next-router-mock": "^0.9.10",
