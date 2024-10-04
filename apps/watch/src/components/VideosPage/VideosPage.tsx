@@ -10,7 +10,7 @@ import { ThemeMode } from '@core/shared/ui/themes'
 
 import type { GetLanguages } from '../../../__generated__/GetLanguages'
 import { PageWrapper } from '../PageWrapper'
-import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid/AlgoliaVideoGrid'
+import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
 
 import { FilterList } from './FilterList'
 import { VideosHero } from './Hero'

@@ -301,8 +301,14 @@ export type CloudflareImage = {
   aspectRatio?: Maybe<ImageAspectRatio>;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
+  mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
+  mobileCinematicLow?: Maybe<Scalars['String']['output']>;
+  mobileCinematicVeryLow?: Maybe<Scalars['String']['output']>;
+  thumbnail?: Maybe<Scalars['String']['output']>;
   uploadUrl?: Maybe<Scalars['String']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
+  videoStill?: Maybe<Scalars['String']['output']>;
 };
 
 export type CloudflareVideo = {
@@ -2117,6 +2123,8 @@ export type Query = {
    */
   adminJourneys: Array<Journey>;
   adminJourneysReport?: Maybe<PowerBiEmbed>;
+  adminVideo: Video;
+  adminVideos: Array<Video>;
   bibleBooks: Array<BibleBook>;
   bibleCitations: Array<BibleCitation>;
   block: Block;
@@ -2211,6 +2219,19 @@ export type QueryAdminJourneysArgs = {
 
 export type QueryAdminJourneysReportArgs = {
   reportType: JourneysReportType;
+};
+
+
+export type QueryAdminVideoArgs = {
+  id: Scalars['ID']['input'];
+  idType?: InputMaybe<IdType>;
+};
+
+
+export type QueryAdminVideosArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<VideosFilter>;
 };
 
 
@@ -3176,6 +3197,7 @@ export type Video = {
   mobileCinematicVeryLow?: Maybe<Scalars['String']['output']>;
   noIndex?: Maybe<Scalars['Boolean']['output']>;
   primaryLanguageId: Scalars['ID']['output'];
+  published: Scalars['Boolean']['output'];
   /** slug is a permanent link to the video. */
   slug: Scalars['String']['output'];
   snippet: Array<VideoSnippet>;
@@ -3936,6 +3958,7 @@ export type VisitorsConnection = {
 export enum Join__Graph {
   Analytics = 'ANALYTICS',
   Journeys = 'JOURNEYS',
+  JourneysModern = 'JOURNEYS_MODERN',
   Languages = 'LANGUAGES',
   Media = 'MEDIA',
   Users = 'USERS'
