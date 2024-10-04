@@ -13,7 +13,7 @@ import { VideosFilter } from './inputs/videosFilter'
 import { videosFilter } from './lib/videosFilter'
 
 export function getLanguageIdFromInfo(
-  info: GraphQL,
+  info: any,
   parentId: string
 ): string | undefined {
   return typeof info.variableValues === 'object'
