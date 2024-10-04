@@ -1,6 +1,6 @@
 {
-  "extends": ["../../.eslintrc.json"],
-  "ignorePatterns": ["!**/*", "build", "public/build"],
+  "extends": ["plugin:@nx/react-typescript", "../../.eslintrc.json", "remix"],
+  "ignorePatterns": ["!**/*"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
@@ -8,11 +8,35 @@
     },
     {
       "files": ["*.ts", "*.tsx"],
-      "rules": {}
+      "parserOptions": {
+        "project": ["apps/journeys-admin-pwa/tsconfig.*?.json"]
+      },
+      "rules": {
+        "no-void": [
+          "error",
+          {
+            "allowAsStatement": true
+          }
+        ],
+        "@typescript-eslint/no-misused-promises": "off"
+      }
     },
     {
       "files": ["*.js", "*.jsx"],
       "rules": {}
+    },
+    {
+      "files": ["*.tsx", "*.jsx"],
+      "rules": {}
+    },
+    {
+      "files": ["next-env.d.ts"],
+      "rules": {
+        "@typescript-eslint/triple-slash-reference": "off"
+      }
     }
-  ]
+  ],
+  "env": {
+    "jest": true
+  }
 }

@@ -8,7 +8,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 /**
  * @type {import('@remix-run/dev').AppConfig}
  */
-export default {
+const config = {
   ignoredRouteFiles: ['**/.*'],
   // appDirectory: "app",
   // assetsBuildDirectory: "public/build",
@@ -16,3 +16,5 @@ export default {
   // publicPath: "/build/",
   watchPaths: () => createWatchPaths(__dirname)
 }
+
+export default config

@@ -1,9 +1,10 @@
 import NxWelcome from '../nx-welcome'
+import Box from '@mui/material/Box'
 
 export default function Index() {
   return (
-    <div>
+    <Box>
       <NxWelcome title={'journeys-admin-pwa'} />
-    </div>
+    </Box>
   )
 }
