@@ -4,12 +4,12 @@ import CardContent from '@mui/material/CardContent'
 import Skeleton from '@mui/material/Skeleton'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useMediaQuery } from '@core/shared/ui/useMediaQuery'
 
 import {
   BlockFields_CardBlock as CardBlock,
