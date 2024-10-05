@@ -28,8 +28,13 @@ describe('LocalDetails', () => {
         video: {
           id: '2_Acts7302-0-0',
           primaryLanguageId: '529',
-          image:
-            'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+          images: [
+            {
+              __typename: 'CloudflareImage',
+              mobileCinematicHigh:
+                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg'
+            }
+          ],
           title: [
             {
               primary: true,
@@ -105,8 +110,13 @@ describe('LocalDetails', () => {
         video: {
           id: '2_Acts7302-0-0',
           primaryLanguageId: '529',
-          image:
-            'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+          images: [
+            {
+              __typename: 'CloudflareImage',
+              mobileCinematicHigh:
+                'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg'
+            }
+          ],
           title: [
             {
               primary: true,

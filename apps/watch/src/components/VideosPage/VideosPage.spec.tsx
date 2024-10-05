@@ -38,8 +38,13 @@ describe('VideosPage', () => {
       __typename: 'Video',
       childrenCount: 49,
       id: 'videoId',
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg'
+        }
+      ],
       imageAlt: [
         {
           value: 'Life of Jesus (Gospel of John)'

@@ -75,7 +75,7 @@ export function SourceFromLocal({
       <Box sx={{ ml: 2, mr: 4 }}>
         <ImageBlockThumbnail
           selectedBlock={{
-            src: selectedBlock?.video?.images[0].mobileCinematicHigh ?? '',
+            src: selectedBlock?.video?.images[0]?.mobileCinematicHigh ?? '',
             alt: selectedBlock?.video?.title?.[0]?.value ?? ''
           }}
           Icon={VideoOnIcon}
