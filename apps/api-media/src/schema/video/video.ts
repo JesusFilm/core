@@ -12,6 +12,38 @@ import { VideoLabel } from './enums/videoLabel'
 import { VideosFilter } from './inputs/videosFilter'
 import { videosFilter } from './lib/videosFilter'
 
+interface Info {
+  variableValues:
+    | Record<
+        string,
+        Array<
+          Array<{
+            id: string
+            primaryLanguageId: string
+          }>
+        >
+      >
+    | Array<{ id: string; primaryLanguageId: string }>
+}
+
+export function getLanguageIdFromInfo(
+  info: unknown,
+  parentId: string
+): string | undefined {
+  return typeof (info as Info).variableValues === 'object'
+    ? Object.values((info as Info).variableValues).find(
+        (inner) =>
+          Array.isArray(inner) &&
+          inner.find(({ id }: { id: string }) => id === parentId)
+      )?.[0].primaryLanguageId
+    : (
+        (info as Info).variableValues as Array<{
+          id: string
+          primaryLanguageId: string
+        }>
+      )?.find(({ id }: { id: string }) => id === parentId)?.primaryLanguageId
+}
+
 const Video = builder.prismaObject('Video', {
   shareable: true,
   fields: (t) => ({
@@ -214,11 +246,10 @@ const Video = builder.prismaObject('Video', {
           ? variableValueId.substring(variableValueId.lastIndexOf('/') + 1)
           : ''
 
-        const journeysLanguageIdForBlock = (
-          info.variableValues as {
-            representations: Array<{ id: string; primaryLanguageId: string }>
-          }
-        ).representations?.find(({ id }) => id === parent.id)?.primaryLanguageId
+        const journeysLanguageIdForBlock = getLanguageIdFromInfo(
+          info,
+          parent.id
+        )
 
         if (
           info.variableValues.idType !== IdTypeShape.databaseId &&
