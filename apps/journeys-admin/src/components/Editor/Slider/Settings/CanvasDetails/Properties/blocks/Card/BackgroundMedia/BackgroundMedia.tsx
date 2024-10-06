@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
 import { styled } from '@mui/material/styles'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
@@ -182,18 +181,14 @@ export function BackgroundMedia(): ReactElement {
             aria-label="video"
             data-testid="bgvideo-video-tab"
           >
-            <Stack direction="row" spacing="8px">
-              <span>{t('Video')}</span>
-            </Stack>
+            {t('Video')}
           </ToggleButton>
           <ToggleButton
             value="ImageBlock"
             aria-label="image"
             data-testid="bgvideo-image-tab"
           >
-            <Stack direction="row" spacing="8px">
-              <span>{t('Image')}</span>
-            </Stack>
+            {t('Image')}
           </ToggleButton>
         </StyledToggleButtonGroup>
       </Box>
