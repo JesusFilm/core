@@ -75,7 +75,6 @@ export async function contextToUserId(
 export async function contextToUser(
   context: ExecutionContext
 ): Promise<User | null> {
-  const userId = await contextToUserId(context)
   const ctx = GqlExecutionContext.create(context).getContext()
   const payload = get(ctx, 'req.body.extensions.jwt.payload')
   const result = payloadSchema.safeParse(payload)
@@ -101,6 +100,8 @@ export async function contextToUser(
       emailVerified
     }
   }
+
+  const userId = await contextToUserId(context)
 
   if (userId != null) {
     const { displayName, email, photoURL, emailVerified } = await auth.getUser(
