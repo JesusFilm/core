@@ -6,6 +6,7 @@ import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import { DateResolver } from 'graphql-scalars'
 
 import { MediaRole, Prisma } from '.prisma/api-media-client'
+import { User } from '@core/yoga/firebaseClient'
 
 import type PrismaTypes from '../__generated__/pothos-types'
 import { prisma } from '../lib/prisma'
@@ -13,8 +14,8 @@ import { prisma } from '../lib/prisma'
 const PrismaPlugin = pluginName
 
 export interface Context {
-  currentRoles?: MediaRole[] | null
-  userId: string | null
+  currentRoles: MediaRole[]
+  user: User | null
 }
 
 export const builder = new SchemaBuilder<{
@@ -32,7 +33,7 @@ export const builder = new SchemaBuilder<{
   plugins: [ScopeAuthPlugin, PrismaPlugin, DirectivesPlugin, FederationPlugin],
   scopeAuth: {
     authScopes: async (context) => ({
-      isAuthenticated: context.userId != null,
+      isAuthenticated: context.user != null,
       isPublisher: context.currentRoles?.includes('publisher') ?? false
     })
   },

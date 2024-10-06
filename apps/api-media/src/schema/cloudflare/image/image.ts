@@ -83,12 +83,12 @@ builder.queryFields((t) => ({
       offset: t.arg.int({ required: false }),
       limit: t.arg.int({ required: false })
     },
-    resolve: async (query, _root, { offset, limit }, { userId }) => {
-      if (userId == null) throw new Error('User not found')
+    resolve: async (query, _root, { offset, limit }, { user }) => {
+      if (user == null) throw new Error('User not found')
 
       return await prisma.cloudflareImage.findMany({
         ...query,
-        where: { userId },
+        where: { userId: user.id },
         take: limit ?? undefined,
         skip: offset ?? undefined
       })
@@ -102,12 +102,12 @@ builder.queryFields((t) => ({
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
-    resolve: async (query, _root, { id }, { userId }) => {
-      if (userId == null) throw new Error('User not found')
+    resolve: async (query, _root, { id }, { user }) => {
+      if (user == null) throw new Error('User not found')
 
       return await prisma.cloudflareImage.findFirstOrThrow({
         ...query,
-        where: { id, userId }
+        where: { id, userId: user.id }
       })
     }
   })
@@ -122,8 +122,8 @@ builder.mutationFields((t) => ({
     args: {
       input: t.arg({ type: ImageInput, required: false })
     },
-    resolve: async (query, _root, { input }, { userId }) => {
-      if (userId == null) throw new Error('User not found')
+    resolve: async (query, _root, { input }, { user }) => {
+      if (user == null) throw new Error('User not found')
 
       const { id, uploadURL } = await createImageByDirectUpload()
 
@@ -132,7 +132,7 @@ builder.mutationFields((t) => ({
         data: {
           id,
           uploadUrl: uploadURL,
-          userId,
+          userId: user.id,
           aspectRatio: input?.aspectRatio ?? undefined,
           videoId: input?.videoId ?? undefined
         }
@@ -148,8 +148,8 @@ builder.mutationFields((t) => ({
       url: t.arg.string({ required: true }),
       input: t.arg({ type: ImageInput, required: false })
     },
-    resolve: async (query, _root, { url, input }, { userId }) => {
-      if (userId == null) throw new Error('User not found')
+    resolve: async (query, _root, { url, input }, { user }) => {
+      if (user == null) throw new Error('User not found')
 
       const { id } = await createImageFromUrl(url)
 
@@ -157,7 +157,7 @@ builder.mutationFields((t) => ({
         ...query,
         data: {
           id,
-          userId,
+          userId: user.id,
           uploaded: true,
           aspectRatio: input?.aspectRatio ?? undefined,
           videoId: input?.videoId ?? undefined
@@ -174,8 +174,8 @@ builder.mutationFields((t) => ({
       prompt: t.arg.string({ required: true }),
       input: t.arg({ type: ImageInput, required: false })
     },
-    resolve: async (query, _root, { prompt, input }, { userId }) => {
-      if (userId == null) throw new Error('User not found')
+    resolve: async (query, _root, { prompt, input }, { user }) => {
+      if (user == null) throw new Error('User not found')
 
       const image = await createImageFromResponse(
         await createImageFromText(prompt)
@@ -185,7 +185,7 @@ builder.mutationFields((t) => ({
         ...query,
         data: {
           id: image.id,
-          userId,
+          userId: user.id,
           uploaded: true,
           aspectRatio: input?.aspectRatio ?? undefined,
           videoId: input?.videoId ?? undefined
@@ -200,11 +200,11 @@ builder.mutationFields((t) => ({
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
-    resolve: async (_root, { id }, { userId }) => {
-      if (userId == null) throw new Error('User not found')
+    resolve: async (_root, { id }, { user }) => {
+      if (user == null) throw new Error('User not found')
 
       await prisma.cloudflareImage.findUniqueOrThrow({
-        where: { id, userId }
+        where: { id, userId: user.id }
       })
 
       await deleteImage(id)
@@ -220,11 +220,11 @@ builder.mutationFields((t) => ({
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
-    resolve: async (_root, { id }, { userId }) => {
-      if (userId == null) throw new Error('User not found')
+    resolve: async (_root, { id }, { user }) => {
+      if (user == null) throw new Error('User not found')
 
       await prisma.cloudflareImage.update({
-        where: { id, userId },
+        where: { id, userId: user.id },
         data: { uploaded: true }
       })
 
