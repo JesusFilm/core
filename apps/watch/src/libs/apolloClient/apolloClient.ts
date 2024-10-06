@@ -33,7 +33,7 @@ export function createApolloClient({
     return {
       headers: {
         ...(!isSsrMode ? headers : []),
-        Authorization: token ?? ''
+        Authorization: token != null ? `JWT ${token}` : ''
       }
     }
   })

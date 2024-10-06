@@ -33,7 +33,7 @@ export function createApolloClient(
     return {
       headers: {
         ...(!ssrMode ? headers : []),
-        Authorization: firebaseToken
+        Authorization: `JWT ${firebaseToken}`
       }
     }
   })
