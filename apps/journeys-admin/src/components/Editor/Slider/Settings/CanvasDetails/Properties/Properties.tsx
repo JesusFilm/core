@@ -181,7 +181,12 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       data-testId="SettingsDrawer"
     >
       <DrawerTitle title={title} onClose={onClose} />
-      <Stack flexGrow={1} sx={{ overflow: 'auto' }}>
+      <Stack
+        data-testid="SettingsDrawerContent"
+        className="swiper-no-swiping"
+        flexGrow={1}
+        sx={{ overflow: 'auto' }}
+      >
         {component}
       </Stack>
     </Stack>

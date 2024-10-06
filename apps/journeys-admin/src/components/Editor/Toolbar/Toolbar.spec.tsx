@@ -71,7 +71,26 @@ describe('Toolbar', () => {
       title: 'My Awesome Journey Title',
       description: 'My Awesome Journey Description',
       primaryImageBlock: null,
-      status: JourneyStatus.draft
+      status: JourneyStatus.draft,
+      language: {
+        __typename: 'Language',
+        id: '529',
+        name: [
+          {
+            value: 'English',
+            primary: true,
+            __typename: 'LanguageName'
+          }
+        ]
+      }
+    } as unknown as Journey,
+    variant: 'admin'
+  }
+
+  const noDescriptionJourney = {
+    journey: {
+      ...defaultJourney.journey,
+      description: ''
     } as unknown as Journey,
     variant: 'admin'
   }
@@ -92,6 +111,17 @@ describe('Toolbar', () => {
         blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
       },
       status: JourneyStatus.draft,
+      language: {
+        __typename: 'Language',
+        id: '529',
+        name: [
+          {
+            value: 'English',
+            primary: true,
+            __typename: 'LanguageName'
+          }
+        ]
+      },
       variant: 'admin'
     } as unknown as Journey,
 
@@ -117,7 +147,7 @@ describe('Toolbar', () => {
     expect(screen.getByTestId('HelpScoutBeaconIconButton')).toBeInTheDocument()
   })
 
-  it('should render title & description on Toolbar', () => {
+  it('should render title, description and language on Toolbar', () => {
     render(toolbar(defaultJourney))
     expect(screen.getAllByRole('heading', { level: 6 })[0]).toHaveTextContent(
       'My Awesome Journey Title'
@@ -125,6 +155,12 @@ describe('Toolbar', () => {
     expect(
       screen.getAllByText('My Awesome Journey Description')[0]
     ).toBeInTheDocument()
+    expect(screen.getAllByRole('paragraph')[0]).toHaveTextContent('English')
+  })
+
+  it('should not show dot if there is no description', () => {
+    render(toolbar(noDescriptionJourney))
+    expect(screen.queryByTestId('DescriptionDot')).not.toBeInTheDocument()
   })
 
   it('should open the title dialog when selected', async () => {
@@ -132,7 +168,7 @@ describe('Toolbar', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Click to edit' }))
     await waitFor(() => {
-      expect(screen.getByTestId('TitleDescriptionDialog')).toBeInTheDocument()
+      expect(screen.getByTestId('JourneyDetailsDialog')).toBeInTheDocument()
     })
   })
 

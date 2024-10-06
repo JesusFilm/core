@@ -12,7 +12,7 @@ jobs:
       branch: ${{ github.ref_name }}
       endpoint_url: http://api-analytics.service.internal:4008/graphql
     secrets:
-      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      HIVE_TOKEN: ${{ secrets.HIVE_PROD_READ_WRITE_TOKEN }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
@@ -25,7 +25,20 @@ jobs:
       branch: ${{ github.ref_name }}
       endpoint_url: http://api-journeys.service.internal:4001/graphql
     secrets:
-      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      HIVE_TOKEN: ${{ secrets.HIVE_PROD_READ_WRITE_TOKEN }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
+      JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
+      AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+  api-journeys-modern:
+    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
+    with:
+      name: api-journeys-modern
+      env: prod
+      branch: ${{ github.ref_name }}
+      endpoint_url: http://api-journeys-modern.service.internal:4004/graphql
+    secrets:
+      HIVE_TOKEN: ${{ secrets.HIVE_PROD_READ_WRITE_TOKEN }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
@@ -38,7 +51,7 @@ jobs:
       branch: ${{ github.ref_name }}
       endpoint_url: http://api-users.service.internal:4002/graphql
     secrets:
-      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      HIVE_TOKEN: ${{ secrets.HIVE_PROD_READ_WRITE_TOKEN }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
@@ -51,7 +64,7 @@ jobs:
       branch: ${{ github.ref_name }}
       endpoint_url: http://api-languages.service.internal:4003/graphql
     secrets:
-      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      HIVE_TOKEN: ${{ secrets.HIVE_PROD_READ_WRITE_TOKEN }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
@@ -64,7 +77,7 @@ jobs:
       branch: ${{ github.ref_name }}
       endpoint_url: http://api-media.service.internal:4005/graphql
     secrets:
-      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      HIVE_TOKEN: ${{ secrets.HIVE_PROD_READ_WRITE_TOKEN }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}

@@ -21,7 +21,7 @@ locals {
     zone_id = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
     alb_target_group = merge(local.alb_target_group, {
       health_check_path = "/health"
-      health_check_port = "8088"
+      health_check_port = "4000"
     })
   }
 
@@ -63,6 +63,16 @@ module "api-analytics" {
 
 module "api-journeys" {
   source        = "../../../apps/api-journeys/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  doppler_token = data.aws_ssm_parameter.doppler_api_journeys_prod_token.value
+  alb = {
+    arn      = module.prod.internal_alb.arn
+    dns_name = module.prod.internal_alb.dns_name
+  }
+}
+
+module "api-journeys-modern" {
+  source        = "../../../apps/api-journeys-modern/infrastructure"
   ecs_config    = local.internal_ecs_config
   doppler_token = data.aws_ssm_parameter.doppler_api_journeys_prod_token.value
   alb = {
