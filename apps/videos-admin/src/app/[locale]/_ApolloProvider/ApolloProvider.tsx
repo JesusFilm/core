@@ -29,7 +29,7 @@ const authLink = setContext(async (_, { headers }) => {
   return {
     headers: {
       ...headers,
-      Authorization: token != null ? `JWT ${token}` : ''
+      Authorization: token != null ? `JWT ${token}` : undefined
     }
   }
 })
