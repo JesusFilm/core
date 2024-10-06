@@ -44,9 +44,7 @@ const payloadSchema = z
     emailVerified: data.email_verified
   }))
 
-export async function contextToUserId(
-  context: ExecutionContext
-): Promise<string | null> {
+export function contextToUserId(context: ExecutionContext): string | null {
   const ctx = GqlExecutionContext.create(context).getContext()
   const payload = get(ctx, 'req.body.extensions.jwt.payload')
   const result = payloadSchema.safeParse(payload)
@@ -55,9 +53,7 @@ export async function contextToUserId(
   return null
 }
 
-export async function contextToUser(
-  context: ExecutionContext
-): Promise<User | null> {
+export function contextToUser(context: ExecutionContext): User | null {
   const ctx = GqlExecutionContext.create(context).getContext()
   const payload = get(ctx, 'req.body.extensions.jwt.payload')
   const result = payloadSchema.safeParse(payload)

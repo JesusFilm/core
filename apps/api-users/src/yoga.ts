@@ -13,9 +13,9 @@ import { Context } from './schema/builder'
 
 export const yoga = createYoga<Record<string, unknown>, Context>({
   schema,
-  context: async ({ request, params }) => {
+  context: ({ request, params }) => {
     const payload = get(params, 'extensions.jwt.payload')
-    const currentUser = await getUserFromPayload(payload)
+    const currentUser = getUserFromPayload(payload)
     const interopToken = request.headers.get('interop-token')
     const ipAddress = request.headers.get('x-forwarded-for')
 

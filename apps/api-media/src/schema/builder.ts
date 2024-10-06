@@ -34,7 +34,7 @@ export const builder = new SchemaBuilder<{
   scopeAuth: {
     authScopes: async (context) => ({
       isAuthenticated: context.user != null,
-      isPublisher: context.currentRoles?.includes('publisher') ?? false
+      isPublisher: context.currentRoles.includes('publisher') ?? false
     })
   },
   prisma: {

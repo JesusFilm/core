@@ -4,8 +4,8 @@ import { GraphQLError } from 'graphql'
 import { contextToUserId } from '@core/nest/common/firebaseClient'
 
 export const CurrentUserId = createParamDecorator(
-  async (_data, context: ExecutionContext) => {
-    const userId = await contextToUserId(context)
+  (_data, context: ExecutionContext) => {
+    const userId = contextToUserId(context)
     if (userId == null)
       throw new GraphQLError('Token is invalid', {
         extensions: { code: 'UNAUTHENTICATED' }

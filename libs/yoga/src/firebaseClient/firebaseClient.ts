@@ -42,9 +42,7 @@ const payloadSchema = z
 
 export const auth = getAuth(firebaseClient)
 
-export async function getUserIdFromPayload(
-  payload: unknown
-): Promise<string | null> {
+export function getUserIdFromPayload(payload: unknown): string | null {
   if (process.env.NODE_ENV === 'test') return 'testUserId'
 
   const result = payloadSchema.safeParse(payload)
@@ -53,9 +51,7 @@ export async function getUserIdFromPayload(
   return null
 }
 
-export async function getUserFromPayload(
-  payload: unknown
-): Promise<User | null> {
+export function getUserFromPayload(payload: unknown): User | null {
   if (process.env.NODE_ENV === 'test')
     return {
       id: 'testUserId',

@@ -22,7 +22,7 @@ export const yoga = createYoga<Record<string, unknown>, Context>({
   schema,
   context: async ({ params }) => {
     const payload = get(params, 'extensions.jwt.payload')
-    const user = await getUserFromPayload(payload)
+    const user = getUserFromPayload(payload)
 
     return {
       ...initContextCache(),
