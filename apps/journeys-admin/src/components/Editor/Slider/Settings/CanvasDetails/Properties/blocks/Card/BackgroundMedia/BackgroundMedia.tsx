@@ -13,8 +13,6 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import Image3Icon from '@core/shared/ui/icons/Image3'
-import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 import { palette } from '@core/shared/ui/themes/journeysAdmin/tokens/colors'
 
 import {
@@ -39,10 +37,10 @@ const BackgroundMediaImage = dynamic(
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
   '& .MuiToggleButtonGroup-grouped': {
-    paddingLeft: 30,
-    paddingRight: 30,
-    paddingTop: 12,
-    paddingBottom: 12,
+    paddingLeft: 12,
+    paddingRight: 12,
+    paddingTop: 8,
+    paddingBottom: 8,
     backgroundColor: theme.palette[0],
     '&.Mui-selected': {
       backgroundColor: theme.palette[100],
@@ -185,7 +183,6 @@ export function BackgroundMedia(): ReactElement {
             data-testid="bgvideo-video-tab"
           >
             <Stack direction="row" spacing="8px">
-              <VideoOnIcon />
               <span>{t('Video')}</span>
             </Stack>
           </ToggleButton>
@@ -195,7 +192,6 @@ export function BackgroundMedia(): ReactElement {
             data-testid="bgvideo-image-tab"
           >
             <Stack direction="row" spacing="8px">
-              <Image3Icon />
               <span>{t('Image')}</span>
             </Stack>
           </ToggleButton>
