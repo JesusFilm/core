@@ -54,12 +54,12 @@ describe('language', () => {
       name: languageName
     } as unknown as Language)
     prismaMock.countryLanguage.findFirst.mockResolvedValue({
-        id: 'cl1',
-        languageId: 'en',
-        countryId: 'US',
-        speakers: 1000000,
-        displaySpeakers: 1000000,
-        primary: true
+      id: 'cl1',
+      languageId: 'en',
+      countryId: 'US',
+      speakers: 1000000,
+      displaySpeakers: 1000000,
+      primary: true
     })
     prismaMock.countryLanguage.aggregate.mockResolvedValue({
       _count: {},
@@ -73,7 +73,7 @@ describe('language', () => {
     const data = await client({
       document: LANGUAGE_QUERY
     })
-    
+
     expect(prismaMock.language.findUnique).toHaveBeenCalledWith({
       where: {
         id: '529'
@@ -117,12 +117,12 @@ describe('language', () => {
       name: languageName
     } as unknown as Language)
     prismaMock.countryLanguage.findFirst.mockResolvedValue({
-        id: 'cl1',
-        languageId: 'en',
-        countryId: 'US',
-        speakers: 1000000,
-        displaySpeakers: 1000000,
-        primary: true
+      id: 'cl1',
+      languageId: 'en',
+      countryId: 'US',
+      speakers: 1000000,
+      displaySpeakers: 1000000,
+      primary: true
     })
     prismaMock.countryLanguage.aggregate.mockResolvedValue({
       _count: {},
@@ -140,7 +140,7 @@ describe('language', () => {
         primary: true
       }
     })
-    
+
     expect(prismaMock.language.findUnique).toHaveBeenCalledWith({
       where: {
         id: '529'
