@@ -13,6 +13,7 @@ import {
   GridRowParams,
   GridRowsProp,
   GridToolbar,
+  GridValidRowModel,
   MuiEvent,
   getGridStringOperators,
   gridClasses
@@ -21,6 +22,7 @@ import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
+
 import { PublishedChip } from '../../../../../components/PublishedChip'
 
 export const GET_ADMIN_VIDEOS_AND_COUNT = graphql(`
@@ -122,9 +124,9 @@ export function VideoList(): ReactElement {
       field: 'published',
       headerName: t('Published'),
       minWidth: 150,
-      renderCell: (params: GridRenderCellParams<any, boolean>) => (
-        <PublishedChip published={params.value ?? false} />
-      )
+      renderCell: (
+        params: GridRenderCellParams<GridValidRowModel, boolean>
+      ) => <PublishedChip published={params.value ?? false} />
     },
     {
       field: 'description',

@@ -3,10 +3,9 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { useParams } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { useVideoMock } from '../../../../../../libs/useVideo/useVideo.mock'
+import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 import { VideoView } from './VideoView'
-import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
