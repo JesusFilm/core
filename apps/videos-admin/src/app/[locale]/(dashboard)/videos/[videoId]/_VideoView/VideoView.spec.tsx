@@ -6,7 +6,6 @@ import { NextIntlClientProvider } from 'next-intl'
 import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 import { VideoView } from './VideoView'
-import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
