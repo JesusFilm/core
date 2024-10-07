@@ -5,20 +5,19 @@ import { getApolloClient } from '../../../lib/apolloClient'
 import { paramsToRecord } from '../../../lib/paramsToRecord'
 
 /* TODO: 
-  querystring:
-    apiKey
-    term
+querystring:
+  apiKey
+  term
     iso3
     bcp47
     ids
     countryIds
-    type
+type
     subTypes
     contentTypes
     expand
     filter
 */
-
 const GET_LANGUAGES = graphql(`
 query GetLanguagesWithTags {
   languages {
@@ -38,9 +37,9 @@ query GetLanguagesWithTags {
     speakerCount
     countriesCount
     primaryCountryId
-    videoVariants(first: 1) {
-      seriesLanguageCount
-    }
+    seriesCount
+    featureFilmCount
+    shortFilmCount
   }
   languagesCount
 }
@@ -85,7 +84,7 @@ export async function GET(request: NextRequest): Promise<Response> {
   }).toString()
 
   const mediaLanguages = data.languages.map((language) => ({
-    languageId: language.id,
+    languageId: Number(language.id),
     iso3: language.iso3,
     bcp47: language.bcp47,
     counts: {
@@ -97,18 +96,18 @@ export async function GET(request: NextRequest): Promise<Response> {
         value: language.countriesCount,
         description: "Number of countries"
       },
-      // series: {
-      //   value: (language as { videoVariants?: { seriesLanguageCount?: number }[] }).videoVariants?.[0]?.seriesLanguageCount ?? 0,
-      //   description: "Series"
-      // },
-      // featureFilm: {
-      //   value: language.featureFilmCount,
-      //   description: "Feature Film"
-      // },
-      // shortFilm: {
-      //   value: language.shortFilmCount,
-      //   description: "Short Film"
-      // }
+      series: {
+        value: language.seriesCount,
+        description: "Series"
+      },
+      featureFilm: {
+        value: language.featureFilmCount,
+        description: "Feature Film"
+      },
+      shortFilm: {
+        value: language.shortFilmCount,
+        description: "Short Film"
+      }
     },
     audioPreview: language.audioPreview != null ? {
       url: language.audioPreview.value,

@@ -10,8 +10,6 @@ import { paramsToRecord } from '../../../../lib/paramsToRecord'
     expand
     metadataLanguageTags
     filter
-  api:
-    country data & counts
 */
 
 const GET_LANGUAGE = graphql(`
@@ -23,6 +21,19 @@ const GET_LANGUAGE = graphql(`
       name {
         value
       }
+      audioPreview {
+        size
+        value
+        duration
+        bitrate
+        codec
+      }
+      speakerCount
+      countriesCount
+      primaryCountryId
+      seriesCount
+      featureFilmCount
+      shortFilmCount
     }
   }
 `)
@@ -63,19 +74,43 @@ export async function GET(
   const queryString = new URLSearchParams(queryObject).toString()
 
   const response = {
-    languageId,
+    languageId: Number(data.language.id),
     iso3: data.language.iso3,
     bcp47: data.language.bcp47,
-    // TODO: investigate
-    counts: {},
-    // TODO investigate
-    audioPreview: {},
-    // TODO implement
-    primaryCountryId: '',
+    counts: {
+      speakerCount: {
+        value: data.language.speakerCount,
+        description: "Number of speakers"
+      },
+      countriesCount: {
+        value: data.language.countriesCount,
+        description: "Number of countries"
+      },
+      series: {
+        value: data.language.seriesCount,
+        description: "Series"
+      },
+      featureFilm: {
+        value: data.language.featureFilmCount,
+        description: "Feature Film"
+      },
+      shortFilm: {
+        value: data.language.shortFilmCount,
+        description: "Short Film"
+      }
+    },
+    audioPreview: data.language.audioPreview != null ? {
+      url: data.language.audioPreview.value,
+      audioBitrate: data.language.audioPreview.bitrate,
+      audioContainer: data.language.audioPreview.codec,
+      sizeInBytes: data.language.audioPreview.size
+    } : null,
+    primaryCountryId: data.language.primaryCountryId ?? '',
     name: data.language.name[0].value,
     nameNative: data.language.name[1]?.value ?? data.language.name[0].value,
-    // TODO investigate
-    metadataLanguageTag: '',
+    alternateLanguageName: '',
+    alternateLanguageNameNative: '',
+    metadataLanguageTag: 'en',
     _links: {
       self: {
         href: `http://api.arclight.org/v2/media-languages/${languageId}?${queryString}`
