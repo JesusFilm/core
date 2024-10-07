@@ -7,6 +7,6 @@ builder.prismaObject('CountryLanguage', {
     country: t.relation('country'),
     speakers: t.exposeInt('speakers'),
     displaySpeakers: t.exposeInt('displaySpeakers', { nullable: true }),
-    primary: t.exposeBoolean('primary'),
-  }),
+    primary: t.exposeBoolean('primary')
+  })
 })

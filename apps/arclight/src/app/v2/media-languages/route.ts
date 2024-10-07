@@ -19,30 +19,30 @@ type
     filter
 */
 const GET_LANGUAGES = graphql(`
-query GetLanguagesWithTags {
-  languages {
-    id
-    iso3
-    bcp47
-    name {
-      value
+  query GetLanguagesWithTags {
+    languages {
+      id
+      iso3
+      bcp47
+      name {
+        value
+      }
+      audioPreview {
+        size
+        value
+        duration
+        bitrate
+        codec
+      }
+      speakerCount
+      countriesCount
+      primaryCountryId
+      seriesCount
+      featureFilmCount
+      shortFilmCount
     }
-    audioPreview {
-      size
-      value
-      duration
-      bitrate
-      codec
-    }
-    speakerCount
-    countriesCount
-    primaryCountryId
-    seriesCount
-    featureFilmCount
-    shortFilmCount
+    languagesCount
   }
-  languagesCount
-}
 `)
 
 export async function GET(request: NextRequest): Promise<Response> {
@@ -90,35 +90,38 @@ export async function GET(request: NextRequest): Promise<Response> {
     counts: {
       speakerCount: {
         value: language.speakerCount,
-        description: "Number of speakers"
+        description: 'Number of speakers'
       },
       countriesCount: {
         value: language.countriesCount,
-        description: "Number of countries"
+        description: 'Number of countries'
       },
       series: {
         value: language.seriesCount,
-        description: "Series"
+        description: 'Series'
       },
       featureFilm: {
         value: language.featureFilmCount,
-        description: "Feature Film"
+        description: 'Feature Film'
       },
       shortFilm: {
         value: language.shortFilmCount,
-        description: "Short Film"
+        description: 'Short Film'
       }
     },
-    audioPreview: language.audioPreview != null ? {
-      url: language.audioPreview.value,
-      audioBitrate: language.audioPreview.bitrate,
-      audioContainer: language.audioPreview.codec,
-      sizeInBytes: language.audioPreview.size
-    } : null,
+    audioPreview:
+      language.audioPreview != null
+        ? {
+            url: language.audioPreview.value,
+            audioBitrate: language.audioPreview.bitrate,
+            audioContainer: language.audioPreview.codec,
+            sizeInBytes: language.audioPreview.size
+          }
+        : null,
     primaryCountryId: language.primaryCountryId ?? '',
     name: language.name[0]?.value,
     nameNative: language.name[1]?.value,
-    alternateLanguageName:  '',
+    alternateLanguageName: '',
     alternateLanguageNameNative: '',
     metadataLanguageTag: 'en', // TODO: Get from parameters
     _links: {
