@@ -79,6 +79,23 @@ export const Language = builder.prismaObject('Language', {
         });
         return primaryCountryLanguage?.countryId ?? null;
       }
+    }),
+    speakerCount: t.int({
+      resolve: async (parent) => {
+        const result = await prisma.countryLanguage.aggregate({
+          where: { languageId: parent.id },
+          _sum: { speakers: true }
+        });
+        return result._sum.speakers ?? 0;
+      }
+    }),
+    countriesCount: t.int({
+      resolve: async (parent) => {
+        return await prisma.countryLanguage.count({
+          where: { languageId: parent.id }
+        });
+      }
+    
     })
   })
 })
@@ -146,3 +163,5 @@ builder.queryFields((t) => ({
     }
   })
 }))
+
+

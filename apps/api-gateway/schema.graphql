@@ -1078,6 +1078,8 @@ type Language @join__type(graph: JOURNEYS, key: "id")  @join__type(graph: LANGUA
   countryLanguages: [CountryLanguage!]! @join__field(graph: LANGUAGES) 
   audioPreview: AudioPreview @join__field(graph: LANGUAGES) 
   primaryCountryId: String @join__field(graph: LANGUAGES) 
+  speakerCount: Int! @join__field(graph: LANGUAGES) 
+  countriesCount: Int! @join__field(graph: LANGUAGES) 
 }
 
 type JourneyViewEvent implements Event @join__type(graph: JOURNEYS)  @join__implements(graph: JOURNEYS, interface: "Event")  {
@@ -2200,6 +2202,7 @@ type VideoVariant @join__type(graph: MEDIA)  {
   downloads: [VideoVariantDownload!]!
   duration: Int!
   language: Language!
+  seriesLanguageCount: Int!
   subtitle(languageId: ID, primary: Boolean) : [VideoSubtitle!]!
   subtitleCount: Int!
   """
