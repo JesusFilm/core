@@ -33,7 +33,8 @@ export function createApolloClient(
     return {
       headers: {
         ...(!ssrMode ? headers : []),
-        Authorization: firebaseToken
+        Authorization:
+          firebaseToken != null ? `JWT ${firebaseToken}` : undefined
       }
     }
   })

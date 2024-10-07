@@ -310,9 +310,15 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                       )?.value
                     }
                   </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    •
-                  </Typography>
+                  {journey.description !== '' && journey.description != null ? (
+                    <Typography
+                      data-testid="DescriptionDot"
+                      variant="body2"
+                      sx={{ color: 'text.secondary' }}
+                    >
+                      •
+                    </Typography>
+                  ) : null}
                   <Typography
                     variant="body2"
                     sx={{

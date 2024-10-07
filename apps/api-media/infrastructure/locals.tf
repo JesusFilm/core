@@ -9,6 +9,7 @@ locals {
     "BIG_QUERY_APPLICATION_JSON",
     "CLOUDFLARE_IMAGES_TOKEN",
     "CLOUDFLARE_ACCOUNT_ID",
+    "CLOUDFLARE_IMAGE_ACCOUNT",
     "CLOUDFLARE_STREAM_TOKEN",
     "CROWDIN_API_KEY",
     "GATEWAY_URL",
@@ -18,6 +19,7 @@ locals {
     "REDIS_URL",
     "SEGMIND_API_KEY",
     "UNSPLASH_ACCESS_KEY",
+    "GATEWAY_HMAC_SECRET"
   ]
   service_config = {
     name           = "api-media"

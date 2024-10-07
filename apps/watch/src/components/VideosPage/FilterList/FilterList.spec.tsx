@@ -4,9 +4,13 @@ import type { RefinementListRenderState } from 'instantsearch.js/es/connectors/r
 import type { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useMenu, useSearchBox } from 'react-instantsearch'
 
-import { useAlgoliaRouter } from '../../../libs/algolia/useAlgoliaRouter'
+import {
+  FilterParams,
+  useAlgoliaRouter
+} from '../../../libs/algolia/useAlgoliaRouter'
 import { languages } from '../data'
 
+import { languageIdRefinements, subtitleIdRefinements } from './data'
 import { FilterList } from './FilterList'
 
 jest.mock('react-instantsearch')
@@ -21,38 +25,31 @@ const mockUseAlgoliaRouter = useAlgoliaRouter as jest.MockedFunction<
 >
 
 describe('FilterList', () => {
+  const useSearchBox = {
+    refine: jest.fn()
+  } as unknown as SearchBoxRenderState
+
+  const useMenu = {
+    refine: jest.fn()
+  } as unknown as MenuRenderState
+
+  const useAlgoliaRouter: FilterParams = {
+    query: null,
+    languageId: null,
+    subtitleId: null
+  }
+
   beforeEach(() => {
-    mockUseSearchBox.mockReturnValue({
-      refine: jest.fn()
-    } as unknown as SearchBoxRenderState)
-
-    mockUseAlgoliaRouter.mockReturnValue({
-      query: null,
-      languageId: null,
-      subtitleId: null
-    })
-
-    mockUseMenu.mockReturnValue({
-      refine: jest.fn()
-    } as unknown as MenuRenderState)
+    mockUseSearchBox.mockReturnValue(useSearchBox)
+    mockUseMenu.mockReturnValue(useMenu)
+    mockUseAlgoliaRouter.mockReturnValue(useAlgoliaRouter)
   })
 
   describe('Language Filter', () => {
-    const languageItems = [
-      {
-        count: 100,
-        isRefined: false,
-        value: '529',
-        label: '529',
-        highlighted: '529'
-      }
-    ]
-
     it('should refine by language on audio language filter', async () => {
       const refineLanguages = jest.fn()
-
       mockUseMenu.mockReturnValue({
-        items: languageItems,
+        items: languageIdRefinements,
         refine: refineLanguages
       } as unknown as RefinementListRenderState)
 
@@ -74,28 +71,10 @@ describe('FilterList', () => {
   })
 
   describe('Subtitles Filter', () => {
-    const subtitleItems = [
-      {
-        count: 100,
-        isRefined: false,
-        value: '529',
-        label: '529',
-        highlighted: '529'
-      },
-      {
-        count: 100,
-        isRefined: false,
-        value: '21028',
-        label: '21028',
-        highlighted: '21028'
-      }
-    ]
-
     it('should refine by subtitle on subtitle language filter', async () => {
       const refineSubtitles = jest.fn()
-
       mockUseMenu.mockReturnValue({
-        items: subtitleItems,
+        items: subtitleIdRefinements,
         refine: refineSubtitles
       } as unknown as RefinementListRenderState)
 
@@ -118,7 +97,6 @@ describe('FilterList', () => {
   describe('Search Filter', () => {
     it('should refine by title on title search', async () => {
       const refine = jest.fn()
-
       mockUseSearchBox.mockReturnValue({
         refine
       } as unknown as SearchBoxRenderState)
@@ -132,7 +110,8 @@ describe('FilterList', () => {
           target: { value: 'Jesus' }
         }
       )
-      await waitFor(() => expect(refine).toHaveBeenCalled())
+      await waitFor(() => expect(refine).toHaveBeenCalledTimes(1))
+      expect(refine).toHaveBeenCalledWith('Jesus')
     })
   })
 })

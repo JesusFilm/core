@@ -8,6 +8,7 @@ locals {
     "REDIS_PORT",
     "REDIS_URL",
     "WESS_API_TOKEN",
+    "GATEWAY_HMAC_SECRET"
   ]
   service_config = {
     name           = "api-languages"

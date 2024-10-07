@@ -30,6 +30,19 @@ jobs:
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+  api-journeys-modern:
+    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
+    with:
+      name: api-journeys-modern
+      env: prod
+      branch: ${{ github.ref_name }}
+      endpoint_url: http://api-journeys-modern.service.internal:4004/graphql
+    secrets:
+      HIVE_TOKEN: ${{ secrets.HIVE_PROD_READ_WRITE_TOKEN }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
+      JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
+      AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
   api-users:
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@main
     with:

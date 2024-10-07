@@ -1474,3 +1474,233 @@ export const algoliaVideosNonEnglish = [
     objectID: '4_21753-Win3GodPath'
   }
 ] as unknown as AlgoliaVideo[]
+
+export const transformedItems = [
+  {
+    description:
+      "This film is a perfect introduction to Jesus through the Gospel of Luke. Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion. \n\nGod creates everything and loves mankind. But mankind disobeys God. God and mankind are separated, but God loves mankind so much, He arranges redemption for mankind. He sends his Son Jesus to be a perfect sacrifice to make amends for us.\n\nBefore Jesus arrives, God prepares mankind. Prophets speak of the birth, the life, and the death of Jesus.\n\nJesus attracts attention. He teaches in parables no one really understands, gives sight to the blind, and helps those who no one sees as worth helping.\n\nHe scares the Jewish leaders, they see him as a threat. So they arrange, through Judas the traitor and their Roman oppressors, for the crucifixion of Jesus. They think the matter is settled. But the women who serve Jesus discover an empty tomb. The disciples panic. When Jesus appears, they doubt He's real. But it's what He proclaimed all along: He is their perfect sacrifice, their Savior, victor over death. He ascends to heaven, telling His followers to tell others about Him and His teachings.",
+    duration: 7674,
+    id: '1_jf-0-0',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
+    source: 'internal',
+    title: 'JESUS'
+  },
+  {
+    description:
+      'And truly Jesus did many other signs in the presence of His disciples, which are not written in this book; but these are written that you may believe that Jesus is the Christ, the Son of God, and that believing you may have life in His name. -John 20:30-31 NKJV\n\n" I have come that they may have life, and that they may have it more abundantly." - John 10:10 NKJV\n\n"And this is eternal life, that they may know You, the only true God, and Jesus Christ whom You have sent." - John 17:3 NKJV',
+    duration: 10994,
+    id: '2_GOJ-0-0',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+    source: 'internal',
+    title: 'Life of Jesus (Gospel of John)'
+  },
+  {
+    description:
+      "Jesus gets into a boat and tells His disciples they should all go to the other side of the lake. Along the way, Jesus falls asleep. A storm starts to rage. Waves stretch high over the bow. And the boat starts to take on water.\n\nThe whole time, Jesus stays asleep. The disciples hold on tight. They try to keep the boat afloat. Finally, Peter cries out to the still sleeping Jesus. He tells Jesus that the boat is taking on water and that they'll all be drowned.\n\nJesus stands and puts a hand out toward the storm. The storm clears. And the seas immediately calm.",
+    duration: 119,
+    id: '1_jf6119-0-0',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6119-0-0.mobileCinematicHigh.jpg',
+    source: 'internal',
+    title: 'Jesus Calms the Storm'
+  },
+  {
+    description:
+      'A woman suffering from 12 years of bleeding could find no one to help her.',
+    duration: 190,
+    id: '1_wl604423-0-0',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_wl604423-0-0.mobileCinematicHigh.jpg',
+    source: 'internal',
+    title: 'The Woman with the Issue of Blood'
+  },
+  {
+    description:
+      '"Magdalena", the compelling film portraying Jesus\' tender regard for women, is being met with incredible response around the world. Magdalena is inspiring women everywhere to realize and reclaim the purpose they were always intended for...to know Jesus, and with loving hearts and a gentle touch make Him known.\n\nThis collection includes the 1-hour version of "Magdalena" as well as the original 82 minute director\'s cut. A series of short clips (2-5 minutes) with thought-provoking questions help viewers delve deeper into God’s Word to discover hope for their lives. ',
+    duration: 3658,
+    id: 'MAG1',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/high_mag_collection_640x300br.jpg',
+    source: 'internal',
+    title: 'Magdalena'
+  },
+  {
+    description:
+      "Reflections of Hope is an eight-lesson Bible study that helps women deepen their understanding of Jesus' love and care for them. They learn of His promise to be with them each step of life's journey. This collection includes seven short clips from Magdalena that correspond with the lessons in the study. It also provides thought provoking questions to help women go deeper into God's Word and find the value that God placed in each one of them.",
+    duration: 0,
+    id: '1_wl7-0-0',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/ROH.mobileCinematicHigh.jpg',
+    source: 'internal',
+    title: 'Reflections of Hope'
+  },
+  {
+    description:
+      "They arrive at the place where the crosses are being set up. Others are being tied to their crosses. Jesus is stripped and led to His own cross. They throw Him down on it. There are cries as the others are nailed to their crosses.\n\nThe nails are hammered through Jesus's wrists and feet as He screams. Then slowly, the crosses are erected as Romans pulls the ropes. Jesus is lifted high in the air. He hangs on the cross, tired and in pain. He prays for those in the crowd. He asks God to forgive them because they don't know what they do.\n\nThe crowd murmurs at the feet of the cross. Annas and Caiaphas comment that He saved others. They wonder why He doesn't save Himself. The crowd starts to jeer. They urge Him to save Himself. But He doesn't.",
+    duration: 488,
+    id: '3_0-8DWJ-WIJ_06-0-0',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/3_0-8DWJ-WIJ_06-0-0.mobileCinematicHigh.jpg',
+    source: 'internal',
+    title: 'Day 6: Jesus Died for Me'
+  },
+  {
+    description:
+      'This film depicts the birth of the early church through the eyes of Luke, the author of the Gospel of Luke.',
+    duration: 11530,
+    id: '2_Acts-0-0',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts-0-0.mobileCinematicHigh.jpg',
+    source: 'internal',
+    title: 'Book of Acts'
+  }
+]
+
+export const customTransformedItems = [
+  {
+    __typename: 'Video',
+    childrenCount: 61,
+    id: '1_jf-0-0',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
+    imageAlt: [{ value: 'JESUS' }],
+    label: 'featureFilm',
+    slug: 'jesus/english',
+    snippet: [],
+    title: [{ value: 'JESUS' }],
+    variant: {
+      duration: 7674,
+      hls: null,
+      id: '1_529-jf-0-0',
+      slug: 'jesus/english'
+    }
+  },
+  {
+    __typename: 'Video',
+    childrenCount: 49,
+    id: '2_GOJ-0-0',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+    imageAlt: [{ value: 'Life of Jesus (Gospel of John)' }],
+    label: 'featureFilm',
+    slug: 'life-of-jesus-gospel-of-john/english',
+    snippet: [],
+    title: [{ value: 'Life of Jesus (Gospel of John)' }],
+    variant: {
+      duration: 10994,
+      hls: null,
+      id: '2_529-GOJ-0-0',
+      slug: 'life-of-jesus-gospel-of-john/english'
+    }
+  },
+  {
+    __typename: 'Video',
+    childrenCount: 0,
+    id: '1_jf6119-0-0',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6119-0-0.mobileCinematicHigh.jpg',
+    imageAlt: [{ value: 'Jesus Calms the Storm' }],
+    label: 'segment',
+    slug: 'jesus-calms-the-storm/english',
+    snippet: [],
+    title: [{ value: 'Jesus Calms the Storm' }],
+    variant: {
+      duration: 119,
+      hls: null,
+      id: '1_529-jf6119-0-0',
+      slug: 'jesus-calms-the-storm/english'
+    }
+  },
+  {
+    __typename: 'Video',
+    childrenCount: 0,
+    id: '1_wl604423-0-0',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_wl604423-0-0.mobileCinematicHigh.jpg',
+    imageAlt: [{ value: 'The Woman with the Issue of Blood' }],
+    label: 'segment',
+    slug: 'the-woman-with-the-issue-of-blood/english',
+    snippet: [],
+    title: [{ value: 'The Woman with the Issue of Blood' }],
+    variant: {
+      duration: 190,
+      hls: null,
+      id: '1_529-wl604423-0-0',
+      slug: 'the-woman-with-the-issue-of-blood/english'
+    }
+  },
+  {
+    __typename: 'Video',
+    childrenCount: 46,
+    id: 'MAG1',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/high_mag_collection_640x300br.jpg',
+    imageAlt: [{ value: 'Magdalena' }],
+    label: 'featureFilm',
+    slug: 'magdalena/english',
+    snippet: [],
+    title: [{ value: 'Magdalena' }],
+    variant: {
+      duration: 3658,
+      hls: null,
+      id: '1_529-wl60-0-0',
+      slug: 'magdalena/english'
+    }
+  },
+  {
+    __typename: 'Video',
+    childrenCount: 7,
+    id: '1_wl7-0-0',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/ROH.mobileCinematicHigh.jpg',
+    imageAlt: [{ value: 'Reflections of Hope' }],
+    label: 'series',
+    slug: 'reflections-of-hope/english',
+    snippet: [],
+    title: [{ value: 'Reflections of Hope' }],
+    variant: {
+      duration: 0,
+      hls: null,
+      id: '1_529-wl7-0-0',
+      slug: 'reflections-of-hope/english'
+    }
+  },
+  {
+    __typename: 'Video',
+    childrenCount: 0,
+    id: '3_0-8DWJ-WIJ_06-0-0',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/3_0-8DWJ-WIJ_06-0-0.mobileCinematicHigh.jpg',
+    imageAlt: [{ value: 'Day 6: Jesus Died for Me' }],
+    label: 'episode',
+    slug: 'day-6-jesus-died-for-me/english',
+    snippet: [],
+    title: [{ value: 'Day 6: Jesus Died for Me' }],
+    variant: {
+      duration: 488,
+      hls: null,
+      id: '3_529-0-8DWJ-WIJ_06-0-0',
+      slug: 'day-6-jesus-died-for-me/english'
+    }
+  },
+  {
+    __typename: 'Video',
+    childrenCount: 73,
+    id: '2_Acts-0-0',
+    image:
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts-0-0.mobileCinematicHigh.jpg',
+    imageAlt: [{ value: 'Book of Acts' }],
+    label: 'featureFilm',
+    slug: 'book-of-acts/english',
+    snippet: [],
+    title: [{ value: 'Book of Acts' }],
+    variant: {
+      duration: 11530,
+      hls: null,
+      id: '2_529-Acts-0-0',
+      slug: 'book-of-acts/english'
+    }
+  }
+]

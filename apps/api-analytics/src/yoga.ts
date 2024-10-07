@@ -1,4 +1,5 @@
 import { authZEnvelopPlugin } from '@graphql-authz/envelop-plugin'
+import { useHmacSignatureValidation } from '@graphql-hive/gateway'
 import { initContextCache } from '@pothos/core'
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 
@@ -22,6 +23,11 @@ export const yoga = createYoga({
     } satisfies Context
   },
   plugins: [
+    process.env.NODE_ENV !== 'test'
+      ? useHmacSignatureValidation({
+          secret: process.env.GATEWAY_HMAC_SECRET ?? ''
+        })
+      : {},
     authZEnvelopPlugin({ rules }),
     useReadinessCheck({
       endpoint: '/.well-known/apollo/server-health',
