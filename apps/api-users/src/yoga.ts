@@ -1,4 +1,9 @@
+import {
+  useForwardedJWT,
+  useHmacSignatureValidation
+} from '@graphql-hive/gateway'
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
+import get from 'lodash/get'
 
 import { getUserFromRequest } from '@core/yoga/firebaseClient'
 
@@ -8,8 +13,9 @@ import { Context } from './schema/builder'
 
 export const yoga = createYoga({
   schema,
-  context: async ({ request }) => {
-    const currentUser = await getUserFromRequest(request)
+  context: async ({ request, params }) => {
+    const payload = get(params, 'extensions.jwt.payload')
+    const currentUser = await getUserFromRequest(request, payload)
     const interopToken = request.headers.get('interop-token')
     const ipAddress = request.headers.get('x-forwarded-for')
 
@@ -20,6 +26,12 @@ export const yoga = createYoga({
     } satisfies Context
   },
   plugins: [
+    useForwardedJWT({}),
+    process.env.NODE_ENV !== 'test'
+      ? useHmacSignatureValidation({
+          secret: process.env.GATEWAY_HMAC_SECRET ?? ''
+        })
+      : {},
     useReadinessCheck({
       endpoint: '/.well-known/apollo/server-health',
       check: async () => {

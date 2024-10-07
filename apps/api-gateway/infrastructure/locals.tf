@@ -6,7 +6,8 @@ locals {
     "GOOGLE_APPLICATION_JSON",
     "HIVE_CDN_ENDPOINT",
     "HIVE_CDN_KEY",
-    "HIVE_REGISTRY_TOKEN"
+    "HIVE_REGISTRY_TOKEN",
+    "GATEWAY_HMAC_SECRET"
   ]
   service_config = {
     name           = "api-gateway"

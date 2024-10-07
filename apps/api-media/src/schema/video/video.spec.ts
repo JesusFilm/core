@@ -19,6 +19,8 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
+import { getLanguageIdFromInfo } from './video'
+
 describe('video', () => {
   const client = getClient()
 
@@ -325,6 +327,7 @@ describe('video', () => {
           images(aspectRatio: $aspectRatio) {
             id
             aspectRatio
+            url
           }
         }
       }
@@ -454,7 +457,10 @@ describe('video', () => {
         images: [
           {
             id: 'imageId',
-            aspectRatio: ImageAspectRatio.hd
+            aspectRatio: ImageAspectRatio.hd,
+            url: `https://imagedelivery.net/${
+              process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
+            }/imageId`
           }
         ]
       }
@@ -561,7 +567,10 @@ describe('video', () => {
               ]
             }
           },
-          images: { where: { aspectRatio: undefined } }
+          images: {
+            where: { aspectRatio: undefined },
+            orderBy: { aspectRatio: 'desc' }
+          }
         }
       })
       expect(data).toHaveProperty('data.videos', result)
@@ -749,7 +758,8 @@ describe('video', () => {
           images: {
             where: {
               aspectRatio: ImageAspectRatio.hd
-            }
+            },
+            orderBy: { aspectRatio: 'desc' }
           }
         }
       })
@@ -1148,7 +1158,10 @@ describe('video', () => {
               ]
             }
           },
-          images: { where: { aspectRatio: undefined } }
+          images: {
+            where: { aspectRatio: undefined },
+            orderBy: { aspectRatio: 'desc' }
+          }
         }
       })
       expect(data).toHaveProperty('data.adminVideos', result)
@@ -1345,7 +1358,8 @@ describe('video', () => {
           images: {
             where: {
               aspectRatio: ImageAspectRatio.hd
-            }
+            },
+            orderBy: { aspectRatio: 'desc' }
           }
         }
       })
@@ -1491,6 +1505,50 @@ describe('video', () => {
         }
       })
       expect(data).toHaveProperty('data.videosCount', 1)
+    })
+
+    describe('getLanguageIdFromInfo', () => {
+      it('should return languageId from info when object', () => {
+        const parentId = 'videoId'
+        const info = {
+          variableValues: {
+            456: [
+              {
+                id: 'notVideoId',
+                primaryLanguageId: 'notPrimaryLanguageId'
+              }
+            ],
+            abc: [
+              {
+                id: 'videoId',
+                primaryLanguageId: 'primaryLanguageId'
+              }
+            ]
+          }
+        }
+        expect(getLanguageIdFromInfo(info, parentId)).toBe('primaryLanguageId')
+      })
+
+      it('should return languageId from info when array', () => {
+        const parentId = 'videoId'
+        const info = {
+          variableValues: [
+            [
+              {
+                id: 'notVideoId',
+                primaryLanguageId: 'notPrimaryLanguageId'
+              }
+            ],
+            [
+              {
+                id: 'videoId',
+                primaryLanguageId: 'primaryLanguageId'
+              }
+            ]
+          ]
+        }
+        expect(getLanguageIdFromInfo(info, parentId)).toBe('primaryLanguageId')
+      })
     })
   })
 })

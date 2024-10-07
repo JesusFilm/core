@@ -77,6 +77,7 @@ schema
 enum join__Graph {
   ANALYTICS @join__graph(name: "analytics", url: "http://127.0.0.1:4008/graphql") 
   JOURNEYS @join__graph(name: "journeys", url: "http://127.0.0.1:4001/graphql") 
+  JOURNEYS_MODERN @join__graph(name: "journeys-modern", url: "http://127.0.0.1:4004/graphql") 
   LANGUAGES @join__graph(name: "languages", url: "http://127.0.0.1:4003/graphql") 
   MEDIA @join__graph(name: "media", url: "http://127.0.0.1:4005/graphql") 
   USERS @join__graph(name: "users", url: "http://127.0.0.1:4002/graphql") 
@@ -502,7 +503,7 @@ type Journey @join__type(graph: JOURNEYS, key: "id")  {
   userJourneys: [UserJourney!]
 }
 
-type Query @join__type(graph: ANALYTICS)  @join__type(graph: JOURNEYS)  @join__type(graph: LANGUAGES)  @join__type(graph: MEDIA)  @join__type(graph: USERS)  {
+type Query @join__type(graph: ANALYTICS)  @join__type(graph: JOURNEYS)  @join__type(graph: JOURNEYS_MODERN)  @join__type(graph: LANGUAGES)  @join__type(graph: MEDIA)  @join__type(graph: USERS)  {
   blocks(where: BlocksFilter) : [Block!]! @join__field(graph: JOURNEYS) 
   block(id: ID!) : Block! @join__field(graph: JOURNEYS) 
   customDomain(id: ID!) : CustomDomain! @join__field(graph: JOURNEYS) 
@@ -2032,6 +2033,12 @@ type CloudflareImage @join__type(graph: MEDIA)  {
   userId: ID!
   createdAt: Date!
   aspectRatio: ImageAspectRatio
+  url: String
+  mobileCinematicHigh: String
+  mobileCinematicLow: String
+  mobileCinematicVeryLow: String
+  thumbnail: String
+  videoStill: String
 }
 
 type CloudflareVideo @join__type(graph: MEDIA)  {

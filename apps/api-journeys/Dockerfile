@@ -5,13 +5,14 @@ EXPOSE 4001
 ENV PRISMA_LOCATION_JOURNEYS=/app/node_modules/.prisma/api-journeys-client
 
 RUN apk upgrade --update-cache --available && \
+    apk add g++ make python3 py3-pip curl-dev && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /app
 COPY ./dist/apps/api-journeys .
 
 # dependencies that nestjs needs
-RUN npm install --production --silent
+RUN npm install --production
 
 WORKDIR /prisma
 COPY ./apps/api-journeys/db .
