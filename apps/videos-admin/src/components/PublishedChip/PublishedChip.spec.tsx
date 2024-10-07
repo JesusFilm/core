@@ -1,12 +1,13 @@
 import { render, screen } from '@testing-library/react'
-import { PublishedChip } from '.'
 import { NextIntlClientProvider } from 'next-intl'
+
+import { PublishedChip } from '.'
 
 describe('PublishedChip', () => {
   it('should render published', () => {
     render(
       <NextIntlClientProvider locale="en">
-        <PublishedChip published={true} />
+        <PublishedChip published />
       </NextIntlClientProvider>
     )
 

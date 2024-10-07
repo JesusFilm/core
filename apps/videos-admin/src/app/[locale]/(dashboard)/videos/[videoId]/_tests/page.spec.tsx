@@ -1,10 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import { useParams } from 'next/navigation'
-
-import VideoViewPage from '../page'
 import { NextIntlClientProvider } from 'next-intl'
+
 import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import VideoViewPage from '../page'
 
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),

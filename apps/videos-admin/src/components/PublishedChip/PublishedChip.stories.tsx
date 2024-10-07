@@ -1,8 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { PublishedChip } from './PublishedChip'
-import { videosAdminConfig } from '../../libs/storybookConfig'
-import { ComponentPropsWithoutRef } from 'react'
 import { NextIntlClientProvider } from 'next-intl'
+import { ComponentPropsWithoutRef } from 'react'
+
+import { videosAdminConfig } from '../../libs/storybookConfig'
+
+import { PublishedChip } from './PublishedChip'
+
 
 const meta: Meta<typeof PublishedChip> = {
   ...videosAdminConfig,

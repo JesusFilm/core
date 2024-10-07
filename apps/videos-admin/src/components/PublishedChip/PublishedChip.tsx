@@ -1,6 +1,6 @@
 import Chip from '@mui/material/Chip'
-import { ReactElement } from 'react'
 import { useTranslations } from 'next-intl'
+import { ReactElement } from 'react'
 
 interface PublishedChipProps {
   published: boolean

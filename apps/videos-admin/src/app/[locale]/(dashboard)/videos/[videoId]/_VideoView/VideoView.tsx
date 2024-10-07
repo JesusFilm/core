@@ -7,8 +7,8 @@ import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { ReactElement } from 'react'
 
-import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
 import { PublishedChip } from '../../../../../../components/PublishedChip'
+import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
 
 export function VideoView(): ReactElement {
   const params = useParams<{ videoId: string; locale: string }>()
