@@ -4,17 +4,16 @@
     "lib": ["DOM", "DOM.Iterable", "ES2019"],
     "isolatedModules": true,
     "esModuleInterop": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "target": "ES2019",
     "strict": true,
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "incremental": true
+    "noEmit": true
   },
-  "include": [".next/types/**/*.ts"],
+  "include": [],
   "files": [],
   "references": [
     {

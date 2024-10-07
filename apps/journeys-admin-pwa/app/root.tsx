@@ -7,6 +7,7 @@ import {
   Scripts,
   ScrollRestoration
 } from '@remix-run/react'
+import { ReactElement } from 'react'
 
 export const meta: MetaFunction = () => [
   {
@@ -14,7 +15,7 @@ export const meta: MetaFunction = () => [
   }
 ]
 
-export default function App() {
+export default function App(): ReactElement {
   return (
     <html lang="en">
       <head>

@@ -1,10 +1,11 @@
-import NxWelcome from '../nx-welcome'
-import Box from '@mui/material/Box'
+import { ReactElement } from 'react'
 
-export default function Index() {
+import NxWelcome from '../nx-welcome'
+
+export default function Index(): ReactElement {
   return (
-    <Box>
+    <div>
       <NxWelcome title={'journeys-admin-pwa'} />
-    </Box>
+    </div>
   )
 }

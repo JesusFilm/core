@@ -1,9 +1,15 @@
-import { ReactNode, startTransition, useMemo, useState } from 'react'
-import * as ReactDOM from 'react-dom/client'
-import { RemixBrowser } from '@remix-run/react'
 import { CacheProvider } from '@emotion/react'
-import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
+import { ThemeProvider } from '@mui/material/styles'
+import { RemixBrowser } from '@remix-run/react'
+import {
+  ReactElement,
+  ReactNode,
+  startTransition,
+  useMemo,
+  useState
+} from 'react'
+import { hydrateRoot } from 'react-dom/client'
 
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { adminLight } from '@core/shared/ui/themes/journeysAdmin/theme'
@@ -13,7 +19,9 @@ import ClientStyleContext from '../libs/ClientStyleContext/ClientStyleContext'
 interface ClientCacheProviderProps {
   children: ReactNode
 }
-function ClientCacheProvider({ children }: ClientCacheProviderProps) {
+function ClientCacheProvider({
+  children
+}: ClientCacheProviderProps): ReactElement {
   const [cache, setCache] = useState(createEmotionCache({}))
 
   const clientStyleContextValue = useMemo(
@@ -32,9 +40,9 @@ function ClientCacheProvider({ children }: ClientCacheProviderProps) {
   )
 }
 
-const hydrate = () => {
+const hydrate = (): void => {
   startTransition(() => {
-    ReactDOM.hydrateRoot(
+    hydrateRoot(
       document,
       <ClientCacheProvider>
         <ThemeProvider theme={adminLight}>
@@ -47,7 +55,7 @@ const hydrate = () => {
   })
 }
 
-if (window.requestIdleCallback) {
+if (window.requestIdleCallback !== undefined) {
   window.requestIdleCallback(hydrate)
 } else {
   // Safari doesn't support requestIdleCallback

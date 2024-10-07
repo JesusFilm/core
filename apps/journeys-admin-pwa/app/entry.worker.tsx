@@ -1,24 +1,25 @@
-import * as ReactDOMServer from 'react-dom/server'
-import { RemixServer } from '@remix-run/react'
-import type { EntryContext } from '@remix-run/node'
-import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
-import { adminLight } from '@core/shared/ui/themes/journeysAdmin/theme'
-
-import CssBaseline from '@mui/material/CssBaseline'
-import { ThemeProvider } from '@mui/material/styles'
 import { CacheProvider } from '@emotion/react'
 import createEmotionServer from '@emotion/server/create-instance'
+import CssBaseline from '@mui/material/CssBaseline'
+import { ThemeProvider } from '@mui/material/styles'
+import type { EntryContext } from '@remix-run/node'
+import { RemixServer } from '@remix-run/react'
+import { ReactElement } from 'react'
+import { renderToString } from 'react-dom/server'
+
+import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
+import { adminLight } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 export default function handleRequest(
   request: Request,
   responseStatusCode: number,
   responseHeaders: Headers,
   remixContext: EntryContext
-) {
+): Response {
   const cache = createEmotionCache({})
-  const { extractCriticalToChunks } = createEmotionServer(cache)
+  const emotionServer = createEmotionServer(cache)
 
-  function MuiRemixServer() {
+  function MuiRemixServer(): ReactElement {
     return (
       <CacheProvider value={cache}>
         <ThemeProvider theme={adminLight}>
@@ -30,10 +31,10 @@ export default function handleRequest(
   }
 
   // Render the component to a string.
-  const html = ReactDOMServer.renderToString(<MuiRemixServer />)
+  const html = renderToString(<MuiRemixServer />)
 
   // Grab the CSS from emotion
-  const { styles } = extractCriticalToChunks(html)
+  const { styles } = emotionServer.extractCriticalToChunks(html)
 
   let stylesHTML = ''
 
