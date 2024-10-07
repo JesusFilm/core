@@ -6,7 +6,6 @@ import { videosAdminConfig } from '../../libs/storybookConfig'
 
 import { PublishedChip } from './PublishedChip'
 
-
 const meta: Meta<typeof PublishedChip> = {
   ...videosAdminConfig,
   title: 'Videos-Admin/PublishedChip',
