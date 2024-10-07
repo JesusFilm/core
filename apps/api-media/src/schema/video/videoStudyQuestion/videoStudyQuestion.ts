@@ -1,63 +1,14 @@
-import { Prisma } from '.prisma/api-media-client'
-
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { Language } from '../../language'
 
 import { VideoStudyQuestionCreateInput } from './inputs/videoStudyQuestionCreate'
 import { VideoStudyQuestionUpdateInput } from './inputs/videoStudyQuestionUpdate'
-
-interface updateOrderDelete {
-  videoId: string
-  order?: number
-  isDelete: true
-  transaction: Prisma.TransactionClient
-}
-
-interface updateOrderUpdate {
-  videoId: string
-  order: number
-  transaction: Prisma.TransactionClient
-  isDelete?: false
-}
-type updateOrderParams = updateOrderDelete | updateOrderUpdate
-
-export async function updateOrder({
-  videoId,
-  order = 0,
-  transaction,
-  isDelete = false
-}: updateOrderParams): Promise<void> {
-  const existing = await transaction.videoStudyQuestion.findMany({
-    where: { videoId },
-    select: { id: true },
-    orderBy: { order: 'asc' }
-  })
-
-  if (isDelete) {
-    let index = 1
-    for (const studyQuestion of existing) {
-      await transaction.videoStudyQuestion.update({
-        where: { id: studyQuestion.id },
-        data: { order: index }
-      })
-      index++
-    }
-    return
-  }
-
-  const newOrders = existing.map((item, index) => ({
-    id: item.id,
-    order: index >= order - 1 ? index + 2 : index + 1
-  }))
-
-  for (const studyQuestion of newOrders) {
-    await transaction.videoStudyQuestion.update({
-      where: { id: studyQuestion.id },
-      data: { order: studyQuestion.order }
-    })
-  }
-}
+import {
+  updateOrderCreate,
+  updateOrderDelete,
+  updateOrderUpdate
+} from './updateOrder'
 
 builder.prismaObject('VideoStudyQuestion', {
   include: { order: true },
@@ -83,7 +34,7 @@ builder.mutationFields((t) => ({
     },
     resolve: async (_query, _parent, { input }) => {
       return await prisma.$transaction(async (transaction) => {
-        await updateOrder({
+        await updateOrderCreate({
           videoId: input.videoId,
           order: input.order,
           transaction
@@ -106,17 +57,21 @@ builder.mutationFields((t) => ({
       isPublisher: true
     },
     resolve: async (_query, _parent, { input }) => {
-      const existing = await prisma.videoStudyQuestion.findUnique({
-        where: { id: input.id },
-        select: { videoId: true }
-      })
-      if (existing?.videoId == null)
-        throw new Error(`videoStudyQuestion ${input.id} not found`)
-
       return await prisma.$transaction(async (transaction) => {
+        const existing = await transaction.videoStudyQuestion.findUnique({
+          where: { id: input.id },
+          select: { videoId: true }
+        })
+        if (existing == null)
+          throw new Error(`videoStudyQuestion ${input.id} not found`)
+
+        if (existing.videoId == null)
+          throw new Error(`videoStudyQuestion ${input.id} videoId not found`)
+
         if (input.order != null)
-          await updateOrder({
+          await updateOrderUpdate({
             videoId: existing.videoId,
+            id: input.id,
             order: input.order,
             transaction
           })
@@ -152,9 +107,8 @@ builder.mutationFields((t) => ({
         await transaction.videoStudyQuestion.delete({
           where: { id }
         })
-        await updateOrder({
+        await updateOrderDelete({
           videoId: existing.id,
-          isDelete: true,
           transaction
         })
         return existing
