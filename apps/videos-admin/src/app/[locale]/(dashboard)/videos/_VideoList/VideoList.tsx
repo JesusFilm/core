@@ -15,6 +15,7 @@ import {
   GridToolbar,
   GridValidRowModel,
   MuiEvent,
+  getGridBooleanOperators,
   getGridStringOperators,
   gridClasses
 } from '@mui/x-data-grid'
@@ -124,6 +125,9 @@ export function VideoList(): ReactElement {
       field: 'published',
       headerName: t('Published'),
       minWidth: 150,
+      filterOperators: getGridBooleanOperators().filter(
+        (operator) => operator.value === 'is'
+      ),
       renderCell: (
         params: GridRenderCellParams<GridValidRowModel, boolean>
       ) => <PublishedChip published={params.value ?? false} />
@@ -172,6 +176,13 @@ export function VideoList(): ReactElement {
         item.value != null
       )
         where.title = item.value === '' ? null : item.value
+
+      if (
+        item.field === 'published' &&
+        item.operator === 'is' &&
+        item.value != null
+      )
+        where.published = item.value === '' ? null : item.value === 'true'
     })
     setFilterModel(model)
     setPaginationModel({
