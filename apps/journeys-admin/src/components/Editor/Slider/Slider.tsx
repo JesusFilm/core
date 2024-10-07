@@ -105,13 +105,6 @@ export function Slider(): ReactElement {
     }
   }, [activeSlide])
 
-  useEffect(() => {
-    if (swiperRef.current != null) {
-      swiperRef.current.swiper.allowTouchMove = showAnalytics !== true
-      swiperRef.current.swiper.setGrabCursor()
-    }
-  }, [showAnalytics])
-
   function resetCanvasFocus(): void {
     if (isSlideChangingTo(ActiveSlide.JourneyFlow)) {
       dispatch({
@@ -151,6 +144,7 @@ export function Slider(): ReactElement {
     <StyledSwiper
       data-testid="Slider"
       ref={swiperRef}
+      grabCursor
       slidesPerView="auto"
       breakpoints={swiperBreakpoints}
       onActiveIndexChange={(swiper) => {
@@ -289,7 +283,8 @@ export function Slider(): ReactElement {
           display: 'flex',
           flexDirection: { xs: 'column', md: 'row' },
           justifyContent: { md: 'space-between' },
-          position: 'relative'
+          position: 'relative',
+          pointerEvents: showAnalytics === true ? 'none' : 'auto'
         }}
       >
         {/* slide bar (mobile bottom) */}
@@ -320,6 +315,7 @@ export function Slider(): ReactElement {
       <StyledSwiperSlide
         sx={{
           p: { xs: 0, md: 4 },
+          pb: { md: 0 },
           width: (theme) => ({
             xs: '100%',
             md: DRAWER_WIDTH + Number.parseInt(theme.spacing(8)) // 328 DRAWER_WIDTH + 16px * 2 (padding L & R)
@@ -327,7 +323,8 @@ export function Slider(): ReactElement {
           height: {
             xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
             md: '100%'
-          }
+          },
+          pointerEvents: showAnalytics === true ? 'none' : 'auto'
         }}
       >
         <Settings />

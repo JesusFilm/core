@@ -41,15 +41,18 @@ export function Item({
             ]
           }}
         >
-          <IconButton
-            component={href != null ? 'a' : 'button'}
-            target={href != null ? '_blank' : undefined}
-            href={href}
-            onClick={onClick}
-            {...ButtonProps}
-          >
-            {icon}
-          </IconButton>
+          <span>
+            <IconButton
+              component={href != null ? 'a' : 'button'}
+              target={href != null ? '_blank' : undefined}
+              href={href}
+              onClick={onClick}
+              aria-label={label}
+              {...ButtonProps}
+            >
+              {icon}
+            </IconButton>
+          </span>
         </Tooltip>
       )
     case 'button':
@@ -76,6 +79,9 @@ export function Item({
           target={href != null ? '_blank' : undefined}
           href={href}
           onClick={onClick}
+          sx={{
+            gap: 2
+          }}
         >
           <ListItemIcon>{icon}</ListItemIcon>
           <ListItemText>{label}</ListItemText>

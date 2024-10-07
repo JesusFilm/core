@@ -2,6 +2,7 @@ import { gql, useQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
+import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { User } from 'next-firebase-auth'
@@ -18,13 +19,12 @@ import { AccessItem } from '../Items/AccessItem'
 import { AnalyticsItem } from '../Items/AnalyticsItem'
 import { CopyLinkItem } from '../Items/CopyLinkItem'
 import { CreateTemplateItem } from '../Items/CreateTemplateItem'
-import { DescriptionItem } from '../Items/DescriptionItem'
-import { LanguageItem } from '../Items/LanguageItem'
-import { PreviewItem } from '../Items/PreviewItem'
+import { DetailsItem } from '../Items/DetailsItem'
 import { ShareItem } from '../Items/ShareItem'
 import { StrategyItem } from '../Items/StrategyItem'
 import { TemplateSettingsItem } from '../Items/TemplateSettingsItem'
-import { TitleItem } from '../Items/TitleItem'
+
+import { JourneyDetails } from './JourneyDetails'
 
 export const GET_ROLE = gql`
   query GetRole {
@@ -80,21 +80,23 @@ export function Menu({ user }: MenuProps): ReactElement {
         MenuListProps={{
           'aria-labelledby': 'edit-journey-actions'
         }}
+        sx={{
+          '& .MuiList-root': {
+            py: 2
+          }
+        }}
       >
-        {!smUp && <PreviewItem variant="menu-item" onClick={handleCloseMenu} />}
-        <AccessItem variant="menu-item" onClose={handleCloseMenu} />
+        {!smUp && (
+          <Stack sx={{ width: 220 }}>
+            <JourneyDetails />
+          </Stack>
+        )}
+        <DetailsItem variant="menu-item" onClose={handleCloseMenu} />
+        {!smUp && <Divider data-testid="details-menu-divider" />}
         {journey?.template === true && (
           <TemplateSettingsItem variant="menu-item" onClose={handleCloseMenu} />
         )}
-        {journey?.template !== true && (
-          <TitleItem variant="menu-item" onClose={handleCloseMenu} />
-        )}
-        {journey?.template !== true && (
-          <DescriptionItem variant="menu-item" onClose={handleCloseMenu} />
-        )}
-        {(journey?.template !== true || isPublisher != null) && (
-          <LanguageItem variant="menu-item" onClose={handleCloseMenu} />
-        )}
+        <AccessItem variant="menu-item" onClose={handleCloseMenu} />
         {!smUp && journey?.template !== true && (
           <AnalyticsItem variant="menu-item" />
         )}
@@ -107,17 +109,14 @@ export function Menu({ user }: MenuProps): ReactElement {
             <ShareItem variant="menu-item" closeMenu={handleCloseMenu} />
           </>
         )}
-        {journey != null &&
-          (journey?.template !== true || isPublisher != null) && (
-            <Divider data-testid="menu-divider" />
-          )}
+        {journey != null && smUp && <Divider data-testid="menu-divider" />}
         {journey != null &&
           (journey?.template !== true || isPublisher != null) && (
             <CopyLinkItem variant="menu-item" onClose={handleCloseMenu} />
           )}
         {!smUp && (
           <>
-            <Divider />
+            <Divider data-testid="helpscout-menu-divider" />
             <HelpScoutBeacon
               variant="menuItem"
               userInfo={{

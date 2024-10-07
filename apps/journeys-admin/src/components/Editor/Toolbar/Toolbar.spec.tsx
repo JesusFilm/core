@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Slider from '@mui/material/Slider'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -9,8 +9,18 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { GetPlausibleJourneyFlowViewed } from '../../../../__generated__/GetPlausibleJourneyFlowViewed'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import {
+  UpdatePlausibleJourneyFlowViewed,
+  UpdatePlausibleJourneyFlowViewedVariables
+} from '../../../../__generated__/UpdatePlausibleJourneyFlowViewed'
 import { TestEditorState } from '../../../libs/TestEditorState'
+
+import {
+  GET_PLAUSIBLE_JOURNEY_FLOW_VIEWED,
+  UPDATE_PLAUSIBLE_JOURNEY_FLOW_VIEWED
+} from './Toolbar'
 
 import { Toolbar } from '.'
 
@@ -20,13 +30,67 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('Toolbar', () => {
+  const mockGetPlausibleJourneyFlowViewed: MockedResponse<GetPlausibleJourneyFlowViewed> =
+    {
+      request: {
+        query: GET_PLAUSIBLE_JOURNEY_FLOW_VIEWED
+      },
+      result: {
+        data: {
+          getJourneyProfile: {
+            id: 'journeyProfileId',
+            plausibleJourneyFlowViewed: true,
+            __typename: 'JourneyProfile'
+          }
+        }
+      }
+    }
+
+  const mockUpdatePlausibleJourneyFlowViewed: MockedResponse<
+    UpdatePlausibleJourneyFlowViewed,
+    UpdatePlausibleJourneyFlowViewedVariables
+  > = {
+    request: {
+      query: UPDATE_PLAUSIBLE_JOURNEY_FLOW_VIEWED,
+      variables: { input: { plausibleJourneyFlowViewed: true } }
+    },
+    result: {
+      data: {
+        journeyProfileUpdate: {
+          id: 'journeyProfileId',
+          plausibleJourneyFlowViewed: true,
+          __typename: 'JourneyProfile'
+        }
+      }
+    }
+  }
+
   const defaultJourney = {
     journey: {
       id: 'journeyId',
       title: 'My Awesome Journey Title',
       description: 'My Awesome Journey Description',
       primaryImageBlock: null,
-      status: JourneyStatus.draft
+      status: JourneyStatus.draft,
+      language: {
+        __typename: 'Language',
+        id: '529',
+        name: [
+          {
+            value: 'English',
+            primary: true,
+            __typename: 'LanguageName'
+          }
+        ]
+      }
+    } as unknown as Journey,
+    variant: 'admin'
+  }
+
+  const noDescriptionJourney = {
+    journey: {
+      ...defaultJourney.journey,
+      description: ''
     } as unknown as Journey,
     variant: 'admin'
   }
@@ -47,6 +111,17 @@ describe('Toolbar', () => {
         blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
       },
       status: JourneyStatus.draft,
+      language: {
+        __typename: 'Language',
+        id: '529',
+        name: [
+          {
+            value: 'English',
+            primary: true,
+            __typename: 'LanguageName'
+          }
+        ]
+      },
       variant: 'admin'
     } as unknown as Journey,
 
@@ -64,6 +139,7 @@ describe('Toolbar', () => {
   it('should render NextSteps logo on Toolbar', () => {
     render(toolbar(defaultJourney))
     expect(screen.getByAltText('Next Steps')).toBeInTheDocument() // NextSteps logo
+    expect(screen.getByTestId('NextStepsLogo')).toHaveAttribute('href', '/')
   })
 
   it('should render help scout beacon', () => {
@@ -71,12 +147,20 @@ describe('Toolbar', () => {
     expect(screen.getByTestId('HelpScoutBeaconIconButton')).toBeInTheDocument()
   })
 
-  it('should render title & description on Toolbar', () => {
+  it('should render title, description and language on Toolbar', () => {
     render(toolbar(defaultJourney))
-    expect(screen.getByText('My Awesome Journey Title')).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { level: 6 })[0]).toHaveTextContent(
+      'My Awesome Journey Title'
+    )
     expect(
-      screen.getByText('My Awesome Journey Description')
+      screen.getAllByText('My Awesome Journey Description')[0]
     ).toBeInTheDocument()
+    expect(screen.getAllByRole('paragraph')[0]).toHaveTextContent('English')
+  })
+
+  it('should not show dot if there is no description', () => {
+    render(toolbar(noDescriptionJourney))
+    expect(screen.queryByTestId('DescriptionDot')).not.toBeInTheDocument()
   })
 
   it('should open the title dialog when selected', async () => {
@@ -84,7 +168,7 @@ describe('Toolbar', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Click to edit' }))
     await waitFor(() => {
-      expect(screen.getByTestId('TitleDescriptionDialog')).toBeInTheDocument()
+      expect(screen.getByTestId('JourneyDetailsDialog')).toBeInTheDocument()
     })
   })
 
@@ -138,14 +222,77 @@ describe('Toolbar', () => {
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
   })
 
-  it.skip('should open analytics popover', () => {
+  it('should open analytics popover if users first time and update plausible viewed', async () => {
     const initialState = {
       showAnalytics: true
     } as unknown as EditorState
 
+    const result = jest
+      .fn()
+      .mockReturnValue(mockUpdatePlausibleJourneyFlowViewed.result)
+
+    const result2 = jest.fn().mockReturnValue({
+      ...mockGetPlausibleJourneyFlowViewed.result,
+      data: {
+        journeyProfileUpdate: {
+          id: 'journeyProfileId',
+          plausibleJourneyFlowViewed: null,
+          __typename: 'JourneyProfile'
+        }
+      }
+    })
+
     render(
       <FlagsProvider flags={{ editorAnalytics: true }}>
-        <MockedProvider>
+        <MockedProvider
+          mocks={[
+            { ...mockUpdatePlausibleJourneyFlowViewed, result },
+            { ...mockGetPlausibleJourneyFlowViewed, result: result2 }
+          ]}
+        >
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney.journey,
+                variant: 'admin'
+              }}
+            >
+              <EditorProvider initialState={initialState}>
+                <TestEditorState />
+                <Toolbar />
+                <Slider />
+              </EditorProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      </FlagsProvider>
+    )
+    await waitFor(() => expect(result2).toHaveBeenCalled())
+    expect(screen.getByText('New Feature Feedback')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Feedback' }))
+    await waitFor(() => expect(window.Beacon).toHaveBeenCalledWith('open'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(screen.queryByText('New Feature Feedback')).not.toBeInTheDocument()
+  })
+
+  it('should not open analytics popover if user has already enabled analytics before', async () => {
+    const initialState = {
+      showAnalytics: true
+    } as unknown as EditorState
+
+    const result = jest
+      .fn()
+      .mockReturnValue(mockGetPlausibleJourneyFlowViewed.result)
+
+    render(
+      <FlagsProvider flags={{ editorAnalytics: true }}>
+        <MockedProvider
+          mocks={[
+            mockUpdatePlausibleJourneyFlowViewed,
+            { ...mockGetPlausibleJourneyFlowViewed, result }
+          ]}
+        >
           <SnackbarProvider>
             <JourneyProvider
               value={{
@@ -164,9 +311,7 @@ describe('Toolbar', () => {
       </FlagsProvider>
     )
 
-    expect(screen.getByText('New Feature Feedback')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Feedback' }))
-    expect(window.Beacon).toHaveBeenCalledWith('open')
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.queryByText('New Feature Feedback')).not.toBeInTheDocument()
   })
 

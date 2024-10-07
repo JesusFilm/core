@@ -1,9 +1,9 @@
 import Button from '@mui/material/Button'
+import { sendGTMEvent } from '@next/third-parties/google'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
-import TagManager from 'react-gtm-module'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
@@ -47,12 +47,10 @@ export function CreateJourneyButton({
       })
 
       if (data != null) {
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'template_use',
-            journeyId: journey.id,
-            journeyTitle: journey.title
-          }
+        sendGTMEvent({
+          event: 'template_use',
+          journeyId: journey.id,
+          journeyTitle: journey.title
         })
         void router
           .push(`/journeys/${data.journeyDuplicate.id}`, undefined, {

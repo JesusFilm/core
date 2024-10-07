@@ -87,6 +87,7 @@ export function HelpScoutBeacon({
         <MenuItem
           data-testid="HelpScoutBeaconMenuItem"
           onClick={handleBeaconClick}
+          sx={{ gap: 2 }}
         >
           <ListItemIcon>
             <HelpCircleContained />

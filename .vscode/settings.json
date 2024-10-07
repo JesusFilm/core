@@ -85,12 +85,6 @@
     "source.fixAll.eslint": "always"
   },
   "eslint.validate": ["javascript", "typescript"],
-  "yaml.schemas": {
-    "./apps/api-gateway/routerSchema.json": [
-      "apps/api-gateway/router.yaml",
-      "apps/api-gateway/router.prod.yaml"
-    ]
-  },
   "typescript.preferences.importModuleSpecifier": "project-relative",
   "javascript.preferences.importModuleSpecifier": "project-relative",
   "prettier.prettierPath": "./node_modules/prettier",

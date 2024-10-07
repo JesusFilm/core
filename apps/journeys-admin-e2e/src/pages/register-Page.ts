@@ -123,26 +123,9 @@ export class Register {
 
   async clickNextBtn() {
     await this.page
-      .locator('button[type="button"]', { hasText: 'Next' })
-      .click({ delay: 2000 })
+      .locator('button[data-testid="TermsAndConditionsNextButton"]')
+      .click()
   }
-
-  // disable while formium is broken
-
-  // async verifyPageNavigatedFewQuestionsPage() {
-  //   await expect(
-  //     this.page.locator(
-  //       'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
-  //       { hasText: 'User Insights' }
-  //     )
-  //   ).toBeVisible({ timeout: sixtySecondsTimeout })
-  // }
-
-  // async clickNextBtnInFewQuestionPage() {
-  //   await this.page
-  //     .locator('button[type="submit"]', { hasText: 'Next' })
-  //     .click()
-  // }
 
   async entetTeamName() {
     await this.page

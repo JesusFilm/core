@@ -87,13 +87,13 @@
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "rover subgraph introspect http://localhost:4001/graphql > apps/api-journeys/schema.graphql"
+        "command": "npx -y @apollo/rover@0.23.0 subgraph introspect http://localhost:4001/graphql > apps/api-journeys/schema.graphql"
       }
     },
     "subgraph-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "rover subgraph check API-GATEWAY-0zuda@current --name api-journeys --schema apps/api-journeys/schema.graphql"
+        "command": "npx hive schema:check apps/api-journeys/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys"
       }
     },
     "fetch-secrets": {

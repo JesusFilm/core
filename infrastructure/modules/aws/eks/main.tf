@@ -212,16 +212,16 @@ data "aws_ami" "eks-worker" {
 #   }
 # }
 
-resource "aws_eks_node_group" "this" {
+resource "aws_eks_node_group" "az_2a" {
   cluster_name    = aws_eks_cluster.this.name
-  node_group_name = "jfp-eks-node-group-${var.env}"
+  node_group_name = "jfp-eks-node-group-2a-${var.env}"
   node_role_arn   = aws_iam_role.eks-node.arn
-  subnet_ids      = var.subnet_ids
+  subnet_ids      = var.subnet_ids_2a
 
   scaling_config {
-    desired_size = 3
+    desired_size = 2
     max_size     = 4
-    min_size     = 3
+    min_size     = 2
   }
 
   update_config {

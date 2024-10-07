@@ -9,8 +9,7 @@ export function canBlockHaveAction(block: Block): boolean {
       'RadioOptionBlock',
       'ButtonBlock',
       'VideoBlock',
-      'VideoTriggerBlock',
-      'FormBlock'
+      'VideoTriggerBlock'
     ],
     block.typename
   )

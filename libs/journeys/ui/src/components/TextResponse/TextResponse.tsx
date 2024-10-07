@@ -2,12 +2,12 @@ import { ApolloError, gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { SxProps } from '@mui/system/styleFunctionSx'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { Form, Formik } from 'formik'
 import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import { useBlocks } from '../../libs/block'
@@ -85,13 +85,11 @@ export const TextResponse = ({
               }
             }
           })
-          TagManager.dataLayer({
-            dataLayer: {
-              event: 'text_response_submission',
-              eventId: id,
-              blockId,
-              stepName: heading
-            }
+          sendGTMEvent({
+            event: 'text_response_submission',
+            eventId: id,
+            blockId,
+            stepName: heading
           })
         } catch (e) {
           if (e instanceof ApolloError) {

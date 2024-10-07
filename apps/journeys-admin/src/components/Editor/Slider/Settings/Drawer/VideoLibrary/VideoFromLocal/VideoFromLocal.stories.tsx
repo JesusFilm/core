@@ -1,12 +1,12 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { ApolloLoadingProvider } from '../../../../../../../../test/ApolloLoadingProvider'
-
-import { videos } from './data'
-import { GET_VIDEOS } from './VideoFromLocal'
+import {
+  getAlgoliaVideosHandlers,
+  loadingHandler
+} from '../VideoLibrary.handlers'
 
 import { VideoFromLocal } from '.'
 
@@ -20,60 +20,37 @@ const VideoFromLocalStory: Meta<typeof VideoFromLocal> = {
 
 const Template: StoryObj<typeof VideoFromLocal> = {
   render: ({ onSelect }) => (
-    <MockedProvider
-      mocks={[
-        {
-          request: {
-            query: GET_VIDEOS,
-            variables: {
-              offset: 0,
-              limit: 5,
-              where: {
-                availableVariantLanguageIds: ['529'],
-                title: null
-              }
-            }
-          },
-          result: {
-            data: {
-              videos
-            }
-          }
-        },
-        {
-          request: {
-            query: GET_VIDEOS,
-            variables: {
-              offset: 3,
-              limit: 5,
-              where: {
-                availableVariantLanguageIds: ['529'],
-                title: null
-              }
-            }
-          },
-          result: {
-            data: {
-              videos: []
-            }
-          }
-        }
-      ]}
-    >
+    <InstantSearchTestWrapper>
       <VideoFromLocal onSelect={onSelect} />
-    </MockedProvider>
+    </InstantSearchTestWrapper>
   )
 }
 
-export const Default = { ...Template }
+export const Default = {
+  ...Template,
+  parameters: {
+    msw: {
+      handlers: [getAlgoliaVideosHandlers]
+    }
+  }
+}
 
-export const Loading: StoryObj<typeof VideoFromLocal> = {
+const LoadingTemplate: StoryObj<typeof VideoFromLocal> = {
   render: ({ onSelect }) => {
     return (
-      <ApolloLoadingProvider>
+      <InstantSearchTestWrapper>
         <VideoFromLocal onSelect={onSelect} />
-      </ApolloLoadingProvider>
+      </InstantSearchTestWrapper>
     )
+  }
+}
+
+export const Loading = {
+  ...LoadingTemplate,
+  parameters: {
+    msw: {
+      handlers: [loadingHandler]
+    }
   }
 }
 

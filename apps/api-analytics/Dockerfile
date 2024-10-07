@@ -5,13 +5,14 @@ EXPOSE 4008
 ENV PRISMA_LOCATION_ANALYTICS=/app/node_modules/.prisma/api-analytics-client
 
 RUN apk upgrade --update-cache --available && \
+    apk add g++ make python3 py3-pip curl-dev && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /app
 COPY ./dist/apps/api-analytics .
 
 # dependencies that nestjs needs
-RUN npm install --production --silent
+RUN npm install --production
 
 WORKDIR /prisma
 COPY ./apps/api-analytics/db .
