@@ -57,7 +57,7 @@ export function getUserFromPayload(payload: unknown): User | null {
       id: 'testUserId',
       firstName: 'Test',
       lastName: 'User',
-      email: 'text@example.com',
+      email: 'test@example.com',
       emailVerified: true,
       imageUrl: null
     }
