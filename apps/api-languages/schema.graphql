@@ -6,6 +6,8 @@ type AudioPreview {
   value: String!
   duration: Int!
   size: Int!
+  bitrate: Int!
+  codec: String!
 }
 
 type Continent {
@@ -41,6 +43,7 @@ type CountryLanguage {
   country: Country!
   speakers: Int!
   displaySpeakers: Int
+  primary: Boolean!
 }
 
 type CountryName {

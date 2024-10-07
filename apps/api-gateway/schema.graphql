@@ -1955,6 +1955,8 @@ type AudioPreview @join__type(graph: LANGUAGES)  {
   value: String!
   duration: Int!
   size: Int!
+  bitrate: Int!
+  codec: String!
 }
 
 type Continent @join__type(graph: LANGUAGES)  {
@@ -1988,6 +1990,7 @@ type CountryLanguage @join__type(graph: LANGUAGES)  {
   country: Country!
   speakers: Int!
   displaySpeakers: Int
+  primary: Boolean!
 }
 
 type CountryName @join__type(graph: LANGUAGES)  {

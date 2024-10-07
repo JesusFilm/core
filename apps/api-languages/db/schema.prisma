@@ -79,6 +79,7 @@ model CountryLanguage {
   countryId       String
   speakers        Int
   displaySpeakers Int?
+  primary         Boolean  @default(false)
   language        Language @relation(fields: [languageId], references: [id])
   country         Country  @relation(fields: [countryId], references: [id])
 
@@ -128,6 +129,8 @@ model AudioPreview {
   value      String
   duration   Int
   size       Int
+  bitrate    Int      @default(128)
+  codec      String   @default("aac")
   updatedAt  DateTime
   language   Language @relation(fields: [languageId], references: [id])
 

@@ -23,7 +23,9 @@ builder.prismaObject('AudioPreview', {
     language: t.relation('language'),
     value: t.exposeString('value'),
     duration: t.exposeInt('duration'),
-    size: t.exposeInt('size')
+    size: t.exposeInt('size'),
+    bitrate: t.exposeInt('bitrate'),
+    codec: t.exposeString('codec')
   })
 })
 
