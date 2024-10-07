@@ -80,31 +80,34 @@ export async function GET(
     counts: {
       speakerCount: {
         value: data.language.speakerCount,
-        description: "Number of speakers"
+        description: 'Number of speakers'
       },
       countriesCount: {
         value: data.language.countriesCount,
-        description: "Number of countries"
+        description: 'Number of countries'
       },
       series: {
         value: data.language.seriesCount,
-        description: "Series"
+        description: 'Series'
       },
       featureFilm: {
         value: data.language.featureFilmCount,
-        description: "Feature Film"
+        description: 'Feature Film'
       },
       shortFilm: {
         value: data.language.shortFilmCount,
-        description: "Short Film"
+        description: 'Short Film'
       }
     },
-    audioPreview: data.language.audioPreview != null ? {
-      url: data.language.audioPreview.value,
-      audioBitrate: data.language.audioPreview.bitrate,
-      audioContainer: data.language.audioPreview.codec,
-      sizeInBytes: data.language.audioPreview.size
-    } : null,
+    audioPreview:
+      data.language.audioPreview != null
+        ? {
+            url: data.language.audioPreview.value,
+            audioBitrate: data.language.audioPreview.bitrate,
+            audioContainer: data.language.audioPreview.codec,
+            sizeInBytes: data.language.audioPreview.size
+          }
+        : null,
     primaryCountryId: data.language.primaryCountryId ?? '',
     name: data.language.name[0].value,
     nameNative: data.language.name[1]?.value ?? data.language.name[0].value,

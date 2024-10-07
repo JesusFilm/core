@@ -1,9 +1,9 @@
-import { builder } from '../builder'
 import { prisma } from '../../lib/prisma'
+import { builder } from '../builder'
 
 export const Language = builder.externalRef(
   'Language',
- builder.selection<{ id: string }>('id')
+  builder.selection<{ id: string }>('id')
 )
 
 Language.implement({
@@ -12,38 +12,38 @@ Language.implement({
     seriesCount: t.int({
       resolve: async (parent) => {
         return await prisma.videoVariant.count({
-          where: { 
+          where: {
             languageId: parent.id,
             video: {
               label: 'series'
             }
           }
-          })
-        }
+        })
+      }
     }),
     featureFilmCount: t.int({
       resolve: async (parent) => {
         return await prisma.videoVariant.count({
-          where: { 
+          where: {
             languageId: parent.id,
             video: {
               label: 'featureFilm'
             }
           }
-          })
-        }
+        })
+      }
     }),
     shortFilmCount: t.int({
       resolve: async (parent) => {
         return await prisma.videoVariant.count({
-          where: { 
+          where: {
             languageId: parent.id,
             video: {
               label: 'shortFilm'
             }
           }
-          })
-        }
+        })
+      }
     })
   })
 })
