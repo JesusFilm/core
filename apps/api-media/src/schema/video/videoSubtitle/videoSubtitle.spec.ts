@@ -25,6 +25,11 @@ describe('videoSubtitle', () => {
       `)
 
       it('should create video subtitle', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
         prismaMock.videoSubtitle.create.mockResolvedValue({
           id: 'id',
           edition: 'edition',
@@ -49,9 +54,7 @@ describe('videoSubtitle', () => {
           }
         })
         expect(result).toHaveProperty('data.createVideoSubtitle', {
-          : {
-            id: 'id'
-          }
+          id: 'id'
         })
       })
 

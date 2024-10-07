@@ -10,7 +10,7 @@ export const VideoStudyQuestionCreateInput = builder.inputType(
       primary: t.boolean({ required: true }),
       languageId: t.string({ required: true }),
       crowdInId: t.string({ required: false }),
-      order: t.int({ required: true })
+      order: t.int({ required: true, description: 'index from 1' })
     })
   }
 )

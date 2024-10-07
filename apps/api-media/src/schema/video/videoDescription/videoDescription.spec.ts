@@ -3,7 +3,7 @@ import { graphql } from 'gql.tada'
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 
-describe('videoSnippet', () => {
+describe('videoDescription', () => {
   const client = getClient()
 
   const authClient = getClient({
@@ -16,50 +16,48 @@ describe('videoSnippet', () => {
   })
 
   describe('mutations', () => {
-    describe('createVideoSnippet', () => {
-      const CREATE_VIDEO_SNIPPET_MUTATION = graphql(`
-        mutation CreateVideoSnippet($input: VideoTranslationCreateInput!) {
-          createVideoSnippet(input: $input) {
+    describe('createVideoDescription', () => {
+      const CREATE_VIDEO_DESCRIPTION_MUTATION = graphql(`
+        mutation CreateVideoDescription($input: VideoTranslationCreateInput!) {
+          createVideoDescription(input: $input) {
             id
           }
         }
       `)
 
-      it('should create video snippet', async () => {
+      it('should create video description', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        prismaMock.videoSnippet.create.mockResolvedValue({
+        prismaMock.videoDescription.create.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',
           value: 'value',
           primary: true,
-          languageId: '529'
+          languageId: 'languageId'
         })
         const result = await authClient({
-          document: CREATE_VIDEO_SNIPPET_MUTATION,
+          document: CREATE_VIDEO_DESCRIPTION_MUTATION,
           variables: {
             input: {
               id: 'id',
               videoId: 'videoId',
               value: 'value',
               primary: true,
-              languageId: '529'
+              languageId: 'languageId'
             }
           }
         })
-        expect(result).toHaveProperty('data', {
-          createVideoSnippet: {
-            id: 'id'
-          }
+        expect(result).toHaveProperty('data.createVideoDescription', {
+          id: 'id'
         })
       })
 
       it('should reject if not publisher', async () => {
         const result = await client({
-          document: CREATE_VIDEO_SNIPPET_MUTATION,
+          document: CREATE_VIDEO_DESCRIPTION_MUTATION,
           variables: {
             input: {
               id: 'id',
@@ -74,22 +72,22 @@ describe('videoSnippet', () => {
       })
     })
 
-    describe('updateVideoSnippet', () => {
-      const UPDATE_VIDEO_SNIPPET_MUTATION = graphql(`
-        mutation UpdateVideoSnippet($input: VideoTranslationUpdateInput!) {
-          updateVideoSnippet(input: $input) {
+    describe('updateVideoDescription', () => {
+      const UPDATE_VIDEO_DESCRIPTION_MUTATION = graphql(`
+        mutation UpdateVideoDescription($input: VideoTranslationUpdateInput!) {
+          updateVideoDescription(input: $input) {
             id
           }
         }
       `)
 
-      it('should update video snippet', async () => {
+      it('should update video description', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        prismaMock.videoSnippet.update.mockResolvedValue({
+        prismaMock.videoDescription.update.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',
           value: 'value',
@@ -97,7 +95,7 @@ describe('videoSnippet', () => {
           languageId: 'languageId'
         })
         const result = await authClient({
-          document: UPDATE_VIDEO_SNIPPET_MUTATION,
+          document: UPDATE_VIDEO_DESCRIPTION_MUTATION,
           variables: {
             input: {
               id: 'id',
@@ -107,14 +105,14 @@ describe('videoSnippet', () => {
             }
           }
         })
-        expect(result).toHaveProperty('data.updateVideoSnippet', {
+        expect(result).toHaveProperty('data.updateVideoDescription', {
           id: 'id'
         })
       })
 
       it('should reject if not publisher', async () => {
         const result = await client({
-          document: UPDATE_VIDEO_SNIPPET_MUTATION,
+          document: UPDATE_VIDEO_DESCRIPTION_MUTATION,
           variables: {
             input: {
               id: 'id',
@@ -128,22 +126,22 @@ describe('videoSnippet', () => {
       })
     })
 
-    describe('deleteVideoSnippet', () => {
-      const DELETE_VIDEO_SNIPPET_MUTATION = graphql(`
-        mutation DeleteVideoSnippet($id: ID!) {
-          deleteVideoSnippet(id: $id) {
+    describe('deleteVideoDescription', () => {
+      const DELETE_VIDEO_DESCRIPTION_MUTATION = graphql(`
+        mutation DeleteVideoDescription($id: ID!) {
+          deleteVideoDescription(id: $id) {
             id
           }
         }
       `)
 
-      it('should delete video snippet', async () => {
+      it('should delete video description', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        prismaMock.videoSnippet.delete.mockResolvedValue({
+        prismaMock.videoDescription.delete.mockResolvedValue({
           id: 'id',
           videoId: 'videoId',
           value: 'value',
@@ -151,19 +149,19 @@ describe('videoSnippet', () => {
           languageId: 'languageId'
         })
         const result = await authClient({
-          document: DELETE_VIDEO_SNIPPET_MUTATION,
+          document: DELETE_VIDEO_DESCRIPTION_MUTATION,
           variables: {
             id: 'id'
           }
         })
-        expect(result).toHaveProperty('data.deleteVideoSnippet', {
+        expect(result).toHaveProperty('data.deleteVideoDescription', {
           id: 'id'
         })
       })
 
       it('should reject if not publisher', async () => {
         const result = await client({
-          document: DELETE_VIDEO_SNIPPET_MUTATION,
+          document: DELETE_VIDEO_DESCRIPTION_MUTATION,
           variables: {
             id: 'id'
           }
