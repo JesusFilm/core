@@ -62,6 +62,7 @@ type Language
   name(languageId: ID, primary: Boolean): [LanguageName!]!
   countryLanguages: [CountryLanguage!]!
   audioPreview: AudioPreview
+  primaryCountryId: String
 }
 
 enum LanguageIdType {

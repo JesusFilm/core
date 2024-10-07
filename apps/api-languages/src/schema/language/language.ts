@@ -64,7 +64,22 @@ export const Language = builder.prismaObject('Language', {
       }
     }),
     countryLanguages: t.relation('countryLanguages'),
-    audioPreview: t.relation('audioPreview', { nullable: true })
+    audioPreview: t.relation('audioPreview', { nullable: true }),
+    primaryCountryId: t.string({
+      nullable: true,
+      resolve: async (parent) => {
+        const primaryCountryLanguage = await prisma.countryLanguage.findFirst({
+          where: {
+            languageId: parent.id,
+            primary: true
+          },
+          orderBy: {
+            speakers: 'desc'
+          }
+        });
+        return primaryCountryLanguage?.countryId ?? null;
+      }
+    })
   })
 })
 

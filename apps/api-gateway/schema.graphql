@@ -1077,6 +1077,7 @@ type Language @join__type(graph: JOURNEYS, key: "id")  @join__type(graph: LANGUA
   name(languageId: ID, primary: Boolean) : [LanguageName!]! @join__field(graph: LANGUAGES) 
   countryLanguages: [CountryLanguage!]! @join__field(graph: LANGUAGES) 
   audioPreview: AudioPreview @join__field(graph: LANGUAGES) 
+  primaryCountryId: String @join__field(graph: LANGUAGES) 
 }
 
 type JourneyViewEvent implements Event @join__type(graph: JOURNEYS)  @join__implements(graph: JOURNEYS, interface: "Event")  {
