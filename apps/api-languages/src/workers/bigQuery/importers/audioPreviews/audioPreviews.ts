@@ -1,3 +1,4 @@
+import omit from 'lodash/omit'
 import { Logger } from 'pino'
 import { z } from 'zod'
 
@@ -10,8 +11,13 @@ const audioPreviewSchema = z.object({
   duration: z.number(),
   size: z.number(),
   value: z.string(),
+  bitrate: z.number(),
+  container: z.string(),
   updatedAt: z.object({ value: z.string() }).transform((value) => value.value)
-})
+}).transform((value) => ({
+  ...omit(value, ['container']),
+  codec: value.container
+}))
 
 export async function importAudioPreviews(logger?: Logger): Promise<void> {
   await processTable(
