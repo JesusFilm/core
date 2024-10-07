@@ -62,7 +62,7 @@ export default async function middleware(
     },
     handleValidToken: async (token) => {
       const { data } = await makeClient({
-        headers: { Authorization: token.token }
+        headers: { Authorization: `JWT ${token.token}` }
       }).query({
         query: GET_AUTH
       })
