@@ -174,6 +174,58 @@ describe('VideoList', () => {
     await waitFor(() => expect(result2).toHaveBeenCalled())
   })
 
+  it('should filter published column by is operator', async () => {
+    const mockGetVideosAndCountFilter = {
+      ...mockGetVideosAndCount,
+      request: {
+        ...mockGetVideosAndCount.request,
+        variables: {
+          limit: 50,
+          offset: 0,
+          showTitle: true,
+          showSnippet: true,
+          where: { published: false }
+        }
+      }
+    }
+
+    const result = jest.fn().mockReturnValue(mockGetVideosAndCount.result)
+    const result2 = jest
+      .fn()
+      .mockReturnValue(mockGetVideosAndCountFilter.result)
+
+    render(
+      <NextIntlClientProvider locale="en">
+        <MockedProvider
+          mocks={[
+            { ...mockGetVideosAndCount, result },
+            { ...mockGetVideosAndCountFilter, result: result2 }
+          ]}
+        >
+          <VideoList />
+        </MockedProvider>
+      </NextIntlClientProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(screen.getAllByText('example-id')).toHaveLength(3)
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Show filters' }))
+    const select = screen.getByRole('combobox', { name: 'Columns' })
+
+    await fireEvent.mouseDown(select)
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('option', { name: 'Published' }))
+    )
+
+    await fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Value' }))
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('option', { name: 'false' }))
+    )
+    await waitFor(() => expect(result2).toHaveBeenCalled())
+  })
+
   it('should handle hiding the title field on the server', async () => {
     const mockGetVideosCountPageOne = {
       ...mockGetVideosAndCount,
