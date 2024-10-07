@@ -32,8 +32,17 @@ query GetLanguagesWithTags {
       size
       value
       duration
+      bitrate
+      codec
+    }
+    speakerCount
+    countriesCount
+    primaryCountryId
+    videoVariants(first: 1) {
+      seriesLanguageCount
     }
   }
+  languagesCount
 }
 `)
 
@@ -79,20 +88,40 @@ export async function GET(request: NextRequest): Promise<Response> {
     languageId: language.id,
     iso3: language.iso3,
     bcp47: language.bcp47,
-    // TODO: investigate
-    counts: {},
+    counts: {
+      speakerCount: {
+        value: language.speakerCount,
+        description: "Number of speakers"
+      },
+      countriesCount: {
+        value: language.countriesCount,
+        description: "Number of countries"
+      },
+      // series: {
+      //   value: (language as { videoVariants?: { seriesLanguageCount?: number }[] }).videoVariants?.[0]?.seriesLanguageCount ?? 0,
+      //   description: "Series"
+      // },
+      // featureFilm: {
+      //   value: language.featureFilmCount,
+      //   description: "Feature Film"
+      // },
+      // shortFilm: {
+      //   value: language.shortFilmCount,
+      //   description: "Short Film"
+      // }
+    },
     audioPreview: language.audioPreview != null ? {
       url: language.audioPreview.value,
-      audioBitrate: 'TODO: add bitrate',
-      audioContainer: 'TODO: add container',
+      audioBitrate: language.audioPreview.bitrate,
+      audioContainer: language.audioPreview.codec,
       sizeInBytes: language.audioPreview.size
     } : null,
-    // TODO: implement api call to get the primary country id
-    primaryCountryId: '',
+    primaryCountryId: language.primaryCountryId ?? '',
     name: language.name[0]?.value,
     nameNative: language.name[1]?.value,
-    // TODO investigate
-    metadataLanguageTag: '',
+    alternateLanguageName:  '',
+    alternateLanguageNameNative: '',
+    metadataLanguageTag: 'en', // TODO: Get from parameters
     _links: {
       self: {
         // TODO queerystring
@@ -104,10 +133,8 @@ export async function GET(request: NextRequest): Promise<Response> {
   const response = {
     page,
     limit,
-    // TODO: implement a formula pased on the total and the limit
-    pages: 1234,
-    // TODO: implent an api call in api-languages that gets a count of the total languages
-    total: 1234,
+    pages: Math.ceil(Number(data.languagesCount) / limit),
+    total: data.languagesCount,
     _links: {
       self: {
         href: `http://api.arclight.org/v2/media-languages?${queryString}`
