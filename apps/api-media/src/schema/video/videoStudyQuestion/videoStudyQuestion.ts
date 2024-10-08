@@ -96,11 +96,13 @@ builder.mutationFields((t) => ({
     authScopes: {
       isPublisher: true
     },
-    resolve: async (_query, _parent, { id }) => {
+    resolve: async (query, _parent, { id }) => {
+      const existing = await prisma.videoStudyQuestion.findUnique({
+        ...query,
+        where: { id }
+      })
       return await prisma.$transaction(async (transaction) => {
-        const existing = await transaction.videoStudyQuestion.findUnique({
-          where: { id }
-        })
+        console.log(existing)
         if (existing == null)
           throw new Error(`videoStudyQuestion ${id} not found`)
 

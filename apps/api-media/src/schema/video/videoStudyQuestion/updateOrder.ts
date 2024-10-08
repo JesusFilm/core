@@ -23,11 +23,13 @@ export async function updateOrderUpdate({
     order: index >= order - 1 ? index + 2 : index + 1
   }))
 
+  let index = 0
   for (const studyQuestion of newOrders) {
+    index++
     if (studyQuestion.id === id) continue
     await transaction.videoStudyQuestion.update({
       where: { id: studyQuestion.id },
-      data: { order: studyQuestion.order }
+      data: { order: index }
     })
   }
 }

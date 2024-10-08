@@ -4,21 +4,15 @@ import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 
 import {
-  updateCreateOrder,
-  updateDeleteOrder,
+  updateOrderCreate,
+  updateOrderDelete,
   updateOrderUpdate
 } from './updateOrder'
 
 jest.mock('./updateOrder', () => ({
-  updateCreateOrder: jest
-    .fn()
-    .mockImplementation(async () => await Promise.resolve()),
-  updateDeleteOrder: jest
-    .fn()
-    .mockImplementation(async () => await Promise.resolve()),
-  updateOrderUpdate: jest
-    .fn()
-    .mockImplementation(async () => await Promise.resolve())
+  updateOrderCreate: jest.fn(),
+  updateOrderDelete: jest.fn(),
+  updateOrderUpdate: jest.fn()
 }))
 
 describe('videoStudyQuestion', () => {
@@ -50,6 +44,15 @@ describe('videoStudyQuestion', () => {
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
+        })
+        prismaMock.videoStudyQuestion.findUnique.mockResolvedValue({
+          id: 'id',
+          videoId: 'videoId',
+          value: 'value',
+          primary: true,
+          languageId: 'languageId',
+          crowdInId: 'crowdInId',
+          order: 1
         })
         prismaMock.videoStudyQuestion.create.mockResolvedValue({
           id: 'id',
@@ -166,6 +169,9 @@ describe('videoStudyQuestion', () => {
       `)
 
       it('should delete video study question', async () => {
+        prismaMock.$transaction.mockImplementation(
+          async (callback) => await callback(prismaMock)
+        )
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -189,16 +195,15 @@ describe('videoStudyQuestion', () => {
           crowdInId: 'crowdInId',
           order: 1
         })
-
         const result = await authClient({
           document: DELETE_VIDEO_STUDY_QUESTION_MUTATION,
           variables: {
             id: 'id'
           }
         })
-        expect(updateDeleteOrder).toHaveBeenCalledWith({
-          videoId: 'videoId',
-          transaction: expect.any(Object)
+        expect(updateOrderDelete).toHaveBeenCalledWith({
+          videoId: 'id',
+          transaction: undefined
         })
         expect(result).toHaveProperty('data.deleteVideoStudyQuestion', {
           id: 'id'
