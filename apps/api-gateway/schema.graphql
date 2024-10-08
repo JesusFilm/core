@@ -642,6 +642,7 @@ type Query @join__type(graph: ANALYTICS)  @join__type(graph: JOURNEYS)  @join__t
   keywords: [Keyword!]! @join__field(graph: MEDIA) 
   adminVideo(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: MEDIA) 
   adminVideos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: MEDIA) 
+  adminVideosCount(where: VideosFilter) : Int! @join__field(graph: MEDIA) 
   video(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: MEDIA) 
   videos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: MEDIA) 
   videosCount(where: VideosFilter) : Int! @join__field(graph: MEDIA) 

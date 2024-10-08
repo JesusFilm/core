@@ -349,6 +349,18 @@ builder.queryFields((t) => ({
       })
     }
   }),
+  adminVideosCount: t.int({
+    args: { where: t.arg({ type: VideosFilter, required: false }) },
+    authScopes: {
+      isPublisher: true
+    },
+    resolve: async (_parent, { where }) => {
+      const filter = videosFilter(where ?? {})
+      return await prisma.video.count({
+        where: filter
+      })
+    }
+  }),
   video: t.prismaField({
     type: 'Video',
     args: {
