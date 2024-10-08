@@ -1203,14 +1203,12 @@ export type Mutation = {
   /** @deprecated use createCloudflareImageFromPrompt */
   createImageBySegmindPrompt: CloudflareImage;
   createVerificationRequest?: Maybe<Scalars['Boolean']['output']>;
-  createVideoVariantDownload: VideoVariantDownload;
   customDomainCheck: CustomDomainCheck;
   customDomainCreate: CustomDomain;
   customDomainDelete: CustomDomain;
   customDomainUpdate: CustomDomain;
   deleteCloudflareImage: Scalars['Boolean']['output'];
   deleteCloudflareVideo: Scalars['Boolean']['output'];
-  deleteVideoVariantDownload: VideoVariantDownload;
   hostCreate: Host;
   hostDelete: Host;
   hostUpdate: Host;
@@ -1269,7 +1267,6 @@ export type Mutation = {
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
-  updateVideoVariantDownload: VideoVariantDownload;
   userImpersonate?: Maybe<Scalars['String']['output']>;
   userInviteAcceptAll: Array<UserInvite>;
   userInviteCreate?: Maybe<UserInvite>;
@@ -1318,6 +1315,9 @@ export type Mutation = {
   videoUpdate: Video;
   videoVariantCreate: VideoVariant;
   videoVariantDelete: VideoVariant;
+  videoVariantDownloadCreate: VideoVariantDownload;
+  videoVariantDownloadDelete: VideoVariantDownload;
+  videoVariantDownloadUpdate: VideoVariantDownload;
   videoVariantUpdate: VideoVariant;
   /** Update a visitor */
   visitorUpdate: Visitor;
@@ -1484,11 +1484,6 @@ export type MutationCreateVerificationRequestArgs = {
 };
 
 
-export type MutationCreateVideoVariantDownloadArgs = {
-  input: VideoVariantDownloadCreateInput;
-};
-
-
 export type MutationCustomDomainCheckArgs = {
   id: Scalars['ID']['input'];
 };
@@ -1516,11 +1511,6 @@ export type MutationDeleteCloudflareImageArgs = {
 
 
 export type MutationDeleteCloudflareVideoArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type MutationDeleteVideoVariantDownloadArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -1803,11 +1793,6 @@ export type MutationUpdateJourneysEmailPreferenceArgs = {
 };
 
 
-export type MutationUpdateVideoVariantDownloadArgs = {
-  input: VideoVariantDownloadUpdateInput;
-};
-
-
 export type MutationUserImpersonateArgs = {
   email: Scalars['String']['input'];
 };
@@ -2038,6 +2023,21 @@ export type MutationVideoVariantCreateArgs = {
 
 export type MutationVideoVariantDeleteArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoVariantDownloadCreateArgs = {
+  input: VideoVariantDownloadCreateInput;
+};
+
+
+export type MutationVideoVariantDownloadDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoVariantDownloadUpdateArgs = {
+  input: VideoVariantDownloadUpdateInput;
 };
 
 
