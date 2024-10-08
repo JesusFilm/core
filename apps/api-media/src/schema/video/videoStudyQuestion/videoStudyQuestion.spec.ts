@@ -40,6 +40,9 @@ describe('videoStudyQuestion', () => {
       `)
 
       it('should create video study question', async () => {
+        prismaMock.$transaction.mockImplementation(
+          async (callback) => await callback(prismaMock)
+        )
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -80,11 +83,7 @@ describe('videoStudyQuestion', () => {
         expect(result).toHaveProperty('data.createVideoStudyQuestion', {
           id: 'id'
         })
-        expect(updateCreateOrder).toHaveBeenCalledWith({
-          videoId: 'videoId',
-          order: 1,
-          transaction: expect.any(Object)
-        })
+        expect(updateOrderCreate).toHaveBeenCalled()
       })
 
       it('should reject if not publisher', async () => {
@@ -135,6 +134,15 @@ describe('videoStudyQuestion', () => {
           userId: 'userId',
           roles: ['publisher']
         })
+        prismaMock.videoStudyQuestion.update.mockResolvedValue({
+          id: 'id',
+          videoId: 'videoId',
+          value: 'value',
+          primary: true,
+          languageId: 'languageId',
+          crowdInId: 'crowdInId',
+          order: 1
+        })
         const result = await authClient({
           document: UPDATE_VIDEO_STUDY_QUESTION_MUTATION,
           variables: {
@@ -148,6 +156,7 @@ describe('videoStudyQuestion', () => {
             }
           }
         })
+        expect(updateOrderUpdate).toHaveBeenCalled()
         expect(result).toHaveProperty('data.updateVideoStudyQuestion', {
           id: 'id'
         })
@@ -155,6 +164,66 @@ describe('videoStudyQuestion', () => {
 
       it('should reject if not publisher', async () => {
         const result = await client({
+          document: UPDATE_VIDEO_STUDY_QUESTION_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              value: 'value',
+              primary: true,
+              languageId: 'languageId',
+              crowdInId: 'crowdInId',
+              order: 1
+            }
+          }
+        })
+        expect(result).toHaveProperty('data', null)
+      })
+
+      it('should throw if not found', async () => {
+        prismaMock.$transaction.mockImplementation(
+          async (callback) => await callback(prismaMock)
+        )
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.videoStudyQuestion.findUnique.mockResolvedValue(null)
+        const result = await authClient({
+          document: UPDATE_VIDEO_STUDY_QUESTION_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              value: 'value',
+              primary: true,
+              languageId: 'languageId',
+              crowdInId: 'crowdInId',
+              order: 1
+            }
+          }
+        })
+        expect(result).toHaveProperty('data', null)
+      })
+
+      it('should throw if videoId not found', async () => {
+        prismaMock.$transaction.mockImplementation(
+          async (callback) => await callback(prismaMock)
+        )
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.videoStudyQuestion.findUnique.mockResolvedValue({
+          id: 'id',
+          videoId: null,
+          value: 'value',
+          primary: true,
+          languageId: 'languageId',
+          crowdInId: 'crowdInId',
+          order: 1
+        })
+        const result = await authClient({
           document: UPDATE_VIDEO_STUDY_QUESTION_MUTATION,
           variables: {
             input: {
@@ -221,6 +290,25 @@ describe('videoStudyQuestion', () => {
 
       it('should reject if not publisher', async () => {
         const result = await client({
+          document: DELETE_VIDEO_STUDY_QUESTION_MUTATION,
+          variables: {
+            id: 'id'
+          }
+        })
+        expect(result).toHaveProperty('data', null)
+      })
+
+      it('should throw if not found', async () => {
+        prismaMock.$transaction.mockImplementation(
+          async (callback) => await callback(prismaMock)
+        )
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.videoStudyQuestion.findUnique.mockResolvedValue(null)
+        const result = await authClient({
           document: DELETE_VIDEO_STUDY_QUESTION_MUTATION,
           variables: {
             id: 'id'

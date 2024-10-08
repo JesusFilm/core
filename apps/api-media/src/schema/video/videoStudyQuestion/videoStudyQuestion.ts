@@ -32,7 +32,7 @@ builder.mutationFields((t) => ({
     authScopes: {
       isPublisher: true
     },
-    resolve: async (_query, _parent, { input }) => {
+    resolve: async (query, _parent, { input }) => {
       return await prisma.$transaction(async (transaction) => {
         await updateOrderCreate({
           videoId: input.videoId,
@@ -40,6 +40,7 @@ builder.mutationFields((t) => ({
           transaction
         })
         return await transaction.videoStudyQuestion.create({
+          ...query,
           data: {
             ...input,
             id: input.id ?? undefined
@@ -56,7 +57,7 @@ builder.mutationFields((t) => ({
     authScopes: {
       isPublisher: true
     },
-    resolve: async (_query, _parent, { input }) => {
+    resolve: async (query, _parent, { input }) => {
       return await prisma.$transaction(async (transaction) => {
         const existing = await transaction.videoStudyQuestion.findUnique({
           where: { id: input.id },
@@ -76,6 +77,7 @@ builder.mutationFields((t) => ({
             transaction
           })
         return await transaction.videoStudyQuestion.update({
+          ...query,
           where: { id: input.id },
           data: {
             value: input.value ?? undefined,
