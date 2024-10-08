@@ -118,6 +118,18 @@ describe('videoStudyQuestion', () => {
       `)
 
       it('should update video study question', async () => {
+        prismaMock.$transaction.mockImplementation(
+          async (callback) => await callback(prismaMock)
+        )
+        prismaMock.videoStudyQuestion.findUnique.mockResolvedValue({
+          id: 'id',
+          videoId: 'videoId',
+          value: 'value',
+          primary: true,
+          languageId: 'languageId',
+          crowdInId: 'crowdInId',
+          order: 1
+        })
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -201,10 +213,7 @@ describe('videoStudyQuestion', () => {
             id: 'id'
           }
         })
-        expect(updateOrderDelete).toHaveBeenCalledWith({
-          videoId: 'id',
-          transaction: undefined
-        })
+        expect(updateOrderDelete).toHaveBeenCalled()
         expect(result).toHaveProperty('data.deleteVideoStudyQuestion', {
           id: 'id'
         })

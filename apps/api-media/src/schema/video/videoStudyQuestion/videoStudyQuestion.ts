@@ -102,7 +102,6 @@ builder.mutationFields((t) => ({
         where: { id }
       })
       return await prisma.$transaction(async (transaction) => {
-        console.log(existing)
         if (existing == null)
           throw new Error(`videoStudyQuestion ${id} not found`)
 
