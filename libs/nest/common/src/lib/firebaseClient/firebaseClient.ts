@@ -30,7 +30,7 @@ export const auth = getAuth(firebaseClient)
 const payloadSchema = z
   .object({
     name: z.string(),
-    picture: z.string().nullable(),
+    picture: z.string().nullish(),
     user_id: z.string(),
     email: z.string(),
     email_verified: z.boolean()
