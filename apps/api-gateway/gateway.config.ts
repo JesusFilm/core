@@ -13,13 +13,16 @@ export const gatewayConfig = defineConfig({
   graphqlEndpoint: '/',
   supergraph: './apps/api-gateway/schema.graphql',
   propagateHeaders: {
-    fromClientToSubgraphs: ({ request }) => {
-      return {
-        authorization: request.headers.get('authorization') ?? '',
+    fromClientToSubgraphs: ({ request, subgraphName }) => {
+      const headers: Record<string, string> = {
         'user-agent': request.headers.get('user-agent') ?? '',
         'x-forward-for': request.headers.get('x-forward-for') ?? '',
         'interop-token': request.headers.get('interop-token') ?? ''
       }
+      if (subgraphName === 'analytics')
+        headers.authorization = request.headers.get('authorization') ?? ''
+
+      return headers
     }
   },
   hmacSignature: {
