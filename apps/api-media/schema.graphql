@@ -126,9 +126,9 @@ type Mutation {
   videoTitleCreate(input: VideoTranslationCreateInput!): VideoTitle!
   videoTitleUpdate(input: VideoTranslationUpdateInput!): VideoTitle!
   videoTitleDelete(id: ID!): VideoTitle!
-  createVideoVariant(input: VideoVariantCreateInput!): VideoVariant!
-  updateVideoVariant(input: VideoVariantUpdateInput!): VideoVariant!
-  deleteVideoVariant(id: ID!): VideoVariant!
+  videoVariantCreate(input: VideoVariantCreateInput!): VideoVariant!
+  videoVariantUpdate(input: VideoVariantUpdateInput!): VideoVariant!
+  videoVariantDelete(id: ID!): VideoVariant!
   createVideoVariantDownload(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
   updateVideoVariantDownload(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
   deleteVideoVariantDownload(id: ID!): VideoVariantDownload!

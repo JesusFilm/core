@@ -7,6 +7,15 @@ import { graphql } from '../../lib/graphql/subgraphGraphql'
 describe('videoVariant', () => {
   const client = getClient()
 
+  const authClient = getClient({
+    headers: {
+      authorization: 'token'
+    },
+    context: {
+      currentRoles: ['publisher']
+    }
+  })
+
   describe('videoVariants', () => {
     const VIDEO_VARIANTS_QUERY = graphql(`
       query videoVariants($languageId: ID, $primary: Boolean) {
@@ -275,6 +284,221 @@ describe('videoVariant', () => {
           slug: 'videoSlug'
         }
       ])
+    })
+  })
+
+  describe('mutations', () => {
+    describe('videoVariantCreate', () => {
+      const VIDEO_VARIANT_CREATE_MUTATION = graphql(`
+        mutation VideoVariantCreate($input: VideoVariantCreateInput!) {
+          videoVariantCreate(input: $input) {
+            id
+          }
+        }
+      `)
+
+      it('should create a new video variant', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.videoVariant.create.mockResolvedValue({
+          id: 'id',
+          hls: 'hls',
+          duration: 1024,
+          dash: 'dash',
+          edition: 'base',
+          slug: 'videoSlug',
+          videoId: 'videoId',
+          languageId: 'languageId',
+          share: 'share'
+        })
+        const result = await authClient({
+          document: VIDEO_VARIANT_CREATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              hls: 'hls',
+              dash: 'dash',
+              duration: 1024,
+              languageId: 'languageId',
+              edition: 'base',
+              slug: 'videoSlug',
+              videoId: 'videoId',
+              share: 'share'
+            }
+          }
+        })
+        expect(prismaMock.videoVariant.create).toHaveBeenCalledWith({
+          data: {
+            id: 'id',
+            hls: 'hls',
+            dash: 'dash',
+            duration: 1024,
+            languageId: 'languageId',
+            edition: 'base',
+            slug: 'videoSlug',
+            videoId: 'videoId',
+            share: 'share'
+          }
+        })
+        expect(result).toHaveProperty('data.videoVariantCreate', {
+          id: 'id'
+        })
+      })
+
+      it('should fail if not publisher', async () => {
+        const result = await client({
+          document: VIDEO_VARIANT_CREATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              hls: 'hls',
+              dash: 'dash',
+              duration: 1024,
+              languageId: 'languageId',
+              edition: 'base',
+              slug: 'videoSlug',
+              videoId: 'videoId',
+              share: 'share'
+            }
+          }
+        })
+        expect(result).toHaveProperty('data', null)
+      })
+    })
+
+    describe('videoVariantUpdate', () => {
+      const VIDEO_VARIANT_UPDATE_MUTATION = graphql(`
+        mutation VideoVariantUpdate($input: VideoVariantUpdateInput!) {
+          videoVariantUpdate(input: $input) {
+            id
+          }
+        }
+      `)
+
+      it('should update a video variant', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.videoVariant.update.mockResolvedValue({
+          id: 'id',
+          hls: 'hls',
+          duration: 1024,
+          dash: 'dash',
+          edition: 'base',
+          slug: 'videoSlug',
+          videoId: 'videoId',
+          languageId: 'languageId',
+          share: 'share'
+        })
+        const result = await authClient({
+          document: VIDEO_VARIANT_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              hls: 'hls',
+              dash: 'dash',
+              duration: 1024,
+              languageId: 'languageId',
+              edition: 'base',
+              slug: 'videoSlug',
+              videoId: 'videoId',
+              share: 'share'
+            }
+          }
+        })
+        expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
+          where: { id: 'id' },
+          data: {
+            hls: 'hls',
+            dash: 'dash',
+            duration: 1024,
+            languageId: 'languageId',
+            edition: 'base',
+            slug: 'videoSlug',
+            videoId: 'videoId',
+            share: 'share'
+          }
+        })
+        expect(result).toHaveProperty('data.videoVariantUpdate', {
+          id: 'id'
+        })
+      })
+
+      it('should fail if not publisher', async () => {
+        const result = await client({
+          document: VIDEO_VARIANT_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              hls: 'hls',
+              dash: 'dash',
+              duration: 1024,
+              languageId: 'languageId',
+              edition: 'base',
+              slug: 'videoSlug',
+              videoId: 'videoId',
+              share: 'share'
+            }
+          }
+        })
+        expect(result).toHaveProperty('data', null)
+      })
+    })
+
+    describe('videoVariantDelete', () => {
+      const VIDEO_VARIANT_DELETE_MUTATION = graphql(`
+        mutation VideoVariantDelete($id: ID!) {
+          videoVariantDelete(id: $id) {
+            id
+          }
+        }
+      `)
+
+      it('should delete a video variant', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.videoVariant.delete.mockResolvedValue({
+          id: 'id',
+          hls: 'hls',
+          duration: 1024,
+          dash: 'dash',
+          edition: 'base',
+          slug: 'videoSlug',
+          videoId: 'videoId',
+          languageId: 'languageId',
+          share: 'share'
+        })
+        const result = await authClient({
+          document: VIDEO_VARIANT_DELETE_MUTATION,
+          variables: {
+            id: 'id'
+          }
+        })
+        expect(prismaMock.videoVariant.delete).toHaveBeenCalledWith({
+          where: { id: 'id' }
+        })
+        expect(result).toHaveProperty('data.videoVariantDelete', {
+          id: 'id'
+        })
+      })
+
+      it('should fail if not publisher', async () => {
+        const result = await client({
+          document: VIDEO_VARIANT_DELETE_MUTATION,
+          variables: {
+            id: 'id'
+          }
+        })
+        expect(result).toHaveProperty('data', null)
+      })
     })
   })
 })
