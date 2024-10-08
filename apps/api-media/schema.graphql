@@ -129,9 +129,9 @@ type Mutation {
   videoVariantCreate(input: VideoVariantCreateInput!): VideoVariant!
   videoVariantUpdate(input: VideoVariantUpdateInput!): VideoVariant!
   videoVariantDelete(id: ID!): VideoVariant!
-  createVideoVariantDownload(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
-  updateVideoVariantDownload(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
-  deleteVideoVariantDownload(id: ID!): VideoVariantDownload!
+  videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
+  videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
+  videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
 }
 
 type Query {
