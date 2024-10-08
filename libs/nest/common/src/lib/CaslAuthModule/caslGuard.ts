@@ -43,7 +43,7 @@ export class CaslGuard implements CanActivate {
     }>().req
 
     if (req.userId == null) {
-      req.userId = await contextToUserId(context)
+      req.userId = contextToUserId(context)
     }
 
     if (req.userId == null) return false

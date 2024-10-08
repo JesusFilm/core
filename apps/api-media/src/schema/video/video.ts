@@ -14,6 +14,38 @@ import { VideosFilter } from './inputs/videosFilter'
 import { VideoUpdateInput } from './inputs/videoUpdate'
 import { videosFilter } from './lib/videosFilter'
 
+interface Info {
+  variableValues:
+    | Record<
+        string,
+        Array<
+          Array<{
+            id: string
+            primaryLanguageId: string
+          }>
+        >
+      >
+    | Array<{ id: string; primaryLanguageId: string }>
+}
+
+export function getLanguageIdFromInfo(
+  info: unknown,
+  parentId: string
+): string | undefined {
+  return typeof (info as Info).variableValues === 'object'
+    ? Object.values((info as Info).variableValues).find(
+        (inner) =>
+          Array.isArray(inner) &&
+          inner.find(({ id }: { id: string }) => id === parentId)
+      )?.[0].primaryLanguageId
+    : (
+        (info as Info).variableValues as Array<{
+          id: string
+          primaryLanguageId: string
+        }>
+      )?.find(({ id }: { id: string }) => id === parentId)?.primaryLanguageId
+}
+
 const Video = builder.prismaObject('Video', {
   shareable: true,
   fields: (t) => ({
@@ -210,16 +242,16 @@ const Video = builder.prismaObject('Video', {
         const variableValueId =
           (info.variableValues.id as string | undefined) ??
           (info.variableValues.contentId as string | undefined) ??
+          (info.variableValues._1_contentId as string | undefined) ??
           ''
         const requestedLanguage = variableValueId.includes('/')
           ? variableValueId.substring(variableValueId.lastIndexOf('/') + 1)
           : ''
 
-        const journeysLanguageIdForBlock = (
-          info.variableValues as {
-            representations: Array<{ id: string; primaryLanguageId: string }>
-          }
-        ).representations?.find(({ id }) => id === parent.id)?.primaryLanguageId
+        const journeysLanguageIdForBlock = getLanguageIdFromInfo(
+          info,
+          parent.id
+        )
 
         if (
           info.variableValues.idType !== IdTypeShape.databaseId &&
@@ -316,6 +348,18 @@ builder.queryFields((t) => ({
         where: filter,
         skip: offset ?? 0,
         take: limit ?? 100
+      })
+    }
+  }),
+  adminVideosCount: t.int({
+    args: { where: t.arg({ type: VideosFilter, required: false }) },
+    authScopes: {
+      isPublisher: true
+    },
+    resolve: async (_parent, { where }) => {
+      const filter = videosFilter(where ?? {})
+      return await prisma.video.count({
+        where: filter
       })
     }
   }),

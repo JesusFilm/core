@@ -28,7 +28,7 @@ export default async function UnauthorizedPage(): Promise<ReactNode> {
   const t = await getTranslations()
   const user = await getUser()
   const { data } = await makeClient({
-    headers: { Authorization: user?.token ?? '' }
+    headers: { Authorization: user?.token != null ? `JWT ${user.token}` : '' }
   }).query({
     query: GET_AUTH
   })
