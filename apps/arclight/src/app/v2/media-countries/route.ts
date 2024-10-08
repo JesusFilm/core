@@ -1,9 +1,10 @@
+import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
+import { getApolloClient } from '../../../lib/apolloClient'
 import { paramsToRecord } from '../../../lib/paramsToRecord'
 
 /* TODO: 
-  api-countries needs to be rebuilt
   querystring:
     apiKey
     term
@@ -14,12 +15,42 @@ import { paramsToRecord } from '../../../lib/paramsToRecord'
     metadataLanguageTags
 */
 
-export async function GET(req: NextRequest): Promise<Response> {
-  const query = req.nextUrl.searchParams
+const GET_COUNTRIES = graphql(`
+query Country {
+  countries {
+    id
+    population
+    latitude
+    longitude
+    flagPngSrc
+    flagWebpSrc
+    name {
+      value
+      primary
+    }
+    continent {
+      name {
+        value
+      }
+    }
+    # languageCount
+    # languageHavingMediaCount
+  }
+}
+`)
+
+export async function GET(request: NextRequest): Promise<Response> {
+  const query = request.nextUrl.searchParams
 
   const page = Number(query.get('page') ?? 1)
   const limit = Number(query.get('limit') ?? 10)
-  // const offset = (page - 1) * limit
+  const offset = (page - 1) * limit
+
+  const { data } = await getApolloClient().query<
+    ResultOf<typeof GET_COUNTRIES>
+  >({
+    query: GET_COUNTRIES
+  })
 
   const queryObject: Record<string, string> = {
     ...paramsToRecord(query.entries()),
@@ -34,38 +65,72 @@ export async function GET(req: NextRequest): Promise<Response> {
   }).toString()
   const lastQueryString = new URLSearchParams({
     ...queryObject,
-    page: '1234'
+    page: Math.ceil(data.countries.length / limit).toString()
   }).toString()
   const nextQueryString = new URLSearchParams({
     ...queryObject,
     page: (page + 1).toString()
   }).toString()
 
-  const response = {
-    page,
-    limit,
-    // TODO: Needs to be completed
-    pages: 1234,
-    // TODO: Needs to be completed
-    total: 1234,
-    _embedded: {
-      // TODO implement api countries again
-      mediaCountries: []
+  const mediaCountries = data.countries.slice(offset, offset + limit).map((country) => ({
+    countryId: country.id,
+    longitude: country.longitude,
+    latitude: country.latitude,
+    counts: {
+      languageCount: {
+        // TODO: implement
+        // value: country.languageCount,
+        description: "Number of spoken languages"
+      },
+      population: {
+        value: country.population,
+        description: "Country population"
+      },
+      languageHavingMediaCount: {
+        // TODO: Implement
+        // value: country.languageHavingMediaCount,
+        description: "Number of languages having media"
+      }
+    },
+    assets: {
+      flagUrls: {
+        png8: country.flagPngSrc,
+        webpLossy50: country.flagWebpSrc
+      }
     },
     _links: {
       self: {
-        href: `https://api.arclight.com/v2/mediaComponents?${queryString}`
-      },
-      first: {
-        href: `https://api.arclight.com/v2/mediaComponents?${firstQueryString}`
-      },
-      last: {
-        href: `https://api.arclight.com/v2/mediaComponents?${lastQueryString}`
-      },
-      next: {
-        href: `https://api.arclight.com/v2/mediaComponents?${nextQueryString}`
+        href: `http://api.arclight.org/v2/media-countries/${country.id}?apiKey=3a21a65d4gf98hZ7`
       }
     }
+  }))
+
+  const totalCountries = data.countries.length
+  const totalPages = Math.ceil(totalCountries / limit)
+
+  const response = {
+    page,
+    limit,
+    pages: totalPages,
+    total: totalCountries,
+    _embedded: {
+      mediaCountries
+    },
+    _links: {
+      self: {
+        href: `http://api.arclight.org/v2/media-countries?${queryString}`
+      },
+      first: {
+        href: `http://api.arclight.org/v2/media-countries?${firstQueryString}`
+      },
+      last: {
+        href: `http://api.arclight.org/v2/media-countries?${lastQueryString}`
+      },
+      next: page < totalPages ? {
+        href: `http://api.arclight.org/v2/media-countries?${nextQueryString}`
+      } : undefined
+    }
   }
+
   return new Response(JSON.stringify(response), { status: 200 })
 }
