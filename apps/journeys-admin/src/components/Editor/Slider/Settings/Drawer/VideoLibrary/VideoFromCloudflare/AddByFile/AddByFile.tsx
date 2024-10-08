@@ -1,99 +1,28 @@
-import type { ReadStream } from 'fs'
-
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import LinearProgress from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { FileRejection, useDropzone } from 'react-dropzone'
-import {
-  DefaultHttpStack,
-  DetailedError,
-  HttpStack,
-  Upload
-} from 'tus-js-client'
 
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
-import { CreateCloudflareVideoUploadByFileMutation } from '../../../../../../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
-import { GetMyCloudflareVideoQuery } from '../../../../../../../../../__generated__/GetMyCloudflareVideoQuery'
-
-export const CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
-  mutation CreateCloudflareVideoUploadByFileMutation(
-    $uploadLength: Int!
-    $name: String!
-  ) {
-    createCloudflareVideoUploadByFile(
-      uploadLength: $uploadLength
-      name: $name
-    ) {
-      uploadUrl
-      id
-    }
-  }
-`
-
-export const GET_MY_CLOUDFLARE_VIDEO_QUERY = gql`
-  query GetMyCloudflareVideoQuery($id: ID!) {
-    getMyCloudflareVideo(id: $id) {
-      id
-      readyToStream
-    }
-  }
-`
+import { useBackgroundUpload } from '../../../../../../BackgroundUpload'
 
 interface AddByFileProps {
   onChange: (id: string) => void
-  httpStack?: HttpStack // required for testing in jest
 }
 
-export function AddByFile({
-  onChange,
-  httpStack
-}: AddByFileProps): ReactElement {
+export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [createCloudflareVideoUploadByFile, { data }] =
-    useMutation<CreateCloudflareVideoUploadByFileMutation>(
-      CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION
-    )
-  const [getMyCloudflareVideo, { stopPolling }] =
-    useLazyQuery<GetMyCloudflareVideoQuery>(GET_MY_CLOUDFLARE_VIDEO_QUERY, {
-      pollInterval: 1000,
-      notifyOnNetworkStatusChange: true,
-      onCompleted: (data) => {
-        if (
-          data.getMyCloudflareVideo?.readyToStream &&
-          data.getMyCloudflareVideo.id != null
-        ) {
-          stopPolling()
-          onChange(data.getMyCloudflareVideo.id)
-        }
-      }
-    })
-  const [uploading, setUploading] = useState(false)
-  const [processing, setProcessing] = useState(false)
+
   const [fileRejected, setfileRejected] = useState(false)
   const [fileTooLarge, setfileTooLarge] = useState(false)
   const [tooManyFiles, settooManyFiles] = useState(false)
   const [fileInvalidType, setfileInvalidType] = useState(false)
-  const [error, setError] = useState<Error | DetailedError>()
-  const [progress, setProgress] = useState(0)
-
-  useEffect(() => {
-    if (processing && data?.createCloudflareVideoUploadByFile?.id != null) {
-      void getMyCloudflareVideo({
-        variables: { id: data.createCloudflareVideoUploadByFile.id }
-      })
-    }
-  }, [
-    processing,
-    getMyCloudflareVideo,
-    data?.createCloudflareVideoUploadByFile?.id
-  ])
+  const { uploadCloudflareVideo } = useBackgroundUpload()
 
   const onDrop = async (): Promise<void> => {
     setfileTooLarge(false)
@@ -103,55 +32,12 @@ export function AddByFile({
   }
 
   const onDropAccepted = async (files: File[]): Promise<void> => {
-    if (files.length > 0) {
-      const file = files[0]
-      const fileName = file.name.split('.')[0]
-      const { data } = await createCloudflareVideoUploadByFile({
-        variables: {
-          uploadLength: file.size,
-          name: fileName
-        }
-      })
-
-      if (
-        data?.createCloudflareVideoUploadByFile?.uploadUrl != null &&
-        data?.createCloudflareVideoUploadByFile?.id != null
-      ) {
-        setUploading(true)
-        // the following if statement is required for testing in jest
-        let buffer: ReadStream | File
-        if (process.env.NODE_ENV === 'test') {
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          buffer = require('fs').createReadStream(
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            require('path').join(
-              __dirname,
-              (file as unknown as { path: string }).path
-            )
-          )
-        } else {
-          buffer = file
-        }
-        const upload = new Upload(buffer, {
-          httpStack: httpStack ?? new DefaultHttpStack({}),
-          uploadUrl: data.createCloudflareVideoUploadByFile.uploadUrl,
-          chunkSize: 150 * 1024 * 1024,
-          onSuccess: (): void => {
-            setUploading(false)
-            setProcessing(true)
-          },
-          onError: (err): void => {
-            setError(err)
-            setUploading(false)
-            setProgress(0)
-          },
-          onProgress(bytesUploaded, bytesTotal): void {
-            setProgress((bytesUploaded / bytesTotal) * 100)
-          }
-        })
-        upload.start()
-      }
-    }
+    const upload = uploadCloudflareVideo({
+      files
+    })
+    const uploadId = (await upload.next()).value
+    void upload.next()
+    onChange(uploadId)
   }
 
   const onDropRejected = async (
@@ -186,8 +72,6 @@ export function AddByFile({
     }
   })
 
-  const noBorder = error != null || uploading || fileRejected
-
   return (
     <Stack
       alignItems="center"
@@ -202,15 +86,14 @@ export function AddByFile({
           display: 'flex',
           width: '100%',
           height: 162,
-          borderWidth: noBorder ? undefined : 2,
-          backgroundColor:
-            isDragAccept || uploading
-              ? 'rgba(239, 239, 239, 0.9)'
-              : error != null || fileRejected
-              ? 'rgba(197, 45, 58, 0.08)'
-              : 'rgba(239, 239, 239, 0.35)',
+          borderWidth: fileRejected ? undefined : 2,
+          backgroundColor: isDragAccept
+            ? 'rgba(239, 239, 239, 0.9)'
+            : fileRejected
+            ? 'rgba(197, 45, 58, 0.08)'
+            : 'rgba(239, 239, 239, 0.35)',
           borderColor: 'divider',
-          borderStyle: noBorder ? undefined : 'dashed',
+          borderStyle: fileRejected ? undefined : 'dashed',
           borderRadius: 2,
           justifyContent: 'center',
           flexDirection: 'column',
@@ -219,47 +102,29 @@ export function AddByFile({
         {...getRootProps({ isDragAccept })}
       >
         <input {...getInputProps()} />
-        {error != null || fileRejected ? (
-          <AlertTriangleIcon
-            sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
-          />
-        ) : (
-          <Upload1Icon sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }} />
-        )}
+        <Upload1Icon sx={{ fontSize: 48, color: 'secondary.light', mb: 1 }} />
         <Typography
           variant="body1"
-          color={
-            error != null || fileRejected ? 'error.main' : 'secondary.main'
-          }
+          color={fileRejected ? 'error.main' : 'secondary.main'}
           sx={{ pb: 4 }}
         >
-          {uploading && t('Uploading...')}
-          {processing && t('Processing...')}
-          {(error != null || fileRejected) && t('Upload Failed!')}
-          {!uploading &&
-            !processing &&
-            !fileRejected &&
-            error == null &&
-            t('Drop a video here')}
+          {fileRejected && t('Upload Failed!')}
+          {!fileRejected && t('Drop a video here')}
         </Typography>
       </Box>
       <Stack
         direction="row"
         spacing={1}
-        color={error != null || fileRejected ? 'error.main' : 'secondary.light'}
+        color={fileRejected ? 'error.main' : 'secondary.light'}
         sx={{ justifyContent: 'center', alignItems: 'center' }}
       >
         <AlertTriangleIcon
           fontSize="small"
           sx={{
-            display: error != null || fileRejected ? 'flex' : 'none'
+            display: fileRejected ? 'flex' : 'none'
           }}
         />
-        {error != null ? (
-          <Typography variant="caption">
-            {t('Something went wrong, try again')}
-          </Typography>
-        ) : fileRejected ? (
+        {fileRejected ? (
           <Typography variant="caption">
             {fileInvalidType && t('Invalid file type. ')}
             {tooManyFiles && t('Only one file upload at once. ')}
@@ -270,36 +135,26 @@ export function AddByFile({
         )}
       </Stack>
 
-      {uploading || processing ? (
-        <Box sx={{ width: '100%', mt: 4 }}>
-          <LinearProgress
-            variant={processing ? 'indeterminate' : 'determinate'}
-            value={progress}
-            sx={{ height: 32, borderRadius: 2 }}
-          />
-        </Box>
-      ) : (
-        <Button
-          size="small"
-          color="secondary"
-          variant="outlined"
-          onClick={open}
-          sx={{
-            mt: 4,
-            height: 32,
-            width: '100%',
-            borderRadius: 2
-          }}
+      <Button
+        size="small"
+        color="secondary"
+        variant="outlined"
+        onClick={open}
+        sx={{
+          mt: 4,
+          height: 32,
+          width: '100%',
+          borderRadius: 2
+        }}
+      >
+        <Typography
+          variant="subtitle2"
+          fontSize={14}
+          sx={{ color: 'secondary.main' }}
         >
-          <Typography
-            variant="subtitle2"
-            fontSize={14}
-            sx={{ color: 'secondary.main' }}
-          >
-            {t('Upload file')}
-          </Typography>
-        </Button>
-      )}
+          {t('Upload file')}
+        </Typography>
+      </Button>
     </Stack>
   )
 }
