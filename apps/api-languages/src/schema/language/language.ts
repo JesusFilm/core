@@ -23,7 +23,9 @@ builder.prismaObject('AudioPreview', {
     language: t.relation('language'),
     value: t.exposeString('value'),
     duration: t.exposeInt('duration'),
-    size: t.exposeInt('size')
+    size: t.exposeInt('size'),
+    bitrate: t.exposeInt('bitrate'),
+    codec: t.exposeString('codec')
   })
 })
 
@@ -62,7 +64,38 @@ export const Language = builder.prismaObject('Language', {
       }
     }),
     countryLanguages: t.relation('countryLanguages'),
-    audioPreview: t.relation('audioPreview', { nullable: true })
+    audioPreview: t.relation('audioPreview', { nullable: true }),
+    primaryCountryId: t.string({
+      nullable: true,
+      resolve: async (parent) => {
+        const primaryCountryLanguage = await prisma.countryLanguage.findFirst({
+          where: {
+            languageId: parent.id,
+            primary: true
+          },
+          orderBy: {
+            speakers: 'desc'
+          }
+        })
+        return primaryCountryLanguage?.countryId ?? null
+      }
+    }),
+    speakerCount: t.int({
+      resolve: async (parent) => {
+        const result = await prisma.countryLanguage.aggregate({
+          where: { languageId: parent.id },
+          _sum: { speakers: true }
+        })
+        return result._sum.speakers ?? 0
+      }
+    }),
+    countriesCount: t.int({
+      resolve: async (parent) => {
+        return await prisma.countryLanguage.count({
+          where: { languageId: parent.id }
+        })
+      }
+    })
   })
 })
 
@@ -112,6 +145,19 @@ builder.queryFields((t) => ({
         where: filter,
         skip: offset ?? undefined,
         take: limit ?? undefined
+      })
+    }
+  }),
+
+  languagesCount: t.int({
+    args: { where: t.arg({ type: LanguagesFilter, required: false }) },
+    resolve: async (_parent, { where }) => {
+      const filter: Prisma.LanguageWhereInput = {
+        hasVideos: true
+      }
+      if (where?.ids != null) filter.id = { in: where.ids }
+      return await prisma.language.count({
+        where: filter
       })
     }
   })
