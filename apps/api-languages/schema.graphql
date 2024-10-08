@@ -33,6 +33,8 @@ type Country
   name(languageId: ID, primary: Boolean): [CountryName!]!
   continent: Continent!
   countryLanguages: [CountryLanguage!]!
+  languageCount: Int!
+  languageHavingMediaCount: Int!
 }
 
 type CountryLanguage {

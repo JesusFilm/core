@@ -1979,6 +1979,8 @@ type Country @join__type(graph: LANGUAGES, key: "id")  {
   name(languageId: ID, primary: Boolean) : [CountryName!]!
   continent: Continent!
   countryLanguages: [CountryLanguage!]!
+  languageCount: Int!
+  languageHavingMediaCount: Int!
 }
 
 type CountryLanguage @join__type(graph: LANGUAGES)  {

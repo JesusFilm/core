@@ -23,7 +23,7 @@ const GET_COUNTRY = graphql(`
       longitude
       flagPngSrc
       flagWebpSrc
-      name {
+      name (languageId: "529") {
         value
       }
       continent {
@@ -31,9 +31,8 @@ const GET_COUNTRY = graphql(`
           value
         }
       }
-      # TODO: Add these fields to the GraphQL schema if not already present
-      # languageCount
-      # languageHavingMediaCount
+      languageCount
+      languageHavingMediaCount
     }
   }
 `)
@@ -75,12 +74,14 @@ export async function GET(
 
   const response = {
     countryId,
+    name: data.country.name?.[0]?.value ?? '',
+    continentName: data.country.continent?.name?.[0]?.value ?? '',
+    metadataLanguageTag: 'en',
     longitude: data.country.longitude,
     latitude: data.country.latitude,
     counts: {
       languageCount: {
-        // TODO:
-        // value: data.country.languageCount,
+        value: data.country.languageCount,
         description: "Number of spoken languages"
       },
       population: {
@@ -88,8 +89,7 @@ export async function GET(
         description: "Country population"
       },
       languageHavingMediaCount: {
-        // TODO:
-        // value: data.country.languageHavingMediaCount,
+        value: data.country.languageHavingMediaCount,
         description: "Number of languages having media"
       }
     },
@@ -99,11 +99,6 @@ export async function GET(
         webpLossy50: data.country.flagWebpSrc
       }
     },
-    name: data.country.name[0].value,
-    nameNative: data.country.name[1]?.value ?? data.country.name[0].value,
-    continent: data.country.continent.name[0].value,
-    // TODO: default to en pull from querystrings
-    metadataLanguageTag: '',
     _links: {
       self: {
         href: `http://api.arclight.org/v2/media-countries/${countryId}?${queryString}`

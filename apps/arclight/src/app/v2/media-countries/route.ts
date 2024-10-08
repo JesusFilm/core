@@ -24,17 +24,16 @@ query Country {
     longitude
     flagPngSrc
     flagWebpSrc
-    name {
+    name (languageId: "529") {
       value
-      primary
     }
     continent {
       name {
         value
       }
     }
-    # languageCount
-    # languageHavingMediaCount
+    languageCount
+    languageHavingMediaCount
   }
 }
 `)
@@ -74,12 +73,13 @@ export async function GET(request: NextRequest): Promise<Response> {
 
   const mediaCountries = data.countries.slice(offset, offset + limit).map((country) => ({
     countryId: country.id,
+    name: country.name?.[0]?.value ?? '',
+    continentName: country.continent?.name?.[0]?.value ?? '',
     longitude: country.longitude,
     latitude: country.latitude,
     counts: {
       languageCount: {
-        // TODO: implement
-        // value: country.languageCount,
+        value: country.languageCount,
         description: "Number of spoken languages"
       },
       population: {
@@ -87,8 +87,7 @@ export async function GET(request: NextRequest): Promise<Response> {
         description: "Country population"
       },
       languageHavingMediaCount: {
-        // TODO: Implement
-        // value: country.languageHavingMediaCount,
+        value: country.languageHavingMediaCount,
         description: "Number of languages having media"
       }
     },
@@ -113,9 +112,6 @@ export async function GET(request: NextRequest): Promise<Response> {
     limit,
     pages: totalPages,
     total: totalCountries,
-    _embedded: {
-      mediaCountries
-    },
     _links: {
       self: {
         href: `http://api.arclight.org/v2/media-countries?${queryString}`
@@ -129,6 +125,9 @@ export async function GET(request: NextRequest): Promise<Response> {
       next: page < totalPages ? {
         href: `http://api.arclight.org/v2/media-countries?${nextQueryString}`
       } : undefined
+    },
+    _embedded: {
+      mediaCountries
     }
   }
 
