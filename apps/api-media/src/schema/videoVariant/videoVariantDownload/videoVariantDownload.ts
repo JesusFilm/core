@@ -20,7 +20,7 @@ builder.prismaObject('VideoVariantDownload', {
 })
 
 builder.mutationFields((t) => ({
-  createVideoVariantDownload: t.prismaField({
+  videoVariantDownloadCreate: t.prismaField({
     type: 'VideoVariantDownload',
     args: {
       input: t.arg({ type: VideoVariantDownloadCreateInput, required: true })
@@ -37,7 +37,7 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  updateVideoVariantDownload: t.prismaField({
+  videoVariantDownloadUpdate: t.prismaField({
     type: 'VideoVariantDownload',
     args: {
       input: t.arg({ type: VideoVariantDownloadUpdateInput, required: true })
@@ -59,7 +59,7 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  deleteVideoVariantDownload: t.prismaField({
+  videoVariantDownloadDelete: t.prismaField({
     type: 'VideoVariantDownload',
     args: {
       id: t.arg.id({ required: true })
