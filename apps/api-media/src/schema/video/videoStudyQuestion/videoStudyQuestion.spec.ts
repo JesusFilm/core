@@ -33,7 +33,7 @@ describe('videoStudyQuestion', () => {
         mutation CreateVideoStudyQuestion(
           $input: VideoStudyQuestionCreateInput!
         ) {
-          createVideoStudyQuestion(input: $input) {
+          videoStudyQuestionCreate(input: $input) {
             id
           }
         }
@@ -80,7 +80,7 @@ describe('videoStudyQuestion', () => {
             }
           }
         })
-        expect(result).toHaveProperty('data.createVideoStudyQuestion', {
+        expect(result).toHaveProperty('data.videoStudyQuestionCreate', {
           id: 'id'
         })
         expect(updateOrderCreate).toHaveBeenCalled()
@@ -105,12 +105,12 @@ describe('videoStudyQuestion', () => {
       })
     })
 
-    describe('updateVideoStudyQuestion', () => {
+    describe('videoStudyQuestionUpdate', () => {
       const UPDATE_VIDEO_STUDY_QUESTION_MUTATION = graphql(`
         mutation UpdateVideoStudyQuestion(
           $input: VideoStudyQuestionUpdateInput!
         ) {
-          updateVideoStudyQuestion(input: $input) {
+          videoStudyQuestionUpdate(input: $input) {
             id
           }
         }
@@ -157,7 +157,7 @@ describe('videoStudyQuestion', () => {
           }
         })
         expect(updateOrderUpdate).toHaveBeenCalled()
-        expect(result).toHaveProperty('data.updateVideoStudyQuestion', {
+        expect(result).toHaveProperty('data.videoStudyQuestionUpdate', {
           id: 'id'
         })
       })
@@ -240,10 +240,10 @@ describe('videoStudyQuestion', () => {
       })
     })
 
-    describe('deleteVideoStudyQuestion', () => {
+    describe('videoStudyQuestionDelete', () => {
       const DELETE_VIDEO_STUDY_QUESTION_MUTATION = graphql(`
         mutation DeleteVideoStudyQuestion($id: ID!) {
-          deleteVideoStudyQuestion(id: $id) {
+          videoStudyQuestionDelete(id: $id) {
             id
           }
         }
@@ -283,7 +283,7 @@ describe('videoStudyQuestion', () => {
           }
         })
         expect(updateOrderDelete).toHaveBeenCalled()
-        expect(result).toHaveProperty('data.deleteVideoStudyQuestion', {
+        expect(result).toHaveProperty('data.videoStudyQuestionDelete', {
           id: 'id'
         })
       })

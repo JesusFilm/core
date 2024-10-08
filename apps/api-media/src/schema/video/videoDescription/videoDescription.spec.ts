@@ -16,10 +16,10 @@ describe('videoDescription', () => {
   })
 
   describe('mutations', () => {
-    describe('createVideoDescription', () => {
+    describe('videoDescriptionCreate', () => {
       const CREATE_VIDEO_DESCRIPTION_MUTATION = graphql(`
         mutation CreateVideoDescription($input: VideoTranslationCreateInput!) {
-          createVideoDescription(input: $input) {
+          videoDescriptionCreate(input: $input) {
             id
           }
         }
@@ -50,7 +50,7 @@ describe('videoDescription', () => {
             }
           }
         })
-        expect(result).toHaveProperty('data.createVideoDescription', {
+        expect(result).toHaveProperty('data.videoDescriptionCreate', {
           id: 'id'
         })
       })
@@ -72,10 +72,10 @@ describe('videoDescription', () => {
       })
     })
 
-    describe('updateVideoDescription', () => {
+    describe('videoDescriptionUpdate', () => {
       const UPDATE_VIDEO_DESCRIPTION_MUTATION = graphql(`
         mutation UpdateVideoDescription($input: VideoTranslationUpdateInput!) {
-          updateVideoDescription(input: $input) {
+          videoDescriptionUpdate(input: $input) {
             id
           }
         }
@@ -105,7 +105,7 @@ describe('videoDescription', () => {
             }
           }
         })
-        expect(result).toHaveProperty('data.updateVideoDescription', {
+        expect(result).toHaveProperty('data.videoDescriptionUpdate', {
           id: 'id'
         })
       })
@@ -126,10 +126,10 @@ describe('videoDescription', () => {
       })
     })
 
-    describe('deleteVideoDescription', () => {
+    describe('videoDescriptionDelete', () => {
       const DELETE_VIDEO_DESCRIPTION_MUTATION = graphql(`
         mutation DeleteVideoDescription($id: ID!) {
-          deleteVideoDescription(id: $id) {
+          videoDescriptionDelete(id: $id) {
             id
           }
         }
@@ -154,7 +154,7 @@ describe('videoDescription', () => {
             id: 'id'
           }
         })
-        expect(result).toHaveProperty('data.deleteVideoDescription', {
+        expect(result).toHaveProperty('data.videoDescriptionDelete', {
           id: 'id'
         })
       })

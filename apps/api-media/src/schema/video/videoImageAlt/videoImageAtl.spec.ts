@@ -16,10 +16,10 @@ describe('videoImageAlt', () => {
   })
 
   describe('mutations', () => {
-    describe('createVideoImageAlt', () => {
+    describe('videoImageAltCreate', () => {
       const CREATE_VIDEO_IMAGE_ALT_MUTATION = graphql(`
         mutation CreateVideoImageAlt($input: VideoTranslationCreateInput!) {
-          createVideoImageAlt(input: $input) {
+          videoImageAltCreate(input: $input) {
             id
           }
         }
@@ -50,7 +50,7 @@ describe('videoImageAlt', () => {
             }
           }
         })
-        expect(result).toHaveProperty('data.createVideoImageAlt', {
+        expect(result).toHaveProperty('data.videoImageAltCreate', {
           id: 'id'
         })
       })
@@ -72,10 +72,10 @@ describe('videoImageAlt', () => {
       })
     })
 
-    describe('updateVideoImageAlt', () => {
+    describe('videoImageAltUpdate', () => {
       const UPDATE_VIDEO_IMAGE_ALT_MUTATION = graphql(`
         mutation UpdateVideoImageAlt($input: VideoTranslationUpdateInput!) {
-          updateVideoImageAlt(input: $input) {
+          videoImageAltUpdate(input: $input) {
             id
           }
         }
@@ -105,7 +105,7 @@ describe('videoImageAlt', () => {
             }
           }
         })
-        expect(result).toHaveProperty('data.updateVideoImageAlt', {
+        expect(result).toHaveProperty('data.videoImageAltUpdate', {
           id: 'id'
         })
       })
@@ -126,10 +126,10 @@ describe('videoImageAlt', () => {
       })
     })
 
-    describe('deleteVideoImageAlt', () => {
+    describe('videoImageAltDelete', () => {
       const DELETE_VIDEO_IMAGE_ALT_MUTATION = graphql(`
         mutation DeleteVideoImageAlt($id: ID!) {
-          deleteVideoImageAlt(id: $id) {
+          videoImageAltDelete(id: $id) {
             id
           }
         }
@@ -154,7 +154,7 @@ describe('videoImageAlt', () => {
             id: 'id'
           }
         })
-        expect(result).toHaveProperty('data.deleteVideoImageAlt', {
+        expect(result).toHaveProperty('data.videoImageAltDelete', {
           id: 'id'
         })
       })

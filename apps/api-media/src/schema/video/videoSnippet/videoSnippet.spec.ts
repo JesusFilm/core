@@ -16,10 +16,10 @@ describe('videoSnippet', () => {
   })
 
   describe('mutations', () => {
-    describe('createVideoSnippet', () => {
+    describe('videoSnippetCreate', () => {
       const CREATE_VIDEO_SNIPPET_MUTATION = graphql(`
         mutation CreateVideoSnippet($input: VideoTranslationCreateInput!) {
-          createVideoSnippet(input: $input) {
+          videoSnippetCreate(input: $input) {
             id
           }
         }
@@ -51,7 +51,7 @@ describe('videoSnippet', () => {
           }
         })
         expect(result).toHaveProperty('data', {
-          createVideoSnippet: {
+          videoSnippetCreate: {
             id: 'id'
           }
         })
@@ -74,10 +74,10 @@ describe('videoSnippet', () => {
       })
     })
 
-    describe('updateVideoSnippet', () => {
+    describe('videoSnippetUpdate', () => {
       const UPDATE_VIDEO_SNIPPET_MUTATION = graphql(`
         mutation UpdateVideoSnippet($input: VideoTranslationUpdateInput!) {
-          updateVideoSnippet(input: $input) {
+          videoSnippetUpdate(input: $input) {
             id
           }
         }
@@ -107,7 +107,7 @@ describe('videoSnippet', () => {
             }
           }
         })
-        expect(result).toHaveProperty('data.updateVideoSnippet', {
+        expect(result).toHaveProperty('data.videoSnippetUpdate', {
           id: 'id'
         })
       })
@@ -128,10 +128,10 @@ describe('videoSnippet', () => {
       })
     })
 
-    describe('deleteVideoSnippet', () => {
+    describe('videoSnippetDelete', () => {
       const DELETE_VIDEO_SNIPPET_MUTATION = graphql(`
         mutation DeleteVideoSnippet($id: ID!) {
-          deleteVideoSnippet(id: $id) {
+          videoSnippetDelete(id: $id) {
             id
           }
         }
@@ -156,7 +156,7 @@ describe('videoSnippet', () => {
             id: 'id'
           }
         })
-        expect(result).toHaveProperty('data.deleteVideoSnippet', {
+        expect(result).toHaveProperty('data.videoSnippetDelete', {
           id: 'id'
         })
       })

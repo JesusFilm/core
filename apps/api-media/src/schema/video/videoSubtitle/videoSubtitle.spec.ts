@@ -15,10 +15,10 @@ describe('videoSubtitle', () => {
   })
 
   describe('mutations', () => {
-    describe('createVideoSubtitle', () => {
+    describe('videoSubtitleCreate', () => {
       const CREATE_VIDEO_SUBTITLE_MUTATION = graphql(`
         mutation CreateVideoSubtitle($input: VideoSubtitleCreateInput!) {
-          createVideoSubtitle(input: $input) {
+          videoSubtitleCreate(input: $input) {
             id
           }
         }
@@ -53,7 +53,7 @@ describe('videoSubtitle', () => {
             }
           }
         })
-        expect(result).toHaveProperty('data.createVideoSubtitle', {
+        expect(result).toHaveProperty('data.videoSubtitleCreate', {
           id: 'id'
         })
       })
@@ -66,6 +66,125 @@ describe('videoSubtitle', () => {
               id: 'id',
               edition: 'edition',
               videoId: 'videoId',
+              vttSrc: 'vttSrc',
+              srtSrc: 'srtSrc',
+              primary: true,
+              languageId: 'languageId'
+            }
+          }
+        })
+        expect(result).toHaveProperty('data', null)
+      })
+    })
+
+    describe('videoSubtitleDelete', () => {
+      const DELETE_VIDEO_SUBTITLE_MUTATION = graphql(`
+        mutation DeleteVideoSubtitle($id: ID!) {
+          videoSubtitleDelete(id: $id) {
+            id
+          }
+        }
+      `)
+
+      it('should delete video subtitle', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.videoSubtitle.delete.mockResolvedValue({
+          id: 'id',
+          videoId: 'videoId',
+          edition: 'edition',
+          vttSrc: 'vttSrc',
+          srtSrc: 'srtSrc',
+          primary: true,
+          languageId: 'languageId'
+        })
+        const result = await authClient({
+          document: DELETE_VIDEO_SUBTITLE_MUTATION,
+          variables: {
+            id: 'id'
+          }
+        })
+        expect(prismaMock.videoSubtitle.delete).toHaveBeenCalledWith({
+          where: { id: 'id' }
+        })
+        expect(result).toHaveProperty('data.videoSubtitleDelete', {
+          id: 'id'
+        })
+      })
+
+      it('should throw if not publisher', async () => {
+        const result = await authClient({
+          document: DELETE_VIDEO_SUBTITLE_MUTATION,
+          variables: {
+            id: 'id'
+          }
+        })
+        expect(result).toHaveProperty('data', null)
+      })
+    })
+
+    describe('videoSubtitleUpdate', () => {
+      const UPDATE_VIDEO_SUBTITLE_MUTATION = graphql(`
+        mutation UpdateVideoSubtitle($input: VideoSubtitleUpdateInput!) {
+          videoSubtitleUpdate(input: $input) {
+            id
+          }
+        }
+      `)
+
+      it('should update video subtitle', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.videoSubtitle.update.mockResolvedValue({
+          id: 'id',
+          videoId: 'videoId',
+          edition: 'edition',
+          vttSrc: 'vttSrc',
+          srtSrc: 'srtSrc',
+          primary: true,
+          languageId: 'languageId'
+        })
+        const result = await authClient({
+          document: UPDATE_VIDEO_SUBTITLE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              edition: 'edition',
+              vttSrc: 'vttSrc',
+              srtSrc: 'srtSrc',
+              primary: true,
+              languageId: 'languageId'
+            }
+          }
+        })
+        expect(prismaMock.videoSubtitle.update).toHaveBeenCalledWith({
+          where: { id: 'id' },
+          data: {
+            edition: 'edition',
+            vttSrc: 'vttSrc',
+            srtSrc: 'srtSrc',
+            primary: true,
+            languageId: 'languageId'
+          }
+        })
+        expect(result).toHaveProperty('data.videoSubtitleUpdate', {
+          id: 'id'
+        })
+      })
+
+      it('should throw if not publisher', async () => {
+        const result = await authClient({
+          document: UPDATE_VIDEO_SUBTITLE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              edition: 'edition',
               vttSrc: 'vttSrc',
               srtSrc: 'srtSrc',
               primary: true,

@@ -16,10 +16,10 @@ describe('videoTitle', () => {
   })
 
   describe('mutations', () => {
-    describe('createVideoTitle', () => {
+    describe('videoTitleCreate', () => {
       const CREATE_VIDEO_TITLE_MUTATION = graphql(`
         mutation CreateVideoTitle($input: VideoTranslationCreateInput!) {
-          createVideoTitle(input: $input) {
+          videoTitleCreate(input: $input) {
             id
           }
         }
@@ -59,7 +59,7 @@ describe('videoTitle', () => {
             languageId: 'languageId'
           }
         })
-        expect(result).toHaveProperty('data.createVideoTitle', {
+        expect(result).toHaveProperty('data.videoTitleCreate', {
           id: 'id'
         })
       })
@@ -81,10 +81,10 @@ describe('videoTitle', () => {
       })
     })
 
-    describe('updateVideoTitle', () => {
+    describe('videoTitleUpdate', () => {
       const UPDATE_VIDEO_TITLE_MUTATION = graphql(`
         mutation UpdateVideoTitle($input: VideoTranslationUpdateInput!) {
-          updateVideoTitle(input: $input) {
+          videoTitleUpdate(input: $input) {
             id
           }
         }
@@ -122,7 +122,7 @@ describe('videoTitle', () => {
             languageId: 'languageId'
           }
         })
-        expect(result).toHaveProperty('data.updateVideoTitle', {
+        expect(result).toHaveProperty('data.videoTitleUpdate', {
           id: 'id'
         })
       })
@@ -143,10 +143,10 @@ describe('videoTitle', () => {
       })
     })
 
-    describe('deleteVideoTitle', () => {
+    describe('videoTitleDelete', () => {
       const DELETE_VIDEO_TITLE_MUTATION = graphql(`
         mutation DeleteVideoTitle($id: ID!) {
-          deleteVideoTitle(id: $id) {
+          videoTitleDelete(id: $id) {
             id
           }
         }
@@ -174,7 +174,7 @@ describe('videoTitle', () => {
         expect(prismaMock.videoTitle.delete).toHaveBeenCalledWith({
           where: { id: 'id' }
         })
-        expect(result).toHaveProperty('data.deleteVideoTitle', {
+        expect(result).toHaveProperty('data.videoTitleDelete', {
           id: 'id'
         })
       })

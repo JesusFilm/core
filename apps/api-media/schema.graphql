@@ -103,26 +103,26 @@ type Mutation {
   deleteCloudflareVideo(id: ID!): Boolean!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!
-  createVideo(input: VideoCreateInput!): Video!
+  videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
-  createVideoDescription(input: VideoTranslationCreateInput!): VideoDescription!
-  updateVideoDescription(input: VideoTranslationUpdateInput!): VideoDescription!
-  deleteVideoDescription(id: ID!): VideoDescription!
-  createVideoImageAlt(input: VideoTranslationCreateInput!): VideoImageAlt!
-  updateVideoImageAlt(input: VideoTranslationUpdateInput!): VideoImageAlt!
-  deleteVideoImageAlt(id: ID!): VideoImageAlt!
-  createVideoSnippet(input: VideoTranslationCreateInput!): VideoSnippet!
-  updateVideoSnippet(input: VideoTranslationUpdateInput!): VideoSnippet!
-  deleteVideoSnippet(id: ID!): VideoSnippet!
-  createVideoStudyQuestion(input: VideoStudyQuestionCreateInput!): VideoStudyQuestion!
-  updateVideoStudyQuestion(input: VideoStudyQuestionUpdateInput!): VideoStudyQuestion!
-  deleteVideoStudyQuestion(id: ID!): VideoStudyQuestion!
-  createVideoSubtitle(input: VideoSubtitleCreateInput!): VideoSubtitle!
-  updateVideoSubtitle(input: VideoSubtitleUpdateInput!): VideoSubtitle!
-  deleteVideoSubtitle(id: ID!): VideoSubtitle!
-  createVideoTitle(input: VideoTranslationCreateInput!): VideoTitle!
-  updateVideoTitle(input: VideoTranslationUpdateInput!): VideoTitle!
-  deleteVideoTitle(id: ID!): VideoTitle!
+  videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
+  videoDescriptionUpdate(input: VideoTranslationUpdateInput!): VideoDescription!
+  videoDescriptionDelete(id: ID!): VideoDescription!
+  videoImageAltCreate(input: VideoTranslationCreateInput!): VideoImageAlt!
+  videoImageAltUpdate(input: VideoTranslationUpdateInput!): VideoImageAlt!
+  videoImageAltDelete(id: ID!): VideoImageAlt!
+  videoSnippetCreate(input: VideoTranslationCreateInput!): VideoSnippet!
+  videoSnippetUpdate(input: VideoTranslationUpdateInput!): VideoSnippet!
+  videoSnippetDelete(id: ID!): VideoSnippet!
+  videoStudyQuestionCreate(input: VideoStudyQuestionCreateInput!): VideoStudyQuestion!
+  videoStudyQuestionUpdate(input: VideoStudyQuestionUpdateInput!): VideoStudyQuestion!
+  videoStudyQuestionDelete(id: ID!): VideoStudyQuestion!
+  videoSubtitleCreate(input: VideoSubtitleCreateInput!): VideoSubtitle!
+  videoSubtitleUpdate(input: VideoSubtitleUpdateInput!): VideoSubtitle!
+  videoSubtitleDelete(id: ID!): VideoSubtitle!
+  videoTitleCreate(input: VideoTranslationCreateInput!): VideoTitle!
+  videoTitleUpdate(input: VideoTranslationUpdateInput!): VideoTitle!
+  videoTitleDelete(id: ID!): VideoTitle!
   createVideoVariant(input: VideoVariantCreateInput!): VideoVariant!
   updateVideoVariant(input: VideoVariantUpdateInput!): VideoVariant!
   deleteVideoVariant(id: ID!): VideoVariant!
@@ -388,6 +388,8 @@ input VideoStudyQuestionCreateInput {
   primary: Boolean!
   languageId: String!
   crowdInId: String
+
+  """index from 1"""
   order: Int!
 }
 
@@ -397,6 +399,8 @@ input VideoStudyQuestionUpdateInput {
   primary: Boolean
   languageId: String
   crowdInId: String
+
+  """index from 1"""
   order: Int
 }
 

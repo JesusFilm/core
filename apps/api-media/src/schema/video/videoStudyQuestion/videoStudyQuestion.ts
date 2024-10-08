@@ -24,7 +24,7 @@ builder.prismaObject('VideoStudyQuestion', {
 })
 
 builder.mutationFields((t) => ({
-  createVideoStudyQuestion: t.prismaField({
+  videoStudyQuestionCreate: t.prismaField({
     type: 'VideoStudyQuestion',
     args: {
       input: t.arg({ type: VideoStudyQuestionCreateInput, required: true })
@@ -49,7 +49,7 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  updateVideoStudyQuestion: t.prismaField({
+  videoStudyQuestionUpdate: t.prismaField({
     type: 'VideoStudyQuestion',
     args: {
       input: t.arg({ type: VideoStudyQuestionUpdateInput, required: true })
@@ -90,7 +90,7 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  deleteVideoStudyQuestion: t.prismaField({
+  videoStudyQuestionDelete: t.prismaField({
     type: 'VideoStudyQuestion',
     args: {
       id: t.arg.id({ required: true })

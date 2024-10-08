@@ -391,26 +391,26 @@ type Mutation @join__type(graph: ANALYTICS)  @join__type(graph: JOURNEYS)  @join
   deleteCloudflareVideo(id: ID!) : Boolean! @join__field(graph: MEDIA) 
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!) : CloudflareImage! @join__field(graph: MEDIA)  @deprecated(reason: "use createCloudflareImageFromPrompt") 
   triggerUnsplashDownload(url: String!) : Boolean! @join__field(graph: MEDIA) 
-  createVideo(input: VideoCreateInput!) : Video! @join__field(graph: MEDIA) 
+  videoCreate(input: VideoCreateInput!) : Video! @join__field(graph: MEDIA) 
   videoUpdate(input: VideoUpdateInput!) : Video! @join__field(graph: MEDIA) 
-  createVideoDescription(input: VideoTranslationCreateInput!) : VideoDescription! @join__field(graph: MEDIA) 
-  updateVideoDescription(input: VideoTranslationUpdateInput!) : VideoDescription! @join__field(graph: MEDIA) 
-  deleteVideoDescription(id: ID!) : VideoDescription! @join__field(graph: MEDIA) 
-  createVideoImageAlt(input: VideoTranslationCreateInput!) : VideoImageAlt! @join__field(graph: MEDIA) 
-  updateVideoImageAlt(input: VideoTranslationUpdateInput!) : VideoImageAlt! @join__field(graph: MEDIA) 
-  deleteVideoImageAlt(id: ID!) : VideoImageAlt! @join__field(graph: MEDIA) 
-  createVideoSnippet(input: VideoTranslationCreateInput!) : VideoSnippet! @join__field(graph: MEDIA) 
-  updateVideoSnippet(input: VideoTranslationUpdateInput!) : VideoSnippet! @join__field(graph: MEDIA) 
-  deleteVideoSnippet(id: ID!) : VideoSnippet! @join__field(graph: MEDIA) 
-  createVideoStudyQuestion(input: VideoStudyQuestionCreateInput!) : VideoStudyQuestion! @join__field(graph: MEDIA) 
-  updateVideoStudyQuestion(input: VideoStudyQuestionUpdateInput!) : VideoStudyQuestion! @join__field(graph: MEDIA) 
-  deleteVideoStudyQuestion(id: ID!) : VideoStudyQuestion! @join__field(graph: MEDIA) 
-  createVideoSubtitle(input: VideoSubtitleCreateInput!) : VideoSubtitle! @join__field(graph: MEDIA) 
-  updateVideoSubtitle(input: VideoSubtitleUpdateInput!) : VideoSubtitle! @join__field(graph: MEDIA) 
-  deleteVideoSubtitle(id: ID!) : VideoSubtitle! @join__field(graph: MEDIA) 
-  createVideoTitle(input: VideoTranslationCreateInput!) : VideoTitle! @join__field(graph: MEDIA) 
-  updateVideoTitle(input: VideoTranslationUpdateInput!) : VideoTitle! @join__field(graph: MEDIA) 
-  deleteVideoTitle(id: ID!) : VideoTitle! @join__field(graph: MEDIA) 
+  videoDescriptionCreate(input: VideoTranslationCreateInput!) : VideoDescription! @join__field(graph: MEDIA) 
+  videoDescriptionUpdate(input: VideoTranslationUpdateInput!) : VideoDescription! @join__field(graph: MEDIA) 
+  videoDescriptionDelete(id: ID!) : VideoDescription! @join__field(graph: MEDIA) 
+  videoImageAltCreate(input: VideoTranslationCreateInput!) : VideoImageAlt! @join__field(graph: MEDIA) 
+  videoImageAltUpdate(input: VideoTranslationUpdateInput!) : VideoImageAlt! @join__field(graph: MEDIA) 
+  videoImageAltDelete(id: ID!) : VideoImageAlt! @join__field(graph: MEDIA) 
+  videoSnippetCreate(input: VideoTranslationCreateInput!) : VideoSnippet! @join__field(graph: MEDIA) 
+  videoSnippetUpdate(input: VideoTranslationUpdateInput!) : VideoSnippet! @join__field(graph: MEDIA) 
+  videoSnippetDelete(id: ID!) : VideoSnippet! @join__field(graph: MEDIA) 
+  videoStudyQuestionCreate(input: VideoStudyQuestionCreateInput!) : VideoStudyQuestion! @join__field(graph: MEDIA) 
+  videoStudyQuestionUpdate(input: VideoStudyQuestionUpdateInput!) : VideoStudyQuestion! @join__field(graph: MEDIA) 
+  videoStudyQuestionDelete(id: ID!) : VideoStudyQuestion! @join__field(graph: MEDIA) 
+  videoSubtitleCreate(input: VideoSubtitleCreateInput!) : VideoSubtitle! @join__field(graph: MEDIA) 
+  videoSubtitleUpdate(input: VideoSubtitleUpdateInput!) : VideoSubtitle! @join__field(graph: MEDIA) 
+  videoSubtitleDelete(id: ID!) : VideoSubtitle! @join__field(graph: MEDIA) 
+  videoTitleCreate(input: VideoTranslationCreateInput!) : VideoTitle! @join__field(graph: MEDIA) 
+  videoTitleUpdate(input: VideoTranslationUpdateInput!) : VideoTitle! @join__field(graph: MEDIA) 
+  videoTitleDelete(id: ID!) : VideoTitle! @join__field(graph: MEDIA) 
   createVideoVariant(input: VideoVariantCreateInput!) : VideoVariant! @join__field(graph: MEDIA) 
   updateVideoVariant(input: VideoVariantUpdateInput!) : VideoVariant! @join__field(graph: MEDIA) 
   deleteVideoVariant(id: ID!) : VideoVariant! @join__field(graph: MEDIA) 
@@ -3674,6 +3674,9 @@ input VideoStudyQuestionCreateInput @join__type(graph: MEDIA)  {
   primary: Boolean!
   languageId: String!
   crowdInId: String
+  """
+  index from 1
+  """
   order: Int!
 }
 
@@ -3683,6 +3686,9 @@ input VideoStudyQuestionUpdateInput @join__type(graph: MEDIA)  {
   primary: Boolean
   languageId: String
   crowdInId: String
+  """
+  index from 1
+  """
   order: Int
 }
 
