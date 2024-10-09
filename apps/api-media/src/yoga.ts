@@ -10,7 +10,7 @@ import { initContextCache } from '@pothos/core'
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import get from 'lodash/get'
 
-import { getUserIdFromRequest } from '@core/yoga/firebaseClient/firebaseClient'
+import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { prisma } from './lib/prisma'
 import { schema } from './schema'
@@ -18,24 +18,24 @@ import { Context } from './schema/builder'
 
 export const cache = createInMemoryCache()
 
-export const yoga = createYoga({
+export const yoga = createYoga<Record<string, unknown>, Context>({
   schema,
-  context: async ({ request, params }) => {
+  context: async ({ params }) => {
     const payload = get(params, 'extensions.jwt.payload')
-    const userId = await getUserIdFromRequest(request, payload)
+    const user = getUserFromPayload(payload)
 
     return {
       ...initContextCache(),
-      userId,
+      user,
       currentRoles:
-        userId != null
+        user?.id != null
           ? (
               await prisma.userMediaRole.findUnique({
-                where: { userId }
+                where: { userId: user.id }
               })
-            )?.roles ?? null
-          : null
-    } satisfies Context
+            )?.roles ?? []
+          : []
+    }
   },
   plugins: [
     useForwardedJWT({}),

@@ -30,12 +30,12 @@ builder.queryFields((t) => ({
       offset: t.arg.int({ required: false }),
       limit: t.arg.int({ required: false })
     },
-    resolve: async (query, _root, { offset, limit }, { userId }) => {
-      if (userId == null) throw new Error('User not found')
+    resolve: async (query, _root, { offset, limit }, { user }) => {
+      if (user == null) throw new Error('User not found')
 
       return await prisma.cloudflareVideo.findMany({
         ...query,
-        where: { userId },
+        where: { userId: user.id },
         take: limit ?? undefined,
         skip: offset ?? undefined
       })
@@ -49,12 +49,12 @@ builder.queryFields((t) => ({
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
-    resolve: async (query, _root, { id }, { userId }) => {
-      if (userId == null) throw new Error('User not found')
+    resolve: async (query, _root, { id }, { user }) => {
+      if (user == null) throw new Error('User not found')
 
       const video = await prisma.cloudflareVideo.findFirstOrThrow({
         ...query,
-        where: { id, userId }
+        where: { id, userId: user.id }
       })
 
       if (!video.readyToStream) {
@@ -85,13 +85,13 @@ builder.mutationFields((t) => ({
       uploadLength: t.arg({ type: 'Int', required: true }),
       name: t.arg({ type: 'String', required: true })
     },
-    resolve: async (query, _root, { uploadLength, name }, { userId }) => {
-      if (userId == null) throw new Error('User not found')
+    resolve: async (query, _root, { uploadLength, name }, { user }) => {
+      if (user == null) throw new Error('User not found')
 
       const { id, uploadUrl } = await createVideoByDirectUpload(
         uploadLength,
         name,
-        userId
+        user.id
       )
 
       return await prisma.cloudflareVideo.create({
@@ -99,7 +99,7 @@ builder.mutationFields((t) => ({
         data: {
           id,
           uploadUrl,
-          userId,
+          userId: user.id,
           name
         }
       })
@@ -113,16 +113,16 @@ builder.mutationFields((t) => ({
     args: {
       url: t.arg({ type: 'String', required: true })
     },
-    resolve: async (query, _root, { url }, { userId }) => {
-      if (userId == null) throw new Error('User not found')
+    resolve: async (query, _root, { url }, { user }) => {
+      if (user == null) throw new Error('User not found')
 
-      const { uid: id } = await createVideoFromUrl(url, userId)
+      const { uid: id } = await createVideoFromUrl(url, user.id)
 
       return await prisma.cloudflareVideo.create({
         ...query,
         data: {
           id,
-          userId
+          userId: user.id
         }
       })
     }
@@ -134,11 +134,11 @@ builder.mutationFields((t) => ({
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
-    resolve: async (_root, { id }, { userId }) => {
-      if (userId == null) throw new Error('User not found')
+    resolve: async (_root, { id }, { user }) => {
+      if (user == null) throw new Error('User not found')
 
       await prisma.cloudflareVideo.findUniqueOrThrow({
-        where: { id, userId }
+        where: { id, userId: user.id }
       })
 
       await deleteVideo(id)
