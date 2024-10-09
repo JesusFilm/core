@@ -41,6 +41,11 @@ jobs:
         run: npx nx run ${{ inputs.TargetTests }}:${{ inputs.TargetAction }}
         env:
           DEPLOYMENT_URL: ${{ inputs.TargetAppUrl }}
+          PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
+          PLAYWRIGHT_PASSWORD: ${{ secrets.PLAYWRIGHT_PASSWORD }}
+          PLAYWRIGHT_USER: ${{ secrets.PLAYWRIGHT_USER }}
+          PLAYWRIGHT_TEAM_NAME: ${{ secrets.PLAYWRIGHT_TEAM_NAME }}
+          EXAMPLE_EMAIL_TOKEN: ${{ secrets.EXAMPLE_EMAIL_TOKEN }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
