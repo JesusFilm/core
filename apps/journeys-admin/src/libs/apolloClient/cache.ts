@@ -14,7 +14,6 @@ export const cache = (): InMemoryCache =>
       Block: [
         'ButtonBlock',
         'CardBlock',
-        'FormBlock',
         'GridContainerBlock',
         'GridItemBlock',
         'IconBlock',
@@ -47,6 +46,13 @@ export const cache = (): InMemoryCache =>
             merge(existing, incoming) {
               return [...(existing ?? []), ...incoming]
             }
+          },
+          adminJourney(_, { args, toReference }) {
+            if (args?.idType === 'databaseId' && args?.id != null)
+              return toReference({
+                __typename: 'Journey',
+                id: args.id
+              })
           }
         }
       },

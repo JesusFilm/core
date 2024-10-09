@@ -1,8 +1,5 @@
 import { ApolloProvider, NormalizedCacheObject, gql } from '@apollo/client'
-import type { UiState } from 'instantsearch.js'
-import type { RouterProps } from 'instantsearch.js/es/middlewares'
 import type { GetStaticProps } from 'next'
-import singletonRouter from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import type { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
@@ -13,12 +10,12 @@ import {
   type InstantSearchServerState,
   getServerState
 } from 'react-instantsearch'
-import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
 
 import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
 import i18nConfig from '../../next-i18next.config'
 import { WatchHomePage as VideoHomePage } from '../../src/components/WatchHomePage'
+import { createInstantSearchRouter } from '../../src/libs/algolia/instantSearchRouter/instantSearchRouter'
 import {
   createApolloClient,
   useApolloClient
@@ -38,36 +35,6 @@ export const GET_HOME_VIDEOS = gql`
 interface HomePageProps {
   initialApolloState?: NormalizedCacheObject
   serverState?: InstantSearchServerState
-}
-
-export const nextRouter: RouterProps = {
-  // Manages the URL paramers with instant search state
-  router: createInstantSearchRouterNext({
-    serverUrl: process.env.NEXT_PUBLIC_WATCH_URL,
-    singletonRouter,
-    routerOptions: {
-      cleanUrlOnDispose: false
-    }
-  }),
-  stateMapping: {
-    stateToRoute(uiState) {
-      const indexUiState = uiState[process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? '']
-
-      const stateRoute = {
-        query: indexUiState.query,
-        refinementList: {
-          languageEnglishName: indexUiState.refinementList?.languageEnglishName
-        }
-      } as unknown as UiState
-
-      return stateRoute
-    },
-    routeToState(routeState) {
-      return {
-        [process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? '']: routeState
-      }
-    }
-  }
 }
 
 function HomePage({
@@ -90,7 +57,7 @@ function HomePage({
           stalledSearchDelay={500}
           future={{ preserveSharedStateOnUnmount: true }}
           insights
-          routing={nextRouter}
+          routing={createInstantSearchRouter()}
         >
           <Configure ruleContexts={['home_page']} />
           <VideoHomePage />

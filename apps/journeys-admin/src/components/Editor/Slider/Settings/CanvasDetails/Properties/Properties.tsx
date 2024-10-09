@@ -1,15 +1,16 @@
+import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, ReactNode, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields as StepBlock } from '../../../../../../../__generated__/BlockFields'
-import { Drawer } from '../../Drawer'
+import { DrawerTitle } from '../../Drawer'
 import { CardTemplates } from '../../Drawer/CardTemplates/CardTemplates'
 
 const Card = dynamic(
@@ -83,14 +84,6 @@ const SignUp = dynamic(
   { ssr: false }
 )
 
-const Form = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Form" */ './blocks/Form'
-    ).then((mod) => mod.Form),
-  { ssr: false }
-)
-
 interface PropertiesProps {
   block?: TreeBlock
   step?: TreeBlock<StepBlock>
@@ -105,27 +98,24 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
 
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
-  let component
+  let component: ReactNode | undefined
   let title: string | undefined
+
+  if (selectedBlock?.__typename === 'StepBlock') {
+    const card = selectedBlock.children[0]
+    if (card?.children.length > 0 || !showCardTemplates) {
+      return <Properties block={card} step={selectedStep} />
+    }
+  }
+
   switch (selectedBlock?.__typename) {
     case 'CardBlock':
+      title = t('Card Properties')
       component = <Card {...selectedBlock} />
       break
-    case 'FormBlock':
-      title = t('Form Properties')
-      component = <Form {...selectedBlock} />
-      break
     case 'StepBlock': {
-      const card = selectedBlock.children[0]
-      if (card?.children.length > 0 || !showCardTemplates) {
-        title = t('Card Properties')
-        component = card != null && (
-          <Properties block={card} step={selectedStep} />
-        )
-      } else {
-        title = t('Card Templates')
-        component = <CardTemplates />
-      }
+      title = t('Card Templates')
+      component = <CardTemplates />
       break
     }
     case 'VideoBlock':
@@ -160,13 +150,10 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       title = t('Text Input Properties')
       component = <TextResponse {...selectedBlock} />
       break
-    default:
-      component = <></>
-      break
   }
 
   function onClose(): void {
-    const isCardTemplates = title === 'Card Templates'
+    const isCardTemplates = title === t('Card Templates')
     setShowCardTemplates(!isCardTemplates)
 
     if (!isCardTemplates)
@@ -176,11 +163,32 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       })
   }
 
-  return block == null && step == null ? (
-    <Drawer title={title} onClose={onClose}>
-      <Stack>{component}</Stack>
-    </Drawer>
-  ) : (
-    <Stack>{component}</Stack>
+  if (component == null) return <></>
+
+  return (
+    <Stack
+      component={Paper}
+      elevation={0}
+      sx={{
+        height: '100%',
+        borderRadius: 3,
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
+        overflow: 'hidden'
+      }}
+      border={1}
+      borderColor="divider"
+      data-testId="SettingsDrawer"
+    >
+      <DrawerTitle title={title} onClose={onClose} />
+      <Stack
+        data-testid="SettingsDrawerContent"
+        className="swiper-no-swiping"
+        flexGrow={1}
+        sx={{ overflow: 'auto' }}
+      >
+        {component}
+      </Stack>
+    </Stack>
   )
 }

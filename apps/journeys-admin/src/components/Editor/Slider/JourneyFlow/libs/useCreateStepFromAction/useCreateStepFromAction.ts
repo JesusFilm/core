@@ -98,11 +98,6 @@ export const STEP_BLOCK_DELETE_FROM_ACTION_WITHOUT_ACTION = gql`
           parentBlockId
         }
       }
-      ... on FormBlock {
-        action {
-          parentBlockId
-        }
-      }
       ... on VideoBlock {
         action {
           parentBlockId

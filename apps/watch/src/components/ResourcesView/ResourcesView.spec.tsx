@@ -5,6 +5,7 @@ import { RefinementListRenderState } from 'instantsearch.js/es/connectors/refine
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { useHits, useRefinementList, useSearchBox } from 'react-instantsearch'
 
+import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
 import { fetchCountryMock } from '@core/journeys/ui/SearchBar/data'
 
 import { resourceItems } from './ResourceSections/ResourceSection/data'
@@ -54,7 +55,9 @@ describe('ResourcesView', () => {
   it('should render interaction text', () => {
     render(
       <MockedProvider>
-        <ResourcesView />
+        <SearchBarProvider>
+          <ResourcesView />
+        </SearchBarProvider>
       </MockedProvider>
     )
     expect(screen.getByText('Resources for every')).toBeInTheDocument()
@@ -64,7 +67,9 @@ describe('ResourcesView', () => {
   it('should render searchbar', () => {
     render(
       <MockedProvider>
-        <ResourcesView />
+        <SearchBarProvider>
+          <ResourcesView />
+        </SearchBarProvider>
       </MockedProvider>
     )
     expect(screen.getByTestId('SearchBar')).toBeInTheDocument()
@@ -73,7 +78,9 @@ describe('ResourcesView', () => {
   it('should render resource sections', () => {
     render(
       <MockedProvider>
-        <ResourcesView />
+        <SearchBarProvider>
+          <ResourcesView />
+        </SearchBarProvider>
       </MockedProvider>
     )
     expect(screen.getByTestId('ResourceSections')).toBeInTheDocument()

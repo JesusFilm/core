@@ -1,6 +1,8 @@
 import { graphql } from 'gql.tada'
 import omit from 'lodash/omit'
 
+import { getUserFromPayload } from '@core/yoga/firebaseClient'
+
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 
@@ -8,23 +10,25 @@ import { findOrFetchUser } from './findOrFetchUser'
 import { user } from './user.mock'
 import { verifyUser } from './verifyUser'
 
-jest.mock('@core/yoga/firebaseClient', () => ({
-  getUserFromRequest: jest.fn().mockImplementation((request: Request) =>
-    request.headers.get('authorization') != null
-      ? {
-          id: '1',
-          userId: '1',
-          createdAt: new Date('2021-01-01T00:00:00.000Z'),
-          firstName: 'Amin',
-          lastName: 'One',
-          email: 'amin@email.com',
-          imageUrl: 'https://bit.ly/3Gth4',
-          emailVerified: false
-        }
-      : null
-  ),
-  impersonateUser: jest.fn().mockResolvedValue('1234')
-}))
+jest.mock('@core/yoga/firebaseClient', () => {
+  return {
+    __esModule: true,
+    getUserIdFromPayload: jest.fn().mockReturnValue('testUserId'),
+    getUserFromPayload: jest.fn().mockReturnValue({
+      id: 'testUserId',
+      firstName: 'Test',
+      lastName: 'User',
+      email: 'test@example.com',
+      emailVerified: true,
+      imageUrl: null
+    }),
+    impersonateUser: jest.fn().mockResolvedValue('1234')
+  }
+})
+
+const getUserFromPayloadMock = getUserFromPayload as jest.MockedFunction<
+  typeof getUserFromPayload
+>
 
 jest.mock('./findOrFetchUser', () => ({
   findOrFetchUser: jest.fn().mockResolvedValue({
@@ -79,18 +83,24 @@ describe('api-users', () => {
       const data = await authClient({
         document: ME_QUERY
       })
-      expect(findOrFetchUser).toHaveBeenCalledWith({}, '1', undefined)
+      expect(findOrFetchUser).toHaveBeenCalledWith({}, 'testUserId', undefined)
       expect(data).toHaveProperty(
         'data.me',
         omit(user, ['createdAt', 'userId'])
       )
     })
 
-    it('should return null when no current user', async () => {
-      const data = await client({
-        document: ME_QUERY
+    describe('when user is not found', () => {
+      beforeEach(() => {
+        getUserFromPayloadMock.mockReturnValueOnce(null)
       })
-      expect(data).toHaveProperty('data.me', null)
+
+      it('should return null when no current user', async () => {
+        const data = await client({
+          document: ME_QUERY
+        })
+        expect(data).toHaveProperty('data.me', null)
+      })
     })
   })
 
@@ -228,15 +238,25 @@ describe('api-users', () => {
       const data = await authClient({
         document: CREATE_VERIFICATION_REQUEST_MUTATION
       })
-      expect(verifyUser).toHaveBeenCalledWith('1', 'amin@email.com', undefined)
+      expect(verifyUser).toHaveBeenCalledWith(
+        'testUserId',
+        'test@example.com',
+        undefined
+      )
       expect(data).toHaveProperty('data.createVerificationRequest', true)
     })
 
-    it('should return null when no current user', async () => {
-      const data = await client({
-        document: CREATE_VERIFICATION_REQUEST_MUTATION
+    describe('when user is not found', () => {
+      beforeEach(() => {
+        getUserFromPayloadMock.mockReturnValueOnce(null)
       })
-      expect(data).toHaveProperty('data.createVerificationRequest', null)
+
+      it('should return null when no current user', async () => {
+        const data = await client({
+          document: CREATE_VERIFICATION_REQUEST_MUTATION
+        })
+        expect(data).toHaveProperty('data.createVerificationRequest', null)
+      })
     })
   })
 

@@ -1,1 +1,0 @@
-export { validateFormCredentials } from './validateFormCredentials'

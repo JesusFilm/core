@@ -1,11 +1,16 @@
 import {
+  useForwardedJWT,
+  useHmacSignatureValidation
+} from '@graphql-hive/gateway'
+import {
   createInMemoryCache,
   useResponseCache
 } from '@graphql-yoga/plugin-response-cache'
 import { initContextCache } from '@pothos/core'
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
+import get from 'lodash/get'
 
-import { getUserIdFromRequest } from '@core/yoga/firebaseClient/firebaseClient'
+import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { prisma } from './lib/prisma'
 import { schema } from './schema'
@@ -13,25 +18,32 @@ import { Context } from './schema/builder'
 
 export const cache = createInMemoryCache()
 
-export const yoga = createYoga({
+export const yoga = createYoga<Record<string, unknown>, Context>({
   schema,
-  context: async ({ request }) => {
-    const userId = await getUserIdFromRequest(request)
+  context: async ({ params }) => {
+    const payload = get(params, 'extensions.jwt.payload')
+    const user = getUserFromPayload(payload)
 
     return {
       ...initContextCache(),
-      userId,
+      user,
       currentRoles:
-        userId != null
+        user?.id != null
           ? (
               await prisma.userMediaRole.findUnique({
-                where: { userId }
+                where: { userId: user.id }
               })
-            )?.roles ?? null
-          : null
-    } satisfies Context
+            )?.roles ?? []
+          : []
+    }
   },
   plugins: [
+    useForwardedJWT({}),
+    process.env.NODE_ENV !== 'test'
+      ? useHmacSignatureValidation({
+          secret: process.env.GATEWAY_HMAC_SECRET ?? ''
+        })
+      : {},
     useReadinessCheck({
       endpoint: '/.well-known/apollo/server-health',
       check: async () => {

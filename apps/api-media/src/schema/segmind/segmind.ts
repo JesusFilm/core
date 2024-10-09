@@ -18,13 +18,13 @@ builder.mutationFields((t) => ({
       prompt: t.arg.string({ required: true }),
       model: t.arg({ type: SegmindModel, required: true })
     },
-    async resolve(query, _root, { prompt }, { userId }) {
+    async resolve(query, _root, { prompt }, { user }) {
       // We retired the segmind service in favor of Cloudflare Workers AI.
       // At the time of this migration, Cloudflare Workers AI is free for
       // image generation. This resolver remains intact for historical
       // reasons and should be removed in the future.
 
-      if (userId == null) throw new Error('User not found')
+      if (user == null) throw new Error('User not found')
 
       const image = await createImageFromResponse(
         await createImageFromText(prompt)
@@ -35,7 +35,7 @@ builder.mutationFields((t) => ({
         data: {
           id: image.id,
           uploaded: true,
-          userId
+          userId: user.id
         }
       })
     }

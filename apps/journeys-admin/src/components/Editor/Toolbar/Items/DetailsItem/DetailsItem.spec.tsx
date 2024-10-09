@@ -3,8 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-
-import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { DetailsItem } from './DetailsItem'
 
@@ -30,15 +29,10 @@ describe('DetailsItem', () => {
     jest.clearAllMocks()
   })
 
-  it('should open title description dialog', async () => {
-    const mockJourney: JourneyFields = {
-      id: 'journeyId',
-      title: 'Some title',
-      description: 'Some description'
-    } as unknown as JourneyFields
+  it('should open journey details dialog', async () => {
     render(
-      <MockedProvider>
-        <JourneyProvider value={{ journey: mockJourney }}>
+      <MockedProvider mocks={[]}>
+        <JourneyProvider value={{ journey: defaultJourney }}>
           <DetailsItem variant="menu-item" />
         </JourneyProvider>
       </MockedProvider>
@@ -46,13 +40,13 @@ describe('DetailsItem', () => {
 
     fireEvent.click(screen.getByText('Edit Details'))
     await waitFor(() =>
-      expect(screen.getByTestId('TitleDescriptionDialog')).toBeInTheDocument()
+      expect(screen.getByTestId('JourneyDetailsDialog')).toBeInTheDocument()
     )
     expect(screen.queryByRole('menuitem')).not.toBeInTheDocument()
     fireEvent.click(screen.getByText('Cancel'))
     await waitFor(() =>
       expect(
-        screen.queryByTestId('TitleDescriptionDialog')
+        screen.queryByTestId('JourneyDetailsDialog')
       ).not.toBeInTheDocument()
     )
   })
@@ -63,7 +57,7 @@ describe('DetailsItem', () => {
     fireEvent.click(screen.getByText('Edit Details'))
     expect(push).toHaveBeenCalledWith(
       {
-        query: { param: 'titleDescription' }
+        query: { param: 'journeyDetails' }
       },
       undefined,
       { shallow: true }

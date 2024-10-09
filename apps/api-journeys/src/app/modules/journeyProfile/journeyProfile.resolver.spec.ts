@@ -22,7 +22,6 @@ describe('JourneyProfileResolver', () => {
     userId: 'userId',
     acceptedTermsAt: new Date(),
     lastActiveTeamId: null,
-    onboardingFormCompletedAt: null,
     journeyFlowBackButtonClicked: null,
     plausibleJourneyFlowViewed: null,
     plausibleDashboardViewed: null
@@ -80,7 +79,6 @@ describe('JourneyProfileResolver', () => {
         userId: 'newUserId',
         acceptedTermsAt: new Date(),
         lastActiveTeamId: null,
-        onboardingFormCompletedAt: null,
         journeyFlowBackButtonClicked: null,
         plausibleJourneyFlowViewed: null,
         plausibleDashboardViewed: null
@@ -157,19 +155,6 @@ describe('JourneyProfileResolver', () => {
         where: { id: profile.id },
         data: {
           plausibleDashboardViewed: true
-        }
-      })
-    })
-  })
-
-  describe('journeyProfileOnboardingFormComplete', () => {
-    it('should update onboardingFormCompletedAt', async () => {
-      prismaService.journeyProfile.findUnique.mockResolvedValueOnce(profile)
-      await resolver.journeyProfileOnboardingFormComplete('userId')
-      expect(prismaService.journeyProfile.update).toHaveBeenCalledWith({
-        where: { id: profile.id },
-        data: {
-          onboardingFormCompletedAt: new Date('2021-02-18T00:00:00.000Z')
         }
       })
     })

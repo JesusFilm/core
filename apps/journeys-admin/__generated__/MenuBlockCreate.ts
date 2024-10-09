@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { StepBlockCreateInput, CardBlockCreateInput, TypographyBlockCreateInput, JourneyUpdateInput, ThemeMode, ThemeName, TypographyAlign, TypographyColor, TypographyVariant } from "./globalTypes";
+import { StepBlockCreateInput, CardBlockCreateInput, TypographyBlockCreateInput, ButtonBlockCreateInput, JourneyUpdateInput, ThemeMode, ThemeName, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: MenuBlockCreate
@@ -77,7 +77,7 @@ export interface MenuBlockCreate_card {
   fullscreen: boolean;
 }
 
-export interface MenuBlockCreate_typography {
+export interface MenuBlockCreate_heading {
   __typename: "TypographyBlock";
   id: string;
   parentBlockId: string | null;
@@ -86,6 +86,128 @@ export interface MenuBlockCreate_typography {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+}
+
+export interface MenuBlockCreate_subHeading {
+  __typename: "TypographyBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  align: TypographyAlign | null;
+  color: TypographyColor | null;
+  content: string;
+  variant: TypographyVariant | null;
+}
+
+export interface MenuBlockCreate_button1_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface MenuBlockCreate_button1_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export interface MenuBlockCreate_button1_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type MenuBlockCreate_button1_action = MenuBlockCreate_button1_action_NavigateToBlockAction | MenuBlockCreate_button1_action_LinkAction | MenuBlockCreate_button1_action_EmailAction;
+
+export interface MenuBlockCreate_button1 {
+  __typename: "ButtonBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+  buttonVariant: ButtonVariant | null;
+  buttonColor: ButtonColor | null;
+  size: ButtonSize | null;
+  startIconId: string | null;
+  endIconId: string | null;
+  action: MenuBlockCreate_button1_action | null;
+}
+
+export interface MenuBlockCreate_button2_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface MenuBlockCreate_button2_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export interface MenuBlockCreate_button2_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type MenuBlockCreate_button2_action = MenuBlockCreate_button2_action_NavigateToBlockAction | MenuBlockCreate_button2_action_LinkAction | MenuBlockCreate_button2_action_EmailAction;
+
+export interface MenuBlockCreate_button2 {
+  __typename: "ButtonBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+  buttonVariant: ButtonVariant | null;
+  buttonColor: ButtonColor | null;
+  size: ButtonSize | null;
+  startIconId: string | null;
+  endIconId: string | null;
+  action: MenuBlockCreate_button2_action | null;
+}
+
+export interface MenuBlockCreate_button3_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface MenuBlockCreate_button3_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+}
+
+export interface MenuBlockCreate_button3_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+}
+
+export type MenuBlockCreate_button3_action = MenuBlockCreate_button3_action_NavigateToBlockAction | MenuBlockCreate_button3_action_LinkAction | MenuBlockCreate_button3_action_EmailAction;
+
+export interface MenuBlockCreate_button3 {
+  __typename: "ButtonBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+  buttonVariant: ButtonVariant | null;
+  buttonColor: ButtonColor | null;
+  size: ButtonSize | null;
+  startIconId: string | null;
+  endIconId: string | null;
+  action: MenuBlockCreate_button3_action | null;
 }
 
 export interface MenuBlockCreate_journeyUpdate_menuStepBlock {
@@ -122,14 +244,22 @@ export interface MenuBlockCreate_journeyUpdate {
 export interface MenuBlockCreate {
   step: MenuBlockCreate_step;
   card: MenuBlockCreate_card;
-  typography: MenuBlockCreate_typography;
+  heading: MenuBlockCreate_heading;
+  subHeading: MenuBlockCreate_subHeading;
+  button1: MenuBlockCreate_button1;
+  button2: MenuBlockCreate_button2;
+  button3: MenuBlockCreate_button3;
   journeyUpdate: MenuBlockCreate_journeyUpdate;
 }
 
 export interface MenuBlockCreateVariables {
   journeyId: string;
-  stepBlockCreateInput: StepBlockCreateInput;
-  cardBlockCreateInput: CardBlockCreateInput;
-  typographyBlockCreateInput: TypographyBlockCreateInput;
+  stepInput: StepBlockCreateInput;
+  cardInput: CardBlockCreateInput;
+  headingInput: TypographyBlockCreateInput;
+  subHeadingInput: TypographyBlockCreateInput;
+  button1Input: ButtonBlockCreateInput;
+  button2Input: ButtonBlockCreateInput;
+  button3Input: ButtonBlockCreateInput;
   journeyUpdateInput: JourneyUpdateInput;
 }

@@ -6,8 +6,8 @@ import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
-import { TitleDescriptionDialog } from '../../TitleDescriptionDialog'
-import { Item } from '../Item/Item'
+import { JourneyDetailsDialog } from '../../JourneyDetailsDialog'
+import { Item } from '../Item'
 
 interface DetailsItemProps {
   variant: ComponentProps<typeof Item>['variant']
@@ -33,7 +33,7 @@ export function DetailsItem({
   }
 
   function handleClick(): void {
-    setRoute('titleDescription')
+    setRoute('journeyDetails')
     setDialogOpen(true)
     onClose?.()
   }
@@ -51,7 +51,7 @@ export function DetailsItem({
         onClick={handleClick}
       />
       {journey?.id != null && dialogOpen != null && (
-        <TitleDescriptionDialog open={dialogOpen} onClose={handleClose} />
+        <JourneyDetailsDialog open={dialogOpen} onClose={handleClose} />
       )}
     </>
   )
