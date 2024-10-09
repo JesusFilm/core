@@ -168,7 +168,7 @@ const Video = builder.prismaObject('Video', {
     children: t.prismaField({
       type: ['Video'],
       async resolve(query, parent) {
-        if (!parent.childIds?.length) return [];
+        if (!parent.childIds || parent.childIds.length === 0) return [];
         return orderBy(
           await prisma.video.findMany({
             ...query,
