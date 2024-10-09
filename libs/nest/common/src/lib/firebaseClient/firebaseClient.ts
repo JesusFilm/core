@@ -50,7 +50,9 @@ export function contextToUserId(context: ExecutionContext): string | null {
   const result = payloadSchema.safeParse(payload)
   if (result.success) return result.data.id
 
-  console.error('contextToUserId failed to parse', result.error)
+  if (payload != null)
+    console.error('contextToUserId failed to parse', result.error)
+
   return null
 }
 
@@ -61,7 +63,9 @@ export function contextToUser(context: ExecutionContext): User | null {
 
   if (result.success) return result.data
 
-  console.error('contextToUser failed to parse', result.error)
+  if (payload != null)
+    console.error('contextToUser failed to parse', result.error)
+
   return null
 }
 
