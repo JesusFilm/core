@@ -22,10 +22,9 @@ const GET_VIDEOS_CHILDREN = graphql(`
       children {
         id
       }
-      # TODO: Add parent relationship
-      #   parent {
-      #     id
-      #   }
+      parents {
+        id
+      }
     }
   }
 `)
@@ -48,9 +47,8 @@ export async function GET(request: NextRequest): Promise<Response> {
     .map((video) => ({
       mediaComponentId: video.id,
       linkedMediaComponentIds: {
-        contains: video.children.map(({ id }) => id) ?? undefined
-        // TODO: Add parent relationship
-        //   containedBy: ['JFM1']
+        contains: video.children.map(({ id }) => id) ?? undefined,
+        containedBy: video.parents.map(({ id }) => id) ?? undefined
       }
     }))
 
