@@ -29,7 +29,7 @@ export const auth = getAuth(firebaseClient)
 
 const payloadSchema = z
   .object({
-    name: z.string(),
+    name: z.string().nullish(),
     picture: z.string().nullish(),
     user_id: z.string(),
     email: z.string(),
@@ -37,8 +37,8 @@ const payloadSchema = z
   })
   .transform((data) => ({
     id: data.user_id,
-    firstName: data.name.split(' ').slice(0, -1).join(' '),
-    lastName: data.name.split(' ').slice(-1).join(' '),
+    firstName: data.name?.split(' ').slice(0, -1).join(' ') ?? '',
+    lastName: data.name?.split(' ').slice(-1).join(' '),
     email: data.email,
     imageUrl: data.picture,
     emailVerified: data.email_verified
@@ -50,6 +50,7 @@ export function contextToUserId(context: ExecutionContext): string | null {
   const result = payloadSchema.safeParse(payload)
   if (result.success) return result.data.id
 
+  console.error('contextToUserId failed to parse', result.error)
   return null
 }
 
@@ -60,6 +61,7 @@ export function contextToUser(context: ExecutionContext): User | null {
 
   if (result.success) return result.data
 
+  console.error('contextToUser failed to parse', result.error)
   return null
 }
 

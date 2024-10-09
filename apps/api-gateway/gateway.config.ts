@@ -2,12 +2,29 @@ import {
   createRemoteJwksSigningKeyProvider,
   defineConfig
 } from '@graphql-hive/gateway'
+import pino, { Logger } from 'pino'
+
+export const logger = pino({
+  formatters: {
+    level(level) {
+      return { level }
+    }
+  }
+}).child({ service: 'api-gateway' })
 
 const googleApplication = JSON.parse(
   process.env.GOOGLE_APPLICATION_JSON ?? '{}'
 )
 
+function childFn(logger: Logger) {
+  return (name: string) => {
+    const child = logger.child({ name })
+    return { ...child, log: child.info, child: childFn(child) }
+  }
+}
+
 export const gatewayConfig = defineConfig({
+  logging: { ...logger, log: logger.info, child: childFn(logger) },
   port: 4000,
   healthCheckEndpoint: '/health',
   graphqlEndpoint: '/',
