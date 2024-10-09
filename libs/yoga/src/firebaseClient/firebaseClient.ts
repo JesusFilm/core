@@ -1,5 +1,6 @@
 import { ServiceAccount, cert, initializeApp } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
+import { Logger } from 'pino'
 import { z } from 'zod'
 
 export interface User {
@@ -42,17 +43,23 @@ const payloadSchema = z
 
 export const auth = getAuth(firebaseClient)
 
-export function getUserIdFromPayload(payload: unknown): string | null {
+export function getUserIdFromPayload(
+  payload: unknown,
+  logger?: Logger
+): string | null {
   if (process.env.NODE_ENV === 'test') return 'testUserId'
 
   const result = payloadSchema.safeParse(payload)
   if (result.success) return result.data.id
 
-  console.error('getUserIdFromPayload failed to parse', result.error)
+  logger?.error(result.error, 'getUserIdFromPayload failed to parse')
   return null
 }
 
-export function getUserFromPayload(payload: unknown): User | null {
+export function getUserFromPayload(
+  payload: unknown,
+  logger?: Logger
+): User | null {
   if (process.env.NODE_ENV === 'test')
     return {
       id: 'testUserId',
@@ -66,7 +73,7 @@ export function getUserFromPayload(payload: unknown): User | null {
   const result = payloadSchema.safeParse(payload)
   if (result.success) return result.data
 
-  console.error('getUserFromPayload failed to parse', result.error)
+  logger?.error(result.error, 'getUserFromPayload failed to parse')
   return null
 }
 
