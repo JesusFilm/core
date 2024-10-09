@@ -303,6 +303,7 @@ type Video
 
   """the number value of the amount of children on a video"""
   childrenCount: Int!
+  parents: [Video!]!
   variantLanguagesWithSlug: [LanguageWithSlug!]!
   variants: [VideoVariant!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
