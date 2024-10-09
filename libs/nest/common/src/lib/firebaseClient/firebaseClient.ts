@@ -27,99 +27,41 @@ export const firebaseClient = initializeApp(
 
 export const auth = getAuth(firebaseClient)
 
-const payloadSchema = z.object({
-  name: z.string(),
-  picture: z.string().nullable(),
-  // iss: z.string(),
-  // aud: z.string(),
-  // auth_time: z.number(),
-  user_id: z.string(),
-  // sub: z.string(),
-  // iat: z.number(),
-  // exp: z.number(),
-  email: z.string(),
-  email_verified: z.boolean()
-  // firebase: z.object({
-  //   identities: z.object({
-  //     email: z.array(z.string())
-  //   }),
-  //   sign_in_provider: z.string()
-  // })
-})
+const payloadSchema = z
+  .object({
+    name: z.string().nullish(),
+    picture: z.string().nullish(),
+    user_id: z.string(),
+    email: z.string(),
+    email_verified: z.boolean()
+  })
+  .transform((data) => ({
+    id: data.user_id,
+    firstName: data.name?.split(' ').slice(0, -1).join(' ') ?? '',
+    lastName: data.name?.split(' ').slice(-1).join(' '),
+    email: data.email,
+    imageUrl: data.picture,
+    emailVerified: data.email_verified
+  }))
 
-export async function contextToUserId(
-  context: ExecutionContext
-): Promise<string | null> {
+export function contextToUserId(context: ExecutionContext): string | null {
   const ctx = GqlExecutionContext.create(context).getContext()
   const payload = get(ctx, 'req.body.extensions.jwt.payload')
   const result = payloadSchema.safeParse(payload)
-  if (result.success) return result.data.user_id
+  if (result.success) return result.data.id
 
-  const token: string = get(ctx.headers, 'authorization')
-  if (token == null || token === '') return null
-  try {
-    const { uid } = await auth.verifyIdToken(token.replace(/^JWT /g, ''))
-    return uid
-  } catch (err) {
-    if (
-      err instanceof Error &&
-      'message' in err &&
-      typeof err.message === 'string' &&
-      err.message.includes('Decoding Firebase ID token failed.')
-    )
-      return null
-    throw err
-  }
+  console.error('contextToUserId failed to parse', result.error)
+  return null
 }
 
-export async function contextToUser(
-  context: ExecutionContext
-): Promise<User | null> {
+export function contextToUser(context: ExecutionContext): User | null {
   const ctx = GqlExecutionContext.create(context).getContext()
   const payload = get(ctx, 'req.body.extensions.jwt.payload')
   const result = payloadSchema.safeParse(payload)
 
-  if (result.success) {
-    const {
-      user_id: id,
-      name,
-      email,
-      picture: imageUrl,
-      email_verified: emailVerified
-    } = result.data
+  if (result.success) return result.data
 
-    const firstName = name?.split(' ')?.slice(0, -1)?.join(' ') ?? ''
-    const lastName = name?.split(' ')?.slice(-1)?.join(' ') ?? ''
-
-    return {
-      id,
-      firstName,
-      lastName,
-      email,
-      imageUrl,
-      emailVerified
-    }
-  }
-
-  const userId = await contextToUserId(context)
-
-  if (userId != null) {
-    const { displayName, email, photoURL, emailVerified } = await auth.getUser(
-      userId
-    )
-
-    const firstName = displayName?.split(' ')?.slice(0, -1)?.join(' ') ?? ''
-    const lastName = displayName?.split(' ')?.slice(-1)?.join(' ') ?? ''
-
-    return {
-      id: userId,
-      firstName,
-      lastName,
-      email: email ?? '',
-      imageUrl: photoURL,
-      emailVerified
-    }
-  }
+  console.error('contextToUser failed to parse', result.error)
   return null
 }
 

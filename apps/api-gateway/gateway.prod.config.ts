@@ -3,12 +3,22 @@ import {
   createRemoteJwksSigningKeyProvider,
   defineConfig
 } from '@graphql-hive/gateway'
+import { maskError } from 'graphql-yoga'
+import pino from 'pino'
+
+export const logger = pino().child({ service: 'api-gateway' })
 
 const googleApplication = JSON.parse(
   process.env.GOOGLE_APPLICATION_JSON ?? '{}'
 )
 
 export const gatewayConfig = defineConfig({
+  maskedErrors: {
+    maskError: (error, message, isDev) => {
+      logger.error(error, message)
+      return maskError(error, message, isDev)
+    }
+  },
   port: 4000,
   graphqlEndpoint: '/',
   healthCheckEndpoint: '/health',
@@ -18,13 +28,16 @@ export const gatewayConfig = defineConfig({
     key: process.env.HIVE_CDN_KEY ?? ''
   },
   propagateHeaders: {
-    fromClientToSubgraphs: ({ request }) => {
-      return {
-        authorization: request.headers.get('authorization') ?? '',
+    fromClientToSubgraphs: ({ request, subgraphName }) => {
+      const headers: Record<string, string> = {
         'user-agent': request.headers.get('user-agent') ?? '',
         'x-forwarded-for': request.headers.get('x-forwarded-for') ?? '',
         'interop-token': request.headers.get('interop-token') ?? ''
       }
+      if (subgraphName === 'analytics')
+        headers.authorization = request.headers.get('authorization') ?? ''
+
+      return headers
     }
   },
   openTelemetry: {

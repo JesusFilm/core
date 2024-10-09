@@ -6,6 +6,7 @@ ENV VERCEL=true
 
 WORKDIR /app
 COPY ./dist/apps/journeys-admin .
+COPY ./package-lock.json .
 
 # dependencies
 RUN npm i -g next

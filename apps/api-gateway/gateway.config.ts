@@ -2,24 +2,37 @@ import {
   createRemoteJwksSigningKeyProvider,
   defineConfig
 } from '@graphql-hive/gateway'
+import { maskError } from 'graphql-yoga'
+import pino from 'pino'
+
+export const logger = pino().child({ service: 'api-gateway' })
 
 const googleApplication = JSON.parse(
   process.env.GOOGLE_APPLICATION_JSON ?? '{}'
 )
 
 export const gatewayConfig = defineConfig({
+  maskedErrors: {
+    maskError: (error, message, isDev) => {
+      logger.error(error, message)
+      return maskError(error, message, isDev)
+    }
+  },
   port: 4000,
   healthCheckEndpoint: '/health',
   graphqlEndpoint: '/',
   supergraph: './apps/api-gateway/schema.graphql',
   propagateHeaders: {
-    fromClientToSubgraphs: ({ request }) => {
-      return {
-        authorization: request.headers.get('authorization') ?? '',
+    fromClientToSubgraphs: ({ request, subgraphName }) => {
+      const headers: Record<string, string> = {
         'user-agent': request.headers.get('user-agent') ?? '',
         'x-forward-for': request.headers.get('x-forward-for') ?? '',
         'interop-token': request.headers.get('interop-token') ?? ''
       }
+      if (subgraphName === 'analytics')
+        headers.authorization = request.headers.get('authorization') ?? ''
+
+      return headers
     }
   },
   hmacSignature: {
