@@ -615,6 +615,7 @@ type Query @join__type(graph: ANALYTICS)  @join__type(graph: JOURNEYS)  @join__t
   visitor(id: ID!) : Visitor! @join__field(graph: JOURNEYS) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter) : [Language!]! @join__field(graph: LANGUAGES) 
+  languagesCount(where: LanguagesFilter) : Int! @join__field(graph: LANGUAGES) 
   country(id: ID!) : Country @join__field(graph: LANGUAGES) 
   countries: [Country!]! @join__field(graph: LANGUAGES) 
   getMyCloudflareImages(offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: MEDIA) 
@@ -642,6 +643,7 @@ type Query @join__type(graph: ANALYTICS)  @join__type(graph: JOURNEYS)  @join__t
   keywords: [Keyword!]! @join__field(graph: MEDIA) 
   adminVideo(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: MEDIA) 
   adminVideos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: MEDIA) 
+  adminVideosCount(where: VideosFilter) : Int! @join__field(graph: MEDIA) 
   video(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: MEDIA) 
   videos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: MEDIA) 
   videosCount(where: VideosFilter) : Int! @join__field(graph: MEDIA) 
@@ -1075,6 +1077,12 @@ type Language @join__type(graph: JOURNEYS, key: "id")  @join__type(graph: LANGUA
   name(languageId: ID, primary: Boolean) : [LanguageName!]! @join__field(graph: LANGUAGES) 
   countryLanguages: [CountryLanguage!]! @join__field(graph: LANGUAGES) 
   audioPreview: AudioPreview @join__field(graph: LANGUAGES) 
+  primaryCountryId: String @join__field(graph: LANGUAGES) 
+  speakerCount: Int! @join__field(graph: LANGUAGES) 
+  countriesCount: Int! @join__field(graph: LANGUAGES) 
+  seriesCount: Int! @join__field(graph: MEDIA) 
+  featureFilmCount: Int! @join__field(graph: MEDIA) 
+  shortFilmCount: Int! @join__field(graph: MEDIA) 
 }
 
 type JourneyViewEvent implements Event @join__type(graph: JOURNEYS)  @join__implements(graph: JOURNEYS, interface: "Event")  {
@@ -1953,6 +1961,8 @@ type AudioPreview @join__type(graph: LANGUAGES)  {
   value: String!
   duration: Int!
   size: Int!
+  bitrate: Int!
+  codec: String!
 }
 
 type Continent @join__type(graph: LANGUAGES)  {
@@ -1986,6 +1996,7 @@ type CountryLanguage @join__type(graph: LANGUAGES)  {
   country: Country!
   speakers: Int!
   displaySpeakers: Int
+  primary: Boolean!
 }
 
 type CountryName @join__type(graph: LANGUAGES)  {

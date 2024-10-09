@@ -12,10 +12,12 @@ const countryLanguageSchema = z
     languageId: z.number().transform(String),
     countryCode: z.string(),
     speakers: z.number(),
-    display_speakers: z.number().nullable()
+    display_speakers: z.number().nullable(),
+    primary: z.number()
   })
   .transform((value) => ({
     ...omit(value, ['countryCode', 'display_speakers']),
+    primary: value.primary === 1,
     countryId: value.countryCode,
     displaySpeakers: value.display_speakers
   }))

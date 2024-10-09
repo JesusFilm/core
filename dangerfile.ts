@@ -64,18 +64,6 @@ export default async () => {
     )
   }
 
-  // check PR has basecamp link
-  if (
-    danger.github.pr.body.match(
-      /\(https\:\/\/3.basecamp.com\/3105655\/buckets\/\d+\/todos\/\d+\)/
-    ) == null &&
-    !isDependabot
-  ) {
-    warn(
-      'Is this PR related to a Basecamp issue? If so link it via the PR description - https://3.basecamp.com/3105655/buckets/:projectId/todos/:todoId'
-    )
-  }
-
   // check PR has assignee
   if (danger.github.pr.assignee === null) {
     fail('Please assign someone to merge this PR.')

@@ -18,13 +18,16 @@ export const gatewayConfig = defineConfig({
     key: process.env.HIVE_CDN_KEY ?? ''
   },
   propagateHeaders: {
-    fromClientToSubgraphs: ({ request }) => {
-      return {
-        authorization: request.headers.get('authorization') ?? '',
+    fromClientToSubgraphs: ({ request, subgraphName }) => {
+      const headers: Record<string, string> = {
         'user-agent': request.headers.get('user-agent') ?? '',
         'x-forwarded-for': request.headers.get('x-forwarded-for') ?? '',
         'interop-token': request.headers.get('interop-token') ?? ''
       }
+      if (subgraphName === 'analytics')
+        headers.authorization = request.headers.get('authorization') ?? ''
+
+      return headers
     }
   },
   openTelemetry: {
