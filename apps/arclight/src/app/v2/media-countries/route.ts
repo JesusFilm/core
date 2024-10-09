@@ -16,26 +16,26 @@ import { paramsToRecord } from '../../../lib/paramsToRecord'
 */
 
 const GET_COUNTRIES = graphql(`
-query Country {
-  countries {
-    id
-    population
-    latitude
-    longitude
-    flagPngSrc
-    flagWebpSrc
-    name (languageId: "529") {
-      value
-    }
-    continent {
-      name {
+  query Country {
+    countries {
+      id
+      population
+      latitude
+      longitude
+      flagPngSrc
+      flagWebpSrc
+      name(languageId: "529") {
         value
       }
+      continent {
+        name {
+          value
+        }
+      }
+      languageCount
+      languageHavingMediaCount
     }
-    languageCount
-    languageHavingMediaCount
   }
-}
 `)
 
 export async function GET(request: NextRequest): Promise<Response> {
@@ -71,38 +71,40 @@ export async function GET(request: NextRequest): Promise<Response> {
     page: (page + 1).toString()
   }).toString()
 
-  const mediaCountries = data.countries.slice(offset, offset + limit).map((country) => ({
-    countryId: country.id,
-    name: country.name?.[0]?.value ?? '',
-    continentName: country.continent?.name?.[0]?.value ?? '',
-    longitude: country.longitude,
-    latitude: country.latitude,
-    counts: {
-      languageCount: {
-        value: country.languageCount,
-        description: "Number of spoken languages"
+  const mediaCountries = data.countries
+    .slice(offset, offset + limit)
+    .map((country) => ({
+      countryId: country.id,
+      name: country.name?.[0]?.value ?? '',
+      continentName: country.continent?.name?.[0]?.value ?? '',
+      longitude: country.longitude,
+      latitude: country.latitude,
+      counts: {
+        languageCount: {
+          value: country.languageCount,
+          description: 'Number of spoken languages'
+        },
+        population: {
+          value: country.population,
+          description: 'Country population'
+        },
+        languageHavingMediaCount: {
+          value: country.languageHavingMediaCount,
+          description: 'Number of languages having media'
+        }
       },
-      population: {
-        value: country.population,
-        description: "Country population"
+      assets: {
+        flagUrls: {
+          png8: country.flagPngSrc,
+          webpLossy50: country.flagWebpSrc
+        }
       },
-      languageHavingMediaCount: {
-        value: country.languageHavingMediaCount,
-        description: "Number of languages having media"
+      _links: {
+        self: {
+          href: `http://api.arclight.org/v2/media-countries/${country.id}?apiKey=3a21a65d4gf98hZ7`
+        }
       }
-    },
-    assets: {
-      flagUrls: {
-        png8: country.flagPngSrc,
-        webpLossy50: country.flagWebpSrc
-      }
-    },
-    _links: {
-      self: {
-        href: `http://api.arclight.org/v2/media-countries/${country.id}?apiKey=3a21a65d4gf98hZ7`
-      }
-    }
-  }))
+    }))
 
   const totalCountries = data.countries.length
   const totalPages = Math.ceil(totalCountries / limit)
@@ -122,9 +124,12 @@ export async function GET(request: NextRequest): Promise<Response> {
       last: {
         href: `http://api.arclight.org/v2/media-countries?${lastQueryString}`
       },
-      next: page < totalPages ? {
-        href: `http://api.arclight.org/v2/media-countries?${nextQueryString}`
-      } : undefined
+      next:
+        page < totalPages
+          ? {
+              href: `http://api.arclight.org/v2/media-countries?${nextQueryString}`
+            }
+          : undefined
     },
     _embedded: {
       mediaCountries

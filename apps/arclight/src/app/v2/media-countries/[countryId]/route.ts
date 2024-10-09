@@ -23,7 +23,7 @@ const GET_COUNTRY = graphql(`
       longitude
       flagPngSrc
       flagWebpSrc
-      name (languageId: "529") {
+      name(languageId: "529") {
         value
       }
       continent {
@@ -48,14 +48,12 @@ export async function GET(
   const query = request.nextUrl.searchParams
   const { countryId } = params
 
-  const { data } = await getApolloClient().query<ResultOf<typeof GET_COUNTRY>>(
-    {
-      query: GET_COUNTRY,
-      variables: {
-        id: countryId
-      }
+  const { data } = await getApolloClient().query<ResultOf<typeof GET_COUNTRY>>({
+    query: GET_COUNTRY,
+    variables: {
+      id: countryId
     }
-  )
+  })
 
   const queryObject: Record<string, string> = {
     ...paramsToRecord(query.entries())
@@ -82,15 +80,15 @@ export async function GET(
     counts: {
       languageCount: {
         value: data.country.languageCount,
-        description: "Number of spoken languages"
+        description: 'Number of spoken languages'
       },
       population: {
         value: data.country.population,
-        description: "Country population"
+        description: 'Country population'
       },
       languageHavingMediaCount: {
         value: data.country.languageHavingMediaCount,
-        description: "Number of languages having media"
+        description: 'Number of languages having media'
       }
     },
     assets: {
