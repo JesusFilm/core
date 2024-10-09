@@ -19,6 +19,8 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
+import { getLanguageIdFromInfo } from './video'
+
 describe('video', () => {
   const client = getClient()
 
@@ -810,6 +812,50 @@ describe('video', () => {
     })
   })
 
+  describe('videosCount', () => {
+    const VIDEO_COUNT = graphql(`
+      query VideoCount($where: VideosFilter) {
+        videosCount(where: $where)
+      }
+    `)
+
+    it('should return a count of videos', async () => {
+      prismaMock.video.count.mockResolvedValueOnce(1)
+      const data = await client({
+        document: VIDEO_COUNT,
+        variables: {
+          where: null
+        }
+      })
+      expect(prismaMock.video.count).toHaveBeenCalledWith({
+        where: { published: true }
+      })
+      expect(data).toHaveProperty('data.videosCount', 1)
+    })
+
+    it('should return a count of videos with where', async () => {
+      prismaMock.video.count.mockResolvedValueOnce(1)
+      const data = await client({
+        document: VIDEO_COUNT,
+        variables: {
+          where: {
+            title: 'Jesus'
+          }
+        }
+      })
+      expect(prismaMock.video.count).toHaveBeenCalledWith({
+        where: {
+          id: undefined,
+          label: undefined,
+          published: true,
+          title: { some: { value: { search: 'Jesus' } } },
+          variants: undefined
+        }
+      })
+      expect(data).toHaveProperty('data.videosCount', 1)
+    })
+  })
+
   describe('adminVideos', () => {
     const ADMIN_VIDEOS_QUERY = graphql(`
       query AdminVideos(
@@ -1462,31 +1508,43 @@ describe('video', () => {
     })
   })
 
-  describe('videosCount', () => {
-    const VIDEO_COUNT = graphql(`
-      query VideoCount($where: VideosFilter) {
-        videosCount(where: $where)
+  describe('adminVideosCount', () => {
+    const ADMIN_VIDEO_COUNT = graphql(`
+      query AdminVideoCount($where: VideosFilter) {
+        adminVideosCount(where: $where)
       }
     `)
 
     it('should return a count of videos', async () => {
       prismaMock.video.count.mockResolvedValueOnce(1)
-      const data = await client({
-        document: VIDEO_COUNT,
+      prismaMock.userMediaRole.findUnique.mockResolvedValueOnce({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher']
+      })
+
+      const data = await authClient({
+        document: ADMIN_VIDEO_COUNT,
         variables: {
           where: null
         }
       })
       expect(prismaMock.video.count).toHaveBeenCalledWith({
-        where: { published: true }
+        where: {}
       })
-      expect(data).toHaveProperty('data.videosCount', 1)
+      expect(data).toHaveProperty('data.adminVideosCount', 1)
     })
 
     it('should return a count of videos with where', async () => {
       prismaMock.video.count.mockResolvedValueOnce(1)
-      const data = await client({
-        document: VIDEO_COUNT,
+      prismaMock.userMediaRole.findUnique.mockResolvedValueOnce({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher']
+      })
+
+      const data = await authClient({
+        document: ADMIN_VIDEO_COUNT,
         variables: {
           where: {
             title: 'Jesus'
@@ -1497,12 +1555,56 @@ describe('video', () => {
         where: {
           id: undefined,
           label: undefined,
-          published: true,
+          published: undefined,
           title: { some: { value: { search: 'Jesus' } } },
           variants: undefined
         }
       })
-      expect(data).toHaveProperty('data.videosCount', 1)
+      expect(data).toHaveProperty('data.adminVideosCount', 1)
+    })
+
+    describe('getLanguageIdFromInfo', () => {
+      it('should return languageId from info when object', () => {
+        const parentId = 'videoId'
+        const info = {
+          variableValues: {
+            456: [
+              {
+                id: 'notVideoId',
+                primaryLanguageId: 'notPrimaryLanguageId'
+              }
+            ],
+            abc: [
+              {
+                id: 'videoId',
+                primaryLanguageId: 'primaryLanguageId'
+              }
+            ]
+          }
+        }
+        expect(getLanguageIdFromInfo(info, parentId)).toBe('primaryLanguageId')
+      })
+
+      it('should return languageId from info when array', () => {
+        const parentId = 'videoId'
+        const info = {
+          variableValues: [
+            [
+              {
+                id: 'notVideoId',
+                primaryLanguageId: 'notPrimaryLanguageId'
+              }
+            ],
+            [
+              {
+                id: 'videoId',
+                primaryLanguageId: 'primaryLanguageId'
+              }
+            ]
+          ]
+        }
+        expect(getLanguageIdFromInfo(info, parentId)).toBe('primaryLanguageId')
+      })
     })
   })
 })

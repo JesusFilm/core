@@ -11,11 +11,8 @@ import { User } from '@core/yoga/firebaseClient'
 import type PrismaTypes from '../__generated__/pothos-types'
 import { prisma } from '../lib/prisma'
 
-interface PrismaUser extends User {
-  superAdmin?: boolean
-}
 export interface Context {
-  currentUser: PrismaUser | null
+  currentUser: User | null
   interopToken?: string | null
   ipAddress?: string | null
 }
