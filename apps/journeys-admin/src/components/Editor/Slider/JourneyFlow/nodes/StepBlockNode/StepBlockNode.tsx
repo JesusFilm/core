@@ -26,23 +26,25 @@ export function StepBlockNode({
     state: { steps, importedSteps, selectedStep, activeContent, showAnalytics }
   } = useEditor()
   const { journey } = useJourney()
+
   const step =
     importedSteps?.find((step) => step.id === id) ??
     steps?.find((step) => step.id === id)
 
   // const step = steps?.find((step) => step.id === id)
+
   const actionBlocks = filterActionBlocks(step)
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
 
-  const isMenuCard = journey?.menuStepBlock?.id === id
+  // const isMenuCard = journey?.menuStepBlock?.id === id
 
-  const targetHandleVariant = isMenuCard
-    ? HandleVariant.None
-    : showAnalytics === true
-    ? HandleVariant.Disabled
-    : HandleVariant.Shown
+  // const targetHandleVariant = isMenuCard
+  //   ? HandleVariant.None
+  //   : showAnalytics === true
+  //   ? HandleVariant.Disabled
+  // : HandleVariant.Shown
 
   return step != null ? (
     <Stack sx={{ position: 'relative' }}>
