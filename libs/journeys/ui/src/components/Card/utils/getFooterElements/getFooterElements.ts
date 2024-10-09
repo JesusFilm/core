@@ -1,6 +1,9 @@
-import { SxProps } from '@mui/material/styles'
-
 import { JourneyFields } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
+
+const FULL_HEIGHT = '124px'
+const HALF_HEIGHT = '56px'
+const MIN_HEIGHT = '8px'
+const WEBSITE_HEIGHT = '0px'
 
 interface JourneyInfoProps {
   journey?: JourneyFields
@@ -51,14 +54,12 @@ export function hasTitle({ journey }: JourneyInfoProps): string | null {
   }
 }
 
-export function getFooterSpacing({
+export function getFooterMobileSpacing({
   journey,
   variant = 'default'
-}: JourneyInfoProps): SxProps {
-  let mobileFooterSpacing = 0
-
+}: JourneyInfoProps): string {
   if (journey?.website === true) {
-    mobileFooterSpacing = 0
+    return WEBSITE_HEIGHT
   } else {
     const hasTopRow = hasReactions({ journey })
     const hasBottomRow =
@@ -68,18 +69,32 @@ export function getFooterSpacing({
       hasTitle({ journey }) != null
 
     if (hasTopRow && hasBottomRow) {
-      mobileFooterSpacing = 28
+      return FULL_HEIGHT
     } else if (hasTopRow || hasBottomRow) {
-      mobileFooterSpacing = 14
+      return HALF_HEIGHT
     } else {
-      mobileFooterSpacing = 2
+      return MIN_HEIGHT
     }
   }
+}
 
-  return {
-    mb: {
-      xs: mobileFooterSpacing,
-      sm: 10
+export function getFooterMobileHeight({
+  journey,
+  variant = 'default'
+}: JourneyInfoProps): string {
+  if (journey?.website === true) {
+    return HALF_HEIGHT
+  } else {
+    const hasBottomRow =
+      hasHostAvatar({ journey, variant }) ||
+      hasHostDetails({ journey }) ||
+      hasChatWidget({ journey, variant }) ||
+      hasTitle({ journey }) != null
+
+    if (hasBottomRow) {
+      return HALF_HEIGHT
+    } else {
+      return MIN_HEIGHT
     }
   }
 }
