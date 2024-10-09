@@ -48,6 +48,7 @@ export function getUserIdFromPayload(payload: unknown): string | null {
   const result = payloadSchema.safeParse(payload)
   if (result.success) return result.data.id
 
+  console.error('getUserIdFromPayload failed to parse', result.error)
   return null
 }
 
@@ -65,6 +66,7 @@ export function getUserFromPayload(payload: unknown): User | null {
   const result = payloadSchema.safeParse(payload)
   if (result.success) return result.data
 
+  console.error('getUserFromPayload failed to parse', result.error)
   return null
 }
 
