@@ -26,6 +26,8 @@ describe('videoVariant', () => {
             id
             quality
             size
+            height
+            width
             url
           }
           duration
@@ -111,7 +113,9 @@ describe('videoVariant', () => {
               id: 'downloadId',
               quality: 'high',
               size: 0,
-              url: 'url'
+              url: 'url',
+              height: 0,
+              width: 0
             }
           ],
           duration: 0,
@@ -148,6 +152,8 @@ describe('videoVariant', () => {
               quality: 'high',
               size: 1024,
               url: 'url',
+              height: 0,
+              width: 0,
               videoVariantId: 'videoVariantId'
             }
           ]
@@ -193,6 +199,8 @@ describe('videoVariant', () => {
               id: 'downloadId',
               quality: 'high',
               size: 1024,
+              height: 0,
+              width: 0,
               url: 'url'
             }
           ],
@@ -230,7 +238,9 @@ describe('videoVariant', () => {
               quality: 'high',
               size: 1024,
               url: 'url',
-              videoVariantId: 'videoVariantId'
+              videoVariantId: 'videoVariantId',
+              height: 0,
+              width: 0
             }
           ]
         }
@@ -265,7 +275,9 @@ describe('videoVariant', () => {
               id: 'downloadId',
               quality: 'high',
               size: 1024,
-              url: 'url'
+              url: 'url',
+              height: 0,
+              width: 0
             }
           ],
           duration: 768,
