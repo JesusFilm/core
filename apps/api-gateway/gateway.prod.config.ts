@@ -3,12 +3,19 @@ import {
   createRemoteJwksSigningKeyProvider,
   defineConfig
 } from '@graphql-hive/gateway'
+import { maskError } from 'graphql-yoga'
 
 const googleApplication = JSON.parse(
   process.env.GOOGLE_APPLICATION_JSON ?? '{}'
 )
 
 export const gatewayConfig = defineConfig({
+  maskedErrors: {
+    maskError: (error, message, isDev) => {
+      console.error(message, error)
+      return maskError(error, message, isDev)
+    }
+  },
   port: 4000,
   graphqlEndpoint: '/',
   healthCheckEndpoint: '/health',
