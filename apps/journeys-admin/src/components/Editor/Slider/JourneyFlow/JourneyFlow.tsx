@@ -253,7 +253,15 @@ export function JourneyFlow(): ReactElement {
 
     const { nodes, edges } = transformSteps(filteredSteps ?? [], positions)
 
-    setEdges(edges)
+    let filteredEdges = edges
+
+    if (journey?.website === true) {
+      filteredEdges = edges.filter(
+        (e) => e.source === 'SocialPreview' || e.sourceHandle != null
+      )
+    }
+
+    setEdges(filteredEdges)
     setNodes(nodes)
   }, [steps, data, theme, setEdges, setNodes, allBlockPositionUpdate, journey])
 

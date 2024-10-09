@@ -1,11 +1,13 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.7", import: ["@key"])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key"])
 
 type AudioPreview {
   language: Language!
   value: String!
   duration: Int!
   size: Int!
+  bitrate: Int!
+  codec: String!
 }
 
 type Continent {
@@ -41,6 +43,7 @@ type CountryLanguage {
   country: Country!
   speakers: Int!
   displaySpeakers: Int
+  primary: Boolean!
 }
 
 type CountryName {
@@ -59,6 +62,9 @@ type Language
   name(languageId: ID, primary: Boolean): [LanguageName!]!
   countryLanguages: [CountryLanguage!]!
   audioPreview: AudioPreview
+  primaryCountryId: String
+  speakerCount: Int!
+  countriesCount: Int!
 }
 
 enum LanguageIdType {
@@ -79,6 +85,7 @@ input LanguagesFilter {
 type Query {
   language(id: ID!, idType: LanguageIdType = databaseId): Language
   languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]!
+  languagesCount(where: LanguagesFilter): Int!
   country(id: ID!): Country
   countries: [Country!]!
 }

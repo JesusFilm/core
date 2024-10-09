@@ -103,26 +103,6 @@ describe('Properties', () => {
     )
   })
 
-  it('should return properties for Form block', async () => {
-    const block = {
-      __typename: 'FormBlock',
-      id: 'block.id',
-      children: []
-    } as unknown as TreeBlock
-
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <Properties block={block} />
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
-      expect(screen.getByTestId('FormProperties')).toBeInTheDocument()
-    )
-  })
-
   it('should return card templates for StepBlock if there are no blocks on the card', async () => {
     const block = {
       __typename: 'StepBlock',
@@ -324,7 +304,7 @@ describe('Properties', () => {
       </MockedProvider>
     )
 
-    await waitFor(() => expect(container.children[0].childElementCount).toBe(0))
+    await waitFor(() => expect(container.childElementCount).toBe(0))
   })
 
   it('should return to journey map when close icon is clicked', async () => {

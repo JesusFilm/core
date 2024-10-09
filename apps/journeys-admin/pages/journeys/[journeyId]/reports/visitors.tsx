@@ -101,7 +101,9 @@ function JourneyVisitorsPage(): ReactElement {
   const [endCursor, setEndCursor] = useState<string | null>()
   const [chatStarted, setChatStarted] = useState(false)
   const [withPollAnswers, setWithPollAnswers] = useState(false)
-  const [withSubmittedText, setWithSubmittedText] = useState(false)
+  const [withSubmittedText, setWithSubmittedText] = useState(
+    router.query.withSubmittedText === 'true'
+  )
   const [withIcon, setWithIcon] = useState(false)
   const [hideInteractive, setHideInterActive] = useState(false)
   const [sortSetting, setSortSetting] = useState<'date' | 'duration'>('date')

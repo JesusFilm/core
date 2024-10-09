@@ -3,6 +3,7 @@ import { GqlExecutionContext } from '@nestjs/graphql'
 import { ServiceAccount, cert, initializeApp } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
 import get from 'lodash/get'
+import { z } from 'zod'
 
 export interface User {
   id: string
@@ -26,49 +27,41 @@ export const firebaseClient = initializeApp(
 
 export const auth = getAuth(firebaseClient)
 
-export async function contextToUserId(
-  context: ExecutionContext
-): Promise<string | null> {
+const payloadSchema = z
+  .object({
+    name: z.string().nullish(),
+    picture: z.string().nullish(),
+    user_id: z.string(),
+    email: z.string(),
+    email_verified: z.boolean()
+  })
+  .transform((data) => ({
+    id: data.user_id,
+    firstName: data.name?.split(' ').slice(0, -1).join(' ') ?? '',
+    lastName: data.name?.split(' ').slice(-1).join(' '),
+    email: data.email,
+    imageUrl: data.picture,
+    emailVerified: data.email_verified
+  }))
+
+export function contextToUserId(context: ExecutionContext): string | null {
   const ctx = GqlExecutionContext.create(context).getContext()
-  const token: string = get(ctx.headers, 'authorization')
-  if (token == null || token === '') return null
-  try {
-    const { uid } = await auth.verifyIdToken(token)
-    return uid
-  } catch (err) {
-    if (
-      err instanceof Error &&
-      'message' in err &&
-      typeof err.message === 'string' &&
-      err.message.includes('Decoding Firebase ID token failed.')
-    )
-      return null
-    throw err
-  }
+  const payload = get(ctx, 'req.body.extensions.jwt.payload')
+  const result = payloadSchema.safeParse(payload)
+  if (result.success) return result.data.id
+
+  console.error('contextToUserId failed to parse', result.error)
+  return null
 }
 
-export async function contextToUser(
-  context: ExecutionContext
-): Promise<User | null> {
-  const userId = await contextToUserId(context)
+export function contextToUser(context: ExecutionContext): User | null {
+  const ctx = GqlExecutionContext.create(context).getContext()
+  const payload = get(ctx, 'req.body.extensions.jwt.payload')
+  const result = payloadSchema.safeParse(payload)
 
-  if (userId != null) {
-    const { displayName, email, photoURL, emailVerified } = await auth.getUser(
-      userId
-    )
+  if (result.success) return result.data
 
-    const firstName = displayName?.split(' ')?.slice(0, -1)?.join(' ') ?? ''
-    const lastName = displayName?.split(' ')?.slice(-1)?.join(' ') ?? ''
-
-    return {
-      id: userId,
-      firstName,
-      lastName,
-      email: email ?? '',
-      imageUrl: photoURL,
-      emailVerified
-    }
-  }
+  console.error('contextToUser failed to parse', result.error)
   return null
 }
 

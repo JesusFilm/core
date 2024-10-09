@@ -26,7 +26,7 @@ describe('PreviewItem', () => {
   it('should call onclick', async () => {
     const mockOnClick = jest.fn()
     const { getByRole } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[getCustomDomainMock]}>
         <SnackbarProvider>
           <JourneyProvider value={{ journey: mockJourney }}>
             <PreviewItem variant="icon-button" onClick={mockOnClick} />
@@ -39,9 +39,25 @@ describe('PreviewItem', () => {
     await waitFor(() => expect(mockOnClick).toHaveBeenCalled())
   })
 
+  it('should not call onclick when no journey id', async () => {
+    const mockOnClick = jest.fn()
+    const { getByRole } = render(
+      <MockedProvider mocks={[getCustomDomainMock]}>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: undefined }}>
+            <PreviewItem variant="icon-button" onClick={mockOnClick} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByRole('button'))
+    await waitFor(() => expect(mockOnClick).not.toHaveBeenCalled())
+  })
+
   it('should have correct link', async () => {
     const { getByRole } = render(
-      <MockedProvider>
+      <MockedProvider mocks={[getCustomDomainMock]}>
         <SnackbarProvider>
           <JourneyProvider value={{ journey: mockJourney }}>
             <PreviewItem variant="icon-button" />

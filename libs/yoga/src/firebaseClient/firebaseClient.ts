@@ -1,5 +1,7 @@
 import { ServiceAccount, cert, initializeApp } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
+import { Logger } from 'pino'
+import { z } from 'zod'
 
 export interface User {
   id: string
@@ -22,51 +24,60 @@ export const firebaseClient = initializeApp(
   'jfm-firebase-admin'
 )
 
+const payloadSchema = z
+  .object({
+    name: z.string().nullish(),
+    picture: z.string().nullish(),
+    user_id: z.string(),
+    email: z.string(),
+    email_verified: z.boolean()
+  })
+  .transform((data) => ({
+    id: data.user_id,
+    firstName: data.name?.split(' ').slice(0, -1).join(' ') ?? '',
+    lastName: data.name?.split(' ').slice(-1).join(' '),
+    email: data.email,
+    imageUrl: data.picture,
+    emailVerified: data.email_verified
+  }))
+
 export const auth = getAuth(firebaseClient)
 
-export async function getUserIdFromRequest(
-  request: Request
-): Promise<string | null> {
+export function getUserIdFromPayload(
+  payload: unknown,
+  logger?: Logger
+): string | null {
   if (process.env.NODE_ENV === 'test') return 'testUserId'
-  const token = request.headers.get('Authorization')
-  if (token == null || token === '') return null
-  try {
-    const { uid } = await auth.verifyIdToken(token)
-    return uid
-  } catch (err) {
-    if (
-      err instanceof Error &&
-      'message' in err &&
-      typeof err.message === 'string' &&
-      err.message.includes('Decoding Firebase ID token failed.')
-    )
-      return null
-    throw err
-  }
+
+  const result = payloadSchema.safeParse(payload)
+  if (result.success) return result.data.id
+
+  if (payload != null)
+    logger?.error(result.error, 'getUserIdFromPayload failed to parse')
+
+  return null
 }
 
-export async function getUserFromRequest(
-  request: Request
-): Promise<User | null> {
-  const userId = await getUserIdFromRequest(request)
-
-  if (userId != null) {
-    const { displayName, email, photoURL, emailVerified } = await auth.getUser(
-      userId
-    )
-
-    const firstName = displayName?.split(' ')?.slice(0, -1)?.join(' ') ?? ''
-    const lastName = displayName?.split(' ')?.slice(-1)?.join(' ') ?? ''
-
+export function getUserFromPayload(
+  payload: unknown,
+  logger?: Logger
+): User | null {
+  if (process.env.NODE_ENV === 'test')
     return {
-      id: userId,
-      firstName,
-      lastName,
-      email: email ?? '',
-      imageUrl: photoURL,
-      emailVerified
+      id: 'testUserId',
+      firstName: 'Test',
+      lastName: 'User',
+      email: 'test@example.com',
+      emailVerified: true,
+      imageUrl: null
     }
-  }
+
+  const result = payloadSchema.safeParse(payload)
+  if (result.success) return result.data
+
+  if (payload != null)
+    logger?.error(result.error, 'getUserFromPayload failed to parse')
+
   return null
 }
 

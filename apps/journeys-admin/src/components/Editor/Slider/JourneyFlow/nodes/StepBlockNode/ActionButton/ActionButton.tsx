@@ -54,8 +54,6 @@ export function ActionButton({
     switch (block.__typename) {
       case 'ButtonBlock':
         return extractTitleAndConnection(block, t('Button'))
-      case 'FormBlock':
-        return extractTitleAndConnection(block, t('Form'))
       case 'RadioOptionBlock':
         return extractTitleAndConnection(block, t('Option'))
       case 'SignUpBlock':

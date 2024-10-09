@@ -30,7 +30,7 @@ export class JourneyPage {
     await this.enterJourneysTypography()
     await this.clickDoneBtn()
     await this.clickThreeDotBtnOfCustomJourney()
-    await this.clickTitleInThreeDotOptions()
+    await this.clickJourneyDetailsInThreeDotOptions()
     await this.enterTitle()
     await this.clickSaveBtn()
     await this.backIcon()
@@ -183,7 +183,7 @@ export class JourneyPage {
     await this.enterJourneysTypographyForTemplate()
     await this.clickDoneBtn()
     await this.clickThreeDotBtnOfCustomJourney()
-    await this.clickTitleInThreeDotOptions()
+    await this.clickJourneyDetailsInThreeDotOptions()
     await this.enterTitle()
     await this.clickSaveBtn()
     await this.backIcon()
@@ -288,11 +288,11 @@ export class JourneyPage {
     await this.page.locator('button#edit-journey-actions').click()
   }
 
-  async clickTitleInThreeDotOptions() {
+  async clickJourneyDetailsInThreeDotOptions() {
     await this.page
       .locator(
         'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
-        { hasText: 'Title' }
+        { hasText: 'Edit Details' }
       )
       .click()
   }
@@ -930,7 +930,10 @@ export class JourneyPage {
   }
 
   async clickPreviewBtnInCustomJourneyPage() {
-    await this.page.getByTestId('ItemsStack').getByLabel('Preview').click()
+    await this.page
+      .getByTestId('ItemsStack')
+      .getByRole('link', { name: 'Preview' })
+      .click()
   }
 
   async verifyPreviewFromCustomJourneyPage() {

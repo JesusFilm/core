@@ -18,7 +18,6 @@ export type Scalars = {
   Date: { input: any; output: any; }
   DateTime: { input: any; output: any; }
   Json: { input: any; output: any; }
-  join__DirectiveArguments: { input: any; output: any; }
   join__FieldSet: { input: any; output: any; }
   link__Import: { input: any; output: any; }
 };
@@ -31,6 +30,8 @@ export type Action = {
 
 export type AudioPreview = {
   __typename?: 'AudioPreview';
+  bitrate: Scalars['Int']['output'];
+  codec: Scalars['String']['output'];
   duration: Scalars['Int']['output'];
   language: Language;
   size: Scalars['Int']['output'];
@@ -302,8 +303,14 @@ export type CloudflareImage = {
   aspectRatio?: Maybe<ImageAspectRatio>;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
+  mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
+  mobileCinematicLow?: Maybe<Scalars['String']['output']>;
+  mobileCinematicVeryLow?: Maybe<Scalars['String']['output']>;
+  thumbnail?: Maybe<Scalars['String']['output']>;
   uploadUrl?: Maybe<Scalars['String']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
+  videoStill?: Maybe<Scalars['String']['output']>;
 };
 
 export type CloudflareVideo = {
@@ -361,6 +368,7 @@ export type CountryLanguage = {
   displaySpeakers?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
+  primary: Scalars['Boolean']['output'];
   speakers: Scalars['Int']['output'];
 };
 
@@ -470,49 +478,6 @@ export type Event = {
   journeyId: Scalars['ID']['output'];
   label?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
-};
-
-export type FormBlock = Block & {
-  __typename?: 'FormBlock';
-  action?: Maybe<Action>;
-  apiTokenExists: Scalars['Boolean']['output'];
-  form?: Maybe<Scalars['Json']['output']>;
-  formSlug?: Maybe<Scalars['String']['output']>;
-  forms: Array<FormiumForm>;
-  id: Scalars['ID']['output'];
-  journeyId: Scalars['ID']['output'];
-  parentBlockId?: Maybe<Scalars['ID']['output']>;
-  parentOrder?: Maybe<Scalars['Int']['output']>;
-  projectId?: Maybe<Scalars['String']['output']>;
-  projects: Array<FormiumProject>;
-};
-
-export type FormBlockCreateInput = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-  journeyId: Scalars['ID']['input'];
-  parentBlockId: Scalars['ID']['input'];
-};
-
-export type FormBlockUpdateInput = {
-  apiToken?: InputMaybe<Scalars['String']['input']>;
-  formSlug?: InputMaybe<Scalars['String']['input']>;
-  projectId?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type FormiumForm = {
-  __typename?: 'FormiumForm';
-  /** The name of the form */
-  name: Scalars['String']['output'];
-  /** The formSlug of the form */
-  slug: Scalars['String']['output'];
-};
-
-export type FormiumProject = {
-  __typename?: 'FormiumProject';
-  /** The projectId of the project */
-  id: Scalars['String']['output'];
-  /** The name of the project */
-  name: Scalars['String']['output'];
 };
 
 export enum GridAlignItems {
@@ -872,7 +837,6 @@ export type JourneyProfile = {
   id: Scalars['ID']['output'];
   journeyFlowBackButtonClicked?: Maybe<Scalars['Boolean']['output']>;
   lastActiveTeamId?: Maybe<Scalars['String']['output']>;
-  onboardingFormCompletedAt?: Maybe<Scalars['DateTime']['output']>;
   plausibleDashboardViewed?: Maybe<Scalars['Boolean']['output']>;
   plausibleJourneyFlowViewed?: Maybe<Scalars['Boolean']['output']>;
   userId: Scalars['ID']['output'];
@@ -1107,11 +1071,17 @@ export type Language = {
   __typename?: 'Language';
   audioPreview?: Maybe<AudioPreview>;
   bcp47?: Maybe<Scalars['String']['output']>;
+  countriesCount: Scalars['Int']['output'];
   countryLanguages: Array<CountryLanguage>;
+  featureFilmCount: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
   name: Array<LanguageName>;
+  primaryCountryId?: Maybe<Scalars['String']['output']>;
+  seriesCount: Scalars['Int']['output'];
+  shortFilmCount: Scalars['Int']['output'];
   slug?: Maybe<Scalars['String']['output']>;
+  speakerCount: Scalars['Int']['output'];
 };
 
 
@@ -1239,8 +1209,6 @@ export type Mutation = {
   customDomainUpdate: CustomDomain;
   deleteCloudflareImage: Scalars['Boolean']['output'];
   deleteCloudflareVideo: Scalars['Boolean']['output'];
-  formBlockCreate: FormBlock;
-  formBlockUpdate?: Maybe<FormBlock>;
   hostCreate: Host;
   hostDelete: Host;
   hostUpdate: Host;
@@ -1260,7 +1228,6 @@ export type Mutation = {
   journeyFeature?: Maybe<Journey>;
   journeyNotificationUpdate: JourneyNotification;
   journeyProfileCreate: JourneyProfile;
-  journeyProfileOnboardingFormComplete: JourneyProfile;
   journeyProfileUpdate: JourneyProfile;
   /** Sets journey status to published */
   journeyPublish?: Maybe<Journey>;
@@ -1519,17 +1486,6 @@ export type MutationDeleteCloudflareImageArgs = {
 
 export type MutationDeleteCloudflareVideoArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type MutationFormBlockCreateArgs = {
-  input: FormBlockCreateInput;
-};
-
-
-export type MutationFormBlockUpdateArgs = {
-  id: Scalars['ID']['input'];
-  input: FormBlockUpdateInput;
 };
 
 
@@ -2176,6 +2132,9 @@ export type Query = {
    */
   adminJourneys: Array<Journey>;
   adminJourneysReport?: Maybe<PowerBiEmbed>;
+  adminVideo: Video;
+  adminVideos: Array<Video>;
+  adminVideosCount: Scalars['Int']['output'];
   bibleBooks: Array<BibleBook>;
   bibleCitations: Array<BibleCitation>;
   block: Block;
@@ -2231,6 +2190,7 @@ export type Query = {
   keywords: Array<Keyword>;
   language?: Maybe<Language>;
   languages: Array<Language>;
+  languagesCount: Scalars['Int']['output'];
   listUnsplashCollectionPhotos: Array<UnsplashPhoto>;
   me?: Maybe<User>;
   searchUnsplashPhotos: UnsplashQueryResponse;
@@ -2270,6 +2230,24 @@ export type QueryAdminJourneysArgs = {
 
 export type QueryAdminJourneysReportArgs = {
   reportType: JourneysReportType;
+};
+
+
+export type QueryAdminVideoArgs = {
+  id: Scalars['ID']['input'];
+  idType?: InputMaybe<IdType>;
+};
+
+
+export type QueryAdminVideosArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<VideosFilter>;
+};
+
+
+export type QueryAdminVideosCountArgs = {
+  where?: InputMaybe<VideosFilter>;
 };
 
 
@@ -2407,6 +2385,11 @@ export type QueryLanguageArgs = {
 export type QueryLanguagesArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<LanguagesFilter>;
+};
+
+
+export type QueryLanguagesCountArgs = {
   where?: InputMaybe<LanguagesFilter>;
 };
 
@@ -3235,6 +3218,7 @@ export type Video = {
   mobileCinematicVeryLow?: Maybe<Scalars['String']['output']>;
   noIndex?: Maybe<Scalars['Boolean']['output']>;
   primaryLanguageId: Scalars['ID']['output'];
+  published: Scalars['Boolean']['output'];
   /** slug is a permanent link to the video. */
   slug: Scalars['String']['output'];
   snippet: Array<VideoSnippet>;
@@ -3995,6 +3979,7 @@ export type VisitorsConnection = {
 export enum Join__Graph {
   Analytics = 'ANALYTICS',
   Journeys = 'JOURNEYS',
+  JourneysModern = 'JOURNEYS_MODERN',
   Languages = 'LANGUAGES',
   Media = 'MEDIA',
   Users = 'USERS'

@@ -28,7 +28,7 @@ export enum ActiveSlide {
 }
 export enum ActiveCanvasDetailsDrawer {
   Properties = 0,
-  Footer = 1,
+  JourneyAppearance = 1,
   AddBlock = 2
 }
 export interface EditorState {

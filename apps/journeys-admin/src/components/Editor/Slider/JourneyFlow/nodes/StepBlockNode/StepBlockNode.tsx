@@ -1,7 +1,7 @@
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement } from 'react'
 import { NodeProps } from 'reactflow'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -30,10 +30,8 @@ export function StepBlockNode({
     importedSteps?.find((step) => step.id === id) ??
     steps?.find((step) => step.id === id)
 
-  const actionBlocks = useMemo(
-    () => (step != null ? [step, ...filterActionBlocks(step)] : []),
-    [step]
-  )
+  // const step = steps?.find((step) => step.id === id)
+  const actionBlocks = filterActionBlocks(step)
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
@@ -90,7 +88,10 @@ export function StepBlockNode({
         >
           {() => <StepBlockNodeCard step={step} selected={isSelected} />}
         </BaseNode>
-        <Stack direction="column" sx={{}}>
+        <Stack direction="column">
+          {journey?.website !== true && (
+            <ActionButton stepId={step.id} block={step} selected={isSelected} />
+          )}
           {actionBlocks.map((block) => (
             <ActionButton
               key={block.id}

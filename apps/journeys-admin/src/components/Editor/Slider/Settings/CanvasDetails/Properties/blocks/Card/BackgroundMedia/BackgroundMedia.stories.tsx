@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -206,17 +207,19 @@ const Template: StoryObj<typeof BackgroundMedia> = {
         }
       ]}
     >
-      <ThemeProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <EditorProvider
-            initialState={{
-              ...args
-            }}
-          >
-            <BackgroundMedia />
-          </EditorProvider>
-        </JourneyProvider>
-      </ThemeProvider>
+      <InstantSearchTestWrapper>
+        <ThemeProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <EditorProvider
+              initialState={{
+                ...args
+              }}
+            >
+              <BackgroundMedia />
+            </EditorProvider>
+          </JourneyProvider>
+        </ThemeProvider>
+      </InstantSearchTestWrapper>
     </MockedProvider>
   )
 }

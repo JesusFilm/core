@@ -7,7 +7,7 @@ import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import X2Icon from '@core/shared/ui/icons/X2'
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  width: 168,
+  minWidth: 168,
   borderRadius: 32,
   gap: 0,
   padding: '8px 20px 8px 20px',
