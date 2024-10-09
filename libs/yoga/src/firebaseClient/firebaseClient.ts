@@ -52,7 +52,9 @@ export function getUserIdFromPayload(
   const result = payloadSchema.safeParse(payload)
   if (result.success) return result.data.id
 
-  logger?.error(result.error, 'getUserIdFromPayload failed to parse')
+  if (payload != null)
+    logger?.error(result.error, 'getUserIdFromPayload failed to parse')
+
   return null
 }
 
@@ -73,7 +75,9 @@ export function getUserFromPayload(
   const result = payloadSchema.safeParse(payload)
   if (result.success) return result.data
 
-  logger?.error(result.error, 'getUserFromPayload failed to parse')
+  if (payload != null)
+    logger?.error(result.error, 'getUserFromPayload failed to parse')
+
   return null
 }
 
