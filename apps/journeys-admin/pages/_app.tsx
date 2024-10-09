@@ -38,8 +38,6 @@ type JourneysAdminAppProps = NextJsAppProps<{
   emotionCache?: EmotionCache
 }
 
-console.log('force rebuild')
-
 function JourneysAdminApp({
   Component,
   pageProps,
