@@ -41,9 +41,8 @@ export async function GET(request: NextRequest): Promise<Response> {
     query: GET_VIDEOS_CHILDREN
   })
 
-  // TODO: filter on parent relationship too
   const mediaComponentsLinks = data.videos
-    .filter((video) => video.children.length > 0)
+    .filter((video) => video.children.length > 0 || video.parents.length > 0)
     .map((video) => ({
       mediaComponentId: video.id,
       linkedMediaComponentIds: {
