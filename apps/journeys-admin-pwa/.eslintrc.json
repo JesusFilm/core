@@ -1,5 +1,9 @@
 {
-  "extends": ["plugin:@nx/react-typescript", "../../.eslintrc.json"],
+  "extends": [
+    "plugin:@nx/react-typescript",
+    "plugin:react/recommended",
+    "../../.eslintrc.json"
+  ],
   "ignorePatterns": ["!**/*"],
   "overrides": [
     {
@@ -30,7 +34,7 @@
       "rules": {}
     },
     {
-      "files": ["next-env.d.ts"],
+      "files": ["remix.env.d.ts"],
       "rules": {
         "@typescript-eslint/triple-slash-reference": "off"
       }

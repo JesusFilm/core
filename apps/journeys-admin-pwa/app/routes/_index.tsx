@@ -1,11 +1,11 @@
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
-
-import NxWelcome from '../nx-welcome'
 
 export default function Index(): ReactElement {
   return (
-    <div>
-      <NxWelcome title={'journeys-admin-pwa'} />
-    </div>
+    <Box>
+      <Typography variant="h1">Welcome to Next.js!</Typography>
+    </Box>
   )
 }

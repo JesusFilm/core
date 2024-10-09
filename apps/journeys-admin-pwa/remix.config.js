@@ -14,7 +14,8 @@ const config = {
   // assetsBuildDirectory: "public/build",
   // serverBuildPath: "build/index.js",
   // publicPath: "/build/",
-  watchPaths: () => createWatchPaths(__dirname)
+  watchPaths: () => createWatchPaths(__dirname),
+  serverDependenciesToBundle: [/@mui\/.*/]
 }
 
 export default config
