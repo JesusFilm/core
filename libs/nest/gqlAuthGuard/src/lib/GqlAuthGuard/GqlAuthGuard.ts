@@ -5,9 +5,9 @@ import { contextToUserId } from '@core/nest/common/firebaseClient'
 
 @Injectable()
 export class GqlAuthGuard implements CanActivate {
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  canActivate(context: ExecutionContext): boolean {
     const req = GqlExecutionContext.create(context).getContext().req
-    const userId = await contextToUserId(context)
+    const userId = contextToUserId(context)
     req.userId = userId
     return userId != null
   }

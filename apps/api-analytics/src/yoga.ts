@@ -9,7 +9,7 @@ import { rules } from './lib/rules'
 import { schema } from './schema'
 import { Context } from './schema/builder'
 
-export const yoga = createYoga({
+export const yoga = createYoga<Record<string, unknown>, Context>({
   schema,
   context: async ({ request }) => {
     const apiKey = request.headers
@@ -20,7 +20,7 @@ export const yoga = createYoga({
       ...initContextCache(),
       currentUser: await getUserFromApiKey(apiKey),
       apiKey
-    } satisfies Context
+    }
   },
   plugins: [
     process.env.NODE_ENV !== 'test'

@@ -30,6 +30,8 @@ export type Action = {
 
 export type AudioPreview = {
   __typename?: 'AudioPreview';
+  bitrate: Scalars['Int']['output'];
+  codec: Scalars['String']['output'];
   duration: Scalars['Int']['output'];
   language: Language;
   size: Scalars['Int']['output'];
@@ -366,6 +368,7 @@ export type CountryLanguage = {
   displaySpeakers?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
+  primary: Scalars['Boolean']['output'];
   speakers: Scalars['Int']['output'];
 };
 
@@ -1068,11 +1071,17 @@ export type Language = {
   __typename?: 'Language';
   audioPreview?: Maybe<AudioPreview>;
   bcp47?: Maybe<Scalars['String']['output']>;
+  countriesCount: Scalars['Int']['output'];
   countryLanguages: Array<CountryLanguage>;
+  featureFilmCount: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
   name: Array<LanguageName>;
+  primaryCountryId?: Maybe<Scalars['String']['output']>;
+  seriesCount: Scalars['Int']['output'];
+  shortFilmCount: Scalars['Int']['output'];
   slug?: Maybe<Scalars['String']['output']>;
+  speakerCount: Scalars['Int']['output'];
 };
 
 
@@ -2125,6 +2134,7 @@ export type Query = {
   adminJourneysReport?: Maybe<PowerBiEmbed>;
   adminVideo: Video;
   adminVideos: Array<Video>;
+  adminVideosCount: Scalars['Int']['output'];
   bibleBooks: Array<BibleBook>;
   bibleCitations: Array<BibleCitation>;
   block: Block;
@@ -2180,6 +2190,7 @@ export type Query = {
   keywords: Array<Keyword>;
   language?: Maybe<Language>;
   languages: Array<Language>;
+  languagesCount: Scalars['Int']['output'];
   listUnsplashCollectionPhotos: Array<UnsplashPhoto>;
   me?: Maybe<User>;
   searchUnsplashPhotos: UnsplashQueryResponse;
@@ -2231,6 +2242,11 @@ export type QueryAdminVideoArgs = {
 export type QueryAdminVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<VideosFilter>;
+};
+
+
+export type QueryAdminVideosCountArgs = {
   where?: InputMaybe<VideosFilter>;
 };
 
@@ -2369,6 +2385,11 @@ export type QueryLanguageArgs = {
 export type QueryLanguagesArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<LanguagesFilter>;
+};
+
+
+export type QueryLanguagesCountArgs = {
   where?: InputMaybe<LanguagesFilter>;
 };
 

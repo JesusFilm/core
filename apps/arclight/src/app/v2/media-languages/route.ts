@@ -5,30 +5,43 @@ import { getApolloClient } from '../../../lib/apolloClient'
 import { paramsToRecord } from '../../../lib/paramsToRecord'
 
 /* TODO: 
-  querystring:
-    apiKey
-    term
+querystring:
+  apiKey
+  term
     iso3
     bcp47
     ids
     countryIds
-    type
+type
     subTypes
     contentTypes
     expand
     filter
 */
-
 const GET_LANGUAGES = graphql(`
-  query GetLanguagesWithTags($limit: Int, $offset: Int) {
-    languages(limit: $limit, offset: $offset) {
+  query GetLanguagesWithTags {
+    languages {
       id
       iso3
       bcp47
       name {
         value
       }
+      audioPreview {
+        size
+        value
+        duration
+        bitrate
+        codec
+      }
+      speakerCount
+      countriesCount
+      primaryCountryId
+      seriesCount
+      featureFilmCount
+      shortFilmCount
     }
+    languagesCount
   }
 `)
 
@@ -71,19 +84,46 @@ export async function GET(request: NextRequest): Promise<Response> {
   }).toString()
 
   const mediaLanguages = data.languages.map((language) => ({
-    languageId: language.id,
+    languageId: Number(language.id),
     iso3: language.iso3,
     bcp47: language.bcp47,
-    // TODO: investigate
-    counts: {},
-    // TODO investigate
-    audioPreview: {},
-    // TODO implement
-    primaryCountryId: '',
-    name: language.name[0].value,
-    nameNative: language.name[1].value,
-    // TODO investigate
-    metadataLanguageTag: '',
+    counts: {
+      speakerCount: {
+        value: language.speakerCount,
+        description: 'Number of speakers'
+      },
+      countriesCount: {
+        value: language.countriesCount,
+        description: 'Number of countries'
+      },
+      series: {
+        value: language.seriesCount,
+        description: 'Series'
+      },
+      featureFilm: {
+        value: language.featureFilmCount,
+        description: 'Feature Film'
+      },
+      shortFilm: {
+        value: language.shortFilmCount,
+        description: 'Short Film'
+      }
+    },
+    audioPreview:
+      language.audioPreview != null
+        ? {
+            url: language.audioPreview.value,
+            audioBitrate: language.audioPreview.bitrate,
+            audioContainer: language.audioPreview.codec,
+            sizeInBytes: language.audioPreview.size
+          }
+        : null,
+    primaryCountryId: language.primaryCountryId ?? '',
+    name: language.name[0]?.value,
+    nameNative: language.name[1]?.value,
+    alternateLanguageName: '',
+    alternateLanguageNameNative: '',
+    metadataLanguageTag: 'en', // TODO: Get from parameters
     _links: {
       self: {
         // TODO queerystring
@@ -95,10 +135,8 @@ export async function GET(request: NextRequest): Promise<Response> {
   const response = {
     page,
     limit,
-    // TODO implement
-    pages: 1234,
-    // TODO implement
-    total: 1234,
+    pages: Math.ceil(Number(data.languagesCount) / limit),
+    total: data.languagesCount,
     _links: {
       self: {
         href: `http://api.arclight.org/v2/media-languages?${queryString}`

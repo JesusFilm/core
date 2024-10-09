@@ -10,6 +10,8 @@ const bigQueryAudioPreview = {
   duration: 10,
   size: 1024,
   value: 'abc.mp3',
+  bitrate: 128,
+  container: 'mp3',
   updatedAt: { value: '2021-01-01T00:00:00.000Z' }
 }
 const prismaAudioPreview = {
@@ -17,6 +19,8 @@ const prismaAudioPreview = {
   size: 1024,
   duration: 10,
   languageId: '20615',
+  bitrate: 128,
+  codec: 'mp3',
   updatedAt: '2021-01-01T00:00:00.000Z'
 }
 
@@ -66,7 +70,7 @@ describe('bigQuery/importers/audioPreviews', () => {
 
   describe('importMany', () => {
     it('should import many audio previews', async () => {
-      prismaMock.audioPreview.createMany.mockImplementation()
+      prismaMock.audioPreview.createMany.mockResolvedValue({ count: 2 })
       await importMany([bigQueryAudioPreview, bigQueryAudioPreview])
       expect(prismaMock.audioPreview.createMany).toHaveBeenCalledWith({
         data: [prismaAudioPreview, prismaAudioPreview],
@@ -75,7 +79,6 @@ describe('bigQuery/importers/audioPreviews', () => {
     })
 
     it('should throw error if some rows do not match schema', async () => {
-      prismaMock.audioPreview.createMany.mockImplementation()
       await expect(
         importMany([
           bigQueryAudioPreview,
