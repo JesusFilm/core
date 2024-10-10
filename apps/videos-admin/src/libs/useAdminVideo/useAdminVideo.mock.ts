@@ -18,8 +18,12 @@ export const useAdminVideoMock: MockedResponse<
     data: {
       adminVideo: {
         id: '1_jf-0-0',
-        image:
-          'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
+        images: [
+          {
+            mobileCinematicHigh:
+              'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg'
+          }
+        ],
         imageAlt: [
           {
             id: 'e53b7688-f286-4743-983d-e8dacce35ad9',
