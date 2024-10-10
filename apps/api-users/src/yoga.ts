@@ -8,14 +8,16 @@ import get from 'lodash/get'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { prisma } from './lib/prisma'
+import { logger } from './logger'
 import { schema } from './schema'
 import { Context } from './schema/builder'
 
 export const yoga = createYoga<Record<string, unknown>, Context>({
   schema,
+  logging: logger,
   context: ({ request, params }) => {
     const payload = get(params, 'extensions.jwt.payload')
-    const currentUser = getUserFromPayload(payload)
+    const currentUser = getUserFromPayload(payload, logger)
     const interopToken = request.headers.get('interop-token')
     const ipAddress = request.headers.get('x-forwarded-for')
 

@@ -1,0 +1,2 @@
+import './videoVariantCreate'
+import './videoVariantUpdate'

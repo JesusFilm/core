@@ -4,11 +4,14 @@ import {
   defineConfig
 } from '@graphql-hive/gateway'
 
+import logger from './src/logger'
+
 const googleApplication = JSON.parse(
   process.env.GOOGLE_APPLICATION_JSON ?? '{}'
 )
 
 export const gatewayConfig = defineConfig({
+  logging: logger,
   port: 4000,
   graphqlEndpoint: '/',
   healthCheckEndpoint: '/health',

@@ -391,6 +391,32 @@ type Mutation @join__type(graph: ANALYTICS)  @join__type(graph: JOURNEYS)  @join
   deleteCloudflareVideo(id: ID!) : Boolean! @join__field(graph: MEDIA) 
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!) : CloudflareImage! @join__field(graph: MEDIA)  @deprecated(reason: "use createCloudflareImageFromPrompt") 
   triggerUnsplashDownload(url: String!) : Boolean! @join__field(graph: MEDIA) 
+  videoCreate(input: VideoCreateInput!) : Video! @join__field(graph: MEDIA) 
+  videoUpdate(input: VideoUpdateInput!) : Video! @join__field(graph: MEDIA) 
+  videoDescriptionCreate(input: VideoTranslationCreateInput!) : VideoDescription! @join__field(graph: MEDIA) 
+  videoDescriptionUpdate(input: VideoTranslationUpdateInput!) : VideoDescription! @join__field(graph: MEDIA) 
+  videoDescriptionDelete(id: ID!) : VideoDescription! @join__field(graph: MEDIA) 
+  videoImageAltCreate(input: VideoTranslationCreateInput!) : VideoImageAlt! @join__field(graph: MEDIA) 
+  videoImageAltUpdate(input: VideoTranslationUpdateInput!) : VideoImageAlt! @join__field(graph: MEDIA) 
+  videoImageAltDelete(id: ID!) : VideoImageAlt! @join__field(graph: MEDIA) 
+  videoSnippetCreate(input: VideoTranslationCreateInput!) : VideoSnippet! @join__field(graph: MEDIA) 
+  videoSnippetUpdate(input: VideoTranslationUpdateInput!) : VideoSnippet! @join__field(graph: MEDIA) 
+  videoSnippetDelete(id: ID!) : VideoSnippet! @join__field(graph: MEDIA) 
+  videoStudyQuestionCreate(input: VideoStudyQuestionCreateInput!) : VideoStudyQuestion! @join__field(graph: MEDIA) 
+  videoStudyQuestionUpdate(input: VideoStudyQuestionUpdateInput!) : VideoStudyQuestion! @join__field(graph: MEDIA) 
+  videoStudyQuestionDelete(id: ID!) : VideoStudyQuestion! @join__field(graph: MEDIA) 
+  videoSubtitleCreate(input: VideoSubtitleCreateInput!) : VideoSubtitle! @join__field(graph: MEDIA) 
+  videoSubtitleUpdate(input: VideoSubtitleUpdateInput!) : VideoSubtitle! @join__field(graph: MEDIA) 
+  videoSubtitleDelete(id: ID!) : VideoSubtitle! @join__field(graph: MEDIA) 
+  videoTitleCreate(input: VideoTranslationCreateInput!) : VideoTitle! @join__field(graph: MEDIA) 
+  videoTitleUpdate(input: VideoTranslationUpdateInput!) : VideoTitle! @join__field(graph: MEDIA) 
+  videoTitleDelete(id: ID!) : VideoTitle! @join__field(graph: MEDIA) 
+  videoVariantCreate(input: VideoVariantCreateInput!) : VideoVariant! @join__field(graph: MEDIA) 
+  videoVariantUpdate(input: VideoVariantUpdateInput!) : VideoVariant! @join__field(graph: MEDIA) 
+  videoVariantDelete(id: ID!) : VideoVariant! @join__field(graph: MEDIA) 
+  videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!) : VideoVariantDownload! @join__field(graph: MEDIA) 
+  videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!) : VideoVariantDownload! @join__field(graph: MEDIA) 
+  videoVariantDownloadDelete(id: ID!) : VideoVariantDownload! @join__field(graph: MEDIA) 
   userImpersonate(email: String!) : String @join__field(graph: USERS) 
   createVerificationRequest(input: CreateVerificationRequestInput) : Boolean @join__field(graph: USERS) 
   validateEmail(email: String!, token: String!) : User @join__field(graph: USERS) 
@@ -3639,6 +3665,129 @@ input LanguagesFilter @join__type(graph: LANGUAGES)  {
 input ImageInput @join__type(graph: MEDIA)  {
   aspectRatio: ImageAspectRatio
   videoId: ID
+}
+
+input VideoCreateInput @join__type(graph: MEDIA)  {
+  id: String!
+  label: VideoLabel!
+  primaryLanguageId: String!
+  published: Boolean!
+  slug: String!
+  noIndex: Boolean!
+  childIds: [String!]!
+}
+
+input VideoStudyQuestionCreateInput @join__type(graph: MEDIA)  {
+  id: ID
+  videoId: String!
+  value: String!
+  primary: Boolean!
+  languageId: String!
+  crowdInId: String
+  """
+  index from 1
+  """
+  order: Int!
+}
+
+input VideoStudyQuestionUpdateInput @join__type(graph: MEDIA)  {
+  id: ID!
+  value: String
+  primary: Boolean
+  languageId: String
+  crowdInId: String
+  """
+  index from 1
+  """
+  order: Int
+}
+
+input VideoSubtitleCreateInput @join__type(graph: MEDIA)  {
+  id: ID
+  videoId: String!
+  edition: String!
+  vttSrc: String
+  srtSrc: String
+  primary: Boolean!
+  languageId: String!
+}
+
+input VideoSubtitleUpdateInput @join__type(graph: MEDIA)  {
+  id: ID!
+  edition: String!
+  vttSrc: String
+  srtSrc: String
+  primary: Boolean
+  languageId: String
+}
+
+input VideoTranslationCreateInput @join__type(graph: MEDIA)  {
+  id: ID
+  videoId: String!
+  value: String!
+  primary: Boolean!
+  languageId: String!
+}
+
+input VideoTranslationUpdateInput @join__type(graph: MEDIA)  {
+  id: ID!
+  value: String
+  primary: Boolean
+  languageId: String
+}
+
+input VideoUpdateInput @join__type(graph: MEDIA)  {
+  id: String!
+  label: VideoLabel
+  primaryLanguageId: String
+  published: Boolean
+  slug: String
+  noIndex: Boolean
+  childIds: [String!]
+}
+
+input VideoVariantCreateInput @join__type(graph: MEDIA)  {
+  id: String!
+  videoId: String!
+  edition: String!
+  hls: String
+  dash: String
+  share: String
+  duration: Int
+  languageId: String!
+  slug: String!
+}
+
+input VideoVariantDownloadCreateInput @join__type(graph: MEDIA)  {
+  id: String
+  videoVariantId: String!
+  quality: VideoVariantDownloadQuality!
+  size: Float
+  height: Int
+  width: Int
+  url: String!
+}
+
+input VideoVariantDownloadUpdateInput @join__type(graph: MEDIA)  {
+  id: String!
+  videoVariantId: String
+  quality: VideoVariantDownloadQuality
+  size: Float
+  height: Int
+  width: Int
+  url: String
+}
+
+input VideoVariantUpdateInput @join__type(graph: MEDIA)  {
+  id: String!
+  videoId: String
+  edition: String
+  hls: String
+  dash: String
+  share: String
+  duration: Int
+  languageId: String
+  slug: String
 }
 
 input VideosFilter @join__type(graph: MEDIA)  {

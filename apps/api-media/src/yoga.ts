@@ -13,6 +13,7 @@ import get from 'lodash/get'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { prisma } from './lib/prisma'
+import { logger } from './logger'
 import { schema } from './schema'
 import { Context } from './schema/builder'
 
@@ -20,9 +21,10 @@ export const cache = createInMemoryCache()
 
 export const yoga = createYoga<Record<string, unknown>, Context>({
   schema,
+  logging: logger,
   context: async ({ params }) => {
     const payload = get(params, 'extensions.jwt.payload')
-    const user = getUserFromPayload(payload)
+    const user = getUserFromPayload(payload, logger)
 
     return {
       ...initContextCache(),
