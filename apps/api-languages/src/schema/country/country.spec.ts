@@ -60,8 +60,8 @@ describe('country', () => {
       countryLanguages: [{ id: '1', language, speakers: 100 }]
     } as unknown as Country)
 
-    prismaMock.countryLanguage.count.mockResolvedValue(1)
-    prismaMock.language.count.mockResolvedValue(2)
+    prismaMock.countryLanguage.count.mockResolvedValue(2)
+    prismaMock.language.count.mockResolvedValue(1)
 
     prismaMock.countryName.findMany.mockResolvedValue([countryName])
     prismaMock.continentName.findMany.mockResolvedValue([continentName])
