@@ -120,7 +120,7 @@ const video: TreeBlock<VideoBlock> = {
         value: '#FallingPlates'
       }
     ],
-    image: null,
+    images: [],
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -145,7 +145,7 @@ const getVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
       video: {
         __typename: 'Video',
         id: 'videoId',
-        image: null,
+        images: [],
         primaryLanguageId: '529',
         title: [
           {
