@@ -8,6 +8,7 @@ import {
   Video,
   VideoDescription,
   VideoImageAlt,
+  VideoLabel,
   VideoSnippet,
   VideoStudyQuestion,
   VideoSubtitle,
@@ -1671,6 +1672,155 @@ describe('video', () => {
           ]
         }
         expect(getLanguageIdFromInfo(info, parentId)).toBe('primaryLanguageId')
+      })
+    })
+  })
+
+  describe('mutations', () => {
+    describe('videoCreate', () => {
+      const CREATE_VIDEO_MUTATION = graphql(`
+        mutation CreateVideo($input: VideoCreateInput!) {
+          videoCreate(input: $input) {
+            id
+          }
+        }
+      `)
+
+      it('should create video', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.create.mockResolvedValue({
+          id: 'id',
+          label: VideoLabel.featureFilm,
+          primaryLanguageId: 'primaryLanguageId',
+          published: true,
+          slug: 'slug',
+          noIndex: true,
+          childIds: []
+        } as unknown as Video)
+        const result = await authClient({
+          document: CREATE_VIDEO_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              label: VideoLabel.featureFilm,
+              primaryLanguageId: 'primaryLanguageId',
+              published: true,
+              slug: 'slug',
+              noIndex: true,
+              childIds: []
+            }
+          }
+        })
+        expect(prismaMock.video.create).toHaveBeenCalledWith({
+          data: {
+            id: 'id',
+            label: 'featureFilm',
+            primaryLanguageId: 'primaryLanguageId',
+            published: true,
+            slug: 'slug',
+            noIndex: true,
+            childIds: []
+          }
+        })
+        expect(result).toHaveProperty('data.videoCreate', {
+          id: 'id'
+        })
+      })
+
+      it('should fail if not publisher', async () => {
+        const result = await client({
+          document: CREATE_VIDEO_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              label: VideoLabel.featureFilm,
+              primaryLanguageId: 'primaryLanguageId',
+              published: true,
+              slug: 'slug',
+              noIndex: true,
+              childIds: []
+            }
+          }
+        })
+        expect(result).toHaveProperty('data', null)
+      })
+    })
+
+    describe('videoUpdate', () => {
+      const VIDEO_UPDATE_MUTATION = graphql(`
+        mutation VideoUpdate($input: VideoUpdateInput!) {
+          videoUpdate(input: $input) {
+            id
+          }
+        }
+      `)
+
+      it('should update video', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.update.mockResolvedValue({
+          id: 'id',
+          label: VideoLabel.episode,
+          primaryLanguageId: 'primaryLanguageId',
+          published: true,
+          slug: 'slug',
+          noIndex: true,
+          childIds: []
+        } as unknown as Video)
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              label: VideoLabel.episode,
+              primaryLanguageId: 'primaryLanguageId',
+              published: true,
+              slug: 'slug',
+              noIndex: true,
+              childIds: []
+            }
+          }
+        })
+        expect(prismaMock.video.update).toHaveBeenCalledWith({
+          where: { id: 'id' },
+          include: { children: true },
+          data: {
+            label: 'episode',
+            primaryLanguageId: 'primaryLanguageId',
+            published: true,
+            slug: 'slug',
+            noIndex: true,
+            childIds: []
+          }
+        })
+        expect(result).toHaveProperty('data.videoUpdate', {
+          id: 'id'
+        })
+      })
+
+      it('should fail if not publisher', async () => {
+        const result = await client({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              label: VideoLabel.segment,
+              primaryLanguageId: 'primaryLanguageId',
+              published: true,
+              slug: 'slug',
+              noIndex: true,
+              childIds: []
+            }
+          }
+        })
+        expect(result).toHaveProperty('data', null)
       })
     })
   })
