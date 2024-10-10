@@ -313,11 +313,6 @@ type Video
   description(languageId: ID, primary: Boolean): [VideoDescription!]!
   studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]!
   imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]!
-  videoStill: String
-  thumbnail: String
-  mobileCinematicHigh: String
-  mobileCinematicLow: String
-  mobileCinematicVeryLow: String
   variantLanguages: [Language!]!
   variantLanguagesCount: Int!
 

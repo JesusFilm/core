@@ -872,11 +872,6 @@ type Video @join__type(graph: JOURNEYS, key: "id primaryLanguageId")  @join__typ
   description(languageId: ID, primary: Boolean) : [VideoDescription!]! @join__field(graph: MEDIA) 
   studyQuestions(languageId: ID, primary: Boolean) : [VideoStudyQuestion!]! @join__field(graph: MEDIA) 
   imageAlt(languageId: ID, primary: Boolean) : [VideoImageAlt!]! @join__field(graph: MEDIA) 
-  videoStill: String @join__field(graph: MEDIA) 
-  thumbnail: String @join__field(graph: MEDIA) 
-  mobileCinematicHigh: String @join__field(graph: MEDIA) 
-  mobileCinematicLow: String @join__field(graph: MEDIA) 
-  mobileCinematicVeryLow: String @join__field(graph: MEDIA) 
   variantLanguages: [Language!]! @join__field(graph: MEDIA) 
   variantLanguagesCount: Int! @join__field(graph: MEDIA) 
   """

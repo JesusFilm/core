@@ -3368,9 +3368,6 @@ export type Video = {
   images: Array<CloudflareImage>;
   keywords: Array<Keyword>;
   label: VideoLabel;
-  mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
-  mobileCinematicLow?: Maybe<Scalars['String']['output']>;
-  mobileCinematicVeryLow?: Maybe<Scalars['String']['output']>;
   noIndex?: Maybe<Scalars['Boolean']['output']>;
   primaryLanguageId: Scalars['ID']['output'];
   published: Scalars['Boolean']['output'];
@@ -3379,14 +3376,12 @@ export type Video = {
   snippet: Array<VideoSnippet>;
   studyQuestions: Array<VideoStudyQuestion>;
   subtitles: Array<VideoSubtitle>;
-  thumbnail?: Maybe<Scalars['String']['output']>;
   title: Array<VideoTitle>;
   variant?: Maybe<VideoVariant>;
   variantLanguages: Array<Language>;
   variantLanguagesCount: Scalars['Int']['output'];
   variantLanguagesWithSlug: Array<LanguageWithSlug>;
   variants: Array<VideoVariant>;
-  videoStill?: Maybe<Scalars['String']['output']>;
 };
 
 
