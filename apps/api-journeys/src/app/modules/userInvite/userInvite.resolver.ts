@@ -129,6 +129,10 @@ export class UserInviteResolver {
   @Mutation()
   @UseGuards(AppCaslGuard)
   async userInviteAcceptAll(@CurrentUser() user: User): Promise<UserInvite[]> {
+    if (user.email == null)
+      throw new GraphQLError('User must have an email to accept invites', {
+        extensions: { code: 'BAD_REQUEST' }
+      })
     const userInvites = await this.prismaService.userInvite.findMany({
       where: {
         email: user.email,

@@ -6,11 +6,13 @@ import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import { getUserFromApiKey } from './lib/auth'
 import { prisma } from './lib/prisma'
 import { rules } from './lib/rules'
+import { logger } from './logger'
 import { schema } from './schema'
 import { Context } from './schema/builder'
 
 export const yoga = createYoga<Record<string, unknown>, Context>({
   schema,
+  logging: logger,
   context: async ({ request }) => {
     const apiKey = request.headers
       .get('authorization')

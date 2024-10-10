@@ -9,7 +9,9 @@ import { IdType, IdTypeShape } from '../enums/idType'
 import { Language, LanguageWithSlug } from '../language'
 
 import { VideoLabel } from './enums/videoLabel'
+import { VideoCreateInput } from './inputs/videoCreate'
 import { VideosFilter } from './inputs/videosFilter'
+import { VideoUpdateInput } from './inputs/videoUpdate'
 import { videosFilter } from './lib/videosFilter'
 
 interface Info {
@@ -407,6 +409,51 @@ builder.queryFields((t) => ({
       filter.published = true
       return await prisma.video.count({
         where: filter
+      })
+    }
+  })
+}))
+
+builder.mutationFields((t) => ({
+  videoCreate: t.prismaField({
+    type: 'Video',
+    args: {
+      input: t.arg({ type: VideoCreateInput, required: true })
+    },
+    authScopes: {
+      isPublisher: true
+    },
+    resolve: async (query, _parent, { input }) => {
+      return await prisma.video.create({
+        ...query,
+        data: input
+      })
+    }
+  }),
+  videoUpdate: t.prismaField({
+    type: 'Video',
+    authScopes: {
+      isPublisher: true
+    },
+    args: {
+      input: t.arg({ type: VideoUpdateInput, required: true })
+    },
+    resolve: async (query, _parent, { input }) => {
+      return await prisma.video.update({
+        ...query,
+        where: { id: input.id },
+        data: {
+          label: input.label ?? undefined,
+          primaryLanguageId: input.primaryLanguageId ?? undefined,
+          published: input.published ?? undefined,
+          slug: input.slug ?? undefined,
+          noIndex: input.noIndex ?? undefined,
+          childIds: input.childIds ?? undefined
+        },
+        include: {
+          ...query.include,
+          children: true
+        }
       })
     }
   })

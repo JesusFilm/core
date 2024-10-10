@@ -7,7 +7,7 @@ export interface User {
   id: string
   firstName: string
   lastName?: string
-  email: string
+  email?: string | null
   imageUrl?: string | null
   emailVerified: boolean
 }
@@ -29,8 +29,8 @@ const payloadSchema = z
     name: z.string().nullish(),
     picture: z.string().nullish(),
     user_id: z.string(),
-    email: z.string(),
-    email_verified: z.boolean()
+    email: z.string().nullish(),
+    email_verified: z.boolean().nullish()
   })
   .transform((data) => ({
     id: data.user_id,
@@ -38,7 +38,7 @@ const payloadSchema = z
     lastName: data.name?.split(' ').slice(-1).join(' '),
     email: data.email,
     imageUrl: data.picture,
-    emailVerified: data.email_verified
+    emailVerified: data.email_verified ?? false
   }))
 
 export const auth = getAuth(firebaseClient)
