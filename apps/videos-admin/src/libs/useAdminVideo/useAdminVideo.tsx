@@ -5,7 +5,9 @@ export const GET_ADMIN_VIDEO = graphql(`
   query GetAdminVideo($videoId: ID!) {
     adminVideo(id: $videoId) {
       id
-      image
+      images(aspectRatio: banner) {
+        mobileCinematicHigh
+      }
       imageAlt {
         id
         value

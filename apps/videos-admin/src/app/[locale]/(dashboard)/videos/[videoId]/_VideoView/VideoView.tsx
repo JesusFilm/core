@@ -35,7 +35,7 @@ export function VideoView(): ReactElement {
           }}
         >
           <Image
-            src={data?.adminVideo.image as string}
+            src={data?.adminVideo.images[0].mobileCinematicHigh as string}
             alt={`${data?.adminVideo.imageAlt[0].value}`}
             layout="fill"
             objectFit="cover"
