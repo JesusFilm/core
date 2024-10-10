@@ -46,8 +46,12 @@ export async function GET(request: NextRequest): Promise<Response> {
     .map((video) => ({
       mediaComponentId: video.id,
       linkedMediaComponentIds: {
-        ...(video.children.length > 0 ? { contains: video.children.map(({ id }) => id) } : {}),
-        ...(video.parents.length > 0 ? { containedBy: video.parents.map(({ id }) => id) } : {})
+        ...(video.children.length > 0
+          ? { contains: video.children.map(({ id }) => id) }
+          : {}),
+        ...(video.parents.length > 0
+          ? { containedBy: video.parents.map(({ id }) => id) }
+          : {})
       }
     }))
 

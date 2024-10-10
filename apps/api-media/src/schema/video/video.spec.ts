@@ -110,7 +110,7 @@ describe('video', () => {
       slug: null,
       noIndex: null,
       published: true,
-      childIds: []  
+      childIds: []
     }
   ]
 
@@ -681,7 +681,7 @@ describe('video', () => {
         id: 'variantId'
       } as unknown as VideoVariant)
       const data = await client({
-        document: VIDEOS_QUERY, 
+        document: VIDEOS_QUERY,
         variables: {
           languageId: '987',
           primary: false,
