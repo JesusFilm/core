@@ -36,7 +36,7 @@ export const gatewayConfig = defineConfig({
   openTelemetry: {
     exporters: [
       createOtlpHttpExporter({
-        url: `http://${process.env.DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT}`
+        url: 'http://0.0.0.0:4318'
       })
     ],
     serviceName: 'api-gateway'

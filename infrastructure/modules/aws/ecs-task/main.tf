@@ -98,6 +98,10 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         {
           name  = "NODE_ENV",
           value = "production"
+        },
+        {
+          name  = "SERVICE_NAME",
+          value = var.service_config.name
         }
       ]
       mountPoints = []
@@ -158,10 +162,6 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         {
           name  = "ECS_FARGATE",
           value = "true"
-        },
-        {
-          name  = "SERVICE_NAME",
-          value = var.service_config.name
         }
       ]
       secrets = [
@@ -172,6 +172,16 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
       ]
       mountPoints = []
       portMappings = [
+        {
+          protocol      = "tcp"
+          hostPort      = 4317
+          containerPort = 4317
+        },
+        {
+          protocol      = "tcp"
+          hostPort      = 4318
+          containerPort = 4318
+        },
         {
           protocol      = "udp"
           hostPort      = 8125

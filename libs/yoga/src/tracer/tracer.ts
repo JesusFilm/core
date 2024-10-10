@@ -19,7 +19,7 @@ export const provider = new NodeTracerProvider({
 provider.addSpanProcessor(
   new SimpleSpanProcessor(
     new OTLPTraceExporter({
-      url: `http://${process.env.DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT}`
+      url: 'http://0.0.0.0:4318'
     })
   )
 )
