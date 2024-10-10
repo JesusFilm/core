@@ -1,3 +1,4 @@
+import { ApolloClient, useApolloClient } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
@@ -17,7 +18,16 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
+jest.mock('@apollo/client', () => ({
+  __esModule: true,
+  ...jest.requireActual('@apollo/client'),
+  useApolloClient: jest.fn()
+}))
+
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseApolloClient = useApolloClient as jest.MockedFunction<
+  typeof useApolloClient
+>
 
 describe('UserMenu', () => {
   const handleProfileClose = jest.fn()
@@ -108,6 +118,10 @@ describe('UserMenu', () => {
   })
 
   it('should call signOut on logout click', async () => {
+    const clearStore = jest.fn()
+    mockUseApolloClient.mockReturnValue({
+      clearStore
+    } as unknown as ApolloClient<object>)
     const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
       request: {
         query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -171,6 +185,7 @@ describe('UserMenu', () => {
       expect(getByText('Logout successful')).toBeInTheDocument()
     )
     expect(getTeams.result).toHaveBeenCalled()
+    expect(clearStore).toHaveBeenCalled()
   })
 
   it('should open language selector', async () => {
