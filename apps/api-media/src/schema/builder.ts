@@ -1,8 +1,13 @@
+// eslint-disable-next-line import/order -- Must be imported first
+import { tracer } from '@core/yoga/tracer'
+
 import SchemaBuilder from '@pothos/core'
 import DirectivesPlugin from '@pothos/plugin-directives'
 import FederationPlugin from '@pothos/plugin-federation'
 import pluginName from '@pothos/plugin-prisma'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
+import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
+import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 import { DateResolver } from 'graphql-scalars'
 
 import { MediaRole, Prisma } from '.prisma/api-media-client'
@@ -18,6 +23,10 @@ export interface Context {
   user: User | null
 }
 
+const createSpan = createOpenTelemetryWrapper(tracer, {
+  includeSource: true
+})
+
 export const builder = new SchemaBuilder<{
   Context: Context
   AuthScopes: {
@@ -30,7 +39,17 @@ export const builder = new SchemaBuilder<{
     ID: { Input: string; Output: number | string }
   }
 }>({
-  plugins: [ScopeAuthPlugin, PrismaPlugin, DirectivesPlugin, FederationPlugin],
+  plugins: [
+    TracingPlugin,
+    ScopeAuthPlugin,
+    PrismaPlugin,
+    DirectivesPlugin,
+    FederationPlugin
+  ],
+  tracing: {
+    default: (config) => isRootField(config),
+    wrap: (resolver, options) => createSpan(resolver, options)
+  },
   scopeAuth: {
     authScopes: async (context) => ({
       isAuthenticated: context.user != null,

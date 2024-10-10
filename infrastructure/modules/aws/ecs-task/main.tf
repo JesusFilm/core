@@ -158,6 +158,10 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         {
           name  = "ECS_FARGATE",
           value = "true"
+        },
+        {
+          name  = "SERVICE_NAME",
+          value = var.service_config.name
         }
       ]
       secrets = [
