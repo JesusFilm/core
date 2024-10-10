@@ -4,5 +4,7 @@
 # - inform all developers to run npm i
 FROM  ghcr.io/ardatan/hive-gateway:1.0.5
 EXPOSE 4000
+RUN npm install pino@^9.3.2
 COPY ./apps/api-gateway/gateway.prod.config.ts gateway.config.ts
+COPY ./apps/api-gateway/src src
 CMD ["supergraph"]

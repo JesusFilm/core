@@ -29,19 +29,19 @@ export const auth = getAuth(firebaseClient)
 
 const payloadSchema = z
   .object({
-    name: z.string(),
+    name: z.string().nullish(),
     picture: z.string().nullish(),
     user_id: z.string(),
     email: z.string(),
-    email_verified: z.boolean()
+    email_verified: z.boolean().nullish()
   })
   .transform((data) => ({
     id: data.user_id,
-    firstName: data.name.split(' ').slice(0, -1).join(' '),
-    lastName: data.name.split(' ').slice(-1).join(' '),
+    firstName: data.name?.split(' ').slice(0, -1).join(' ') ?? '',
+    lastName: data.name?.split(' ').slice(-1).join(' '),
     email: data.email,
     imageUrl: data.picture,
-    emailVerified: data.email_verified
+    emailVerified: data.email_verified ?? false
   }))
 
 export function contextToUserId(context: ExecutionContext): string | null {
@@ -49,6 +49,9 @@ export function contextToUserId(context: ExecutionContext): string | null {
   const payload = get(ctx, 'req.body.extensions.jwt.payload')
   const result = payloadSchema.safeParse(payload)
   if (result.success) return result.data.id
+
+  if (payload != null)
+    console.error('contextToUserId failed to parse', result.error)
 
   return null
 }
@@ -59,6 +62,9 @@ export function contextToUser(context: ExecutionContext): User | null {
   const result = payloadSchema.safeParse(payload)
 
   if (result.success) return result.data
+
+  if (payload != null)
+    console.error('contextToUser failed to parse', result.error)
 
   return null
 }

@@ -6,12 +6,14 @@ import {
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 
 import { prisma } from './lib/prisma'
+import { logger } from './logger'
 import { schema } from './schema'
 
 export const cache = createInMemoryCache()
 
 export const yoga = createYoga({
   schema,
+  logging: logger,
   plugins: [
     process.env.NODE_ENV !== 'test'
       ? useHmacSignatureValidation({
