@@ -39,6 +39,8 @@ const COUNTRY_QUERY = graphql(`
         primary
       }
       population
+      languageCount
+      languageHavingMediaCount
     }
   }
 `)
@@ -57,6 +59,10 @@ describe('country', () => {
       continent,
       countryLanguages: [{ id: '1', language, speakers: 100 }]
     } as unknown as Country)
+
+    prismaMock.countryLanguage.count.mockResolvedValue(1)
+    prismaMock.language.count.mockResolvedValue(2)
+
     prismaMock.countryName.findMany.mockResolvedValue([countryName])
     prismaMock.continentName.findMany.mockResolvedValue([continentName])
     const data = await client({
@@ -103,7 +109,9 @@ describe('country', () => {
           speakers: 100
         }
       ],
-      name: [{ ...omit(countryName, ['id', 'countryId', 'languageId']) }]
+      name: [{ ...omit(countryName, ['id', 'countryId', 'languageId']) }],
+      languageCount: 2,
+      languageHavingMediaCount: 1
     })
   })
 
