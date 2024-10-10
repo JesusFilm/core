@@ -1,9 +1,9 @@
 import { JourneyFields } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
 
-const FULL_HEIGHT = '124px'
-const HALF_HEIGHT = '56px'
-const MIN_HEIGHT = '8px'
-const WEBSITE_HEIGHT = '0px'
+export const FULL_HEIGHT = '124px'
+export const HALF_HEIGHT = '56px'
+export const MIN_HEIGHT = '8px'
+export const WEBSITE_HEIGHT = '0px'
 
 interface JourneyInfoProps {
   journey?: JourneyFields
@@ -12,10 +12,9 @@ interface JourneyInfoProps {
 
 export function hasReactions({ journey }: JourneyInfoProps): boolean {
   return (
-    (journey?.showShareButton === true ||
-      journey?.showLikeButton === true ||
-      journey?.showDislikeButton === true) ??
-    false
+    journey?.showShareButton === true ||
+    journey?.showLikeButton === true ||
+    journey?.showDislikeButton === true
   )
 }
 
@@ -44,7 +43,7 @@ export function hasChatWidget({
   )
 }
 
-export function hasTitle({ journey }: JourneyInfoProps): string | null {
+export function getTitle({ journey }: JourneyInfoProps): string | null {
   if (journey?.displayTitle == null) {
     return journey?.seoTitle ?? null
   } else if (journey.displayTitle === '') {
@@ -66,7 +65,7 @@ export function getFooterMobileSpacing({
       hasHostAvatar({ journey, variant }) ||
       hasHostDetails({ journey }) ||
       hasChatWidget({ journey, variant }) ||
-      hasTitle({ journey }) != null
+      getTitle({ journey }) != null
 
     if (hasTopRow && hasBottomRow) {
       return FULL_HEIGHT
@@ -89,7 +88,7 @@ export function getFooterMobileHeight({
       hasHostAvatar({ journey, variant }) ||
       hasHostDetails({ journey }) ||
       hasChatWidget({ journey, variant }) ||
-      hasTitle({ journey }) != null
+      getTitle({ journey }) != null
 
     if (hasBottomRow) {
       return HALF_HEIGHT

@@ -8,10 +8,10 @@ import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 import {
   getFooterMobileHeight,
+  getTitle,
   hasChatWidget,
   hasHostAvatar,
-  hasHostDetails,
-  hasTitle
+  hasHostDetails
 } from '../Card/utils/getFooterElements'
 import { InformationButton } from '../StepHeader/InformationButton'
 
@@ -34,7 +34,7 @@ export function StepFooter({
   const hostAvatar = hasHostAvatar({ journey, variant })
   const hostDetails = hasHostDetails({ journey })
   const chat = hasChatWidget({ journey, variant })
-  const title = hasTitle({ journey })
+  const title = getTitle({ journey })
   const footerMobileHeight = getFooterMobileHeight({ journey, variant })
 
   const isWebsite = journey?.website === true
@@ -103,7 +103,7 @@ export function StepFooter({
                   avatarSrc2={journey?.host?.src2}
                 />
               )}
-              {(title != null || hostDetails != null) && (
+              {(title != null || hostDetails) && (
                 <Stack sx={{ flex: '1 1 100%', minWidth: 0 }}>
                   {title != null && (
                     <Typography

@@ -3,7 +3,7 @@ export {
   hasHostAvatar,
   hasHostDetails,
   hasChatWidget,
-  hasTitle,
+  getTitle,
   getFooterMobileSpacing,
   getFooterMobileHeight
 } from './getFooterElements'
