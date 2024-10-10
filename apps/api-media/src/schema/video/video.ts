@@ -120,7 +120,7 @@ const Video = builder.prismaObject('Video', {
         orderBy: { order: 'asc' }
       })
     }),
-    // image: t.exposeString('image', { nullable: true }),
+    image: t.exposeString('image', { nullable: true }),
     imageAlt: t.relation('imageAlt', {
       args: {
         languageId: t.arg.id({ required: false }),

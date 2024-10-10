@@ -312,6 +312,7 @@ type Video
   snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
   description(languageId: ID, primary: Boolean): [VideoDescription!]!
   studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]!
+  image: String
   imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]!
   videoStill: String
   thumbnail: String
