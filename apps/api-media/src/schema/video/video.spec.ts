@@ -42,6 +42,7 @@ describe('video', () => {
     studyQuestions: VideoStudyQuestion[]
     imageAlt: VideoImageAlt[]
     children: Video[]
+    parents: Video[]
     subtitles: VideoSubtitle[]
     images: CloudflareImage[]
   }
@@ -76,6 +77,39 @@ describe('video', () => {
       noIndex: null,
       published: true,
       childIds: []
+    }
+  ]
+
+  const parents: Video[] = [
+    {
+      id: 'videoId3',
+      label: 'collection',
+      primaryLanguageId: 'primaryLanguageId',
+      thumbnail: null,
+      videoStill: null,
+      mobileCinematicHigh: null,
+      mobileCinematicLow: null,
+      mobileCinematicVeryLow: null,
+      image: null,
+      slug: null,
+      noIndex: null,
+      published: true,
+      childIds: []
+    },
+    {
+      id: 'videoId4',
+      label: 'collection',
+      primaryLanguageId: 'primaryLanguageId',
+      thumbnail: null,
+      videoStill: null,
+      mobileCinematicHigh: null,
+      mobileCinematicLow: null,
+      mobileCinematicVeryLow: null,
+      image: null,
+      slug: null,
+      noIndex: null,
+      published: true,
+      childIds: []  
     }
   ]
 
@@ -162,6 +196,7 @@ describe('video', () => {
         }
       ],
       children,
+      parents,
       subtitles: [
         {
           id: 'subtitleId',
@@ -299,6 +334,9 @@ describe('video', () => {
             id
           }
           childrenCount
+          parents {
+            id
+          }
           variantLanguagesWithSlug {
             slug
             language {
@@ -349,6 +387,14 @@ describe('video', () => {
           }
         ],
         childrenCount: 1,
+        parents: [
+          {
+            id: 'videoId3'
+          },
+          {
+            id: 'videoId4'
+          }
+        ],
         description: [
           {
             id: 'descriptionId',
@@ -469,6 +515,7 @@ describe('video', () => {
     it('should query videos', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
       prismaMock.video.findMany.mockResolvedValueOnce(children)
+      prismaMock.video.findMany.mockResolvedValueOnce(parents)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -582,6 +629,8 @@ describe('video', () => {
       ])
       // children
       prismaMock.video.findMany.mockResolvedValueOnce(children)
+      // parents
+      prismaMock.video.findMany.mockResolvedValueOnce(parents)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -612,6 +661,8 @@ describe('video', () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
       // children
       prismaMock.video.findMany.mockResolvedValueOnce(children)
+      // parents
+      prismaMock.video.findMany.mockResolvedValueOnce(parents)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -629,7 +680,7 @@ describe('video', () => {
         id: 'variantId'
       } as unknown as VideoVariant)
       const data = await client({
-        document: VIDEOS_QUERY,
+        document: VIDEOS_QUERY, 
         variables: {
           languageId: '987',
           primary: false,
@@ -933,6 +984,9 @@ describe('video', () => {
             id
           }
           childrenCount
+          parents {
+            id
+          }
           variantLanguagesWithSlug {
             slug
             language {
@@ -982,6 +1036,14 @@ describe('video', () => {
           }
         ],
         childrenCount: 1,
+        parents: [
+          {
+            id: 'videoId3'
+          },
+          {
+            id: 'videoId4'
+          }
+        ],
         description: [
           {
             id: 'descriptionId',
@@ -1099,6 +1161,7 @@ describe('video', () => {
     it('should query videos', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
       prismaMock.video.findMany.mockResolvedValueOnce(children)
+      prismaMock.video.findMany.mockResolvedValueOnce(parents)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -1217,6 +1280,8 @@ describe('video', () => {
       ])
       // children
       prismaMock.video.findMany.mockResolvedValueOnce(children)
+      // parents
+      prismaMock.video.findMany.mockResolvedValueOnce(parents)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -1252,6 +1317,8 @@ describe('video', () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
       // children
       prismaMock.video.findMany.mockResolvedValueOnce(children)
+      // parents
+      prismaMock.video.findMany.mockResolvedValueOnce(parents)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
