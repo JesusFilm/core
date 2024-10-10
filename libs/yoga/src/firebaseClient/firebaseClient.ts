@@ -7,7 +7,7 @@ export interface User {
   id: string
   firstName: string
   lastName?: string
-  email: string
+  email?: string | null
   imageUrl?: string | null
   emailVerified: boolean
 }
@@ -29,7 +29,7 @@ const payloadSchema = z
     name: z.string().nullish(),
     picture: z.string().nullish(),
     user_id: z.string(),
-    email: z.string(),
+    email: z.string().nullish(),
     email_verified: z.boolean().nullish()
   })
   .transform((data) => ({
