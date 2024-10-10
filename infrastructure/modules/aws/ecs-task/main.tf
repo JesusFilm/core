@@ -43,6 +43,7 @@ resource "aws_ssm_parameter" "parameters" {
 resource "aws_ecs_task_definition" "ecs_task_definition" {
   family                   = local.ecs_task_definition_family
   execution_role_arn       = var.ecs_config.task_execution_role_arn
+  task_role_arn            = data.aws_iam_role.ecs_task_role.arn
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   memory                   = var.service_config.memory
@@ -269,11 +270,12 @@ resource "aws_alb_listener_rule" "alb_listener_rule" {
 
 #Create services for app services
 resource "aws_ecs_service" "ecs_service" {
-  name            = "${local.service_config_name_env}-service"
-  cluster         = var.ecs_config.cluster.id
-  task_definition = aws_ecs_task_definition.ecs_task_definition.arn
-  launch_type     = "FARGATE"
-  desired_count   = var.service_config.desired_count
+  name                   = "${local.service_config_name_env}-service"
+  cluster                = var.ecs_config.cluster.id
+  task_definition        = aws_ecs_task_definition.ecs_task_definition.arn
+  launch_type            = "FARGATE"
+  desired_count          = var.service_config.desired_count
+  enable_execute_command = true
 
   network_configuration {
     subnets          = var.ecs_config.subnets
