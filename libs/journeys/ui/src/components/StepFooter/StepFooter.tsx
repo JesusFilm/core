@@ -69,11 +69,12 @@ export function StepFooter({
           width: '100%'
         }}
       >
-        {!isWebsite && (
-          <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
-            <FooterButtonList />
-          </Box>
-        )}
+        {!isWebsite &&
+          (title != null || hostDetails || variant === 'admin') && (
+            <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
+              <FooterButtonList />
+            </Box>
+          )}
 
         <Stack
           sx={{
@@ -85,6 +86,17 @@ export function StepFooter({
           }}
           gap={4}
         >
+          {!isWebsite &&
+            (title == null || !hostDetails) &&
+            variant !== 'admin' && (
+              <Box
+                sx={{
+                  display: { xs: 'flex', sm: 'none' }
+                }}
+              >
+                <FooterButtonList />
+              </Box>
+            )}
           {isWebsite && <InformationButton sx={{ p: 0 }} />}
           {!isWebsite && (
             <Stack
