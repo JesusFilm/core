@@ -32,7 +32,7 @@ export function getBackgroundImage(
                   block.__typename === 'ImageBlock'
               ) as TreeBlock<ImageBlock>
             )?.src
-          : coverBlock?.video?.images[0].mobileCinematicHigh
+          : coverBlock?.video?.images[0]?.mobileCinematicHigh
         : // Use Youtube or Cloudflare set poster image
           coverBlock?.image) ?? undefined
   } else if (coverBlock?.__typename === 'ImageBlock') {
