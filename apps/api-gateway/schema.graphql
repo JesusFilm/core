@@ -890,6 +890,7 @@ type Video @join__type(graph: JOURNEYS, key: "id primaryLanguageId")  @join__typ
   the number value of the amount of children on a video
   """
   childrenCount: Int! @join__field(graph: MEDIA) 
+  parents: [Video!]! @join__field(graph: MEDIA) 
   variantLanguagesWithSlug: [LanguageWithSlug!]! @join__field(graph: MEDIA) 
   variants: [VideoVariant!]! @join__field(graph: MEDIA) 
   subtitles(languageId: ID, primary: Boolean, edition: String) : [VideoSubtitle!]! @join__field(graph: MEDIA) 
@@ -2014,6 +2015,8 @@ type Country @join__type(graph: LANGUAGES, key: "id")  {
   name(languageId: ID, primary: Boolean) : [CountryName!]!
   continent: Continent!
   countryLanguages: [CountryLanguage!]!
+  languageCount: Int!
+  languageHavingMediaCount: Int!
 }
 
 type CountryLanguage @join__type(graph: LANGUAGES)  {

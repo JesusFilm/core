@@ -349,6 +349,8 @@ export type Country = {
   flagPngSrc?: Maybe<Scalars['String']['output']>;
   flagWebpSrc?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  languageCount: Scalars['Int']['output'];
+  languageHavingMediaCount: Scalars['Int']['output'];
   languages: Array<Language>;
   latitude?: Maybe<Scalars['Float']['output']>;
   longitude?: Maybe<Scalars['Float']['output']>;
@@ -3377,6 +3379,7 @@ export type Video = {
   /** @deprecated use images.mobileCinematicVeryLow */
   mobileCinematicVeryLow?: Maybe<Scalars['String']['output']>;
   noIndex?: Maybe<Scalars['Boolean']['output']>;
+  parents: Array<Video>;
   primaryLanguageId: Scalars['ID']['output'];
   published: Scalars['Boolean']['output'];
   /** slug is a permanent link to the video. */
