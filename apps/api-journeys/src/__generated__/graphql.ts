@@ -349,6 +349,8 @@ export type Country = {
   flagPngSrc?: Maybe<Scalars['String']['output']>;
   flagWebpSrc?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  languageCount: Scalars['Int']['output'];
+  languageHavingMediaCount: Scalars['Int']['output'];
   languages: Array<Language>;
   latitude?: Maybe<Scalars['Float']['output']>;
   longitude?: Maybe<Scalars['Float']['output']>;
