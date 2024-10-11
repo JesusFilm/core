@@ -239,6 +239,11 @@ export interface BlockDuplicate_blockDuplicate_VideoBlock_video_title {
   value: string;
 }
 
+export interface BlockDuplicate_blockDuplicate_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface BlockDuplicate_blockDuplicate_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -261,7 +266,7 @@ export interface BlockDuplicate_blockDuplicate_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: BlockDuplicate_blockDuplicate_VideoBlock_video_title[];
-  image: string | null;
+  images: BlockDuplicate_blockDuplicate_VideoBlock_video_images[];
   variant: BlockDuplicate_blockDuplicate_VideoBlock_video_variant | null;
   variantLanguages: BlockDuplicate_blockDuplicate_VideoBlock_video_variantLanguages[];
 }
