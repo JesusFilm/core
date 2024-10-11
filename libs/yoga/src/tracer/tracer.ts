@@ -13,6 +13,8 @@ import { AttributeNames, SpanNames } from '@pothos/tracing-opentelemetry'
 import { print } from 'graphql'
 import { Plugin } from 'graphql-yoga'
 
+import { PrismaInstrumentation } from '@prisma/instrumentation'
+
 const envAttributes = process.env.OTEL_RESOURCE_ATTRIBUTES ?? ''
 
 // Parse the environment variable string into an object
@@ -48,7 +50,8 @@ registerInstrumentations({
     new HttpInstrumentation({
       ignoreIncomingRequestHook: (req) =>
         req.url?.includes('/.well-known/apollo/server-health') ?? false
-    })
+    }),
+    new PrismaInstrumentation()
   ]
 })
 
