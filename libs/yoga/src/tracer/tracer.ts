@@ -5,14 +5,31 @@ import { HttpInstrumentation } from '@opentelemetry/instrumentation-http'
 import { Resource } from '@opentelemetry/resources'
 import { SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base'
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node'
-import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions'
+import {
+  ATTR_SERVICE_NAME,
+  ATTR_SERVICE_VERSION
+} from '@opentelemetry/semantic-conventions'
 import { AttributeNames, SpanNames } from '@pothos/tracing-opentelemetry'
 import { print } from 'graphql'
 import { Plugin } from 'graphql-yoga'
 
+const envAttributes = process.env.OTEL_RESOURCE_ATTRIBUTES ?? ''
+
+// Parse the environment variable string into an object
+const attributes = envAttributes
+  .split(',')
+  .reduce<Record<string, string>>((acc, curr) => {
+    const [key, value] = curr.split('=')
+    if (typeof key === 'string' && typeof value === 'string') {
+      acc[key.trim()] = value.trim()
+    }
+    return acc
+  }, {})
+
 export const provider = new NodeTracerProvider({
   resource: new Resource({
-    [ATTR_SERVICE_NAME]: process.env.SERVICE_NAME
+    [ATTR_SERVICE_NAME]: process.env.SERVICE_NAME,
+    [ATTR_SERVICE_VERSION]: attributes['service.version'] ?? '0.0.1'
   })
 })
 
