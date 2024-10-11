@@ -312,13 +312,13 @@ type Video
   snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
   description(languageId: ID, primary: Boolean): [VideoDescription!]!
   studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]!
-  image: String
+  image: String @deprecated(reason: "use images.mobileCinematicHigh")
   imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]!
-  videoStill: String
-  thumbnail: String
-  mobileCinematicHigh: String
-  mobileCinematicLow: String
-  mobileCinematicVeryLow: String
+  videoStill: String @deprecated(reason: "use images.videoStill")
+  thumbnail: String @deprecated(reason: "use images.thumbnail")
+  mobileCinematicHigh: String @deprecated(reason: "use images.mobileCinematicHigh")
+  mobileCinematicLow: String @deprecated(reason: "use images.mobileCinematicLow")
+  mobileCinematicVeryLow: String @deprecated(reason: "use images.mobileCinematicVeryLow")
   variantLanguages: [Language!]!
   variantLanguagesCount: Int!
 
