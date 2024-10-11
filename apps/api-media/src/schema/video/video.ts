@@ -170,11 +170,12 @@ const Video = builder.prismaObject('Video', {
     children: t.prismaField({
       type: ['Video'],
       async resolve(query, parent) {
+        if (parent.childIds.length === 0) return []
         return orderBy(
           await prisma.video.findMany({
             ...query,
             where: {
-              parent: { some: { id: parent.id } }
+              id: { in: parent.childIds }
             }
           }),
           ({ id }) => parent.childIds.indexOf(id),
@@ -186,6 +187,19 @@ const Video = builder.prismaObject('Video', {
       resolve: async ({ id }) =>
         await prisma.video.count({ where: { parent: { some: { id } } } }),
       description: 'the number value of the amount of children on a video'
+    }),
+    parents: t.prismaField({
+      type: ['Video'],
+      async resolve(query, child: { id: string }) {
+        return await prisma.video.findMany({
+          ...query,
+          where: {
+            childIds: {
+              has: child.id
+            }
+          }
+        })
+      }
     }),
     variantLanguagesWithSlug: t.field({
       type: [LanguageWithSlug],
