@@ -4,7 +4,9 @@ export const VIDEO_CONTENT_FIELDS = gql`
   fragment VideoContentFields on Video {
     id
     label
-    image
+    images(aspectRatio: banner) {
+      mobileCinematicHigh
+    }
     imageAlt(languageId: $languageId, primary: true) {
       value
     }

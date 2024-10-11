@@ -5,6 +5,7 @@ import type { AlgoliaVideo } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 import type { VideoLabel } from '../../../../__generated__/globalTypes'
 import type {
   VideoChildFields_imageAlt,
+  VideoChildFields_images,
   VideoChildFields_snippet,
   VideoChildFields_title,
   VideoChildFields_variant
@@ -15,7 +16,7 @@ export interface CoreVideo extends Hit<BaseHit> {
   id: string
   label: VideoLabel
   title: VideoChildFields_title[]
-  image: string | null
+  images: VideoChildFields_images[]
   imageAlt: VideoChildFields_imageAlt[]
   snippet: VideoChildFields_snippet[]
   slug: string
@@ -34,7 +35,12 @@ export function transformAlgoliaVideos(items: AlgoliaVideo[]): CoreVideo[] {
         value: videoVariant.titles[0]
       }
     ],
-    image: videoVariant.image,
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh: videoVariant.image
+      }
+    ],
     imageAlt: [
       {
         __typename: 'VideoImageAlt',
