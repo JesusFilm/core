@@ -147,7 +147,6 @@ const Video = builder.prismaObject('Video', {
     mobileCinematicVeryLow: t.exposeString('mobileCinematicVeryLow', {
       nullable: true
     }),
-
     variantLanguages: t.field({
       type: [Language],
       resolve: async ({ id: videoId }) =>

@@ -25,7 +25,12 @@ describe('transformAlgoliaVideos', () => {
       __typename: 'Video',
       childrenCount: 49,
       id: 'videoId',
-      image: 'image.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh: 'image.jpg'
+        }
+      ],
       imageAlt: [
         {
           __typename: 'VideoImageAlt',
