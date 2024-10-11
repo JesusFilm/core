@@ -44,7 +44,12 @@ provider.addSpanProcessor(
 provider.register()
 
 registerInstrumentations({
-  instrumentations: [new HttpInstrumentation({})]
+  instrumentations: [
+    new HttpInstrumentation({
+      ignoreIncomingRequestHook: (req) =>
+        req.url?.includes('/.well-known/apollo/server-health') ?? false
+    })
+  ]
 })
 
 export const tracingPlugin: Plugin = {
