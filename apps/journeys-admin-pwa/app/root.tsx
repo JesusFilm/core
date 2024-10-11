@@ -1,18 +1,22 @@
 import { EmotionCache, withEmotionCache } from '@emotion/react'
 import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/utils'
+import { LoaderFunction, json } from '@remix-run/node'
 import {
   Links,
   LiveReload,
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration
+  ScrollRestoration,
+  useLoaderData
 } from '@remix-run/react'
-import { ReactElement, ReactNode, useContext } from 'react'
+import { ReactElement, ReactNode, useContext, useEffect, useState } from 'react'
+import { RxDatabase } from 'rxdb'
 
 import { ClientStyleContext } from '../libs/ClientStyleContext/ClientStyleContext'
 
 import { ThemeProvider } from './components/ThemeProvider'
+import { initializeDatabase } from './services/initializeRxDB'
 
 interface DocumentProps {
   children: ReactNode
@@ -26,15 +30,9 @@ const Document = withEmotionCache(
   ): ReactElement => {
     const clientStyleData = useContext(ClientStyleContext)
 
-    // Only executed on client
     useEnhancedEffect(() => {
-      // re-link sheet container
       emotionCache.sheet.container = document.head
-
-      // re-inject tags (Emotion handles this for you)
       emotionCache.sheet.flush()
-
-      // reset cache to reapply global styles
       clientStyleData.reset()
     }, [clientStyleData, emotionCache])
 
@@ -59,10 +57,26 @@ const Document = withEmotionCache(
 )
 
 export default function App(): ReactElement {
+  const [rxDatabase, setRxDatabase] = useState<RxDatabase | null>(null)
+
+  useEffect(() => {
+    async function initRxDatabase(): Promise<void> {
+      try {
+        console.log('Initializing RxDB')
+        const db = await initializeDatabase()
+        console.log('RxDB initialized successfully')
+        setRxDatabase(db)
+      } catch (error) {
+        console.error('Failed to initialize RxDB:', error)
+      }
+    }
+    void initRxDatabase()
+  }, [])
+
   return (
     <Document>
       <ThemeProvider>
-        <Outlet />
+        <Outlet context={{ rxDatabase }} />
       </ThemeProvider>
     </Document>
   )
