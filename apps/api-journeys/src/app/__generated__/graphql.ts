@@ -150,6 +150,7 @@ export enum MessagePlatform {
     telegram = "telegram",
     whatsApp = "whatsApp",
     instagram = "instagram",
+    kakaoTalk = "kakaoTalk",
     viber = "viber",
     vk = "vk",
     snapchat = "snapchat",

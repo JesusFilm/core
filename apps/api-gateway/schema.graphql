@@ -2472,6 +2472,7 @@ enum MessagePlatform @join__type(graph: JOURNEYS)  {
   telegram @join__enumValue(graph: JOURNEYS) 
   whatsApp @join__enumValue(graph: JOURNEYS) 
   instagram @join__enumValue(graph: JOURNEYS) 
+  kakaoTalk @join__enumValue(graph: JOURNEYS) 
   viber @join__enumValue(graph: JOURNEYS) 
   vk @join__enumValue(graph: JOURNEYS) 
   snapchat @join__enumValue(graph: JOURNEYS) 

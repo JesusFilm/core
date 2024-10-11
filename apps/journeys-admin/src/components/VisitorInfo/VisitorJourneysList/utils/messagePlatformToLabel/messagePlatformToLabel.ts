@@ -11,6 +11,8 @@ export function messagePlatformToLabel(
       return t('Facebook')
     case MessagePlatform.instagram:
       return t('Instagram')
+    case MessagePlatform.kakaoTalk:
+      return t('KakaoTalk')
     case MessagePlatform.line:
       return t('LINE')
     case MessagePlatform.skype:
