@@ -120,7 +120,10 @@ const Video = builder.prismaObject('Video', {
         orderBy: { order: 'asc' }
       })
     }),
-    image: t.exposeString('image', { nullable: true }),
+    image: t.exposeString('image', {
+      nullable: true,
+      deprecationReason: 'use images.mobileCinematicHigh'
+    }),
     imageAlt: t.relation('imageAlt', {
       args: {
         languageId: t.arg.id({ required: false }),
@@ -136,16 +139,25 @@ const Video = builder.prismaObject('Video', {
         orderBy: { primary: 'desc' }
       })
     }),
-    videoStill: t.exposeString('videoStill', { nullable: true }),
-    thumbnail: t.exposeString('thumbnail', { nullable: true }),
+    videoStill: t.exposeString('videoStill', {
+      nullable: true,
+      deprecationReason: 'use images.videoStill'
+    }),
+    thumbnail: t.exposeString('thumbnail', {
+      nullable: true,
+      deprecationReason: 'use images.thumbnail'
+    }),
     mobileCinematicHigh: t.exposeString('mobileCinematicHigh', {
-      nullable: true
+      nullable: true,
+      deprecationReason: 'use images.mobileCinematicHigh'
     }),
     mobileCinematicLow: t.exposeString('mobileCinematicLow', {
-      nullable: true
+      nullable: true,
+      deprecationReason: 'use images.mobileCinematicLow'
     }),
     mobileCinematicVeryLow: t.exposeString('mobileCinematicVeryLow', {
-      nullable: true
+      nullable: true,
+      deprecationReason: 'use images.mobileCinematicVeryLow'
     }),
     variantLanguages: t.field({
       type: [Language],
