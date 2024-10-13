@@ -214,8 +214,9 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         <Button
           onClick={handleSocialImageClick}
           data-testid="ToolbarSocialImage"
-          style={{ backgroundColor: 'transparent' }}
+          style={{ backgroundColor: 'transparent', minWidth: 'auto' }}
           disableRipple
+          sx={{ px: 0 }}
         >
           <Box
             bgcolor={(theme) => theme.palette.background.default}
@@ -281,7 +282,8 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                   whiteSpace: 'nowrap',
                   textOverflow: 'ellipsis',
                   borderRadius: '8px',
-                  flexShrink: 1
+                  flexShrink: 1,
+                  p: 0
                 }}
               >
                 <Typography
