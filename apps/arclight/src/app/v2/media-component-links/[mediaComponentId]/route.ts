@@ -19,16 +19,15 @@ interface GetParams {
 }
 
 const GET_VIDEO_CHILDREN = graphql(`
-  query GetVideosChildren($id: ID!) {
+  query GetVideoChildren($id: ID!) {
     video(id: $id) {
       id
       children {
         id
       }
-      # TODO: Add parent relationship
-      #   parent {
-      #     id
-      #   }
+      parents {
+        id
+      }
     }
   }
 `)
@@ -59,7 +58,12 @@ export async function GET(
     )
 
   const linkedMediaComponentIds = {
-    contains: data.video.children.map(({ id }) => id)
+    ...(data.video.children.length > 0
+      ? { contains: data.video.children.map(({ id }) => id) }
+      : {}),
+    ...(data.video.parents.length > 0
+      ? { containedBy: data.video.parents.map(({ id }) => id) }
+      : {})
   }
 
   const queryObject: Record<string, string> = {

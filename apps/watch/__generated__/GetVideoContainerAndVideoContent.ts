@@ -9,6 +9,11 @@ import { VideoLabel, VideoVariantDownloadQuality } from "./globalTypes";
 // GraphQL query operation: GetVideoContainerAndVideoContent
 // ====================================================
 
+export interface GetVideoContainerAndVideoContent_container_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface GetVideoContainerAndVideoContent_container_imageAlt {
   __typename: "VideoImageAlt";
   value: string;
@@ -71,7 +76,7 @@ export interface GetVideoContainerAndVideoContent_container {
   __typename: "Video";
   id: string;
   label: VideoLabel;
-  image: string | null;
+  images: GetVideoContainerAndVideoContent_container_images[];
   imageAlt: GetVideoContainerAndVideoContent_container_imageAlt[];
   snippet: GetVideoContainerAndVideoContent_container_snippet[];
   description: GetVideoContainerAndVideoContent_container_description[];
@@ -87,6 +92,11 @@ export interface GetVideoContainerAndVideoContent_container {
    * the number value of the amount of children on a video
    */
   childrenCount: number;
+}
+
+export interface GetVideoContainerAndVideoContent_content_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
 }
 
 export interface GetVideoContainerAndVideoContent_content_imageAlt {
@@ -151,7 +161,7 @@ export interface GetVideoContainerAndVideoContent_content {
   __typename: "Video";
   id: string;
   label: VideoLabel;
-  image: string | null;
+  images: GetVideoContainerAndVideoContent_content_images[];
   imageAlt: GetVideoContainerAndVideoContent_content_imageAlt[];
   snippet: GetVideoContainerAndVideoContent_content_snippet[];
   description: GetVideoContainerAndVideoContent_content_description[];
