@@ -1,14 +1,13 @@
-/* eslint-disable jsx-a11y/accessible-emoji */
 import React, { useRef, useState } from 'react'
 import {
+  Linking,
   SafeAreaView,
-  StyleSheet,
   ScrollView,
-  View,
-  Text,
   StatusBar,
+  StyleSheet,
+  Text,
   TouchableOpacity,
-  Linking
+  View
 } from 'react-native'
 import Svg, { G, Path } from 'react-native-svg'
 
@@ -84,8 +83,8 @@ export const App = () => {
               </Text>
               <TouchableOpacity
                 style={[styles.listItem, styles.learning]}
-                onPress={() =>
-                  Linking.openURL(
+                onPress={async () =>
+                  await Linking.openURL(
                     'https://nx.dev/getting-started/intro?utm_source=nx-project'
                   )
                 }
@@ -127,8 +126,10 @@ export const App = () => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.listItem, styles.learning]}
-                onPress={() =>
-                  Linking.openURL('https://nx.dev/blog/?utm_source=nx-project')
+                onPress={async () =>
+                  await Linking.openURL(
+                    'https://nx.dev/blog/?utm_source=nx-project'
+                  )
                 }
               >
                 <Svg
@@ -168,8 +169,8 @@ export const App = () => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.listItem, styles.learning]}
-                onPress={() =>
-                  Linking.openURL(
+                onPress={async () =>
+                  await Linking.openURL(
                     'https://www.youtube.com/@NxDevtools/videos?utm_source=nx-project'
                   )
                 }
@@ -200,8 +201,8 @@ export const App = () => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.listItem, styles.learning]}
-                onPress={() =>
-                  Linking.openURL(
+                onPress={async () =>
+                  await Linking.openURL(
                     'https://nx.dev/nx-api/expo/documents/overview'
                   )
                 }
@@ -238,15 +239,17 @@ export const App = () => {
                     strokeLinejoin="round"
                     strokeWidth="2"
                     d="M9 5l7 7-7 7"
-                  ></Path>
+                  />
                 </Svg>
               </TouchableOpacity>
             </View>
           </View>
           <View style={styles.section}>
             <TouchableOpacity
-              onPress={() =>
-                Linking.openURL('https://nx.dev/nx-cloud?utm_source=nx-project')
+              onPress={async () =>
+                await Linking.openURL(
+                  'https://nx.dev/nx-cloud?utm_source=nx-project'
+                )
               }
             >
               <View style={[styles.listItem, styles.shadowBox]}>
@@ -272,8 +275,8 @@ export const App = () => {
           </View>
           <View style={[styles.section, styles.shadowBox]}>
             <TouchableOpacity
-              onPress={() =>
-                Linking.openURL(
+              onPress={async () =>
+                await Linking.openURL(
                   'https://marketplace.visualstudio.com/items?itemName=nrwl.angular-console&utm_source=nx-project'
                 )
               }
@@ -307,8 +310,8 @@ export const App = () => {
 
           <View style={[styles.section, styles.shadowBox]}>
             <TouchableOpacity
-              onPress={() =>
-                Linking.openURL(
+              onPress={async () =>
+                await Linking.openURL(
                   'https://plugins.jetbrains.com/plugin/21060-nx-console'
                 )
               }
@@ -348,8 +351,10 @@ export const App = () => {
           </View>
           <View style={styles.section}>
             <TouchableOpacity
-              onPress={() =>
-                Linking.openURL('https://nx.dev/nx-cloud?utm_source=nx-project')
+              onPress={async () =>
+                await Linking.openURL(
+                  'https://nx.dev/nx-cloud?utm_source=nx-project'
+                )
               }
             >
               <View style={styles.shadowBox}>
