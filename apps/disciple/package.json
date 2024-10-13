@@ -32,5 +32,6 @@
   "scripts": {
     "eas-build-post-install": "cd ../../ && node tools/scripts/eas-build-post-install.mjs . apps/disciple"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "main": "expo-router/entry"
 }
