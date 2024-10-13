@@ -22,10 +22,9 @@ const GET_VIDEOS_CHILDREN = graphql(`
       children {
         id
       }
-      # TODO: Add parent relationship
-      #   parent {
-      #     id
-      #   }
+      parents {
+        id
+      }
     }
   }
 `)
@@ -42,15 +41,17 @@ export async function GET(request: NextRequest): Promise<Response> {
     query: GET_VIDEOS_CHILDREN
   })
 
-  // TODO: filter on parent relationship too
   const mediaComponentsLinks = data.videos
-    .filter((video) => video.children.length > 0)
+    .filter((video) => video.children.length > 0 || video.parents.length > 0)
     .map((video) => ({
       mediaComponentId: video.id,
       linkedMediaComponentIds: {
-        contains: video.children.map(({ id }) => id) ?? undefined
-        // TODO: Add parent relationship
-        //   containedBy: ['JFM1']
+        ...(video.children.length > 0
+          ? { contains: video.children.map(({ id }) => id) }
+          : {}),
+        ...(video.parents.length > 0
+          ? { containedBy: video.parents.map(({ id }) => id) }
+          : {})
       }
     }))
 

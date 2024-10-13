@@ -1,14 +1,17 @@
 import {
-  createOtlpHttpExporter,
+  createOtlpGrpcExporter,
   createRemoteJwksSigningKeyProvider,
   defineConfig
 } from '@graphql-hive/gateway'
+
+import logger from './src/logger'
 
 const googleApplication = JSON.parse(
   process.env.GOOGLE_APPLICATION_JSON ?? '{}'
 )
 
 export const gatewayConfig = defineConfig({
+  logging: logger,
   port: 4000,
   graphqlEndpoint: '/',
   healthCheckEndpoint: '/health',
@@ -32,8 +35,8 @@ export const gatewayConfig = defineConfig({
   },
   openTelemetry: {
     exporters: [
-      createOtlpHttpExporter({
-        url: `http://${process.env.DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT}`
+      createOtlpGrpcExporter({
+        url: 'http://0.0.0.0:4317'
       })
     ],
     serviceName: 'api-gateway'

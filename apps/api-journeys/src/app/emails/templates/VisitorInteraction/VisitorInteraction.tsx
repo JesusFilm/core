@@ -156,7 +156,7 @@ export const VisitorInteraction = ({
           </ActionCard>
         </BodyWrapper>
         <UnsubscribeLink
-          recipientEmail={recipient.email}
+          recipientEmail={recipient.email ?? ''}
           url={unsubscribeUrl}
         />
       </EmailContainer>

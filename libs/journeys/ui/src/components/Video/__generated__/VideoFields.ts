@@ -14,6 +14,11 @@ export interface VideoFields_video_title {
   value: string;
 }
 
+export interface VideoFields_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface VideoFields_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -36,7 +41,7 @@ export interface VideoFields_video {
   __typename: "Video";
   id: string;
   title: VideoFields_video_title[];
-  image: string | null;
+  images: VideoFields_video_images[];
   variant: VideoFields_video_variant | null;
   variantLanguages: VideoFields_video_variantLanguages[];
 }
