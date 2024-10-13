@@ -3,7 +3,6 @@ import IconButton from '@mui/material/IconButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
-import { SxProps } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { ComponentProps, MouseEvent, ReactElement, ReactNode } from 'react'
@@ -15,7 +14,6 @@ interface ItemProps {
   href?: string
   ButtonProps?: ComponentProps<typeof Button>
   onClick?: (event: MouseEvent<HTMLElement>) => void
-  sx?: SxProps
 }
 
 export function Item({
@@ -24,8 +22,7 @@ export function Item({
   label,
   href,
   ButtonProps,
-  onClick,
-  sx
+  onClick
 }: ItemProps): ReactElement {
   switch (variant) {
     case 'icon-button':
