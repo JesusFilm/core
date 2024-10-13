@@ -2,6 +2,8 @@ import Box from '@mui/material/Box'
 import { SxProps } from '@mui/material/styles'
 import { ReactElement, ReactNode } from 'react'
 
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+
 import { useJourney } from '../../../libs/JourneyProvider'
 
 interface OverlayContentProps {
@@ -69,10 +71,21 @@ export function OverlayContent({
         ...topBottomEdgeFadeEffect,
         ...topBottomMarginsOnContent,
         ...mobileNotchPadding,
-        ...sx
+        ...sx,
+         border: '2px solid white'
       }}
     >
       {children}
+      <Box data-testid = "DownArrowBox" 
+      sx={{
+        position: 'absolute',
+        bottom: '100px',
+        left: '50%'
+
+      }}>
+        <ChevronDownIcon/>
+      </Box>
+     
     </Box>
   )
 }
