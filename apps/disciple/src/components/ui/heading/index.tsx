@@ -5,7 +5,6 @@ import React, { forwardRef, memo } from 'react'
 
 import { headingStyle } from './styles'
 
-
 type IHeadingProps = VariantProps<typeof headingStyle> &
   React.ComponentPropsWithoutRef<typeof H1> & {
     as?: React.ElementType

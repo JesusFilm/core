@@ -3,9 +3,7 @@ import { useRouter } from 'expo-router'
 import { AlertTriangle } from 'lucide-react-native'
 import { Controller, useForm } from 'react-hook-form'
 import { Keyboard } from 'react-native'
-import { z } from 'zod'
-
-import { Button, ButtonText } from '../../../components/ui/button'
+import { Button, ButtonText } from 'src/components/ui/button'
 import {
   FormControl,
   FormControlError,
@@ -13,14 +11,16 @@ import {
   FormControlErrorText,
   FormControlLabel,
   FormControlLabelText
-} from '../../../components/ui/form-control'
-import { Heading } from '../../../components/ui/heading'
-import { ArrowLeftIcon, Icon } from '../../../components/ui/icon'
-import { Input, InputField } from '../../../components/ui/input'
-import { Pressable } from '../../../components/ui/pressable'
-import { Text } from '../../../components/ui/text'
-import { Toast, ToastTitle, useToast } from '../../../components/ui/toast'
-import { VStack } from '../../../components/ui/vstack'
+} from 'src/components/ui/form-control'
+import { Heading } from 'src/components/ui/heading'
+import { Input, InputField } from 'src/components/ui/input'
+import { Text } from 'src/components/ui/text'
+import { Toast, ToastTitle, useToast } from 'src/components/ui/toast'
+import { VStack } from 'src/components/ui/vstack'
+import { ArrowLeftIcon, Icon } from 'src/components/ui/icon'
+import { z } from 'zod'
+import { Pressable } from 'src/components/ui/pressable'
+
 import { AuthLayout } from '../layout'
 
 const forgotPasswordSchema = z.object({

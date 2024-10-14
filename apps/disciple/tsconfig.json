@@ -8,7 +8,8 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "strict": true,
-    "declaration": true
+    "declaration": true,
+    "baseUrl": "."
   },
   "files": [],
   "include": ["nativewind-env.d.ts", ".expo/types/**/*.ts", "expo-env.d.ts"],

@@ -7,7 +7,7 @@ import { withStyleContext } from '@gluestack-ui/nativewind-utils/withStyleContex
 import { withStyleContextAndStates } from '@gluestack-ui/nativewind-utils/withStyleContextAndStates'
 import { cssInterop } from 'nativewind'
 import React from 'react'
-import { Platform , Pressable, Text } from 'react-native'
+import { Platform, Pressable, Text } from 'react-native'
 
 export const UILink = createLink({
   Root:

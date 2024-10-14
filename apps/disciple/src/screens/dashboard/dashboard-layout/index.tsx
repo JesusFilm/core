@@ -2,26 +2,25 @@ import { cn } from '@gluestack-ui/nativewind-utils/cn'
 import { isWeb } from '@gluestack-ui/nativewind-utils/IsWeb'
 import { useRouter } from 'expo-router'
 import type { LucideIcon } from 'lucide-react-native'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Platform } from 'react-native'
-
 import {
   Avatar,
   AvatarFallbackText,
   AvatarImage
-} from '../../../components/ui/avatar'
-import { Box } from '../../../components/ui/box'
-import { Button, ButtonText } from '../../../components/ui/button'
-import { Divider } from '../../../components/ui/divider'
-import { Grid, GridItem } from '../../../components/ui/grid'
-import { Heading } from '../../../components/ui/heading'
-import { HStack } from '../../../components/ui/hstack'
-import { ChevronLeftIcon, Icon, MenuIcon } from '../../../components/ui/icon'
-import { Pressable } from '../../../components/ui/pressable'
-import { SafeAreaView } from '../../../components/ui/safe-area-view'
-import { ScrollView } from '../../../components/ui/scroll-view'
-import { Text } from '../../../components/ui/text'
-import { VStack } from '../../../components/ui/vstack'
+} from 'src/components/ui/avatar'
+import { Box } from 'src/components/ui/box'
+import { Button, ButtonText } from 'src/components/ui/button'
+import { Divider } from 'src/components/ui/divider'
+import { Grid, GridItem } from 'src/components/ui/grid'
+import { Heading } from 'src/components/ui/heading'
+import { HStack } from 'src/components/ui/hstack'
+import { ChevronLeftIcon, Icon, MenuIcon } from 'src/components/ui/icon'
+import { Pressable } from 'src/components/ui/pressable'
+import { SafeAreaView } from 'src/components/ui/safe-area-view'
+import { ScrollView } from 'src/components/ui/scroll-view'
+import { Text } from 'src/components/ui/text'
+import { VStack } from 'src/components/ui/vstack'
 
 import { CalendarIcon } from './assets/icons/calendar'
 import { GlobeIcon } from './assets/icons/globe'
@@ -108,27 +107,27 @@ interface ColleaguesCardData {
 
 const HeadingCards: CardData[] = [
   {
-    bannerUri: require('./assets/image.png'),
+    bannerUri: require('assets/dashboard/dashboard-layout/image.png'),
     title: 'Update your profile',
     description: 'Add your details'
   },
   {
-    bannerUri: require('./assets/image2.png'),
+    bannerUri: require('assets/dashboard/dashboard-layout/image2.png'),
     title: 'Your skills',
     description: 'Add your skills here'
   },
   {
-    bannerUri: require('./assets/image3.png'),
+    bannerUri: require('assets/dashboard/dashboard-layout/image3.png'),
     title: 'Your goals',
     description: 'Set a target to accomplish'
   },
   {
-    bannerUri: require('./assets/image3.png'),
+    bannerUri: require('assets/dashboard/dashboard-layout/image3.png'),
     title: 'Your goals',
     description: 'Set a target to accomplish'
   },
   {
-    bannerUri: require('./assets/image3.png'),
+    bannerUri: require('assets/dashboard/dashboard-layout/image3.png'),
     title: 'Your goals',
     description: 'Set a target to accomplish'
   }
@@ -183,22 +182,22 @@ const LeavesCards: LeavesCardData[] = [
 ]
 const ColleaguesCards: ColleaguesCardData[] = [
   {
-    image: require('./assets/image7.png'),
+    image: require('assets/dashboard/dashboard-layout/image7.png'),
     title: 'Emily Zho',
     position: 'UI/UX Designer'
   },
   {
-    image: require('./assets/image4.png'),
+    image: require('assets/dashboard/dashboard-layout/image4.png'),
     title: 'Marilyn Monroe',
     position: 'SDE II'
   },
   {
-    image: require('./assets/image5.png'),
+    image: require('assets/dashboard/dashboard-layout/image5.png'),
     title: 'James Kant',
     position: 'SDE III'
   },
   {
-    image: require('./assets/image6.png'),
+    image: require('assets/dashboard/dashboard-layout/image6.png'),
     title: 'Richard Faynmen',
     position: 'CEO Marketing'
   }

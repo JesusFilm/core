@@ -1,51 +1,52 @@
-import { cn } from '@gluestack-ui/nativewind-utils/cn'
-import { isWeb } from '@gluestack-ui/nativewind-utils/IsWeb'
-import Image from '@unitools/image'
-import { useRouter } from 'expo-router'
-import type { LucideIcon } from 'lucide-react-native'
-import { useState } from 'react'
-import { Platform } from 'react-native'
-
-import { Avatar, AvatarFallbackText } from '../../../components/ui/avatar'
-import { Box } from '../../../components/ui/box'
-import { Button, ButtonIcon, ButtonText } from '../../../components/ui/button'
-import { Heading } from '../../../components/ui/heading'
-import { HStack } from '../../../components/ui/hstack'
+import { Box } from 'src/components/ui/box'
+import { HStack } from 'src/components/ui/hstack'
 import {
   ChevronLeftIcon,
   DownloadIcon,
   Icon,
   MenuIcon,
   SearchIcon
-} from '../../../components/ui/icon'
+} from 'src/components/ui/icon'
+import { isWeb } from '@gluestack-ui/nativewind-utils/IsWeb'
+import { Text } from 'src/components/ui/text'
+import { VStack } from 'src/components/ui/vstack'
+import { Pressable } from 'src/components/ui/pressable'
+import type { LucideIcon } from 'lucide-react-native'
+import { FeedIcon } from './assets/icons/feed'
+import { GlobeIcon } from './assets/icons/globe'
+import { Button, ButtonIcon, ButtonText } from 'src/components/ui/button'
+import { useState } from 'react'
+import { Heading } from 'src/components/ui/heading'
+import Image from '@unitools/image'
+import { ScrollView } from 'src/components/ui/scroll-view'
 import {
   Input,
   InputField,
   InputIcon,
   InputSlot
-} from '../../../components/ui/input'
-import { Pressable } from '../../../components/ui/pressable'
-import { SafeAreaView } from '../../../components/ui/safe-area-view'
-import { ScrollView } from '../../../components/ui/scroll-view'
-import { Text } from '../../../components/ui/text'
-import { VStack } from '../../../components/ui/vstack'
-
-import { FeedIcon } from './assets/icons/feed'
-import { GlobeIcon } from './assets/icons/globe'
-import { HeartIcon } from './assets/icons/heart'
+} from 'src/components/ui/input'
+import {
+  Avatar,
+  AvatarFallbackText,
+  AvatarImage
+} from 'src/components/ui/avatar'
+import { useRouter } from 'expo-router'
 import { HomeIcon } from './assets/icons/home'
+import { HeartIcon } from './assets/icons/heart'
 import { ProfileIcon } from './assets/icons/profile'
-
-interface MobileHeaderProps {
+import { SafeAreaView } from 'src/components/ui/safe-area-view'
+import { cn } from '@gluestack-ui/nativewind-utils/cn'
+import { Platform } from 'react-native'
+type MobileHeaderProps = {
   title: string
 }
 
-interface HeaderProps {
+type HeaderProps = {
   title: string
   toggleSidebar: () => void
 }
 
-interface Icons {
+type Icons = {
   iconName: LucideIcon | typeof Icon
 }
 const list: Icons[] = [
@@ -62,7 +63,7 @@ const list: Icons[] = [
     iconName: HeartIcon
   }
 ]
-interface BottomTabs {
+type BottomTabs = {
   iconName: LucideIcon | typeof Icon
   iconText: string
 }
@@ -104,35 +105,35 @@ interface CreatorData {
 
 const WORLD_DATA: BlogData[] = [
   {
-    bannerUri: require('./assets/image3.png'),
+    bannerUri: require('assets/news-feed/news-and-feed/image3.png'),
     title: 'The Power of Positive Thinking',
     description:
       'Discover how the power of positive thinking can transform your life, boost your confidence, and help you overcome challenges. Explore practical tips and techniques to cultivate a positive mindset for greater happiness and success.',
     publishedDate: 'May 15, 2023'
   },
   {
-    bannerUri: require('./assets/image4.png'),
+    bannerUri: require('assets/news-feed/news-and-feed/image4.png'),
     title: 'The Power of Positive Thinking',
     description:
       'Discover how the power of positive thinking can transform your life, boost your confidence, and help you overcome challenges. Explore practical tips and techniques to cultivate a positive mindset for greater happiness and success.',
     publishedDate: 'May 15, 2023'
   },
   {
-    bannerUri: require('./assets/image5.png'),
+    bannerUri: require('assets/news-feed/news-and-feed/image5.png'),
     title: 'The Power of Positive Thinking',
     description:
       'Discover how the power of positive thinking can transform your life, boost your confidence, and help you overcome challenges. Explore practical tips and techniques to cultivate a positive mindset for greater happiness and success.',
     publishedDate: 'May 15, 2023'
   },
   {
-    bannerUri: require('./assets/image3.png'),
+    bannerUri: require('assets/news-feed/news-and-feed/image3.png'),
     title: 'The Power of Positive Thinking',
     description:
       'Discover how the power of positive thinking can transform your life, boost your confidence, and help you overcome challenges. Explore practical tips and techniques to cultivate a positive mindset for greater happiness and success.',
     publishedDate: 'May 15, 2023'
   },
   {
-    bannerUri: require('./assets/image4.png'),
+    bannerUri: require('assets/news-feed/news-and-feed/image4.png'),
     title: 'The Power of Positive Thinking',
     description:
       'Discover how the power of positive thinking can transform your life, boost your confidence, and help you overcome challenges. Explore practical tips and techniques to cultivate a positive mindset for greater happiness and success.',
@@ -141,21 +142,21 @@ const WORLD_DATA: BlogData[] = [
 ]
 const BLOGS_DATA: BlogData[] = [
   {
-    bannerUri: require('./assets/image.png'),
+    bannerUri: require('assets/news-feed/news-and-feed/image.png'),
     title: 'The Power of Positive Thinking',
     description:
       'Discover how the power of positive thinking can transform your life, boost your confidence, and help you overcome challenges. Explore practical tips and techniques to cultivate a positive mindset for greater happiness and success.',
     publishedDate: 'May 15, 2023'
   },
   {
-    bannerUri: require('./assets/image2.png'),
+    bannerUri: require('assets/news-feed/news-and-feed/image2.png'),
     title: 'The Power of Positive Thinking',
     description:
       'Discover how the power of positive thinking can transform your life, boost your confidence, and help you overcome challenges. Explore practical tips and techniques to cultivate a positive mindset for greater happiness and success.',
     publishedDate: 'May 15, 2023'
   },
   {
-    bannerUri: require('./assets/image2.png'),
+    bannerUri: require('assets/news-feed/news-and-feed/image2.png'),
     title: 'The Power of Positive Thinking',
     description:
       'Discover how the power of positive thinking can transform your life, boost your confidence, and help you overcome challenges. Explore practical tips and techniques to cultivate a positive mindset for greater happiness and success.',
@@ -164,17 +165,17 @@ const BLOGS_DATA: BlogData[] = [
 ]
 const CREATORS_DATA: CreatorData[] = [
   {
-    bannerUri: require('./assets/image6.png'),
+    bannerUri: require('assets/news-feed/news-and-feed/image6.png'),
     name: 'Emily Zho',
     description: 'Designer by heart, writer by profession, talks about design'
   },
   {
-    bannerUri: require('./assets/image7.png'),
+    bannerUri: require('assets/news-feed/news-and-feed/image7.png'),
     name: 'Ram Narayan',
     description: 'Founder of Fortune 500 company Alo, talks about'
   },
   {
-    bannerUri: require('./assets/image8.png'),
+    bannerUri: require('assets/news-feed/news-and-feed/image8.png'),
     name: 'David John',
     description: 'Creator of all things metal, talks about music and art. '
   }
@@ -208,7 +209,7 @@ const DashboardLayout = (props: any) => {
   return (
     <VStack className="h-full w-full bg-background-0">
       <Box className="md:hidden">
-        <MobileHeader title="News feed" />
+        <MobileHeader title={'News feed'} />
       </Box>
       <Box className="hidden md:flex">
         <WebHeader toggleSidebar={toggleSidebar} title={props.title} />
@@ -334,8 +335,8 @@ const MainContent = () => {
                 >
                   <Box className="w-full h-64 rounded">
                     <Image
-                      height="100%"
-                      width="100%"
+                      height={'100%'}
+                      width={'100%'}
                       source={item.bannerUri}
                       alt={item.bannerUri}
                       contentFit="cover"
@@ -372,8 +373,8 @@ const MainContent = () => {
                       >
                         <Box className="relative h-full w-40 rounded">
                           <Image
-                            height="100%"
-                            width="100%"
+                            height={'100%'}
+                            width={'100%'}
                             contentFit="cover"
                             source={item.bannerUri}
                             alt={item.title}
@@ -442,7 +443,7 @@ const MainContent = () => {
 export const NewsAndFeed = () => {
   return (
     <SafeAreaView className="h-full w-full">
-      <DashboardLayout title="News Feed" isSidebarVisible>
+      <DashboardLayout title="News Feed" isSidebarVisible={true}>
         <MainContent />
       </DashboardLayout>
       <MobileFooter footerIcons={bottomTabsList} />

@@ -9,26 +9,24 @@ import { Controller, useForm } from 'react-hook-form'
 import { Keyboard, Platform } from 'react-native'
 import { z } from 'zod'
 
+import { CameraSparklesIcon } from './assets/icons/camera-sparkles'
+import { DownloadIcon } from './assets/icons/download'
+import { EditPhotoIcon } from './assets/icons/edit-photo'
+import { FaqIcon } from './assets/icons/faq'
+import { GlobeIcon } from './assets/icons/globe'
+import { HeartIcon } from './assets/icons/heart'
+import { HomeIcon } from './assets/icons/home'
+import { InboxIcon } from './assets/icons/inbox'
+import { NewsBlogIcon } from './assets/icons/news-blog'
+import { ProfileIcon } from './assets/icons/profile'
 import {
   Avatar,
   AvatarBadge,
   AvatarFallbackText,
   AvatarImage
-} from '../../../components/ui/avatar'
-import { Box } from '../../../components/ui/box'
-import { Button, ButtonIcon, ButtonText } from '../../../components/ui/button'
-import { Center } from '../../../components/ui/center'
-import { Divider } from '../../../components/ui/divider'
-import {
-  FormControl,
-  FormControlError,
-  FormControlErrorIcon,
-  FormControlErrorText,
-  FormControlLabel,
-  FormControlLabelText
-} from '../../../components/ui/form-control'
-import { Heading } from '../../../components/ui/heading'
-import { HStack } from '../../../components/ui/hstack'
+} from 'src/components/ui/avatar'
+import { Box } from 'src/components/ui/box'
+import { HStack } from 'src/components/ui/hstack'
 import {
   AlertCircleIcon,
   ChevronDownIcon,
@@ -40,8 +38,14 @@ import {
   MenuIcon,
   PhoneIcon,
   SettingsIcon
-} from '../../../components/ui/icon'
-import { Input, InputField } from '../../../components/ui/input'
+} from 'src/components/ui/icon'
+import { Text } from 'src/components/ui/text'
+import { VStack } from 'src/components/ui/vstack'
+import { Pressable } from 'src/components/ui/pressable'
+import { Button, ButtonIcon, ButtonText } from 'src/components/ui/button'
+import { Heading } from 'src/components/ui/heading'
+
+import { ScrollView } from 'src/components/ui/scroll-view'
 import {
   Modal,
   ModalBackdrop,
@@ -49,10 +53,22 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalHeader
-} from '../../../components/ui/modal'
-import { Pressable } from '../../../components/ui/pressable'
-import { SafeAreaView } from '../../../components/ui/safe-area-view'
-import { ScrollView } from '../../../components/ui/scroll-view'
+} from 'src/components/ui/modal'
+import { Input, InputField } from 'src/components/ui/input'
+
+import { SafeAreaView } from 'src/components/ui/safe-area-view'
+import { Center } from 'src/components/ui/center'
+
+import { SubscriptionIcon } from './assets/icons/subscription'
+import { Divider } from 'src/components/ui/divider'
+import {
+  FormControl,
+  FormControlError,
+  FormControlErrorIcon,
+  FormControlErrorText,
+  FormControlLabel,
+  FormControlLabelText
+} from 'src/components/ui/form-control'
 import {
   Select,
   SelectBackdrop,
@@ -64,21 +80,7 @@ import {
   SelectItem,
   SelectPortal,
   SelectTrigger
-} from '../../../components/ui/select'
-import { Text } from '../../../components/ui/text'
-import { VStack } from '../../../components/ui/vstack'
-
-import { CameraSparklesIcon } from './assets/icons/camera-sparkles'
-import { DownloadIcon } from './assets/icons/download'
-import { EditPhotoIcon } from './assets/icons/edit-photo'
-import { FaqIcon } from './assets/icons/faq'
-import { GlobeIcon } from './assets/icons/globe'
-import { HeartIcon } from './assets/icons/heart'
-import { HomeIcon } from './assets/icons/home'
-import { InboxIcon } from './assets/icons/inbox'
-import { NewsBlogIcon } from './assets/icons/news-blog'
-import { ProfileIcon } from './assets/icons/profile'
-import { SubscriptionIcon } from './assets/icons/subscription'
+} from 'src/components/ui/select'
 
 interface MobileHeaderProps {
   title: string
@@ -461,7 +463,7 @@ const MainContent = () => {
         <VStack className="h-full w-full pb-8" space="2xl">
           <Box className="relative w-full md:h-[478px] h-[380px]">
             <Image
-              source={require('./assets/image2.png')}
+              source={require('assets/profile-screens/profile/image2.png')}
               height="100%"
               width="100%"
               alt="Banner Image"
@@ -481,7 +483,7 @@ const MainContent = () => {
                   alt="Profile Image"
                   height="100%"
                   width="100%"
-                  source={require('./assets/image.png')}
+                  source={require('assets/profile-screens/profile/image.png')}
                 />
                 <AvatarBadge />
               </Avatar>
@@ -555,7 +557,7 @@ const MainContent = () => {
               <HStack space="2xl" className="items-center">
                 <Box className="md:h-20 md:w-20 h-10 w-10">
                   <Image
-                    source={require('./assets/image1.png')}
+                    source={require('assets/profile-screens/profile/image1.png')}
                     height="100%"
                     width="100%"
                     alt="Promo Image"
@@ -654,7 +656,7 @@ const MobileScreen = () => {
     <VStack className="md:hidden mb-5">
       <Box className="w-full h-[188px]">
         <Image
-          source={require('./assets/image2.png')}
+          source={require('assets/profile-screens/profile/image2.png')}
           height="100%"
           width="100%"
           alt="Banner Image"
@@ -665,7 +667,9 @@ const MobileScreen = () => {
       </Pressable>
       <Center className="w-full absolute top-10">
         <Avatar size="2xl">
-          <AvatarImage source={require('./assets/image.png')} />
+          <AvatarImage
+            source={require('assets/profile-screens/profile/image.png')}
+          />
           <AvatarBadge className="justify-center items-center bg-background-950">
             <Icon as={EditPhotoIcon} />
           </AvatarBadge>
@@ -1096,7 +1100,7 @@ const ModalComponent = ({
       <ModalContent>
         <Box className="w-full h-[215px] ">
           <Image
-            source={require('./assets/image2.png')}
+            source={require('assets/profile-screens/profile/image2.png')}
             height="100%"
             width="100%"
             alt="Banner Image"
@@ -1119,7 +1123,9 @@ const ModalComponent = ({
         </ModalHeader>
         <Center className="w-full absolute top-16">
           <Avatar size="2xl">
-            <AvatarImage source={require('./assets/image.png')} />
+            <AvatarImage
+              source={require('assets/profile-screens/profile/image.png')}
+            />
             <AvatarBadge className="justify-center items-center bg-background-500">
               <Icon as={EditPhotoIcon} />
             </AvatarBadge>

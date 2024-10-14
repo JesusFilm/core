@@ -3,7 +3,6 @@ import React from 'react'
 
 import { gridItemStyle, gridStyle } from './styles'
 
-
 type IGridProps = React.ComponentPropsWithoutRef<'div'> &
   VariantProps<typeof gridStyle> & {
     gap?: number

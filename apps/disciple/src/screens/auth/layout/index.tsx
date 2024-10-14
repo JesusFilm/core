@@ -1,10 +1,10 @@
-import { HStack } from '../../../components/ui/hstack'
-import { Image } from '../../../components/ui/image'
-import { SafeAreaView } from '../../../components/ui/safe-area-view'
-import { ScrollView } from '../../../components/ui/scroll-view'
-import { VStack } from '../../../components/ui/vstack'
+import { HStack } from 'src/components/ui/hstack'
+import { VStack } from 'src/components/ui/vstack'
+import { SafeAreaView } from 'src/components/ui/safe-area-view'
+import { ScrollView } from 'src/components/ui/scroll-view'
+import { Image } from 'src/components/ui/image'
 
-interface AuthLayoutProps {
+type AuthLayoutProps = {
   children: React.ReactNode
 }
 
@@ -21,8 +21,9 @@ export const AuthLayout = (props: AuthLayoutProps) => {
             space="md"
           >
             <Image
+              height="100%"
               width="100%"
-              source={require('../../../../assets/auth/radialGradient.png')}
+              source={require('assets/auth/radialGradient.png')}
               className="object-cover h-full w-full"
               alt="Radial Gradient"
             />

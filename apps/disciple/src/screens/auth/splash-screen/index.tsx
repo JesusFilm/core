@@ -1,9 +1,9 @@
 import { useRouter } from 'expo-router'
 import { useColorScheme } from 'nativewind'
+import { Button, ButtonText } from 'src/components/ui/button'
+import { Icon } from 'src/components/ui/icon'
+import { VStack } from 'src/components/ui/vstack'
 
-import { Button, ButtonText } from '../../../components/ui/button'
-import { Icon } from '../../../components/ui/icon'
-import { VStack } from '../../../components/ui/vstack'
 import { AuthLayout } from '../layout'
 
 import { GluestackIcon, GluestackIconDark } from './assets/icons/gluestack-icon'

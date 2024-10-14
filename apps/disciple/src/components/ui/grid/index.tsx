@@ -1,8 +1,4 @@
 import type { VariantProps } from '@gluestack-ui/nativewind-utils'
-import {
-  getBreakPointValue,
-  useBreakpointValue
-} from '@gluestack-ui/nativewind-utils/useBreakpointValue'
 import { cssInterop } from 'nativewind'
 import React, {
   createContext,
@@ -15,7 +11,10 @@ import React, {
 import { Dimensions, Platform, View, ViewProps } from 'react-native'
 
 import { gridItemStyle, gridStyle } from './styles'
-
+import {
+  getBreakPointValue,
+  useBreakpointValue
+} from '../utils/use-break-point-value'
 
 const { width } = Dimensions.get('window')
 

@@ -4,13 +4,12 @@ import {
   DefaultTheme,
   ThemeProvider
 } from '@react-navigation/native'
+import { GluestackUIProvider } from 'src/components/ui/gluestack-ui-provider'
+import { useColorScheme } from 'src/components/useColorScheme'
 import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
 import { hideAsync, preventAutoHideAsync } from 'expo-splash-screen'
 import { ReactElement, useEffect } from 'react'
-
-import { GluestackUIProvider } from '../src/components/ui/gluestack-ui-provider'
-import { useColorScheme } from '../src/components/useColorScheme'
 
 import '../global.css'
 

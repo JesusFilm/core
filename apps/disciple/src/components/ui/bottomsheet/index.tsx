@@ -19,7 +19,7 @@ import React, {
   useState
 } from 'react'
 import type { PressableProps, TextProps } from 'react-native'
-import { Platform , Pressable, Text } from 'react-native'
+import { Platform, Pressable, Text } from 'react-native'
 
 const bottomSheetBackdropStyle = tva({
   base: 'absolute inset-0 flex-1 touch-none select-none bg-black opacity-0'
@@ -209,7 +209,6 @@ export const BottomSheetContent = ({ ...props }: IBottomSheetContent) => {
             if (e.key === 'Escape') {
               e.preventDefault()
               handleClose()
-              
             }
           }
         }

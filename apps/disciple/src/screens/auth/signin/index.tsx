@@ -3,17 +3,14 @@ import Link from '@unitools/link'
 import { useRouter } from 'expo-router'
 import { AlertTriangle } from 'lucide-react-native'
 import React, { useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
 import { Keyboard } from 'react-native'
-import { z } from 'zod'
-
-import { Button, ButtonIcon, ButtonText } from '../../../components/ui/button'
+import { Button, ButtonIcon, ButtonText } from 'src/components/ui/button'
 import {
   Checkbox,
   CheckboxIcon,
   CheckboxIndicator,
   CheckboxLabel
-} from '../../../components/ui/checkbox'
+} from 'src/components/ui/checkbox'
 import {
   FormControl,
   FormControlError,
@@ -21,30 +18,34 @@ import {
   FormControlErrorText,
   FormControlLabel,
   FormControlLabelText
-} from '../../../components/ui/form-control'
-import { Heading } from '../../../components/ui/heading'
-import { HStack } from '../../../components/ui/hstack'
+} from 'src/components/ui/form-control'
+import { Heading } from 'src/components/ui/heading'
+import { HStack } from 'src/components/ui/hstack'
+import { Toast, ToastTitle, useToast } from 'src/components/ui/toast'
+import { VStack } from 'src/components/ui/vstack'
+import { Text } from 'src/components/ui/text'
+import { LinkText } from 'src/components/ui/link'
+import {
+  Input,
+  InputField,
+  InputIcon,
+  InputSlot
+} from 'src/components/ui/input'
 import {
   ArrowLeftIcon,
   CheckIcon,
   EyeIcon,
   EyeOffIcon,
   Icon
-} from '../../../components/ui/icon'
-import {
-  Input,
-  InputField,
-  InputIcon,
-  InputSlot
-} from '../../../components/ui/input'
-import { LinkText } from '../../../components/ui/link'
-import { Pressable } from '../../../components/ui/pressable'
-import { Text } from '../../../components/ui/text'
-import { Toast, ToastTitle, useToast } from '../../../components/ui/toast'
-import { VStack } from '../../../components/ui/vstack'
+} from 'src/components/ui/icon'
+import { Controller, useForm } from 'react-hook-form'
+import { z } from 'zod'
+
 import { AuthLayout } from '../layout'
 
 import { GoogleIcon } from './assets/icons/google'
+
+import { Pressable } from 'src/components/ui/pressable'
 
 const USERS = [
   {

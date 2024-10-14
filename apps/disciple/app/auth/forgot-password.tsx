@@ -1,3 +1,3 @@
-import { ForgotPassword } from '../../src/screens/auth/forgot-password'
+import { ForgotPassword } from 'src/screens/auth/forgot-password'
 
 export default ForgotPassword

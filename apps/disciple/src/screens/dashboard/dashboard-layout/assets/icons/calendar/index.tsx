@@ -1,6 +1,5 @@
 import { createIcon } from '@gluestack-ui/icon'
-import { G, Path, Svg } from 'react-native-svg'
-
+import { Path, G, Svg } from 'react-native-svg'
 export const CalendarIcon: any = createIcon({
   Root: Svg,
   viewBox: '0 0 16 16',

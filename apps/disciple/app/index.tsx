@@ -1,9 +1,9 @@
 import { router } from 'expo-router'
 import React, { ReactElement } from 'react'
 
-import { Button, ButtonText } from '../src/components/ui/button'
-import { SafeAreaView } from '../src/components/ui/safe-area-view'
-import { VStack } from '../src/components/ui/vstack'
+import { Button, ButtonText } from 'src/components/ui/button'
+import { SafeAreaView } from 'src/components/ui/safe-area-view'
+import { VStack } from 'src/components/ui/vstack'
 
 export default function IndexPage(): ReactElement {
   return (

@@ -4,9 +4,7 @@ import { AlertTriangle } from 'lucide-react-native'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Keyboard } from 'react-native'
-import { z } from 'zod'
-
-import { Button, ButtonText } from '../../../components/ui/button'
+import { Button, ButtonText } from 'src/components/ui/button'
 import {
   FormControl,
   FormControlError,
@@ -14,24 +12,26 @@ import {
   FormControlErrorText,
   FormControlLabel,
   FormControlLabelText
-} from '../../../components/ui/form-control'
-import { Heading } from '../../../components/ui/heading'
+} from 'src/components/ui/form-control'
+import { Heading } from 'src/components/ui/heading'
 import {
   ArrowLeftIcon,
   EyeIcon,
   EyeOffIcon,
   Icon
-} from '../../../components/ui/icon'
+} from 'src/components/ui/icon'
 import {
   Input,
   InputField,
   InputIcon,
   InputSlot
-} from '../../../components/ui/input'
-import { Pressable } from '../../../components/ui/pressable'
-import { Text } from '../../../components/ui/text'
-import { Toast, ToastTitle, useToast } from '../../../components/ui/toast'
-import { VStack } from '../../../components/ui/vstack'
+} from 'src/components/ui/input'
+import { Pressable } from 'src/components/ui/pressable'
+import { Text } from 'src/components/ui/text'
+import { Toast, ToastTitle, useToast } from 'src/components/ui/toast'
+import { VStack } from 'src/components/ui/vstack'
+import { z } from 'zod'
+
 import { AuthLayout } from '../layout'
 
 const createPasswordSchema = z.object({
