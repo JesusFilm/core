@@ -1,7 +1,10 @@
+/* eslint-disable import/namespace */
 /* eslint-disable i18next/no-literal-string */
 import { LinearGradient } from 'expo-linear-gradient'
 import { ReactElement } from 'react'
 import { ImageBackground, SafeAreaView, Text, View } from 'react-native'
+
+import { BackButton } from '../BackButton'
 
 export function ChurchHeroBanner(): ReactElement {
   return (
@@ -27,7 +30,7 @@ export function ChurchHeroBanner(): ReactElement {
       />
       <SafeAreaView>
         <View style={{ paddingHorizontal: 20 }}>
-          <Text style={{ color: 'white' }}>Back</Text>
+          <BackButton />
         </View>
       </SafeAreaView>
       <View style={{ marginTop: 'auto', paddingHorizontal: 20 }}>

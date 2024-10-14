@@ -40,7 +40,7 @@ export default function ChurchPage(): ReactElement {
             }}
           >
             <Text style={{ color: 'white', fontSize: 16, lineHeight: 20 }}>
-              700 members
+              700+ members
             </Text>
             <FollowButton />
           </View>
