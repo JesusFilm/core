@@ -1,6 +1,7 @@
-import { ReactElement } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
-import { Text, View, ImageBackground } from 'react-native'
+import { ReactElement } from 'react'
+import { ImageBackground, Text, View } from 'react-native'
+
 export function ChurchAboutSection(): ReactElement {
   return (
     <View
