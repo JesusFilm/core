@@ -6,9 +6,9 @@ import { ComponentProps } from 'react'
 import { videosAdminConfig } from '../../../../../libs/storybookConfig'
 
 import {
-  GET_VIDEOS_AND_COUNT,
-  GetVideosAndCount,
-  GetVideosAndCountVariables,
+  GET_ADMIN_VIDEOS_AND_COUNT,
+  GetAdminVideosAndCount,
+  GetAdminVideosAndCountVariables,
   VideoList
 } from './VideoList'
 
@@ -29,12 +29,12 @@ const meta: Meta<typeof VideoList> = {
 export default meta
 type Story = StoryObj<ComponentProps<typeof VideoList> & { locale: string }>
 
-const mockGetVideosAndCount: MockedResponse<
-  GetVideosAndCount,
-  GetVideosAndCountVariables
+const mockGetAdminVideosAndCount: MockedResponse<
+  GetAdminVideosAndCount,
+  GetAdminVideosAndCountVariables
 > = {
   request: {
-    query: GET_VIDEOS_AND_COUNT,
+    query: GET_ADMIN_VIDEOS_AND_COUNT,
     variables: {
       limit: 50,
       offset: 0,
@@ -45,34 +45,37 @@ const mockGetVideosAndCount: MockedResponse<
   },
   result: {
     data: {
-      videosCount: 3,
-      videos: [
+      adminVideosCount: 3,
+      adminVideos: [
         {
-          id: 'example-id',
+          id: 'video1.id',
           snippet: [{ value: 'Example snippet', primary: true }],
-          title: [{ value: 'Example title', primary: true }]
+          title: [{ value: 'Video 1 title', primary: true }],
+          published: true
         },
         {
-          id: 'example-id',
+          id: 'video2.id',
           snippet: [{ value: 'Example snippet', primary: true }],
-          title: [{ value: 'Example title', primary: true }]
+          title: [{ value: 'Video 2 title', primary: true }],
+          published: false
         },
         {
-          id: 'example-id',
+          id: 'video3.id',
           snippet: [{ value: 'Example snippet', primary: true }],
-          title: [{ value: 'Example title', primary: true }]
+          title: [{ value: 'Video 3 title', primary: true }],
+          published: true
         }
       ]
     }
   }
 }
 
-const mockGetVideosAndCount100: MockedResponse<
-  GetVideosAndCount,
-  GetVideosAndCountVariables
+const mockGetAdminVideosAndCount100: MockedResponse<
+  GetAdminVideosAndCount,
+  GetAdminVideosAndCountVariables
 > = {
   request: {
-    query: GET_VIDEOS_AND_COUNT,
+    query: GET_ADMIN_VIDEOS_AND_COUNT,
     variables: {
       limit: 50,
       offset: 0,
@@ -83,12 +86,13 @@ const mockGetVideosAndCount100: MockedResponse<
   },
   result: {
     data: {
-      videosCount: 100,
-      videos: [
+      adminVideosCount: 100,
+      adminVideos: [
         ...Array.from(new Array(50), (_val, i) => ({
           id: `example-id-${i}`,
           snippet: [{ value: `Example Snippet ${i}`, primary: true }],
-          title: [{ value: `Example title ${i}`, primary: true }]
+          title: [{ value: `Example title ${i}`, primary: true }],
+          published: i % 2 === 0
         }))
       ]
     }
@@ -117,7 +121,7 @@ export const WithVideos: Story = {
   },
   parameters: {
     apolloClient: {
-      mocks: [mockGetVideosAndCount]
+      mocks: [mockGetAdminVideosAndCount]
     }
   }
 }
@@ -133,7 +137,7 @@ export const WithVideosLong: Story = {
   },
   parameters: {
     apolloClient: {
-      mocks: [mockGetVideosAndCount100]
+      mocks: [mockGetAdminVideosAndCount100]
     }
   }
 }
