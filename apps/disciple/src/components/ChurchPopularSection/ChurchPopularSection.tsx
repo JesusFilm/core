@@ -70,7 +70,8 @@ export function ChurchPopularSection(): ReactElement {
     <View
       style={{
         display: 'flex',
-        gap: 20
+        gap: 20,
+        marginBottom: 30
       }}
     >
       <Text

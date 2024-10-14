@@ -1,7 +1,8 @@
+/* eslint-disable i18next/no-literal-string */
 /* eslint-disable import/namespace */
 
 import { ReactElement, useRef } from 'react'
-import { Animated, ScrollView, View } from 'react-native'
+import { Animated, SafeAreaView, ScrollView, Text, View } from 'react-native'
 
 import { ChurchAboutSection } from '../../src/components/ChurchAboutSection'
 import { ChurchHeroBanner } from '../../src/components/ChurchHeroBanner'
@@ -20,28 +21,41 @@ export default function ChurchPage(): ReactElement {
         width: '100%'
       }}
     >
-      <ScrollView
-        bouncesZoom
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: pan.y } } }],
-          { useNativeDriver: false }
-        )}
-      >
-        <ChurchHeroBanner scrollOffset={pan} />
-        <View
-          style={{
-            display: 'flex',
-            height: '100%',
-            width: '100%',
-            paddingHorizontal: 20,
-            gap: 20
-          }}
+      <ChurchHeroBanner scrollOffset={pan} />
+      <SafeAreaView>
+        <ScrollView
+          bouncesZoom
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: pan.y } } }],
+            { useNativeDriver: false }
+          )}
         >
-          <ChurchPageSubheader />
-          <ChurchAboutSection />
-          <ChurchPopularSection />
-        </View>
-      </ScrollView>
+          <Text
+            style={{
+              marginTop: 200,
+              fontSize: 45,
+              color: 'white',
+              fontWeight: 'bold',
+              paddingHorizontal: 20
+            }}
+          >
+            Auckland Ev
+          </Text>
+          <View
+            style={{
+              display: 'flex',
+              height: '100%',
+              width: '100%',
+              paddingHorizontal: 20,
+              gap: 20
+            }}
+          >
+            <ChurchPageSubheader />
+            <ChurchAboutSection />
+            <ChurchPopularSection />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     </View>
   )
 }
