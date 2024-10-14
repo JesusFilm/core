@@ -212,7 +212,9 @@
     "xliff": "^6.2.1",
     "yup": "^1.0.0",
     "zod": "^3.23.8",
-    "expo-router": "~3.5.23"
+    "expo-router": "~3.5.23",
+    "expo-image": "~1.13.0",
+    "expo-linear-gradient": "~13.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.22.15",

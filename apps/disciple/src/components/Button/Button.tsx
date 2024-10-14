@@ -1,8 +1,9 @@
+/* eslint-disable import/namespace */
 import { ReactElement } from 'react'
 import { Pressable, Text } from 'react-native'
 
 interface ButtonProps {
-  title: string
+  title?: string
   onPress?: () => void
 }
 
@@ -15,7 +16,7 @@ export function Button({ title, onPress }: ButtonProps): ReactElement {
           justifyContent: 'center',
           paddingVertical: 12,
           paddingHorizontal: 32,
-          borderRadius: 8,
+          borderRadius: 9,
           elevation: 3,
           backgroundColor: 'black',
           opacity: pressed ? 0.7 : 1
