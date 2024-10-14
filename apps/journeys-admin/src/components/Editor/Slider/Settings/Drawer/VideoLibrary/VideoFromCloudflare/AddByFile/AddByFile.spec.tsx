@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { act, fireEvent, render, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { createCloudflareVideoMock, getCloudflareVideoMock } from './data'
 import { TestHttpStack } from './TestHttpStack'
@@ -7,6 +7,27 @@ import { TestHttpStack } from './TestHttpStack'
 import { AddByFile } from '.'
 
 describe('AddByFile', () => {
+  it('should have no errors on start upload', async () => {
+    const result = jest.fn().mockReturnValue(createCloudflareVideoMock.result)
+    const { getByTestId } = render(
+      <MockedProvider mocks={[{ ...createCloudflareVideoMock, result }]}>
+        <AddByFile onChange={jest.fn()} />
+      </MockedProvider>
+    )
+    window.URL.createObjectURL = jest.fn().mockImplementation(() => 'url')
+    const input = getByTestId('drop zone')
+    const file = new File(['file'], 'testFile.mp4', {
+      type: 'video/mp4'
+    })
+    Object.defineProperty(input, 'files', {
+      value: [file]
+    })
+    fireEvent.drop(input)
+    await waitFor(() =>
+      expect(screen.queryByText('Upload Failed!')).not.toBeInTheDocument()
+    )
+  })
+
   it('should check if the mutations gets called', async () => {
     const testStack = new TestHttpStack()
     const result = jest.fn().mockReturnValue(createCloudflareVideoMock.result)
