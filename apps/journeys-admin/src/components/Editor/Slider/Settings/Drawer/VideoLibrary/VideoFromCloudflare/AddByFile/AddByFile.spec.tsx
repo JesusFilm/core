@@ -1,10 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
 
-import {
-  CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
-  GET_MY_CLOUDFLARE_VIDEO_QUERY
-} from './AddByFile'
+import { createCloudflareVideoMock, getCloudflareVideoMock } from './data'
 import { TestHttpStack } from './TestHttpStack'
 
 import { AddByFile } from '.'
@@ -12,31 +9,10 @@ import { AddByFile } from '.'
 describe('AddByFile', () => {
   it('should check if the mutations gets called', async () => {
     const testStack = new TestHttpStack()
-    const result = jest.fn(() => ({
-      data: {
-        createCloudflareVideoUploadByFile: {
-          id: 'uploadId',
-          uploadUrl: 'https://example.com/upload',
-          __typename: 'CloudflareVideo'
-        }
-      }
-    }))
+    const result = jest.fn().mockReturnValue(createCloudflareVideoMock.result)
     const onChange = jest.fn()
     const { getByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
-              variables: {
-                uploadLength: 4,
-                name: 'testFile'
-              }
-            },
-            result
-          }
-        ]}
-      >
+      <MockedProvider mocks={[{ ...createCloudflareVideoMock, result }]}>
         <AddByFile onChange={onChange} httpStack={testStack} />
       </MockedProvider>
     )
@@ -57,43 +33,7 @@ describe('AddByFile', () => {
     const onChange = jest.fn()
     const { getByTestId, getByText } = render(
       <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
-              variables: {
-                uploadLength: 4,
-                name: 'testFile'
-              }
-            },
-            result: {
-              data: {
-                createCloudflareVideoUploadByFile: {
-                  id: 'uploadId',
-                  uploadUrl: 'https://example.com/upload',
-                  __typename: 'CloudflareVideo'
-                }
-              }
-            }
-          },
-          {
-            request: {
-              query: GET_MY_CLOUDFLARE_VIDEO_QUERY,
-              variables: {
-                id: 'uploadId'
-              }
-            },
-            result: {
-              data: {
-                getMyCloudflareVideo: {
-                  id: 'uploadId',
-                  readyToStream: true,
-                  __typename: 'CloudflareVideo'
-                }
-              }
-            }
-          }
-        ]}
+        mocks={[createCloudflareVideoMock, getCloudflareVideoMock]}
       >
         <AddByFile onChange={onChange} httpStack={testStack} />
       </MockedProvider>
@@ -151,28 +91,7 @@ describe('AddByFile', () => {
     const testStack = new TestHttpStack()
     const onChange = jest.fn()
     const { getByTestId, getByText, getAllByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
-              variables: {
-                uploadLength: 4,
-                name: 'testFile'
-              }
-            },
-            result: {
-              data: {
-                createCloudflareVideoUploadByFile: {
-                  id: 'uploadId',
-                  uploadUrl: 'https://example.com/upload',
-                  __typename: 'CloudflareVideo'
-                }
-              }
-            }
-          }
-        ]}
-      >
+      <MockedProvider mocks={[createCloudflareVideoMock]}>
         <AddByFile onChange={onChange} httpStack={testStack} />
       </MockedProvider>
     )
@@ -202,28 +121,7 @@ describe('AddByFile', () => {
     const testStack = new TestHttpStack()
     const onChange = jest.fn()
     const { getByTestId, getAllByTestId } = render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
-              variables: {
-                uploadLength: 4,
-                name: 'testFile'
-              }
-            },
-            result: {
-              data: {
-                createCloudflareVideoUploadByFile: {
-                  id: 'uploadId',
-                  uploadUrl: 'https://example.com/upload',
-                  __typename: 'CloudflareVideo'
-                }
-              }
-            }
-          }
-        ]}
-      >
+      <MockedProvider mocks={[createCloudflareVideoMock]}>
         <AddByFile onChange={onChange} httpStack={testStack} />
       </MockedProvider>
     )
