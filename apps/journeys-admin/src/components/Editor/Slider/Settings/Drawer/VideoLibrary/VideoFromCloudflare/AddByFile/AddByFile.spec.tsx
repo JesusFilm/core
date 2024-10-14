@@ -20,7 +20,7 @@ async function dropTestVideo(): Promise<void> {
 }
 
 describe('AddByFile', () => {
-  it('should have no errors on start upload', async () => {
+  it('should clear errors on start upload', async () => {
     const result = jest.fn().mockReturnValue(createCloudflareVideoMock.result)
     render(
       <MockedProvider mocks={[{ ...createCloudflareVideoMock, result }]}>
