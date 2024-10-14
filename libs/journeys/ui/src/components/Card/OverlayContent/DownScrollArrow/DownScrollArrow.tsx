@@ -38,7 +38,6 @@ export function DownScrollArrow({
         style={{
           transitionDuration: '500ms'
         }}
-        data-testid="DownArrow"
       >
         <ChevronDownIcon />
       </Fade>
