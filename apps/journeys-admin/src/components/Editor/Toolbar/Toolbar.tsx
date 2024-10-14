@@ -283,7 +283,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                   textOverflow: 'ellipsis',
                   borderRadius: '8px',
                   flexShrink: 1,
-                  p: 0
+                  px: 0
                 }}
               >
                 <Typography
