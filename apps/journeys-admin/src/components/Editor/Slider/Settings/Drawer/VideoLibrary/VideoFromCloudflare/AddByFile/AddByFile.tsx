@@ -100,6 +100,7 @@ export function AddByFile({
     settooManyFiles(false)
     setfileInvalidType(false)
     setfileRejected(false)
+    setError(undefined)
   }
 
   const onDropAccepted = async (files: File[]): Promise<void> => {
