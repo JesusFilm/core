@@ -1,12 +1,11 @@
 import Box from '@mui/material/Box'
-import Fade from '@mui/material/Fade'
-import { SxProps, keyframes } from '@mui/material/styles'
+import { SxProps } from '@mui/material/styles'
 import useScrollTrigger from '@mui/material/useScrollTrigger'
 import { ReactElement, ReactNode, useRef } from 'react'
 
-import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
-
 import { useJourney } from '../../../libs/JourneyProvider'
+
+import { DownScrollArrow } from './DownScrollArrow'
 
 interface OverlayContentProps {
   children: ReactNode
@@ -26,6 +25,10 @@ export function OverlayContent({
     target: cardOverlayRef.current,
     threshold: 20
   })
+  const isScrollable = (): boolean => {
+    const box = cardOverlayRef.current
+    return box != null ? box.scrollHeight > box.clientHeight : false
+  }
   const enableVerticalScroll: SxProps = {
     overflowY: 'scroll',
     // Hide on Firefox https://caniuse.com/?search=scrollbar-width
@@ -71,24 +74,6 @@ export function OverlayContent({
           pr: { xs: 6, sm: 10 }
         }
 
-  const bounce = keyframes`
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-30px);
-  }
-  60% {
-    transform: translateY(-15px);
-  }
-`
-
-  console.log(trigger)
-
-  const isScrollable = (): boolean => {
-    const box = cardOverlayRef.current
-    return box != null ? box.scrollHeight > box.clientHeight : false
-  }
   return (
     <Box>
       <Box
@@ -101,32 +86,12 @@ export function OverlayContent({
           ...mobileNotchPadding,
           ...sx,
           position: 'relative'
-          // border: '2px solid white'
         }}
       >
         {children}
       </Box>
-      {isScrollable() && variant === 'default' && (
-        <Box
-          data-testid="DownArrowBox"
-          sx={{
-            position: 'fixed',
-            bottom: 88,
-            left: 'calc(50% - 12px)',
-            animation: `${bounce} 2s infinite`
-          }}
-        >
-          <Fade
-            appear={false}
-            in={!trigger}
-            style={{
-              transitionDuration: '500ms'
-            }}
-            data-testid="DownArrow"
-          >
-            <ChevronDownIcon />
-          </Fade>
-        </Box>
+      {isScrollable() && variant !== 'admin' && (
+        <DownScrollArrow trigger={trigger} />
       )}
     </Box>
   )
