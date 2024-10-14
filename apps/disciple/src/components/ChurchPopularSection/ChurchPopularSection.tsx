@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
 import { Text, View } from 'react-native'
+
 import { ChurchPopularSectionItem } from './ChurchPopularSectionItem'
 
 const mockPopularChurchContentData = [

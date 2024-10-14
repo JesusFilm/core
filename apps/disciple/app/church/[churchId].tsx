@@ -1,12 +1,11 @@
 /* eslint-disable import/namespace */
-/* eslint-disable i18next/no-literal-string */
+
 import { ReactElement, useRef } from 'react'
+import { Animated, ScrollView, View } from 'react-native'
 
-import { View, ImageBackground, ScrollView, Animated } from 'react-native'
-
+import { ChurchAboutSection } from '../../src/components/ChurchAboutSection'
 import { ChurchHeroBanner } from '../../src/components/ChurchHeroBanner'
 import { ChurchPageSubheader } from '../../src/components/ChurchPageSubheader'
-import { ChurchAboutSection } from '../../src/components/ChurchAboutSection'
 import { ChurchPopularSection } from '../../src/components/ChurchPopularSection'
 
 export default function ChurchPage(): ReactElement {

@@ -1,6 +1,6 @@
-import { ReactElement } from 'react'
-import { View, Text } from 'react-native'
 import { Image } from 'expo-image'
+import { ReactElement } from 'react'
+import { Text, View } from 'react-native'
 
 interface ChurchPopularSectionItemProps {
   rank: number
