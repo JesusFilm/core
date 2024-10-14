@@ -60,11 +60,9 @@ export default function App(): ReactElement {
   useEffect(() => {
     async function initRxDatabase(): Promise<void> {
       try {
-        console.log('Initializing RxDB')
-        const { db } = await initializeDataLayer()
-        console.log('RxDB initialized successfully')
-        console.log('db', db)
-        setRxDatabase(db)
+        const { database, items } = await initializeDataLayer()
+        console.log('items', await items.find().exec())
+        setRxDatabase(database)
       } catch (error) {
         console.error('Failed to initialize RxDB:', error)
       }

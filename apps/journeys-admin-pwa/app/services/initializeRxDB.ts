@@ -12,21 +12,26 @@ addRxPlugin(RxDBDevModePlugin)
 const GRAPHQL_ENDPOINT = 'http://127.0.0.1:4000/'
 
 interface DataLayer {
-  db: RxDatabase
+  database: RxDatabase
   items: RxCollection
 }
 
 export async function initializeDataLayer(): Promise<DataLayer> {
-  const db = await createRxDatabase({
+  console.log('Initializing data layer...')
+  const database = await createRxDatabase({
     name: 'journeys-admin-pwa',
     storage: getRxStorageDexie()
   })
 
-  const collections = await db.addCollections({
+  console.log('database created')
+
+  const collections = await database.addCollections({
     items: {
       schema: itemSchema
     }
   })
+
+  console.log('collections created:', collections)
 
   const replicationState = replicateGraphQL({
     collection: collections.items,
@@ -49,12 +54,14 @@ export async function initializeDataLayer(): Promise<DataLayer> {
         }
       })
     },
-    live: true,
-    retryTime: 1000 * 300, // 5 minutes
     waitForLeadership: true
   })
 
   await replicationState.start()
 
-  return { db, items: collections.items }
+  console.log('Replication started')
+
+  console.log('RxDB initialized successfully')
+
+  return { database, items: collections.items }
 }
