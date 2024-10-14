@@ -17,5 +17,8 @@
       "files": ["*.js", "*.jsx"],
       "rules": {}
     }
-  ]
+  ],
+  "settings": {
+    "import/ignore": ["node_modules/react-native/index\\.js$"]
+  }
 }

@@ -1,33 +1,17 @@
-const { getDefaultConfig } = require('@expo/metro-config')
-const { withNxMetro } = require('@nx/expo')
-const { mergeConfig } = require('metro-config')
+const path = require('path')
 
-const defaultConfig = getDefaultConfig(__dirname)
-const { assetExts, sourceExts } = defaultConfig.resolver
+const { getDefaultConfig } = require('expo/metro-config')
+const { withNativeWind } = require('nativewind/metro')
 
-/**
- * Metro configuration
- * https://reactnative.dev/docs/metro
- *
- * @type {import('metro-config').MetroConfig}
- */
-const customConfig = {
-  cacheVersion: 'disciple',
-  transformer: {
-    babelTransformerPath: require.resolve('react-native-svg-transformer')
-  },
-  resolver: {
-    assetExts: assetExts.filter((ext) => ext !== 'svg'),
-    sourceExts: [...sourceExts, 'cjs', 'mjs', 'svg']
-  }
-}
-
-module.exports = withNxMetro(mergeConfig(defaultConfig, customConfig), {
-  // Change this to true to see debugging info.
-  // Useful if you have issues resolving modules
-  debug: false,
-  // all the file extensions used for imports other than 'ts', 'tsx', 'js', 'jsx', 'json'
-  extensions: [],
-  // Specify folders to watch, in addition to Nx defaults (workspace libraries and node_modules)
-  watchFolders: []
+const projectRoot = __dirname
+const config = getDefaultConfig(projectRoot, {
+  isCSSEnabled: true
 })
+
+// 1. Watch all files within the monorepo
+// 2. Let Metro know where to resolve packages and in what order
+config.resolver.nodeModulesPaths = [path.resolve(projectRoot, 'node_modules')]
+
+// module.exports = config;
+
+module.exports = withNativeWind(config, { input: './global.css' })

@@ -11,7 +11,7 @@
     "declaration": true
   },
   "files": [],
-  "include": [],
+  "include": ["nativewind-env.d.ts", ".expo/types/**/*.ts", "expo-env.d.ts"],
   "references": [
     {
       "path": "./tsconfig.app.json"
