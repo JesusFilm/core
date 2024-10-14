@@ -1,0 +1,46 @@
+{
+  "extends": [
+    "plugin:@nx/react-typescript",
+    "plugin:react/recommended",
+    "../../.eslintrc.json"
+  ],
+  "ignorePatterns": ["!**/*"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "rules": {}
+    },
+    {
+      "files": ["*.ts", "*.tsx"],
+      "parserOptions": {
+        "project": ["apps/journeys-admin-pwa/tsconfig.*?.json"]
+      },
+      "rules": {
+        "no-void": [
+          "error",
+          {
+            "allowAsStatement": true
+          }
+        ],
+        "@typescript-eslint/no-misused-promises": "off"
+      }
+    },
+    {
+      "files": ["*.js", "*.jsx"],
+      "rules": {}
+    },
+    {
+      "files": ["*.tsx", "*.jsx"],
+      "rules": {}
+    },
+    {
+      "files": ["remix.env.d.ts"],
+      "rules": {
+        "@typescript-eslint/triple-slash-reference": "off"
+      }
+    }
+  ],
+  "env": {
+    "jest": true
+  }
+}

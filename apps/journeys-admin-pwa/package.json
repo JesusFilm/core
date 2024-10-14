@@ -1,0 +1,48 @@
+{
+  "private": true,
+  "name": "journeys-admin-pwa",
+  "description": "",
+  "license": "",
+  "scripts": {},
+  "type": "module",
+  "dependencies": {
+    "@emotion/cache": "^11.13.1",
+    "@emotion/react": "^11.13.3",
+    "@emotion/server": "^11.11.0",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.2",
+    "@mui/lab": "^6.0.0-beta.10",
+    "@mui/material": "^6.1.2",
+    "@mui/system": "^6.1.2",
+    "@mui/x-charts": "^7.19.0",
+    "@mui/x-data-grid": "^7.19.0",
+    "@mui/x-date-pickers": "^7.19.0",
+    "@mui/x-tree-view": "^7.19.0",
+    "@remix-run/node": "^2.8.1",
+    "@remix-run/react": "^2.8.1",
+    "@remix-run/serve": "^2.8.1",
+    "fake-indexeddb": "^6.0.0",
+    "isbot": "^4.4.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rxdb": "^15.34.1",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.8",
+    "@babel/preset-env": "^7.25.8",
+    "@babel/preset-react": "^7.25.7",
+    "@babel/preset-typescript": "^7.25.7",
+    "@remix-run/dev": "^2.8.1",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "babel-loader": "^9.2.1",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react": "^7.37.1",
+    "typescript": "~5.5.2"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "sideEffects": false
+}
