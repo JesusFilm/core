@@ -1,4 +1,4 @@
-export const TodoSchema = {
+export const itemSchema = {
   version: 0,
   title: 'todo',
   description: 'A simple todo schema',

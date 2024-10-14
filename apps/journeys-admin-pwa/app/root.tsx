@@ -1,14 +1,12 @@
 import { EmotionCache, withEmotionCache } from '@emotion/react'
 import { unstable_useEnhancedEffect as useEnhancedEffect } from '@mui/utils'
-import { LoaderFunction, json } from '@remix-run/node'
 import {
   Links,
   LiveReload,
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration,
-  useLoaderData
+  ScrollRestoration
 } from '@remix-run/react'
 import { ReactElement, ReactNode, useContext, useEffect, useState } from 'react'
 import { RxDatabase } from 'rxdb'
@@ -16,7 +14,7 @@ import { RxDatabase } from 'rxdb'
 import { ClientStyleContext } from '../libs/ClientStyleContext/ClientStyleContext'
 
 import { ThemeProvider } from './components/ThemeProvider'
-import { initializeDatabase } from './services/initializeRxDB'
+import { initializeDataLayer } from './services/initializeRxDB'
 
 interface DocumentProps {
   children: ReactNode
@@ -63,8 +61,9 @@ export default function App(): ReactElement {
     async function initRxDatabase(): Promise<void> {
       try {
         console.log('Initializing RxDB')
-        const db = await initializeDatabase()
+        const { db } = await initializeDataLayer()
         console.log('RxDB initialized successfully')
+        console.log('db', db)
         setRxDatabase(db)
       } catch (error) {
         console.error('Failed to initialize RxDB:', error)

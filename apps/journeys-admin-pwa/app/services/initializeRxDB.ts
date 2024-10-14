@@ -1,70 +1,60 @@
-import { RxDatabase, addRxPlugin, createRxDatabase } from 'rxdb'
+import { RxCollection, RxDatabase, addRxPlugin, createRxDatabase } from 'rxdb'
 import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode'
-import { RxDBQueryBuilderPlugin } from 'rxdb/plugins/query-builder'
+import { RxDBLeaderElectionPlugin } from 'rxdb/plugins/leader-election'
+import { replicateGraphQL } from 'rxdb/plugins/replication-graphql'
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie'
-import { RxDBUpdatePlugin } from 'rxdb/plugins/update'
 
-import { TodoSchema } from './todoSchema'
+import { itemSchema } from './todoSchema'
 
-addRxPlugin(RxDBUpdatePlugin)
-addRxPlugin(RxDBQueryBuilderPlugin)
+addRxPlugin(RxDBLeaderElectionPlugin)
+addRxPlugin(RxDBDevModePlugin)
 
-const DEXIE_STORAGE = getRxStorageDexie()
-const DATABASE_NAME = 'database'
-const COLLECTION_NAME = 'todo'
+const GRAPHQL_ENDPOINT = 'http://127.0.0.1:4000/'
 
-const isDevelopment = process.env.NODE_ENV !== 'production'
+interface DataLayer {
+  db: RxDatabase
+  items: RxCollection
+}
 
-export async function initializeDatabase(): Promise<RxDatabase | null> {
-  console.log('Starting database initialization')
+export async function initializeDataLayer(): Promise<DataLayer> {
+  const db = await createRxDatabase({
+    name: 'journeys-admin-pwa',
+    storage: getRxStorageDexie()
+  })
 
-  if (isDevelopment) {
-    console.log('Adding DevMode plugin')
-    addRxPlugin(RxDBDevModePlugin)
-  }
+  const collections = await db.addCollections({
+    items: {
+      schema: itemSchema
+    }
+  })
 
-  let database: RxDatabase
+  const replicationState = replicateGraphQL({
+    collection: collections.items,
+    url: {
+      http: GRAPHQL_ENDPOINT
+    },
+    replicationIdentifier: 'journeys-replication',
+    pull: {
+      queryBuilder: () => ({
+        query: `
+          query Journeys {
+            journeys {
+              id
+              title
+            }
+          }
+        `,
+        variables: {
+          lastUpdateAt: 0
+        }
+      })
+    },
+    live: true,
+    retryTime: 1000 * 300, // 5 minutes
+    waitForLeadership: true
+  })
 
-  try {
-    console.log('Creating RxDatabase')
-    database = await createRxDatabase({
-      name: DATABASE_NAME,
-      storage: DEXIE_STORAGE,
-      multiInstance: true,
-      ignoreDuplicate: true
-    })
-    console.log('RxDatabase created successfully')
-  } catch (error) {
-    console.error('Error creating database:', error)
-    return null
-  }
+  await replicationState.start()
 
-  try {
-    console.log('Adding collection:', COLLECTION_NAME)
-    await database.addCollections({
-      [COLLECTION_NAME]: {
-        schema: TodoSchema
-      }
-    })
-    console.log('Collection added successfully')
-  } catch (error) {
-    await database.destroy()
-    return null
-  }
-
-  try {
-    console.log('Creating sample todo')
-    const item = await database.todo.insert({
-      id: '1',
-      title: 'Sample Todo',
-      description: 'This is a sample todo.',
-      done: false
-    })
-    console.log('Sample todo inserted successfully: ', item)
-  } catch (error) {
-    console.error('Error inserting sample todo:', error)
-  }
-
-  console.log('Database initialization complete')
-  return database
+  return { db, items: collections.items }
 }
