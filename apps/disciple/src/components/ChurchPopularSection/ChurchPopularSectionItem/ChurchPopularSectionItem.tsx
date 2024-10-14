@@ -53,7 +53,7 @@ export function ChurchPopularSectionItem({
           {bibleBooks?.map((book, i, arr) => {
             const lastItem = i === arr.length - 1
             return (
-              <Text style={{ color: 'white', fontWeight: 500 }}>
+              <Text key={i} style={{ color: 'white', fontWeight: 200 }}>
                 {lastItem ? `${book}` : `${book}, `}
               </Text>
             )

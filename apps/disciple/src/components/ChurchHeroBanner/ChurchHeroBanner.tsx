@@ -67,7 +67,6 @@ export function ChurchHeroBanner({
               <BackButton />
             </View>
           </SafeAreaView>
-          <View style={{ marginTop: 'auto', paddingHorizontal: 20 }}></View>
         </ImageBackground>
       </Animated.View>
       <Text
