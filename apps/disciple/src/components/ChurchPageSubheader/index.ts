@@ -1,0 +1,1 @@
+export { ChurchPageSubheader } from './ChurchPageSubheader'
