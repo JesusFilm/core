@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 
 import { ChurchPopularSectionItem } from './ChurchPopularSectionItem'
 
@@ -88,6 +88,7 @@ export function ChurchPopularSection(): ReactElement {
       >
         Popular
       </Text>
+
       <View
         style={{
           gap: 20
@@ -95,13 +96,22 @@ export function ChurchPopularSection(): ReactElement {
       >
         {mockPopularChurchContentData.map(
           ({ id, contentName, bibleBooks, contentImage }, i) => (
-            <ChurchPopularSectionItem
-              rank={i + 1}
+            <Pressable
               key={id}
-              contentName={contentName}
-              bibleBooks={bibleBooks}
-              contentImage={contentImage}
-            />
+              onPress={() =>
+                console.log(
+                  `good content choice! ${contentName} is a favourite of mine!`
+                )
+              }
+            >
+              <ChurchPopularSectionItem
+                rank={i + 1}
+                key={id}
+                contentName={contentName}
+                bibleBooks={bibleBooks}
+                contentImage={contentImage}
+              />
+            </Pressable>
           )
         )}
       </View>
