@@ -1,10 +1,21 @@
+import { router } from 'expo-router'
 import { ReactElement } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
+
+import { Button } from '../../src/components/Button'
 
 export default function HomePage(): ReactElement {
   return (
     <View style={styles.container}>
-      <Text>Tab Home</Text>
+      <Button
+        title="To church/[churchId]"
+        onPress={() => {
+          router.push({
+            pathname: '/church/[churchId]',
+            params: { churchId: 'aucklandEv' }
+          })
+        }}
+      />
     </View>
   )
 }
