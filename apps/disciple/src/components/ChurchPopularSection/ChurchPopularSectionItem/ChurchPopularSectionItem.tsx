@@ -6,7 +6,6 @@ interface ChurchPopularSectionItemProps {
   rank: number
   contentName: string
   bibleBooks?: string[]
-  studentCount?: number
   contentImage?: string | null
 }
 
@@ -14,7 +13,7 @@ export function ChurchPopularSectionItem({
   rank,
   contentName,
   bibleBooks,
-  studentCount
+  contentImage
 }: ChurchPopularSectionItemProps): ReactElement {
   return (
     <View
@@ -40,7 +39,7 @@ export function ChurchPopularSectionItem({
             width: '100%'
           }}
           contentFit="cover"
-          source="https://picsum.photos/seed/696/3000/2000"
+          source={contentImage ?? 'https://picsum.photos/seed/696/3000/2000'}
         />
       </View>
       <View>
