@@ -2,48 +2,85 @@
 /* eslint-disable i18next/no-literal-string */
 import { LinearGradient } from 'expo-linear-gradient'
 import { ReactElement } from 'react'
-import { ImageBackground, SafeAreaView, Text, View } from 'react-native'
+import {
+  Animated,
+  ImageBackground,
+  SafeAreaView,
+  Text,
+  View
+} from 'react-native'
 
 import { BackButton } from '../BackButton'
 
-export function ChurchHeroBanner(): ReactElement {
+export function ChurchHeroBanner({
+  scrollOffset
+}: {
+  scrollOffset: Animated.ValueXY
+}): ReactElement {
+  console.log(scrollOffset)
   return (
-    <ImageBackground
-      style={{
-        height: 400,
-        width: '100%',
-        zIndex: -1
-      }}
-      source={{
-        uri: 'https://assets.aucklandev.co.nz/wp-content/uploads/2014/11/05133409/eviTunesSquare1.jpg'
-      }}
-    >
-      <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.9)']}
+    <>
+      <Animated.View
         style={{
-          position: 'absolute',
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0
+          transform: [
+            {
+              translateY: scrollOffset.y.interpolate({
+                inputRange: [-1000, 0],
+                outputRange: [-100, 0],
+                extrapolate: 'clamp'
+              })
+            },
+            {
+              scale: scrollOffset.y.interpolate({
+                inputRange: [-3000, 0],
+                outputRange: [20, 1],
+                extrapolate: 'clamp'
+              })
+            }
+          ]
         }}
-      />
-      <SafeAreaView>
-        <View style={{ paddingHorizontal: 20 }}>
-          <BackButton />
-        </View>
-      </SafeAreaView>
-      <View style={{ marginTop: 'auto', paddingHorizontal: 20 }}>
-        <Text
+      >
+        <ImageBackground
           style={{
-            fontSize: 45,
-            color: 'white',
-            fontWeight: 'bold'
+            minHeight: 400,
+            maxHeight: 800,
+            width: '100%',
+            zIndex: -1
+          }}
+          resizeMode="stretch"
+          source={{
+            uri: 'https://assets.aucklandev.co.nz/wp-content/uploads/2014/11/05133409/eviTunesSquare1.jpg'
           }}
         >
-          Auckland EV
-        </Text>
-      </View>
-    </ImageBackground>
+          <LinearGradient
+            colors={['transparent', 'rgba(0,0,0,0.9)']}
+            style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0
+            }}
+          />
+          <SafeAreaView>
+            <View style={{ paddingHorizontal: 20 }}>
+              <BackButton />
+            </View>
+          </SafeAreaView>
+          <View style={{ marginTop: 'auto', paddingHorizontal: 20 }}></View>
+        </ImageBackground>
+      </Animated.View>
+      <Text
+        style={{
+          marginTop: -60,
+          fontSize: 45,
+          color: 'white',
+          fontWeight: 'bold',
+          paddingHorizontal: 20
+        }}
+      >
+        Auckland EV
+      </Text>
+    </>
   )
 }
