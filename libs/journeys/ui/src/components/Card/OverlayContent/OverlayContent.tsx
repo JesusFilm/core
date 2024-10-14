@@ -1,6 +1,8 @@
 import Box from '@mui/material/Box'
-import { SxProps } from '@mui/material/styles'
-import { ReactElement, ReactNode } from 'react'
+import Fade from '@mui/material/Fade'
+import { SxProps, keyframes } from '@mui/material/styles'
+import useScrollTrigger from '@mui/material/useScrollTrigger'
+import { ReactElement, ReactNode, useRef } from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
@@ -18,6 +20,12 @@ export function OverlayContent({
   hasFullscreenVideo = false
 }: OverlayContentProps): ReactElement {
   const { variant } = useJourney()
+  const cardOverlayRef = useRef<any>()
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    target: cardOverlayRef.current,
+    threshold: 20
+  })
   const enableVerticalScroll: SxProps = {
     overflowY: 'scroll',
     // Hide on Firefox https://caniuse.com/?search=scrollbar-width
@@ -40,7 +48,7 @@ export function OverlayContent({
     ? {
         '& > *': {
           '&:first-child': { mt: { xs: 8, sm: 5, lg: 12 } },
-          '&:last-child': { mb: { xs: 6, lg: 12 } }
+          '&:last-child': { mb: { xs: 8, lg: 12 } }
         }
       }
     : {}
@@ -63,29 +71,63 @@ export function OverlayContent({
           pr: { xs: 6, sm: 10 }
         }
 
-  return (
-    <Box
-      data-testid="CardOverlayContent"
-      sx={{
-        ...enableVerticalScroll,
-        ...topBottomEdgeFadeEffect,
-        ...topBottomMarginsOnContent,
-        ...mobileNotchPadding,
-        ...sx,
-         border: '2px solid white'
-      }}
-    >
-      {children}
-      <Box data-testid = "DownArrowBox" 
-      sx={{
-        position: 'absolute',
-        bottom: '100px',
-        left: '50%'
+  const bounce = keyframes`
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-30px);
+  }
+  60% {
+    transform: translateY(-15px);
+  }
+`
 
-      }}>
-        <ChevronDownIcon/>
+  console.log(trigger)
+
+  const isScrollable = (): boolean => {
+    const box = cardOverlayRef.current
+    return box != null ? box.scrollHeight > box.clientHeight : false
+  }
+  return (
+    <Box>
+      <Box
+        data-testid="CardOverlayContent"
+        ref={cardOverlayRef}
+        sx={{
+          ...enableVerticalScroll,
+          ...topBottomEdgeFadeEffect,
+          ...topBottomMarginsOnContent,
+          ...mobileNotchPadding,
+          ...sx,
+          position: 'relative'
+          // border: '2px solid white'
+        }}
+      >
+        {children}
       </Box>
-     
+      {isScrollable() && variant === 'default' && (
+        <Box
+          data-testid="DownArrowBox"
+          sx={{
+            position: 'fixed',
+            bottom: 88,
+            left: 'calc(50% - 12px)',
+            animation: `${bounce} 2s infinite`
+          }}
+        >
+          <Fade
+            appear={false}
+            in={!trigger}
+            style={{
+              transitionDuration: '500ms'
+            }}
+            data-testid="DownArrow"
+          >
+            <ChevronDownIcon />
+          </Fade>
+        </Box>
+      )}
     </Box>
   )
 }

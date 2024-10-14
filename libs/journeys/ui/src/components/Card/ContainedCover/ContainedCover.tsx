@@ -10,7 +10,6 @@ import {
   useState
 } from 'react'
 
-import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { NextImage } from '@core/shared/ui/NextImage'
 
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
@@ -286,9 +285,6 @@ export function ContainedCover({
             >
               {children}
             </OverlayContent>
-            {/* <Box data-testid="ChevronBox">
-              <ChevronDownIcon/>
-            </Box> */}
           </>
         ) : (
           <StyledGradientBackground
