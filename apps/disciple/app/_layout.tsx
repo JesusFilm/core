@@ -1,14 +1,30 @@
 import { Stack } from 'expo-router'
 import { ReactElement } from 'react'
+import { Text } from 'react-native'
 
 import { BackButton } from '../src/components/BackButton'
+
+import Churches from './churches'
 
 export default function Layout(): ReactElement {
   return (
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen
-        name="church/[churchId]"
+        name="churches/index"
+        options={{
+          headerShown: true,
+          headerTitle: () => (
+            <Text style={{ color: 'white' }}>search bar here</Text>
+          ),
+          headerRight: () => <BackButton />,
+          headerBackVisible: false,
+          headerTransparent: true
+        }}
+        z
+      />
+      <Stack.Screen
+        name="churches/[churchId]"
         options={{
           headerShown: true,
           headerTitle: '',

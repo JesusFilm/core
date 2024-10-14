@@ -15,7 +15,6 @@ export default function ChurchPage(): ReactElement {
     <View
       testID="ChurchPageContainer"
       style={{
-        display: 'flex',
         backgroundColor: 'black',
         height: '100%',
         width: '100%'

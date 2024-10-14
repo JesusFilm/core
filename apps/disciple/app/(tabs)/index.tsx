@@ -8,10 +8,19 @@ export default function HomePage(): ReactElement {
   return (
     <View style={styles.container}>
       <Button
-        title="To church/[churchId]"
+        title="To churches"
         onPress={() => {
           router.push({
-            pathname: '/church/[churchId]',
+            pathname: '/churches',
+            params: { churchId: 'aucklandEv' }
+          })
+        }}
+      />
+      <Button
+        title="To churches/[churchId]"
+        onPress={() => {
+          router.push({
+            pathname: '/churches/[churchId]',
             params: { churchId: 'aucklandEv' }
           })
         }}
