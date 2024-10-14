@@ -51,7 +51,7 @@ export function OverlayContent({
     ? {
         '& > *': {
           '&:first-child': { mt: { xs: 8, sm: 5, lg: 12 } },
-          '&:last-child': { mb: { xs: 8, lg: 12 } }
+          '&:last-child': { mb: { xs: 6, lg: 12 } }
         }
       }
     : {}
@@ -84,8 +84,7 @@ export function OverlayContent({
           ...topBottomEdgeFadeEffect,
           ...topBottomMarginsOnContent,
           ...mobileNotchPadding,
-          ...sx,
-          position: 'relative'
+          ...sx
         }}
       >
         {children}
