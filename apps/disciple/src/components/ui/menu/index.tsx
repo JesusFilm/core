@@ -1,3 +1,4 @@
+'use client'
 import { createMenu } from '@gluestack-ui/menu'
 import type { VariantProps } from '@gluestack-ui/nativewind-utils'
 import { tva } from '@gluestack-ui/nativewind-utils/tva'

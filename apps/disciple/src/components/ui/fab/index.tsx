@@ -1,3 +1,4 @@
+'use client'
 import { createFab } from '@gluestack-ui/fab'
 import type { VariantProps } from '@gluestack-ui/nativewind-utils'
 import { tva } from '@gluestack-ui/nativewind-utils/tva'

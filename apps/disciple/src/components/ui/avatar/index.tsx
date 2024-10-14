@@ -1,3 +1,4 @@
+'use client'
 import { createAvatar } from '@gluestack-ui/avatar'
 import type { VariantProps } from '@gluestack-ui/nativewind-utils'
 import { tva } from '@gluestack-ui/nativewind-utils/tva'

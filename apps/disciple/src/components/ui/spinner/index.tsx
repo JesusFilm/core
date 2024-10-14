@@ -1,3 +1,4 @@
+'use client'
 import { tva } from '@gluestack-ui/nativewind-utils/tva'
 import { createSpinner } from '@gluestack-ui/spinner'
 import { cssInterop } from 'nativewind'

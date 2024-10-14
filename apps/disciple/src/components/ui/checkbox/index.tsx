@@ -1,3 +1,4 @@
+'use client'
 import { createCheckbox } from '@gluestack-ui/checkbox'
 import type { VariantProps } from '@gluestack-ui/nativewind-utils'
 import { tva } from '@gluestack-ui/nativewind-utils/tva'

@@ -1,3 +1,4 @@
+'use client'
 import { createIcon } from '@gluestack-ui/icon'
 import { VariantProps } from '@gluestack-ui/nativewind-utils'
 import { tva } from '@gluestack-ui/nativewind-utils/tva'

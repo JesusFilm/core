@@ -8,9 +8,9 @@ import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
 import { hideAsync, preventAutoHideAsync } from 'expo-splash-screen'
 import { ReactElement, useEffect } from 'react'
-import { useColorScheme } from 'react-native'
 
 import { GluestackUIProvider } from '../src/components/ui/gluestack-ui-provider'
+import { useColorScheme } from '../src/components/useColorScheme'
 
 import '../global.css'
 
@@ -59,13 +59,13 @@ function RootLayoutNav(): ReactElement {
     <GluestackUIProvider mode={colorScheme ?? 'light'}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="auth/sign-in" />
-          <Stack.Screen name="auth/sign-up" />
-          <Stack.Screen name="auth/forgot-password" />
-          <Stack.Screen name="auth/create-password" />
-          <Stack.Screen name="news-feed/news-and-feed" />
-          <Stack.Screen name="dashboard/dashboard-layout" />
-          <Stack.Screen name="profile/profile" />
+          <Stack.Screen name="signin" />
+          <Stack.Screen name="signup" />
+          <Stack.Screen name="forgot-password" />
+          <Stack.Screen name="create-password" />
+          <Stack.Screen name="news-feed" />
+          <Stack.Screen name="dashboard" />
+          <Stack.Screen name="profile" />
         </Stack>
       </ThemeProvider>
     </GluestackUIProvider>

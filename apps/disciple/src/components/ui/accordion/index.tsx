@@ -1,3 +1,4 @@
+'use client'
 import { H3 } from '@expo/html-elements'
 import { createAccordion } from '@gluestack-ui/accordion'
 import type { VariantProps } from '@gluestack-ui/nativewind-utils'

@@ -1,3 +1,4 @@
+'use client'
 import { createDivider } from '@gluestack-ui/divider'
 import type { VariantProps } from '@gluestack-ui/nativewind-utils'
 import { tva } from '@gluestack-ui/nativewind-utils/tva'

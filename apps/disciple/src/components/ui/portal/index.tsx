@@ -1,3 +1,4 @@
+'use client'
 import { Overlay } from '@gluestack-ui/overlay'
 import { cssInterop } from 'nativewind'
 import React from 'react'

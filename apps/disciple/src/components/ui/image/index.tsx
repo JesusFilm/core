@@ -1,3 +1,4 @@
+'use client'
 import { createImage } from '@gluestack-ui/image'
 import type { VariantProps } from '@gluestack-ui/nativewind-utils'
 import { tva } from '@gluestack-ui/nativewind-utils/tva'
@@ -35,6 +36,7 @@ const Image = React.forwardRef<
       className={imageStyle({ size, class: className })}
       {...props}
       ref={ref}
+      // @ts-expect-error
       style={
         Platform.OS === 'web'
           ? { height: 'revert-layer', width: 'revert-layer' }

@@ -1,3 +1,4 @@
+'use client'
 import { tva } from '@gluestack-ui/nativewind-utils/tva'
 import React from 'react'
 import { ImageBackground as RNImageBackground } from 'react-native'

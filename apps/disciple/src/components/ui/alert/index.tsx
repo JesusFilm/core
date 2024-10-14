@@ -1,3 +1,4 @@
+'use client'
 import { createAlert } from '@gluestack-ui/alert'
 import type { VariantProps } from '@gluestack-ui/nativewind-utils'
 import { tva } from '@gluestack-ui/nativewind-utils/tva'

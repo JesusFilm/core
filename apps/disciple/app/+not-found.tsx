@@ -1,11 +1,10 @@
 import { Link, Stack } from 'expo-router'
-import { ReactElement } from 'react'
 import { StyleSheet } from 'react-native'
 
 import { Text } from '../src/components/ui/text'
 import { View } from '../src/components/ui/view'
 
-export default function NotFoundScreen(): ReactElement {
+export default function NotFoundScreen() {
   return (
     <>
       <Stack.Screen options={{ title: 'Oops!' }} />

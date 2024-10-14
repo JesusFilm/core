@@ -19,14 +19,14 @@ export default function IndexPage(): ReactElement {
         <Button
           className="w-full"
           onPress={() => {
-            router.push('auth/sign-in')
+            router.push('auth/signin')
           }}
         >
           <ButtonText>Sign in</ButtonText>
         </Button>
         <Button
           onPress={() => {
-            router.push('auth/sign-up')
+            router.push('auth/signup')
           }}
         >
           <ButtonText>Sign up</ButtonText>

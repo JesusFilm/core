@@ -1,3 +1,4 @@
+'use client'
 import type { VariantProps } from '@gluestack-ui/nativewind-utils'
 import { tva } from '@gluestack-ui/nativewind-utils/tva'
 import { withStates } from '@gluestack-ui/nativewind-utils/withStates'
@@ -136,7 +137,9 @@ const SCOPE = 'Radio'
 const UIRadio = createRadio({
   Root: (Platform.OS === 'web'
     ? withStyleContext(View, SCOPE)
-    : withStyleContextAndStates(Pressable, SCOPE)),
+    : withStyleContextAndStates(Pressable, SCOPE)) as ReturnType<
+    typeof withStyleContextAndStates<typeof Pressable>
+  >,
   Group: View,
   Icon: Platform.OS === 'web' ? IconWrapper : withStates(IconWrapper),
   Indicator:

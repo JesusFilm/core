@@ -1,3 +1,4 @@
+'use client'
 import type { VariantProps } from '@gluestack-ui/nativewind-utils'
 import { tva } from '@gluestack-ui/nativewind-utils/tva'
 import { withStates } from '@gluestack-ui/nativewind-utils/withStates'
@@ -20,11 +21,16 @@ const AnimatedPressable = createMotionAnimatedComponent(Pressable)
 const SCOPE = 'POPOVER'
 const ArrowWrapper = React.forwardRef(({ ...props }, ref) => {
   return <Motion.View {...props} ref={ref} />
-})
+}) as React.ForwardRefExoticComponent<
+  React.ElementRef<typeof Motion.View> &
+    React.ComponentProps<typeof Motion.View>
+>
 const UIPopover = createPopover({
   Root: (Platform.OS === 'web'
     ? withStyleContext(View, SCOPE)
-    : withStyleContextAndStates(View, SCOPE)),
+    : withStyleContextAndStates(View, SCOPE)) as ReturnType<
+    typeof withStyleContext<typeof View>
+  >,
   Arrow: Platform.OS === 'web' ? Motion.View : withStates(ArrowWrapper),
   Backdrop: AnimatedPressable,
   Body: ScrollView,
