@@ -2,15 +2,7 @@
 /* eslint-disable i18next/no-literal-string */
 import { LinearGradient } from 'expo-linear-gradient'
 import { ReactElement } from 'react'
-import {
-  Animated,
-  ImageBackground,
-  SafeAreaView,
-  Text,
-  View
-} from 'react-native'
-
-import { BackButton } from '../BackButton'
+import { Animated, ImageBackground, Text } from 'react-native'
 
 export function ChurchHeroBanner({
   scrollOffset
@@ -45,7 +37,7 @@ export function ChurchHeroBanner({
             minHeight: 400,
             maxHeight: 800,
             width: '100%',
-            zIndex: -1
+            zIndex: 2
           }}
           resizeMode="stretch"
           source={{
@@ -62,11 +54,6 @@ export function ChurchHeroBanner({
               right: 0
             }}
           />
-          <SafeAreaView>
-            <View style={{ paddingHorizontal: 20 }}>
-              <BackButton />
-            </View>
-          </SafeAreaView>
         </ImageBackground>
       </Animated.View>
       <Text
@@ -78,7 +65,7 @@ export function ChurchHeroBanner({
           paddingHorizontal: 20
         }}
       >
-        Auckland EV
+        Auckland Ev
       </Text>
     </>
   )
