@@ -25,7 +25,7 @@ export function VideoContentPage(): ReactElement {
   const {
     title,
     snippet,
-    image,
+    images,
     imageAlt,
     slug,
     variant,
@@ -58,10 +58,10 @@ export function VideoContentPage(): ReactElement {
           }${ogSlug}`,
           description: snippet[0].value ?? undefined,
           images:
-            image != null
+            images[0]?.mobileCinematicHigh != null
               ? [
                   {
-                    url: image,
+                    url: images[0].mobileCinematicHigh,
                     width: 1080,
                     height: 600,
                     alt: imageAlt[0].value,

@@ -2,6 +2,8 @@ FROM node:20-alpine
 
 EXPOSE 4001
 
+ARG SERVICE_VERSION=0.0.1
+ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
 ENV PRISMA_LOCATION_JOURNEYS=/app/node_modules/.prisma/api-journeys-client
 
 RUN apk upgrade --update-cache --available && \

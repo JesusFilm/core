@@ -41,8 +41,13 @@ export const journeyVideoBlocks: Blocks[] = [
           value: 'Installing the Jesus Film Media App'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/lrg_cine_install.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/lrg_cine_install.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-0-TrainV_1Install',
@@ -80,8 +85,13 @@ export const journeyVideoBlocks: Blocks[] = [
           value: 'Use this App in Ministry'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/lrg_cine_ministry.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/lrg_cine_ministry.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-0-TrainV_5Ministry',
@@ -119,8 +129,13 @@ export const journeyVideoBlocks: Blocks[] = [
           value: 'StoryClubs: Childhood of Jesus'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl1302-0-0.mobileCinematicHigh.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1302-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-cl1302-0-0',
@@ -202,8 +217,13 @@ export const journeyVideoBlocks: Blocks[] = [
           value: 'StoryClubs: Sinful Woman Forgiven'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl1305-0-0.mobileCinematicHigh.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1305-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-cl1305-0-0',
@@ -339,8 +359,13 @@ export const videoBlocksFiltered = [
           value: 'StoryClubs: Birth of Jesus'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl1301-0-0.mobileCinematicHigh.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1301-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-cl1301-0-0',
@@ -408,8 +433,13 @@ export const videoBlocksFiltered = [
           value: 'JESUS'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg?version=2',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg?version=2/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-jf-0-0',
@@ -450,8 +480,13 @@ export const videoBlocksFiltered = [
           value: 'StoryClubs: Miraculous Catch of Fish'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl1303-0-0.mobileCinematicHigh.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1303-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-cl1303-0-0',
@@ -492,8 +527,13 @@ export const videoBlocksFiltered = [
           value: "The Lord's Prayer"
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6125-0-0.mobileCinematicHigh.jpg?version=2',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6125-0-0.mobileCinematicHigh.jpg?version=2/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-jf6125-0-0',

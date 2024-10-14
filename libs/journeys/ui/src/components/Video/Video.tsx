@@ -97,7 +97,10 @@ export function Video({
     (block) => block.id === posterBlockId && block.__typename === 'ImageBlock'
   ) as TreeBlock<ImageFields> | undefined
 
-  const videoImage = source === VideoBlockSource.internal ? video?.image : image
+  const videoImage =
+    source === VideoBlockSource.internal
+      ? video?.images[0]?.mobileCinematicHigh
+      : image
 
   const blurBackground = useMemo(() => {
     return posterBlock != null

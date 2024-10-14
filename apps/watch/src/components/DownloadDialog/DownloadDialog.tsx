@@ -48,7 +48,7 @@ export function DownloadDialog({
   onClose
 }: DownloadDialogProps): ReactElement {
   const theme = useTheme()
-  const { title, image, imageAlt, variant } = useVideo()
+  const { title, images, imageAlt, variant } = useVideo()
   const { percentage, download, cancel, isInProgress } = useDownloader()
   const [openTerms, setOpenTerms] = useState<boolean>(false)
   const { t } = useTranslation('apps-watch')
@@ -91,7 +91,7 @@ export function DownloadDialog({
           alignItems="flex-start"
           sx={{ mt: { xs: 0, sm: 1 }, mb: { xs: 0, sm: 5 } }}
         >
-          {image != null && (
+          {images[0].mobileCinematicHigh != null && (
             <>
               <Box
                 sx={{
@@ -101,7 +101,7 @@ export function DownloadDialog({
                 }}
               >
                 <Image
-                  src={image}
+                  src={images[0].mobileCinematicHigh}
                   alt={imageAlt[0].value}
                   width={240}
                   height={115}

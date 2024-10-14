@@ -120,7 +120,10 @@ const Video = builder.prismaObject('Video', {
         orderBy: { order: 'asc' }
       })
     }),
-    image: t.exposeString('image', { nullable: true }),
+    image: t.exposeString('image', {
+      nullable: true,
+      deprecationReason: 'use images.mobileCinematicHigh'
+    }),
     imageAlt: t.relation('imageAlt', {
       args: {
         languageId: t.arg.id({ required: false }),
@@ -136,18 +139,26 @@ const Video = builder.prismaObject('Video', {
         orderBy: { primary: 'desc' }
       })
     }),
-    videoStill: t.exposeString('videoStill', { nullable: true }),
-    thumbnail: t.exposeString('thumbnail', { nullable: true }),
+    videoStill: t.exposeString('videoStill', {
+      nullable: true,
+      deprecationReason: 'use images.videoStill'
+    }),
+    thumbnail: t.exposeString('thumbnail', {
+      nullable: true,
+      deprecationReason: 'use images.thumbnail'
+    }),
     mobileCinematicHigh: t.exposeString('mobileCinematicHigh', {
-      nullable: true
+      nullable: true,
+      deprecationReason: 'use images.mobileCinematicHigh'
     }),
     mobileCinematicLow: t.exposeString('mobileCinematicLow', {
-      nullable: true
+      nullable: true,
+      deprecationReason: 'use images.mobileCinematicLow'
     }),
     mobileCinematicVeryLow: t.exposeString('mobileCinematicVeryLow', {
-      nullable: true
+      nullable: true,
+      deprecationReason: 'use images.mobileCinematicVeryLow'
     }),
-
     variantLanguages: t.field({
       type: [Language],
       resolve: async ({ id: videoId }) =>
@@ -170,11 +181,12 @@ const Video = builder.prismaObject('Video', {
     children: t.prismaField({
       type: ['Video'],
       async resolve(query, parent) {
+        if (parent.childIds.length === 0) return []
         return orderBy(
           await prisma.video.findMany({
             ...query,
             where: {
-              parent: { some: { id: parent.id } }
+              id: { in: parent.childIds }
             }
           }),
           ({ id }) => parent.childIds.indexOf(id),
@@ -186,6 +198,19 @@ const Video = builder.prismaObject('Video', {
       resolve: async ({ id }) =>
         await prisma.video.count({ where: { parent: { some: { id } } } }),
       description: 'the number value of the amount of children on a video'
+    }),
+    parents: t.prismaField({
+      type: ['Video'],
+      async resolve(query, child: { id: string }) {
+        return await prisma.video.findMany({
+          ...query,
+          where: {
+            childIds: {
+              has: child.id
+            }
+          }
+        })
+      }
     }),
     variantLanguagesWithSlug: t.field({
       type: [LanguageWithSlug],
