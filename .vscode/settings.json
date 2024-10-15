@@ -1,4 +1,7 @@
 {
+  "tailwindCSS.experimental.classRegex": [
+    ["tva\\((([^()]*|\\([^()]*\\))*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+  ],
   "files.eol": "\n",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[javascript]": {

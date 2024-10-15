@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
 import { View } from 'react-native'
+
 import { ChurchMemberCount } from '../ChurchMemberCount'
 import { FollowButton } from '../FollowButton'
 
