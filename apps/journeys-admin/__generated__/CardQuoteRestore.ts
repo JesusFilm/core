@@ -239,6 +239,11 @@ export interface CardQuoteRestore_image_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardQuoteRestore_image_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardQuoteRestore_image_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -261,7 +266,7 @@ export interface CardQuoteRestore_image_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardQuoteRestore_image_VideoBlock_video_title[];
-  image: string | null;
+  images: CardQuoteRestore_image_VideoBlock_video_images[];
   variant: CardQuoteRestore_image_VideoBlock_video_variant | null;
   variantLanguages: CardQuoteRestore_image_VideoBlock_video_variantLanguages[];
 }
@@ -636,6 +641,11 @@ export interface CardQuoteRestore_subtitle_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardQuoteRestore_subtitle_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardQuoteRestore_subtitle_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -658,7 +668,7 @@ export interface CardQuoteRestore_subtitle_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardQuoteRestore_subtitle_VideoBlock_video_title[];
-  image: string | null;
+  images: CardQuoteRestore_subtitle_VideoBlock_video_images[];
   variant: CardQuoteRestore_subtitle_VideoBlock_video_variant | null;
   variantLanguages: CardQuoteRestore_subtitle_VideoBlock_video_variantLanguages[];
 }
@@ -1033,6 +1043,11 @@ export interface CardQuoteRestore_title_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardQuoteRestore_title_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardQuoteRestore_title_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -1055,7 +1070,7 @@ export interface CardQuoteRestore_title_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardQuoteRestore_title_VideoBlock_video_title[];
-  image: string | null;
+  images: CardQuoteRestore_title_VideoBlock_video_images[];
   variant: CardQuoteRestore_title_VideoBlock_video_variant | null;
   variantLanguages: CardQuoteRestore_title_VideoBlock_video_variantLanguages[];
 }
@@ -1430,6 +1445,11 @@ export interface CardQuoteRestore_body_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardQuoteRestore_body_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardQuoteRestore_body_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -1452,7 +1472,7 @@ export interface CardQuoteRestore_body_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardQuoteRestore_body_VideoBlock_video_title[];
-  image: string | null;
+  images: CardQuoteRestore_body_VideoBlock_video_images[];
   variant: CardQuoteRestore_body_VideoBlock_video_variant | null;
   variantLanguages: CardQuoteRestore_body_VideoBlock_video_variantLanguages[];
 }

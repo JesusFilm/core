@@ -3,9 +3,9 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
 import {
-  GET_VIDEOS_AND_COUNT,
-  GetVideosAndCount,
-  GetVideosAndCountVariables,
+  GET_ADMIN_VIDEOS_AND_COUNT,
+  GetAdminVideosAndCount,
+  GetAdminVideosAndCountVariables,
   VideoList
 } from './VideoList'
 
@@ -13,11 +13,11 @@ jest.mock('next/navigation')
 
 describe('VideoList', () => {
   const mockGetVideosAndCount: MockedResponse<
-    GetVideosAndCount,
-    GetVideosAndCountVariables
+    GetAdminVideosAndCount,
+    GetAdminVideosAndCountVariables
   > = {
     request: {
-      query: GET_VIDEOS_AND_COUNT,
+      query: GET_ADMIN_VIDEOS_AND_COUNT,
       variables: {
         limit: 50,
         offset: 0,
@@ -28,22 +28,25 @@ describe('VideoList', () => {
     },
     result: {
       data: {
-        videosCount: 3,
-        videos: [
+        adminVideosCount: 3,
+        adminVideos: [
           {
             id: 'example-id',
             snippet: [{ value: 'Example snippet', primary: true }],
-            title: [{ value: 'Example title', primary: true }]
+            title: [{ value: 'Example title', primary: true }],
+            published: true
           },
           {
             id: 'example-id',
             snippet: [{ value: 'Example snippet', primary: true }],
-            title: [{ value: 'Example title', primary: true }]
+            title: [{ value: 'Example title', primary: true }],
+            published: false
           },
           {
             id: 'example-id',
             snippet: [{ value: 'Example snippet', primary: true }],
-            title: [{ value: 'Example title', primary: true }]
+            title: [{ value: 'Example title', primary: true }],
+            published: true
           }
         ]
       }
@@ -176,12 +179,13 @@ describe('VideoList', () => {
       ...mockGetVideosAndCount,
       result: {
         data: {
-          videosCount: 100,
-          videos: [
+          adminVideosCount: 100,
+          adminVideos: [
             {
               id: 'example-id',
               snippet: [{ value: 'Example snippet', primary: true }],
-              title: [{ value: 'Example title', primary: true }]
+              title: [{ value: 'Example title', primary: true }],
+              published: true
             }
           ]
         }
@@ -230,12 +234,13 @@ describe('VideoList', () => {
       ...mockGetVideosAndCount,
       result: {
         data: {
-          videosCount: 100,
-          videos: [
+          adminVideosCount: 100,
+          adminVideos: [
             {
               id: 'example-id',
               snippet: [{ value: 'Example snippet', primary: true }],
-              title: [{ value: 'Example title', primary: true }]
+              title: [{ value: 'Example title', primary: true }],
+              published: true
             }
           ]
         }
@@ -284,12 +289,13 @@ describe('VideoList', () => {
       ...mockGetVideosAndCount,
       result: {
         data: {
-          videosCount: 100,
-          videos: [
+          adminVideosCount: 100,
+          adminVideos: [
             {
               id: 'example-id',
               snippet: [{ value: 'Example snippet', primary: true }],
-              title: [{ value: 'Example title', primary: true }]
+              title: [{ value: 'Example title', primary: true }],
+              published: true
             }
           ]
         }
@@ -299,7 +305,7 @@ describe('VideoList', () => {
     const mockGetVideosCountPageTwo = {
       ...mockGetVideosCountPageOne,
       request: {
-        query: GET_VIDEOS_AND_COUNT,
+        query: GET_ADMIN_VIDEOS_AND_COUNT,
         variables: {
           limit: 50,
           offset: 50,
@@ -310,12 +316,13 @@ describe('VideoList', () => {
       },
       result: {
         data: {
-          videosCount: 100,
-          videos: [
+          adminVideosCount: 100,
+          adminVideos: [
             {
               id: 'example-id',
               snippet: [{ value: 'Example snippet', primary: true }],
-              title: [{ value: 'Example title', primary: true }]
+              title: [{ value: 'Example title', primary: true }],
+              published: true
             }
           ]
         }
