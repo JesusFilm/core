@@ -3,6 +3,7 @@
   "Settings": "Ajustes",
   "ID": "ID",
   "Title": "Título",
+  "Published": "Publicado en",
   "Description": "Descripción",
   "Email": "Envía un correo electrónico a",
   "Password": "Contraseña",
@@ -22,5 +23,6 @@
   "Nexus": "Nexus",
   "Home": "Inicio",
   "Video Library": "Videoteca",
-  "Sign Out": "Sign Out"
+  "Sign Out": "Sign Out",
+  "Unpublished": "Sin publicar"
 }
