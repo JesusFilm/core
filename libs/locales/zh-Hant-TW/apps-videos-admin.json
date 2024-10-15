@@ -3,6 +3,7 @@
   "Settings": "Settings",
   "ID": "ID",
   "Title": "標題",
+  "Published": "Published",
   "Description": "描述",
   "Email": "電子郵件",
   "Password": "Password",
@@ -22,5 +23,6 @@
   "Nexus": "Nexus",
   "Home": "Home",
   "Video Library": "影片庫",
-  "Sign Out": "Sign Out"
+  "Sign Out": "Sign Out",
+  "Unpublished": "Unpublished"
 }
