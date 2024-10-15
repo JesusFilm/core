@@ -75,25 +75,30 @@ export function PageWrapper({
         data-testid="JourneysAdminPageWrapper"
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
-          {showNavBar && (
-            <NavigationDrawer
-              open={open}
-              onClose={setOpen}
-              user={user}
-              selectedPage={router?.pathname?.split('/')[1]}
-            />
-          )}
+          <Box
+            sx={{
+              backgroundColor: background ?? 'background.default',
+              width: navbar.width,
+              overflow: 'hidden'
+            }}
+          >
+            {showNavBar && (
+              <NavigationDrawer
+                open={open}
+                onClose={setOpen}
+                user={user}
+                selectedPage={router?.pathname?.split('/')[1]}
+              />
+            )}
+          </Box>
 
           <Stack
             flexGrow={1}
             direction={{ xs: 'column', md: 'row' }}
             sx={{
               backgroundColor: background ?? 'background.default',
-              width: {
-                xs: '100vw',
-                md: showNavBar ? `calc(100vw - ${navbar.width})` : '100vw'
-              },
-              pt: { xs: showAppHeader ? toolbar.height : 0, md: 0 },
+              width: '100%',
+              pt: { xs: toolbar.height, md: 0 },
               pb: {
                 xs: bottomPanelChildren != null ? bottomPanel.height : 0,
                 md: 0
