@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
@@ -64,7 +65,16 @@ export function JourneyDetails(): ReactElement {
             </Typography>
           </Box>
         </Stack>
-      ) : null}
+      ) : (
+        <Stack sx={{ px: 4, py: 1 }}>
+          <Typography variant="subtitle2">
+            <Skeleton width="40%" />
+          </Typography>
+          <Typography variant="caption">
+            <Skeleton width="80%" />
+          </Typography>
+        </Stack>
+      )}
     </>
   )
 }
