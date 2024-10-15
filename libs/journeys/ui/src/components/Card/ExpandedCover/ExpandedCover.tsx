@@ -71,7 +71,6 @@ export function ExpandedCover({
           data-testid="overlay-content-container"
           justifyContent="center"
           sx={{
-            mx: 'auto',
             flexGrow: 1,
             pt: { xs: 10, sm: 8 },
             ...enableVerticalScroll
@@ -80,6 +79,7 @@ export function ExpandedCover({
           <OverlayContent
             hasFullscreenVideo={hasFullscreenVideo}
             sx={{
+              mx: 'auto',
               width: {
                 xs:
                   variant === 'default'
