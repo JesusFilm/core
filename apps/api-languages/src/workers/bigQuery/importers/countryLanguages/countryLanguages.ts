@@ -13,13 +13,17 @@ const countryLanguageSchema = z
     countryCode: z.string(),
     speakers: z.number(),
     display_speakers: z.number().nullable(),
-    primary: z.number()
+    primary: z.number(),
+    suggested: z.number(),
+    order: z.number()
+
   })
   .transform((value) => ({
-    ...omit(value, ['countryCode', 'display_speakers']),
+    ...omit(value, ['countryCode', 'display_speakers', 'suggested']),
     primary: value.primary === 1,
     countryId: value.countryCode,
-    displaySpeakers: value.display_speakers
+    displaySpeakers: value.display_speakers,
+    suggested: value.suggested === 1
   }))
 
 export async function importCountryLanguages(logger?: Logger): Promise<void> {
