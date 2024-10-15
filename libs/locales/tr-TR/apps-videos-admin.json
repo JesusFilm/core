@@ -3,6 +3,7 @@
   "Settings": "Ayarlar",
   "ID": "KIMLIK",
   "Title": "Başlık",
+  "Published": "Yayınlandı",
   "Description": "Açıklama",
   "Email": "E-posta",
   "Password": "Şifre",
@@ -22,5 +23,6 @@
   "Nexus": "Nexus",
   "Home": "Ev",
   "Video Library": "Video Kütüphanesi",
-  "Sign Out": "Sign Out"
+  "Sign Out": "Sign Out",
+  "Unpublished": "Yayınlanmamış"
 }
