@@ -40,7 +40,7 @@ export function SelectableWrapper({
   }
 
   // TODO: Test dispatch via E2E
-  // if changing the event handlers or their functions, please check RadioOptionBlock events are being propogated properly i.e - can be re-ordered
+  // please check RadioOptionBlock events are being propogated properly i.e - can be re-ordered
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
     // Allow RadioQuestion select event to be overridden by RadioOption select/edit events (no e.stopPropogation)
     if (block.__typename === 'RadioQuestionBlock') {
