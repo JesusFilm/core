@@ -14,7 +14,7 @@ import { RxDatabase } from 'rxdb'
 import { ClientStyleContext } from '../libs/ClientStyleContext/ClientStyleContext'
 
 import { ThemeProvider } from './components/ThemeProvider'
-import { initializeDataLayer } from './services/initializeRxDB'
+import { initializeRxDB } from './services/initializeRxDB'
 
 interface DocumentProps {
   children: ReactNode
@@ -60,8 +60,7 @@ export default function App(): ReactElement {
   useEffect(() => {
     async function initRxDatabase(): Promise<void> {
       try {
-        const { database, items } = await initializeDataLayer()
-        console.log('items', await items.find().exec())
+        const { database } = await initializeRxDB()
         setRxDatabase(database)
       } catch (error) {
         console.error('Failed to initialize RxDB:', error)

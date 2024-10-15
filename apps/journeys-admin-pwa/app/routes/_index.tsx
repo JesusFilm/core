@@ -1,8 +1,10 @@
-import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import { useOutletContext } from '@remix-run/react'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { RxDatabase } from 'rxdb'
+
+import { ThemeProvider } from '../components/ThemeProvider'
 
 interface Context {
   rxDatabase: RxDatabase | null
@@ -11,20 +13,34 @@ interface Context {
 export default function Index(): ReactElement {
   const { rxDatabase } = useOutletContext<Context>()
 
+  const [journey, setJourney] = useState([])
+
+  function transformJourney(journeys) {
+    return journeys.map((doc) => {
+      const { _meta, _deleted, _attachments, _rev, ...cleanDoc } = doc.toJSON()
+      return cleanDoc
+    })
+  }
+
   useEffect(() => {
     const fetchTodos = async (): Promise<void> => {
-      if (rxDatabase?.todo != null) {
-        await rxDatabase?.todo.find().$.subscribe((todo) => {
-          console.log('Fetched todos:', todo)
-        })
+      if (rxDatabase?.journeys != null) {
+        const doc = await rxDatabase?.journeys.find().exec()
+        const journeys = transformJourney(doc)
+        setJourney(journeys[0])
       }
     }
     void fetchTodos()
   }, [rxDatabase])
 
+  console.log('journeys', journey)
+
   return (
-    <Box>
-      <Typography variant="h1">Welcome to Next.js!</Typography>
-    </Box>
+    <ThemeProvider>
+      <Container>
+        <Typography variant="h1">Welcome to Remix!</Typography>
+        <Typography variant="h2">{journey.title}</Typography>
+      </Container>
+    </ThemeProvider>
   )
 }

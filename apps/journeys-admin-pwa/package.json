@@ -23,6 +23,7 @@
     "@remix-run/serve": "^2.8.1",
     "fake-indexeddb": "^6.0.0",
     "isbot": "^4.4.0",
+    "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rxdb": "^15.34.1",

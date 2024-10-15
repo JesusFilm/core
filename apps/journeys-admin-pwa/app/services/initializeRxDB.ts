@@ -1,67 +1,44 @@
-import { RxCollection, RxDatabase, addRxPlugin, createRxDatabase } from 'rxdb'
+import { RxDatabase, addRxPlugin, createRxDatabase } from 'rxdb'
 import { RxDBDevModePlugin } from 'rxdb/plugins/dev-mode'
-import { RxDBLeaderElectionPlugin } from 'rxdb/plugins/leader-election'
-import { replicateGraphQL } from 'rxdb/plugins/replication-graphql'
 import { getRxStorageDexie } from 'rxdb/plugins/storage-dexie'
 
-import { itemSchema } from './todoSchema'
+import { journeySchema, journey } from './journeySchema'
 
-addRxPlugin(RxDBLeaderElectionPlugin)
 addRxPlugin(RxDBDevModePlugin)
-
-const GRAPHQL_ENDPOINT = 'http://127.0.0.1:4000/'
 
 interface DataLayer {
   database: RxDatabase
-  items: RxCollection
 }
 
-export async function initializeDataLayer(): Promise<DataLayer> {
+export async function initializeRxDB(): Promise<DataLayer> {
   console.log('Initializing data layer...')
   const database = await createRxDatabase({
     name: 'journeys-admin-pwa',
     storage: getRxStorageDexie()
   })
 
-  console.log('database created')
+  console.log('Database created')
 
   const collections = await database.addCollections({
-    items: {
-      schema: itemSchema
+    journeys: {
+      schema: journeySchema
     }
   })
 
-  console.log('collections created:', collections)
+  const journeyExist = await collections.journeys
+    .find({
+      selector: { id: journey.id }
+    })
+    .exec()
 
-  const replicationState = replicateGraphQL({
-    collection: collections.items,
-    url: {
-      http: GRAPHQL_ENDPOINT
-    },
-    replicationIdentifier: 'journeys-replication',
-    pull: {
-      queryBuilder: () => ({
-        query: `
-          query Journeys {
-            journeys {
-              id
-              title
-            }
-          }
-        `,
-        variables: {
-          lastUpdateAt: 0
-        }
-      })
-    },
-    waitForLeadership: true
-  })
+  console.log('Journey exists', journeyExist)
 
-  await replicationState.start()
-
-  console.log('Replication started')
+  if (journeyExist.length === 0) {
+    await collections.journeys.insert(journey)
+    console.log('Journey inserted')
+  }
 
   console.log('RxDB initialized successfully')
 
-  return { database, items: collections.items }
+  return { database }
 }
