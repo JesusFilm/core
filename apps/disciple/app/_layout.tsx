@@ -8,18 +8,7 @@ export default function Layout(): ReactElement {
   return (
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="churches/index"
-        options={{
-          headerShown: true,
-          headerTitle: () => (
-            <Text style={{ color: 'white' }}>search bar here</Text>
-          ),
-          headerRight: () => <BackButton />,
-          headerBackVisible: false,
-          headerTransparent: true
-        }}
-      />
+      <Stack.Screen name="churches/index" />
       <Stack.Screen
         name="churches/[churchId]"
         options={{
