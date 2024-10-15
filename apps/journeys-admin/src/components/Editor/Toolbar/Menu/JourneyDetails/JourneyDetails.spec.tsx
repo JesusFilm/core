@@ -9,10 +9,26 @@ import { JourneyDetails } from './JourneyDetails'
 describe('JourneyDetails', () => {
   const mockJourney: JourneyFields = {
     title: 'Some title',
-    description: 'Some description'
+    description: 'Some description',
+    language: {
+      __typename: 'Language',
+      id: '529',
+      name: [
+        {
+          value: 'English',
+          primary: true,
+          __typename: 'LanguageName'
+        }
+      ]
+    }
   } as unknown as JourneyFields
 
-  it('should display title and description', () => {
+  const noDescriptionJourney: JourneyFields = {
+    ...mockJourney,
+    description: ''
+  } as unknown as JourneyFields
+
+  it('should display title, language and description', () => {
     render(
       <JourneyProvider value={{ journey: mockJourney }}>
         <JourneyDetails />
@@ -21,6 +37,17 @@ describe('JourneyDetails', () => {
     expect(screen.getByRole('heading', { level: 6 })).toHaveTextContent(
       'Some title'
     )
+    expect(screen.getByText('English')).toBeInTheDocument()
+    expect(screen.queryByTestId('DescriptionDot')).toBeInTheDocument()
     expect(screen.getByText('Some description')).toBeInTheDocument()
+  })
+
+  it('should not show dot if there is no description', () => {
+    render(
+      <JourneyProvider value={{ journey: noDescriptionJourney }}>
+        <JourneyDetails />
+      </JourneyProvider>
+    )
+    expect(screen.queryByTestId('DescriptionDot')).not.toBeInTheDocument()
   })
 })
