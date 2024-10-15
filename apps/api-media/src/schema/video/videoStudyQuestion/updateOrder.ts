@@ -1,11 +1,14 @@
 import { Prisma } from '.prisma/api-media-client'
 
+import { fakeDeferExistingQuestions } from './fakeDeferExistingQuestions'
+
 interface updateOrderUpdateParams {
   videoId: string
   id: string
   order: number
   transaction: Prisma.TransactionClient
 }
+
 export async function updateOrderUpdate({
   videoId,
   id,
@@ -17,6 +20,8 @@ export async function updateOrderUpdate({
     select: { id: true },
     orderBy: { order: 'asc' }
   })
+
+  await fakeDeferExistingQuestions({ videoId, transaction })
 
   const newOrders = existing.map((item, index) => ({
     id: item.id,
@@ -50,6 +55,8 @@ export async function updateOrderCreate({
     select: { id: true },
     orderBy: { order: 'asc' }
   })
+
+  await fakeDeferExistingQuestions({ videoId, transaction })
 
   const newOrders = existing.map((item, index) => ({
     id: item.id,

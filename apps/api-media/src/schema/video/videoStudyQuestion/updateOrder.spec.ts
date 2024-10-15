@@ -6,6 +6,10 @@ import {
   updateOrderUpdate
 } from './updateOrder'
 
+jest.mock('./fakeDeferExistingQuestions', () => ({
+  fakeDeferExistingQuestions: jest.fn()
+}))
+
 describe('updateOrder', () => {
   describe('updateOrderCreate', () => {
     it('should update order', async () => {
