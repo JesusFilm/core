@@ -69,13 +69,16 @@ builder.mutationFields((t) => ({
         if (existing.videoId == null)
           throw new Error(`videoStudyQuestion ${input.id} videoId not found`)
 
+        console.log('foo', input)
         if (input.order != null)
           await updateOrderUpdate({
             videoId: existing.videoId,
             id: input.id,
+            // languageId: input.languageId ?? '529',
             order: input.order,
             transaction
           })
+
         return await transaction.videoStudyQuestion.update({
           ...query,
           where: { id: input.id },

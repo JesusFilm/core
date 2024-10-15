@@ -1,10 +1,11 @@
 'use client'
 
+import { Button } from '@mui/material'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-import { useParams } from 'next/navigation'
+import { useParams, usePathname, useRouter } from 'next/navigation'
 import { ReactElement } from 'react'
 
 import { PublishedChip } from '../../../../../../components/PublishedChip'
@@ -12,10 +13,18 @@ import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
 
 export function VideoView(): ReactElement {
   const params = useParams<{ videoId: string; locale: string }>()
+  const pathname = usePathname()
+  const router = useRouter()
 
   const { data } = useAdminVideo({
     variables: { videoId: params?.videoId as string }
   })
+
+  const handleEdit = () => {
+    router.push(`${pathname}/edit`)
+  }
+
+  const image = data?.adminVideo.images?.[0]
 
   return (
     <Stack gap={2} sx={{ width: '100%' }} data-testid="VideoView">
@@ -34,13 +43,15 @@ export function VideoView(): ReactElement {
             flexShrink: 0
           }}
         >
-          <Image
-            src={data?.adminVideo.images[0].mobileCinematicHigh as string}
-            alt={`${data?.adminVideo.imageAlt[0].value}`}
-            layout="fill"
-            objectFit="cover"
-            priority
-          />
+          {image != null && (
+            <Image
+              src={image.mobileCinematicHigh as string}
+              alt={`${data?.adminVideo.imageAlt[0].value}`}
+              layout="fill"
+              objectFit="cover"
+              priority
+            />
+          )}
         </Box>
         <Box sx={{ width: '100%' }}>
           <Stack direction="column" sx={{ width: '100%' }}>
