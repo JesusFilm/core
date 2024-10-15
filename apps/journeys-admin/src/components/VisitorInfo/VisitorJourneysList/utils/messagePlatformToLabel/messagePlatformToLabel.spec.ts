@@ -20,6 +20,12 @@ describe('messagePlatformToLabel', () => {
     )
   })
 
+  it('returns KakaoTalk', () => {
+    expect(messagePlatformToLabel(MessagePlatform.kakaoTalk, t)).toBe(
+      'KakaoTalk'
+    )
+  })
+
   it('returns LINE', () => {
     expect(messagePlatformToLabel(MessagePlatform.line, t)).toBe('LINE')
   })
