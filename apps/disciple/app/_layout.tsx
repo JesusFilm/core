@@ -4,8 +4,6 @@ import { Text } from 'react-native'
 
 import { BackButton } from '../src/components/BackButton'
 
-import Churches from './churches'
-
 export default function Layout(): ReactElement {
   return (
     <Stack>
@@ -21,7 +19,6 @@ export default function Layout(): ReactElement {
           headerBackVisible: false,
           headerTransparent: true
         }}
-        z
       />
       <Stack.Screen
         name="churches/[churchId]"
