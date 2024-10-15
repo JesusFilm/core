@@ -23,22 +23,22 @@ export default function Index(): ReactElement {
   }
 
   useEffect(() => {
-    const fetchTodos = async (): Promise<void> => {
+    const fetchJourneys = async (): Promise<void> => {
       if (rxDatabase?.journeys != null) {
         const doc = await rxDatabase?.journeys.find().exec()
         const journeys = transformJourney(doc)
         setJourney(journeys[0])
       }
     }
-    void fetchTodos()
+    void fetchJourneys()
   }, [rxDatabase])
 
-  console.log('journeys', journey)
+  console.log('journey: ', journey)
 
   return (
     <ThemeProvider>
       <Container>
-        <Typography variant="h1">Welcome to Remix!</Typography>
+        <Typography variant="h1">Journeys Admin in Remix!</Typography>
         <Typography variant="h2">{journey.title}</Typography>
       </Container>
     </ThemeProvider>
