@@ -3,6 +3,7 @@
   "Settings": "Settings",
   "ID": "ID",
   "Title": "Pamagat",
+  "Published": "Published",
   "Description": "Paglalarawan",
   "Email": "Email",
   "Password": "Password",
@@ -22,5 +23,6 @@
   "Nexus": "Nexus",
   "Home": "Home",
   "Video Library": "Video Library",
-  "Sign Out": "Sign Out"
+  "Sign Out": "Sign Out",
+  "Unpublished": "Unpublished"
 }
