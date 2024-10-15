@@ -4,7 +4,9 @@
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {}
+      "rules": {
+        "i18next/no-literal-string": "off"
+      }
     },
     {
       "files": ["*.ts", "*.tsx"],
@@ -16,6 +18,16 @@
     {
       "files": ["*.js", "*.jsx"],
       "rules": {}
+    },
+    {
+      "files": ["src/components/ui/**/*.ts", "src/components/ui/**/*.tsx"],
+      "rules": {
+        "@typescript-eslint/strict-boolean-expressions": "off",
+        "@typescript-eslint/explicit-function-return-type": "off"
+      }
     }
-  ]
+  ],
+  "settings": {
+    "import/ignore": ["node_modules/react-native/index\\.js$"]
+  }
 }

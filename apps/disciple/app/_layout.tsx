@@ -2,10 +2,8 @@ import { Stack } from 'expo-router'
 import { ReactElement } from 'react'
 import { Text } from 'react-native'
 
-import { GluestackUIProvider } from '../components/ui/gluestack-ui-provider'
 import { BackButton } from '../src/components/BackButton'
-
-import Churches from './churches'
+import { GluestackUIProvider } from '../src/components/ui/gluestack-ui-provider'
 
 import '../global.css'
 

@@ -55,6 +55,7 @@
     "@expo/metro-runtime": "~3.2.1",
     "@formium/client": "^0.1.4",
     "@formium/react": "^0.2.0",
+    "@gluestack-ui/button": "^1.0.7",
     "@gluestack-ui/nativewind-utils": "^1.0.25",
     "@gluestack-ui/overlay": "^0.1.15",
     "@gluestack-ui/toast": "^1.0.7",

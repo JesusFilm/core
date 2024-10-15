@@ -37,7 +37,9 @@
     "@gluestack-ui/toast": "*",
     "babel-plugin-module-resolver": "*",
     "react-native-reanimated": "*",
-    "tailwindcss": "*"
+    "tailwindcss": "*",
+    "nativewind": "*",
+    "@gluestack-ui/button": "*"
   },
   "scripts": {
     "eas-build-post-install": "cd ../../ && node tools/scripts/eas-build-post-install.mjs . apps/disciple"
