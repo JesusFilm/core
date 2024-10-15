@@ -5,7 +5,7 @@ import { Components, Theme, alpha } from '@mui/material/styles'
 import { svgIconClasses } from '@mui/material/SvgIcon'
 import { typographyClasses } from '@mui/material/Typography'
 
-import { green, grey, red } from '../themePrimitives'
+import { green, grey, orange, red } from '../themePrimitives'
 
 export const dataDisplayCustomizations: Components<Theme> = {
   MuiList: {
@@ -169,6 +169,31 @@ export const dataDisplayCustomizations: Components<Theme> = {
                 },
                 [`& .${chipClasses.icon}`]: {
                   color: red[300]
+                }
+              })
+            }
+          },
+          {
+            props: {
+              color: 'warning'
+            },
+            style: {
+              borderColor: orange[200],
+              backgroundColor: orange[50],
+              [`& .${chipClasses.label}`]: {
+                color: orange[500]
+              },
+              [`& .${chipClasses.icon}`]: {
+                color: orange[500]
+              },
+              ...theme.applyStyles('dark', {
+                borderColor: orange[800],
+                backgroundColor: orange[900],
+                [`& .${chipClasses.label}`]: {
+                  color: orange[200]
+                },
+                [`& .${chipClasses.icon}`]: {
+                  color: orange[300]
                 }
               })
             }

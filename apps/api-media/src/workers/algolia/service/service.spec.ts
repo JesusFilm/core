@@ -103,7 +103,10 @@ describe('algolia/service', () => {
               title: [{ value: 'title' }],
               description: [{ value: 'description' }],
               label: 'label',
-              image: 'image',
+              images: [
+                { id: 'imageId', aspectRatio: 'banner' },
+                { id: 'imageId2', aspectRatio: 'hd' }
+              ],
               imageAlt: [{ value: 'imageAlt', languageId: '529' }],
               childIds: ['childId'],
               subtitles: [{ edition: 'edition', languageId: '21754' }]
@@ -127,7 +130,8 @@ describe('algolia/service', () => {
               description: true,
               imageAlt: true,
               snippet: true,
-              subtitles: true
+              subtitles: true,
+              images: true
             }
           }
         },
@@ -144,7 +148,9 @@ describe('algolia/service', () => {
           childrenCount: 1,
           description: ['description'],
           duration: 100,
-          image: 'image',
+          image: `https://imagedelivery.net/${
+            process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
+          }/imageId/f=jpg,w=1280,h=600,q=95`,
           imageAlt: 'imageAlt',
           label: 'label',
           languageId: '21754',
@@ -176,7 +182,8 @@ describe('algolia/service', () => {
               description: true,
               imageAlt: true,
               snippet: true,
-              subtitles: true
+              subtitles: true,
+              images: true
             }
           }
         }
