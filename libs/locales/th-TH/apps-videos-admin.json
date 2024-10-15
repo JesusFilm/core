@@ -3,6 +3,7 @@
   "Settings": "การตั้งค่า",
   "ID": "ID",
   "Title": "หัวข้อ",
+  "Published": "Published",
   "Description": "คำอธิบาย",
   "Email": "อีเมล",
   "Password": "รหัสผ่าน",
@@ -22,5 +23,6 @@
   "Nexus": "เนกซัส",
   "Home": "หน้าหลัก",
   "Video Library": "คลังวิดีโอ",
-  "Sign Out": "ออกจากระบบ"
+  "Sign Out": "ออกจากระบบ",
+  "Unpublished": "Unpublished"
 }
