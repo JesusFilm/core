@@ -6,11 +6,11 @@ import {
   HALF_HEIGHT,
   MIN_HEIGHT,
   WEBSITE_HEIGHT,
-  combinedFooter,
   getFooterMobileHeight,
   getFooterMobileSpacing,
   getTitle,
   hasChatWidget,
+  hasCombinedFooter,
   hasHostAvatar,
   hasHostDetails,
   hasReactions
@@ -203,10 +203,10 @@ describe('getFooterElements', () => {
     })
   })
 
-  describe('combinedFooter', () => {
+  describe('hasCombinedFooter', () => {
     it('should return true if reactions can be combined with chat buttons', () => {
       expect(
-        combinedFooter({
+        hasCombinedFooter({
           journey: {
             ...defaultJourney,
             seoTitle: null,
@@ -220,7 +220,7 @@ describe('getFooterElements', () => {
 
     it('should return false on admin', () => {
       expect(
-        combinedFooter({
+        hasCombinedFooter({
           journey: {
             ...defaultJourney,
             showShareButton: true

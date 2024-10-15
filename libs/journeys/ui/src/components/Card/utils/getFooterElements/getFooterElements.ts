@@ -53,7 +53,7 @@ export function getTitle({ journey }: JourneyInfoProps): string | null {
   }
 }
 
-export function combinedFooter({
+export function hasCombinedFooter({
   journey,
   variant = 'default'
 }: JourneyInfoProps): boolean {
@@ -77,7 +77,7 @@ export function getFooterMobileSpacing({
     const title = getTitle({ journey })
     const reactions = hasReactions({ journey })
 
-    const hasTopRow = reactions && !combinedFooter({ journey, variant })
+    const hasTopRow = reactions && !hasCombinedFooter({ journey, variant })
     const hasBottomRow =
       hasHost ||
       hasChatWidget({ journey, variant }) ||

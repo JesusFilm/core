@@ -4,7 +4,7 @@ export {
   hasHostDetails,
   hasChatWidget,
   getTitle,
-  combinedFooter,
+  hasCombinedFooter,
   getFooterMobileSpacing,
   getFooterMobileHeight
 } from './getFooterElements'
