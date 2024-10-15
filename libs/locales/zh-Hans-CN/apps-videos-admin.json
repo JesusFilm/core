@@ -3,6 +3,7 @@
   "Settings": "设置",
   "ID": "ID",
   "Title": "标题",
+  "Published": "已出版",
   "Description": "描述",
   "Email": "电子邮件",
   "Password": "密码",
@@ -22,5 +23,6 @@
   "Nexus": "内克斯",
   "Home": "首页",
   "Video Library": "视频库",
-  "Sign Out": "Sign Out"
+  "Sign Out": "Sign Out",
+  "Unpublished": "未发表"
 }
