@@ -1149,6 +1149,7 @@ export enum MessagePlatform {
   Home3 = 'home3',
   Home4 = 'home4',
   Instagram = 'instagram',
+  KakaoTalk = 'kakaoTalk',
   Line = 'line',
   LinkExternal = 'linkExternal',
   Mail1 = 'mail1',
