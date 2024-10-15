@@ -6,6 +6,7 @@ import {
   HALF_HEIGHT,
   MIN_HEIGHT,
   WEBSITE_HEIGHT,
+  combinedFooter,
   getFooterMobileHeight,
   getFooterMobileSpacing,
   getTitle,
@@ -97,8 +98,27 @@ describe('getFooterElements', () => {
   })
 
   describe('hasHostDetails', () => {
-    it('should do check is a journey host has details', () => {
+    it('should return false by default', () => {
       expect(hasHostDetails({ journey: defaultJourney })).toBe(false)
+    })
+
+    it('should return true if there is a host', () => {
+      expect(
+        hasHostDetails({
+          journey: {
+            ...defaultJourney,
+            host: {
+              id: 'hostId',
+              src1: 'someimageurl',
+              src2: null,
+              __typename: 'Host',
+              teamId: 'teamId',
+              title: 'Johnathan Joestar',
+              location: 'England'
+            }
+          }
+        })
+      ).toBe(true)
     })
   })
 
@@ -134,16 +154,28 @@ describe('getFooterElements', () => {
   })
 
   describe('getTitle', () => {
-    it('should return null if seoTitle or displayTitle is missing', () => {
+    it('should return null if there is no seoTitle or displayTitle', () => {
       expect(
         getTitle({
           journey: {
             ...defaultJourney,
-            displayTitle: journey.displayTitle,
-            seoTitle: journey.seoTitle
+            displayTitle: null,
+            seoTitle: null
           }
         })
       ).toBeNull()
+    })
+
+    it('should return seoTitle', () => {
+      expect(
+        getTitle({
+          journey: {
+            ...defaultJourney,
+            displayTitle: null,
+            seoTitle: 'seoTitle'
+          }
+        })
+      ).toBe('seoTitle')
     })
 
     it('should return displayTitle', () => {
@@ -171,12 +203,47 @@ describe('getFooterElements', () => {
     })
   })
 
+  describe('combinedFooter', () => {
+    it('should return true if reactions can be combined with chat buttons', () => {
+      expect(
+        combinedFooter({
+          journey: {
+            ...defaultJourney,
+            seoTitle: null,
+            displayTitle: '',
+            host: null,
+            showShareButton: true
+          }
+        })
+      ).toBe(true)
+    })
+
+    it('should return false on admin', () => {
+      expect(
+        combinedFooter({
+          journey: {
+            ...defaultJourney,
+            showShareButton: true
+          },
+          variant: 'admin'
+        })
+      ).toBe(false)
+    })
+  })
+
   describe('getFooterMobileSpacing', () => {
     it('should return min height by default', () => {
       expect(
         getFooterMobileSpacing({
           journey: {
-            ...defaultJourney
+            ...defaultJourney,
+            seoTitle: null,
+            displayTitle: '',
+            host: null,
+            chatButtons: [],
+            showShareButton: null,
+            showLikeButton: null,
+            showDislikeButton: null
           }
         })
       ).toBe(MIN_HEIGHT)
@@ -221,7 +288,26 @@ describe('getFooterElements', () => {
           journey: {
             ...defaultJourney,
             showShareButton: true,
-            displayTitle: 'title'
+            showLikeButton: true,
+            showDislikeButton: true,
+            displayTitle: 'title',
+            host: {
+              id: 'hostId',
+              src1: 'someimageurl',
+              src2: null,
+              __typename: 'Host',
+              teamId: 'teamId',
+              title: 'Johnathan Joestar',
+              location: 'England'
+            },
+            chatButtons: [
+              {
+                __typename: 'ChatButton',
+                id: 'chatButtonId',
+                link: null,
+                platform: null
+              }
+            ]
           }
         })
       ).toBe(FULL_HEIGHT)
@@ -255,7 +341,27 @@ describe('getFooterElements', () => {
         getFooterMobileHeight({
           journey: {
             ...defaultJourney,
-            displayTitle: 'title'
+            showShareButton: true,
+            showLikeButton: true,
+            showDislikeButton: true,
+            displayTitle: 'title',
+            host: {
+              id: 'hostId',
+              src1: 'someimageurl',
+              src2: null,
+              __typename: 'Host',
+              teamId: 'teamId',
+              title: 'Johnathan Joestar',
+              location: 'England'
+            },
+            chatButtons: [
+              {
+                __typename: 'ChatButton',
+                id: 'chatButtonId',
+                link: null,
+                platform: null
+              }
+            ]
           }
         })
       ).toBe(HALF_HEIGHT)
@@ -265,8 +371,7 @@ describe('getFooterElements', () => {
       expect(
         getFooterMobileHeight({
           journey: {
-            ...defaultJourney,
-            showShareButton: true
+            ...defaultJourney
           }
         })
       ).toBe(MIN_HEIGHT)

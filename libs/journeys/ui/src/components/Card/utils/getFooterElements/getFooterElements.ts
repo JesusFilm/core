@@ -77,7 +77,7 @@ export function getFooterMobileSpacing({
     const title = getTitle({ journey })
     const reactions = hasReactions({ journey })
 
-    const hasTopRow = !combinedFooter({ journey, variant })
+    const hasTopRow = reactions && !combinedFooter({ journey, variant })
     const hasBottomRow =
       hasHost ||
       hasChatWidget({ journey, variant }) ||
