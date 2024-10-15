@@ -6,6 +6,11 @@ import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 
 import { JourneyDetails } from './JourneyDetails'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 describe('JourneyDetails', () => {
   const mockJourney: JourneyFields = {
     title: 'Some title',
