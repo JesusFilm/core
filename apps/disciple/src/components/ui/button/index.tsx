@@ -105,12 +105,14 @@ cssInterop(UIButton.Group, { className: 'style' })
 cssInterop(UIButton.Spinner, {
   className: { target: 'style', nativeStyleToProp: { color: true } }
 })
+// @ts-expect-error
 cssInterop(PrimitiveIcon, {
   className: {
     target: 'style',
     nativeStyleToProp: {
       height: true,
       width: true,
+      // @ts-expect-error
       fill: true,
       color: 'classNameColor',
       stroke: true

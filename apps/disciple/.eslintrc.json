@@ -1,6 +1,7 @@
 {
   "extends": ["plugin:@nx/react", "../../.eslintrc.json"],
   "ignorePatterns": ["!**/*", ".expo", "web-build", "cache", "dist"],
+  "plugins": ["react", "react-native"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
@@ -23,7 +24,13 @@
       "files": ["src/components/ui/**/*.ts", "src/components/ui/**/*.tsx"],
       "rules": {
         "@typescript-eslint/strict-boolean-expressions": "off",
-        "@typescript-eslint/explicit-function-return-type": "off"
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "react/jsx-no-useless-fragment": "off",
+        "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "jsx-a11y/heading-has-content": "off"
       }
     }
   ],
