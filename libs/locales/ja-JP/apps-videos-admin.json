@@ -3,6 +3,7 @@
   "Settings": "設定",
   "ID": "身分証明書",
   "Title": "タイトル",
+  "Published": "出版",
   "Description": "説明",
   "Email": "電子メール",
   "Password": "パスワード",
@@ -22,5 +23,6 @@
   "Nexus": "ネクサス",
   "Home": "ホーム",
   "Video Library": "ビデオライブラリー",
-  "Sign Out": "Sign Out"
+  "Sign Out": "Sign Out",
+  "Unpublished": "未発表"
 }
