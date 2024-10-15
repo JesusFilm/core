@@ -7,6 +7,7 @@ import { ReactElement } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 import {
+  combinedFooter,
   getFooterMobileHeight,
   getTitle,
   hasChatWidget,
@@ -31,11 +32,14 @@ export function StepFooter({
 }: StepFooterProps): ReactElement {
   const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
+
   const hostAvatar = hasHostAvatar({ journey, variant })
   const hostDetails = hasHostDetails({ journey })
   const chat = hasChatWidget({ journey, variant })
   const title = getTitle({ journey })
+
   const footerMobileHeight = getFooterMobileHeight({ journey, variant })
+  const combineFooter = combinedFooter({ journey, variant })
 
   const isWebsite = journey?.website === true
 
@@ -69,12 +73,11 @@ export function StepFooter({
           width: '100%'
         }}
       >
-        {!isWebsite &&
-          (title != null || hostDetails || variant === 'admin') && (
-            <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
-              <FooterButtonList />
-            </Box>
-          )}
+        {!isWebsite && !combineFooter && (
+          <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
+            <FooterButtonList />
+          </Box>
+        )}
 
         <Stack
           sx={{
@@ -86,17 +89,11 @@ export function StepFooter({
           }}
           gap={4}
         >
-          {!isWebsite &&
-            (title == null || !hostDetails) &&
-            variant !== 'admin' && (
-              <Box
-                sx={{
-                  display: { xs: 'flex', sm: 'none' }
-                }}
-              >
-                <FooterButtonList />
-              </Box>
-            )}
+          {!isWebsite && combineFooter && (
+            <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
+              <FooterButtonList />
+            </Box>
+          )}
           {isWebsite && <InformationButton sx={{ p: 0 }} />}
           {!isWebsite && (
             <Stack

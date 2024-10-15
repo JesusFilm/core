@@ -53,19 +53,36 @@ export function getTitle({ journey }: JourneyInfoProps): string | null {
   }
 }
 
+export function combinedFooter({
+  journey,
+  variant = 'default'
+}: JourneyInfoProps): boolean {
+  const hasHost =
+    hasHostAvatar({ journey, variant }) || hasHostDetails({ journey })
+  const title = getTitle({ journey })
+  const reactions = hasReactions({ journey })
+
+  return reactions && title == null && !hasHost && variant !== 'admin'
+}
+
 export function getFooterMobileSpacing({
   journey,
   variant = 'default'
 }: JourneyInfoProps): string {
   if (journey?.website === true) {
-    return WEBSITE_HEIGHT
+    return variant === 'admin' ? HALF_HEIGHT : WEBSITE_HEIGHT
   } else {
-    const hasTopRow = hasReactions({ journey })
+    const hasHost =
+      hasHostAvatar({ journey, variant }) || hasHostDetails({ journey })
+    const title = getTitle({ journey })
+    const reactions = hasReactions({ journey })
+
+    const hasTopRow = !combinedFooter({ journey, variant })
     const hasBottomRow =
-      hasHostAvatar({ journey, variant }) ||
-      hasHostDetails({ journey }) ||
+      hasHost ||
       hasChatWidget({ journey, variant }) ||
-      getTitle({ journey }) != null
+      title != null ||
+      reactions
 
     if (hasTopRow && hasBottomRow) {
       return FULL_HEIGHT
@@ -85,6 +102,7 @@ export function getFooterMobileHeight({
     return HALF_HEIGHT
   } else {
     const hasBottomRow =
+      hasReactions({ journey }) ||
       hasHostAvatar({ journey, variant }) ||
       hasHostDetails({ journey }) ||
       hasChatWidget({ journey, variant }) ||
