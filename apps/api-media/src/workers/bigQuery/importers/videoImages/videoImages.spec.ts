@@ -52,14 +52,14 @@ describe('bigQuery/importers/videoImages', () => {
 
     it('should get existing images for videos', async () => {
       prismaMock.video.findMany.mockResolvedValue([
-        { id: 'mockVideoId', image: null, videoStill: null } as unknown as Video
+        { id: 'mockVideoId', images: [] } as unknown as Video
       ])
       prismaMock.cloudflareImage.create.mockResolvedValue(
         {} as unknown as CloudflareImage
       )
       await importVideoImages()
       expect(prismaMock.video.findMany).toHaveBeenCalledWith({
-        select: { id: true, image: true, videoStill: true },
+        select: { id: true },
         where: { images: { none: {} } }
       })
       expect(getClient().images.v1.get).toHaveBeenCalledWith(
@@ -114,33 +114,6 @@ describe('bigQuery/importers/videoImages', () => {
           uploadUrl:
             'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.videoStill.jpg',
           userId: 'system'
-        }
-      })
-    })
-
-    it('should fix broken images', async () => {
-      prismaMock.video.findMany.mockResolvedValue([
-        {
-          id: 'mockVideoId',
-          mobileCinematicHigh: null,
-          videoStill: null
-        } as unknown as Video
-      ])
-      prismaMock.video.update.mockResolvedValue({} as unknown as Video)
-      await importVideoImages()
-      expect(prismaMock.video.update).toHaveBeenCalledWith({
-        data: {
-          mobileCinematicHigh:
-            'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.mobileCinematicHigh.jpg',
-          mobileCinematicLow: null,
-          mobileCinematicVeryLow: null,
-          thumbnail:
-            'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.thumbnail.jpg',
-          videoStill:
-            'https://d1wl257kev7hsz.cloudfront.net/cinematics/mockVideoId.videoStill.jpg'
-        },
-        where: {
-          id: 'mockVideoId'
         }
       })
     })
