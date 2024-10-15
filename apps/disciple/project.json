@@ -11,6 +11,22 @@
       "options": {
         "jestConfig": "apps/disciple/jest.config.ts"
       }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/disciple/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "gluestack-ui": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/disciple",
+        "command": "npx gluestack-ui"
+      }
     }
   }
 }

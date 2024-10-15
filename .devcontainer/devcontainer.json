@@ -9,6 +9,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
+        "bradlc.vscode-tailwindcss",
         "dbaeumer.vscode-eslint",
         "nrwl.angular-console",
         "eamodio.gitlens",
