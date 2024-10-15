@@ -5,18 +5,20 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-interface DownScrollArrowProps {
+const BOUNCE_DELAY = 5000
+
+interface ScrollDownIndicatorProps {
   trigger: boolean
 }
-export function DownScrollArrow({
+export function ScrollDownIndicator({
   trigger
-}: DownScrollArrowProps): ReactElement {
+}: ScrollDownIndicatorProps): ReactElement {
   const [shouldAnimate, setShouldAnimate] = useState(false)
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShouldAnimate(true)
-    }, 5000)
+    }, BOUNCE_DELAY)
     return () => clearTimeout(timer)
   }, [])
 

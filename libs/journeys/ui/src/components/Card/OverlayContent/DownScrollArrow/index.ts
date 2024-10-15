@@ -1,1 +1,0 @@
-export { DownScrollArrow } from './DownScrollArrow'

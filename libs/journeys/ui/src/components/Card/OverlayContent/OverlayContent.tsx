@@ -5,7 +5,7 @@ import { ReactElement, ReactNode, useRef } from 'react'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 
-import { DownScrollArrow } from './DownScrollArrow'
+import { ScrollDownIndicator } from './ScrollDownIndicator'
 
 interface OverlayContentProps {
   children: ReactNode
@@ -20,15 +20,18 @@ export function OverlayContent({
 }: OverlayContentProps): ReactElement {
   const { variant } = useJourney()
   const cardOverlayRef = useRef<any>()
+
   const trigger = useScrollTrigger({
     disableHysteresis: true,
     target: cardOverlayRef.current,
     threshold: 20
   })
+
   const isScrollable = (): boolean => {
     const box = cardOverlayRef.current
     return box != null ? box.scrollHeight > box.clientHeight : false
   }
+
   const enableVerticalScroll: SxProps = {
     overflowY: 'scroll',
     // Hide on Firefox https://caniuse.com/?search=scrollbar-width
@@ -90,7 +93,7 @@ export function OverlayContent({
         {children}
       </Box>
       {isScrollable() && variant !== 'admin' && (
-        <DownScrollArrow trigger={trigger} />
+        <ScrollDownIndicator trigger={trigger} />
       )}
     </>
   )
