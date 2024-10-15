@@ -75,7 +75,7 @@ export function OverlayContent({
         }
 
   return (
-    <Box>
+    <>
       <Box
         data-testid="CardOverlayContent"
         ref={cardOverlayRef}
@@ -92,6 +92,6 @@ export function OverlayContent({
       {isScrollable() && variant !== 'admin' && (
         <DownScrollArrow trigger={trigger} />
       )}
-    </Box>
+    </>
   )
 }
