@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/order -- Must be imported first
+import { tracingPlugin } from '@core/yoga/tracer'
+
 import {
   useForwardedJWT,
   useHmacSignatureValidation
@@ -14,6 +17,7 @@ import { Context } from './schema/builder'
 
 export const yoga = createYoga<Record<string, unknown>, Context>({
   schema,
+  logging: logger,
   context: ({ request, params }) => {
     const payload = get(params, 'extensions.jwt.payload')
     const currentUser = getUserFromPayload(payload, logger)
@@ -27,6 +31,7 @@ export const yoga = createYoga<Record<string, unknown>, Context>({
     }
   },
   plugins: [
+    tracingPlugin,
     useForwardedJWT({}),
     process.env.NODE_ENV !== 'test'
       ? useHmacSignatureValidation({

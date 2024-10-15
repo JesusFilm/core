@@ -2,22 +2,15 @@ import {
   createRemoteJwksSigningKeyProvider,
   defineConfig
 } from '@graphql-hive/gateway'
-import { maskError } from 'graphql-yoga'
-import pino from 'pino'
 
-export const logger = pino().child({ service: 'api-gateway' })
+import logger from './src/logger'
 
 const googleApplication = JSON.parse(
   process.env.GOOGLE_APPLICATION_JSON ?? '{}'
 )
 
 export const gatewayConfig = defineConfig({
-  maskedErrors: {
-    maskError: (error, message, isDev) => {
-      logger.error(error, message)
-      return maskError(error, message, isDev)
-    }
-  },
+  logging: logger,
   port: 4000,
   healthCheckEndpoint: '/health',
   graphqlEndpoint: '/',

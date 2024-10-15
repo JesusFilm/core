@@ -12,8 +12,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '1_jf-0-0',
     label: VideoLabel.featureFilm,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'JESUS' }],
     snippet: [
       {
@@ -85,8 +90,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '2_GOJ-0-0',
     label: VideoLabel.featureFilm,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_GOJ-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [
       { __typename: 'VideoImageAlt', value: 'Life of Jesus (Gospel of John)' }
     ],
@@ -143,8 +153,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '1_jf6119-0-0',
     label: VideoLabel.segment,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6119-0-0.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6119-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'Jesus Calms the Storm' }],
     snippet: [
       {
@@ -210,8 +225,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '1_wl604423-0-0',
     label: VideoLabel.segment,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_wl604423-0-0.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_wl604423-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [
       {
         __typename: 'VideoImageAlt',
@@ -287,8 +307,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: 'MAG1',
     label: VideoLabel.featureFilm,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/high_mag_collection_640x300br.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/high_mag_collection_640x300br.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'Magdalena' }],
     snippet: [
       {
@@ -341,8 +366,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '1_wl7-0-0',
     label: VideoLabel.series,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/ROH.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_wl7-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'Reflections of Hope' }],
     snippet: [
       {
@@ -382,8 +412,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '3_0-8DWJ-WIJ_06-0-0',
     label: VideoLabel.episode,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/3_0-8DWJ-WIJ_06-0-0.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/3_0-8DWJ-WIJ_06-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [
       { __typename: 'VideoImageAlt', value: 'Day 6: Jesus Died for Me' }
     ],
@@ -447,8 +482,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '2_Acts-0-0',
     label: VideoLabel.featureFilm,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts-0-0.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_Acts-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'Book of Acts' }],
     snippet: [
       {
@@ -507,8 +547,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '2_GOJ4904-0-0',
     label: VideoLabel.segment,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ4904-0-0.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_GOJ4904-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'Wedding in Cana' }],
     snippet: [
       {
@@ -570,8 +615,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: 'LUMOCollection',
     label: VideoLabel.collection,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/LUMOCollection.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/LUMOCollection.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'LUMO' }],
     snippet: [{ __typename: 'VideoSnippet', value: 'LUMO content collection' }],
     description: [
@@ -601,8 +651,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '2_Acts7331-0-0',
     label: VideoLabel.segment,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7331-0-0.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_Acts7331-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [
       {
         __typename: 'VideoImageAlt',
@@ -682,8 +737,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '3_0-8DWJ-WIJ',
     label: VideoLabel.series,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/3_0-8DWJ-WIJ.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/3_0-8DWJ-WIJ.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [
       { __typename: 'VideoImageAlt', value: '8 Days with Jesus: Who is Jesus?' }
     ],
@@ -727,8 +787,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '2_ChosenWitness',
     label: VideoLabel.shortFilm,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_ChosenWitness.mobileCinematicHigh.jpg?version=2',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_ChosenWitness.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'Chosen Witness' }],
     snippet: [
       {
@@ -801,8 +866,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: 'GOLukeCollection',
     label: VideoLabel.collection,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/GOLukeCollection.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/GOLukeCollection.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [
       { __typename: 'VideoImageAlt', value: 'LUMO - The Gospel of Luke' }
     ],
@@ -844,8 +914,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '1_cl1309-0-0',
     label: VideoLabel.episode,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl1309-0-0.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1309-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [
       { __typename: 'VideoImageAlt', value: 'StoryClubs: Jesus and Zacchaeus' }
     ],
@@ -931,8 +1006,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '1_jf6102-0-0',
     label: VideoLabel.segment,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6102-0-0.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6102-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'Birth of Jesus' }],
     snippet: [
       {
@@ -998,8 +1078,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '2_0-FallingPlates',
     label: VideoLabel.shortFilm,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [{ __typename: 'VideoImageAlt', value: '#FallingPlates' }],
     snippet: [
       {
@@ -1059,8 +1144,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '2_Acts7345-0-0',
     label: VideoLabel.segment,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7345-0-0.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_Acts7345-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [
       { __typename: 'VideoImageAlt', value: 'Paul and Silas in Prison' }
     ],
@@ -1129,8 +1219,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '1_mld-0-0',
     label: VideoLabel.shortFilm,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_mld-0-0.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_mld-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'My Last Day' }],
     snippet: [
       {
@@ -1197,8 +1292,13 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '1_jf6101-0-0',
     label: VideoLabel.segment,
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6101-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'The Beginning' }],
     snippet: [
       {

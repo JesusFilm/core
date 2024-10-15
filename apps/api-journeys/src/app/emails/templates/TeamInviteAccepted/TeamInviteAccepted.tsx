@@ -70,7 +70,7 @@ export const TeamInviteAcceptedEmail = ({
           </ActionCard>
         </BodyWrapper>
         <Footer />
-        <UnsubscribeLink recipientEmail={recipient.email} />
+        <UnsubscribeLink recipientEmail={recipient.email ?? ''} />
       </EmailContainer>
     </>
   )

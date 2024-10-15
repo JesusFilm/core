@@ -19,8 +19,13 @@ describe('AlgoliaVideoGrid', () => {
       __typename: 'Video',
       childrenCount: 49,
       id: 'videoId',
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_GOJ-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       imageAlt: [
         {
           value: 'Life of Jesus (Gospel of John)'
