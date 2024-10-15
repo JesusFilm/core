@@ -30,7 +30,8 @@
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-empty-function": "off",
         "@typescript-eslint/no-explicit-any": "off",
-        "jsx-a11y/heading-has-content": "off"
+        "jsx-a11y/heading-has-content": "off",
+        "no-prototype-builtins": "off"
       }
     }
   ],

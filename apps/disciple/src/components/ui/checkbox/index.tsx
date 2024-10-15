@@ -10,7 +10,7 @@ import {
 import { withStyleContextAndStates } from '@gluestack-ui/nativewind-utils/withStyleContextAndStates'
 import { cssInterop } from 'nativewind'
 import React, { useMemo } from 'react'
-import { Platform, Pressable, Text , View } from 'react-native'
+import { Platform, Pressable, Text, View } from 'react-native'
 import type { TextProps, ViewProps } from 'react-native'
 import { Svg } from 'react-native-svg'
 

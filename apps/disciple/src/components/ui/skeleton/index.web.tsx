@@ -3,7 +3,6 @@ import React from 'react'
 
 import { skeletonStyle, skeletonTextStyle } from './styles'
 
-
 type ISkeletonProps = React.ComponentPropsWithoutRef<'div'> &
   VariantProps<typeof skeletonStyle> & {
     startColor?: string

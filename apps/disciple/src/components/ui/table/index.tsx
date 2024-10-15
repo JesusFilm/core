@@ -20,7 +20,6 @@ import {
   tableStyle
 } from './styles'
 
-
 const TableHeaderContext = createContext<any>({})
 const TableFooterContext = createContext<any>({})
 

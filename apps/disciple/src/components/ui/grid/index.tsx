@@ -10,13 +10,12 @@ import React, {
 } from 'react'
 import { Dimensions, Platform, View, ViewProps } from 'react-native'
 
-import { gridItemStyle, gridStyle } from './styles'
-
-
 import {
   getBreakPointValue,
   useBreakpointValue
-} from '@/components/ui/utils/use-break-point-value'
+} from '../utils/use-break-point-value'
+
+import { gridItemStyle, gridStyle } from './styles'
 
 const { width } = Dimensions.get('window')
 

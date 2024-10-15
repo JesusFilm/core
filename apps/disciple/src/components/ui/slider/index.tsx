@@ -10,7 +10,7 @@ import { withStyleContextAndStates } from '@gluestack-ui/nativewind-utils/withSt
 import { createSlider } from '@gluestack-ui/slider'
 import { cssInterop } from 'nativewind'
 import React from 'react'
-import { Platform , Pressable, View } from 'react-native'
+import { Platform, Pressable, View } from 'react-native'
 
 const ThumbWrapper = React.forwardRef<
   React.ElementRef<typeof View>,

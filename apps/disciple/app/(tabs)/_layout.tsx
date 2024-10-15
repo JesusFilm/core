@@ -1,28 +1,32 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome'
-import { Tabs } from 'expo-router'
+import Feather from '@expo/vector-icons/Feather'
+import { Stack, Tabs } from 'expo-router'
 import { ReactElement } from 'react'
 
 export default function TabLayout(): ReactElement {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: 'blue' }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="home" color={color} />
-          )
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: 'Settings',
-          tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="cog" color={color} />
-          )
-        }}
-      />
-    </Tabs>
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
+      <Tabs screenOptions={{ tabBarActiveTintColor: '#EF3340' }}>
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: 'Home',
+            headerShown: false,
+            tabBarIcon: ({ color, size }) => (
+              <Feather size={size} name="home" color={color} />
+            )
+          }}
+        />
+        <Tabs.Screen
+          name="settings"
+          options={{
+            title: 'Settings',
+            tabBarIcon: ({ color, size }) => (
+              <Feather size={size} name="settings" color={color} />
+            )
+          }}
+        />
+      </Tabs>
+    </>
   )
 }

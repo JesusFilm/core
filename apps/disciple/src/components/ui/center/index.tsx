@@ -4,7 +4,6 @@ import { View, ViewProps } from 'react-native'
 
 import { centerStyle } from './styles'
 
-
 type ICenterProps = ViewProps & VariantProps<typeof centerStyle>
 
 const Center = React.forwardRef<React.ElementRef<typeof View>, ICenterProps>(

@@ -9,7 +9,7 @@ import {
 import { withStyleContextAndStates } from '@gluestack-ui/nativewind-utils/withStyleContextAndStates'
 import { cssInterop } from 'nativewind'
 import React, { useMemo } from 'react'
-import { Platform, Pressable , Text } from 'react-native'
+import { Platform, Pressable, Text } from 'react-native'
 import { Svg } from 'react-native-svg'
 
 type IPrimitiveIcon = React.ComponentPropsWithoutRef<typeof Svg> & {
