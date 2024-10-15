@@ -3,6 +3,7 @@
   "Settings": "الإعدادات",
   "ID": "بطاقة الهوية",
   "Title": "العنوان",
+  "Published": "Published",
   "Description": "الوصف",
   "Email": "البريد الإلكتروني",
   "Password": "Password",
@@ -22,5 +23,6 @@
   "Nexus": "Nexus",
   "Home": "Home",
   "Video Library": "مكتبة الفيديو",
-  "Sign Out": "Sign Out"
+  "Sign Out": "Sign Out",
+  "Unpublished": "Unpublished"
 }
