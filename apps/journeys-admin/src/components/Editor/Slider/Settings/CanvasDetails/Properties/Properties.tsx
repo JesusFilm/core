@@ -104,6 +104,10 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
   if (selectedBlock?.__typename === 'StepBlock') {
     const card = selectedBlock.children[0]
     if (card?.children.length > 0 || !showCardTemplates) {
+      if (card?.children[0]?.__typename === 'VideoBlock') {
+        const videoBlock = card.children[0]
+        return <Properties block={videoBlock} step={selectedStep} />
+      }
       return <Properties block={card} step={selectedStep} />
     }
   }

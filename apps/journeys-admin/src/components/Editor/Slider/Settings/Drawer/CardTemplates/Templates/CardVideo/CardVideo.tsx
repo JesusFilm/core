@@ -56,8 +56,7 @@ export const CARD_VIDEO_RESTORE = gql`
 export function CardVideo(): ReactElement {
   const { journey } = useJourney()
   const {
-    state: { selectedStep },
-    dispatch
+    state: { selectedStep }
   } = useEditor()
   const { add } = useCommand()
 
@@ -79,8 +78,6 @@ export function CardVideo(): ReactElement {
   function handleClick(): void {
     const cardId = selectedStep?.children[0].id
     if (journey == null || cardId == null) return
-
-    console.log('Creating video block')
 
     const videoBlock = {
       id: uuidv4(),
@@ -126,11 +123,6 @@ export function CardVideo(): ReactElement {
       action: null,
       __typename: 'VideoBlock'
     } satisfies VideoBlock
-
-    // dispatch({
-    //   type: 'SetSelectedBlockAction',
-    //   selectedBlock: videoBlock
-    // })
 
     add({
       parameters: { execute: {}, undo: {} },
