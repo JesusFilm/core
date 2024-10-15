@@ -3,6 +3,7 @@
   "Settings": "Paramètres",
   "ID": "ID",
   "Title": "Titre",
+  "Published": "Publié",
   "Description": "Description",
   "Email": "Courriel",
   "Password": "Mot de passe",
@@ -22,5 +23,6 @@
   "Nexus": "Nexus",
   "Home": "Accueil",
   "Video Library": "Bibliothèque vidéo",
-  "Sign Out": "Sign Out"
+  "Sign Out": "Sign Out",
+  "Unpublished": "Non publié"
 }
