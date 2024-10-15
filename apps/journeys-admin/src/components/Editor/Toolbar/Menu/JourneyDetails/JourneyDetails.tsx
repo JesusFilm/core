@@ -16,7 +16,6 @@ export function JourneyDetails(): ReactElement {
     ({ primary }) => primary != null
   )?.value
 
-  const titleVariant = smUp ? 'subtitle1' : 'subtitle2'
   const languageVariant = smUp ? 'body2' : 'caption'
 
   return (
@@ -31,9 +30,22 @@ export function JourneyDetails(): ReactElement {
           }}
         >
           <Typography
-            variant={titleVariant}
+            variant="subtitle2"
             sx={{
-              display: { xs: '-webkit-box', sm: 'unset' },
+              display: { xs: '-webkit-box', sm: 'none' },
+              '-webkit-line-clamp': { xs: '2', sm: '1' },
+              '-webkit-box-orient': 'vertical',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              color: 'secondary.dark'
+            }}
+          >
+            {journey.title}
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            sx={{
+              display: { xs: 'none', sm: 'unset' },
               '-webkit-line-clamp': { xs: '2', sm: '1' },
               '-webkit-box-orient': 'vertical',
               overflow: 'hidden',
