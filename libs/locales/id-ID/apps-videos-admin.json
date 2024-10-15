@@ -3,6 +3,7 @@
   "Settings": "Pengaturan",
   "ID": "ID",
   "Title": "Judul",
+  "Published": "Diterbitkan",
   "Description": "Deskripsi",
   "Email": "Email",
   "Password": "Kata sandi",
@@ -22,5 +23,6 @@
   "Nexus": "Nexus",
   "Home": "Beranda",
   "Video Library": "Perpustakaan Video",
-  "Sign Out": "Sign Out"
+  "Sign Out": "Sign Out",
+  "Unpublished": "Tidak dipublikasikan"
 }
