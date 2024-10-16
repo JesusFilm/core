@@ -27,6 +27,8 @@ const GET_COUNTRIES_LANGUAGES = graphql(`
         speakers
         displaySpeakers
         primary
+        suggested
+        order
       }
     }
   }
@@ -44,23 +46,27 @@ export async function GET(request: NextRequest): Promise<Response> {
     query: GET_COUNTRIES_LANGUAGES
   })
 
-  const mediaCountriesLinks = data.countries.map((country) => ({
-    countryId: country.id,
-    linkedMediaLanguages: {
-      suggested: country.countryLanguages
-        .filter((lang) => lang.primary)
-      .map(({ language }) => ({
-        languageId: language.id
-      })),
-      spoken: country.countryLanguages
-        .filter((lang) => lang.speakers > 0)
-        .sort((a, b) => b.speakers - a.speakers)
-        .map(({ language, speakers }) => ({
-          languageId: language.id,
-          speakerCount: speakers
-        }))
-    }
-  }))
+  const mediaCountriesLinks = [...data.countries]
+    .sort((a, b) => a.id.localeCompare(b.id))
+    .map((country) => ({
+      countryId: country.id,
+      linkedMediaLanguages: {
+        suggested: country.countryLanguages
+          .filter((countryLanguage) => countryLanguage.suggested === true && countryLanguage.order)
+          .sort((a, b) => Number(b.order) - Number(a.order))
+          .map(({ language, order }) => ({
+            languageId: Number(language.id),
+            languageRank: order ?? 0
+          })),
+        spoken: country.countryLanguages
+          .filter((countryLanguage) => countryLanguage.speakers > 0 && countryLanguage.suggested === false)
+          .sort((a, b) => b.speakers - a.speakers)
+          .map(({ language, speakers }) => ({
+            languageId: Number(language.id),
+            speakerCount: speakers
+          }))
+      }
+    }))
 
   const queryString = new URLSearchParams(queryObject).toString()
   const response = {
