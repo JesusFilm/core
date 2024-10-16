@@ -61,15 +61,17 @@ describe('country', () => {
       ...country,
       languages: [language],
       continent,
-      countryLanguages: [{
-        id: '1',
-        language,
-        speakers: 100,
-        displaySpeakers: 100,
-        primary: true,
-        suggested: false,
-        order: 1
-      }]
+      countryLanguages: [
+        {
+          id: '1',
+          language,
+          speakers: 100,
+          displaySpeakers: 100,
+          primary: true,
+          suggested: false,
+          order: 1
+        }
+      ]
     } as unknown as Country)
 
     prismaMock.countryLanguage.count.mockResolvedValue(2)

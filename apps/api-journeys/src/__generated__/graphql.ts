@@ -370,8 +370,10 @@ export type CountryLanguage = {
   displaySpeakers?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
+  order?: Maybe<Scalars['Int']['output']>;
   primary: Scalars['Boolean']['output'];
   speakers: Scalars['Int']['output'];
+  suggested: Scalars['Boolean']['output'];
 };
 
 export type CountryName = {

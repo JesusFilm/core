@@ -21,8 +21,8 @@ const GET_COUNTRIES_LANGUAGES = graphql(`
       id
       countryLanguages {
         id
-        language{
-            id
+        language {
+          id
         }
         speakers
         displaySpeakers
@@ -52,14 +52,21 @@ export async function GET(request: NextRequest): Promise<Response> {
       countryId: country.id,
       linkedMediaLanguages: {
         suggested: country.countryLanguages
-          .filter((countryLanguage) => countryLanguage.suggested === true && countryLanguage.order)
+          .filter(
+            (countryLanguage) =>
+              countryLanguage.suggested && countryLanguage.order
+          )
           .sort((a, b) => Number(b.order) - Number(a.order))
           .map(({ language, order }) => ({
             languageId: Number(language.id),
             languageRank: order ?? 0
           })),
         spoken: country.countryLanguages
-          .filter((countryLanguage) => countryLanguage.speakers > 0 && countryLanguage.suggested === false)
+          .filter(
+            (countryLanguage) =>
+              countryLanguage.speakers > 0 &&
+              !countryLanguage.suggested
+          )
           .sort((a, b) => b.speakers - a.speakers)
           .map(({ language, speakers }) => ({
             languageId: Number(language.id),
