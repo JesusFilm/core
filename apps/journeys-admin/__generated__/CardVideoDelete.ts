@@ -18,6 +18,11 @@ export interface CardVideoDelete_video_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardVideoDelete_video_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardVideoDelete_video_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -40,7 +45,7 @@ export interface CardVideoDelete_video_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardVideoDelete_video_VideoBlock_video_title[];
-  image: string | null;
+  images: CardVideoDelete_video_VideoBlock_video_images[];
   variant: CardVideoDelete_video_VideoBlock_video_variant | null;
   variantLanguages: CardVideoDelete_video_VideoBlock_video_variantLanguages[];
 }

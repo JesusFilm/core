@@ -54,8 +54,13 @@ const getVideoMock = {
     data: {
       video: {
         id: 'videoId',
-        image:
-          'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+        images: [
+          {
+            __typename: 'CloudflareImage',
+            mobileCinematicHigh:
+              'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+          }
+        ],
         primaryLanguageId: '529',
         title: [
           {

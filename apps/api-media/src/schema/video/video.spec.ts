@@ -8,6 +8,7 @@ import {
   Video,
   VideoDescription,
   VideoImageAlt,
+  VideoLabel,
   VideoSnippet,
   VideoStudyQuestion,
   VideoSubtitle,
@@ -42,6 +43,7 @@ describe('video', () => {
     studyQuestions: VideoStudyQuestion[]
     imageAlt: VideoImageAlt[]
     children: Video[]
+    parents: Video[]
     subtitles: VideoSubtitle[]
     images: CloudflareImage[]
   }
@@ -71,6 +73,39 @@ describe('video', () => {
       mobileCinematicLow: null,
       mobileCinematicVeryLow: null,
       primaryLanguageId: 'primaryLanguageId',
+      image: null,
+      slug: null,
+      noIndex: null,
+      published: true,
+      childIds: []
+    }
+  ]
+
+  const parents: Video[] = [
+    {
+      id: 'videoId3',
+      label: 'collection',
+      primaryLanguageId: 'primaryLanguageId',
+      thumbnail: null,
+      videoStill: null,
+      mobileCinematicHigh: null,
+      mobileCinematicLow: null,
+      mobileCinematicVeryLow: null,
+      image: null,
+      slug: null,
+      noIndex: null,
+      published: true,
+      childIds: []
+    },
+    {
+      id: 'videoId4',
+      label: 'collection',
+      primaryLanguageId: 'primaryLanguageId',
+      thumbnail: null,
+      videoStill: null,
+      mobileCinematicHigh: null,
+      mobileCinematicLow: null,
+      mobileCinematicVeryLow: null,
       image: null,
       slug: null,
       noIndex: null,
@@ -162,6 +197,7 @@ describe('video', () => {
         }
       ],
       children,
+      parents,
       subtitles: [
         {
           id: 'subtitleId',
@@ -299,6 +335,9 @@ describe('video', () => {
             id
           }
           childrenCount
+          parents {
+            id
+          }
           variantLanguagesWithSlug {
             slug
             language {
@@ -349,6 +388,14 @@ describe('video', () => {
           }
         ],
         childrenCount: 1,
+        parents: [
+          {
+            id: 'videoId3'
+          },
+          {
+            id: 'videoId4'
+          }
+        ],
         description: [
           {
             id: 'descriptionId',
@@ -469,6 +516,7 @@ describe('video', () => {
     it('should query videos', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
       prismaMock.video.findMany.mockResolvedValueOnce(children)
+      prismaMock.video.findMany.mockResolvedValueOnce(parents)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -582,6 +630,8 @@ describe('video', () => {
       ])
       // children
       prismaMock.video.findMany.mockResolvedValueOnce(children)
+      // parents
+      prismaMock.video.findMany.mockResolvedValueOnce(parents)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -612,6 +662,8 @@ describe('video', () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
       // children
       prismaMock.video.findMany.mockResolvedValueOnce(children)
+      // parents
+      prismaMock.video.findMany.mockResolvedValueOnce(parents)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -933,6 +985,9 @@ describe('video', () => {
             id
           }
           childrenCount
+          parents {
+            id
+          }
           variantLanguagesWithSlug {
             slug
             language {
@@ -982,6 +1037,14 @@ describe('video', () => {
           }
         ],
         childrenCount: 1,
+        parents: [
+          {
+            id: 'videoId3'
+          },
+          {
+            id: 'videoId4'
+          }
+        ],
         description: [
           {
             id: 'descriptionId',
@@ -1099,6 +1162,7 @@ describe('video', () => {
     it('should query videos', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
       prismaMock.video.findMany.mockResolvedValueOnce(children)
+      prismaMock.video.findMany.mockResolvedValueOnce(parents)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -1217,6 +1281,8 @@ describe('video', () => {
       ])
       // children
       prismaMock.video.findMany.mockResolvedValueOnce(children)
+      // parents
+      prismaMock.video.findMany.mockResolvedValueOnce(parents)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -1252,6 +1318,8 @@ describe('video', () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
       // children
       prismaMock.video.findMany.mockResolvedValueOnce(children)
+      // parents
+      prismaMock.video.findMany.mockResolvedValueOnce(parents)
       // variantLanguages
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         { languageId: 'languageId' } as unknown as VideoVariant
@@ -1604,6 +1672,155 @@ describe('video', () => {
           ]
         }
         expect(getLanguageIdFromInfo(info, parentId)).toBe('primaryLanguageId')
+      })
+    })
+  })
+
+  describe('mutations', () => {
+    describe('videoCreate', () => {
+      const CREATE_VIDEO_MUTATION = graphql(`
+        mutation CreateVideo($input: VideoCreateInput!) {
+          videoCreate(input: $input) {
+            id
+          }
+        }
+      `)
+
+      it('should create video', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.create.mockResolvedValue({
+          id: 'id',
+          label: VideoLabel.featureFilm,
+          primaryLanguageId: 'primaryLanguageId',
+          published: true,
+          slug: 'slug',
+          noIndex: true,
+          childIds: []
+        } as unknown as Video)
+        const result = await authClient({
+          document: CREATE_VIDEO_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              label: VideoLabel.featureFilm,
+              primaryLanguageId: 'primaryLanguageId',
+              published: true,
+              slug: 'slug',
+              noIndex: true,
+              childIds: []
+            }
+          }
+        })
+        expect(prismaMock.video.create).toHaveBeenCalledWith({
+          data: {
+            id: 'id',
+            label: 'featureFilm',
+            primaryLanguageId: 'primaryLanguageId',
+            published: true,
+            slug: 'slug',
+            noIndex: true,
+            childIds: []
+          }
+        })
+        expect(result).toHaveProperty('data.videoCreate', {
+          id: 'id'
+        })
+      })
+
+      it('should fail if not publisher', async () => {
+        const result = await client({
+          document: CREATE_VIDEO_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              label: VideoLabel.featureFilm,
+              primaryLanguageId: 'primaryLanguageId',
+              published: true,
+              slug: 'slug',
+              noIndex: true,
+              childIds: []
+            }
+          }
+        })
+        expect(result).toHaveProperty('data', null)
+      })
+    })
+
+    describe('videoUpdate', () => {
+      const VIDEO_UPDATE_MUTATION = graphql(`
+        mutation VideoUpdate($input: VideoUpdateInput!) {
+          videoUpdate(input: $input) {
+            id
+          }
+        }
+      `)
+
+      it('should update video', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.update.mockResolvedValue({
+          id: 'id',
+          label: VideoLabel.episode,
+          primaryLanguageId: 'primaryLanguageId',
+          published: true,
+          slug: 'slug',
+          noIndex: true,
+          childIds: []
+        } as unknown as Video)
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              label: VideoLabel.episode,
+              primaryLanguageId: 'primaryLanguageId',
+              published: true,
+              slug: 'slug',
+              noIndex: true,
+              childIds: []
+            }
+          }
+        })
+        expect(prismaMock.video.update).toHaveBeenCalledWith({
+          where: { id: 'id' },
+          include: { children: true },
+          data: {
+            label: 'episode',
+            primaryLanguageId: 'primaryLanguageId',
+            published: true,
+            slug: 'slug',
+            noIndex: true,
+            childIds: []
+          }
+        })
+        expect(result).toHaveProperty('data.videoUpdate', {
+          id: 'id'
+        })
+      })
+
+      it('should fail if not publisher', async () => {
+        const result = await client({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              label: VideoLabel.segment,
+              primaryLanguageId: 'primaryLanguageId',
+              published: true,
+              slug: 'slug',
+              noIndex: true,
+              childIds: []
+            }
+          }
+        })
+        expect(result).toHaveProperty('data', null)
       })
     })
   })

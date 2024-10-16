@@ -14,6 +14,11 @@ export interface GetHomeVideos_videos_title {
   value: string;
 }
 
+export interface GetHomeVideos_videos_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface GetHomeVideos_videos_imageAlt {
   __typename: "VideoImageAlt";
   value: string;
@@ -40,7 +45,7 @@ export interface GetHomeVideos_videos {
   id: string;
   label: VideoLabel;
   title: GetHomeVideos_videos_title[];
-  image: string | null;
+  images: GetHomeVideos_videos_images[];
   imageAlt: GetHomeVideos_videos_imageAlt[];
   snippet: GetHomeVideos_videos_snippet[];
   /**

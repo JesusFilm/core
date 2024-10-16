@@ -20,8 +20,13 @@ describe('VideoCard', () => {
       __typename: 'Video',
       childrenCount: 49,
       id: 'videoId',
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_GOJ-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       imageAlt: [
         {
           value: 'Life of Jesus (Gospel of John)'
@@ -61,7 +66,10 @@ describe('VideoCard', () => {
         <VideoCard video={videos[0]} variant="contained" />
       )
       const img = getByRole('img')
-      expect(img).toHaveAttribute('src', videos[0].image)
+      expect(img).toHaveAttribute(
+        'src',
+        videos[0].images[0].mobileCinematicHigh
+      )
       expect(img).toHaveAttribute('alt', videos[0].title[0].value)
     })
 

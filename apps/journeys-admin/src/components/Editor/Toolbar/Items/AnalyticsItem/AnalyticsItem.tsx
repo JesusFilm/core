@@ -50,12 +50,7 @@ export function AnalyticsItem({ variant }: AnalyticsItemProps): ReactElement {
   })
 
   return (
-    <Stack
-      data-testid="AnalyticsItem"
-      direction="row"
-      gap={1}
-      alignItems="center"
-    >
+    <Stack data-testid="AnalyticsItem" direction="row" alignItems="center">
       <NextLink
         href={`/journeys/${journey?.id}/reports`}
         passHref
