@@ -10,8 +10,8 @@ const googleApplication = JSON.parse(
   process.env.GOOGLE_APPLICATION_JSON ?? '{}'
 )
 
-export const gatewayConfig = defineConfig({
-  // configuration common between development and production
+// common configuration between development, stage and production
+export const commonConfig = defineConfig({
   logging: logger,
   port: 4000,
   graphqlEndpoint: '/',
@@ -63,8 +63,12 @@ export const gatewayConfig = defineConfig({
     reject: {
       missingToken: false
     }
-  },
-  // configuration specific to production
+  }
+})
+
+// configuration specific to stage and production
+export const gatewayConfig = defineConfig({
+  ...commonConfig,
   supergraph: {
     type: 'hive',
     endpoint: process.env.HIVE_CDN_ENDPOINT ?? '',
