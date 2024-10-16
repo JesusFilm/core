@@ -25,6 +25,11 @@ describe('MessageChatIcon', () => {
     expect(screen.getByTestId('InstagramIcon')).toBeInTheDocument()
   })
 
+  it('should return kakaoTalk icon', () => {
+    render(<MessageChatIcon platform={MessagePlatform.kakaoTalk} />)
+    expect(screen.getByTestId('KakaoTalkIcon')).toBeInTheDocument()
+  })
+
   it('should return viber icon', () => {
     render(<MessageChatIcon platform={MessagePlatform.viber} />)
     expect(screen.getByTestId('ViberIcon')).toBeInTheDocument()
