@@ -14,6 +14,7 @@ import { NextImage } from '@core/shared/ui/NextImage'
 
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../libs/block'
+import { useFocalPoint } from '../../../libs/FocalPointProvider'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../../libs/rtl'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
@@ -72,6 +73,7 @@ export function ContainedCover({
   const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const contentRef = useRef() as RefObject<HTMLDivElement>
+  const { focalPoint } = useFocalPoint()
 
   const posterImage =
     videoBlock?.source !== VideoBlockSource.youTube &&
@@ -181,10 +183,8 @@ export function ContainedCover({
         sx={{
           width: '100%',
           height: hasFullscreenVideo ? undefined : '100%',
-          flexGrow: 1,
           zIndex: 1,
-          top: 0,
-          position: { xs: 'relative', sm: 'absolute' },
+          position: 'relative',
           WebkitMask: { xs: overlayImageMask, sm: 'unset' },
           mask: { xs: overlayImageMask, sm: 'unset' }
         }}
@@ -198,6 +198,7 @@ export function ContainedCover({
             blurDataURL={backgroundBlur}
             layout="fill"
             objectFit="cover"
+            objectPosition={`${focalPoint.x}% ${focalPoint.y}%`}
           />
         )}
       </Box>

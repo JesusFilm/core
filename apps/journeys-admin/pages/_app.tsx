@@ -10,6 +10,7 @@ import { DefaultSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useEffect } from 'react'
 
+import { FocalPointProvider } from '@core/journeys/ui/FocalPointProvider'
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
@@ -124,11 +125,13 @@ function JourneysAdminApp({
                   horizontal: 'right'
                 }}
               >
-                <GoogleTagManager
-                  gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''}
-                  dataLayer={{ userId: user?.id }}
-                />
-                <Component {...pageProps} />
+                <FocalPointProvider>
+                  <GoogleTagManager
+                    gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''}
+                    dataLayer={{ userId: user?.id }}
+                  />
+                  <Component {...pageProps} />
+                </FocalPointProvider>
               </SnackbarProvider>
             </TeamProvider>
           </ApolloProvider>

@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import Stack from '@mui/material/Stack'
 import pick from 'lodash/pick'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -32,6 +33,8 @@ import { blockRestoreUpdate } from '../../../../../../../../../../libs/useBlockR
 import { useCoverBlockDeleteMutation } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation'
 import { useCoverBlockRestoreMutation } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation'
 import { ImageSource } from '../../../../../../Drawer/ImageSource'
+
+import { FocalPoint } from './FocalPoint'
 
 export const COVER_IMAGE_BLOCK_CREATE = gql`
   ${IMAGE_FIELDS}
@@ -336,12 +339,18 @@ export function BackgroundMediaImage({
   }
 
   return (
-    <ImageSource
-      selectedBlock={
-        coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
-      }
-      onChange={handleChange}
-      onDelete={async () => deleteImageBlock()}
-    />
+    <Stack gap={4}>
+      <ImageSource
+        selectedBlock={
+          coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
+        }
+        onChange={handleChange}
+        onDelete={async () => deleteImageBlock()}
+      />
+      <FocalPoint
+        src={coverBlock?.__typename === 'ImageBlock' ? coverBlock?.src : ''}
+        alt={coverBlock?.__typename === 'ImageBlock' ? coverBlock?.alt : ''}
+      />
+    </Stack>
   )
 }
