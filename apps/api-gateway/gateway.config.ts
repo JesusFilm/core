@@ -13,13 +13,13 @@ export const gatewayConfig = defineConfig({
   // configuration common between development and production
   logging: logger,
   port: 4000,
-  healthCheckEndpoint: '/health',
   graphqlEndpoint: '/',
+  healthCheckEndpoint: '/health',
   propagateHeaders: {
     fromClientToSubgraphs: ({ request, subgraphName }) => {
       const headers: Record<string, string> = {
         'user-agent': request.headers.get('user-agent') ?? '',
-        'x-forward-for': request.headers.get('x-forward-for') ?? '',
+        'x-forwarded-for': request.headers.get('x-forwarded-for') ?? '',
         'interop-token': request.headers.get('interop-token') ?? ''
       }
       if (subgraphName === 'api-analytics')
