@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { defaultJourney } from '../TemplateView/data'
@@ -40,7 +40,10 @@ describe('StepHeader', () => {
               width: 10,
               blurhash: 'blurhash',
               scale: 1
-            }
+            },
+            showLogo: true,
+            showDisplayTitle: true,
+            showMenu: true
           }
         }}
       >
@@ -54,5 +57,42 @@ describe('StepHeader', () => {
       'https://example.com/logo.png'
     )
     expect(screen.getByTestId('StepHeaderMenu')).toBeInTheDocument()
+  })
+
+  it('should hide elements if they are turned off', () => {
+    render(
+      <JourneyProvider
+        value={{
+          journey: {
+            ...defaultJourney,
+            website: true,
+            displayTitle: 'Journey display title',
+            logoImageBlock: {
+              __typename: 'ImageBlock',
+              id: 'logoImageBlockId',
+              src: 'https://example.com/logo.png',
+              alt: 'Logo',
+              parentBlockId: null,
+              parentOrder: null,
+              height: 10,
+              width: 10,
+              blurhash: 'blurhash',
+              scale: 1
+            },
+            showLogo: false,
+            showDisplayTitle: false,
+            showMenu: null
+          }
+        }}
+      >
+        <StepHeader />
+      </JourneyProvider>
+    )
+
+    expect(screen.queryByText('Journey display title')).not.toBeInTheDocument()
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+    expect(
+      within(screen.getByTestId('StepHeaderMenu')).queryByTestId('Menu1Icon')
+    ).not.toBeInTheDocument()
   })
 })

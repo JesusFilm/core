@@ -1,5 +1,11 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -144,7 +150,12 @@ describe('Host', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Hosted By' }))
+    const accordion = screen.getByTestId('AccordionSummary')
+    expect(accordion).toBeInTheDocument()
+    expect(within(accordion).getByText('Hosted By')).toBeInTheDocument()
+    expect(within(accordion).getByRole('checkbox')).toBeInTheDocument()
+
+    fireEvent.click(accordion)
 
     await waitFor(() => {
       expect(
@@ -177,7 +188,7 @@ describe('Host', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Hosted By' }))
+    fireEvent.click(screen.getByTestId('AccordionSummary'))
 
     await waitFor(() => {
       expect(getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()
@@ -214,7 +225,7 @@ describe('Host', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Hosted By' }))
+    fireEvent.click(screen.getByTestId('AccordionSummary'))
 
     await waitFor(() => {
       expect(getByRole('button', { name: 'Select a Host' })).not.toBeDisabled()

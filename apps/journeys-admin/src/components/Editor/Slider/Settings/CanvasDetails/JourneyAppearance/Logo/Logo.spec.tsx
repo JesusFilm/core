@@ -178,7 +178,7 @@ describe('Logo', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
+    fireEvent.click(screen.getByTestId('AccordionSummary'))
     await waitFor(() => fireEvent.click(screen.getByTestId('card click area')))
     await waitFor(() => fireEvent.click(screen.getByTestId('Image3Icon')))
     await waitFor(() => fireEvent.click(screen.getByTestId('CustomURL')))
@@ -225,7 +225,7 @@ describe('Logo', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
+    fireEvent.click(screen.getByTestId('AccordionSummary'))
     await waitFor(() => fireEvent.click(screen.getByTestId('card click area')))
     await waitFor(() => fireEvent.click(screen.getByTestId('Image3Icon')))
     await waitFor(() => fireEvent.click(screen.getByTestId('CustomURL')))
@@ -279,7 +279,7 @@ describe('Logo', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
+    fireEvent.click(screen.getByTestId('AccordionSummary'))
     await waitFor(() => fireEvent.click(screen.getByTestId('card click area')))
     await waitFor(() => fireEvent.click(screen.getByTestId('Image3Icon')))
     await waitFor(() => fireEvent.click(screen.getByTestId('CustomURL')))
@@ -337,7 +337,7 @@ describe('Logo', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
+    fireEvent.click(screen.getByTestId('AccordionSummary'))
     await waitFor(() => fireEvent.click(screen.getByTestId('card click area')))
     await waitFor(() => fireEvent.click(screen.getByTestId('Image3Icon')))
     await waitFor(() => fireEvent.click(screen.getByTestId('CustomURL')))
@@ -385,7 +385,7 @@ describe('Logo', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
+    fireEvent.click(screen.getByTestId('AccordionSummary'))
     await waitFor(() => fireEvent.click(screen.getByTestId('card click area')))
     await waitFor(() =>
       fireEvent.click(screen.getByTestId('imageBlockHeaderDelete'))
@@ -434,7 +434,7 @@ describe('Logo', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
+    fireEvent.click(screen.getByTestId('AccordionSummary'))
     await waitFor(() => fireEvent.click(screen.getByTestId('card click area')))
     await waitFor(() =>
       fireEvent.click(screen.getByTestId('imageBlockHeaderDelete'))
@@ -474,7 +474,7 @@ describe('Logo', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
+    fireEvent.click(screen.getByTestId('AccordionSummary'))
     await waitFor(() =>
       fireEvent.change(screen.getByLabelText('size-slider'), {
         target: { value: 50 }
@@ -522,7 +522,7 @@ describe('Logo', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Logo' }))
+    fireEvent.click(screen.getByTestId('AccordionSummary'))
     await waitFor(() =>
       fireEvent.change(screen.getByLabelText('size-slider'), {
         target: { value: 50 }

@@ -31,10 +31,6 @@ export function StepFooter({
     journey?.host?.src1 != null ||
     journey?.host?.src2 != null
 
-  const hasChatWidget =
-    variant === 'admin' ||
-    (journey?.chatButtons != null && journey?.chatButtons.length > 0)
-
   const isWebsite = journey?.website === true
 
   return (
@@ -67,10 +63,8 @@ export function StepFooter({
           width: '100%'
         }}
       >
-        {!isWebsite && (
-          <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
-            <FooterButtonList />
-          </Box>
+        {!isWebsite && journey?.showReactionButtons === true && (
+          <FooterButtonList sx={{ display: { xs: 'flex', sm: 'none' } }} />
         )}
 
         <Stack
@@ -100,6 +94,7 @@ export function StepFooter({
                   hasPlaceholder={variant === 'admin'}
                   avatarSrc1={journey?.host?.src1}
                   avatarSrc2={journey?.host?.src2}
+                  showFallback
                 />
               )}
               <Stack sx={{ flex: '1 1 100%', minWidth: 0 }}>
@@ -116,22 +111,24 @@ export function StepFooter({
                 >
                   {title != null
                     ? title
-                    : journey?.displayTitle ?? journey?.seoTitle}
+                    : journey?.showDisplayTitle === true
+                    ? journey?.displayTitle ?? journey?.seoTitle
+                    : null}
                 </Typography>
-                <HostTitleLocation />
+                {journey?.showHosts === true && <HostTitleLocation />}
               </Stack>
 
-              <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
-                <FooterButtonList />
-              </Box>
+              {journey?.showReactionButtons === true && (
+                <FooterButtonList
+                  sx={{ display: { xs: 'none', sm: 'flex' } }}
+                />
+              )}
             </Stack>
           )}
 
-          {hasChatWidget && (
-            <Box>
-              <ChatButtons />
-            </Box>
-          )}
+          <Box>
+            <ChatButtons />
+          </Box>
         </Stack>
       </Stack>
     </Box>
