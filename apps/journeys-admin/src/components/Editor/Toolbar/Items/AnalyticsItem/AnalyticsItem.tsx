@@ -1,4 +1,5 @@
 import { gql, useLazyQuery } from '@apollo/client'
+import Box from '@mui/material/Box'
 import { formatISO } from 'date-fns'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
@@ -53,21 +54,23 @@ export function AnalyticsItem({ variant }: AnalyticsItemProps): ReactElement {
   }, [journey?.id, loadPlausibleVisitors])
 
   return (
-    <NextLink
-      href={`/journeys/${journey?.id}/reports`}
-      passHref
-      legacyBehavior
-      prefetch={false}
-    >
-      <Item
-        variant={variant}
-        label={t('Analytics')}
-        icon={<BarChartSquare3Icon />}
-        count={data?.journeyAggregateVisitors?.visitors?.value ?? 0}
-        countLabel={t('{{count}} visitors', {
-          count: data?.journeyAggregateVisitors?.visitors?.value ?? 0
-        })}
-      />
-    </NextLink>
+    <Box data-testid="AnalyticsItem">
+      <NextLink
+        href={`/journeys/${journey?.id}/reports`}
+        passHref
+        legacyBehavior
+        prefetch={false}
+      >
+        <Item
+          variant={variant}
+          label={t('Analytics')}
+          icon={<BarChartSquare3Icon />}
+          count={data?.journeyAggregateVisitors?.visitors?.value ?? 0}
+          countLabel={t('{{count}} visitors', {
+            count: data?.journeyAggregateVisitors?.visitors?.value ?? 0
+          })}
+        />
+      </NextLink>
+    </Box>
   )
 }

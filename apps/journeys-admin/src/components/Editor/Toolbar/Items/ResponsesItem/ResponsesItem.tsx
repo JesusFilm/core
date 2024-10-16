@@ -1,4 +1,5 @@
 import { gql, useLazyQuery } from '@apollo/client'
+import Box from '@mui/material/Box'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, useEffect } from 'react'
@@ -43,21 +44,23 @@ export function ResponsesItem({ variant }: ResponseItemProps): ReactElement {
   }, [journey?.id, loadVisitorsResponseCount, data])
 
   return (
-    <NextLink
-      href={`/journeys/${journey?.id}/reports/visitors?withSubmittedText=true`}
-      passHref
-      legacyBehavior
-      prefetch={false}
-    >
-      <Item
-        variant={variant}
-        label={t('Responses')}
-        icon={<Inbox2Icon />}
-        count={data?.journeyVisitorCount ?? 0}
-        countLabel={t('{{count}} responses', {
-          count: data?.journeyVisitorCount ?? 0
-        })}
-      />
-    </NextLink>
+    <Box data-testid="ResponsesItem">
+      <NextLink
+        href={`/journeys/${journey?.id}/reports/visitors?withSubmittedText=true`}
+        passHref
+        legacyBehavior
+        prefetch={false}
+      >
+        <Item
+          variant={variant}
+          label={t('Responses')}
+          icon={<Inbox2Icon />}
+          count={data?.journeyVisitorCount ?? 0}
+          countLabel={t('{{count}} responses', {
+            count: data?.journeyVisitorCount ?? 0
+          })}
+        />
+      </NextLink>
+    </Box>
   )
 }
