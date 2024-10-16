@@ -1,9 +1,7 @@
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -11,46 +9,30 @@ import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
 export function JourneyDetails(): ReactElement {
   const { journey } = useJourney()
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const language = journey?.language.name.find(
     ({ primary }) => primary != null
   )?.value
-
-  const languageVariant = smUp ? 'body2' : 'caption'
 
   return (
     <>
       {journey != null ? (
         <Stack
           sx={{
-            px: 4,
-            py: 1,
-            spacing: { xs: 2, sm: 0 },
+            px: { xs: 4, sm: 0 },
+            py: { xs: 1, sm: 0 },
+            gap: { xs: 2, sm: 0 },
             width: { xs: 220, sm: '100%' }
           }}
         >
           <Typography
-            variant="subtitle2"
             sx={{
-              display: { xs: '-webkit-box', sm: 'none' },
+              display: { xs: '-webkit-box', sm: 'unset' },
               '-webkit-line-clamp': { xs: '2', sm: '1' },
               '-webkit-box-orient': 'vertical',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
-              color: 'secondary.dark'
-            }}
-          >
-            {journey.title}
-          </Typography>
-          <Typography
-            variant="subtitle1"
-            sx={{
-              display: { xs: 'none', sm: 'unset' },
-              '-webkit-line-clamp': { xs: '2', sm: '1' },
-              '-webkit-box-orient': 'vertical',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              color: 'secondary.dark'
+              color: 'secondary.dark',
+              typography: { xs: 'subtitle2', sm: 'subtitle1' }
             }}
           >
             {journey.title}
@@ -58,12 +40,12 @@ export function JourneyDetails(): ReactElement {
           <Box
             sx={{
               display: { xs: '-webkit-box', sm: 'unset' },
+              typography: { xs: 'caption', sm: 'body2' },
               '-webkit-line-clamp': { xs: '2', sm: '1' },
               '-webkit-box-orient': 'vertical',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
-              color: 'secondary.light',
-              typography: { xs: 'caption', sm: 'body2' }
+              color: 'secondary.light'
             }}
           >
             <Globe1Icon
@@ -76,9 +58,9 @@ export function JourneyDetails(): ReactElement {
               }}
             />
             <Typography
-              variant={languageVariant}
               sx={{
                 display: 'inline',
+                typography: { xs: 'caption', sm: 'body2' },
                 fontWeight: { xs: 600, sm: 'initial' },
                 color: { xs: 'secondary.light', sm: 'secondary.main' }
               }}
@@ -88,16 +70,20 @@ export function JourneyDetails(): ReactElement {
             {journey.description !== '' && journey.description != null ? (
               <Typography
                 data-testid="DescriptionDot"
-                variant={languageVariant}
-                sx={{ display: 'inline', px: 1, color: 'secondary.light' }}
+                sx={{
+                  display: 'inline',
+                  typography: { xs: 'caption', sm: 'body2' },
+                  px: 1,
+                  color: 'secondary.light'
+                }}
               >
                 •
               </Typography>
             ) : null}
             <Typography
-              variant={languageVariant}
               sx={{
                 display: { xs: 'inline', sm: 'unset' },
+                typography: { xs: 'caption', sm: 'body2' },
                 color: 'secondary.light'
               }}
             >
