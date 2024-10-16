@@ -317,7 +317,11 @@ export function Card({
         // >
         //   {renderedChildren}
         // </ContainedCover>
-        <ParallaxCover imageBlock={imageBlock} backgroundBlur={blurUrl}>
+        <ParallaxCover
+          imageBlock={imageBlock}
+          backgroundBlur={blurUrl}
+          backgroundColor={cardColor}
+        >
           {renderedChildren}
         </ParallaxCover>
       ) : (

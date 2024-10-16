@@ -61,6 +61,13 @@ export function ParallaxCover({
           position: 'absolute',
           borderRadius: 'inherit',
           overflowY: 'auto',
+          overflowX: 'hidden',
+          // Hide on Firefox https://caniuse.com/?search=scrollbar-width
+          scrollbarWidth: 'none',
+          // Hide on all others https://caniuse.com/?search=webkit-scrollbar
+          '&::-webkit-scrollbar': {
+            display: 'none'
+          },
           perspective: '10px',
           WebkitMask: `linear-gradient(transparent 0%, #0000001a 0%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`,
           mask: `linear-gradient(transparent 0%, #0000001a 0%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`
@@ -73,11 +80,11 @@ export function ParallaxCover({
             top: 0,
             zIndex: -1,
             width: '100%',
-            height: '40%',
+            height: '100%',
             objectFit: 'cover',
             transform: 'translateZ(-10px) scale(2) translate(0px, -38%)',
-            WebkitMask: `linear-gradient(transparent 0%, #0000001a 0%, #000000 0%, #000000 70%, #0000001a 100%, transparent 100%)`,
-            mask: `linear-gradient(transparent 0%, #0000001a 0%, #000000 0%, #000000 70%, #0000001a 100%, transparent 100%)`
+            WebkitMask: `linear-gradient(to top, transparent 0%, ${backgroundColor}14 5%, ${backgroundColor}33 10%, ${backgroundColor}60 15%, ${backgroundColor}b0 20%, ${backgroundColor}e6 25%, ${backgroundColor} 30%)`,
+            mask: `linear-gradient(to top, transparent 0%, ${backgroundColor}14 5%, ${backgroundColor}33 10%, ${backgroundColor}60 15%, ${backgroundColor}b0 20%, ${backgroundColor}e6 25%, ${backgroundColor} 30%)`
           }}
         >
           <NextImage
