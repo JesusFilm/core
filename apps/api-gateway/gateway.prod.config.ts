@@ -11,15 +11,11 @@ const googleApplication = JSON.parse(
 )
 
 export const gatewayConfig = defineConfig({
+  // configuration common between development and production
   logging: logger,
   port: 4000,
   graphqlEndpoint: '/',
   healthCheckEndpoint: '/health',
-  supergraph: {
-    type: 'hive',
-    endpoint: process.env.HIVE_CDN_ENDPOINT ?? '',
-    key: process.env.HIVE_CDN_KEY ?? ''
-  },
   propagateHeaders: {
     fromClientToSubgraphs: ({ request, subgraphName }) => {
       const headers: Record<string, string> = {
@@ -32,6 +28,47 @@ export const gatewayConfig = defineConfig({
 
       return headers
     }
+  },
+  hmacSignature: {
+    secret: process.env.GATEWAY_HMAC_SECRET ?? ''
+  },
+  jwt: {
+    tokenLookupLocations: [
+      ({ request }) => {
+        const header = request.headers.get('authorization')
+
+        if (header == null) return
+
+        const [prefix, token] = header.split(' ').map((s) => s.trim())
+
+        if (prefix !== 'JWT') return
+
+        return { prefix, token }
+      }
+    ],
+    singingKeyProviders: [
+      createRemoteJwksSigningKeyProvider({
+        jwksUri:
+          'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'
+      })
+    ],
+    tokenVerification: {
+      issuer: `https://securetoken.google.com/${googleApplication.project_id}`,
+      audience: googleApplication.project_id,
+      algorithms: ['RS256']
+    },
+    forward: {
+      payload: true
+    },
+    reject: {
+      missingToken: false
+    }
+  },
+  // configuration specific to production
+  supergraph: {
+    type: 'hive',
+    endpoint: process.env.HIVE_CDN_ENDPOINT ?? '',
+    key: process.env.HIVE_CDN_KEY ?? ''
   },
   openTelemetry: {
     exporters: [
@@ -84,39 +121,7 @@ export const gatewayConfig = defineConfig({
 
     return defaultCors
   },
-  hmacSignature: {
-    secret: process.env.GATEWAY_HMAC_SECRET ?? ''
-  },
-  jwt: {
-    tokenLookupLocations: [
-      ({ request }) => {
-        const header = request.headers.get('authorization')
-
-        if (header == null) return
-
-        const [prefix, token] = header.split(' ').map((s) => s.trim())
-
-        if (prefix !== 'JWT') return
-
-        return { prefix, token }
-      }
-    ],
-    singingKeyProviders: [
-      createRemoteJwksSigningKeyProvider({
-        jwksUri:
-          'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'
-      })
-    ],
-    tokenVerification: {
-      issuer: `https://securetoken.google.com/${googleApplication.project_id}`,
-      audience: googleApplication.project_id,
-      algorithms: ['RS256']
-    },
-    forward: {
-      payload: true
-    },
-    reject: {
-      missingToken: false
-    }
+  graphiql: {
+    title: `[${process.env.SERVICE_ENV?.toUpperCase() ?? 'PROD'}] api-gateway`
   }
 })

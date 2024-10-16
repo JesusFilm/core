@@ -10,11 +10,11 @@ const googleApplication = JSON.parse(
 )
 
 export const gatewayConfig = defineConfig({
+  // configuration common between development and production
   logging: logger,
   port: 4000,
   healthCheckEndpoint: '/health',
   graphqlEndpoint: '/',
-  supergraph: './apps/api-gateway/schema.graphql',
   propagateHeaders: {
     fromClientToSubgraphs: ({ request, subgraphName }) => {
       const headers: Record<string, string> = {
@@ -62,5 +62,10 @@ export const gatewayConfig = defineConfig({
     reject: {
       missingToken: false
     }
+  },
+  // configuration specific to development
+  supergraph: './apps/api-gateway/schema.graphql',
+  graphiql: {
+    title: '[DEV] api-gateway'
   }
 })
