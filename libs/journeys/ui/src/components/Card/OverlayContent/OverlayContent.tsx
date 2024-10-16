@@ -1,8 +1,11 @@
 import Box from '@mui/material/Box'
 import { SxProps } from '@mui/material/styles'
-import { ReactElement, ReactNode } from 'react'
+import useScrollTrigger from '@mui/material/useScrollTrigger'
+import { ReactElement, ReactNode, useRef } from 'react'
 
 import { useJourney } from '../../../libs/JourneyProvider'
+
+import { ScrollDownIndicator } from './ScrollDownIndicator'
 
 interface OverlayContentProps {
   children: ReactNode
@@ -16,6 +19,19 @@ export function OverlayContent({
   hasFullscreenVideo = false
 }: OverlayContentProps): ReactElement {
   const { variant } = useJourney()
+  const cardOverlayRef = useRef<any>()
+
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    target: cardOverlayRef.current,
+    threshold: 20
+  })
+
+  const isScrollable = (): boolean => {
+    const box = cardOverlayRef.current
+    return box != null ? box.scrollHeight > box.clientHeight : false
+  }
+
   const enableVerticalScroll: SxProps = {
     overflowY: 'scroll',
     // Hide on Firefox https://caniuse.com/?search=scrollbar-width
@@ -62,17 +78,23 @@ export function OverlayContent({
         }
 
   return (
-    <Box
-      data-testid="CardOverlayContent"
-      sx={{
-        ...enableVerticalScroll,
-        ...topBottomEdgeFadeEffect,
-        ...topBottomMarginsOnContent,
-        ...mobileNotchPadding,
-        ...sx
-      }}
-    >
-      {children}
-    </Box>
+    <>
+      <Box
+        data-testid="CardOverlayContent"
+        ref={cardOverlayRef}
+        sx={{
+          ...enableVerticalScroll,
+          ...topBottomEdgeFadeEffect,
+          ...topBottomMarginsOnContent,
+          ...mobileNotchPadding,
+          ...sx
+        }}
+      >
+        {children}
+      </Box>
+      {isScrollable() && variant !== 'admin' && (
+        <ScrollDownIndicator trigger={trigger} />
+      )}
+    </>
   )
 }
