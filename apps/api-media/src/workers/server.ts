@@ -44,7 +44,7 @@ function run({
     {},
     {
       removeOnComplete: { age: ONE_HOUR },
-      removeOnFail: { age: ONE_DAY },
+      removeOnFail: { age: ONE_DAY, count: 50 },
       repeat: repeat != null ? { pattern: repeat } : undefined
     }
   )

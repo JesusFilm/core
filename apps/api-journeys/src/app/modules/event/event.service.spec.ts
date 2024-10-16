@@ -155,7 +155,7 @@ describe('EventService', () => {
           delay: 120000,
           jobId: 'visitor-event-journey-id-visitor-id',
           removeOnComplete: true,
-          removeOnFail: { age: 864000 }
+          removeOnFail: { age: 86400, count: 50 }
         }
       )
     })
@@ -174,7 +174,7 @@ describe('EventService', () => {
           delay: 120000,
           jobId: 'visitor-event-journey-id-visitor-id',
           removeOnComplete: true,
-          removeOnFail: { age: 864000 }
+          removeOnFail: { age: 86400, count: 50 }
         }
       )
     })
