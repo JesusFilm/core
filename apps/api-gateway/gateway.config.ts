@@ -22,7 +22,7 @@ export const gatewayConfig = defineConfig({
         'x-forward-for': request.headers.get('x-forward-for') ?? '',
         'interop-token': request.headers.get('interop-token') ?? ''
       }
-      if (subgraphName === 'analytics')
+      if (subgraphName === 'api-analytics')
         headers.authorization = request.headers.get('authorization') ?? ''
 
       return headers
