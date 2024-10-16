@@ -22,8 +22,7 @@ import { DetailsItem } from '../Items/DetailsItem'
 import { ShareItem } from '../Items/ShareItem'
 import { StrategyItem } from '../Items/StrategyItem'
 import { TemplateSettingsItem } from '../Items/TemplateSettingsItem'
-
-import { JourneyDetails } from './JourneyDetails'
+import { JourneyDetails } from '../JourneyDetails'
 
 export const GET_ROLE = gql`
   query GetRole {

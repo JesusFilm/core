@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
+import { JourneyFields } from '../../../../../__generated__/JourneyFields'
 
 import { JourneyDetails } from './JourneyDetails'
 

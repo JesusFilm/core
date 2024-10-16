@@ -45,13 +45,13 @@ import { Items } from './Items'
 import { CommandRedoItem } from './Items/CommandRedoItem'
 import { CommandUndoItem } from './Items/CommandUndoItem'
 import { PreviewItem } from './Items/PreviewItem'
+import { JourneyDetails } from './JourneyDetails'
 import { Menu } from './Menu'
-import { JourneyDetails } from './Menu/JourneyDetails'
 
 const JourneyDetailsDialog = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/Toolbar/JourneyDetailsDialog" */ './JourneyDetailsDialog/JourneyDetailsDialog'
+      /* webpackChunkName: "Editor/Toolbar/JourneyDetails/JourneyDetailsDialog" */ './JourneyDetails/JourneyDetailsDialog/JourneyDetailsDialog'
     ).then((mod) => mod.JourneyDetailsDialog),
   { ssr: false }
 )
