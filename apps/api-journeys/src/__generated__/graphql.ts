@@ -761,6 +761,7 @@ export type Journey = {
   /** private title for creators */
   title: Scalars['String']['output'];
   trashedAt?: Maybe<Scalars['DateTime']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
   userJourneys?: Maybe<Array<UserJourney>>;
   website?: Maybe<Scalars['Boolean']['output']>;
 };
@@ -4261,12 +4262,12 @@ export type VisitorsConnection = {
 };
 
 export enum Join__Graph {
-  Analytics = 'ANALYTICS',
-  Journeys = 'JOURNEYS',
-  JourneysModern = 'JOURNEYS_MODERN',
-  Languages = 'LANGUAGES',
-  Media = 'MEDIA',
-  Users = 'USERS'
+  ApiAnalytics = 'API_ANALYTICS',
+  ApiJourneys = 'API_JOURNEYS',
+  ApiJourneysModern = 'API_JOURNEYS_MODERN',
+  ApiLanguages = 'API_LANGUAGES',
+  ApiMedia = 'API_MEDIA',
+  ApiUsers = 'API_USERS'
 }
 
 export enum Link__Purpose {
