@@ -1,6 +1,6 @@
 import { defineConfig } from '@graphql-hive/gateway'
 
-import { commonConfig } from './gateway.prod.config'
+import { commonConfig } from './src/common.config'
 
 // configuration specific to development
 export const gatewayConfig = defineConfig({
