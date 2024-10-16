@@ -25,12 +25,16 @@ const COUNTRY_QUERY = graphql(`
       id
       countryLanguages {
         speakers
+        displaySpeakers
         language {
           id
           iso3
           bcp47
           slug
         }
+        primary
+        suggested
+        order
       }
       latitude
       longitude
@@ -57,7 +61,15 @@ describe('country', () => {
       ...country,
       languages: [language],
       continent,
-      countryLanguages: [{ id: '1', language, speakers: 100 }]
+      countryLanguages: [{
+        id: '1',
+        language,
+        speakers: 100,
+        displaySpeakers: 100,
+        primary: true,
+        suggested: false,
+        order: 1
+      }]
     } as unknown as Country)
 
     prismaMock.countryLanguage.count.mockResolvedValue(2)
@@ -106,7 +118,11 @@ describe('country', () => {
       countryLanguages: [
         {
           language: omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
-          speakers: 100
+          speakers: 100,
+          displaySpeakers: 100,
+          primary: true,
+          suggested: false,
+          order: 1
         }
       ],
       name: [{ ...omit(countryName, ['id', 'countryId', 'languageId']) }],
