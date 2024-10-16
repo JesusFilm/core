@@ -370,7 +370,7 @@ type Journey
   publishedAt: DateTime
   trashedAt: DateTime
   featuredAt: DateTime
-  updatedAt: DateTime
+  updatedAt: DateTime!
   createdAt: DateTime!
   status: JourneyStatus!
 
