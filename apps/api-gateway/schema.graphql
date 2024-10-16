@@ -494,6 +494,7 @@ type Journey @join__type(graph: JOURNEYS, key: "id")  {
   publishedAt: DateTime
   trashedAt: DateTime
   featuredAt: DateTime
+  updatedAt: DateTime!
   createdAt: DateTime!
   status: JourneyStatus!
   """

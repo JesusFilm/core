@@ -1105,6 +1105,7 @@ export class Journey {
     publishedAt?: Nullable<DateTime>;
     trashedAt?: Nullable<DateTime>;
     featuredAt?: Nullable<DateTime>;
+    updatedAt: DateTime;
     createdAt: DateTime;
     status: JourneyStatus;
     seoTitle?: Nullable<string>;
