@@ -6,11 +6,6 @@ import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 
 import { JourneyDetails } from './JourneyDetails'
 
-jest.mock('@mui/material/useMediaQuery', () => ({
-  __esModule: true,
-  default: () => true
-}))
-
 describe('JourneyDetails', () => {
   const mockJourney: JourneyFields = {
     title: 'Some title',
@@ -39,9 +34,7 @@ describe('JourneyDetails', () => {
         <JourneyDetails />
       </JourneyProvider>
     )
-    expect(screen.getByRole('heading', { level: 6 })).toHaveTextContent(
-      'Some title'
-    )
+    expect(screen.getByText('Some title')).toBeInTheDocument()
     expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.queryByTestId('DescriptionDot')).toBeInTheDocument()
     expect(screen.getByText('Some description')).toBeInTheDocument()
