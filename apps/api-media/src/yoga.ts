@@ -1,3 +1,6 @@
+// eslint-disable-next-line import/order -- Must be imported first
+import { tracingPlugin } from '@core/yoga/tracer'
+
 import {
   useForwardedJWT,
   useHmacSignatureValidation
@@ -10,34 +13,37 @@ import { initContextCache } from '@pothos/core'
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import get from 'lodash/get'
 
-import { getUserIdFromRequest } from '@core/yoga/firebaseClient/firebaseClient'
+import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { prisma } from './lib/prisma'
+import { logger } from './logger'
 import { schema } from './schema'
 import { Context } from './schema/builder'
 
 export const cache = createInMemoryCache()
 
-export const yoga = createYoga({
+export const yoga = createYoga<Record<string, unknown>, Context>({
   schema,
-  context: async ({ request, params }) => {
+  logging: logger,
+  context: async ({ params }) => {
     const payload = get(params, 'extensions.jwt.payload')
-    const userId = await getUserIdFromRequest(request, payload)
+    const user = getUserFromPayload(payload, logger)
 
     return {
       ...initContextCache(),
-      userId,
+      user,
       currentRoles:
-        userId != null
+        user?.id != null
           ? (
               await prisma.userMediaRole.findUnique({
-                where: { userId }
+                where: { userId: user.id }
               })
-            )?.roles ?? null
-          : null
-    } satisfies Context
+            )?.roles ?? []
+          : []
+    }
   },
   plugins: [
+    tracingPlugin,
     useForwardedJWT({}),
     process.env.NODE_ENV !== 'test'
       ? useHmacSignatureValidation({

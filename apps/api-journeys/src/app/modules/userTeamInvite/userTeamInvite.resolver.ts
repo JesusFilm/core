@@ -123,6 +123,10 @@ export class UserTeamInviteResolver {
     @CurrentUser()
     user: User
   ): Promise<UserTeamInvite[]> {
+    if (user.email == null)
+      throw new GraphQLError('User must have an email to accept invites', {
+        extensions: { code: 'BAD_REQUEST' }
+      })
     const userTeamInvites = await this.prismaService.userTeamInvite.findMany({
       where: {
         email: user.email,

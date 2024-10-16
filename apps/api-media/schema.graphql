@@ -81,6 +81,9 @@ type Language
   @extends
 {
   id: ID! @external
+  seriesCount: Int!
+  featureFilmCount: Int!
+  shortFilmCount: Int!
 }
 
 type LanguageWithSlug {
@@ -103,6 +106,32 @@ type Mutation {
   deleteCloudflareVideo(id: ID!): Boolean!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!
+  videoCreate(input: VideoCreateInput!): Video!
+  videoUpdate(input: VideoUpdateInput!): Video!
+  videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
+  videoDescriptionUpdate(input: VideoTranslationUpdateInput!): VideoDescription!
+  videoDescriptionDelete(id: ID!): VideoDescription!
+  videoImageAltCreate(input: VideoTranslationCreateInput!): VideoImageAlt!
+  videoImageAltUpdate(input: VideoTranslationUpdateInput!): VideoImageAlt!
+  videoImageAltDelete(id: ID!): VideoImageAlt!
+  videoSnippetCreate(input: VideoTranslationCreateInput!): VideoSnippet!
+  videoSnippetUpdate(input: VideoTranslationUpdateInput!): VideoSnippet!
+  videoSnippetDelete(id: ID!): VideoSnippet!
+  videoStudyQuestionCreate(input: VideoStudyQuestionCreateInput!): VideoStudyQuestion!
+  videoStudyQuestionUpdate(input: VideoStudyQuestionUpdateInput!): VideoStudyQuestion!
+  videoStudyQuestionDelete(id: ID!): VideoStudyQuestion!
+  videoSubtitleCreate(input: VideoSubtitleCreateInput!): VideoSubtitle!
+  videoSubtitleUpdate(input: VideoSubtitleUpdateInput!): VideoSubtitle!
+  videoSubtitleDelete(id: ID!): VideoSubtitle!
+  videoTitleCreate(input: VideoTranslationCreateInput!): VideoTitle!
+  videoTitleUpdate(input: VideoTranslationUpdateInput!): VideoTitle!
+  videoTitleDelete(id: ID!): VideoTitle!
+  videoVariantCreate(input: VideoVariantCreateInput!): VideoVariant!
+  videoVariantUpdate(input: VideoVariantUpdateInput!): VideoVariant!
+  videoVariantDelete(id: ID!): VideoVariant!
+  videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
+  videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
+  videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
 }
 
 type Query {
@@ -283,13 +312,13 @@ type Video
   snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
   description(languageId: ID, primary: Boolean): [VideoDescription!]!
   studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]!
-  image: String
+  image: String @deprecated(reason: "use images.mobileCinematicHigh")
   imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]!
-  videoStill: String
-  thumbnail: String
-  mobileCinematicHigh: String
-  mobileCinematicLow: String
-  mobileCinematicVeryLow: String
+  videoStill: String @deprecated(reason: "use images.videoStill")
+  thumbnail: String @deprecated(reason: "use images.thumbnail")
+  mobileCinematicHigh: String @deprecated(reason: "use images.mobileCinematicHigh")
+  mobileCinematicLow: String @deprecated(reason: "use images.mobileCinematicLow")
+  mobileCinematicVeryLow: String @deprecated(reason: "use images.mobileCinematicVeryLow")
   variantLanguages: [Language!]!
   variantLanguagesCount: Int!
 
@@ -300,11 +329,22 @@ type Video
 
   """the number value of the amount of children on a video"""
   childrenCount: Int!
+  parents: [Video!]!
   variantLanguagesWithSlug: [LanguageWithSlug!]!
   variants: [VideoVariant!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
   variant(languageId: ID): VideoVariant
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
+}
+
+input VideoCreateInput {
+  id: String!
+  label: VideoLabel!
+  primaryLanguageId: String!
+  published: Boolean!
+  slug: String!
+  noIndex: Boolean!
+  childIds: [String!]!
 }
 
 type VideoDescription {
@@ -346,6 +386,29 @@ type VideoStudyQuestion {
   language: Language!
 }
 
+input VideoStudyQuestionCreateInput {
+  id: ID
+  videoId: String!
+  value: String!
+  primary: Boolean!
+  languageId: String!
+  crowdInId: String
+
+  """index from 1"""
+  order: Int!
+}
+
+input VideoStudyQuestionUpdateInput {
+  id: ID!
+  value: String
+  primary: Boolean
+  languageId: String
+  crowdInId: String
+
+  """index from 1"""
+  order: Int
+}
+
 type VideoSubtitle {
   id: ID!
   languageId: ID!
@@ -357,11 +420,55 @@ type VideoSubtitle {
   language: Language!
 }
 
+input VideoSubtitleCreateInput {
+  id: ID
+  videoId: String!
+  edition: String!
+  vttSrc: String
+  srtSrc: String
+  primary: Boolean!
+  languageId: String!
+}
+
+input VideoSubtitleUpdateInput {
+  id: ID!
+  edition: String!
+  vttSrc: String
+  srtSrc: String
+  primary: Boolean
+  languageId: String
+}
+
 type VideoTitle {
   id: ID!
   value: String!
   primary: Boolean!
   language: Language!
+}
+
+input VideoTranslationCreateInput {
+  id: ID
+  videoId: String!
+  value: String!
+  primary: Boolean!
+  languageId: String!
+}
+
+input VideoTranslationUpdateInput {
+  id: ID!
+  value: String
+  primary: Boolean
+  languageId: String
+}
+
+input VideoUpdateInput {
+  id: String!
+  label: VideoLabel
+  primaryLanguageId: String
+  published: Boolean
+  slug: String
+  noIndex: Boolean
+  childIds: [String!]
 }
 
 type VideoVariant {
@@ -379,6 +486,18 @@ type VideoVariant {
   slug: String!
 }
 
+input VideoVariantCreateInput {
+  id: String!
+  videoId: String!
+  edition: String!
+  hls: String
+  dash: String
+  share: String
+  duration: Int
+  languageId: String!
+  slug: String!
+}
+
 type VideoVariantDownload {
   id: ID!
   quality: VideoVariantDownloadQuality!
@@ -388,9 +507,41 @@ type VideoVariantDownload {
   url: String!
 }
 
+input VideoVariantDownloadCreateInput {
+  id: String
+  videoVariantId: String!
+  quality: VideoVariantDownloadQuality!
+  size: Float
+  height: Int
+  width: Int
+  url: String!
+}
+
 enum VideoVariantDownloadQuality {
   low
   high
+}
+
+input VideoVariantDownloadUpdateInput {
+  id: String!
+  videoVariantId: String
+  quality: VideoVariantDownloadQuality
+  size: Float
+  height: Int
+  width: Int
+  url: String
+}
+
+input VideoVariantUpdateInput {
+  id: String!
+  videoId: String
+  edition: String
+  hls: String
+  dash: String
+  share: String
+  duration: Int
+  languageId: String
+  slug: String
 }
 
 input VideosFilter {

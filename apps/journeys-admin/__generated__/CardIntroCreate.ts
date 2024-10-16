@@ -141,6 +141,11 @@ export interface CardIntroCreate_video_video_title {
   value: string;
 }
 
+export interface CardIntroCreate_video_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardIntroCreate_video_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -163,7 +168,7 @@ export interface CardIntroCreate_video_video {
   __typename: "Video";
   id: string;
   title: CardIntroCreate_video_video_title[];
-  image: string | null;
+  images: CardIntroCreate_video_video_images[];
   variant: CardIntroCreate_video_video_variant | null;
   variantLanguages: CardIntroCreate_video_video_variantLanguages[];
 }

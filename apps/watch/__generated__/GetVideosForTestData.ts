@@ -9,6 +9,11 @@ import { VideoLabel, VideoVariantDownloadQuality } from "./globalTypes";
 // GraphQL query operation: GetVideosForTestData
 // ====================================================
 
+export interface GetVideosForTestData_videos_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface GetVideosForTestData_videos_imageAlt {
   __typename: "VideoImageAlt";
   value: string;
@@ -71,7 +76,7 @@ export interface GetVideosForTestData_videos {
   __typename: "Video";
   id: string;
   label: VideoLabel;
-  image: string | null;
+  images: GetVideosForTestData_videos_images[];
   imageAlt: GetVideosForTestData_videos_imageAlt[];
   snippet: GetVideosForTestData_videos_snippet[];
   description: GetVideosForTestData_videos_description[];

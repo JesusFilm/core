@@ -2,9 +2,10 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider      = "prisma-client-js"
-  output        = env("PRISMA_LOCATION_LANGUAGES")
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  output          = env("PRISMA_LOCATION_LANGUAGES")
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+  previewFeatures = ["tracing"]
 }
 
 generator erd {
@@ -79,6 +80,7 @@ model CountryLanguage {
   countryId       String
   speakers        Int
   displaySpeakers Int?
+  primary         Boolean  @default(false)
   language        Language @relation(fields: [languageId], references: [id])
   country         Country  @relation(fields: [countryId], references: [id])
 
@@ -128,6 +130,8 @@ model AudioPreview {
   value      String
   duration   Int
   size       Int
+  bitrate    Int      @default(128)
+  codec      String   @default("aac")
   updatedAt  DateTime
   language   Language @relation(fields: [languageId], references: [id])
 

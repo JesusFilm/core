@@ -1,9 +1,13 @@
+// eslint-disable-next-line import/order -- Must be imported first
+import { tracer } from '@core/yoga/tracer'
+
 import SchemaBuilder from '@pothos/core'
 import DirectivesPlugin from '@pothos/plugin-directives'
 import FederationPlugin from '@pothos/plugin-federation'
-// eslint-disable-next-line import/no-named-as-default
-import PrismaPlugin from '@pothos/plugin-prisma'
+import pluginName from '@pothos/plugin-prisma'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
+import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
+import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 
 import { Prisma } from '.prisma/api-users-client'
 import { User } from '@core/yoga/firebaseClient'
@@ -11,14 +15,17 @@ import { User } from '@core/yoga/firebaseClient'
 import type PrismaTypes from '../__generated__/pothos-types'
 import { prisma } from '../lib/prisma'
 
-interface PrismaUser extends User {
-  superAdmin?: boolean
-}
+const PrismaPlugin = pluginName
+
 export interface Context {
-  currentUser: PrismaUser | null
+  currentUser: User | null
   interopToken?: string | null
   ipAddress?: string | null
 }
+
+const createSpan = createOpenTelemetryWrapper(tracer, {
+  includeSource: true
+})
 
 export function validateIpV4(s?: string | null): boolean {
   if (s == null) return true // localhost
@@ -51,7 +58,13 @@ export const builder = new SchemaBuilder<{
     isValidInterOp: boolean
   }
 }>({
-  plugins: [ScopeAuthPlugin, PrismaPlugin, DirectivesPlugin, FederationPlugin],
+  plugins: [
+    TracingPlugin,
+    ScopeAuthPlugin,
+    PrismaPlugin,
+    DirectivesPlugin,
+    FederationPlugin
+  ],
   scopeAuth: {
     authorizeOnSubscribe: true,
     authScopes: async (context: Context) => ({
@@ -65,6 +78,10 @@ export const builder = new SchemaBuilder<{
       },
       isValidInterOp: isValidInterOp(context.interopToken, context.ipAddress)
     })
+  },
+  tracing: {
+    default: (config) => isRootField(config),
+    wrap: (resolver, options) => createSpan(resolver, options)
   },
   prisma: {
     client: prisma,

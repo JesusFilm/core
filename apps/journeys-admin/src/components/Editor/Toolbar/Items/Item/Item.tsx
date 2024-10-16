@@ -49,6 +49,7 @@ export function Item({
               onClick={onClick}
               aria-label={label}
               {...ButtonProps}
+              sx={{ px: 1 }}
             >
               {icon}
             </IconButton>

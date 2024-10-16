@@ -29,7 +29,9 @@ export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID!) {
     video(id: $id) {
       id
-      image
+      images(aspectRatio: banner) {
+        mobileCinematicHigh
+      }
       primaryLanguageId
       title {
         primary
@@ -148,7 +150,9 @@ export function LocalDetails({
         setPlaying(true)
       })
 
-      playerRef.current.poster(data?.video?.image ?? undefined)
+      playerRef.current.poster(
+        data?.video?.images[0]?.mobileCinematicHigh ?? undefined
+      )
       playerRef.current.src({
         type: 'application/x-mpegURL',
         src: data?.video?.variant?.hls ?? ''

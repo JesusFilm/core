@@ -3,23 +3,29 @@ import {
   defineConfig
 } from '@graphql-hive/gateway'
 
+import logger from './src/logger'
+
 const googleApplication = JSON.parse(
   process.env.GOOGLE_APPLICATION_JSON ?? '{}'
 )
 
 export const gatewayConfig = defineConfig({
+  logging: logger,
   port: 4000,
   healthCheckEndpoint: '/health',
   graphqlEndpoint: '/',
   supergraph: './apps/api-gateway/schema.graphql',
   propagateHeaders: {
-    fromClientToSubgraphs: ({ request }) => {
-      return {
-        authorization: request.headers.get('authorization') ?? '',
+    fromClientToSubgraphs: ({ request, subgraphName }) => {
+      const headers: Record<string, string> = {
         'user-agent': request.headers.get('user-agent') ?? '',
         'x-forward-for': request.headers.get('x-forward-for') ?? '',
         'interop-token': request.headers.get('interop-token') ?? ''
       }
+      if (subgraphName === 'analytics')
+        headers.authorization = request.headers.get('authorization') ?? ''
+
+      return headers
     }
   },
   hmacSignature: {

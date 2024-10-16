@@ -70,7 +70,7 @@ export const TeamRemovedEmail = ({
           </ActionCard>
         </BodyWrapper>
         <Footer />
-        <UnsubscribeLink recipientEmail={recipient.email} />
+        <UnsubscribeLink recipientEmail={recipient.email ?? ''} />
       </EmailContainer>
     </>
   )
