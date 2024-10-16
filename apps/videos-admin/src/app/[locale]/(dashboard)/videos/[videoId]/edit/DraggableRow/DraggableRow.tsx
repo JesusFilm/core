@@ -10,7 +10,6 @@ import {
   Typography
 } from '@mui/material'
 import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
 import { ReactElement } from 'react'
 
 import Drag from '@core/shared/ui/icons/Drag'
@@ -49,9 +48,15 @@ export function DraggableRow({
   //   router.push(`/${locale}/${entity}/${id}`)
   // }
 
+  const clickEvent = (e): void => {
+    if (e.currentTarget !== e.target) return
+
+    handleClick?.()
+  }
+
   return (
     <Stack
-      onClick={handleClick}
+      onClick={clickEvent}
       id={`draggable-row-${id}`}
       ref={setNodeRef}
       {...attributes}

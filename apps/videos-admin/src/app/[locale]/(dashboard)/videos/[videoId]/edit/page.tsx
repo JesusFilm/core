@@ -2,25 +2,21 @@
 
 import { gql, useMutation } from '@apollo/client'
 import {
-  Box,
   FormControl,
-  FormLabel,
   InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
   Stack,
-  Switch,
   Tab,
   Tabs,
-  TextField,
-  TextareaAutosize,
   Typography
 } from '@mui/material'
 import { useParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 
-import { useVideo } from '../../../../../../libs/useVideo'
+import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
 
 import { ChildrenView } from './_ChildrenView'
 import { StudyQuestions } from './StudyQuestions'
@@ -68,6 +64,7 @@ const VIDEO_UPDATE = gql`
     videoUpdate(input: $input) {
       id
       label
+      published
     }
   }
 `
@@ -84,11 +81,12 @@ const videoLabels = [
 ]
 
 const videoStatuses = [
-  { label: 'Published', value: true },
-  { label: 'Unpublished', value: false }
+  { label: 'Published', value: 'published' },
+  { label: 'Unpublished', value: 'unpublished' }
 ]
 
 export default function EditPage(): ReactElement {
+  const t = useTranslations()
   const params = useParams<{ videoId: string; locale: string }>()
   const updateTitle = useUpdateMutation(VIDEO_TITLE_UPDATE)
   const updateDescription = useUpdateMutation(VIDEO_DESCRIPTION_UPDATE)
@@ -100,11 +98,11 @@ export default function EditPage(): ReactElement {
     setTabValue(newValue)
   }
 
-  const { data, loading } = useVideo({
+  const { data, loading } = useAdminVideo({
     variables: { videoId: params?.videoId as string }
   })
 
-  const video = data?.video
+  const video = data?.adminVideo
 
   const handleLabelChange = (e: SelectChangeEvent): void => {
     void updateVideo({
@@ -118,12 +116,11 @@ export default function EditPage(): ReactElement {
   }
 
   const handleStatusChange = (e: SelectChangeEvent): void => {
-    console.log(e.target.value)
     void updateVideo({
       variables: {
         input: {
           id: video?.id,
-          published: e.target.value
+          published: e.target.value === 'published'
         }
       }
     })
@@ -185,9 +182,13 @@ export default function EditPage(): ReactElement {
               />
 
               <FormControl>
-                <InputLabel id="published-status-label">Published</InputLabel>
+                <InputLabel id="published-status-label">
+                  {t('Published')}
+                </InputLabel>
                 <Select
-                  value={video?.published === true}
+                  defaultValue={
+                    video?.published === true ? 'published' : 'unpublished'
+                  }
                   onChange={handleStatusChange}
                 >
                   {videoStatuses.map(({ label, value }) => (
@@ -198,7 +199,9 @@ export default function EditPage(): ReactElement {
                 </Select>
               </FormControl>
               <FormControl>
-                <InputLabel id="published-status-label">Label</InputLabel>
+                <InputLabel id="published-status-label">
+                  {t('Label')}
+                </InputLabel>
                 <Select value={video?.label} onChange={handleLabelChange}>
                   {videoLabels.map(({ label, value }) => (
                     <MenuItem key={value} value={value}>
