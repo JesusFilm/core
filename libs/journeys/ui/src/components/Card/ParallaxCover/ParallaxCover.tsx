@@ -37,7 +37,9 @@ export function ParallaxCover({
         blurDataURL={backgroundBlur}
         layout="fill"
         objectFit="cover"
-        sx={{}}
+        sx={{
+          transform: 'scale(2) translate(0px, -25%)'
+        }}
       />
       <Box
         data-testid="parallax-background-blur"
