@@ -9,18 +9,23 @@ const BOUNCE_DELAY = 5000
 
 interface ScrollDownIndicatorProps {
   trigger: boolean
+  bounceDelay?: number
+  icon?: ReactElement
 }
+
 export function ScrollDownIndicator({
-  trigger
+  trigger,
+  bounceDelay = BOUNCE_DELAY,
+  icon = <ChevronDownIcon />
 }: ScrollDownIndicatorProps): ReactElement {
   const [shouldAnimate, setShouldAnimate] = useState(false)
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShouldAnimate(true)
-    }, BOUNCE_DELAY)
+    }, bounceDelay)
     return () => clearTimeout(timer)
-  }, [])
+  }, [bounceDelay])
 
   const bounce = keyframes`
     0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
@@ -44,7 +49,7 @@ export function ScrollDownIndicator({
           transitionDuration: '500ms'
         }}
       >
-        <ChevronDownIcon />
+        {icon}
       </Fade>
     </Box>
   )
