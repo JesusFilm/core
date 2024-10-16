@@ -1,21 +1,13 @@
-import debounce from 'lodash/debounce'
-import React, {
-  ReactElement,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState
-} from 'react'
+import React, { ReactElement, createContext, useContext, useState } from 'react'
 
-interface FocalPoint {
+export interface Position {
   x: number
   y: number
 }
 
 interface FocalPointContextType {
-  focalPoint: FocalPoint
-  updateFocalPoint: (newPoint: FocalPoint) => void
+  focalPoint: Position
+  updateFocalPoint: (newPoint: Position) => void
 }
 
 const FocalPointContext = createContext<FocalPointContextType | undefined>(
@@ -35,28 +27,11 @@ export function FocalPointProvider({
 }: {
   children: React.ReactNode
 }): ReactElement {
-  const [focalPoint, setFocalPoint] = useState<FocalPoint>({ x: 50, y: 50 })
+  const [focalPoint, setFocalPoint] = useState<Position>({ x: 50, y: 50 })
 
-  const debouncedSave = useCallback(
-    debounce((point: FocalPoint) => {
-      console.log('TODO - save in database:', point)
-    }, 2000),
-    []
-  )
-
-  const updateFocalPoint = useCallback(
-    (newPoint: FocalPoint) => {
-      setFocalPoint(newPoint)
-      debouncedSave(newPoint)
-    },
-    [debouncedSave]
-  )
-
-  useEffect(() => {
-    return () => {
-      debouncedSave.cancel()
-    }
-  }, [debouncedSave])
+  function updateFocalPoint(newPoint: Position): void {
+    setFocalPoint(newPoint)
+  }
 
   return (
     <FocalPointContext.Provider value={{ focalPoint, updateFocalPoint }}>

@@ -5,9 +5,12 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
-import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
-import { useFocalPoint } from '@core/journeys/ui/FocalPointProvider'
+import {
+  type Position,
+  useFocalPoint
+} from '@core/journeys/ui/FocalPointProvider'
 
 interface FocalPointProps {
   src: string | null
@@ -16,12 +19,33 @@ interface FocalPointProps {
 
 export function FocalPoint({ src, alt }: FocalPointProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { focalPoint, updateFocalPoint } = useFocalPoint()
-  const [isDragging, setIsDragging] = useState(false)
-  const imageRef = useRef<HTMLDivElement>(null)
-  const dotRef = useRef<HTMLDivElement>(null)
 
-  function handleMouseDown(e: MouseEvent): void {
+  const dotRef = useRef<HTMLDivElement>(null)
+  const imageRef = useRef<HTMLDivElement>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const { focalPoint, updateFocalPoint } = useFocalPoint()
+
+  const axis = ['x', 'y']
+
+  function clamp(value: number, min: number, max: number): number {
+    return Math.min(Math.max(value, min), max)
+  }
+
+  function updatePoint(point: Position): void {
+    const x = clamp(point.x, 0, 100)
+    const y = clamp(point.y, 0, 100)
+    updateFocalPoint({ x, y })
+  }
+
+  function calculatePoint(e): Position | null {
+    if (imageRef.current == null) return null
+    const boundingRect = imageRef.current.getBoundingClientRect()
+    const x = ((e.clientX - boundingRect.left) / boundingRect.width) * 100
+    const y = ((e.clientY - boundingRect.top) / boundingRect.height) * 100
+    return { x, y }
+  }
+
+  function handleMouseDown(e): void {
     e.stopPropagation()
     setIsDragging(true)
   }
@@ -31,26 +55,21 @@ export function FocalPoint({ src, alt }: FocalPointProps): ReactElement {
   }
 
   function handleImageClick(e): void {
-    if (imageRef.current == null) return
-    const rect = imageRef.current.getBoundingClientRect()
-    const x = ((e.clientX - rect.left) / rect.width) * 100
-    const y = ((e.clientY - rect.top) / rect.height) * 100
-    updateFocalPoint({ x, y })
+    const point = calculatePoint(e)
+    if (point != null) updatePoint(point)
   }
 
   function handleMouseMove(e): void {
-    if (isDragging && imageRef.current != null) {
-      const rect = imageRef.current.getBoundingClientRect()
-      const x = ((e.clientX - rect.left) / rect.width) * 100
-      const y = ((e.clientY - rect.top) / rect.height) * 100
-      updateFocalPoint({ x, y })
+    if (isDragging) {
+      const point = calculatePoint(e)
+      if (point != null) updatePoint(point)
     }
   }
 
   function handleInputChange(axis: 'x' | 'y', value: string): void {
     const numValue = parseFloat(value)
     if (!isNaN(numValue)) {
-      updateFocalPoint({
+      updatePoint({
         x: axis === 'x' ? numValue : focalPoint.x,
         y: axis === 'y' ? numValue : focalPoint.y
       })
@@ -64,6 +83,7 @@ export function FocalPoint({ src, alt }: FocalPointProps): ReactElement {
       document.removeEventListener('mouseup', handleMouseUp)
       document.removeEventListener('mousemove', handleMouseMove)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDragging])
 
   useEffect(() => {
@@ -78,16 +98,17 @@ export function FocalPoint({ src, alt }: FocalPointProps): ReactElement {
       <Box
         ref={imageRef}
         sx={{
+          height: 300,
+          width: '100%',
           display: 'flex',
+          cursor: 'pointer',
+          userSelect: 'none',
+          overflow: 'hidden',
+          position: 'relative',
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: 4,
-          position: 'relative',
-          width: '100%',
-          height: 300,
-          overflow: 'hidden',
-          cursor: 'pointer',
-          userSelect: 'none'
+          border: (theme) => `1px solid ${theme.palette.divider}`
         }}
         onClick={handleImageClick}
       >
@@ -97,17 +118,17 @@ export function FocalPoint({ src, alt }: FocalPointProps): ReactElement {
             <Box
               ref={dotRef}
               sx={{
-                position: 'absolute',
-                top: `${focalPoint.y}%`,
-                left: `${focalPoint.x}%`,
                 width: 30,
                 height: 30,
-                borderRadius: '50%',
-                backgroundColor: 'white',
-                transform: 'translate(-50%, -50%)',
                 cursor: 'move',
-                border: (theme) => `1px solid ${theme.palette.primary.main}`,
-                pointerEvents: 'auto'
+                borderRadius: '50%',
+                position: 'absolute',
+                pointerEvents: 'auto',
+                top: `${focalPoint.y}%`,
+                left: `${focalPoint.x}%`,
+                transform: 'translate(-50%, -50%)',
+                backgroundColor: (theme) => theme.palette.background.paper,
+                border: (theme) => `1px solid ${theme.palette.divider}`
               }}
               onMouseDown={handleMouseDown}
             />
@@ -117,26 +138,20 @@ export function FocalPoint({ src, alt }: FocalPointProps): ReactElement {
         )}
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-        <TextField
-          label={t('Left')}
-          type="number"
-          value={focalPoint.x.toFixed(0)}
-          onChange={(e) => handleInputChange('x', e.target.value)}
-          slotProps={{
-            input: { endAdornment: '%' }
-          }}
-          sx={{ width: '45%' }}
-        />
-        <TextField
-          label={t('Top')}
-          type="number"
-          value={focalPoint.y.toFixed(0)}
-          onChange={(e) => handleInputChange('y', e.target.value)}
-          slotProps={{
-            input: { endAdornment: '%' }
-          }}
-          sx={{ width: '45%' }}
-        />
+        {axis.map((axis: 'x' | 'y') => (
+          <TextField
+            key={axis}
+            type="number"
+            label={axis === 'x' ? t('Left') : t('Top')}
+            value={focalPoint[axis].toFixed(0)}
+            onChange={(e) => handleInputChange(axis, e.target.value)}
+            slotProps={{
+              input: { endAdornment: '%' },
+              htmlInput: { min: 0, max: 100 }
+            }}
+            sx={{ width: '45%' }}
+          />
+        ))}
       </Box>
     </Stack>
   )
