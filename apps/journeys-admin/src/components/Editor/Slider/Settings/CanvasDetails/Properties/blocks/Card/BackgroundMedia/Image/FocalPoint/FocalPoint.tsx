@@ -78,36 +78,43 @@ export function FocalPoint({ src, alt }: FocalPointProps): ReactElement {
       <Box
         ref={imageRef}
         sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           borderRadius: 4,
           position: 'relative',
           width: '100%',
           height: 300,
           overflow: 'hidden',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          userSelect: 'none'
         }}
         onClick={handleImageClick}
       >
-        {src != null ? (
-          <Image src={src} alt={alt ?? ''} layout="fill" objectFit="cover" />
+        {src != null && src !== '' ? (
+          <>
+            <Image src={src} alt={alt ?? ''} layout="fill" objectFit="cover" />
+            <Box
+              ref={dotRef}
+              sx={{
+                position: 'absolute',
+                top: `${focalPoint.y}%`,
+                left: `${focalPoint.x}%`,
+                width: 30,
+                height: 30,
+                borderRadius: '50%',
+                backgroundColor: 'white',
+                transform: 'translate(-50%, -50%)',
+                cursor: 'move',
+                border: (theme) => `1px solid ${theme.palette.primary.main}`,
+                pointerEvents: 'auto'
+              }}
+              onMouseDown={handleMouseDown}
+            />
+          </>
         ) : (
           <InsertPhotoRoundedIcon fontSize="large" />
         )}
-        <Box
-          ref={dotRef}
-          sx={{
-            position: 'absolute',
-            top: `${focalPoint.y}%`,
-            left: `${focalPoint.x}%`,
-            width: 30,
-            height: 30,
-            borderRadius: '50%',
-            backgroundColor: 'white',
-            transform: 'translate(-50%, -50%)',
-            cursor: 'move',
-            border: (theme) => `1px solid ${theme.palette.primary.main}`
-          }}
-          onMouseDown={handleMouseDown}
-        />
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
         <TextField

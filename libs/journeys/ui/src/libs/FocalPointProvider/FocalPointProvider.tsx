@@ -39,7 +39,7 @@ export function FocalPointProvider({
 
   const debouncedSave = useCallback(
     debounce((point: FocalPoint) => {
-      console.log('Saving to database:', point)
+      console.log('TODO - save in database:', point)
     }, 2000),
     []
   )
