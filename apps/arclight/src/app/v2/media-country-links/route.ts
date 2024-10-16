@@ -64,8 +64,7 @@ export async function GET(request: NextRequest): Promise<Response> {
         spoken: country.countryLanguages
           .filter(
             (countryLanguage) =>
-              countryLanguage.speakers > 0 &&
-              !countryLanguage.suggested
+              countryLanguage.speakers > 0 && !countryLanguage.suggested
           )
           .sort((a, b) => b.speakers - a.speakers)
           .map(({ language, speakers }) => ({
