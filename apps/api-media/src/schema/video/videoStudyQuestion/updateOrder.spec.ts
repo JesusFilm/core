@@ -26,11 +26,28 @@ describe('updateOrder', () => {
       await updateOrderCreate({
         videoId: 'videoId',
         order: 2,
+        languageId: 'languageId',
         transaction: transaction as unknown as Prisma.TransactionClient
       })
       expect(transaction.videoStudyQuestion.update).toHaveBeenCalledWith({
-        where: { id: 'id1' },
-        data: { order: 1 }
+        where: {
+          videoId_languageId_order: {
+            videoId: 'videoId',
+            languageId: 'languageId',
+            order: 2
+          }
+        },
+        data: { order: 1002 }
+      })
+      expect(transaction.videoStudyQuestion.update).toHaveBeenCalledWith({
+        where: {
+          videoId_languageId_order: {
+            videoId: 'videoId',
+            languageId: 'languageId',
+            order: 3
+          }
+        },
+        data: { order: 1003 }
       })
       expect(transaction.videoStudyQuestion.update).toHaveBeenCalledWith({
         where: { id: 'id2' },
@@ -57,6 +74,7 @@ describe('updateOrder', () => {
       }
       await updateOrderDelete({
         videoId: 'videoId',
+        languageId: 'languageId',
         transaction: transaction as unknown as Prisma.TransactionClient
       })
       expect(transaction.videoStudyQuestion.update).toHaveBeenCalledWith({
@@ -88,16 +106,27 @@ describe('updateOrder', () => {
       }
       await updateOrderUpdate({
         videoId: 'videoId',
-        id: 'id2',
+        id: 'id3',
+        languageId: 'languageId',
         order: 2,
         transaction: transaction as unknown as Prisma.TransactionClient
       })
       expect(transaction.videoStudyQuestion.update).toHaveBeenCalledWith({
-        where: { id: 'id1' },
-        data: { order: 1 }
+        where: {
+          videoId_languageId_order: {
+            videoId: 'videoId',
+            languageId: 'languageId',
+            order: 2
+          }
+        },
+        data: { order: 1002 }
       })
       expect(transaction.videoStudyQuestion.update).toHaveBeenCalledWith({
         where: { id: 'id3' },
+        data: { order: 2 }
+      })
+      expect(transaction.videoStudyQuestion.update).toHaveBeenCalledWith({
+        where: { id: 'id2' },
         data: { order: 3 }
       })
     })
