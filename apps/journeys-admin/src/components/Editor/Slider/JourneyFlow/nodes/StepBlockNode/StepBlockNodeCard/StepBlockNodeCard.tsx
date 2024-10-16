@@ -2,14 +2,13 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Skeleton from '@mui/material/Skeleton'
-import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { isIPhone } from '@core/shared/ui/deviceUtils'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -33,9 +32,6 @@ export function StepBlockNodeCard({
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
-  const theme = useTheme()
-
-  const smUp = useMediaQuery(theme.breakpoints.up('sm'))
 
   const card = step?.children[0] as TreeBlock<CardBlock> | undefined
   const {
@@ -49,16 +45,17 @@ export function StepBlockNodeCard({
   } = getCardMetadata(card)
 
   function handleClick(): void {
-    dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
-    if ((selectedStep?.id === step?.id && showAnalytics !== true) || !smUp) {
+    if (selectedStep?.id === step?.id && showAnalytics !== true) {
       dispatch({
         type: 'SetSelectedBlockAction',
-        selectedBlock: step
+        selectedBlock: selectedStep
       })
       dispatch({
         type: 'SetSelectedAttributeIdAction',
         selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
       })
+    } else {
+      dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
     }
   }
 
@@ -82,6 +79,12 @@ export function StepBlockNodeCard({
       data-testid="StepBlockNodeCard"
       elevation={selected ? 6 : 1}
       title={showAnalytics === true ? '' : t('Click to edit or drag')}
+      // hover events and psuedo elements preventing onclicks from running on iOS devices see:
+      // https://stackoverflow.com/questions/17710893/why-when-do-i-have-to-tap-twice-to-trigger-click-on-ios#:~:text=The%20simplest%20solution%20is%20not,triggered%20on%20the%20first%20tap.
+      // see fig 6-4, https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7
+      onMouseEnter={() => {
+        if (isIPhone()) handleClick()
+      }}
       onClick={handleClick}
       sx={{
         width: STEP_NODE_CARD_WIDTH,
