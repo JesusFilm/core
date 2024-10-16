@@ -139,6 +139,11 @@ describe('Toolbar', () => {
     expect(screen.getByTestId('HelpScoutBeaconIconButton')).toBeInTheDocument()
   })
 
+  it('should render journey details', () => {
+    render(toolbar(defaultJourney))
+    expect(screen.getByTestId('JourneyDetails')).toBeInTheDocument()
+  })
+
   it('should open the title dialog when selected', async () => {
     render(toolbar(defaultJourney))
 

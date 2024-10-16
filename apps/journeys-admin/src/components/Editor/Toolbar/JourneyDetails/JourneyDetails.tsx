@@ -17,6 +17,7 @@ export function JourneyDetails(): ReactElement {
     <>
       {journey != null ? (
         <Stack
+          data-testid="JourneyDetails"
           sx={{
             px: { xs: 4, sm: 0 },
             py: { xs: 1, sm: 0 },
