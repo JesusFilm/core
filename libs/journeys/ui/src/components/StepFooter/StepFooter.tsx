@@ -7,10 +7,10 @@ import { ReactElement } from 'react'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 import {
-  combinedFooter,
   getFooterMobileHeight,
   getTitle,
   hasChatWidget,
+  hasCombinedFooter,
   hasHostAvatar,
   hasHostDetails
 } from '../Card/utils/getFooterElements'
@@ -39,7 +39,7 @@ export function StepFooter({
   const title = getTitle({ journey })
 
   const footerMobileHeight = getFooterMobileHeight({ journey, variant })
-  const combineFooter = combinedFooter({ journey, variant })
+  const combinedFooter = hasCombinedFooter({ journey, variant })
 
   const isWebsite = journey?.website === true
 
@@ -73,7 +73,7 @@ export function StepFooter({
           width: '100%'
         }}
       >
-        {!isWebsite && !combineFooter && (
+        {!isWebsite && !combinedFooter && (
           <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
             <FooterButtonList />
           </Box>
@@ -89,7 +89,7 @@ export function StepFooter({
           }}
           gap={4}
         >
-          {!isWebsite && combineFooter && (
+          {!isWebsite && combinedFooter && (
             <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
               <FooterButtonList />
             </Box>
