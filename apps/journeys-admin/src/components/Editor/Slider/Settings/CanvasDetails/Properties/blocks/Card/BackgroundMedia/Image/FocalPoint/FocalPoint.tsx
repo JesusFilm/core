@@ -116,6 +116,55 @@ export function FocalPoint({ src, alt }: FocalPointProps): ReactElement {
           <>
             <Image src={src} alt={alt ?? ''} layout="fill" objectFit="cover" />
             <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0
+              }}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: '33.33%',
+                bottom: 0,
+                width: '1px',
+                backgroundColor: 'rgba(255,255,255,0.5)'
+              }}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: '66.66%',
+                bottom: 0,
+                width: '1px',
+                backgroundColor: 'rgba(255,255,255,0.5)'
+              }}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                top: '33.33%',
+                left: 0,
+                right: 0,
+                height: '1px',
+                backgroundColor: 'rgba(255,255,255,0.5)'
+              }}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                top: '66.66%',
+                left: 0,
+                right: 0,
+                height: '1px',
+                backgroundColor: 'rgba(255,255,255,0.5)'
+              }}
+            />
+            <Box
               ref={dotRef}
               sx={{
                 width: 30,
