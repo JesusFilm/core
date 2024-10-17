@@ -3708,7 +3708,6 @@ input VideoStudyQuestionUpdateInput @join__type(graph: API_MEDIA)  {
   id: ID!
   value: String
   primary: Boolean
-  languageId: String
   crowdInId: String
   """
   index from 1

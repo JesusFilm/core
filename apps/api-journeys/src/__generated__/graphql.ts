@@ -3930,7 +3930,6 @@ export type VideoStudyQuestionCreateInput = {
 export type VideoStudyQuestionUpdateInput = {
   crowdInId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
-  languageId?: InputMaybe<Scalars['String']['input']>;
   /** index from 1 */
   order?: InputMaybe<Scalars['Int']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
