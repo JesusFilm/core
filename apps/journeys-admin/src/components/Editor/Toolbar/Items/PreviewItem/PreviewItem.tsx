@@ -15,7 +15,6 @@ interface PreviewItemProps {
 
 export function PreviewItem({
   variant,
-  ref,
   onClick
 }: PreviewItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -31,7 +30,7 @@ export function PreviewItem({
     journey?.slug != null ? journeyPath + customDomainParam : undefined
 
   return (
-    <Box data-testid="PreviewItem" ref={ref}>
+    <Box data-testid="PreviewItem">
       <Item
         variant={variant}
         href={href}
