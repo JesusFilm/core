@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
@@ -20,6 +21,7 @@ interface PageWrapperProps {
   title?: string
   showMainHeader?: boolean
   showNavBar?: boolean
+  fadeInNavBar?: boolean
   backHref?: string
   backHrefHistory?: boolean
   mainHeaderChildren?: ReactNode
@@ -44,6 +46,7 @@ export function PageWrapper({
   title,
   showMainHeader = true,
   showNavBar = true,
+  fadeInNavBar = false,
   backHref,
   backHrefHistory,
   mainHeaderChildren,
@@ -62,6 +65,19 @@ export function PageWrapper({
   const viewportHeight = use100vh()
   const { navbar, toolbar, bottomPanel, sidePanel } = usePageWrapperStyles()
   const router = useRouter()
+
+  function renderNavigationDrawer(): ReactElement {
+    return (
+      <Box>
+        <NavigationDrawer
+          open={open}
+          onClose={setOpen}
+          user={user}
+          selectedPage={router?.pathname?.split('/')[1]}
+        />
+      </Box>
+    )
+  }
 
   return (
     <PageProvider initialState={initialState}>
@@ -82,14 +98,14 @@ export function PageWrapper({
               overflow: 'hidden'
             }}
           >
-            {showNavBar && (
-              <NavigationDrawer
-                open={open}
-                onClose={setOpen}
-                user={user}
-                selectedPage={router?.pathname?.split('/')[1]}
-              />
-            )}
+            {showNavBar &&
+              (fadeInNavBar ? (
+                <Fade in={showNavBar} timeout={500}>
+                  {renderNavigationDrawer()}
+                </Fade>
+              ) : (
+                renderNavigationDrawer()
+              ))}
           </Box>
 
           <Stack
