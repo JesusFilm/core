@@ -1,8 +1,8 @@
 import {
   ApolloClient,
-  HttpLink,
   InMemoryCache,
   NormalizedCacheObject,
+  createHttpLink,
   gql
 } from '@apollo/client'
 import { InjectQueue } from '@nestjs/bullmq'
@@ -133,19 +133,18 @@ export class PlausibleService implements OnModuleInit {
     private readonly plausibleQueue: Queue<PlausibleJob>,
     private readonly prismaService: PrismaService
   ) {
+    const httpLink = createHttpLink({
+      uri: process.env.GATEWAY_URL,
+      fetch,
+      headers: {
+        Authorization: `Bearer ${process.env.PLAUSIBLE_API_KEY}`,
+        'x-graphql-client-name': 'api-journeys',
+        'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
+      }
+    })
     this.client = new ApolloClient({
-      link: new HttpLink({
-        uri: process.env.GATEWAY_URL,
-        fetch,
-        headers: {
-          Authorization: `Bearer ${process.env.PLAUSIBLE_API_KEY}`,
-          'x-graphql-client-name': 'api-journeys',
-          'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
-        }
-      }),
-      cache: new InMemoryCache(),
-      name: 'api-journeys',
-      version: process.env.SERVICE_VERSION
+      link: httpLink,
+      cache: new InMemoryCache()
     })
 
     this.plausibleClient = axios.create({
