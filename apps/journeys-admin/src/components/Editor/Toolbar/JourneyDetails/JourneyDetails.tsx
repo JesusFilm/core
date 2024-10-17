@@ -19,30 +19,30 @@ export function JourneyDetails(): ReactElement {
         <Stack
           data-testid="JourneyDetails"
           sx={{
-            px: { xs: 4, sm: 0 },
-            py: { xs: 1, sm: 0 },
-            gap: { xs: 2, sm: 0 },
-            maxWidth: { xs: 220, sm: '100%' }
+            px: { xs: 4, md: 0 },
+            py: { xs: 1, md: 0 },
+            gap: { xs: 2, md: 0 },
+            maxWidth: { xs: 220, md: '100%' }
           }}
         >
           <Typography
             sx={{
-              display: { xs: '-webkit-box', sm: 'unset' },
-              '-webkit-line-clamp': { xs: '2', sm: '1' },
+              display: { xs: '-webkit-box', md: 'unset' },
+              '-webkit-line-clamp': { xs: '2', md: '1' },
               '-webkit-box-orient': 'vertical',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               color: 'secondary.dark',
-              typography: { xs: 'subtitle2', sm: 'subtitle1' }
+              typography: { xs: 'subtitle2', md: 'subtitle1' }
             }}
           >
             {journey.title}
           </Typography>
           <Box
             sx={{
-              display: { xs: '-webkit-box', sm: 'unset' },
-              typography: { xs: 'caption', sm: 'body2' },
-              '-webkit-line-clamp': { xs: '2', sm: '1' },
+              display: { xs: '-webkit-box', md: 'unset' },
+              typography: { xs: 'caption', md: 'body2' },
+              '-webkit-line-clamp': { xs: '2', md: '1' },
               '-webkit-box-orient': 'vertical',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -55,15 +55,15 @@ export function JourneyDetails(): ReactElement {
                 top: '3px',
                 mr: 1,
                 fontSize: 16,
-                color: { xs: 'secondary.light', sm: 'secondary.main' }
+                color: { xs: 'secondary.light', md: 'secondary.main' }
               }}
             />
             <Typography
               sx={{
                 display: 'inline',
-                typography: { xs: 'caption', sm: 'body2' },
-                fontWeight: { xs: 600, sm: 'initial' },
-                color: { xs: 'secondary.light', sm: 'secondary.main' }
+                typography: { xs: 'caption', md: 'body2' },
+                fontWeight: { xs: 600, md: 'initial' },
+                color: { xs: 'secondary.light', md: 'secondary.main' }
               }}
             >
               {language}
@@ -73,7 +73,7 @@ export function JourneyDetails(): ReactElement {
                 data-testid="DescriptionDot"
                 sx={{
                   display: 'inline',
-                  typography: { xs: 'caption', sm: 'body2' },
+                  typography: { xs: 'caption', md: 'body2' },
                   px: 1,
                   color: 'secondary.light'
                 }}
@@ -83,8 +83,8 @@ export function JourneyDetails(): ReactElement {
             ) : null}
             <Typography
               sx={{
-                display: { xs: 'inline', sm: 'unset' },
-                typography: { xs: 'caption', sm: 'body2' },
+                display: { xs: 'inline', md: 'unset' },
+                typography: { xs: 'caption', md: 'body2' },
                 color: 'secondary.light'
               }}
             >
@@ -93,7 +93,7 @@ export function JourneyDetails(): ReactElement {
           </Box>
         </Stack>
       ) : (
-        <Stack sx={{ px: 4, py: 1, width: { xs: 220, sm: 500 } }}>
+        <Stack sx={{ px: 4, py: 1, width: { xs: 220, md: 500 } }}>
           <Typography variant="subtitle2">
             <Skeleton width="40%" />
           </Typography>
