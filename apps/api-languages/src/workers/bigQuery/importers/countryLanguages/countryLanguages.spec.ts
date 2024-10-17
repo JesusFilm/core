@@ -12,15 +12,19 @@ const bigQueryCountryLanguage = {
   countryCode: 'AD',
   speakers: 12,
   display_speakers: null,
-  primary: 1
+  primary: 1,
+  suggested: 0,
+  order: 1
 }
 
 const countryLanguage = {
   countryId: 'AD',
   languageId: '529',
   speakers: 12,
-  displaySpeakers: null,
-  primary: true
+  displaySpeakers: 0,
+  primary: true,
+  suggested: false,
+  order: 1
 }
 
 jest.mock('../../importer', () => ({
