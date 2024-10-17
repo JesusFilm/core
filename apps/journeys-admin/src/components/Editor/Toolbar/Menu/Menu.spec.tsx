@@ -302,9 +302,7 @@ describe('Toolbar Menu', () => {
         </SnackbarProvider>
       )
       fireEvent.click(screen.getByRole('button'))
-      expect(
-        screen.getByRole('heading', { level: 6, name: 'some title' })
-      ).toBeInTheDocument()
+      expect(screen.getByText('some title')).toBeInTheDocument()
       expect(screen.getByText('some description')).toBeInTheDocument()
       expect(
         screen.getByRole('menuitem', { name: 'Edit Details' })

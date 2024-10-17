@@ -6,7 +6,7 @@ import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
-import { JourneyDetailsDialog } from '../../JourneyDetailsDialog'
+import { JourneyDetailsDialog } from '../../JourneyDetails/JourneyDetailsDialog'
 import { Item } from '../Item'
 
 interface DetailsItemProps {
