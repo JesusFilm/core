@@ -136,7 +136,6 @@
     "instantsearch.js": "^4.63.0",
     "ioredis": "^5.3.2",
     "isomorphic-fetch": "^3.0.0",
-    "jsondiffpatch": "^0.5.0",
     "jsonwebtoken": "^9.0.2",
     "launchdarkly-node-server-sdk": "^7.0.3",
     "leaflet": "^1.9.4",
