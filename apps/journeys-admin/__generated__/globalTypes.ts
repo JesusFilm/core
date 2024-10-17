@@ -389,6 +389,8 @@ export interface ImageBlockCreateInput {
   height?: number | null;
   isCover?: boolean | null;
   scale?: number | null;
+  focalTop?: number | null;
+  focalLeft?: number | null;
 }
 
 export interface ImageBlockUpdateInput {
@@ -399,6 +401,8 @@ export interface ImageBlockUpdateInput {
   width?: number | null;
   height?: number | null;
   scale?: number | null;
+  focalTop?: number | null;
+  focalLeft?: number | null;
 }
 
 export interface IntegrationGrowthSpacesCreateInput {
