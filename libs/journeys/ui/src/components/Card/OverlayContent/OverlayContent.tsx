@@ -3,6 +3,7 @@ import { SxProps } from '@mui/material/styles'
 import { ReactElement, ReactNode } from 'react'
 
 import { useJourney } from '../../../libs/JourneyProvider'
+import { getFooterMobileSpacing } from '../utils/getFooterElements'
 
 interface OverlayContentProps {
   children: ReactNode
@@ -15,7 +16,7 @@ export function OverlayContent({
   sx,
   hasFullscreenVideo = false
 }: OverlayContentProps): ReactElement {
-  const { variant } = useJourney()
+  const { journey, variant } = useJourney()
   const enableVerticalScroll: SxProps = {
     overflowY: 'scroll',
     // Hide on Firefox https://caniuse.com/?search=scrollbar-width
@@ -61,6 +62,11 @@ export function OverlayContent({
           pr: { xs: 6, sm: 10 }
         }
 
+  const footerMobileSpacing = getFooterMobileSpacing({ journey, variant })
+  const footerSpacing: SxProps = {
+    mb: { xs: footerMobileSpacing, sm: 10 }
+  }
+
   return (
     <Box
       data-testid="CardOverlayContent"
@@ -69,6 +75,7 @@ export function OverlayContent({
         // ...topBottomEdgeFadeEffect,
         ...topBottomMarginsOnContent,
         ...mobileNotchPadding,
+        ...footerSpacing,
         ...sx
       }}
     >

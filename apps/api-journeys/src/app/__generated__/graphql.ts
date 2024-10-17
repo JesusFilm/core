@@ -150,6 +150,7 @@ export enum MessagePlatform {
     telegram = "telegram",
     whatsApp = "whatsApp",
     instagram = "instagram",
+    kakaoTalk = "kakaoTalk",
     viber = "viber",
     vk = "vk",
     snapchat = "snapchat",
@@ -1105,6 +1106,7 @@ export class Journey {
     publishedAt?: Nullable<DateTime>;
     trashedAt?: Nullable<DateTime>;
     featuredAt?: Nullable<DateTime>;
+    updatedAt: DateTime;
     createdAt: DateTime;
     status: JourneyStatus;
     seoTitle?: Nullable<string>;

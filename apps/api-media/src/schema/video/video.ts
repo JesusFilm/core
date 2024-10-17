@@ -1,6 +1,9 @@
+import { GraphQLError } from 'graphql'
 import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 import orderBy from 'lodash/orderBy'
+
+import { Prisma } from '.prisma/api-media-client'
 
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
@@ -398,15 +401,25 @@ builder.queryFields((t) => ({
       })
     },
     resolve: async (query, _parent, { id, idType }) => {
-      return idType === IdTypeShape.slug
-        ? await prisma.video.findFirstOrThrow({
-            ...query,
-            where: { variants: { some: { slug: id } }, published: true }
-          })
-        : await prisma.video.findUniqueOrThrow({
-            ...query,
-            where: { id, published: true }
-          })
+      try {
+        return idType === IdTypeShape.slug
+          ? await prisma.video.findFirstOrThrow({
+              ...query,
+              where: { variants: { some: { slug: id } }, published: true }
+            })
+          : await prisma.video.findUniqueOrThrow({
+              ...query,
+              where: { id, published: true }
+            })
+      } catch (err) {
+        if (
+          err instanceof Prisma.PrismaClientKnownRequestError &&
+          err.code === 'P2025'
+        ) {
+          throw new GraphQLError(`Video not found with id ${idType}:${id}`)
+        }
+        throw err
+      }
     }
   }),
   videos: t.prismaField({

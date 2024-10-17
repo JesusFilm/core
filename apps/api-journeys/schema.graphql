@@ -370,6 +370,7 @@ type Journey
   publishedAt: DateTime
   trashedAt: DateTime
   featuredAt: DateTime
+  updatedAt: DateTime!
   createdAt: DateTime!
   status: JourneyStatus!
 
@@ -1400,6 +1401,7 @@ enum MessagePlatform {
   telegram
   whatsApp
   instagram
+  kakaoTalk
   viber
   vk
   snapchat
