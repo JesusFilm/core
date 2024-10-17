@@ -7,23 +7,33 @@ import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
-import {
-  type Position,
-  useFocalPoint
-} from '@core/journeys/ui/FocalPointProvider'
+import { ImageBlockUpdateInput } from '../../../../../../../../../../../../__generated__/globalTypes'
 
-interface FocalPointProps {
-  src: string | null
-  alt?: string
+interface Position {
+  x: number
+  y: number
 }
 
-export function FocalPoint({ src, alt }: FocalPointProps): ReactElement {
+interface FocalPointProps {
+  focalTop?: number
+  focalLeft?: number
+  src: string | null
+  alt?: string
+  updateImageBlock: (input: ImageBlockUpdateInput) => void
+}
+
+export function FocalPoint({
+  focalTop,
+  focalLeft,
+  src,
+  alt,
+  updateImageBlock
+}: FocalPointProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   const dotRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
-  const { focalPoint, updateFocalPoint } = useFocalPoint()
 
   const axis = ['x', 'y']
 
@@ -34,7 +44,11 @@ export function FocalPoint({ src, alt }: FocalPointProps): ReactElement {
   function updatePoint(point: Position): void {
     const x = clamp(point.x, 0, 100)
     const y = clamp(point.y, 0, 100)
-    updateFocalPoint({ x, y })
+    console.log({ x, y })
+    updateImageBlock({
+      focalTop: Math.round(y),
+      focalLeft: Math.round(x)
+    })
   }
 
   function calculatePoint(e): Position | null {
@@ -68,12 +82,11 @@ export function FocalPoint({ src, alt }: FocalPointProps): ReactElement {
 
   function handleInputChange(axis: 'x' | 'y', value: string): void {
     const numValue = parseFloat(value)
-    if (!isNaN(numValue)) {
+    if (!isNaN(numValue) && focalLeft != null && focalTop != null)
       updatePoint({
-        x: axis === 'x' ? numValue : focalPoint.x,
-        y: axis === 'y' ? numValue : focalPoint.y
+        x: axis === 'x' ? numValue : focalLeft,
+        y: axis === 'y' ? numValue : focalLeft
       })
-    }
   }
 
   useEffect(() => {
@@ -88,9 +101,9 @@ export function FocalPoint({ src, alt }: FocalPointProps): ReactElement {
 
   useEffect(() => {
     if (imageRef.current != null) {
-      imageRef.current.style.objectPosition = `${focalPoint.x}% ${focalPoint.y}%`
+      imageRef.current.style.objectPosition = `${focalLeft}% ${focalLeft}%`
     }
-  }, [focalPoint])
+  }, [focalLeft, focalTop])
 
   return (
     <Stack gap={4}>
@@ -173,8 +186,8 @@ export function FocalPoint({ src, alt }: FocalPointProps): ReactElement {
                 borderRadius: '50%',
                 position: 'absolute',
                 pointerEvents: 'auto',
-                top: `${focalPoint.y}%`,
-                left: `${focalPoint.x}%`,
+                top: `${focalLeft}%`,
+                left: `${focalLeft}%`,
                 transform: 'translate(-50%, -50%)',
                 backdropFilter: 'blur(4px)',
                 border: '2px solid white',
@@ -193,7 +206,7 @@ export function FocalPoint({ src, alt }: FocalPointProps): ReactElement {
             key={axis}
             type="number"
             label={axis === 'x' ? t('Left') : t('Top')}
-            value={focalPoint[axis].toFixed(0)}
+            value={axis === 'x' ? focalLeft?.toFixed(0) : focalTop?.toFixed(0)}
             onChange={(e) => handleInputChange(axis, e.target.value)}
             slotProps={{
               input: { endAdornment: '%' },

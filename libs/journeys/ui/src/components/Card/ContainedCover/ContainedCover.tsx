@@ -14,7 +14,6 @@ import { NextImage } from '@core/shared/ui/NextImage'
 
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../libs/block'
-import { useFocalPoint } from '../../../libs/FocalPointProvider'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../../libs/rtl'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
@@ -73,7 +72,6 @@ export function ContainedCover({
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const contentRef = useRef() as RefObject<HTMLDivElement>
-  const { focalPoint } = useFocalPoint()
 
   const posterImage =
     videoBlock?.source !== VideoBlockSource.youTube &&
@@ -188,7 +186,7 @@ export function ContainedCover({
             blurDataURL={backgroundBlur}
             layout="fill"
             objectFit="cover"
-            objectPosition={`${focalPoint.x}% ${focalPoint.y}%`}
+            objectPosition={`${imageBlock.focalLeft}% ${imageBlock.focalTop}%`}
           />
         )}
       </Box>
