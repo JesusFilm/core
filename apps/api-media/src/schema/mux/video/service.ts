@@ -44,7 +44,6 @@ export async function createVideoByDirectUpload(
 
 export async function createVideoFromUrl(
   url: string,
-  userId: string,
   maxResolution: ResolutionTier,
   downloadable = false
 ): Promise<Mux.Video.Asset> {
