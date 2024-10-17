@@ -373,7 +373,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
       </Stack>
       <Stack
         flexDirection="row"
-        gap={3}
+        gap={2}
         flexGrow={1}
         justifyContent="flex-end"
         alignItems="center"

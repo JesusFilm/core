@@ -16,8 +16,10 @@ export function Items(): ReactElement {
       data-testid="ItemsStack"
       alignItems="center"
     >
-      <ResponsesItem variant="icon-button" />
-      <AnalyticsItem variant="icon-button" />
+      <Stack flexDirection="row" gap={2}>
+        <ResponsesItem variant="icon-button" />
+        <AnalyticsItem variant="icon-button" />
+      </Stack>
       <StrategyItem variant="button" />
       <ShareItem variant="button" />
     </Stack>
