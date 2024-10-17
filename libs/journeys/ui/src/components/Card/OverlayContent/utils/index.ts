@@ -1,0 +1,1 @@
+export { cardHasBackground } from './cardHasBackground'
