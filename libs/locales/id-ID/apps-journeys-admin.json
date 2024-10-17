@@ -155,6 +155,7 @@
   "You can add no more than two chat platforms": "Anda dapat menambahkan tidak lebih dari dua platform obrolan",
   "Chat": "Mengobrol",
   "Instagram": "Instagram",
+  "KakaoTalk": "KakaoTalk",
   "LINE": "LINE",
   "Skype": "Skype",
   "Snapchat": "Snapchat",
@@ -746,7 +747,6 @@
   "Video expanded to fullscreen at ({{ position }})": "Video diperluas ke layar penuh di ({{ position }})",
   "Video completed": "Video selesai",
   "Facebook": "Facebook",
-  "KakaoTalk": "KakaoTalk",
   "Message Square": "Kotak Pesan",
   "ID": "ID",
   "Last Active": "Terakhir Aktif",
@@ -754,5 +754,7 @@
   "Polls": "Jajak pendapat",
   "{{ name }}'s Team": "{{ name }}Tim",
   "Appears on <0>{{count}}</0> card_other": "Muncul di <0>{{count}}</0> kartu",
-  "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>kartu</1>"
+  "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>kartu</1>",
+  "{{count}} visitors_other": "{{count}} pengunjung",
+  "{{count}} responses_other": "{{count}} tanggapan"
 }
