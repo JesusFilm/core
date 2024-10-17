@@ -155,6 +155,7 @@
   "You can add no more than two chat platforms": "คุณสามารถเพิ่มไม่เกินสองแพลตฟอร์มแชทได้",
   "Chat": "แชท",
   "Instagram": "อินสตาแกรม",
+  "KakaoTalk": "KakaoTalk",
   "LINE": "LINE",
   "Skype": "Skype",
   "Snapchat": "Snapchat",
@@ -746,7 +747,6 @@
   "Video expanded to fullscreen at ({{ position }})": "วิดีโอขยายเต็มหน้าจอที่ ({{ ตำแหน่ง }})",
   "Video completed": "สำเร็จการดูวิดีโอ",
   "Facebook": "Facebook",
-  "KakaoTalk": "KakaoTalk",
   "Message Square": "ข้อความสี่เหลี่ยม",
   "ID": "ID",
   "Last Active": "ล่าสุดทำงาน",
@@ -754,5 +754,7 @@
   "Polls": "โพล",
   "{{ name }}'s Team": "ทีมของ {{ name }}",
   "Appears on <0>{{count}}</0> card_other": "Appears on <0>{{count}}</0> cards",
-  "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>cards</1>"
+  "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>cards</1>",
+  "{{count}} visitors_other": "{{count}} visitors",
+  "{{count}} responses_other": "{{count}} responses"
 }
