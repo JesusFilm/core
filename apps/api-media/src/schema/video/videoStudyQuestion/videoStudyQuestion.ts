@@ -33,20 +33,24 @@ builder.mutationFields((t) => ({
       isPublisher: true
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.$transaction(async (transaction) => {
-        await updateOrderCreate({
-          videoId: input.videoId,
-          order: input.order,
-          transaction
-        })
-        return await transaction.videoStudyQuestion.create({
-          ...query,
-          data: {
-            ...input,
-            id: input.id ?? undefined
-          }
-        })
-      })
+      return await prisma.$transaction(
+        async (transaction) => {
+          await updateOrderCreate({
+            videoId: input.videoId,
+            languageId: input.languageId,
+            order: input.order,
+            transaction
+          })
+          return await transaction.videoStudyQuestion.create({
+            ...query,
+            data: {
+              ...input,
+              id: input.id ?? undefined
+            }
+          })
+        },
+        { timeout: 10000 }
+      )
     }
   }),
   videoStudyQuestionUpdate: t.prismaField({
@@ -58,36 +62,41 @@ builder.mutationFields((t) => ({
       isPublisher: true
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.$transaction(async (transaction) => {
-        const existing = await transaction.videoStudyQuestion.findUnique({
-          where: { id: input.id },
-          select: { videoId: true }
-        })
-        if (existing == null)
-          throw new Error(`videoStudyQuestion ${input.id} not found`)
-
-        if (existing.videoId == null)
-          throw new Error(`videoStudyQuestion ${input.id} videoId not found`)
-
-        if (input.order != null)
-          await updateOrderUpdate({
-            videoId: existing.videoId,
-            id: input.id,
-            order: input.order,
-            transaction
+      return await prisma.$transaction(
+        async (transaction) => {
+          const existing = await transaction.videoStudyQuestion.findUnique({
+            where: { id: input.id },
+            select: { videoId: true, languageId: true }
           })
-        return await transaction.videoStudyQuestion.update({
-          ...query,
-          where: { id: input.id },
-          data: {
-            value: input.value ?? undefined,
-            primary: input.primary ?? undefined,
-            languageId: input.languageId ?? undefined,
-            crowdInId: input.crowdInId ?? undefined,
-            order: input.order ?? undefined
-          }
-        })
-      })
+          if (existing == null)
+            throw new Error(`videoStudyQuestion ${input.id} not found`)
+
+          if (existing.videoId == null)
+            throw new Error(`videoStudyQuestion ${input.id} videoId not found`)
+
+          if (input.order != null)
+            await updateOrderUpdate({
+              videoId: existing.videoId,
+              id: input.id,
+              languageId: existing.languageId,
+              order: input.order,
+              transaction
+            })
+
+          return await transaction.videoStudyQuestion.update({
+            ...query,
+            where: { id: input.id },
+            data: {
+              value: input.value ?? undefined,
+              primary: input.primary ?? undefined,
+              crowdInId: input.crowdInId ?? undefined
+            }
+          })
+        },
+        {
+          timeout: 10000
+        }
+      )
     }
   }),
   videoStudyQuestionDelete: t.prismaField({
@@ -112,6 +121,7 @@ builder.mutationFields((t) => ({
         })
         await updateOrderDelete({
           videoId: existing.id,
+          languageId: existing.languageId,
           transaction
         })
         return existing
