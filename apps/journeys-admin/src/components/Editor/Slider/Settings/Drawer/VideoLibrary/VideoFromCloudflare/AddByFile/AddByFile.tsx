@@ -100,6 +100,7 @@ export function AddByFile({
     settooManyFiles(false)
     setfileInvalidType(false)
     setfileRejected(false)
+    setError(undefined)
   }
 
   const onDropAccepted = async (files: File[]): Promise<void> => {
@@ -160,16 +161,9 @@ export function AddByFile({
     setfileRejected(true)
     fileRejections.forEach(({ file, errors }) => {
       errors.forEach((e) => {
-        if (e.code === 'file-invalid-type') {
-          setfileInvalidType(true)
-        }
-        if (e.code === 'file-too-large') {
-          setfileTooLarge(true)
-        }
-
-        if (e.code === 'too-many-files') {
-          settooManyFiles(true)
-        }
+        if (e.code === 'file-invalid-type') setfileInvalidType(true)
+        if (e.code === 'file-too-large') setfileTooLarge(true)
+        if (e.code === 'too-many-files') settooManyFiles(true)
       })
     })
   }
