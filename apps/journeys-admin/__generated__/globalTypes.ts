@@ -126,6 +126,7 @@ export enum MessagePlatform {
   home3 = "home3",
   home4 = "home4",
   instagram = "instagram",
+  kakaoTalk = "kakaoTalk",
   line = "line",
   linkExternal = "linkExternal",
   mail1 = "mail1",
@@ -233,17 +234,6 @@ export enum VideoBlockSource {
   cloudflare = "cloudflare",
   internal = "internal",
   youTube = "youTube",
-}
-
-export enum VideoLabel {
-  behindTheScenes = "behindTheScenes",
-  collection = "collection",
-  episode = "episode",
-  featureFilm = "featureFilm",
-  segment = "segment",
-  series = "series",
-  shortFilm = "shortFilm",
-  trailer = "trailer",
 }
 
 /**
@@ -365,18 +355,6 @@ export interface EmailActionInput {
   email: string;
 }
 
-export interface FormBlockCreateInput {
-  id?: string | null;
-  journeyId: string;
-  parentBlockId: string;
-}
-
-export interface FormBlockUpdateInput {
-  projectId?: string | null;
-  apiToken?: string | null;
-  formSlug?: string | null;
-}
-
 export interface HostCreateInput {
   title: string;
   location?: string | null;
@@ -411,6 +389,8 @@ export interface ImageBlockCreateInput {
   height?: number | null;
   isCover?: boolean | null;
   scale?: number | null;
+  focalTop?: number | null;
+  focalLeft?: number | null;
 }
 
 export interface ImageBlockUpdateInput {
@@ -421,6 +401,8 @@ export interface ImageBlockUpdateInput {
   width?: number | null;
   height?: number | null;
   scale?: number | null;
+  focalTop?: number | null;
+  focalLeft?: number | null;
 }
 
 export interface IntegrationGrowthSpacesCreateInput {
@@ -796,14 +778,6 @@ export interface VideoStartEventCreateInput {
   position?: number | null;
   label?: string | null;
   value?: VideoBlockSource | null;
-}
-
-export interface VideosFilter {
-  availableVariantLanguageIds?: string[] | null;
-  title?: string | null;
-  labels?: VideoLabel[] | null;
-  ids?: string[] | null;
-  subtitleLanguageIds?: string[] | null;
 }
 
 /**

@@ -113,6 +113,11 @@ builder.mutationFields((t) => ({
         throw new GraphQLError('User not found', {
           extensions: { code: '404' }
         })
+      if (ctx.currentUser.email == null)
+        // only satifies typescript null check
+        throw new GraphQLError('User email not found', {
+          extensions: { code: '404' }
+        })
 
       await verifyUser(
         ctx.currentUser.id,

@@ -32,6 +32,20 @@ describe('Toolbar Menu', () => {
   const push = jest.fn()
   const on = jest.fn()
 
+  const language = {
+    __typename: 'Language',
+    id: '529',
+    bcp47: 'en',
+    iso3: 'eng',
+    name: [
+      {
+        __typename: 'LanguageName',
+        value: 'English',
+        primary: true
+      }
+    ]
+  }
+
   describe('smUp', () => {
     beforeEach(() =>
       (useMediaQuery as jest.Mock).mockImplementation(() => true)
@@ -55,8 +69,11 @@ describe('Toolbar Menu', () => {
               value={{
                 journey: {
                   id: 'journeyId',
+                  title: 'Some title',
+                  description: 'Some description',
                   slug: 'my-journey',
-                  tags: []
+                  tags: [],
+                  language
                 } as unknown as Journey
               }}
             >
@@ -70,15 +87,6 @@ describe('Toolbar Menu', () => {
       fireEvent.click(screen.getByRole('button'))
       expect(
         screen.getByRole('menuitem', { name: 'Manage Access' })
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('menuitem', { name: 'Title' })
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('menuitem', { name: 'Description' })
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('menuitem', { name: 'Language' })
       ).toBeInTheDocument()
       expect(screen.getByTestId('menu-divider')).toBeInTheDocument()
       expect(
@@ -121,8 +129,11 @@ describe('Toolbar Menu', () => {
               value={{
                 journey: {
                   id: 'journeyId',
+                  title: 'Some title',
+                  description: 'Some description',
                   slug: 'my-journey',
-                  tags: []
+                  tags: [],
+                  language
                 } as unknown as Journey
               }}
             >
@@ -135,23 +146,17 @@ describe('Toolbar Menu', () => {
       )
       fireEvent.click(screen.getByRole('button'))
       expect(
+        screen.getByRole('menuitem', { name: 'Edit Details' })
+      ).toBeInTheDocument()
+      expect(
         screen.getByRole('menuitem', { name: 'Manage Access' })
       ).toBeInTheDocument()
-      expect(
-        screen.getByRole('menuitem', { name: 'Title' })
-      ).toBeInTheDocument()
-      await waitFor(() => {
+      await waitFor(() =>
         expect(
-          screen.getByRole('menuitem', { name: 'Description' })
+          screen.getByRole('menuitem', { name: 'Create Template' })
         ).toBeInTheDocument()
-      })
-      expect(
-        screen.getByRole('menuitem', { name: 'Create Template' })
-      ).toBeInTheDocument()
+      )
       expect(screen.getByTestId('menu-divider')).toBeInTheDocument()
-      expect(
-        screen.getByRole('menuitem', { name: 'Language' })
-      ).toBeInTheDocument()
       expect(
         screen.getByRole('menuitem', { name: 'Copy Link' })
       ).toBeInTheDocument()
@@ -175,9 +180,12 @@ describe('Toolbar Menu', () => {
               value={{
                 journey: {
                   id: 'journeyId',
+                  title: 'Some title',
+                  description: 'Some description',
                   slug: 'my-journey',
                   template: true,
-                  tags: []
+                  tags: [],
+                  language
                 } as unknown as Journey
               }}
             >
@@ -194,7 +202,7 @@ describe('Toolbar Menu', () => {
       ).toBeInTheDocument()
     })
 
-    it('should handle edit journey title', async () => {
+    it('should handle edit journey details', async () => {
       mockedUseRouter.mockReturnValue({
         query: { param: null },
         push,
@@ -210,8 +218,11 @@ describe('Toolbar Menu', () => {
               value={{
                 journey: {
                   id: 'journeyId',
+                  title: 'Some title',
+                  description: 'Some description',
                   slug: 'my-journey',
-                  tags: []
+                  tags: [],
+                  language
                 } as unknown as Journey
               }}
             >
@@ -224,10 +235,10 @@ describe('Toolbar Menu', () => {
       )
       const menu = screen.getByRole('button')
       fireEvent.click(menu)
-      fireEvent.click(screen.getByRole('menuitem', { name: 'Title' }))
+      fireEvent.click(screen.getByRole('menuitem', { name: 'Edit Details' }))
       await waitFor(() =>
         expect(
-          screen.getByRole('dialog', { name: 'Edit Title' })
+          screen.getByRole('textbox', { name: 'Title' })
         ).toBeInTheDocument()
       )
       fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
@@ -236,57 +247,7 @@ describe('Toolbar Menu', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            query: { param: 'title' }
-          },
-          undefined,
-          { shallow: true }
-        )
-      })
-    })
-
-    it('should handle edit journey description', async () => {
-      mockedUseRouter.mockReturnValue({
-        query: { param: null },
-        push,
-        events: {
-          on
-        }
-      } as unknown as NextRouter)
-
-      render(
-        <SnackbarProvider>
-          <MockedProvider>
-            <JourneyProvider
-              value={{
-                journey: {
-                  id: 'journeyId',
-                  slug: 'my-journey',
-                  tags: []
-                } as unknown as Journey
-              }}
-            >
-              <EditorProvider>
-                <Menu />
-              </EditorProvider>
-            </JourneyProvider>
-          </MockedProvider>
-        </SnackbarProvider>
-      )
-      const menu = screen.getByRole('button')
-      fireEvent.click(menu)
-      fireEvent.click(screen.getByRole('menuitem', { name: 'Description' }))
-      await waitFor(() =>
-        expect(
-          screen.getByRole('dialog', { name: 'Edit Description' })
-        ).toBeInTheDocument()
-      )
-      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
-      expect(menu).not.toHaveAttribute('aria-expanded')
-
-      await waitFor(() => {
-        expect(push).toHaveBeenCalledWith(
-          {
-            query: { param: 'description' }
+            query: { param: 'journeyDetails' }
           },
           undefined,
           { shallow: true }
@@ -328,7 +289,8 @@ describe('Toolbar Menu', () => {
                   title: 'some title',
                   description: 'some description',
                   slug: 'my-journey',
-                  tags: []
+                  tags: [],
+                  language
                 } as unknown as Journey
               }}
             >
@@ -341,20 +303,18 @@ describe('Toolbar Menu', () => {
       )
       fireEvent.click(screen.getByRole('button'))
       expect(
-        screen.getByRole('heading', { name: 'some title' })
+        screen.getByRole('heading', { level: 6, name: 'some title' })
       ).toBeInTheDocument()
       expect(screen.getByText('some description')).toBeInTheDocument()
       expect(
         screen.getByRole('menuitem', { name: 'Edit Details' })
       ).toBeInTheDocument()
+      expect(screen.getByTestId('details-menu-divider')).toBeInTheDocument()
       expect(
         screen.getByRole('menuitem', { name: 'Manage Access' })
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('menuitem', { name: 'Language' })
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('menuitem', { name: 'Analytics' })
+        screen.getByRole('menuitem', { name: 'Analytics 0 visitors' })
       ).toBeInTheDocument()
       expect(
         screen.getByRole('menuitem', { name: 'Strategy' })

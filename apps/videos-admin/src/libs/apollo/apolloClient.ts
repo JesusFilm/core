@@ -10,7 +10,9 @@ export const { getClient: getApolloClient, query } = registerApolloClient(
   async () => {
     const token = await getTokens(cookies(), authConfig)
     return makeClient({
-      headers: { Authorization: token?.token ?? '' }
+      headers: {
+        Authorization: token?.token != null ? `JWT ${token?.token}` : ''
+      }
     })
   }
 )

@@ -90,10 +90,9 @@ export function VideoFromYouTube({
   const { t } = useTranslation('apps-journeys-admin')
   const { data, error, size, setSize } = useSWRInfinite<Data>(
     (_pageIndex, previousPageData?: Data) => {
-      const YOUTUBE_ID_REGEX =
-        /^(?:https?:)?\/\/[^/]*(?:youtube(?:-nocookie)?.com|youtu.be).*[=/]([-\w]{11})(?:\\?|=|&|$)/
+      const YOUTUBE_ID_REGEX = /(\/|%3D|vi=|v=)([0-9A-Za-z-_]{11})([%#?&/]|$)/
 
-      const id = url.match(YOUTUBE_ID_REGEX)?.[1]
+      const id = url.match(YOUTUBE_ID_REGEX)?.[2]
       const pageToken = previousPageData?.nextPageToken ?? ''
       return id != null
         ? `id=${id}`

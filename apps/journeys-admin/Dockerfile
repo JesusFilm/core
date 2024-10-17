@@ -2,10 +2,13 @@ FROM node:20-bullseye-slim
 
 EXPOSE 3000
 
+ARG SERVICE_VERSION=0.0.1
+ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
 ENV VERCEL=true
 
 WORKDIR /app
 COPY ./dist/apps/journeys-admin .
+COPY ./package-lock.json .
 
 # dependencies
 RUN npm i -g next

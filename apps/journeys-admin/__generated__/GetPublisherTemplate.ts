@@ -100,38 +100,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_CardBlock {
   fullscreen: boolean;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action = GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_NavigateToBlockAction | GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_LinkAction | GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action_EmailAction;
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_FormBlock {
-  __typename: "FormBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  form: any | null;
-  action: GetPublisherTemplate_publisherTemplate_blocks_FormBlock_action | null;
-}
-
 export interface GetPublisherTemplate_publisherTemplate_blocks_IconBlock {
   __typename: "IconBlock";
   id: string;
@@ -285,6 +253,11 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_
   value: string;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -307,7 +280,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video 
   __typename: "Video";
   id: string;
   title: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_title[];
-  image: string | null;
+  images: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_images[];
   variant: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variant | null;
   variantLanguages: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages[];
 }
@@ -450,7 +423,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock
   triggerAction: GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks = GetPublisherTemplate_publisherTemplate_blocks_GridContainerBlock | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock | GetPublisherTemplate_publisherTemplate_blocks_CardBlock | GetPublisherTemplate_publisherTemplate_blocks_FormBlock | GetPublisherTemplate_publisherTemplate_blocks_IconBlock | GetPublisherTemplate_publisherTemplate_blocks_ImageBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBlock | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock | GetPublisherTemplate_publisherTemplate_blocks_StepBlock | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock | GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock;
+export type GetPublisherTemplate_publisherTemplate_blocks = GetPublisherTemplate_publisherTemplate_blocks_GridContainerBlock | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock | GetPublisherTemplate_publisherTemplate_blocks_CardBlock | GetPublisherTemplate_publisherTemplate_blocks_IconBlock | GetPublisherTemplate_publisherTemplate_blocks_ImageBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBlock | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock | GetPublisherTemplate_publisherTemplate_blocks_StepBlock | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock | GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock;
 
 export interface GetPublisherTemplate_publisherTemplate_primaryImageBlock {
   __typename: "ImageBlock";

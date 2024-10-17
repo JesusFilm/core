@@ -1,1 +1,5 @@
+import './videoCreate'
 import './videosFilter'
+import './videoTranslationCreate'
+import './videoTranslationUpdate'
+import './videoUpdate'

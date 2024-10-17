@@ -19,8 +19,13 @@ describe('VideoHeroOverlay', () => {
     description: [],
     studyQuestions: [],
     snippet: [],
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl-0-0.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     imageAlt: [
       {
         __typename: 'VideoImageAlt',

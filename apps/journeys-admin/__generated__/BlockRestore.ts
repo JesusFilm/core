@@ -86,38 +86,6 @@ export interface BlockRestore_blockRestore_CardBlock {
   fullscreen: boolean;
 }
 
-export interface BlockRestore_blockRestore_FormBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface BlockRestore_blockRestore_FormBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface BlockRestore_blockRestore_FormBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type BlockRestore_blockRestore_FormBlock_action = BlockRestore_blockRestore_FormBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_FormBlock_action_LinkAction | BlockRestore_blockRestore_FormBlock_action_EmailAction;
-
-export interface BlockRestore_blockRestore_FormBlock {
-  __typename: "FormBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  form: any | null;
-  action: BlockRestore_blockRestore_FormBlock_action | null;
-}
-
 export interface BlockRestore_blockRestore_IconBlock {
   __typename: "IconBlock";
   id: string;
@@ -281,6 +249,11 @@ export interface BlockRestore_blockRestore_VideoBlock_video_title {
   value: string;
 }
 
+export interface BlockRestore_blockRestore_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface BlockRestore_blockRestore_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -303,7 +276,7 @@ export interface BlockRestore_blockRestore_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: BlockRestore_blockRestore_VideoBlock_video_title[];
-  image: string | null;
+  images: BlockRestore_blockRestore_VideoBlock_video_images[];
   variant: BlockRestore_blockRestore_VideoBlock_video_variant | null;
   variantLanguages: BlockRestore_blockRestore_VideoBlock_video_variantLanguages[];
 }
@@ -446,7 +419,7 @@ export interface BlockRestore_blockRestore_VideoTriggerBlock {
   triggerAction: BlockRestore_blockRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockRestore_blockRestore = BlockRestore_blockRestore_GridContainerBlock | BlockRestore_blockRestore_ButtonBlock | BlockRestore_blockRestore_CardBlock | BlockRestore_blockRestore_FormBlock | BlockRestore_blockRestore_IconBlock | BlockRestore_blockRestore_ImageBlock | BlockRestore_blockRestore_RadioOptionBlock | BlockRestore_blockRestore_RadioQuestionBlock | BlockRestore_blockRestore_SignUpBlock | BlockRestore_blockRestore_StepBlock | BlockRestore_blockRestore_TextResponseBlock | BlockRestore_blockRestore_TypographyBlock | BlockRestore_blockRestore_VideoBlock | BlockRestore_blockRestore_VideoTriggerBlock;
+export type BlockRestore_blockRestore = BlockRestore_blockRestore_GridContainerBlock | BlockRestore_blockRestore_ButtonBlock | BlockRestore_blockRestore_CardBlock | BlockRestore_blockRestore_IconBlock | BlockRestore_blockRestore_ImageBlock | BlockRestore_blockRestore_RadioOptionBlock | BlockRestore_blockRestore_RadioQuestionBlock | BlockRestore_blockRestore_SignUpBlock | BlockRestore_blockRestore_StepBlock | BlockRestore_blockRestore_TextResponseBlock | BlockRestore_blockRestore_TypographyBlock | BlockRestore_blockRestore_VideoBlock | BlockRestore_blockRestore_VideoTriggerBlock;
 
 export interface BlockRestore {
   /**

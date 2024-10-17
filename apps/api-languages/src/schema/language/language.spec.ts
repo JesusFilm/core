@@ -24,10 +24,15 @@ const LANGUAGE_QUERY = graphql(`
         value
         duration
         size
+        bitrate
+        codec
         language {
           id
         }
       }
+      primaryCountryId
+      speakerCount
+      countriesCount
     }
   }
 `)
@@ -48,9 +53,29 @@ describe('language', () => {
       },
       name: languageName
     } as unknown as Language)
+    prismaMock.countryLanguage.findFirst.mockResolvedValue({
+      id: 'cl1',
+      languageId: 'en',
+      countryId: 'US',
+      speakers: 1000000,
+      displaySpeakers: 1000000,
+      primary: true,
+      suggested: false,
+      order: 1
+    })
+    prismaMock.countryLanguage.aggregate.mockResolvedValue({
+      _count: {},
+      _min: {},
+      _max: {},
+      _avg: {},
+      _sum: { speakers: 1000000 }
+    })
+    prismaMock.countryLanguage.count.mockResolvedValue(10)
+
     const data = await client({
       document: LANGUAGE_QUERY
     })
+
     expect(prismaMock.language.findUnique).toHaveBeenCalledWith({
       where: {
         id: '529'
@@ -77,7 +102,10 @@ describe('language', () => {
       audioPreview: {
         ...omit(audioPreview, 'languageId', 'updatedAt'),
         language: { id: audioPreview.languageId }
-      }
+      },
+      primaryCountryId: 'US',
+      speakerCount: 1000000,
+      countriesCount: 10
     })
   })
 
@@ -90,7 +118,25 @@ describe('language', () => {
       },
       name: languageName
     } as unknown as Language)
-    prismaMock.languageName.findMany.mockResolvedValue(languageName)
+    prismaMock.countryLanguage.findFirst.mockResolvedValue({
+      id: 'cl1',
+      languageId: 'en',
+      countryId: 'US',
+      speakers: 1000000,
+      displaySpeakers: 1000000,
+      primary: true,
+      suggested: false,
+      order: 1
+    })
+    prismaMock.countryLanguage.aggregate.mockResolvedValue({
+      _count: {},
+      _min: {},
+      _max: {},
+      _avg: {},
+      _sum: { speakers: 1000000 }
+    })
+    prismaMock.countryLanguage.count.mockResolvedValue(10)
+
     const data = await client({
       document: LANGUAGE_QUERY,
       variables: {
@@ -98,6 +144,7 @@ describe('language', () => {
         primary: true
       }
     })
+
     expect(prismaMock.language.findUnique).toHaveBeenCalledWith({
       where: {
         id: '529'
@@ -124,7 +171,10 @@ describe('language', () => {
       audioPreview: {
         ...omit(audioPreview, 'languageId', 'updatedAt'),
         language: { id: audioPreview.languageId }
-      }
+      },
+      primaryCountryId: 'US',
+      speakerCount: 1000000,
+      countriesCount: 10
     })
   })
 

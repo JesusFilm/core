@@ -43,7 +43,24 @@ const Country = builder.prismaObject('Country', {
       }
     }),
     continent: t.relation('continent'),
-    countryLanguages: t.relation('countryLanguages')
+    countryLanguages: t.relation('countryLanguages'),
+    languageCount: t.int({
+      resolve: async (country) => {
+        return await prisma.countryLanguage.count({
+          where: { countryId: country.id }
+        })
+      }
+    }),
+    languageHavingMediaCount: t.int({
+      resolve: async (country) => {
+        return await prisma.language.count({
+          where: {
+            countryLanguages: { some: { countryId: country.id } },
+            hasVideos: true
+          }
+        })
+      }
+    })
   })
 })
 

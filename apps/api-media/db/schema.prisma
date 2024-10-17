@@ -3,9 +3,9 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch"]
   output          = env("PRISMA_LOCATION_MEDIA")
   binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+  previewFeatures = ["fullTextSearch", "tracing"]
 }
 
 generator pothos {
@@ -76,17 +76,18 @@ model Video {
   id                     String               @id @default(uuid())
   label                  VideoLabel
   primaryLanguageId      String
+  published              Boolean              @default(true)
   title                  VideoTitle[]
   snippet                VideoSnippet[]
   description            VideoDescription[]
   studyQuestions         VideoStudyQuestion[]
-  image                  String?
+  image                  String? /// @deprecated Use images aspectRatio banner
   imageAlt               VideoImageAlt[]
-  thumbnail              String?
-  videoStill             String?
-  mobileCinematicHigh    String?
-  mobileCinematicLow     String?
-  mobileCinematicVeryLow String?
+  thumbnail              String? /// @deprecated Use images aspectRatio hd
+  videoStill             String? /// @deprecated Use images aspectRatio hd
+  mobileCinematicHigh    String? /// @deprecated Use images aspectRatio banner
+  mobileCinematicLow     String? /// @deprecated Use images aspectRatio banner
+  mobileCinematicVeryLow String? /// @deprecated Use images aspectRatio banner
   slug                   String?              @unique
   noIndex                Boolean?
   childIds               String[] // needed for child sort order
@@ -100,6 +101,7 @@ model Video {
 
   @@index(label)
   @@index(childIds)
+  @@index(published(type: Hash))
 }
 
 model VideoTitle {

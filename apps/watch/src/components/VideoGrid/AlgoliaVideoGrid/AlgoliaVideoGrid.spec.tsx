@@ -1,12 +1,13 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
-import type { CoreVideo } from '../../../libs/algolia/useAlgoliaVideos'
-import { useAlgoliaVideos } from '../../../libs/algolia/useAlgoliaVideos'
+import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
+
+import { type CoreVideo } from '../../../libs/algolia/transformAlgoliaVideos'
 
 import { AlgoliaVideoGrid } from './AlgoliaVideoGrid'
 
 jest.mock('react-instantsearch')
-jest.mock('../../../libs/algolia/useAlgoliaVideos')
+jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
 
 const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
   typeof useAlgoliaVideos
@@ -18,8 +19,13 @@ describe('AlgoliaVideoGrid', () => {
       __typename: 'Video',
       childrenCount: 49,
       id: 'videoId',
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_GOJ-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       imageAlt: [
         {
           value: 'Life of Jesus (Gospel of John)'
@@ -46,7 +52,7 @@ describe('AlgoliaVideoGrid', () => {
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: false,
       noResults: false,
-      hits: transformedVideos,
+      items: transformedVideos,
       showMore: jest.fn(),
       isLastPage: false,
       sendEvent: jest.fn()
@@ -64,7 +70,7 @@ describe('AlgoliaVideoGrid', () => {
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: false,
       noResults: false,
-      hits: transformedVideos,
+      items: transformedVideos,
       showMore,
       isLastPage: false,
       sendEvent: jest.fn()
@@ -79,7 +85,7 @@ describe('AlgoliaVideoGrid', () => {
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: false,
       noResults: false,
-      hits: transformedVideos,
+      items: transformedVideos,
       showMore: jest.fn(),
       isLastPage: true,
       sendEvent: jest.fn()
@@ -96,7 +102,7 @@ describe('AlgoliaVideoGrid', () => {
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: true,
       noResults: false,
-      hits: transformedVideos,
+      items: transformedVideos,
       showMore: jest.fn(),
       isLastPage: true,
       sendEvent: jest.fn()
@@ -109,11 +115,11 @@ describe('AlgoliaVideoGrid', () => {
     ).toBeInTheDocument()
   })
 
-  it('should show no results if no hits returned', () => {
+  it('should show no results if no items returned', () => {
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: false,
       noResults: true,
-      hits: [],
+      items: [],
       showMore: jest.fn(),
       isLastPage: true,
       sendEvent: jest.fn()

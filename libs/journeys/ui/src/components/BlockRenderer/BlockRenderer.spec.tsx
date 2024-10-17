@@ -1,5 +1,4 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Form } from '@formium/types'
 import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
@@ -197,67 +196,6 @@ describe('BlockRenderer', () => {
     ).toBe('card-wrapper')
     expect(getByTestId('card-wrapper')).toContainElement(
       getByText('How did we get here?')
-    )
-  })
-
-  it('should render Form', async () => {
-    const form = {
-      name: 'single-page-test'
-    } as unknown as Form
-    const block: TreeBlock = {
-      __typename: 'FormBlock',
-      id: 'form.id',
-      parentBlockId: null,
-      parentOrder: 0,
-      form,
-      action: null,
-      children: []
-    }
-
-    const { getByTestId } = render(
-      <MockedProvider>
-        <BlockRenderer block={block} />
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getByTestId('FormBlock-form.id')).toBeInTheDocument()
-    )
-  })
-
-  it('should render Form with general wrapper and specific wrapper', () => {
-    const form = {
-      name: 'single-page-test'
-    } as unknown as Form
-    const block: TreeBlock = {
-      __typename: 'FormBlock',
-      id: 'form.id',
-      parentBlockId: null,
-      parentOrder: 0,
-      form,
-      action: null,
-      children: []
-    }
-
-    const { getByTestId } = render(
-      <MockedProvider>
-        <BlockRenderer
-          block={block}
-          wrappers={{
-            Wrapper: ({ children }) => (
-              <div data-testid="general-wrapper">{children}</div>
-            ),
-            FormWrapper: ({ children }) => (
-              <div data-testid="form-wrapper">{children}</div>
-            )
-          }}
-        />
-      </MockedProvider>
-    )
-    expect(
-      getByTestId('general-wrapper').children[0].getAttribute('data-testid')
-    ).toBe('form-wrapper')
-    expect(getByTestId('form-wrapper')).toContainElement(
-      getByTestId('FormBlock-form.id')
     )
   })
 
@@ -657,8 +595,13 @@ describe('BlockRenderer', () => {
             value: 'FallingPlates'
           }
         ],
-        image:
-          'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+        images: [
+          {
+            __typename: 'CloudflareImage',
+            mobileCinematicHigh:
+              'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+          }
+        ],
         variant: {
           __typename: 'VideoVariant',
           id: '2_0-FallingPlates-529',
@@ -708,8 +651,13 @@ describe('BlockRenderer', () => {
             value: 'FallingPlates'
           }
         ],
-        image:
-          'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+        images: [
+          {
+            __typename: 'CloudflareImage',
+            mobileCinematicHigh:
+              'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+          }
+        ],
         variant: {
           __typename: 'VideoVariant',
           id: '2_0-FallingPlates-529',

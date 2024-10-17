@@ -14,8 +14,13 @@ const chapter1: VideoContentFields = {
   __typename: 'Video',
   id: '1_jf6101-0-0',
   label: VideoLabel.segment,
-  image:
-    'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6101-0-0.mobileCinematicHigh.jpg',
+  images: [
+    {
+      __typename: 'CloudflareImage',
+      mobileCinematicHigh:
+        'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6101-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+    }
+  ],
   imageAlt: [{ __typename: 'VideoImageAlt', value: 'The Beginning' }],
   snippet: [
     {

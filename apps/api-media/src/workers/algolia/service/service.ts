@@ -83,7 +83,8 @@ export async function service(logger?: Logger): Promise<void> {
               description: true,
               imageAlt: true,
               snippet: true,
-              subtitles: true
+              subtitles: true,
+              images: true
             }
           }
         },
@@ -102,6 +103,15 @@ export async function service(logger?: Logger): Promise<void> {
       }
 
       const transformedVideos = videoVariants.map((videoVariant) => {
+        const cfImage = videoVariant.video?.images.find(
+          ({ aspectRatio }) => aspectRatio === 'banner'
+        )
+        let image = ''
+        if (cfImage != null)
+          image = `https://imagedelivery.net/${
+            process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
+          }/${cfImage.id}/f=jpg,w=1280,h=600,q=95`
+
         return {
           objectID: videoVariant.id,
           videoId: videoVariant.videoId,
@@ -118,7 +128,7 @@ export async function service(logger?: Logger): Promise<void> {
             .map((subtitle) => subtitle.languageId),
           slug: videoVariant.slug,
           label: videoVariant.video?.label,
-          image: videoVariant.video?.image,
+          image,
           imageAlt:
             videoVariant.video?.imageAlt.find((alt) => alt.languageId === '529')
               ?.value ?? '',

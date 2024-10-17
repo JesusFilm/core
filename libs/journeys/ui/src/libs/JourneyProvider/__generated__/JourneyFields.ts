@@ -100,38 +100,6 @@ export interface JourneyFields_blocks_CardBlock {
   fullscreen: boolean;
 }
 
-export interface JourneyFields_blocks_FormBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface JourneyFields_blocks_FormBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface JourneyFields_blocks_FormBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type JourneyFields_blocks_FormBlock_action = JourneyFields_blocks_FormBlock_action_NavigateToBlockAction | JourneyFields_blocks_FormBlock_action_LinkAction | JourneyFields_blocks_FormBlock_action_EmailAction;
-
-export interface JourneyFields_blocks_FormBlock {
-  __typename: "FormBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  form: any | null;
-  action: JourneyFields_blocks_FormBlock_action | null;
-}
-
 export interface JourneyFields_blocks_IconBlock {
   __typename: "IconBlock";
   id: string;
@@ -285,6 +253,11 @@ export interface JourneyFields_blocks_VideoBlock_video_title {
   value: string;
 }
 
+export interface JourneyFields_blocks_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface JourneyFields_blocks_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -307,7 +280,7 @@ export interface JourneyFields_blocks_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: JourneyFields_blocks_VideoBlock_video_title[];
-  image: string | null;
+  images: JourneyFields_blocks_VideoBlock_video_images[];
   variant: JourneyFields_blocks_VideoBlock_video_variant | null;
   variantLanguages: JourneyFields_blocks_VideoBlock_video_variantLanguages[];
 }
@@ -450,7 +423,7 @@ export interface JourneyFields_blocks_VideoTriggerBlock {
   triggerAction: JourneyFields_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type JourneyFields_blocks = JourneyFields_blocks_GridContainerBlock | JourneyFields_blocks_ButtonBlock | JourneyFields_blocks_CardBlock | JourneyFields_blocks_FormBlock | JourneyFields_blocks_IconBlock | JourneyFields_blocks_ImageBlock | JourneyFields_blocks_RadioOptionBlock | JourneyFields_blocks_RadioQuestionBlock | JourneyFields_blocks_SignUpBlock | JourneyFields_blocks_StepBlock | JourneyFields_blocks_TextResponseBlock | JourneyFields_blocks_TypographyBlock | JourneyFields_blocks_VideoBlock | JourneyFields_blocks_VideoTriggerBlock;
+export type JourneyFields_blocks = JourneyFields_blocks_GridContainerBlock | JourneyFields_blocks_ButtonBlock | JourneyFields_blocks_CardBlock | JourneyFields_blocks_IconBlock | JourneyFields_blocks_ImageBlock | JourneyFields_blocks_RadioOptionBlock | JourneyFields_blocks_RadioQuestionBlock | JourneyFields_blocks_SignUpBlock | JourneyFields_blocks_StepBlock | JourneyFields_blocks_TextResponseBlock | JourneyFields_blocks_TypographyBlock | JourneyFields_blocks_VideoBlock | JourneyFields_blocks_VideoTriggerBlock;
 
 export interface JourneyFields_primaryImageBlock {
   __typename: "ImageBlock";

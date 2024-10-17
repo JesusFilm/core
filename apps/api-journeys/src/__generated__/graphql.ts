@@ -18,7 +18,6 @@ export type Scalars = {
   Date: { input: any; output: any; }
   DateTime: { input: any; output: any; }
   Json: { input: any; output: any; }
-  join__DirectiveArguments: { input: any; output: any; }
   join__FieldSet: { input: any; output: any; }
   link__Import: { input: any; output: any; }
 };
@@ -31,6 +30,8 @@ export type Action = {
 
 export type AudioPreview = {
   __typename?: 'AudioPreview';
+  bitrate: Scalars['Int']['output'];
+  codec: Scalars['String']['output'];
   duration: Scalars['Int']['output'];
   language: Language;
   size: Scalars['Int']['output'];
@@ -302,8 +303,14 @@ export type CloudflareImage = {
   aspectRatio?: Maybe<ImageAspectRatio>;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
+  mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
+  mobileCinematicLow?: Maybe<Scalars['String']['output']>;
+  mobileCinematicVeryLow?: Maybe<Scalars['String']['output']>;
+  thumbnail?: Maybe<Scalars['String']['output']>;
   uploadUrl?: Maybe<Scalars['String']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
+  videoStill?: Maybe<Scalars['String']['output']>;
 };
 
 export type CloudflareVideo = {
@@ -342,6 +349,8 @@ export type Country = {
   flagPngSrc?: Maybe<Scalars['String']['output']>;
   flagWebpSrc?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  languageCount: Scalars['Int']['output'];
+  languageHavingMediaCount: Scalars['Int']['output'];
   languages: Array<Language>;
   latitude?: Maybe<Scalars['Float']['output']>;
   longitude?: Maybe<Scalars['Float']['output']>;
@@ -361,7 +370,10 @@ export type CountryLanguage = {
   displaySpeakers?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
+  order?: Maybe<Scalars['Int']['output']>;
+  primary: Scalars['Boolean']['output'];
   speakers: Scalars['Int']['output'];
+  suggested: Scalars['Boolean']['output'];
 };
 
 export type CountryName = {
@@ -470,49 +482,6 @@ export type Event = {
   journeyId: Scalars['ID']['output'];
   label?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
-};
-
-export type FormBlock = Block & {
-  __typename?: 'FormBlock';
-  action?: Maybe<Action>;
-  apiTokenExists: Scalars['Boolean']['output'];
-  form?: Maybe<Scalars['Json']['output']>;
-  formSlug?: Maybe<Scalars['String']['output']>;
-  forms: Array<FormiumForm>;
-  id: Scalars['ID']['output'];
-  journeyId: Scalars['ID']['output'];
-  parentBlockId?: Maybe<Scalars['ID']['output']>;
-  parentOrder?: Maybe<Scalars['Int']['output']>;
-  projectId?: Maybe<Scalars['String']['output']>;
-  projects: Array<FormiumProject>;
-};
-
-export type FormBlockCreateInput = {
-  id?: InputMaybe<Scalars['ID']['input']>;
-  journeyId: Scalars['ID']['input'];
-  parentBlockId: Scalars['ID']['input'];
-};
-
-export type FormBlockUpdateInput = {
-  apiToken?: InputMaybe<Scalars['String']['input']>;
-  formSlug?: InputMaybe<Scalars['String']['input']>;
-  projectId?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type FormiumForm = {
-  __typename?: 'FormiumForm';
-  /** The name of the form */
-  name: Scalars['String']['output'];
-  /** The formSlug of the form */
-  slug: Scalars['String']['output'];
-};
-
-export type FormiumProject = {
-  __typename?: 'FormiumProject';
-  /** The projectId of the project */
-  id: Scalars['String']['output'];
-  /** The name of the project */
-  name: Scalars['String']['output'];
 };
 
 export enum GridAlignItems {
@@ -668,6 +637,8 @@ export type ImageBlock = Block & {
    * Find a frontend implementation at https://github.com/woltapp/blurhash
    */
   blurhash: Scalars['String']['output'];
+  focalLeft?: Maybe<Scalars['Int']['output']>;
+  focalTop?: Maybe<Scalars['Int']['output']>;
   height: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
@@ -682,6 +653,8 @@ export type ImageBlockCreateInput = {
   alt: Scalars['String']['input'];
   /** If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated. */
   blurhash?: InputMaybe<Scalars['String']['input']>;
+  focalLeft?: InputMaybe<Scalars['Int']['input']>;
+  focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
   /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
@@ -698,6 +671,8 @@ export type ImageBlockUpdateInput = {
   alt?: InputMaybe<Scalars['String']['input']>;
   /** If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated. */
   blurhash?: InputMaybe<Scalars['String']['input']>;
+  focalLeft?: InputMaybe<Scalars['Int']['input']>;
+  focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   scale?: InputMaybe<Scalars['Int']['input']>;
@@ -794,6 +769,7 @@ export type Journey = {
   /** private title for creators */
   title: Scalars['String']['output'];
   trashedAt?: Maybe<Scalars['DateTime']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
   userJourneys?: Maybe<Array<UserJourney>>;
   website?: Maybe<Scalars['Boolean']['output']>;
 };
@@ -872,7 +848,6 @@ export type JourneyProfile = {
   id: Scalars['ID']['output'];
   journeyFlowBackButtonClicked?: Maybe<Scalars['Boolean']['output']>;
   lastActiveTeamId?: Maybe<Scalars['String']['output']>;
-  onboardingFormCompletedAt?: Maybe<Scalars['DateTime']['output']>;
   plausibleDashboardViewed?: Maybe<Scalars['Boolean']['output']>;
   plausibleJourneyFlowViewed?: Maybe<Scalars['Boolean']['output']>;
   userId: Scalars['ID']['output'];
@@ -1107,11 +1082,17 @@ export type Language = {
   __typename?: 'Language';
   audioPreview?: Maybe<AudioPreview>;
   bcp47?: Maybe<Scalars['String']['output']>;
+  countriesCount: Scalars['Int']['output'];
   countryLanguages: Array<CountryLanguage>;
+  featureFilmCount: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
   name: Array<LanguageName>;
+  primaryCountryId?: Maybe<Scalars['String']['output']>;
+  seriesCount: Scalars['Int']['output'];
+  shortFilmCount: Scalars['Int']['output'];
   slug?: Maybe<Scalars['String']['output']>;
+  speakerCount: Scalars['Int']['output'];
 };
 
 
@@ -1177,6 +1158,7 @@ export enum MessagePlatform {
   Home3 = 'home3',
   Home4 = 'home4',
   Instagram = 'instagram',
+  KakaoTalk = 'kakaoTalk',
   Line = 'line',
   LinkExternal = 'linkExternal',
   Mail1 = 'mail1',
@@ -1239,8 +1221,6 @@ export type Mutation = {
   customDomainUpdate: CustomDomain;
   deleteCloudflareImage: Scalars['Boolean']['output'];
   deleteCloudflareVideo: Scalars['Boolean']['output'];
-  formBlockCreate: FormBlock;
-  formBlockUpdate?: Maybe<FormBlock>;
   hostCreate: Host;
   hostDelete: Host;
   hostUpdate: Host;
@@ -1260,7 +1240,6 @@ export type Mutation = {
   journeyFeature?: Maybe<Journey>;
   journeyNotificationUpdate: JourneyNotification;
   journeyProfileCreate: JourneyProfile;
-  journeyProfileOnboardingFormComplete: JourneyProfile;
   journeyProfileUpdate: JourneyProfile;
   /** Sets journey status to published */
   journeyPublish?: Maybe<Journey>;
@@ -1321,11 +1300,37 @@ export type Mutation = {
   videoBlockUpdate: VideoBlock;
   videoCollapseEventCreate: VideoCollapseEvent;
   videoCompleteEventCreate: VideoCompleteEvent;
+  videoCreate: Video;
+  videoDescriptionCreate: VideoDescription;
+  videoDescriptionDelete: VideoDescription;
+  videoDescriptionUpdate: VideoDescription;
   videoExpandEventCreate: VideoExpandEvent;
+  videoImageAltCreate: VideoImageAlt;
+  videoImageAltDelete: VideoImageAlt;
+  videoImageAltUpdate: VideoImageAlt;
   videoPauseEventCreate: VideoPauseEvent;
   videoPlayEventCreate: VideoPlayEvent;
   videoProgressEventCreate: VideoProgressEvent;
+  videoSnippetCreate: VideoSnippet;
+  videoSnippetDelete: VideoSnippet;
+  videoSnippetUpdate: VideoSnippet;
   videoStartEventCreate: VideoStartEvent;
+  videoStudyQuestionCreate: VideoStudyQuestion;
+  videoStudyQuestionDelete: VideoStudyQuestion;
+  videoStudyQuestionUpdate: VideoStudyQuestion;
+  videoSubtitleCreate: VideoSubtitle;
+  videoSubtitleDelete: VideoSubtitle;
+  videoSubtitleUpdate: VideoSubtitle;
+  videoTitleCreate: VideoTitle;
+  videoTitleDelete: VideoTitle;
+  videoTitleUpdate: VideoTitle;
+  videoUpdate: Video;
+  videoVariantCreate: VideoVariant;
+  videoVariantDelete: VideoVariant;
+  videoVariantDownloadCreate: VideoVariantDownload;
+  videoVariantDownloadDelete: VideoVariantDownload;
+  videoVariantDownloadUpdate: VideoVariantDownload;
+  videoVariantUpdate: VideoVariant;
   /** Update a visitor */
   visitorUpdate: Visitor;
   /** Allow current user to update specific allowable fields of their visitor record */
@@ -1519,17 +1524,6 @@ export type MutationDeleteCloudflareImageArgs = {
 
 export type MutationDeleteCloudflareVideoArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type MutationFormBlockCreateArgs = {
-  input: FormBlockCreateInput;
-};
-
-
-export type MutationFormBlockUpdateArgs = {
-  id: Scalars['ID']['input'];
-  input: FormBlockUpdateInput;
 };
 
 
@@ -1909,8 +1903,43 @@ export type MutationVideoCompleteEventCreateArgs = {
 };
 
 
+export type MutationVideoCreateArgs = {
+  input: VideoCreateInput;
+};
+
+
+export type MutationVideoDescriptionCreateArgs = {
+  input: VideoTranslationCreateInput;
+};
+
+
+export type MutationVideoDescriptionDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoDescriptionUpdateArgs = {
+  input: VideoTranslationUpdateInput;
+};
+
+
 export type MutationVideoExpandEventCreateArgs = {
   input: VideoExpandEventCreateInput;
+};
+
+
+export type MutationVideoImageAltCreateArgs = {
+  input: VideoTranslationCreateInput;
+};
+
+
+export type MutationVideoImageAltDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoImageAltUpdateArgs = {
+  input: VideoTranslationUpdateInput;
 };
 
 
@@ -1929,8 +1958,103 @@ export type MutationVideoProgressEventCreateArgs = {
 };
 
 
+export type MutationVideoSnippetCreateArgs = {
+  input: VideoTranslationCreateInput;
+};
+
+
+export type MutationVideoSnippetDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoSnippetUpdateArgs = {
+  input: VideoTranslationUpdateInput;
+};
+
+
 export type MutationVideoStartEventCreateArgs = {
   input: VideoStartEventCreateInput;
+};
+
+
+export type MutationVideoStudyQuestionCreateArgs = {
+  input: VideoStudyQuestionCreateInput;
+};
+
+
+export type MutationVideoStudyQuestionDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoStudyQuestionUpdateArgs = {
+  input: VideoStudyQuestionUpdateInput;
+};
+
+
+export type MutationVideoSubtitleCreateArgs = {
+  input: VideoSubtitleCreateInput;
+};
+
+
+export type MutationVideoSubtitleDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoSubtitleUpdateArgs = {
+  input: VideoSubtitleUpdateInput;
+};
+
+
+export type MutationVideoTitleCreateArgs = {
+  input: VideoTranslationCreateInput;
+};
+
+
+export type MutationVideoTitleDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoTitleUpdateArgs = {
+  input: VideoTranslationUpdateInput;
+};
+
+
+export type MutationVideoUpdateArgs = {
+  input: VideoUpdateInput;
+};
+
+
+export type MutationVideoVariantCreateArgs = {
+  input: VideoVariantCreateInput;
+};
+
+
+export type MutationVideoVariantDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoVariantDownloadCreateArgs = {
+  input: VideoVariantDownloadCreateInput;
+};
+
+
+export type MutationVideoVariantDownloadDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoVariantDownloadUpdateArgs = {
+  input: VideoVariantDownloadUpdateInput;
+};
+
+
+export type MutationVideoVariantUpdateArgs = {
+  input: VideoVariantUpdateInput;
 };
 
 
@@ -2176,6 +2300,9 @@ export type Query = {
    */
   adminJourneys: Array<Journey>;
   adminJourneysReport?: Maybe<PowerBiEmbed>;
+  adminVideo: Video;
+  adminVideos: Array<Video>;
+  adminVideosCount: Scalars['Int']['output'];
   bibleBooks: Array<BibleBook>;
   bibleCitations: Array<BibleCitation>;
   block: Block;
@@ -2231,6 +2358,7 @@ export type Query = {
   keywords: Array<Keyword>;
   language?: Maybe<Language>;
   languages: Array<Language>;
+  languagesCount: Scalars['Int']['output'];
   listUnsplashCollectionPhotos: Array<UnsplashPhoto>;
   me?: Maybe<User>;
   searchUnsplashPhotos: UnsplashQueryResponse;
@@ -2270,6 +2398,24 @@ export type QueryAdminJourneysArgs = {
 
 export type QueryAdminJourneysReportArgs = {
   reportType: JourneysReportType;
+};
+
+
+export type QueryAdminVideoArgs = {
+  id: Scalars['ID']['input'];
+  idType?: InputMaybe<IdType>;
+};
+
+
+export type QueryAdminVideosArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<VideosFilter>;
+};
+
+
+export type QueryAdminVideosCountArgs = {
+  where?: InputMaybe<VideosFilter>;
 };
 
 
@@ -2407,6 +2553,11 @@ export type QueryLanguageArgs = {
 export type QueryLanguagesArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<LanguagesFilter>;
+};
+
+
+export type QueryLanguagesCountArgs = {
   where?: InputMaybe<LanguagesFilter>;
 };
 
@@ -3225,21 +3376,28 @@ export type Video = {
   childrenCount: Scalars['Int']['output'];
   description: Array<VideoDescription>;
   id: Scalars['ID']['output'];
+  /** @deprecated use images.mobileCinematicHigh */
   image?: Maybe<Scalars['String']['output']>;
   imageAlt: Array<VideoImageAlt>;
   images: Array<CloudflareImage>;
   keywords: Array<Keyword>;
   label: VideoLabel;
+  /** @deprecated use images.mobileCinematicHigh */
   mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
+  /** @deprecated use images.mobileCinematicLow */
   mobileCinematicLow?: Maybe<Scalars['String']['output']>;
+  /** @deprecated use images.mobileCinematicVeryLow */
   mobileCinematicVeryLow?: Maybe<Scalars['String']['output']>;
   noIndex?: Maybe<Scalars['Boolean']['output']>;
+  parents: Array<Video>;
   primaryLanguageId: Scalars['ID']['output'];
+  published: Scalars['Boolean']['output'];
   /** slug is a permanent link to the video. */
   slug: Scalars['String']['output'];
   snippet: Array<VideoSnippet>;
   studyQuestions: Array<VideoStudyQuestion>;
   subtitles: Array<VideoSubtitle>;
+  /** @deprecated use images.thumbnail */
   thumbnail?: Maybe<Scalars['String']['output']>;
   title: Array<VideoTitle>;
   variant?: Maybe<VideoVariant>;
@@ -3247,6 +3405,7 @@ export type Video = {
   variantLanguagesCount: Scalars['Int']['output'];
   variantLanguagesWithSlug: Array<LanguageWithSlug>;
   variants: Array<VideoVariant>;
+  /** @deprecated use images.videoStill */
   videoStill?: Maybe<Scalars['String']['output']>;
 };
 
@@ -3545,6 +3704,16 @@ export type VideoCompleteEventCreateInput = {
   value?: InputMaybe<VideoBlockSource>;
 };
 
+export type VideoCreateInput = {
+  childIds: Array<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  label: VideoLabel;
+  noIndex: Scalars['Boolean']['input'];
+  primaryLanguageId: Scalars['String']['input'];
+  published: Scalars['Boolean']['input'];
+  slug: Scalars['String']['input'];
+};
+
 export type VideoDescription = {
   __typename?: 'VideoDescription';
   id: Scalars['ID']['output'];
@@ -3747,6 +3916,26 @@ export type VideoStudyQuestion = {
   value: Scalars['String']['output'];
 };
 
+export type VideoStudyQuestionCreateInput = {
+  crowdInId?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  languageId: Scalars['String']['input'];
+  /** index from 1 */
+  order: Scalars['Int']['input'];
+  primary: Scalars['Boolean']['input'];
+  value: Scalars['String']['input'];
+  videoId: Scalars['String']['input'];
+};
+
+export type VideoStudyQuestionUpdateInput = {
+  crowdInId?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['ID']['input'];
+  /** index from 1 */
+  order?: InputMaybe<Scalars['Int']['input']>;
+  primary?: InputMaybe<Scalars['Boolean']['input']>;
+  value?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type VideoSubtitle = {
   __typename?: 'VideoSubtitle';
   edition: Scalars['String']['output'];
@@ -3759,12 +3948,46 @@ export type VideoSubtitle = {
   vttSrc?: Maybe<Scalars['String']['output']>;
 };
 
+export type VideoSubtitleCreateInput = {
+  edition: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['ID']['input']>;
+  languageId: Scalars['String']['input'];
+  primary: Scalars['Boolean']['input'];
+  srtSrc?: InputMaybe<Scalars['String']['input']>;
+  videoId: Scalars['String']['input'];
+  vttSrc?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type VideoSubtitleUpdateInput = {
+  edition: Scalars['String']['input'];
+  id: Scalars['ID']['input'];
+  languageId?: InputMaybe<Scalars['String']['input']>;
+  primary?: InputMaybe<Scalars['Boolean']['input']>;
+  srtSrc?: InputMaybe<Scalars['String']['input']>;
+  vttSrc?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type VideoTitle = {
   __typename?: 'VideoTitle';
   id: Scalars['ID']['output'];
   language: Language;
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
+};
+
+export type VideoTranslationCreateInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  languageId: Scalars['String']['input'];
+  primary: Scalars['Boolean']['input'];
+  value: Scalars['String']['input'];
+  videoId: Scalars['String']['input'];
+};
+
+export type VideoTranslationUpdateInput = {
+  id: Scalars['ID']['input'];
+  languageId?: InputMaybe<Scalars['String']['input']>;
+  primary?: InputMaybe<Scalars['Boolean']['input']>;
+  value?: InputMaybe<Scalars['String']['input']>;
 };
 
 /**
@@ -3783,6 +4006,16 @@ export type VideoTriggerBlock = Block & {
    * this is the number of seconds since the start of the video
    */
   triggerStart: Scalars['Int']['output'];
+};
+
+export type VideoUpdateInput = {
+  childIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  id: Scalars['String']['input'];
+  label?: InputMaybe<VideoLabel>;
+  noIndex?: InputMaybe<Scalars['Boolean']['input']>;
+  primaryLanguageId?: InputMaybe<Scalars['String']['input']>;
+  published?: InputMaybe<Scalars['Boolean']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type VideoVariant = {
@@ -3806,6 +4039,18 @@ export type VideoVariantSubtitleArgs = {
   primary?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type VideoVariantCreateInput = {
+  dash?: InputMaybe<Scalars['String']['input']>;
+  duration?: InputMaybe<Scalars['Int']['input']>;
+  edition: Scalars['String']['input'];
+  hls?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  languageId: Scalars['String']['input'];
+  share?: InputMaybe<Scalars['String']['input']>;
+  slug: Scalars['String']['input'];
+  videoId: Scalars['String']['input'];
+};
+
 export type VideoVariantDownload = {
   __typename?: 'VideoVariantDownload';
   height: Scalars['Int']['output'];
@@ -3816,10 +4061,42 @@ export type VideoVariantDownload = {
   width: Scalars['Int']['output'];
 };
 
+export type VideoVariantDownloadCreateInput = {
+  height?: InputMaybe<Scalars['Int']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  quality: VideoVariantDownloadQuality;
+  size?: InputMaybe<Scalars['Float']['input']>;
+  url: Scalars['String']['input'];
+  videoVariantId: Scalars['String']['input'];
+  width?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export enum VideoVariantDownloadQuality {
   High = 'high',
   Low = 'low'
 }
+
+export type VideoVariantDownloadUpdateInput = {
+  height?: InputMaybe<Scalars['Int']['input']>;
+  id: Scalars['String']['input'];
+  quality?: InputMaybe<VideoVariantDownloadQuality>;
+  size?: InputMaybe<Scalars['Float']['input']>;
+  url?: InputMaybe<Scalars['String']['input']>;
+  videoVariantId?: InputMaybe<Scalars['String']['input']>;
+  width?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type VideoVariantUpdateInput = {
+  dash?: InputMaybe<Scalars['String']['input']>;
+  duration?: InputMaybe<Scalars['Int']['input']>;
+  edition?: InputMaybe<Scalars['String']['input']>;
+  hls?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  languageId?: InputMaybe<Scalars['String']['input']>;
+  share?: InputMaybe<Scalars['String']['input']>;
+  slug?: InputMaybe<Scalars['String']['input']>;
+  videoId?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type VideosFilter = {
   availableVariantLanguageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
@@ -3993,11 +4270,12 @@ export type VisitorsConnection = {
 };
 
 export enum Join__Graph {
-  Analytics = 'ANALYTICS',
-  Journeys = 'JOURNEYS',
-  Languages = 'LANGUAGES',
-  Media = 'MEDIA',
-  Users = 'USERS'
+  ApiAnalytics = 'API_ANALYTICS',
+  ApiJourneys = 'API_JOURNEYS',
+  ApiJourneysModern = 'API_JOURNEYS_MODERN',
+  ApiLanguages = 'API_LANGUAGES',
+  ApiMedia = 'API_MEDIA',
+  ApiUsers = 'API_USERS'
 }
 
 export enum Link__Purpose {
