@@ -22,7 +22,7 @@ export function JourneyDetails(): ReactElement {
             px: { xs: 4, sm: 0 },
             py: { xs: 1, sm: 0 },
             gap: { xs: 2, sm: 0 },
-            width: { xs: 220, sm: '100%' }
+            maxWidth: { xs: 220, sm: '100%' }
           }}
         >
           <Typography
