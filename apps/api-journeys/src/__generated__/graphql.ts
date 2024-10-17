@@ -370,8 +370,10 @@ export type CountryLanguage = {
   displaySpeakers?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
+  order?: Maybe<Scalars['Int']['output']>;
   primary: Scalars['Boolean']['output'];
   speakers: Scalars['Int']['output'];
+  suggested: Scalars['Boolean']['output'];
 };
 
 export type CountryName = {
@@ -1150,6 +1152,7 @@ export enum MessagePlatform {
   Home3 = 'home3',
   Home4 = 'home4',
   Instagram = 'instagram',
+  KakaoTalk = 'kakaoTalk',
   Line = 'line',
   LinkExternal = 'linkExternal',
   Mail1 = 'mail1',
