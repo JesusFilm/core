@@ -9,8 +9,12 @@ import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
 export function JourneyDetails(): ReactElement {
   const { journey } = useJourney()
-  const language = journey?.language.name.find(
-    ({ primary }) => primary != null
+  const nativeName = journey?.language?.name.find(
+    ({ primary }) => !primary
+  )?.value
+
+  const localName = journey?.language?.name.find(
+    ({ primary }) => primary
   )?.value
 
   return (
@@ -66,7 +70,7 @@ export function JourneyDetails(): ReactElement {
                 color: { xs: 'secondary.light', md: 'secondary.main' }
               }}
             >
-              {language}
+              {localName ?? nativeName}
             </Typography>
             {journey.description !== '' && journey.description != null ? (
               <Typography
