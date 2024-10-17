@@ -29,8 +29,10 @@ export function OverlayContent({
 
   const isScrollable = (): boolean => {
     const box = cardOverlayRef.current
+    console.log(box)
     return box != null ? box.scrollHeight > box.clientHeight : false
   }
+  console.log(isScrollable())
 
   const enableVerticalScroll: SxProps = {
     overflowY: 'scroll',
@@ -87,14 +89,29 @@ export function OverlayContent({
           ...topBottomEdgeFadeEffect,
           ...topBottomMarginsOnContent,
           ...mobileNotchPadding,
-          ...sx
+          ...sx,
+          position: 'relative',
+          '& ~ .scroll-indicator': {
+            position: 'absolute',
+            bottom: { xs: 0, sm: 64 },
+            left: {
+              xs: 'calc(50% - 12px)'
+              //   sm: cardHasBackground() ? '80%' : 'calc(50% - 12px)'
+            }
+          }
         }}
       >
         {children}
       </Box>
-      {isScrollable() && variant !== 'admin' && (
-        <ScrollDownIndicator trigger={trigger} />
-      )}
+      <Box
+        className="scroll-indicator"
+        data-testid="ScrollBox"
+        sx={{ zIndex: 1 }}
+      >
+        {isScrollable() && variant !== 'admin' && (
+          <ScrollDownIndicator trigger={trigger} />
+        )}
+      </Box>
     </>
   )
 }

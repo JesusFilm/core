@@ -5,6 +5,13 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
+import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
+
+import { StepFields } from '../../../Step/__generated__/StepFields'
+import { cardHasBackground } from '../utils'
+
+import FacebookLogoIcon from '@core/shared/ui/icons/FacebookLogo'
+
 const BOUNCE_DELAY = 5000
 
 interface ScrollDownIndicatorProps {
@@ -16,8 +23,9 @@ interface ScrollDownIndicatorProps {
 export function ScrollDownIndicator({
   trigger,
   bounceDelay = BOUNCE_DELAY,
-  icon = <ChevronDownIcon />
-}: ScrollDownIndicatorProps): ReactElement {
+  icon = <ChevronDownIcon fontSize="large" />
+}: // icon = <FacebookLogoIcon fontSize="large" />
+ScrollDownIndicatorProps): ReactElement {
   const [shouldAnimate, setShouldAnimate] = useState(false)
 
   useEffect(() => {
@@ -35,12 +43,16 @@ export function ScrollDownIndicator({
   return (
     <Box
       data-testid="DownArrowBox"
-      sx={{
-        position: 'fixed',
-        bottom: 88,
-        left: 'calc(50% - 12px)',
-        animation: shouldAnimate ? `${bounce} 2s` : 'none'
-      }}
+      sx={
+        {
+          // position: 'fixed',
+          // left: 'calc(50% - 12px)',
+          // bottom: 80, // 112,
+          //  position: 'relative',
+          // zIndex: 1
+          // animation: shouldAnimate ? `${bounce} 2s` : 'none'
+        }
+      }
     >
       <Fade
         appear={false}
