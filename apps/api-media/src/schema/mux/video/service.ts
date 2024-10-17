@@ -16,7 +16,7 @@ function getClient(): Mux {
 type ResolutionTier = '1080p' | '1440p' | '2160p' | undefined
 
 export async function createVideoByDirectUpload(
-  maxResolution: ResolutionTier,
+  maxResolution: ResolutionTier = '1080p',
   downloadable = false
 ): Promise<{ id: string; uploadUrl: string }> {
   if (process.env.CORS_ORIGIN == null) throw new Error('Missing CORS_ORIGIN')
@@ -44,7 +44,7 @@ export async function createVideoByDirectUpload(
 
 export async function createVideoFromUrl(
   url: string,
-  maxResolution: ResolutionTier,
+  maxResolution: ResolutionTier = '1080p',
   downloadable = false
 ): Promise<Mux.Video.Asset> {
   if (process.env.CLOUDFLARE_ACCOUNT_ID == null)

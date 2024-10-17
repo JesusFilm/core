@@ -60,7 +60,7 @@ builder.queryFields((t) => ({
       if (!video.readyToStream) {
         const muxVideo = await getVideo(id)
 
-        if (muxVideo.readyToStream === true) {
+        if (muxVideo.status === 'ready') {
           return await prisma.muxVideo.update({
             ...query,
             where: { id },
@@ -82,17 +82,12 @@ builder.mutationFields((t) => ({
       isAuthenticated: true
     },
     args: {
-      uploadLength: t.arg({ type: 'Int', required: true }),
       name: t.arg({ type: 'String', required: true })
     },
-    resolve: async (query, _root, { uploadLength, name }, { user }) => {
+    resolve: async (query, _root, { name }, { user }) => {
       if (user == null) throw new Error('User not found')
 
-      const { id, uploadUrl } = await createVideoByDirectUpload(
-        uploadLength,
-        name,
-        user.id
-      )
+      const { id, uploadUrl } = await createVideoByDirectUpload()
 
       return await prisma.muxVideo.create({
         ...query,
@@ -116,7 +111,7 @@ builder.mutationFields((t) => ({
     resolve: async (query, _root, { url }, { user }) => {
       if (user == null) throw new Error('User not found')
 
-      const { uid: id } = await createVideoFromUrl(url, user.id)
+      const { id } = await createVideoFromUrl(url)
 
       return await prisma.muxVideo.create({
         ...query,
