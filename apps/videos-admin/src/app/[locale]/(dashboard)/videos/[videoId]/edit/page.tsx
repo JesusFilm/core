@@ -2,7 +2,11 @@
 
 import { gql, useMutation } from '@apollo/client'
 import {
+  Box,
+  Checkbox,
   FormControl,
+  FormControlLabel,
+  FormLabel,
   InputLabel,
   MenuItem,
   Select,
@@ -12,6 +16,8 @@ import {
   Tabs,
   Typography
 } from '@mui/material'
+import { graphql } from 'gql.tada'
+import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, SyntheticEvent, useState } from 'react'
@@ -65,9 +71,19 @@ const VIDEO_UPDATE = gql`
       id
       label
       published
+      noIndex
     }
   }
 `
+
+const VIDEO_IMAGE_ALT_UPDATE = graphql(`
+  mutation UpdateVideoImageAlt($input: VideoTranslationUpdateInput!) {
+    videoImageAltUpdate(input: $input) {
+      id
+      value
+    }
+  }
+`)
 
 const videoLabels = [
   { label: 'Collection', value: 'collection' },
@@ -92,6 +108,7 @@ export default function EditPage(): ReactElement {
   const updateDescription = useUpdateMutation(VIDEO_DESCRIPTION_UPDATE)
   const updateSnippet = useUpdateMutation(VIDEO_SNIPPET_UPDATE)
   const [updateVideo] = useMutation(VIDEO_UPDATE)
+  const updateAlt = useUpdateMutation(VIDEO_IMAGE_ALT_UPDATE)
 
   const [tabValue, setTabValue] = useState(0)
   const handleTabChange = (e: SyntheticEvent, newValue: number): void => {
@@ -121,6 +138,17 @@ export default function EditPage(): ReactElement {
         input: {
           id: video?.id,
           published: e.target.value === 'published'
+        }
+      }
+    })
+  }
+
+  const updateNoIndex = (e): void => {
+    void updateVideo({
+      variables: {
+        input: {
+          id: video?.id,
+          noIndex: e.target.checked
         }
       }
     })
@@ -167,7 +195,66 @@ export default function EditPage(): ReactElement {
                   disabled
                   fullWidth
                 />
+                <FormControl>
+                  <FormLabel>{t('Status')}</FormLabel>
+                  <Select
+                    defaultValue={
+                      video?.published === true ? 'published' : 'unpublished'
+                    }
+                    onChange={handleStatusChange}
+                  >
+                    {videoStatuses.map(({ label, value }) => (
+                      <MenuItem key={label} value={value}>
+                        {label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl>
+                  <FormLabel>{t('Label')}</FormLabel>
+                  <Select value={video?.label} onChange={handleLabelChange}>
+                    {videoLabels.map(({ label, value }) => (
+                      <MenuItem key={value} value={value}>
+                        {label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Stack>
+
+              <Box
+                sx={{
+                  position: 'relative',
+                  height: 225,
+                  width: { xs: 'auto', sm: 400 },
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  flexShrink: 0
+                }}
+              >
+                <Image
+                  src={video?.images[0].mobileCinematicHigh as string}
+                  alt={video?.imageAlt[0].value}
+                  layout="fill"
+                  objectFit="cover"
+                  priority
+                />
+              </Box>
+              <UpdateableField
+                label="Alt"
+                {...video?.imageAlt?.[0]}
+                handleUpdate={updateAlt}
+              />
+              <FormControlLabel
+                label="No Index"
+                control={
+                  <Checkbox
+                    defaultChecked={video?.noIndex === true}
+                    onChange={updateNoIndex}
+                  />
+                }
+              />
+
               <UpdateableField
                 label="Snippet"
                 {...video?.snippet?.[0]}
@@ -180,36 +267,6 @@ export default function EditPage(): ReactElement {
                 handleUpdate={updateDescription}
                 variant="textarea"
               />
-
-              <FormControl>
-                <InputLabel id="published-status-label">
-                  {t('Published')}
-                </InputLabel>
-                <Select
-                  defaultValue={
-                    video?.published === true ? 'published' : 'unpublished'
-                  }
-                  onChange={handleStatusChange}
-                >
-                  {videoStatuses.map(({ label, value }) => (
-                    <MenuItem key={label} value={value}>
-                      {label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl>
-                <InputLabel id="published-status-label">
-                  {t('Label')}
-                </InputLabel>
-                <Select value={video?.label} onChange={handleLabelChange}>
-                  {videoLabels.map(({ label, value }) => (
-                    <MenuItem key={value} value={value}>
-                      {label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
 
               <StudyQuestions studyQuestions={video?.studyQuestions} />
             </Stack>

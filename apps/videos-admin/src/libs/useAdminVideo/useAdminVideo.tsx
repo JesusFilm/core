@@ -15,6 +15,7 @@ export const GET_ADMIN_VIDEO = graphql(`
         id
         value
       }
+      noIndex
       title {
         id
         value

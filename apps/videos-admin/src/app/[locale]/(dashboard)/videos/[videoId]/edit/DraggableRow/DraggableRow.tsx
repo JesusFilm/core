@@ -3,13 +3,16 @@ import {
   Box,
   FormControl,
   IconButton,
+  IconButtonProps,
   InputLabel,
   MenuItem,
   Select,
   Stack,
   Typography
 } from '@mui/material'
+import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import Drag from '@core/shared/ui/icons/Drag'
@@ -21,7 +24,16 @@ interface DraggableRowProps {
   img?: any
   idx: number
   count: number
-  handleClick?: () => void
+  handleClick?: (id: string) => void
+  actions?: Array<{
+    name: string
+    Icon: typeof SvgIcon
+    events: { [key: string]: (id: string) => void }
+    slotProps?: {
+      button?: IconButtonProps
+      icon?: SvgIconProps
+    }
+  }>
 }
 
 export function DraggableRow({
@@ -30,8 +42,10 @@ export function DraggableRow({
   img,
   idx,
   count,
-  handleClick
+  handleClick,
+  actions
 }: DraggableRowProps): ReactElement {
+  const t = useTranslations()
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
@@ -49,9 +63,10 @@ export function DraggableRow({
   // }
 
   const clickEvent = (e): void => {
+    console.log('click event')
     if (e.currentTarget !== e.target) return
 
-    handleClick?.()
+    handleClick?.(id)
   }
 
   return (
@@ -97,7 +112,7 @@ export function DraggableRow({
       )}
       <Typography variant="subtitle2">{label}</Typography>
       <FormControl sx={{ ml: 'auto' }}>
-        <InputLabel>Order</InputLabel>
+        <InputLabel>{t('Order')}</InputLabel>
         <Select value={idx + 1} size="small">
           {[...Array(count)].map((_, i) => (
             <MenuItem key={i} value={i + 1}>
@@ -106,9 +121,21 @@ export function DraggableRow({
           ))}
         </Select>
       </FormControl>
-      <IconButton aria-label="delete" color="error" size="small">
-        <Trash2 sx={{ fontSize: '16px' }} color="error" />
-      </IconButton>
+      {actions != null && actions.length > 0 && (
+        <Stack direction="row" gap={0.75}>
+          {actions.map(({ Icon, events, name, slotProps }) => (
+            <IconButton
+              size="small"
+              {...slotProps?.button}
+              key={`${name}-action`}
+              aria-label={name}
+              {...events}
+            >
+              <Icon {...slotProps?.icon} sx={{ fontSize: '16px' }} />
+            </IconButton>
+          ))}
+        </Stack>
+      )}
     </Stack>
   )
 }

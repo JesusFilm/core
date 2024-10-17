@@ -1,16 +1,20 @@
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import { DndContext } from '@dnd-kit/core'
 import { SortableContext } from '@dnd-kit/sortable'
 import {
   Box,
   FormControl,
+  FormLabel,
   Modal,
   ModalProps,
+  Paper,
   Select,
   Stack,
+  TextField,
   Typography
 } from '@mui/material'
 import { graphql } from 'gql.tada'
+import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
 import {
@@ -18,7 +22,10 @@ import {
   LanguageOption
 } from '@core/shared/ui/LanguageAutocomplete'
 
+import { useVideoVariant } from '../../../../../../../libs/useVideoVariant/useVideoVariant'
 import { DraggableRow } from '../DraggableRow'
+
+import { Downloads } from './Downloads'
 
 // const GET_VIDEO_LANGUAGES = graphql(`
 //   query GetVariantLanguages a
@@ -28,15 +35,63 @@ import { DraggableRow } from '../DraggableRow'
 // const query = useQuery()
 // }
 
+const GET_LANGUAGES = graphql(`
+  query GetLanguages {
+    languages {
+      id
+      iso3
+      bcp47
+      name {
+        value
+      }
+    }
+  }
+`)
+
+export const VIDEO_VARIANT_UPDATE = graphql(`
+  mutation VideoVariantUpdate($input: VideoVariantUpdateInput!) {
+    videoVariantUpdate(input: $input) {
+      id
+      language {
+        id
+        name {
+          value
+        }
+        slug
+      }
+    }
+  }
+`)
+
 interface VariantModalProps extends Omit<ModalProps, 'children'> {
   variant: any
 }
 
-function VariantModal({ variant, ...rest }: VariantModalProps): ReactElement {
+function VariantModal({
+  variant,
+  ...rest
+}: VariantModalProps): ReactElement | null {
+  const t = useTranslations()
+  const [updateVariant] = useMutation(VIDEO_VARIANT_UPDATE)
   // const { data } = useGetLanguages({ variantId: variant.id })
   console.log({ variant })
 
-  if (variant == null) return <Typography>No Variant</Typography>
+  const { data, loading } = useQuery(GET_LANGUAGES)
+
+  console.log({ data })
+
+  const handleLanguageChange = (language): void => {
+    void updateVariant({
+      variables: {
+        input: {
+          id: variant.id,
+          languageId: language.id
+        }
+      }
+    })
+  }
+
+  if (variant == null) return null
 
   return (
     <Modal {...rest}>
@@ -54,13 +109,22 @@ function VariantModal({ variant, ...rest }: VariantModalProps): ReactElement {
           p: 4
         }}
       >
-        <pre>{JSON.stringify(variant, null, 2)}</pre>
+        <Typography variant="h2">{t('Variant')}</Typography>
+        <FormControl>
+          <FormLabel>{t('Slug')}</FormLabel>
+          <TextField disabled defaultValue={variant.slug} />
+        </FormControl>
         <LanguageAutocomplete
-          onChange={() => alert('change language')}
-          value="529"
-          languages={variant.language}
-          loading={false}
+          onChange={handleLanguageChange}
+          value={{
+            id: variant.language.id,
+            localName: variant.language.name[0].value,
+            nativeName: ''
+          }}
+          languages={data?.languages}
+          loading={loading}
         />
+        <Downloads downloads={variant.downloads} />
       </Box>
     </Modal>
   )
@@ -68,12 +132,14 @@ function VariantModal({ variant, ...rest }: VariantModalProps): ReactElement {
 
 export function Variants({ variants }): ReactElement {
   const [open, setOpen] = useState(false)
-  const [variant, setVariant] = useState(null)
+  const [selected, setSelected] = useState(null)
   const items = variants.slice(0, 50)
+
+  console.log({ variants })
 
   const handleOpen = (variant): void => {
     setOpen(true)
-    setVariant(variant)
+    setSelected(variant.id)
   }
   const handleClose = (): void => setOpen(false)
   return (
@@ -96,7 +162,11 @@ export function Variants({ variants }): ReactElement {
           </Stack>
         </SortableContext>
       </DndContext>
-      <VariantModal open={open} onClose={handleClose} variant={variant} />
+      <VariantModal
+        open={open}
+        onClose={handleClose}
+        variant={variants.find((variant) => variant.id === selected)}
+      />
     </Box>
   )
 }

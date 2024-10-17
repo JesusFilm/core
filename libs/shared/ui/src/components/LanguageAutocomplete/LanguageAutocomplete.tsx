@@ -61,8 +61,6 @@ export function LanguageAutocomplete({
     )
   }, [languages])
 
-  console.log({ options })
-
   const sortedOptions = useMemo(() => {
     if (options.length > 0) {
       return options.sort((a, b) => {

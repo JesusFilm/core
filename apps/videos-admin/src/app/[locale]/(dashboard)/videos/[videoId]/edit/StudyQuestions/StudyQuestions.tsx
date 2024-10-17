@@ -1,8 +1,9 @@
 import { gql, useMutation } from '@apollo/client'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext } from '@dnd-kit/sortable'
-import { Typography } from '@mui/material'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { DraggableRow } from '../DraggableRow'
@@ -15,12 +16,12 @@ const UPDATE_STUDY_QUESTION_ORDER = gql`
   }
 `
 
-export function StudyQuestions({ studyQuestions }): ReactElement {
+export function StudyQuestions({ studyQuestions }): ReactElement | null {
+  const t = useTranslations()
   const [updateStudyQuestionOrder] = useMutation(UPDATE_STUDY_QUESTION_ORDER)
 
-  const handleDragEnd = async (e: DragEndEvent) => {
-    console.log('drag end', e)
-    if (!e.over) return
+  const handleDragEnd = async (e: DragEndEvent): Promise<void> => {
+    if (e.over == null) return
 
     if (e.active.id !== e.over.id) {
       const oldIndex = studyQuestions.findIndex(
@@ -29,9 +30,7 @@ export function StudyQuestions({ studyQuestions }): ReactElement {
       const newIndex = studyQuestions.findIndex(
         (question) => question.id === e.over?.id
       )
-      console.log({ oldIndex, newIndex })
-      // send graphql request to update order
-      const res = await updateStudyQuestionOrder({
+      await updateStudyQuestionOrder({
         variables: {
           input: {
             id: e.active.id,
@@ -40,8 +39,6 @@ export function StudyQuestions({ studyQuestions }): ReactElement {
           }
         }
       })
-
-      console.log(res)
     }
   }
 
@@ -51,7 +48,7 @@ export function StudyQuestions({ studyQuestions }): ReactElement {
 
   return (
     <>
-      <Typography variant="h4">Study Questions</Typography>
+      <Typography variant="h4">{t('Study Questions')}</Typography>
       <DndContext onDragEnd={handleDragEnd}>
         <SortableContext items={studyQuestions}>
           <Stack gap={1}>
