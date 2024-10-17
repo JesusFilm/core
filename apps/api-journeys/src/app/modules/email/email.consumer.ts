@@ -1,6 +1,6 @@
 // code commmented out until all SES requirements for bounce, unsubscribe, GDPR met
 
-import { ApolloClient, InMemoryCache } from '@apollo/client'
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { render } from '@react-email/render'
 import { Job } from 'bullmq'
@@ -24,16 +24,18 @@ import { TeamInviteAcceptedEmail } from '../../emails/templates/TeamInviteAccept
 import { TeamRemovedEmail } from '../../emails/templates/TeamRemoved'
 import { PrismaService } from '../../lib/prisma.service'
 
-const apollo = new ApolloClient({
+const httpLink = createHttpLink({
   uri: process.env.GATEWAY_URL,
-  cache: new InMemoryCache(),
-  name: 'api-journeys',
-  version: process.env.SERVICE_VERSION,
   headers: {
     'interop-token': process.env.INTEROP_TOKEN ?? '',
     'x-graphql-client-name': 'api-journeys',
     'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
   }
+})
+
+const apollo = new ApolloClient({
+  link: httpLink,
+  cache: new InMemoryCache()
 })
 
 type OmittedUser = Omit<User, 'id' | 'emailVerified'>

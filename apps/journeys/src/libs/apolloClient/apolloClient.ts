@@ -12,7 +12,12 @@ import { firebaseClient } from '../firebaseClient'
 import { cache } from './cache'
 
 const httpLink = createHttpLink({
-  uri: process.env.GATEWAY_URL ?? '/api/graphql'
+  uri: process.env.GATEWAY_URL ?? '/api/graphql',
+  headers: {
+    'x-graphql-client-name': 'journeys',
+    'x-graphql-client-version':
+      process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
+  }
 })
 
 let signInPromise: Promise<UserCredential>
@@ -37,14 +42,7 @@ export function createApolloClient(): ApolloClient<NormalizedCacheObject> {
     ssrMode: typeof window === 'undefined',
     link: typeof window === 'undefined' ? httpLink : authLink.concat(httpLink),
     cache: cache(),
-    connectToDevTools: true,
-    name: 'journeys',
-    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
-    headers: {
-      'x-graphql-client-name': 'journeys',
-      'x-graphql-client-version':
-        process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
-    }
+    connectToDevTools: true
   })
 }
 
