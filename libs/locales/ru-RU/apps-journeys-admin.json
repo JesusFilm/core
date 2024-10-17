@@ -155,6 +155,7 @@
   "You can add no more than two chat platforms": "Вы можете добавить не более двух чат-платформ.",
   "Chat": "Чат",
   "Instagram": "Инстаграм",
+  "KakaoTalk": "KakaoTalk",
   "LINE": "ЛИНИЯ",
   "Skype": "Скайп",
   "Snapchat": "Snapchat",
@@ -746,7 +747,6 @@
   "Video expanded to fullscreen at ({{ position }})": "Видео разворачивается в полноэкранный режим на ({{ position }})",
   "Video completed": "Видео завершено",
   "Facebook": "Фейсбук",
-  "KakaoTalk": "KakaoTalk",
   "Message Square": "Квадрат для сообщений",
   "ID": "ИДЕНТИФИКАТОР",
   "Last Active": "Последнее посещение",
@@ -760,5 +760,13 @@
   "<0>{{count}}</0><1>card</1>_one": "<0>{{count}}</0><1>карта</1>",
   "<0>{{count}}</0><1>card</1>_few": "<0>{{count}}</0><1>карты</1>",
   "<0>{{count}}</0><1>card</1>_many": "<0>{{count}}</0><1>карты</1>",
-  "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>карты</1>"
+  "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>карты</1>",
+  "{{count}} visitors_one": "{{count}} Посетители",
+  "{{count}} visitors_few": "{{count}} посетители",
+  "{{count}} visitors_many": "{{count}} посетители",
+  "{{count}} visitors_other": "{{count}} Посетители",
+  "{{count}} responses_one": "{{count}} ответы",
+  "{{count}} responses_few": "{{count}} ответы",
+  "{{count}} responses_many": "{{count}} ответы",
+  "{{count}} responses_other": "{{count}} ответы"
 }
