@@ -155,6 +155,7 @@
   "You can add no more than two chat platforms": "Tu ne peux pas ajouter plus de deux plateformes de chat",
   "Chat": "Chat",
   "Instagram": "Instagram",
+  "KakaoTalk": "KakaoTalk",
   "LINE": "LIGNE",
   "Skype": "Skype",
   "Snapchat": "Snapchat",
@@ -746,7 +747,6 @@
   "Video expanded to fullscreen at ({{ position }})": "La vidéo est affichée en plein écran à l'adresse ({{ position }})",
   "Video completed": "Vidéo complétée",
   "Facebook": "Facebook",
-  "KakaoTalk": "KakaoTalk",
   "Message Square": "Carré à messages",
   "ID": "ID",
   "Last Active": "Dernier actif",
@@ -756,5 +756,9 @@
   "Appears on <0>{{count}}</0> card_one": "Apparaît sur la <0>{{count}}</0> carte",
   "Appears on <0>{{count}}</0> card_other": "Apparaît sur les <0>{{count}}</0> cartes",
   "<0>{{count}}</0><1>card</1>_one": "<0>{{count}}</0><1>carte</1>",
-  "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>cartes</1>"
+  "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>cartes</1>",
+  "{{count}} visitors_one": "{{count}} visiteurs",
+  "{{count}} visitors_other": "{{count}} visiteurs",
+  "{{count}} responses_one": "{{count}} réponses",
+  "{{count}} responses_other": "{{count}} réponses"
 }
