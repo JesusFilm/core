@@ -214,7 +214,7 @@
     "@emotion/babel-plugin": "11.12.0",
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/client-preset": "^4.3.0",
-    "@graphql-hive/cli": "^0.43.0",
+    "@graphql-hive/cli": "^0.44.0",
     "@graphql-tools/executor-http": "^1.0.9",
     "@mermaid-js/mermaid-cli": "^10.8.0",
     "@nestjs/schematics": "10.0.2",
