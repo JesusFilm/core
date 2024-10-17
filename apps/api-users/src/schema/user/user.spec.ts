@@ -195,12 +195,12 @@ describe('api-users', () => {
       const data = await authClient({
         document: USER_QUERY,
         variables: {
-          id: '1'
+          id: '2'
         }
       })
       expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
         where: {
-          userId: user.id
+          userId: user.userId
         }
       })
       expect(data).toHaveProperty(
