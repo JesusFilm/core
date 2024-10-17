@@ -1,5 +1,4 @@
 import Mux from '@mux/mux-node'
-import { Video } from 'cloudflare/resources/stream/stream'
 
 function getClient(): Mux {
   if (process.env.MUX_ACCESS_TOKEN_ID == null)
@@ -14,11 +13,10 @@ function getClient(): Mux {
   })
 }
 
+type ResolutionTier = '1080p' | '1440p' | '2160p' | undefined
+
 export async function createVideoByDirectUpload(
-  uploadLength: number,
-  name: string,
-  userId: string,
-  maxResolution: '1080p' | '1440p' | '2160p' | undefined,
+  maxResolution: ResolutionTier,
   downloadable = false
 ): Promise<{ id: string; uploadUrl: string }> {
   if (process.env.CORS_ORIGIN == null) throw new Error('Missing CORS_ORIGIN')
@@ -46,40 +44,29 @@ export async function createVideoByDirectUpload(
 
 export async function createVideoFromUrl(
   url: string,
-  userId: string
-): Promise<Video> {
+  userId: string,
+  maxResolution: ResolutionTier,
+  downloadable = false
+): Promise<Mux.Video.Asset> {
   if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
     throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
 
   return await getClient().video.assets.create({
-    input: {
-      url,
-      playback_policy: ['public'],
-      max_resolution_tier: maxResolution,
-      mp4_support: downloadable ? 'capped-1080p' : 'none'
-    }
-  })
-  return await getClient().stream.copy.create({
-    account_id: process.env.CLOUDFLARE_ACCOUNT_ID,
-    url,
-    creator: userId
+    input: [
+      {
+        url
+      }
+    ],
+    playback_policy: ['public'],
+    max_resolution_tier: maxResolution,
+    mp4_support: downloadable ? 'capped-1080p' : 'none'
   })
 }
 
-export async function getVideo(videoId: string): Promise<Video> {
-  if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
-    throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
-
-  return await getClient().stream.get(videoId, {
-    account_id: process.env.CLOUDFLARE_ACCOUNT_ID
-  })
+export async function getVideo(videoId: string): Promise<Mux.Video.Asset> {
+  return await getClient().video.assets.retrieve(videoId)
 }
 
 export async function deleteVideo(videoId: string): Promise<void> {
-  if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
-    throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
-
-  await getClient().stream.delete(videoId, {
-    account_id: process.env.CLOUDFLARE_ACCOUNT_ID
-  })
+  await getClient().video.assets.delete(videoId)
 }
