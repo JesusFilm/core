@@ -37,9 +37,14 @@ export function createApolloClient(): ApolloClient<NormalizedCacheObject> {
     ssrMode: typeof window === 'undefined',
     link: typeof window === 'undefined' ? httpLink : authLink.concat(httpLink),
     cache: cache(),
+    connectToDevTools: true,
     name: 'journeys',
     version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
-    connectToDevTools: true
+    headers: {
+      'x-graphql-client-name': 'journeys',
+      'x-graphql-client-version':
+        process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
+    }
   })
 }
 

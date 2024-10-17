@@ -39,9 +39,14 @@ function makeClient(): ApolloClient<NormalizedCacheObject> {
   return new ApolloClient({
     cache: new InMemoryCache(cache),
     link: typeof window === 'undefined' ? httpLink : authLink.concat(httpLink),
+    connectToDevTools: true,
     name: 'videos-admin',
     version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
-    connectToDevTools: true
+    headers: {
+      'x-graphql-client-name': 'videos-admin',
+      'x-graphql-client-version':
+        process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
+    }
   })
 }
 

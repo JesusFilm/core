@@ -22,7 +22,7 @@ describe('ResponsesItem', () => {
               variant: 'admin'
             }}
           >
-            <ResponsesItem />
+            <ResponsesItem variant="icon-button" />
           </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -54,7 +54,7 @@ describe('ResponsesItem', () => {
               variant: 'admin'
             }}
           >
-            <ResponsesItem />
+            <ResponsesItem variant="icon-button" />
           </JourneyProvider>
         </MockedProvider>
       </SnackbarProvider>

@@ -24,7 +24,13 @@ export const GET_LANGUAGES = graphql(`
 
 export const apollo = new ApolloClient({
   uri: process.env.GATEWAY_URL,
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
+  name: 'api-media',
+  version: process.env.SERVICE_VERSION,
+  headers: {
+    'x-graphql-client-name': 'api-media',
+    'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
+  }
 })
 
 interface LanguageRecord {

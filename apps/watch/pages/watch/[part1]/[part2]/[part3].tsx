@@ -128,7 +128,9 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
     if (
       error instanceof ApolloError &&
       error.graphQLErrors.some(
-        ({ extensions }) => extensions?.code === 'NOT_FOUND'
+        ({ extensions, message }) =>
+          extensions?.code === 'NOT_FOUND' ||
+          message?.startsWith('Video not found')
       )
     )
       return {

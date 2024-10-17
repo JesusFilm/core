@@ -115,7 +115,13 @@ export class IntegrationGrowthSpacesService {
     if (languageCode == null) {
       const apollo = new ApolloClient({
         uri: process.env.GATEWAY_URL,
-        cache: new InMemoryCache()
+        cache: new InMemoryCache(),
+        name: 'api-journeys',
+        version: process.env.SERVICE_VERSION,
+        headers: {
+          'x-graphql-client-name': 'api-journeys',
+          'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
+        }
       })
 
       const { data } = await apollo.query<

@@ -12,9 +12,14 @@ export const { getClient: getApolloClient, query } = registerApolloClient(
     return new ApolloClient({
       link: httpLink,
       cache: new InMemoryCache(cache),
+      connectToDevTools: true,
       name: 'arclight',
       version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
-      connectToDevTools: true
+      headers: {
+        'x-graphql-client-name': 'arclight',
+        'x-graphql-client-version':
+          process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
+      }
     })
   }
 )

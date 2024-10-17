@@ -27,8 +27,12 @@ import { PrismaService } from '../../lib/prisma.service'
 const apollo = new ApolloClient({
   uri: process.env.GATEWAY_URL,
   cache: new InMemoryCache(),
+  name: 'api-journeys',
+  version: process.env.SERVICE_VERSION,
   headers: {
-    'interop-token': process.env.INTEROP_TOKEN ?? ''
+    'interop-token': process.env.INTEROP_TOKEN ?? '',
+    'x-graphql-client-name': 'api-journeys',
+    'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
   }
 })
 

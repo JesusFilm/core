@@ -22,7 +22,12 @@ export const ApolloLoadingProvider = ({
     link,
     cache: new InMemoryCache(),
     name: 'journeys-ui-test',
-    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA
+    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
+    headers: {
+      'x-graphql-client-name': 'journeys-ui-test',
+      'x-graphql-client-version':
+        process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
+    }
   })
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>

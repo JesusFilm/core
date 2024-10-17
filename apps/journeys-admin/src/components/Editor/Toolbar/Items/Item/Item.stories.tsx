@@ -45,4 +45,15 @@ export const IconButtonItem = {
   }
 }
 
+export const IconButtonWithCountItem = {
+  ...Template,
+  args: {
+    variant: 'icon-button',
+    icon: <BarChartSquare3Icon />,
+    label: 'Icon Button Item',
+    count: 5,
+    countLabel: '5 visitors'
+  }
+}
+
 export default Demo

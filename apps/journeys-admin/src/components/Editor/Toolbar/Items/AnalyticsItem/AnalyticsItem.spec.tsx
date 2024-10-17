@@ -73,11 +73,12 @@ describe('AnalyticsItem', () => {
         </MockedProvider>
       </SnackbarProvider>
     )
-    expect(getByRole('menuitem', { name: 'Analytics' })).toBeInTheDocument()
-    expect(getByRole('menuitem', { name: 'Analytics' })).toHaveAttribute(
-      'href',
-      '/journeys/journey-id/reports'
-    )
+    expect(
+      getByRole('menuitem', { name: 'Analytics 0 visitors' })
+    ).toBeInTheDocument()
+    expect(
+      getByRole('menuitem', { name: 'Analytics 0 visitors' })
+    ).toHaveAttribute('href', '/journeys/journey-id/reports')
   })
 
   it('should link to journey reports page as an icon button', async () => {
@@ -121,13 +122,13 @@ describe('AnalyticsItem', () => {
                 variant: 'admin'
               }}
             >
-              <AnalyticsItem variant="button" />
+              <AnalyticsItem variant="icon-button" />
             </JourneyProvider>
           </TeamProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(getByRole('paragraph')).toHaveTextContent('10')
+    expect(getByRole('link')).toHaveTextContent('10')
   })
 })
