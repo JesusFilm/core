@@ -8,7 +8,7 @@ import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { isIPhone } from '@core/shared/ui/deviceUtils'
+import { isIPhone as checkIsIphone } from '@core/shared/ui/deviceUtils'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -32,7 +32,7 @@ export function StepBlockNodeCard({
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
-
+  const isIphone = checkIsIphone()
   const card = step?.children[0] as TreeBlock<CardBlock> | undefined
   const {
     title,
@@ -58,7 +58,6 @@ export function StepBlockNodeCard({
       dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
     }
   }
-
   const nodeBgImage = priorityImage ?? bgImage
 
   const conditionalStyles =
@@ -83,7 +82,7 @@ export function StepBlockNodeCard({
       // https://stackoverflow.com/questions/17710893/why-when-do-i-have-to-tap-twice-to-trigger-click-on-ios#:~:text=The%20simplest%20solution%20is%20not,triggered%20on%20the%20first%20tap.
       // see fig 6-4, https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7
       onMouseEnter={() => {
-        if (isIPhone()) handleClick()
+        if (isIphone) handleClick()
       }}
       onClick={handleClick}
       sx={{
@@ -93,6 +92,20 @@ export function StepBlockNodeCard({
         ...conditionalStyles
       }}
     >
+      {selectedStep?.id === step?.id && showAnalytics !== true && isIphone && (
+        <Box
+          data-testid="IPhoneSecondTapLayer"
+          sx={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            zIndex: 2
+          }}
+          onMouseEnter={(e) => {
+            if (isIphone) handleClick()
+          }}
+        />
+      )}
       <CardContent
         data-testid="StepBlock"
         sx={{

@@ -156,7 +156,7 @@ describe('StepBlockNodeCard', () => {
   })
 
   it('should handle select block tap on iOS', () => {
-    mockIsIPhone.mockReturnValueOnce(true)
+    mockIsIPhone.mockReturnValue(true)
     mockGetCardMetadata.mockReturnValue({
       title: undefined,
       subtitle: undefined,
@@ -191,6 +191,35 @@ describe('StepBlockNodeCard', () => {
       screen.getByText('selectedAttributeId: step.id-next-block')
     ).toBeInTheDocument()
     expect(mockIsIPhone).toHaveBeenCalled()
+  })
+
+  it('should show second tap layer on iOS to handle the event of the second tap', async () => {
+    mockIsIPhone.mockReturnValue(true)
+    mockGetCardMetadata.mockReturnValue({
+      title: undefined,
+      subtitle: undefined,
+      description: undefined,
+      priorityBlock: undefined,
+      bgImage: undefined
+    })
+    const step = {
+      __typename: 'StepBlock',
+      id: 'step.id',
+      children: []
+    } as unknown as TreeBlock<StepBlock>
+
+    const initialState = {
+      selectedStep: step,
+      selectedAttributeId: 'selectedAttributeId'
+    }
+
+    render(
+      <EditorProvider initialState={initialState}>
+        <StepBlockNodeCard step={step} selected={false} />
+        <TestEditorState />
+      </EditorProvider>
+    )
+    expect(screen.getByTestId('IPhoneSecondTapLayer')).toBeInTheDocument()
   })
 
   it('should block select if in analytics mode', () => {
