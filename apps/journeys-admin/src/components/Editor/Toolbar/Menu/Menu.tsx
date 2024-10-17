@@ -38,10 +38,12 @@ export const GET_ROLE = gql`
 
 interface MenuProps {
   user?: User
+  ref: MutableRefObject<null>
 }
 
-export function Menu({ user }: MenuProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+export function Menu({ user, ref }: MenuProps): ReactElement {
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
+
   const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   const { data } = useQuery<GetRole>(GET_ROLE)
@@ -64,10 +66,10 @@ export function Menu({ user }: MenuProps): ReactElement {
         aria-controls="edit-journey-actions"
         aria-haspopup="true"
         aria-expanded={anchorEl != null ? 'true' : undefined}
+        ref={ref}
         onClick={handleShowMenu}
         disabled={journey == null}
         data-testid="ToolbarMenuButton"
-        sx={{ p: 0 }}
       >
         <MoreIcon />
       </IconButton>
@@ -86,35 +88,35 @@ export function Menu({ user }: MenuProps): ReactElement {
           }
         }}
       >
-        {!smUp && (
+        {!mdUp && (
           <Stack sx={{ width: 220 }}>
             <JourneyDetails />
           </Stack>
         )}
         <DetailsItem variant="menu-item" onClose={handleCloseMenu} />
-        {!smUp && <Divider data-testid="details-menu-divider" />}
+        {!mdUp && <Divider data-testid="details-menu-divider" />}
         {journey?.template === true && (
           <TemplateSettingsItem variant="menu-item" onClose={handleCloseMenu} />
         )}
         <AccessItem variant="menu-item" onClose={handleCloseMenu} />
-        {!smUp && journey?.template !== true && (
+        {!mdUp && journey?.template !== true && (
           <AnalyticsItem variant="menu-item" />
         )}
         {journey?.template !== true && isPublisher === true && (
           <CreateTemplateItem variant="menu-item" />
         )}
-        {!smUp && (
+        {!mdUp && (
           <>
             <StrategyItem variant="menu-item" closeMenu={handleCloseMenu} />
             <ShareItem variant="menu-item" closeMenu={handleCloseMenu} />
           </>
         )}
-        {journey != null && smUp && <Divider data-testid="menu-divider" />}
+        {journey != null && mdUp && <Divider data-testid="menu-divider" />}
         {journey != null &&
           (journey?.template !== true || isPublisher != null) && (
             <CopyLinkItem variant="menu-item" onClose={handleCloseMenu} />
           )}
-        {!smUp && (
+        {!mdUp && (
           <>
             <Divider data-testid="helpscout-menu-divider" />
             <HelpScoutBeacon

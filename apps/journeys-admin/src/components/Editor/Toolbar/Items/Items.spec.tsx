@@ -22,6 +22,5 @@ describe('Items', () => {
     expect(getByTestId('ResponsesItem')).toBeInTheDocument()
     expect(getByTestId('StrategyItem')).toBeInTheDocument()
     expect(getByTestId('ShareItem')).toBeInTheDocument()
-    expect(getByTestId('PreviewItem')).toBeInTheDocument()
   })
 })
