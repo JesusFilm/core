@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
-import { ComponentProps, MutableRefObject, ReactElement } from 'react'
+import { ComponentProps, ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Play3Icon from '@core/shared/ui/icons/Play3'
