@@ -2,7 +2,6 @@ import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
 import { AnalyticsItem } from './AnalyticsItem'
-import { PreviewItem } from './PreviewItem'
 import { ResponsesItem } from './ResponsesItem'
 import { ShareItem } from './ShareItem'
 import { StrategyItem } from './StrategyItem'
