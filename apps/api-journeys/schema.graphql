@@ -1401,6 +1401,7 @@ enum MessagePlatform {
   telegram
   whatsApp
   instagram
+  kakaoTalk
   viber
   vk
   snapchat
