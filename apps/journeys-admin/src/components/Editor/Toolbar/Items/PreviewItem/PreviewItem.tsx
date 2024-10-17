@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
-import { ComponentProps, ReactElement } from 'react'
+import { ComponentProps, MutableRefObject, ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Play3Icon from '@core/shared/ui/icons/Play3'
@@ -11,10 +11,12 @@ import { Item } from '../Item/Item'
 interface PreviewItemProps {
   variant: ComponentProps<typeof Item>['variant']
   onClick?: () => void
+  ref: MutableRefObject<null>
 }
 
 export function PreviewItem({
   variant,
+  ref,
   onClick
 }: PreviewItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -30,7 +32,7 @@ export function PreviewItem({
     journey?.slug != null ? journeyPath + customDomainParam : undefined
 
   return (
-    <Box data-testid="PreviewItem">
+    <Box data-testid="PreviewItem" ref={ref}>
       <Item
         variant={variant}
         href={href}

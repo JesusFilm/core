@@ -10,7 +10,7 @@ import { StrategyItem } from './StrategyItem'
 export function Items(): ReactElement {
   return (
     <Stack
-      sx={{ display: { xs: 'none', sm: 'flex' } }}
+      sx={{ display: { xs: 'none', md: 'flex' } }}
       flexDirection="row"
       gap={5}
       data-testid="ItemsStack"
@@ -20,7 +20,6 @@ export function Items(): ReactElement {
       <AnalyticsItem variant="icon-button" />
       <StrategyItem variant="button" />
       <ShareItem variant="button" />
-      <PreviewItem variant="icon-button" />
     </Stack>
   )
 }

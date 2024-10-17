@@ -22,14 +22,12 @@ export function CommandRedoItem({
   }
 
   return (
-    <Box data-testid="CommandRedoItem">
-      <Item
-        variant={variant}
-        label={t('Redo')}
-        icon={<FlipRightIcon />}
-        onClick={handleClick}
-        ButtonProps={{ disabled: state.redo == null }}
-      />
-    </Box>
+    <Item
+      variant={variant}
+      label={t('Redo')}
+      icon={<FlipRightIcon />}
+      onClick={handleClick}
+      ButtonProps={{ disabled: state.redo == null }}
+    />
   )
 }
