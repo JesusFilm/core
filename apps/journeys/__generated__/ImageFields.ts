@@ -22,4 +22,6 @@ export interface ImageFields {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }

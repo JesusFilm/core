@@ -171,10 +171,8 @@ export function ContainedCover({
         sx={{
           width: '100%',
           height: hasFullscreenVideo ? undefined : '100%',
-          flexGrow: 1,
           zIndex: 1,
-          top: 0,
-          position: { xs: 'relative', sm: 'absolute' },
+          position: 'relative',
           WebkitMask: { xs: overlayImageMask, sm: 'unset' },
           mask: { xs: overlayImageMask, sm: 'unset' }
         }}
@@ -188,6 +186,7 @@ export function ContainedCover({
             blurDataURL={backgroundBlur}
             layout="fill"
             objectFit="cover"
+            objectPosition={`${imageBlock.focalLeft}% ${imageBlock.focalTop}%`}
           />
         )}
       </Box>

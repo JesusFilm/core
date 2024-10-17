@@ -11,5 +11,7 @@ export const IMAGE_FIELDS = gql`
     height
     blurhash
     scale
+    focalTop
+    focalLeft
   }
 `

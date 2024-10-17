@@ -24,6 +24,8 @@ export interface ImageBlockUpdate_imageBlockUpdate {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface ImageBlockUpdate {

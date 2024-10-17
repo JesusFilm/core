@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import Stack from '@mui/material/Stack'
 import pick from 'lodash/pick'
 import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -32,6 +33,8 @@ import { blockRestoreUpdate } from '../../../../../../../../../../libs/useBlockR
 import { useCoverBlockDeleteMutation } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation'
 import { useCoverBlockRestoreMutation } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation'
 import { ImageSource } from '../../../../../../Drawer/ImageSource'
+
+import { FocalPoint } from './FocalPoint'
 
 export const COVER_IMAGE_BLOCK_CREATE = gql`
   ${IMAGE_FIELDS}
@@ -69,6 +72,16 @@ export function BackgroundMediaImage({
   const coverBlock = cardBlock?.children.find(
     (child) => child.id === cardBlock?.coverBlockId
   ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock> | undefined
+  const isImageBlock = coverBlock?.__typename === 'ImageBlock'
+  const imageProps: Partial<ImageBlock> = isImageBlock
+    ? {
+        src: coverBlock.src,
+        alt: coverBlock.alt,
+        focalLeft: coverBlock.focalLeft ?? 0,
+        focalTop: coverBlock.focalTop ?? 0
+      }
+    : {}
+
   const { add } = useCommand()
   const { journey } = useJourney()
   const {
@@ -100,7 +113,9 @@ export function BackgroundMediaImage({
       height: input.height ?? 0,
       blurhash: input.blurhash ?? '',
       parentOrder: null,
-      scale: null
+      scale: null,
+      focalTop: input?.focalTop ?? 0,
+      focalLeft: input?.focalLeft ?? 0
     }
 
     add({
@@ -225,7 +240,9 @@ export function BackgroundMediaImage({
       alt: input.alt ?? coverBlock.alt,
       blurhash: input.blurhash ?? coverBlock.blurhash,
       height: input.height ?? coverBlock.height,
-      width: input.width ?? coverBlock.width
+      width: input.width ?? coverBlock.width,
+      focalTop: input?.focalTop ?? coverBlock.focalTop,
+      focalLeft: input?.focalLeft ?? coverBlock.focalLeft
     }
 
     add({
@@ -335,13 +352,22 @@ export function BackgroundMediaImage({
     }
   }
 
+  console.log('imageBlock', isImageBlock ? coverBlock : null)
+
   return (
-    <ImageSource
-      selectedBlock={
-        coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
-      }
-      onChange={handleChange}
-      onDelete={async () => deleteImageBlock()}
-    />
+    <Stack gap={4}>
+      <ImageSource
+        selectedBlock={isImageBlock ? coverBlock : null}
+        onChange={handleChange}
+        onDelete={async () => deleteImageBlock()}
+      />
+      <FocalPoint
+        src={imageProps.src ?? ''}
+        alt={imageProps.alt ?? ''}
+        focalLeft={imageProps.focalLeft ?? 0}
+        focalTop={imageProps.focalTop ?? 0}
+        updateImageBlock={updateImageBlock}
+      />
+    </Stack>
   )
 }
