@@ -34,7 +34,6 @@ export function StudyQuestions({ studyQuestions }): ReactElement | null {
         variables: {
           input: {
             id: e.active.id,
-            languageId: '529',
             order: newIndex + 1
           }
         }

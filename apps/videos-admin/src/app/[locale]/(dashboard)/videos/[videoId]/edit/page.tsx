@@ -25,6 +25,7 @@ import { ReactElement, SyntheticEvent, useState } from 'react'
 import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
 
 import { ChildrenView } from './_ChildrenView'
+import { Editions } from './Editions'
 import { StudyQuestions } from './StudyQuestions'
 import { TabContainer } from './Tabs/TabContainer'
 import { TabLabel } from './Tabs/TabLabel'
@@ -276,6 +277,9 @@ export default function EditPage(): ReactElement {
           </TabContainer>
           <TabContainer value={tabValue} index={2}>
             <Variants variants={video?.variants} />
+          </TabContainer>
+          <TabContainer value={tabValue} index={3}>
+            <Editions editions={[]} subtitles={video?.subtitles} />
           </TabContainer>
         </>
       )}

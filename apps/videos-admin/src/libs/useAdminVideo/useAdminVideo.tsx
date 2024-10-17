@@ -66,6 +66,20 @@ export const GET_ADMIN_VIDEO = graphql(`
         value
       }
       variantLanguagesCount
+      subtitles {
+        id
+        edition
+        vttSrc
+        srtSrc
+        value
+        language {
+          id
+          name {
+            value
+          }
+          slug
+        }
+      }
     }
   }
 `)
