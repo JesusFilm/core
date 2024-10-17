@@ -87,6 +87,14 @@ describe('Toolbar', () => {
     variant: 'admin'
   }
 
+  const noDescriptionJourney = {
+    journey: {
+      ...defaultJourney.journey,
+      description: ''
+    } as unknown as Journey,
+    variant: 'admin'
+  }
+
   const socialImageJourney = {
     journey: {
       title: 'My Awesome Journey Title',
@@ -139,9 +147,21 @@ describe('Toolbar', () => {
     expect(screen.getByTestId('HelpScoutBeaconIconButton')).toBeInTheDocument()
   })
 
-  it('should render journey details', () => {
+  it('should render title, description and language on Toolbar', () => {
     render(toolbar(defaultJourney))
-    expect(screen.getByTestId('JourneyDetails')).toBeInTheDocument()
+    expect(screen.getByText('My Awesome Journey Title')).toBeInTheDocument()
+    expect(
+      screen.getByText('My Awesome Journey Description')
+    ).toBeInTheDocument()
+    expect(screen.getByText('English')).toBeInTheDocument()
+  })
+
+  it('should not show dot if there is no description', () => {
+    render(toolbar(noDescriptionJourney))
+    expect(screen.queryByTestId('DescriptionDot')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('My Awesome Journey Description')
+    ).not.toBeInTheDocument()
   })
 
   it('should open the title dialog when selected', async () => {

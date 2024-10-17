@@ -39,9 +39,9 @@ interface MenuProps {
 }
 
 export function Menu({ user }: MenuProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const { journey } = useJourney()
-  const { t } = useTranslation('apps-journeys-admin')
   const { data } = useQuery<GetRole>(GET_ROLE)
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
 
