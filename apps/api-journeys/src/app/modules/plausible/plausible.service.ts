@@ -63,6 +63,8 @@ export const SITE_CREATE = gql(`
   }
 `)
 
+const FIVE_DAYS = 5 * 24 * 60 * 60 // in seconds
+
 export const goals: Array<keyof JourneyPlausibleEvents> = [
   'footerThumbsUpButtonClick',
   'footerThumbsDownButtonClick',
@@ -151,9 +153,16 @@ export class PlausibleService implements OnModuleInit {
   }
 
   async onModuleInit(): Promise<void> {
-    await this.plausibleQueue.add('plausibleCreateSites', {
-      __typename: 'plausibleCreateSites'
-    })
+    await this.plausibleQueue.add(
+      'plausibleCreateSites',
+      {
+        __typename: 'plausibleCreateSites'
+      },
+      {
+        removeOnComplete: true,
+        removeOnFail: { age: FIVE_DAYS, count: 50 }
+      }
+    )
   }
 
   async createSites(): Promise<void> {

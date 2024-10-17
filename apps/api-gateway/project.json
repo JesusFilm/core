@@ -26,7 +26,7 @@
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx hive dev --service analytics --url http://127.0.0.1:4008/graphql --schema ./apps/api-analytics/schema.graphql --service journeys --url http://127.0.0.1:4001/graphql --schema ./apps/api-journeys/schema.graphql --service users --url http://127.0.0.1:4002/graphql --schema ./apps/api-users/schema.graphql --service languages --url http://127.0.0.1:4003/graphql --schema ./apps/api-languages/schema.graphql --service media --url http://127.0.0.1:4005/graphql --schema ./apps/api-media/schema.graphql --service journeys-modern --url http://127.0.0.1:4004/graphql --schema ./apps/api-journeys-modern/schema.graphql --write ./apps/api-gateway/schema.graphql"
+        "command": "npx hive dev --service api-analytics --url http://127.0.0.1:4008/graphql --schema ./apps/api-analytics/schema.graphql --service api-journeys --url http://127.0.0.1:4001/graphql --schema ./apps/api-journeys/schema.graphql --service api-users --url http://127.0.0.1:4002/graphql --schema ./apps/api-users/schema.graphql --service api-languages --url http://127.0.0.1:4003/graphql --schema ./apps/api-languages/schema.graphql --service api-media --url http://127.0.0.1:4005/graphql --schema ./apps/api-media/schema.graphql --service api-journeys-modern --url http://127.0.0.1:4004/graphql --schema ./apps/api-journeys-modern/schema.graphql --write ./apps/api-gateway/schema.graphql"
       }
     },
     "fetch-secrets": {
