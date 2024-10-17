@@ -38,9 +38,10 @@ export const GET_ROLE = gql`
 
 interface MenuProps {
   user?: User
+  ref: MutableRefObject<null>
 }
 
-export function Menu({ user }: MenuProps): ReactElement {
+export function Menu({ user, ref }: MenuProps): ReactElement {
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
   const { journey } = useJourney()
@@ -65,6 +66,7 @@ export function Menu({ user }: MenuProps): ReactElement {
         aria-controls="edit-journey-actions"
         aria-haspopup="true"
         aria-expanded={anchorEl != null ? 'true' : undefined}
+        ref={ref}
         onClick={handleShowMenu}
         disabled={journey == null}
         data-testid="ToolbarMenuButton"

@@ -379,8 +379,8 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         alignItems="center"
       >
         <Items />
-        <PreviewItem variant="icon-button" ref={menuRef} />
-        <Menu user={user} />
+        <PreviewItem variant="icon-button" />
+        <Menu user={user} ref={menuRef} />
         <Box
           ref={helpScoutRef}
           sx={{

@@ -11,7 +11,6 @@ import { Item } from '../Item/Item'
 interface PreviewItemProps {
   variant: ComponentProps<typeof Item>['variant']
   onClick?: () => void
-  ref: MutableRefObject<null>
 }
 
 export function PreviewItem({
