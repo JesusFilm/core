@@ -127,8 +127,9 @@ export function FocalPoint({ src, alt }: FocalPointProps): ReactElement {
                 top: `${focalPoint.y}%`,
                 left: `${focalPoint.x}%`,
                 transform: 'translate(-50%, -50%)',
-                backgroundColor: (theme) => theme.palette.background.paper,
-                border: (theme) => `1px solid ${theme.palette.divider}`
+                backdropFilter: 'blur(4px)',
+                border: '2px solid white',
+                boxShadow: (theme) => theme.shadows[3]
               }}
               onMouseDown={handleMouseDown}
             />
