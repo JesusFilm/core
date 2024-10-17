@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { isIPhone } from '@core/shared/ui/deviceUtils'
+import { isIOSTouchScreen } from '@core/shared/ui/deviceUtils'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
@@ -20,7 +20,7 @@ jest.mock('../libs/getCardMetadata', () => ({
 
 jest.mock('@core/shared/ui/deviceUtils', () => {
   return {
-    isIPhone: jest.fn()
+    isIOSTouchScreen: jest.fn()
   }
 })
 
@@ -28,7 +28,9 @@ const mockGetCardMetadata = getCardMetadata as jest.MockedFunction<
   typeof getCardMetadata
 >
 
-const mockIsIPhone = isIPhone as jest.MockedFunction<typeof isIPhone>
+const mockIsIosTouchScreen = isIOSTouchScreen as jest.MockedFunction<
+  typeof isIOSTouchScreen
+>
 
 describe('StepBlockNodeCard', () => {
   beforeEach(() => jest.clearAllMocks())
@@ -156,7 +158,7 @@ describe('StepBlockNodeCard', () => {
   })
 
   it('should handle select block tap on iOS', () => {
-    mockIsIPhone.mockReturnValue(true)
+    mockIsIosTouchScreen.mockReturnValue(true)
     mockGetCardMetadata.mockReturnValue({
       title: undefined,
       subtitle: undefined,
@@ -190,11 +192,11 @@ describe('StepBlockNodeCard', () => {
     expect(
       screen.getByText('selectedAttributeId: step.id-next-block')
     ).toBeInTheDocument()
-    expect(mockIsIPhone).toHaveBeenCalled()
+    expect(mockIsIosTouchScreen).toHaveBeenCalled()
   })
 
   it('should show second tap layer on iOS to handle the event of the second tap', async () => {
-    mockIsIPhone.mockReturnValue(true)
+    mockIsIosTouchScreen.mockReturnValue(true)
     mockGetCardMetadata.mockReturnValue({
       title: undefined,
       subtitle: undefined,
