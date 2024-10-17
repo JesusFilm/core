@@ -370,8 +370,10 @@ export type CountryLanguage = {
   displaySpeakers?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
+  order?: Maybe<Scalars['Int']['output']>;
   primary: Scalars['Boolean']['output'];
   speakers: Scalars['Int']['output'];
+  suggested: Scalars['Boolean']['output'];
 };
 
 export type CountryName = {
@@ -1150,6 +1152,7 @@ export enum MessagePlatform {
   Home3 = 'home3',
   Home4 = 'home4',
   Instagram = 'instagram',
+  KakaoTalk = 'kakaoTalk',
   Line = 'line',
   LinkExternal = 'linkExternal',
   Mail1 = 'mail1',
@@ -4262,12 +4265,12 @@ export type VisitorsConnection = {
 };
 
 export enum Join__Graph {
-  Analytics = 'ANALYTICS',
-  Journeys = 'JOURNEYS',
-  JourneysModern = 'JOURNEYS_MODERN',
-  Languages = 'LANGUAGES',
-  Media = 'MEDIA',
-  Users = 'USERS'
+  ApiAnalytics = 'API_ANALYTICS',
+  ApiJourneys = 'API_JOURNEYS',
+  ApiJourneysModern = 'API_JOURNEYS_MODERN',
+  ApiLanguages = 'API_LANGUAGES',
+  ApiMedia = 'API_MEDIA',
+  ApiUsers = 'API_USERS'
 }
 
 export enum Link__Purpose {
