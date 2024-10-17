@@ -69,6 +69,7 @@
     "@mui/x-data-grid": "^7.15.0",
     "@mui/x-date-pickers": "^7.15.0",
     "@mui/x-tree-view": "^7.15.0",
+    "@mux/mux-node": "^8.8.0",
     "@nestjs-modules/mailer": "^1.10.3",
     "@nestjs/apollo": "^12.0.7",
     "@nestjs/bull": "^10.1.0",

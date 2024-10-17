@@ -56,6 +56,19 @@ model CloudflareVideo {
   @@index([userId])
 }
 
+model MuxVideo {
+  id            String   @id @default(uuid())
+  uploadUrl     String?
+  userId        String
+  name          String?
+  downloadable  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  readyToStream Boolean  @default(false)
+  updatedAt     DateTime @default(now()) @updatedAt
+
+  @@index([userId])
+}
+
 enum IdType {
   databaseId
   slug
