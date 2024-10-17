@@ -637,6 +637,8 @@ export type ImageBlock = Block & {
    * Find a frontend implementation at https://github.com/woltapp/blurhash
    */
   blurhash: Scalars['String']['output'];
+  focalLeft?: Maybe<Scalars['Int']['output']>;
+  focalTop?: Maybe<Scalars['Int']['output']>;
   height: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
@@ -651,6 +653,8 @@ export type ImageBlockCreateInput = {
   alt: Scalars['String']['input'];
   /** If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated. */
   blurhash?: InputMaybe<Scalars['String']['input']>;
+  focalLeft?: InputMaybe<Scalars['Int']['input']>;
+  focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
   /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
@@ -667,6 +671,8 @@ export type ImageBlockUpdateInput = {
   alt?: InputMaybe<Scalars['String']['input']>;
   /** If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated. */
   blurhash?: InputMaybe<Scalars['String']['input']>;
+  focalLeft?: InputMaybe<Scalars['Int']['input']>;
+  focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   scale?: InputMaybe<Scalars['Int']['input']>;
@@ -3924,7 +3930,6 @@ export type VideoStudyQuestionCreateInput = {
 export type VideoStudyQuestionUpdateInput = {
   crowdInId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
-  languageId?: InputMaybe<Scalars['String']['input']>;
   /** index from 1 */
   order?: InputMaybe<Scalars['Int']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
