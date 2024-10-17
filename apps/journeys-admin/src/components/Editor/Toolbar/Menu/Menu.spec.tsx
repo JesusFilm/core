@@ -311,7 +311,7 @@ describe('Toolbar Menu', () => {
         screen.getByRole('menuitem', { name: 'Manage Access' })
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('menuitem', { name: 'Analytics' })
+        screen.getByRole('menuitem', { name: 'Analytics 0 visitors' })
       ).toBeInTheDocument()
       expect(
         screen.getByRole('menuitem', { name: 'Strategy' })
