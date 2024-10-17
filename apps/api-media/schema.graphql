@@ -402,7 +402,6 @@ input VideoStudyQuestionUpdateInput {
   id: ID!
   value: String
   primary: Boolean
-  languageId: String
   crowdInId: String
 
   """index from 1"""
