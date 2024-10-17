@@ -90,7 +90,8 @@ function JourneyEditPage({ status }): ReactElement {
     >
       <Configure
         ruleContexts={['home_page']}
-        filters="label:episode OR label:featureFilm OR label:segment OR label:shortFilm"
+        // Algolia will only return videos with theese label types
+        filters="label:episode OR label:featureFilm OR label:segment OR label:shortFilm OR label:series"
         hitsPerPage={5}
       />
       <NextSeo
