@@ -47,5 +47,6 @@ describe('JourneyDetails', () => {
       </JourneyProvider>
     )
     expect(screen.queryByTestId('DescriptionDot')).not.toBeInTheDocument()
+    expect(screen.queryByText('Some description')).not.toBeInTheDocument()
   })
 })
