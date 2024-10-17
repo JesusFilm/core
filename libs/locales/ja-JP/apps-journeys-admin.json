@@ -155,6 +155,7 @@
   "You can add no more than two chat platforms": "追加できるチャットプラットフォームは2つまでです。",
   "Chat": "チャット",
   "Instagram": "インスタグラム",
+  "KakaoTalk": "カカオトーク",
   "LINE": "ライン",
   "Skype": "スカイプ",
   "Snapchat": "スナップチャット",
@@ -746,7 +747,6 @@
   "Video expanded to fullscreen at ({{ position }})": "動画はフルスクリーンに拡大 ({{ position }})",
   "Video completed": "ビデオ完成",
   "Facebook": "フェイスブック",
-  "KakaoTalk": "カカオトーク",
   "Message Square": "メッセージ広場",
   "ID": "身分証明書",
   "Last Active": "ラスト・アクティブ",
@@ -754,5 +754,7 @@
   "Polls": "世論調査",
   "{{ name }}'s Team": "{{ name }}チーム",
   "Appears on <0>{{count}}</0> card_other": "カード <0>{{count}}</0>カード",
-  "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>カード</1>"
+  "<0>{{count}}</0><1>card</1>_other": "<0>{{count}}</0><1>カード</1>",
+  "{{count}} visitors_other": "{{count}} 入場者",
+  "{{count}} responses_other": "{{count}} 回答"
 }
