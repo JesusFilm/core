@@ -200,7 +200,7 @@ describe('api-users', () => {
       })
       expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
         where: {
-          id: '1'
+          userId: user.id
         }
       })
       expect(data).toHaveProperty(
