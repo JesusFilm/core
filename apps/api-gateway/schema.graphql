@@ -2027,6 +2027,8 @@ type CountryLanguage @join__type(graph: API_LANGUAGES)  {
   speakers: Int!
   displaySpeakers: Int
   primary: Boolean!
+  suggested: Boolean!
+  order: Int
 }
 
 type CountryName @join__type(graph: API_LANGUAGES)  {
