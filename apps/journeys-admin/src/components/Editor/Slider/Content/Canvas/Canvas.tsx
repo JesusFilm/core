@@ -100,6 +100,7 @@ export function Canvas(): ReactElement {
   }
 
   function handleSelectCard(): void {
+    // console.log('clicking the canvas')
     if (showAnalytics === true) return
     const iframeDocument =
       frameRef.current?.contentDocument ??
@@ -107,18 +108,13 @@ export function Canvas(): ReactElement {
 
     const selectedText = iframeDocument?.getSelection()?.toString()
 
+    console.log(selectionRef.current)
+
     // if user is copying from typog blocks or text, keep focus on typog blocks
     if (selectedText != null && selectedText !== '' && !selectionRef.current) {
       return
     }
-    // Prevent losing focus on empty input
-    if (
-      selectedBlock?.__typename === 'TypographyBlock' &&
-      selectedBlock.content === ''
-    ) {
-      resetClickOrigin()
-      return
-    }
+
     dispatch({
       type: 'SetSelectedBlockAction',
       selectedBlock: selectedStep
