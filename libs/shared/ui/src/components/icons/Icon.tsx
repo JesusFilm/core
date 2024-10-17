@@ -110,6 +110,7 @@ import Instagram from './Instagram'
 import Iphone1 from './Iphone1'
 import Journey from './Journey'
 import Journeys from './Journeys'
+import KakaoTalk from './KakaoTalk'
 import Key1 from './Key1'
 import Key2 from './Key2'
 import Laptop1 from './Laptop1'
@@ -322,6 +323,7 @@ export type IconName =
   | 'Iphone1'
   | 'Journey'
   | 'Journeys'
+  | 'KakaoTalk'
   | 'Key1'
   | 'Key2'
   | 'Laptop1'
@@ -538,6 +540,7 @@ const iconComponents: IconComponents = {
   Iphone1,
   Journey,
   Journeys,
+  KakaoTalk,
   Key1,
   Key2,
   Laptop1,
