@@ -46,7 +46,7 @@ const Template: StoryObj<typeof ResponsesItem> = {
           backgroundColor: 'background.paper'
         }}
       >
-        <ResponsesItem />
+        <ResponsesItem variant="icon-button" />
       </Box>
     </JourneyProvider>
   )

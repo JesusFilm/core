@@ -13,6 +13,8 @@ type ImageBlock implements Block {
   """
   blurhash: String!
   scale: Int
+  focalTop: Int
+  focalLeft: Int
 }
 
 input ImageBlockCreateInput {
@@ -36,6 +38,8 @@ input ImageBlockCreateInput {
   """
   isCover: Boolean
   scale: Int
+  focalTop: Int
+  focalLeft: Int
 }
 
 input ImageBlockUpdateInput {
@@ -49,6 +53,8 @@ input ImageBlockUpdateInput {
   width: Int
   height: Int
   scale: Int
+  focalTop: Int
+  focalLeft: Int
 }
 
 extend type Mutation {
