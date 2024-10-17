@@ -93,6 +93,8 @@ export function StepBlockNodeCard({
       }}
     >
       {selectedStep?.id === step?.id && showAnalytics !== true && isIphone && (
+        // this tap layer is needed to handle the second tap without the user having to double tap, see:
+        // https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7
         <Box
           data-testid="IPhoneSecondTapLayer"
           sx={{
