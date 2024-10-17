@@ -48,7 +48,8 @@ export function ParallaxCover({
           height: '100%',
           WebkitBackdropFilter: 'blur(40px)',
           backdropFilter: 'blur(40px)',
-          borderRadius: 'inherit'
+          borderRadius: 'inherit',
+          backgroundColor: `${backgroundColor}60`
         }}
       />
 
@@ -102,7 +103,7 @@ export function ParallaxCover({
           data-testid="parallax-content"
           hasFullscreenVideo={false}
           sx={{
-            pt: '30%',
+            mt: '60%',
             width: { sm: '312px' }
           }}
         >
