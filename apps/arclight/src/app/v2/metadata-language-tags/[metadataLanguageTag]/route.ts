@@ -24,7 +24,10 @@ interface GetParams {
   params: { metadataLanguageTag: string }
 }
 
-export async function GET(req: NextRequest, { params }: GetParams): Promise<Response> {
+export async function GET(
+  req: NextRequest,
+  { params }: GetParams
+): Promise<Response> {
   const query = req.nextUrl.searchParams
   const { metadataLanguageTag } = params
 
@@ -59,33 +62,40 @@ export async function GET(req: NextRequest, { params }: GetParams): Promise<Resp
     }
   })
 
-  const language = data.languages.find(lang => lang.bcp47 === metadataLanguageTag)
-  
+  const language = data.languages.find(
+    (lang) => lang.bcp47 === metadataLanguageTag
+  )
+
   if (language === null || language === undefined) {
-    return new Response(JSON.stringify({
-      message: `Metadata language tag '${metadataLanguageTag}' not found!`,
-      logref: 404
-    }), { 
-      status: 404,
-      headers: { 'Content-Type': 'application/json' }
-    })
+    return new Response(
+      JSON.stringify({
+        message: `Metadata language tag '${metadataLanguageTag}' not found!`,
+        logref: 404
+      }),
+      {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
   }
 
-  const response = [{
-    tag: language?.bcp47 ?? '',
-    name: language?.name[1]?.value ?? language?.name[0].value,
-    nameNative: language?.name[0].value,
-    _links: {
-      self: {
-        href: `https://api.arclight.org/v2/metadata-language-tags/${language.bcp47}?apiKey=${apiKey}`
-      },
-      metadataLanguageTags: {
-        href: `https://api.arclight.org/v2/metadata-language-tags?apiKey=${apiKey}`
+  const response = [
+    {
+      tag: language?.bcp47 ?? '',
+      name: language?.name[1]?.value ?? language?.name[0].value,
+      nameNative: language?.name[0].value,
+      _links: {
+        self: {
+          href: `https://api.arclight.org/v2/metadata-language-tags/${language.bcp47}?apiKey=${apiKey}`
+        },
+        metadataLanguageTags: {
+          href: `https://api.arclight.org/v2/metadata-language-tags?apiKey=${apiKey}`
+        }
       }
     }
-  }]
+  ]
 
-  return new Response(JSON.stringify(response), { 
+  return new Response(JSON.stringify(response), {
     status: 200,
     headers: { 'Content-Type': 'application/json' }
   })
