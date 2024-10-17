@@ -58,7 +58,8 @@ export function Canvas(): ReactElement {
       selectedBlock,
       activeSlide,
       activeCanvasDetailsDrawer,
-      showAnalytics
+      showAnalytics,
+      importedSteps
     },
     dispatch
   } = useEditor()
@@ -101,6 +102,7 @@ export function Canvas(): ReactElement {
 
   function handleSelectCard(): void {
     if (showAnalytics === true) return
+    if (importedSteps != null) return
     const iframeDocument =
       frameRef.current?.contentDocument ??
       frameRef.current?.contentWindow?.document
@@ -192,7 +194,10 @@ export function Canvas(): ReactElement {
                   scale < 0.65 ? '20px' : '0px'
                 }) ${calculateScaledMargin(CARD_WIDTH, scale)}`,
                 borderRadius: 6,
-                pointerEvents: showAnalytics === true ? 'none' : 'auto',
+                pointerEvents:
+                  showAnalytics === true || importedSteps != null
+                    ? 'none'
+                    : 'auto',
                 transition: (theme) =>
                   theme.transitions.create('border-color', {
                     duration: 200,

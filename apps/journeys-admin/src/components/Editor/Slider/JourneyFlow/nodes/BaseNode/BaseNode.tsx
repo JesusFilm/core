@@ -75,7 +75,7 @@ export function BaseNode({
   positionTargetHandle = true
 }: BaseNodeProps): ReactElement {
   const {
-    state: { showAnalytics }
+    state: { showAnalytics, importedSteps }
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const connectionHandleId = useStore(connectionHandleIdSelector)
@@ -87,16 +87,16 @@ export function BaseNode({
   const [sourceSelected, setSourceSelected] = useState(false)
 
   useEffect(() => {
-    if (showAnalytics === true) {
+    if (showAnalytics === true || importedSteps != null) {
       setTargetSelected(false)
       setSourceSelected(false)
     }
-  }, [showAnalytics])
+  }, [showAnalytics, importedSteps])
 
   useOnSelectionChange({
     onChange: (selected) => {
       const selectedEdge = selected.edges[0]
-      if (showAnalytics === true) return
+      if (showAnalytics === true || importedSteps != null) return
       setTargetSelected(selectedEdge?.target === id)
       setSourceSelected(
         selectedEdge?.sourceHandle != null

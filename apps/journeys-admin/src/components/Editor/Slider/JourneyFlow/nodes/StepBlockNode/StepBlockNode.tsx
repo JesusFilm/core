@@ -23,23 +23,28 @@ export function StepBlockNode({
   dragging
 }: NodeProps): ReactElement {
   const {
-    state: { steps, selectedStep, activeContent, showAnalytics }
+    state: { steps, importedSteps, selectedStep, activeContent, showAnalytics }
   } = useEditor()
   const { journey } = useJourney()
 
-  const step = steps?.find((step) => step.id === id)
+  const step =
+    importedSteps?.find((step) => step.id === id) ??
+    steps?.find((step) => step.id === id)
+
+  // const step = steps?.find((step) => step.id === id)
+
   const actionBlocks = filterActionBlocks(step)
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
 
-  const isMenuCard = journey?.menuStepBlock?.id === id
+  // const isMenuCard = journey?.menuStepBlock?.id === id
 
-  const targetHandleVariant = isMenuCard
-    ? HandleVariant.None
-    : showAnalytics === true
-    ? HandleVariant.Disabled
-    : HandleVariant.Shown
+  // const targetHandleVariant = isMenuCard
+  //   ? HandleVariant.None
+  //   : showAnalytics === true
+  //   ? HandleVariant.Disabled
+  // : HandleVariant.Shown
 
   return step != null ? (
     <Stack sx={{ position: 'relative' }}>
@@ -48,7 +53,7 @@ export function StepBlockNode({
           <StepBlockNodeAnalytics stepId={step.id} />
         </div>
       </Fade>
-      {showAnalytics !== true && (
+      {showAnalytics !== true && importedSteps == null && (
         <StepBlockNodeMenu
           in={isSelected}
           className="fab"
@@ -74,7 +79,11 @@ export function StepBlockNode({
       >
         <BaseNode
           id={step.id}
-          targetHandle={targetHandleVariant}
+          targetHandle={
+            showAnalytics === true || importedSteps != null
+              ? HandleVariant.Disabled
+              : HandleVariant.Shown
+          }
           selected={isSelected}
           isSourceConnected={step.nextBlockId != null}
           dragging={dragging}

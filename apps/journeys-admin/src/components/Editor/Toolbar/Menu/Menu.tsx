@@ -20,6 +20,7 @@ import { AnalyticsItem } from '../Items/AnalyticsItem'
 import { CopyLinkItem } from '../Items/CopyLinkItem'
 import { CreateTemplateItem } from '../Items/CreateTemplateItem'
 import { DetailsItem } from '../Items/DetailsItem'
+import { ExportItem } from '../Items/ExportItem'
 import { ShareItem } from '../Items/ShareItem'
 import { StrategyItem } from '../Items/StrategyItem'
 import { TemplateSettingsItem } from '../Items/TemplateSettingsItem'
@@ -95,6 +96,9 @@ export function Menu({ user }: MenuProps): ReactElement {
         {!smUp && <Divider data-testid="details-menu-divider" />}
         {journey?.template === true && (
           <TemplateSettingsItem variant="menu-item" onClose={handleCloseMenu} />
+        )}
+        {journey?.template !== true && (
+          <ExportItem variant="menu-item" onClose={handleCloseMenu} />
         )}
         <AccessItem variant="menu-item" onClose={handleCloseMenu} />
         {!smUp && journey?.template !== true && (

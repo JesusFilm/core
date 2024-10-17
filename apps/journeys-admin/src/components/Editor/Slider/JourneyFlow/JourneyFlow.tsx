@@ -70,6 +70,7 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
+import { Item } from '../../Toolbar/Items/Item'
 
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
@@ -99,7 +100,7 @@ export function JourneyFlow(): ReactElement {
   const { editorAnalytics } = useFlags()
   const theme = useTheme()
   const {
-    state: { steps, activeSlide, showAnalytics, analytics },
+    state: { steps, activeSlide, showAnalytics, analytics, importedSteps },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
@@ -137,31 +138,36 @@ export function JourneyFlow(): ReactElement {
 
   const blockPositionUpdate = useCallback(
     (input: Array<{ id: string; x: number; y: number }>): void => {
-      void stepBlockPositionUpdate({
-        variables: {
-          input
-        },
-        optimisticResponse: {
-          stepBlockPositionUpdate: input.map((step) => ({
-            ...step,
-            __typename: 'StepBlock'
-          }))
-        }
-      })
+      if (importedSteps == null) {
+        void stepBlockPositionUpdate({
+          variables: {
+            input
+          },
+          optimisticResponse: {
+            stepBlockPositionUpdate: input.map((step) => ({
+              ...step,
+              __typename: 'StepBlock'
+            }))
+          }
+        })
+      }
     },
     [stepBlockPositionUpdate]
   )
 
   const allBlockPositionUpdate = useCallback(
     async (onload = false): Promise<void> => {
-      if (steps == null || data == null) return
+      if ((steps == null && importedSteps == null) || data == null) return
 
-      const input = Object.entries(arrangeSteps(steps)).map(
+      const stepData = importedSteps ?? steps ?? []
+
+      const input = Object.entries(arrangeSteps(stepData)).map(
         ([id, position]) => ({
           id,
           ...position
         })
       )
+      // console.log('data', data.blocks, input)
 
       if (onload) {
         blockPositionUpdate(input)
@@ -191,30 +197,40 @@ export function JourneyFlow(): ReactElement {
         })
       }
     },
-    [data, dispatch, steps, add, blockPositionUpdate]
+    [data, dispatch, steps, add, blockPositionUpdate, importedSteps]
   )
 
+  const handleCancelPreviewMode = useCallback(() => {
+    dispatch({
+      type: 'SetImportedStepsAction',
+      importedSteps: undefined
+    })
+    if (steps) {
+      dispatch({
+        type: 'SetStepsAction',
+        steps
+      })
+    }
+  }, [dispatch])
+
   useEffect(() => {
-    if (
-      data?.blocks == null ||
-      steps == null ||
-      data.blocks.length !== steps.length
-    )
-      return
+    if (data?.blocks == null || (steps == null && importedSteps == null)) return
+
+    if (steps != null && data.blocks.length !== steps.length) return
+
+    const blocks = importedSteps ?? steps ?? []
 
     const positions: PositionMap =
-      data.blocks.reduce((acc, block) => {
-        if (
-          block.__typename === 'StepBlock' &&
-          block.x != null &&
-          block.y != null
-        ) {
-          acc[block.id] = { x: block.x, y: block.y }
+      blocks.reduce((acc, block, i) => {
+        if (block.__typename === 'StepBlock') {
+          acc[block.id] = { x: -10, y: i * 200 }
         }
         return acc
       }, {}) ?? {}
 
-    const validSteps = steps.every((step) => {
+    // console.log('blocks', importedSteps, blocks, data.blocks)
+
+    const validSteps = blocks.every((step) => {
       return (
         positions[step.id] != null &&
         positions[step.id].x != null &&
@@ -227,10 +243,10 @@ export function JourneyFlow(): ReactElement {
       return
     }
 
-    let filteredSteps = steps
+    let filteredSteps = blocks
 
     if (journey?.menuStepBlock != null && journey.website !== true) {
-      filteredSteps = steps.filter(
+      filteredSteps = blocks?.filter(
         (step) => step.id !== journey.menuStepBlock?.id
       )
     }
@@ -464,7 +480,11 @@ export function JourneyFlow(): ReactElement {
         onConnectEnd={onConnectEnd}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
-        onEdgeUpdate={showAnalytics === true ? undefined : onEdgeUpdate}
+        onEdgeUpdate={
+          showAnalytics === true || importedSteps != null
+            ? undefined
+            : onEdgeUpdate
+        }
         onEdgeUpdateStart={onEdgeUpdateStart}
         onEdgeUpdateEnd={onEdgeUpdateEnd}
         onSelectionChange={onSelectionChange}
@@ -484,10 +504,38 @@ export function JourneyFlow(): ReactElement {
         {activeSlide === ActiveSlide.JourneyFlow && (
           <>
             <Panel position="top-right">
-              {showAnalytics !== true && (
+              {(showAnalytics !== true || importedSteps == null) && (
                 <NewStepButton disabled={steps == null || loading} />
               )}
             </Panel>
+            {importedSteps != null && (
+              <Panel position="top-right">
+                <Item
+                  variant="button"
+                  icon={null}
+                  label={'Confirm import'}
+                  ButtonProps={{
+                    disabled: true,
+                    sx: { backgroundColor: 'background.paper' }
+                  }}
+                />
+                <Item
+                  variant="button"
+                  icon={null}
+                  label={'Exit preview mode'}
+                  onClick={handleCancelPreviewMode}
+                  ButtonProps={{
+                    sx: {
+                      ml: 4,
+                      backgroundColor: 'background.paper',
+                      ':hover': {
+                        backgroundColor: 'background.paper'
+                      }
+                    }
+                  }}
+                />
+              </Panel>
+            )}
             {editorAnalytics && (
               <Panel position="top-left">
                 <>
