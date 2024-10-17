@@ -138,10 +138,14 @@ export class PlausibleService implements OnModuleInit {
         uri: process.env.GATEWAY_URL,
         fetch,
         headers: {
-          Authorization: `Bearer ${process.env.PLAUSIBLE_API_KEY}`
+          Authorization: `Bearer ${process.env.PLAUSIBLE_API_KEY}`,
+          'x-graphql-client-name': 'api-journeys',
+          'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
         }
       }),
-      cache: new InMemoryCache()
+      cache: new InMemoryCache(),
+      name: 'api-journeys',
+      version: process.env.SERVICE_VERSION
     })
 
     this.plausibleClient = axios.create({
