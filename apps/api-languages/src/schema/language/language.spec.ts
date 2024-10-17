@@ -59,7 +59,9 @@ describe('language', () => {
       countryId: 'US',
       speakers: 1000000,
       displaySpeakers: 1000000,
-      primary: true
+      primary: true,
+      suggested: false,
+      order: 1
     })
     prismaMock.countryLanguage.aggregate.mockResolvedValue({
       _count: {},
@@ -122,7 +124,9 @@ describe('language', () => {
       countryId: 'US',
       speakers: 1000000,
       displaySpeakers: 1000000,
-      primary: true
+      primary: true,
+      suggested: false,
+      order: 1
     })
     prismaMock.countryLanguage.aggregate.mockResolvedValue({
       _count: {},
