@@ -2,7 +2,7 @@ import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
 import { ReactElement } from 'react'
-import { NodeProps } from 'reactflow'
+import { NodeProps, useUpdateNodeInternals } from 'reactflow'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
@@ -27,8 +27,11 @@ export function StepBlockNode({
   } = useEditor()
   const { journey } = useJourney()
 
+  const updateNodeInternals = useUpdateNodeInternals()
+
   const step = steps?.find((step) => step.id === id)
   const actionBlocks = filterActionBlocks(step)
+  updateNodeInternals(step?.id ?? '')
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
