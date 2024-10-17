@@ -358,6 +358,8 @@ export class ImageBlockCreateInput {
     height?: Nullable<number>;
     isCover?: Nullable<boolean>;
     scale?: Nullable<number>;
+    focalTop?: Nullable<number>;
+    focalLeft?: Nullable<number>;
 }
 
 export class ImageBlockUpdateInput {
@@ -368,6 +370,8 @@ export class ImageBlockUpdateInput {
     width?: Nullable<number>;
     height?: Nullable<number>;
     scale?: Nullable<number>;
+    focalTop?: Nullable<number>;
+    focalLeft?: Nullable<number>;
 }
 
 export class RadioOptionBlockCreateInput {
@@ -1270,6 +1274,8 @@ export class ImageBlock implements Block {
     alt: string;
     blurhash: string;
     scale?: Nullable<number>;
+    focalTop?: Nullable<number>;
+    focalLeft?: Nullable<number>;
 }
 
 export class RadioOptionBlock implements Block {

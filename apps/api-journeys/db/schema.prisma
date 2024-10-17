@@ -517,6 +517,8 @@ model Block {
   type                    TextResponseType?
   updatedAt               DateTime             @default(now()) @updatedAt
   deletedAt               DateTime?
+  focalTop                Int?
+  focalLeft               Int?
   journey                 Journey              @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   posterBlock             Block?               @relation("PosterBlock", fields: [posterBlockId], references: [id])
   posterBlockParent       Block?               @relation("PosterBlock")
