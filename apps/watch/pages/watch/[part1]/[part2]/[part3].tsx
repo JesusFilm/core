@@ -97,8 +97,6 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
     }
 
   const client = createApolloClient()
-  console.log('containerId', `${containerId}/${languageId}`)
-  console.log('contentId', `${contentId}/${languageId}`)
   try {
     const { data } = await client.query<GetVideoContainerAndVideoContent>({
       query: GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT,
