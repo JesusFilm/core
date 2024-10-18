@@ -195,13 +195,18 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           </IconButton>
         </Tooltip>
       </NextLink>
-      <Stack gap={2} direction="row" data-testid="CommandUndoRedo">
+      <Stack
+        gap={2}
+        direction="row"
+        data-testid="CommandUndoRedo"
+        sx={{ mr: 1 }}
+      >
         <CommandUndoItem variant="icon-button" />
         <CommandRedoItem variant="icon-button" />
       </Stack>
       <Stack
         direction="row"
-        gap={1}
+        gap={2}
         data-testid="JourneyDetails"
         sx={{ minWidth: 0, display: { xs: 'none', md: 'inline-flex' } }}
       >
@@ -380,7 +385,9 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
       >
         <Items />
         <PreviewItem variant="icon-button" />
-        <Menu user={user} ref={menuRef} />
+        <Box ref={menuRef}>
+          <Menu user={user} />
+        </Box>
         <Box
           ref={helpScoutRef}
           sx={{
