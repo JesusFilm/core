@@ -111,6 +111,8 @@ export interface CardIntroRestore_subtitle_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardIntroRestore_subtitle_RadioOptionBlock_action_NavigateToBlockAction {
@@ -513,6 +515,8 @@ export interface CardIntroRestore_title_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardIntroRestore_title_RadioOptionBlock_action_NavigateToBlockAction {
@@ -915,6 +919,8 @@ export interface CardIntroRestore_body_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardIntroRestore_body_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1317,6 +1323,8 @@ export interface CardIntroRestore_button_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardIntroRestore_button_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1719,6 +1727,8 @@ export interface CardIntroRestore_startIcon_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardIntroRestore_startIcon_RadioOptionBlock_action_NavigateToBlockAction {
@@ -2121,6 +2131,8 @@ export interface CardIntroRestore_endIcon_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardIntroRestore_endIcon_RadioOptionBlock_action_NavigateToBlockAction {
@@ -2523,6 +2535,8 @@ export interface CardIntroRestore_video_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardIntroRestore_video_RadioOptionBlock_action_NavigateToBlockAction {

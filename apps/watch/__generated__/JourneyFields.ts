@@ -125,6 +125,8 @@ export interface JourneyFields_blocks_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface JourneyFields_blocks_RadioOptionBlock_action_NavigateToBlockAction {
@@ -440,6 +442,8 @@ export interface JourneyFields_primaryImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface JourneyFields_creatorImageBlock {
@@ -457,6 +461,8 @@ export interface JourneyFields_creatorImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface JourneyFields_userJourneys_user {
@@ -536,6 +542,8 @@ export interface JourneyFields_logoImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface JourneyFields_menuStepBlock {
