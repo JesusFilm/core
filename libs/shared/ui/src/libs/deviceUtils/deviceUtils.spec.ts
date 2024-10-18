@@ -1,4 +1,10 @@
-import { hasTouchScreen, isIOS, isIPhone, isMobile } from './deviceUtils'
+import {
+  hasTouchScreen,
+  isIOS,
+  isIOSTouchScreen,
+  isIPhone,
+  isMobile
+} from './deviceUtils'
 
 describe('hasTouchScreen', () => {
   const originalNavigator = { ...global.navigator }
@@ -179,6 +185,41 @@ describe('isIOS function', () => {
       configurable: true
     })
     expect(isIOS()).toBe(false)
+  })
+})
+
+describe('isIOSTouchScreen function', () => {
+  test('should return true when userAgent contains iOS devices', () => {
+    const iOSUserAgents = [
+      'Mozilla/5.0 (iPad; CPU OS 15_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1',
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 15_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1'
+    ]
+
+    iOSUserAgents.forEach((userAgent) => {
+      Object.defineProperty(navigator, 'userAgent', {
+        value: userAgent,
+        configurable: true
+      })
+      expect(isIOSTouchScreen()).toBe(true)
+    })
+  })
+
+  test('should return false when userAgent does not contain iOS devices', () => {
+    const nonIOSUserAgent =
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36'
+    Object.defineProperty(navigator, 'userAgent', {
+      value: nonIOSUserAgent,
+      configurable: true
+    })
+    expect(isIOSTouchScreen()).toBe(false)
+  })
+
+  test('should return false when userAgent is undefined', () => {
+    Object.defineProperty(navigator, 'userAgent', {
+      value: undefined,
+      configurable: true
+    })
+    expect(isIOSTouchScreen()).toBe(false)
   })
 })
 

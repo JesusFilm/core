@@ -44,6 +44,18 @@ export function isIOS(): boolean {
 }
 
 // TODO: should only resort to user agent sniffing as a last resport
+export function isIOSTouchScreen(): boolean {
+  if (
+    typeof navigator === 'undefined' ||
+    typeof navigator.userAgent === 'undefined'
+  )
+    return false
+
+  const userAgent = navigator.userAgent
+  return /iPad|iPhone|iPod/.test(userAgent)
+}
+
+// TODO: should only resort to user agent sniffing as a last resport
 export function isMobile(): boolean {
   if (
     typeof navigator === 'undefined' ||
