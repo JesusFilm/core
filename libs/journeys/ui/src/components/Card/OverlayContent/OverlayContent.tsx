@@ -72,7 +72,7 @@ export function OverlayContent({
       data-testid="CardOverlayContent"
       sx={{
         ...enableVerticalScroll,
-        ...topBottomEdgeFadeEffect,
+        // ...topBottomEdgeFadeEffect,
         ...topBottomMarginsOnContent,
         ...mobileNotchPadding,
         ...footerSpacing,
