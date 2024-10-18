@@ -105,7 +105,9 @@ const posterInternal: TreeBlock<ImageBlock> = {
   blurhash: '',
   alt: 'poster',
   children: [],
-  scale: null
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const videoYouTube: TreeBlock<VideoBlock> = {
@@ -144,7 +146,9 @@ const posterYouTube: TreeBlock<ImageBlock> = {
   blurhash: '',
   alt: 'poster',
   children: [],
-  scale: null
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const onChange = async (): Promise<void> => await Promise.resolve()
