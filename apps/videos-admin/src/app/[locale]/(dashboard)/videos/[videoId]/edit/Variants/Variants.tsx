@@ -27,14 +27,6 @@ import { DraggableRow } from '../DraggableRow'
 
 import { Downloads } from './Downloads'
 
-// const GET_VIDEO_LANGUAGES = graphql(`
-//   query GetVariantLanguages a
-//   `)
-
-// function useGetLanguages({ variantId }) {
-// const query = useQuery()
-// }
-
 const GET_LANGUAGES = graphql(`
   query GetLanguages {
     languages {

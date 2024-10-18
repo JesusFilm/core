@@ -27,6 +27,7 @@ import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
 import { ChildrenView } from './_ChildrenView'
 import { Editions } from './Editions'
 import { StudyQuestions } from './StudyQuestions'
+import { Subtitles } from './Subtitles'
 import { TabContainer } from './Tabs/TabContainer'
 import { TabLabel } from './Tabs/TabLabel'
 import { UpdateableField } from './UpdateableField'
@@ -279,7 +280,8 @@ export default function EditPage(): ReactElement {
             <Variants variants={video?.variants} />
           </TabContainer>
           <TabContainer value={tabValue} index={3}>
-            <Editions editions={[]} subtitles={video?.subtitles} />
+            <Editions editions={[]} />
+            <Subtitles subtitles={video?.subtitles} videoId={video.id} />
           </TabContainer>
         </>
       )}
