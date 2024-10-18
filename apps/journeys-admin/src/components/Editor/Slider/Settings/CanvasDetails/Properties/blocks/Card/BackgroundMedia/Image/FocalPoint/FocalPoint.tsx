@@ -3,12 +3,15 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import clamp from 'lodash/clamp'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../../../../../__generated__/globalTypes'
+
+import { GridLines } from './GridLines'
 
 interface Position {
   x: number
@@ -34,13 +37,7 @@ export function FocalPoint({
   const dotRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
-
-  const axis = ['x', 'y']
-  const gridPositions = [33.33, 66.66]
-
-  function clamp(value: number, min: number, max: number): number {
-    return Math.min(Math.max(value, min), max)
-  }
+  const [shouldUpdate, setShouldUpdate] = useState(false)
 
   function updatePoint(point: Position): void {
     const x = clamp(point.x, 0, 100)
@@ -65,28 +62,17 @@ export function FocalPoint({
   }
 
   function handleMouseUp(): void {
-    setIsDragging(false)
-    updateImageBlock({
-      focalTop: Math.round(localPosition.y),
-      focalLeft: Math.round(localPosition.x)
-    })
+    if (isDragging) {
+      setIsDragging(false)
+      setShouldUpdate(true)
+    }
   }
 
   function handleImageClick(e: React.MouseEvent): void {
     const point = calculatePoint(e)
     if (point != null) {
       updatePoint(point)
-      updateImageBlock({
-        focalTop: Math.round(point.y),
-        focalLeft: Math.round(point.x)
-      })
-    }
-  }
-
-  function handleMouseMove(e: MouseEvent): void {
-    if (isDragging) {
-      const point = calculatePoint(e)
-      if (point != null) updatePoint(point)
+      setShouldUpdate(true)
     }
   }
 
@@ -100,11 +86,11 @@ export function FocalPoint({
     }
   }
 
-  function handleBlur(): void {
-    updateImageBlock({
-      focalTop: Math.round(localPosition.y),
-      focalLeft: Math.round(localPosition.x)
-    })
+  function handleMouseMove(e: MouseEvent): void {
+    if (isDragging) {
+      const point = calculatePoint(e)
+      if (point != null) updatePoint(point)
+    }
   }
 
   useEffect(() => {
@@ -121,7 +107,15 @@ export function FocalPoint({
     if (imageRef.current != null) {
       imageRef.current.style.objectPosition = `${localPosition.x}% ${localPosition.y}%`
     }
-  }, [localPosition])
+
+    if (shouldUpdate) {
+      updateImageBlock({
+        focalTop: Math.round(localPosition.y),
+        focalLeft: Math.round(localPosition.x)
+      })
+      setShouldUpdate(false)
+    }
+  }, [shouldUpdate, localPosition, updateImageBlock])
 
   return (
     <Stack gap={4}>
@@ -160,30 +154,7 @@ export function FocalPoint({
                 bottom: 0
               }}
             />
-            {gridPositions.map((position) => (
-              <>
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: 0,
-                    left: `${position}%`,
-                    bottom: 0,
-                    width: '1px',
-                    backgroundColor: 'rgba(255,255,255,0.5)'
-                  }}
-                />
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: `${position}%`,
-                    left: 0,
-                    right: 0,
-                    height: '1px',
-                    backgroundColor: 'rgba(255,255,255,0.5)'
-                  }}
-                />
-              </>
-            ))}
+            <GridLines />
             <Box
               ref={dotRef}
               sx={{
@@ -208,14 +179,14 @@ export function FocalPoint({
         )}
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-        {axis.map((axis: 'x' | 'y') => (
+        {['x', 'y'].map((axis: 'x' | 'y') => (
           <TextField
             key={axis}
             type="number"
             label={axis === 'x' ? t('Left') : t('Top')}
             value={localPosition[axis].toFixed(0)}
             onChange={(e) => handleInputChange(axis, e.target.value)}
-            onBlur={handleBlur}
+            onBlur={() => setShouldUpdate(true)}
             slotProps={{
               input: { endAdornment: '%' },
               htmlInput: { min: 0, max: 100 }
