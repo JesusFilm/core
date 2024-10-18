@@ -125,6 +125,8 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToBlockAction {
@@ -440,6 +442,8 @@ export interface GetPublisherTemplate_publisherTemplate_primaryImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_creatorImageBlock {
@@ -457,6 +461,8 @@ export interface GetPublisherTemplate_publisherTemplate_creatorImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_userJourneys_user {
@@ -536,6 +542,8 @@ export interface GetPublisherTemplate_publisherTemplate_logoImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_menuStepBlock {

@@ -125,6 +125,8 @@ export interface GetAdminJourney_journey_blocks_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetAdminJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
@@ -440,6 +442,8 @@ export interface GetAdminJourney_journey_primaryImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetAdminJourney_journey_creatorImageBlock {
@@ -457,6 +461,8 @@ export interface GetAdminJourney_journey_creatorImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetAdminJourney_journey_userJourneys_user {
@@ -536,6 +542,8 @@ export interface GetAdminJourney_journey_logoImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetAdminJourney_journey_menuStepBlock {

@@ -140,7 +140,9 @@ export function HostAvatarsButton(): ReactElement {
                   blurhash: '',
                   parentBlockId: null,
                   parentOrder: 0,
-                  scale: null
+                  scale: null,
+                  focalLeft: 50,
+                  focalTop: 50
                 }
               : null
           }
