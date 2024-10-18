@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, CloudflareVideo, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, UserMediaRole } from ".prisma/api-media-client";
+import type { Prisma, CloudflareImage, CloudflareVideo, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, UserMediaRole } from ".prisma/api-media-client";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
@@ -160,7 +160,7 @@ export default interface PrismaTypes {
         Where: Prisma.VideoVariantWhereInput;
         Create: {};
         Update: {};
-        RelationName: "downloads" | "video";
+        RelationName: "downloads" | "videoEdition" | "video";
         ListRelations: "downloads";
         Relations: {
             downloads: {
@@ -168,10 +168,40 @@ export default interface PrismaTypes {
                 Name: "VideoVariantDownload";
                 Nullable: false;
             };
+            videoEdition: {
+                Shape: VideoEdition | null;
+                Name: "VideoEdition";
+                Nullable: true;
+            };
             video: {
                 Shape: Video | null;
                 Name: "Video";
                 Nullable: true;
+            };
+        };
+    };
+    VideoEdition: {
+        Name: "VideoEdition";
+        Shape: VideoEdition;
+        Include: Prisma.VideoEditionInclude;
+        Select: Prisma.VideoEditionSelect;
+        OrderBy: Prisma.VideoEditionOrderByWithRelationAndSearchRelevanceInput;
+        WhereUnique: Prisma.VideoEditionWhereUniqueInput;
+        Where: Prisma.VideoEditionWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "VideoVariant" | "VideoSubtitle";
+        ListRelations: "VideoVariant" | "VideoSubtitle";
+        Relations: {
+            VideoVariant: {
+                Shape: VideoVariant[];
+                Name: "VideoVariant";
+                Nullable: false;
+            };
+            VideoSubtitle: {
+                Shape: VideoSubtitle[];
+                Name: "VideoSubtitle";
+                Nullable: false;
             };
         };
     };
@@ -185,9 +215,14 @@ export default interface PrismaTypes {
         Where: Prisma.VideoSubtitleWhereInput;
         Create: {};
         Update: {};
-        RelationName: "Video";
+        RelationName: "videoEdition" | "Video";
         ListRelations: never;
         Relations: {
+            videoEdition: {
+                Shape: VideoEdition | null;
+                Name: "VideoEdition";
+                Nullable: true;
+            };
             Video: {
                 Shape: Video;
                 Name: "Video";
