@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Block" ADD COLUMN     "focalLeft" INTEGER DEFAULT 50,
+ADD COLUMN     "focalTop" INTEGER DEFAULT 50;

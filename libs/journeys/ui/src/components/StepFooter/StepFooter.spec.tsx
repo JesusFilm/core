@@ -120,13 +120,10 @@ describe('StepFooter', () => {
           <JourneyProvider
             value={{
               variant: 'admin',
-              journey: undefined
+              journey: { ...journey, seoTitle: 'discovery journey title' }
             }}
           >
-            <StepFooter
-              onFooterClick={jest.fn()}
-              title="discovery journey title"
-            />
+            <StepFooter onFooterClick={jest.fn()} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
