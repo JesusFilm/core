@@ -68,6 +68,13 @@ export function FocalPoint({
     }
   }
 
+  function handleMouseMove(e: MouseEvent): void {
+    if (isDragging) {
+      const point = calculatePoint(e)
+      if (point != null) updatePoint(point)
+    }
+  }
+
   function handleImageClick(e: React.MouseEvent): void {
     const point = calculatePoint(e)
     if (point != null) {
@@ -83,13 +90,6 @@ export function FocalPoint({
         x: axis === 'x' ? numValue : localPosition.x,
         y: axis === 'y' ? numValue : localPosition.y
       })
-    }
-  }
-
-  function handleMouseMove(e: MouseEvent): void {
-    if (isDragging) {
-      const point = calculatePoint(e)
-      if (point != null) updatePoint(point)
     }
   }
 
