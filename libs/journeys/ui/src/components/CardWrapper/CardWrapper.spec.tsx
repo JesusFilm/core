@@ -61,7 +61,9 @@ describe('CardWrapper', () => {
               parentOrder: 0,
               children: [],
               blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
-              scale: null
+              scale: null,
+              focalLeft: 50,
+              focalTop: 50
             }
           ]
         }
@@ -176,7 +178,9 @@ describe('CardWrapper', () => {
               parentOrder: 0,
               children: [],
               blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
-              scale: null
+              scale: null,
+              focalLeft: 50,
+              focalTop: 50
             }
           ]
         }
