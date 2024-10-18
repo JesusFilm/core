@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { useParams } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { useVideoMock } from '../../../../../../libs/useVideo/useVideo.mock'
+import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 import { VideoView } from './VideoView'
 
@@ -18,10 +18,10 @@ describe('VideoView', () => {
   it('should get video details', async () => {
     mockUseParams.mockReturnValue({ videoId: 'someId' })
 
-    const result = jest.fn().mockReturnValue(useVideoMock.result)
+    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
 
     render(
-      <MockedProvider mocks={[{ ...useVideoMock, result }]}>
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
           <VideoView />
         </NextIntlClientProvider>

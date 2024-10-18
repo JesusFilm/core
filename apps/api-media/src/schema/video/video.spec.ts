@@ -1,10 +1,12 @@
 import { ResultOf } from 'gql.tada'
+import { GraphQLError } from 'graphql'
 
 import {
   BibleCitation,
   CloudflareImage,
   ImageAspectRatio,
   Keyword,
+  Prisma,
   Video,
   VideoDescription,
   VideoImageAlt,
@@ -861,6 +863,26 @@ describe('video', () => {
         }
       })
       expect(data).toHaveProperty('data.video', { id: 'videoId' })
+    })
+
+    it('should throw error when not found', async () => {
+      prismaMock.video.findFirstOrThrow.mockRejectedValueOnce(
+        new Prisma.PrismaClientKnownRequestError('No Video found', {
+          code: 'P2025',
+          clientVersion: 'prismaVersion'
+        })
+      )
+      const data = await client({
+        document: VIDEO_QUERY,
+        variables: {
+          id: 'slug',
+          idType: 'slug'
+        }
+      })
+
+      expect(data).toHaveProperty('errors', [
+        new GraphQLError('Video not found with id slug:slug')
+      ])
     })
   })
 
