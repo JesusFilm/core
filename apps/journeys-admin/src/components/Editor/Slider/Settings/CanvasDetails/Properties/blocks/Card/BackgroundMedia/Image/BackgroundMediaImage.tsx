@@ -72,16 +72,6 @@ export function BackgroundMediaImage({
   const coverBlock = cardBlock?.children.find(
     (child) => child.id === cardBlock?.coverBlockId
   ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock> | undefined
-  const isImageBlock = coverBlock?.__typename === 'ImageBlock'
-  const imageProps: Partial<ImageBlock> = isImageBlock
-    ? {
-        src: coverBlock.src,
-        alt: coverBlock.alt,
-        focalLeft: coverBlock.focalLeft ?? 0,
-        focalTop: coverBlock.focalTop ?? 0
-      }
-    : {}
-
   const { add } = useCommand()
   const { journey } = useJourney()
   const {
@@ -114,8 +104,8 @@ export function BackgroundMediaImage({
       blurhash: input.blurhash ?? '',
       parentOrder: null,
       scale: null,
-      focalTop: input?.focalTop ?? 0,
-      focalLeft: input?.focalLeft ?? 0
+      focalTop: input?.focalTop ?? 50,
+      focalLeft: input?.focalLeft ?? 50
     }
 
     add({
@@ -241,8 +231,8 @@ export function BackgroundMediaImage({
       blurhash: input.blurhash ?? coverBlock.blurhash,
       height: input.height ?? coverBlock.height,
       width: input.width ?? coverBlock.width,
-      focalTop: input?.focalTop ?? coverBlock.focalTop,
-      focalLeft: input?.focalLeft ?? coverBlock.focalLeft
+      focalTop: input?.focalTop ?? coverBlock.focalTop ?? 50,
+      focalLeft: input?.focalLeft ?? coverBlock.focalLeft ?? 50
     }
 
     add({
@@ -352,20 +342,17 @@ export function BackgroundMediaImage({
     }
   }
 
-  console.log('imageBlock', isImageBlock ? coverBlock : null)
-
   return (
     <Stack gap={4}>
       <ImageSource
-        selectedBlock={isImageBlock ? coverBlock : null}
+        selectedBlock={
+          coverBlock?.__typename === 'ImageBlock' ? coverBlock : null
+        }
         onChange={handleChange}
         onDelete={async () => deleteImageBlock()}
       />
       <FocalPoint
-        src={imageProps.src ?? ''}
-        alt={imageProps.alt ?? ''}
-        focalLeft={imageProps.focalLeft ?? 0}
-        focalTop={imageProps.focalTop ?? 0}
+        imageBlock={coverBlock?.__typename === 'ImageBlock' ? coverBlock : null}
         updateImageBlock={updateImageBlock}
       />
     </Stack>

@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
+import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../../../../../__generated__/globalTypes'
 
 interface Position {
@@ -15,27 +16,27 @@ interface Position {
 }
 
 interface FocalPointProps {
-  focalTop?: number
-  focalLeft?: number
-  src: string | null
-  alt?: string
+  imageBlock?: ImageBlock | null
   updateImageBlock: (input: ImageBlockUpdateInput) => void
 }
 
 export function FocalPoint({
-  focalTop,
-  focalLeft,
-  src,
-  alt,
+  imageBlock,
   updateImageBlock
 }: FocalPointProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+
+  const [localPosition, setLocalPosition] = useState<Position>({
+    x: imageBlock?.focalLeft ?? 50,
+    y: imageBlock?.focalTop ?? 50
+  })
 
   const dotRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
 
   const axis = ['x', 'y']
+  const gridPositions = [33.33, 66.66]
 
   function clamp(value: number, min: number, max: number): number {
     return Math.min(Math.max(value, min), max)
@@ -44,14 +45,13 @@ export function FocalPoint({
   function updatePoint(point: Position): void {
     const x = clamp(point.x, 0, 100)
     const y = clamp(point.y, 0, 100)
-    console.log({ x, y })
-    updateImageBlock({
-      focalTop: Math.round(y),
-      focalLeft: Math.round(x)
+    setLocalPosition({
+      x: Math.round(x * 100) / 100,
+      y: Math.round(y * 100) / 100
     })
   }
 
-  function calculatePoint(e): Position | null {
+  function calculatePoint(e: React.MouseEvent | MouseEvent): Position | null {
     if (imageRef.current == null) return null
     const boundingRect = imageRef.current.getBoundingClientRect()
     const x = ((e.clientX - boundingRect.left) / boundingRect.width) * 100
@@ -59,21 +59,31 @@ export function FocalPoint({
     return { x, y }
   }
 
-  function handleMouseDown(e): void {
+  function handleMouseDown(e: React.MouseEvent): void {
     e.stopPropagation()
     setIsDragging(true)
   }
 
   function handleMouseUp(): void {
     setIsDragging(false)
+    updateImageBlock({
+      focalTop: Math.round(localPosition.y),
+      focalLeft: Math.round(localPosition.x)
+    })
   }
 
-  function handleImageClick(e): void {
+  function handleImageClick(e: React.MouseEvent): void {
     const point = calculatePoint(e)
-    if (point != null) updatePoint(point)
+    if (point != null) {
+      updatePoint(point)
+      updateImageBlock({
+        focalTop: Math.round(point.y),
+        focalLeft: Math.round(point.x)
+      })
+    }
   }
 
-  function handleMouseMove(e): void {
+  function handleMouseMove(e: MouseEvent): void {
     if (isDragging) {
       const point = calculatePoint(e)
       if (point != null) updatePoint(point)
@@ -82,28 +92,36 @@ export function FocalPoint({
 
   function handleInputChange(axis: 'x' | 'y', value: string): void {
     const numValue = parseFloat(value)
-    if (!isNaN(numValue) && focalLeft != null && focalTop != null)
+    if (!isNaN(numValue)) {
       updatePoint({
-        x: axis === 'x' ? numValue : focalLeft,
-        y: axis === 'y' ? numValue : focalLeft
+        x: axis === 'x' ? numValue : localPosition.x,
+        y: axis === 'y' ? numValue : localPosition.y
       })
+    }
+  }
+
+  function handleBlur(): void {
+    updateImageBlock({
+      focalTop: Math.round(localPosition.y),
+      focalLeft: Math.round(localPosition.x)
+    })
   }
 
   useEffect(() => {
-    document.addEventListener('mouseup', handleMouseUp)
     document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseup', handleMouseUp)
     return () => {
-      document.removeEventListener('mouseup', handleMouseUp)
       document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDragging])
+  }, [isDragging, localPosition])
 
   useEffect(() => {
     if (imageRef.current != null) {
-      imageRef.current.style.objectPosition = `${focalLeft}% ${focalLeft}%`
+      imageRef.current.style.objectPosition = `${localPosition.x}% ${localPosition.y}%`
     }
-  }, [focalLeft, focalTop])
+  }, [localPosition])
 
   return (
     <Stack gap={4}>
@@ -125,9 +143,14 @@ export function FocalPoint({
         }}
         onClick={handleImageClick}
       >
-        {src != null && src !== '' ? (
+        {imageBlock?.src != null && imageBlock?.src !== '' ? (
           <>
-            <Image src={src} alt={alt ?? ''} layout="fill" objectFit="cover" />
+            <Image
+              src={imageBlock.src}
+              alt={imageBlock?.alt ?? ''}
+              layout="fill"
+              objectFit="cover"
+            />
             <Box
               sx={{
                 position: 'absolute',
@@ -137,46 +160,30 @@ export function FocalPoint({
                 bottom: 0
               }}
             />
-            <Box
-              sx={{
-                position: 'absolute',
-                top: 0,
-                left: '33.33%',
-                bottom: 0,
-                width: '1px',
-                backgroundColor: 'rgba(255,255,255,0.5)'
-              }}
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                top: 0,
-                left: '66.66%',
-                bottom: 0,
-                width: '1px',
-                backgroundColor: 'rgba(255,255,255,0.5)'
-              }}
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                top: '33.33%',
-                left: 0,
-                right: 0,
-                height: '1px',
-                backgroundColor: 'rgba(255,255,255,0.5)'
-              }}
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                top: '66.66%',
-                left: 0,
-                right: 0,
-                height: '1px',
-                backgroundColor: 'rgba(255,255,255,0.5)'
-              }}
-            />
+            {gridPositions.map((position) => (
+              <>
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: `${position}%`,
+                    bottom: 0,
+                    width: '1px',
+                    backgroundColor: 'rgba(255,255,255,0.5)'
+                  }}
+                />
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: `${position}%`,
+                    left: 0,
+                    right: 0,
+                    height: '1px',
+                    backgroundColor: 'rgba(255,255,255,0.5)'
+                  }}
+                />
+              </>
+            ))}
             <Box
               ref={dotRef}
               sx={{
@@ -186,8 +193,8 @@ export function FocalPoint({
                 borderRadius: '50%',
                 position: 'absolute',
                 pointerEvents: 'auto',
-                top: `${focalLeft}%`,
-                left: `${focalLeft}%`,
+                top: `${localPosition.y}%`,
+                left: `${localPosition.x}%`,
                 transform: 'translate(-50%, -50%)',
                 backdropFilter: 'blur(4px)',
                 border: '2px solid white',
@@ -206,8 +213,9 @@ export function FocalPoint({
             key={axis}
             type="number"
             label={axis === 'x' ? t('Left') : t('Top')}
-            value={axis === 'x' ? focalLeft?.toFixed(0) : focalTop?.toFixed(0)}
+            value={localPosition[axis].toFixed(0)}
             onChange={(e) => handleInputChange(axis, e.target.value)}
+            onBlur={handleBlur}
             slotProps={{
               input: { endAdornment: '%' },
               htmlInput: { min: 0, max: 100 }

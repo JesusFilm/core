@@ -102,6 +102,8 @@ export function ContainedCover({
 
   const overlayImageMask = `linear-gradient(to top, transparent 0%, ${backgroundColor}14 5%, ${backgroundColor}33 10%, ${backgroundColor}60 15%, ${backgroundColor}b0 20%, ${backgroundColor}e6 25%, ${backgroundColor} 30%)`
 
+  console.log('imageBlock', imageBlock)
+
   return (
     <>
       <Box
@@ -186,7 +188,7 @@ export function ContainedCover({
             blurDataURL={backgroundBlur}
             layout="fill"
             objectFit="cover"
-            objectPosition={`${imageBlock.focalLeft}% ${imageBlock.focalTop}%`}
+            // objectPosition={`${imageBlock.focalLeft}% ${imageBlock.focalTop}%`}
           />
         )}
       </Box>
