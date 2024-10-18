@@ -25,10 +25,10 @@ export const GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT = gql`
     $contentId: ID!
     $languageId: ID
   ) {
-    container: video(id: $containerId, idType: slug) {
+    content: video(id: $contentId, idType: slug) {
       ...VideoContentFields
     }
-    content: video(id: $contentId, idType: slug) {
+    container: video(id: $containerId, idType: slug) {
       ...VideoContentFields
     }
   }
@@ -97,6 +97,8 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
     }
 
   const client = createApolloClient()
+  console.log('containerId', `${containerId}/${languageId}`)
+  console.log('contentId', `${contentId}/${languageId}`)
   try {
     const { data } = await client.query<GetVideoContainerAndVideoContent>({
       query: GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT,
