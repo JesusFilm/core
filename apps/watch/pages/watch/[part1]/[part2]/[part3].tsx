@@ -25,10 +25,10 @@ export const GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT = gql`
     $contentId: ID!
     $languageId: ID
   ) {
-    container: video(id: $containerId, idType: slug) {
+    content: video(id: $contentId, idType: slug) {
       ...VideoContentFields
     }
-    content: video(id: $contentId, idType: slug) {
+    container: video(id: $containerId, idType: slug) {
       ...VideoContentFields
     }
   }

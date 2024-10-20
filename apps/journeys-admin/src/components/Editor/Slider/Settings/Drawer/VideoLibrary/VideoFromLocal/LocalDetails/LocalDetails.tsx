@@ -84,7 +84,7 @@ export function LocalDetails({
   const videoBlock = selectedBlock as VideoBlock
   const languageId =
     videoBlock?.videoId === id
-      ? videoBlock?.videoVariantLanguageId ?? DEFAULT_LANGUAGE_ID
+      ? (videoBlock?.videoVariantLanguageId ?? DEFAULT_LANGUAGE_ID)
       : DEFAULT_LANGUAGE_ID
 
   const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO, {
@@ -132,7 +132,7 @@ export function LocalDetails({
     const newSelectedLanguage =
       videoBlock?.videoId === id &&
       videoBlock?.videoVariantLanguageId !== selectedLanguage?.id
-        ? getVideoVariantLanguage() ?? DEFAULT_LANGUAGE
+        ? (getVideoVariantLanguage() ?? DEFAULT_LANGUAGE)
         : DEFAULT_LANGUAGE
 
     setSelectedLanguage(newSelectedLanguage)

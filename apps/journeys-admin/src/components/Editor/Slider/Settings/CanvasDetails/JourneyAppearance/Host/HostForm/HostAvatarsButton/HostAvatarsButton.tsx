@@ -107,7 +107,7 @@ export function HostAvatarsButton(): ReactElement {
           data-testid="avatar2"
           alt="avatar2"
           onClick={() => handleOpen(2)}
-          src={hasAvatar2 ? journey?.host?.src2 ?? undefined : undefined}
+          src={hasAvatar2 ? (journey?.host?.src2 ?? undefined) : undefined}
           sx={
             !hasAvatar2
               ? {
