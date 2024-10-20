@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { MailerService } from '@nestjs-modules/mailer'
-import { mockDeep } from 'jest-mock-extended'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { EmailService } from './email.service'
 
@@ -13,8 +13,7 @@ jest.mock('@aws-sdk/client-ses', () => ({
 }))
 
 describe('EmailService', () => {
-  let emailService: EmailService
-  let mailerService: MailerService
+  let emailService: EmailService, mailerService: DeepMockProxy<MailerService>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,7 +25,9 @@ describe('EmailService', () => {
         }
       ]
     }).compile()
-    mailerService = module.get<MailerService>(MailerService)
+    mailerService = module.get<MailerService>(
+      MailerService
+    ) as DeepMockProxy<MailerService>
     emailService = module.get<EmailService>(EmailService)
   })
 
@@ -41,52 +42,16 @@ describe('EmailService', () => {
     html: 'Test Html'
   }
 
-  it('should send email using mailerService when SMTP_URL is defined', async () => {
-    process.env.SMTP_URL = 'smtp://example.com' // from now on the env var is test
-
-    const mailerSpy = jest
-      .spyOn(mailerService, 'sendMail')
-      .mockResolvedValue(undefined)
+  it('should send email using mailerService ', async () => {
+    mailerService.sendMail.mockResolvedValue(undefined)
 
     await emailService.sendEmail(email)
 
-    expect(mailerSpy).toHaveBeenCalledWith({
+    expect(mailerService.sendMail).toHaveBeenCalledWith({
       to: email.to,
       subject: email.subject,
       text: email.text,
       html: email.html
     })
-  })
-
-  it('should process the email job', async () => {
-    const OLD_ENV = process.env
-    process.env = {
-      ...OLD_ENV,
-      SMTP_URL: undefined
-    }
-
-    await emailService.sendEmail(email)
-
-    expect(sendEmailMock).toHaveBeenCalledWith({
-      Source: 'support@nextstep.is',
-      Destination: { ToAddresses: [email.to] },
-      Message: {
-        Subject: {
-          Charset: 'UTF-8',
-          Data: email.subject
-        },
-        Body: {
-          Html: {
-            Charset: 'UTF-8',
-            Data: email.html
-          },
-          Text: {
-            Charset: 'UTF-8',
-            Data: email.text
-          }
-        }
-      }
-    })
-    process.env = OLD_ENV
   })
 })

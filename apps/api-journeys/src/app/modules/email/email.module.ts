@@ -8,6 +8,7 @@ import { PrismaService } from '../../lib/prisma.service'
 
 import { EmailConsumer } from './email.consumer'
 import { EmailEventsConsumer } from './emailEvents/emailEvents.consumer'
+import { SES } from '@aws-sdk/client-ses'
 
 @Global()
 @Module({
@@ -16,11 +17,16 @@ import { EmailEventsConsumer } from './emailEvents/emailEvents.consumer'
       { name: 'api-journeys-email' },
       { name: 'api-journeys-events-email' }
     ),
-    MailerModule.forRoot({
-      transport: process.env.SMTP_URL ?? 'smtp://maildev:1025',
-      defaults: {
-        from: '"Next Steps Support" <support@nextstep.is>'
-      }
+    MailerModule.forRootAsync({
+      useFactory: () => ({
+        transport:
+          process.env.SMTP_URL == null
+            ? { SES: new SES({ region: 'us-east-2' }) }
+            : process.env.SMTP_URL,
+        defaults: {
+          from: '"Next Steps Support" <support@nextstep.is>'
+        }
+      })
     })
   ],
   providers: [EmailConsumer, EmailService, PrismaService, EmailEventsConsumer],
