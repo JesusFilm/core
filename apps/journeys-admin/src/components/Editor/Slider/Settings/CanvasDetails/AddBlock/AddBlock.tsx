@@ -30,9 +30,7 @@ export function AddBlock(): ReactElement {
     (block) => block.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
 
-  const hasChildBlock = cardBlock?.children?.some(
-    (block) => block.id !== cardBlock.coverBlockId
-  )
+  const hasChildBlock = cardBlock?.children?.length > 0
 
   function onClose(): void {
     dispatch({
