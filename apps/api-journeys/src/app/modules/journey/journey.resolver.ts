@@ -553,8 +553,8 @@ export class JourneyResolver {
       duplicateNumber === 0
         ? ''
         : duplicateNumber === 1
-        ? ' copy'
-        : ` copy ${duplicateNumber}`
+          ? ' copy'
+          : ` copy ${duplicateNumber}`
     }`.trimEnd()
 
     let slug = slugify(duplicateTitle, {

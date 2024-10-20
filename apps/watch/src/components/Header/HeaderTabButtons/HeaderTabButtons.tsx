@@ -77,7 +77,7 @@ export function HeaderTabButtons(): ReactElement {
                 borderRadius: '40px !important',
                 border: '2px solid',
                 borderColor:
-                  router?.pathname?.startsWith(href) ?? false
+                  (router?.pathname?.startsWith(href) ?? false)
                     ? (theme) => theme.palette.primary.main
                     : 'transparent'
               }}
