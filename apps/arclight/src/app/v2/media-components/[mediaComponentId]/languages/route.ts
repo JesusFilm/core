@@ -106,15 +106,15 @@ export async function GET(
             platform === 'web'
               ? {}
               : platform === 'android'
-              ? {
-                  dash: [{ videoBitrate: 0, url: variant.dash }],
-                  hls: [{ videoBitrate: 0, url: variant.hls }],
-                  http: []
-                }
-              : {
-                  m3u8: [{ videoBitrate: 0, url: variant.hls }],
-                  http: []
-                }
+                ? {
+                    dash: [{ videoBitrate: 0, url: variant.dash }],
+                    hls: [{ videoBitrate: 0, url: variant.hls }],
+                    http: []
+                  }
+                : {
+                    m3u8: [{ videoBitrate: 0, url: variant.hls }],
+                    http: []
+                  }
 
           const url = `https://api.arclight.org/videoPlayerUrl?refId=${variant.id}&apiSessionId=${apiSessionId}&player=bc.vanilla6&dtm=0&playerStyle=vanilla`
 
