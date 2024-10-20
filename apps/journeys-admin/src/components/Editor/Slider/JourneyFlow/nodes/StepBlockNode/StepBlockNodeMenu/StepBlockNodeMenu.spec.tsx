@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { isIPhone } from '@core/shared/ui/deviceUtils'
+import { isIOSTouchScreen } from '@core/shared/ui/deviceUtils'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 
@@ -11,11 +11,13 @@ import { StepBlockNodeMenu } from './StepBlockNodeMenu'
 
 jest.mock('@core/shared/ui/deviceUtils', () => {
   return {
-    isIPhone: jest.fn()
+    isIOSTouchScreen: jest.fn()
   }
 })
 
-const mockIsIPhone = isIPhone as jest.MockedFunction<typeof isIPhone>
+const mockIsIOSTouchScreen = isIOSTouchScreen as jest.MockedFunction<
+  typeof isIOSTouchScreen
+>
 
 describe('StepBlockNodeMenu', () => {
   const step: TreeBlock<StepBlock> = {
@@ -56,7 +58,7 @@ describe('StepBlockNodeMenu', () => {
   })
 
   it('should open menu on tap for iOS', async () => {
-    mockIsIPhone.mockReturnValueOnce(true)
+    mockIsIOSTouchScreen.mockReturnValueOnce(true)
     const { getByTestId, queryByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -74,6 +76,6 @@ describe('StepBlockNodeMenu', () => {
     await waitFor(() => {
       expect(queryByTestId('StepBlockNodeMenu')).toBeInTheDocument()
     })
-    expect(mockIsIPhone).toHaveBeenCalled()
+    expect(mockIsIOSTouchScreen).toHaveBeenCalled()
   })
 })
