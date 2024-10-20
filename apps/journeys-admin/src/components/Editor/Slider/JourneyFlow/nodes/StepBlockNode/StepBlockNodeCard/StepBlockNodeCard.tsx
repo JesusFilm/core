@@ -45,7 +45,6 @@ export function StepBlockNodeCard({
 
   function handleClick(): void {
     if (selectedStep?.id === step?.id && showAnalytics !== true) {
-      console.log(step.id)
       // displays video block properties if video card, else card properties
       if (
         card?.children[0]?.__typename === 'VideoBlock' &&
