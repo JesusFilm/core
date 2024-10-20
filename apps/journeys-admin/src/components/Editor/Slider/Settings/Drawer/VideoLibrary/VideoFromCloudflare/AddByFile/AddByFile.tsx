@@ -71,6 +71,7 @@ export function AddByFile({
         ) {
           stopPolling()
           onChange(data.getMyCloudflareVideo.id)
+          setProcessing(false)
         }
       }
     })
