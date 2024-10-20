@@ -4,7 +4,7 @@ import Zoom from '@mui/material/Zoom'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { isIPhone } from '@core/shared/ui/deviceUtils'
+import { isIOSTouchScreen } from '@core/shared/ui/deviceUtils'
 import EllipsisIcon from '@core/shared/ui/icons/Ellipsis'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
@@ -53,7 +53,7 @@ export function StepBlockNodeMenu({
           // https://stackoverflow.com/questions/17710893/why-when-do-i-have-to-tap-twice-to-trigger-click-on-ios#:~:text=The%20simplest%20solution%20is%20not,triggered%20on%20the%20first%20tap.
           // see fig 6-4, https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7
           onMouseEnter={(e) => {
-            if (isIPhone()) handleClick(e)
+            if (isIOSTouchScreen()) handleClick(e)
           }}
           onClick={handleClick}
           sx={{
