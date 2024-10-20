@@ -6,12 +6,17 @@ import Typography from '@mui/material/Typography'
 import clamp from 'lodash/clamp'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../../../../../__generated__/globalTypes'
 
 import { GridLines } from './GridLines'
+
+const INITIAL_POSITION = { x: 50, y: 50 }
+const MIN_VALUE = 0
+const MAX_VALUE = 100
+const ROUND_PRECISION = 100
 
 interface Position {
   x: number
@@ -30,8 +35,8 @@ export function FocalPoint({
   const { t } = useTranslation('apps-journeys-admin')
 
   const [localPosition, setLocalPosition] = useState<Position>({
-    x: imageBlock?.focalLeft ?? 50,
-    y: imageBlock?.focalTop ?? 50
+    x: imageBlock?.focalLeft ?? INITIAL_POSITION.x,
+    y: imageBlock?.focalTop ?? INITIAL_POSITION.y
   })
 
   const dotRef = useRef<HTMLDivElement>(null)
@@ -40,19 +45,21 @@ export function FocalPoint({
   const [shouldUpdate, setShouldUpdate] = useState(false)
 
   function updatePoint(point: Position): void {
-    const x = clamp(point.x, 0, 100)
-    const y = clamp(point.y, 0, 100)
     setLocalPosition({
-      x: Math.round(x * 100) / 100,
-      y: Math.round(y * 100) / 100
+      x:
+        Math.round(clamp(point.x, MIN_VALUE, MAX_VALUE) * ROUND_PRECISION) /
+        ROUND_PRECISION,
+      y:
+        Math.round(clamp(point.y, MIN_VALUE, MAX_VALUE) * ROUND_PRECISION) /
+        ROUND_PRECISION
     })
   }
 
   function calculatePoint(e: React.MouseEvent | MouseEvent): Position | null {
     if (imageRef.current == null) return null
     const boundingRect = imageRef.current.getBoundingClientRect()
-    const x = ((e.clientX - boundingRect.left) / boundingRect.width) * 100
-    const y = ((e.clientY - boundingRect.top) / boundingRect.height) * 100
+    const x = ((e.clientX - boundingRect.left) / boundingRect.width) * MAX_VALUE
+    const y = ((e.clientY - boundingRect.top) / boundingRect.height) * MAX_VALUE
     return { x, y }
   }
 
@@ -61,19 +68,22 @@ export function FocalPoint({
     setIsDragging(true)
   }
 
-  function handleMouseUp(): void {
+  const handleMouseUp = useCallback((): void => {
     if (isDragging) {
       setIsDragging(false)
       setShouldUpdate(true)
     }
-  }
+  }, [isDragging])
 
-  function handleMouseMove(e: MouseEvent): void {
-    if (isDragging) {
-      const point = calculatePoint(e)
-      if (point != null) updatePoint(point)
-    }
-  }
+  const handleMouseMove = useCallback(
+    (e: MouseEvent): void => {
+      if (isDragging) {
+        const point = calculatePoint(e)
+        if (point != null) updatePoint(point)
+      }
+    },
+    [isDragging]
+  )
 
   function handleImageClick(e: React.MouseEvent): void {
     const point = calculatePoint(e)
@@ -100,8 +110,7 @@ export function FocalPoint({
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDragging, localPosition])
+  }, [handleMouseMove, handleMouseUp])
 
   useEffect(() => {
     if (imageRef.current != null) {
@@ -110,12 +119,17 @@ export function FocalPoint({
 
     if (shouldUpdate) {
       updateImageBlock({
+        src: imageBlock?.src,
+        alt: imageBlock?.alt,
+        blurhash: imageBlock?.blurhash,
+        width: imageBlock?.width,
+        height: imageBlock?.height,
         focalTop: Math.round(localPosition.y),
         focalLeft: Math.round(localPosition.x)
       })
       setShouldUpdate(false)
     }
-  }, [shouldUpdate, localPosition, updateImageBlock])
+  }, [shouldUpdate, localPosition, updateImageBlock, imageBlock])
 
   return (
     <Stack gap={4}>
@@ -137,7 +151,7 @@ export function FocalPoint({
         }}
         onClick={handleImageClick}
       >
-        {imageBlock?.src != null && imageBlock?.src !== '' ? (
+        {imageBlock?.src != null ? (
           <>
             <Image
               src={imageBlock.src}
@@ -179,7 +193,7 @@ export function FocalPoint({
         )}
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-        {['x', 'y'].map((axis: 'x' | 'y') => (
+        {(['x', 'y'] as const).map((axis) => (
           <TextField
             key={axis}
             type="number"

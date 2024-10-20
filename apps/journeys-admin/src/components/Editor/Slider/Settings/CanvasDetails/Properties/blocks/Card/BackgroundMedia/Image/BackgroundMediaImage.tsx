@@ -231,8 +231,8 @@ export function BackgroundMediaImage({
       blurhash: input.blurhash ?? coverBlock.blurhash,
       height: input.height ?? coverBlock.height,
       width: input.width ?? coverBlock.width,
-      focalTop: input?.focalTop ?? coverBlock.focalTop ?? 50,
-      focalLeft: input?.focalLeft ?? coverBlock.focalLeft ?? 50
+      focalTop: input?.focalTop ?? coverBlock.focalTop,
+      focalLeft: input?.focalLeft ?? coverBlock.focalLeft
     }
 
     add({
