@@ -189,6 +189,58 @@ describe('StepBlockNodeCard', () => {
     expect(screen.getByText('selectedBlock: video.id')).toBeInTheDocument()
   })
 
+  it('should not select video block if its the background video', () => {
+    mockGetCardMetadata.mockReturnValue({
+      title: undefined,
+      subtitle: undefined,
+      description: undefined,
+      priorityBlock: undefined,
+      bgImage: undefined
+    })
+
+    const step = {
+      __typename: 'StepBlock',
+      id: 'step.id',
+      children: [
+        {
+          id: 'card.id',
+          __typename: 'CardBlock',
+          coverBlockId: 'video.id',
+          children: [
+            {
+              id: 'video.id',
+              __typename: 'VideoBlock'
+            }
+          ]
+        }
+      ]
+    } as unknown as TreeBlock<StepBlock>
+
+    const initialState = {
+      selectedStep: step,
+      selectedAttributeId: 'selectedAttributeId'
+    }
+
+    render(
+      <EditorProvider initialState={initialState}>
+        <StepBlockNodeCard step={step} selected={false} />
+        <TestEditorState />
+      </EditorProvider>
+    )
+
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('StepBlock'))
+
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+    expect(
+      screen.queryByText('selectedBlock: video.id')
+    ).not.toBeInTheDocument()
+    expect(screen.getByText('selectedBlock: step.id')).toBeInTheDocument()
+    expect(
+      screen.getByText('selectedAttributeId: step.id-next-block')
+    ).toBeInTheDocument()
+  })
+
   it('should block select if in analytics mode', () => {
     mockGetCardMetadata.mockReturnValue({
       title: undefined,
