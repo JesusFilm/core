@@ -1,3 +1,4 @@
+import { SES } from '@aws-sdk/client-ses'
 import { BullModule } from '@nestjs/bullmq'
 import { Global, Module } from '@nestjs/common'
 import { MailerModule } from '@nestjs-modules/mailer'
@@ -8,7 +9,6 @@ import { PrismaService } from '../../lib/prisma.service'
 
 import { EmailConsumer } from './email.consumer'
 import { EmailEventsConsumer } from './emailEvents/emailEvents.consumer'
-import { SES } from '@aws-sdk/client-ses'
 
 @Global()
 @Module({

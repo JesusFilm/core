@@ -42,7 +42,7 @@ describe('EmailService', () => {
     html: 'Test Html'
   }
 
-  it('should send email using mailerService ', async () => {
+  it('should send email using mailerService', async () => {
     mailerService.sendMail.mockResolvedValue(undefined)
 
     await emailService.sendEmail(email)
