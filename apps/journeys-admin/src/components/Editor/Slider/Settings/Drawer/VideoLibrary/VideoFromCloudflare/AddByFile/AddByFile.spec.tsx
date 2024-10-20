@@ -19,6 +19,46 @@ async function dropTestVideo(): Promise<void> {
   })
 }
 
+async function completeUpload(testStack: TestHttpStack): Promise<void> {
+  let req
+  await act(async () => {
+    req = await testStack.nextRequest()
+  })
+  expect(req.getURL()).toBe('https://example.com/upload')
+  expect(req.getMethod()).toBe('HEAD')
+  req.respondWith({
+    status: 200,
+    responseHeaders: {
+      'Upload-Length': '16315',
+      'Upload-Offset': '0'
+    }
+  })
+
+  await act(async () => {
+    req = await testStack.nextRequest()
+  })
+  expect(req.getURL()).toBe('https://example.com/upload')
+  expect(req.getMethod()).toBe('PATCH')
+  req.respondWith({
+    status: 204,
+    responseHeaders: {
+      'Upload-Offset': '3263'
+    }
+  })
+
+  await act(async () => {
+    req = await testStack.nextRequest()
+  })
+  expect(req.getURL()).toBe('https://example.com/upload')
+  expect(req.getMethod()).toBe('PATCH')
+  req.respondWith({
+    status: 204,
+    responseHeaders: {
+      'Upload-Offset': '16315'
+    }
+  })
+}
+
 describe('AddByFile', () => {
   it('should clear errors on start upload', async () => {
     const result = jest.fn().mockReturnValue(createCloudflareVideoMock.result)
@@ -60,46 +100,6 @@ describe('AddByFile', () => {
     )
     expect(screen.getByTestId('Upload1Icon')).toBeInTheDocument()
   })
-
-  async function completeUpload(testStack: TestHttpStack): Promise<void> {
-    let req
-    await act(async () => {
-      req = await testStack.nextRequest()
-    })
-    expect(req.getURL()).toBe('https://example.com/upload')
-    expect(req.getMethod()).toBe('HEAD')
-    req.respondWith({
-      status: 200,
-      responseHeaders: {
-        'Upload-Length': '16315',
-        'Upload-Offset': '0'
-      }
-    })
-
-    await act(async () => {
-      req = await testStack.nextRequest()
-    })
-    expect(req.getURL()).toBe('https://example.com/upload')
-    expect(req.getMethod()).toBe('PATCH')
-    req.respondWith({
-      status: 204,
-      responseHeaders: {
-        'Upload-Offset': '3263'
-      }
-    })
-
-    await act(async () => {
-      req = await testStack.nextRequest()
-    })
-    expect(req.getURL()).toBe('https://example.com/upload')
-    expect(req.getMethod()).toBe('PATCH')
-    req.respondWith({
-      status: 204,
-      responseHeaders: {
-        'Upload-Offset': '16315'
-      }
-    })
-  }
 
   it('should complete a file upload and call onChange', async () => {
     const testStack = new TestHttpStack()
