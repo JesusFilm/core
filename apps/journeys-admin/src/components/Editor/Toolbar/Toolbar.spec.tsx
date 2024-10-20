@@ -147,13 +147,15 @@ describe('Toolbar', () => {
     expect(screen.getByTestId('HelpScoutBeaconIconButton')).toBeInTheDocument()
   })
 
-  it('should render title, description and language on Toolbar', () => {
+  it('should render title, globe, dot, language and description on Toolbar', () => {
     render(toolbar(defaultJourney))
     expect(screen.getByText('My Awesome Journey Title')).toBeInTheDocument()
+    expect(screen.getByTestId('Globe1Icon')).toBeInTheDocument()
+    expect(screen.getByText('English')).toBeInTheDocument()
+    expect(screen.queryByTestId('DescriptionDot')).toBeInTheDocument()
     expect(
       screen.getByText('My Awesome Journey Description')
     ).toBeInTheDocument()
-    expect(screen.getByText('English')).toBeInTheDocument()
   })
 
   it('should not show dot if there is no description', () => {

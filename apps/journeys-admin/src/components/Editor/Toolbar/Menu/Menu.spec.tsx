@@ -303,6 +303,9 @@ describe('Toolbar Menu', () => {
       )
       fireEvent.click(screen.getByRole('button'))
       expect(screen.getByText('some title')).toBeInTheDocument()
+      expect(screen.getByTestId('Globe1Icon')).toBeInTheDocument()
+      expect(screen.getByText('English')).toBeInTheDocument()
+      expect(screen.queryByTestId('DescriptionDot')).toBeInTheDocument()
       expect(screen.getByText('some description')).toBeInTheDocument()
       expect(
         screen.getByRole('menuitem', { name: 'Edit Details' })

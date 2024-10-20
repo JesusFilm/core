@@ -28,13 +28,14 @@ describe('JourneyDetails', () => {
     description: ''
   } as unknown as JourneyFields
 
-  it('should display title, language and description', () => {
+  it('should display title, globe, dot, language and description', () => {
     render(
       <JourneyProvider value={{ journey: mockJourney }}>
         <JourneyDetails />
       </JourneyProvider>
     )
     expect(screen.getByText('Some title')).toBeInTheDocument()
+    expect(screen.getByTestId('Globe1Icon')).toBeInTheDocument()
     expect(screen.getByText('English')).toBeInTheDocument()
     expect(screen.queryByTestId('DescriptionDot')).toBeInTheDocument()
     expect(screen.getByText('Some description')).toBeInTheDocument()
