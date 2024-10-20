@@ -59,22 +59,25 @@ export async function importVideoImages(logger?: Logger): Promise<void> {
         const url =
           bqVideo[edition.field] ??
           `https://d1wl257kev7hsz.cloudfront.net/cinematics/${edition.fileName}`
-        try {
-          await client.images.v1.get(edition.fileName, {
-            account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
-          })
-        } catch {
-          await client.images.v1.create(
-            {
+        // skip image check and upload in dev
+        if (['production', 'test'].includes(process.env.NODE_ENV as string)) {
+          try {
+            await client.images.v1.get(edition.fileName, {
               account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
-            },
-            {
-              body: {
-                id: edition.fileName,
-                url
+            })
+          } catch {
+            await client.images.v1.create(
+              {
+                account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
+              },
+              {
+                body: {
+                  id: edition.fileName,
+                  url
+                }
               }
-            }
-          )
+            )
+          }
         }
         await prisma.cloudflareImage.create({
           data: {

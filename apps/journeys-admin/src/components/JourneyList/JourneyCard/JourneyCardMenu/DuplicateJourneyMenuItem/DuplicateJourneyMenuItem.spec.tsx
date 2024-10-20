@@ -197,9 +197,8 @@ describe('DuplicateJourneys', () => {
     )
     expect(getByText('Copy to Another Team')).toBeInTheDocument()
     const muiSelect = getByTestId('team-duplicate-select')
-    const muiSelectDropDownButton = await within(muiSelect).getByRole(
-      'combobox'
-    )
+    const muiSelectDropDownButton =
+      await within(muiSelect).getByRole('combobox')
     await fireEvent.mouseDown(muiSelectDropDownButton)
     const muiSelectOptions = await getByRole('option', {
       name: 'Team Name'
