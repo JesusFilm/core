@@ -206,7 +206,9 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           width: 0,
           height: 0,
           blurhash: '',
-          scale: null
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         }
       }
     },
