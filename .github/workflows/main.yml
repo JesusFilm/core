@@ -85,10 +85,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        node-version: [20]
-        # https://jestjs.io/docs/cli#--shard
-        shard: ['1/3', '2/3', '3/3']
+      # matrix:
+      #   node-version: [20]
+      #   # https://jestjs.io/docs/cli#--shard
+      #   shard: ['1/3', '2/3', '3/3']
     services:
       postgres:
         image: postgres
@@ -136,7 +136,7 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: test
-          args: --ci --silent --max-workers ${{ steps.cpu-cores.outputs.count }} --shard=${{ matrix.shard }}
+          args: --ci --silent --maxWorkers ${{ steps.cpu-cores.outputs.count }}
           parallel: 1
       - name: download codecov
         run: |
