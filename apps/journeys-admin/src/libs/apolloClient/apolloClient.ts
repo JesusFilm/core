@@ -28,11 +28,14 @@ export function createApolloClient(
   const authLink = setContext(async (_, { headers }) => {
     const firebaseToken = ssrMode
       ? token
-      : (await getAuth(getApp()).currentUser?.getIdToken()) ?? token
+      : ((await getAuth(getApp()).currentUser?.getIdToken()) ?? token)
 
     return {
       headers: {
         ...(!ssrMode ? headers : []),
+        'x-graphql-client-name': 'journeys-admin',
+        'x-graphql-client-version':
+          process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? '',
         Authorization:
           firebaseToken != null ? `JWT ${firebaseToken}` : undefined
       }
@@ -52,8 +55,6 @@ export function createApolloClient(
     ssrMode,
     link,
     cache: cache(),
-    name: 'journeys-admin',
-    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
     connectToDevTools: true
   })
 }

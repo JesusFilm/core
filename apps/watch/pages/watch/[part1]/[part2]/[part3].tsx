@@ -25,10 +25,10 @@ export const GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT = gql`
     $contentId: ID!
     $languageId: ID
   ) {
-    container: video(id: $containerId, idType: slug) {
+    content: video(id: $contentId, idType: slug) {
       ...VideoContentFields
     }
-    content: video(id: $contentId, idType: slug) {
+    container: video(id: $containerId, idType: slug) {
       ...VideoContentFields
     }
   }
@@ -128,7 +128,9 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
     if (
       error instanceof ApolloError &&
       error.graphQLErrors.some(
-        ({ extensions }) => extensions?.code === 'NOT_FOUND'
+        ({ extensions, message }) =>
+          extensions?.code === 'NOT_FOUND' ||
+          message?.startsWith('Video not found')
       )
     )
       return {
