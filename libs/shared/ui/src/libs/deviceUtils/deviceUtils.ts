@@ -52,7 +52,12 @@ export function isIOSTouchScreen(): boolean {
     return false
 
   const userAgent = navigator.userAgent
-  return /iPad|iPhone|iPod/.test(userAgent)
+  return (
+    /iPad|iPhone|iPod/.test(userAgent) ||
+    // iPad on iOS 13 detection
+    // iPad user agen is Macintosh on iOS13 and above, see: https://forums.developer.apple.com/forums/thread/119186
+    (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
+  )
 }
 
 // TODO: should only resort to user agent sniffing as a last resport

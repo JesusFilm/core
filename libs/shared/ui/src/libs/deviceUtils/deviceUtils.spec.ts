@@ -8,14 +8,17 @@ import {
 
 describe('hasTouchScreen', () => {
   const originalNavigator = { ...global.navigator }
+  const orignalDocument = { ...global.document }
 
   beforeEach(() => {
     Object.assign(navigator, { ...originalNavigator })
+    Object.assign(document, { ...orignalDocument })
   })
 
   afterEach(() => {
     jest.resetAllMocks()
     Object.assign(navigator, originalNavigator)
+    Object.assign(document, { ...orignalDocument })
   })
 
   it('should return false if device does not have a touch screen', () => {
@@ -212,6 +215,17 @@ describe('isIOSTouchScreen function', () => {
       configurable: true
     })
     expect(isIOSTouchScreen()).toBe(false)
+  })
+
+  test('should return true when userAgent is iPad with iOS13', () => {
+    const nonIOSUserAgent =
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 12_3) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.3 Safari/605.1.15'
+    Object.defineProperty(navigator, 'userAgent', {
+      value: nonIOSUserAgent,
+      configurable: true
+    })
+    Object.defineProperty(document, 'ontouchend', {})
+    expect(isIOSTouchScreen()).toBe(true)
   })
 
   test('should return false when userAgent is undefined', () => {
