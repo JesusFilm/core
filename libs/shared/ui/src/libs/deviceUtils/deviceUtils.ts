@@ -55,7 +55,7 @@ export function isIOSTouchScreen(): boolean {
   return (
     /iPad|iPhone|iPod/.test(userAgent) ||
     // iPad on iOS 13 detection
-    // iPad user agen is Macintosh on iOS13 and above, see: https://forums.developer.apple.com/forums/thread/119186
+    // iPad iOS 13 user agent is "Macintosh" on iOS13 and above, see: https://forums.developer.apple.com/forums/thread/119186
     (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
   )
 }
