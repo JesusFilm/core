@@ -115,8 +115,8 @@ export function SlugDialog({
                       <>
                         {hostname != null
                           ? `https://${hostname}`
-                          : process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                            'https://your.nextstep.is'}
+                          : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                            'https://your.nextstep.is')}
                         /<strong>{values.slug}</strong>
                       </>
                     ) : (

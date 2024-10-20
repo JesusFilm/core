@@ -1,8 +1,8 @@
 import {
   ApolloClient,
-  HttpLink,
   InMemoryCache,
   NormalizedCacheObject,
+  createHttpLink,
   gql
 } from '@apollo/client'
 import { InjectQueue } from '@nestjs/bullmq'
@@ -62,6 +62,8 @@ export const SITE_CREATE = gql(`
     }
   }
 `)
+
+const FIVE_DAYS = 5 * 24 * 60 * 60 // in seconds
 
 export const goals: Array<keyof JourneyPlausibleEvents> = [
   'footerThumbsUpButtonClick',
@@ -131,14 +133,17 @@ export class PlausibleService implements OnModuleInit {
     private readonly plausibleQueue: Queue<PlausibleJob>,
     private readonly prismaService: PrismaService
   ) {
+    const httpLink = createHttpLink({
+      uri: process.env.GATEWAY_URL,
+      fetch,
+      headers: {
+        Authorization: `Bearer ${process.env.PLAUSIBLE_API_KEY}`,
+        'x-graphql-client-name': 'api-journeys',
+        'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
+      }
+    })
     this.client = new ApolloClient({
-      link: new HttpLink({
-        uri: process.env.GATEWAY_URL,
-        fetch,
-        headers: {
-          Authorization: `Bearer ${process.env.PLAUSIBLE_API_KEY}`
-        }
-      }),
+      link: httpLink,
       cache: new InMemoryCache()
     })
 
@@ -151,9 +156,16 @@ export class PlausibleService implements OnModuleInit {
   }
 
   async onModuleInit(): Promise<void> {
-    await this.plausibleQueue.add('plausibleCreateSites', {
-      __typename: 'plausibleCreateSites'
-    })
+    await this.plausibleQueue.add(
+      'plausibleCreateSites',
+      {
+        __typename: 'plausibleCreateSites'
+      },
+      {
+        removeOnComplete: true,
+        removeOnFail: { age: FIVE_DAYS, count: 50 }
+      }
+    )
   }
 
   async createSites(): Promise<void> {

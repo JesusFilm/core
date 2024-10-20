@@ -2,7 +2,7 @@
 # - update Dockerfile image version (ghcr.io/ardatan/hive-gateway:X.X.X)
 # - update package.json ("@graphql-hive/gateway": "^X.X.X")
 # - inform all developers to run npm i
-FROM  ghcr.io/ardatan/hive-gateway:1.0.9
+FROM  ghcr.io/ardatan/hive-gateway:1.2.0
 ARG SERVICE_VERSION=0.0.1
 ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
 EXPOSE 4000
