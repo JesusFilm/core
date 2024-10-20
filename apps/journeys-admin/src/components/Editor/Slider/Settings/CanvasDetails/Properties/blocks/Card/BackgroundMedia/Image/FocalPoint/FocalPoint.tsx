@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import clamp from 'lodash/clamp'
+import debounce from 'lodash/debounce'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
@@ -12,13 +12,16 @@ import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../..
 import { ImageBlockUpdateInput } from '../../../../../../../../../../../../__generated__/globalTypes'
 
 import { GridLines } from './GridLines'
+import { calculatePoint } from './utils/calculatePoint'
+import { clampPosition } from './utils/clampPosition'
 
 const INITIAL_POSITION = { x: 50, y: 50 }
-const MIN_VALUE = 0
-const MAX_VALUE = 100
-const ROUND_PRECISION = 100
+export const MIN_VALUE = 0
+export const MAX_VALUE = 100
+export const ROUND_PRECISION = 100
+const DEBOUNCE_DELAY = 500
 
-interface Position {
+export interface Position {
   x: number
   y: number
 }
@@ -42,25 +45,26 @@ export function FocalPoint({
   const dotRef = useRef<HTMLDivElement>(null)
   const imageRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
-  const [shouldUpdate, setShouldUpdate] = useState(false)
+
+  const debouncedUpdateImageBlock = useCallback(
+    debounce((position: Position) => {
+      updateImageBlock({
+        src: imageBlock?.src,
+        alt: imageBlock?.alt,
+        blurhash: imageBlock?.blurhash,
+        width: imageBlock?.width,
+        height: imageBlock?.height,
+        focalTop: Math.round(position.y),
+        focalLeft: Math.round(position.x)
+      })
+    }, DEBOUNCE_DELAY),
+    [imageBlock, updateImageBlock]
+  )
 
   function updatePoint(point: Position): void {
-    setLocalPosition({
-      x:
-        Math.round(clamp(point.x, MIN_VALUE, MAX_VALUE) * ROUND_PRECISION) /
-        ROUND_PRECISION,
-      y:
-        Math.round(clamp(point.y, MIN_VALUE, MAX_VALUE) * ROUND_PRECISION) /
-        ROUND_PRECISION
-    })
-  }
-
-  function calculatePoint(e: React.MouseEvent | MouseEvent): Position | null {
-    if (imageRef.current == null) return null
-    const boundingRect = imageRef.current.getBoundingClientRect()
-    const x = ((e.clientX - boundingRect.left) / boundingRect.width) * MAX_VALUE
-    const y = ((e.clientY - boundingRect.top) / boundingRect.height) * MAX_VALUE
-    return { x, y }
+    const newPosition = clampPosition(point)
+    setLocalPosition(newPosition)
+    debouncedUpdateImageBlock(newPosition)
   }
 
   function handleMouseDown(e: React.MouseEvent): void {
@@ -68,28 +72,21 @@ export function FocalPoint({
     setIsDragging(true)
   }
 
-  const handleMouseUp = useCallback((): void => {
-    if (isDragging) {
-      setIsDragging(false)
-      setShouldUpdate(true)
-    }
-  }, [isDragging])
+  function handleMouseUp(): void {
+    setIsDragging(false)
+  }
 
-  const handleMouseMove = useCallback(
-    (e: MouseEvent): void => {
-      if (isDragging) {
-        const point = calculatePoint(e)
-        if (point != null) updatePoint(point)
-      }
-    },
-    [isDragging]
-  )
+  function handleMouseMove(e: MouseEvent): void {
+    if (isDragging) {
+      const point = calculatePoint(e, imageRef)
+      if (point != null) updatePoint(point)
+    }
+  }
 
   function handleImageClick(e: React.MouseEvent): void {
-    const point = calculatePoint(e)
+    const point = calculatePoint(e, imageRef)
     if (point != null) {
       updatePoint(point)
-      setShouldUpdate(true)
     }
   }
 
@@ -110,26 +107,14 @@ export function FocalPoint({
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)
     }
-  }, [handleMouseMove, handleMouseUp])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDragging])
 
   useEffect(() => {
     if (imageRef.current != null) {
       imageRef.current.style.objectPosition = `${localPosition.x}% ${localPosition.y}%`
     }
-
-    if (shouldUpdate) {
-      updateImageBlock({
-        src: imageBlock?.src,
-        alt: imageBlock?.alt,
-        blurhash: imageBlock?.blurhash,
-        width: imageBlock?.width,
-        height: imageBlock?.height,
-        focalTop: Math.round(localPosition.y),
-        focalLeft: Math.round(localPosition.x)
-      })
-      setShouldUpdate(false)
-    }
-  }, [shouldUpdate, localPosition, updateImageBlock, imageBlock])
+  }, [localPosition])
 
   return (
     <Stack gap={4}>
@@ -200,7 +185,6 @@ export function FocalPoint({
             label={axis === 'x' ? t('Left') : t('Top')}
             value={localPosition[axis].toFixed(0)}
             onChange={(e) => handleInputChange(axis, e.target.value)}
-            onBlur={() => setShouldUpdate(true)}
             slotProps={{
               input: { endAdornment: '%' },
               htmlInput: { min: 0, max: 100 }
