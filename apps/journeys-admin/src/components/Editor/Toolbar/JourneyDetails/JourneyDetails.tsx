@@ -58,36 +58,35 @@ export function JourneyDetails(): ReactElement {
                 top: '3px',
                 mr: 1,
                 fontSize: 16,
-                color: { xs: 'secondary.light', md: 'secondary.main' }
+                color: 'secondary.main'
               }}
             />
             <Typography
+              variant="body2"
               sx={{
                 display: 'inline',
-                typography: { xs: 'caption', md: 'body2' },
-                fontWeight: { xs: 600, md: 'initial' },
-                color: { xs: 'secondary.light', md: 'secondary.main' }
+                color: 'secondary.dark'
               }}
             >
               {localName ?? nativeName}
             </Typography>
             {journey.description !== '' && journey.description != null ? (
               <Typography
+                variant="body2"
                 data-testid="DescriptionDot"
                 sx={{
                   display: 'inline',
-                  typography: { xs: 'caption', md: 'body2' },
                   px: 1,
-                  color: 'secondary.light'
+                  color: 'secondary.dark'
                 }}
               >
                 •
               </Typography>
             ) : null}
             <Typography
+              variant="body2"
               sx={{
                 display: { xs: 'inline', md: 'unset' },
-                typography: { xs: 'caption', md: 'body2' },
                 color: 'secondary.light'
               }}
             >
