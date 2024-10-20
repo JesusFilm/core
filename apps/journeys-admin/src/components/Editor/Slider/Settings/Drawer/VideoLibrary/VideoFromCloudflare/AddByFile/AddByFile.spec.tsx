@@ -46,23 +46,26 @@ describe('AddByFile', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
-  it('should complete a file upload and call onChange', async () => {
-    const testStack = new TestHttpStack()
-    const onChange = jest.fn()
+  it('should start uploading on a file drop', async () => {
     render(
       <MockedProvider
         mocks={[createCloudflareVideoMock, getCloudflareVideoMock]}
       >
-        <AddByFile onChange={onChange} httpStack={testStack} />
+        <AddByFile onChange={jest.fn()} />
       </MockedProvider>
     )
     await dropTestVideo()
-
     await waitFor(() =>
       expect(screen.getByText('Uploading...')).toBeInTheDocument()
     )
     expect(screen.getByTestId('Upload1Icon')).toBeInTheDocument()
-    let req = await testStack.nextRequest()
+  })
+
+  async function completeUpload(testStack: TestHttpStack): Promise<void> {
+    let req
+    await act(async () => {
+      req = await testStack.nextRequest()
+    })
     expect(req.getURL()).toBe('https://example.com/upload')
     expect(req.getMethod()).toBe('HEAD')
     req.respondWith({
@@ -76,7 +79,6 @@ describe('AddByFile', () => {
     await act(async () => {
       req = await testStack.nextRequest()
     })
-
     expect(req.getURL()).toBe('https://example.com/upload')
     expect(req.getMethod()).toBe('PATCH')
     req.respondWith({
@@ -85,10 +87,10 @@ describe('AddByFile', () => {
         'Upload-Offset': '3263'
       }
     })
-    // await waitFor(() =>
-    //   expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '20')
-    // )
-    req = await testStack.nextRequest()
+
+    await act(async () => {
+      req = await testStack.nextRequest()
+    })
     expect(req.getURL()).toBe('https://example.com/upload')
     expect(req.getMethod()).toBe('PATCH')
     req.respondWith({
@@ -97,34 +99,25 @@ describe('AddByFile', () => {
         'Upload-Offset': '16315'
       }
     })
+  }
+
+  it('should complete a file upload and call onChange', async () => {
+    const testStack = new TestHttpStack()
+    const onChange = jest.fn()
+    render(
+      <MockedProvider
+        mocks={[createCloudflareVideoMock, getCloudflareVideoMock]}
+      >
+        <AddByFile onChange={onChange} httpStack={testStack} />
+      </MockedProvider>
+    )
+    await dropTestVideo()
+    await completeUpload(testStack)
     await waitFor(() =>
       expect(screen.getByText('Processing...')).toBeInTheDocument()
     )
     await waitFor(() => expect(onChange).toHaveBeenCalledWith('uploadId'))
   })
-
-  async function completeUpload(testStack: TestHttpStack): Promise<void> {
-    let req
-    await act(async () => {
-      req = await testStack.nextRequest()
-    })
-    req.respondWith({
-      status: 200,
-      responseHeaders: {
-        'Upload-Length': '16315',
-        'Upload-Offset': '0'
-      }
-    })
-    await act(async () => {
-      req = await testStack.nextRequest()
-    })
-    req.respondWith({
-      status: 204,
-      responseHeaders: {
-        'Upload-Offset': '16315'
-      }
-    })
-  }
 
   it('should finish processing after upload', async () => {
     const testStack = new TestHttpStack()
