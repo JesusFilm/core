@@ -1,8 +1,8 @@
-import { PrismaClient, Service } from '.prisma/api-media-client'
+import { Service } from '.prisma/api-media-client'
 
-const prisma = new PrismaClient()
+import { prisma } from '../../../../lib/prisma'
 
-async function upsertTag(
+export async function upsertTag(
   name: string,
   childrenNames: string[],
   parentId?: string,

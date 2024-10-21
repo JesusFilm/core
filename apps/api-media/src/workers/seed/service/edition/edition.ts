@@ -1,8 +1,6 @@
-import { PrismaClient } from '.prisma/api-media-client'
+import { prisma } from '../../../../lib/prisma'
 
-const prisma = new PrismaClient()
-
-const EDITIONS = [
+export const EDITIONS = [
   '0-BrothersSubtitles',
   '0-EasterExplained',
   '0-FallingPlates',
