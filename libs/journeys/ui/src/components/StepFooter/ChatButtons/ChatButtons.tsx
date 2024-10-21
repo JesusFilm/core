@@ -35,11 +35,13 @@ export function ChatButtons(): ReactElement {
   const plausible = usePlausible<JourneyPlausibleEvents>()
   const { variant, journey } = useJourney()
   const { blockHistory } = useBlocks()
-  const activeBlock = blockHistory[blockHistory.length - 1]
   const theme = useTheme()
   const { rtl } = getJourneyRTL(journey)
+
+  const activeBlock = blockHistory[blockHistory.length - 1]
   const chatButtons = journey?.chatButtons
   const isWebsite = journey?.website === true
+  const showDefault = variant === 'admin' && chatButtons?.length === 0
 
   const [chatButtonEventCreate] = useMutation<
     ChatButtonEventCreate,
@@ -51,7 +53,7 @@ export function ChatButtons(): ReactElement {
     type: 'main' | 'background' | 'website' = 'main'
   ): string | undefined => {
     if (type === 'background') {
-      return primary ? theme.palette.grey[100] : '#dedfe040'
+      return primary ? theme.palette.grey[100] : `${theme.palette.grey[200]}40`
     }
     if (type === 'main') {
       return primary ? theme.palette.grey[900] : theme.palette.grey[100]
@@ -137,7 +139,7 @@ export function ChatButtons(): ReactElement {
           />
         </IconButton>
       ))}
-      {variant === 'admin' && chatButtons?.length === 0 && (
+      {showDefault && (
         <IconButton
           key="default"
           disabled
