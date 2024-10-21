@@ -130,8 +130,8 @@ export function UnsplashGallery({
   const loading = query === '' ? loadingCollection : loadingSearch
   const gallery =
     query === ''
-      ? collectionData?.listUnsplashCollectionPhotos ?? []
-      : searchData?.searchUnsplashPhotos.results ?? []
+      ? (collectionData?.listUnsplashCollectionPhotos ?? [])
+      : (searchData?.searchUnsplashPhotos.results ?? [])
 
   async function handleSubmit(query: string): Promise<void> {
     setQuery(query)

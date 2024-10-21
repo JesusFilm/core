@@ -370,8 +370,10 @@ export type CountryLanguage = {
   displaySpeakers?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
+  order?: Maybe<Scalars['Int']['output']>;
   primary: Scalars['Boolean']['output'];
   speakers: Scalars['Int']['output'];
+  suggested: Scalars['Boolean']['output'];
 };
 
 export type CountryName = {
@@ -635,6 +637,8 @@ export type ImageBlock = Block & {
    * Find a frontend implementation at https://github.com/woltapp/blurhash
    */
   blurhash: Scalars['String']['output'];
+  focalLeft?: Maybe<Scalars['Int']['output']>;
+  focalTop?: Maybe<Scalars['Int']['output']>;
   height: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
@@ -649,6 +653,8 @@ export type ImageBlockCreateInput = {
   alt: Scalars['String']['input'];
   /** If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated. */
   blurhash?: InputMaybe<Scalars['String']['input']>;
+  focalLeft?: InputMaybe<Scalars['Int']['input']>;
+  focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
   /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
@@ -665,6 +671,8 @@ export type ImageBlockUpdateInput = {
   alt?: InputMaybe<Scalars['String']['input']>;
   /** If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated. */
   blurhash?: InputMaybe<Scalars['String']['input']>;
+  focalLeft?: InputMaybe<Scalars['Int']['input']>;
+  focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   scale?: InputMaybe<Scalars['Int']['input']>;
@@ -761,6 +769,7 @@ export type Journey = {
   /** private title for creators */
   title: Scalars['String']['output'];
   trashedAt?: Maybe<Scalars['DateTime']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
   userJourneys?: Maybe<Array<UserJourney>>;
   website?: Maybe<Scalars['Boolean']['output']>;
 };
@@ -1149,6 +1158,7 @@ export enum MessagePlatform {
   Home3 = 'home3',
   Home4 = 'home4',
   Instagram = 'instagram',
+  KakaoTalk = 'kakaoTalk',
   Line = 'line',
   LinkExternal = 'linkExternal',
   Mail1 = 'mail1',
@@ -3920,7 +3930,6 @@ export type VideoStudyQuestionCreateInput = {
 export type VideoStudyQuestionUpdateInput = {
   crowdInId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
-  languageId?: InputMaybe<Scalars['String']['input']>;
   /** index from 1 */
   order?: InputMaybe<Scalars['Int']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
@@ -4261,12 +4270,12 @@ export type VisitorsConnection = {
 };
 
 export enum Join__Graph {
-  Analytics = 'ANALYTICS',
-  Journeys = 'JOURNEYS',
-  JourneysModern = 'JOURNEYS_MODERN',
-  Languages = 'LANGUAGES',
-  Media = 'MEDIA',
-  Users = 'USERS'
+  ApiAnalytics = 'API_ANALYTICS',
+  ApiJourneys = 'API_JOURNEYS',
+  ApiJourneysModern = 'API_JOURNEYS_MODERN',
+  ApiLanguages = 'API_LANGUAGES',
+  ApiMedia = 'API_MEDIA',
+  ApiUsers = 'API_USERS'
 }
 
 export enum Link__Purpose {

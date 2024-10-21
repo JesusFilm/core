@@ -74,7 +74,7 @@ export function InformationButton({
             {journey?.team?.publicTitle !== '' &&
             journey?.team?.publicTitle !== null
               ? journey?.team?.publicTitle
-              : journey?.team?.title ?? ''}
+              : (journey?.team?.title ?? '')}
           </Typography>
         </MuiMenuItem>
         <Divider />
@@ -123,7 +123,7 @@ export function InformationButton({
                   journey?.team?.publicTitle !== '' &&
                   journey?.team?.publicTitle !== null
                     ? journey?.team?.publicTitle
-                    : journey?.team?.title ?? ''
+                    : (journey?.team?.title ?? '')
               }
             )}
           </Typography>

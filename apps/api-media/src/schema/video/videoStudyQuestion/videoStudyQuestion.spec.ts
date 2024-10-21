@@ -150,7 +150,6 @@ describe('videoStudyQuestion', () => {
               id: 'id',
               value: 'value',
               primary: true,
-              languageId: 'languageId',
               crowdInId: 'crowdInId',
               order: 1
             }
@@ -170,7 +169,6 @@ describe('videoStudyQuestion', () => {
               id: 'id',
               value: 'value',
               primary: true,
-              languageId: 'languageId',
               crowdInId: 'crowdInId',
               order: 1
             }
@@ -196,7 +194,6 @@ describe('videoStudyQuestion', () => {
               id: 'id',
               value: 'value',
               primary: true,
-              languageId: 'languageId',
               crowdInId: 'crowdInId',
               order: 1
             }
@@ -230,7 +227,6 @@ describe('videoStudyQuestion', () => {
               id: 'id',
               value: 'value',
               primary: true,
-              languageId: 'languageId',
               crowdInId: 'crowdInId',
               order: 1
             }

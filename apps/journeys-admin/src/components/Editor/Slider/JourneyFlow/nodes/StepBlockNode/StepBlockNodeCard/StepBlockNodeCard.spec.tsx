@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { isIOSTouchScreen } from '@core/shared/ui/deviceUtils'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
@@ -17,11 +18,23 @@ jest.mock('../libs/getCardMetadata', () => ({
   getCardMetadata: jest.fn()
 }))
 
+jest.mock('@core/shared/ui/deviceUtils', () => {
+  return {
+    isIOSTouchScreen: jest.fn()
+  }
+})
+
 const mockGetCardMetadata = getCardMetadata as jest.MockedFunction<
   typeof getCardMetadata
 >
 
+const mockIsIosTouchScreen = isIOSTouchScreen as jest.MockedFunction<
+  typeof isIOSTouchScreen
+>
+
 describe('StepBlockNodeCard', () => {
+  beforeEach(() => jest.clearAllMocks())
+
   it('should render card content', () => {
     const priorityBlock = {
       __typename: 'ButtonBlock',
@@ -142,6 +155,73 @@ describe('StepBlockNodeCard', () => {
     expect(
       screen.getByText('selectedAttributeId: step.id-next-block')
     ).toBeInTheDocument()
+  })
+
+  it('should handle select block tap on iOS', () => {
+    mockIsIosTouchScreen.mockReturnValue(true)
+    mockGetCardMetadata.mockReturnValue({
+      title: undefined,
+      subtitle: undefined,
+      description: undefined,
+      priorityBlock: undefined,
+      bgImage: undefined
+    })
+    const step = {
+      __typename: 'StepBlock',
+      id: 'step.id',
+      children: []
+    } as unknown as TreeBlock<StepBlock>
+
+    const initialState = {
+      selectedStep: step,
+      selectedAttributeId: 'selectedAttributeId'
+    }
+
+    render(
+      <EditorProvider initialState={initialState}>
+        <StepBlockNodeCard step={step} selected={false} />
+        <TestEditorState />
+      </EditorProvider>
+    )
+
+    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
+    fireEvent.mouseEnter(screen.getByTestId('StepBlock'))
+
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+    expect(screen.getByText('selectedBlock: step.id')).toBeInTheDocument()
+    expect(
+      screen.getByText('selectedAttributeId: step.id-next-block')
+    ).toBeInTheDocument()
+    expect(mockIsIosTouchScreen).toHaveBeenCalled()
+  })
+
+  it('should show second tap layer on iOS to handle the event of the second tap', async () => {
+    mockIsIosTouchScreen.mockReturnValue(true)
+    mockGetCardMetadata.mockReturnValue({
+      title: undefined,
+      subtitle: undefined,
+      description: undefined,
+      priorityBlock: undefined,
+      bgImage: undefined
+    })
+    const step = {
+      __typename: 'StepBlock',
+      id: 'step.id',
+      children: []
+    } as unknown as TreeBlock<StepBlock>
+
+    const initialState = {
+      selectedStep: step,
+      selectedAttributeId: 'selectedAttributeId'
+    }
+
+    render(
+      <EditorProvider initialState={initialState}>
+        <StepBlockNodeCard step={step} selected={false} />
+        <TestEditorState />
+      </EditorProvider>
+    )
+    expect(screen.getByTestId('IPhoneSecondTapLayer')).toBeInTheDocument()
   })
 
   it('should block select if in analytics mode', () => {
