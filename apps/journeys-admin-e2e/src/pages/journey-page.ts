@@ -931,7 +931,7 @@ export class JourneyPage {
 
   async clickPreviewBtnInCustomJourneyPage() {
     await this.page
-      .getByTestId('ItemsStack')
+      .getByTestId('PreviewItem')
       .getByRole('link', { name: 'Preview' })
       .click()
   }
