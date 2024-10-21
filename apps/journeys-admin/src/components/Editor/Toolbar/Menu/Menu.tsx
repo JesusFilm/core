@@ -2,7 +2,6 @@ import { gql, useQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
-import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { User } from 'next-firebase-auth'
@@ -84,11 +83,7 @@ export function Menu({ user }: MenuProps): ReactElement {
           }
         }}
       >
-        {!mdUp && (
-          <Stack sx={{ width: 220 }}>
-            <JourneyDetails />
-          </Stack>
-        )}
+        {!mdUp && <JourneyDetails />}
         <DetailsItem variant="menu-item" onClose={handleCloseMenu} />
         {!mdUp && <Divider data-testid="details-menu-divider" />}
         {journey?.template === true && (
