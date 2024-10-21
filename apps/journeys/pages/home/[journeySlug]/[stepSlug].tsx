@@ -128,7 +128,8 @@ export const getStaticProps: GetStaticProps<StepPageProps> = async (
         redirect: {
           destination: `/${data.journey.slug}`,
           permanent: false
-        }
+        },
+        revalidate: 1
       }
 
     return {
@@ -154,7 +155,8 @@ export const getStaticProps: GetStaticProps<StepPageProps> = async (
             i18nConfig
           ))
         },
-        notFound: true
+        notFound: true,
+        revalidate: 1
       }
     }
     throw e
