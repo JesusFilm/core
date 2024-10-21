@@ -7,8 +7,8 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
 
-import { getJourneySettingsUpdateMock } from '../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation.mock'
-import { journey } from '../../../JourneyList/ActiveJourneyList/ActivePriorityList/ActiveJourneyListData'
+import { getJourneySettingsUpdateMock } from '../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation.mock'
+import { journey } from '../../../../JourneyList/ActiveJourneyList/ActivePriorityList/ActiveJourneyListData'
 
 import { JourneyDetailsDialog } from '.'
 

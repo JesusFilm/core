@@ -41,8 +41,8 @@ export function StepBlockNode({
   const targetHandleVariant = isMenuCard
     ? HandleVariant.None
     : showAnalytics === true
-    ? HandleVariant.Disabled
-    : HandleVariant.Shown
+      ? HandleVariant.Disabled
+      : HandleVariant.Shown
 
   return step != null ? (
     <Stack sx={{ position: 'relative' }}>

@@ -11,8 +11,8 @@ import { simpleComponentConfig } from '@core/shared/ui/storybook'
 import {
   GetLanguages,
   GetLanguagesVariables
-} from '../../../../../__generated__/GetLanguages'
-import { JOURNEY_SETTINGS_UPDATE } from '../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
+} from '../../../../../../__generated__/GetLanguages'
+import { JOURNEY_SETTINGS_UPDATE } from '../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
 
 import { JourneyDetailsDialog } from './JourneyDetailsDialog'
 

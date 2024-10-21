@@ -24,6 +24,8 @@ export interface LogoBlockCreate_imageBlockCreate {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface LogoBlockCreate_journeyUpdate_logoImageBlock {
