@@ -2,11 +2,11 @@
 import { tracer } from '@core/yoga/tracer'
 
 import SchemaBuilder from '@pothos/core'
-import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import DirectivesPlugin from '@pothos/plugin-directives'
 import ErrorsPlugin from '@pothos/plugin-errors'
 import FederationPlugin from '@pothos/plugin-federation'
 import pluginName from '@pothos/plugin-prisma'
+import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 
