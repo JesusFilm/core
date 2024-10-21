@@ -1,22 +1,23 @@
+import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import debounce from 'lodash/debounce'
+import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../../../../../__generated__/globalTypes'
 
-import { FocalPointImage } from './FocalPointImage'
-import { FocalPointInputs } from './FocalPointInputs'
 import { calculatePoint } from './utils/calculatePoint'
 import { clampPosition } from './utils/clampPosition'
 
-const INITIAL_POSITION = { x: 50, y: 50 }
 export const MIN_VALUE = 0
 export const MAX_VALUE = 100
 export const ROUND_PRECISION = 100
 const DEBOUNCE_DELAY = 500
+const INITIAL_POSITION = { x: 50, y: 50 }
 
 export interface Position {
   x: number
@@ -63,6 +64,11 @@ export function FocalPoint({
     debouncedUpdateImageBlock(newPosition)
   }
 
+  function handleMouseDown(e: React.MouseEvent): void {
+    e.preventDefault()
+    setIsDragging(true)
+  }
+
   function handleMouseUp(): void {
     setIsDragging(false)
   }
@@ -92,6 +98,12 @@ export function FocalPoint({
   }
 
   useEffect(() => {
+    if (imageRef.current != null) {
+      imageRef.current.style.objectPosition = `${localPosition.x}% ${localPosition.y}%`
+    }
+  }, [imageRef, localPosition])
+
+  useEffect(() => {
     document.addEventListener('mousemove', handleMouseMove)
     document.addEventListener('mouseup', handleMouseUp)
     return () => {
@@ -102,19 +114,127 @@ export function FocalPoint({
   }, [isDragging])
 
   return (
-    <Stack gap={4}>
-      <Typography variant="subtitle2">{t('Focal Point')}</Typography>
-      <FocalPointImage
-        imageBlock={imageBlock}
-        imageRef={imageRef}
-        localPosition={localPosition}
-        handleClick={handleClick}
-        onDragStart={() => setIsDragging(true)}
-      />
-      <FocalPointInputs
-        localPosition={localPosition}
-        handleChange={handleChange}
-      />
-    </Stack>
+    <>
+      {imageBlock?.src != null && (
+        <Stack gap={4}>
+          <Typography variant="subtitle2">{t('Focal Point')}</Typography>
+          <Box
+            ref={imageRef}
+            sx={{
+              height: 300,
+              width: '100%',
+              display: 'flex',
+              cursor: 'pointer',
+              userSelect: 'none',
+              overflow: 'hidden',
+              position: 'relative',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 4,
+              border: (theme) => `1px solid ${theme.palette.divider}`
+            }}
+            onClick={handleClick}
+          >
+            <Image
+              src={imageBlock.src}
+              alt={imageBlock?.alt ?? ''}
+              layout="fill"
+              objectFit="cover"
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0
+              }}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: '33.33%',
+                bottom: 0,
+                width: '1px',
+                backgroundColor: 'rgba(255,255,255,0.5)'
+              }}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: '66.66%',
+                bottom: 0,
+                width: '1px',
+                backgroundColor: 'rgba(255,255,255,0.5)'
+              }}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                top: '33.33%',
+                left: 0,
+                right: 0,
+                height: '1px',
+                backgroundColor: 'rgba(255,255,255,0.5)'
+              }}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                top: '66.66%',
+                left: 0,
+                right: 0,
+                height: '1px',
+                backgroundColor: 'rgba(255,255,255,0.5)'
+              }}
+            />
+            <Box
+              data-testid="focal-point-dot"
+              sx={{
+                width: 30,
+                height: 30,
+                cursor: 'move',
+                borderRadius: '50%',
+                position: 'absolute',
+                pointerEvents: 'auto',
+                top: `${localPosition.y}%`,
+                left: `${localPosition.x}%`,
+                transform: 'translate(-50%, -50%)',
+                backdropFilter: 'blur(4px)',
+                border: '2px solid white',
+                boxShadow: (theme) => theme.shadows[3]
+              }}
+              onMouseDown={handleMouseDown}
+            />
+          </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+            <TextField
+              type="number"
+              label={t('Left')}
+              value={localPosition.x.toFixed(0)}
+              onChange={(e) => handleChange('x', e.target.value)}
+              slotProps={{
+                input: { endAdornment: '%' },
+                htmlInput: { min: MIN_VALUE, max: MAX_VALUE }
+              }}
+              sx={{ width: '45%' }}
+            />
+            <TextField
+              type="number"
+              label={t('Top')}
+              value={localPosition.y.toFixed(0)}
+              onChange={(e) => handleChange('y', e.target.value)}
+              slotProps={{
+                input: { endAdornment: '%' },
+                htmlInput: { min: MIN_VALUE, max: MAX_VALUE }
+              }}
+              sx={{ width: '45%' }}
+            />
+          </Box>
+        </Stack>
+      )}
+    </>
   )
 }
