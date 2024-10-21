@@ -32,7 +32,9 @@ const image: TreeBlock<ImageBlock> = {
   height: 1080,
   blurhash: '',
   children: [],
-  scale: null
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const Template: StoryObj<{ block: TreeBlock<ImageBlock> }> = {

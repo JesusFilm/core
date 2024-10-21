@@ -143,8 +143,8 @@ export function Card({
           themeMode == null
             ? t('Default')
             : themeMode === ThemeMode.light
-            ? t('Light')
-            : t('Dark')
+              ? t('Light')
+              : t('Dark')
         }
       >
         <CardStyling />

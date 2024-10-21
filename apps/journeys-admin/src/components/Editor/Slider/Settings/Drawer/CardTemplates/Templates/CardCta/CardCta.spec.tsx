@@ -93,7 +93,9 @@ describe('CardCta', () => {
           src: 'https://images.unsplash.com/photo-1474314881477-04c4aac40a0e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHw3OHx8dGFsa2luZ3xlbnwwfHx8fDE2OTUxNzExNTl8MA&ixlib=rb-4.0.3&q=80&w=1080',
           width: 6000,
           isCover: true,
-          scale: null
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         },
         subtitleInput: {
           id: 'subtitleId',
@@ -204,7 +206,9 @@ describe('CardCta', () => {
           height: 4000,
           blurhash: 'L~NTUYkWM{t7~qs:WBofEMjYt7WB',
           __typename: 'ImageBlock',
-          scale: null
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         },
         subtitle: {
           id: 'subtitleId',

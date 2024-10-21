@@ -139,7 +139,7 @@ export class JourneyLevelActions {
     await newPage.waitForLoadState()
     // await expect(await newPage.locator('h3[data-testid="JourneysTypography"]')).toHaveText(this.existingJourneyName)
     const tabName: string = await newPage.title()
-    await expect(tabName.includes(this.existingJourneyName)).toBeTruthy()
+    expect(tabName.includes(this.existingJourneyName)).toBeTruthy()
     const slidesCount = await newPage
       .locator(
         'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'

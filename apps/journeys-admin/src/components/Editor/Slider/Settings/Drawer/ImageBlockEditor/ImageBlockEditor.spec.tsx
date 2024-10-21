@@ -30,7 +30,9 @@ describe('ImageBlockEditor', () => {
     blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
     parentBlockId: 'card',
     parentOrder: 0,
-    scale: null
+    scale: null,
+    focalLeft: 50,
+    focalTop: 50
   }
 
   it('should render the ImageBlockEditor', () => {

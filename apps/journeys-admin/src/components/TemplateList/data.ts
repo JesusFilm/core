@@ -20,7 +20,9 @@ const imageBlock: ImageFields = {
   width: 10,
   height: 10,
   blurhash: '',
-  scale: null
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 export const defaultTemplate: Journey = {

@@ -91,7 +91,9 @@ const image: ImageBlock = {
   width: 1920,
   height: 1080,
   blurhash: '',
-  scale: null
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const defaultJourney: Journey = {

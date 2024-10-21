@@ -18,7 +18,9 @@ const image: TreeBlock<ImageBlock> = {
   parentOrder: 0,
   blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
   children: [],
-  scale: null
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const card: TreeBlock<CardBlock> = {

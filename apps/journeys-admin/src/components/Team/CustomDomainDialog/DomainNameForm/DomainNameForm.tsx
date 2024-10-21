@@ -223,8 +223,8 @@ export function DomainNameForm({
                 {touched.name != null && errors.name != null
                   ? errors.name
                   : currentUserTeamRole !== UserTeamRole.manager
-                  ? t('Only team managers can update the custom domain')
-                  : ' '}
+                    ? t('Only team managers can update the custom domain')
+                    : ' '}
               </>
             }
             label={t('Domain Name')}

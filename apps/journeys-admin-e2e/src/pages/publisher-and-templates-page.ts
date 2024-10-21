@@ -690,7 +690,7 @@ export class Publisher {
         { hasText: selectedFilter }
       )
     ).toBeVisible({ timeout: 40000 })
-    await expect(
+    expect(
       await this.page
         .locator(
           'div[data-testid="JourneysAdminTemplateSections"] div[data-testid*="gallery-carousel"]',

@@ -193,6 +193,8 @@ describe('CardBlock', () => {
     parentBlockId: 'card',
     parentOrder: 0,
     scale: null,
+    focalLeft: 50,
+    focalTop: 50,
     children: []
   }
 

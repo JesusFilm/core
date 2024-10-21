@@ -147,8 +147,8 @@ export function TeamUpdateDialog({
                   errors.title !== undefined
                     ? (errors.title as string)
                     : currentUserTeamRole !== UserTeamRole.manager
-                    ? t('Only a team manager can rename a team')
-                    : t('Private: Visible only to your team')
+                      ? t('Only a team manager can rename a team')
+                      : t('Private: Visible only to your team')
                 }
                 label={t('Team Name')}
               />
@@ -165,8 +165,8 @@ export function TeamUpdateDialog({
                   errors.publicTitle !== undefined
                     ? (errors.publicTitle as string)
                     : currentUserTeamRole !== UserTeamRole.manager
-                    ? t('Only a team manager can rename a team')
-                    : t('Public: Anyone can view it')
+                      ? t('Only a team manager can rename a team')
+                      : t('Public: Anyone can view it')
                 }
                 label={t('Legal Name')}
                 placeholder={values.title}

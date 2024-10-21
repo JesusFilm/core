@@ -157,7 +157,9 @@ const poster: TreeBlock<ImageBlock> = {
   blurhash: '',
   alt: 'poster',
   children: [],
-  scale: null
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const image: TreeBlock<ImageBlock> = {
@@ -171,7 +173,9 @@ const image: TreeBlock<ImageBlock> = {
   height: 1080,
   blurhash: '',
   children: [],
-  scale: null
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const videoLanguages: GetVideoVariantLanguages_video = {

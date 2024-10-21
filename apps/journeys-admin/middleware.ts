@@ -59,8 +59,8 @@ function getSupportedLocale(input?: string): string {
   return isSupported(input)
     ? input
     : isSupported(languageCode)
-    ? languageCode
-    : 'en'
+      ? languageCode
+      : 'en'
 }
 
 function getBrowserLanguage(req: NextRequest): string {
