@@ -157,7 +157,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           data-testid="Conductor"
           sx={{
             justifyContent: 'center',
-            height: '100svh',
+            height: '100dvh',
             background: theme.palette.grey[900],
             overflow: 'hidden'
           }}

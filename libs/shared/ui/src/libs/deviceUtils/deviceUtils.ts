@@ -44,6 +44,23 @@ export function isIOS(): boolean {
 }
 
 // TODO: should only resort to user agent sniffing as a last resport
+export function isIOSTouchScreen(): boolean {
+  if (
+    typeof navigator === 'undefined' ||
+    typeof navigator.userAgent === 'undefined'
+  )
+    return false
+
+  const userAgent = navigator.userAgent
+  return (
+    /iPad|iPhone|iPod/.test(userAgent) ||
+    // iPad on iOS 13 detection
+    // iPad iOS 13 user agent is "Macintosh" on iOS13 and above, see: https://forums.developer.apple.com/forums/thread/119186
+    (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
+  )
+}
+
+// TODO: should only resort to user agent sniffing as a last resport
 export function isMobile(): boolean {
   if (
     typeof navigator === 'undefined' ||
