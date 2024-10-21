@@ -69,7 +69,7 @@
     "@mui/x-data-grid": "^7.15.0",
     "@mui/x-date-pickers": "^7.15.0",
     "@mui/x-tree-view": "^7.15.0",
-    "@nestjs-modules/mailer": "^1.10.3",
+    "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/apollo": "^12.0.7",
     "@nestjs/bull": "^10.1.0",
     "@nestjs/bullmq": "^10.1.0",
