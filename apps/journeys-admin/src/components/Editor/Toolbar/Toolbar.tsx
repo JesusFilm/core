@@ -297,60 +297,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                     flexShrink: 1
                   }}
                 >
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      overflow: 'hidden',
-                      whiteSpace: 'nowrap',
-                      textOverflow: 'ellipsis',
-                      flexShrink: 1
-                    }}
-                  >
-                    {journey.title}
-                  </Typography>
-                  <Stack flexDirection="row" alignItems="center" gap={1}>
-                    <Globe1Icon
-                      sx={{
-                        fontSize: 16,
-                        alignItems: 'center',
-                        color: 'secondary.main'
-                      }}
-                    />
-                    <Typography
-                      variant="body2"
-                      sx={{ color: 'secondary.main' }}
-                    >
-                      {
-                        journey.language.name.find(
-                          ({ primary }) => primary != null
-                        )?.value
-                      }
-                    </Typography>
-                    {journey.description !== '' &&
-                    journey.description != null ? (
-                      <Typography
-                        data-testid="DescriptionDot"
-                        variant="body2"
-                        sx={{ color: 'text.secondary' }}
-                      >
-                        •
-                      </Typography>
-                    ) : null}
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        maxWidth: 'auto',
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis',
-                        flexShrink: 1,
-                        fontWeight: 'normal',
-                        color: 'text.secondary'
-                      }}
-                    >
-                      {journey.description}
-                    </Typography>
-                  </Stack>
+                  <JourneyDetails />
                 </Button>
               </Tooltip>
             </Box>
