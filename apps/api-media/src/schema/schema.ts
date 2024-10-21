@@ -13,6 +13,7 @@ import './user'
 import './video'
 import './videoVariant'
 import './tag'
+import './taxonomy'
 
 import { builder } from './builder'
 
