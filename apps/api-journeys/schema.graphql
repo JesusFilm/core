@@ -370,6 +370,7 @@ type Journey
   publishedAt: DateTime
   trashedAt: DateTime
   featuredAt: DateTime
+  updatedAt: DateTime!
   createdAt: DateTime!
   status: JourneyStatus!
 
@@ -750,6 +751,8 @@ type ImageBlock implements Block {
   """
   blurhash: String!
   scale: Int
+  focalTop: Int
+  focalLeft: Int
 }
 
 input ImageBlockCreateInput {
@@ -774,6 +777,8 @@ input ImageBlockCreateInput {
   """
   isCover: Boolean
   scale: Int
+  focalTop: Int
+  focalLeft: Int
 }
 
 input ImageBlockUpdateInput {
@@ -788,6 +793,8 @@ input ImageBlockUpdateInput {
   width: Int
   height: Int
   scale: Int
+  focalTop: Int
+  focalLeft: Int
 }
 
 type RadioOptionBlock implements Block {
@@ -1400,6 +1407,7 @@ enum MessagePlatform {
   telegram
   whatsApp
   instagram
+  kakaoTalk
   viber
   vk
   snapchat
