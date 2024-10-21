@@ -22,6 +22,8 @@ const emptyImage: Omit<ComponentProps<typeof Image>, 'src'> = {
   height: 1067,
   blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
   scale: null,
+  focalLeft: 50,
+  focalTop: 50,
   children: []
 }
 
