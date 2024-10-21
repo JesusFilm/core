@@ -171,8 +171,10 @@ export function ContainedCover({
         sx={{
           width: '100%',
           height: hasFullscreenVideo ? undefined : '100%',
+          flexGrow: 1,
           zIndex: 1,
-          position: 'relative',
+          top: 0,
+          position: {xs: 'relative', sm: 'absolute'},
           WebkitMask: { xs: overlayImageMask, sm: 'unset' },
           mask: { xs: overlayImageMask, sm: 'unset' }
         }}
