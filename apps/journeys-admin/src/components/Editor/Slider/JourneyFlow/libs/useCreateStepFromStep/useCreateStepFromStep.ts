@@ -46,10 +46,12 @@ export const STEP_BLOCK_DELETE_FROM_STEP = gql`
     $stepBlockUpdateId: ID!
   ) {
     blockDelete(id: $id, journeyId: $journeyId) {
-      id
-      parentOrder
-      ... on StepBlock {
-        nextBlockId
+      deletedBlocks {
+        id
+        parentOrder
+        ... on StepBlock {
+          nextBlockId
+        }
       }
     }
     stepBlockUpdate(

@@ -17,6 +17,21 @@ import {
   BlockRestoreVariables
 } from '../../../__generated__/BlockRestore'
 
+// export const BLOCK_RESTORE = gql`
+//   ${BLOCK_FIELDS}
+//   mutation BlockRestore($id: ID!, $referencingBlocks: [ID!]!) {
+//     blockRestore(id: $id, referencingBlocks: $referencingBlocks) {
+//       id
+//       ...BlockFields
+//       ... on StepBlock {
+//         id
+//         x
+//         y
+//       }
+//     }
+//   }
+// `
+
 export const BLOCK_RESTORE = gql`
   ${BLOCK_FIELDS}
   mutation BlockRestore($id: ID!) {
@@ -34,6 +49,7 @@ export const BLOCK_RESTORE = gql`
 
 export function blockRestoreUpdate(
   selectedBlock: { id: string } | undefined,
+  // referencingBlocksToRestore: { referencingBlocks: string[] } | undefined,
   response:
     | Array<{ id: string; __typename: BlockFields['__typename'] }>
     | undefined,
@@ -41,6 +57,10 @@ export function blockRestoreUpdate(
   cache: ApolloCache<any>,
   journeyId: string | undefined
 ): void {
+  // console.log(
+  //   'need to modify cache for ref blocks ',
+  //   referencingBlocksToRestore
+  // )
   if (response != null) {
     const selected = response.find((block) => selectedBlock?.id === block.id)
     if (selected != null && journeyId != null) {
@@ -100,8 +120,16 @@ export function useBlockRestoreMutation(
 
   return useMutation<BlockRestore, BlockRestoreVariables>(BLOCK_RESTORE, {
     update(cache, { data }, { variables }) {
+      const blockToRestore =
+        variables?.id != null ? { id: variables.id } : undefined
+      // const referencingBlocksToRestore =
+      //   variables?.referencingBlocks != null
+      //     ? { referencingBlocks: variables.referencingBlocks }
+      //     : undefined
+
       blockRestoreUpdate(
-        variables?.id != null ? { id: variables.id } : undefined,
+        blockToRestore,
+        // referencingBlocksToRestore,
         data?.blockRestore,
         cache,
         journey?.id

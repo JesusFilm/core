@@ -9,34 +9,59 @@ import { CardBlockUpdateInput, ThemeMode, ThemeName } from "./globalTypes";
 // GraphQL mutation operation: CardFormDelete
 // ====================================================
 
+export interface CardFormDelete_body_deletedBlocks {
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  id: string;
+  parentOrder: number | null;
+}
+
 export interface CardFormDelete_body {
+  __typename: "BlockDeleteResponse";
+  deletedBlocks: CardFormDelete_body_deletedBlocks[];
+}
+
+export interface CardFormDelete_textResponse_deletedBlocks {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
 
 export interface CardFormDelete_textResponse {
+  __typename: "BlockDeleteResponse";
+  deletedBlocks: CardFormDelete_textResponse_deletedBlocks[];
+}
+
+export interface CardFormDelete_title_deletedBlocks {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
 
 export interface CardFormDelete_title {
+  __typename: "BlockDeleteResponse";
+  deletedBlocks: CardFormDelete_title_deletedBlocks[];
+}
+
+export interface CardFormDelete_subtitle_deletedBlocks {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
 
 export interface CardFormDelete_subtitle {
+  __typename: "BlockDeleteResponse";
+  deletedBlocks: CardFormDelete_subtitle_deletedBlocks[];
+}
+
+export interface CardFormDelete_image_deletedBlocks {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
 
 export interface CardFormDelete_image {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
-  id: string;
-  parentOrder: number | null;
+  __typename: "BlockDeleteResponse";
+  deletedBlocks: CardFormDelete_image_deletedBlocks[];
 }
 
 export interface CardFormDelete_cardBlockUpdate {
@@ -76,23 +101,23 @@ export interface CardFormDelete {
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  body: CardFormDelete_body[];
+  body: CardFormDelete_body;
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  textResponse: CardFormDelete_textResponse[];
+  textResponse: CardFormDelete_textResponse;
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  title: CardFormDelete_title[];
+  title: CardFormDelete_title;
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  subtitle: CardFormDelete_subtitle[];
+  subtitle: CardFormDelete_subtitle;
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  image: CardFormDelete_image[];
+  image: CardFormDelete_image;
   cardBlockUpdate: CardFormDelete_cardBlockUpdate;
 }
 

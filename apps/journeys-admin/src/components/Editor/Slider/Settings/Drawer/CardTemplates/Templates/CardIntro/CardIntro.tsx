@@ -102,32 +102,46 @@ export const CARD_INTRO_DELETE = gql`
     $videoId: ID!
   ) {
     video: blockDelete(id: $videoId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     endIcon: blockDelete(id: $endIconId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     startIcon: blockDelete(id: $startIconId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     button: blockDelete(id: $buttonId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     body: blockDelete(id: $bodyId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     title: blockDelete(id: $titleId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     subtitle: blockDelete(id: $subtitleId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
   }
 `

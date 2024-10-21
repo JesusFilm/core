@@ -51,10 +51,12 @@ export const STEP_BLOCK_DELETE_FROM_ACTION = gql`
     $blockUpdateActionId: ID!
   ) {
     blockDelete(id: $id, journeyId: $journeyId, parentBlockId: $parentBlockId) {
-      id
-      parentOrder
-      ... on StepBlock {
-        nextBlockId
+      deletedBlocks {
+        id
+        parentOrder
+        ... on StepBlock {
+          nextBlockId
+        }
       }
     }
     blockUpdateAction(id: $blockUpdateActionId, input: $input) {
@@ -75,10 +77,12 @@ export const STEP_BLOCK_DELETE_FROM_ACTION_WITHOUT_ACTION = gql`
     $blockDeleteActionId: ID!
   ) {
     blockDelete(id: $id, journeyId: $journeyId, parentBlockId: $parentBlockId) {
-      id
-      parentOrder
-      ... on StepBlock {
-        nextBlockId
+      deletedBlocks {
+        id
+        parentOrder
+        ... on StepBlock {
+          nextBlockId
+        }
       }
     }
     blockDeleteAction(id: $blockDeleteActionId) {

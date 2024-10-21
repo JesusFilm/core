@@ -9,13 +9,13 @@ import { BlockUpdateActionInput } from "./globalTypes";
 // GraphQL mutation operation: StepBlockDeleteFromAction
 // ====================================================
 
-export interface StepBlockDeleteFromAction_blockDelete_ImageBlock {
+export interface StepBlockDeleteFromAction_blockDelete_deletedBlocks_ImageBlock {
   __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
 
-export interface StepBlockDeleteFromAction_blockDelete_StepBlock {
+export interface StepBlockDeleteFromAction_blockDelete_deletedBlocks_StepBlock {
   __typename: "StepBlock";
   id: string;
   parentOrder: number | null;
@@ -26,7 +26,12 @@ export interface StepBlockDeleteFromAction_blockDelete_StepBlock {
   nextBlockId: string | null;
 }
 
-export type StepBlockDeleteFromAction_blockDelete = StepBlockDeleteFromAction_blockDelete_ImageBlock | StepBlockDeleteFromAction_blockDelete_StepBlock;
+export type StepBlockDeleteFromAction_blockDelete_deletedBlocks = StepBlockDeleteFromAction_blockDelete_deletedBlocks_ImageBlock | StepBlockDeleteFromAction_blockDelete_deletedBlocks_StepBlock;
+
+export interface StepBlockDeleteFromAction_blockDelete {
+  __typename: "BlockDeleteResponse";
+  deletedBlocks: StepBlockDeleteFromAction_blockDelete_deletedBlocks[];
+}
 
 export interface StepBlockDeleteFromAction_blockUpdateAction_parentBlock {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
@@ -44,7 +49,7 @@ export interface StepBlockDeleteFromAction {
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  blockDelete: StepBlockDeleteFromAction_blockDelete[];
+  blockDelete: StepBlockDeleteFromAction_blockDelete;
   blockUpdateAction: StepBlockDeleteFromAction_blockUpdateAction;
 }
 

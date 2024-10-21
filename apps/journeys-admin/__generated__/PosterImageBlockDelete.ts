@@ -7,10 +7,15 @@
 // GraphQL mutation operation: PosterImageBlockDelete
 // ====================================================
 
-export interface PosterImageBlockDelete_blockDelete {
+export interface PosterImageBlockDelete_blockDelete_deletedBlocks {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
+}
+
+export interface PosterImageBlockDelete_blockDelete {
+  __typename: "BlockDeleteResponse";
+  deletedBlocks: PosterImageBlockDelete_blockDelete_deletedBlocks[];
 }
 
 export interface PosterImageBlockDelete_videoBlockUpdate {
@@ -28,7 +33,7 @@ export interface PosterImageBlockDelete {
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  blockDelete: PosterImageBlockDelete_blockDelete[];
+  blockDelete: PosterImageBlockDelete_blockDelete;
   videoBlockUpdate: PosterImageBlockDelete_videoBlockUpdate;
 }
 

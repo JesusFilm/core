@@ -13,8 +13,10 @@ import {
 export const COVER_BLOCK_DELETE = gql`
   mutation CoverBlockDelete($id: ID!, $cardBlockId: ID!) {
     blockDelete(id: $id) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     cardBlockUpdate(id: $cardBlockId, input: { coverBlockId: null }) {
       id

@@ -81,6 +81,11 @@ export type Block = {
   parentOrder?: Maybe<Scalars['Int']['output']>;
 };
 
+export type BlockDeleteResponse = {
+  deletedBlocks: Array<Block>;
+  updatedBlocks: Array<Block>;
+};
+
 export type BlockDuplicateIdMap = {
   newId: Scalars['ID']['input'];
   oldId: Scalars['ID']['input'];
@@ -1186,7 +1191,7 @@ export enum MessagePlatform {
 export type Mutation = {
   __typename?: 'Mutation';
   /** blockDelete returns the updated sibling blocks on successful delete */
-  blockDelete: Array<Block>;
+  blockDelete: BlockDeleteResponse;
   blockDeleteAction: Block;
   /** blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate */
   blockDuplicate: Array<Block>;

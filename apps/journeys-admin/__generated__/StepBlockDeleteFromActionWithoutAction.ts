@@ -7,13 +7,13 @@
 // GraphQL mutation operation: StepBlockDeleteFromActionWithoutAction
 // ====================================================
 
-export interface StepBlockDeleteFromActionWithoutAction_blockDelete_ImageBlock {
+export interface StepBlockDeleteFromActionWithoutAction_blockDelete_deletedBlocks_ImageBlock {
   __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
 
-export interface StepBlockDeleteFromActionWithoutAction_blockDelete_StepBlock {
+export interface StepBlockDeleteFromActionWithoutAction_blockDelete_deletedBlocks_StepBlock {
   __typename: "StepBlock";
   id: string;
   parentOrder: number | null;
@@ -24,7 +24,12 @@ export interface StepBlockDeleteFromActionWithoutAction_blockDelete_StepBlock {
   nextBlockId: string | null;
 }
 
-export type StepBlockDeleteFromActionWithoutAction_blockDelete = StepBlockDeleteFromActionWithoutAction_blockDelete_ImageBlock | StepBlockDeleteFromActionWithoutAction_blockDelete_StepBlock;
+export type StepBlockDeleteFromActionWithoutAction_blockDelete_deletedBlocks = StepBlockDeleteFromActionWithoutAction_blockDelete_deletedBlocks_ImageBlock | StepBlockDeleteFromActionWithoutAction_blockDelete_deletedBlocks_StepBlock;
+
+export interface StepBlockDeleteFromActionWithoutAction_blockDelete {
+  __typename: "BlockDeleteResponse";
+  deletedBlocks: StepBlockDeleteFromActionWithoutAction_blockDelete_deletedBlocks[];
+}
 
 export interface StepBlockDeleteFromActionWithoutAction_blockDeleteAction_ImageBlock {
   __typename: "ImageBlock" | "StepBlock" | "CardBlock" | "IconBlock" | "RadioQuestionBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
@@ -84,7 +89,7 @@ export interface StepBlockDeleteFromActionWithoutAction {
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  blockDelete: StepBlockDeleteFromActionWithoutAction_blockDelete[];
+  blockDelete: StepBlockDeleteFromActionWithoutAction_blockDelete;
   blockDeleteAction: StepBlockDeleteFromActionWithoutAction_blockDeleteAction;
 }
 

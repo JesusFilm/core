@@ -3,10 +3,23 @@ import reject from 'lodash/reject'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
+import {
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_RadioOptionBlock as RadioOptionBlock,
+  BlockFields_StepBlock as StepBlock
+} from '../../../__generated__/BlockFields'
+
 interface BlockIdentifier {
   __typename: TreeBlock['__typename']
   id: string
   children?: BlockIdentifier[]
+}
+
+interface BlockDeleteResponse {
+  deletedBlocks:
+    | Array<BlockIdentifier & { parentOrder: number | null }>
+    | undefined
+  updatedBlocks: Array<StepBlock | ButtonBlock | RadioOptionBlock> | undefined
 }
 
 const getNestedChildRefs = (
@@ -20,13 +33,17 @@ const getNestedChildRefs = (
 
 export const blockDeleteUpdate = (
   selectedBlock: BlockIdentifier,
-  response: Array<BlockIdentifier & { parentOrder: number | null }> | undefined,
+  response: BlockDeleteResponse,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   cache: ApolloCache<any>,
   journeyId: string
 ): void => {
-  if (response != null) {
-    response.forEach((block) => {
+  console.log('blockDeleteUpdate ', selectedBlock, response, journeyId)
+
+  const { deletedBlocks, updatedBlocks } = response
+
+  if (deletedBlocks != null) {
+    deletedBlocks.forEach((block) => {
       cache.modify({
         id: cache.identify({
           __typename: block.__typename,
@@ -65,6 +82,40 @@ export const blockDeleteUpdate = (
       cache.evict({
         id: blockRef
       })
+    })
+
+    // cache.gc() // Run garbage collection to clean up the cache
+  }
+
+  if (updatedBlocks != null) {
+    // Handle cache update for updated blocks (restore null references)
+    updatedBlocks.forEach((block) => {
+      if (block.__typename === 'StepBlock') {
+        cache.modify({
+          id: cache.identify({
+            __typename: block.__typename,
+            id: block.id
+          }),
+          fields: {
+            nextBlockId: () => block.nextBlockId
+          }
+        })
+      }
+
+      if (
+        block.__typename === 'ButtonBlock' ||
+        block.__typename === 'RadioOptionBlock'
+      ) {
+        cache.modify({
+          id: cache.identify({
+            __typename: block.__typename,
+            id: block.id
+          }),
+          fields: {
+            action: () => block.action
+          }
+        })
+      }
     })
   }
 }

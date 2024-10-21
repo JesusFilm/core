@@ -906,7 +906,7 @@ export abstract class IMutation {
 
     abstract blockUpdateAction(id: string, input?: Nullable<BlockUpdateActionInput>): Action | Promise<Action>;
 
-    abstract blockDelete(id: string, journeyId?: Nullable<string>, parentBlockId?: Nullable<string>): Block[] | Promise<Block[]>;
+    abstract blockDelete(id: string, journeyId?: Nullable<string>, parentBlockId?: Nullable<string>): BlockDeleteResponse | Promise<BlockDeleteResponse>;
 
     abstract blockDuplicate(id: string, parentOrder?: Nullable<number>, idMap?: Nullable<BlockDuplicateIdMap[]>, journeyId?: Nullable<string>, x?: Nullable<number>, y?: Nullable<number>): Block[] | Promise<Block[]>;
 
@@ -1087,6 +1087,12 @@ export abstract class IMutation {
     abstract visitorUpdate(id: string, input: VisitorUpdateInput): Visitor | Promise<Visitor>;
 
     abstract visitorUpdateForCurrentUser(input: VisitorUpdateInput): Visitor | Promise<Visitor>;
+}
+
+export class BlockDeleteResponse {
+    __typename?: 'BlockDeleteResponse';
+    deletedBlocks: Block[];
+    updatedBlocks: Block[];
 }
 
 export class Journey {

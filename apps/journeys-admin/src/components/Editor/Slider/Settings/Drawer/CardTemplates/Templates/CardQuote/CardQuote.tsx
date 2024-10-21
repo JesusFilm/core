@@ -84,20 +84,28 @@ export const CARD_QUOTE_DELETE = gql`
       ...CardFields
     }
     body: blockDelete(id: $bodyId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     title: blockDelete(id: $titleId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     subtitle: blockDelete(id: $subtitleId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     image: blockDelete(id: $imageId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
   }
 `

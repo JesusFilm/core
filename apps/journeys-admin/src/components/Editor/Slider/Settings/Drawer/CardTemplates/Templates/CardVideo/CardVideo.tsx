@@ -39,7 +39,9 @@ export const CARD_VIDEO_DELETE = gql`
   ${VIDEO_FIELDS}
   mutation CardVideoDelete($videoId: ID!) {
     video: blockDelete(id: $videoId) {
-      ...VideoFields
+      deletedBlocks {
+        ...VideoFields
+      }
     }
   }
 `

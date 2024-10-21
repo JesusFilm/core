@@ -9,13 +9,13 @@ import { StepBlockUpdateInput } from "./globalTypes";
 // GraphQL mutation operation: StepBlockDeleteFromStep
 // ====================================================
 
-export interface StepBlockDeleteFromStep_blockDelete_ImageBlock {
+export interface StepBlockDeleteFromStep_blockDelete_deletedBlocks_ImageBlock {
   __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
 
-export interface StepBlockDeleteFromStep_blockDelete_StepBlock {
+export interface StepBlockDeleteFromStep_blockDelete_deletedBlocks_StepBlock {
   __typename: "StepBlock";
   id: string;
   parentOrder: number | null;
@@ -26,7 +26,12 @@ export interface StepBlockDeleteFromStep_blockDelete_StepBlock {
   nextBlockId: string | null;
 }
 
-export type StepBlockDeleteFromStep_blockDelete = StepBlockDeleteFromStep_blockDelete_ImageBlock | StepBlockDeleteFromStep_blockDelete_StepBlock;
+export type StepBlockDeleteFromStep_blockDelete_deletedBlocks = StepBlockDeleteFromStep_blockDelete_deletedBlocks_ImageBlock | StepBlockDeleteFromStep_blockDelete_deletedBlocks_StepBlock;
+
+export interface StepBlockDeleteFromStep_blockDelete {
+  __typename: "BlockDeleteResponse";
+  deletedBlocks: StepBlockDeleteFromStep_blockDelete_deletedBlocks[];
+}
 
 export interface StepBlockDeleteFromStep_stepBlockUpdate {
   __typename: "StepBlock";
@@ -42,7 +47,7 @@ export interface StepBlockDeleteFromStep {
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  blockDelete: StepBlockDeleteFromStep_blockDelete[];
+  blockDelete: StepBlockDeleteFromStep_blockDelete;
   stepBlockUpdate: StepBlockDeleteFromStep_stepBlockUpdate;
 }
 

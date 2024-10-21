@@ -69,10 +69,12 @@ export const STEP_BLOCK_DELETE_FROM_SOCIAL_PREVIEW = gql`
     $stepId: ID!
   ) {
     blockDelete(id: $id, journeyId: $journeyId) {
-      id
-      parentOrder
-      ... on StepBlock {
-        nextBlockId
+      deletedBlocks {
+        id
+        parentOrder
+        ... on StepBlock {
+          nextBlockId
+        }
       }
     }
     blockOrderUpdate(id: $stepId, parentOrder: $parentOrder) {

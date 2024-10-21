@@ -42,28 +42,48 @@ export interface CardQuoteDelete_cardBlockUpdate {
   fullscreen: boolean;
 }
 
+export interface CardQuoteDelete_body_deletedBlocks {
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  id: string;
+  parentOrder: number | null;
+}
+
 export interface CardQuoteDelete_body {
+  __typename: "BlockDeleteResponse";
+  deletedBlocks: CardQuoteDelete_body_deletedBlocks[];
+}
+
+export interface CardQuoteDelete_title_deletedBlocks {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
 
 export interface CardQuoteDelete_title {
+  __typename: "BlockDeleteResponse";
+  deletedBlocks: CardQuoteDelete_title_deletedBlocks[];
+}
+
+export interface CardQuoteDelete_subtitle_deletedBlocks {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
 
 export interface CardQuoteDelete_subtitle {
+  __typename: "BlockDeleteResponse";
+  deletedBlocks: CardQuoteDelete_subtitle_deletedBlocks[];
+}
+
+export interface CardQuoteDelete_image_deletedBlocks {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }
 
 export interface CardQuoteDelete_image {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
-  id: string;
-  parentOrder: number | null;
+  __typename: "BlockDeleteResponse";
+  deletedBlocks: CardQuoteDelete_image_deletedBlocks[];
 }
 
 export interface CardQuoteDelete {
@@ -71,19 +91,19 @@ export interface CardQuoteDelete {
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  body: CardQuoteDelete_body[];
+  body: CardQuoteDelete_body;
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  title: CardQuoteDelete_title[];
+  title: CardQuoteDelete_title;
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  subtitle: CardQuoteDelete_subtitle[];
+  subtitle: CardQuoteDelete_subtitle;
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  image: CardQuoteDelete_image[];
+  image: CardQuoteDelete_image;
 }
 
 export interface CardQuoteDeleteVariables {

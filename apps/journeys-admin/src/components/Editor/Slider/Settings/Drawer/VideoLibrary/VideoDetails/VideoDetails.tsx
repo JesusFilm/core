@@ -42,8 +42,10 @@ export const BLOCK_DELETE_FOR_COVER_IMAGE = gql`
       journeyId: $journeyId
       parentBlockId: $parentBlockId
     ) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
   }
 `

@@ -20,10 +20,32 @@ import { blockDeleteUpdate } from '../blockDeleteUpdate'
 export const BLOCK_DELETE = gql`
   mutation BlockDelete($id: ID!) {
     blockDelete(id: $id) {
-      id
-      parentOrder
-      ... on StepBlock {
-        nextBlockId
+      deletedBlocks {
+        id
+        parentOrder
+        ... on StepBlock {
+          nextBlockId
+        }
+      }
+      updatedBlocks {
+        id
+        ... on StepBlock {
+          nextBlockId
+        }
+        ... on ButtonBlock {
+          action {
+            ... on NavigateToBlockAction {
+              blockId
+            }
+          }
+        }
+        ... on RadioOptionBlock {
+          action {
+            ... on NavigateToBlockAction {
+              blockId
+            }
+          }
+        }
       }
     }
   }

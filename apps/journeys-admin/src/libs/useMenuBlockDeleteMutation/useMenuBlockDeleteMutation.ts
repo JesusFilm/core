@@ -21,8 +21,10 @@ export const MENU_BLOCK_DELETE = gql`
     $journeyUpdateInput: JourneyUpdateInput!
   ) {
     stepDelete: blockDelete(id: $stepId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     journeyUpdate(id: $journeyId, input: $journeyUpdateInput) {
       id

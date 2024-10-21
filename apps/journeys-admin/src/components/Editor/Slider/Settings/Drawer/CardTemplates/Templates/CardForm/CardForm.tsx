@@ -91,24 +91,34 @@ export const CARD_FORM_DELETE = gql`
     $cardInput: CardBlockUpdateInput!
   ) {
     body: blockDelete(id: $bodyId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     textResponse: blockDelete(id: $textResponseId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     title: blockDelete(id: $titleId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     subtitle: blockDelete(id: $subtitleId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     image: blockDelete(id: $imageId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     cardBlockUpdate(id: $cardId, journeyId: $journeyId, input: $cardInput) {
       ...CardFields

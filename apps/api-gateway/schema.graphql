@@ -140,7 +140,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     drop this parameter after merging teams
     """
     parentBlockId: ID
-  ): [Block!]! @join__field(graph: API_JOURNEYS) 
+  ): BlockDeleteResponse! @join__field(graph: API_JOURNEYS) 
   """
   blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
   """
@@ -180,7 +180,15 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   blockRestore is used for redo/undo
   """
-  blockRestore(id: ID!) : [Block!]! @join__field(graph: API_JOURNEYS) 
+  blockRestore(
+    """
+    block to restore
+    TODO
+    blocks that were referencing the block to restore
+    referencingBlocks: [ID!]
+    """
+    id: ID!
+  ): [Block!]! @join__field(graph: API_JOURNEYS) 
   buttonBlockCreate(input: ButtonBlockCreateInput!) : ButtonBlock! @join__field(graph: API_JOURNEYS) 
   buttonBlockUpdate(
     id: ID!
@@ -469,6 +477,11 @@ type EmailAction implements Action @join__type(graph: API_JOURNEYS)  @join__impl
   parentBlock: Block!
   gtmEventName: String
   email: String!
+}
+
+type BlockDeleteResponse @join__type(graph: API_JOURNEYS)  {
+  deletedBlocks: [Block!]!
+  updatedBlocks: [Block!]!
 }
 
 type Journey @join__type(graph: API_JOURNEYS, key: "id")  {

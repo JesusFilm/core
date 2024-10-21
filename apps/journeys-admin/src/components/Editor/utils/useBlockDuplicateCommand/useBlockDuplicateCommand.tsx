@@ -70,10 +70,14 @@ export function useBlockDuplicateCommand(): {
             })
         void blockDelete(block, {
           optimisticResponse: {
-            blockDelete:
-              block.__typename === 'StepBlock'
-                ? [...steps]
-                : [...flatten(card.children)]
+            blockDelete: {
+              __typename: 'BlockDeleteResponse',
+              deletedBlocks:
+                block.__typename === 'StepBlock'
+                  ? [...steps]
+                  : [...flatten(card.children)],
+              updatedBlocks: []
+            }
           }
         })
       },

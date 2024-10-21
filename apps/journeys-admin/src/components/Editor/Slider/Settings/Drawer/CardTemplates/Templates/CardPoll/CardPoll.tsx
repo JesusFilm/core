@@ -110,40 +110,58 @@ export const CARD_POLL_DELETE = gql`
     $bodyId: ID!
   ) {
     bodyDelete: blockDelete(id: $bodyId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     radioOption4Delete: blockDelete(id: $radioOption4Id) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     radioOption3Delete: blockDelete(id: $radioOption3Id) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     radioOption2Delete: blockDelete(id: $radioOption2Id) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     radioOption1Delete: blockDelete(id: $radioOption1Id) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     radioQuestionDelete: blockDelete(id: $radioQuestionId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     titleDelete: blockDelete(id: $titleId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     subtitleDelete: blockDelete(id: $subtitleId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     imageDelete: blockDelete(id: $imageId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
   }
 `

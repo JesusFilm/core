@@ -9,12 +9,21 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
+import {
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_RadioOptionBlock as RadioOptionBlock,
+  BlockFields_StepBlock as StepBlock
+} from '../../../../../__generated__/BlockFields'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 
+import {
+  blockReferencesUpdate,
+  nullifyBlockReferences
+} from './blockReferencesUpdate'
 import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
 
 export function useBlockDeleteCommand(): {
@@ -76,12 +85,19 @@ export function useBlockDeleteCommand(): {
       currentBlock.id === journey.menuStepBlock?.id &&
       currentBlock.__typename === 'StepBlock'
 
+    console.log(
+      'looking for block references to update ',
+      journey,
+      currentBlock
+    )
+
     add({
       parameters: {
         execute: {},
         undo: {}
       },
       execute() {
+        // TODO: refactor into setNewSelectedStep(...)
         const nextSelectedStep =
           stepSiblingsAfterDelete.find(
             ({ parentOrder }) => parentOrder === deletedBlockParentOrder
@@ -114,10 +130,18 @@ export function useBlockDeleteCommand(): {
             })
 
         void blockDelete(currentBlock, {
-          optimisticResponse: { blockDelete: canvasSiblingsAfterDelete },
+          optimisticResponse: {
+            // TODO(jk): surely this isn't the best way to do this?
+            blockDelete: {
+              __typename: 'BlockDeleteResponse',
+              deletedBlocks: canvasSiblingsAfterDelete,
+              updatedBlocks: []
+            }
+          },
           update(cache, { data }) {
             blockDeleteUpdate(
               currentBlock,
+              // TODO(jk): need to solve this?
               data?.blockDelete,
               cache,
               journey.id
@@ -145,7 +169,12 @@ export function useBlockDeleteCommand(): {
       undo() {
         const flattenedChildren = flatten(currentBlock?.children)
         setBlockRestoreEditorState(currentBlock, selectedStep, dispatch)
+        // const referencingBlocks = blockReferencesUpdate(
+        //   currentBlock.id,
+        //   journey
+        // )
         void blockRestore({
+          // variables: { id: currentBlock.id, referencingBlocks },
           variables: { id: currentBlock.id },
           optimisticResponse:
             currentBlock.__typename === 'StepBlock'

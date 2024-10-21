@@ -162,52 +162,76 @@ export const CARD_CTA_DELETE = gql`
       ...CardFields
     }
     endIcon3Delete: blockDelete(id: $endIcon3Id) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     startIcon3Delete: blockDelete(id: $startIcon3Id) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     button3Delete: blockDelete(id: $button3Id) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     endIcon2Delete: blockDelete(id: $endIcon2Id) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     startIcon2Delete: blockDelete(id: $startIcon2Id) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     button2Delete: blockDelete(id: $button2Id) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     endIcon1Delete: blockDelete(id: $endIcon1Id) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     startIcon1Delete: blockDelete(id: $startIcon1Id) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     button1Delete: blockDelete(id: $button1Id) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     titleDelete: blockDelete(id: $titleId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     subtitleDelete: blockDelete(id: $subtitleId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     imageDelete: blockDelete(id: $imageId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
   }
 `

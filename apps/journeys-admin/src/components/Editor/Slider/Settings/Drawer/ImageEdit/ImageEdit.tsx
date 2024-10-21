@@ -38,8 +38,10 @@ const ImageLibrary = dynamic(
 export const JOURNEY_IMAGE_BLOCK_DELETE = gql`
   mutation JourneyImageBlockDelete($id: ID!, $journeyId: ID!) {
     blockDelete(id: $id, journeyId: $journeyId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
   }
 `

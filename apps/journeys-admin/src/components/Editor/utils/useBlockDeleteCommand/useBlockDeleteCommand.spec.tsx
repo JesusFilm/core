@@ -70,6 +70,8 @@ describe('useBlockDeleteCommand', () => {
     await waitFor(() => {
       expect(deleteStepMockResult).toHaveBeenCalled()
     })
+
+    // TODO: should be separate test
     const undo = screen.getByRole('button', { name: 'Undo' })
     await waitFor(() => expect(undo).not.toBeDisabled())
     fireEvent.click(undo)
@@ -117,6 +119,8 @@ describe('useBlockDeleteCommand', () => {
     await waitFor(() => {
       expect(deleteCardBlockMockResult).toHaveBeenCalled()
     })
+
+    // TODO: should be separate test
     const undo = screen.getByRole('button', { name: 'Undo' })
     await waitFor(() => expect(undo).not.toBeDisabled())
     fireEvent.click(undo)

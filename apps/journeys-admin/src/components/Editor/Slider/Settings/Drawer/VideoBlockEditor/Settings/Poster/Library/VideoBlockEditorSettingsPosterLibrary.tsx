@@ -58,8 +58,10 @@ export const POSTER_IMAGE_BLOCK_UPDATE = gql`
 export const POSTER_IMAGE_BLOCK_DELETE = gql`
   mutation PosterImageBlockDelete($id: ID!, $parentBlockId: ID!) {
     blockDelete(id: $id, parentBlockId: $parentBlockId) {
-      id
-      parentOrder
+      deletedBlocks {
+        id
+        parentOrder
+      }
     }
     videoBlockUpdate(id: $parentBlockId, input: { posterBlockId: null }) {
       id

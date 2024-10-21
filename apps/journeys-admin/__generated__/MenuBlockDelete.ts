@@ -9,10 +9,15 @@ import { JourneyUpdateInput } from "./globalTypes";
 // GraphQL mutation operation: MenuBlockDelete
 // ====================================================
 
-export interface MenuBlockDelete_stepDelete {
+export interface MenuBlockDelete_stepDelete_deletedBlocks {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
+}
+
+export interface MenuBlockDelete_stepDelete {
+  __typename: "BlockDeleteResponse";
+  deletedBlocks: MenuBlockDelete_stepDelete_deletedBlocks[];
 }
 
 export interface MenuBlockDelete_journeyUpdate_menuStepBlock {
@@ -50,7 +55,7 @@ export interface MenuBlockDelete {
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  stepDelete: MenuBlockDelete_stepDelete[];
+  stepDelete: MenuBlockDelete_stepDelete;
   journeyUpdate: MenuBlockDelete_journeyUpdate;
 }
 

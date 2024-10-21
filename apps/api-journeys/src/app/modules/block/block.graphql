@@ -5,6 +5,11 @@ interface Block {
   parentOrder: Int
 }
 
+type BlockDeleteResponse {
+  deletedBlocks: [Block!]!
+  updatedBlocks: [Block!]!
+}
+
 extend type Journey {
   blocks: [Block!]
 }
@@ -38,7 +43,7 @@ extend type Mutation {
     drop this parameter after merging teams
     """
     parentBlockId: ID
-  ): [Block!]!
+  ): BlockDeleteResponse!
   """
   blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
   """
@@ -79,5 +84,13 @@ extend type Mutation {
   """
   blockRestore is used for redo/undo
   """
-  blockRestore(id: ID!): [Block!]!
+  blockRestore(
+    """
+    block to restore
+    TODO
+    blocks that were referencing the block to restore
+    referencingBlocks: [ID!]
+    """
+    id: ID!
+  ): [Block!]!
 }

@@ -9,71 +9,71 @@ import { VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 // GraphQL mutation operation: CardVideoDelete
 // ====================================================
 
-export interface CardVideoDelete_video_ImageBlock {
+export interface CardVideoDelete_video_deletedBlocks_ImageBlock {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
 }
 
-export interface CardVideoDelete_video_VideoBlock_video_title {
+export interface CardVideoDelete_video_deletedBlocks_VideoBlock_video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface CardVideoDelete_video_VideoBlock_video_images {
+export interface CardVideoDelete_video_deletedBlocks_VideoBlock_video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface CardVideoDelete_video_VideoBlock_video_variant {
+export interface CardVideoDelete_video_deletedBlocks_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface CardVideoDelete_video_VideoBlock_video_variantLanguages_name {
+export interface CardVideoDelete_video_deletedBlocks_VideoBlock_video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface CardVideoDelete_video_VideoBlock_video_variantLanguages {
+export interface CardVideoDelete_video_deletedBlocks_VideoBlock_video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: CardVideoDelete_video_VideoBlock_video_variantLanguages_name[];
+  name: CardVideoDelete_video_deletedBlocks_VideoBlock_video_variantLanguages_name[];
 }
 
-export interface CardVideoDelete_video_VideoBlock_video {
+export interface CardVideoDelete_video_deletedBlocks_VideoBlock_video {
   __typename: "Video";
   id: string;
-  title: CardVideoDelete_video_VideoBlock_video_title[];
-  images: CardVideoDelete_video_VideoBlock_video_images[];
-  variant: CardVideoDelete_video_VideoBlock_video_variant | null;
-  variantLanguages: CardVideoDelete_video_VideoBlock_video_variantLanguages[];
+  title: CardVideoDelete_video_deletedBlocks_VideoBlock_video_title[];
+  images: CardVideoDelete_video_deletedBlocks_VideoBlock_video_images[];
+  variant: CardVideoDelete_video_deletedBlocks_VideoBlock_video_variant | null;
+  variantLanguages: CardVideoDelete_video_deletedBlocks_VideoBlock_video_variantLanguages[];
 }
 
-export interface CardVideoDelete_video_VideoBlock_action_NavigateToBlockAction {
+export interface CardVideoDelete_video_deletedBlocks_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface CardVideoDelete_video_VideoBlock_action_LinkAction {
+export interface CardVideoDelete_video_deletedBlocks_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
 }
 
-export interface CardVideoDelete_video_VideoBlock_action_EmailAction {
+export interface CardVideoDelete_video_deletedBlocks_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
 }
 
-export type CardVideoDelete_video_VideoBlock_action = CardVideoDelete_video_VideoBlock_action_NavigateToBlockAction | CardVideoDelete_video_VideoBlock_action_LinkAction | CardVideoDelete_video_VideoBlock_action_EmailAction;
+export type CardVideoDelete_video_deletedBlocks_VideoBlock_action = CardVideoDelete_video_deletedBlocks_VideoBlock_action_NavigateToBlockAction | CardVideoDelete_video_deletedBlocks_VideoBlock_action_LinkAction | CardVideoDelete_video_deletedBlocks_VideoBlock_action_EmailAction;
 
-export interface CardVideoDelete_video_VideoBlock {
+export interface CardVideoDelete_video_deletedBlocks_VideoBlock {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
@@ -145,20 +145,25 @@ export interface CardVideoDelete_video_VideoBlock {
    * internal source videos: video is only populated when videoID and
    * videoVariantLanguageId are present
    */
-  video: CardVideoDelete_video_VideoBlock_video | null;
+  video: CardVideoDelete_video_deletedBlocks_VideoBlock_video | null;
   /**
    * action that should be performed when the video ends
    */
-  action: CardVideoDelete_video_VideoBlock_action | null;
+  action: CardVideoDelete_video_deletedBlocks_VideoBlock_action | null;
 }
 
-export type CardVideoDelete_video = CardVideoDelete_video_ImageBlock | CardVideoDelete_video_VideoBlock;
+export type CardVideoDelete_video_deletedBlocks = CardVideoDelete_video_deletedBlocks_ImageBlock | CardVideoDelete_video_deletedBlocks_VideoBlock;
+
+export interface CardVideoDelete_video {
+  __typename: "BlockDeleteResponse";
+  deletedBlocks: CardVideoDelete_video_deletedBlocks[];
+}
 
 export interface CardVideoDelete {
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  video: CardVideoDelete_video[];
+  video: CardVideoDelete_video;
 }
 
 export interface CardVideoDeleteVariables {

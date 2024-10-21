@@ -7,10 +7,15 @@
 // GraphQL mutation operation: CoverBlockDelete
 // ====================================================
 
-export interface CoverBlockDelete_blockDelete {
+export interface CoverBlockDelete_blockDelete_deletedBlocks {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
+}
+
+export interface CoverBlockDelete_blockDelete {
+  __typename: "BlockDeleteResponse";
+  deletedBlocks: CoverBlockDelete_blockDelete_deletedBlocks[];
 }
 
 export interface CoverBlockDelete_cardBlockUpdate {
@@ -28,7 +33,7 @@ export interface CoverBlockDelete {
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  blockDelete: CoverBlockDelete_blockDelete[];
+  blockDelete: CoverBlockDelete_blockDelete;
   cardBlockUpdate: CoverBlockDelete_cardBlockUpdate;
 }
 
