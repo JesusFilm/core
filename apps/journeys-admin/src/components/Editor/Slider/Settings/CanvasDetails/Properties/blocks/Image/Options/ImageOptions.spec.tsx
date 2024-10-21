@@ -51,7 +51,9 @@ describe('ImageOptions', () => {
     height: 1080,
     blurhash: '',
     children: [],
-    scale: null
+    scale: null,
+    focalLeft: 50,
+    focalTop: 50
   }
 
   const response: ImageBlockUpdate = {

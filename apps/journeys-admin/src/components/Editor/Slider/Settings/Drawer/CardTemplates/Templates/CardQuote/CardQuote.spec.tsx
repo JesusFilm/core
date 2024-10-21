@@ -86,7 +86,9 @@ const cardQuoteCreateMock: MockedResponse<
         src: 'https://images.unsplash.com/photo-1552423310-ba74b8de5e6f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHwyOXx8aXNyYWVsfGVufDB8fHx8MTY5NTE3MDg5M3ww&ixlib=rb-4.0.3&q=80&w=1080',
         width: 5094,
         isCover: true,
-        scale: null
+        scale: null,
+        focalLeft: 50,
+        focalTop: 50
       },
       subtitleInput: {
         id: 'subtitleId',
@@ -134,7 +136,9 @@ const cardQuoteCreateMock: MockedResponse<
         height: 3396,
         blurhash: 'L99*0;01IAtk5R%MRie;t8D%-pa$',
         __typename: 'ImageBlock',
-        scale: null
+        scale: null,
+        focalLeft: 50,
+        focalTop: 50
       },
       subtitle: {
         id: 'subtitleId',
