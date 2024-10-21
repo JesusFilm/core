@@ -191,7 +191,7 @@ export function BaseNode({
             width: HANDLE_DIAMETER,
             height: HANDLE_DIAMETER,
             background: (theme) =>
-              sourceSelected
+              sourceSelected || !isSourceConnected
                 ? theme.palette.primary.main
                 : `${theme.palette.secondary.light}A0`,
             ...sourceHandleProps?.sx,
