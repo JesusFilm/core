@@ -77,14 +77,16 @@ export function MoveBlock(): ReactElement {
       <IconButton
         aria-label="move-block-up"
         disabled={selectedBlock?.parentOrder === 0}
-        onClick={handleMoveBlockUp}
+        // onClickCapture event does not get ovverridden by parent components for RadioOptionBlocks
+        onClickCapture={handleMoveBlockUp}
       >
         <ChevronUpIcon />
       </IconButton>
       <IconButton
         aria-label="move-block-down"
         disabled={selectedBlock?.parentOrder === lastBlockIndex}
-        onClick={handleMoveBlockDown}
+        // onClickCapture event does not get ovverridden by parent components for RadioOptionBlocks
+        onClickCapture={handleMoveBlockDown}
       >
         <ChevronDownIcon />
       </IconButton>

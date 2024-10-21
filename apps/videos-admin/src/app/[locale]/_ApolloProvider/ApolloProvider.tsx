@@ -14,7 +14,12 @@ import { cache } from '../../../libs/apollo/cache'
 import { firebaseClient } from '../../../libs/firebaseClient/firebaseClient'
 
 const httpLink = createHttpLink({
-  uri: process.env.NEXT_PUBLIC_GATEWAY_URL
+  uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
+  headers: {
+    'x-graphql-client-name': 'videos-admin',
+    'x-graphql-client-version':
+      process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
+  }
 })
 
 let signInPromise: Promise<UserCredential>
@@ -39,8 +44,6 @@ function makeClient(): ApolloClient<NormalizedCacheObject> {
   return new ApolloClient({
     cache: new InMemoryCache(cache),
     link: typeof window === 'undefined' ? httpLink : authLink.concat(httpLink),
-    name: 'videos-admin',
-    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
     connectToDevTools: true
   })
 }

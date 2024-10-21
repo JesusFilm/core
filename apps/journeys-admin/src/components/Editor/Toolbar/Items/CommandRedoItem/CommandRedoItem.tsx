@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
 
@@ -22,14 +21,12 @@ export function CommandRedoItem({
   }
 
   return (
-    <Box data-testid="CommandRedoItem">
-      <Item
-        variant={variant}
-        label={t('Redo')}
-        icon={<FlipRightIcon />}
-        onClick={handleClick}
-        ButtonProps={{ disabled: state.redo == null }}
-      />
-    </Box>
+    <Item
+      variant={variant}
+      label={t('Redo')}
+      icon={<FlipRightIcon />}
+      onClick={handleClick}
+      ButtonProps={{ disabled: state.redo == null }}
+    />
   )
 }

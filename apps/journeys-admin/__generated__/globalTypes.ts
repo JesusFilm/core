@@ -126,6 +126,7 @@ export enum MessagePlatform {
   home3 = "home3",
   home4 = "home4",
   instagram = "instagram",
+  kakaoTalk = "kakaoTalk",
   line = "line",
   linkExternal = "linkExternal",
   mail1 = "mail1",
@@ -388,6 +389,8 @@ export interface ImageBlockCreateInput {
   height?: number | null;
   isCover?: boolean | null;
   scale?: number | null;
+  focalTop?: number | null;
+  focalLeft?: number | null;
 }
 
 export interface ImageBlockUpdateInput {
@@ -398,6 +401,8 @@ export interface ImageBlockUpdateInput {
   width?: number | null;
   height?: number | null;
   scale?: number | null;
+  focalTop?: number | null;
+  focalLeft?: number | null;
 }
 
 export interface IntegrationGrowthSpacesCreateInput {

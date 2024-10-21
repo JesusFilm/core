@@ -195,15 +195,15 @@ export async function GET(
     platform === 'web'
       ? {}
       : platform === 'android'
-      ? {
-          dash: [{ videoBitrate: 0, url: video.variant?.dash }],
-          hls: [{ videoBitrate: 0, url: video.variant?.hls }],
-          http: []
-        }
-      : {
-          m3u8: [{ videoBitrate: 0, url: video.variant?.hls }],
-          http: []
-        }
+        ? {
+            dash: [{ videoBitrate: 0, url: video.variant?.dash }],
+            hls: [{ videoBitrate: 0, url: video.variant?.hls }],
+            http: []
+          }
+        : {
+            m3u8: [{ videoBitrate: 0, url: video.variant?.hls }],
+            http: []
+          }
 
   const response = {
     mediaComponentId,

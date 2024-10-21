@@ -98,8 +98,8 @@ function JourneyEditPage({ status }): ReactElement {
           status === 'noAccess'
             ? t('Request Access')
             : data?.journey?.title != null
-            ? t('Edit {{title}}', { title: data.journey.title })
-            : t('Edit Journey')
+              ? t('Edit {{title}}', { title: data.journey.title })
+              : t('Edit Journey')
         }
         description={data?.journey?.description ?? undefined}
       />

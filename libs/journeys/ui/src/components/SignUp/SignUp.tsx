@@ -227,8 +227,8 @@ export const SignUp = ({
                 {editableSubmitLabel != null
                   ? editableSubmitLabel
                   : submitLabel != null && submitLabel !== ''
-                  ? submitLabel
-                  : t('Submit')}
+                    ? submitLabel
+                    : t('Submit')}
               </span>
             </LoadingButton>
           </Form>

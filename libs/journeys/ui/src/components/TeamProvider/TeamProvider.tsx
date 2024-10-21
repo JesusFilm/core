@@ -98,7 +98,7 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
 
   const activeTeam =
     activeTeamId != null
-      ? query.data?.teams.find((team) => team.id === activeTeamId) ?? null
+      ? (query.data?.teams.find((team) => team.id === activeTeamId) ?? null)
       : activeTeamId
 
   // query.refetch() does not rerun onCompleted

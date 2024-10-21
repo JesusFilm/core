@@ -34,11 +34,11 @@ export const yoga = createYoga<Record<string, unknown>, Context>({
       user,
       currentRoles:
         user?.id != null
-          ? (
+          ? ((
               await prisma.userMediaRole.findUnique({
                 where: { userId: user.id }
               })
-            )?.roles ?? []
+            )?.roles ?? [])
           : []
     }
   },

@@ -38,7 +38,8 @@ export function PreviewItem({
         icon={<Play3Icon />}
         onClick={onClick}
         ButtonProps={{
-          disabled: href == null
+          disabled: href == null,
+          sx: { ml: 3 }
         }}
       />
     </Box>

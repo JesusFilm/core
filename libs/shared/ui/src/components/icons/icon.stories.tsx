@@ -118,6 +118,7 @@ const iconNames: IconName[] = [
   'Iphone1',
   'Journey',
   'Journeys',
+  'KakaoTalk',
   'Key1',
   'Key2',
   'Laptop1',

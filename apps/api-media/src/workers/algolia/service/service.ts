@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client'
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import algoliasearch from 'algoliasearch'
 import { Logger } from 'pino'
 
@@ -22,8 +22,16 @@ export const GET_LANGUAGES = graphql(`
   }
 `)
 
-export const apollo = new ApolloClient({
+const httpLink = createHttpLink({
   uri: process.env.GATEWAY_URL,
+  headers: {
+    'x-graphql-client-name': 'api-media',
+    'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
+  }
+})
+
+export const apollo = new ApolloClient({
+  link: httpLink,
   cache: new InMemoryCache()
 })
 

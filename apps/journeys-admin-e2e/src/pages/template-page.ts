@@ -202,7 +202,7 @@ export class TemplatePage {
     ])
     await newPage.waitForLoadState()
     const tabName: string = await newPage.title()
-    await expect(tabName.includes(this.selecetdTemplated)).toBeTruthy()
+    expect(tabName.includes(this.selecetdTemplated)).toBeTruthy()
     const slidesCount = await newPage
       .locator(
         'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
@@ -343,7 +343,7 @@ export class TemplatePage {
         { hasText: this.selectedFilterOption }
       )
     ).toBeVisible({ timeout: sixtySecondsTimeout })
-    await expect(
+    expect(
       await this.page
         .locator(
           'div[data-testid="JourneysAdminTemplateSections"] div[data-testid*="gallery-carousel"]',

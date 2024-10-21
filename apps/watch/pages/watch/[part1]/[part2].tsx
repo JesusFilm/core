@@ -8,7 +8,10 @@ import { InstantSearch } from 'react-instantsearch'
 
 import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
-import type { GetVideoContent } from '../../../__generated__/GetVideoContent'
+import type {
+  GetVideoContent,
+  GetVideoContentVariables
+} from '../../../__generated__/GetVideoContent'
 import type { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../../../src/libs/apolloClient'
@@ -100,7 +103,10 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
 
   const client = createApolloClient()
   try {
-    const { data } = await client.query<GetVideoContent>({
+    const { data } = await client.query<
+      GetVideoContent,
+      GetVideoContentVariables
+    >({
       query: GET_VIDEO_CONTENT,
       variables: {
         id: `${contentId}/${languageId}`
@@ -128,7 +134,9 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
     if (
       error instanceof ApolloError &&
       error.graphQLErrors.some(
-        ({ extensions }) => extensions?.code === 'NOT_FOUND'
+        ({ extensions, message }) =>
+          extensions?.code === 'NOT_FOUND' ||
+          message?.startsWith('Video not found')
       )
     )
       return {

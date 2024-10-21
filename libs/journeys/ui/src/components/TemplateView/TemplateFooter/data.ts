@@ -46,7 +46,9 @@ export const journey: Journey = {
       width: 2766,
       height: 3457,
       blurhash: 'LXJGyfWCEgs:~VWVofoet,jZ$%oe',
-      scale: null
+      scale: null,
+      focalLeft: 50,
+      focalTop: 50
     },
     {
       __typename: 'CardBlock',
@@ -97,7 +99,9 @@ export const journey: Journey = {
       width: 2766,
       height: 3457,
       blurhash: 'LXJGyfWCEgs:~VWVofoet,jZ$%oe',
-      scale: null
+      scale: null,
+      focalLeft: 50,
+      focalTop: 50
     },
     {
       __typename: 'CardBlock',

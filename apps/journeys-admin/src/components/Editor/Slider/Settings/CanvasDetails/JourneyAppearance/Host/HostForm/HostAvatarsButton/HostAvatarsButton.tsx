@@ -107,7 +107,7 @@ export function HostAvatarsButton(): ReactElement {
           data-testid="avatar2"
           alt="avatar2"
           onClick={() => handleOpen(2)}
-          src={hasAvatar2 ? journey?.host?.src2 ?? undefined : undefined}
+          src={hasAvatar2 ? (journey?.host?.src2 ?? undefined) : undefined}
           sx={
             !hasAvatar2
               ? {
@@ -140,7 +140,9 @@ export function HostAvatarsButton(): ReactElement {
                   blurhash: '',
                   parentBlockId: null,
                   parentOrder: 0,
-                  scale: null
+                  scale: null,
+                  focalLeft: 50,
+                  focalTop: 50
                 }
               : null
           }

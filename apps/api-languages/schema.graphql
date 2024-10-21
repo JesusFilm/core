@@ -46,6 +46,8 @@ type CountryLanguage {
   speakers: Int!
   displaySpeakers: Int
   primary: Boolean!
+  suggested: Boolean!
+  order: Int
 }
 
 type CountryName {

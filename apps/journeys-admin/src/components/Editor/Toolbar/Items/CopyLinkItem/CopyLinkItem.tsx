@@ -32,7 +32,7 @@ export function CopyLinkItem({
       `${
         hostname != null
           ? `https://${hostname}`
-          : process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
+          : (process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is')
       }/${journey.slug}`
     )
     onClose?.()

@@ -92,8 +92,8 @@ export function SocialPreviewNode(): ReactElement {
                 selected === true
                   ? theme.palette.primary.main
                   : selected === 'descendant'
-                  ? theme.palette.divider
-                  : 'transparent'
+                    ? theme.palette.divider
+                    : 'transparent'
               }`,
             outlineOffset: '5px',
             ...(showAnalytics === true && {

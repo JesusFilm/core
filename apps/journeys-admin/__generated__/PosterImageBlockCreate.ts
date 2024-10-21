@@ -24,6 +24,8 @@ export interface PosterImageBlockCreate_imageBlockCreate {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface PosterImageBlockCreate_videoBlockUpdate {

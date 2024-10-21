@@ -81,6 +81,8 @@ model CountryLanguage {
   speakers        Int
   displaySpeakers Int?
   primary         Boolean  @default(false)
+  suggested       Boolean  @default(false)
+  order           Int?
   language        Language @relation(fields: [languageId], references: [id])
   country         Country  @relation(fields: [countryId], references: [id])
 

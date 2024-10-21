@@ -20,9 +20,7 @@ export const ApolloLoadingProvider = ({
 
   const client = new ApolloClient({
     link,
-    cache: new InMemoryCache(),
-    name: 'journeys-admin-test',
-    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA
+    cache: new InMemoryCache()
   })
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>

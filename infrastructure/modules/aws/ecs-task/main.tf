@@ -103,6 +103,10 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         {
           name  = "SERVICE_NAME",
           value = var.service_config.name
+        },
+        {
+          name  = "SERVICE_ENV",
+          value = var.env
         }
       ]
       mountPoints = []

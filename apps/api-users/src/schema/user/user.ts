@@ -51,7 +51,7 @@ builder.queryFields((t) => ({
     resolve: async (query, _parent, { id }) =>
       await prisma.user.findUnique({
         ...query,
-        where: { id }
+        where: { userId: id }
       })
   }),
   userByEmail: t.prismaField({

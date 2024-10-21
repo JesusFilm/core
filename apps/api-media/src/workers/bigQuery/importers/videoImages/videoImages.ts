@@ -8,20 +8,25 @@ import { client as bqClient } from '../../importer'
 
 enum fields {
   videoStill = 'videoStill',
-  image = 'image'
+  mobileCinematicHigh = 'mobileCinematicHigh'
 }
 
 export async function importVideoImages(logger?: Logger): Promise<void> {
-  logger?.info('check for broken video images')
+  logger?.info('imageSeed started')
   const brokenVideos = await prisma.video.findMany({
-    select: { id: true, mobileCinematicHigh: true },
+    select: { id: true },
     where: {
-      mobileCinematicHigh: null
+      images: { none: {} }
     }
   })
   if (brokenVideos.length > 0)
     logger?.info(`found ${brokenVideos.length} broken video images`)
+  else {
+    logger?.info('imageSeed finished')
+    return
+  }
 
+  const client = getClient()
   for (const video of brokenVideos) {
     const bqResult = await bqClient.query({
       query: `SELECT * FROM \`jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data\` WHERE id = @id`,
@@ -36,31 +41,10 @@ export async function importVideoImages(logger?: Logger): Promise<void> {
       continue
     }
 
-    await prisma.video.update({
-      where: { id: video.id },
-      data: {
-        mobileCinematicHigh: bqVideo.mobileCinematicHigh,
-        mobileCinematicLow: bqVideo.mobileCinematicLow,
-        mobileCinematicVeryLow: bqVideo.mobileCinematicVeryLow,
-        thumbnail: bqVideo.thumbnail,
-        videoStill: bqVideo.videoStill
-      }
-    })
-  }
-
-  logger?.info('imageSeed started')
-  const newVideos = await prisma.video.findMany({
-    select: { id: true, videoStill: true, image: true },
-    where: { images: { none: {} } }
-  })
-
-  const client = getClient()
-  for (const video of newVideos) {
-    logger?.info(`imageSeed started for video: ${video.id}`)
     const editions = [
       {
         fileName: `${video.id}.mobileCinematicHigh.jpg`,
-        field: fields.image,
+        field: fields.mobileCinematicHigh,
         aspectRatio: ImageAspectRatio.banner
       },
       {
@@ -69,27 +53,31 @@ export async function importVideoImages(logger?: Logger): Promise<void> {
         aspectRatio: ImageAspectRatio.hd
       }
     ]
+
     for (const edition of editions) {
       try {
         const url =
-          video[edition.field] ??
+          bqVideo[edition.field] ??
           `https://d1wl257kev7hsz.cloudfront.net/cinematics/${edition.fileName}`
-        try {
-          await client.images.v1.get(edition.fileName, {
-            account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
-          })
-        } catch {
-          await client.images.v1.create(
-            {
+        // skip image check and upload in dev
+        if (['production', 'test'].includes(process.env.NODE_ENV as string)) {
+          try {
+            await client.images.v1.get(edition.fileName, {
               account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
-            },
-            {
-              body: {
-                id: edition.fileName,
-                url
+            })
+          } catch {
+            await client.images.v1.create(
+              {
+                account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
+              },
+              {
+                body: {
+                  id: edition.fileName,
+                  url
+                }
               }
-            }
-          )
+            )
+          }
         }
         await prisma.cloudflareImage.create({
           data: {

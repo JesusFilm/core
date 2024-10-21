@@ -24,6 +24,8 @@ export interface CardFormCreate_image {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardFormCreate_subtitle {
