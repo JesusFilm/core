@@ -1,5 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
-import React from 'react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../../../../__generated__/BlockFields'
 
@@ -30,33 +29,32 @@ describe('FocalPointImage', () => {
   }
 
   it('renders correctly with image', () => {
-    const { getByAltText, getByTestId } = render(
-      <FocalPointImage {...mockProps} />
-    )
+    render(<FocalPointImage {...mockProps} />)
 
-    expect(getByAltText('Test Image')).toBeInTheDocument()
-    expect(getByTestId('focal-point-dot')).toBeInTheDocument()
+    expect(screen.getByRole('img').getAttribute('src')).toBe(
+      'https://imagedelivery.net/cloudflare-key/uploadId/public'
+    )
+    expect(screen.getByAltText('Test Image')).toBeInTheDocument()
+    expect(screen.getByTestId('focal-point-dot')).toBeInTheDocument()
   })
 
   it('renders placeholder when no image is provided', () => {
-    const { getByTestId } = render(
-      <FocalPointImage {...mockProps} imageBlock={undefined} />
-    )
+    render(<FocalPointImage {...mockProps} imageBlock={undefined} />)
 
-    expect(getByTestId('InsertPhotoRoundedIcon')).toBeInTheDocument()
+    expect(screen.getByTestId('InsertPhotoRoundedIcon')).toBeInTheDocument()
   })
 
   it('calls handleClick when clicked', () => {
-    const { getByTestId } = render(<FocalPointImage {...mockProps} />)
+    render(<FocalPointImage {...mockProps} />)
 
-    fireEvent.click(getByTestId('focal-point-image'))
+    fireEvent.click(screen.getByRole('img'))
     expect(mockProps.handleClick).toHaveBeenCalled()
   })
 
   it('calls onDragStart when dot is clicked', () => {
-    const { getByTestId } = render(<FocalPointImage {...mockProps} />)
+    render(<FocalPointImage {...mockProps} />)
 
-    fireEvent.mouseDown(getByTestId('focal-point-dot'))
+    fireEvent.mouseDown(screen.getByTestId('focal-point-dot'))
     expect(mockProps.onDragStart).toHaveBeenCalled()
   })
 })

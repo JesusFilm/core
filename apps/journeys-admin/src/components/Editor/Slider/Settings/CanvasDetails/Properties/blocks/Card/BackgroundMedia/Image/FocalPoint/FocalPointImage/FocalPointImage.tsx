@@ -37,7 +37,6 @@ export function FocalPointImage({
   return (
     <Box
       ref={imageRef}
-      data-testid="focal-point-image"
       sx={{
         height: 300,
         width: '100%',
