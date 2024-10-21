@@ -174,7 +174,7 @@ export function ContainedCover({
           flexGrow: 1,
           zIndex: 1,
           top: 0,
-          position: {xs: 'relative', sm: 'absolute'},
+          position: { xs: 'relative', sm: 'absolute' },
           WebkitMask: { xs: overlayImageMask, sm: 'unset' },
           mask: { xs: overlayImageMask, sm: 'unset' }
         }}
