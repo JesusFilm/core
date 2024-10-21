@@ -95,7 +95,9 @@ export function Logo(): ReactElement {
       width: imageBlockCreateInput.width ?? 0,
       height: imageBlockCreateInput.height ?? 0,
       blurhash: imageBlockCreateInput.blurhash ?? '',
-      scale: null
+      scale: null,
+      focalLeft: 50,
+      focalTop: 50
     }
 
     add({
