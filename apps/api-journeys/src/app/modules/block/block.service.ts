@@ -333,27 +333,6 @@ export class BlockService {
     return filteredBlocks
   }
 
-  async updateJourneyUpdatedAt(id: string): Promise<void> {
-    const block = await this.prismaService.block.findUnique({
-      where: {
-        id
-      },
-      select: {
-        journeyId: true,
-        updatedAt: true
-      }
-    })
-
-    if (block != null) {
-      await this.prismaService.journey.update({
-        where: {
-          id: block.journeyId
-        },
-        data: { updatedAt: block.updatedAt }
-      })
-    }
-  }
-
   @FromPostgresql()
   async removeBlockAndChildren(
     block: Block,
@@ -444,7 +423,7 @@ export class BlockService {
       await this.prismaService.action.delete({ where: { parentBlockId: id } })
     }
 
-    const updatedBlock = (await this.prismaService.block.update({
+    const updatedBlock = await this.prismaService.block.update({
       where: { id },
       data: omit(input, [
         ...OMITTED_BLOCK_FIELDS,
@@ -453,10 +432,15 @@ export class BlockService {
         'deletedAt'
       ]) as Prisma.BlockUpdateInput,
       include: { action: true }
-    })) as unknown as T
+    })
 
-    await this.updateJourneyUpdatedAt(id)
+    await this.prismaService.journey.update({
+      where: {
+        id: updatedBlock.journeyId
+      },
+      data: { updatedAt: updatedBlock.updatedAt }
+    })
 
-    return updatedBlock
+    return updatedBlock as unknown as T
   }
 }
