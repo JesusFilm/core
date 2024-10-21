@@ -21,6 +21,7 @@ import {
 } from '../../../../../../../../../__generated__/CardVideoRestore'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
+import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 import { CommandRedoItem } from '../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -215,6 +216,7 @@ describe('CardVideo', () => {
         >
           <EditorProvider initialState={{ steps: [step] }}>
             <CardVideo />
+            <TestEditorState />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -226,6 +228,27 @@ describe('CardVideo', () => {
         { __ref: 'CardBlock:cardId' },
         { __ref: 'VideoBlock:videoBlockId' }
       ])
+    })
+  })
+
+  it('should select videoblock on click', async () => {
+    mockUuidv4.mockReturnValueOnce('videoBlockId')
+
+    const { getByRole, getByText } = render(
+      <MockedProvider mocks={[cardVideoCreateMock]}>
+        <JourneyProvider
+          value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+        >
+          <EditorProvider initialState={{ steps: [step] }}>
+            <CardVideo />
+            <TestEditorState />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(getByRole('button', { name: 'Card Video Template' }))
+    await waitFor(() => {
+      expect(getByText('selectedBlockId: videoBlockId')).toBeInTheDocument()
     })
   })
 

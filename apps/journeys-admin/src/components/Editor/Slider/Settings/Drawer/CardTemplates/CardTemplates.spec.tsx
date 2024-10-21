@@ -92,7 +92,7 @@ describe('CardTemplates', () => {
     )
     fireEvent.click(getByRole('button', { name: 'Card Video Template' }))
     await waitFor(() =>
-      expect(getByText('selectedBlock: stepId')).toBeInTheDocument()
+      expect(getByText('selectedBlockId: videoId')).toBeInTheDocument()
     )
     expect(getByText('selectedAttributeId:')).toBeInTheDocument()
   })
