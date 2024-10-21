@@ -2,7 +2,7 @@
 import { tracer } from '@core/yoga/tracer'
 
 import SchemaBuilder from '@pothos/core'
-import AuthzPlugin from '@pothos/plugin-authz'
+import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import DirectivesPlugin from '@pothos/plugin-directives'
 import ErrorsPlugin from '@pothos/plugin-errors'
 import FederationPlugin from '@pothos/plugin-federation'
@@ -14,7 +14,6 @@ import { Prisma, users as User } from '.prisma/api-analytics-client'
 
 import type PrismaTypes from '../__generated__/pothos-types'
 import { prisma } from '../lib/prisma'
-import { rules } from '../lib/rules'
 
 const PrismaPlugin = pluginName
 
@@ -29,7 +28,9 @@ const createSpan = createOpenTelemetryWrapper(tracer, {
 
 export const builder = new SchemaBuilder<{
   Context: Context
-  AuthZRule: keyof typeof rules
+  AuthScopes: {
+    isAuthenticated: boolean
+  }
   PrismaTypes: PrismaTypes
   Scalars: {
     ID: {
@@ -40,12 +41,17 @@ export const builder = new SchemaBuilder<{
 }>({
   plugins: [
     TracingPlugin,
-    AuthzPlugin,
+    ScopeAuthPlugin,
     ErrorsPlugin,
     DirectivesPlugin,
     PrismaPlugin,
     FederationPlugin
   ],
+  scopeAuth: {
+    authScopes: async (context) => ({
+      isAuthenticated: context.currentUser != null
+    })
+  },
   tracing: {
     default: (config) => isRootField(config),
     wrap: (resolver, options) => createSpan(resolver, options)
