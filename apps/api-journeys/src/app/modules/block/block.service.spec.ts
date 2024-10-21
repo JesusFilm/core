@@ -75,7 +75,8 @@ describe('BlockService', () => {
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     fullscreen: true,
-    action: null
+    action: null,
+    updatedAt: '2024-10-21T04:32:25.858Z'
   } as unknown as BlockWithAction
 
   const blockWithAction = {
@@ -233,6 +234,32 @@ describe('BlockService', () => {
         },
         include: {
           action: true
+        },
+        where: {
+          id: '1'
+        }
+      })
+    })
+
+    it('should update journey updatedAt when block is updated', async () => {
+      prismaService.block.update.mockResolvedValueOnce(block)
+      expect(await service.update(block.id, { title: 'test' })).toEqual(
+        blockResponse
+      )
+      expect(prismaService.block.update).toHaveBeenCalledWith({
+        data: {
+          title: 'test'
+        },
+        include: {
+          action: true
+        },
+        where: {
+          id: '1'
+        }
+      })
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        data: {
+          updatedAt: '2024-10-21T04:32:25.858Z'
         },
         where: {
           id: '1'
