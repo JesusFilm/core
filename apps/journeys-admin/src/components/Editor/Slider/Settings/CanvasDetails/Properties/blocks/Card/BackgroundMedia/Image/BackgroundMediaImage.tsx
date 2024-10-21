@@ -104,8 +104,8 @@ export function BackgroundMediaImage({
       blurhash: input.blurhash ?? '',
       parentOrder: null,
       scale: null,
-      focalTop: input?.focalTop ?? 50,
-      focalLeft: input?.focalLeft ?? 50
+      focalTop: 50,
+      focalLeft: 50
     }
 
     add({
