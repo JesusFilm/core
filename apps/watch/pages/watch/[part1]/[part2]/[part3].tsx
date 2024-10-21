@@ -7,6 +7,14 @@ import { InstantSearch } from 'react-instantsearch'
 
 import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
+import {
+  GetVideoContainerPart2,
+  GetVideoContainerPart2Variables
+} from '../../../../__generated__/GetVideoContainerPart2'
+import {
+  GetVideoContentPart3,
+  GetVideoContentPart3Variables
+} from '../../../../__generated__/GetVideoContentPart3'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../../next-i18next.config'
 import { VideoContentPage } from '../../../../src/components/VideoContentPage'
@@ -16,14 +24,6 @@ import { LanguageProvider } from '../../../../src/libs/languageContext/LanguageC
 import { slugMap } from '../../../../src/libs/slugMap'
 import { VIDEO_CONTENT_FIELDS } from '../../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../../src/libs/videoContext'
-import {
-  GetVideoContainerPart2,
-  GetVideoContainerPart2Variables
-} from '../../../../__generated__/GetVideoContainerPart2'
-import {
-  GetVideoContentPart3,
-  GetVideoContentPart3Variables
-} from '../../../../__generated__/GetVideoContentPart3'
 
 export const GET_VIDEO_CONTAINER_PART_2 = gql`
   ${VIDEO_CONTENT_FIELDS}
