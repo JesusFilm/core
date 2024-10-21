@@ -132,6 +132,7 @@ export function JourneyDetailsDialog({
           }}
           onSubmit={handleUpdateJourneyDetails}
           validationSchema={titleSchema}
+          enableReinitialize
         >
           {({
             values,
