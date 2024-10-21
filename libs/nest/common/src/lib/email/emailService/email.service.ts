@@ -16,11 +16,16 @@ export class EmailService {
   constructor(private readonly mailerService: MailerService) {}
 
   async sendEmail({ to, subject, text, html }: SendEmailParams): Promise<void> {
+    const [, domain] = to.split('@')
+    const disallowedDomains = [
+      'example.com',
+      'example.org',
+      'example.net',
+      'example.edu'
+    ]
     if (
-      to.endsWith('example.com') ||
-      to.endsWith('example.org') ||
-      to.endsWith('example.net') ||
-      to.endsWith('example.edu')
+      process.env.NODE_ENV === 'production' &&
+      disallowedDomains.includes(domain)
     )
       throw new Error('Example email address')
 
