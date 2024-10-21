@@ -17,7 +17,7 @@ const ChatButtonsDemo: Meta<typeof ChatButtons> = {
   title: 'Journeys-Ui/StepFooter/ChatButtons'
 }
 
-type Story = StoryObj<{ chatButtons: ChatButton[] & { website: boolean } }>
+type Story = StoryObj<{ chatButtons: ChatButton[] } & { website: boolean }>
 
 const Template: Story = {
   render: ({ chatButtons, website = false }) => {
