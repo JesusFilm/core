@@ -45,25 +45,14 @@ export function StepBlockNodeCard({
 
   function handleClick(): void {
     if (selectedStep?.id === step?.id && showAnalytics !== true) {
-      // displays video block properties if video card, else card properties
-      if (
-        card?.children[0]?.__typename === 'VideoBlock' &&
-        card?.children[0]?.id !== card?.coverBlockId // checks video block isn't background video
-      ) {
-        dispatch({
-          type: 'SetSelectedBlockAction',
-          selectedBlock: card.children[0]
-        })
-      } else {
-        dispatch({
-          type: 'SetSelectedBlockAction',
-          selectedBlock: selectedStep
-        })
-        dispatch({
-          type: 'SetSelectedAttributeIdAction',
-          selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
-        })
-      }
+      dispatch({
+        type: 'SetSelectedBlockAction',
+        selectedBlock: selectedStep
+      })
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
+      })
     } else {
       dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
     }
