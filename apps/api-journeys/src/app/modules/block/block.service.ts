@@ -409,38 +409,39 @@ export class BlockService {
     id: string,
     input: Prisma.BlockUpdateInput | Prisma.BlockUncheckedUpdateInput
   ): Promise<T> {
-    if (input.action != null) {
-      const data = {
-        parentBlock: { connect: { id } },
-        ...omit(input.action, 'id')
+    return await this.prismaService.$transaction(async (tx) => {
+      if (input.action != null) {
+        const data = {
+          parentBlock: { connect: { id } },
+          ...omit(input.action, 'id')
+        }
+        await tx.action.upsert({
+          where: { parentBlockId: id },
+          create: data,
+          update: data
+        })
+      } else if (input.action === null) {
+        await tx.action.delete({ where: { parentBlockId: id } })
       }
-      await this.prismaService.action.upsert({
-        where: { parentBlockId: id },
-        create: data,
-        update: data
+      const updatedBlock = await tx.block.update({
+        where: { id },
+        data: omit(input, [
+          ...OMITTED_BLOCK_FIELDS,
+          'action',
+          // deletedAt should only be updated using removeBlockAndChildren
+          'deletedAt'
+        ]) as Prisma.BlockUpdateInput,
+        include: { action: true }
       })
-    } else if (input.action === null) {
-      await this.prismaService.action.delete({ where: { parentBlockId: id } })
-    }
 
-    const updatedBlock = await this.prismaService.block.update({
-      where: { id },
-      data: omit(input, [
-        ...OMITTED_BLOCK_FIELDS,
-        'action',
-        // deletedAt should only be updated using removeBlockAndChildren
-        'deletedAt'
-      ]) as Prisma.BlockUpdateInput,
-      include: { action: true }
+      await tx.journey.update({
+        where: {
+          id: updatedBlock.journeyId
+        },
+        data: { updatedAt: updatedBlock.updatedAt }
+      })
+
+      return updatedBlock as unknown as T
     })
-
-    await this.prismaService.journey.update({
-      where: {
-        id: updatedBlock.journeyId
-      },
-      data: { updatedAt: updatedBlock.updatedAt }
-    })
-
-    return updatedBlock as unknown as T
   }
 }
