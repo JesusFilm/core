@@ -43,19 +43,17 @@ export function FocalPoint({
   const [isDragging, setIsDragging] = useState(false)
 
   const debouncedUpdateImageBlock = useCallback(
-    (position: Position) => {
-      debounce(() => {
-        updateImageBlock({
-          src: imageBlock?.src,
-          alt: imageBlock?.alt,
-          blurhash: imageBlock?.blurhash,
-          width: imageBlock?.width,
-          height: imageBlock?.height,
-          focalTop: Math.round(position.y),
-          focalLeft: Math.round(position.x)
-        })
-      }, DEBOUNCE_DELAY)()
-    },
+    debounce((position: Position) => {
+      updateImageBlock({
+        src: imageBlock?.src,
+        alt: imageBlock?.alt,
+        blurhash: imageBlock?.blurhash,
+        width: imageBlock?.width,
+        height: imageBlock?.height,
+        focalTop: Math.round(position.y),
+        focalLeft: Math.round(position.x)
+      })
+    }, DEBOUNCE_DELAY),
     [imageBlock, updateImageBlock]
   )
 
