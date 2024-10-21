@@ -34,7 +34,8 @@ describe('CardBlockResolver', () => {
     backgroundColor: '#FFF',
     fullscreen: true,
     themeMode: ThemeMode.light,
-    themeName: ThemeName.base
+    themeName: ThemeName.base,
+    updatedAt: '2024-10-21T04:32:25.858Z'
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -123,6 +124,43 @@ describe('CardBlockResolver', () => {
         blockCreateInput.journeyId,
         blockCreateInput.parentBlockId
       )
+    })
+
+    it('should update journey updatedAt when card is created', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(await resolver.cardBlockCreate(ability, blockCreateInput)).toEqual(
+        blockWithUserTeam
+      )
+      expect(prismaService.block.create).toHaveBeenCalledWith({
+        data: {
+          backgroundColor: '#FFF',
+          themeMode: ThemeMode.light,
+          themeName: ThemeName.base,
+          id: 'blockId',
+          journey: { connect: { id: 'journeyId' } },
+          parentBlock: { connect: { id: 'parentBlockId' } },
+          parentOrder: 2,
+          typename: 'CardBlock',
+          fullscreen: true
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        data: {
+          updatedAt: '2024-10-21T04:32:25.858Z'
+        },
+        where: {
+          id: 'journeyId'
+        }
+      })
     })
 
     it('throws error if not authorized', async () => {
