@@ -1,1 +1,0 @@
-export { FocalPointImage } from './FocalPointImage'

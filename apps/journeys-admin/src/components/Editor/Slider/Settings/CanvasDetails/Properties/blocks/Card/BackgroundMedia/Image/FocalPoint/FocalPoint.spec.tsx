@@ -12,6 +12,8 @@ const mockedCalculatePoint = calculatePoint as jest.MockedFunction<
 >
 
 describe('FocalPoint', () => {
+  const updateImageBlock = jest.fn()
+
   const imageBlock: ImageBlock = {
     id: 'image.id',
     __typename: 'ImageBlock',
@@ -27,7 +29,15 @@ describe('FocalPoint', () => {
     focalTop: 50
   }
 
-  const updateImageBlock = jest.fn()
+  const imageBlockResult = {
+    src: imageBlock.src,
+    alt: imageBlock.alt,
+    blurhash: imageBlock.blurhash,
+    width: imageBlock.width,
+    height: imageBlock.height,
+    focalLeft: 50,
+    focalTop: 50
+  }
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -47,6 +57,16 @@ describe('FocalPoint', () => {
     expect(screen.getByLabelText('Top')).toHaveValue(50)
   })
 
+  it('should not render FocalPoint when image block src is null', () => {
+    render(
+      <FocalPoint
+        imageBlock={{ ...imageBlock, src: null }}
+        updateImageBlock={updateImageBlock}
+      />
+    )
+    expect(screen.queryByText('Focal Point')).not.toBeInTheDocument()
+  })
+
   it('updates image block when image is clicked', async () => {
     mockedCalculatePoint.mockReturnValueOnce({ x: 25, y: 25 })
     render(
@@ -58,11 +78,7 @@ describe('FocalPoint', () => {
 
     await waitFor(() => {
       expect(updateImageBlock).toHaveBeenCalledWith({
-        src: imageBlock.src,
-        alt: imageBlock.alt,
-        blurhash: imageBlock.blurhash,
-        width: imageBlock.width,
-        height: imageBlock.height,
+        ...imageBlockResult,
         focalTop: 25,
         focalLeft: 25
       })
@@ -83,11 +99,7 @@ describe('FocalPoint', () => {
 
     await waitFor(() => {
       expect(updateImageBlock).toHaveBeenCalledWith({
-        src: imageBlock.src,
-        alt: imageBlock.alt,
-        blurhash: imageBlock.blurhash,
-        width: imageBlock.width,
-        height: imageBlock.height,
+        ...imageBlockResult,
         focalTop: 75,
         focalLeft: 75
       })
@@ -107,13 +119,32 @@ describe('FocalPoint', () => {
 
     await waitFor(() => {
       expect(updateImageBlock).toHaveBeenCalledWith({
-        src: imageBlock.src,
-        alt: imageBlock.alt,
-        blurhash: imageBlock.blurhash,
-        width: imageBlock.width,
-        height: imageBlock.height,
+        ...imageBlockResult,
+
         focalTop: 75,
         focalLeft: 75
+      })
+    })
+  })
+
+  it('debounces rapid changes on text input update', async () => {
+    render(
+      <FocalPoint imageBlock={imageBlock} updateImageBlock={updateImageBlock} />
+    )
+
+    const inputX = screen.getByLabelText('Left')
+
+    fireEvent.change(inputX, { target: { value: '60' } })
+    fireEvent.change(inputX, { target: { value: '70' } })
+    fireEvent.change(inputX, { target: { value: '80' } })
+
+    jest.runAllTimers()
+
+    await waitFor(() => {
+      expect(updateImageBlock).toHaveBeenCalledTimes(1)
+      expect(updateImageBlock).toHaveBeenCalledWith({
+        ...imageBlockResult,
+        focalLeft: 80
       })
     })
   })
