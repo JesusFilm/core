@@ -1,0 +1,1 @@
+export { FocalPointDot } from './FocalPointDot'
