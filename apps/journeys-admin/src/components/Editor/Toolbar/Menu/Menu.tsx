@@ -2,7 +2,6 @@ import { gql, useQuery } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
-import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { User } from 'next-firebase-auth'
@@ -23,8 +22,7 @@ import { DetailsItem } from '../Items/DetailsItem'
 import { ShareItem } from '../Items/ShareItem'
 import { StrategyItem } from '../Items/StrategyItem'
 import { TemplateSettingsItem } from '../Items/TemplateSettingsItem'
-
-import { JourneyDetails } from './JourneyDetails'
+import { JourneyDetails } from '../JourneyDetails'
 
 export const GET_ROLE = gql`
   query GetRole {
@@ -41,9 +39,9 @@ interface MenuProps {
 }
 
 export function Menu({ user }: MenuProps): ReactElement {
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
+  const { journey } = useJourney()
   const { data } = useQuery<GetRole>(GET_ROLE)
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
 
@@ -67,7 +65,6 @@ export function Menu({ user }: MenuProps): ReactElement {
         onClick={handleShowMenu}
         disabled={journey == null}
         data-testid="ToolbarMenuButton"
-        sx={{ p: 0 }}
       >
         <MoreIcon />
       </IconButton>
@@ -86,35 +83,31 @@ export function Menu({ user }: MenuProps): ReactElement {
           }
         }}
       >
-        {!smUp && (
-          <Stack sx={{ width: 220 }}>
-            <JourneyDetails />
-          </Stack>
-        )}
+        {!mdUp && <JourneyDetails />}
         <DetailsItem variant="menu-item" onClose={handleCloseMenu} />
-        {!smUp && <Divider data-testid="details-menu-divider" />}
+        {!mdUp && <Divider data-testid="details-menu-divider" />}
         {journey?.template === true && (
           <TemplateSettingsItem variant="menu-item" onClose={handleCloseMenu} />
         )}
         <AccessItem variant="menu-item" onClose={handleCloseMenu} />
-        {!smUp && journey?.template !== true && (
+        {!mdUp && journey?.template !== true && (
           <AnalyticsItem variant="menu-item" />
         )}
         {journey?.template !== true && isPublisher === true && (
           <CreateTemplateItem variant="menu-item" />
         )}
-        {!smUp && (
+        {!mdUp && (
           <>
             <StrategyItem variant="menu-item" closeMenu={handleCloseMenu} />
             <ShareItem variant="menu-item" closeMenu={handleCloseMenu} />
           </>
         )}
-        {journey != null && smUp && <Divider data-testid="menu-divider" />}
+        {journey != null && mdUp && <Divider data-testid="menu-divider" />}
         {journey != null &&
           (journey?.template !== true || isPublisher != null) && (
             <CopyLinkItem variant="menu-item" onClose={handleCloseMenu} />
           )}
-        {!smUp && (
+        {!mdUp && (
           <>
             <Divider data-testid="helpscout-menu-divider" />
             <HelpScoutBeacon

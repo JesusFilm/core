@@ -80,7 +80,9 @@ export const Filled: StoryObj<typeof Card> = {
           parentOrder: 0,
           blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
           children: [],
-          scale: null
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         }
       ]
     }

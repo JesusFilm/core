@@ -29,7 +29,6 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
 
 import { GetPlausibleJourneyFlowViewed } from '../../../../__generated__/GetPlausibleJourneyFlowViewed'
@@ -46,12 +45,13 @@ import { Items } from './Items'
 import { CommandRedoItem } from './Items/CommandRedoItem'
 import { CommandUndoItem } from './Items/CommandUndoItem'
 import { PreviewItem } from './Items/PreviewItem'
+import { JourneyDetails } from './JourneyDetails'
 import { Menu } from './Menu'
 
 const JourneyDetailsDialog = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/Toolbar/JourneyDetailsDialog" */ './JourneyDetailsDialog/JourneyDetailsDialog'
+      /* webpackChunkName: "Editor/Toolbar/JourneyDetails/JourneyDetailsDialog" */ './JourneyDetails/JourneyDetailsDialog/JourneyDetailsDialog'
     ).then((mod) => mod.JourneyDetailsDialog),
   { ssr: false }
 )
@@ -195,188 +195,160 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           </IconButton>
         </Tooltip>
       </NextLink>
-      <CommandUndoItem variant="icon-button" />
-      <CommandRedoItem variant="icon-button" />
-      <Tooltip
-        title={t('Social Image')}
-        arrow
-        PopperProps={{
-          modifiers: [
-            {
-              name: 'offset',
-              options: {
-                offset: [0, -11]
-              }
-            }
-          ]
-        }}
+      <Stack
+        gap={2}
+        direction="row"
+        data-testid="CommandUndoRedo"
+        sx={{ mr: 1 }}
       >
-        <Button
-          onClick={handleSocialImageClick}
-          data-testid="ToolbarSocialImage"
-          style={{ backgroundColor: 'transparent', minWidth: 'auto' }}
-          disableRipple
-          sx={{ px: 0 }}
+        <CommandUndoItem variant="icon-button" />
+        <CommandRedoItem variant="icon-button" />
+      </Stack>
+      <Stack
+        direction="row"
+        gap={2}
+        data-testid="JourneyDetails"
+        sx={{ minWidth: 0, display: { xs: 'none', md: 'inline-flex' } }}
+      >
+        <Tooltip
+          title={t('Social Image')}
+          arrow
+          PopperProps={{
+            modifiers: [
+              {
+                name: 'offset',
+                options: {
+                  offset: [0, -11]
+                }
+              }
+            ]
+          }}
         >
-          <Box
-            bgcolor={(theme) => theme.palette.background.default}
-            borderRadius="4px"
-            width={50}
-            height={50}
-            justifyContent="center"
-            alignItems="center"
-            sx={{ display: { xs: 'none', sm: 'flex' } }}
+          <Button
+            onClick={handleSocialImageClick}
+            data-testid="ToolbarSocialImage"
+            style={{ backgroundColor: 'transparent', minWidth: 'auto' }}
+            disableRipple
+            sx={{ px: 0 }}
           >
-            {journey?.primaryImageBlock?.src == null ? (
-              <ThumbsUpIcon color="error" />
-            ) : (
-              <Image
-                src={journey.primaryImageBlock.src}
-                alt={journey.primaryImageBlock.alt}
-                width={50}
-                height={50}
-                style={{
-                  borderRadius: '4px',
-                  objectFit: 'cover'
-                }}
-              />
-            )}
-          </Box>
-        </Button>
-      </Tooltip>
-      {journey != null ? (
-        <Stack flexGrow={1} flexShrink={1} sx={{ minWidth: 0 }}>
-          <Box
-            flexShrink={1}
-            sx={{
-              display: { xs: 'none', md: 'inline-flex' },
-              overflow: 'hidden',
-              whiteSpace: 'nowrap',
-              textOverflow: 'ellipsis'
-            }}
-          >
-            <Tooltip
-              title="Click to edit"
-              placement="bottom"
-              arrow
-              PopperProps={{
-                modifiers: [
-                  {
-                    name: 'offset',
-                    options: {
-                      offset: journey.description === '' ? [0, 2] : [0, -10.3]
-                    }
-                  }
-                ]
+            <Box
+              bgcolor={(theme) => theme.palette.background.default}
+              borderRadius="4px"
+              width={50}
+              height={50}
+              justifyContent="center"
+              alignItems="center"
+              sx={{ display: { xs: 'none', sm: 'flex' } }}
+            >
+              {journey?.primaryImageBlock?.src == null ? (
+                <ThumbsUpIcon color="error" />
+              ) : (
+                <Image
+                  src={journey.primaryImageBlock.src}
+                  alt={journey.primaryImageBlock.alt}
+                  width={50}
+                  height={50}
+                  style={{
+                    borderRadius: '4px',
+                    objectFit: 'cover'
+                  }}
+                />
+              )}
+            </Box>
+          </Button>
+        </Tooltip>
+        {journey != null ? (
+          <Stack flexGrow={1} flexShrink={1} sx={{ minWidth: 0 }}>
+            <Box
+              flexShrink={1}
+              sx={{
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis'
               }}
             >
-              <Button
-                variant="text"
-                onClick={handleDialogOpen}
-                color="secondary"
-                sx={{
-                  maxWidth: 'auto',
-                  display: 'block',
-                  textAlign: 'left',
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis',
-                  borderRadius: '8px',
-                  flexShrink: 1,
-                  px: 0
+              <Tooltip
+                title="Click to edit"
+                placement="bottom"
+                arrow
+                PopperProps={{
+                  modifiers: [
+                    {
+                      name: 'offset',
+                      options: {
+                        offset: journey.description === '' ? [0, 2] : [0, -10.3]
+                      }
+                    }
+                  ]
                 }}
               >
-                <Typography
-                  variant="subtitle1"
+                <Button
+                  variant="text"
+                  onClick={handleDialogOpen}
+                  color="secondary"
                   sx={{
+                    maxWidth: 'auto',
+                    display: 'block',
+                    textAlign: 'left',
                     overflow: 'hidden',
                     whiteSpace: 'nowrap',
                     textOverflow: 'ellipsis',
+                    borderRadius: '8px',
                     flexShrink: 1
                   }}
                 >
-                  {journey.title}
-                </Typography>
-                <Stack flexDirection="row" alignItems="center" gap={1}>
-                  <Globe1Icon
-                    sx={{
-                      fontSize: 16,
-                      alignItems: 'center',
-                      color: 'secondary.main'
-                    }}
-                  />
-                  <Typography variant="body2" sx={{ color: 'secondary.main' }}>
-                    {
-                      journey.language.name.find(
-                        ({ primary }) => primary != null
-                      )?.value
-                    }
-                  </Typography>
-                  {journey.description !== '' && journey.description != null ? (
-                    <Typography
-                      data-testid="DescriptionDot"
-                      variant="body2"
-                      sx={{ color: 'text.secondary' }}
-                    >
-                      •
-                    </Typography>
-                  ) : null}
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      maxWidth: 'auto',
-                      overflow: 'hidden',
-                      whiteSpace: 'nowrap',
-                      textOverflow: 'ellipsis',
-                      flexShrink: 1,
-                      fontWeight: 'normal',
-                      color: 'text.secondary'
-                    }}
-                  >
-                    {journey.description}
-                  </Typography>
-                </Stack>
-              </Button>
-            </Tooltip>
-          </Box>
-          <JourneyDetailsDialog open={dialogOpen} onClose={handleDialogClose} />
-        </Stack>
-      ) : (
-        <Stack flexGrow={1}>
-          <Typography
-            variant="subtitle1"
-            sx={{ display: { xs: 'none', md: 'block' } }}
-          >
-            <Skeleton width="40%" />
-          </Typography>
-          <Typography
-            variant="caption"
-            sx={{ display: { xs: 'none', md: 'block' } }}
-          >
-            <Skeleton width="80%" />
-          </Typography>
-        </Stack>
-      )}
-      <Items />
-      <Stack ref={menuRef} flexDirection="row">
-        <Box sx={{ display: { xs: 'flex', sm: 'none' }, px: 2 }}>
-          <PreviewItem variant="icon-button" />
-        </Box>
-        <Menu user={user} />
+                  <JourneyDetails />
+                </Button>
+              </Tooltip>
+            </Box>
+            <JourneyDetailsDialog
+              open={dialogOpen}
+              onClose={handleDialogClose}
+            />
+          </Stack>
+        ) : (
+          <Stack flexGrow={1}>
+            <Typography
+              variant="subtitle1"
+              sx={{ display: { xs: 'none', md: 'block' } }}
+            >
+              <Skeleton width="40%" />
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ display: { xs: 'none', md: 'block' } }}
+            >
+              <Skeleton width="80%" />
+            </Typography>
+          </Stack>
+        )}
       </Stack>
-      <Box
-        ref={helpScoutRef}
-        sx={{
-          display: { xs: 'none', sm: 'block' }
-        }}
+      <Stack
+        flexDirection="row"
+        gap={2}
+        flexGrow={1}
+        justifyContent="flex-end"
+        alignItems="center"
       >
-        <HelpScoutBeacon
-          userInfo={{
-            name: user?.displayName ?? '',
-            email: user?.email ?? ''
+        <Items />
+        <PreviewItem variant="icon-button" />
+        <Box ref={menuRef}>
+          <Menu user={user} />
+        </Box>
+        <Box
+          ref={helpScoutRef}
+          sx={{
+            display: { xs: 'none', md: 'block' }
           }}
-        />
-      </Box>
+        >
+          <HelpScoutBeacon
+            userInfo={{
+              name: user?.displayName ?? '',
+              email: user?.email ?? ''
+            }}
+          />
+        </Box>
+      </Stack>
       {editorAnalytics && (
         <NotificationPopover
           title={t('New Feature Feedback')}

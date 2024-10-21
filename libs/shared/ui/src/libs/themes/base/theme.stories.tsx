@@ -337,14 +337,14 @@ const ViewportComponent = (args: ThemeStoryProps): ReactElement => {
               {breakpoints.xxl
                 ? 'Desktop'
                 : breakpoints.xl
-                ? 'Laptop'
-                : breakpoints.lg
-                ? 'Tablet (L)'
-                : breakpoints.md
-                ? 'Tablet (P)'
-                : breakpoints.sm
-                ? 'Mobile (L)'
-                : 'Mobile (P)'}
+                  ? 'Laptop'
+                  : breakpoints.lg
+                    ? 'Tablet (L)'
+                    : breakpoints.md
+                      ? 'Tablet (P)'
+                      : breakpoints.sm
+                        ? 'Mobile (L)'
+                        : 'Mobile (P)'}
             </Typography>
             <Typography
               variant="body2"
