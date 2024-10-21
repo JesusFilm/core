@@ -76,7 +76,8 @@ export function HelpScoutBeacon({
               color:
                 iconButtonColor === 'primary'
                   ? 'secondary.light'
-                  : 'background.paper'
+                  : 'background.paper',
+              ml: 0
             }}
           >
             {beaconOpen ? <XCircleContained /> : <HelpCircleContained />}
