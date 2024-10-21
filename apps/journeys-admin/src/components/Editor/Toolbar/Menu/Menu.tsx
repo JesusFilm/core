@@ -39,6 +39,9 @@ interface MenuProps {
 }
 
 export function Menu({ user }: MenuProps): ReactElement {
+  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+
+  const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const { journey } = useJourney()
@@ -65,7 +68,6 @@ export function Menu({ user }: MenuProps): ReactElement {
         onClick={handleShowMenu}
         disabled={journey == null}
         data-testid="ToolbarMenuButton"
-        sx={{ p: 0 }}
       >
         <MoreIcon />
       </IconButton>
@@ -84,7 +86,11 @@ export function Menu({ user }: MenuProps): ReactElement {
           }
         }}
       >
-        {!mdUp && <JourneyDetails />}
+        {!mdUp && (
+          <Stack sx={{ width: 220 }}>
+            <JourneyDetails />
+          </Stack>
+        )}
         <DetailsItem variant="menu-item" onClose={handleCloseMenu} />
         {!mdUp && <Divider data-testid="details-menu-divider" />}
         {journey?.template === true && (
