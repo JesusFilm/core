@@ -71,7 +71,9 @@ describe('TemplateViewHeader', () => {
         height: 4000,
         blurhash: 'LHFr#AxW9a%L0KM{IVRkoMD%D%R*',
         __typename: 'ImageBlock',
-        scale: null
+        scale: null,
+        focalLeft: 50,
+        focalTop: 50
       }
     }
     const { getByText, getByRole } = render(
@@ -121,7 +123,9 @@ describe('TemplateViewHeader', () => {
         height: 4000,
         blurhash: 'LHFr#AxW9a%L0KM{IVRkoMD%D%R*',
         __typename: 'ImageBlock',
-        scale: null
+        scale: null,
+        focalLeft: 50,
+        focalTop: 50
       }
     }
     const { queryByText, queryByRole } = render(

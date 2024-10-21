@@ -168,7 +168,9 @@ export function CardQuote(): ReactElement {
       height: 3396,
       blurhash: 'L99*0;01IAtk5R%MRie;t8D%-pa$',
       __typename: 'ImageBlock',
-      scale: null
+      scale: null,
+      focalLeft: 50,
+      focalTop: 50
     } satisfies ImageBlock
 
     const subtitle = {
