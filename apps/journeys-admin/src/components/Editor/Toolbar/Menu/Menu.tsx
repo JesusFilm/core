@@ -39,9 +39,6 @@ interface MenuProps {
 }
 
 export function Menu({ user }: MenuProps): ReactElement {
-  const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-
-  const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
   const { journey } = useJourney()
