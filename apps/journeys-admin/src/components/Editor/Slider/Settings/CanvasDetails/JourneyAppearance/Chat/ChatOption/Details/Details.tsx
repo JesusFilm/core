@@ -261,11 +261,17 @@ export function Details({
   ): Promise<void> {
     let input
     if (type === 'link') {
+      const hasProtocolPrefix = /^\w+:\/\//
+      const link =
+        value != null && hasProtocolPrefix.test(value)
+          ? value
+          : `https://${value}`
+
       input = {
-        link: value,
+        link,
         platform: currentPlatform
       }
-      setCurrentLink(value ?? '')
+      setCurrentLink(link ?? '')
     } else {
       input = {
         link: currentLink,
@@ -323,14 +329,12 @@ export function Details({
             </Select>
           </FormControl>
         )}
-
         <TextFieldForm
           id={currentPlatform as string}
           label={t('Paste URL here')}
           initialValue={currentLink}
           onSubmit={async (value) => await handleUpdate('link', value)}
         />
-
         {helperInfo != null && (
           <Typography variant="caption">{helperInfo}</Typography>
         )}
