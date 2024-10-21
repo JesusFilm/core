@@ -39,6 +39,7 @@ export function ChatButtons(): ReactElement {
   const theme = useTheme()
   const { rtl } = getJourneyRTL(journey)
   const chatButtons = journey?.chatButtons
+  const isWebsite = journey?.website === true
 
   const [chatButtonEventCreate] = useMutation<
     ChatButtonEventCreate,
@@ -117,19 +118,17 @@ export function ChatButtons(): ReactElement {
             width: 44,
             backgroundColor: getColor(
               index === 0,
-              journey?.website === true ? 'website' : 'background'
+              isWebsite ? 'website' : 'background'
             ),
             '&:hover': {
               backgroundColor: getColor(
                 index === 0,
-                journey?.website === true ? 'website' : 'background'
+                isWebsite ? 'website' : 'background'
               )
             },
             backdropFilter: 'blur(5px)',
             boxShadow: (theme) =>
-              journey?.website === true
-                ? `0px 6px 6px ${theme.palette.grey[900]}60`
-                : undefined
+              isWebsite ? `0px 6px 6px ${theme.palette.grey[900]}60` : undefined
           }}
         >
           <MessageChatIcon
