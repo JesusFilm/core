@@ -72,6 +72,8 @@ const image: TreeBlock<ImageBlock> = {
   height: 1080,
   blurhash: '',
   scale: null,
+  focalLeft: 50,
+  focalTop: 50,
   children: []
 }
 

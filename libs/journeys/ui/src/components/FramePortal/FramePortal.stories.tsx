@@ -59,7 +59,9 @@ const block: TreeBlock<Block> = {
           parentOrder: 0,
           children: [],
           blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
-          scale: null
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         },
         {
           id: 'typographyBlockId1',
