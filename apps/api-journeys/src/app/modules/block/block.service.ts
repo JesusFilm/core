@@ -433,14 +433,12 @@ export class BlockService {
         ]) as Prisma.BlockUpdateInput,
         include: { action: true }
       })
-
       await tx.journey.update({
         where: {
           id: updatedBlock.journeyId
         },
         data: { updatedAt: updatedBlock.updatedAt }
       })
-
       return updatedBlock as unknown as T
     })
   }
