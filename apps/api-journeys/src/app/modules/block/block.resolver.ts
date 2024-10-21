@@ -9,7 +9,7 @@ import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { BlockDuplicateIdMap, BlocksFilter } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
-import { PrismaService } from '../../lib/prisma.service'
+import { ACTION_AND_JOURNEY, PrismaService } from '../../lib/prisma.service'
 
 import { BlockService, BlockWithAction } from './block.service'
 
@@ -34,16 +34,9 @@ export class BlockResolver {
   ): Promise<Block[]> {
     const block = await this.prismaService.block.findUnique({
       where: { id, deletedAt: null },
-      include: {
-        action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
-      }
+      include: ACTION_AND_JOURNEY
     })
+
     if (block == null)
       throw new GraphQLError('block not found', {
         extensions: { code: 'NOT_FOUND' }
@@ -67,15 +60,7 @@ export class BlockResolver {
   ): Promise<Block[]> {
     const block = await this.prismaService.block.findUnique({
       where: { id, deletedAt: null },
-      include: {
-        action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
-      }
+      include: ACTION_AND_JOURNEY
     })
 
     if (block == null)
@@ -103,16 +88,9 @@ export class BlockResolver {
   ): Promise<Block[]> {
     const block = await this.prismaService.block.findUnique({
       where: { id, deletedAt: null },
-      include: {
-        action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
-      }
+      include: ACTION_AND_JOURNEY
     })
+
     if (block == null)
       throw new GraphQLError('block not found', {
         extensions: { code: 'NOT_FOUND' }
@@ -132,15 +110,7 @@ export class BlockResolver {
   ): Promise<Block> {
     const block = await this.prismaService.block.findUnique({
       where: { id, deletedAt: null },
-      include: {
-        action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
-      }
+      include: ACTION_AND_JOURNEY
     })
 
     if (block == null) {
@@ -172,15 +142,7 @@ export class BlockResolver {
       where: {
         AND: [accessibleBlocks, filter]
       },
-      include: {
-        action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
-      }
+      include: ACTION_AND_JOURNEY
     })
     return blocks
   }
@@ -193,15 +155,7 @@ export class BlockResolver {
   ): Promise<Block[]> {
     const block = await this.prismaService.block.findUnique({
       where: { id },
-      include: {
-        action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
-      }
+      include: ACTION_AND_JOURNEY
     })
 
     if (block == null) {

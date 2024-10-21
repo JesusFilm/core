@@ -10,7 +10,7 @@ import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 import { RadioQuestionBlockCreateInput } from '../../../__generated__/graphql'
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
-import { PrismaService } from '../../../lib/prisma.service'
+import { ACTION_AND_JOURNEY, PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../block.service'
 
 @Resolver('RadioQuestionBlock')
@@ -39,15 +39,7 @@ export class RadioQuestionBlockResolver {
           parentBlock: { connect: { id: input.parentBlockId } },
           parentOrder
         },
-        include: {
-          action: true,
-          journey: {
-            include: {
-              team: { include: { userTeams: true } },
-              userJourneys: true
-            }
-          }
-        }
+        include: ACTION_AND_JOURNEY
       })
       if (!ability.can(Action.Update, subject('Journey', block.journey)))
         throw new GraphQLError('user is not allowed to create block', {
