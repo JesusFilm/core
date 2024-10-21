@@ -160,18 +160,13 @@ export default interface PrismaTypes {
         Where: Prisma.VideoVariantWhereInput;
         Create: {};
         Update: {};
-        RelationName: "downloads" | "videoEdition" | "video";
+        RelationName: "downloads" | "video";
         ListRelations: "downloads";
         Relations: {
             downloads: {
                 Shape: VideoVariantDownload[];
                 Name: "VideoVariantDownload";
                 Nullable: false;
-            };
-            videoEdition: {
-                Shape: VideoEdition | null;
-                Name: "VideoEdition";
-                Nullable: true;
             };
             video: {
                 Shape: Video | null;
@@ -183,27 +178,16 @@ export default interface PrismaTypes {
     VideoEdition: {
         Name: "VideoEdition";
         Shape: VideoEdition;
-        Include: Prisma.VideoEditionInclude;
+        Include: never;
         Select: Prisma.VideoEditionSelect;
         OrderBy: Prisma.VideoEditionOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.VideoEditionWhereUniqueInput;
         Where: Prisma.VideoEditionWhereInput;
         Create: {};
         Update: {};
-        RelationName: "VideoVariant" | "VideoSubtitle";
-        ListRelations: "VideoVariant" | "VideoSubtitle";
-        Relations: {
-            VideoVariant: {
-                Shape: VideoVariant[];
-                Name: "VideoVariant";
-                Nullable: false;
-            };
-            VideoSubtitle: {
-                Shape: VideoSubtitle[];
-                Name: "VideoSubtitle";
-                Nullable: false;
-            };
-        };
+        RelationName: never;
+        ListRelations: never;
+        Relations: {};
     };
     VideoSubtitle: {
         Name: "VideoSubtitle";
@@ -215,14 +199,9 @@ export default interface PrismaTypes {
         Where: Prisma.VideoSubtitleWhereInput;
         Create: {};
         Update: {};
-        RelationName: "videoEdition" | "Video";
+        RelationName: "Video";
         ListRelations: never;
         Relations: {
-            videoEdition: {
-                Shape: VideoEdition | null;
-                Name: "VideoEdition";
-                Nullable: true;
-            };
             Video: {
                 Shape: Video;
                 Name: "Video";
