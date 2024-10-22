@@ -200,10 +200,7 @@ export function JourneyDetailsDialog({
                         },
                         {
                           name: 'preventOverflow',
-                          enabled: true,
-                          options: {
-                            altAxis: true
-                          }
+                          enabled: true
                         }
                       ]
                     }}
