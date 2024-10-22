@@ -43,7 +43,8 @@ describe('ImageBlockResolver', () => {
     alt: 'grid image',
     width: 640,
     height: 425,
-    blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
+    blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ',
+    updatedAt: '2024-10-21T04:32:25.858Z'
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -140,6 +141,21 @@ describe('ImageBlockResolver', () => {
         blockCreateInput.journeyId,
         blockCreateInput.parentBlockId
       )
+    })
+
+    it('should update journey updatedAt when image is created', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.imageBlockCreate(ability, blockCreateInput)
+      ).toEqual(blockWithUserTeam)
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        data: {
+          updatedAt: '2024-10-21T04:32:25.858Z'
+        },
+        where: {
+          id: 'journeyId'
+        }
+      })
     })
 
     it('creates an ImageBlock with a focal point', async () => {
