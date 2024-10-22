@@ -209,8 +209,8 @@ export function AddByFile({
             isDragAccept || uploading
               ? 'rgba(239, 239, 239, 0.9)'
               : error != null || fileRejected
-              ? 'rgba(197, 45, 58, 0.08)'
-              : 'rgba(239, 239, 239, 0.35)',
+                ? 'rgba(197, 45, 58, 0.08)'
+                : 'rgba(239, 239, 239, 0.35)',
           borderColor: 'divider',
           borderStyle: noBorder ? undefined : 'dashed',
           borderRadius: 2,
