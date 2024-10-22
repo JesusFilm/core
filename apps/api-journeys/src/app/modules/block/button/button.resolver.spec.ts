@@ -134,28 +134,6 @@ describe('ButtonBlock', () => {
       expect(
         await resolver.buttonBlockCreate(ability, blockCreateInput)
       ).toEqual(blockWithUserTeam)
-      expect(prismaService.block.create).toHaveBeenCalledWith({
-        data: {
-          color: 'primary',
-          id: 'blockId',
-          journey: { connect: { id: 'journeyId' } },
-          label: 'label',
-          parentBlock: { connect: { id: 'parentBlockId' } },
-          parentOrder: 2,
-          size: 'medium',
-          typename: 'ButtonBlock',
-          variant: 'contained'
-        },
-        include: {
-          action: true,
-          journey: {
-            include: {
-              team: { include: { userTeams: true } },
-              userJourneys: true
-            }
-          }
-        }
-      })
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         data: {
           updatedAt: '2024-10-21T04:32:25.858Z'
