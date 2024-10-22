@@ -19,7 +19,8 @@ builder.prismaObject('VideoSubtitle', {
     language: t.field({
       type: Language,
       resolve: ({ languageId: id }) => ({ id })
-    })
+    }),
+    videoEdition: t.relation('videoEdition')
   })
 })
 
