@@ -29,7 +29,8 @@ describe('RadioQuestionBlockResolver', () => {
     __typename: 'RadioOptionBlock',
     parentBlockId: 'parentBlockId',
     parentOrder: 3,
-    label: 'label'
+    label: 'label',
+    updatedAt: '2024-10-21T04:32:25.858Z'
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -107,6 +108,17 @@ describe('RadioQuestionBlockResolver', () => {
           }
         }
       })
+      expect(service.getSiblings).toHaveBeenCalledWith(
+        blockCreateInput.journeyId,
+        blockCreateInput.parentBlockId
+      )
+    })
+
+    it('should update journey updatedAt when radio option is created', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.radioOptionBlockCreate(ability, blockCreateInput)
+      ).toEqual(blockWithUserTeam)
       expect(service.getSiblings).toHaveBeenCalledWith(
         blockCreateInput.journeyId,
         blockCreateInput.parentBlockId
