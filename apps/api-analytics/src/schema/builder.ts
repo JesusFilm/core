@@ -31,6 +31,9 @@ export const builder = new SchemaBuilder<{
   AuthScopes: {
     isAuthenticated: boolean
   }
+  AuthContexts: {
+    isAuthenticated: Context & { currentUser: User; apiKey: string }
+  }
   PrismaTypes: PrismaTypes
   Scalars: {
     ID: {
