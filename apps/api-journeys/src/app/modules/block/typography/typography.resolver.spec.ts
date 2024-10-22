@@ -35,7 +35,8 @@ describe('TypographyBlockResolver', () => {
     content: 'content',
     variant: TypographyVariant.h2,
     color: TypographyColor.primary,
-    align: TypographyAlign.left
+    align: TypographyAlign.left,
+    updatedAt: '2024-10-21T04:32:25.858Z'
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -123,6 +124,21 @@ describe('TypographyBlockResolver', () => {
         blockCreateInput.journeyId,
         blockCreateInput.parentBlockId
       )
+    })
+
+    it('should update journey updatedAt when typography is created', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.typographyBlockCreate(ability, blockCreateInput)
+      ).toEqual(blockWithUserTeam)
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        data: {
+          updatedAt: '2024-10-21T04:32:25.858Z'
+        },
+        where: {
+          id: 'journeyId'
+        }
+      })
     })
 
     it('throws error if not authorized', async () => {
