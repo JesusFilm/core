@@ -10,7 +10,6 @@ import { type ReactElement, useEffect, useRef, useState } from 'react'
 import { Swiper, type SwiperRef, SwiperSlide } from 'swiper/react'
 import type { SwiperOptions } from 'swiper/types'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import {
   ActiveContent,
   ActiveSlide,
@@ -19,7 +18,6 @@ import {
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../__generated__/BlockFields'
 import type { getJourneyFlowBackButtonClicked } from '../../../../__generated__/getJourneyFlowBackButtonClicked'
 import type { UpdateJourneyFlowBackButtonClicked } from '../../../../__generated__/UpdateJourneyFlowBackButtonClicked'
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
@@ -113,18 +111,6 @@ export function Slider(): ReactElement {
         type: 'SetSelectedBlockOnlyAction',
         selectedBlock: selectedStep
       })
-    } else if (isSlideChangingTo(ActiveSlide.Content)) {
-      // displays video block properties if video card, else card properties
-      const card = selectedStep?.children[0] as TreeBlock<CardBlock> | undefined
-      if (
-        card?.children[0]?.__typename === 'VideoBlock' &&
-        card?.children[0]?.id !== card?.coverBlockId // checks video block isn't background video
-      ) {
-        dispatch({
-          type: 'SetSelectedBlockOnlyAction',
-          selectedBlock: card.children[0]
-        })
-      }
     }
   }
 

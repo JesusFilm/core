@@ -119,11 +119,6 @@ export function Canvas(): ReactElement {
       resetClickOrigin()
       return
     }
-    // keep focus on video block
-    if (selectedBlock?.__typename === 'VideoBlock') {
-      resetClickOrigin()
-      return
-    }
 
     dispatch({
       type: 'SetSelectedBlockAction',
