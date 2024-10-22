@@ -197,7 +197,7 @@ export function JourneyDetailsDialog({
                       modifiers: [
                         {
                           name: 'flip',
-                          enabled: false,
+                          enabled: true,
                           options: {
                             altBoundary: true
                           }
