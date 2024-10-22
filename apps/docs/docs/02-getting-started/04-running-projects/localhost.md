@@ -40,7 +40,7 @@ title: Deploying a project on mobile/tablet
 
 2. Plug your device into your mac
 
-3. Open Safari
+3. On your mac, open Safari
 
 4. Go to develop -> your iPhone/iPad -> localhost link
 
