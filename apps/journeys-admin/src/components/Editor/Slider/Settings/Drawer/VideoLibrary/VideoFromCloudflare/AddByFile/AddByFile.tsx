@@ -56,6 +56,22 @@ export function AddByFile({
   httpStack
 }: AddByFileProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+
+  const [uploading, setUploading] = useState(false)
+  const [processing, setProcessing] = useState(false)
+  const [fileRejected, setfileRejected] = useState(false)
+  const [fileTooLarge, setfileTooLarge] = useState(false)
+  const [tooManyFiles, settooManyFiles] = useState(false)
+  const [fileInvalidType, setfileInvalidType] = useState(false)
+  const [error, setError] = useState<Error | DetailedError>()
+  const [progress, setProgress] = useState(0)
+
+  function resetUploadStatus(): void {
+    setUploading(false)
+    setProcessing(false)
+    setProgress(0)
+  }
+
   const [createCloudflareVideoUploadByFile, { data }] =
     useMutation<CreateCloudflareVideoUploadByFileMutation>(
       CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION
@@ -71,18 +87,10 @@ export function AddByFile({
         ) {
           stopPolling()
           onChange(data.getMyCloudflareVideo.id)
-          setProcessing(false)
+          resetUploadStatus()
         }
       }
     })
-  const [uploading, setUploading] = useState(false)
-  const [processing, setProcessing] = useState(false)
-  const [fileRejected, setfileRejected] = useState(false)
-  const [fileTooLarge, setfileTooLarge] = useState(false)
-  const [tooManyFiles, settooManyFiles] = useState(false)
-  const [fileInvalidType, setfileInvalidType] = useState(false)
-  const [error, setError] = useState<Error | DetailedError>()
-  const [progress, setProgress] = useState(0)
 
   useEffect(() => {
     if (processing && data?.createCloudflareVideoUploadByFile?.id != null) {
@@ -144,8 +152,7 @@ export function AddByFile({
           },
           onError: (err): void => {
             setError(err)
-            setUploading(false)
-            setProgress(0)
+            resetUploadStatus()
           },
           onProgress(bytesUploaded, bytesTotal): void {
             setProgress((bytesUploaded / bytesTotal) * 100)
@@ -202,8 +209,8 @@ export function AddByFile({
             isDragAccept || uploading
               ? 'rgba(239, 239, 239, 0.9)'
               : error != null || fileRejected
-                ? 'rgba(197, 45, 58, 0.08)'
-                : 'rgba(239, 239, 239, 0.35)',
+              ? 'rgba(197, 45, 58, 0.08)'
+              : 'rgba(239, 239, 239, 0.35)',
           borderColor: 'divider',
           borderStyle: noBorder ? undefined : 'dashed',
           borderRadius: 2,
