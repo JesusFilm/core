@@ -21,18 +21,13 @@ builder.prismaObject('CloudflareVideo', {
 })
 
 builder.queryFields((t) => ({
-  getMyCloudflareVideos: t.prismaField({
+  getMyCloudflareVideos: t.withAuth({ isAuthenticated: true }).prismaField({
     type: ['CloudflareVideo'],
-    authScopes: {
-      isAuthenticated: true
-    },
     args: {
       offset: t.arg.int({ required: false }),
       limit: t.arg.int({ required: false })
     },
     resolve: async (query, _root, { offset, limit }, { user }) => {
-      if (user == null) throw new Error('User not found')
-
       return await prisma.cloudflareVideo.findMany({
         ...query,
         where: { userId: user.id },
@@ -41,17 +36,12 @@ builder.queryFields((t) => ({
       })
     }
   }),
-  getMyCloudflareVideo: t.prismaField({
+  getMyCloudflareVideo: t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'CloudflareVideo',
-    authScopes: {
-      isAuthenticated: true
-    },
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
     resolve: async (query, _root, { id }, { user }) => {
-      if (user == null) throw new Error('User not found')
-
       const video = await prisma.cloudflareVideo.findFirstOrThrow({
         ...query,
         where: { id, userId: user.id }
@@ -76,67 +66,56 @@ builder.queryFields((t) => ({
 }))
 
 builder.mutationFields((t) => ({
-  createCloudflareVideoUploadByFile: t.prismaField({
-    type: 'CloudflareVideo',
-    authScopes: {
-      isAuthenticated: true
-    },
-    args: {
-      uploadLength: t.arg({ type: 'Int', required: true }),
-      name: t.arg({ type: 'String', required: true })
-    },
-    resolve: async (query, _root, { uploadLength, name }, { user }) => {
-      if (user == null) throw new Error('User not found')
+  createCloudflareVideoUploadByFile: t
+    .withAuth({ isAuthenticated: true })
+    .prismaField({
+      type: 'CloudflareVideo',
+      args: {
+        uploadLength: t.arg({ type: 'Int', required: true }),
+        name: t.arg({ type: 'String', required: true })
+      },
+      resolve: async (query, _root, { uploadLength, name }, { user }) => {
+        const { id, uploadUrl } = await createVideoByDirectUpload(
+          uploadLength,
+          name,
+          user.id
+        )
 
-      const { id, uploadUrl } = await createVideoByDirectUpload(
-        uploadLength,
-        name,
-        user.id
-      )
+        return await prisma.cloudflareVideo.create({
+          ...query,
+          data: {
+            id,
+            uploadUrl,
+            userId: user.id,
+            name
+          }
+        })
+      }
+    }),
+  createCloudflareVideoUploadByUrl: t
+    .withAuth({ isAuthenticated: true })
+    .prismaField({
+      type: 'CloudflareVideo',
+      args: {
+        url: t.arg({ type: 'String', required: true })
+      },
+      resolve: async (query, _root, { url }, { user }) => {
+        const { uid: id } = await createVideoFromUrl(url, user.id)
 
-      return await prisma.cloudflareVideo.create({
-        ...query,
-        data: {
-          id,
-          uploadUrl,
-          userId: user.id,
-          name
-        }
-      })
-    }
-  }),
-  createCloudflareVideoUploadByUrl: t.prismaField({
-    type: 'CloudflareVideo',
-    authScopes: {
-      isAuthenticated: true
-    },
-    args: {
-      url: t.arg({ type: 'String', required: true })
-    },
-    resolve: async (query, _root, { url }, { user }) => {
-      if (user == null) throw new Error('User not found')
-
-      const { uid: id } = await createVideoFromUrl(url, user.id)
-
-      return await prisma.cloudflareVideo.create({
-        ...query,
-        data: {
-          id,
-          userId: user.id
-        }
-      })
-    }
-  }),
-  deleteCloudflareVideo: t.boolean({
-    authScopes: {
-      isAuthenticated: true
-    },
+        return await prisma.cloudflareVideo.create({
+          ...query,
+          data: {
+            id,
+            userId: user.id
+          }
+        })
+      }
+    }),
+  deleteCloudflareVideo: t.withAuth({ isAuthenticated: true }).boolean({
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
     resolve: async (_root, { id }, { user }) => {
-      if (user == null) throw new Error('User not found')
-
       await prisma.cloudflareVideo.findUniqueOrThrow({
         where: { id, userId: user.id }
       })

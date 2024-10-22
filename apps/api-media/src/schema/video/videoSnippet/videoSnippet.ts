@@ -17,13 +17,10 @@ builder.prismaObject('VideoSnippet', {
 })
 
 builder.mutationFields((t) => ({
-  videoSnippetCreate: t.prismaField({
+  videoSnippetCreate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoSnippet',
     args: {
       input: t.arg({ type: VideoTranslationCreateInput, required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { input }) => {
       return await prisma.videoSnippet.create({
@@ -35,13 +32,10 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  videoSnippetUpdate: t.prismaField({
+  videoSnippetUpdate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoSnippet',
     args: {
       input: t.arg({ type: VideoTranslationUpdateInput, required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { input }) => {
       return await prisma.videoSnippet.update({
@@ -55,13 +49,10 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  videoSnippetDelete: t.prismaField({
+  videoSnippetDelete: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoSnippet',
     args: {
       id: t.arg.id({ required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { id }) => {
       return await prisma.videoSnippet.delete({
