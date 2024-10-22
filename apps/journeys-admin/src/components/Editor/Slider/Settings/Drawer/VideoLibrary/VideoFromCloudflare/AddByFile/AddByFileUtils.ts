@@ -1,5 +1,4 @@
-import { ReadStream, createReadStream } from 'fs'
-import { join } from 'path'
+import type { ReadStream } from 'fs'
 
 import { CreateCloudflareVideoUploadByFileMutationVariables } from '../../../../../../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
 
@@ -19,8 +18,13 @@ export function getBuffer(file: File): ReadStream | File {
   // the following if statement is required for testing in jest
   let buffer: ReadStream | File
   if (process.env.NODE_ENV === 'test') {
-    buffer = createReadStream(
-      join(__dirname, (file as unknown as { path: string }).path)
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    buffer = require('fs').createReadStream(
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      require('path').join(
+        __dirname,
+        (file as unknown as { path: string }).path
+      )
     )
   } else {
     buffer = file
