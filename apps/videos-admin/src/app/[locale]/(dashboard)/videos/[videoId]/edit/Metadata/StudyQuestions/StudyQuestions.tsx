@@ -27,15 +27,20 @@ export function StudyQuestions({ studyQuestions }): ReactElement | null {
       const newIndex = studyQuestions.findIndex(
         (question) => question.id === e.over?.id
       )
-      await updateStudyQuestionOrder({
-        variables: {
-          input: {
-            id: e.active.id,
-            order: newIndex + 1
-          }
-        }
-      })
+
+      updateOrder({ id: e.active.id as string, order: newIndex + 1 })
     }
+  }
+
+  const updateOrder = async (input: {
+    id: string
+    order: number
+  }): Promise<void> => {
+    await updateStudyQuestionOrder({
+      variables: {
+        input
+      }
+    })
   }
 
   if (studyQuestions == null) return null
@@ -53,6 +58,7 @@ export function StudyQuestions({ studyQuestions }): ReactElement | null {
               label={value}
               idx={idx}
               count={totalQuestions}
+              handleOrderChange={updateOrder}
             />
           ))}
         </Stack>

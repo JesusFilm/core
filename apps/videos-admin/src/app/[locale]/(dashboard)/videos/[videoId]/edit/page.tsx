@@ -7,7 +7,7 @@ import { ReactElement, SyntheticEvent, useState } from 'react'
 
 import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
 
-import { ChildrenView } from './_ChildrenView'
+import { Children } from './_Children'
 import { Editions } from './Editions'
 import { Metadata } from './Metadata'
 import { Subtitles } from './Subtitles'
@@ -29,8 +29,6 @@ export default function EditPage(): ReactElement {
   })
 
   const video = data?.adminVideo
-
-  console.log(video)
 
   return (
     <div>
@@ -60,7 +58,7 @@ export default function EditPage(): ReactElement {
             <Metadata video={video} loading={loading} />
           </TabContainer>
           <TabContainer value={tabValue} index={1}>
-            <ChildrenView childVideos={video?.children} />
+            <Children childVideos={video?.children} />
           </TabContainer>
           <TabContainer value={tabValue} index={2}>
             <Variants variants={video?.variants} />

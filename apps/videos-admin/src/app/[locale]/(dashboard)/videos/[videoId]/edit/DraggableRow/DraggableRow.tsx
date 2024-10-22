@@ -7,6 +7,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  SelectChangeEvent,
   Stack,
   Typography
 } from '@mui/material'
@@ -24,6 +25,7 @@ interface DraggableRowProps {
   idx: number
   count: number
   handleClick?: (id: string) => void
+  handleOrderChange?: (input: { id: string; order: string | number }) => void
   actions?: Array<{
     name: string
     Icon: typeof SvgIcon
@@ -42,6 +44,7 @@ export function DraggableRow({
   idx,
   count,
   handleClick,
+  handleOrderChange,
   actions
 }: DraggableRowProps): ReactElement {
   const t = useTranslations()
@@ -62,10 +65,21 @@ export function DraggableRow({
   // }
 
   const clickEvent = (e): void => {
-    console.log('click event')
     if (e.currentTarget !== e.target) return
 
     handleClick?.(id)
+  }
+
+  const handleSelectChange = (e: SelectChangeEvent<number>): void => {
+    let newOrder = e.target.value
+
+    if (typeof newOrder === 'string') {
+      newOrder = Number(newOrder)
+    }
+
+    if (typeof newOrder !== 'number' || newOrder === idx) return
+
+    handleOrderChange?.({ id, order: e.target.value })
   }
 
   return (
@@ -112,7 +126,7 @@ export function DraggableRow({
       <Typography variant="subtitle2">{label}</Typography>
       <FormControl sx={{ ml: 'auto' }}>
         <InputLabel>{t('Order')}</InputLabel>
-        <Select value={idx + 1} size="small">
+        <Select value={idx + 1} size="small" onChange={handleSelectChange}>
           {[...Array(count)].map((_, i) => (
             <MenuItem key={i} value={i + 1}>
               <Typography>{i + 1}</Typography>

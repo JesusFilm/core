@@ -11,7 +11,7 @@ import Trash2 from '@core/shared/ui/icons/Trash2'
 import { DraggableRow } from '../DraggableRow'
 import { Section } from '../Section'
 
-export function ChildrenView({ childVideos }): ReactElement {
+export function Children({ childVideos }): ReactElement {
   const pathname = usePathname()
   const router = useRouter()
 

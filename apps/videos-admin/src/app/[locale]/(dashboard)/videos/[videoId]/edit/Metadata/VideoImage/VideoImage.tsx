@@ -4,8 +4,25 @@ import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { ReactElement, useState } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
+import { VideoImageUpload } from './VideoImageUpload'
+import { GetAdminVideo } from '../../../../../../../../libs/useAdminVideo'
 
-export function VideoImage({ src, alt }): ReactElement {
+function getImageFields(video): { src: string | null; alt: string | null } {
+  if (video == null) return { src: null, alt: null }
+  const src = video?.images?.[0].mobileCinematicHigh
+  const alt = video?.imageAlt?.[0].value
+
+  return {
+    src,
+    alt
+  }
+}
+
+interface VideoImageProps {
+  video: GetAdminVideo['adminVideo']
+}
+
+export function VideoImage({ video }: VideoImageProps): ReactElement {
   const t = useTranslations()
   const [show, setShow] = useState(false)
 
@@ -16,6 +33,8 @@ export function VideoImage({ src, alt }): ReactElement {
   const handleClose = () => {
     setShow(false)
   }
+
+  const { src, alt } = getImageFields(video)
 
   return (
     <>
@@ -41,9 +60,13 @@ export function VideoImage({ src, alt }): ReactElement {
       <Dialog
         open={show}
         onClose={handleClose}
-        dialogTitle={{ title: t('Change image'), closeButton: true }}
+        dialogTitle={{ title: t('Change Image'), closeButton: true }}
+        slotProps={{ titleButton: { size: 'small' } }}
+        sx={{
+          '& .MuiPaper-root': { maxWidth: 400 }
+        }}
       >
-        <h1>Modal</h1>
+        <VideoImageUpload video={video} />
       </Dialog>
     </>
   )

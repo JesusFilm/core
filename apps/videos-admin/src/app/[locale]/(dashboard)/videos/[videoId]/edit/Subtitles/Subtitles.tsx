@@ -137,8 +137,15 @@ function FileUpload({ subtitle }): ReactElement {
 }
 
 function Subtitle({ subtitle, file, extension }): ReactElement {
-  const isInProgress = false
-  const handleDownload = (s) => {}
+  const { download, isInProgress } = useDownloader()
+  const handleDownload = () => {
+    console.log({ url: subtitle.srtSrc, bar: subtitle.vttSrc })
+    if (subtitle == null) return
+
+    const fileName = getFileName(subtitle.value)
+
+    void download(subtitle.value, fileName)
+  }
   const handleUploadClick = (s) => {}
 
   return (

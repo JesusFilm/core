@@ -11,7 +11,6 @@ import {
   Stack
 } from '@mui/material'
 import { graphql } from 'gql.tada'
-import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
@@ -32,17 +31,6 @@ function useUpdateMutation(mutation) {
     void updateMutation({
       variables: { input }
     })
-  }
-}
-
-function getImageFields(video): { src: string | null; alt: string | null } {
-  if (video == null) return { src: null, alt: null }
-  const src = video?.images?.[0].mobileCinematicHigh
-  const alt = video?.imageAlt?.[0].value
-
-  return {
-    src,
-    alt
   }
 }
 
@@ -153,14 +141,11 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
     })
   }
 
-  const image = video?.images?.[0]
-  const imageFields = getImageFields(video)
-
   return (
     <Stack gap={2}>
       <Section title={t('Information')}>
         <Stack gap={2}>
-          <Stack direction="row" gap={1}>
+          <Stack direction="row" gap={2}>
             <UpdateableField
               label="Title"
               {...video?.title?.[0]}
@@ -176,8 +161,8 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
               fullWidth
             />
           </Stack>
-          <Stack direction="row" gap={1}>
-            <FormControl sx={{ width: '100%' }}>
+          <Stack direction="row" gap={2}>
+            <FormControl>
               <FormLabel>{t('Status')}</FormLabel>
               <Select
                 defaultValue={
@@ -192,7 +177,7 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
                 ))}
               </Select>
             </FormControl>
-            <FormControl sx={{ width: '100%' }}>
+            <FormControl>
               <FormLabel>{t('Label')}</FormLabel>
               <Select value={video?.label} onChange={handleLabelChange}>
                 {videoLabels.map(({ label, value }) => (
@@ -218,11 +203,7 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
 
       <Section title={t('Image')}>
         <Stack direction="row" gap={2}>
-          <VideoImage
-            {...imageFields}
-            // src={image.mobileCinematicHigh}
-            // alt={video?.imageAlt[0].value}
-          />
+          <VideoImage video={video} />
           <UpdateableField
             label="Alt"
             {...video?.imageAlt?.[0]}
