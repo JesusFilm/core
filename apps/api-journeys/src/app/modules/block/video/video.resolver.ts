@@ -184,6 +184,12 @@ export class VideoBlockResolver {
           }
         }
       })
+      await tx.journey.update({
+        where: {
+          id: block.journeyId
+        },
+        data: { updatedAt: block.updatedAt }
+      })
       if (!ability.can(Action.Update, subject('Journey', block.journey)))
         throw new GraphQLError('user is not allowed to create block', {
           extensions: { code: 'FORBIDDEN' }
