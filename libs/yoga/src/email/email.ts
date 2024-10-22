@@ -32,18 +32,22 @@ export async function sendEmail(
     throw new Error('Example email address')
 
   const transporter = nodemailer.createTransport(process.env.SMTP_URL, defaults)
-  await transporter.sendMail({
-    to,
-    subject,
-    text,
-    html
-  })
+  try {
+    await transporter.sendMail({
+      to,
+      subject,
+      text,
+      html
+    })
 
-  logger?.info('email sent', {
-    to: to.replaceAll(
-      '(?<=.)[^@](?=[^@]*?@)|(?:(?<=@.)|(?!^)\\G(?=[^@]*$)).(?=.*[^@]\\.)',
-      '*'
-    ),
-    subject
-  })
+    logger?.info('email sent', {
+      to: to.replaceAll(
+        '(?<=.)[^@](?=[^@]*?@)|(?:(?<=@.)|(?!^)\\G(?=[^@]*$)).(?=.*[^@]\\.)',
+        '*'
+      ),
+      subject
+    })
+  } catch (error) {
+    logger?.error('email failed to send', error)
+  }
 }
