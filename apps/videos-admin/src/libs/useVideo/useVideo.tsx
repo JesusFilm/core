@@ -5,7 +5,11 @@ export const GET_VIDEO = graphql(`
   query GetVideo($videoId: ID!) {
     video(id: $videoId) {
       id
+      slug
       image
+      images(aspectRatio: banner) {
+        mobileCinematicHigh
+      }
       imageAlt {
         id
         value
@@ -20,6 +24,32 @@ export const GET_VIDEO = graphql(`
       }
       label
       variantLanguagesCount
+      snippet {
+        id
+        value
+      }
+      children {
+        id
+        title {
+          id
+          value
+        }
+        images(aspectRatio: banner) {
+          mobileCinematicHigh
+        }
+        imageAlt {
+          id
+          value
+        }
+      }
+      variants {
+        id
+        slug
+      }
+      studyQuestions {
+        id
+        value
+      }
     }
   }
 `)
