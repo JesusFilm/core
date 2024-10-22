@@ -159,8 +159,8 @@ model VideoVariant {
 model VideoEdition {
   id            String          @id
   name          String?
-  VideoVariant  VideoVariant[]
-  VideoSubtitle VideoSubtitle[]
+  videoVariant  VideoVariant[]
+  videoSubtitle VideoSubtitle[]
 }
 
 model VideoSubtitle {

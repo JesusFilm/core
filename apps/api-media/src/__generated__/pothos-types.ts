@@ -190,15 +190,15 @@ export default interface PrismaTypes {
         Where: Prisma.VideoEditionWhereInput;
         Create: {};
         Update: {};
-        RelationName: "VideoVariant" | "VideoSubtitle";
-        ListRelations: "VideoVariant" | "VideoSubtitle";
+        RelationName: "videoVariant" | "videoSubtitle";
+        ListRelations: "videoVariant" | "videoSubtitle";
         Relations: {
-            VideoVariant: {
+            videoVariant: {
                 Shape: VideoVariant[];
                 Name: "VideoVariant";
                 Nullable: false;
             };
-            VideoSubtitle: {
+            videoSubtitle: {
                 Shape: VideoSubtitle[];
                 Name: "VideoSubtitle";
                 Nullable: false;
