@@ -125,9 +125,6 @@ export function ButtonEdit({
           fullWidth
           multiline
           autoFocus
-          inputRef={(ref) => {
-            if (ref != null) ref.focus()
-          }}
           onFocus={(e) =>
             e.currentTarget.setSelectionRange(
               e.currentTarget.value.length,
