@@ -111,6 +111,8 @@ export interface BlockFields_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface BlockFields_RadioOptionBlock_action_NavigateToBlockAction {

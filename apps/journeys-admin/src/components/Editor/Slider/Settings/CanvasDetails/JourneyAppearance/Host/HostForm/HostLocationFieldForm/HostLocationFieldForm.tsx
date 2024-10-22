@@ -24,7 +24,7 @@ export function HostLocationFieldForm(): ReactElement {
       label={t('Location')}
       disabled={journey?.host == null}
       initialValue={
-        journey?.host == null ? undefined : journey.host.location ?? ''
+        journey?.host == null ? undefined : (journey.host.location ?? '')
       }
       onSubmit={handleSubmit}
       data-testid="HostLocationFieldForm"

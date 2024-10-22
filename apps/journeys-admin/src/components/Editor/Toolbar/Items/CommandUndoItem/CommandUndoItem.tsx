@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'
 
@@ -22,14 +21,12 @@ export function CommandUndoItem({
   }
 
   return (
-    <Box data-testid="CommandUndoItem">
-      <Item
-        variant={variant}
-        label={t('Undo')}
-        icon={<FlipLeftIcon />}
-        onClick={handleClick}
-        ButtonProps={{ disabled: state.undo == null }}
-      />
-    </Box>
+    <Item
+      variant={variant}
+      label={t('Undo')}
+      icon={<FlipLeftIcon />}
+      onClick={handleClick}
+      ButtonProps={{ disabled: state.undo == null }}
+    />
   )
 }

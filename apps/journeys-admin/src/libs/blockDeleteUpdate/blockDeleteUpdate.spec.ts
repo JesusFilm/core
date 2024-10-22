@@ -73,7 +73,9 @@ const image: TreeBlock<ImageBlock> = {
   width: 10,
   height: 10,
   children: [],
-  scale: null
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const journey: Journey = {

@@ -24,6 +24,8 @@ export interface ImageBlockCreate_imageBlockCreate {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface ImageBlockCreate {

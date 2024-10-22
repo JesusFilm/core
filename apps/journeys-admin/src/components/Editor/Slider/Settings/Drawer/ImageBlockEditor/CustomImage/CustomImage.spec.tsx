@@ -16,7 +16,9 @@ describe('CustomImage', () => {
     blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
     parentBlockId: 'card',
     parentOrder: 0,
-    scale: null
+    scale: null,
+    focalLeft: 50,
+    focalTop: 50
   }
 
   it('should render custom url image upload', () => {

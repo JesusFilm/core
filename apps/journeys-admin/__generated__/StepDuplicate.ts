@@ -111,6 +111,8 @@ export interface StepDuplicate_blockDuplicate_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface StepDuplicate_blockDuplicate_RadioOptionBlock_action_NavigateToBlockAction {

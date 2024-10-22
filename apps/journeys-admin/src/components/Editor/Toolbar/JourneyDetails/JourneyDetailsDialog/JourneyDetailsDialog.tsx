@@ -12,7 +12,7 @@ import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
-import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
+import { useJourneyUpdateMutation } from '../../../../../libs/useJourneyUpdateMutation'
 
 interface JourneyDetailsDialogProps {
   open: boolean
@@ -132,6 +132,7 @@ export function JourneyDetailsDialog({
           }}
           onSubmit={handleUpdateJourneyDetails}
           validationSchema={titleSchema}
+          enableReinitialize
         >
           {({
             values,

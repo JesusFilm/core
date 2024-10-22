@@ -57,7 +57,7 @@ export function Button({
           <Typography variant="caption" lineHeight="12px" sx={{ my: 1.25 }}>
             {t(
               disabled && value === 'Video'
-                ? 'Video Block cannot be placed on top of Blocks'
+                ? 'Video Block cannot be placed on top of Blocks or Background Video/Image'
                 : 'Click to add'
             )}
           </Typography>

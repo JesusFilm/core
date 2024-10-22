@@ -17,16 +17,17 @@ const ChatButtonsDemo: Meta<typeof ChatButtons> = {
   title: 'Journeys-Ui/StepFooter/ChatButtons'
 }
 
-type Story = StoryObj<{ chatButtons: ChatButton[] }>
+type Story = StoryObj<{ chatButtons: ChatButton[]; website: boolean }>
 
 const Template: Story = {
-  render: ({ chatButtons }) => {
+  render: ({ chatButtons, website = false }) => {
     return (
       <MockedProvider>
         <JourneyProvider
           value={{
             journey: {
               id: 'journeyId',
+              website,
               language: {
                 __typename: 'Language',
                 id: '529',
@@ -115,6 +116,27 @@ export const Platform = {
         id: '10',
         link: 'https://tiktok.com/',
         platform: MessagePlatform.tikTok
+      }
+    ]
+  }
+}
+
+export const Website = {
+  ...Template,
+  args: {
+    website: true,
+    chatButtons: [
+      {
+        __typename: 'ChatButton',
+        id: '1',
+        link: 'https://m.me/',
+        platform: MessagePlatform.facebook
+      },
+      {
+        __typename: 'ChatButton',
+        id: '2',
+        link: 'https://other.messagingplatform/',
+        platform: MessagePlatform.telegram
       }
     ]
   }

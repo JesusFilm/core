@@ -1,5 +1,3 @@
-import sortBy from 'lodash/sortBy'
-
 import { Prisma } from '.prisma/api-media-client'
 
 interface updateOrderUpdateParams {
@@ -17,47 +15,31 @@ export async function updateOrderUpdate({
   order,
   transaction
 }: updateOrderUpdateParams): Promise<void> {
+  if (order < 1) throw new Error('order must be greater than 0')
+
   const existing = await transaction.videoStudyQuestion.findMany({
     where: { videoId, languageId },
     select: { id: true, order: true },
     orderBy: { order: 'asc' }
   })
 
-  const newOrders = sortBy(
-    existing.map((item, index) => ({
-      id: item.id,
-      order:
-        item.id === id ? order : index >= order - 1 ? index + 2 : index + 1,
-      originalOrder: item.order
-    })),
-    'order'
-  )
-
-  let existingOrders = newOrders.map((item) => item.originalOrder)
-  const deferred: string[] = []
-
-  for (let index = 1; index <= newOrders.length; index++) {
-    if (order > index) continue
-    const studyQuestion = newOrders[index - 1]
-    if (
-      !deferred.includes(studyQuestion.id) &&
-      existingOrders.includes(index)
-    ) {
-      await transaction.videoStudyQuestion.update({
-        where: {
-          videoId_languageId_order: { videoId, languageId, order: index }
-        },
-        data: { order: index + 1000 }
-      })
-      existingOrders = existingOrders.filter(
-        (item) => item !== studyQuestion.originalOrder
-      )
-    }
+  for (const studyQuestion of existing)
     await transaction.videoStudyQuestion.update({
       where: { id: studyQuestion.id },
-      data: { order: studyQuestion.order }
+      data: { order: studyQuestion.order + 1000 }
     })
-    deferred.push(studyQuestion.id)
+
+  const newOrders = existing
+    .filter((item) => item.id !== id)
+    .map(({ id }) => id)
+
+  newOrders.splice(order - 1, 0, id)
+
+  for (let index = 0; index < newOrders.length; index++) {
+    await transaction.videoStudyQuestion.update({
+      where: { id: newOrders[index] },
+      data: { order: index + 1 }
+    })
   }
 }
 
@@ -80,40 +62,19 @@ export async function updateOrderCreate({
     orderBy: { order: 'asc' }
   })
 
-  const newOrders = sortBy(
-    existing.map((item, index) => ({
-      id: item.id,
-      order: index >= order - 1 ? index + 2 : index + 1,
-      originalOrder: item.order
-    })),
-    'order'
-  )
-
-  let existingOrders = newOrders.map((item) => item.originalOrder)
-  const deferred: string[] = []
-
-  for (let index = 1; index <= newOrders.length; index++) {
-    if (order > index) continue
-    const studyQuestion = newOrders[index - 1]
-    if (
-      !deferred.includes(studyQuestion.id) &&
-      existingOrders.includes(index)
-    ) {
-      await transaction.videoStudyQuestion.update({
-        where: {
-          videoId_languageId_order: { videoId, languageId, order: index }
-        },
-        data: { order: index + 1000 }
-      })
-      existingOrders = existingOrders.filter(
-        (item) => item !== studyQuestion.originalOrder
-      )
-    }
+  for (const studyQuestion of existing)
     await transaction.videoStudyQuestion.update({
       where: { id: studyQuestion.id },
-      data: { order: studyQuestion.order }
+      data: { order: studyQuestion.order + 1000 }
     })
-    deferred.push(studyQuestion.id)
+
+  const newOrders = existing.map(({ id }) => id)
+
+  for (let index = 1; index <= newOrders.length; index++) {
+    await transaction.videoStudyQuestion.update({
+      where: { id: newOrders[index - 1] },
+      data: { order: index >= order ? index + 1 : index }
+    })
   }
 }
 

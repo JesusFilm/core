@@ -305,7 +305,9 @@ export function CardCta(): ReactElement {
       height: 4000,
       blurhash: 'L~NTUYkWM{t7~qs:WBofEMjYt7WB',
       __typename: 'ImageBlock',
-      scale: null
+      scale: null,
+      focalLeft: 50,
+      focalTop: 50
     } satisfies ImageBlock
 
     const subtitle = {

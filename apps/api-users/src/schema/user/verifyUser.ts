@@ -13,7 +13,7 @@ export async function verifyUser(
 ): Promise<void> {
   const isExample = email.endsWith('@example.com')
   const token = isExample
-    ? process.env.EXAMPLE_EMAIL_TOKEN ?? ''
+    ? (process.env.EXAMPLE_EMAIL_TOKEN ?? '')
     : generateSixDigitNumber()
 
   const job = await queue.getJob(userId)

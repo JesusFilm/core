@@ -43,8 +43,8 @@ export function ShareDialog({
     description != null && description.length > 0
       ? description[0].value
       : snippet != null && snippet.length > 0
-      ? snippet[0].value
-      : ''
+        ? snippet[0].value
+        : ''
 
   const shareLink =
     router?.query != null

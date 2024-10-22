@@ -111,6 +111,8 @@ export interface StepBlockRestoreFromStep_blockRestore_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface StepBlockRestoreFromStep_blockRestore_RadioOptionBlock_action_NavigateToBlockAction {

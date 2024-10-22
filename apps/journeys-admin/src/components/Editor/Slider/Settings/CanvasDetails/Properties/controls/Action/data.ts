@@ -40,7 +40,9 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             parentOrder: 0,
             children: [],
             blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
-            scale: null
+            scale: null,
+            focalLeft: 50,
+            focalTop: 50
           },
           {
             id: 'typographyBlockId1',
@@ -119,7 +121,9 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             parentOrder: 0,
             children: [],
             blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG',
-            scale: null
+            scale: null,
+            focalLeft: 50,
+            focalTop: 50
           },
           {
             id: 'typographyBlockId1',
@@ -216,7 +220,9 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             parentOrder: null,
             children: [],
             blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@',
-            scale: null
+            scale: null,
+            focalLeft: 50,
+            focalTop: 50
           },
           {
             id: 'typographyBlockId1',
@@ -325,7 +331,9 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             parentOrder: null,
             children: [],
             blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA',
-            scale: null
+            scale: null,
+            focalLeft: 50,
+            focalTop: 50
           },
           {
             id: 'typographyBlockId1',
@@ -439,7 +447,9 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             parentOrder: 0,
             children: [],
             blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
-            scale: null
+            scale: null,
+            focalLeft: 50,
+            focalTop: 50
           },
           {
             id: 'typographyBlockId1',

@@ -39,10 +39,6 @@ function HostStepPage({ journey, locale, rtl }: StepPageProps): ReactElement {
       (block.slug === stepSlug || block.id === stepSlug)
   )
 
-  if (stepBlock == null) {
-    void router.push('/404')
-  }
-
   return (
     <>
       <Head>
@@ -117,6 +113,23 @@ export const getStaticProps: GetStaticProps<StepPageProps> = async (
       }
     })
     const { rtl, locale } = getJourneyRTL(data.journey)
+
+    const stepBlock = data.journey?.blocks?.find(
+      (block) =>
+        block.__typename === 'StepBlock' &&
+        (block.slug === context.params?.stepSlug ||
+          block.id === context.params?.stepSlug)
+    )
+
+    if (stepBlock == null)
+      return {
+        redirect: {
+          destination: `/${data.journey.slug}`,
+          permanent: false
+        },
+        revalidate: 1
+      }
+
     return {
       props: {
         ...(await serverSideTranslations(
@@ -140,7 +153,8 @@ export const getStaticProps: GetStaticProps<StepPageProps> = async (
             i18nConfig
           ))
         },
-        notFound: true
+        notFound: true,
+        revalidate: 1
       }
     }
     throw e
