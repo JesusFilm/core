@@ -19,6 +19,8 @@ export function SourceFromCloudflare({
   selectedBlock
 }: SourceFromCloudflareProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const width = '56'
+  const height = '56'
   return (
     <>
       <Box sx={{ ml: 2, mr: 4 }}>
@@ -28,7 +30,7 @@ export function SourceFromCloudflare({
               process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
             }.cloudflarestream.com/${
               selectedBlock.videoId ?? ''
-            }/thumbnails/thumbnail.jpg?time=2s&height=55&width=55`,
+            }/thumbnails/thumbnail.jpg?time=2s&height=${height}&width=${width}`,
             alt: selectedBlock.title ?? ''
           }}
           Icon={VideoOnIcon}

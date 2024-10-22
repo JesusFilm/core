@@ -19,16 +19,34 @@ export function ImageBlockThumbnail({
   Icon = Image3Icon,
   error
 }: ImageBlockThumbnailProps): ReactElement {
-  const isUnsplash =
-    selectedBlock?.src?.match(/^https:\/\/images\.unsplash\.com/) ?? false
+  function getImageSource(srcSet: boolean): string | undefined {
+    const isUnsplash =
+      selectedBlock?.src?.match(/^https:\/\/images\.unsplash\.com/) ?? false
+    const width = '56'
+    const height = '56'
+
+    if (selectedBlock?.src != null) {
+      return isUnsplash
+        ? `${selectedBlock.src
+            .replace(
+              'w=1080',
+              `w=${width}&h=${height}&auto=format${srcSet ? '&dpr=2' : ''}`
+            )
+            .replace('fit=max', 'fit=crop')
+            .replace('crop=entropy&', '')} ${srcSet ? '2x' : ''}`
+        : srcSet
+          ? undefined
+          : selectedBlock.src
+    }
+  }
 
   return (
     <Box
       sx={{
         display: 'flex',
         borderRadius: 2,
-        height: 55,
-        width: 55,
+        height: 56,
+        width: 56,
         backgroundColor: 'background.default',
         position: 'relative',
         justifyContent: 'center',
@@ -44,28 +62,12 @@ export function ImageBlockThumbnail({
       ) : selectedBlock?.src != null ? (
         <Box
           component="img"
-          srcSet={
-            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-            isUnsplash
-              ? `${selectedBlock.src
-                  .replace('w=1080', 'w=55&h=55&auto=format&dpr=2')
-                  .replace('fit=max', 'fit=crop')
-                  .replace('crop=entropy&', '')} 2x`
-              : undefined
-          }
-          src={
-            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-            isUnsplash
-              ? selectedBlock.src
-                  .replace('w=1080', 'w=55&h=55&auto=format')
-                  .replace('fit=max', 'fit=crop')
-                  .replace('crop=entropy&', '')
-              : selectedBlock.src
-          }
+          srcSet={getImageSource(true)}
+          src={getImageSource(false)}
           alt={selectedBlock.alt}
           sx={{
-            width: 55,
-            height: 55,
+            width: 56,
+            height: 56,
             objectFit: 'cover'
           }}
         />
