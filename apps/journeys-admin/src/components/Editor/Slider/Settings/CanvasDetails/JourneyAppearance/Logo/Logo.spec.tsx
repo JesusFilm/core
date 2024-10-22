@@ -73,7 +73,9 @@ describe('Logo', () => {
     parentOrder: null,
     width: 1,
     height: 1,
-    blurhash: ''
+    blurhash: '',
+    focalLeft: 50,
+    focalTop: 50
   }
 
   function getLogoImageBlockCreateMock(): MockedResponse<

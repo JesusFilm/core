@@ -55,7 +55,7 @@ export class VideoStartEventResolver {
     const delay =
       video?.endAt != null && video?.startAt != null
         ? video.endAt - video.startAt
-        : video?.duration ?? 0
+        : (video?.duration ?? 0)
 
     await this.eventService.resetEventsEmailDelay(journeyId, visitor.id, delay)
 
@@ -105,7 +105,7 @@ export class VideoPlayEventResolver {
     const delay =
       video?.endAt != null && video?.startAt != null
         ? video.endAt - video.startAt
-        : video?.duration ?? 0
+        : (video?.duration ?? 0)
 
     await this.eventService.resetEventsEmailDelay(journeyId, visitor.id, delay)
 

@@ -71,6 +71,7 @@ export function AddByFile({
         ) {
           stopPolling()
           onChange(data.getMyCloudflareVideo.id)
+          setProcessing(false)
         }
       }
     })
@@ -100,6 +101,7 @@ export function AddByFile({
     settooManyFiles(false)
     setfileInvalidType(false)
     setfileRejected(false)
+    setError(undefined)
   }
 
   const onDropAccepted = async (files: File[]): Promise<void> => {
@@ -160,16 +162,9 @@ export function AddByFile({
     setfileRejected(true)
     fileRejections.forEach(({ file, errors }) => {
       errors.forEach((e) => {
-        if (e.code === 'file-invalid-type') {
-          setfileInvalidType(true)
-        }
-        if (e.code === 'file-too-large') {
-          setfileTooLarge(true)
-        }
-
-        if (e.code === 'too-many-files') {
-          settooManyFiles(true)
-        }
+        if (e.code === 'file-invalid-type') setfileInvalidType(true)
+        if (e.code === 'file-too-large') setfileTooLarge(true)
+        if (e.code === 'too-many-files') settooManyFiles(true)
       })
     })
   }
@@ -207,8 +202,8 @@ export function AddByFile({
             isDragAccept || uploading
               ? 'rgba(239, 239, 239, 0.9)'
               : error != null || fileRejected
-              ? 'rgba(197, 45, 58, 0.08)'
-              : 'rgba(239, 239, 239, 0.35)',
+                ? 'rgba(197, 45, 58, 0.08)'
+                : 'rgba(239, 239, 239, 0.35)',
           borderColor: 'divider',
           borderStyle: noBorder ? undefined : 'dashed',
           borderRadius: 2,

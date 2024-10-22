@@ -56,7 +56,8 @@ export const CARD_VIDEO_RESTORE = gql`
 export function CardVideo(): ReactElement {
   const { journey } = useJourney()
   const {
-    state: { selectedStep }
+    state: { selectedStep },
+    dispatch
   } = useEditor()
   const { add } = useCommand()
 
@@ -168,6 +169,10 @@ export function CardVideo(): ReactElement {
               })
             }
           }
+        })
+        dispatch({
+          type: 'SetSelectedBlockByIdAction',
+          selectedBlockId: videoBlock.id
         })
       },
       undo() {
