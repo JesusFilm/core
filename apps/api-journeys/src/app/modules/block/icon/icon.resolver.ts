@@ -13,7 +13,8 @@ import {
 } from '../../../__generated__/graphql'
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
-import { ACTION_AND_JOURNEY, PrismaService } from '../../../lib/prisma.service'
+import { PrismaService } from '../../../lib/prisma.service'
+import { JOURNEY } from '../../journey/journey.acl'
 import { BlockService } from '../block.service'
 
 @Resolver('IconBlock')
@@ -40,7 +41,10 @@ export class IconBlockResolver {
           // Icons positions are set via parent block props, cannot be ordered.
           parentOrder: null
         },
-        include: ACTION_AND_JOURNEY
+        include: {
+          action: true,
+          ...JOURNEY
+        }
       })
       if (!ability.can(Action.Update, subject('Journey', block.journey)))
         throw new GraphQLError('user is not allowed to create block', {

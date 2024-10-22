@@ -13,7 +13,8 @@ import {
 } from '../../../__generated__/graphql'
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
-import { ACTION_AND_JOURNEY, PrismaService } from '../../../lib/prisma.service'
+import { PrismaService } from '../../../lib/prisma.service'
+import { JOURNEY } from '../../journey/journey.acl'
 import { BlockService } from '../block.service'
 
 @Resolver('ButtonBlock')
@@ -42,7 +43,10 @@ export class ButtonBlockResolver {
           parentBlock: { connect: { id: input.parentBlockId } },
           parentOrder
         },
-        include: ACTION_AND_JOURNEY
+        include: {
+          action: true,
+          ...JOURNEY
+        }
       })
       if (!ability.can(Action.Update, subject('Journey', block.journey)))
         throw new GraphQLError('user is not allowed to create block', {

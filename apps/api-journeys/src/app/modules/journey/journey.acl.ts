@@ -6,6 +6,15 @@ import {
 
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
+export const JOURNEY = {
+  journey: {
+    include: {
+      team: { include: { userTeams: true } },
+      userJourneys: true
+    }
+  }
+}
+
 export const journeyAcl: AppAclFn = ({
   can,
   cannot,
