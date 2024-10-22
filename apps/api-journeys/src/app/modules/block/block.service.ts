@@ -334,9 +334,7 @@ export class BlockService {
   }
 
   @FromPostgresql()
-  async removeBlockAndChildren(
-    block: Block,
-  ): Promise<BlockWithAction[]> {
+  async removeBlockAndChildren(block: Block): Promise<BlockWithAction[]> {
     return await this.prismaService.$transaction(async (tx) => {
       const currentTime = new Date().toISOString()
       const updatedBlock = await tx.block.update({
