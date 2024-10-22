@@ -73,6 +73,7 @@ interface DetailsProps {
   setCurrentLink: (value: string) => void
   helperInfo?: string
   enableIconSelect: boolean
+  active?: boolean
 }
 
 interface MessagePlatformOptions {
@@ -89,7 +90,8 @@ export function Details({
   setCurrentPlatform,
   setCurrentLink,
   helperInfo,
-  enableIconSelect
+  enableIconSelect,
+  active
 }: DetailsProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
@@ -263,7 +265,9 @@ export function Details({
     if (type === 'link') {
       const hasProtocolPrefix = /^\w+:\/\//
       const link =
-        value != null && hasProtocolPrefix.test(value)
+        value === ''
+          ? ''
+          : hasProtocolPrefix.test(value ?? '')
           ? value
           : `https://${value}`
 
