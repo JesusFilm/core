@@ -75,7 +75,7 @@ export function OverlayContent({
         // ...topBottomEdgeFadeEffect,
         ...topBottomMarginsOnContent,
         ...mobileNotchPadding,
-        ...footerSpacing,
+        // ...footerSpacing,
         ...sx
       }}
     >

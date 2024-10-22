@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 
 import { NextImage } from '@core/shared/ui/NextImage'
 
@@ -20,6 +20,17 @@ export function ParallaxCover({
   backgroundBlur,
   children
 }: ParallaxCoverProps): ReactElement {
+  const contentRef = useRef(null)
+  const [contentHeight, setContentHeight] = useState(0)
+
+  useEffect(() => {
+    if (contentRef.current != null && contentRef.current.offsetHeight != null) {
+      setContentHeight(contentRef.current.offsetHeight)
+    } else {
+      setContentHeight(0)
+    }
+  }, [contentRef, children])
+
   return (
     <Box
       sx={{
@@ -78,12 +89,17 @@ export function ParallaxCover({
           data-testid="parallax-header"
           sx={{
             position: 'absolute',
-            top: 0,
             zIndex: -1,
             width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            transform: 'translateZ(-10px) scale(2) translate(0px, -38%)',
+            height: `calc(100% - ${contentHeight}px + ${
+              contentHeight > 0 ? 100 : 0
+            }px)`,
+            top: `calc(-${contentHeight > 0 ? contentHeight / 2 : 0}px)`,
+            // height: '100%',
+            // top: 0,
+            // objectFit: 'cover',
+            transform: 'translateZ(-10px) scale(2)',
+            // transform: 'translateZ(-10px) scale(2) translate(0px, -38%)',
             WebkitMask: `linear-gradient(to top, transparent 0%, ${backgroundColor}14 5%, ${backgroundColor}33 10%, ${backgroundColor}60 15%, ${backgroundColor}b0 20%, ${backgroundColor}e6 25%, ${backgroundColor} 30%)`,
             mask: `linear-gradient(to top, transparent 0%, ${backgroundColor}14 5%, ${backgroundColor}33 10%, ${backgroundColor}60 15%, ${backgroundColor}b0 20%, ${backgroundColor}e6 25%, ${backgroundColor} 30%)`
           }}
@@ -99,16 +115,26 @@ export function ParallaxCover({
           />
         </Box>
 
-        <OverlayContent
+        <Box
+          ref={contentRef}
           data-testid="parallax-content"
-          hasFullscreenVideo={false}
           sx={{
-            mt: '60%',
-            width: { sm: '312px' }
+            position: 'absolute',
+            bottom: 0,
+            maxHeight: '40vh',
+            width: '100%'
           }}
         >
-          {children}
-        </OverlayContent>
+          <OverlayContent
+            hasFullscreenVideo={false}
+            sx={{
+              // mt: '60%',
+              width: { sm: '312px' }
+            }}
+          >
+            {children}
+          </OverlayContent>
+        </Box>
       </Box>
     </Box>
   )
