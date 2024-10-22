@@ -190,6 +190,9 @@ export function JourneyDetailsDialog({
                         placeholder={t('Search Language')}
                         label={t('Language')}
                         variant="filled"
+                        inputRef={(ref) => {
+                          if (ref != null) ref?.focus()
+                        }}
                       />
                     )}
                     popper={{
