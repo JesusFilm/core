@@ -193,7 +193,6 @@ export function JourneyDetailsDialog({
                       />
                     )}
                     popper={{
-                      disablePortal: true,
                       modifiers: [
                         {
                           name: 'flip',
