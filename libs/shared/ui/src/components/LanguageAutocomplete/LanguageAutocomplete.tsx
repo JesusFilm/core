@@ -33,7 +33,7 @@ export interface LanguageAutocompleteProps {
   helperText?: string
   renderInput?: (params: AutocompleteRenderInputParams) => ReactNode
   renderOption?: (params: HTMLAttributes<HTMLLIElement>) => ReactNode
-  popper?: Pick<PopperOwnProps, 'placement' | 'modifiers' | 'anchorEl'>
+  popper?: Pick<PopperOwnProps, 'placement' | 'modifiers'>
 }
 
 export function LanguageAutocomplete({

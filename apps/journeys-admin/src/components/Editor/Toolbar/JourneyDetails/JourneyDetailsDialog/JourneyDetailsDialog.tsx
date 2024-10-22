@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useRef } from 'react'
+import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -29,8 +29,6 @@ export function JourneyDetailsDialog({
   open,
   onClose
 }: JourneyDetailsDialogProps): ReactElement {
-  const ancholEl = useRef<HTMLDivElement>(null)
-
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useJourneyUpdateMutation()
   const { journey } = useJourney()
@@ -145,7 +143,6 @@ export function JourneyDetailsDialog({
             setFieldValue
           }) => (
             <Dialog
-              ref={ancholEl}
               open={open}
               onClose={handleClose(resetForm)}
               dialogAction={{
@@ -196,7 +193,6 @@ export function JourneyDetailsDialog({
                       />
                     )}
                     popper={{
-                      anchorEl: ancholEl.current,
                       modifiers: [
                         {
                           name: 'flip',
