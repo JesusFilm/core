@@ -29,7 +29,7 @@ export function JourneyDetailsDialog({
   open,
   onClose
 }: JourneyDetailsDialogProps): ReactElement {
-  const ancholEl = useRef()
+  const ancholEl = useRef<HTMLDivElement>(null)
 
   const { t } = useTranslation('apps-journeys-admin')
   const [journeyUpdate] = useJourneyUpdateMutation()
@@ -145,6 +145,7 @@ export function JourneyDetailsDialog({
             setFieldValue
           }) => (
             <Dialog
+              ref={ancholEl}
               open={open}
               onClose={handleClose(resetForm)}
               dialogAction={{
@@ -180,7 +181,6 @@ export function JourneyDetailsDialog({
                     onChange={handleChange}
                   />
                   <LanguageAutocomplete
-                    ref={ancholEl}
                     onChange={async (value) =>
                       await setFieldValue('language', value)
                     }

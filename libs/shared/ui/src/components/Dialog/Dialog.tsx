@@ -7,7 +7,7 @@ import DialogContent from '@mui/material/DialogContent'
 import MuiDialogTitle from '@mui/material/DialogTitle'
 import IconButton from '@mui/material/IconButton'
 import { SxProps, styled } from '@mui/material/styles'
-import { ReactElement, ReactNode } from 'react'
+import React, { ReactElement, ReactNode, forwardRef } from 'react'
 
 interface DialogProps {
   open?: boolean
@@ -70,22 +70,26 @@ const StyledDialog = styled(MuiDialog)({
   }
 })
 
-export function Dialog({
-  open,
-  onClose,
-  dialogTitle,
-  dialogAction,
-  dialogActionChildren,
-  divider,
-  fullscreen,
-  children,
-  container,
-  loading = false,
-  testId,
-  sx
-}: DialogProps): ReactElement {
+export const Dialog = forwardRef(function Dialog(
+  {
+    open,
+    onClose,
+    dialogTitle,
+    dialogAction,
+    dialogActionChildren,
+    divider,
+    fullscreen,
+    children,
+    container,
+    loading = false,
+    testId,
+    sx
+  }: DialogProps,
+  ref: React.ForwardedRef<HTMLDivElement>
+): ReactElement {
   return (
     <StyledDialog
+      ref={ref}
       open={open === true}
       fullScreen={fullscreen}
       maxWidth="sm"
@@ -131,4 +135,4 @@ export function Dialog({
       ) : null}
     </StyledDialog>
   )
-}
+})

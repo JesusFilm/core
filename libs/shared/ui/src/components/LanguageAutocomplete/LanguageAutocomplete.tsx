@@ -7,13 +7,7 @@ import { PopperOwnProps } from '@mui/material/Popper/BasePopper.types'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import {
-  HTMLAttributes,
-  ReactElement,
-  ReactNode,
-  forwardRef,
-  useMemo
-} from 'react'
+import { HTMLAttributes, ReactElement, ReactNode, useMemo } from 'react'
 
 export interface Language {
   id: string
@@ -42,19 +36,16 @@ export interface LanguageAutocompleteProps {
   popper?: Pick<PopperOwnProps, 'placement' | 'modifiers' | 'anchorEl'>
 }
 
-export const LanguageAutocomplete = forwardRef(function LanguageAutocomplete(
-  {
-    onChange: handleChange,
-    value,
-    languages,
-    loading,
-    renderInput,
-    renderOption,
-    helperText,
-    popper
-  }: LanguageAutocompleteProps,
-  ref?
-): ReactElement {
+export function LanguageAutocomplete({
+  onChange: handleChange,
+  value,
+  languages,
+  loading,
+  renderInput,
+  renderOption,
+  helperText,
+  popper
+}: LanguageAutocompleteProps): ReactElement {
   const options = useMemo(() => {
     return (
       languages?.map(({ id, name }) => {
@@ -123,7 +114,6 @@ export const LanguageAutocomplete = forwardRef(function LanguageAutocomplete(
 
   return (
     <Autocomplete
-      ref={ref}
       disableClearable
       value={value}
       isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -141,4 +131,4 @@ export const LanguageAutocomplete = forwardRef(function LanguageAutocomplete(
       }}
     />
   )
-})
+}
