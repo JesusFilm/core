@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { MailerService } from '@nestjs-modules/mailer'
 
 export interface SendEmailParams {
@@ -10,6 +10,8 @@ export interface SendEmailParams {
 
 @Injectable()
 export class EmailService {
+  private readonly logger = new Logger(EmailService.name)
+
   constructor(private readonly mailerService: MailerService) {}
 
   async sendEmail({ to, subject, text, html }: SendEmailParams): Promise<void> {
@@ -31,6 +33,14 @@ export class EmailService {
       subject,
       text,
       html
+    })
+
+    this.logger.log('email sent', {
+      to: to.replaceAll(
+        '(?<=.)[^@](?=[^@]*?@)|(?:(?<=@.)|(?!^)\\G(?=[^@]*$)).(?=.*[^@]\\.)',
+        '*'
+      ),
+      subject
     })
   }
 }

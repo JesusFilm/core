@@ -70,10 +70,13 @@ export async function service(
     }
   )
 
-  await sendEmail({
-    to: job.data.email,
-    subject: 'Verify your email address on Next Steps',
-    text,
-    html
-  })
+  await sendEmail(
+    {
+      to: job.data.email,
+      subject: 'Verify your email address on Next Steps',
+      text,
+      html
+    },
+    logger
+  )
 }

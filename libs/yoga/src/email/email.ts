@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer'
+import { Logger } from 'pino'
 
 export interface SendEmailParams {
   to: string
@@ -11,12 +12,10 @@ const defaults = {
   from: '"Next Steps Support" <support@nextstep.is>'
 }
 
-export async function sendEmail({
-  to,
-  subject,
-  text,
-  html
-}: SendEmailParams): Promise<void> {
+export async function sendEmail(
+  { to, subject, text, html }: SendEmailParams,
+  logger?: Logger
+): Promise<void> {
   if (process.env.SMTP_URL == null) throw new Error('SMTP_URL is not defined')
 
   const [, domain] = to.split('@')
@@ -38,5 +37,13 @@ export async function sendEmail({
     subject,
     text,
     html
+  })
+
+  logger?.info('email sent', {
+    to: to.replaceAll(
+      '(?<=.)[^@](?=[^@]*?@)|(?:(?<=@.)|(?!^)\\G(?=[^@]*$)).(?=.*[^@]\\.)',
+      '*'
+    ),
+    subject
   })
 }
