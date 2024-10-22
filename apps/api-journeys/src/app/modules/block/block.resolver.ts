@@ -10,7 +10,7 @@ import { BlockDuplicateIdMap, BlocksFilter } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
-import { JOURNEY } from '../journey/journey.acl'
+import { INCLUDE_JOURNEY_ACL } from '../journey/journey.acl'
 
 import { BlockService, BlockWithAction } from './block.service'
 
@@ -37,7 +37,7 @@ export class BlockResolver {
       where: { id, deletedAt: null },
       include: {
         action: true,
-        ...JOURNEY
+        ...INCLUDE_JOURNEY_ACL
       }
     })
 
@@ -66,7 +66,7 @@ export class BlockResolver {
       where: { id, deletedAt: null },
       include: {
         action: true,
-        ...JOURNEY
+        ...INCLUDE_JOURNEY_ACL
       }
     })
 
@@ -97,7 +97,7 @@ export class BlockResolver {
       where: { id, deletedAt: null },
       include: {
         action: true,
-        ...JOURNEY
+        ...INCLUDE_JOURNEY_ACL
       }
     })
 
@@ -122,7 +122,7 @@ export class BlockResolver {
       where: { id, deletedAt: null },
       include: {
         action: true,
-        ...JOURNEY
+        ...INCLUDE_JOURNEY_ACL
       }
     })
 
@@ -157,7 +157,7 @@ export class BlockResolver {
       },
       include: {
         action: true,
-        ...JOURNEY
+        ...INCLUDE_JOURNEY_ACL
       }
     })
     return blocks
@@ -173,7 +173,7 @@ export class BlockResolver {
       where: { id },
       include: {
         action: true,
-        ...JOURNEY
+        ...INCLUDE_JOURNEY_ACL
       }
     })
 

@@ -17,7 +17,7 @@ import {
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
-import { JOURNEY } from '../../journey/journey.acl'
+import { INCLUDE_JOURNEY_ACL } from '../../journey/journey.acl'
 import { BlockService } from '../block.service'
 
 const videoBlockYouTubeSchema = object().shape({
@@ -177,7 +177,7 @@ export class VideoBlockResolver {
         },
         include: {
           action: true,
-          ...JOURNEY
+          ...INCLUDE_JOURNEY_ACL
         }
       })
       if (!ability.can(Action.Update, subject('Journey', block.journey)))
