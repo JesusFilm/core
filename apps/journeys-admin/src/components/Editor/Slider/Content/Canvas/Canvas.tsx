@@ -119,7 +119,6 @@ export function Canvas(): ReactElement {
       resetClickOrigin()
       return
     }
-
     dispatch({
       type: 'SetSelectedBlockAction',
       selectedBlock: selectedStep
