@@ -119,95 +119,107 @@ export function FocalPoint({
         <Stack gap={4}>
           <Typography variant="subtitle2">{t('Focal Point')}</Typography>
           <Box
-            ref={imageRef}
             sx={{
-              height: 300,
               width: '100%',
+              height: 200,
               display: 'flex',
-              cursor: 'pointer',
-              userSelect: 'none',
-              overflow: 'hidden',
-              position: 'relative',
               alignItems: 'center',
               justifyContent: 'center',
-              borderRadius: 4,
-              border: (theme) => `1px solid ${theme.palette.divider}`
+              overflow: 'hidden',
+              bgcolor: 'background.default',
+              borderRadius: 1
             }}
-            onClick={handleClick}
           >
-            <Image
-              src={imageBlock.src}
-              alt={imageBlock?.alt ?? ''}
-              layout="fill"
-              objectFit="cover"
-            />
             <Box
+              ref={imageRef}
               sx={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0
+                height: '100%',
+                aspectRatio: `${imageBlock?.width ?? 0} / ${
+                  imageBlock?.height ?? 0
+                }`,
+                position: 'relative',
+                display: 'flex',
+                cursor: 'pointer',
+                userSelect: 'none',
+                border: (theme) => `1px solid ${theme.palette.divider}`,
+                overflow: 'hidden'
               }}
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                top: 0,
-                left: '33.33%',
-                bottom: 0,
-                width: '1px',
-                backgroundColor: 'rgba(255,255,255,0.5)'
-              }}
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                top: 0,
-                left: '66.66%',
-                bottom: 0,
-                width: '1px',
-                backgroundColor: 'rgba(255,255,255,0.5)'
-              }}
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                top: '33.33%',
-                left: 0,
-                right: 0,
-                height: '1px',
-                backgroundColor: 'rgba(255,255,255,0.5)'
-              }}
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                top: '66.66%',
-                left: 0,
-                right: 0,
-                height: '1px',
-                backgroundColor: 'rgba(255,255,255,0.5)'
-              }}
-            />
-            <Box
-              data-testid="focal-point-dot"
-              sx={{
-                width: 30,
-                height: 30,
-                cursor: 'move',
-                borderRadius: '50%',
-                position: 'absolute',
-                pointerEvents: 'auto',
-                top: `${localPosition.y}%`,
-                left: `${localPosition.x}%`,
-                transform: 'translate(-50%, -50%)',
-                backdropFilter: 'blur(4px)',
-                border: '2px solid white',
-                boxShadow: (theme) => theme.shadows[3]
-              }}
-              onMouseDown={handleMouseDown}
-            />
+              onClick={handleClick}
+            >
+              <Image
+                src={imageBlock.src}
+                alt={imageBlock?.alt ?? ''}
+                layout="fill"
+                objectFit="cover"
+              />
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0
+                }}
+              />
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: '33.33%',
+                  bottom: 0,
+                  width: '1px',
+                  backgroundColor: 'rgba(255,255,255,0.5)'
+                }}
+              />
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: '66.66%',
+                  bottom: 0,
+                  width: '1px',
+                  backgroundColor: 'rgba(255,255,255,0.5)'
+                }}
+              />
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: '33.33%',
+                  left: 0,
+                  right: 0,
+                  height: '1px',
+                  backgroundColor: 'rgba(255,255,255,0.5)'
+                }}
+              />
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: '66.66%',
+                  left: 0,
+                  right: 0,
+                  height: '1px',
+                  backgroundColor: 'rgba(255,255,255,0.5)'
+                }}
+              />
+              <Box
+                data-testid="focal-point-dot"
+                sx={{
+                  width: 25,
+                  height: 25,
+                  cursor: 'move',
+                  borderRadius: '50%',
+                  position: 'absolute',
+                  pointerEvents: 'auto',
+                  top: `${localPosition.y}%`,
+                  left: `${localPosition.x}%`,
+                  transform: 'translate(-50%, -50%)',
+                  backdropFilter: 'blur(4px)',
+                  border: '2px solid white',
+                  boxShadow: (theme) => theme.shadows[3]
+                }}
+                onMouseDown={handleMouseDown}
+              />
+            </Box>
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
             <TextField
