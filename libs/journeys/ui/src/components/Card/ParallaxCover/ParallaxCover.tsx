@@ -49,7 +49,7 @@ export function ParallaxCover({
           WebkitBackdropFilter: 'blur(40px)',
           backdropFilter: 'blur(40px)',
           borderRadius: 'inherit',
-          backgroundColor: `${backgroundColor}60`
+          backgroundColor: `${backgroundColor}`
         }}
       />
 
@@ -83,7 +83,7 @@ export function ParallaxCover({
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            transform: 'translateZ(-10px) scale(2) translate(0px, -38%)',
+            transform: 'translateZ(-10px) scale(2)',
             WebkitMask: `linear-gradient(to top, transparent 0%, ${backgroundColor}14 5%, ${backgroundColor}33 10%, ${backgroundColor}60 15%, ${backgroundColor}b0 20%, ${backgroundColor}e6 25%, ${backgroundColor} 30%)`,
             mask: `linear-gradient(to top, transparent 0%, ${backgroundColor}14 5%, ${backgroundColor}33 10%, ${backgroundColor}60 15%, ${backgroundColor}b0 20%, ${backgroundColor}e6 25%, ${backgroundColor} 30%)`
           }}
@@ -98,17 +98,26 @@ export function ParallaxCover({
             objectFit="cover"
           />
         </Box>
-
-        <OverlayContent
-          data-testid="parallax-content"
-          hasFullscreenVideo={false}
+        <Box
+          data-testid="overlay-gradient"
           sx={{
-            mt: '60%',
-            width: { sm: '312px' }
+            width: '100%',
+            WebkitMask: `linear-gradient(to bottom, transparent 0%, ${backgroundColor}14 10px, ${backgroundColor}33 20px, ${backgroundColor}60 30px, ${backgroundColor}b0 40px, ${backgroundColor}e6 50px, ${backgroundColor} 60px)`,
+            mask: `linear-gradient(to bottom, transparent 0%, ${backgroundColor}14 10px, ${backgroundColor}33 20px, ${backgroundColor}60 30px, ${backgroundColor}b0 40px, ${backgroundColor}e6 50px, ${backgroundColor} 60px)`,
+            backgroundColor: `${backgroundColor}d9`
           }}
         >
-          {children}
-        </OverlayContent>
+          <OverlayContent
+            data-testid="parallax-content"
+            hasFullscreenVideo={false}
+            sx={{
+              mt: `calc(100% + 40px)`,
+              width: { sm: '312px' }
+            }}
+          >
+            {children}
+          </OverlayContent>
+        </Box>
       </Box>
     </Box>
   )
