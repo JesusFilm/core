@@ -66,19 +66,6 @@ export function PageWrapper({
   const { navbar, toolbar, bottomPanel, sidePanel } = usePageWrapperStyles()
   const router = useRouter()
 
-  function renderNavigationDrawer(): ReactElement {
-    return (
-      <Box>
-        <NavigationDrawer
-          open={open}
-          onClose={setOpen}
-          user={user}
-          selectedPage={router?.pathname?.split('/')[1]}
-        />
-      </Box>
-    )
-  }
-
   return (
     <PageProvider initialState={initialState}>
       <Box
@@ -93,23 +80,22 @@ export function PageWrapper({
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
           <Box
             sx={{
-              backgroundColor: background ?? 'background.default',
-              width: navbar.width,
-              overflow: 'hidden',
-              '-webkit-backface-visibility': fadeInNavBar
-                ? 'hidden'
-                : 'visible', // Safari Fix
-              '-webkit-transform': fadeInNavBar ? 'translateZ(0)' : 'none' // Forces GPU acceleration
+              minWidth: navbar.width,
+              backgroundColor: background ?? 'background.default'
             }}
           >
-            {showNavBar &&
-              (fadeInNavBar ? (
-                <Fade in={showNavBar} timeout={1000}>
-                  {renderNavigationDrawer()}
-                </Fade>
-              ) : (
-                renderNavigationDrawer()
-              ))}
+            {showNavBar && (
+              <Fade in appear={fadeInNavBar} timeout={500}>
+                <Box>
+                  <NavigationDrawer
+                    open={open}
+                    onClose={setOpen}
+                    user={user}
+                    selectedPage={router?.pathname?.split('/')[1]}
+                  />
+                </Box>
+              </Fade>
+            )}
           </Box>
 
           <Stack
