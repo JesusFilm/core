@@ -137,10 +137,7 @@ export class VideoBlockResolver {
             extensions: { code: 'NOT_FOUND' }
           })
         if (parentBlock.coverBlock != null)
-          await this.blockService.removeBlockAndChildren(
-            parentBlock.coverBlock,
-            tx
-          )
+          await this.blockService.removeBlockAndChildren(parentBlock.coverBlock)
       }
 
       const block = await tx.block.create({
