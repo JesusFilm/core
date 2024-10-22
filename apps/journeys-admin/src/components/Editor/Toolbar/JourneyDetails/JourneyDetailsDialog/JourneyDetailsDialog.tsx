@@ -198,7 +198,9 @@ export function JourneyDetailsDialog({
                         {
                           name: 'flip',
                           enabled: false,
-                          altBoundary: true
+                          options: {
+                            altBoundary: true
+                          }
                         },
                         {
                           name: 'preventOverflow',
