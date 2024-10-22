@@ -24,6 +24,7 @@ import {
 
 import { useVideoVariant } from '../../../../../../../libs/useVideoVariant/useVideoVariant'
 import { DraggableRow } from '../DraggableRow'
+import { Section } from '../Section'
 
 import { Downloads } from './Downloads'
 
@@ -135,30 +136,38 @@ export function Variants({ variants }): ReactElement {
   }
   const handleClose = (): void => setOpen(false)
   return (
-    <Box sx={{ height: '600px', overflowY: 'scroll' }}>
-      <DndContext>
-        <SortableContext items={items}>
-          <Stack gap={1}>
-            {items.map((variant, idx) => (
-              <DraggableRow
-                key={variant.id}
-                id={variant.id}
-                label={variant.slug}
-                idx={idx}
-                count={items.length}
-                handleClick={() => {
-                  handleOpen(variant)
-                }}
-              />
-            ))}
-          </Stack>
-        </SortableContext>
-      </DndContext>
-      <VariantModal
-        open={open}
-        onClose={handleClose}
-        variant={variants.find((variant) => variant.id === selected)}
-      />
-    </Box>
+    <Section
+      title="Variants"
+      action={{
+        label: 'Create Variant',
+        onClick: () => alert('Create variant')
+      }}
+    >
+      <Box sx={{ height: '600px', overflowY: 'scroll' }}>
+        <DndContext>
+          <SortableContext items={items}>
+            <Stack gap={1}>
+              {items.map((variant, idx) => (
+                <DraggableRow
+                  key={variant.id}
+                  id={variant.id}
+                  label={variant.slug}
+                  idx={idx}
+                  count={items.length}
+                  handleClick={() => {
+                    handleOpen(variant)
+                  }}
+                />
+              ))}
+            </Stack>
+          </SortableContext>
+        </DndContext>
+        <VariantModal
+          open={open}
+          onClose={handleClose}
+          variant={variants.find((variant) => variant.id === selected)}
+        />
+      </Box>
+    </Section>
   )
 }

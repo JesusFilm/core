@@ -1,4 +1,3 @@
-import { supportsResultCaching } from '@apollo/client/cache/inmemory/entityStore'
 import {
   Box,
   Button,

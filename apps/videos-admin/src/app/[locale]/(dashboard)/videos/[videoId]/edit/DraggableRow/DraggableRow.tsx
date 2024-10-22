@@ -16,7 +16,6 @@ import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import Drag from '@core/shared/ui/icons/Drag'
-import Trash2 from '@core/shared/ui/icons/Trash2'
 
 interface DraggableRowProps {
   id: string
@@ -84,7 +83,7 @@ export function DraggableRow({
         borderColor: 'divider',
         p: 1,
         borderRadius: 1,
-        width: '1000px'
+        width: '100%'
       }}
     >
       <IconButton {...listeners}>
