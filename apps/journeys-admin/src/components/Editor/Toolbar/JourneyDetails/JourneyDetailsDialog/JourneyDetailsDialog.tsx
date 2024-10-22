@@ -1,12 +1,10 @@
 import { ApolloError } from '@apollo/client'
 import Stack from '@mui/material/Stack'
-import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
-import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik, FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useRef } from 'react'
 import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -31,10 +29,9 @@ export function JourneyDetailsDialog({
   open,
   onClose
 }: JourneyDetailsDialogProps): ReactElement {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const ancholEl = useRef()
 
   const { t } = useTranslation('apps-journeys-admin')
-  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [journeyUpdate] = useJourneyUpdateMutation()
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
@@ -155,7 +152,6 @@ export function JourneyDetailsDialog({
                 closeLabel: t('Cancel')
               }}
               testId="JourneyDetailsDialog"
-              fullscreen={!smUp}
             >
               <Form>
                 <Stack spacing={6}>
@@ -184,6 +180,7 @@ export function JourneyDetailsDialog({
                     onChange={handleChange}
                   />
                   <LanguageAutocomplete
+                    ref={ancholEl}
                     onChange={async (value) =>
                       await setFieldValue('language', value)
                     }
@@ -196,13 +193,10 @@ export function JourneyDetailsDialog({
                         placeholder={t('Search Language')}
                         label={t('Language')}
                         variant="filled"
-                        onClick={(e) =>
-                          setAnchorEl(anchorEl != null ? null : e.currentTarget)
-                        }
                       />
                     )}
                     popper={{
-                      anchorEl,
+                      anchorEl: ancholEl.current,
                       modifiers: [
                         {
                           name: 'flip',
