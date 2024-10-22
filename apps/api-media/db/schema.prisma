@@ -155,6 +155,11 @@ model VideoVariant {
   @@index(videoId(type: Hash))
 }
 
+model VideoEdition {
+  id   String  @id
+  name String?
+}
+
 model VideoSubtitle {
   id         String  @id @default(uuid())
   videoId    String
