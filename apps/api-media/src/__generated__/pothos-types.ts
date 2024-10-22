@@ -169,9 +169,9 @@ export default interface PrismaTypes {
                 Nullable: false;
             };
             videoEdition: {
-                Shape: VideoEdition | null;
+                Shape: VideoEdition;
                 Name: "VideoEdition";
-                Nullable: true;
+                Nullable: false;
             };
             video: {
                 Shape: Video | null;
@@ -185,7 +185,7 @@ export default interface PrismaTypes {
         Shape: VideoEdition;
         Include: Prisma.VideoEditionInclude;
         Select: Prisma.VideoEditionSelect;
-        OrderBy: Prisma.VideoEditionOrderByWithRelationAndSearchRelevanceInput;
+        OrderBy: Prisma.VideoEditionOrderByWithRelationInput;
         WhereUnique: Prisma.VideoEditionWhereUniqueInput;
         Where: Prisma.VideoEditionWhereInput;
         Create: {};
@@ -219,9 +219,9 @@ export default interface PrismaTypes {
         ListRelations: never;
         Relations: {
             videoEdition: {
-                Shape: VideoEdition | null;
+                Shape: VideoEdition;
                 Name: "VideoEdition";
-                Nullable: true;
+                Nullable: false;
             };
             Video: {
                 Shape: Video;
