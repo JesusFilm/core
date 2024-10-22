@@ -1,0 +1,1 @@
+export { seedTags } from './tag'

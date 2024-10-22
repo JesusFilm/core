@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, CloudflareVideo, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, UserMediaRole } from ".prisma/api-media-client";
+import type { Prisma, CloudflareImage, CloudflareVideo, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, UserMediaRole } from ".prisma/api-media-client";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
@@ -174,6 +174,20 @@ export default interface PrismaTypes {
                 Nullable: true;
             };
         };
+    };
+    VideoEdition: {
+        Name: "VideoEdition";
+        Shape: VideoEdition;
+        Include: never;
+        Select: Prisma.VideoEditionSelect;
+        OrderBy: Prisma.VideoEditionOrderByWithRelationInput;
+        WhereUnique: Prisma.VideoEditionWhereUniqueInput;
+        Where: Prisma.VideoEditionWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: never;
+        ListRelations: never;
+        Relations: {};
     };
     VideoSubtitle: {
         Name: "VideoSubtitle";
