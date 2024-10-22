@@ -459,7 +459,7 @@ export default interface PrismaTypes {
         Shape: Taxonomy;
         Include: Prisma.TaxonomyInclude;
         Select: Prisma.TaxonomySelect;
-        OrderBy: Prisma.TaxonomyOrderByWithRelationAndSearchRelevanceInput;
+        OrderBy: Prisma.TaxonomyOrderByWithRelationInput;
         WhereUnique: Prisma.TaxonomyWhereUniqueInput;
         Where: Prisma.TaxonomyWhereInput;
         Create: {};
@@ -479,7 +479,7 @@ export default interface PrismaTypes {
         Shape: TaxonomyName;
         Include: Prisma.TaxonomyNameInclude;
         Select: Prisma.TaxonomyNameSelect;
-        OrderBy: Prisma.TaxonomyNameOrderByWithRelationAndSearchRelevanceInput;
+        OrderBy: Prisma.TaxonomyNameOrderByWithRelationInput;
         WhereUnique: Prisma.TaxonomyNameWhereUniqueInput;
         Where: Prisma.TaxonomyNameWhereInput;
         Create: {};
