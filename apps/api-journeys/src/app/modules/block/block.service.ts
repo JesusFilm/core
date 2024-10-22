@@ -336,19 +336,29 @@ export class BlockService {
   @FromPostgresql()
   async removeBlockAndChildren(
     block: Block,
-    tx: PrismaTransation = this.prismaService
   ): Promise<BlockWithAction[]> {
-    await tx.block.update({
-      where: { id: block.id },
-      data: { deletedAt: new Date().toISOString() }
+    return await this.prismaService.$transaction(async (tx) => {
+      const currentTime = new Date().toISOString()
+      const updatedBlock = await tx.block.update({
+        where: { id: block.id },
+        data: { deletedAt: currentTime }
+      })
+      await tx.journey.update({
+        where: {
+          id: updatedBlock.journeyId
+        },
+        data: { updatedAt: currentTime }
+      })
+      const result = await this.reorderSiblings(
+        await this.getSiblingsInternal(
+          block.journeyId,
+          block.parentBlockId,
+          tx
+        ),
+        tx
+      )
+      return result
     })
-
-    const result = await this.reorderSiblings(
-      await this.getSiblingsInternal(block.journeyId, block.parentBlockId, tx),
-      tx
-    )
-
-    return result
   }
 
   async validateBlock(

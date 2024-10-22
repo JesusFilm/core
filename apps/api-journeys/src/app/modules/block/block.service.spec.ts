@@ -695,6 +695,10 @@ describe('BlockService', () => {
     })
 
     it('should remove blocks and return siblings', async () => {
+      jest.useFakeTimers()
+      jest.setSystemTime(new Date('2024-10-22T03:39:39.268Z'))
+
+      prismaService.block.update.mockResolvedValueOnce(block)
       service.getSiblingsInternal = jest.fn().mockResolvedValue([
         { id: block.id, parentOrder: 1 },
         { id: block.id, parentOrder: 2 }
@@ -703,7 +707,6 @@ describe('BlockService', () => {
         { id: block.id, parentOrder: 0 },
         { id: block.id, parentOrder: 1 }
       ])
-
       expect(await service.removeBlockAndChildren(block)).toEqual([
         { id: block.id, parentOrder: 0 },
         { id: block.id, parentOrder: 1 }
@@ -714,9 +717,40 @@ describe('BlockService', () => {
         prismaService
       )
       expect(prismaService.block.update).toHaveBeenCalledWith({
-        data: { deletedAt: expect.any(String) },
+        data: { deletedAt: '2024-10-22T03:39:39.268Z' },
         where: { id: '1' }
       })
+    })
+  })
+
+  it('should update journey updatedAt when block is deleted', async () => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date('2024-10-22T03:39:39.268Z'))
+
+    prismaService.block.update.mockResolvedValueOnce(block)
+    service.getSiblingsInternal = jest.fn().mockResolvedValue([
+      { id: block.id, parentOrder: 1 },
+      { id: block.id, parentOrder: 2 }
+    ])
+    service.reorderSiblings = jest.fn().mockResolvedValue([
+      { id: block.id, parentOrder: 0 },
+      { id: block.id, parentOrder: 1 }
+    ])
+    expect(await service.removeBlockAndChildren(block)).toEqual([
+      { id: block.id, parentOrder: 0 },
+      { id: block.id, parentOrder: 1 }
+    ])
+    expect(prismaService.journey.update).toHaveBeenCalledWith({
+      data: {
+        updatedAt: '2024-10-22T03:39:39.268Z'
+      },
+      where: {
+        id: '1'
+      }
+    })
+    expect(prismaService.block.update).toHaveBeenCalledWith({
+      data: { deletedAt: '2024-10-22T03:39:39.268Z' },
+      where: { id: '1' }
     })
   })
 
