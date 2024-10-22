@@ -95,12 +95,16 @@ export function PageWrapper({
             sx={{
               backgroundColor: background ?? 'background.default',
               width: navbar.width,
-              overflow: 'hidden'
+              overflow: 'hidden',
+              '-webkit-backface-visibility': fadeInNavBar
+                ? 'hidden'
+                : 'visible', // Safari Fix
+              '-webkit-transform': fadeInNavBar ? 'translateZ(0)' : 'none' // Forces GPU acceleration
             }}
           >
             {showNavBar &&
               (fadeInNavBar ? (
-                <Fade in={showNavBar} timeout={500}>
+                <Fade in={showNavBar} timeout={1000}>
                   {renderNavigationDrawer()}
                 </Fade>
               ) : (
