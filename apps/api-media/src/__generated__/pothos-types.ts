@@ -180,7 +180,7 @@ export default interface PrismaTypes {
         Shape: VideoEdition;
         Include: never;
         Select: Prisma.VideoEditionSelect;
-        OrderBy: Prisma.VideoEditionOrderByWithRelationAndSearchRelevanceInput;
+        OrderBy: Prisma.VideoEditionOrderByWithRelationInput;
         WhereUnique: Prisma.VideoEditionWhereUniqueInput;
         Where: Prisma.VideoEditionWhereInput;
         Create: {};
