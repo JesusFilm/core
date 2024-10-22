@@ -26,7 +26,7 @@ title: Deploying a project on mobile/tablet
 
 - Change the value to `http://[YOUR_IP_ADDRESS]:4100`. For example, if your IP address was `123.4.5.6`, then set the variable to `http:123.4.5.6:4100`
 
-3. Start the server on your machine by running `nf start` & `nx serve journeys-admin`
+3. Start the server on your machine by running `nf start` & `nx serve journeys`
 
 - If you had these running already, restart them.
 
