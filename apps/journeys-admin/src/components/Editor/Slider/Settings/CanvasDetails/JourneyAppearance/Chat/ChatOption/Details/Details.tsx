@@ -266,8 +266,8 @@ export function Details({
         value === ''
           ? ''
           : hasProtocolPrefix.test(value ?? '')
-          ? value
-          : `https://${value}`
+            ? value
+            : `https://${value}`
 
       input = {
         link,
