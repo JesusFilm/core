@@ -197,6 +197,13 @@ export function JourneyDetailsDialog({
                         {
                           name: 'flip',
                           enabled: false
+                        },
+                        {
+                          name: 'preventOverflow',
+                          enabled: true,
+                          options: {
+                            altAxis: true
+                          }
                         }
                       ]
                     }}
