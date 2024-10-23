@@ -139,6 +139,8 @@ export function MenuIconSelect(): ReactElement {
         <MenuItem value="" key="empty">
           <Box
             sx={{
+              height: 56,
+              width: 56,
               borderRadius: 2,
               boxSizing: 'border-box',
               border: ({ palette }) =>
@@ -152,6 +154,8 @@ export function MenuIconSelect(): ReactElement {
           <MenuItem value={value} key={value}>
             <Box
               sx={{
+                height: 56,
+                width: 56,
                 borderRadius: 2,
                 background: ({ palette }) => palette.background.default,
                 display: 'grid',
