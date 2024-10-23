@@ -53,7 +53,6 @@ describe('FocalPoint', () => {
       'https://imagedelivery.net/cloudflare-key/uploadId/public'
     )
     expect(screen.getByTestId('focal-point-dot')).toBeInTheDocument()
-    expect(screen.getByRole('slider')).toBeInTheDocument()
   })
 
   it('should not render FocalPoint when image block src is null', () => {
@@ -101,79 +100,6 @@ describe('FocalPoint', () => {
         ...imageBlockResult,
         focalTop: 75,
         focalLeft: 75
-      })
-    })
-  })
-
-  describe('Image Slider', () => {
-    it('renders with default zoom value of 1', () => {
-      render(
-        <FocalPoint
-          imageBlock={imageBlock}
-          updateImageBlock={updateImageBlock}
-        />
-      )
-      const slider = screen.getByRole('slider')
-      expect(slider).toHaveValue('1')
-    })
-
-    it('updates zoom value when slider is changed', () => {
-      render(
-        <FocalPoint
-          imageBlock={imageBlock}
-          updateImageBlock={updateImageBlock}
-        />
-      )
-      const slider = screen.getByRole('slider')
-
-      fireEvent.change(slider, { target: { value: '2' } })
-      expect(slider).toHaveValue('2')
-
-      const imageContainer = screen.getByRole('img').parentElement
-      expect(imageContainer).toHaveStyle('transform: scale(2)')
-    })
-
-    it('respects min and max zoom values', () => {
-      render(
-        <FocalPoint
-          imageBlock={imageBlock}
-          updateImageBlock={updateImageBlock}
-        />
-      )
-      const slider = screen.getByRole('slider')
-
-      fireEvent.change(slider, { target: { value: '0.05' } })
-      expect(slider).toHaveValue('0.1')
-
-      fireEvent.change(slider, { target: { value: '4' } })
-      expect(slider).toHaveValue('3')
-    })
-
-    it('maintains zoom value when updating focal point', async () => {
-      mockedCalculatePoint.mockReturnValueOnce({ x: 25, y: 25 })
-      render(
-        <FocalPoint
-          imageBlock={imageBlock}
-          updateImageBlock={updateImageBlock}
-        />
-      )
-
-      const slider = screen.getByRole('slider')
-      fireEvent.change(slider, { target: { value: '2' } })
-
-      const image = screen.getByRole('img')
-      fireEvent.click(image, { clientX: 25, clientY: 25 })
-
-      expect(slider).toHaveValue('2')
-      const imageContainer = screen.getByRole('img').parentElement
-      expect(imageContainer).toHaveStyle('transform: scale(2)')
-
-      await waitFor(() => {
-        expect(updateImageBlock).toHaveBeenCalledWith({
-          ...imageBlockResult,
-          focalTop: 25,
-          focalLeft: 25
-        })
       })
     })
   })
