@@ -3028,7 +3028,7 @@ export type Taxonomy = {
 
 
 export type TaxonomyNameArgs = {
-  languageCode?: InputMaybe<Scalars['String']['input']>;
+  languageCodes?: InputMaybe<Array<Scalars['String']['input']>>;
   languageId?: InputMaybe<Scalars['String']['input']>;
 };
 
