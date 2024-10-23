@@ -17,13 +17,10 @@ builder.prismaObject('VideoImageAlt', {
 })
 
 builder.mutationFields((t) => ({
-  videoImageAltCreate: t.prismaField({
+  videoImageAltCreate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoImageAlt',
     args: {
       input: t.arg({ type: VideoTranslationCreateInput, required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { input }) => {
       return await prisma.videoImageAlt.create({
@@ -35,13 +32,10 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  videoImageAltUpdate: t.prismaField({
+  videoImageAltUpdate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoImageAlt',
     args: {
       input: t.arg({ type: VideoTranslationUpdateInput, required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { input }) => {
       return await prisma.videoImageAlt.update({
@@ -55,13 +49,10 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  videoImageAltDelete: t.prismaField({
+  videoImageAltDelete: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoImageAlt',
     args: {
       id: t.arg.id({ required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { id }) => {
       return await prisma.videoImageAlt.delete({
