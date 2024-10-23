@@ -1,11 +1,15 @@
 import Box from '@mui/material/Box'
+import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import debounce from 'lodash/debounce'
+import isArray from 'lodash/isArray'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+
+import MinusCircleContainedIcon from '@core/shared/ui/icons/MinusCircleContained'
+import Plus1Icon from '@core/shared/ui/icons/Plus1'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../../../../../__generated__/globalTypes'
@@ -35,13 +39,13 @@ export function FocalPoint({
 }: FocalPointProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
+  const imageRef = useRef<HTMLDivElement>(null)
+  const [isDragging, setIsDragging] = useState(false)
+  const [zoom, setZoom] = useState(1)
   const [localPosition, setLocalPosition] = useState<Position>({
     x: imageBlock?.focalLeft ?? INITIAL_POSITION.x,
     y: imageBlock?.focalTop ?? INITIAL_POSITION.y
   })
-
-  const imageRef = useRef<HTMLDivElement>(null)
-  const [isDragging, setIsDragging] = useState(false)
 
   const debouncedUpdateImageBlock = useCallback(
     debounce((position: Position) => {
@@ -87,13 +91,9 @@ export function FocalPoint({
     }
   }
 
-  function handleChange(axis: 'x' | 'y', value: string): void {
-    const numValue = parseFloat(value)
-    if (!isNaN(numValue)) {
-      updatePoint({
-        x: axis === 'x' ? numValue : localPosition.x,
-        y: axis === 'y' ? numValue : localPosition.y
-      })
+  function handleChange(_event: Event, value: number | number[]): void {
+    if (!isArray(value)) {
+      setZoom(value)
     }
   }
 
@@ -141,6 +141,7 @@ export function FocalPoint({
                 display: 'flex',
                 cursor: 'pointer',
                 userSelect: 'none',
+                transform: `scale(${zoom})`,
                 border: (theme) => `1px solid ${theme.palette.divider}`,
                 overflow: 'hidden'
               }}
@@ -221,29 +222,27 @@ export function FocalPoint({
               />
             </Box>
           </Box>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-            <TextField
-              type="number"
-              label={t('Left')}
-              value={localPosition.x.toFixed(0)}
-              onChange={(e) => handleChange('x', e.target.value)}
-              slotProps={{
-                input: { endAdornment: '%' },
-                htmlInput: { min: MIN_VALUE, max: MAX_VALUE }
-              }}
-              sx={{ width: '45%' }}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 2
+            }}
+          >
+            <MinusCircleContainedIcon
+              sx={{ fontSize: 20, color: 'text.disabled' }}
             />
-            <TextField
-              type="number"
-              label={t('Top')}
-              value={localPosition.y.toFixed(0)}
-              onChange={(e) => handleChange('y', e.target.value)}
-              slotProps={{
-                input: { endAdornment: '%' },
-                htmlInput: { min: MIN_VALUE, max: MAX_VALUE }
-              }}
-              sx={{ width: '45%' }}
+            <Slider
+              min={0.1}
+              max={3}
+              step={0.1}
+              value={zoom}
+              onChange={handleChange}
+              sx={{ mx: 2 }}
             />
+            <Plus1Icon sx={{ fontSize: 20, color: 'text.disabled' }} />
           </Box>
         </Stack>
       )}

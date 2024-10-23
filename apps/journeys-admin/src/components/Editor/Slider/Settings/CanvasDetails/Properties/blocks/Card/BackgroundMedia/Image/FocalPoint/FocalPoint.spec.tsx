@@ -53,8 +53,7 @@ describe('FocalPoint', () => {
       'https://imagedelivery.net/cloudflare-key/uploadId/public'
     )
     expect(screen.getByTestId('focal-point-dot')).toBeInTheDocument()
-    expect(screen.getByLabelText('Left')).toHaveValue(50)
-    expect(screen.getByLabelText('Top')).toHaveValue(50)
+    expect(screen.getByRole('slider')).toBeInTheDocument()
   })
 
   it('should not render FocalPoint when image block src is null', () => {
@@ -106,45 +105,75 @@ describe('FocalPoint', () => {
     })
   })
 
-  it('updates image block when focal point is updated through input', async () => {
-    render(
-      <FocalPoint imageBlock={imageBlock} updateImageBlock={updateImageBlock} />
-    )
-
-    const inputX = screen.getByLabelText('Left')
-    const inputY = screen.getByLabelText('Top')
-
-    fireEvent.change(inputX, { target: { value: '75' } })
-    fireEvent.change(inputY, { target: { value: '75' } })
-
-    await waitFor(() => {
-      expect(updateImageBlock).toHaveBeenCalledWith({
-        ...imageBlockResult,
-
-        focalTop: 75,
-        focalLeft: 75
-      })
+  describe('Image Slider', () => {
+    it('renders with default zoom value of 1', () => {
+      render(
+        <FocalPoint
+          imageBlock={imageBlock}
+          updateImageBlock={updateImageBlock}
+        />
+      )
+      const slider = screen.getByRole('slider')
+      expect(slider).toHaveValue('1')
     })
-  })
 
-  it('debounces rapid changes on text input update', async () => {
-    render(
-      <FocalPoint imageBlock={imageBlock} updateImageBlock={updateImageBlock} />
-    )
+    it('updates zoom value when slider is changed', () => {
+      render(
+        <FocalPoint
+          imageBlock={imageBlock}
+          updateImageBlock={updateImageBlock}
+        />
+      )
+      const slider = screen.getByRole('slider')
 
-    const inputX = screen.getByLabelText('Left')
+      fireEvent.change(slider, { target: { value: '2' } })
+      expect(slider).toHaveValue('2')
 
-    fireEvent.change(inputX, { target: { value: '60' } })
-    fireEvent.change(inputX, { target: { value: '70' } })
-    fireEvent.change(inputX, { target: { value: '80' } })
+      const imageContainer = screen.getByRole('img').parentElement
+      expect(imageContainer).toHaveStyle('transform: scale(2)')
+    })
 
-    jest.runAllTimers()
+    it('respects min and max zoom values', () => {
+      render(
+        <FocalPoint
+          imageBlock={imageBlock}
+          updateImageBlock={updateImageBlock}
+        />
+      )
+      const slider = screen.getByRole('slider')
 
-    await waitFor(() => {
-      expect(updateImageBlock).toHaveBeenCalledTimes(1)
-      expect(updateImageBlock).toHaveBeenCalledWith({
-        ...imageBlockResult,
-        focalLeft: 80
+      fireEvent.change(slider, { target: { value: '0.05' } })
+      expect(slider).toHaveValue('0.1')
+
+      fireEvent.change(slider, { target: { value: '4' } })
+      expect(slider).toHaveValue('3')
+    })
+
+    it('maintains zoom value when updating focal point', async () => {
+      mockedCalculatePoint.mockReturnValueOnce({ x: 25, y: 25 })
+      render(
+        <FocalPoint
+          imageBlock={imageBlock}
+          updateImageBlock={updateImageBlock}
+        />
+      )
+
+      const slider = screen.getByRole('slider')
+      fireEvent.change(slider, { target: { value: '2' } })
+
+      const image = screen.getByRole('img')
+      fireEvent.click(image, { clientX: 25, clientY: 25 })
+
+      expect(slider).toHaveValue('2')
+      const imageContainer = screen.getByRole('img').parentElement
+      expect(imageContainer).toHaveStyle('transform: scale(2)')
+
+      await waitFor(() => {
+        expect(updateImageBlock).toHaveBeenCalledWith({
+          ...imageBlockResult,
+          focalTop: 25,
+          focalLeft: 25
+        })
       })
     })
   })
