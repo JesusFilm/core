@@ -1,4 +1,4 @@
-# Starting Projects on a Phone/Tablet
+# On a Phone/Tablet
 
 ## journeys-admin
 
