@@ -24,10 +24,10 @@ export function ParallaxCover({
   const [contentHeight, setContentHeight] = useState(0)
 
   useEffect(() => {
-    if (contentRef.current != null && contentRef.current.offsetHeight != null) {
-      setContentHeight(contentRef.current.offsetHeight)
-    } else {
-      setContentHeight(0)
+    if (contentRef.current != null) {
+      setContentHeight(
+        (contentRef.current as unknown as HTMLDivElement).clientHeight ?? 0
+      )
     }
   }, [contentRef, children])
 
@@ -95,11 +95,8 @@ export function ParallaxCover({
               contentHeight > 0 ? 100 : 0
             }px)`,
             top: `calc(-${contentHeight > 0 ? contentHeight / 2 : 0}px)`,
-            // height: '100%',
-            // top: 0,
-            // objectFit: 'cover',
+            objectFit: 'cover',
             transform: 'translateZ(-10px) scale(2)',
-            // transform: 'translateZ(-10px) scale(2) translate(0px, -38%)',
             WebkitMask: `linear-gradient(to top, transparent 0%, ${backgroundColor}14 5%, ${backgroundColor}33 10%, ${backgroundColor}60 15%, ${backgroundColor}b0 20%, ${backgroundColor}e6 25%, ${backgroundColor} 30%)`,
             mask: `linear-gradient(to top, transparent 0%, ${backgroundColor}14 5%, ${backgroundColor}33 10%, ${backgroundColor}60 15%, ${backgroundColor}b0 20%, ${backgroundColor}e6 25%, ${backgroundColor} 30%)`
           }}
@@ -128,7 +125,6 @@ export function ParallaxCover({
           <OverlayContent
             hasFullscreenVideo={false}
             sx={{
-              // mt: '60%',
               width: { sm: '312px' }
             }}
           >
