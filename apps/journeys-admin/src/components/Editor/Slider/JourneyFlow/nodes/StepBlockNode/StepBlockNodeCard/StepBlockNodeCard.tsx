@@ -57,7 +57,7 @@ export function StepBlockNodeCard({
     //   })
     // } else {
     //   dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
-    // }
+    // } //
   }
   const nodeBgImage = priorityImage ?? bgImage
 
