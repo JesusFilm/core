@@ -1,8 +1,4 @@
----
-title: Deploying a project on mobile/tablet
----
-
-# Connecting to localhost on your phone/tablet
+# Starting Projects on a Phone/Tablet
 
 ## journeys-admin
 
@@ -28,7 +24,7 @@ title: Deploying a project on mobile/tablet
 
 2. Go to `apps/journeys/.env`, and find the `NEXT_PUBLIC_ROOT_DOMAIN` variable.
 
-   - Change the value to `http://[YOUR_IP_ADDRESS]:4100`. For example, if your IP address was `123.4.5.6`, then set the variable to `http://123.4.5.6:4100`
+   - Change the value to `[YOUR_IP_ADDRESS]:4100`. For example, if your IP address was `123.4.5.6`, then set the variable to `123.4.5.6:4100`
 
 3. Start the server on your machine by running `nf start` & `nx serve journeys`
 
@@ -50,9 +46,10 @@ title: Deploying a project on mobile/tablet
 
 ## Common issues
 
-Sometimes, errors similar to this will appear when trying to run the server:
+Sometimes, errors similar to these may appear when trying to run the server:
 
-` ... failed, reason: connect ECONNREFUSED ...`
+`ApolloError: connect ECONNREFUSED...`
+`ApolloError: cannot connect to server...`
 
 In most situations, cancelling and re-running `nf start` and `nx serve [PROJECT-NAME]` should fix the issue. If it does not, try the following:
 
