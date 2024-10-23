@@ -4,6 +4,7 @@ locals {
     "AWS_ACCESS_KEY_ID",
     "AWS_SECRET_ACCESS_KEY",
     "EXAMPLE_EMAIL_TOKEN",
+    "GATEWAY_HMAC_SECRET",
     "GOOGLE_APPLICATION_JSON",
     "INTEROP_TOKEN",
     "JOURNEYS_ADMIN_URL",
@@ -11,7 +12,7 @@ locals {
     "PG_DATABASE_URL_USERS",
     "REDIS_PORT",
     "REDIS_URL",
-    "GATEWAY_HMAC_SECRET"
+    "SMTP_URL"
   ]
   service_config = {
     name           = "api-users"
