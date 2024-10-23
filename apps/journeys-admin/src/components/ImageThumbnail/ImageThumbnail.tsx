@@ -26,8 +26,8 @@ export function ImageThumbnail({
       sx={{
         display: 'flex',
         borderRadius: 2,
-        height: 55,
-        width: 55,
+        height: 56,
+        width: 56,
         backgroundColor: 'background.default',
         position: 'relative',
         justifyContent: 'center',
@@ -46,8 +46,8 @@ export function ImageThumbnail({
           src={imageSrc}
           alt={imageAlt}
           sx={{
-            width: 55,
-            height: 55,
+            width: 56,
+            height: 56,
             objectFit: 'cover'
           }}
         />
