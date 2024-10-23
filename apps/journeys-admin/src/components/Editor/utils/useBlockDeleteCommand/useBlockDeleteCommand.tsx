@@ -7,6 +7,7 @@ import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
@@ -15,6 +16,7 @@ import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 
+import { blockReferencesUpdate as blockDeleteReferences } from './blockDeleteReferences'
 import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
 
 export function useBlockDeleteCommand(): {
@@ -76,6 +78,8 @@ export function useBlockDeleteCommand(): {
       currentBlock.id === journey.menuStepBlock?.id &&
       currentBlock.__typename === 'StepBlock'
 
+    const referencingBlocks = blockDeleteReferences(currentBlock.id, journey)
+
     add({
       parameters: {
         execute: {},
@@ -114,14 +118,12 @@ export function useBlockDeleteCommand(): {
             })
 
         void blockDelete(currentBlock, {
-          optimisticResponse: { blockDelete: canvasSiblingsAfterDelete },
+          optimisticResponse: {
+            blockDelete: canvasSiblingsAfterDelete,
+            blockDeleteReferences: referencingBlocks
+          },
           update(cache, { data }) {
-            blockDeleteUpdate(
-              currentBlock,
-              data?.blockDelete,
-              cache,
-              journey.id
-            )
+            blockDeleteUpdate(currentBlock, data, cache, journey.id)
           }
         })
 

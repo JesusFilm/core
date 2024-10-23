@@ -26,6 +26,27 @@ export const BLOCK_DELETE = gql`
         nextBlockId
       }
     }
+    blockDeleteReferences(id: $id) {
+      id
+      ... on StepBlock {
+        nextBlockId
+      }
+      ... on ButtonBlock {
+        action {
+          ... on NavigateToBlockAction {
+            blockId
+          }
+        }
+      }
+      ... on RadioOptionBlock {
+        action {
+          ... on NavigateToBlockAction {
+            blockId
+          }
+        }
+      }
+    }
+    # blockUpdateAction(id: $id)
   }
 `
 
@@ -55,7 +76,8 @@ export function useBlockDeleteMutation(
         id: block.id
       },
       update(cache, { data }) {
-        blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
+        // TODO(jk): also evict blockDeleteReferences
+        blockDeleteUpdate(block, data, cache, journey.id)
       },
       ...options
     })

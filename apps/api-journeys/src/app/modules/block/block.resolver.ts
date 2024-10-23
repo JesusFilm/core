@@ -249,4 +249,86 @@ export class BlockResolver {
       return [...siblings, ...children]
     })
   }
+
+  @Mutation()
+  @UseGuards(AppCaslGuard)
+  async blockDeleteReferences(
+    @Args('id') id: string,
+    @CaslAbility() ability: AppAbility
+  ): Promise<Block[]> {
+    const block = await this.prismaService.block.findUnique({
+      where: { id },
+      include: {
+        action: true,
+        journey: {
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true
+          }
+        }
+      }
+    })
+
+    if (block == null) {
+      throw new GraphQLError('block not found', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    }
+    if (!ability.can(Action.Update, subject('Journey', block.journey)))
+      throw new GraphQLError('user is not allowed to update block', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+
+    return await this.nullifyReferencesTo(block)
+  }
+
+  // TODO(jk): move to service
+  // Find all blocks that reference the block being deleted and drop references
+  private async nullifyReferencesTo(block): Promise<Block[]> {
+    const stepBlocksReferencingDeleted =
+      await this.prismaService.block.findMany({
+        where: { nextBlockId: block.id }
+      })
+
+    const actionBlocksReferencingDeleted =
+      await this.prismaService.block.findMany({
+        where: { action: { blockId: block.id } }
+      })
+
+    // TODO(jk): move this to useBlockDeleteMutation
+    // Actually delete the actions that navigate to the deleting block
+    await Promise.all(
+      actionBlocksReferencingDeleted.map(async (referencingBlock) => {
+        const results = await this.prismaService.action.delete({
+          where: { parentBlockId: referencingBlock.id }
+        })
+        console.log('deleting action blocks ', results)
+      })
+    )
+
+    return await Promise.all([
+      ...stepBlocksReferencingDeleted.map(async (referencingBlock) => {
+        const results = await this.prismaService.block.update({
+          where: { id: referencingBlock.id },
+          data: { nextBlockId: null }
+        })
+        console.log(
+          'updated ',
+          results.id,
+          ' nextBlockId to ',
+          results.nextBlockId
+        )
+        return results
+      }),
+      ...actionBlocksReferencingDeleted.map(async (referencingBlock) => {
+        const results = await this.prismaService.block.update({
+          where: { id: referencingBlock.id },
+          data: { action: undefined }
+        })
+        // NOTE: action record is still persisted in database
+        console.log('nullifying action on block ', results)
+        return results
+      })
+    ])
+  }
 }

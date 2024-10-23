@@ -40,6 +40,15 @@ extend type Mutation {
     parentBlockId: ID
   ): [Block!]!
   """
+  blockDeleteReferences removes references to a given block and returns the affected blocks
+  """
+  blockDeleteReferences(
+    """
+    id of the block for which to drop all references
+    """
+    id: ID!
+  ): [Block!]!
+  """
   blockDuplicate returns the updated block, it's children and sibling blocks on successful duplicate
   """
   blockDuplicate(
