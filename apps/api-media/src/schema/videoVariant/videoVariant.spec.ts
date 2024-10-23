@@ -1,4 +1,8 @@
-import { VideoVariant, VideoVariantDownload } from '.prisma/api-media-client'
+import {
+  VideoEdition,
+  VideoVariant,
+  VideoVariantDownload
+} from '.prisma/api-media-client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
@@ -54,6 +58,7 @@ describe('videoVariant', () => {
 
     type VideoVariantAndIncludes = VideoVariant & {
       downloads: VideoVariantDownload[]
+      videoEdition: VideoEdition
     }
 
     it('should query videoVariants', async () => {
