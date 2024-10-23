@@ -13,6 +13,7 @@ import { BlockUpdateActionInput } from '../../__generated__/graphql'
 import { AppAbility, Action as CaslAction } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
+import { INCLUDE_JOURNEY_ACL } from '../journey/journey.acl'
 
 import { ActionService } from './action.service'
 import { canBlockHaveAction } from './canBlockHaveAction'
@@ -69,14 +70,7 @@ export class ActionResolver {
       where: { id },
       include: {
         action: true,
-        journey: {
-          include: {
-            userJourneys: true,
-            team: {
-              include: { userTeams: true }
-            }
-          }
-        }
+        ...INCLUDE_JOURNEY_ACL
       }
     })
     if (block == null)
@@ -128,14 +122,7 @@ export class ActionResolver {
       where: { id },
       include: {
         action: true,
-        journey: {
-          include: {
-            userJourneys: true,
-            team: {
-              include: { userTeams: true }
-            }
-          }
-        }
+        ...INCLUDE_JOURNEY_ACL
       }
     })
     if (block == null)

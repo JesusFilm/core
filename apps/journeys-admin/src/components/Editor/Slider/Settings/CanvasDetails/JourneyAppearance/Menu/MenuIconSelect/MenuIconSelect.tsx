@@ -119,16 +119,28 @@ export function MenuIconSelect(): ReactElement {
         onChange={handleChange}
         displayEmpty
         autoWidth
+        IconComponent={ChevronDown}
         sx={{
           width: 'min-content',
-          borderRadius: 2
+          borderRadius: 2,
+          '& .MuiSelect-icon': {
+            color: 'primary.main',
+            mr: 1.5
+          }
+        }}
+        inputProps={{
+          sx: {
+            py: 2,
+            pl: 2,
+            mr: 4
+          }
         }}
       >
         <MenuItem value="" key="empty">
           <Box
             sx={{
-              height: 48,
-              width: 48,
+              height: 56,
+              width: 56,
               borderRadius: 2,
               boxSizing: 'border-box',
               border: ({ palette }) =>
@@ -142,8 +154,8 @@ export function MenuIconSelect(): ReactElement {
           <MenuItem value={value} key={value}>
             <Box
               sx={{
-                height: 48,
-                width: 48,
+                height: 56,
+                width: 56,
                 borderRadius: 2,
                 background: ({ palette }) => palette.background.default,
                 display: 'grid',
