@@ -8,9 +8,9 @@
 
    - On Windows, go to Settings -> Network and Internet -> Wifi. Scroll down to see your IPv4 Address, which is your IP address.
 
-2. Go to `apps/journeys-admin/.env`, and find the `NEXT_PUBLIC_GATWAY_URL` variable.
+2. Go to `apps/journeys-admin/.env`, and find the `NEXT_PUBLIC_GATEWAY_URL` variable.
 
-   - Change value to `http://[YOUR_IP_ADDRESS]:4000/`. For example, if your IP address was `123.4.5.6`, then set the variable to `http://123.4.5.6:4000/`
+   - Change the value to `http://[YOUR_IP_ADDRESS]:4000/`. For example, if your IP address was `123.4.5.6`, then set the variable to `http://123.4.5.6:4000/`
 
 3. Start the server on your machine by running `nf start` & `nx serve journeys-admin`
 
