@@ -1,3 +1,5 @@
+import uniq from 'lodash/uniq'
+
 import { prisma } from '../../../../lib/prisma'
 
 export const EDITIONS = [
@@ -99,9 +101,22 @@ export async function seedEditions(): Promise<void> {
 
   if (exists != null) return
 
+  const existingVVEditions = await prisma.$queryRaw<
+    Array<{ edition: string }>
+  >`SELECT "edition" FROM "VideoVariant" GROUP BY "edition"`
+
+  const existingSTEditions = await prisma.$queryRaw<
+    Array<{ edition: string }>
+  >`SELECT "edition" FROM "VideoSubtitle" GROUP BY "edition"`
+
+  const data = uniq([
+    ...EDITIONS,
+    ...existingVVEditions.map(({ edition }) => edition),
+    ...existingSTEditions.map(({ edition }) => edition)
+  ]).map((edition) => ({
+    id: edition
+  }))
   await prisma.videoEdition.createMany({
-    data: EDITIONS.map((edition) => ({
-      id: edition
-    }))
+    data
   })
 }
