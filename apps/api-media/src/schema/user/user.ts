@@ -10,9 +10,6 @@ builder.externalRef('User', builder.selection<{ id: string }>('id')).implement({
   fields: (t) => ({
     mediaUserRoles: t.field({
       type: [MediaRole],
-      authScopes: {
-        isAuthenticated: true
-      },
       resolve: async (data) => {
         return (
           (

@@ -14,14 +14,15 @@ variable "ecs_config" {
 
 variable "service_config" {
   type = object({
-    name           = string
-    container_port = number
-    host_port      = number
-    cpu            = number
-    memory         = number
-    desired_count  = number
-    zone_id        = string
-    is_public      = bool
+    name                 = string
+    doppler_project_name = optional(string)
+    container_port       = number
+    host_port            = number
+    cpu                  = number
+    memory               = number
+    desired_count        = number
+    zone_id              = string
+    is_public            = bool
     alb_target_group = object({
       port              = number
       protocol          = string
