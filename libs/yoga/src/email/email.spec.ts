@@ -1,12 +1,6 @@
 import { sendEmail } from './email'
 
 const sendEmailMock = jest.fn().mockReturnValue({})
-// Mock the SES sendEmail method
-jest.mock('@aws-sdk/client-ses', () => ({
-  SES: jest.fn().mockImplementation(() => ({
-    sendEmail: sendEmailMock
-  }))
-}))
 
 jest.mock('nodemailer', () => ({
   createTransport: jest.fn().mockImplementation(() => ({
@@ -15,19 +9,27 @@ jest.mock('nodemailer', () => ({
 }))
 
 describe('email', () => {
+  const OLD_ENV = process.env
+
+  beforeEach(() => {
+    process.env = { ...OLD_ENV } // make a copy
+  })
+
   afterEach(() => {
+    process.env = OLD_ENV
     jest.clearAllMocks()
   })
 
   const email = {
-    to: 'text@xample.com',
+    to: 'test@gooddomain.com',
     subject: 'Test Subject',
     text: 'Test Body',
     html: 'Test Html'
   }
 
-  it('should send email using mailerService when SMTP_URL is defined', async () => {
-    process.env.SMTP_URL = 'smtp://example.com' // from now on the env var is test
+  it('should send email', async () => {
+    process.env.SMTP_URL = 'smtp://example.com'
+    process.env.NODE_ENV = 'production'
 
     await sendEmail(email)
 
@@ -39,35 +41,15 @@ describe('email', () => {
     })
   })
 
-  it('should process the email job', async () => {
-    const OLD_ENV = process.env
-    process.env = {
-      ...OLD_ENV,
-      SMTP_URL: undefined
-    }
+  it('should throw error with example email address', async () => {
+    process.env.SMTP_URL = 'smtp://example.com'
+    process.env.NODE_ENV = 'production'
+    await expect(
+      sendEmail({ ...email, to: 'test@example.com' })
+    ).rejects.toThrow('Example email address')
+  })
 
-    await sendEmail(email)
-
-    expect(sendEmailMock).toHaveBeenCalledWith({
-      Source: 'support@nextstep.is',
-      Destination: { ToAddresses: [email.to] },
-      Message: {
-        Subject: {
-          Charset: 'UTF-8',
-          Data: email.subject
-        },
-        Body: {
-          Html: {
-            Charset: 'UTF-8',
-            Data: email.html
-          },
-          Text: {
-            Charset: 'UTF-8',
-            Data: email.text
-          }
-        }
-      }
-    })
-    process.env = OLD_ENV
+  it('should throw error without SMTP URL', async () => {
+    await expect(sendEmail(email)).rejects.toThrow('SMTP_URL is not defined')
   })
 })
