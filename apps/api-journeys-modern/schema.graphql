@@ -1,2 +1,175 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: [])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key"])
+
+type CustomDomain {
+  id: ID!
+  team: Team!
+  name: String!
+  apexName: String!
+  journeyCollection: JourneyCollection
+  routeAllTeamJourneys: Boolean!
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+type Host {
+  id: ID!
+  teamId: ID!
+  title: String!
+  location: String
+  src1: String
+  src2: String
+}
+
+type Integration {
+  id: ID!
+  team: Team!
+  type: IntegrationType!
+}
+
+enum IntegrationType {
+  growthSpaces
+}
+
+type Journey {
+  id: ID!
+
+  """private title for creators"""
+  title: String!
+  language: Language!
+  themeMode: ThemeMode
+  themeName: ThemeName
+  description: String
+  creatorDescription: String
+  slug: String!
+  archivedAt: DateTime
+  deletedAt: DateTime
+  publishedAt: DateTime
+  trashedAt: DateTime
+  featuredAt: DateTime
+  updatedAt: DateTime!
+  createdAt: DateTime!
+  status: JourneyStatus
+
+  """title for seo and sharing"""
+  seoTitle: String
+  seoDescription: String
+  template: Boolean
+  host: Host
+  team: Team!
+  strategySlug: String
+  tags: [Tag!]!
+  journeyCollections: [JourneyCollection!]!
+
+  """used in a plausible share link to embed report"""
+  plausibleToken: String
+  website: Boolean
+  showShareButton: Boolean
+  showLikeButton: Boolean
+  showDislikeButton: Boolean
+
+  """public title for viewers"""
+  displayTitle: String
+  showHosts: Boolean
+  showChatButtons: Boolean
+  showReactionButtons: Boolean
+  showLogo: Boolean
+  showMenu: Boolean
+  showDisplayTitle: Boolean
+  menuButtonIcon: JourneyMenuButtonIcon
+}
+
+type JourneyCollection {
+  id: ID!
+  team: Team!
+  title: String
+  customDomains: [CustomDomain!]!
+  journeys: [Journey!]!
+}
+
+enum JourneyMenuButtonIcon {
+  menu1
+  equals
+  home3
+  home4
+  more
+  ellipsis
+  grid1
+  chevronDown
+}
+
+enum JourneyStatus {
+  archived
+  deleted
+  draft
+  published
+  trashed
+}
+
+type Language
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+}
+
+type Query {
+  adminJourneys(
+    status: [JourneyStatus!]
+    template: Boolean
+    teamId: String
+
+    """Use Last Active Team Id from JourneyProfile (if null will error)"""
+    useLastActiveTeamId: Boolean
+  ): [Journey!]!
+}
+
+type Tag
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+}
+
+type Team {
+  id: ID!
+  title: String!
+  publicTitle: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  userTeams: [UserTeam!]!
+  customDomains: [CustomDomain!]!
+  integrations: [Integration!]!
+}
+
+enum ThemeMode {
+  dark
+  light
+}
+
+enum ThemeName {
+  base
+}
+
+type User
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+}
+
+type UserTeam {
+  id: ID!
+  user: User!
+  role: UserTeamRole!
+  createAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum UserTeamRole {
+  manager
+  member
+}
