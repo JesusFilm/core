@@ -30,7 +30,7 @@ resource "aws_ecr_lifecycle_policy" "ecr_policy" {
 resource "aws_ssm_parameter" "parameters" {
   for_each = toset(var.environment_variables)
 
-  name      = "/ecs/${var.service_config.name}/${var.env}/${each.key}"
+  name      = "/ecs/${coalesce(var.service_config.doppler_project_name, var.service_config.name)}/${var.env}/${each.key}"
   type      = "SecureString"
   value     = data.doppler_secrets.app.map[each.key]
   overwrite = true
