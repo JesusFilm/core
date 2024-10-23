@@ -45,18 +45,19 @@ export function StepBlockNodeCard({
   } = getCardMetadata(card)
 
   function handleClick(): void {
-    if (selectedStep?.id === step?.id && showAnalytics !== true) {
-      dispatch({
-        type: 'SetSelectedBlockAction',
-        selectedBlock: selectedStep
-      })
-      dispatch({
-        type: 'SetSelectedAttributeIdAction',
-        selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
-      })
-    } else {
-      dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
-    }
+    console.log('Stepblocknode click')
+    // if (selectedStep?.id === step?.id && showAnalytics !== true) {
+    //   dispatch({
+    //     type: 'SetSelectedBlockAction',
+    //     selectedBlock: selectedStep
+    //   })
+    //   dispatch({
+    //     type: 'SetSelectedAttributeIdAction',
+    //     selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
+    //   })
+    // } else {
+    //   dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
+    // }
   }
   const nodeBgImage = priorityImage ?? bgImage
 
@@ -81,18 +82,27 @@ export function StepBlockNodeCard({
       // hover events and psuedo elements preventing onclicks from running on iOS devices see:
       // https://stackoverflow.com/questions/17710893/why-when-do-i-have-to-tap-twice-to-trigger-click-on-ios#:~:text=The%20simplest%20solution%20is%20not,triggered%20on%20the%20first%20tap.
       // see fig 6-4, https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7
-      // onMouseEnter={() => {
-      //   if (isIOSTouchScreen) handleClick()
+      //  onMouseEnter={() => {
+      //    if (isIOSTouchScreen) handleClick()
+      //  }}
+      // onMouseLeave={() => {
+      //   if (isIOSTouchScreen) {
+      //     console.log('ending')
+      //   }
       // }}
       onClick={handleClick}
       sx={{
+        // position: 'absolute',
+        // left: '100px',
+        // top: '100px',
         width: STEP_NODE_CARD_WIDTH,
         m: 1.5,
         boxShadow: 3,
         ...conditionalStyles
+        // backgroundColor: 'red'
       }}
     >
-      {/* {selectedStep?.id === step?.id &&
+      {/*   {selectedStep?.id === step?.id &&
         showAnalytics !== true &&
         isIOSTouchScreen && (
           // this tap layer is needed to handle the second tap without the user having to double tap, see:
@@ -109,7 +119,7 @@ export function StepBlockNodeCard({
               if (isIOSTouchScreen) handleClick()
             }}
           />
-        )} */}
+        )}   */}
       <CardContent
         data-testid="StepBlock"
         sx={{

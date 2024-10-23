@@ -34,6 +34,7 @@ import {
 } from 'reactflow'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { ContentCarousel } from '@core/journeys/ui/ContentCarousel'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { isActionBlock } from '@core/journeys/ui/isActionBlock'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -70,6 +71,7 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
+import { hasTouchScreen } from '@core/shared/ui/deviceUtils'
 
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
@@ -99,7 +101,7 @@ export function JourneyFlow(): ReactElement {
   const { editorAnalytics } = useFlags()
   const theme = useTheme()
   const {
-    state: { steps, activeSlide, showAnalytics, analytics },
+    state: { steps, activeSlide, showAnalytics, analytics, selectedStep },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
@@ -111,6 +113,7 @@ export function JourneyFlow(): ReactElement {
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [referrerNodes, setReferrerNodes] = useNodesState([])
   const [referrerEdges, setReferrerEdges] = useEdgesState([])
+  const [dragTimeStamp, setDragTimeStamp] = useState(0)
 
   const createStepFromStep = useCreateStepFromStep()
   const createStepFromAction = useCreateStepFromAction()
@@ -273,7 +276,7 @@ export function JourneyFlow(): ReactElement {
       let yPos = (event as unknown as MouseEvent).clientY
 
       if (!(event instanceof MouseEvent)) {
-        console.log('touch event')
+        console.log('touch event  ')
         const touchEvent = event.changedTouches[0]
 
         eventTarget = document.elementFromPoint(
@@ -344,36 +347,74 @@ export function JourneyFlow(): ReactElement {
   const onNodeDragStop: NodeDragHandler = (_event, node): void => {
     if (node.type !== 'StepBlock') return
 
+    console.log('drag click')
     const step = data?.blocks.find(
       (step) => step.__typename === 'StepBlock' && step.id === node.id
     )
     if (step == null || step.__typename !== 'StepBlock') return
 
-    const x = Math.trunc(node.position.x)
-    const y = Math.trunc(node.position.y)
-    add({
-      parameters: {
-        execute: {
-          x,
-          y
-        },
-        undo: {
-          x: step.x,
-          y: step.y
-        },
-        redo: {
-          x,
-          y
-        }
-      },
-      execute({ x, y }) {
+    // console.log(_event)
+    // if mobile, and if tap
+    // go through block selection logic
+    // else go through standard logic below
+
+    const isTouchScreen = hasTouchScreen()
+    const isTap = _event.timeStamp - dragTimeStamp < 150
+
+    const currentStep = steps?.find((innerStep) => innerStep.id === step.id)
+
+    // if (_event.timeStamp - dragTimeStamp > 300) {
+    //   console.log('Drag!')
+    // } else {
+    //   console.log('tap')
+    // }
+    // if (isTouchScreen) {
+    if (isTap) {
+      console.log('Tap')
+      if (selectedStep?.id === currentStep?.id && showAnalytics !== true) {
+        // console.log('selecting block')
         dispatch({
-          type: 'SetEditorFocusAction',
-          activeSlide: ActiveSlide.JourneyFlow
+          type: 'SetSelectedBlockAction',
+          selectedBlock: selectedStep
         })
-        blockPositionUpdate([{ id: node.id, x, y }])
+        dispatch({
+          type: 'SetSelectedAttributeIdAction',
+          selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
+        })
+      } else {
+        dispatch({ type: 'SetSelectedStepAction', selectedStep: currentStep })
       }
-    })
+    } else {
+      console.log('Drag')
+
+      // }
+
+      const x = Math.trunc(node.position.x)
+      const y = Math.trunc(node.position.y)
+      add({
+        parameters: {
+          execute: {
+            x,
+            y
+          },
+          undo: {
+            x: step.x,
+            y: step.y
+          },
+          redo: {
+            x,
+            y
+          }
+        },
+        execute({ x, y }) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            activeSlide: ActiveSlide.JourneyFlow
+          })
+          blockPositionUpdate([{ id: node.id, x, y }])
+        }
+      })
+    }
   }
   const onEdgeUpdateStart = useCallback<
     NonNullable<ReactFlowProps['onEdgeUpdateStart']>
@@ -463,6 +504,23 @@ export function JourneyFlow(): ReactElement {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
+        onNodeDragStart={(_event, node) => {
+          // console.log(_event)
+          // console.log('drag start')
+          setDragTimeStamp(_event.timeStamp)
+          // need to determine whether it's being dragged or clicked/tapped
+          // if clicked, and is the selected step, then call setselectedblock
+          // if drag, then select that step
+
+          // const step = data?.blocks.find(
+          //   (step) => step.__typename === 'StepBlock' && step.id === node.id
+          // )
+          // if (step == null || step.__typename !== 'StepBlock') return
+          // dispatch({
+          //   type: 'SetSelectedStepByIdAction',
+          //   selectedStepId: step.id
+          // })
+        }}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
         onEdgeUpdate={showAnalytics === true ? undefined : onEdgeUpdate}
