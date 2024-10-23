@@ -288,7 +288,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-playwright": "^1.5.4",
     "eslint-plugin-promise": "6.6.0",
-    "eslint-plugin-react": "7.37.1",
+    "eslint-plugin-react": "7.37.2",
     "eslint-plugin-react-hooks": "4.6.2",
     "eslint-plugin-storybook": "^0.9.0",
     "graphql-cli": "^4.1.0",
