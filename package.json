@@ -274,7 +274,7 @@
     "css-mediaquery": "^0.1.2",
     "danger": "^11.2.8",
     "dotenv": "^16.3.1",
-    "eslint": "8.57.1",
+    "eslint": "9.13.0",
     "eslint-config-love": "^46.0.0",
     "eslint-config-next": "14.2.15",
     "eslint-config-prettier": "9.1.0",
