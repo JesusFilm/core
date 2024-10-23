@@ -275,7 +275,7 @@
     "danger": "^11.2.8",
     "dotenv": "^16.3.1",
     "eslint": "8.57.1",
-    "eslint-config-love": "^46.0.0",
+    "eslint-config-love": "^89.0.0",
     "eslint-config-next": "14.2.15",
     "eslint-config-prettier": "9.1.0",
     "eslint-config-standard": "^17.0.0",
