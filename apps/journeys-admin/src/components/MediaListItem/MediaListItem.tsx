@@ -133,9 +133,9 @@ export function MediaListItem({
             <ListItemText
               primary={
                 <Typography
-                  variant="subtitle1"
+                  variant="subtitle2"
                   className="overflow-text"
-                  sx={{ ...fadeOverflowText('subtitle1') }}
+                  sx={{ ...fadeOverflowText('subtitle2') }}
                 >
                   {loading === true ? <Skeleton width={156} /> : title}
                 </Typography>
@@ -143,10 +143,10 @@ export function MediaListItem({
               secondary={
                 (description != null || loading === true) && (
                   <Typography
-                    variant="body2"
+                    variant="caption"
                     color="secondary.light"
                     className="overflow-text"
-                    sx={{ ...fadeOverflowText('body2') }}
+                    sx={{ ...fadeOverflowText('caption') }}
                   >
                     {loading === true ? <Skeleton width={128} /> : description}
                   </Typography>
