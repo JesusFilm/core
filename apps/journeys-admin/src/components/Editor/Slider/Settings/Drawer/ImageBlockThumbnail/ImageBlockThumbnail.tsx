@@ -36,7 +36,7 @@ export function ImageBlockThumbnail({
   }
 
   function getImageSourceSet() {
-    return `${parseUnsplash(selectedBlock?.src ?? '').replace('w=1080', 'w=1080&dpr=2')} 2x`
+    return `${parseUnsplash(selectedBlock?.src ?? '').replace('auto=format', 'auto=format&dpr=2')} 2x`
   }
 
   return (
