@@ -47,8 +47,14 @@ export function BaseEdge({
 
   const props = !hasTouchScreen() &&
     showAnalytics !== true && {
-      onMouseOver: () => setIsHovering(true),
-      onMouseLeave: () => setIsHovering(false)
+      onMouseOver: () => {
+        console.log('onmouseover')
+        setIsHovering(true)
+      },
+      onMouseLeave: () => {
+        console.log('onmouseleave')
+        setIsHovering(false)
+      }
     }
 
   let stroke: CSSProperties['stroke']

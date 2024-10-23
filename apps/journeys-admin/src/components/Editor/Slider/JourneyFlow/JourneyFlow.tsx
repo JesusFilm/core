@@ -273,6 +273,7 @@ export function JourneyFlow(): ReactElement {
       let yPos = (event as unknown as MouseEvent).clientY
 
       if (!(event instanceof MouseEvent)) {
+        console.log('touch event')
         const touchEvent = event.changedTouches[0]
 
         eventTarget = document.elementFromPoint(

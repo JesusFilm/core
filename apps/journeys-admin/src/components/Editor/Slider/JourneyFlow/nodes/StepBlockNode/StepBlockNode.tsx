@@ -84,7 +84,7 @@ export function StepBlockNode({
         >
           {() => <StepBlockNodeCard step={step} selected={isSelected} />}
         </BaseNode>
-        <Stack direction="column">
+        {/* <Stack direction="column">
           {journey?.website !== true && (
             <ActionButton stepId={step.id} block={step} selected={isSelected} />
           )}
@@ -96,7 +96,7 @@ export function StepBlockNode({
               selected={isSelected}
             />
           ))}
-        </Stack>
+        </Stack> */}
       </Stack>
     </Stack>
   ) : (
