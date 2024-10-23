@@ -43,6 +43,11 @@ describe('bigQuery/importers/videoSubtitles', () => {
         srtSrc: 'mockSrtSrc',
         edition: null
       })
+      expect(prismaMock.videoEdition.upsert).toHaveBeenCalledWith({
+        where: { id: 'base' },
+        update: {},
+        create: { id: 'base' }
+      })
       expect(prismaMock.videoSubtitle.upsert).toHaveBeenCalledWith({
         where: {
           videoId_edition_languageId: {
@@ -103,6 +108,17 @@ describe('bigQuery/importers/videoSubtitles', () => {
           edition: 'ct'
         }
       ])
+      expect(prismaMock.videoEdition.upsert).toHaveBeenCalledWith({
+        where: { id: 'base' },
+        update: {},
+        create: { id: 'base' }
+      })
+      expect(prismaMock.videoEdition.upsert).toHaveBeenCalledWith({
+        where: { id: 'ct' },
+        update: {},
+        create: { id: 'ct' }
+      })
+      expect(prismaMock.videoEdition.upsert).toHaveBeenCalledTimes(2)
       expect(prismaMock.videoSubtitle.createMany).toHaveBeenCalledWith({
         data: [
           {

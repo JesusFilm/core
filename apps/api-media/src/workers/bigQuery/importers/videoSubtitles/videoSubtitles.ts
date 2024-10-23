@@ -1,4 +1,5 @@
 import omit from 'lodash/omit'
+import uniq from 'lodash/uniq'
 import { Logger } from 'pino'
 import { z } from 'zod'
 
@@ -38,6 +39,16 @@ export async function importOne(row: unknown): Promise<void> {
   if (!getVideoIds().includes(videoSubtitle.videoId))
     throw new Error(`Video with id ${videoSubtitle.videoId} not found`)
 
+  await prisma.videoEdition.upsert({
+    where: {
+      id: videoSubtitle.edition
+    },
+    update: {},
+    create: {
+      id: videoSubtitle.edition
+    }
+  })
+
   await prisma.videoSubtitle.upsert({
     where: {
       videoId_edition_languageId: {
@@ -59,6 +70,19 @@ export async function importMany(rows: unknown[]): Promise<void> {
 
   if (videoSubtitles.length !== rows.length)
     throw new Error(`some rows do not match schema: ${inValidRowIds.join(',')}`)
+
+  const editions = uniq(videoSubtitles.map(({ edition }) => edition))
+  for (const edition of editions) {
+    await prisma.videoEdition.upsert({
+      where: {
+        id: edition
+      },
+      update: {},
+      create: {
+        id: edition
+      }
+    })
+  }
 
   await prisma.videoSubtitle.createMany({
     data: videoSubtitles.filter(({ videoId }) =>
