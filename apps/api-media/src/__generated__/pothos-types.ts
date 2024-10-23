@@ -6,7 +6,7 @@ export default interface PrismaTypes {
         Shape: CloudflareImage;
         Include: Prisma.CloudflareImageInclude;
         Select: Prisma.CloudflareImageSelect;
-        OrderBy: Prisma.CloudflareImageOrderByWithRelationInput;
+        OrderBy: Prisma.CloudflareImageOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.CloudflareImageWhereUniqueInput;
         Where: Prisma.CloudflareImageWhereInput;
         Create: {};
@@ -26,7 +26,7 @@ export default interface PrismaTypes {
         Shape: CloudflareVideo;
         Include: never;
         Select: Prisma.CloudflareVideoSelect;
-        OrderBy: Prisma.CloudflareVideoOrderByWithRelationInput;
+        OrderBy: Prisma.CloudflareVideoOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.CloudflareVideoWhereUniqueInput;
         Where: Prisma.CloudflareVideoWhereInput;
         Create: {};
@@ -40,7 +40,7 @@ export default interface PrismaTypes {
         Shape: Video;
         Include: Prisma.VideoInclude;
         Select: Prisma.VideoSelect;
-        OrderBy: Prisma.VideoOrderByWithRelationInput;
+        OrderBy: Prisma.VideoOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.VideoWhereUniqueInput;
         Where: Prisma.VideoWhereInput;
         Create: {};
@@ -115,7 +115,7 @@ export default interface PrismaTypes {
         Shape: VideoTitle;
         Include: Prisma.VideoTitleInclude;
         Select: Prisma.VideoTitleSelect;
-        OrderBy: Prisma.VideoTitleOrderByWithRelationInput;
+        OrderBy: Prisma.VideoTitleOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.VideoTitleWhereUniqueInput;
         Where: Prisma.VideoTitleWhereInput;
         Create: {};
@@ -135,7 +135,7 @@ export default interface PrismaTypes {
         Shape: VideoVariantDownload;
         Include: Prisma.VideoVariantDownloadInclude;
         Select: Prisma.VideoVariantDownloadSelect;
-        OrderBy: Prisma.VideoVariantDownloadOrderByWithRelationInput;
+        OrderBy: Prisma.VideoVariantDownloadOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.VideoVariantDownloadWhereUniqueInput;
         Where: Prisma.VideoVariantDownloadWhereInput;
         Create: {};
@@ -155,7 +155,7 @@ export default interface PrismaTypes {
         Shape: VideoVariant;
         Include: Prisma.VideoVariantInclude;
         Select: Prisma.VideoVariantSelect;
-        OrderBy: Prisma.VideoVariantOrderByWithRelationInput;
+        OrderBy: Prisma.VideoVariantOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.VideoVariantWhereUniqueInput;
         Where: Prisma.VideoVariantWhereInput;
         Create: {};
@@ -180,7 +180,7 @@ export default interface PrismaTypes {
         Shape: VideoEdition;
         Include: never;
         Select: Prisma.VideoEditionSelect;
-        OrderBy: Prisma.VideoEditionOrderByWithRelationInput;
+        OrderBy: Prisma.VideoEditionOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.VideoEditionWhereUniqueInput;
         Where: Prisma.VideoEditionWhereInput;
         Create: {};
@@ -194,7 +194,7 @@ export default interface PrismaTypes {
         Shape: VideoSubtitle;
         Include: Prisma.VideoSubtitleInclude;
         Select: Prisma.VideoSubtitleSelect;
-        OrderBy: Prisma.VideoSubtitleOrderByWithRelationInput;
+        OrderBy: Prisma.VideoSubtitleOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.VideoSubtitleWhereUniqueInput;
         Where: Prisma.VideoSubtitleWhereInput;
         Create: {};
@@ -214,7 +214,7 @@ export default interface PrismaTypes {
         Shape: VideoSnippet;
         Include: Prisma.VideoSnippetInclude;
         Select: Prisma.VideoSnippetSelect;
-        OrderBy: Prisma.VideoSnippetOrderByWithRelationInput;
+        OrderBy: Prisma.VideoSnippetOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.VideoSnippetWhereUniqueInput;
         Where: Prisma.VideoSnippetWhereInput;
         Create: {};
@@ -234,7 +234,7 @@ export default interface PrismaTypes {
         Shape: VideoDescription;
         Include: Prisma.VideoDescriptionInclude;
         Select: Prisma.VideoDescriptionSelect;
-        OrderBy: Prisma.VideoDescriptionOrderByWithRelationInput;
+        OrderBy: Prisma.VideoDescriptionOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.VideoDescriptionWhereUniqueInput;
         Where: Prisma.VideoDescriptionWhereInput;
         Create: {};
@@ -254,7 +254,7 @@ export default interface PrismaTypes {
         Shape: VideoImageAlt;
         Include: Prisma.VideoImageAltInclude;
         Select: Prisma.VideoImageAltSelect;
-        OrderBy: Prisma.VideoImageAltOrderByWithRelationInput;
+        OrderBy: Prisma.VideoImageAltOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.VideoImageAltWhereUniqueInput;
         Where: Prisma.VideoImageAltWhereInput;
         Create: {};
@@ -274,7 +274,7 @@ export default interface PrismaTypes {
         Shape: VideoStudyQuestion;
         Include: Prisma.VideoStudyQuestionInclude;
         Select: Prisma.VideoStudyQuestionSelect;
-        OrderBy: Prisma.VideoStudyQuestionOrderByWithRelationInput;
+        OrderBy: Prisma.VideoStudyQuestionOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.VideoStudyQuestionWhereUniqueInput;
         Where: Prisma.VideoStudyQuestionWhereInput;
         Create: {};
@@ -294,7 +294,7 @@ export default interface PrismaTypes {
         Shape: ImportTimes;
         Include: never;
         Select: Prisma.ImportTimesSelect;
-        OrderBy: Prisma.ImportTimesOrderByWithRelationInput;
+        OrderBy: Prisma.ImportTimesOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.ImportTimesWhereUniqueInput;
         Where: Prisma.ImportTimesWhereInput;
         Create: {};
@@ -308,7 +308,7 @@ export default interface PrismaTypes {
         Shape: BibleCitation;
         Include: Prisma.BibleCitationInclude;
         Select: Prisma.BibleCitationSelect;
-        OrderBy: Prisma.BibleCitationOrderByWithRelationInput;
+        OrderBy: Prisma.BibleCitationOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.BibleCitationWhereUniqueInput;
         Where: Prisma.BibleCitationWhereInput;
         Create: {};
@@ -333,7 +333,7 @@ export default interface PrismaTypes {
         Shape: BibleBook;
         Include: Prisma.BibleBookInclude;
         Select: Prisma.BibleBookSelect;
-        OrderBy: Prisma.BibleBookOrderByWithRelationInput;
+        OrderBy: Prisma.BibleBookOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.BibleBookWhereUniqueInput;
         Where: Prisma.BibleBookWhereInput;
         Create: {};
@@ -358,7 +358,7 @@ export default interface PrismaTypes {
         Shape: BibleBookName;
         Include: Prisma.BibleBookNameInclude;
         Select: Prisma.BibleBookNameSelect;
-        OrderBy: Prisma.BibleBookNameOrderByWithRelationInput;
+        OrderBy: Prisma.BibleBookNameOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.BibleBookNameWhereUniqueInput;
         Where: Prisma.BibleBookNameWhereInput;
         Create: {};
@@ -378,7 +378,7 @@ export default interface PrismaTypes {
         Shape: Keyword;
         Include: Prisma.KeywordInclude;
         Select: Prisma.KeywordSelect;
-        OrderBy: Prisma.KeywordOrderByWithRelationInput;
+        OrderBy: Prisma.KeywordOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.KeywordWhereUniqueInput;
         Where: Prisma.KeywordWhereInput;
         Create: {};
@@ -398,7 +398,7 @@ export default interface PrismaTypes {
         Shape: TagName;
         Include: Prisma.TagNameInclude;
         Select: Prisma.TagNameSelect;
-        OrderBy: Prisma.TagNameOrderByWithRelationInput;
+        OrderBy: Prisma.TagNameOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.TagNameWhereUniqueInput;
         Where: Prisma.TagNameWhereInput;
         Create: {};
@@ -418,7 +418,7 @@ export default interface PrismaTypes {
         Shape: Tag;
         Include: Prisma.TagInclude;
         Select: Prisma.TagSelect;
-        OrderBy: Prisma.TagOrderByWithRelationInput;
+        OrderBy: Prisma.TagOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.TagWhereUniqueInput;
         Where: Prisma.TagWhereInput;
         Create: {};
@@ -453,7 +453,7 @@ export default interface PrismaTypes {
         Shape: Tagging;
         Include: Prisma.TaggingInclude;
         Select: Prisma.TaggingSelect;
-        OrderBy: Prisma.TaggingOrderByWithRelationInput;
+        OrderBy: Prisma.TaggingOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.TaggingWhereUniqueInput;
         Where: Prisma.TaggingWhereInput;
         Create: {};
@@ -473,7 +473,7 @@ export default interface PrismaTypes {
         Shape: UserMediaRole;
         Include: never;
         Select: Prisma.UserMediaRoleSelect;
-        OrderBy: Prisma.UserMediaRoleOrderByWithRelationInput;
+        OrderBy: Prisma.UserMediaRoleOrderByWithRelationAndSearchRelevanceInput;
         WhereUnique: Prisma.UserMediaRoleWhereUniqueInput;
         Where: Prisma.UserMediaRoleWhereInput;
         Create: {};

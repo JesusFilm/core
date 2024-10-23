@@ -4,9 +4,12 @@ import Autocomplete, {
 import CircularProgress from '@mui/material/CircularProgress'
 import { PopperProps } from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { HTMLAttributes, ReactElement, ReactNode, useMemo } from 'react'
+import { FixedSizeList as List } from 'react-window'
 
 export interface Language {
   id: string
@@ -97,6 +100,7 @@ export function LanguageAutocomplete({
     props: HTMLAttributes<HTMLLIElement>,
     { localName, nativeName, id }: LanguageOption
   ): ReactNode => {
+    console.log(props)
     return (
       <li {...props} key={id}>
         <Stack>
@@ -111,8 +115,31 @@ export function LanguageAutocomplete({
     )
   }
 
+  function ListboxComponent(props): ReactElement {
+    console.log(props)
+    const theme = useTheme()
+    const smUp = useMediaQuery(theme.breakpoints.up('sm'), {
+      noSsr: true
+    })
+    const itemCount = options.length
+    const itemSize = smUp ? 36 : 48
+
+    return (
+      <List
+        width="100%"
+        innerElementType="ul"
+        itemSize={itemSize}
+        overscanCount={5}
+        itemCount={itemCount}
+      >
+        {renderOption != null ? renderOption : defaultRenderOption}
+      </List>
+    )
+  }
+
   return (
     <Autocomplete
+      open
       disableClearable
       value={value}
       isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -126,7 +153,8 @@ export function LanguageAutocomplete({
       renderInput={renderInput != null ? renderInput : defaultRenderInput}
       renderOption={renderOption != null ? renderOption : defaultRenderOption}
       slotProps={{
-        popper
+        popper,
+        listbox: ListboxComponent
       }}
     />
   )
