@@ -2118,7 +2118,7 @@ type Taxonomy @join__type(graph: API_MEDIA)  {
   id: ID!
   category: String!
   term: String!
-  name(languageId: String, languageCode: String) : [TaxonomyName!]!
+  name(languageId: String, languageCodes: [String!]) : [TaxonomyName!]!
 }
 
 type TaxonomyName @join__type(graph: API_MEDIA)  {

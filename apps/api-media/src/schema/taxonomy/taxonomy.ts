@@ -31,12 +31,18 @@ export const Taxonomy = builder.prismaObject('Taxonomy', {
     name: t.relation('name', {
       args: {
         languageId: t.arg.string({ required: false }),
-        languageCode: t.arg.string({ required: false })
+        languageCodes: t.arg.stringList({ required: false })
       },
-      query: ({ languageId, languageCode }) => {
+      query: ({ languageId, languageCodes }) => {
         const where: Prisma.TaxonomyNameWhereInput = {}
         if (languageId !== null) where.languageId = languageId
-        if (languageCode !== null) where.languageCode = languageCode
+        if (
+          languageCodes !== undefined &&
+          languageCodes !== null &&
+          languageCodes.length > 0
+        ) {
+          where.languageCode = { in: languageCodes }
+        }
         return { where }
       }
     })
