@@ -15,6 +15,71 @@ describe('videoEdition', () => {
     }
   })
 
+  describe('queries', () => {
+    describe('videoEditions', () => {
+      const VIDEO_EDITIONS_QUERY = graphql(`
+        query VideoEditions {
+          videoEditions {
+            id
+            name
+          }
+        }
+      `)
+
+      it('should query video editions', async () => {
+        prismaMock.videoEdition.findMany.mockResolvedValueOnce([
+          {
+            id: 'id',
+            name: 'name'
+          }
+        ])
+        const data = await client({
+          document: VIDEO_EDITIONS_QUERY
+        })
+        expect(prismaMock.videoEdition.findMany).toHaveBeenCalledWith({})
+        expect(data).toHaveProperty('data.videoEditions', [
+          {
+            id: 'id',
+            name: 'name'
+          }
+        ])
+      })
+    })
+
+    describe('videoEdition', () => {
+      const VIDEO_EDITION_QUERY = graphql(`
+        query VideoEdition($id: ID!) {
+          videoEdition(id: $id) {
+            id
+            name
+          }
+        }
+      `)
+
+      it('should get videoEdition', async () => {
+        prismaMock.videoEdition.findUnique.mockResolvedValue({
+          id: 'id',
+          name: 'name'
+        })
+        const data = await client({
+          document: VIDEO_EDITION_QUERY,
+          variables: {
+            id: 'id'
+          }
+        })
+        expect(prismaMock.videoEdition.findUnique).toHaveBeenCalledWith({
+          where: {
+            id: 'id'
+          }
+        })
+        expect(data).toHaveProperty('data.videoEdition', {
+          id: 'id',
+          name: 'name'
+        })
+      })
+    })
+  })
+
   describe('mutations', () => {
     describe('videoEditionCreate', () => {
       const CREATE_VIDEO_EDITION_MUTATION = graphql(`

@@ -411,6 +411,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoTitleCreate(input: VideoTranslationCreateInput!) : VideoTitle! @join__field(graph: API_MEDIA) 
   videoTitleUpdate(input: VideoTranslationUpdateInput!) : VideoTitle! @join__field(graph: API_MEDIA) 
   videoTitleDelete(id: ID!) : VideoTitle! @join__field(graph: API_MEDIA) 
+  videoEditionCreate(input: VideoEditionCreateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
+  videoEditionUpdate(input: VideoEditionUpdateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
+  videoEditionDelete(id: ID!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoVariantCreate(input: VideoVariantCreateInput!) : VideoVariant! @join__field(graph: API_MEDIA) 
   videoVariantUpdate(input: VideoVariantUpdateInput!) : VideoVariant! @join__field(graph: API_MEDIA) 
   videoVariantDelete(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
@@ -674,6 +677,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   video(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
   videos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
   videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
+  videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
+  videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
   videoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   me(input: MeInput) : User @join__field(graph: API_USERS) 
@@ -3698,6 +3703,16 @@ input VideoCreateInput @join__type(graph: API_MEDIA)  {
   slug: String!
   noIndex: Boolean!
   childIds: [String!]!
+}
+
+input VideoEditionCreateInput @join__type(graph: API_MEDIA)  {
+  id: ID!
+  name: String
+}
+
+input VideoEditionUpdateInput @join__type(graph: API_MEDIA)  {
+  id: ID!
+  name: String
 }
 
 input VideoStudyQuestionCreateInput @join__type(graph: API_MEDIA)  {
