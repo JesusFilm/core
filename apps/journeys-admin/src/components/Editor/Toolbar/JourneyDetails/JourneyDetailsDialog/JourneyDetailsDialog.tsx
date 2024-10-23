@@ -197,7 +197,7 @@ export function JourneyDetailsDialog({
                       />
                     )}
                     popper={{
-                      placement: smUp ? 'bottom' : 'top',
+                      placement: !smUp ? 'top' : 'bottom',
                       sx: {
                         '&>.MuiAutocomplete-paper': {
                           height: !smUp ? '200px' : 'auto',
