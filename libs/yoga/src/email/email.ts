@@ -40,11 +40,14 @@ export async function sendEmail(
     html
   })
 
-  logger?.info('email sent', {
-    to: to.replaceAll(
-      '(?<=.)[^@](?=[^@]*?@)|(?:(?<=@.)|(?!^)\\G(?=[^@]*$)).(?=.*[^@]\\.)',
-      '*'
-    ),
-    subject
-  })
+  logger?.info(
+    {
+      to: to.replaceAll(
+        '(?<=.)[^@](?=[^@]*?@)|(?:(?<=@.)|(?!^)\\G(?=[^@]*$)).(?=.*[^@]\\.)',
+        '*'
+      ),
+      subject
+    },
+    'email sent'
+  )
 }
