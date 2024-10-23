@@ -19,25 +19,24 @@ export function ImageBlockThumbnail({
   Icon = Image3Icon,
   error
 }: ImageBlockThumbnailProps): ReactElement {
-  function getImageSource(srcSet: boolean): string | undefined {
-    const isUnsplash =
-      selectedBlock?.src?.match(/^https:\/\/images\.unsplash\.com/) ?? false
-    const width = '56'
-    const height = '56'
+  const isUnsplash =
+    selectedBlock?.src?.match(/^https:\/\/images\.unsplash\.com/) ?? false
+  const IMG_WIDTH = 56
+  const IMG_HEIGHT = 56
 
-    if (selectedBlock?.src != null) {
-      return isUnsplash
-        ? `${selectedBlock.src
-            .replace(
-              'w=1080',
-              `w=${width}&h=${height}&auto=format${srcSet ? '&dpr=2' : ''}`
-            )
-            .replace('fit=max', 'fit=crop')
-            .replace('crop=entropy&', '')} ${srcSet ? '2x' : ''}`
-        : srcSet
-          ? undefined
-          : selectedBlock.src
-    }
+  function parseUnsplash(src) {
+    return src
+      .replace('w=1080', `w=${IMG_WIDTH}&h=${IMG_HEIGHT}&auto=format`)
+      .replace('fit=max', 'fit=crop')
+      .replace('crop=entropy&', '')
+  }
+
+  function getImageSource() {
+    return parseUnsplash(selectedBlock?.src ?? '')
+  }
+
+  function getImageSourceSet() {
+    return `${parseUnsplash(selectedBlock?.src ?? '').replace('w=1080', 'w=1080&dpr=2')} 2x`
   }
 
   return (
@@ -45,8 +44,8 @@ export function ImageBlockThumbnail({
       sx={{
         display: 'flex',
         borderRadius: 2,
-        height: 56,
-        width: 56,
+        width: IMG_WIDTH,
+        height: IMG_HEIGHT,
         backgroundColor: 'background.default',
         position: 'relative',
         justifyContent: 'center',
@@ -62,12 +61,12 @@ export function ImageBlockThumbnail({
       ) : selectedBlock?.src != null ? (
         <Box
           component="img"
-          srcSet={getImageSource(true)}
-          src={getImageSource(false)}
+          srcSet={isUnsplash ? getImageSourceSet() : undefined}
+          src={isUnsplash ? getImageSource() : selectedBlock.src}
           alt={selectedBlock.alt}
           sx={{
-            width: 56,
-            height: 56,
+            width: IMG_WIDTH,
+            height: IMG_HEIGHT,
             objectFit: 'cover'
           }}
         />
