@@ -160,12 +160,17 @@ export default interface PrismaTypes {
         Where: Prisma.VideoVariantWhereInput;
         Create: {};
         Update: {};
-        RelationName: "downloads" | "video";
+        RelationName: "downloads" | "videoEdition" | "video";
         ListRelations: "downloads";
         Relations: {
             downloads: {
                 Shape: VideoVariantDownload[];
                 Name: "VideoVariantDownload";
+                Nullable: false;
+            };
+            videoEdition: {
+                Shape: VideoEdition;
+                Name: "VideoEdition";
                 Nullable: false;
             };
             video: {
@@ -178,16 +183,27 @@ export default interface PrismaTypes {
     VideoEdition: {
         Name: "VideoEdition";
         Shape: VideoEdition;
-        Include: never;
+        Include: Prisma.VideoEditionInclude;
         Select: Prisma.VideoEditionSelect;
         OrderBy: Prisma.VideoEditionOrderByWithRelationInput;
         WhereUnique: Prisma.VideoEditionWhereUniqueInput;
         Where: Prisma.VideoEditionWhereInput;
         Create: {};
         Update: {};
-        RelationName: never;
-        ListRelations: never;
-        Relations: {};
+        RelationName: "videoVariants" | "videoSubtitles";
+        ListRelations: "videoVariants" | "videoSubtitles";
+        Relations: {
+            videoVariants: {
+                Shape: VideoVariant[];
+                Name: "VideoVariant";
+                Nullable: false;
+            };
+            videoSubtitles: {
+                Shape: VideoSubtitle[];
+                Name: "VideoSubtitle";
+                Nullable: false;
+            };
+        };
     };
     VideoSubtitle: {
         Name: "VideoSubtitle";
@@ -199,12 +215,17 @@ export default interface PrismaTypes {
         Where: Prisma.VideoSubtitleWhereInput;
         Create: {};
         Update: {};
-        RelationName: "Video";
+        RelationName: "Video" | "videoEdition";
         ListRelations: never;
         Relations: {
             Video: {
                 Shape: Video;
                 Name: "Video";
+                Nullable: false;
+            };
+            videoEdition: {
+                Shape: VideoEdition;
+                Name: "VideoEdition";
                 Nullable: false;
             };
         };
