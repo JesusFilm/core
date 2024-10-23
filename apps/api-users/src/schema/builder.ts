@@ -53,9 +53,13 @@ export const builder = new SchemaBuilder<{
   }
   AuthScopes: {
     isAuthenticated: boolean
-    isCurrentUser: string
     isSuperAdmin: boolean
     isValidInterOp: boolean
+  }
+  AuthContexts: {
+    isAuthenticated: Context & { currentUser: User }
+    isSuperAdmin: Context & { currentUser: User }
+    isValidInterOp: Context & { interopToken: string; ipAddress: string }
   }
 }>({
   plugins: [
@@ -69,10 +73,11 @@ export const builder = new SchemaBuilder<{
     authorizeOnSubscribe: true,
     authScopes: async (context: Context) => ({
       isAuthenticated: context.currentUser != null,
-      isCurrentUser: (id) => context.currentUser?.id === id,
       isSuperAdmin: async () => {
+        if (context.currentUser == null) return false
+
         const user = await prisma.user.findUnique({
-          where: { userId: context.currentUser?.id }
+          where: { userId: context.currentUser.id }
         })
         return user?.superAdmin ?? false
       },

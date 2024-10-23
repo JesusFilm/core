@@ -335,7 +335,7 @@ builder.asEntity(Video, {
 })
 
 builder.queryFields((t) => ({
-  adminVideo: t.prismaField({
+  adminVideo: t.withAuth({ isPublisher: true }).prismaField({
     type: 'Video',
     args: {
       id: t.arg.id({ required: true }),
@@ -343,9 +343,6 @@ builder.queryFields((t) => ({
         type: IdType,
         defaultValue: IdTypeShape.databaseId
       })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { id, idType }) => {
       return idType === IdTypeShape.slug
@@ -359,15 +356,12 @@ builder.queryFields((t) => ({
           })
     }
   }),
-  adminVideos: t.prismaField({
+  adminVideos: t.withAuth({ isPublisher: true }).prismaField({
     type: ['Video'],
     args: {
       where: t.arg({ type: VideosFilter, required: false }),
       offset: t.arg.int({ required: false }),
       limit: t.arg.int({ required: false })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { offset, limit, where }) => {
       const filter = videosFilter(where ?? {})
@@ -379,11 +373,8 @@ builder.queryFields((t) => ({
       })
     }
   }),
-  adminVideosCount: t.int({
+  adminVideosCount: t.withAuth({ isPublisher: true }).int({
     args: { where: t.arg({ type: VideosFilter, required: false }) },
-    authScopes: {
-      isPublisher: true
-    },
     resolve: async (_parent, { where }) => {
       const filter = videosFilter(where ?? {})
       return await prisma.video.count({
@@ -453,13 +444,10 @@ builder.queryFields((t) => ({
 }))
 
 builder.mutationFields((t) => ({
-  videoCreate: t.prismaField({
+  videoCreate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'Video',
     args: {
       input: t.arg({ type: VideoCreateInput, required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { input }) => {
       return await prisma.video.create({
@@ -468,11 +456,8 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  videoUpdate: t.prismaField({
+  videoUpdate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'Video',
-    authScopes: {
-      isPublisher: true
-    },
     args: {
       input: t.arg({ type: VideoUpdateInput, required: true })
     },

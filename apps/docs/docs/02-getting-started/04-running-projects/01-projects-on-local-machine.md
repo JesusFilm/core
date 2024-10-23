@@ -1,8 +1,4 @@
----
-title: 4. Starting Projects
----
-
-# Starting Projects
+# On Local Machine
 
 <div
   style={{
