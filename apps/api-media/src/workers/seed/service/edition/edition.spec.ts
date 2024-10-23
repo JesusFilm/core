@@ -6,9 +6,26 @@ describe('seed/edition', () => {
   it('should seed editions', async () => {
     prismaMock.videoEdition.findFirst.mockResolvedValue(null)
     prismaMock.videoEdition.createMany.mockImplementation()
+    prismaMock.$queryRaw
+      .mockResolvedValueOnce([
+        {
+          edition: 'base'
+        },
+        {
+          edition: 'abc'
+        }
+      ])
+      .mockResolvedValueOnce([
+        {
+          edition: 'base'
+        },
+        {
+          edition: 'def'
+        }
+      ])
     await seedEditions()
     expect(prismaMock.videoEdition.createMany).toHaveBeenCalledWith({
-      data: EDITIONS.map((edition) => ({
+      data: [...EDITIONS, 'abc', 'def'].map((edition) => ({
         id: edition
       }))
     })

@@ -25,13 +25,10 @@ builder.prismaObject('VideoSubtitle', {
 })
 
 builder.mutationFields((t) => ({
-  videoSubtitleCreate: t.prismaField({
+  videoSubtitleCreate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoSubtitle',
     args: {
       input: t.arg({ type: VideoSubtitleCreateInput, required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { input }) => {
       return await prisma.videoSubtitle.create({
@@ -43,13 +40,10 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  videoSubtitleUpdate: t.prismaField({
+  videoSubtitleUpdate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoSubtitle',
     args: {
       input: t.arg({ type: VideoSubtitleUpdateInput, required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { input }) => {
       return await prisma.videoSubtitle.update({
@@ -65,13 +59,10 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  videoSubtitleDelete: t.prismaField({
+  videoSubtitleDelete: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoSubtitle',
     args: {
       id: t.arg.id({ required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { id }) => {
       return await prisma.videoSubtitle.delete({
