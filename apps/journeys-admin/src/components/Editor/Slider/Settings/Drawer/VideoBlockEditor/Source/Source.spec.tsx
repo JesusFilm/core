@@ -254,7 +254,7 @@ describe('Source', () => {
         })
         .getAttribute('src')
     ).toMatch(
-      /https:\/\/customer-.*\.cloudflarestream\.com\/videoId\/thumbnails\/thumbnail.jpg\?time=2s&height=55&width=55/
+      /https:\/\/customer-.*\.cloudflarestream\.com\/videoId\/thumbnails\/thumbnail.jpg\?time=2s&height=56&width=56/
     )
   })
 
