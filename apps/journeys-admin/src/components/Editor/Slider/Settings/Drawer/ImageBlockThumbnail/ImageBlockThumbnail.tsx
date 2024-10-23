@@ -24,18 +24,18 @@ export function ImageBlockThumbnail({
   const IMG_WIDTH = 56
   const IMG_HEIGHT = 56
 
-  function parseUnsplash(src) {
+  function parseUnsplash(src): string {
     return src
       .replace('w=1080', `w=${IMG_WIDTH}&h=${IMG_HEIGHT}&auto=format`)
       .replace('fit=max', 'fit=crop')
       .replace('crop=entropy&', '')
   }
 
-  function getImageSource() {
+  function getImageSource(): string {
     return parseUnsplash(selectedBlock?.src ?? '')
   }
 
-  function getImageSourceSet() {
+  function getImageSourceSet(): string {
     return `${parseUnsplash(selectedBlock?.src ?? '').replace('auto=format', 'auto=format&dpr=2')} 2x`
   }
 
@@ -61,7 +61,9 @@ export function ImageBlockThumbnail({
       ) : selectedBlock?.src != null ? (
         <Box
           component="img"
+          // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
           srcSet={isUnsplash ? getImageSourceSet() : undefined}
+          // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
           src={isUnsplash ? getImageSource() : selectedBlock.src}
           alt={selectedBlock.alt}
           sx={{
