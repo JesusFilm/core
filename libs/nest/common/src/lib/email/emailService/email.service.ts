@@ -1,4 +1,3 @@
-import { SES } from '@aws-sdk/client-ses'
 import { Injectable, Logger } from '@nestjs/common'
 import { MailerService } from '@nestjs-modules/mailer'
 
@@ -11,7 +10,7 @@ export interface SendEmailParams {
 
 @Injectable()
 export class EmailService {
-  private readonly logger = new Logger(EmailService.name, { timestamp: true })
+  private readonly logger = new Logger(EmailService.name)
 
   constructor(private readonly mailerService: MailerService) {}
 
@@ -29,15 +28,19 @@ export class EmailService {
     )
       throw new Error('Example email address')
 
-    try {
-      await this.mailerService.sendMail({
-        to,
-        subject,
-        text,
-        html
-      })
-    } catch (e) {
-      this.logger.error(e)
-    }
+    await this.mailerService.sendMail({
+      to,
+      subject,
+      text,
+      html
+    })
+
+    this.logger.log('email sent', {
+      to: to.replaceAll(
+        '(?<=.)[^@](?=[^@]*?@)|(?:(?<=@.)|(?!^)\\G(?=[^@]*$)).(?=.*[^@]\\.)',
+        '*'
+      ),
+      subject
+    })
   }
 }

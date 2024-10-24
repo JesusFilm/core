@@ -10,6 +10,7 @@ import { BlockDuplicateIdMap, BlocksFilter } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
+import { INCLUDE_JOURNEY_ACL } from '../journey/journey.acl'
 
 import { BlockService, BlockWithAction } from './block.service'
 
@@ -36,14 +37,10 @@ export class BlockResolver {
       where: { id, deletedAt: null },
       include: {
         action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
+        ...INCLUDE_JOURNEY_ACL
       }
     })
+
     if (block == null)
       throw new GraphQLError('block not found', {
         extensions: { code: 'NOT_FOUND' }
@@ -69,12 +66,7 @@ export class BlockResolver {
       where: { id, deletedAt: null },
       include: {
         action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
+        ...INCLUDE_JOURNEY_ACL
       }
     })
 
@@ -105,14 +97,10 @@ export class BlockResolver {
       where: { id, deletedAt: null },
       include: {
         action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
+        ...INCLUDE_JOURNEY_ACL
       }
     })
+
     if (block == null)
       throw new GraphQLError('block not found', {
         extensions: { code: 'NOT_FOUND' }
@@ -134,12 +122,7 @@ export class BlockResolver {
       where: { id, deletedAt: null },
       include: {
         action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
+        ...INCLUDE_JOURNEY_ACL
       }
     })
 
@@ -174,12 +157,7 @@ export class BlockResolver {
       },
       include: {
         action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
+        ...INCLUDE_JOURNEY_ACL
       }
     })
     return blocks
@@ -195,12 +173,7 @@ export class BlockResolver {
       where: { id },
       include: {
         action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
+        ...INCLUDE_JOURNEY_ACL
       }
     })
 
