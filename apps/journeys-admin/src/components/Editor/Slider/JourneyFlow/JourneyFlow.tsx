@@ -34,7 +34,6 @@ import {
 } from 'reactflow'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
-import { ContentCarousel } from '@core/journeys/ui/ContentCarousel'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { isActionBlock } from '@core/journeys/ui/isActionBlock'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -71,7 +70,6 @@ import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 
 import 'reactflow/dist/style.css'
-import { hasTouchScreen } from '@core/shared/ui/deviceUtils'
 
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
@@ -344,51 +342,41 @@ export function JourneyFlow(): ReactElement {
       createStepFromAction
     ]
   )
+
+  const isClickOrTouch = (endDragTimeStamp: number): boolean => {
+    return endDragTimeStamp - dragTimeStamp < 150
+  }
+
+  const callDispatches = (stepId: string): void => {
+    const currentStep = steps?.find((innerStep) => innerStep.id === stepId)
+    if (selectedStep?.id === currentStep?.id && showAnalytics !== true) {
+      dispatch({
+        type: 'SetSelectedBlockAction',
+        selectedBlock: selectedStep
+      })
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
+      })
+    } else {
+      dispatch({ type: 'SetSelectedStepAction', selectedStep: currentStep })
+    }
+  }
+
   const onNodeDragStop: NodeDragHandler = (_event, node): void => {
     if (node.type !== 'StepBlock') return
 
-    console.log('drag click')
     const step = data?.blocks.find(
       (step) => step.__typename === 'StepBlock' && step.id === node.id
     )
     if (step == null || step.__typename !== 'StepBlock') return
 
-    // console.log(_event)
-    // if mobile, and if tap
-    // go through block selection logic
-    // else go through standard logic below
+    // if click or tap, go through block selection logic
+    // else go through standard positioning logic below
 
-    const isTouchScreen = hasTouchScreen()
-    const isTap = _event.timeStamp - dragTimeStamp < 150
-
-    const currentStep = steps?.find((innerStep) => innerStep.id === step.id)
-
-    // if (_event.timeStamp - dragTimeStamp > 300) {
-    //   console.log('Drag!')
-    // } else {
-    //   console.log('tap')
-    // }
-    // if (isTouchScreen) {
-    if (isTap) {
-      console.log('Tap')
-      if (selectedStep?.id === currentStep?.id && showAnalytics !== true) {
-        // console.log('selecting block')
-        dispatch({
-          type: 'SetSelectedBlockAction',
-          selectedBlock: selectedStep
-        })
-        dispatch({
-          type: 'SetSelectedAttributeIdAction',
-          selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
-        })
-      } else {
-        dispatch({ type: 'SetSelectedStepAction', selectedStep: currentStep })
-      }
+    if (isClickOrTouch(_event.timeStamp)) {
+      callDispatches(step.id)
     } else {
-      console.log('Drag')
-
-      // }
-
       const x = Math.trunc(node.position.x)
       const y = Math.trunc(node.position.y)
       add({
