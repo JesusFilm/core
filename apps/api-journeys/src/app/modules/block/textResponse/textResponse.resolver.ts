@@ -14,7 +14,7 @@ import {
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
-import { BlockService } from '../block.service'
+import { BlockService, updateJourneyUpdatedAt } from '../block.service'
 
 @Resolver('TextResponseBlock')
 export class TextResponseBlockResolver {
@@ -52,12 +52,7 @@ export class TextResponseBlockResolver {
           }
         }
       })
-      await tx.journey.update({
-        where: {
-          id: block.journeyId
-        },
-        data: { updatedAt: block.updatedAt }
-      })
+      await updateJourneyUpdatedAt(tx, block)
       if (!ability.can(Action.Update, subject('Journey', block.journey)))
         throw new GraphQLError('user is not allowed to create block', {
           extensions: { code: 'FORBIDDEN' }

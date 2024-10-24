@@ -25,6 +25,18 @@ type PrismaTransation = Omit<
   | 'enableShutdownHooks'
 >
 
+export async function updateJourneyUpdatedAt(
+  tx: PrismaTransation,
+  block: Block
+): Promise<void> {
+  await tx.journey.update({
+    where: {
+      id: block.journeyId
+    },
+    data: { updatedAt: block.updatedAt }
+  })
+}
+
 @Injectable()
 export class BlockService {
   constructor(private readonly prismaService: PrismaService) {}
@@ -441,12 +453,7 @@ export class BlockService {
         ]) as Prisma.BlockUpdateInput,
         include: { action: true }
       })
-      await tx.journey.update({
-        where: {
-          id: updatedBlock.journeyId
-        },
-        data: { updatedAt: updatedBlock.updatedAt }
-      })
+      await updateJourneyUpdatedAt(tx, updatedBlock)
       return updatedBlock as unknown as T
     })
   }

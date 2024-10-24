@@ -15,7 +15,7 @@ import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
 import { INCLUDE_JOURNEY_ACL } from '../../journey/journey.acl'
-import { BlockService } from '../block.service'
+import { BlockService, updateJourneyUpdatedAt } from '../block.service'
 
 @Resolver('TypographyBlock')
 export class TypographyBlockResolver {
@@ -48,12 +48,7 @@ export class TypographyBlockResolver {
           ...INCLUDE_JOURNEY_ACL
         }
       })
-      await tx.journey.update({
-        where: {
-          id: block.journeyId
-        },
-        data: { updatedAt: block.updatedAt }
-      })
+      await updateJourneyUpdatedAt(tx, block)
       if (!ability.can(Action.Update, subject('Journey', block.journey)))
         throw new GraphQLError('user is not allowed to create block', {
           extensions: { code: 'FORBIDDEN' }
