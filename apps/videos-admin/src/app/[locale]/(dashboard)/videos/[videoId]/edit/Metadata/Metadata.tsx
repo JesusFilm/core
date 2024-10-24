@@ -2,6 +2,7 @@ import { useMutation } from '@apollo/client'
 import {
   Box,
   Checkbox,
+  CircularProgress,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -140,7 +141,9 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
 
   return (
     <Stack gap={2} data-testid="VideoMetadata">
-      <Section title={t('Information')}>
+      {loading ? <CircularProgress /> : (
+       <> 
+        <Section title={t('Information')}>
         <Stack gap={2}>
           <Stack direction="row" gap={2}>
             <UpdateableField
@@ -240,6 +243,8 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
       </Section>
 
       <StudyQuestions studyQuestions={video?.studyQuestions} />
+      </>
+      )}
     </Stack>
   )
 }

@@ -1,11 +1,10 @@
-import { UniqueIdentifier } from '@dnd-kit/core'
 import type { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 
 import { videosAdminConfig } from '../../../../../../../libs/storybookConfig'
+import { OrderedItem } from '../OrderedItem'
 
 import { OrderedList } from './OrderedList'
-import { OrderedRow } from './OrderedRow'
 
 interface Item {
   id: string
@@ -32,10 +31,10 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 const Template: Story = {
-  render: (args) => (
+  render: ({ items, ...args}) => (
     <OrderedList<Item> {...args}>
-      {args.items.map(({ id, value }, i) => (
-        <OrderedRow key={i} id={id} value={value} />
+      {items.map(({ id, value }, i) => (
+        <OrderedItem key={i} id={id} value={value} />
       ))}
     </OrderedList>
   )
@@ -43,17 +42,13 @@ const Template: Story = {
 
 export const Default: Story = {
   args: {
-    id: 'orderedRow.1',
-    label: 'Ordered row',
-    idx: 0,
-    total: 1,
-    onOrderUpdate: ({ id, order }) => alert(`Update ${id} order to: ${order}`)
+    items: [{ id: 'OrderedItem.1', value: 'Ordered row'}]
   }
 }
 
 export const WithActions: Story = {
   args: {
-    id: 'orderedRow.1',
+    id: 'OrderedItem.1',
     label: 'Ordered row',
     idx: 0,
     total: 1,

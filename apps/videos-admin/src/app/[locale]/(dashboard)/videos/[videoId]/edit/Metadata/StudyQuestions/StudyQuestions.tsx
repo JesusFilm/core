@@ -4,19 +4,30 @@ import { ReactElement } from 'react'
 
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
+import { OrderedItem } from '../../OrderedItem'
 import { OrderedList } from '../../OrderedList'
-import { OrderedRow } from '../../OrderedRow'
 import { Section } from '../../Section'
+import { graphql, VariablesOf } from 'gql.tada'
+import { ResultOf } from 'gql.tada'
 
-const UPDATE_STUDY_QUESTION_ORDER = gql`
+export const UPDATE_STUDY_QUESTION_ORDER = graphql(`
   mutation UpdateStudyQuestionOrder($input: VideoStudyQuestionUpdateInput!) {
     videoStudyQuestionUpdate(input: $input) {
       id
     }
   }
-`
+`)
 
-export function StudyQuestions({ studyQuestions }): ReactElement | null {
+export type UpdateStudyQuestionOrder = ResultOf<typeof UPDATE_STUDY_QUESTION_ORDER>
+export type UpdateStudyQuestionOrderVariables = VariablesOf<
+  typeof UPDATE_STUDY_QUESTION_ORDER
+>
+
+interface StudyQuestionsProps {
+  studyQuestions: Array<{ id: string, value: string }>
+}
+
+export function StudyQuestions({ studyQuestions }: StudyQuestionsProps): ReactElement | null {
   const t = useTranslations()
   const [updateStudyQuestionOrder] = useMutation(UPDATE_STUDY_QUESTION_ORDER)
 
@@ -47,13 +58,16 @@ export function StudyQuestions({ studyQuestions }): ReactElement | null {
       {totalQuestions > 0 ? (
         <OrderedList onOrderUpdate={updateOrder} items={studyQuestions}>
           {studyQuestions?.map(({ id, value }, idx) => (
-            <OrderedRow
+            <OrderedItem
               key={id}
               id={id}
               label={value}
               idx={idx}
               total={totalQuestions}
               onOrderUpdate={updateOrder}
+              actions={[
+                { label: 'view', handler: () => null}
+              ]}
             />
           ))}
         </OrderedList>

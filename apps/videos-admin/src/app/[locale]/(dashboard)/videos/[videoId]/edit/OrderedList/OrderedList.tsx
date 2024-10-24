@@ -1,13 +1,13 @@
-import { DndContext, DragEndEvent, UniqueIdentifier } from '@dnd-kit/core'
+import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext } from '@dnd-kit/sortable'
 import Stack from '@mui/material/Stack'
 import { ReactElement, ReactNode } from 'react'
 
 interface BaseItem {
-  id: UniqueIdentifier
+  id: string
 }
 
-interface OrderedListProps<T extends BaseItem> {
+export interface OrderedListProps<T extends BaseItem> {
   onOrderUpdate: (input: { id: string; order: number }) => void
   items: T[]
   children: ReactNode

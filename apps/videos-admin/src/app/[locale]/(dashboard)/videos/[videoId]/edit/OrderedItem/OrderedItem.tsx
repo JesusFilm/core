@@ -1,3 +1,4 @@
+import { UniqueIdentifier } from '@dnd-kit/core'
 import { useSortable } from '@dnd-kit/sortable'
 import FormControl from '@mui/material/FormControl'
 import IconButton from '@mui/material/IconButton'
@@ -10,7 +11,7 @@ import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
+import { MouseEvent, ReactElement, useState } from 'react'
 
 import Drag from '@core/shared/ui/icons/Drag'
 import More from '@core/shared/ui/icons/More'
@@ -48,7 +49,7 @@ function Actions({ actions }: ActionsProps): ReactElement {
   return (
     <div>
       <IconButton
-        aria-label="ordered-row-actions"
+        aria-label="ordered-item-actions"
         size="small"
         onClick={handleClick}
       >
@@ -59,7 +60,8 @@ function Actions({ actions }: ActionsProps): ReactElement {
         open={open}
         onClose={closeMenu}
         MenuListProps={{
-          'aria-labelledby': 'ordered-row-actions'
+          'aria-labelledby': 'ordered-item-actions',
+          'aria-label': 'ordered-item-actions-menu'
         }}
       >
         {actions.map(({ label, handler }) => (
@@ -115,7 +117,7 @@ function Label({ children }: { children: string }): ReactElement {
   return <Typography variant="subtitle2">{children}</Typography>
 }
 
-interface OrderedRowProps {
+interface OrderedItemProps {
   id: string
   label: string
   idx: number
@@ -128,7 +130,7 @@ interface OrderedRowProps {
   }>
 }
 
-export function OrderedRow({
+export function OrderedItem({
   id,
   label,
   idx,
@@ -136,7 +138,7 @@ export function OrderedRow({
   onOrderUpdate,
   onClick,
   actions
-}: OrderedRowProps): ReactElement {
+}: OrderedItemProps): ReactElement {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id })
 
@@ -155,7 +157,8 @@ export function OrderedRow({
     <OrderedProvider value={{ id }}>
       <Stack
         onClick={handleClick}
-        id={`draggable-row-${id}`}
+        data-testid="OrderedItem"
+        id={`ordered-item-${id}`}
         ref={setNodeRef}
         {...attributes}
         direction="row"
@@ -171,7 +174,7 @@ export function OrderedRow({
           width: '100%'
         }}
       >
-        <IconButton {...listeners}>
+        <IconButton {...listeners} aria-label="ordered-item-drag-handle">
           <Drag fontSize="large" />
         </IconButton>
         <Label>{label}</Label>
@@ -202,6 +205,6 @@ export function OrderedRow({
   )
 }
 
-OrderedRow.Label = Label
-OrderedRow.Dropdown = Dropdown
-OrderedRow.Actions = Actions
+OrderedItem.Label = Label
+OrderedItem.Dropdown = Dropdown
+OrderedItem.Actions = Actions
