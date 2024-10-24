@@ -24,14 +24,17 @@ export function Section({
       sx={{
         border: '1px solid',
         borderColor: 'divider',
+        overflow: 'hidden',
         borderRadius: 1,
-        width: 1024
+        width: '100%'
       }}
+      data-testid={`${title}-section`}
     >
       <Stack
         sx={{
           borderBottom: '1px solid',
           borderColor: 'divider',
+          backgroundColor: 'background.paper',
           px: 2,
           py: 1.5
         }}

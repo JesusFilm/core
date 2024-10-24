@@ -1,4 +1,4 @@
-import { Button, Modal } from '@mui/material'
+import { Button, IconButton, Modal } from '@mui/material'
 import Box from '@mui/material/Box'
 import { useTranslations } from 'next-intl'
 import Image from 'next/image'
@@ -6,6 +6,7 @@ import { ReactElement, useState } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { VideoImageUpload } from './VideoImageUpload'
 import { GetAdminVideo } from '../../../../../../../../libs/useAdminVideo'
+import Edit2 from '@core/shared/ui/icons/Edit2'
 
 function getImageFields(video): { src: string | null; alt: string | null } {
   if (video == null) return { src: null, alt: null }
@@ -42,7 +43,7 @@ export function VideoImage({ video }: VideoImageProps): ReactElement {
         sx={{
           position: 'relative',
           height: 225,
-          width: { xs: 'auto', sm: 225 },
+          width: { xs: 'auto', sm: 400 },
           borderRadius: 1,
           overflow: 'hidden',
           flexShrink: 0
@@ -55,8 +56,14 @@ export function VideoImage({ video }: VideoImageProps): ReactElement {
           objectFit="cover"
           priority
         />
+        <IconButton
+          onClick={handleOpen}
+          size="small"
+          sx={{ position: 'absolute', top: 4, right: 4 }}
+        >
+          <Edit2 />
+        </IconButton>
       </Box>
-      <Button onClick={handleOpen}>Change</Button>
       <Dialog
         open={show}
         onClose={handleClose}

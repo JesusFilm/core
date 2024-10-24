@@ -12,7 +12,7 @@ export function TabContainer(props: TabContainerProps): ReactElement {
 
   return (
     <div role="tabpanel" hidden={value !== index} {...other}>
-      {value === index && <Box sx={{ mt: 3 }}>{children}</Box>}
+      {value === index && <Box>{children}</Box>}
     </div>
   )
 }

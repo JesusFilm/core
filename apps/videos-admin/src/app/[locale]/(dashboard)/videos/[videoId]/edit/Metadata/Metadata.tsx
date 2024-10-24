@@ -14,10 +14,7 @@ import { graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
-import Plus2 from '@core/shared/ui/icons/Plus2'
-
 import { Textarea } from '../../../../../../../components/Textarea'
-import { useUpdateVideoVariantMutation } from '../../../../../../../libs/useUpdateVideoVariantMutation'
 import { Section } from '../Section'
 import { UpdateableField } from '../UpdateableField'
 
@@ -102,7 +99,7 @@ interface MetadataProps {
 export function Metadata({ video, loading }: MetadataProps): ReactElement {
   const t = useTranslations()
 
-  const updateTitle = useUpdateVideoVariantMutation(VIDEO_TITLE_UPDATE)
+  const updateTitle = useUpdateMutation(VIDEO_TITLE_UPDATE)
   const updateDescription = useUpdateMutation(VIDEO_DESCRIPTION_UPDATE)
   const updateSnippet = useUpdateMutation(VIDEO_SNIPPET_UPDATE)
   const [updateVideo] = useMutation(VIDEO_UPDATE)
@@ -142,7 +139,7 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
   }
 
   return (
-    <Stack gap={2}>
+    <Stack gap={2} data-testid="VideoMetadata">
       <Section title={t('Information')}>
         <Stack gap={2}>
           <Stack direction="row" gap={2}>
@@ -161,7 +158,7 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
               fullWidth
             />
           </Stack>
-          <Stack direction="row" gap={2}>
+          <Stack direction="row" alignItems="center" gap={2}>
             <FormControl>
               <FormLabel>{t('Status')}</FormLabel>
               <Select
@@ -187,28 +184,28 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
                 ))}
               </Select>
             </FormControl>
-          </Stack>
 
-          <FormControlLabel
-            label="No Index"
-            control={
-              <Checkbox
-                defaultChecked={video?.noIndex === true}
-                onChange={updateNoIndex}
-              />
-            }
-          />
+            <FormControlLabel
+              label="No Index"
+              control={
+                <Checkbox
+                  defaultChecked={video?.noIndex === true}
+                  onChange={updateNoIndex}
+                />
+              }
+            />
+          </Stack>
         </Stack>
       </Section>
 
       <Section title={t('Image')}>
-        <Stack direction="row" gap={2}>
-          <VideoImage video={video} />
+        <Stack gap={2}>
           <UpdateableField
             label="Alt"
             {...video?.imageAlt?.[0]}
             handleUpdate={updateAlt}
           />
+          <VideoImage video={video} />
         </Stack>
       </Section>
 
@@ -242,16 +239,7 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
         />
       </Section>
 
-      <Section
-        title={t('Study Questions')}
-        action={{
-          label: t('Add Question'),
-          startIcon: <Plus2 />,
-          onClick: () => alert('Create new Question')
-        }}
-      >
-        <StudyQuestions studyQuestions={video?.studyQuestions} />
-      </Section>
+      <StudyQuestions studyQuestions={video?.studyQuestions} />
     </Stack>
   )
 }
