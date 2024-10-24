@@ -1,9 +1,10 @@
-import { render, fireEvent, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { HelpButton } from '.'
 
 describe('HelpButton', () => {
   window.open = jest.fn()
+
   it('should open link in a new tab upon clicking', () => {
     render(<HelpButton />)
 

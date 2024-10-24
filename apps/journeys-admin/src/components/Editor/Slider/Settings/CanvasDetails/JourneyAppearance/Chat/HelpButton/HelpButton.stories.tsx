@@ -1,6 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { HelpButton } from './HelpButton'
+
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
+
+import { HelpButton } from './HelpButton'
 
 const HelpButtonStory: Meta<typeof HelpButton> = {
   ...simpleComponentConfig,

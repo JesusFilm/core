@@ -1,13 +1,11 @@
-import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
-import Icon from '@mui/material/Icon'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
 
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
-import { ReactElement } from 'react'
 
 export function HelpButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
