@@ -5,11 +5,12 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
+import { CREATE_HOST } from '../../../../../../../../../libs/useHostCreateMutation'
 import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation'
 import { UPDATE_HOST } from '../../../../../../../../../libs/useHostUpdateMutation/useHostUpdateMutation'
 import { UPDATE_JOURNEY_HOST } from '../../../../../../../../../libs/useUpdateJourneyHostMutation/useUpdateJourneyHostMutation'
 
-import { CREATE_HOST, HostTitleFieldForm } from './HostTitleFieldForm'
+import { HostTitleFieldForm } from './HostTitleFieldForm'
 
 jest.mock('uuid', () => ({
   __esModule: true,
