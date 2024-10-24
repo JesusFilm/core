@@ -38,7 +38,6 @@ export function BaseEdge({
     onChange: (selected) => {
       const selectedEdge = selected.edges.find((edge) => edge.id === id)
       if (selectedEdge != null && showAnalytics !== true) {
-        console.log('edge selected')
         setEdgeSelected(true)
       } else {
         setEdgeSelected(false)
@@ -48,12 +47,8 @@ export function BaseEdge({
 
   const props = !hasTouchScreen() &&
     showAnalytics !== true && {
-      onMouseOver: () => {
-        setIsHovering(true)
-      },
-      onMouseLeave: () => {
-        setIsHovering(false)
-      }
+      onMouseOver: () => setIsHovering(true),
+      onMouseLeave: () => setIsHovering(false)
     }
 
   let stroke: CSSProperties['stroke']
