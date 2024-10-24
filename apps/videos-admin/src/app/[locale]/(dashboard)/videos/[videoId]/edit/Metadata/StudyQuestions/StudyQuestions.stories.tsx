@@ -1,7 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react'
-import { StudyQuestions } from './StudyQuestions'
-import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
 import { ComponentPropsWithoutRef } from 'react'
+
+import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
+
+import { mockStudyQuestions } from './data.mock'
+import { StudyQuestions } from './StudyQuestions'
 
 type StoryArgs = ComponentPropsWithoutRef<typeof StudyQuestions> & {
   locale: string
@@ -26,7 +29,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    studyQuestions: []
+    studyQuestions: mockStudyQuestions
   }
 }
 

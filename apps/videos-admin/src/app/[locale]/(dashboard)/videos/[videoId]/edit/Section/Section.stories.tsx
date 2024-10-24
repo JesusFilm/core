@@ -1,9 +1,12 @@
+import Typography from '@mui/material/Typography'
 import type { Meta, StoryObj } from '@storybook/react'
-import { Section } from './Section'
-import { videosAdminConfig } from '../../../../../../../libs/storybookConfig'
-import { Typography } from '@mui/material'
-import Plus2 from '@core/shared/ui/icons/Plus2'
 import { ComponentPropsWithoutRef } from 'react'
+
+import Plus2 from '@core/shared/ui/icons/Plus2'
+
+import { videosAdminConfig } from '../../../../../../../libs/storybookConfig'
+
+import { Section } from './Section'
 
 type StoryArgs = ComponentPropsWithoutRef<typeof Section>
 
@@ -40,5 +43,12 @@ export const WithAction: Story = {
       startIcon: <Plus2 />
     },
     children: <Typography>Action section content</Typography>
+  }
+}
+
+export const WithFallback: Story = {
+  args: {
+    title: 'Empty Section',
+    children: <Section.Fallback>Nothing to show</Section.Fallback>
   }
 }

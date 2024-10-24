@@ -1,14 +1,15 @@
 import { gql, useMutation } from '@apollo/client'
 import { DndContext, DragEndEvent } from '@dnd-kit/core'
 import { SortableContext } from '@dnd-kit/sortable'
+import { Box, Typography } from '@mui/material'
 import Stack from '@mui/material/Stack'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
+
+import Plus2 from '@core/shared/ui/icons/Plus2'
 
 import { DraggableRow } from '../../DraggableRow'
 import { Section } from '../../Section'
-import { useTranslations } from 'next-intl'
-
-import Plus2 from '@core/shared/ui/icons/Plus2'
 
 const UPDATE_STUDY_QUESTION_ORDER = gql`
   mutation UpdateStudyQuestionOrder($input: VideoStudyQuestionUpdateInput!) {
@@ -17,6 +18,10 @@ const UPDATE_STUDY_QUESTION_ORDER = gql`
     }
   }
 `
+
+function Fallback(): ReactElement {
+  return <h1>No studyquestions</h1>
+}
 
 export function StudyQuestions({ studyQuestions }): ReactElement | null {
   const t = useTranslations()
@@ -58,22 +63,26 @@ export function StudyQuestions({ studyQuestions }): ReactElement | null {
         onClick: () => alert('Create new Question')
       }}
     >
-      <DndContext onDragEnd={handleDragEnd}>
-        <SortableContext items={studyQuestions}>
-          <Stack gap={1}>
-            {studyQuestions?.map(({ id, value }, idx) => (
-              <DraggableRow
-                id={id}
-                key={id}
-                label={value}
-                idx={idx}
-                count={totalQuestions}
-                handleOrderChange={updateOrder}
-              />
-            ))}
-          </Stack>
-        </SortableContext>
-      </DndContext>
+      {studyQuestions.length > 0 ? (
+        <DndContext onDragEnd={handleDragEnd}>
+          <SortableContext items={studyQuestions}>
+            <Stack gap={1}>
+              {studyQuestions?.map(({ id, value }, idx) => (
+                <DraggableRow
+                  id={id}
+                  key={id}
+                  label={value}
+                  idx={idx}
+                  count={totalQuestions}
+                  handleOrderChange={updateOrder}
+                />
+              ))}
+            </Stack>
+          </SortableContext>
+        </DndContext>
+      ) : (
+        <Section.Fallback>{t('No study questions')}</Section.Fallback>
+      )}
     </Section>
   )
 }

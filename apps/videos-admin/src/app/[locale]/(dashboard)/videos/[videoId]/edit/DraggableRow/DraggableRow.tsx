@@ -95,6 +95,7 @@ export function DraggableRow({
         alignItems: 'center',
         border: '1px solid',
         borderColor: 'divider',
+        backgroundColor: 'background.default',
         p: 1,
         borderRadius: 1,
         width: '100%'
