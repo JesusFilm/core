@@ -2210,6 +2210,13 @@ type VideoDescription @join__type(graph: API_MEDIA)  {
   language: Language!
 }
 
+type VideoEdition @join__type(graph: API_MEDIA)  {
+  id: ID!
+  name: String
+  videoVariants: [VideoVariant!]!
+  videoSubtitles: [VideoSubtitle!]!
+}
+
 type VideoImageAlt @join__type(graph: API_MEDIA)  {
   id: ID!
   value: String!
@@ -2240,6 +2247,7 @@ type VideoSubtitle @join__type(graph: API_MEDIA)  {
   srtSrc: String
   value: String!
   language: Language!
+  videoEdition: VideoEdition!
 }
 
 type VideoTitle @join__type(graph: API_MEDIA)  {
@@ -2257,6 +2265,7 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   downloads: [VideoVariantDownload!]!
   duration: Int!
   language: Language!
+  videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean) : [VideoSubtitle!]!
   subtitleCount: Int!
   """

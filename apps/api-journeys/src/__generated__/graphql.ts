@@ -3765,6 +3765,14 @@ export type VideoDescription = {
   value: Scalars['String']['output'];
 };
 
+export type VideoEdition = {
+  __typename?: 'VideoEdition';
+  id: Scalars['ID']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+  videoSubtitles: Array<VideoSubtitle>;
+  videoVariants: Array<VideoVariant>;
+};
+
 export type VideoExpandEvent = Event & {
   __typename?: 'VideoExpandEvent';
   /** time event was created */
@@ -3988,6 +3996,7 @@ export type VideoSubtitle = {
   primary: Scalars['Boolean']['output'];
   srtSrc?: Maybe<Scalars['String']['output']>;
   value: Scalars['String']['output'];
+  videoEdition: VideoEdition;
   vttSrc?: Maybe<Scalars['String']['output']>;
 };
 
@@ -4074,6 +4083,7 @@ export type VideoVariant = {
   slug: Scalars['String']['output'];
   subtitle: Array<VideoSubtitle>;
   subtitleCount: Scalars['Int']['output'];
+  videoEdition: VideoEdition;
 };
 
 
