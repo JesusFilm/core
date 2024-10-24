@@ -677,7 +677,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   videoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomy(id: ID!) : Taxonomy @join__field(graph: API_MEDIA) 
-  taxonomies(offset: Int, limit: Int, where: TaxonomiesFilter) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
+  taxonomies: [Taxonomy!]! @join__field(graph: API_MEDIA) 
   me(input: MeInput) : User @join__field(graph: API_USERS) 
   user(id: ID!) : User @join__field(graph: API_USERS) 
   userByEmail(email: String!) : User @join__field(graph: API_USERS) 
@@ -3706,11 +3706,6 @@ input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
 input ImageInput @join__type(graph: API_MEDIA)  {
   aspectRatio: ImageAspectRatio
   videoId: ID
-}
-
-input TaxonomiesFilter @join__type(graph: API_MEDIA)  {
-  ids: [ID!]
-  category: String
 }
 
 input VideoCreateInput @join__type(graph: API_MEDIA)  {
