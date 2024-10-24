@@ -1,10 +1,21 @@
 import {
   JourneyStatus,
+  Prisma,
   UserJourneyRole,
   UserTeamRole
 } from '.prisma/api-journeys-client'
+import { DefaultArgs } from '@prisma/client/runtime/library'
 
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
+
+export const INCLUDE_JOURNEY_ACL: Prisma.BlockInclude<DefaultArgs> = {
+  journey: {
+    include: {
+      team: { include: { userTeams: true } },
+      userJourneys: true
+    }
+  }
+}
 
 export const journeyAcl: AppAclFn = ({
   can,

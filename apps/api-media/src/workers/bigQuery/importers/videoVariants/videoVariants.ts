@@ -1,4 +1,5 @@
 import compact from 'lodash/compact'
+import uniq from 'lodash/uniq'
 import { Logger } from 'pino'
 import { z } from 'zod'
 
@@ -100,6 +101,16 @@ export async function importOne(row: unknown): Promise<void> {
   const transformedVideoVariant = transform(videoVariant, invertedVideoSlugs())
   if (transformedVideoVariant == null) return
 
+  await prisma.videoEdition.upsert({
+    where: {
+      id: transformedVideoVariant.edition
+    },
+    update: {},
+    create: {
+      id: transformedVideoVariant.edition
+    }
+  })
+
   await prisma.videoVariant.upsert({
     where: {
       id: videoVariant.id
@@ -122,6 +133,19 @@ export async function importMany(rows: unknown[]): Promise<void> {
   const transformedVideoVariants = compact(
     videoVariants.map((videoVariant) => transform(videoVariant, videoSlugs))
   )
+
+  const editions = uniq(transformedVideoVariants.map(({ edition }) => edition))
+  for (const edition of editions) {
+    await prisma.videoEdition.upsert({
+      where: {
+        id: edition
+      },
+      update: {},
+      create: {
+        id: edition
+      }
+    })
+  }
 
   await prisma.videoVariant.createMany({
     data: transformedVideoVariants,
