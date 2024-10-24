@@ -7,6 +7,11 @@ import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { DetailsItem } from './DetailsItem'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()

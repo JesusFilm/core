@@ -2,8 +2,7 @@ import Autocomplete, {
   AutocompleteRenderInputParams
 } from '@mui/material/Autocomplete'
 import CircularProgress from '@mui/material/CircularProgress'
-// eslint-disable-next-line no-restricted-imports
-import { PopperOwnProps } from '@mui/material/Popper/BasePopper.types'
+import { PopperProps } from '@mui/material/Popper'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -33,7 +32,7 @@ export interface LanguageAutocompleteProps {
   helperText?: string
   renderInput?: (params: AutocompleteRenderInputParams) => ReactNode
   renderOption?: (params: HTMLAttributes<HTMLLIElement>) => ReactNode
-  popper?: Pick<PopperOwnProps, 'placement' | 'modifiers'>
+  popper?: Omit<PopperProps, 'open'>
 }
 
 export function LanguageAutocomplete({
