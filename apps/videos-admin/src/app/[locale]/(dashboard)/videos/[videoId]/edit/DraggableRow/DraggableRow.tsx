@@ -79,7 +79,7 @@ export function DraggableRow({
 
     if (typeof newOrder !== 'number' || newOrder === idx) return
 
-    handleOrderChange?.({ id, order: e.target.value })
+    handleOrderChange?.({ id, order: newOrder })
   }
 
   return (
