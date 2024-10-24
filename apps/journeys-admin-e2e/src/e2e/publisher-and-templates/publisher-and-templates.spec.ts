@@ -201,12 +201,12 @@ test.describe('Publisher page functionality', () => {
     await publisherPage.clickOnTemplateInPublisherPage() // clicking on existing template
     await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
     await publisherPage.clickTheDotOptionsInEditTemplatePage('Language') // clicking Language option from the three dot options
-    await journeyLevelActions.enterLanguage('Tamil') // selecting language in the edit language popup
+    await journeyLevelActions.enterLanguage('Aklanon') // selecting language in the edit language popup
     await publisherPage.clickSaveBtn() // clicking on save button in the 'edit language' popup
     await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
     await publisherPage.clickTheDotOptionsInEditTemplatePage('Language') // clicking Language option from the three dot options
     await journeyLevelActions.verifySelectedLanguageInLanguagePopup() // verify selecetd language is upadetd in the edit language popup
-    await journeyLevelActions.enterLanguage('English') //  clicking on save button in the 'edit language' popup
+    await journeyLevelActions.enterLanguage('Balangao') //  clicking on save button in the 'edit language' popup
     await publisherPage.clickSaveBtn() // clicking on save button in the 'edit language' popup
   })
 })

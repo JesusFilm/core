@@ -163,7 +163,7 @@ export function LanguageAutocomplete({
           <List
             itemData={itemData}
             outerElementType={OuterElementType}
-            height={smUp ? 400 : 200}
+            height={smUp ? Math.min(itemCount * itemSize + 10, 400) : 200}
             width="100%"
             itemSize={itemSize}
             overscanCount={5}
