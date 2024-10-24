@@ -150,10 +150,10 @@ describe('ImageBlockResolver', () => {
       ).toEqual(blockWithUserTeam)
       expect(prismaService.journey.update).toHaveBeenCalledWith({
         data: {
-          updatedAt: '2024-10-21T04:32:25.858Z'
+          updatedAt: block.updatedAt
         },
         where: {
-          id: 'journeyId'
+          id: block.journeyId
         }
       })
     })

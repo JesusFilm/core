@@ -123,6 +123,14 @@ describe('RadioQuestionBlockResolver', () => {
         blockCreateInput.journeyId,
         blockCreateInput.parentBlockId
       )
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        data: {
+          updatedAt: block.updatedAt
+        },
+        where: {
+          id: block.journeyId
+        }
+      })
     })
 
     it('throws error if not authorized', async () => {
