@@ -11,16 +11,31 @@ import { paramsToRecord } from '../../../../lib/paramsToRecord'
 */
 
 const GET_TAXONOMY = graphql(`
-  query GetTaxonomy($category: String!) {
-    taxonomies(where: { category: $category }) {
+  query GetTaxonomy($category: String!, $languageCodes: [String!]) {
+    taxonomies(category: $category) {
+      category
       term
-      name {
+      name(languageCodes: $languageCodes) {
         label
         languageCode
       }
     }
   }
 `)
+
+interface TaxonomyGroup {
+  terms: Record<
+    string,
+    {
+      label: string
+      metadataLanguageTag: string
+    }
+  >
+  _links: {
+    self: { href: string }
+    taxonomies: { href: string }
+  }
+}
 
 interface TaxonomyParams {
   params: {
@@ -47,40 +62,83 @@ export async function GET(
     {
       query: GET_TAXONOMY,
       variables: {
-        category
+        category,
+        languageCodes: metadataLanguageTags
       }
     }
   )
 
-  const terms: Record<string, { label: string; metadataLanguageTag: string }> =
-    {}
+  const findBestMatchingName = (
+    names: Array<{ label: string; languageCode: string }>,
+    preferredLanguages: string[]
+  ): { label: string; languageCode: string } => {
+    console.log('INSIDE findBestMatchingName')
+    console.log('names', names)
+    console.log('preferredLanguages', preferredLanguages)
+
+    for (const preferredLanguage of preferredLanguages) {
+      const match = names.find(
+        (name) => name.languageCode === preferredLanguage
+      )
+      if (match !== undefined) return match
+    }
+    return names[0]
+  }
+
+  const groupedTaxonomies: Record<string, TaxonomyGroup> = {}
 
   data.taxonomies.forEach((taxonomy) => {
-    let bestMatchingName = taxonomy.name[0]
-    for (const tag of metadataLanguageTags) {
-      const match = taxonomy.name.find((name) => name.languageCode === tag)
-      if (match !== undefined) {
-        bestMatchingName = match
-        break
-      }
+    if (taxonomy.name.length === 0) {
+      console.log('taxonomy.name is null')
+      console.log('taxonomy', taxonomy)
+      return
     }
+    const matchingName = findBestMatchingName(
+      taxonomy.name,
+      metadataLanguageTags
+    )
+    if (groupedTaxonomies[taxonomy.category] === undefined) {
+      groupedTaxonomies[taxonomy.category] = {
+        terms: {
+          [taxonomy.term]: {
+            label: matchingName.label,
+            metadataLanguageTag: matchingName.languageCode
+          }
+        },
+        _links: {
+          self: {
+            href: `https://api.arclight.org/v2/taxonomies/${taxonomy.category}?${queryString}`
+          },
+          taxonomies: {
+            href: `https://api.arclight.org/v2/taxonomies?${queryString}`
+          }
+        }
+      }
+    } else {
+      // const
 
-    terms[taxonomy.term] = {
-      label: bestMatchingName.label,
-      metadataLanguageTag: bestMatchingName.languageCode
+      groupedTaxonomies[taxonomy.category].terms[taxonomy.term] = {
+        label: matchingName.label,
+        metadataLanguageTag: matchingName.languageCode
+      }
     }
   })
 
+  if (Object.keys(groupedTaxonomies).length === 0) {
+    return new Response(
+      JSON.stringify({
+        message: `Taxonomy '${category}' not found!`,
+        logref: 404
+      }),
+      { status: 404 }
+    )
+  }
+
   const response = {
-    terms,
     _links: {
-      self: {
-        href: `https://api.arclight.org/v2/taxonomies/${category}?${queryString}`
-      },
-      taxonomies: {
-        href: `https://api.arclight.org/v2/taxonomies?${queryString}`
-      }
-    }
+      self: { href: `http://api.arclight.org/v2/taxonomies?${queryString}` }
+    },
+    _embedded: { taxonomies: groupedTaxonomies }
   }
 
   return new Response(JSON.stringify(response), { status: 200 })
