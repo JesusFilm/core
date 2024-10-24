@@ -2,7 +2,6 @@ import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../lib/apolloClient'
-import { paramsToRecord } from '../../../lib/paramsToRecord'
 
 /* TODO: 
   querystring:
@@ -11,11 +10,11 @@ import { paramsToRecord } from '../../../lib/paramsToRecord'
 */
 
 const GET_TAXONOMIES = graphql(`
-  query GetTaxonomies {
+  query GetTaxonomies($languageCodes: [String!]) {
     taxonomies {
       category
       term
-      name {
+      name(languageCodes: $languageCodes) {
         label
         languageCode
       }
@@ -23,74 +22,93 @@ const GET_TAXONOMIES = graphql(`
   }
 `)
 
+interface TaxonomyGroup {
+  terms: Record<
+    string,
+    {
+      label: string
+      metadataLanguageTag: string
+    }
+  >
+  _links: {
+    self: { href: string }
+    taxonomies: { href: string }
+  }
+}
+
+const findBestMatchingName = (
+  names: Array<{ label: string; languageCode: string }>,
+  preferredLanguages: string[]
+): { label: string; languageCode: string } => {
+  console.log('INSIDE findBestMatchingName')
+  console.log('names', names)
+  console.log('preferredLanguages', preferredLanguages)
+
+  for (const preferredLanguage of preferredLanguages) {
+    const match = names.find((name) => name.languageCode === preferredLanguage)
+    if (match !== undefined) return match
+  }
+  return names[0]
+}
+
 export async function GET(request: NextRequest): Promise<Response> {
-  const query = request.nextUrl.searchParams
-  const metadataLanguageTags = query
+  const { searchParams } = request.nextUrl
+  const metadataLanguageTags = searchParams
     .get('metadataLanguageTags')
     ?.split(',') ?? ['en']
+  const queryString = searchParams.toString()
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_TAXONOMIES>
   >({
-    query: GET_TAXONOMIES
+    query: GET_TAXONOMIES,
+    variables: { languageCodes: metadataLanguageTags }
   })
-
-  const queryObject: Record<string, string> = {
-    ...paramsToRecord(query.entries())
-  }
-
-  const queryString = new URLSearchParams(queryObject).toString()
-
-  interface TaxonomyGroup {
-    terms: Record<string, { label: string; metadataLanguageTag: string }>
-    _links?: {
-      self: { href: string }
-      taxonomies: { href: string }
-    }
-  }
 
   const groupedTaxonomies: Record<string, TaxonomyGroup> = {}
 
   data.taxonomies.forEach((taxonomy) => {
+    if (taxonomy.name.length === 0) {
+      console.log('taxonomy.name is null')
+      console.log('taxonomy', taxonomy)
+      return
+    }
+    const matchingName = findBestMatchingName(
+      taxonomy.name,
+      metadataLanguageTags
+    )
     if (groupedTaxonomies[taxonomy.category] === undefined) {
-      groupedTaxonomies[taxonomy.category] = { terms: {} }
-    }
-
-    let bestMatchingName = taxonomy.name[0]
-    for (const tag of metadataLanguageTags) {
-      const match = taxonomy.name.find((name) => name.languageCode === tag)
-      if (match !== undefined) {
-        bestMatchingName = match
-        break
+      groupedTaxonomies[taxonomy.category] = {
+        terms: {
+          [taxonomy.term]: {
+            label: matchingName.label,
+            metadataLanguageTag: matchingName.languageCode
+          }
+        },
+        _links: {
+          self: {
+            href: `https://api.arclight.org/v2/taxonomies/${taxonomy.category}?${queryString}`
+          },
+          taxonomies: {
+            href: `https://api.arclight.org/v2/taxonomies?${queryString}`
+          }
+        }
       }
-    }
+    } else {
+      // const
 
-    groupedTaxonomies[taxonomy.category].terms[taxonomy.term] = {
-      label: bestMatchingName.label,
-      metadataLanguageTag: bestMatchingName.languageCode
-    }
-  })
-
-  Object.keys(groupedTaxonomies).forEach((category) => {
-    groupedTaxonomies[category]._links = {
-      self: {
-        href: `https://api.arclight.org/v2/taxonomies/${category}?${queryString}`
-      },
-      taxonomies: {
-        href: `https://api.arclight.org/v2/taxonomies?${queryString}`
+      groupedTaxonomies[taxonomy.category].terms[taxonomy.term] = {
+        label: matchingName.label,
+        metadataLanguageTag: matchingName.languageCode
       }
     }
   })
 
   const response = {
     _links: {
-      self: {
-        href: `https://api.arclight.org/v2/taxonomies?${queryString}`
-      }
+      self: { href: `http://api.arclight.org/v2/taxonomies?${queryString}` }
     },
-    _embedded: {
-      taxonomies: groupedTaxonomies
-    }
+    _embedded: { taxonomies: groupedTaxonomies }
   }
 
   return new Response(JSON.stringify(response), { status: 200 })
