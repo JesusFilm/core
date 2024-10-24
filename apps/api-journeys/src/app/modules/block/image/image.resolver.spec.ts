@@ -306,10 +306,7 @@ describe('ImageBlockResolver', () => {
         ...blockCreateInput,
         isCover: true
       })
-      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
-        block,
-        prismaService
-      )
+      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(block)
     })
   })
 
