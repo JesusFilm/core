@@ -49,6 +49,32 @@ export interface LanguageAutocompleteProps {
 
 const OuterElementContext = createContext({})
 
+const OuterElementType = forwardRef<HTMLDivElement>(
+  function OuterElementType(props, ref): ReactElement {
+    const outerProps = useContext(OuterElementContext)
+    return <div ref={ref} {...props} {...outerProps} />
+  }
+)
+
+const defaultRenderOption = (props: ListChildComponentProps): ReactNode => {
+  const { data, index, style } = props
+  const { id, localName, nativeName } = data[index][1]
+  const { key, ...optionProps } = data[index][0]
+
+  return (
+    <Box {...optionProps} key={id} style={style} tabIndex={1}>
+      <Stack>
+        <Typography>{localName ?? nativeName}</Typography>
+        {localName != null && nativeName != null && (
+          <Typography variant="body2" color="text.secondary">
+            {nativeName}
+          </Typography>
+        )}
+      </Stack>
+    </Box>
+  )
+}
+
 export function LanguageAutocomplete({
   onChange: handleChange,
   value,
@@ -59,23 +85,6 @@ export function LanguageAutocomplete({
   helperText,
   popper
 }: LanguageAutocompleteProps): ReactElement {
-  const OuterElementType = forwardRef<HTMLDivElement>(
-    function OuterElementType(props, ref): ReactElement {
-      const outerProps = useContext(OuterElementContext)
-      console.log(outerProps)
-      return (
-        <div
-          ref={ref}
-          {...props}
-          {...outerProps}
-          onClick={() => {
-            console.log(outerProps)
-          }}
-        />
-      )
-    }
-  )
-
   const options = useMemo(() => {
     return (
       languages?.map(({ id, name }) => {
@@ -123,25 +132,6 @@ export function LanguageAutocomplete({
       }}
     />
   )
-
-  const defaultRenderOption = (props: ListChildComponentProps): ReactNode => {
-    const { data, index, style } = props
-    const dataSet = data[index]
-    const { id, localName, nativeName } = dataSet[1]
-    const { key, ...optionProps } = dataSet[0]
-    return (
-      <Box {...optionProps} key={id} style={style} tabIndex={1}>
-        <Stack>
-          <Typography>{localName ?? nativeName}</Typography>
-          {localName != null && nativeName != null && (
-            <Typography variant="body2" color="text.secondary">
-              {nativeName}
-            </Typography>
-          )}
-        </Stack>
-      </Box>
-    )
-  }
 
   const ListboxComponent = forwardRef<
     HTMLDivElement,
@@ -202,9 +192,10 @@ export function LanguageAutocomplete({
       loading={loading}
       disablePortal={process.env.NODE_ENV === 'test'}
       renderInput={renderInput != null ? renderInput : defaultRenderInput}
-      renderOption={(props, option, state) =>
-        [props, option, state.index] as React.ReactNode
-      }
+      renderOption={(props, option, state) => {
+        console.log(props)
+        return [props, option, state.index] as React.ReactNode
+      }}
       slots={{
         listbox: ListboxComponent
       }}
