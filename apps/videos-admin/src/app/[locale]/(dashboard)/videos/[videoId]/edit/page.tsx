@@ -1,24 +1,38 @@
 'use client'
 
-import { Button, Divider, styled, Tab, Tabs, Typography } from '@mui/material'
+import { Box, Button, Divider, Tab, Tabs, Typography , styled } from '@mui/material'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 
+import { Drawer } from '../../../../../../components/Drawer'
 import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
 
 import { Children } from './Children'
 import { Editions } from './Editions'
 import { Metadata } from './Metadata'
+import { Section } from './Section'
 import { Subtitles } from './Subtitles'
 import { TabContainer } from './Tabs/TabContainer'
 import { TabLabel } from './Tabs/TabLabel'
 import { Variants } from './Variants'
-import { Drawer } from '../../../../../../components/Drawer'
-import { Section } from './Section'
-import { Box } from '@mui/material'
+import { createFilledContext } from '../../../../../../libs/createFilledContext'
 
 const DRAWER_WIDTH = 500
+
+export enum ActiveDrawerContent {
+  StudyQuestion = 0
+}
+
+interface EditorContext {
+  activeDrawerContent: ActiveDrawerContent
+  showDrawer: boolean
+}
+
+const EditorContext = createFilledContext<EditorContext>({
+  activeDrawerContent: ActiveDrawerContent.StudyQuestion,
+  showDrawer: false
+})
 
 const Container = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'open'

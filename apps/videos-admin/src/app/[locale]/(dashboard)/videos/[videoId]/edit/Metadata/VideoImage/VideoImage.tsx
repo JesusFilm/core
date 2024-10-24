@@ -10,8 +10,8 @@ import Edit2 from '@core/shared/ui/icons/Edit2'
 
 function getImageFields(video): { src: string | null; alt: string | null } {
   if (video == null) return { src: null, alt: null }
-  const src = video?.images?.[0].mobileCinematicHigh
-  const alt = video?.imageAlt?.[0].value
+  const src = video?.images?.at(-1).mobileCinematicHigh
+  const alt = video?.imageAlt?.at(-1).value
 
   return {
     src,

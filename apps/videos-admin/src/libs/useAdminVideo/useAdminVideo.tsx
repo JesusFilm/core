@@ -9,6 +9,7 @@ export const GET_ADMIN_VIDEO = graphql(`
       label
       published
       images(aspectRatio: banner) {
+        id
         mobileCinematicHigh
       }
       imageAlt {
@@ -35,6 +36,7 @@ export const GET_ADMIN_VIDEO = graphql(`
           value
         }
         images(aspectRatio: banner) {
+          id
           mobileCinematicHigh
         }
         imageAlt {

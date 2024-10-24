@@ -19,6 +19,8 @@ export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = graphql(`
   }
 `)
 
+
+
 export type CreateCloudflareUploadByFile = ResultOf<
   typeof CREATE_CLOUDFLARE_UPLOAD_BY_FILE
 >
@@ -37,6 +39,12 @@ export type CloudflareUploadComplete = ResultOf<
 export type CloudflareUploadCompleteVariables = VariablesOf<
   typeof CLOUDFLARE_UPLOAD_COMPLETE
 >
+
+export const DELETE_VIDEO_CLOUDFLARE_IMAGE = graphql(`
+mutation DeleteVideoCloudflareImage($id: ID!) {
+  deleteCloudflareImage(id: $id)
+}
+  `)
 
 function getFileExtension(path: string): string | null {
   const regex = /(?:\.([^.]+))?$/
@@ -62,6 +70,10 @@ export function VideoImageUpload({ video }: VideoImageUpload): ReactElement {
   const [uploadComplete] = useMutation<CloudflareUploadComplete>(
     CLOUDFLARE_UPLOAD_COMPLETE
   )
+
+  console.log({video})
+
+  const [deleteImage] = useMutation(DELETE_VIDEO_CLOUDFLARE_IMAGE)
 
   const handleDrop = async (file: File): Promise<void> => {
     if (file == null) null
@@ -108,6 +120,13 @@ export function VideoImageUpload({ video }: VideoImageUpload): ReactElement {
           }
         })
         console.log({ completeResponse })
+
+        const deleteResponse = await deleteImage({
+          variables: {
+            id: video.images[0].id
+          }
+        })
+        console.log({ deleteResponse })
       } catch {
         // dispatch('Error')
       }

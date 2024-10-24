@@ -141,18 +141,18 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
 
   return (
     <Stack gap={2} data-testid="VideoMetadata">
-      {loading ? <CircularProgress /> : (
-       <> 
-        <Section title={t('Information')}>
-        <Stack gap={2}>
-          <Stack direction="row" gap={2}>
-            <UpdateableField
+      {loading ? <Box sx={{ height: 240, display: 'grid', placeItems: 'center'}}> <CircularProgress /> </Box> : (
+        <> 
+          <Section title={t('Information')}>
+            <Stack gap={2}>
+              <Stack direction="row" gap={2}>
+                <UpdateableField
               label="Title"
               {...video?.title?.[0]}
               handleUpdate={updateTitle}
               fullWidth
             />
-            <UpdateableField
+                <UpdateableField
               id="none"
               handleUpdate={() => null}
               value={video?.slug ?? ''}
@@ -160,35 +160,35 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
               disabled
               fullWidth
             />
-          </Stack>
-          <Stack direction="row" alignItems="center" gap={2}>
-            <FormControl>
-              <FormLabel>{t('Status')}</FormLabel>
-              <Select
+              </Stack>
+              <Stack direction="row" alignItems="center" gap={2}>
+                <FormControl>
+                  <FormLabel>{t('Status')}</FormLabel>
+                  <Select
                 defaultValue={
                   video?.published === true ? 'published' : 'unpublished'
                 }
                 onChange={handleStatusChange}
               >
-                {videoStatuses.map(({ label, value }) => (
-                  <MenuItem key={label} value={value}>
-                    {label}
-                  </MenuItem>
+                    {videoStatuses.map(({ label, value }) => (
+                      <MenuItem key={label} value={value}>
+                        {label}
+                      </MenuItem>
                 ))}
-              </Select>
-            </FormControl>
-            <FormControl>
-              <FormLabel>{t('Label')}</FormLabel>
-              <Select value={video?.label} onChange={handleLabelChange}>
-                {videoLabels.map(({ label, value }) => (
-                  <MenuItem key={value} value={value}>
-                    {label}
-                  </MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl>
+                  <FormLabel>{t('Label')}</FormLabel>
+                  <Select value={video?.label} onChange={handleLabelChange}>
+                    {videoLabels.map(({ label, value }) => (
+                      <MenuItem key={value} value={value}>
+                        {label}
+                      </MenuItem>
                 ))}
-              </Select>
-            </FormControl>
+                  </Select>
+                </FormControl>
 
-            <FormControlLabel
+                <FormControlLabel
               label="No Index"
               control={
                 <Checkbox
@@ -197,23 +197,23 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
                 />
               }
             />
-          </Stack>
-        </Stack>
-      </Section>
+              </Stack>
+            </Stack>
+          </Section>
 
-      <Section title={t('Image')}>
-        <Stack gap={2}>
-          <UpdateableField
+          <Section title={t('Image')}>
+            <Stack gap={2}>
+              <UpdateableField
             label="Alt"
             {...video?.imageAlt?.[0]}
             handleUpdate={updateAlt}
           />
-          <VideoImage video={video} />
-        </Stack>
-      </Section>
+              <VideoImage video={video} />
+            </Stack>
+          </Section>
 
-      <Section title={t('Snippet')}>
-        <Textarea
+          <Section title={t('Snippet')}>
+            <Textarea
           defaultValue={video?.snippet?.[0].value}
           onBlur={(e) =>
             updateSnippet({
@@ -225,10 +225,10 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
           maxRows={6}
           sx={{ minWidth: '100%', maxWidth: '100%' }}
         />
-      </Section>
+          </Section>
 
-      <Section title={t('Description')}>
-        <Textarea
+          <Section title={t('Description')}>
+            <Textarea
           defaultValue={video?.description?.[0].value}
           onBlur={(e) =>
             updateDescription({
@@ -240,10 +240,10 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
           maxRows={8}
           sx={{ minWidth: '100%', maxWidth: '100%' }}
         />
-      </Section>
+          </Section>
 
-      <StudyQuestions studyQuestions={video?.studyQuestions} />
-      </>
+          <StudyQuestions studyQuestions={video?.studyQuestions} />
+        </>
       )}
     </Stack>
   )
