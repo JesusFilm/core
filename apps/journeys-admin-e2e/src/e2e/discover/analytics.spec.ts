@@ -8,6 +8,7 @@ import { Register } from '../../pages/register-Page'
 
 let userEmail = ''
 
+// just to run the tests daily
 test.describe('Verify analytics page functionality', () => {
   test.beforeAll('Register new account', async ({ browser }) => {
     const page = await browser.newPage()
