@@ -56,6 +56,18 @@ model CloudflareVideo {
   @@index([userId])
 }
 
+model CloudflareR2 {
+  id        String   @id @default(uuid())
+  fileName  String
+  uploadUrl String?
+  userId    String
+  publicUrl String?
+  videoId   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  video     Video?   @relation(fields: [videoId], references: [id])
+}
+
 enum IdType {
   databaseId
   slug
@@ -98,6 +110,7 @@ model Video {
   bibleCitation          BibleCitation[]
   keywords               Keyword[]            @relation("VideoToKeyword")
   images                 CloudflareImage[]
+  cloudflareAssets       CloudflareR2[]
 
   @@index(label)
   @@index(childIds)
