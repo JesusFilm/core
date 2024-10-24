@@ -154,8 +154,9 @@ export function LanguageAutocomplete({
         itemData.push(...(item.children ?? []))
       }
     )
+
     const itemCount = itemData.length
-    const itemSize = 44
+    const itemSize = 45
     return (
       <div ref={ref}>
         <OuterElementContext.Provider value={other}>
@@ -164,9 +165,8 @@ export function LanguageAutocomplete({
             outerElementType={OuterElementType}
             height={smUp ? 400 : 200}
             width="100%"
-            innerElementType="ul"
             itemSize={itemSize}
-            overscanCount={20}
+            overscanCount={5}
             itemCount={itemCount}
           >
             {renderOption != null ? renderOption : defaultRenderOption}
@@ -178,7 +178,6 @@ export function LanguageAutocomplete({
 
   return (
     <Autocomplete
-      disableListWrap
       disableClearable
       value={value}
       isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -193,7 +192,6 @@ export function LanguageAutocomplete({
       disablePortal={process.env.NODE_ENV === 'test'}
       renderInput={renderInput != null ? renderInput : defaultRenderInput}
       renderOption={(props, option, state) => {
-        console.log(props)
         return [props, option, state.index] as React.ReactNode
       }}
       slots={{
