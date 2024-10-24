@@ -135,7 +135,7 @@ jobs:
       # ECS Deployment
       - name: Configure ECS AWS credentials
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
