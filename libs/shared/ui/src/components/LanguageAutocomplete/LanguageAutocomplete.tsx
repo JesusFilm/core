@@ -4,21 +4,20 @@ import Autocomplete, {
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import { PopperProps } from '@mui/material/Popper'
-import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   HTMLAttributes,
   ReactElement,
   ReactNode,
-  createContext,
   forwardRef,
-  useContext,
   useMemo
 } from 'react'
-import { FixedSizeList as List, ListChildComponentProps } from 'react-window'
+import { FixedSizeList as List } from 'react-window'
+
+import { defaultRenderOption } from './defaultRenderOption'
+import { OuterElement, OuterElementContext } from './OuterElement'
 
 export interface Language {
   id: string
@@ -45,34 +44,6 @@ export interface LanguageAutocompleteProps {
   renderInput?: (params: AutocompleteRenderInputParams) => ReactNode
   renderOption?: (params: HTMLAttributes<HTMLLIElement>) => ReactNode
   popper?: Omit<PopperProps, 'open'>
-}
-
-const OuterElementContext = createContext({})
-
-const OuterElementType = forwardRef<HTMLDivElement>(
-  function OuterElementType(props, ref): ReactElement {
-    const outerProps = useContext(OuterElementContext)
-    return <div ref={ref} {...props} {...outerProps} />
-  }
-)
-
-const defaultRenderOption = (props: ListChildComponentProps): ReactNode => {
-  const { data, index, style } = props
-  const { id, localName, nativeName } = data[index][1]
-  const { key, ...optionProps } = data[index][0]
-
-  return (
-    <Box {...optionProps} key={id} style={style} tabIndex={1}>
-      <Stack>
-        <Typography>{localName ?? nativeName}</Typography>
-        {localName != null && nativeName != null && (
-          <Typography variant="body2" color="text.secondary">
-            {nativeName}
-          </Typography>
-        )}
-      </Stack>
-    </Box>
-  )
 }
 
 export function LanguageAutocomplete({
@@ -158,11 +129,11 @@ export function LanguageAutocomplete({
     const itemCount = itemData.length
     const itemSize = 45
     return (
-      <div ref={ref}>
+      <Box ref={ref}>
         <OuterElementContext.Provider value={other}>
           <List
             itemData={itemData}
-            outerElementType={OuterElementType}
+            outerElementType={OuterElement}
             height={smUp ? Math.min(itemCount * itemSize + 10, 400) : 200}
             width="100%"
             itemSize={itemSize}
@@ -172,7 +143,7 @@ export function LanguageAutocomplete({
             {renderOption != null ? renderOption : defaultRenderOption}
           </List>
         </OuterElementContext.Provider>
-      </div>
+      </Box>
     )
   })
 
