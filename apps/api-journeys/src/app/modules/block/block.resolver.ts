@@ -219,6 +219,12 @@ export class BlockResolver {
         blocks
       )
 
+      await tx.journey.update({
+        where: {
+          id: updatedBlock.journeyId
+        },
+        data: { updatedAt: new Date().toISOString() }
+      })
       return [...siblings, ...children]
     })
   }
