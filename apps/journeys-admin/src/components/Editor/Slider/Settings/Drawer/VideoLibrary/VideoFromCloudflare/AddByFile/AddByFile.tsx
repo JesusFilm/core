@@ -20,7 +20,7 @@ import Upload1Icon from '@core/shared/ui/icons/Upload1'
 import { CreateCloudflareVideoUploadByFileMutation } from '../../../../../../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
 import { GetMyCloudflareVideoQuery } from '../../../../../../../../../__generated__/GetMyCloudflareVideoQuery'
 
-import { fileToCloudflareUpload, getBuffer } from './AddByFileUtils'
+import { fileToCloudflareUpload, getBuffer } from './utils/addByFileUtils'
 
 export const CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
   mutation CreateCloudflareVideoUploadByFileMutation(

@@ -1,6 +1,6 @@
 import type { ReadStream } from 'fs'
 
-import { CreateCloudflareVideoUploadByFileMutationVariables } from '../../../../../../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
+import { CreateCloudflareVideoUploadByFileMutationVariables } from '../../../../../../../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
 
 export function fileToCloudflareUpload(file: File): {
   variables: CreateCloudflareVideoUploadByFileMutationVariables
