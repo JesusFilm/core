@@ -3,6 +3,7 @@ import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
 import { paramsToRecord } from '../../../../lib/paramsToRecord'
+import { TaxonomyGroup, findBestMatchingName } from '../lib'
 
 /* TODO: 
   querystring:
@@ -22,20 +23,6 @@ const GET_TAXONOMY = graphql(`
     }
   }
 `)
-
-interface TaxonomyGroup {
-  terms: Record<
-    string,
-    {
-      label: string
-      metadataLanguageTag: string
-    }
-  >
-  _links: {
-    self: { href: string }
-    taxonomies: { href: string }
-  }
-}
 
 interface TaxonomyParams {
   params: {
@@ -67,23 +54,6 @@ export async function GET(
       }
     }
   )
-
-  const findBestMatchingName = (
-    names: Array<{ label: string; languageCode: string }>,
-    preferredLanguages: string[]
-  ): { label: string; languageCode: string } => {
-    console.log('INSIDE findBestMatchingName')
-    console.log('names', names)
-    console.log('preferredLanguages', preferredLanguages)
-
-    for (const preferredLanguage of preferredLanguages) {
-      const match = names.find(
-        (name) => name.languageCode === preferredLanguage
-      )
-      if (match !== undefined) return match
-    }
-    return names[0]
-  }
 
   const groupedTaxonomies: Record<string, TaxonomyGroup> = {}
 
