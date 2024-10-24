@@ -1,9 +1,7 @@
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
-import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
-import TextField from '@mui/material/TextField'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
@@ -12,12 +10,9 @@ import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
-import Play2Icon from '@core/shared/ui/icons/Play2'
-import StopCircleContainedIcon from '@core/shared/ui/icons/StopCircleContained'
 import {
   secondsToTimeFormat,
   timeFormatToSeconds
@@ -33,6 +28,7 @@ import {
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
 
+import { VideoBlockEditorSettingsPlaybackControl } from './PlaybackControl'
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 
 interface Values extends FormikValues {
@@ -56,6 +52,7 @@ export function VideoBlockEditorSettings({
 }: VideoBlockEditorSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
+
   const initialValues: Values = {
     autoplay: selectedBlock?.autoplay ?? true,
     muted: selectedBlock?.muted ?? true,
@@ -63,6 +60,7 @@ export function VideoBlockEditorSettings({
     endAt: secondsToTimeFormat(selectedBlock?.endAt ?? 0),
     objectFit: selectedBlock?.objectFit ?? ObjectFit.fill
   }
+
   const { values, errors, handleChange, setFieldValue } = useFormik<Values>({
     initialValues,
     enableReinitialize: true,
@@ -119,62 +117,10 @@ export function VideoBlockEditorSettings({
   return (
     <Box sx={{ px: 4, width: '100%' }} data-testid="VideoBlockEditorSettings">
       <Stack direction="column" spacing={6}>
-        <Stack direction="column" spacing={2}>
-          <Typography
-            variant="subtitle2"
-            sx={{
-              color: selectedBlock == null ? 'action.disabled' : undefined
-            }}
-          >
-            {t('Timing')}
-          </Typography>
-          <Stack direction="row" justifyContent="space-around" spacing={3}>
-            <TimeField
-              showSeconds
-              value={values.startAt}
-              onChange={handleChange}
-              style={{ width: '100%' }}
-              input={
-                <TextField
-                  label={t('Starts At')}
-                  name="startAt"
-                  value={values.startAt}
-                  variant="filled"
-                  disabled={selectedBlock == null}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Play2Icon />
-                      </InputAdornment>
-                    )
-                  }}
-                />
-              }
-            />
-            <TimeField
-              showSeconds
-              value={values.endAt}
-              onChange={handleChange}
-              style={{ width: '100%' }}
-              input={
-                <TextField
-                  label={t('Ends At')}
-                  name="endAt"
-                  value={values.endAt}
-                  variant="filled"
-                  disabled={selectedBlock == null}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <StopCircleContainedIcon />
-                      </InputAdornment>
-                    )
-                  }}
-                />
-              }
-            />
-          </Stack>
-        </Stack>
+        <VideoBlockEditorSettingsPlaybackControl
+          selectedBlock={selectedBlock}
+          onChange={onChange}
+        />
         <Stack direction="column" spacing={2}>
           <Stack>
             <Typography
