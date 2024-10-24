@@ -12,12 +12,6 @@ import { ImageBlockUpdateInput } from '../../../../../../../../../../../../__gen
 import { calculatePoint } from './utils/calculatePoint'
 import { clampPosition } from './utils/clampPosition'
 
-export const MIN_VALUE = 0
-export const MAX_VALUE = 100
-export const ROUND_PRECISION = 100
-const DEBOUNCE_DELAY = 500
-const INITIAL_POSITION = { x: 50, y: 50 }
-
 export interface Position {
   x: number
   y: number
@@ -37,8 +31,8 @@ export function FocalPoint({
   const imageRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [localPosition, setLocalPosition] = useState<Position>({
-    x: imageBlock?.focalLeft ?? INITIAL_POSITION.x,
-    y: imageBlock?.focalTop ?? INITIAL_POSITION.y
+    x: imageBlock?.focalLeft ?? 50,
+    y: imageBlock?.focalTop ?? 50
   })
 
   const debouncedUpdateImageBlock = useCallback(
@@ -52,7 +46,7 @@ export function FocalPoint({
         focalTop: Math.round(position.y),
         focalLeft: Math.round(position.x)
       })
-    }, DEBOUNCE_DELAY),
+    }, 500),
     [imageBlock, updateImageBlock]
   )
 

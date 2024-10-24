@@ -1,6 +1,8 @@
 import { RefObject } from 'react'
 
-import { MAX_VALUE, Position } from '../../FocalPoint'
+import { Position } from '../../FocalPoint'
+
+const MAX_VALUE = 100
 
 export function calculatePoint(
   e: React.MouseEvent | MouseEvent,

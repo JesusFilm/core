@@ -1,11 +1,10 @@
 import clamp from 'lodash/clamp'
 
-import {
-  MAX_VALUE,
-  MIN_VALUE,
-  Position,
-  ROUND_PRECISION
-} from '../../FocalPoint'
+import { Position } from '../../FocalPoint'
+
+const MIN_VALUE = 0
+const MAX_VALUE = 100
+const ROUND_PRECISION = 100
 
 export function clampPosition(point: Position): Position {
   return {
