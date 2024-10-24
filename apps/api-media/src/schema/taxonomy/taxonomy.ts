@@ -22,12 +22,14 @@ export const Taxonomy = builder.prismaObject('Taxonomy', {
     name: t.relation('name', {
       args: {
         languageId: t.arg.string({ required: false }),
-        languageCodes: t.arg.stringList({ required: false })
+        languageCodes: t.arg.stringList({ required: false }),
+        category: t.arg.string({ required: false })
       },
-      query: ({ languageId, languageCodes }) => {
+      query: ({ languageId, languageCodes, category }) => {
         const where: Prisma.TaxonomyNameWhereInput = {}
         if (languageId !== null) where.languageId = languageId
         if (languageCodes !== null) where.languageCode = { in: languageCodes }
+        if (category !== null) where.taxonomy = { category }
         return { where }
       }
     })
@@ -35,27 +37,18 @@ export const Taxonomy = builder.prismaObject('Taxonomy', {
 })
 
 builder.queryFields((t) => ({
-  taxonomy: t.prismaField({
-    type: 'Taxonomy',
-    nullable: true,
-    args: {
-      id: t.arg.id({ required: true })
-    },
-    resolve: async (query, _parent, { id }) => {
-      const taxonomy = await prisma.taxonomy.findUnique({
-        ...query,
-        where: { id }
-      })
-      return taxonomy ?? null
-    }
-  }),
-
   taxonomies: t.prismaField({
     type: ['Taxonomy'],
     nullable: false,
-    resolve: async (query, _parent) => {
+    args: {
+      category: t.arg.string({ required: false })
+    },
+    resolve: async (query, _parent, { category }) => {
       const taxonomies = await prisma.taxonomy.findMany({
-        ...query
+        ...query,
+        where: {
+          ...(category !== null && { category })
+        }
       })
       return taxonomies
     }

@@ -152,8 +152,7 @@ type Query {
   videosCount(where: VideosFilter): Int!
   videoVariants: [VideoVariant!]!
   tags: [Tag!]!
-  taxonomy(id: ID!): Taxonomy
-  taxonomies: [Taxonomy!]!
+  taxonomies(category: String): [Taxonomy!]!
 }
 
 enum SegmindModel {
@@ -192,7 +191,7 @@ type Taxonomy {
   id: ID!
   category: String!
   term: String!
-  name(languageId: String, languageCodes: [String!]): [TaxonomyName!]!
+  name(languageId: String, languageCodes: [String!], category: String): [TaxonomyName!]!
 }
 
 type TaxonomyName {
