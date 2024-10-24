@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect } from 'react'
 import { object, string } from 'yup'
@@ -9,15 +8,6 @@ import { useHostCreateMutation } from '../../../../../../../../../libs/useHostCr
 import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation/useHostUpdateMutation'
 import { useUpdateJourneyHostMutation } from '../../../../../../../../../libs/useUpdateJourneyHostMutation'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
-
-export const CREATE_HOST = gql`
-  mutation CreateHost($teamId: ID!, $input: HostCreateInput!) {
-    hostCreate(teamId: $teamId, input: $input) {
-      id
-      title
-    }
-  }
-`
 
 interface HostTitleFieldFormProps {
   defaultTitle?: string
