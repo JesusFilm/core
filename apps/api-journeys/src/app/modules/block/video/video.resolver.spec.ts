@@ -56,7 +56,8 @@ describe('VideoBlockResolver', () => {
       url: 'https://jesusfilm.org',
       target: 'target'
     },
-    objectFit: 'fill'
+    objectFit: 'fill',
+    updatedAt: '2024-10-21T04:32:25.858Z'
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -157,6 +158,21 @@ describe('VideoBlockResolver', () => {
       )
     })
 
+    it('should update journey updatedAt when video block is created', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.videoBlockCreate(ability, blockCreateInput)
+      ).toEqual(blockWithUserTeam)
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        data: {
+          updatedAt: block.updatedAt
+        },
+        where: {
+          id: block.journeyId
+        }
+      })
+    })
+
     it('creates a VideoBlock without poster block', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       expect(
@@ -249,10 +265,7 @@ describe('VideoBlockResolver', () => {
         ...blockCreateInput,
         isCover: true
       })
-      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
-        block,
-        prismaService
-      )
+      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(block)
     })
 
     describe('Internal Source', () => {

@@ -35,7 +35,8 @@ describe('ButtonBlock', () => {
     label: 'label',
     variant: ButtonVariant.contained,
     color: ButtonColor.primary,
-    size: ButtonSize.large
+    size: ButtonSize.large,
+    updatedAt: '2024-10-21T04:32:25.858Z'
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -126,6 +127,21 @@ describe('ButtonBlock', () => {
         blockCreateInput.journeyId,
         blockCreateInput.parentBlockId
       )
+    })
+
+    it('should update the journey when button is created', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.buttonBlockCreate(ability, blockCreateInput)
+      ).toEqual(blockWithUserTeam)
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        data: {
+          updatedAt: block.updatedAt
+        },
+        where: {
+          id: block.journeyId
+        }
+      })
     })
 
     it('throws error if not authorized', async () => {

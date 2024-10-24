@@ -334,6 +334,30 @@ describe('BlockResolver', () => {
       ])
     })
 
+    it('should update journey updatedAt on block restore', async () => {
+      jest.useFakeTimers()
+      jest.setSystemTime(new Date('2024-10-22T03:39:39.268Z'))
+      prismaService.block.findUnique.mockResolvedValue(blockWithUserTeam)
+      prismaService.block.update.mockResolvedValue(block)
+      prismaService.block.findMany.mockResolvedValue([block, block])
+      await resolver.blockRestore('1', ability)
+      expect(prismaService.block.update).toHaveBeenCalledWith({
+        where: { id: '1' },
+        data: {
+          deletedAt: null
+        },
+        include: {
+          action: true
+        }
+      })
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: {
+          id: block.journeyId
+        },
+        data: { updatedAt: '2024-10-22T03:39:39.268Z' }
+      })
+    })
+
     it('should throw error if block not found', async () => {
       await expect(resolver.blockRestore('1', ability)).rejects.toThrow(
         'block not found'

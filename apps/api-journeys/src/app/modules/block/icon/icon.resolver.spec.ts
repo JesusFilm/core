@@ -34,7 +34,8 @@ describe('Icon', () => {
     parentOrder: 0,
     name: IconName.ArrowForwardRounded,
     color: IconColor.secondary,
-    size: IconSize.lg
+    size: IconSize.lg,
+    updatedAt: '2024-10-21T04:32:25.858Z'
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -112,6 +113,21 @@ describe('Icon', () => {
               userJourneys: true
             }
           }
+        }
+      })
+    })
+
+    it('should update journey updatedAt when IconBlock is created', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(await resolver.iconBlockCreate(ability, blockCreateInput)).toEqual(
+        blockWithUserTeam
+      )
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        data: {
+          updatedAt: block.updatedAt
+        },
+        where: {
+          id: block.journeyId
         }
       })
     })

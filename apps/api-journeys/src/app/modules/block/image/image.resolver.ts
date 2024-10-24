@@ -15,7 +15,7 @@ import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
 import { INCLUDE_JOURNEY_ACL } from '../../journey/journey.acl'
-import { BlockService } from '../block.service'
+import { BlockService, updateJourneyUpdatedAt } from '../block.service'
 
 import { transformInput } from './transformInput'
 
@@ -55,10 +55,7 @@ export class ImageBlockResolver {
           })
         // Delete old coverBlock
         if (parentBlock.coverBlock != null)
-          await this.blockService.removeBlockAndChildren(
-            parentBlock.coverBlock,
-            tx
-          )
+          await this.blockService.removeBlockAndChildren(parentBlock.coverBlock)
       }
 
       const block = await tx.block.create({
@@ -93,6 +90,7 @@ export class ImageBlockResolver {
           ...INCLUDE_JOURNEY_ACL
         }
       })
+      await updateJourneyUpdatedAt(tx, block)
       if (!ability.can(Action.Update, subject('Journey', block.journey)))
         throw new GraphQLError('user is not allowed to create block', {
           extensions: { code: 'FORBIDDEN' }
