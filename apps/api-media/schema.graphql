@@ -354,6 +354,13 @@ type VideoDescription {
   language: Language!
 }
 
+type VideoEdition {
+  id: ID!
+  name: String
+  videoVariants: [VideoVariant!]!
+  videoSubtitles: [VideoSubtitle!]!
+}
+
 type VideoImageAlt {
   id: ID!
   value: String!
@@ -417,6 +424,7 @@ type VideoSubtitle {
   srtSrc: String
   value: String!
   language: Language!
+  videoEdition: VideoEdition!
 }
 
 input VideoSubtitleCreateInput {
@@ -478,6 +486,7 @@ type VideoVariant {
   downloads: [VideoVariantDownload!]!
   duration: Int!
   language: Language!
+  videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
   subtitleCount: Int!
 
