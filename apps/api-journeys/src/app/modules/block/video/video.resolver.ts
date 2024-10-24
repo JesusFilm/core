@@ -17,6 +17,7 @@ import {
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
+import { INCLUDE_JOURNEY_ACL } from '../../journey/journey.acl'
 import { BlockService } from '../block.service'
 
 const videoBlockYouTubeSchema = object().shape({
@@ -173,12 +174,7 @@ export class VideoBlockResolver {
         },
         include: {
           action: true,
-          journey: {
-            include: {
-              team: { include: { userTeams: true } },
-              userJourneys: true
-            }
-          }
+          ...INCLUDE_JOURNEY_ACL
         }
       })
       await tx.journey.update({
