@@ -80,12 +80,6 @@ export function FocalPoint({
   }
 
   useEffect(() => {
-    if (imageRef.current != null) {
-      imageRef.current.style.objectPosition = `${localPosition.x}% ${localPosition.y}%`
-    }
-  }, [imageRef, localPosition])
-
-  useEffect(() => {
     document.addEventListener('mousemove', handleMouseMove)
     document.addEventListener('mouseup', handleMouseUp)
     return () => {
