@@ -1,0 +1,1 @@
+export { seedTaxonomies } from './taxonomy'

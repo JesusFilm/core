@@ -346,6 +346,27 @@ model Tagging {
   @@index([tagId])
 }
 
+model Taxonomy {
+  id       String         @id @default(uuid())
+  category String
+  term     String         @unique
+  name     TaxonomyName[]
+}
+
+model TaxonomyName {
+  id           String   @id @default(uuid())
+  term         String
+  label        String
+  languageId   String
+  languageCode String
+  taxonomy     Taxonomy @relation(fields: [term], references: [term])
+
+  @@unique([term, languageId])
+  @@index([term])
+  @@index([languageId])
+  @@index([languageCode])
+}
+
 enum MediaRole {
   publisher
 }

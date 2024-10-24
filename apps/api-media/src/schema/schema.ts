@@ -14,6 +14,7 @@ import './video'
 import './videoEdition'
 import './videoVariant'
 import './tag'
+import './taxonomy'
 
 import { builder } from './builder'
 

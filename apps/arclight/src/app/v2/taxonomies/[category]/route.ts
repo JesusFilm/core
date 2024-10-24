@@ -1,19 +1,19 @@
 import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
-import { getApolloClient } from '../../../lib/apolloClient'
-
-import { TaxonomyGroup, findBestMatchingName } from './lib'
+import { getApolloClient } from '../../../../lib/apolloClient'
+import { paramsToRecord } from '../../../../lib/paramsToRecord'
+import { TaxonomyGroup, findBestMatchingName } from '../lib'
 
 /* TODO: 
   querystring:
     apiKey
-    metadataLanguageTags: comma separated list of language tags use second tag as a backup
+    metadataLanguageTags
 */
 
-const GET_TAXONOMIES = graphql(`
-  query GetTaxonomies($languageCodes: [String!]) {
-    taxonomies {
+const GET_TAXONOMY = graphql(`
+  query GetTaxonomy($category: String!, $languageCodes: [String!]) {
+    taxonomies(category: $category) {
       category
       term
       name(languageCodes: $languageCodes) {
@@ -24,19 +24,36 @@ const GET_TAXONOMIES = graphql(`
   }
 `)
 
-export async function GET(request: NextRequest): Promise<Response> {
-  const { searchParams } = request.nextUrl
-  const metadataLanguageTags = searchParams
+interface TaxonomyParams {
+  params: {
+    category: string
+  }
+}
+
+export async function GET(
+  req: NextRequest,
+  { params: { category } }: TaxonomyParams
+): Promise<Response> {
+  const query = req.nextUrl.searchParams
+  const metadataLanguageTags = query
     .get('metadataLanguageTags')
     ?.split(',') ?? ['en']
-  const queryString = searchParams.toString()
 
-  const { data } = await getApolloClient().query<
-    ResultOf<typeof GET_TAXONOMIES>
-  >({
-    query: GET_TAXONOMIES,
-    variables: { languageCodes: metadataLanguageTags }
-  })
+  const queryObject: Record<string, string> = {
+    ...paramsToRecord(query.entries())
+  }
+
+  const queryString = new URLSearchParams(queryObject).toString()
+
+  const { data } = await getApolloClient().query<ResultOf<typeof GET_TAXONOMY>>(
+    {
+      query: GET_TAXONOMY,
+      variables: {
+        category,
+        languageCodes: metadataLanguageTags
+      }
+    }
+  )
 
   const groupedTaxonomies: Record<string, TaxonomyGroup> = {}
 
@@ -76,6 +93,16 @@ export async function GET(request: NextRequest): Promise<Response> {
       }
     }
   })
+
+  if (Object.keys(groupedTaxonomies).length === 0) {
+    return new Response(
+      JSON.stringify({
+        message: `Taxonomy '${category}' not found!`,
+        logref: 404
+      }),
+      { status: 404 }
+    )
+  }
 
   const response = {
     _links: {
