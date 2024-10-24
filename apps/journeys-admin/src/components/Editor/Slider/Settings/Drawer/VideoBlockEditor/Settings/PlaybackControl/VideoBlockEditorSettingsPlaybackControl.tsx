@@ -181,7 +181,7 @@ export function VideoBlockEditorSettingsPlaybackControl({
         aria-label="video-playback-control"
         size="medium"
         min={0}
-        max={Math.round(playbackState.endAt)}
+        max={Math.round(selectedBlock?.duration ?? 0)}
         value={[
           playbackState.startAt,
           playbackState.currentTime,
