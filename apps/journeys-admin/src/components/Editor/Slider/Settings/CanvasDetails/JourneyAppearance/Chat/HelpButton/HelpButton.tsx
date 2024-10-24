@@ -31,11 +31,9 @@ export function HelpButton(): ReactElement {
           sx={{ px: 4, py: 3 }}
           justifyContent="space-between"
         >
-          <Box>
-            <Typography variant="caption">
-              {t('Learn how to get your direct chat link for any platform')}
-            </Typography>
-          </Box>
+          <Typography variant="caption">
+            {t('Learn how to get your direct chat link for any platform')}
+          </Typography>
           <LinkExternal />
         </Stack>
       </CardActionArea>
