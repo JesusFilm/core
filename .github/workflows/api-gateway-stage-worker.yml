@@ -59,7 +59,7 @@ jobs:
       - name: Login to Amazon ECR
         if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
         id: login-ecr-ecs
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build, tag, and push the image to Amazon ECR
         if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
