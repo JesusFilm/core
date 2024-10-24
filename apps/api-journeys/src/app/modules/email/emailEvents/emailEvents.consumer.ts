@@ -108,7 +108,7 @@ export class EmailEventsConsumer extends WorkerHost {
           process.env.JOURNEYS_ADMIN_URL ?? ''
         }/journeys/${journey.id}?manageAccess=true`
 
-        const text = render(
+        const text = await render(
           VisitorInteraction({
             title: journey.title,
             recipient: data.user,
@@ -119,7 +119,7 @@ export class EmailEventsConsumer extends WorkerHost {
           { plainText: true }
         )
 
-        const html = render(
+        const html = await render(
           VisitorInteraction({
             title: journey.title,
             recipient: data.user,
