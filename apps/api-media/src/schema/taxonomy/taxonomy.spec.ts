@@ -29,7 +29,7 @@ describe('Taxonomy', () => {
           id: '1',
           category: 'book',
           term: 'genesis',
-          name: [] // Add an empty array for the name property
+          name: []
         }
       ] as Array<Taxonomy & { name: TaxonomyName[] }>)
 
@@ -78,7 +78,7 @@ describe('Taxonomy', () => {
           id: '2',
           category: 'chapter',
           term: 'exodus',
-          name: [] // Add an empty array for the name property
+          name: []
         }
       ] as Array<Taxonomy & { name: TaxonomyName[] }>)
 
