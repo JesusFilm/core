@@ -314,6 +314,7 @@ export function MenuActionButton(): ReactElement {
       fullWidth
       onClick={handleClick}
       endIcon={<ChevronRight />}
+      disabled={!menuExists && journey?.menuButtonIcon == null}
     >
       {menuExists ? t('Edit Menu Card') : t('Create Menu Card')}
     </Button>
