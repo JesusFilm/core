@@ -5,7 +5,7 @@ export const VideoEditionCreateInput = builder.inputType(
   {
     fields: (t) => ({
       id: t.id({ required: true }),
-      name: t.string({ required: false }),      
+      name: t.string({ required: false })
     })
   }
 )
