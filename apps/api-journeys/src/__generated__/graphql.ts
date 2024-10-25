@@ -1304,6 +1304,9 @@ export type Mutation = {
   videoDescriptionCreate: VideoDescription;
   videoDescriptionDelete: VideoDescription;
   videoDescriptionUpdate: VideoDescription;
+  videoEditionCreate: VideoEdition;
+  videoEditionDelete: VideoEdition;
+  videoEditionUpdate: VideoEdition;
   videoExpandEventCreate: VideoExpandEvent;
   videoImageAltCreate: VideoImageAlt;
   videoImageAltDelete: VideoImageAlt;
@@ -1923,6 +1926,21 @@ export type MutationVideoDescriptionUpdateArgs = {
 };
 
 
+export type MutationVideoEditionCreateArgs = {
+  input: VideoEditionCreateInput;
+};
+
+
+export type MutationVideoEditionDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoEditionUpdateArgs = {
+  input: VideoEditionUpdateInput;
+};
+
+
 export type MutationVideoExpandEventCreateArgs = {
   input: VideoExpandEventCreateInput;
 };
@@ -2373,6 +2391,8 @@ export type Query = {
   userTeamInvites: Array<UserTeamInvite>;
   userTeams: Array<UserTeam>;
   video: Video;
+  videoEdition?: Maybe<VideoEdition>;
+  videoEditions: Array<VideoEdition>;
   videoVariants: Array<VideoVariant>;
   videos: Array<Video>;
   videosCount: Scalars['Int']['output'];
@@ -2633,6 +2653,11 @@ export type QueryUserTeamsArgs = {
 export type QueryVideoArgs = {
   id: Scalars['ID']['input'];
   idType?: InputMaybe<IdType>;
+};
+
+
+export type QueryVideoEditionArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -3758,6 +3783,16 @@ export type VideoEdition = {
   name?: Maybe<Scalars['String']['output']>;
   videoSubtitles: Array<VideoSubtitle>;
   videoVariants: Array<VideoVariant>;
+};
+
+export type VideoEditionCreateInput = {
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type VideoEditionUpdateInput = {
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type VideoExpandEvent = Event & {
