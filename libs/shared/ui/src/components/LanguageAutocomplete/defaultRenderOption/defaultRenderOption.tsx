@@ -10,7 +10,7 @@ export function defaultRenderOption(props: ListChildComponentProps): ReactNode {
   const { key, ...optionProps } = data[index][0]
 
   return (
-    <Box {...optionProps} key={id} style={style} tabIndex={1}>
+    <Box {...optionProps} key={id} style={style} tabIndex={1} component="li">
       <Stack>
         <Typography>{localName ?? nativeName}</Typography>
         {localName != null && nativeName != null && (
