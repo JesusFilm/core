@@ -197,15 +197,7 @@ export function JourneyDetailsDialog({
                       />
                     )}
                     popper={{
-                      placement: !smUp ? 'top' : 'bottom',
-                      sx: {
-                        '&>.MuiAutocomplete-paper': {
-                          height: !smUp ? '200px' : 'auto',
-                          '&>.MuiAutocomplete-listbox': {
-                            height: !smUp ? '200px' : 'auto'
-                          }
-                        }
-                      }
+                      placement: !smUp ? 'top' : 'bottom'
                     }}
                   />
                 </Stack>
