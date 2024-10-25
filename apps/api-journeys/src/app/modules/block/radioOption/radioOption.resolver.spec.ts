@@ -16,7 +16,7 @@ import { RadioOptionBlockResolver } from './radioOption.resolver'
 
 describe('RadioQuestionBlockResolver', () => {
   let resolver: RadioOptionBlockResolver,
-    service: BlockService,
+    service: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
     ability: AppAbility
 
@@ -49,19 +49,14 @@ describe('RadioQuestionBlockResolver', () => {
     label: 'label'
   }
 
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      getSiblings: jest.fn(() => [block, block]),
-      update: jest.fn((input) => input)
-    })
-  }
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        blockService,
+        {
+          provide: BlockService,
+          useValue: mockDeep<BlockService>()
+        },
         RadioOptionBlockResolver,
         {
           provide: PrismaService,
@@ -70,11 +65,17 @@ describe('RadioQuestionBlockResolver', () => {
       ]
     }).compile()
     resolver = module.get<RadioOptionBlockResolver>(RadioOptionBlockResolver)
-    service = await module.resolve(BlockService)
+    service = module.get<BlockService>(
+      BlockService
+    ) as DeepMockProxy<BlockService>
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+    service.getSiblings.mockResolvedValue([
+      { ...block, action: null },
+      { ...block, action: null }
+    ])
   })
 
   describe('radioOptionBlockCreate', () => {
@@ -114,7 +115,7 @@ describe('RadioQuestionBlockResolver', () => {
       )
     })
 
-    it('should update journey updatedAt when radio option is created', async () => {
+    it('should set journey updatedAt when radio option is created', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       expect(
         await resolver.radioOptionBlockCreate(ability, blockCreateInput)
@@ -123,14 +124,10 @@ describe('RadioQuestionBlockResolver', () => {
         blockCreateInput.journeyId,
         blockCreateInput.parentBlockId
       )
-      expect(prismaService.journey.update).toHaveBeenCalledWith({
-        data: {
-          updatedAt: block.updatedAt
-        },
-        where: {
-          id: block.journeyId
-        }
-      })
+      expect(service.setJourneyUpdatedAt).toHaveBeenCalledWith(
+        prismaService,
+        blockWithUserTeam
+      )
     })
 
     it('throws error if not authorized', async () => {

@@ -18,7 +18,7 @@ import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
 import { INCLUDE_JOURNEY_ACL } from '../../journey/journey.acl'
-import { BlockService, updateJourneyUpdatedAt } from '../block.service'
+import { BlockService } from '../block.service'
 
 const videoBlockYouTubeSchema = object().shape({
   videoId: string().matches(
@@ -177,7 +177,7 @@ export class VideoBlockResolver {
           ...INCLUDE_JOURNEY_ACL
         }
       })
-      await updateJourneyUpdatedAt(tx, block)
+      await this.blockService.setJourneyUpdatedAt(tx, block)
       if (!ability.can(Action.Update, subject('Journey', block.journey)))
         throw new GraphQLError('user is not allowed to create block', {
           extensions: { code: 'FORBIDDEN' }

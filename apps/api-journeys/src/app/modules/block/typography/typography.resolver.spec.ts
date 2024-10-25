@@ -19,7 +19,7 @@ import { TypographyBlockResolver } from './typography.resolver'
 
 describe('TypographyBlockResolver', () => {
   let resolver: TypographyBlockResolver,
-    service: BlockService,
+    service: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
     ability: AppAbility
 
@@ -58,19 +58,15 @@ describe('TypographyBlockResolver', () => {
     color: TypographyColor.secondary,
     align: TypographyAlign.right
   }
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      getSiblings: jest.fn(() => [block, block]),
-      update: jest.fn((input) => input)
-    })
-  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        blockService,
+        {
+          provide: BlockService,
+          useValue: mockDeep<BlockService>()
+        },
         TypographyBlockResolver,
         {
           provide: PrismaService,
@@ -79,11 +75,17 @@ describe('TypographyBlockResolver', () => {
       ]
     }).compile()
     resolver = module.get<TypographyBlockResolver>(TypographyBlockResolver)
-    service = await module.resolve(BlockService)
+    service = module.get<BlockService>(
+      BlockService
+    ) as DeepMockProxy<BlockService>
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+    service.getSiblings.mockResolvedValue([
+      { ...block, action: null },
+      { ...block, action: null }
+    ])
   })
 
   describe('typographyBlockCreate', () => {
@@ -126,19 +128,15 @@ describe('TypographyBlockResolver', () => {
       )
     })
 
-    it('should update journey updatedAt when typography is created', async () => {
+    it('should set journey updatedAt when typography is created', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       expect(
         await resolver.typographyBlockCreate(ability, blockCreateInput)
       ).toEqual(blockWithUserTeam)
-      expect(prismaService.journey.update).toHaveBeenCalledWith({
-        data: {
-          updatedAt: block.updatedAt
-        },
-        where: {
-          id: block.journeyId
-        }
-      })
+      expect(service.setJourneyUpdatedAt).toHaveBeenCalledWith(
+        prismaService,
+        blockWithUserTeam
+      )
     })
 
     it('throws error if not authorized', async () => {

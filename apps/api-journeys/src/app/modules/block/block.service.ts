@@ -25,18 +25,6 @@ type PrismaTransation = Omit<
   | 'enableShutdownHooks'
 >
 
-export async function updateJourneyUpdatedAt(
-  tx: PrismaTransation,
-  block: Block
-): Promise<void> {
-  await tx.journey.update({
-    where: {
-      id: block.journeyId
-    },
-    data: { updatedAt: block.updatedAt }
-  })
-}
-
 @Injectable()
 export class BlockService {
   constructor(private readonly prismaService: PrismaService) {}
@@ -48,6 +36,15 @@ export class BlockService {
       return
     }
     return await this.findParentStepBlock(block.parentBlockId)
+  }
+
+  async setJourneyUpdatedAt(tx: PrismaTransation, block: Block): Promise<void> {
+    await tx.journey.update({
+      where: {
+        id: block.journeyId
+      },
+      data: { updatedAt: block.updatedAt }
+    })
   }
 
   @FromPostgresql()
@@ -453,7 +450,7 @@ export class BlockService {
         ]) as Prisma.BlockUpdateInput,
         include: { action: true }
       })
-      await updateJourneyUpdatedAt(tx, updatedBlock)
+      await this.setJourneyUpdatedAt(tx, updatedBlock)
       return updatedBlock as unknown as T
     })
   }

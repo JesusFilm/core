@@ -177,6 +177,20 @@ describe('BlockService', () => {
     })
   })
 
+  describe('setJourneyUpdatedAt', () => {
+    it('should set the journey of updatedAt of the block', async () => {
+      await service.setJourneyUpdatedAt(prismaService, block)
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: {
+          id: block.journeyId
+        },
+        data: {
+          updatedAt: block.updatedAt
+        }
+      })
+    })
+  })
+
   describe('save', () => {
     it('should return a saved block', async () => {
       prismaService.block.create.mockResolvedValue(block)

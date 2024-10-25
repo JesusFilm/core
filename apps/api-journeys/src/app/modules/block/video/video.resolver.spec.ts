@@ -31,7 +31,7 @@ const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
 describe('VideoBlockResolver', () => {
   let resolver: VideoBlockResolver,
-    service: BlockService,
+    service: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
     ability: AppAbility
 
@@ -84,20 +84,15 @@ describe('VideoBlockResolver', () => {
     coverBlockId: 'coverBlockId',
     fullscreen: true
   } as unknown as Block
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      getSiblings: jest.fn(() => [block, block]),
-      removeBlockAndChildren: jest.fn((input) => input),
-      update: jest.fn((input) => input)
-    })
-  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        blockService,
+        {
+          provide: BlockService,
+          useValue: mockDeep<BlockService>()
+        },
         VideoBlockResolver,
         {
           provide: PrismaService,
@@ -106,12 +101,18 @@ describe('VideoBlockResolver', () => {
       ]
     }).compile()
     resolver = module.get<VideoBlockResolver>(VideoBlockResolver)
-    service = await module.resolve(BlockService)
+    service = module.get<BlockService>(
+      BlockService
+    ) as DeepMockProxy<BlockService>
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
     prismaService.block.findFirst.mockResolvedValue(null)
+    service.getSiblings.mockResolvedValue([
+      { ...block, action: null },
+      { ...block, action: null }
+    ])
   })
 
   afterEach(() => {
@@ -163,14 +164,10 @@ describe('VideoBlockResolver', () => {
       expect(
         await resolver.videoBlockCreate(ability, blockCreateInput)
       ).toEqual(blockWithUserTeam)
-      expect(prismaService.journey.update).toHaveBeenCalledWith({
-        data: {
-          updatedAt: block.updatedAt
-        },
-        where: {
-          id: block.journeyId
-        }
-      })
+      expect(service.setJourneyUpdatedAt).toHaveBeenCalledWith(
+        prismaService,
+        blockWithUserTeam
+      )
     })
 
     it('creates a VideoBlock without poster block', async () => {

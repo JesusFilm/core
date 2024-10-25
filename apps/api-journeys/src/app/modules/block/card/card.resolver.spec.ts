@@ -18,7 +18,7 @@ import { CardBlockResolver } from './card.resolver'
 
 describe('CardBlockResolver', () => {
   let resolver: CardBlockResolver,
-    service: BlockService,
+    service: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
     ability: AppAbility
 
@@ -58,19 +58,15 @@ describe('CardBlockResolver', () => {
     fullscreen: true,
     coverBlockId: 'coverBlockId'
   }
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      getSiblings: jest.fn(() => [block, block]),
-      update: jest.fn((input) => input)
-    })
-  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        blockService,
+        {
+          provide: BlockService,
+          useValue: mockDeep<BlockService>()
+        },
         CardBlockResolver,
         {
           provide: PrismaService,
@@ -79,11 +75,17 @@ describe('CardBlockResolver', () => {
       ]
     }).compile()
     resolver = module.get<CardBlockResolver>(CardBlockResolver)
-    service = await module.resolve(BlockService)
+    service = module.get<BlockService>(
+      BlockService
+    ) as DeepMockProxy<BlockService>
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+    service.getSiblings.mockResolvedValue([
+      { ...block, action: null },
+      { ...block, action: null }
+    ])
   })
 
   describe('cardBlockCreate', () => {
@@ -126,19 +128,15 @@ describe('CardBlockResolver', () => {
       )
     })
 
-    it('should update journey updatedAt when card is created', async () => {
+    it('should set journey updatedAt when card is created', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       expect(await resolver.cardBlockCreate(ability, blockCreateInput)).toEqual(
         blockWithUserTeam
       )
-      expect(prismaService.journey.update).toHaveBeenCalledWith({
-        data: {
-          updatedAt: block.updatedAt
-        },
-        where: {
-          id: block.journeyId
-        }
-      })
+      expect(service.setJourneyUpdatedAt).toHaveBeenCalledWith(
+        prismaService,
+        blockWithUserTeam
+      )
     })
 
     it('throws error if not authorized', async () => {
