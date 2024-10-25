@@ -9,12 +9,12 @@ describe('Taxonomy', () => {
 
   describe('taxonomies', () => {
     const TAXONOMIES_QUERY = graphql(`
-      query Taxonomies($offset: Int, $limit: Int, $where: TaxonomiesFilter) {
-        taxonomies(offset: $offset, limit: $limit, where: $where) {
+      query Taxonomies($category: String, $languageCodes: [String!]) {
+        taxonomies(category: $category) {
           id
           category
           term
-          name(languageId: "529") {
+          name(languageCodes: $languageCodes) {
             id
             term
             label
@@ -51,13 +51,19 @@ describe('Taxonomy', () => {
         include: {
           name: {
             where: {
-              languageId: '529'
+              languageCode: {
+                in: undefined
+              },
+              languageId: undefined,
+              taxonomy: {
+                category: undefined
+              }
             }
           }
         },
-        where: {},
-        skip: undefined,
-        take: undefined
+        where: {
+          category: undefined
+        }
       })
 
       expect(data).toHaveProperty('data.taxonomies', [
@@ -99,12 +105,7 @@ describe('Taxonomy', () => {
       const data = await client({
         document: TAXONOMIES_QUERY,
         variables: {
-          offset: 1,
-          limit: 10,
-          where: {
-            ids: ['2'],
-            category: 'chapter'
-          }
+          category: 'chapter'
         }
       })
 
@@ -112,16 +113,19 @@ describe('Taxonomy', () => {
         include: {
           name: {
             where: {
-              languageId: '529'
+              languageCode: {
+                in: undefined
+              },
+              languageId: undefined,
+              taxonomy: {
+                category: undefined
+              }
             }
           }
         },
         where: {
-          id: { in: ['2'] },
           category: 'chapter'
-        },
-        skip: 1,
-        take: 10
+        }
       })
 
       expect(data).toHaveProperty('data.taxonomies', [
@@ -140,75 +144,6 @@ describe('Taxonomy', () => {
           ]
         }
       ])
-    })
-  })
-
-  describe('taxonomy', () => {
-    const TAXONOMY_QUERY = graphql(`
-      query Taxonomy($id: ID!) {
-        taxonomy(id: $id) {
-          id
-          category
-          term
-          name(languageId: "529") {
-            id
-            term
-            label
-            languageId
-            languageCode
-          }
-        }
-      }
-    `)
-
-    it('should query a single taxonomy', async () => {
-      const taxonomy: Taxonomy & { name: TaxonomyName[] } = {
-        id: '3',
-        category: 'verse',
-        term: 'john_3_16',
-        name: [
-          {
-            id: '3',
-            term: 'john_3_16',
-            label: 'John 3:16',
-            languageId: '529',
-            languageCode: 'en'
-          }
-        ]
-      }
-
-      prismaMock.taxonomy.findUnique.mockResolvedValue(taxonomy)
-
-      const data = await client({
-        document: TAXONOMY_QUERY,
-        variables: { id: '3' }
-      })
-
-      expect(prismaMock.taxonomy.findUnique).toHaveBeenCalledWith({
-        include: {
-          name: {
-            where: {
-              languageId: '529'
-            }
-          }
-        },
-        where: { id: '3' }
-      })
-
-      expect(data).toHaveProperty('data.taxonomy', {
-        id: '3',
-        category: 'verse',
-        term: 'john_3_16',
-        name: [
-          {
-            id: '3',
-            term: 'john_3_16',
-            label: 'John 3:16',
-            languageId: '529',
-            languageCode: 'en'
-          }
-        ]
-      })
     })
   })
 })
