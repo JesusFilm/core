@@ -2590,6 +2590,7 @@ export type QuerySearchUnsplashPhotosArgs = {
 
 export type QueryTaxonomiesArgs = {
   category?: InputMaybe<Scalars['String']['input']>;
+  languageCodes?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 
@@ -3017,15 +3018,13 @@ export type Taxonomy = {
 export type TaxonomyNameArgs = {
   category?: InputMaybe<Scalars['String']['input']>;
   languageCodes?: InputMaybe<Array<Scalars['String']['input']>>;
-  languageId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type TaxonomyName = {
   __typename?: 'TaxonomyName';
   id: Scalars['ID']['output'];
   label: Scalars['String']['output'];
-  languageCode: Scalars['String']['output'];
-  languageId: Scalars['String']['output'];
+  language: Language;
   taxonomy: Taxonomy;
   term: Scalars['String']['output'];
 };
