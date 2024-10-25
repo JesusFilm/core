@@ -12,15 +12,15 @@ export function getClient(): S3Client {
     throw new Error('Missing CLOUDFLARE_R2_ENDPOINT')
   if (process.env.CLOUDFLARE_R2_ACCESS_KEY_ID == null)
     throw new Error('Missing CLOUDFLARE_R2_ACCESS_KEY_ID')
-  if (process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY == null)
-    throw new Error('Missing CLOUDFLARE_R2_SECRET_ACCESS_KEY')
+  if (process.env.CLOUDFLARE_R2_SECRET == null)
+    throw new Error('Missing CLOUDFLARE_R2_SECRET')
 
   return new S3Client({
     region: 'auto',
     endpoint: process.env.CLOUDFLARE_R2_ENDPOINT,
     credentials: {
       accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID,
-      secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY
+      secretAccessKey: process.env.CLOUDFLARE_R2_SECRET
     }
   })
 }
