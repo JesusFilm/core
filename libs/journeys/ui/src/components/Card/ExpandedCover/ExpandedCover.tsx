@@ -1,4 +1,5 @@
 import Stack from '@mui/material/Stack'
+import { SxProps } from '@mui/system'
 import { ReactElement, ReactNode } from 'react'
 
 import { NextImage } from '@core/shared/ui/NextImage'
@@ -7,6 +8,7 @@ import type { TreeBlock } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { OverlayContent } from '../OverlayContent'
+import { getFooterMobileSpacing } from '../utils/getFooterElements'
 
 interface ExpandedCoverProps {
   children: ReactNode
@@ -23,7 +25,7 @@ export function ExpandedCover({
   backgroundBlur,
   hasFullscreenVideo = false
 }: ExpandedCoverProps): ReactElement {
-  const { variant } = useJourney()
+  const { journey, variant } = useJourney()
   const enableVerticalScroll = {
     overflowY: 'scroll',
     // Hide on Firefox https://caniuse.com/?search=scrollbar-width
@@ -40,6 +42,18 @@ export function ExpandedCover({
         ? `${backgroundColor}4d`
         : backgroundColor
       : 'unset'
+
+  const topBottomEdgeFadeEffect: SxProps = !hasFullscreenVideo
+    ? {
+        WebkitMask: `linear-gradient(transparent 0%, #0000001a 4%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`,
+        mask: `linear-gradient(transparent 0%, #0000001a 4%, #000000 8%, #000000 90%, #0000001a 98%, transparent 100%)`
+      }
+    : {}
+  const footerMobileSpacing = getFooterMobileSpacing({ journey, variant })
+  const footerSpacing: SxProps = {
+    // pb: { xs: footerMobileSpacing, sm: 10 }
+    mb: { xs: footerMobileSpacing, sm: 10 }
+  }
 
   return (
     <>
@@ -79,6 +93,8 @@ export function ExpandedCover({
           <OverlayContent
             hasFullscreenVideo={hasFullscreenVideo}
             sx={{
+              ...topBottomEdgeFadeEffect,
+              ...footerSpacing,
               mx: 'auto',
               width: {
                 xs:
