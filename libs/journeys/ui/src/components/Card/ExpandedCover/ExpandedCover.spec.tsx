@@ -22,6 +22,8 @@ describe('ExpandedCover', () => {
     parentBlockId: 'card1.id',
     parentOrder: 0,
     scale: null,
+    focalLeft: 50,
+    focalTop: 50,
     children: []
   }
 

@@ -124,8 +124,8 @@ export function UserTeamInviteForm({
                 role !== UserTeamRole.manager
                   ? t('Only a manager can invite new members to the team')
                   : touched?.email != null && errors.email != null
-                  ? errors.email
-                  : null
+                    ? errors.email
+                    : null
               }
               autoComplete="off"
               InputProps={{

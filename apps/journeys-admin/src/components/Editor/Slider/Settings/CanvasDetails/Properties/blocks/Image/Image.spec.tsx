@@ -22,7 +22,9 @@ describe('Image', () => {
     height: 1080,
     blurhash: '',
     children: [],
-    scale: null
+    scale: null,
+    focalLeft: 50,
+    focalTop: 50
   }
 
   it('should display Image Options', () => {

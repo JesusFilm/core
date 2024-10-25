@@ -354,6 +354,13 @@ type VideoDescription {
   language: Language!
 }
 
+type VideoEdition {
+  id: ID!
+  name: String
+  videoVariants: [VideoVariant!]!
+  videoSubtitles: [VideoSubtitle!]!
+}
+
 type VideoImageAlt {
   id: ID!
   value: String!
@@ -402,7 +409,6 @@ input VideoStudyQuestionUpdateInput {
   id: ID!
   value: String
   primary: Boolean
-  languageId: String
   crowdInId: String
 
   """index from 1"""
@@ -418,6 +424,7 @@ type VideoSubtitle {
   srtSrc: String
   value: String!
   language: Language!
+  videoEdition: VideoEdition!
 }
 
 input VideoSubtitleCreateInput {
@@ -479,6 +486,7 @@ type VideoVariant {
   downloads: [VideoVariantDownload!]!
   duration: Int!
   language: Language!
+  videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
   subtitleCount: Int!
 

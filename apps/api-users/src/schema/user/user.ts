@@ -18,7 +18,7 @@ builder.asEntity(User, {
 })
 
 builder.queryFields((t) => ({
-  me: t.prismaField({
+  me: t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'User',
     nullable: true,
     args: {
@@ -27,43 +27,33 @@ builder.queryFields((t) => ({
         required: false
       })
     },
-    authScopes: {
-      isAuthenticated: true
-    },
     resolve: async (query, _parent, { input }, ctx) => {
-      if (ctx.currentUser?.id == null) return null
       return await findOrFetchUser(
         query,
-        ctx.currentUser?.id,
+        ctx.currentUser.id,
         input?.redirect ?? undefined
       )
     }
   }),
-  user: t.prismaField({
+  user: t.withAuth({ isValidInterOp: true }).prismaField({
     type: 'User',
     nullable: true,
     args: {
       id: t.arg.id({ required: true })
     },
-    authScopes: {
-      isValidInterOp: true
-    },
     resolve: async (query, _parent, { id }) =>
       await prisma.user.findUnique({
         ...query,
-        where: { id }
+        where: { userId: id }
       })
   }),
-  userByEmail: t.prismaField({
+  userByEmail: t.withAuth({ isValidInterOp: true }).prismaField({
     type: 'User',
     nullable: true,
     args: {
       email: t.arg.string({ required: true })
     },
-    authScopes: {
-      isValidInterOp: true
-    },
-    resolve: async (query, _parent, { email }, ctx) => {
+    resolve: async (query, _parent, { email }) => {
       return await prisma.user.findUnique({
         ...query,
         where: { email }
@@ -73,15 +63,12 @@ builder.queryFields((t) => ({
 }))
 
 builder.mutationFields((t) => ({
-  userImpersonate: t.field({
+  userImpersonate: t.withAuth({ isSuperAdmin: true }).field({
     type: 'String',
     args: {
       email: t.arg.string({ required: true })
     },
     nullable: true,
-    authScopes: {
-      isSuperAdmin: true
-    },
     resolve: async (_parent, { email }) => {
       const userToImpersonate = await prisma.user.findUnique({
         where: {
@@ -95,7 +82,7 @@ builder.mutationFields((t) => ({
       return await impersonateUser(userToImpersonate.userId)
     }
   }),
-  createVerificationRequest: t.field({
+  createVerificationRequest: t.withAuth({ isAuthenticated: true }).field({
     type: 'Boolean',
     args: {
       input: t.arg({
@@ -104,19 +91,10 @@ builder.mutationFields((t) => ({
       })
     },
     nullable: true,
-    authScopes: {
-      isAuthenticated: true
-    },
     resolve: async (_parent, { input }, ctx) => {
-      if (ctx.currentUser == null)
-        // only satifies typescript null check
-        throw new GraphQLError('User not found', {
-          extensions: { code: '404' }
-        })
       if (ctx.currentUser.email == null)
-        // only satifies typescript null check
         throw new GraphQLError('User email not found', {
-          extensions: { code: '404' }
+          extensions: { code: 'NOT_FOUND' }
         })
 
       await verifyUser(
@@ -142,12 +120,14 @@ builder.mutationFields((t) => ({
       })
       if (user == null)
         throw new GraphQLError('User not found', {
-          extensions: { code: '404' }
+          extensions: { code: 'NOT_FOUND' }
         })
 
       const validatedEmail = await validateEmail(user.userId, token)
       if (!validatedEmail)
-        throw new GraphQLError('Invalid token', { extensions: { code: '403' } })
+        throw new GraphQLError('Invalid token', {
+          extensions: { code: 'FORBIDDEN' }
+        })
       return { ...user, emailVerified: true }
     }
   })

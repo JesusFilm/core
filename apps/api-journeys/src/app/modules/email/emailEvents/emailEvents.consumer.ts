@@ -1,4 +1,9 @@
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client'
+import {
+  ApolloClient,
+  InMemoryCache,
+  createHttpLink,
+  gql
+} from '@apollo/client'
 import { Processor, WorkerHost } from '@nestjs/bullmq'
 import { render } from '@react-email/render'
 import { Job } from 'bullmq'
@@ -11,12 +16,18 @@ import { fetchEmailDetails } from '../../../lib/fetchEmailDetails'
 import { PrismaService } from '../../../lib/prisma.service'
 import { processUserIds } from '../../../lib/processUserIds'
 
-const apollo = new ApolloClient({
+const httpLink = createHttpLink({
   uri: process.env.GATEWAY_URL,
-  cache: new InMemoryCache(),
   headers: {
-    'interop-token': process.env.INTEROP_TOKEN ?? ''
+    'interop-token': process.env.INTEROP_TOKEN ?? '',
+    'x-graphql-client-name': 'api-journeys',
+    'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
   }
+})
+
+const apollo = new ApolloClient({
+  link: httpLink,
+  cache: new InMemoryCache()
 })
 
 export type JourneyWithTeamAndUserJourney = Prisma.JourneyGetPayload<{

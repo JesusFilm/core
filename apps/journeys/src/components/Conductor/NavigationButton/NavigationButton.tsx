@@ -270,7 +270,7 @@ export function NavigationButton({
         zIndex: 2,
         display: 'flex',
         width: { xs: 82, lg: 114 },
-        height: '100svh',
+        height: '100dvh',
         alignItems: 'center',
         pointerEvents: 'none'
       }}

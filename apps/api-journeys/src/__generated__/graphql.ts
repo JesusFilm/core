@@ -637,6 +637,8 @@ export type ImageBlock = Block & {
    * Find a frontend implementation at https://github.com/woltapp/blurhash
    */
   blurhash: Scalars['String']['output'];
+  focalLeft?: Maybe<Scalars['Int']['output']>;
+  focalTop?: Maybe<Scalars['Int']['output']>;
   height: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
@@ -651,6 +653,8 @@ export type ImageBlockCreateInput = {
   alt: Scalars['String']['input'];
   /** If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated. */
   blurhash?: InputMaybe<Scalars['String']['input']>;
+  focalLeft?: InputMaybe<Scalars['Int']['input']>;
+  focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
   /** ID should be unique Response UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
@@ -667,6 +671,8 @@ export type ImageBlockUpdateInput = {
   alt?: InputMaybe<Scalars['String']['input']>;
   /** If blurhash, width, & height are provided, the image will skip blurhash processing. Otherwise these values will be calculated. */
   blurhash?: InputMaybe<Scalars['String']['input']>;
+  focalLeft?: InputMaybe<Scalars['Int']['input']>;
+  focalTop?: InputMaybe<Scalars['Int']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   scale?: InputMaybe<Scalars['Int']['input']>;
@@ -3716,6 +3722,14 @@ export type VideoDescription = {
   value: Scalars['String']['output'];
 };
 
+export type VideoEdition = {
+  __typename?: 'VideoEdition';
+  id: Scalars['ID']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+  videoSubtitles: Array<VideoSubtitle>;
+  videoVariants: Array<VideoVariant>;
+};
+
 export type VideoExpandEvent = Event & {
   __typename?: 'VideoExpandEvent';
   /** time event was created */
@@ -3924,7 +3938,6 @@ export type VideoStudyQuestionCreateInput = {
 export type VideoStudyQuestionUpdateInput = {
   crowdInId?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['ID']['input'];
-  languageId?: InputMaybe<Scalars['String']['input']>;
   /** index from 1 */
   order?: InputMaybe<Scalars['Int']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3940,6 +3953,7 @@ export type VideoSubtitle = {
   primary: Scalars['Boolean']['output'];
   srtSrc?: Maybe<Scalars['String']['output']>;
   value: Scalars['String']['output'];
+  videoEdition: VideoEdition;
   vttSrc?: Maybe<Scalars['String']['output']>;
 };
 
@@ -4026,6 +4040,7 @@ export type VideoVariant = {
   slug: Scalars['String']['output'];
   subtitle: Array<VideoSubtitle>;
   subtitleCount: Scalars['Int']['output'];
+  videoEdition: VideoEdition;
 };
 
 

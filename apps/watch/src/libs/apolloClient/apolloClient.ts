@@ -33,7 +33,10 @@ export function createApolloClient({
     return {
       headers: {
         ...(!isSsrMode ? headers : []),
-        Authorization: token != null ? `JWT ${token}` : undefined
+        Authorization: token != null ? `JWT ${token}` : undefined,
+        'x-graphql-client-name': 'watch',
+        'x-graphql-client-version':
+          process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
       }
     }
   })
@@ -53,8 +56,6 @@ export function createApolloClient({
     ssrMode: typeof window === 'undefined',
     link: from([retryLink, authLink, httpLink]),
     cache: cache().restore(initialState ?? {}),
-    name: 'watch',
-    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
     connectToDevTools: true
   })
 }
