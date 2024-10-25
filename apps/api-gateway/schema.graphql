@@ -676,7 +676,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
   videoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
-  taxonomies(category: String) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
+  taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
   me(input: MeInput) : User @join__field(graph: API_USERS) 
   user(id: ID!) : User @join__field(graph: API_USERS) 
   userByEmail(email: String!) : User @join__field(graph: API_USERS) 
@@ -2117,15 +2117,14 @@ type Taxonomy @join__type(graph: API_MEDIA)  {
   id: ID!
   category: String!
   term: String!
-  name(languageId: String, languageCodes: [String!], category: String) : [TaxonomyName!]!
+  name(languageCodes: [String!], category: String) : [TaxonomyName!]!
 }
 
 type TaxonomyName @join__type(graph: API_MEDIA)  {
   id: ID!
   term: String!
   label: String!
-  languageId: String!
-  languageCode: String!
+  language: Language!
   taxonomy: Taxonomy!
 }
 
