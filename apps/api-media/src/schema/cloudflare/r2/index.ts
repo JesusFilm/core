@@ -1,2 +1,2 @@
-import './asset.ts'
+import './asset'
 import './inputs'
