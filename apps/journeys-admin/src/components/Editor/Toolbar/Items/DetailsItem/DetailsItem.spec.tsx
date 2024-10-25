@@ -12,6 +12,11 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: jest.fn()
+}))
+
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('DetailsItem', () => {

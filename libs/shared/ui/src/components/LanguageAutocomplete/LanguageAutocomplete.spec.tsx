@@ -42,6 +42,287 @@ describe('LanguageAutocomplete', () => {
           primary: false
         }
       ]
+    },
+    {
+      id: '12693',
+      name: [
+        {
+          value: 'Kalagan, Tagakaulu',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12696',
+      name: [
+        {
+          value: 'Kankanay, Northern',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12714',
+      name: [
+        {
+          value: 'Isnag',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12723',
+      name: [
+        {
+          value: 'Ilokano',
+          primary: true
+        },
+        {
+          value: 'Ilocano',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '127283',
+      name: [
+        {
+          value: 'Pogoro',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12729',
+      name: [
+        {
+          value: 'Ilongot',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '127397',
+      name: [
+        {
+          value: 'Innu',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12743',
+      name: [
+        {
+          value: 'Ifugao, Amganad',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12747',
+      name: [
+        {
+          value: 'Ibaloi',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12750',
+      name: [
+        {
+          value: 'Ibanag',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '1276',
+      name: [
+        {
+          value: 'Kekchi',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '127670',
+      name: [
+        {
+          value: 'Mundari (South Sudan)',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '1277',
+      name: [
+        {
+          value: 'Garifuna',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12773',
+      name: [
+        {
+          value: 'Cuyonon',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '1278',
+      name: [
+        {
+          value: 'Plautdietsch',
+          primary: true
+        },
+        {
+          value: 'Plautdietsch',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12784',
+      name: [
+        {
+          value: 'Sinugboanon',
+          primary: true
+        },
+        {
+          value: 'Cebuano',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12791',
+      name: [
+        {
+          value: 'Chavacano',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '1280',
+      name: [
+        {
+          value: 'Aja-Gbe',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12801',
+      name: [
+        {
+          value: 'Bantoanon',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12808',
+      name: [
+        {
+          value: 'Balangao',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12815',
+      name: [
+        {
+          value: 'Blaan, Sarangani',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12816',
+      name: [
+        {
+          value: 'Blaan, Koronadal',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12839',
+      name: [
+        {
+          value: 'Manobo, Tagabawa',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12853',
+      name: [
+        {
+          value: 'Aklanon',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12854',
+      name: [
+        {
+          value: 'Binukid',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12869',
+      name: [
+        {
+          value: 'Kaszëbsczi Jãzëk',
+          primary: true
+        },
+        {
+          value: 'Kashubian',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12876',
+      name: [
+        {
+          value: 'Українська',
+          primary: true
+        },
+        {
+          value: 'Ukrainian',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '12923',
+      name: [
+        {
+          value: 'Reunion Creole French',
+          primary: false
+        }
+      ]
+    },
+    {
+      id: '1294',
+      name: [
+        {
+          value: 'Bariba',
+          primary: false
+        }
+      ]
     }
   ]
 
@@ -57,9 +338,9 @@ describe('LanguageAutocomplete', () => {
     )
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
-    expect(queryAllByRole('option')[0]).toHaveTextContent('English')
-    expect(queryAllByRole('option')[1]).toHaveTextContent('French')
-    expect(queryAllByRole('option')[2]).toHaveTextContent('German')
+    expect(queryAllByRole('option')[0]).toHaveTextContent('Aja-Gbe')
+    expect(queryAllByRole('option')[1]).toHaveTextContent('Aklanon')
+    expect(queryAllByRole('option')[2]).toHaveTextContent('Balangao')
   })
 
   it('should select languages via option click', async () => {
@@ -74,11 +355,11 @@ describe('LanguageAutocomplete', () => {
     )
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
-    fireEvent.click(getByRole('option', { name: 'French Français' }))
+    fireEvent.click(getByRole('option', { name: 'Aja-Gbe' }))
     expect(handleChange).toHaveBeenCalledWith({
-      id: '496',
-      localName: 'French',
-      nativeName: 'Français'
+      id: '1280',
+      localName: 'Aja-Gbe',
+      nativeName: undefined
     })
   })
 
@@ -159,6 +440,42 @@ describe('LanguageAutocomplete', () => {
     fireEvent.focus(getByRole('combobox'))
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
 
-    expect(getAllByTestId('test-option')).toHaveLength(3)
+    expect(getAllByTestId('test-option')).toHaveLength(10)
+  })
+
+  it('should have a virtualized list', () => {
+    const renderInput = (params: AutocompleteRenderInputParams): ReactNode => (
+      <TextField
+        {...params}
+        InputProps={{
+          ...params.InputProps
+        }}
+        data-testid="test-input"
+      />
+    )
+
+    const renderOption = (props: HTMLAttributes<HTMLLIElement>): ReactNode => (
+      <li {...props} data-testid="test-option">
+        <Typography>hello world</Typography>
+      </li>
+    )
+    const { getAllByTestId, getByTestId, getByRole } = render(
+      <LanguageAutocomplete
+        onChange={jest.fn()}
+        value={{ id: '529', localName: undefined, nativeName: 'English' }}
+        languages={languages}
+        loading={false}
+        renderInput={renderInput}
+        renderOption={renderOption}
+      />
+    )
+
+    expect(getByTestId('test-input')).toBeInTheDocument()
+
+    fireEvent.focus(getByRole('combobox'))
+    fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
+
+    const listItems = getAllByTestId('test-option')
+    expect(listItems).not.toHaveLength(languages.length)
   })
 })
