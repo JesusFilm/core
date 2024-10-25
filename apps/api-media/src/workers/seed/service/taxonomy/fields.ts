@@ -457,7 +457,7 @@ export const taxonomyNames = [
   {
     term: '1Chr',
     label: 'سفر اخبار الايام الاول',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -571,7 +571,7 @@ export const taxonomyNames = [
   {
     term: '1Cor',
     label: 'رسالة كورنثوس الاولى',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -685,7 +685,7 @@ export const taxonomyNames = [
   {
     term: '1John',
     label: 'رسالة يوحنا الاولى',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -799,7 +799,7 @@ export const taxonomyNames = [
   {
     term: '1Kgs',
     label: 'سفر الملوك الاول',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -913,7 +913,7 @@ export const taxonomyNames = [
   {
     term: '1Pet',
     label: 'رسالة بطرس الاولى',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -1027,7 +1027,7 @@ export const taxonomyNames = [
   {
     term: '1Sam',
     label: 'سفر صموئيل الاول',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -1141,7 +1141,7 @@ export const taxonomyNames = [
   {
     term: '1Thess',
     label: 'رسالة تسالونيكي الاولى',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -1255,7 +1255,7 @@ export const taxonomyNames = [
   {
     term: '1Tim',
     label: 'رسالة تيموثاوس الاولى',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -1369,7 +1369,7 @@ export const taxonomyNames = [
   {
     term: '2Chr',
     label: 'سفر اخبار الايام الثاني',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -1483,7 +1483,7 @@ export const taxonomyNames = [
   {
     term: '2Cor',
     label: 'رسالة كورنثوس الثانية',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -1597,7 +1597,7 @@ export const taxonomyNames = [
   {
     term: '2John',
     label: 'رسالة يوحنا الثانية',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -1711,7 +1711,7 @@ export const taxonomyNames = [
   {
     term: '2Kgs',
     label: 'سفر الملوك الثاني',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -1825,7 +1825,7 @@ export const taxonomyNames = [
   {
     term: '2Pet',
     label: 'رسالة بطرس الثانية',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -1939,7 +1939,7 @@ export const taxonomyNames = [
   {
     term: '2Sam',
     label: 'سفر صموئيل الثاني',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -2053,7 +2053,7 @@ export const taxonomyNames = [
   {
     term: '2Thess',
     label: 'رسالة تسالونيكي الثانية',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -2167,7 +2167,7 @@ export const taxonomyNames = [
   {
     term: '2Tim',
     label: 'رسالة تيموثاوس الثانية',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -2281,7 +2281,7 @@ export const taxonomyNames = [
   {
     term: '3John',
     label: 'رسالة يوحنا الثالثة',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -2395,7 +2395,7 @@ export const taxonomyNames = [
   {
     term: 'Acts',
     label: 'سفر الاعمال',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -2509,7 +2509,7 @@ export const taxonomyNames = [
   {
     term: 'Amos',
     label: 'سفر عاموس',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -2623,7 +2623,7 @@ export const taxonomyNames = [
   {
     term: 'classic',
     label: 'كلاسيكي',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -2737,7 +2737,7 @@ export const taxonomyNames = [
   {
     term: 'Col',
     label: 'رسالة كولوسي',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -2845,7 +2845,7 @@ export const taxonomyNames = [
   {
     term: 'collection',
     label: 'مجموعة',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -2971,7 +2971,7 @@ export const taxonomyNames = [
   {
     term: 'Dan',
     label: 'سفر دانيال',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -3085,7 +3085,7 @@ export const taxonomyNames = [
   {
     term: 'Deut',
     label: 'سفر التثنية',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -3193,7 +3193,7 @@ export const taxonomyNames = [
   {
     term: 'discipleship',
     label: 'أتباع يسوع',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -3307,7 +3307,7 @@ export const taxonomyNames = [
   {
     term: 'Eccl',
     label: 'سفر الجامعة',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -3421,7 +3421,7 @@ export const taxonomyNames = [
   {
     term: 'Eph',
     label: 'رسالة افسس',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -3529,7 +3529,7 @@ export const taxonomyNames = [
   {
     term: 'episode',
     label: 'حلقة',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -3643,7 +3643,7 @@ export const taxonomyNames = [
   {
     term: 'Esth',
     label: 'سفر استير',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -3751,7 +3751,7 @@ export const taxonomyNames = [
   {
     term: 'evangelism',
     label: 'التبشير بالإنجيل',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -3865,7 +3865,7 @@ export const taxonomyNames = [
   {
     term: 'Exod',
     label: 'سفر الخروج',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -3979,7 +3979,7 @@ export const taxonomyNames = [
   {
     term: 'Ezek',
     label: 'سفر حزقيال',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -4093,7 +4093,7 @@ export const taxonomyNames = [
   {
     term: 'Ezra',
     label: 'سفر عزرا',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -4201,7 +4201,7 @@ export const taxonomyNames = [
   {
     term: 'family',
     label: 'الأسرة',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -4309,7 +4309,7 @@ export const taxonomyNames = [
   {
     term: 'featured',
     label: 'الأكثر مشاهدة',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -4417,7 +4417,7 @@ export const taxonomyNames = [
   {
     term: 'featureFilm',
     label: 'فيلم روائي',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -4531,7 +4531,7 @@ export const taxonomyNames = [
   {
     term: 'Gal',
     label: 'رسالة غلاطية',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -4645,7 +4645,7 @@ export const taxonomyNames = [
   {
     term: 'Gen',
     label: 'سفر التكوين',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -4759,7 +4759,7 @@ export const taxonomyNames = [
   {
     term: 'Hab',
     label: 'سفر حبقوق',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -4873,7 +4873,7 @@ export const taxonomyNames = [
   {
     term: 'Hag',
     label: 'سفر حجي',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -4987,7 +4987,7 @@ export const taxonomyNames = [
   {
     term: 'Heb',
     label: 'رسالة العبرانيين',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -5101,7 +5101,7 @@ export const taxonomyNames = [
   {
     term: 'Hos',
     label: 'سفر هوشع',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -5215,7 +5215,7 @@ export const taxonomyNames = [
   {
     term: 'Isa',
     label: 'سفر اشعياء',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -5329,7 +5329,7 @@ export const taxonomyNames = [
   {
     term: 'Jas',
     label: 'رسالة يعقوب',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -5443,7 +5443,7 @@ export const taxonomyNames = [
   {
     term: 'Jer',
     label: 'سفر ارميا',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -5557,7 +5557,7 @@ export const taxonomyNames = [
   {
     term: 'Job',
     label: 'سفر ايوب',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -5671,7 +5671,7 @@ export const taxonomyNames = [
   {
     term: 'Joel',
     label: 'سفر يوئيل',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -5785,7 +5785,7 @@ export const taxonomyNames = [
   {
     term: 'John',
     label: 'انجيل يوحنا',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -5899,7 +5899,7 @@ export const taxonomyNames = [
   {
     term: 'Jonah',
     label: 'سفر يونان',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -6013,7 +6013,7 @@ export const taxonomyNames = [
   {
     term: 'Josh',
     label: 'سفر يشوع',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -6127,7 +6127,7 @@ export const taxonomyNames = [
   {
     term: 'Jude',
     label: 'رسالة يهوذا',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -6241,7 +6241,7 @@ export const taxonomyNames = [
   {
     term: 'Judg',
     label: 'سفر القضاة',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -6355,7 +6355,7 @@ export const taxonomyNames = [
   {
     term: 'Lam',
     label: 'سفر مراثي ارميا',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -6469,7 +6469,7 @@ export const taxonomyNames = [
   {
     term: 'Lev',
     label: 'سفر اللاويين',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -6583,7 +6583,7 @@ export const taxonomyNames = [
   {
     term: 'Luke',
     label: 'انجيل لوقا',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -6697,7 +6697,7 @@ export const taxonomyNames = [
   {
     term: 'Mal',
     label: 'سفر ملاخي',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -6811,7 +6811,7 @@ export const taxonomyNames = [
   {
     term: 'Mark',
     label: 'انجيل مرقس',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -6925,7 +6925,7 @@ export const taxonomyNames = [
   {
     term: 'Matt',
     label: 'انجيل متى',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -7039,7 +7039,7 @@ export const taxonomyNames = [
   {
     term: 'Mic',
     label: 'سفر ميخا',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -7153,7 +7153,7 @@ export const taxonomyNames = [
   {
     term: 'Nah',
     label: 'سفر ناحوم',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -7267,7 +7267,7 @@ export const taxonomyNames = [
   {
     term: 'Neh',
     label: 'سفر نحميا',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -7381,7 +7381,7 @@ export const taxonomyNames = [
   {
     term: 'Num',
     label: 'سفر العدد',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -7495,7 +7495,7 @@ export const taxonomyNames = [
   {
     term: 'Obad',
     label: 'سفر عوبديا',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -7609,7 +7609,7 @@ export const taxonomyNames = [
   {
     term: 'Phil',
     label: 'رسالة فيلبي',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -7723,7 +7723,7 @@ export const taxonomyNames = [
   {
     term: 'Phlm',
     label: 'رسالة فيليمون',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -7837,7 +7837,7 @@ export const taxonomyNames = [
   {
     term: 'Prov',
     label: 'سفر الامثال',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -7951,7 +7951,7 @@ export const taxonomyNames = [
   {
     term: 'Ps',
     label: 'سفر المزامير',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -8059,7 +8059,7 @@ export const taxonomyNames = [
   {
     term: 'relationships',
     label: 'العلاقات',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -8173,7 +8173,7 @@ export const taxonomyNames = [
   {
     term: 'Rev',
     label: 'سفر الرؤيا',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -8287,7 +8287,7 @@ export const taxonomyNames = [
   {
     term: 'Rom',
     label: 'رسالة رومية',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -8401,7 +8401,7 @@ export const taxonomyNames = [
   {
     term: 'Ruth',
     label: 'سفر راعوث',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -8503,7 +8503,7 @@ export const taxonomyNames = [
   {
     term: 'segment',
     label: 'قطعة',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -8611,7 +8611,7 @@ export const taxonomyNames = [
   {
     term: 'series',
     label: 'سلسلة',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -8719,7 +8719,7 @@ export const taxonomyNames = [
   {
     term: 'shortFilm',
     label: 'فيلم قصير',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -8833,7 +8833,7 @@ export const taxonomyNames = [
   {
     term: 'Song',
     label: 'سفر نشيد الانشاد',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -8941,7 +8941,7 @@ export const taxonomyNames = [
   {
     term: 'sports',
     label: 'الرياضة',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -9049,7 +9049,7 @@ export const taxonomyNames = [
   {
     term: 'studentResources',
     label: 'مصادر الطلاب',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -9163,7 +9163,7 @@ export const taxonomyNames = [
   {
     term: 'Titus',
     label: 'رسالة تيطس',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -9271,7 +9271,7 @@ export const taxonomyNames = [
   {
     term: 'training',
     label: 'التدريب',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -9385,7 +9385,7 @@ export const taxonomyNames = [
   {
     term: 'womenResources',
     label: 'مصادر المرأة',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -9499,7 +9499,7 @@ export const taxonomyNames = [
   {
     term: 'Zech',
     label: 'سفر زكريا',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   },
   {
@@ -9613,7 +9613,7 @@ export const taxonomyNames = [
   {
     term: 'Zeph',
     label: 'سفر صفنيا',
-    languageId: '139485',
+    languageId: '22658',
     languageCode: 'ar'
   }
 ]

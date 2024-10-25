@@ -29,12 +29,6 @@ builder.prismaObject('Taxonomy', {
       },
       query: ({ languageCodes, category }) => {
         const where: Prisma.TaxonomyNameWhereInput = {}
-        console.log('===============builder===================')
-        console.log('languageCodes', languageCodes)
-        console.log('category', category)
-        console.log('where.languageCode', where.languageCode)
-        console.log('==================================')
-
         if (languageCodes !== null) where.languageCode = { in: languageCodes }
         if (category !== null) where.taxonomy = { category }
         return { where }
@@ -52,11 +46,6 @@ builder.queryFields((t) => ({
       languageCodes: t.arg.stringList({ required: false })
     },
     resolve: async (query, _parent, { category, languageCodes }) => {
-      console.log('=============query=====================')
-      console.log('category', category)
-      console.log('languageCodes', languageCodes)
-      console.log('==================================')
-
       const taxonomies = await prisma.taxonomy.findMany({
         ...query,
         where: {
