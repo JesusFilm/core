@@ -99,7 +99,7 @@ export function JourneyFlow(): ReactElement {
   const { editorAnalytics } = useFlags()
   const theme = useTheme()
   const {
-    state: { steps, activeSlide, showAnalytics, analytics },
+    state: { steps, activeSlide, showAnalytics, analytics, selectedStep },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
@@ -111,6 +111,7 @@ export function JourneyFlow(): ReactElement {
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [referrerNodes, setReferrerNodes] = useNodesState([])
   const [referrerEdges, setReferrerEdges] = useEdgesState([])
+  const [dragTimeStamp, setDragTimeStamp] = useState(0)
 
   const createStepFromStep = useCreateStepFromStep()
   const createStepFromAction = useCreateStepFromAction()
@@ -273,6 +274,7 @@ export function JourneyFlow(): ReactElement {
       let yPos = (event as unknown as MouseEvent).clientY
 
       if (!(event instanceof MouseEvent)) {
+        console.log('touch event  ')
         const touchEvent = event.changedTouches[0]
 
         eventTarget = document.elementFromPoint(
@@ -340,6 +342,27 @@ export function JourneyFlow(): ReactElement {
       createStepFromAction
     ]
   )
+
+  const isClickOrTouch = (endDragTimeStamp: number): boolean => {
+    return endDragTimeStamp - dragTimeStamp < 150
+  }
+
+  const callDispatches = (stepId: string): void => {
+    const currentStep = steps?.find((innerStep) => innerStep.id === stepId)
+    if (selectedStep?.id === currentStep?.id && showAnalytics !== true) {
+      dispatch({
+        type: 'SetSelectedBlockAction',
+        selectedBlock: selectedStep
+      })
+      dispatch({
+        type: 'SetSelectedAttributeIdAction',
+        selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
+      })
+    } else {
+      dispatch({ type: 'SetSelectedStepAction', selectedStep: currentStep })
+    }
+  }
+
   const onNodeDragStop: NodeDragHandler = (_event, node): void => {
     if (node.type !== 'StepBlock') return
 
@@ -348,31 +371,38 @@ export function JourneyFlow(): ReactElement {
     )
     if (step == null || step.__typename !== 'StepBlock') return
 
-    const x = Math.trunc(node.position.x)
-    const y = Math.trunc(node.position.y)
-    add({
-      parameters: {
-        execute: {
-          x,
-          y
+    // if click or tap, go through block selection logic
+    // else go through standard positioning logic below
+
+    if (isClickOrTouch(_event.timeStamp)) {
+      callDispatches(step.id)
+    } else {
+      const x = Math.trunc(node.position.x)
+      const y = Math.trunc(node.position.y)
+      add({
+        parameters: {
+          execute: {
+            x,
+            y
+          },
+          undo: {
+            x: step.x,
+            y: step.y
+          },
+          redo: {
+            x,
+            y
+          }
         },
-        undo: {
-          x: step.x,
-          y: step.y
-        },
-        redo: {
-          x,
-          y
+        execute({ x, y }) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            activeSlide: ActiveSlide.JourneyFlow
+          })
+          blockPositionUpdate([{ id: node.id, x, y }])
         }
-      },
-      execute({ x, y }) {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          activeSlide: ActiveSlide.JourneyFlow
-        })
-        blockPositionUpdate([{ id: node.id, x, y }])
-      }
-    })
+      })
+    }
   }
   const onEdgeUpdateStart = useCallback<
     NonNullable<ReactFlowProps['onEdgeUpdateStart']>
@@ -462,6 +492,23 @@ export function JourneyFlow(): ReactElement {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
+        onNodeDragStart={(_event, node) => {
+          // console.log(_event)
+          // console.log('drag start')
+          setDragTimeStamp(_event.timeStamp)
+          // need to determine whether it's being dragged or clicked/tapped
+          // if clicked, and is the selected step, then call setselectedblock
+          // if drag, then select that step
+
+          // const step = data?.blocks.find(
+          //   (step) => step.__typename === 'StepBlock' && step.id === node.id
+          // )
+          // if (step == null || step.__typename !== 'StepBlock') return
+          // dispatch({
+          //   type: 'SetSelectedStepByIdAction',
+          //   selectedStepId: step.id
+          // })
+        }}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
         onEdgeUpdate={showAnalytics === true ? undefined : onEdgeUpdate}
