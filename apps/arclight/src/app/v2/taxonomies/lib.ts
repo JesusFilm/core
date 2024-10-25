@@ -13,15 +13,13 @@ export interface TaxonomyGroup {
 }
 
 export const findBestMatchingName = (
-  names: Array<{ label: string; languageCode: string }>,
+  names: Array<{ label: string; language: { bcp47: string } }>,
   preferredLanguages: string[]
-): { label: string; languageCode: string } => {
-  console.log('INSIDE findBestMatchingName')
-  console.log('names', names)
-  console.log('preferredLanguages', preferredLanguages)
-
+): { label: string; language: { bcp47: string } } => {
   for (const preferredLanguage of preferredLanguages) {
-    const match = names.find((name) => name.languageCode === preferredLanguage)
+    const match = names.find(
+      (name) => name.language.bcp47 === preferredLanguage
+    )
     if (match !== undefined) return match
   }
   return names[0]

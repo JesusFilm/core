@@ -18,7 +18,9 @@ const GET_TAXONOMIES = graphql(`
       term
       name(languageCodes: $languageCodes) {
         label
-        languageCode
+        language {
+          bcp47
+        }
       }
     }
   }
@@ -40,22 +42,33 @@ export async function GET(request: NextRequest): Promise<Response> {
 
   const groupedTaxonomies: Record<string, TaxonomyGroup> = {}
 
-  data.taxonomies.forEach((taxonomy) => {
-    if (taxonomy.name.length === 0) {
-      console.log('taxonomy.name is null')
-      console.log('taxonomy', taxonomy)
-      return
-    }
+  const filteredTaxonomies = data.taxonomies.filter(
+    (taxonomy) => taxonomy.name.length > 0
+  )
+
+  if (filteredTaxonomies.length === 0) {
+    return new Response(
+      JSON.stringify({
+        message: `Not acceptable metadata language tag(s): ${metadataLanguageTags.join(
+          ', '
+        )}`
+      }),
+      { status: 406 }
+    )
+  }
+
+  filteredTaxonomies.forEach((taxonomy) => {
     const matchingName = findBestMatchingName(
-      taxonomy.name,
+      taxonomy.name as Array<{ label: string; language: { bcp47: string } }>,
       metadataLanguageTags
     )
+
     if (groupedTaxonomies[taxonomy.category] === undefined) {
       groupedTaxonomies[taxonomy.category] = {
         terms: {
           [taxonomy.term]: {
             label: matchingName.label,
-            metadataLanguageTag: matchingName.languageCode
+            metadataLanguageTag: matchingName.language.bcp47
           }
         },
         _links: {
@@ -68,11 +81,9 @@ export async function GET(request: NextRequest): Promise<Response> {
         }
       }
     } else {
-      // const
-
       groupedTaxonomies[taxonomy.category].terms[taxonomy.term] = {
         label: matchingName.label,
-        metadataLanguageTag: matchingName.languageCode
+        metadataLanguageTag: matchingName.language.bcp47
       }
     }
   })
