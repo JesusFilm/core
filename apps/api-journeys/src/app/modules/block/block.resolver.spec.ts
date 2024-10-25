@@ -61,6 +61,11 @@ describe('BlockResolver', () => {
     })
   }
 
+  beforeAll(async () => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date('2024-10-22T03:39:39.268Z'))
+  })
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
@@ -335,8 +340,6 @@ describe('BlockResolver', () => {
     })
 
     it('should update journey updatedAt on block restore', async () => {
-      jest.useFakeTimers()
-      jest.setSystemTime(new Date('2024-10-22T03:39:39.268Z'))
       prismaService.block.findUnique.mockResolvedValue(blockWithUserTeam)
       prismaService.block.update.mockResolvedValue(block)
       prismaService.block.findMany.mockResolvedValue([block, block])

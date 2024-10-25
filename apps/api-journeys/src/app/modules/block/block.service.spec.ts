@@ -706,11 +706,12 @@ describe('BlockService', () => {
       prismaService.block.findMany
         .mockResolvedValueOnce([block, block])
         .mockResolvedValueOnce([])
+
+      jest.useFakeTimers()
+      jest.setSystemTime(new Date('2024-10-22T03:39:39.268Z'))
     })
 
     it('should remove blocks and return siblings', async () => {
-      jest.useFakeTimers()
-      jest.setSystemTime(new Date('2024-10-22T03:39:39.268Z'))
       prismaService.block.update.mockResolvedValueOnce(block)
       service.getSiblingsInternal = jest.fn().mockResolvedValue([
         { id: block.id, parentOrder: 1 },
