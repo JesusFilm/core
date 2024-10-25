@@ -38,16 +38,22 @@ export default interface PrismaTypes {
     CloudflareR2: {
         Name: "CloudflareR2";
         Shape: CloudflareR2;
-        Include: never;
+        Include: Prisma.CloudflareR2Include;
         Select: Prisma.CloudflareR2Select;
         OrderBy: Prisma.CloudflareR2OrderByWithRelationInput;
         WhereUnique: Prisma.CloudflareR2WhereUniqueInput;
         Where: Prisma.CloudflareR2WhereInput;
         Create: {};
         Update: {};
-        RelationName: never;
+        RelationName: "video";
         ListRelations: never;
-        Relations: {};
+        Relations: {
+            video: {
+                Shape: Video | null;
+                Name: "Video";
+                Nullable: true;
+            };
+        };
     };
     Video: {
         Name: "Video";
@@ -59,8 +65,8 @@ export default interface PrismaTypes {
         Where: Prisma.VideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images";
-        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images";
+        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets";
+        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets";
         Relations: {
             title: {
                 Shape: VideoTitle[];
@@ -120,6 +126,11 @@ export default interface PrismaTypes {
             images: {
                 Shape: CloudflareImage[];
                 Name: "CloudflareImage";
+                Nullable: false;
+            };
+            cloudflareAssets: {
+                Shape: CloudflareR2[];
+                Name: "CloudflareR2";
                 Nullable: false;
             };
         };

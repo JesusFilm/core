@@ -66,6 +66,9 @@ model CloudflareR2 {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
   video     Video?   @relation(fields: [videoId], references: [id])
+
+  @@index(videoId(type: Hash))
+  @@index(userId(type: Hash))
 }
 
 enum IdType {

@@ -1,14 +1,51 @@
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+
+import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 
 import { CloudflareR2CreateInput } from './inputs/cloudflareR2Create'
 import { CloudflareR2UpdateInput } from './inputs/cloudflareR2Update'
 
+export function getClient(): S3Client {
+  if (process.env.CLOUDFLARE_R2_ENDPOINT == null)
+    throw new Error('Missing CLOUDFLARE_R2_ENDPOINT')
+  if (process.env.CLOUDFLARE_R2_ACCESS_KEY_ID == null)
+    throw new Error('Missing CLOUDFLARE_R2_ACCESS_KEY_ID')
+  if (process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY == null)
+    throw new Error('Missing CLOUDFLARE_R2_SECRET_ACCESS_KEY')
+
+  return new S3Client({
+    region: 'auto',
+    endpoint: process.env.CLOUDFLARE_R2_ENDPOINT,
+    credentials: {
+      accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID,
+      secretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY
+    }
+  })
+}
+
+export async function getPresignedUrl(fileName: string): Promise<string> {
+  if (process.env.CLOUDFLARE_R2_BUCKET == null)
+    throw new Error('Missing CLOUDFLARE_R2_BUCKET')
+
+  return await getSignedUrl(
+    getClient(),
+    new PutObjectCommand({
+      Bucket: process.env.CLOUDFLARE_R2_BUCKET,
+      Key: fileName
+    })
+  )
+}
+
 builder.prismaObject('CloudflareR2', {
   fields: (t) => ({
     id: t.exposeID('id'),
     fileName: t.exposeString('fileName'),
-    uploadUrl: t.exposeString('uploadUrl', { nullable: true }),
-    userId: t.exposeID('userId'),
+    uploadUrl: t
+      .withAuth({ isPublisher: true })
+      .exposeString('uploadUrl', { nullable: true }),
+    userId: t.withAuth({ isPublisher: true }).exposeID('userId'),
     publicUrl: t.exposeString('publicUrl', { nullable: true }),
     createdAt: t.expose('createdAt', {
       type: 'Date'
@@ -26,7 +63,7 @@ builder.queryFields((t) => ({
       videoId: t.arg.id({ required: true })
     },
     resolve: async (query, _parent, { videoId }) => {
-      return await query.prisma.cloudflareR2.findMany({
+      return await prisma.cloudflareR2.findMany({
         ...query,
         where: { videoId }
       })
@@ -35,18 +72,23 @@ builder.queryFields((t) => ({
 }))
 
 builder.mutationFields((t) => ({
-  r2AssetCreate: t.withAuth({ isPublisher: true }).prismaField({
+  cloudflareR2Create: t.withAuth({ isPublisher: true }).prismaField({
     type: 'CloudflareR2',
     args: {
       input: t.arg({ type: CloudflareR2CreateInput, required: true })
     },
     resolve: async (query, _parent, { input }, { user }) => {
-      return await query.prisma.cloudflareR2.create({
+      const uploadUrl = await getPresignedUrl(input.fileName)
+
+      return await prisma.cloudflareR2.create({
         ...query,
         data: {
           ...input,
           id: input.id ?? undefined,
-          userId: user.id
+          userId: user.id,
+          fileName: input.fileName,
+          uploadUrl,
+          publicUrl: `process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN/${input.fileName}`
         }
       })
     }
@@ -57,14 +99,15 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: CloudflareR2UpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }, { user }) => {
-      return await query.prisma.cloudflareR2.update({
+      const uploadUrl = await getPresignedUrl(input.fileName)
+      return await prisma.cloudflareR2.update({
         ...query,
         where: { id: input.id },
         data: {
           fileName: input.fileName ?? undefined,
-          uploadUrl: input.uploadUrl ?? undefined,
-          publicUrl: input.publicUrl ?? undefined,
-          videoId: input.videoId ?? undefined
+          uploadUrl,
+          publicUrl: `process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN/${input.fileName}`,
+          userId: user.id
         }
       })
     }
@@ -75,7 +118,7 @@ builder.mutationFields((t) => ({
       id: t.arg.id({ required: true })
     },
     resolve: async (query, _parent, { id }, { user }) => {
-      return await query.prisma.cloudflareR2.delete({
+      return await prisma.cloudflareR2.delete({
         ...query,
         where: { id }
       })
