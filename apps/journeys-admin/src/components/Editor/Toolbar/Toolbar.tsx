@@ -301,7 +301,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                 </Button>
               </Tooltip>
             </Box>
-            {dialogOpen != null && dialogOpen && (
+            {dialogOpen != null && (
               <JourneyDetailsDialog
                 open={dialogOpen}
                 onClose={handleDialogClose}
