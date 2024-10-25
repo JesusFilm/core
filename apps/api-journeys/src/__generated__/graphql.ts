@@ -2364,7 +2364,6 @@ export type Query = {
   searchUnsplashPhotos: UnsplashQueryResponse;
   tags: Array<Tag>;
   taxonomies: Array<Taxonomy>;
-  taxonomy?: Maybe<Taxonomy>;
   team: Team;
   teams: Array<Team>;
   user?: Maybe<User>;
@@ -2590,14 +2589,7 @@ export type QuerySearchUnsplashPhotosArgs = {
 
 
 export type QueryTaxonomiesArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<TaxonomiesFilter>;
-};
-
-
-export type QueryTaxonomyArgs = {
-  id: Scalars['ID']['input'];
+  category?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -3013,11 +3005,6 @@ export type TagName = {
   value: Scalars['String']['output'];
 };
 
-export type TaxonomiesFilter = {
-  category?: InputMaybe<Scalars['String']['input']>;
-  ids?: InputMaybe<Array<Scalars['ID']['input']>>;
-};
-
 export type Taxonomy = {
   __typename?: 'Taxonomy';
   category: Scalars['String']['output'];
@@ -3028,6 +3015,7 @@ export type Taxonomy = {
 
 
 export type TaxonomyNameArgs = {
+  category?: InputMaybe<Scalars['String']['input']>;
   languageCodes?: InputMaybe<Array<Scalars['String']['input']>>;
   languageId?: InputMaybe<Scalars['String']['input']>;
 };
