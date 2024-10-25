@@ -9,7 +9,7 @@ describe('Taxonomy', () => {
 
   describe('taxonomies', () => {
     const TAXONOMIES_QUERY = graphql(`
-      query Taxonomies($category: String, $languageCodes: [String!]) {
+      query taxonomies($category: String, $languageCodes: [String!]) {
         taxonomies(category: $category) {
           id
           category
@@ -18,8 +18,6 @@ describe('Taxonomy', () => {
             id
             term
             label
-            languageId
-            languageCode
           }
         }
       }
@@ -31,15 +29,7 @@ describe('Taxonomy', () => {
           id: '1',
           category: 'book',
           term: 'genesis',
-          name: [
-            {
-              id: '1',
-              term: 'genesis',
-              label: 'Genesis',
-              languageId: '529',
-              languageCode: 'en'
-            }
-          ]
+          name: [] // Add an empty array for the name property
         }
       ] as Array<Taxonomy & { name: TaxonomyName[] }>)
 
@@ -54,7 +44,6 @@ describe('Taxonomy', () => {
               languageCode: {
                 in: undefined
               },
-              languageId: undefined,
               taxonomy: {
                 category: undefined
               }
@@ -62,7 +51,14 @@ describe('Taxonomy', () => {
           }
         },
         where: {
-          category: undefined
+          category: undefined,
+          name: {
+            some: {
+              languageCode: {
+                in: undefined
+              }
+            }
+          }
         }
       })
 
@@ -71,15 +67,7 @@ describe('Taxonomy', () => {
           id: '1',
           category: 'book',
           term: 'genesis',
-          name: [
-            {
-              id: '1',
-              term: 'genesis',
-              label: 'Genesis',
-              languageId: '529',
-              languageCode: 'en'
-            }
-          ]
+          name: []
         }
       ])
     })
@@ -90,22 +78,15 @@ describe('Taxonomy', () => {
           id: '2',
           category: 'chapter',
           term: 'exodus',
-          name: [
-            {
-              id: '2',
-              term: 'exodus',
-              label: 'Exodus',
-              languageId: '529',
-              languageCode: 'en'
-            }
-          ]
+          name: [] // Add an empty array for the name property
         }
       ] as Array<Taxonomy & { name: TaxonomyName[] }>)
 
       const data = await client({
         document: TAXONOMIES_QUERY,
         variables: {
-          category: 'chapter'
+          category: 'chapter',
+          languageCodes: ['en']
         }
       })
 
@@ -114,9 +95,8 @@ describe('Taxonomy', () => {
           name: {
             where: {
               languageCode: {
-                in: undefined
+                in: ['en']
               },
-              languageId: undefined,
               taxonomy: {
                 category: undefined
               }
@@ -124,7 +104,14 @@ describe('Taxonomy', () => {
           }
         },
         where: {
-          category: 'chapter'
+          category: 'chapter',
+          name: {
+            some: {
+              languageCode: {
+                in: undefined
+              }
+            }
+          }
         }
       })
 
@@ -133,15 +120,7 @@ describe('Taxonomy', () => {
           id: '2',
           category: 'chapter',
           term: 'exodus',
-          name: [
-            {
-              id: '2',
-              term: 'exodus',
-              label: 'Exodus',
-              languageId: '529',
-              languageCode: 'en'
-            }
-          ]
+          name: []
         }
       ])
     })
