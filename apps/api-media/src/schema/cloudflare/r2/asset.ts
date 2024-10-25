@@ -78,8 +78,8 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: CloudflareR2CreateInput, required: true })
     },
     resolve: async (query, _parent, { input }, { user }) => {
+      if (user == null) throw new Error('User not found')
       const uploadUrl = await getPresignedUrl(input.fileName)
-
       return await prisma.cloudflareR2.create({
         ...query,
         data: {
@@ -93,12 +93,13 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  r2AssetUpdate: t.withAuth({ isPublisher: true }).prismaField({
+  cloudflareR2Update: t.withAuth({ isPublisher: true }).prismaField({
     type: 'CloudflareR2',
     args: {
       input: t.arg({ type: CloudflareR2UpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }, { user }) => {
+      if (user == null) throw new Error('User not found')
       const uploadUrl = await getPresignedUrl(input.fileName)
       return await prisma.cloudflareR2.update({
         ...query,
@@ -112,7 +113,7 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  r2AssetDelete: t.withAuth({ isPublisher: true }).prismaField({
+  cloudflareR2Delete: t.withAuth({ isPublisher: true }).prismaField({
     type: 'CloudflareR2',
     args: {
       id: t.arg.id({ required: true })
