@@ -313,6 +313,28 @@ export type CloudflareImage = {
   videoStill?: Maybe<Scalars['String']['output']>;
 };
 
+export type CloudflareR2 = {
+  __typename?: 'CloudflareR2';
+  createdAt: Scalars['Date']['output'];
+  fileName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  publicUrl?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['Date']['output'];
+  uploadUrl?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['ID']['output'];
+};
+
+export type CloudflareR2CreateInput = {
+  fileName: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  videoId: Scalars['String']['input'];
+};
+
+export type CloudflareR2UpdateInput = {
+  fileName: Scalars['String']['input'];
+  id: Scalars['String']['input'];
+};
+
 export type CloudflareVideo = {
   __typename?: 'CloudflareVideo';
   createdAt: Scalars['Date']['output'];
@@ -1206,6 +1228,9 @@ export type Mutation = {
   chatButtonRemove: ChatButton;
   chatButtonUpdate: ChatButton;
   chatOpenEventCreate: ChatOpenEvent;
+  cloudflareR2Create: CloudflareR2;
+  cloudflareR2Delete: CloudflareR2;
+  cloudflareR2Update: CloudflareR2;
   cloudflareUploadComplete: Scalars['Boolean']['output'];
   createCloudflareImageFromPrompt: CloudflareImage;
   createCloudflareUploadByFile: CloudflareImage;
@@ -1452,6 +1477,21 @@ export type MutationChatButtonUpdateArgs = {
 
 export type MutationChatOpenEventCreateArgs = {
   input: ChatOpenEventCreateInput;
+};
+
+
+export type MutationCloudflareR2CreateArgs = {
+  input: CloudflareR2CreateInput;
+};
+
+
+export type MutationCloudflareR2DeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationCloudflareR2UpdateArgs = {
+  input: CloudflareR2UpdateInput;
 };
 
 
@@ -2390,6 +2430,7 @@ export type Query = {
   userTeamInvites: Array<UserTeamInvite>;
   userTeams: Array<UserTeam>;
   video: Video;
+  videoCloudflareAssets: Array<CloudflareR2>;
   videoEdition?: Maybe<VideoEdition>;
   videoEditions: Array<VideoEdition>;
   videoVariants: Array<VideoVariant>;
@@ -2646,6 +2687,11 @@ export type QueryUserTeamsArgs = {
 export type QueryVideoArgs = {
   id: Scalars['ID']['input'];
   idType?: InputMaybe<IdType>;
+};
+
+
+export type QueryVideoCloudflareAssetsArgs = {
+  videoId: Scalars['ID']['input'];
 };
 
 
