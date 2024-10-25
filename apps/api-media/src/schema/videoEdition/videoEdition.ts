@@ -13,6 +13,30 @@ builder.prismaObject('VideoEdition', {
   })
 })
 
+builder.queryFields((t) => ({
+  videoEditions: t.prismaField({
+    type: ['VideoEdition'],
+    resolve: async (query) => {
+      return await prisma.videoEdition.findMany({
+        ...query
+      })
+    }
+  }),
+  videoEdition: t.prismaField({
+    type: 'VideoEdition',
+    nullable: true,
+    args: {
+      id: t.arg.id({ required: true })
+    },
+    resolve: async (query, _parent, { id }) => {
+      return await prisma.videoEdition.findUnique({
+        ...query,
+        where: { id }
+      })
+    }
+  })
+}))
+
 builder.mutationFields((t) => ({
   videoEditionCreate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoEdition',
