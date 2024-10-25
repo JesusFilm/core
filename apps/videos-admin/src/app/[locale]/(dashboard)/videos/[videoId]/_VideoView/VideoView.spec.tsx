@@ -9,7 +9,8 @@ import { VideoView } from './VideoView'
 
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
-  useParams: jest.fn()
+  useParams: jest.fn(),
+  useRouter: jest.fn()
 }))
 
 const mockUseParams = useParams as jest.MockedFunction<typeof mockUseParams>
