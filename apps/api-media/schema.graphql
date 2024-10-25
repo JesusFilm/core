@@ -150,6 +150,9 @@ type Mutation {
   videoTitleCreate(input: VideoTranslationCreateInput!): VideoTitle!
   videoTitleUpdate(input: VideoTranslationUpdateInput!): VideoTitle!
   videoTitleDelete(id: ID!): VideoTitle!
+  videoEditionCreate(input: VideoEditionCreateInput!): VideoEdition!
+  videoEditionUpdate(input: VideoEditionUpdateInput!): VideoEdition!
+  videoEditionDelete(id: ID!): VideoEdition!
   videoVariantCreate(input: VideoVariantCreateInput!): VideoVariant!
   videoVariantUpdate(input: VideoVariantUpdateInput!): VideoVariant!
   videoVariantDelete(id: ID!): VideoVariant!
@@ -175,6 +178,8 @@ type Query {
   video(id: ID!, idType: IdType = databaseId): Video!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   videosCount(where: VideosFilter): Int!
+  videoEditions: [VideoEdition!]!
+  videoEdition(id: ID!): VideoEdition
   videoVariants: [VideoVariant!]!
   tags: [Tag!]!
 }
@@ -384,6 +389,16 @@ type VideoEdition {
   name: String
   videoVariants: [VideoVariant!]!
   videoSubtitles: [VideoSubtitle!]!
+}
+
+input VideoEditionCreateInput {
+  id: ID!
+  name: String
+}
+
+input VideoEditionUpdateInput {
+  id: ID!
+  name: String
 }
 
 type VideoImageAlt {
