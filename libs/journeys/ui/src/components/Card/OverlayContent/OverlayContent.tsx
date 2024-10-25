@@ -64,7 +64,8 @@ export function OverlayContent({
 
   const footerMobileSpacing = getFooterMobileSpacing({ journey, variant })
   const footerSpacing: SxProps = {
-    mb: { xs: footerMobileSpacing, sm: 10 }
+    pb: { xs: footerMobileSpacing, sm: 10 }
+    // mb: { xs: footerMobileSpacing, sm: 10 }
   }
 
   return (

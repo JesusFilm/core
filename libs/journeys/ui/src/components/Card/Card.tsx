@@ -318,9 +318,11 @@ export function Card({
         //   {renderedChildren}
         // </ContainedCover>
         <ParallaxCover
-          imageBlock={imageBlock}
-          backgroundBlur={blurUrl}
           backgroundColor={cardColor}
+          backgroundBlur={blurUrl}
+          videoBlock={videoBlock}
+          imageBlock={imageBlock}
+          hasFullscreenVideo={hasFullscreenVideo}
         >
           {renderedChildren}
         </ParallaxCover>
