@@ -4,6 +4,7 @@ import { GraphQLError } from 'graphql'
 import {
   BibleCitation,
   CloudflareImage,
+  CloudflareR2,
   ImageAspectRatio,
   Keyword,
   Prisma,
@@ -245,10 +246,13 @@ describe('video', () => {
       cloudflareAssets: [
         {
           id: 'assetId',
+          videoId: 'videoId',
           fileName: 'assetFileName',
           uploadUrl: 'assetUploadUrl',
           userId: 'testUserId',
-          publicUrl: 'https://assets.jesusfilm.org/assetFileName'
+          publicUrl: 'https://assets.jesusfilm.org/assetFileName',
+          createdAt: new Date(),
+          updatedAt: new Date()
         }
       ]
     }
