@@ -2381,6 +2381,7 @@ export type Query = {
   me?: Maybe<User>;
   searchUnsplashPhotos: UnsplashQueryResponse;
   tags: Array<Tag>;
+  taxonomies: Array<Taxonomy>;
   team: Team;
   teams: Array<Team>;
   user?: Maybe<User>;
@@ -2604,6 +2605,12 @@ export type QuerySearchUnsplashPhotosArgs = {
   page?: InputMaybe<Scalars['Int']['input']>;
   perPage?: InputMaybe<Scalars['Int']['input']>;
   query: Scalars['String']['input'];
+};
+
+
+export type QueryTaxonomiesArgs = {
+  category?: InputMaybe<Scalars['String']['input']>;
+  languageCodes?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 
@@ -3022,6 +3029,29 @@ export type TagName = {
   language: Language;
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
+};
+
+export type Taxonomy = {
+  __typename?: 'Taxonomy';
+  category: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Array<TaxonomyName>;
+  term: Scalars['String']['output'];
+};
+
+
+export type TaxonomyNameArgs = {
+  category?: InputMaybe<Scalars['String']['input']>;
+  languageCodes?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type TaxonomyName = {
+  __typename?: 'TaxonomyName';
+  id: Scalars['ID']['output'];
+  label: Scalars['String']['output'];
+  language: Language;
+  taxonomy: Taxonomy;
+  term: Scalars['String']['output'];
 };
 
 export type Team = {
