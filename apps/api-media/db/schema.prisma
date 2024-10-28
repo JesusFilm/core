@@ -56,6 +56,21 @@ model CloudflareVideo {
   @@index([userId])
 }
 
+model CloudflareR2 {
+  id        String   @id @default(uuid())
+  fileName  String
+  uploadUrl String?
+  userId    String
+  publicUrl String?
+  videoId   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  video     Video?   @relation(fields: [videoId], references: [id])
+
+  @@index(videoId(type: Hash))
+  @@index(userId(type: Hash))
+}
+
 enum IdType {
   databaseId
   slug
@@ -98,6 +113,7 @@ model Video {
   bibleCitation          BibleCitation[]
   keywords               Keyword[]            @relation("VideoToKeyword")
   images                 CloudflareImage[]
+  cloudflareAssets       CloudflareR2[]
 
   @@index(label)
   @@index(childIds)
@@ -344,6 +360,27 @@ model Tagging {
 
   @@unique([taggableId, taggableType, tagId, context])
   @@index([tagId])
+}
+
+model Taxonomy {
+  id       String         @id @default(uuid())
+  category String
+  term     String         @unique
+  name     TaxonomyName[]
+}
+
+model TaxonomyName {
+  id           String   @id @default(uuid())
+  term         String
+  label        String
+  languageId   String
+  languageCode String
+  taxonomy     Taxonomy @relation(fields: [term], references: [term])
+
+  @@unique([term, languageId])
+  @@index([term])
+  @@index([languageId])
+  @@index([languageCode])
 }
 
 enum MediaRole {

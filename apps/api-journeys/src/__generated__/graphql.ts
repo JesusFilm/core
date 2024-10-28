@@ -313,6 +313,28 @@ export type CloudflareImage = {
   videoStill?: Maybe<Scalars['String']['output']>;
 };
 
+export type CloudflareR2 = {
+  __typename?: 'CloudflareR2';
+  createdAt: Scalars['Date']['output'];
+  fileName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  publicUrl?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['Date']['output'];
+  uploadUrl?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['ID']['output'];
+};
+
+export type CloudflareR2CreateInput = {
+  fileName: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  videoId: Scalars['String']['input'];
+};
+
+export type CloudflareR2UpdateInput = {
+  fileName: Scalars['String']['input'];
+  id: Scalars['String']['input'];
+};
+
 export type CloudflareVideo = {
   __typename?: 'CloudflareVideo';
   createdAt: Scalars['Date']['output'];
@@ -1206,6 +1228,9 @@ export type Mutation = {
   chatButtonRemove: ChatButton;
   chatButtonUpdate: ChatButton;
   chatOpenEventCreate: ChatOpenEvent;
+  cloudflareR2Create: CloudflareR2;
+  cloudflareR2Delete: CloudflareR2;
+  cloudflareR2Update: CloudflareR2;
   cloudflareUploadComplete: Scalars['Boolean']['output'];
   createCloudflareImageFromPrompt: CloudflareImage;
   createCloudflareUploadByFile: CloudflareImage;
@@ -1304,6 +1329,9 @@ export type Mutation = {
   videoDescriptionCreate: VideoDescription;
   videoDescriptionDelete: VideoDescription;
   videoDescriptionUpdate: VideoDescription;
+  videoEditionCreate: VideoEdition;
+  videoEditionDelete: VideoEdition;
+  videoEditionUpdate: VideoEdition;
   videoExpandEventCreate: VideoExpandEvent;
   videoImageAltCreate: VideoImageAlt;
   videoImageAltDelete: VideoImageAlt;
@@ -1449,6 +1477,21 @@ export type MutationChatButtonUpdateArgs = {
 
 export type MutationChatOpenEventCreateArgs = {
   input: ChatOpenEventCreateInput;
+};
+
+
+export type MutationCloudflareR2CreateArgs = {
+  input: CloudflareR2CreateInput;
+};
+
+
+export type MutationCloudflareR2DeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationCloudflareR2UpdateArgs = {
+  input: CloudflareR2UpdateInput;
 };
 
 
@@ -1923,6 +1966,21 @@ export type MutationVideoDescriptionUpdateArgs = {
 };
 
 
+export type MutationVideoEditionCreateArgs = {
+  input: VideoEditionCreateInput;
+};
+
+
+export type MutationVideoEditionDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoEditionUpdateArgs = {
+  input: VideoEditionUpdateInput;
+};
+
+
 export type MutationVideoExpandEventCreateArgs = {
   input: VideoExpandEventCreateInput;
 };
@@ -2363,6 +2421,7 @@ export type Query = {
   me?: Maybe<User>;
   searchUnsplashPhotos: UnsplashQueryResponse;
   tags: Array<Tag>;
+  taxonomies: Array<Taxonomy>;
   team: Team;
   teams: Array<Team>;
   user?: Maybe<User>;
@@ -2372,6 +2431,9 @@ export type Query = {
   userTeamInvites: Array<UserTeamInvite>;
   userTeams: Array<UserTeam>;
   video: Video;
+  videoCloudflareAssets: Array<CloudflareR2>;
+  videoEdition?: Maybe<VideoEdition>;
+  videoEditions: Array<VideoEdition>;
   videoVariants: Array<VideoVariant>;
   videos: Array<Video>;
   videosCount: Scalars['Int']['output'];
@@ -2587,6 +2649,12 @@ export type QuerySearchUnsplashPhotosArgs = {
 };
 
 
+export type QueryTaxonomiesArgs = {
+  category?: InputMaybe<Scalars['String']['input']>;
+  languageCodes?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+
 export type QueryTeamArgs = {
   id: Scalars['ID']['input'];
 };
@@ -2626,6 +2694,16 @@ export type QueryUserTeamsArgs = {
 export type QueryVideoArgs = {
   id: Scalars['ID']['input'];
   idType?: InputMaybe<IdType>;
+};
+
+
+export type QueryVideoCloudflareAssetsArgs = {
+  videoId: Scalars['ID']['input'];
+};
+
+
+export type QueryVideoEditionArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -2997,6 +3075,29 @@ export type TagName = {
   language: Language;
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
+};
+
+export type Taxonomy = {
+  __typename?: 'Taxonomy';
+  category: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Array<TaxonomyName>;
+  term: Scalars['String']['output'];
+};
+
+
+export type TaxonomyNameArgs = {
+  category?: InputMaybe<Scalars['String']['input']>;
+  languageCodes?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type TaxonomyName = {
+  __typename?: 'TaxonomyName';
+  id: Scalars['ID']['output'];
+  label: Scalars['String']['output'];
+  language: Language;
+  taxonomy: Taxonomy;
+  term: Scalars['String']['output'];
 };
 
 export type Team = {
@@ -3728,6 +3829,16 @@ export type VideoEdition = {
   name?: Maybe<Scalars['String']['output']>;
   videoSubtitles: Array<VideoSubtitle>;
   videoVariants: Array<VideoVariant>;
+};
+
+export type VideoEditionCreateInput = {
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type VideoEditionUpdateInput = {
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type VideoExpandEvent = Event & {
