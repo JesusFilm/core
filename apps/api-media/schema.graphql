@@ -42,6 +42,27 @@ type CloudflareImage {
   videoStill: String
 }
 
+type CloudflareR2 {
+  id: ID!
+  fileName: String!
+  uploadUrl: String
+  userId: ID!
+  publicUrl: String
+  createdAt: Date!
+  updatedAt: Date!
+}
+
+input CloudflareR2CreateInput {
+  id: String
+  fileName: String!
+  videoId: String!
+}
+
+input CloudflareR2UpdateInput {
+  id: String!
+  fileName: String!
+}
+
 type CloudflareVideo {
   id: ID!
   uploadUrl: String
@@ -101,6 +122,9 @@ type Mutation {
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
   deleteCloudflareImage(id: ID!): Boolean!
   cloudflareUploadComplete(id: ID!): Boolean!
+  cloudflareR2Create(input: CloudflareR2CreateInput!): CloudflareR2!
+  cloudflareR2Update(input: CloudflareR2UpdateInput!): CloudflareR2!
+  cloudflareR2Delete(id: ID!): CloudflareR2!
   createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo!
   createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo!
   deleteCloudflareVideo(id: ID!): Boolean!
@@ -140,6 +164,7 @@ type Mutation {
 type Query {
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
+  videoCloudflareAssets(videoId: ID!): [CloudflareR2!]!
   getMyCloudflareVideos(offset: Int, limit: Int): [CloudflareVideo!]!
   getMyCloudflareVideo(id: ID!): CloudflareVideo!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
