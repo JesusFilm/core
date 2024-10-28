@@ -139,14 +139,14 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
       'Edit Details'
     ) // clicking on the journey details option of the three dot options
-    await journeyLevelActions.enterLanguage('Tamil') // selecting language in the edit 'journey details popup
+    await journeyLevelActions.enterLanguage('A Che') // selecting language in the edit 'journey details popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'journey details' popup
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top right corner of the custom journey page
     await journeyLevelActions.clickThreeDotOptionsOfJourneyCreationPage(
       'Edit Details'
     ) // clicking on the language option of the three dot options
     await journeyLevelActions.verifySelectedLanguageInLanguagePopup() // verify selecetd language is updated in the 'journey details popup
-    await journeyLevelActions.enterLanguage('English') //  selecting language in the edit 'journey details popup
+    await journeyLevelActions.enterLanguage('A-Hmao') //  selecting language in the edit 'journey details popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit language' popup
   })
 
