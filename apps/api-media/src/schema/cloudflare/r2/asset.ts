@@ -56,21 +56,6 @@ builder.prismaObject('CloudflareR2', {
   })
 })
 
-builder.queryFields((t) => ({
-  videoCloudflareAssets: t.prismaField({
-    type: ['CloudflareR2'],
-    args: {
-      videoId: t.arg.id({ required: true })
-    },
-    resolve: async (query, _parent, { videoId }) => {
-      return await prisma.cloudflareR2.findMany({
-        ...query,
-        where: { videoId }
-      })
-    }
-  })
-}))
-
 builder.mutationFields((t) => ({
   cloudflareR2Create: t.withAuth({ isPublisher: true }).prismaField({
     type: 'CloudflareR2',
@@ -88,7 +73,7 @@ builder.mutationFields((t) => ({
           userId: user.id,
           fileName: input.fileName,
           uploadUrl,
-          publicUrl: `process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN/${input.fileName}`
+          publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${input.fileName}`
         }
       })
     }
@@ -107,7 +92,7 @@ builder.mutationFields((t) => ({
         data: {
           fileName: input.fileName ?? undefined,
           uploadUrl,
-          publicUrl: `process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN/${input.fileName}`,
+          publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${input.fileName}`,
           userId: user.id
         }
       })

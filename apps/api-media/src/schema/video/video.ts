@@ -63,6 +63,7 @@ const Video = builder.prismaObject('Video', {
     label: t.expose('label', { type: VideoLabel }),
     primaryLanguageId: t.exposeID('primaryLanguageId'),
     published: t.exposeBoolean('published'),
+    cloudflareAssets: t.relation('cloudflareAssets'),
     title: t.relation('title', {
       args: {
         languageId: t.arg.id({ required: false }),

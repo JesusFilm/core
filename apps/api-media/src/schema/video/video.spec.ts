@@ -48,6 +48,7 @@ describe('video', () => {
     parents: Video[]
     subtitles: VideoSubtitle[]
     images: CloudflareImage[]
+    cloudflareAssets: CloudflareR2[]
   }
 
   const children: Video[] = [
@@ -240,6 +241,15 @@ describe('video', () => {
           updatedAt: new Date(),
           videoId: null
         }
+      ],
+      cloudflareAssets: [
+        {
+          id: 'assetId',
+          fileName: 'assetFileName',
+          uploadUrl: 'assetUploadUrl',
+          userId: 'testUserId',
+          publicUrl: 'https://assets.jesusfilm.org/assetFileName'
+        }
       ]
     }
   ]
@@ -369,6 +379,9 @@ describe('video', () => {
             id
             aspectRatio
             url
+          }
+          cloudflareAssets {
+            id
           }
         }
       }
@@ -511,6 +524,11 @@ describe('video', () => {
               process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
             }/imageId`
           }
+        ],
+        cloudflareAssets: [
+          {
+            id: 'assetId'
+          }
         ]
       }
     ]
@@ -544,6 +562,7 @@ describe('video', () => {
         where: { published: true },
         include: {
           bibleCitation: true,
+          cloudflareAssets: true,
           description: {
             orderBy: {
               primary: 'desc'
@@ -711,6 +730,7 @@ describe('video', () => {
         },
         include: {
           bibleCitation: true,
+          cloudflareAssets: true,
           description: {
             orderBy: {
               primary: 'desc'
