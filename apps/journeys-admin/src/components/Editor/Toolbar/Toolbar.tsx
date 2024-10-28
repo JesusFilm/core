@@ -92,7 +92,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState<boolean | null>(null)
 
   const helpScoutRef = useRef(null)
   const menuRef = useRef(null)
@@ -301,10 +301,12 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                 </Button>
               </Tooltip>
             </Box>
-            <JourneyDetailsDialog
-              open={dialogOpen}
-              onClose={handleDialogClose}
-            />
+            {dialogOpen != null && (
+              <JourneyDetailsDialog
+                open={dialogOpen}
+                onClose={handleDialogClose}
+              />
+            )}
           </Stack>
         ) : (
           <Stack flexGrow={1}>
