@@ -1,44 +1,99 @@
+import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
-import { paramsToRecord } from '../../../lib/paramsToRecord'
+import { getApolloClient } from '../../../lib/apolloClient'
 
-import { contentTypes, genres, osisBibleBooks, subTypes, types } from './fields'
+import { TaxonomyGroup, findBestMatchingName } from './lib'
 
 /* TODO: 
   querystring:
     apiKey
-    metadataLanguageTags
+    metadataLanguageTags: comma separated list of language tags use second tag as a backup
 */
 
-export async function GET(req: NextRequest): Promise<Response> {
-  const query = req.nextUrl.searchParams
-  const metadataLanguageTags = query.get('metadataLanguageTags') ?? 'en'
-
-  const queryObject: Record<string, string> = {
-    ...paramsToRecord(query.entries())
-  }
-
-  const queryString = new URLSearchParams(queryObject).toString()
-  const response = {
-    _links: {
-      self: {
-        href: `https://api.arclight.com/v2/taxonomies${queryString}`
-      }
-    },
-    _embedded: {
-      taxonomies: {
-        // TODO: handle translations
-        contentTypes: await contentTypes(metadataLanguageTags, queryString),
-        // TODO: investigate
-        genres: await genres(metadataLanguageTags, queryString),
-        // TODO: investigate
-        osisBibleBooks: await osisBibleBooks(metadataLanguageTags, queryString),
-        // TODO: handle translations
-        subTypes: await subTypes(metadataLanguageTags, queryString),
-        // TODO: handle translations
-        types: await types(metadataLanguageTags, queryString)
+const GET_TAXONOMIES = graphql(`
+  query GetTaxonomies($languageCodes: [String!]) {
+    taxonomies {
+      category
+      term
+      name(languageCodes: $languageCodes) {
+        label
+        language {
+          bcp47
+        }
       }
     }
   }
+`)
+
+export async function GET(request: NextRequest): Promise<Response> {
+  const { searchParams } = request.nextUrl
+  const metadataLanguageTags = searchParams
+    .get('metadataLanguageTags')
+    ?.split(',') ?? ['en']
+  const queryString = searchParams.toString()
+
+  const { data } = await getApolloClient().query<
+    ResultOf<typeof GET_TAXONOMIES>
+  >({
+    query: GET_TAXONOMIES,
+    variables: { languageCodes: metadataLanguageTags }
+  })
+
+  const groupedTaxonomies: Record<string, TaxonomyGroup> = {}
+
+  const filteredTaxonomies = data.taxonomies.filter(
+    (taxonomy) => taxonomy.name.length > 0
+  )
+
+  if (filteredTaxonomies.length === 0) {
+    return new Response(
+      JSON.stringify({
+        message: `Not acceptable metadata language tag(s): ${metadataLanguageTags.join(
+          ', '
+        )}`
+      }),
+      { status: 406 }
+    )
+  }
+
+  filteredTaxonomies.forEach((taxonomy) => {
+    const matchingName = findBestMatchingName(
+      taxonomy.name as Array<{ label: string; language: { bcp47: string } }>,
+      metadataLanguageTags
+    )
+
+    if (groupedTaxonomies[taxonomy.category] === undefined) {
+      groupedTaxonomies[taxonomy.category] = {
+        terms: {
+          [taxonomy.term]: {
+            label: matchingName.label,
+            metadataLanguageTag: matchingName.language.bcp47
+          }
+        },
+        _links: {
+          self: {
+            href: `https://api.arclight.org/v2/taxonomies/${taxonomy.category}?${queryString}`
+          },
+          taxonomies: {
+            href: `https://api.arclight.org/v2/taxonomies?${queryString}`
+          }
+        }
+      }
+    } else {
+      groupedTaxonomies[taxonomy.category].terms[taxonomy.term] = {
+        label: matchingName.label,
+        metadataLanguageTag: matchingName.language.bcp47
+      }
+    }
+  })
+
+  const response = {
+    _links: {
+      self: { href: `http://api.arclight.org/v2/taxonomies?${queryString}` }
+    },
+    _embedded: { taxonomies: groupedTaxonomies }
+  }
+
   return new Response(JSON.stringify(response), { status: 200 })
 }
