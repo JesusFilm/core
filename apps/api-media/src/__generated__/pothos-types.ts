@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, CloudflareVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, UserMediaRole } from ".prisma/api-media-client";
+import type { Prisma, CloudflareImage, CloudflareVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole } from ".prisma/api-media-client";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
@@ -510,6 +510,46 @@ export default interface PrismaTypes {
             tag: {
                 Shape: Tag;
                 Name: "Tag";
+                Nullable: false;
+            };
+        };
+    };
+    Taxonomy: {
+        Name: "Taxonomy";
+        Shape: Taxonomy;
+        Include: Prisma.TaxonomyInclude;
+        Select: Prisma.TaxonomySelect;
+        OrderBy: Prisma.TaxonomyOrderByWithRelationInput;
+        WhereUnique: Prisma.TaxonomyWhereUniqueInput;
+        Where: Prisma.TaxonomyWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "name";
+        ListRelations: "name";
+        Relations: {
+            name: {
+                Shape: TaxonomyName[];
+                Name: "TaxonomyName";
+                Nullable: false;
+            };
+        };
+    };
+    TaxonomyName: {
+        Name: "TaxonomyName";
+        Shape: TaxonomyName;
+        Include: Prisma.TaxonomyNameInclude;
+        Select: Prisma.TaxonomyNameSelect;
+        OrderBy: Prisma.TaxonomyNameOrderByWithRelationInput;
+        WhereUnique: Prisma.TaxonomyNameWhereUniqueInput;
+        Where: Prisma.TaxonomyNameWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "taxonomy";
+        ListRelations: never;
+        Relations: {
+            taxonomy: {
+                Shape: Taxonomy;
+                Name: "Taxonomy";
                 Nullable: false;
             };
         };

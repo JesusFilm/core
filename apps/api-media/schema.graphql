@@ -182,6 +182,7 @@ type Query {
   videoEdition(id: ID!): VideoEdition
   videoVariants: [VideoVariant!]!
   tags: [Tag!]!
+  taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
 }
 
 enum SegmindModel {
@@ -214,6 +215,21 @@ type TagName {
   value: String!
   primary: Boolean!
   language: Language!
+}
+
+type Taxonomy {
+  id: ID!
+  category: String!
+  term: String!
+  name(languageCodes: [String!], category: String): [TaxonomyName!]!
+}
+
+type TaxonomyName {
+  id: ID!
+  term: String!
+  label: String!
+  language: Language!
+  taxonomy: Taxonomy!
 }
 
 enum UnsplashColor {
