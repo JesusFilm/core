@@ -1304,6 +1304,9 @@ export type Mutation = {
   videoDescriptionCreate: VideoDescription;
   videoDescriptionDelete: VideoDescription;
   videoDescriptionUpdate: VideoDescription;
+  videoEditionCreate: VideoEdition;
+  videoEditionDelete: VideoEdition;
+  videoEditionUpdate: VideoEdition;
   videoExpandEventCreate: VideoExpandEvent;
   videoImageAltCreate: VideoImageAlt;
   videoImageAltDelete: VideoImageAlt;
@@ -1923,6 +1926,21 @@ export type MutationVideoDescriptionUpdateArgs = {
 };
 
 
+export type MutationVideoEditionCreateArgs = {
+  input: VideoEditionCreateInput;
+};
+
+
+export type MutationVideoEditionDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoEditionUpdateArgs = {
+  input: VideoEditionUpdateInput;
+};
+
+
 export type MutationVideoExpandEventCreateArgs = {
   input: VideoExpandEventCreateInput;
 };
@@ -2363,6 +2381,7 @@ export type Query = {
   me?: Maybe<User>;
   searchUnsplashPhotos: UnsplashQueryResponse;
   tags: Array<Tag>;
+  taxonomies: Array<Taxonomy>;
   team: Team;
   teams: Array<Team>;
   user?: Maybe<User>;
@@ -2372,6 +2391,8 @@ export type Query = {
   userTeamInvites: Array<UserTeamInvite>;
   userTeams: Array<UserTeam>;
   video: Video;
+  videoEdition?: Maybe<VideoEdition>;
+  videoEditions: Array<VideoEdition>;
   videoVariants: Array<VideoVariant>;
   videos: Array<Video>;
   videosCount: Scalars['Int']['output'];
@@ -2587,6 +2608,12 @@ export type QuerySearchUnsplashPhotosArgs = {
 };
 
 
+export type QueryTaxonomiesArgs = {
+  category?: InputMaybe<Scalars['String']['input']>;
+  languageCodes?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+
 export type QueryTeamArgs = {
   id: Scalars['ID']['input'];
 };
@@ -2626,6 +2653,11 @@ export type QueryUserTeamsArgs = {
 export type QueryVideoArgs = {
   id: Scalars['ID']['input'];
   idType?: InputMaybe<IdType>;
+};
+
+
+export type QueryVideoEditionArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -2997,6 +3029,29 @@ export type TagName = {
   language: Language;
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
+};
+
+export type Taxonomy = {
+  __typename?: 'Taxonomy';
+  category: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Array<TaxonomyName>;
+  term: Scalars['String']['output'];
+};
+
+
+export type TaxonomyNameArgs = {
+  category?: InputMaybe<Scalars['String']['input']>;
+  languageCodes?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type TaxonomyName = {
+  __typename?: 'TaxonomyName';
+  id: Scalars['ID']['output'];
+  label: Scalars['String']['output'];
+  language: Language;
+  taxonomy: Taxonomy;
+  term: Scalars['String']['output'];
 };
 
 export type Team = {
@@ -3722,6 +3777,24 @@ export type VideoDescription = {
   value: Scalars['String']['output'];
 };
 
+export type VideoEdition = {
+  __typename?: 'VideoEdition';
+  id: Scalars['ID']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+  videoSubtitles: Array<VideoSubtitle>;
+  videoVariants: Array<VideoVariant>;
+};
+
+export type VideoEditionCreateInput = {
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type VideoEditionUpdateInput = {
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type VideoExpandEvent = Event & {
   __typename?: 'VideoExpandEvent';
   /** time event was created */
@@ -3945,6 +4018,7 @@ export type VideoSubtitle = {
   primary: Scalars['Boolean']['output'];
   srtSrc?: Maybe<Scalars['String']['output']>;
   value: Scalars['String']['output'];
+  videoEdition: VideoEdition;
   vttSrc?: Maybe<Scalars['String']['output']>;
 };
 
@@ -4031,6 +4105,7 @@ export type VideoVariant = {
   slug: Scalars['String']['output'];
   subtitle: Array<VideoSubtitle>;
   subtitleCount: Scalars['Int']['output'];
+  videoEdition: VideoEdition;
 };
 
 

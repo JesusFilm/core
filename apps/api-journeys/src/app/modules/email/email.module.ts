@@ -16,11 +16,13 @@ import { EmailEventsConsumer } from './emailEvents/emailEvents.consumer'
       { name: 'api-journeys-email' },
       { name: 'api-journeys-events-email' }
     ),
-    MailerModule.forRoot({
-      transport: process.env.SMTP_URL ?? 'smtp://maildev:1025',
-      defaults: {
-        from: '"Next Steps Support" <support@nextstep.is>'
-      }
+    MailerModule.forRootAsync({
+      useFactory: () => ({
+        transport: process.env.SMTP_URL,
+        defaults: {
+          from: '"Next Steps Support" <support@nextstep.is>'
+        }
+      })
     })
   ],
   providers: [EmailConsumer, EmailService, PrismaService, EmailEventsConsumer],

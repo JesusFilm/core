@@ -414,6 +414,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoTitleCreate(input: VideoTranslationCreateInput!) : VideoTitle! @join__field(graph: API_MEDIA) 
   videoTitleUpdate(input: VideoTranslationUpdateInput!) : VideoTitle! @join__field(graph: API_MEDIA) 
   videoTitleDelete(id: ID!) : VideoTitle! @join__field(graph: API_MEDIA) 
+  videoEditionCreate(input: VideoEditionCreateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
+  videoEditionUpdate(input: VideoEditionUpdateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
+  videoEditionDelete(id: ID!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoVariantCreate(input: VideoVariantCreateInput!) : VideoVariant! @join__field(graph: API_MEDIA) 
   videoVariantUpdate(input: VideoVariantUpdateInput!) : VideoVariant! @join__field(graph: API_MEDIA) 
   videoVariantDelete(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
@@ -679,8 +682,11 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   video(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
   videos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
   videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
+  videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
+  videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
   videoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
+  taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
   me(input: MeInput) : User @join__field(graph: API_USERS) 
   user(id: ID!) : User @join__field(graph: API_USERS) 
   userByEmail(email: String!) : User @join__field(graph: API_USERS) 
@@ -2125,6 +2131,21 @@ type TagName @join__type(graph: API_MEDIA)  {
   language: Language!
 }
 
+type Taxonomy @join__type(graph: API_MEDIA)  {
+  id: ID!
+  category: String!
+  term: String!
+  name(languageCodes: [String!], category: String) : [TaxonomyName!]!
+}
+
+type TaxonomyName @join__type(graph: API_MEDIA)  {
+  id: ID!
+  term: String!
+  label: String!
+  language: Language!
+  taxonomy: Taxonomy!
+}
+
 type UnsplashPhoto @join__type(graph: API_MEDIA)  {
   id: ID!
   created_at: String!
@@ -2205,6 +2226,13 @@ type VideoDescription @join__type(graph: API_MEDIA)  {
   language: Language!
 }
 
+type VideoEdition @join__type(graph: API_MEDIA)  {
+  id: ID!
+  name: String
+  videoVariants: [VideoVariant!]!
+  videoSubtitles: [VideoSubtitle!]!
+}
+
 type VideoImageAlt @join__type(graph: API_MEDIA)  {
   id: ID!
   value: String!
@@ -2235,6 +2263,7 @@ type VideoSubtitle @join__type(graph: API_MEDIA)  {
   srtSrc: String
   value: String!
   language: Language!
+  videoEdition: VideoEdition!
 }
 
 type VideoTitle @join__type(graph: API_MEDIA)  {
@@ -2252,6 +2281,7 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   downloads: [VideoVariantDownload!]!
   duration: Int!
   language: Language!
+  videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean) : [VideoSubtitle!]!
   subtitleCount: Int!
   """
@@ -3702,6 +3732,16 @@ input VideoCreateInput @join__type(graph: API_MEDIA)  {
   slug: String!
   noIndex: Boolean!
   childIds: [String!]!
+}
+
+input VideoEditionCreateInput @join__type(graph: API_MEDIA)  {
+  id: ID!
+  name: String
+}
+
+input VideoEditionUpdateInput @join__type(graph: API_MEDIA)  {
+  id: ID!
+  name: String
 }
 
 input VideoStudyQuestionCreateInput @join__type(graph: API_MEDIA)  {

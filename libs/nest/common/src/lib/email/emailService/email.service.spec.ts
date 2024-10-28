@@ -1,20 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { MailerService } from '@nestjs-modules/mailer'
-import { mockDeep } from 'jest-mock-extended'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { EmailService } from './email.service'
 
-const sendEmailMock = jest.fn().mockReturnValue({})
-// Mock the SES sendEmail method
-jest.mock('@aws-sdk/client-ses', () => ({
-  SES: jest.fn().mockImplementation(() => ({
-    sendEmail: sendEmailMock
-  }))
-}))
-
 describe('EmailService', () => {
-  let emailService: EmailService
-  let mailerService: MailerService
+  const OLD_ENV = process.env
+  let emailService: EmailService, mailerService: DeepMockProxy<MailerService>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,31 +18,31 @@ describe('EmailService', () => {
         }
       ]
     }).compile()
-    mailerService = module.get<MailerService>(MailerService)
+    mailerService = module.get<MailerService>(
+      MailerService
+    ) as DeepMockProxy<MailerService>
     emailService = module.get<EmailService>(EmailService)
+    process.env = { ...OLD_ENV } // make a copy
   })
 
   afterEach(() => {
+    process.env = OLD_ENV
     jest.clearAllMocks()
   })
 
   const email = {
-    to: 'text@xample.com',
+    to: 'test@gooddomain.com',
     subject: 'Test Subject',
     text: 'Test Body',
     html: 'Test Html'
   }
 
-  it('should send email using mailerService when SMTP_URL is defined', async () => {
-    process.env.SMTP_URL = 'smtp://example.com' // from now on the env var is test
-
-    const mailerSpy = jest
-      .spyOn(mailerService, 'sendMail')
-      .mockResolvedValue(undefined)
+  it('should send email', async () => {
+    mailerService.sendMail.mockResolvedValue(undefined)
 
     await emailService.sendEmail(email)
 
-    expect(mailerSpy).toHaveBeenCalledWith({
+    expect(mailerService.sendMail).toHaveBeenCalledWith({
       to: email.to,
       subject: email.subject,
       text: email.text,
@@ -58,35 +50,11 @@ describe('EmailService', () => {
     })
   })
 
-  it('should process the email job', async () => {
-    const OLD_ENV = process.env
-    process.env = {
-      ...OLD_ENV,
-      SMTP_URL: undefined
-    }
-
-    await emailService.sendEmail(email)
-
-    expect(sendEmailMock).toHaveBeenCalledWith({
-      Source: 'support@nextstep.is',
-      Destination: { ToAddresses: [email.to] },
-      Message: {
-        Subject: {
-          Charset: 'UTF-8',
-          Data: email.subject
-        },
-        Body: {
-          Html: {
-            Charset: 'UTF-8',
-            Data: email.html
-          },
-          Text: {
-            Charset: 'UTF-8',
-            Data: email.text
-          }
-        }
-      }
-    })
-    process.env = OLD_ENV
+  it('should throw error with example email address', async () => {
+    process.env.SMTP_URL = 'smtp://example.com'
+    process.env.NODE_ENV = 'production'
+    await expect(
+      emailService.sendEmail({ ...email, to: 'test@example.com' })
+    ).rejects.toThrow('Example email address')
   })
 })

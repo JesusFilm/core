@@ -43,7 +43,7 @@ export function EmbedJourneyDialog({
   const providerUrl =
     hostname != null
       ? `https://${hostname}`
-      : process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
+      : (process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is')
   const embedUrl = `${providerUrl}/embed/${journey?.slug as string}`
 
   // Self-closing iframe tag breaks embed on WordPress

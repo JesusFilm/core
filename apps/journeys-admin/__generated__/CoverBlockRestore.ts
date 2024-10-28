@@ -168,6 +168,8 @@ export interface CoverBlockRestore_blockRestore_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export type CoverBlockRestore_blockRestore = CoverBlockRestore_blockRestore_StepBlock | CoverBlockRestore_blockRestore_VideoBlock | CoverBlockRestore_blockRestore_ImageBlock;
