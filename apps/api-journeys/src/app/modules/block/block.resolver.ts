@@ -91,13 +91,23 @@ export class BlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.blockService.duplicateBlock(
-      block,
-      parentOrder,
-      idMap,
-      x,
-      y
-    )
+
+    return await this.prismaService.$transaction(async (tx) => {
+      const duplicatedBlocks = await this.blockService.duplicateBlock(
+        block,
+        parentOrder,
+        idMap,
+        x,
+        y
+      )
+      await tx.journey.update({
+        where: {
+          id: block.journeyId
+        },
+        data: { updatedAt: new Date().toISOString() }
+      })
+      return duplicatedBlocks
+    })
   }
 
   @Mutation()

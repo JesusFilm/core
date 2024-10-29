@@ -158,6 +158,19 @@ describe('BlockResolver', () => {
       )
     })
 
+    it('should update journey updatedAt on duplication of the block and its children', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.blockDuplicate(ability, 'blockId', 2, undefined, 3, 4)
+      ).toEqual([blockWithUserTeam, blockWithUserTeam])
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: {
+          id: blockWithUserTeam.journeyId
+        },
+        data: { updatedAt: '2024-10-22T03:39:39.268Z' }
+      })
+    })
+
     it('duplicates the block and its children with custom ids', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
       expect(
