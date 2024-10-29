@@ -61,6 +61,13 @@ describe('BlockResolver', () => {
     })
   }
 
+  const updatedAt: Date = new Date('2024-10-22T03:39:39.268Z')
+
+  beforeAll(async () => {
+    jest.useFakeTimers()
+    jest.setSystemTime(updatedAt)
+  })
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
@@ -110,6 +117,19 @@ describe('BlockResolver', () => {
       expect(service.reorderBlock).toHaveBeenCalledWith(blockWithUserTeam, 2)
     })
 
+    it('should update journey updatedAt on block order update', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      expect(await resolver.blockOrderUpdate(ability, 'blockId', 2)).toEqual([
+        { ...blockWithUserTeam, parentOrder: 2 }
+      ])
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: {
+          id: blockWithUserTeam.journeyId
+        },
+        data: { updatedAt: updatedAt.toISOString() }
+      })
+    })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(
@@ -138,6 +158,19 @@ describe('BlockResolver', () => {
         3,
         4
       )
+    })
+
+    it('should update journey updatedAt on duplication of the block and its children', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.blockDuplicate(ability, 'blockId', 2, undefined, 3, 4)
+      ).toEqual([blockWithUserTeam, blockWithUserTeam])
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: {
+          id: blockWithUserTeam.journeyId
+        },
+        data: { updatedAt: updatedAt.toISOString() }
+      })
     })
 
     it('duplicates the block and its children with custom ids', async () => {
@@ -332,6 +365,28 @@ describe('BlockResolver', () => {
         block,
         block
       ])
+    })
+
+    it('should update journey updatedAt on block restore', async () => {
+      prismaService.block.findUnique.mockResolvedValue(blockWithUserTeam)
+      prismaService.block.update.mockResolvedValue(block)
+      prismaService.block.findMany.mockResolvedValue([block, block])
+      await resolver.blockRestore('1', ability)
+      expect(prismaService.block.update).toHaveBeenCalledWith({
+        where: { id: '1' },
+        data: {
+          deletedAt: null
+        },
+        include: {
+          action: true
+        }
+      })
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: {
+          id: block.journeyId
+        },
+        data: { updatedAt: updatedAt.toISOString() }
+      })
     })
 
     it('should throw error if block not found', async () => {

@@ -31,7 +31,7 @@ const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
 describe('VideoBlockResolver', () => {
   let resolver: VideoBlockResolver,
-    service: BlockService,
+    service: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
     ability: AppAbility
 
@@ -56,7 +56,8 @@ describe('VideoBlockResolver', () => {
       url: 'https://jesusfilm.org',
       target: 'target'
     },
-    objectFit: 'fill'
+    objectFit: 'fill',
+    updatedAt: '2024-10-21T04:32:25.858Z'
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -83,20 +84,15 @@ describe('VideoBlockResolver', () => {
     coverBlockId: 'coverBlockId',
     fullscreen: true
   } as unknown as Block
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      getSiblings: jest.fn(() => [block, block]),
-      removeBlockAndChildren: jest.fn((input) => input),
-      update: jest.fn((input) => input)
-    })
-  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        blockService,
+        {
+          provide: BlockService,
+          useValue: mockDeep<BlockService>()
+        },
         VideoBlockResolver,
         {
           provide: PrismaService,
@@ -105,12 +101,18 @@ describe('VideoBlockResolver', () => {
       ]
     }).compile()
     resolver = module.get<VideoBlockResolver>(VideoBlockResolver)
-    service = await module.resolve(BlockService)
+    service = module.get<BlockService>(
+      BlockService
+    ) as DeepMockProxy<BlockService>
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
     prismaService.block.findFirst.mockResolvedValue(null)
+    service.getSiblings.mockResolvedValue([
+      { ...block, action: null },
+      { ...block, action: null }
+    ])
   })
 
   afterEach(() => {
@@ -154,6 +156,17 @@ describe('VideoBlockResolver', () => {
       expect(service.getSiblings).toHaveBeenCalledWith(
         blockCreateInput.journeyId,
         blockCreateInput.parentBlockId
+      )
+    })
+
+    it('should update journey updatedAt when video block is created', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.videoBlockCreate(ability, blockCreateInput)
+      ).toEqual(blockWithUserTeam)
+      expect(service.setJourneyUpdatedAt).toHaveBeenCalledWith(
+        prismaService,
+        blockWithUserTeam
       )
     })
 
@@ -249,10 +262,7 @@ describe('VideoBlockResolver', () => {
         ...blockCreateInput,
         isCover: true
       })
-      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
-        block,
-        prismaService
-      )
+      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(block)
     })
 
     describe('Internal Source', () => {
