@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -12,7 +11,7 @@ import { MessagePlatform } from '../../../../../../../../__generated__/globalTyp
 import { Accordion } from '../../Properties/Accordion'
 
 import { ChatOption } from './ChatOption'
-import { HelpButton } from './HelpButton/HelpButton'
+import { HelpButton } from './HelpButton'
 
 export function Chat(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -43,9 +42,7 @@ export function Chat(): ReactElement {
       name={t('Chat Widget')}
     >
       <Box data-testid="Chat">
-        <Stack sx={{ px: 6, pb: 4 }}>
-          <HelpButton />
-        </Stack>
+        <HelpButton />
         <ChatOption
           title={t('Facebook Messenger')}
           chatButton={facebook}
