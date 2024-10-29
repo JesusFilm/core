@@ -323,21 +323,24 @@ export function Video({
         </>
       )}
       {/* Video Image  */}
-      {videoImage != null && posterBlock?.src == null && showPoster && (
-        <NextImage
-          src={videoImage}
-          alt="video image"
-          layout="fill"
-          objectFit={videoFit}
-          unoptimized
-          style={{
-            transform:
-              objectFit === VideoBlockObjectFit.zoomed
-                ? 'scale(1.33)'
-                : undefined
-          }}
-        />
-      )}
+      {videoImage != null &&
+        source !== VideoBlockSource.youTube &&
+        posterBlock?.src == null &&
+        showPoster && (
+          <NextImage
+            src={videoImage}
+            alt="video image"
+            layout="fill"
+            objectFit={videoFit}
+            unoptimized
+            style={{
+              transform:
+                objectFit === VideoBlockObjectFit.zoomed
+                  ? 'scale(1.33)'
+                  : undefined
+            }}
+          />
+        )}
       {/* Lazy load higher res poster */}
       {posterBlock?.src != null && showPoster && (
         <NextImage
