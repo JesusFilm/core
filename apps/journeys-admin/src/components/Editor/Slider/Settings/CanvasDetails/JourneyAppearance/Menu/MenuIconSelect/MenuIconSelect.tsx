@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import CardActionArea from '@mui/material/CardActionArea'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
@@ -20,7 +21,6 @@ import More from '@core/shared/ui/icons/More'
 
 import { JourneyMenuButtonIcon } from '../../../../../../../../../__generated__/globalTypes'
 import { useJourneyUpdateMutation } from '../../../../../../../../libs/useJourneyUpdateMutation'
-import CardActionArea from '@mui/material/CardActionArea'
 
 type IconOptions = Array<{
   Icon: typeof SvgIcon
@@ -156,7 +156,6 @@ export function MenuIconSelect(): ReactElement {
                 height: 56,
                 width: 56,
                 borderRadius: 2,
-                boxSizing: 'border-box',
                 border: ({ palette }) =>
                   `3px dashed ${palette.background.default}`,
                 display: 'grid',
