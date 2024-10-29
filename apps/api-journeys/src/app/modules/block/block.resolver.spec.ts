@@ -115,6 +115,19 @@ describe('BlockResolver', () => {
       expect(service.reorderBlock).toHaveBeenCalledWith(blockWithUserTeam, 2)
     })
 
+    it('should update journey updatedAt on block order update', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      expect(await resolver.blockOrderUpdate(ability, 'blockId', 2)).toEqual([
+        { ...blockWithUserTeam, parentOrder: 2 }
+      ])
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: {
+          id: blockWithUserTeam.journeyId
+        },
+        data: { updatedAt: '2024-10-22T03:39:39.268Z' }
+      })
+    })
+
     it('throws error if not found', async () => {
       prismaService.block.findUnique.mockResolvedValueOnce(null)
       await expect(

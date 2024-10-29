@@ -49,7 +49,20 @@ export class BlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.blockService.reorderBlock(block, parentOrder)
+
+    return await this.prismaService.$transaction(async (tx) => {
+      const reorderedBlocks = await this.blockService.reorderBlock(
+        block,
+        parentOrder
+      )
+      await tx.journey.update({
+        where: {
+          id: block.journeyId
+        },
+        data: { updatedAt: new Date().toISOString() }
+      })
+      return reorderedBlocks
+    })
   }
 
   @Mutation()
