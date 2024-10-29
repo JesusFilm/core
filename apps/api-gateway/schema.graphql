@@ -386,6 +386,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   deleteCloudflareImage(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   cloudflareUploadComplete(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
+  cloudflareR2Create(input: CloudflareR2CreateInput!) : CloudflareR2! @join__field(graph: API_MEDIA) 
+  cloudflareR2Update(input: CloudflareR2UpdateInput!) : CloudflareR2! @join__field(graph: API_MEDIA) 
+  cloudflareR2Delete(id: ID!) : CloudflareR2! @join__field(graph: API_MEDIA) 
   createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!) : CloudflareVideo! @join__field(graph: API_MEDIA) 
   createCloudflareVideoUploadByUrl(url: String!) : CloudflareVideo! @join__field(graph: API_MEDIA) 
   deleteCloudflareVideo(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
@@ -653,6 +656,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   countries: [Country!]! @join__field(graph: API_LANGUAGES) 
   getMyCloudflareImages(offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   getMyCloudflareImage(id: ID!) : CloudflareImage! @join__field(graph: API_MEDIA) 
+  videoCloudflareAssets(videoId: ID!) : [CloudflareR2!]! @join__field(graph: API_MEDIA) 
   getMyCloudflareVideos(offset: Int, limit: Int) : [CloudflareVideo!]! @join__field(graph: API_MEDIA) 
   getMyCloudflareVideo(id: ID!) : CloudflareVideo! @join__field(graph: API_MEDIA) 
   listUnsplashCollectionPhotos(
@@ -2095,6 +2099,16 @@ type CloudflareImage @join__type(graph: API_MEDIA)  {
   mobileCinematicVeryLow: String
   thumbnail: String
   videoStill: String
+}
+
+type CloudflareR2 @join__type(graph: API_MEDIA)  {
+  id: ID!
+  fileName: String!
+  uploadUrl: String
+  userId: ID!
+  publicUrl: String
+  createdAt: Date!
+  updatedAt: Date!
 }
 
 type CloudflareVideo @join__type(graph: API_MEDIA)  {
@@ -3717,6 +3731,17 @@ input VisitorUpdateInput @join__type(graph: API_JOURNEYS)  {
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
   ids: [ID!]
+}
+
+input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
+  id: String
+  fileName: String!
+  videoId: String!
+}
+
+input CloudflareR2UpdateInput @join__type(graph: API_MEDIA)  {
+  id: String!
+  fileName: String!
 }
 
 input ImageInput @join__type(graph: API_MEDIA)  {

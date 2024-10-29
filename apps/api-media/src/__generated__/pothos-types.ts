@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, CloudflareVideo, MuxVideo, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole } from ".prisma/api-media-client";
+import type { Prisma, CloudflareImage, CloudflareVideo, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole } from ".prisma/api-media-client";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
@@ -49,6 +49,26 @@ export default interface PrismaTypes {
         ListRelations: never;
         Relations: {};
     };
+    CloudflareR2: {
+        Name: "CloudflareR2";
+        Shape: CloudflareR2;
+        Include: Prisma.CloudflareR2Include;
+        Select: Prisma.CloudflareR2Select;
+        OrderBy: Prisma.CloudflareR2OrderByWithRelationInput;
+        WhereUnique: Prisma.CloudflareR2WhereUniqueInput;
+        Where: Prisma.CloudflareR2WhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "video";
+        ListRelations: never;
+        Relations: {
+            video: {
+                Shape: Video | null;
+                Name: "Video";
+                Nullable: true;
+            };
+        };
+    };
     Video: {
         Name: "Video";
         Shape: Video;
@@ -59,8 +79,8 @@ export default interface PrismaTypes {
         Where: Prisma.VideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images";
-        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images";
+        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets";
+        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets";
         Relations: {
             title: {
                 Shape: VideoTitle[];
@@ -120,6 +140,11 @@ export default interface PrismaTypes {
             images: {
                 Shape: CloudflareImage[];
                 Name: "CloudflareImage";
+                Nullable: false;
+            };
+            cloudflareAssets: {
+                Shape: CloudflareR2[];
+                Name: "CloudflareR2";
                 Nullable: false;
             };
         };
