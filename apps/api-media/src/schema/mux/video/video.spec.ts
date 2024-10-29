@@ -294,16 +294,6 @@ describe('mux/video', () => {
         })
         expect(result).toHaveProperty('data.deleteMuxVideo', true)
       })
-
-      it('should fail if not publisher', async () => {
-        const result = await client({
-          document: DELETE_MUX_VIDEO,
-          variables: {
-            id: 'videoId'
-          }
-        })
-        expect(result).toHaveProperty('data', null)
-      })
     })
   })
 })

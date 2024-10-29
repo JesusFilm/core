@@ -118,7 +118,6 @@ builder.mutationFields((t) => ({
     },
     resolve: async (_root, { id }, { user }) => {
       if (user == null) throw new Error('User not found')
-      console.log(user)
 
       await prisma.muxVideo.findUniqueOrThrow({
         where: { id, userId: user.id }
