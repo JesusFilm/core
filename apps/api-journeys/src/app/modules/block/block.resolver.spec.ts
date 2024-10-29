@@ -61,9 +61,11 @@ describe('BlockResolver', () => {
     })
   }
 
+  const date: Date = new Date('2024-10-22T03:39:39.268Z')
+
   beforeAll(async () => {
     jest.useFakeTimers()
-    jest.setSystemTime(new Date('2024-10-22T03:39:39.268Z'))
+    jest.setSystemTime(date)
   })
 
   beforeEach(async () => {
