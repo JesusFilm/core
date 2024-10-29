@@ -108,7 +108,10 @@ export function MenuIconSelect(): ReactElement {
   return (
     <Stack
       direction="row"
-      sx={{ justifyContent: 'space-between', alignItems: 'center' }}
+      sx={{
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}
       data-testid="MenuIconSelect"
     >
       <Typography variant="subtitle2" sx={{ color: 'secondary.light' }}>
@@ -126,6 +129,11 @@ export function MenuIconSelect(): ReactElement {
           '& .MuiSelect-icon': {
             color: 'primary.main',
             mr: 1.5
+          },
+          '&.MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: 'divider'
+            }
           }
         }}
         inputProps={{
