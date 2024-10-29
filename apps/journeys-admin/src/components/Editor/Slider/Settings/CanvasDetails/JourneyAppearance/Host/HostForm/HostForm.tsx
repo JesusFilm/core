@@ -11,7 +11,7 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useCallback, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
@@ -21,10 +21,12 @@ import {
   GetAllTeamHosts,
   GetAllTeamHostsVariables
 } from '../../../../../../../../../__generated__/GetAllTeamHosts'
+import { useHostCreateMutation } from '../../../../../../../../libs/useHostCreateMutation'
+import { useHostUpdateMutation } from '../../../../../../../../libs/useHostUpdateMutation'
 import { useUpdateJourneyHostMutation } from '../../../../../../../../libs/useUpdateJourneyHostMutation'
 
 import { HostAvatarsButton } from './HostAvatarsButton'
-import { HostLocationFieldForm } from './HostLocationFieldForm'
+import { HostLocationFieldForm } from './HostLocationFieldForm/HostLocationFieldForm'
 import { HostTitleFieldForm } from './HostTitleFieldForm'
 
 export const DELETE_HOST = gql`
@@ -34,6 +36,11 @@ export const DELETE_HOST = gql`
     }
   }
 `
+
+interface HostFormValues {
+  title: string
+  location: string
+}
 
 interface HostFormTabProps {
   handleSelection: (value: 'selection' | 'list') => void
@@ -50,11 +57,21 @@ export function HostForm({
   handleSelection,
   getAllTeamHostsQuery
 }: HostFormTabProps): ReactElement {
-  const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
+  const { updateHost } = useHostUpdateMutation()
+  const [hostCreate] = useHostCreateMutation()
   const [hostDelete] = useMutation<DeleteHost>(DELETE_HOST)
   const [journeyHostUpdate] = useUpdateJourneyHostMutation()
   const host = journey?.host
+
+  const initialValues: HostFormValues = {
+    title: journey?.host == null ? '' : journey.host.title,
+    location: journey?.host == null ? '' : (journey.host.location ?? '')
+  }
+
+  const [name, setName] = useState(initialValues.title)
+  const [location, setLocation] = useState(initialValues.location)
 
   const handleClear = async (): Promise<void> => {
     if (journey?.id == null) return
@@ -82,6 +99,51 @@ export function HostForm({
     handleSelection('selection')
   }
 
+  const createHost = useCallback(
+    async (values: HostFormValues): Promise<void> => {
+      if (journey?.team != null) {
+        const { data } = await hostCreate({
+          variables: { teamId: journey.team.id, input: values }
+        })
+        if (data?.hostCreate.id != null) {
+          await journeyHostUpdate({
+            variables: {
+              id: journey?.id,
+              input: { hostId: data.hostCreate.id }
+            }
+          })
+        }
+      }
+    },
+    [hostCreate, journey, journeyHostUpdate]
+  )
+
+  const handleNameChange = async (value: string): Promise<void> => {
+    setName(value)
+    if (journey?.host != null) {
+      const { id, teamId } = journey.host
+      await updateHost({ id, teamId, input: { title: value } })
+    } else {
+      await createHost({
+        title: value,
+        location
+      })
+    }
+  }
+
+  const handleLocationChange = async (value: string): Promise<void> => {
+    setLocation(value)
+    if (journey?.host != null) {
+      const { id, teamId } = journey.host
+      await updateHost({ id, teamId, input: { location: value } })
+    } else {
+      await createHost({
+        title: name,
+        location: value
+      })
+    }
+  }
+
   return (
     <Box data-testid="HostForm">
       <Stack
@@ -105,8 +167,11 @@ export function HostForm({
         )}
       </Stack>
       <Stack sx={{ p: 4 }} gap={6}>
-        <HostTitleFieldForm />
-        <HostLocationFieldForm />
+        <HostTitleFieldForm value={name} onChange={handleNameChange} />
+        <HostLocationFieldForm
+          value={location}
+          onChange={handleLocationChange}
+        />
         <HostAvatarsButton />
       </Stack>
       <Divider />

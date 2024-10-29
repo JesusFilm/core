@@ -1,33 +1,33 @@
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-
-import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation/useHostUpdateMutation'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 
-export function HostLocationFieldForm(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-  const { updateHost } = useHostUpdateMutation()
-  const { journey } = useJourney()
+interface HostLocationFieldProps {
+  value: string
+  onChange: (value: string) => void
+  disabled?: boolean
+}
 
-  async function handleSubmit(value: string): Promise<void> {
-    if (journey?.host != null) {
-      const { id, teamId } = journey.host
-      await updateHost({ id, teamId, input: { location: value } })
-    }
+export function HostLocationFieldForm({
+  value,
+  onChange,
+  disabled
+}: HostLocationFieldProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
+  const handleSubmit = async (value: string): Promise<void> => {
+    onChange(value)
   }
 
   return (
     <TextFieldForm
       id="hostLocation"
       label={t('Location')}
-      disabled={journey?.host == null}
-      initialValue={
-        journey?.host == null ? undefined : (journey.host.location ?? '')
-      }
+      disabled={disabled}
+      initialValue={value}
       onSubmit={handleSubmit}
-      data-testid="HostLocationFieldForm"
+      data-testid="HostLocationField"
     />
   )
 }
