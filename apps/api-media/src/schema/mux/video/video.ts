@@ -21,11 +21,8 @@ builder.prismaObject('MuxVideo', {
 })
 
 builder.queryFields((t) => ({
-  getMyMuxVideos: t.prismaField({
+  getMyMuxVideos: t.withAuth({ isAuthenticated: true }).prismaField({
     type: ['MuxVideo'],
-    authScopes: {
-      isAuthenticated: true
-    },
     args: {
       offset: t.arg.int({ required: false }),
       limit: t.arg.int({ required: false })
@@ -41,11 +38,8 @@ builder.queryFields((t) => ({
       })
     }
   }),
-  getMyMuxVideo: t.prismaField({
+  getMyMuxVideo: t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'MuxVideo',
-    authScopes: {
-      isAuthenticated: true
-    },
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
@@ -76,35 +70,31 @@ builder.queryFields((t) => ({
 }))
 
 builder.mutationFields((t) => ({
-  createMuxVideoUploadByFile: t.prismaField({
-    type: 'MuxVideo',
-    authScopes: {
-      isAuthenticated: true
-    },
-    args: {
-      name: t.arg({ type: 'String', required: true })
-    },
-    resolve: async (query, _root, { name }, { user }) => {
-      if (user == null) throw new Error('User not found')
+  createMuxVideoUploadByFile: t
+    .withAuth({ isAuthenticated: true })
+    .prismaField({
+      type: 'MuxVideo',
+      args: {
+        name: t.arg({ type: 'String', required: true })
+      },
+      resolve: async (query, _root, { name }, { user }) => {
+        if (user == null) throw new Error('User not found')
 
-      const { id, uploadUrl } = await createVideoByDirectUpload()
+        const { id, uploadUrl } = await createVideoByDirectUpload()
 
-      return await prisma.muxVideo.create({
-        ...query,
-        data: {
-          id,
-          uploadUrl,
-          userId: user.id,
-          name
-        }
-      })
-    }
-  }),
-  createMuxVideoUploadByUrl: t.prismaField({
+        return await prisma.muxVideo.create({
+          ...query,
+          data: {
+            id,
+            uploadUrl,
+            userId: user.id,
+            name
+          }
+        })
+      }
+    }),
+  createMuxVideoUploadByUrl: t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'MuxVideo',
-    authScopes: {
-      isAuthenticated: true
-    },
     args: {
       url: t.arg({ type: 'String', required: true })
     },
@@ -122,15 +112,13 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  deleteMuxVideo: t.boolean({
-    authScopes: {
-      isAuthenticated: true
-    },
+  deleteMuxVideo: t.withAuth({ isAuthenticated: true }).boolean({
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
     resolve: async (_root, { id }, { user }) => {
       if (user == null) throw new Error('User not found')
+      console.log(user)
 
       await prisma.muxVideo.findUniqueOrThrow({
         where: { id, userId: user.id }
