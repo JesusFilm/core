@@ -61,11 +61,11 @@ describe('BlockResolver', () => {
     })
   }
 
-  const date: Date = new Date('2024-10-22T03:39:39.268Z')
+  const updatedAt: Date = new Date('2024-10-22T03:39:39.268Z')
 
   beforeAll(async () => {
     jest.useFakeTimers()
-    jest.setSystemTime(date)
+    jest.setSystemTime(updatedAt)
   })
 
   beforeEach(async () => {
@@ -126,7 +126,7 @@ describe('BlockResolver', () => {
         where: {
           id: blockWithUserTeam.journeyId
         },
-        data: { updatedAt: '2024-10-22T03:39:39.268Z' }
+        data: { updatedAt: updatedAt.toISOString() }
       })
     })
 
@@ -169,7 +169,7 @@ describe('BlockResolver', () => {
         where: {
           id: blockWithUserTeam.journeyId
         },
-        data: { updatedAt: '2024-10-22T03:39:39.268Z' }
+        data: { updatedAt: updatedAt.toISOString() }
       })
     })
 
@@ -385,7 +385,7 @@ describe('BlockResolver', () => {
         where: {
           id: block.journeyId
         },
-        data: { updatedAt: '2024-10-22T03:39:39.268Z' }
+        data: { updatedAt: updatedAt.toISOString() }
       })
     })
 
