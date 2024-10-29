@@ -1239,6 +1239,8 @@ export type Mutation = {
   createCloudflareVideoUploadByUrl: CloudflareVideo;
   /** @deprecated use createCloudflareImageFromPrompt */
   createImageBySegmindPrompt: CloudflareImage;
+  createMuxVideoUploadByFile: MuxVideo;
+  createMuxVideoUploadByUrl: MuxVideo;
   createVerificationRequest?: Maybe<Scalars['Boolean']['output']>;
   customDomainCheck: CustomDomainCheck;
   customDomainCreate: CustomDomain;
@@ -1246,6 +1248,7 @@ export type Mutation = {
   customDomainUpdate: CustomDomain;
   deleteCloudflareImage: Scalars['Boolean']['output'];
   deleteCloudflareVideo: Scalars['Boolean']['output'];
+  deleteMuxVideo: Scalars['Boolean']['output'];
   hostCreate: Host;
   hostDelete: Host;
   hostUpdate: Host;
@@ -1534,6 +1537,16 @@ export type MutationCreateImageBySegmindPromptArgs = {
 };
 
 
+export type MutationCreateMuxVideoUploadByFileArgs = {
+  name: Scalars['String']['input'];
+};
+
+
+export type MutationCreateMuxVideoUploadByUrlArgs = {
+  url: Scalars['String']['input'];
+};
+
+
 export type MutationCreateVerificationRequestArgs = {
   input?: InputMaybe<CreateVerificationRequestInput>;
 };
@@ -1566,6 +1579,11 @@ export type MutationDeleteCloudflareImageArgs = {
 
 
 export type MutationDeleteCloudflareVideoArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteMuxVideoArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -2133,6 +2151,15 @@ export type MutationSiteCreateSuccess = {
   data: Site;
 };
 
+export type MuxVideo = {
+  __typename?: 'MuxVideo';
+  createdAt: Scalars['Date']['output'];
+  id: Scalars['ID']['output'];
+  readyToStream: Scalars['Boolean']['output'];
+  uploadUrl?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['ID']['output'];
+};
+
 export type NavigateToBlockAction = Action & {
   __typename?: 'NavigateToBlockAction';
   blockId: Scalars['String']['output'];
@@ -2374,6 +2401,8 @@ export type Query = {
   getMyCloudflareImages: Array<CloudflareImage>;
   getMyCloudflareVideo: CloudflareVideo;
   getMyCloudflareVideos: Array<CloudflareVideo>;
+  getMyMuxVideo: MuxVideo;
+  getMyMuxVideos: Array<MuxVideo>;
   getUserRole?: Maybe<UserRole>;
   hosts: Array<Host>;
   integrations: Array<Integration>;
@@ -2523,6 +2552,17 @@ export type QueryGetMyCloudflareVideoArgs = {
 
 
 export type QueryGetMyCloudflareVideosArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetMyMuxVideoArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetMyMuxVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
