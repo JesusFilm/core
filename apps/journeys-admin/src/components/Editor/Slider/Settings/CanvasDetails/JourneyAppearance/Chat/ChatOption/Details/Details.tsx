@@ -19,6 +19,7 @@ import HelpSquareContained from '@core/shared/ui/icons/HelpSquareContained'
 import Home3 from '@core/shared/ui/icons/Home3'
 import Home4 from '@core/shared/ui/icons/Home4'
 import InstagramIcon from '@core/shared/ui/icons/Instagram'
+import KakaoTalk from '@core/shared/ui/icons/KakaoTalk'
 import LineIcon from '@core/shared/ui/icons/Line'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import Mail1 from '@core/shared/ui/icons/Mail1'
@@ -106,6 +107,11 @@ export function Details({
       value: MessagePlatform.instagram,
       label: t('Instagram'),
       icon: <InstagramIcon />
+    },
+    {
+      value: MessagePlatform.kakaoTalk,
+      label: t('KakaoTalk'),
+      icon: <KakaoTalk />
     },
     {
       value: MessagePlatform.line,
@@ -255,11 +261,19 @@ export function Details({
   ): Promise<void> {
     let input
     if (type === 'link') {
+      const hasProtocolPrefix = /^\w+:\/\//
+      const link =
+        value === ''
+          ? ''
+          : hasProtocolPrefix.test(value ?? '')
+            ? value
+            : `https://${value}`
+
       input = {
-        link: value,
+        link,
         platform: currentPlatform
       }
-      setCurrentLink(value ?? '')
+      setCurrentLink(link ?? '')
     } else {
       input = {
         link: currentLink,
@@ -317,14 +331,12 @@ export function Details({
             </Select>
           </FormControl>
         )}
-
         <TextFieldForm
           id={currentPlatform as string}
           label={t('Paste URL here')}
           initialValue={currentLink}
           onSubmit={async (value) => await handleUpdate('link', value)}
         />
-
         {helperInfo != null && (
           <Typography variant="caption">{helperInfo}</Typography>
         )}

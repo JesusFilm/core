@@ -111,6 +111,8 @@ export interface CardPollRestore_imageRestore_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardPollRestore_imageRestore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -239,6 +241,11 @@ export interface CardPollRestore_imageRestore_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardPollRestore_imageRestore_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardPollRestore_imageRestore_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -261,7 +268,7 @@ export interface CardPollRestore_imageRestore_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardPollRestore_imageRestore_VideoBlock_video_title[];
-  image: string | null;
+  images: CardPollRestore_imageRestore_VideoBlock_video_images[];
   variant: CardPollRestore_imageRestore_VideoBlock_video_variant | null;
   variantLanguages: CardPollRestore_imageRestore_VideoBlock_video_variantLanguages[];
 }
@@ -508,6 +515,8 @@ export interface CardPollRestore_subtitleRestore_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardPollRestore_subtitleRestore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -636,6 +645,11 @@ export interface CardPollRestore_subtitleRestore_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardPollRestore_subtitleRestore_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardPollRestore_subtitleRestore_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -658,7 +672,7 @@ export interface CardPollRestore_subtitleRestore_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardPollRestore_subtitleRestore_VideoBlock_video_title[];
-  image: string | null;
+  images: CardPollRestore_subtitleRestore_VideoBlock_video_images[];
   variant: CardPollRestore_subtitleRestore_VideoBlock_video_variant | null;
   variantLanguages: CardPollRestore_subtitleRestore_VideoBlock_video_variantLanguages[];
 }
@@ -905,6 +919,8 @@ export interface CardPollRestore_titleRestore_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardPollRestore_titleRestore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1033,6 +1049,11 @@ export interface CardPollRestore_titleRestore_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardPollRestore_titleRestore_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardPollRestore_titleRestore_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -1055,7 +1076,7 @@ export interface CardPollRestore_titleRestore_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardPollRestore_titleRestore_VideoBlock_video_title[];
-  image: string | null;
+  images: CardPollRestore_titleRestore_VideoBlock_video_images[];
   variant: CardPollRestore_titleRestore_VideoBlock_video_variant | null;
   variantLanguages: CardPollRestore_titleRestore_VideoBlock_video_variantLanguages[];
 }
@@ -1302,6 +1323,8 @@ export interface CardPollRestore_radioQuestionRestore_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardPollRestore_radioQuestionRestore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1430,6 +1453,11 @@ export interface CardPollRestore_radioQuestionRestore_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardPollRestore_radioQuestionRestore_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardPollRestore_radioQuestionRestore_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -1452,7 +1480,7 @@ export interface CardPollRestore_radioQuestionRestore_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardPollRestore_radioQuestionRestore_VideoBlock_video_title[];
-  image: string | null;
+  images: CardPollRestore_radioQuestionRestore_VideoBlock_video_images[];
   variant: CardPollRestore_radioQuestionRestore_VideoBlock_video_variant | null;
   variantLanguages: CardPollRestore_radioQuestionRestore_VideoBlock_video_variantLanguages[];
 }
@@ -1699,6 +1727,8 @@ export interface CardPollRestore_radioOption1Restore_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardPollRestore_radioOption1Restore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1827,6 +1857,11 @@ export interface CardPollRestore_radioOption1Restore_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardPollRestore_radioOption1Restore_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardPollRestore_radioOption1Restore_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -1849,7 +1884,7 @@ export interface CardPollRestore_radioOption1Restore_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardPollRestore_radioOption1Restore_VideoBlock_video_title[];
-  image: string | null;
+  images: CardPollRestore_radioOption1Restore_VideoBlock_video_images[];
   variant: CardPollRestore_radioOption1Restore_VideoBlock_video_variant | null;
   variantLanguages: CardPollRestore_radioOption1Restore_VideoBlock_video_variantLanguages[];
 }
@@ -2096,6 +2131,8 @@ export interface CardPollRestore_radioOption2Restore_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardPollRestore_radioOption2Restore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -2224,6 +2261,11 @@ export interface CardPollRestore_radioOption2Restore_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardPollRestore_radioOption2Restore_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardPollRestore_radioOption2Restore_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -2246,7 +2288,7 @@ export interface CardPollRestore_radioOption2Restore_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardPollRestore_radioOption2Restore_VideoBlock_video_title[];
-  image: string | null;
+  images: CardPollRestore_radioOption2Restore_VideoBlock_video_images[];
   variant: CardPollRestore_radioOption2Restore_VideoBlock_video_variant | null;
   variantLanguages: CardPollRestore_radioOption2Restore_VideoBlock_video_variantLanguages[];
 }
@@ -2493,6 +2535,8 @@ export interface CardPollRestore_radioOption3Restore_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardPollRestore_radioOption3Restore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -2621,6 +2665,11 @@ export interface CardPollRestore_radioOption3Restore_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardPollRestore_radioOption3Restore_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardPollRestore_radioOption3Restore_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -2643,7 +2692,7 @@ export interface CardPollRestore_radioOption3Restore_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardPollRestore_radioOption3Restore_VideoBlock_video_title[];
-  image: string | null;
+  images: CardPollRestore_radioOption3Restore_VideoBlock_video_images[];
   variant: CardPollRestore_radioOption3Restore_VideoBlock_video_variant | null;
   variantLanguages: CardPollRestore_radioOption3Restore_VideoBlock_video_variantLanguages[];
 }
@@ -2890,6 +2939,8 @@ export interface CardPollRestore_radioOption4Restore_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardPollRestore_radioOption4Restore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -3018,6 +3069,11 @@ export interface CardPollRestore_radioOption4Restore_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardPollRestore_radioOption4Restore_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardPollRestore_radioOption4Restore_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -3040,7 +3096,7 @@ export interface CardPollRestore_radioOption4Restore_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardPollRestore_radioOption4Restore_VideoBlock_video_title[];
-  image: string | null;
+  images: CardPollRestore_radioOption4Restore_VideoBlock_video_images[];
   variant: CardPollRestore_radioOption4Restore_VideoBlock_video_variant | null;
   variantLanguages: CardPollRestore_radioOption4Restore_VideoBlock_video_variantLanguages[];
 }
@@ -3287,6 +3343,8 @@ export interface CardPollRestore_bodyRestore_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardPollRestore_bodyRestore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -3415,6 +3473,11 @@ export interface CardPollRestore_bodyRestore_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardPollRestore_bodyRestore_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardPollRestore_bodyRestore_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -3437,7 +3500,7 @@ export interface CardPollRestore_bodyRestore_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardPollRestore_bodyRestore_VideoBlock_video_title[];
-  image: string | null;
+  images: CardPollRestore_bodyRestore_VideoBlock_video_images[];
   variant: CardPollRestore_bodyRestore_VideoBlock_video_variant | null;
   variantLanguages: CardPollRestore_bodyRestore_VideoBlock_video_variantLanguages[];
 }

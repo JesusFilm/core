@@ -11,11 +11,13 @@ import './keyword'
 import './language'
 import './user'
 import './video'
+import './videoEdition'
 import './videoVariant'
 import './tag'
+import './taxonomy'
 
 import { builder } from './builder'
 
 export const schema = builder.toSubGraphSchema({
-  linkUrl: 'https://specs.apollo.dev/federation/v2.7'
+  linkUrl: 'https://specs.apollo.dev/federation/v2.6'
 })

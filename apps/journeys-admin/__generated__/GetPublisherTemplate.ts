@@ -125,6 +125,8 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_NavigateToBlockAction {
@@ -253,6 +255,11 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_
   value: string;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -275,7 +282,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video 
   __typename: "Video";
   id: string;
   title: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_title[];
-  image: string | null;
+  images: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_images[];
   variant: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variant | null;
   variantLanguages: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_video_variantLanguages[];
 }
@@ -435,6 +442,8 @@ export interface GetPublisherTemplate_publisherTemplate_primaryImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_creatorImageBlock {
@@ -452,6 +461,8 @@ export interface GetPublisherTemplate_publisherTemplate_creatorImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_userJourneys_user {
@@ -531,6 +542,8 @@ export interface GetPublisherTemplate_publisherTemplate_logoImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_menuStepBlock {

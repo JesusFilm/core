@@ -1,3 +1,4 @@
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, useState } from 'react'
@@ -6,8 +7,15 @@ import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 
-import { JourneyDetailsDialog } from '../../JourneyDetailsDialog'
 import { Item } from '../Item'
+
+const JourneyDetailsDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/Toolbar/JourneyDetails/JourneyDetailsDialog" */ '../../JourneyDetails/JourneyDetailsDialog'
+    ).then((mod) => mod.JourneyDetailsDialog),
+  { ssr: false }
+)
 
 interface DetailsItemProps {
   variant: ComponentProps<typeof Item>['variant']
@@ -21,7 +29,7 @@ export function DetailsItem({
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState<boolean | null>(null)
 
   function setRoute(param: string): void {
     void router.push({ query: { ...router.query, param } }, undefined, {

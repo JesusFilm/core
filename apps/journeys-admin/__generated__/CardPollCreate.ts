@@ -24,6 +24,8 @@ export interface CardPollCreate_image {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardPollCreate_subtitle {

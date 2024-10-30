@@ -46,16 +46,9 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     setfileRejected(true)
     fileRejections.forEach(({ file, errors }) => {
       errors.forEach((e) => {
-        if (e.code === 'file-invalid-type') {
-          setfileInvalidType(true)
-        }
-        if (e.code === 'file-too-large') {
-          setfileTooLarge(true)
-        }
-
-        if (e.code === 'too-many-files') {
-          settooManyFiles(true)
-        }
+        if (e.code === 'file-invalid-type') setfileInvalidType(true)
+        if (e.code === 'file-too-large') setfileTooLarge(true)
+        if (e.code === 'too-many-files') settooManyFiles(true)
       })
     })
   }
@@ -90,8 +83,8 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           backgroundColor: isDragAccept
             ? 'rgba(239, 239, 239, 0.9)'
             : fileRejected
-            ? 'rgba(197, 45, 58, 0.08)'
-            : 'rgba(239, 239, 239, 0.35)',
+              ? 'rgba(197, 45, 58, 0.08)'
+              : 'rgba(239, 239, 239, 0.35)',
           borderColor: 'divider',
           borderStyle: fileRejected ? undefined : 'dashed',
           borderRadius: 2,

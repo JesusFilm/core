@@ -93,8 +93,13 @@ const video: TreeBlock<VideoBlock> = {
         value: 'FallingPlates'
       }
     ],
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -117,7 +122,9 @@ const image: TreeBlock<ImageBlock> = {
   height: 1080,
   blurhash: '',
   scale: null,
-  children: []
+  children: [],
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const coverVideoBlockDeleteMock: MockedResponse<

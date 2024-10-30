@@ -44,7 +44,7 @@ jobs:
           key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
           restore-keys: node-modules-${{ matrix.node-version }}-
       - name: Setup Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .cache
           key: lint-cache-${{ matrix.node-version }}-${{ hashFiles('**/.eslintrc.json', '**/tsconfig.json') }}
@@ -60,7 +60,7 @@ jobs:
         env:
           DISABLE_ERD: true
       - name: NPM apollo and graphql for codegen
-        run: npm i -g apollo graphql @apollo/rover@0.22.0
+        run: npm i -g apollo graphql
       - name: Codegen
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -78,7 +78,7 @@ jobs:
         with:
           targets: type-check,extract-translations,subgraph-check
         env:
-          APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+          HIVE_TOKEN: ${{ secrets.HIVE_PROD_READ_ONLY_TOKEN }}
       - name: lint commit messages
         run: npx commitlint --from 9a45682 # earliest good commit to main
       - name: lint branch name

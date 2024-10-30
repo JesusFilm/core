@@ -3,7 +3,6 @@ import { ReactElement } from 'react'
 
 import { AnalyticsItem } from './AnalyticsItem'
 import { BackgroundUploadsItem } from './BackgroundUploads'
-import { PreviewItem } from './PreviewItem'
 import { ResponsesItem } from './ResponsesItem'
 import { ShareItem } from './ShareItem'
 import { StrategyItem } from './StrategyItem'
@@ -11,18 +10,19 @@ import { StrategyItem } from './StrategyItem'
 export function Items(): ReactElement {
   return (
     <Stack
-      sx={{ display: { xs: 'none', sm: 'flex' } }}
+      sx={{ display: { xs: 'none', md: 'flex' } }}
       flexDirection="row"
       gap={5}
       data-testid="ItemsStack"
       alignItems="center"
     >
-      <ResponsesItem />
-      <BackgroundUploadsItem />
-      <AnalyticsItem variant="icon-button" />
+      <Stack flexDirection="row" gap={2}>
+        <BackgroundUploadsItem />
+        <ResponsesItem variant="icon-button" />
+        <AnalyticsItem variant="icon-button" />
+      </Stack>
       <StrategyItem variant="button" />
       <ShareItem variant="button" />
-      <PreviewItem variant="icon-button" />
     </Stack>
   )
 }

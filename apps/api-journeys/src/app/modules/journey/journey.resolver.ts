@@ -56,6 +56,8 @@ import { PlausibleJob } from '../plausible/plausible.consumer'
 
 type BlockWithAction = Block & { action: BlockAction | null }
 
+const FIVE_DAYS = 5 * 24 * 60 * 60 // in seconds
+
 @Resolver('Journey')
 export class JourneyResolver {
   constructor(
@@ -377,14 +379,28 @@ export class JourneyResolver {
           return journey
         })
         retry = false
-        await this.plausibleQueue.add('create-journey-site', {
-          __typename: 'plausibleCreateJourneySite',
-          journeyId: journey.id
-        })
-        await this.plausibleQueue.add('create-team-site', {
-          __typename: 'plausibleCreateTeamSite',
-          teamId: journey.teamId
-        })
+        await this.plausibleQueue.add(
+          'create-journey-site',
+          {
+            __typename: 'plausibleCreateJourneySite',
+            journeyId: journey.id
+          },
+          {
+            removeOnComplete: true,
+            removeOnFail: { age: FIVE_DAYS, count: 50 }
+          }
+        )
+        await this.plausibleQueue.add(
+          'create-team-site',
+          {
+            __typename: 'plausibleCreateTeamSite',
+            teamId: journey.teamId
+          },
+          {
+            removeOnComplete: true,
+            removeOnFail: { age: FIVE_DAYS, count: 50 }
+          }
+        )
         return journey
       } catch (err) {
         if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
@@ -537,8 +553,8 @@ export class JourneyResolver {
       duplicateNumber === 0
         ? ''
         : duplicateNumber === 1
-        ? ' copy'
-        : ` copy ${duplicateNumber}`
+          ? ' copy'
+          : ` copy ${duplicateNumber}`
     }`.trimEnd()
 
     let slug = slugify(duplicateTitle, {
@@ -672,14 +688,28 @@ export class JourneyResolver {
           })
         }
         retry = false
-        await this.plausibleQueue.add('create-journey-site', {
-          __typename: 'plausibleCreateJourneySite',
-          journeyId: duplicateJourneyId
-        })
-        await this.plausibleQueue.add('create-team-site', {
-          __typename: 'plausibleCreateTeamSite',
-          teamId
-        })
+        await this.plausibleQueue.add(
+          'create-journey-site',
+          {
+            __typename: 'plausibleCreateJourneySite',
+            journeyId: duplicateJourneyId
+          },
+          {
+            removeOnComplete: true,
+            removeOnFail: { age: FIVE_DAYS, count: 50 }
+          }
+        )
+        await this.plausibleQueue.add(
+          'create-team-site',
+          {
+            __typename: 'plausibleCreateTeamSite',
+            teamId
+          },
+          {
+            removeOnComplete: true,
+            removeOnFail: { age: FIVE_DAYS, count: 50 }
+          }
+        )
         return duplicateJourney
       } catch (err) {
         if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {

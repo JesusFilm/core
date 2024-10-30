@@ -54,6 +54,7 @@ function TemplateIndexPage(): ReactElement {
         showMainHeader={false}
         showAppHeader={userSignedIn}
         showNavBar={userSignedIn}
+        fadeInNavBar
         background="background.paper"
       >
         <Box

@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { SxProps, styled } from '@mui/material/styles'
+import { styled } from '@mui/material/styles'
 import {
   ReactElement,
   ReactNode,
@@ -69,7 +69,7 @@ export function ContainedCover({
 }: ContainedCoverProps): ReactElement {
   const [loading, setLoading] = useState(true)
   const [contentHeight, setContentHeight] = useState(0)
-  const { journey, variant } = useJourney()
+  const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const contentRef = useRef() as RefObject<HTMLDivElement>
 
@@ -85,7 +85,7 @@ export function ContainedCover({
                 block.__typename === 'ImageBlock'
             ) as TreeBlock<ImageFields>
           ).src
-        : videoBlock?.video?.image
+        : videoBlock?.video?.images[0]?.mobileCinematicHigh
       : // Use Youtube or Cloudflare set poster image
         videoBlock?.image
 
@@ -101,16 +101,6 @@ export function ContainedCover({
     `linear-gradient(to ${direction}, transparent 0%,  ${backgroundColor}14 10%, ${backgroundColor}33 17%, ${backgroundColor}60 25%, ${backgroundColor}b0 40%, ${backgroundColor}e6 60%, ${backgroundColor} 98%)`
 
   const overlayImageMask = `linear-gradient(to top, transparent 0%, ${backgroundColor}14 5%, ${backgroundColor}33 10%, ${backgroundColor}60 15%, ${backgroundColor}b0 20%, ${backgroundColor}e6 25%, ${backgroundColor} 30%)`
-
-  const bottomSpacing: SxProps =
-    journey?.website === true
-      ? {
-          pb: variant === 'admin' ? 0 : 10,
-          mb: variant === 'admin' ? 10 : 0
-        }
-      : {
-          mb: { xs: 28, sm: 10 }
-        }
 
   return (
     <>
@@ -265,11 +255,11 @@ export function ContainedCover({
                 pl: { sm: 50 },
                 WebkitMask: {
                   xs: overlayGradient('bottom'),
-                  sm: overlayGradient(rtl ? 'left' : 'right')
+                  sm: overlayGradient('right')
                 },
                 mask: {
                   xs: overlayGradient('bottom'),
-                  sm: overlayGradient(rtl ? 'left' : 'right')
+                  sm: overlayGradient('right')
                 },
                 backgroundColor: `${backgroundColor}d9`
               }}
@@ -279,8 +269,7 @@ export function ContainedCover({
               sx={{
                 // This should match width of journey card content in admin
                 width: { sm: '312px' },
-                maxHeight: { xs: '55vh', sm: '65%', md: '100%' },
-                ...bottomSpacing
+                maxHeight: { xs: '55vh', sm: '65%', md: '100%' }
               }}
             >
               {children}

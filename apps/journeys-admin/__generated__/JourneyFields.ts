@@ -125,6 +125,8 @@ export interface JourneyFields_blocks_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface JourneyFields_blocks_RadioOptionBlock_action_NavigateToBlockAction {
@@ -253,6 +255,11 @@ export interface JourneyFields_blocks_VideoBlock_video_title {
   value: string;
 }
 
+export interface JourneyFields_blocks_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface JourneyFields_blocks_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -275,7 +282,7 @@ export interface JourneyFields_blocks_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: JourneyFields_blocks_VideoBlock_video_title[];
-  image: string | null;
+  images: JourneyFields_blocks_VideoBlock_video_images[];
   variant: JourneyFields_blocks_VideoBlock_video_variant | null;
   variantLanguages: JourneyFields_blocks_VideoBlock_video_variantLanguages[];
 }
@@ -435,6 +442,8 @@ export interface JourneyFields_primaryImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface JourneyFields_creatorImageBlock {
@@ -452,6 +461,8 @@ export interface JourneyFields_creatorImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface JourneyFields_userJourneys_user {
@@ -531,6 +542,8 @@ export interface JourneyFields_logoImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface JourneyFields_menuStepBlock {

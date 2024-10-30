@@ -22,6 +22,8 @@ export function SourceFromCloudflare({
   selectedBlock
 }: SourceFromCloudflareProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const IMG_HEIGHT = 56
+  const IMG_WIDTH = 56
   const { uploadQueue, setUploadMenuOpen, uploadMenuOpen } =
     useBackgroundUpload()
   function handleClick(): void {
@@ -41,7 +43,7 @@ export function SourceFromCloudflare({
                   process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
                 }.cloudflarestream.com/${
                   selectedBlock.videoId ?? ''
-                }/thumbnails/thumbnail.jpg?time=2s&height=55&width=55`,
+                }/thumbnails/thumbnail.jpg?time=2s&height=${IMG_HEIGHT}&width=${IMG_WIDTH}`,
                 alt: selectedBlock.title ?? ''
               }}
               Icon={VideoOnIcon}
@@ -59,7 +61,6 @@ export function SourceFromCloudflare({
             >
               {selectedBlock.title}
             </Typography>
-
             <Typography
               variant="caption"
               color="text.secondary"

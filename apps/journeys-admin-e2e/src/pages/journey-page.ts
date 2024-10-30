@@ -930,7 +930,10 @@ export class JourneyPage {
   }
 
   async clickPreviewBtnInCustomJourneyPage() {
-    await this.page.getByTestId('ItemsStack').getByLabel('Preview').click()
+    await this.page
+      .getByTestId('PreviewItem')
+      .getByRole('link', { name: 'Preview' })
+      .click()
   }
 
   async verifyPreviewFromCustomJourneyPage() {
@@ -941,7 +944,7 @@ export class JourneyPage {
     await newPage.waitForLoadState()
     // await expect(await newPage.locator('h3[data-testid="JourneysTypography"]')).toHaveText(this.existingJourneyName)
     const tabName: string = await newPage.title()
-    await expect(tabName.includes(journeyName)).toBeTruthy()
+    expect(tabName.includes(journeyName)).toBeTruthy()
     const slidesCount = await newPage
       .locator(
         'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'

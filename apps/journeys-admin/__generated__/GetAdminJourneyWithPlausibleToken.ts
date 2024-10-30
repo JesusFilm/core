@@ -125,6 +125,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
@@ -253,6 +255,11 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_vid
   value: string;
 }
 
+export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -275,7 +282,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_vid
   __typename: "Video";
   id: string;
   title: GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_video_title[];
-  image: string | null;
+  images: GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_video_images[];
   variant: GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_video_variant | null;
   variantLanguages: GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_video_variantLanguages[];
 }
@@ -435,6 +442,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey_primaryImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_creatorImageBlock {
@@ -452,6 +461,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey_creatorImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_userJourneys_user {
@@ -531,6 +542,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey_logoImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_menuStepBlock {

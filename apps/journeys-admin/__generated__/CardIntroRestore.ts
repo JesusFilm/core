@@ -111,6 +111,8 @@ export interface CardIntroRestore_subtitle_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardIntroRestore_subtitle_RadioOptionBlock_action_NavigateToBlockAction {
@@ -239,6 +241,11 @@ export interface CardIntroRestore_subtitle_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardIntroRestore_subtitle_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardIntroRestore_subtitle_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -261,7 +268,7 @@ export interface CardIntroRestore_subtitle_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardIntroRestore_subtitle_VideoBlock_video_title[];
-  image: string | null;
+  images: CardIntroRestore_subtitle_VideoBlock_video_images[];
   variant: CardIntroRestore_subtitle_VideoBlock_video_variant | null;
   variantLanguages: CardIntroRestore_subtitle_VideoBlock_video_variantLanguages[];
 }
@@ -508,6 +515,8 @@ export interface CardIntroRestore_title_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardIntroRestore_title_RadioOptionBlock_action_NavigateToBlockAction {
@@ -636,6 +645,11 @@ export interface CardIntroRestore_title_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardIntroRestore_title_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardIntroRestore_title_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -658,7 +672,7 @@ export interface CardIntroRestore_title_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardIntroRestore_title_VideoBlock_video_title[];
-  image: string | null;
+  images: CardIntroRestore_title_VideoBlock_video_images[];
   variant: CardIntroRestore_title_VideoBlock_video_variant | null;
   variantLanguages: CardIntroRestore_title_VideoBlock_video_variantLanguages[];
 }
@@ -905,6 +919,8 @@ export interface CardIntroRestore_body_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardIntroRestore_body_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1033,6 +1049,11 @@ export interface CardIntroRestore_body_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardIntroRestore_body_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardIntroRestore_body_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -1055,7 +1076,7 @@ export interface CardIntroRestore_body_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardIntroRestore_body_VideoBlock_video_title[];
-  image: string | null;
+  images: CardIntroRestore_body_VideoBlock_video_images[];
   variant: CardIntroRestore_body_VideoBlock_video_variant | null;
   variantLanguages: CardIntroRestore_body_VideoBlock_video_variantLanguages[];
 }
@@ -1302,6 +1323,8 @@ export interface CardIntroRestore_button_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardIntroRestore_button_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1430,6 +1453,11 @@ export interface CardIntroRestore_button_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardIntroRestore_button_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardIntroRestore_button_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -1452,7 +1480,7 @@ export interface CardIntroRestore_button_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardIntroRestore_button_VideoBlock_video_title[];
-  image: string | null;
+  images: CardIntroRestore_button_VideoBlock_video_images[];
   variant: CardIntroRestore_button_VideoBlock_video_variant | null;
   variantLanguages: CardIntroRestore_button_VideoBlock_video_variantLanguages[];
 }
@@ -1699,6 +1727,8 @@ export interface CardIntroRestore_startIcon_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardIntroRestore_startIcon_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1827,6 +1857,11 @@ export interface CardIntroRestore_startIcon_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardIntroRestore_startIcon_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardIntroRestore_startIcon_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -1849,7 +1884,7 @@ export interface CardIntroRestore_startIcon_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardIntroRestore_startIcon_VideoBlock_video_title[];
-  image: string | null;
+  images: CardIntroRestore_startIcon_VideoBlock_video_images[];
   variant: CardIntroRestore_startIcon_VideoBlock_video_variant | null;
   variantLanguages: CardIntroRestore_startIcon_VideoBlock_video_variantLanguages[];
 }
@@ -2096,6 +2131,8 @@ export interface CardIntroRestore_endIcon_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardIntroRestore_endIcon_RadioOptionBlock_action_NavigateToBlockAction {
@@ -2224,6 +2261,11 @@ export interface CardIntroRestore_endIcon_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardIntroRestore_endIcon_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardIntroRestore_endIcon_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -2246,7 +2288,7 @@ export interface CardIntroRestore_endIcon_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardIntroRestore_endIcon_VideoBlock_video_title[];
-  image: string | null;
+  images: CardIntroRestore_endIcon_VideoBlock_video_images[];
   variant: CardIntroRestore_endIcon_VideoBlock_video_variant | null;
   variantLanguages: CardIntroRestore_endIcon_VideoBlock_video_variantLanguages[];
 }
@@ -2493,6 +2535,8 @@ export interface CardIntroRestore_video_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface CardIntroRestore_video_RadioOptionBlock_action_NavigateToBlockAction {
@@ -2621,6 +2665,11 @@ export interface CardIntroRestore_video_VideoBlock_video_title {
   value: string;
 }
 
+export interface CardIntroRestore_video_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface CardIntroRestore_video_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -2643,7 +2692,7 @@ export interface CardIntroRestore_video_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardIntroRestore_video_VideoBlock_video_title[];
-  image: string | null;
+  images: CardIntroRestore_video_VideoBlock_video_images[];
   variant: CardIntroRestore_video_VideoBlock_video_variant | null;
   variantLanguages: CardIntroRestore_video_VideoBlock_video_variantLanguages[];
 }

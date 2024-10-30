@@ -8,6 +8,7 @@ import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { isIOSTouchScreen as checkIsIOSTouchScreen } from '@core/shared/ui/deviceUtils'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -31,7 +32,7 @@ export function StepBlockNodeCard({
     dispatch
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
-
+  const isIOSTouchScreen = checkIsIOSTouchScreen()
   const card = step?.children[0] as TreeBlock<CardBlock> | undefined
   const {
     title,
@@ -57,7 +58,6 @@ export function StepBlockNodeCard({
       dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
     }
   }
-
   const nodeBgImage = priorityImage ?? bgImage
 
   const conditionalStyles =
@@ -78,6 +78,12 @@ export function StepBlockNodeCard({
       data-testid="StepBlockNodeCard"
       elevation={selected ? 6 : 1}
       title={showAnalytics === true ? '' : t('Click to edit or drag')}
+      // hover events and psuedo elements preventing onclicks from running on iOS devices see:
+      // https://stackoverflow.com/questions/17710893/why-when-do-i-have-to-tap-twice-to-trigger-click-on-ios#:~:text=The%20simplest%20solution%20is%20not,triggered%20on%20the%20first%20tap.
+      // see fig 6-4, https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7
+      onMouseEnter={() => {
+        if (isIOSTouchScreen) handleClick()
+      }}
       onClick={handleClick}
       sx={{
         width: STEP_NODE_CARD_WIDTH,
@@ -86,6 +92,24 @@ export function StepBlockNodeCard({
         ...conditionalStyles
       }}
     >
+      {selectedStep?.id === step?.id &&
+        showAnalytics !== true &&
+        isIOSTouchScreen && (
+          // this tap layer is needed to handle the second tap without the user having to double tap, see:
+          // https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7
+          <Box
+            data-testid="IPhoneSecondTapLayer"
+            sx={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              zIndex: 2
+            }}
+            onMouseEnter={(e) => {
+              if (isIOSTouchScreen) handleClick()
+            }}
+          />
+        )}
       <CardContent
         data-testid="StepBlock"
         sx={{

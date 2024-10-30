@@ -111,6 +111,8 @@ export interface BlockFields_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface BlockFields_RadioOptionBlock_action_NavigateToBlockAction {
@@ -239,6 +241,11 @@ export interface BlockFields_VideoBlock_video_title {
   value: string;
 }
 
+export interface BlockFields_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface BlockFields_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -261,7 +268,7 @@ export interface BlockFields_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: BlockFields_VideoBlock_video_title[];
-  image: string | null;
+  images: BlockFields_VideoBlock_video_images[];
   variant: BlockFields_VideoBlock_video_variant | null;
   variantLanguages: BlockFields_VideoBlock_video_variantLanguages[];
 }

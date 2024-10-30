@@ -56,7 +56,8 @@ export const CARD_VIDEO_RESTORE = gql`
 export function CardVideo(): ReactElement {
   const { journey } = useJourney()
   const {
-    state: { selectedStep }
+    state: { selectedStep },
+    dispatch
   } = useEditor()
   const { add } = useCommand()
 
@@ -105,8 +106,13 @@ export function CardVideo(): ReactElement {
             __typename: 'VideoTitle'
           }
         ],
-        image:
-          'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg?version=2',
+        images: [
+          {
+            __typename: 'CloudflareImage',
+            mobileCinematicHigh:
+              'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+          }
+        ],
         variant: {
           id: '1_529-jf-0-0',
           hls: 'https://arc.gt/j67rz',
@@ -163,6 +169,10 @@ export function CardVideo(): ReactElement {
               })
             }
           }
+        })
+        dispatch({
+          type: 'SetSelectedBlockByIdAction',
+          selectedBlockId: videoBlock.id
         })
       },
       undo() {

@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { act, fireEvent, render, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import {
   BackgroundUploadProvider,
@@ -35,6 +35,21 @@ describe('AddByFile', () => {
     await waitFor(() =>
       expect(useBackgroundUpload().uploadCloudflareVideo).toHaveBeenCalled()
     )
+  })
+
+  it('should start uploading on a file drop', async () => {
+    render(
+      <MockedProvider
+        mocks={[createCloudflareVideoMock, getCloudflareVideoMock]}
+      >
+        <AddByFile onChange={jest.fn()} />
+      </MockedProvider>
+    )
+    await dropTestVideo()
+    await waitFor(() =>
+      expect(screen.getByText('Uploading...')).toBeInTheDocument()
+    )
+    expect(screen.getByTestId('Upload1Icon')).toBeInTheDocument()
   })
 
   it('should complete a file upload and call onChange', async () => {
@@ -95,6 +110,25 @@ describe('AddByFile', () => {
     await waitFor(() => expect(onChange).toHaveBeenCalledWith('uploadId'))
   })
 
+  it('should finish processing after upload', async () => {
+    const testStack = new TestHttpStack()
+    const onChange = jest.fn()
+    render(
+      <MockedProvider
+        mocks={[createCloudflareVideoMock, getCloudflareVideoMock]}
+      >
+        <AddByFile onChange={onChange} httpStack={testStack} />
+      </MockedProvider>
+    )
+    await dropTestVideo()
+    await completeUpload(testStack)
+    await waitFor(() => expect(onChange).toHaveBeenCalledWith('uploadId'))
+    await waitFor(() =>
+      expect(screen.queryByText('Processing...')).not.toBeInTheDocument()
+    )
+    expect(screen.queryByText('Uploading...')).not.toBeInTheDocument()
+  })
+
   it('should show error state', async () => {
     const testStack = new TestHttpStack()
     const onChange = jest.fn()
@@ -105,16 +139,12 @@ describe('AddByFile', () => {
         </BackgroundUploadProvider>
       </MockedProvider>
     )
-    const input = getByTestId('drop zone')
-    const file = new File(['file'], 'testFile.mp4', {
-      type: 'video/mp4'
-    })
-    Object.defineProperty(input, 'files', {
-      value: [file]
-    })
-    fireEvent.drop(input)
-    await waitFor(() => expect(getByText('Uploading...')).toBeInTheDocument())
-    expect(getByTestId('Upload1Icon')).toBeInTheDocument()
+    await dropTestVideo()
+
+    await waitFor(() =>
+      expect(screen.getByText('Uploading...')).toBeInTheDocument()
+    )
+    expect(screen.getByTestId('Upload1Icon')).toBeInTheDocument()
     const req = await testStack.nextRequest()
     expect(req.getURL()).toBe('https://example.com/upload')
     expect(req.getMethod()).toBe('HEAD')
@@ -122,9 +152,11 @@ describe('AddByFile', () => {
       status: 404
     })
     await waitFor(() =>
-      expect(getByText('Something went wrong, try again')).toBeInTheDocument()
+      expect(
+        screen.getByText('Something went wrong, try again')
+      ).toBeInTheDocument()
     )
-    expect(getAllByTestId('AlertTriangleIcon')).toHaveLength(2)
+    expect(screen.getAllByTestId('AlertTriangleIcon')).toHaveLength(2)
   })
 
   it('should show error state on fileRejections', async () => {
@@ -136,7 +168,7 @@ describe('AddByFile', () => {
         </BackgroundUploadProvider>
       </MockedProvider>
     )
-    const input = getByTestId('drop zone')
+    const input = screen.getByTestId('drop zone')
     const file1 = new File(['file'], 'testFile.mp4', {
       type: 'video/mp4'
     })
@@ -151,6 +183,6 @@ describe('AddByFile', () => {
       fireEvent.drop(input)
     })
 
-    expect(getAllByTestId('AlertTriangleIcon')).toHaveLength(2)
+    expect(screen.getAllByTestId('AlertTriangleIcon')).toHaveLength(2)
   })
 })

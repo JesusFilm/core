@@ -111,6 +111,8 @@ export interface StepDuplicate_blockDuplicate_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface StepDuplicate_blockDuplicate_RadioOptionBlock_action_NavigateToBlockAction {
@@ -249,6 +251,11 @@ export interface StepDuplicate_blockDuplicate_VideoBlock_video_title {
   value: string;
 }
 
+export interface StepDuplicate_blockDuplicate_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface StepDuplicate_blockDuplicate_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -271,7 +278,7 @@ export interface StepDuplicate_blockDuplicate_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: StepDuplicate_blockDuplicate_VideoBlock_video_title[];
-  image: string | null;
+  images: StepDuplicate_blockDuplicate_VideoBlock_video_images[];
   variant: StepDuplicate_blockDuplicate_VideoBlock_video_variant | null;
   variantLanguages: StepDuplicate_blockDuplicate_VideoBlock_video_variantLanguages[];
 }

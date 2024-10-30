@@ -1,12 +1,13 @@
 import { render, screen } from '@testing-library/react'
 
-import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
+import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
+
 import { videos } from '../Videos/__generated__/testData'
 
 import { VideoGrid } from './VideoGrid'
 
 jest.mock('react-instantsearch')
-jest.mock('../../libs/algolia/useAlgoliaVideos')
+jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
 
 const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
   typeof useAlgoliaVideos
@@ -17,7 +18,7 @@ describe('VideoGrid', () => {
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: false,
       noResults: false,
-      hits: [],
+      items: [],
       showMore: jest.fn(),
       isLastPage: false,
       sendEvent: jest.fn()
@@ -40,7 +41,7 @@ describe('VideoGrid', () => {
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: false,
       noResults: false,
-      hits: [],
+      items: [],
       showMore: jest.fn(),
       isLastPage: false,
       sendEvent: jest.fn()
@@ -57,7 +58,7 @@ describe('VideoGrid', () => {
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: true,
       noResults: false,
-      hits: [],
+      items: [],
       showMore: jest.fn(),
       isLastPage: false,
       sendEvent: jest.fn()
@@ -74,7 +75,7 @@ describe('VideoGrid', () => {
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: true,
       noResults: false,
-      hits: [],
+      items: [],
       showMore: jest.fn(),
       isLastPage: false,
       sendEvent: jest.fn()
@@ -97,7 +98,7 @@ describe('VideoGrid', () => {
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: false,
       noResults: true,
-      hits: [],
+      items: [],
       showMore: jest.fn(),
       isLastPage: false,
       sendEvent: jest.fn()
@@ -112,7 +113,7 @@ describe('VideoGrid', () => {
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: false,
       noResults: true,
-      hits: [],
+      items: [],
       showMore: jest.fn(),
       isLastPage: false,
       sendEvent: jest.fn()
