@@ -23,7 +23,7 @@ import {
 import { JourneyForEmails } from '@core/nest/common/email/types/types'
 import { User } from '@core/nest/common/firebaseClient'
 
-import { JourneyWithTeamAndUserJourney } from '../../../modules/email/email.consumer'
+import { JourneyWithTeamAndUserJourney } from '../../../../../api-journeys/src/app/modules/email/email.consumer'
 
 interface JourneySharedEmailProps {
   journey: JourneyWithTeamAndUserJourney
