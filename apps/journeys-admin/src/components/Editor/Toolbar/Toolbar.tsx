@@ -29,6 +29,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
+import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
 import { GetPlausibleJourneyFlowViewed } from '../../../../__generated__/GetPlausibleJourneyFlowViewed'
 import {
@@ -46,7 +47,6 @@ import { CommandUndoItem } from './Items/CommandUndoItem'
 import { PreviewItem } from './Items/PreviewItem'
 import { JourneyDetails } from './JourneyDetails'
 import { Menu } from './Menu'
-import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
 const JourneyDetailsDialog = dynamic(
   async () =>
