@@ -11,7 +11,7 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
@@ -21,7 +21,10 @@ import {
   GetAllTeamHosts,
   GetAllTeamHostsVariables
 } from '../../../../../../../../../__generated__/GetAllTeamHosts'
-import { useHostCreateMutation } from '../../../../../../../../libs/useHostCreateMutation'
+import {
+  HostFormValues,
+  useHostCreate
+} from '../../../../../../../../libs/useHostCreate'
 import { useHostUpdateMutation } from '../../../../../../../../libs/useHostUpdateMutation'
 import { useUpdateJourneyHostMutation } from '../../../../../../../../libs/useUpdateJourneyHostMutation'
 
@@ -36,11 +39,6 @@ export const DELETE_HOST = gql`
     }
   }
 `
-
-interface HostFormValues {
-  title: string
-  location: string
-}
 
 interface HostFormTabProps {
   handleSelection: (value: 'selection' | 'list') => void
@@ -60,12 +58,12 @@ export function HostForm({
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { updateHost } = useHostUpdateMutation()
-  const [hostCreate] = useHostCreateMutation()
   const [hostDelete] = useMutation<DeleteHost>(DELETE_HOST)
   const [journeyHostUpdate] = useUpdateJourneyHostMutation()
+  const createHost = useHostCreate()
   const host = journey?.host
 
-  const initialValues: HostFormValues = {
+  const initialValues: Required<HostFormValues> = {
     title: journey?.host == null ? '' : journey.host.title,
     location: journey?.host == null ? '' : (journey.host.location ?? '')
   }
@@ -99,26 +97,7 @@ export function HostForm({
     handleSelection('selection')
   }
 
-  const createHost = useCallback(
-    async (values: HostFormValues): Promise<void> => {
-      if (journey?.team != null) {
-        const { data } = await hostCreate({
-          variables: { teamId: journey.team.id, input: values }
-        })
-        if (data?.hostCreate.id != null) {
-          await journeyHostUpdate({
-            variables: {
-              id: journey?.id,
-              input: { hostId: data.hostCreate.id }
-            }
-          })
-        }
-      }
-    },
-    [hostCreate, journey, journeyHostUpdate]
-  )
-
-  const handleNameChange = async (value: string): Promise<void> => {
+  const handleTitleChange = async (value: string): Promise<void> => {
     setName(value)
     if (journey?.host != null) {
       const { id, teamId } = journey.host
@@ -167,7 +146,7 @@ export function HostForm({
         )}
       </Stack>
       <Stack sx={{ p: 4 }} gap={6}>
-        <HostTitleFieldForm value={name} onChange={handleNameChange} />
+        <HostTitleFieldForm value={name} onChange={handleTitleChange} />
         <HostLocationFieldForm
           value={location}
           onChange={handleLocationChange}
