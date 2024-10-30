@@ -115,7 +115,7 @@
     "cross-fetch": "^4.0.0",
     "dagre": "^0.8.5",
     "dataloader": "^2.2.2",
-    "date-fns": "^2.30.0",
+    "date-fns": "^4.0.0",
     "dd-trace": "^4.14.0",
     "elkjs": "^0.9.1",
     "express": "4.21.1",
