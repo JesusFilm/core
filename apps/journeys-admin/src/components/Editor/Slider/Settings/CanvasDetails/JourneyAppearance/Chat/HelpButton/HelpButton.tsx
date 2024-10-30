@@ -17,28 +17,26 @@ export function HelpButton(): ReactElement {
     )
   }
   return (
-    <Stack sx={{ px: 6, pb: 4 }}>
-      <Card
-        variant="outlined"
-        sx={{ borderRadius: 2 }}
-        data-testid="JourneysAdminHelpButton"
-      >
-        <CardActionArea onClick={handleClick}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            sx={{ px: 4, py: 3, color: 'secondary.main' }}
-            justifyContent="space-between"
-          >
-            <Typography variant="caption" color="secondary.main">
-              {t('Learn how to get your direct chat link for any platform')}
-            </Typography>
-            <Stack color="secondary.light">
-              <LinkExternal />
-            </Stack>
+    <Card
+      variant="outlined"
+      sx={{ borderRadius: 2, mx: 6, mb: 4 }}
+      data-testid="JourneysAdminHelpButton"
+    >
+      <CardActionArea onClick={handleClick}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          sx={{ px: 4, py: 3, color: 'secondary.main' }}
+          justifyContent="space-between"
+        >
+          <Typography variant="caption" color="secondary.main">
+            {t('Learn how to get your direct chat link for any platform')}
+          </Typography>
+          <Stack color="secondary.light">
+            <LinkExternal />
           </Stack>
-        </CardActionArea>
-      </Card>
-    </Stack>
+        </Stack>
+      </CardActionArea>
+    </Card>
   )
 }
