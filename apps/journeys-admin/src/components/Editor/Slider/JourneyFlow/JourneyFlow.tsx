@@ -377,8 +377,8 @@ export function JourneyFlow(): ReactElement {
   }
 
   const onSelectionDragStop: SelectionDragHandler = (_event, nodes): void => {
-    const stepNodes = nodes.filter((node) => node.type === 'StepBlock')
     if (steps == null || data == null) return
+    const stepNodes = nodes.filter((node) => node.type === 'StepBlock')
 
     add({
       parameters: {
