@@ -30,7 +30,8 @@ import {
   type ReactFlowProps,
   updateEdge as reactFlowUpdateEdge,
   useEdgesState,
-  useNodesState
+  useNodesState,
+  SelectionDragHandler
 } from 'reactflow'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -374,6 +375,38 @@ export function JourneyFlow(): ReactElement {
       }
     })
   }
+
+  const onSelectionDragStop: SelectionDragHandler = (_event, nodes): void => {
+    const stepNodes = nodes.filter((node) => node.type === 'StepBlock')
+    if (steps == null || data == null) return
+
+    const input = stepNodes.map((node) => ({
+      id: node.id,
+      x: Math.trunc(node.position.x),
+      y: Math.trunc(node.position.y)
+    }))
+
+    if (input.length === 0) return
+
+    add({
+      parameters: {
+        execute: { input },
+        undo: {
+          input: (
+            data.blocks as GetStepBlocksWithPosition_blocks_StepBlock[]
+          ).map((step) => ({
+            id: step.id,
+            x: step.x,
+            y: step.y
+          }))
+        }
+      },
+      execute({ input }) {
+        blockPositionUpdate(input)
+      }
+    })
+  }
+
   const onEdgeUpdateStart = useCallback<
     NonNullable<ReactFlowProps['onEdgeUpdateStart']>
   >(() => {
@@ -464,6 +497,7 @@ export function JourneyFlow(): ReactElement {
         onConnectEnd={onConnectEnd}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
+        onSelectionDragStop={onSelectionDragStop}
         onEdgeUpdate={showAnalytics === true ? undefined : onEdgeUpdate}
         onEdgeUpdateStart={onEdgeUpdateStart}
         onEdgeUpdateEnd={onEdgeUpdateEnd}
