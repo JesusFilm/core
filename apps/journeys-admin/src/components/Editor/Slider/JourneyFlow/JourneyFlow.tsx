@@ -28,10 +28,10 @@ import {
   ReactFlow,
   type ReactFlowInstance,
   type ReactFlowProps,
+  SelectionDragHandler,
   updateEdge as reactFlowUpdateEdge,
   useEdgesState,
-  useNodesState,
-  SelectionDragHandler
+  useNodesState
 } from 'reactflow'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
