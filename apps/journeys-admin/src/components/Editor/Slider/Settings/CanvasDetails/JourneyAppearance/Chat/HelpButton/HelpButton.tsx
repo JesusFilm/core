@@ -29,7 +29,7 @@ export function HelpButton(): ReactElement {
           sx={{ px: 4, py: 3, color: 'secondary.main' }}
           justifyContent="space-between"
         >
-          <Typography variant="caption" color="secondary.main">
+          <Typography variant="body2" color="secondary.main">
             {t('Learn how to get your direct chat link for any platform')}
           </Typography>
           <Stack color="secondary.light">
