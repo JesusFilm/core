@@ -380,17 +380,15 @@ export function JourneyFlow(): ReactElement {
     const stepNodes = nodes.filter((node) => node.type === 'StepBlock')
     if (steps == null || data == null) return
 
-    const input = stepNodes.map((node) => ({
-      id: node.id,
-      x: Math.trunc(node.position.x),
-      y: Math.trunc(node.position.y)
-    }))
-
-    if (input.length === 0) return
-
     add({
       parameters: {
-        execute: { input },
+        execute: {
+          input: stepNodes.map((node) => ({
+            id: node.id,
+            x: Math.trunc(node.position.x),
+            y: Math.trunc(node.position.y)
+          }))
+        },
         undo: {
           input: (
             data.blocks as GetStepBlocksWithPosition_blocks_StepBlock[]
