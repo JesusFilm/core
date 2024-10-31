@@ -142,6 +142,23 @@ export function BackgroundColor(): ReactElement {
     return hexColorRegex.test(color)
   }
 
+  async function handleFieldChange(color: string): Promise<void> {
+    if (validateHexString(color)) {
+      await handleColorChange(color)
+    }
+    if (color.length < 8) {
+      setColor(color)
+    }
+  }
+
+  async function handleBlur(color: string): Promise<void> {
+    if (validateHexString(color)) {
+      await handleColorChange(color)
+    } else {
+      setColor(selectedColor)
+    }
+  }
+
   const palettePicker = (
     <PaletteColorPicker
       selectedColor={selectedColor}
@@ -180,20 +197,13 @@ export function BackgroundColor(): ReactElement {
           hiddenLabel
           value={color}
           onChange={async (e) => {
-            if (validateHexString(e.target.value)) {
-              handleColorChange(e.target.value)
-            }
-            if (e.target.value.length < 8) {
-              setColor(e.target.value)
-            }
+            await handleFieldChange(e.target.value)
           }}
           onBlur={async (e) => {
-            if (validateHexString(e.target.value)) {
-              handleColorChange(e.target.value)
-            } else {
-              setColor(selectedColor)
-            }
+            await handleBlur(e.target.value)
           }}
+          helperText={!validateHexString(color) ? 'Invalid HEX color code' : ''}
+          error={!validateHexString(color)}
           sx={{ flexGrow: 1 }}
           InputProps={{
             startAdornment: (
