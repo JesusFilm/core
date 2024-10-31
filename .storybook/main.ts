@@ -17,8 +17,8 @@ const storiesForProject = {
     '../apps/watch/src/**/*.stories.@(js|jsx|ts|tsx)',
     '../apps/watch/src/components/**/*.stories.@(js|jsx|ts|tsx)'
   ],
-  'api-journeys': [
-    '../apps/api-journeys/src/app/emails/stories/*.stories.@(js|jsx|ts|tsx)'
+  'api-journeys-modern': [
+    '../apps/api-journeys-modern/src/emails/stories/*.stories.@(js|jsx|ts|tsx)'
   ],
   'api-users': [
     '../apps/api-users/src/emails/stories/*.stories.@(js|jsx|ts|tsx)'
