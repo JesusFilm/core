@@ -10,8 +10,8 @@ generator client {
 
 generator erd {
   provider    = "prisma-erd-generator"
-  ignoreEnums = true
-  disabled    = true
+  ignoreEnums = "true"
+  disabled    = "true"
 }
 
 generator pothos {
