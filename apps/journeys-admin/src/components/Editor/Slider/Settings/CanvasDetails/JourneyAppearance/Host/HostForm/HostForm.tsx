@@ -29,7 +29,7 @@ import { useHostUpdateMutation } from '../../../../../../../../libs/useHostUpdat
 import { useUpdateJourneyHostMutation } from '../../../../../../../../libs/useUpdateJourneyHostMutation'
 
 import { HostAvatarsButton } from './HostAvatarsButton'
-import { HostLocationFieldForm } from './HostLocationFieldForm/HostLocationFieldForm'
+import { HostLocationFieldForm } from './HostLocationFieldForm'
 import { HostTitleFieldForm } from './HostTitleFieldForm'
 
 export const DELETE_HOST = gql`
@@ -97,7 +97,7 @@ export function HostForm({
     handleSelection('selection')
   }
 
-  const handleTitleChange = async (value: string): Promise<void> => {
+  async function handleTitleChange(value: string): Promise<void> {
     setName(value)
     if (journey?.host != null) {
       const { id, teamId } = journey.host
@@ -110,7 +110,7 @@ export function HostForm({
     }
   }
 
-  const handleLocationChange = async (value: string): Promise<void> => {
+  async function handleLocationChange(value: string): Promise<void> {
     setLocation(value)
     if (journey?.host != null) {
       const { id, teamId } = journey.host
