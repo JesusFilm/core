@@ -1,8 +1,9 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { apiJourneysConfig } from '../../../../api-journeys/src/app/lib/apiJourneysConfig/apiJourneysConfig'
-import { JourneyWithTeamAndUserJourney } from '../../../../api-journeys/src/app/modules/email/email.consumer'
+import { JourneyWithTeamAndUserJourney } from '../../types'
 import { JourneySharedEmail } from '../templates/JourneyShared'
+
+import { apiJourneysConfig } from './apiJourneysConfig'
 
 const JourneySharedEmailDemo: Meta<typeof JourneySharedEmail> = {
   ...apiJourneysConfig,

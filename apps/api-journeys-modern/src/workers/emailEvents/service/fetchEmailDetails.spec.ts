@@ -1,6 +1,3 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
-
 import {
   Event,
   JourneyStatus,
@@ -10,31 +7,15 @@ import {
   UserJourneyRole,
   UserTeamRole,
   Visitor
-} from '.prisma/api-journeys-client'
+} from '.prisma/api-journeys-modern-client'
 
-import { JourneyWithTeamAndUserJourney } from '../../modules/email/emailEvents/emailEvents.consumer'
-import { PrismaService } from '../prisma.service'
+import { prismaMock } from '../../../../test/prismaMock'
+import { prisma } from '../../../lib/prisma'
 
 import { fetchEmailDetails } from './fetchEmailDetails'
+import { JourneyWithTeamAndUserJourney } from './service'
 
 describe('fetchEmailDetails', () => {
-  let prismaService: DeepMockProxy<PrismaService>
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        {
-          provide: PrismaService,
-          useValue: mockDeep<PrismaService>()
-        }
-      ]
-    }).compile()
-
-    prismaService = module.get<PrismaService>(
-      PrismaService
-    ) as DeepMockProxy<PrismaService>
-  })
-
   afterEach(() => {
     jest.clearAllMocks()
   })
@@ -232,13 +213,13 @@ describe('fetchEmailDetails', () => {
     const journeyId = 'journeyId'
     const visitorId = 'visitorId'
 
-    prismaService.journey.findUnique.mockResolvedValueOnce(journey)
-    prismaService.visitor.findUnique.mockResolvedValue(visitor)
+    prismaMock.journey.findUnique.mockResolvedValueOnce(journey)
+    prismaMock.visitor.findUnique.mockResolvedValue(visitor)
 
-    const result = await fetchEmailDetails(prismaService, journeyId, visitorId)
+    const result = await fetchEmailDetails(prisma, journeyId, visitorId)
 
     expect(result).toEqual({ journey, visitor })
-    expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
+    expect(prismaMock.journey.findUnique).toHaveBeenCalledWith({
       where: { id: journeyId },
       include: {
         userJourneys: {
@@ -257,7 +238,7 @@ describe('fetchEmailDetails', () => {
         }
       }
     })
-    expect(prismaService.visitor.findUnique).toHaveBeenCalledWith({
+    expect(prismaMock.visitor.findUnique).toHaveBeenCalledWith({
       where: { id: visitorId },
       select: {
         id: true,

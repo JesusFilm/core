@@ -2,8 +2,9 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { Event } from '.prisma/api-journeys-client'
 
-import { apiJourneysConfig } from '../../lib/apiJourneysConfig/apiJourneysConfig'
 import { VisitorInteraction } from '../templates/VisitorInteraction'
+
+import { apiJourneysConfig } from './apiJourneysConfig'
 
 const VisitorInteractionDemo: Meta<typeof VisitorInteraction> = {
   ...apiJourneysConfig,

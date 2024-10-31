@@ -1,7 +1,7 @@
 import { Img, Text } from '@react-email/components'
 import { ReactElement } from 'react'
 
-import { User } from '../../../firebaseClient'
+import { User } from '../../../../../nest/common/src/lib/firebaseClient'
 
 interface SenderAvatarProps {
   sender: Omit<User, 'id' | 'email' | 'emailVerified'>

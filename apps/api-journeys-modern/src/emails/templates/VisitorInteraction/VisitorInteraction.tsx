@@ -21,7 +21,7 @@ import {
   EmailContainer,
   Header,
   UnsubscribeLink
-} from '@core/nest/common/email/components'
+} from '@core/yoga/email/components'
 import { User } from '@core/nest/common/firebaseClient'
 
 type Visitor = Prisma.VisitorGetPayload<{

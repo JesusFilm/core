@@ -11,8 +11,7 @@
     }
   ],
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
+    "allowJs": true,    
     "allowImportingTsExtensions": true,
     "noEmit": true,
     "strict": true,

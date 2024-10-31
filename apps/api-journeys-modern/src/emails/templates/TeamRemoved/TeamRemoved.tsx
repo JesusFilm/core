@@ -18,8 +18,8 @@ import {
   Footer,
   Header,
   UnsubscribeLink
-} from '@core/nest/common/email/components'
-import { User } from '@core/nest/common/firebaseClient'
+} from '@core/yoga/email/components'
+import { User } from '@core/yoga/firebaseClient'
 
 interface TeamRemovedEmailProps {
   teamName?: string

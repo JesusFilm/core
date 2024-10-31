@@ -19,11 +19,11 @@ import {
   Footer,
   Header,
   UnsubscribeLink
-} from '@core/nest/common/email/components'
-import { JourneyForEmails } from '@core/nest/common/email/types/types'
-import { User } from '@core/nest/common/firebaseClient'
+} from '@core/yoga/email/components'
+import { JourneyForEmails } from '@core/yoga/email/types/types'
+import { User } from '@core/yoga/firebaseClient'
 
-import { JourneyWithTeamAndUserJourney } from '../../../../../api-journeys/src/app/modules/email/email.consumer'
+import { JourneyWithTeamAndUserJourney } from '../../../types'
 
 interface JourneySharedEmailProps {
   journey: JourneyWithTeamAndUserJourney

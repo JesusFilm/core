@@ -19,11 +19,11 @@ import {
   Footer,
   Header,
   UnsubscribeLink
-} from '@core/nest/common/email/components'
-import { JourneyForEmails } from '@core/nest/common/email/types/types'
-import { User } from '@core/nest/common/firebaseClient'
+} from '@core/yoga/email/components'
+import { JourneyForEmails } from '@core/yoga/email/types/types'
+import { User } from '@core/yoga/firebaseClient'
 
-import { Journey } from '../../../modules/userInvite/userInvite.service'
+import { Journey } from '../../../types'
 
 interface JourneyAccessRequestEmailProps {
   inviteLink: string

@@ -1,7 +1,10 @@
-import { Event, Visitor } from '.prisma/api-journeys-client'
+import {
+  Event,
+  PrismaClient,
+  Visitor
+} from '.prisma/api-journeys-modern-client'
 
-import { JourneyWithTeamAndUserJourney } from '../../modules/email/emailEvents/emailEvents.consumer'
-import { PrismaService } from '../prisma.service'
+import { JourneyWithTeamAndUserJourney } from './service'
 
 interface EmailDetailsResult {
   journey: JourneyWithTeamAndUserJourney | null
@@ -11,7 +14,7 @@ interface EmailDetailsResult {
 }
 
 export async function fetchEmailDetails(
-  prismaService: PrismaService,
+  prismaService: PrismaClient,
   journeyId: string,
   visitorId: string
 ): Promise<EmailDetailsResult> {

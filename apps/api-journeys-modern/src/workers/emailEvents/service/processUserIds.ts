@@ -1,5 +1,6 @@
-import { UserJourneyRole } from '../../__generated__/graphql'
-import { JourneyWithTeamAndUserJourney } from '../../modules/email/emailEvents/emailEvents.consumer'
+import { UserJourneyRole } from '.prisma/api-journeys-modern-client'
+
+import { JourneyWithTeamAndUserJourney } from './service'
 
 export function processUserIds(
   journey: JourneyWithTeamAndUserJourney

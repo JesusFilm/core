@@ -1,8 +1,9 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { apiJourneysConfig } from '../../lib/apiJourneysConfig/apiJourneysConfig'
-import { JourneyWithTeamAndUserJourney } from '../../modules/email/email.consumer'
+import { JourneyWithTeamAndUserJourney } from '../../types'
 import { TeamInviteNoAccountEmail } from '../templates/TeamInvite/TeamInviteNoAccount'
+
+import { apiJourneysConfig } from './apiJourneysConfig'
 
 const TeamInviteNoAccountEmailDemo: Meta<typeof TeamInviteNoAccountEmail> = {
   ...apiJourneysConfig,

@@ -1,7 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { apiJourneysConfig } from '../../lib/apiJourneysConfig/apiJourneysConfig'
 import { TeamInviteAcceptedEmail } from '../templates/TeamInviteAccepted'
+
+import { apiJourneysConfig } from './apiJourneysConfig'
 
 const TeamInviteAcceptedEmailDemo: Meta<typeof TeamInviteAcceptedEmail> = {
   ...apiJourneysConfig,

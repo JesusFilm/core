@@ -4,10 +4,10 @@ import {
   ThemeName,
   UserJourneyRole,
   UserTeamRole
-} from '.prisma/api-journeys-client'
+} from '.prisma/api-journeys-modern-client'
 
-import { JourneyWithTeamAndUserJourney } from '../../modules/email/emailEvents/emailEvents.consumer'
-import { processUserIds } from '../processUserIds'
+import { processUserIds } from './processUserIds'
+import { JourneyWithTeamAndUserJourney } from './service'
 
 describe('processUserIds', () => {
   const userJourneys = [

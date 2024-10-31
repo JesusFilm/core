@@ -1,8 +1,9 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { apiJourneysConfig } from '../../lib/apiJourneysConfig/apiJourneysConfig'
-import { Journey } from '../../modules/userInvite/userInvite.service'
+import { Journey } from '../../types'
 import { JourneyAccessRequestEmail } from '../templates/JourneyAccessRequest'
+
+import { apiJourneysConfig } from './apiJourneysConfig'
 
 const JourneyAccessRequestEmailDemo: Meta<typeof JourneyAccessRequestEmail> = {
   ...apiJourneysConfig,

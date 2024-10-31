@@ -37,6 +37,12 @@ async function main(): Promise<void> {
       './email'
     )
   )
+  run(
+    await import(
+      /* webpackChunkName: "emailEvents" */
+      './emailEvents'
+    )
+  )
 }
 
 // avoid running on test environment
