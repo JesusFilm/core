@@ -9,8 +9,8 @@ import {
 } from '@react-email/components'
 import { ReactElement } from 'react'
 
+import { JourneyForEmails } from '../../../types/types'
 import { ActionButton } from '../ActionButton'
-import { JourneyForEmails } from '@core/yoga/email/types/types'
 
 interface ActionJourneyViewProps {
   journey: JourneyForEmails
