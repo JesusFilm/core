@@ -33,7 +33,7 @@ const stories = [
   ...storiesForProject['journeys-ui'],
   ...storiesForProject['watch'],
   ...storiesForProject['shared-ui'],
-  ...storiesForProject['api-journeys'],
+  ...storiesForProject['api-journeys-modern'],
   ...storiesForProject['api-users'],
   ...storiesForProject['videos-admin']
 ]
