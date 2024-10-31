@@ -4,13 +4,19 @@ import { Job } from 'bullmq'
 import { graphql } from 'gql.tada'
 
 import {
-  Prisma,
-  Team,
   UserJourneyRole,
   UserTeamRole
 } from '.prisma/api-journeys-modern-client'
 import { sendEmail } from '@core/yoga/email'
-import { User } from '@core/yoga/firebaseClient'
+import {
+  ApiJourneysJob,
+  JourneyAccessRequest,
+  JourneyEditInviteJob,
+  JourneyRequestApproved,
+  TeamInviteAccepted,
+  TeamInviteJob,
+  TeamRemoved
+} from '@core/yoga/email/types'
 
 import { JourneyAccessRequestEmail } from '../../../emails/templates/JourneyAccessRequest'
 import { JourneySharedEmail } from '../../../emails/templates/JourneyShared'
@@ -20,7 +26,6 @@ import { TeamInviteNoAccountEmail } from '../../../emails/templates/TeamInvite/T
 import { TeamInviteAcceptedEmail } from '../../../emails/templates/TeamInviteAccepted'
 import { TeamRemovedEmail } from '../../../emails/templates/TeamRemoved'
 import { prisma } from '../../../lib/prisma'
-import { JourneyWithTeamAndUserJourney } from '../../../types'
 
 const httpLink = createHttpLink({
   uri: process.env.GATEWAY_URL,
@@ -35,64 +40,6 @@ const apollo = new ApolloClient({
   link: httpLink,
   cache: new InMemoryCache()
 })
-
-type OmittedUser = Omit<User, 'id' | 'emailVerified'>
-
-export interface VerifyUserJob {
-  userId: string
-  email: string
-  token: string
-  redirect: string | undefined
-}
-
-export interface JourneyEditInviteJob {
-  email: string
-  journey: JourneyWithTeamAndUserJourney
-  url: string
-  sender: OmittedUser
-}
-
-export interface JourneyRequestApproved {
-  userId: string
-  journey: JourneyWithTeamAndUserJourney
-  url: string
-  sender: OmittedUser
-}
-
-export interface JourneyAccessRequest {
-  journey: JourneyWithTeamAndUserJourney
-  url: string
-  sender: OmittedUser
-}
-
-export interface TeamInviteJob {
-  team: Team
-  email: string
-  sender: OmittedUser
-}
-
-export type TeamWithUserTeam = Prisma.TeamGetPayload<{
-  include: {
-    userTeams: true
-  }
-}>
-export interface TeamInviteAccepted {
-  team: TeamWithUserTeam
-  sender: OmittedUser
-}
-
-export interface TeamRemoved {
-  teamName: string
-  userId: string
-}
-
-export type ApiJourneysJob =
-  | JourneyEditInviteJob
-  | TeamInviteJob
-  | JourneyRequestApproved
-  | JourneyAccessRequest
-  | TeamInviteAccepted
-  | TeamRemoved
 
 const GET_USER = graphql(`
   query GetUser($userId: ID!) {

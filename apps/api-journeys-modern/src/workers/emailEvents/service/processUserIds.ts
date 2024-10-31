@@ -1,6 +1,5 @@
 import { UserJourneyRole } from '.prisma/api-journeys-modern-client'
-
-import { JourneyWithTeamAndUserJourney } from './service'
+import { JourneyWithTeamAndUserJourney } from '@core/yoga/emailEvents/types'
 
 export function processUserIds(
   journey: JourneyWithTeamAndUserJourney

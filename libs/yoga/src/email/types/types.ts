@@ -1,3 +1,5 @@
+import { Prisma } from '.prisma/api-journeys-modern-client'
+
 export enum UserJourneyRole {
   editor = 'editor',
   inviteRequested = 'inviteRequested',
@@ -33,3 +35,11 @@ export interface JourneyForEmails {
     publicTitle: string | null
   }
 }
+
+export type Journey = Prisma.JourneyGetPayload<{
+  include: {
+    userJourneys: true
+    team: true
+    primaryImageBlock: true
+  }
+}>

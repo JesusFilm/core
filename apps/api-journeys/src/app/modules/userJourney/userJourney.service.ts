@@ -3,12 +3,11 @@ import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 
 import { User } from '@core/nest/common/firebaseClient'
-
 import {
   JourneyAccessRequest,
   JourneyRequestApproved,
   JourneyWithTeamAndUserJourney
-} from '../email/email.consumer'
+} from '@core/yoga/email/types'
 
 type OmittedUser = Omit<User, 'id' | 'emailVerified'>
 

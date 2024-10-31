@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { Journey } from '../../types'
+import { Journey } from '@core/yoga/email/types'
+
 import { JourneyAccessRequestEmail } from '../templates/JourneyAccessRequest'
 
 import { apiJourneysConfig } from './apiJourneysConfig'

@@ -12,14 +12,14 @@ import {
   Visitor
 } from '.prisma/api-journeys-modern-client'
 import { sendEmail } from '@core/yoga/email'
+import {
+  EventsNotificationJob,
+  JourneyWithTeamAndUserJourney
+} from '@core/yoga/emailEvents/types'
 
 import { prismaMock } from '../../../../test/prismaMock'
 
-import {
-  EventsNotificationJob,
-  JourneyWithTeamAndUserJourney,
-  service
-} from './service'
+import { service } from './service'
 
 jest.mock('@apollo/client')
 

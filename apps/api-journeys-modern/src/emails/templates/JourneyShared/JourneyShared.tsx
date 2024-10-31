@@ -20,10 +20,11 @@ import {
   Header,
   UnsubscribeLink
 } from '@core/yoga/email/components'
-import { JourneyForEmails } from '@core/yoga/email/types/types'
+import {
+  JourneyForEmails,
+  JourneyWithTeamAndUserJourney
+} from '@core/yoga/email/types'
 import { User } from '@core/yoga/firebaseClient'
-
-import { JourneyWithTeamAndUserJourney } from '../../../types'
 
 interface JourneySharedEmailProps {
   journey: JourneyWithTeamAndUserJourney

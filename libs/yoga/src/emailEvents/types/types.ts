@@ -1,20 +1,30 @@
 import { Prisma, UserJourneyRole } from '.prisma/api-journeys-modern-client'
 
-export type Journey = Prisma.JourneyGetPayload<{
+export type JourneyWithTeamAndUserJourney = Prisma.JourneyGetPayload<{
   include: {
-    userJourneys: true
-    team: true
-    primaryImageBlock: true
+    team: {
+      include: {
+        userTeams: {
+          include: {
+            journeyNotifications: true
+          }
+        }
+      }
+    }
+    userJourneys: {
+      include: {
+        journeyNotification: true
+      }
+    }
   }
 }>
 
-export type JourneyWithTeamAndUserJourney = Prisma.JourneyGetPayload<{
-  include: {
-    userJourneys: true
-    team: true
-    primaryImageBlock: true
-  }
-}>
+export interface EventsNotificationJob {
+  journeyId: string
+  visitorId: string
+}
+
+export type ApiUsersJob = EventsNotificationJob
 
 export interface JourneyForEmails {
   id: string

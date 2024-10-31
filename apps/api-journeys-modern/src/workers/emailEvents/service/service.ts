@@ -3,8 +3,11 @@ import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 import { graphql } from 'gql.tada'
 
-import { Prisma } from '.prisma/api-journeys-modern-client'
 import { sendEmail } from '@core/yoga/email'
+import {
+  ApiUsersJob,
+  EventsNotificationJob
+} from '@core/yoga/emailEvents/types'
 
 import { VisitorInteraction } from '../../../emails/templates/VisitorInteraction'
 import { prisma } from '../../../lib/prisma'
@@ -25,32 +28,6 @@ const apollo = new ApolloClient({
   link: httpLink,
   cache: new InMemoryCache()
 })
-
-export type JourneyWithTeamAndUserJourney = Prisma.JourneyGetPayload<{
-  include: {
-    team: {
-      include: {
-        userTeams: {
-          include: {
-            journeyNotifications: true
-          }
-        }
-      }
-    }
-    userJourneys: {
-      include: {
-        journeyNotification: true
-      }
-    }
-  }
-}>
-
-export interface EventsNotificationJob {
-  journeyId: string
-  visitorId: string
-}
-
-export type ApiUsersJob = EventsNotificationJob
 
 export async function service(job: Job<ApiUsersJob>): Promise<void> {
   switch (job.name) {

@@ -1,6 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { JourneyWithTeamAndUserJourney } from '../../types'
+import { JourneyWithTeamAndUserJourney } from '@core/yoga/email/types'
+
 import { TeamInviteNoAccountEmail } from '../templates/TeamInvite/TeamInviteNoAccount'
 
 import { apiJourneysConfig } from './apiJourneysConfig'

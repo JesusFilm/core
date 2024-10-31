@@ -4,6 +4,7 @@ import { Queue } from 'bullmq'
 
 import { Prisma } from '.prisma/api-journeys-client'
 import { User } from '@core/nest/common/firebaseClient'
+import { JourneyEditInviteJob } from '@core/yoga/email/types'
 
 export type Journey = Prisma.JourneyGetPayload<{
   include: {
@@ -12,23 +13,6 @@ export type Journey = Prisma.JourneyGetPayload<{
     primaryImageBlock: true
   }
 }>
-
-type OmittedUser = Omit<User, 'id' | 'emailVerified'>
-
-export type JourneyWithTeamAndUserJourney = Prisma.JourneyGetPayload<{
-  include: {
-    userJourneys: true
-    team: true
-    primaryImageBlock: true
-  }
-}>
-
-interface JourneyEditInviteJob {
-  email: string
-  journey: JourneyWithTeamAndUserJourney
-  url: string
-  sender: OmittedUser
-}
 
 @Injectable()
 export class UserInviteService {

@@ -1,7 +1,8 @@
 import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { JourneyWithTeamAndUserJourney } from '../email/email.consumer'
+import { JourneyWithTeamAndUserJourney } from '@core/yoga/email/types'
+
 import { UserJourneyModule } from '../userJourney/userJourney.module'
 
 import { UserJourneyService } from './userJourney.service'
