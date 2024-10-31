@@ -22,7 +22,7 @@ import {
   Header,
   UnsubscribeLink
 } from '@core/yoga/email/components'
-import { User } from '@core/nest/common/firebaseClient'
+import { User } from '@core/yoga/firebaseClient'
 
 type Visitor = Prisma.VisitorGetPayload<{
   select: {
