@@ -11,7 +11,7 @@
     }
   ],
   "compilerOptions": {
-    "allowJs": true,    
+    "allowJs": true,
     "allowImportingTsExtensions": true,
     "noEmit": true,
     "strict": true,
