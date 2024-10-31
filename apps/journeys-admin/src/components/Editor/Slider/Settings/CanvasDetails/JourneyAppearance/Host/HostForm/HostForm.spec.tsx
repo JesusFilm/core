@@ -11,7 +11,7 @@ import {
 import {
   defaultHost,
   journey
-} from '../../../../../../../../libs/useHostCreate/useHostCreate.data'
+} from '../../../../../../../../libs/useHostCreate/useHostCreate.mocks'
 import { UPDATE_JOURNEY_HOST } from '../../../../../../../../libs/useUpdateJourneyHostMutation/useUpdateJourneyHostMutation'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 

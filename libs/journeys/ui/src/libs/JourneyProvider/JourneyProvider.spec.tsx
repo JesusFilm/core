@@ -2,7 +2,7 @@ import Button from '@mui/material/Button'
 import { fireEvent, render } from '@testing-library/react'
 import { ReactElement } from 'react'
 
-import { journey } from './JourneyProvider.data'
+import { journey } from './JourneyProvider.mock'
 
 import { JourneyProvider, useJourney } from '.'
 
