@@ -300,7 +300,7 @@
     "i18next-parser": "^6.4.0",
     "jest": "29.7.0",
     "jest-environment-jsdom": "29.7.0",
-    "jest-fixed-jsdom": "^0.0.6",
+    "jest-fixed-jsdom": "^0.0.7",
     "jest-mock-extended": "^3.0.5",
     "lighthouse": "^9.6.0",
     "mini-css-extract-plugin": "^2.6.1",
