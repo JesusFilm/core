@@ -130,6 +130,9 @@ type Mutation {
   deleteCloudflareVideo(id: ID!): Boolean!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!
+  createMuxVideoUploadByFile(name: String!): MuxVideo!
+  createMuxVideoUploadByUrl(url: String!): MuxVideo!
+  deleteMuxVideo(id: ID!): Boolean!
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
@@ -161,6 +164,14 @@ type Mutation {
   videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
 }
 
+type MuxVideo {
+  id: ID!
+  uploadUrl: String
+  userId: ID!
+  createdAt: Date!
+  readyToStream: Boolean!
+}
+
 type Query {
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
@@ -172,6 +183,8 @@ type Query {
   bibleBooks: [BibleBook!]!
   bibleCitations: [BibleCitation!]!
   keywords: [Keyword!]!
+  getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
+  getMyMuxVideo(id: ID!): MuxVideo!
   adminVideo(id: ID!, idType: IdType = databaseId): Video!
   adminVideos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   adminVideosCount(where: VideosFilter): Int!
