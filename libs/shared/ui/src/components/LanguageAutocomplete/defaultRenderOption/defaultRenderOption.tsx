@@ -1,4 +1,4 @@
-import Box from '@mui/material/Box'
+import ListItem from '@mui/material/ListItem'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactNode } from 'react'
@@ -10,7 +10,7 @@ export function defaultRenderOption(props: ListChildComponentProps): ReactNode {
   const { key, ...optionProps } = data[index][0]
 
   return (
-    <Box {...optionProps} key={id} style={style} tabIndex={1} component="li">
+    <ListItem {...optionProps} key={id} style={style} tabIndex={1}>
       <Stack>
         <Typography>{localName ?? nativeName}</Typography>
         {localName != null && nativeName != null && (
@@ -19,6 +19,6 @@ export function defaultRenderOption(props: ListChildComponentProps): ReactNode {
           </Typography>
         )}
       </Stack>
-    </Box>
+    </ListItem>
   )
 }
