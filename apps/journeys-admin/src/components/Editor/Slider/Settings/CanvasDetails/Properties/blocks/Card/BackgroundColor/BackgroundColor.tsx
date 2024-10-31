@@ -8,7 +8,7 @@ import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -89,6 +89,11 @@ export function BackgroundColor(): ReactElement {
   const [tabValue, setTabValue] = useState(0)
   const selectedColor =
     cardBlock?.backgroundColor ?? cardTheme.palette.background.paper
+  const [color, setColor] = useState<string>(selectedColor)
+
+  useEffect(() => {
+    setColor(selectedColor)
+  }, [selectedColor])
 
   function handleTabChange(_event, newValue: number): void {
     setTabValue(newValue)
@@ -132,6 +137,11 @@ export function BackgroundColor(): ReactElement {
     }
   }
 
+  function validateHexString(color: string): boolean {
+    const hexColorRegex = /^#[0-9A-Fa-f]{6}$/
+    return hexColorRegex.test(color)
+  }
+
   const palettePicker = (
     <PaletteColorPicker
       selectedColor={selectedColor}
@@ -168,8 +178,22 @@ export function BackgroundColor(): ReactElement {
           data-testid="bgColorTextField"
           variant="filled"
           hiddenLabel
-          value={selectedColor}
-          onChange={async (e) => await handleColorChange(e.target.value)}
+          value={color}
+          onChange={async (e) => {
+            if (validateHexString(e.target.value)) {
+              handleColorChange(e.target.value)
+            }
+            if (e.target.value.length < 8) {
+              setColor(e.target.value)
+            }
+          }}
+          onBlur={async (e) => {
+            if (validateHexString(e.target.value)) {
+              handleColorChange(e.target.value)
+            } else {
+              setColor(selectedColor)
+            }
+          }}
           sx={{ flexGrow: 1 }}
           InputProps={{
             startAdornment: (
