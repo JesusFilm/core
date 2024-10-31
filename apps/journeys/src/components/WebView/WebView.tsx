@@ -47,7 +47,7 @@ export function WebView({ blocks, stepBlock }: WebViewProps): ReactElement {
     blockHistoryVar([stepBlock])
     // multiple re-renders causes block history to be incorrect so do not pass in 'blocks' variable to deps array
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setTreeBlocks])
+  }, [stepBlock, setTreeBlocks])
 
   useEffect(() => {
     if ((variant === 'default' || variant === 'embed') && journey != null) {
