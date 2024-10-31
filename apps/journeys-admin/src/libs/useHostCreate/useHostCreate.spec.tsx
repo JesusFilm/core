@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.data'
+import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
 
 import { JourneyFields } from '../../../__generated__/JourneyFields'
 import { hostCreateMock } from '../useHostCreateMutation/useHostCreateMutation.mock'
