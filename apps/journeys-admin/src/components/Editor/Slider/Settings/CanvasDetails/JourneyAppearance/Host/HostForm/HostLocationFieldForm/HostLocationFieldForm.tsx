@@ -27,7 +27,7 @@ export function HostLocationFieldForm({
       disabled={disabled}
       initialValue={value}
       onSubmit={handleSubmit}
-      data-testid="HostLocationField"
+      data-testid="HostLocationFieldForm"
     />
   )
 }
