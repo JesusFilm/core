@@ -2,15 +2,22 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider      = "prisma-client-js"
-  output        = env("PRISMA_LOCATION_JOURNEYS")
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  output          = env("PRISMA_LOCATION_JOURNEYS_MODERN")
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+  previewFeatures = ["tracing"]
 }
 
 generator erd {
   provider    = "prisma-erd-generator"
   ignoreEnums = true
   disabled    = true
+}
+
+generator pothos {
+  provider     = "prisma-pothos-types"
+  output       = "../src/__generated__/pothos-types.ts"
+  clientOutput = ".prisma/api-journeys-modern-client"
 }
 
 datasource db {
