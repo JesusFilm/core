@@ -23,7 +23,7 @@ export function JourneyQuickSettingsChat({
   const createHost = useHostCreate()
 
   const initialValues: HostFormValues = {
-    title: displayName ?? ''
+    title: journey?.host == null ? (displayName ?? '') : journey.host.title
   }
 
   const [name, setName] = useState(initialValues.title)
