@@ -4,11 +4,12 @@ import { Queue } from 'bullmq'
 
 import { Team } from '.prisma/api-journeys-client'
 import { User } from '@core/nest/common/firebaseClient'
+
 import {
   TeamInviteAccepted,
   TeamInviteJob,
   TeamWithUserTeam
-} from '@core/yoga/email/types'
+} from '../../lib/prisma.types'
 
 @Injectable()
 export class UserTeamInviteService {
