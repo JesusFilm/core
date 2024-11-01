@@ -2,8 +2,8 @@ import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
 
 import { Team, UserTeamRole } from '.prisma/api-journeys-client'
-import { TeamWithUserTeam } from '@core/yoga/email/types'
 
+import { TeamWithUserTeam } from '../../lib/prisma.types'
 import { UserTeamInviteModule } from '../userTeamInvite/userTeamInvite.module'
 
 import { UserTeamInviteService } from './userTeamInvite.service'

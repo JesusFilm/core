@@ -8,15 +8,6 @@ import {
   UserTeamRole
 } from '.prisma/api-journeys-modern-client'
 import { sendEmail } from '@core/yoga/email'
-import {
-  ApiJourneysJob,
-  JourneyAccessRequest,
-  JourneyEditInviteJob,
-  JourneyRequestApproved,
-  TeamInviteAccepted,
-  TeamInviteJob,
-  TeamRemoved
-} from '@core/yoga/email/types'
 
 import { JourneyAccessRequestEmail } from '../../../emails/templates/JourneyAccessRequest'
 import { JourneySharedEmail } from '../../../emails/templates/JourneyShared'
@@ -26,6 +17,16 @@ import { TeamInviteNoAccountEmail } from '../../../emails/templates/TeamInvite/T
 import { TeamInviteAcceptedEmail } from '../../../emails/templates/TeamInviteAccepted'
 import { TeamRemovedEmail } from '../../../emails/templates/TeamRemoved'
 import { prisma } from '../../../lib/prisma'
+
+import {
+  ApiJourneysJob,
+  JourneyAccessRequest,
+  JourneyEditInviteJob,
+  JourneyRequestApproved,
+  TeamInviteAccepted,
+  TeamInviteJob,
+  TeamRemoved
+} from './prisma.types'
 
 const httpLink = createHttpLink({
   uri: process.env.GATEWAY_URL,

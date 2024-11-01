@@ -4,7 +4,8 @@ import { Queue } from 'bullmq'
 
 import { Prisma } from '.prisma/api-journeys-client'
 import { User } from '@core/nest/common/firebaseClient'
-import { JourneyEditInviteJob } from '@core/yoga/email/types'
+
+import { JourneyEditInviteJob } from '../../lib/prisma.types'
 
 export type Journey = Prisma.JourneyGetPayload<{
   include: {

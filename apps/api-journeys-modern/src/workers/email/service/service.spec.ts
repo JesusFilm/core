@@ -8,6 +8,9 @@ import {
   UserTeamRole
 } from '.prisma/api-journeys-modern-client'
 import { sendEmail } from '@core/yoga/email'
+
+import { prismaMock } from '../../../../test/prismaMock'
+
 import {
   JourneyAccessRequest,
   JourneyEditInviteJob,
@@ -15,10 +18,7 @@ import {
   TeamInviteAccepted,
   TeamInviteJob,
   TeamRemoved
-} from '@core/yoga/email/types'
-
-import { prismaMock } from '../../../../test/prismaMock'
-
+} from './prisma.types'
 import { service } from './service'
 
 jest.mock('@apollo/client')

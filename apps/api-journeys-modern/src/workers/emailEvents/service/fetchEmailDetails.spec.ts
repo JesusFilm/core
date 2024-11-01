@@ -8,12 +8,12 @@ import {
   UserTeamRole,
   Visitor
 } from '.prisma/api-journeys-modern-client'
-import { JourneyWithTeamAndUserJourney } from '@core/yoga/emailEvents/types'
 
 import { prismaMock } from '../../../../test/prismaMock'
 import { prisma } from '../../../lib/prisma'
 
 import { fetchEmailDetails } from './fetchEmailDetails'
+import { JourneyWithTeamAndUserJourney } from './prisma.types'
 
 describe('fetchEmailDetails', () => {
   afterEach(() => {

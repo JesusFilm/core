@@ -3,6 +3,7 @@ import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 import { graphql } from 'gql.tada'
 
+import { Prisma } from '.prisma/api-journeys-modern-client'
 import { sendEmail } from '@core/yoga/email'
 import {
   ApiUsersJob,

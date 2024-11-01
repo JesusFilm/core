@@ -1,7 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react'
 
-import { Journey } from '@core/yoga/email/types'
-
+import { Journey } from '../../workers/email/service/prisma.types'
 import { JourneyAccessRequestEmail } from '../templates/JourneyAccessRequest'
 
 import { apiJourneysConfig } from './apiJourneysConfig'

@@ -3,7 +3,8 @@ import {
   PrismaClient,
   Visitor
 } from '.prisma/api-journeys-modern-client'
-import { JourneyWithTeamAndUserJourney } from '@core/yoga/emailEvents/types'
+
+import { JourneyWithTeamAndUserJourney } from './prisma.types'
 
 interface EmailDetailsResult {
   journey: JourneyWithTeamAndUserJourney | null

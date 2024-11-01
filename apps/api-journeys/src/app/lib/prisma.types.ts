@@ -1,13 +1,5 @@
-import {
-  Prisma,
-  Team,
-  UserJourneyRole,
-  UserTeamRole
-} from '.prisma/api-journeys-modern-client'
-
-import { User } from '../../firebaseClient'
-
-type OmittedUser = Omit<User, 'id' | 'emailVerified'>
+import { Prisma, Team } from '.prisma/api-journeys-client'
+import { User } from '@core/yoga/firebaseClient'
 
 export type ApiJourneysJob =
   | JourneyEditInviteJob
@@ -16,6 +8,14 @@ export type ApiJourneysJob =
   | JourneyAccessRequest
   | TeamInviteAccepted
   | TeamRemoved
+
+export type Journey = Prisma.JourneyGetPayload<{
+  include: {
+    userJourneys: true
+    team: true
+    primaryImageBlock: true
+  }
+}>
 
 export interface JourneyAccessRequest {
   journey: JourneyWithTeamAndUserJourney
@@ -44,6 +44,8 @@ export type JourneyWithTeamAndUserJourney = Prisma.JourneyGetPayload<{
     primaryImageBlock: true
   }
 }>
+
+type OmittedUser = Omit<User, 'id' | 'emailVerified'>
 
 export interface TeamInviteAccepted {
   team: TeamWithUserTeam

@@ -20,8 +20,10 @@ import {
   Header,
   UnsubscribeLink
 } from '@core/yoga/email/components'
-import { Journey, JourneyForEmails } from '@core/yoga/email/types/types'
+import { JourneyForEmails } from '@core/yoga/email/types/types'
 import { User } from '@core/yoga/firebaseClient'
+
+import { Journey } from '../../../workers/email/service/prisma.types'
 
 interface JourneyAccessRequestEmailProps {
   inviteLink: string
