@@ -386,11 +386,17 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   deleteCloudflareImage(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   cloudflareUploadComplete(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
+  cloudflareR2Create(input: CloudflareR2CreateInput!) : CloudflareR2! @join__field(graph: API_MEDIA) 
+  cloudflareR2Update(input: CloudflareR2UpdateInput!) : CloudflareR2! @join__field(graph: API_MEDIA) 
+  cloudflareR2Delete(id: ID!) : CloudflareR2! @join__field(graph: API_MEDIA) 
   createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!) : CloudflareVideo! @join__field(graph: API_MEDIA) 
   createCloudflareVideoUploadByUrl(url: String!) : CloudflareVideo! @join__field(graph: API_MEDIA) 
   deleteCloudflareVideo(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!) : CloudflareImage! @join__field(graph: API_MEDIA)  @deprecated(reason: "use createCloudflareImageFromPrompt") 
   triggerUnsplashDownload(url: String!) : Boolean! @join__field(graph: API_MEDIA) 
+  createMuxVideoUploadByFile(name: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
+  createMuxVideoUploadByUrl(url: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
+  deleteMuxVideo(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   videoCreate(input: VideoCreateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoUpdate(input: VideoUpdateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoDescriptionCreate(input: VideoTranslationCreateInput!) : VideoDescription! @join__field(graph: API_MEDIA) 
@@ -650,6 +656,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   countries: [Country!]! @join__field(graph: API_LANGUAGES) 
   getMyCloudflareImages(offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   getMyCloudflareImage(id: ID!) : CloudflareImage! @join__field(graph: API_MEDIA) 
+  videoCloudflareAssets(videoId: ID!) : [CloudflareR2!]! @join__field(graph: API_MEDIA) 
   getMyCloudflareVideos(offset: Int, limit: Int) : [CloudflareVideo!]! @join__field(graph: API_MEDIA) 
   getMyCloudflareVideo(id: ID!) : CloudflareVideo! @join__field(graph: API_MEDIA) 
   listUnsplashCollectionPhotos(
@@ -671,6 +678,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   bibleBooks: [BibleBook!]! @join__field(graph: API_MEDIA) 
   bibleCitations: [BibleCitation!]! @join__field(graph: API_MEDIA) 
   keywords: [Keyword!]! @join__field(graph: API_MEDIA) 
+  getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
+  getMyMuxVideo(id: ID!) : MuxVideo! @join__field(graph: API_MEDIA) 
   adminVideo(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
   adminVideos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
   adminVideosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
@@ -681,6 +690,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
   videoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
+  taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
   me(input: MeInput) : User @join__field(graph: API_USERS) 
   user(id: ID!) : User @join__field(graph: API_USERS) 
   userByEmail(email: String!) : User @join__field(graph: API_USERS) 
@@ -2091,6 +2101,16 @@ type CloudflareImage @join__type(graph: API_MEDIA)  {
   videoStill: String
 }
 
+type CloudflareR2 @join__type(graph: API_MEDIA)  {
+  id: ID!
+  fileName: String!
+  uploadUrl: String
+  userId: ID!
+  publicUrl: String
+  createdAt: Date!
+  updatedAt: Date!
+}
+
 type CloudflareVideo @join__type(graph: API_MEDIA)  {
   id: ID!
   uploadUrl: String
@@ -2110,11 +2130,34 @@ type LanguageWithSlug @join__type(graph: API_MEDIA)  {
   slug: String!
 }
 
+type MuxVideo @join__type(graph: API_MEDIA)  {
+  id: ID!
+  uploadUrl: String
+  userId: ID!
+  createdAt: Date!
+  readyToStream: Boolean!
+}
+
 type TagName @join__type(graph: API_MEDIA)  {
   id: ID!
   value: String!
   primary: Boolean!
   language: Language!
+}
+
+type Taxonomy @join__type(graph: API_MEDIA)  {
+  id: ID!
+  category: String!
+  term: String!
+  name(languageCodes: [String!], category: String) : [TaxonomyName!]!
+}
+
+type TaxonomyName @join__type(graph: API_MEDIA)  {
+  id: ID!
+  term: String!
+  label: String!
+  language: Language!
+  taxonomy: Taxonomy!
 }
 
 type UnsplashPhoto @join__type(graph: API_MEDIA)  {
@@ -3688,6 +3731,17 @@ input VisitorUpdateInput @join__type(graph: API_JOURNEYS)  {
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
   ids: [ID!]
+}
+
+input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
+  id: String
+  fileName: String!
+  videoId: String!
+}
+
+input CloudflareR2UpdateInput @join__type(graph: API_MEDIA)  {
+  id: String!
+  fileName: String!
 }
 
 input ImageInput @join__type(graph: API_MEDIA)  {

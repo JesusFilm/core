@@ -42,6 +42,27 @@ type CloudflareImage {
   videoStill: String
 }
 
+type CloudflareR2 {
+  id: ID!
+  fileName: String!
+  uploadUrl: String
+  userId: ID!
+  publicUrl: String
+  createdAt: Date!
+  updatedAt: Date!
+}
+
+input CloudflareR2CreateInput {
+  id: String
+  fileName: String!
+  videoId: String!
+}
+
+input CloudflareR2UpdateInput {
+  id: String!
+  fileName: String!
+}
+
 type CloudflareVideo {
   id: ID!
   uploadUrl: String
@@ -101,11 +122,17 @@ type Mutation {
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
   deleteCloudflareImage(id: ID!): Boolean!
   cloudflareUploadComplete(id: ID!): Boolean!
+  cloudflareR2Create(input: CloudflareR2CreateInput!): CloudflareR2!
+  cloudflareR2Update(input: CloudflareR2UpdateInput!): CloudflareR2!
+  cloudflareR2Delete(id: ID!): CloudflareR2!
   createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo!
   createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo!
   deleteCloudflareVideo(id: ID!): Boolean!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!
+  createMuxVideoUploadByFile(name: String!): MuxVideo!
+  createMuxVideoUploadByUrl(url: String!): MuxVideo!
+  deleteMuxVideo(id: ID!): Boolean!
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
@@ -137,9 +164,18 @@ type Mutation {
   videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
 }
 
+type MuxVideo {
+  id: ID!
+  uploadUrl: String
+  userId: ID!
+  createdAt: Date!
+  readyToStream: Boolean!
+}
+
 type Query {
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
+  videoCloudflareAssets(videoId: ID!): [CloudflareR2!]!
   getMyCloudflareVideos(offset: Int, limit: Int): [CloudflareVideo!]!
   getMyCloudflareVideo(id: ID!): CloudflareVideo!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
@@ -147,6 +183,8 @@ type Query {
   bibleBooks: [BibleBook!]!
   bibleCitations: [BibleCitation!]!
   keywords: [Keyword!]!
+  getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
+  getMyMuxVideo(id: ID!): MuxVideo!
   adminVideo(id: ID!, idType: IdType = databaseId): Video!
   adminVideos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   adminVideosCount(where: VideosFilter): Int!
@@ -157,6 +195,7 @@ type Query {
   videoEdition(id: ID!): VideoEdition
   videoVariants: [VideoVariant!]!
   tags: [Tag!]!
+  taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
 }
 
 enum SegmindModel {
@@ -189,6 +228,21 @@ type TagName {
   value: String!
   primary: Boolean!
   language: Language!
+}
+
+type Taxonomy {
+  id: ID!
+  category: String!
+  term: String!
+  name(languageCodes: [String!], category: String): [TaxonomyName!]!
+}
+
+type TaxonomyName {
+  id: ID!
+  term: String!
+  label: String!
+  language: Language!
+  taxonomy: Taxonomy!
 }
 
 enum UnsplashColor {
