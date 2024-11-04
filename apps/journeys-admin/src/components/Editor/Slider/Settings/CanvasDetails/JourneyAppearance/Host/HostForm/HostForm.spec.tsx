@@ -2,14 +2,16 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { DeleteHost } from '../../../../../../../../../__generated__/DeleteHost'
-import { GetAllTeamHosts_hosts as Host } from '../../../../../../../../../__generated__/GetAllTeamHosts'
 import {
   UpdateJourneyHost,
   UpdateJourneyHostVariables
 } from '../../../../../../../../../__generated__/UpdateJourneyHost'
+import {
+  defaultHost,
+  journey
+} from '../../../../../../../../libs/useHostCreate/useHostCreate.mocks'
 import { UPDATE_JOURNEY_HOST } from '../../../../../../../../libs/useUpdateJourneyHostMutation/useUpdateJourneyHostMutation'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 
@@ -30,23 +32,6 @@ jest.mock('react-i18next', () => ({
 }))
 
 describe('HostForm', () => {
-  const defaultHost: Host = {
-    id: 'hostId',
-    __typename: 'Host',
-    title: 'Cru International',
-    location: 'Florida, USA',
-    src1: 'imageSrc1',
-    src2: 'imageSrc2'
-  }
-
-  const journey = {
-    __typename: 'Journey',
-    id: 'journeyId',
-    seoTitle: 'My awesome journey',
-    host: defaultHost,
-    team: { id: 'teamId' }
-  } as unknown as Journey
-
   it('should render a create host form', async () => {
     const handleSelection = jest.fn()
     const { getByRole, getByTestId, getByText } = render(
