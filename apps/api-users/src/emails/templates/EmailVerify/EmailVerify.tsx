@@ -20,7 +20,7 @@ import {
   Footer,
   Header,
   UnsubscribeLink
-} from '@core/nest/common/email/components'
+} from '@core/yoga/email/components'
 
 interface VerifyEmailProps {
   inviteLink: string

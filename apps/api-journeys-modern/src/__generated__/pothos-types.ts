@@ -31,18 +31,18 @@ export default interface PrismaTypes {
         Where: Prisma.EventWhereInput;
         Create: {};
         Update: {};
-        RelationName: "journeyVisitor" | "visitor";
+        RelationName: "visitor" | "journeyVisitor";
         ListRelations: never;
         Relations: {
-            journeyVisitor: {
-                Shape: JourneyVisitor | null;
-                Name: "JourneyVisitor";
-                Nullable: true;
-            };
             visitor: {
                 Shape: Visitor;
                 Name: "Visitor";
                 Nullable: false;
+            };
+            journeyVisitor: {
+                Shape: JourneyVisitor | null;
+                Name: "JourneyVisitor";
+                Nullable: true;
             };
         };
     };
@@ -111,14 +111,9 @@ export default interface PrismaTypes {
         Where: Prisma.JourneyVisitorWhereInput;
         Create: {};
         Update: {};
-        RelationName: "events" | "journey" | "visitor";
+        RelationName: "journey" | "visitor" | "events";
         ListRelations: "events";
         Relations: {
-            events: {
-                Shape: Event[];
-                Name: "Event";
-                Nullable: false;
-            };
             journey: {
                 Shape: Journey;
                 Name: "Journey";
@@ -127,6 +122,11 @@ export default interface PrismaTypes {
             visitor: {
                 Shape: Visitor;
                 Name: "Visitor";
+                Nullable: false;
+            };
+            events: {
+                Shape: Event[];
+                Name: "Event";
                 Nullable: false;
             };
         };
@@ -141,32 +141,12 @@ export default interface PrismaTypes {
         Where: Prisma.TeamWhereInput;
         Create: {};
         Update: {};
-        RelationName: "customDomains" | "hosts" | "integrations" | "journeys" | "journeyCollections" | "userTeams" | "UserTeamInvites" | "visitors";
-        ListRelations: "customDomains" | "hosts" | "integrations" | "journeys" | "journeyCollections" | "userTeams" | "UserTeamInvites" | "visitors";
+        RelationName: "visitors" | "userTeams" | "journeys" | "hosts" | "UserTeamInvites" | "journeyCollections" | "customDomains" | "integrations";
+        ListRelations: "visitors" | "userTeams" | "journeys" | "hosts" | "UserTeamInvites" | "journeyCollections" | "customDomains" | "integrations";
         Relations: {
-            customDomains: {
-                Shape: CustomDomain[];
-                Name: "CustomDomain";
-                Nullable: false;
-            };
-            hosts: {
-                Shape: Host[];
-                Name: "Host";
-                Nullable: false;
-            };
-            integrations: {
-                Shape: Integration[];
-                Name: "Integration";
-                Nullable: false;
-            };
-            journeys: {
-                Shape: Journey[];
-                Name: "Journey";
-                Nullable: false;
-            };
-            journeyCollections: {
-                Shape: JourneyCollection[];
-                Name: "JourneyCollection";
+            visitors: {
+                Shape: Visitor[];
+                Name: "Visitor";
                 Nullable: false;
             };
             userTeams: {
@@ -174,14 +154,34 @@ export default interface PrismaTypes {
                 Name: "UserTeam";
                 Nullable: false;
             };
+            journeys: {
+                Shape: Journey[];
+                Name: "Journey";
+                Nullable: false;
+            };
+            hosts: {
+                Shape: Host[];
+                Name: "Host";
+                Nullable: false;
+            };
             UserTeamInvites: {
                 Shape: UserTeamInvite[];
                 Name: "UserTeamInvite";
                 Nullable: false;
             };
-            visitors: {
-                Shape: Visitor[];
-                Name: "Visitor";
+            journeyCollections: {
+                Shape: JourneyCollection[];
+                Name: "JourneyCollection";
+                Nullable: false;
+            };
+            customDomains: {
+                Shape: CustomDomain[];
+                Name: "CustomDomain";
+                Nullable: false;
+            };
+            integrations: {
+                Shape: Integration[];
+                Name: "Integration";
                 Nullable: false;
             };
         };
@@ -216,17 +216,17 @@ export default interface PrismaTypes {
         Where: Prisma.UserTeamWhereInput;
         Create: {};
         Update: {};
-        RelationName: "journeyNotifications" | "team";
+        RelationName: "team" | "journeyNotifications";
         ListRelations: "journeyNotifications";
         Relations: {
-            journeyNotifications: {
-                Shape: JourneyNotification[];
-                Name: "JourneyNotification";
-                Nullable: false;
-            };
             team: {
                 Shape: Team;
                 Name: "Team";
+                Nullable: false;
+            };
+            journeyNotifications: {
+                Shape: JourneyNotification[];
+                Name: "JourneyNotification";
                 Nullable: false;
             };
         };
@@ -261,18 +261,18 @@ export default interface PrismaTypes {
         Where: Prisma.UserJourneyWhereInput;
         Create: {};
         Update: {};
-        RelationName: "journeyNotification" | "journey";
+        RelationName: "journey" | "journeyNotification";
         ListRelations: never;
         Relations: {
-            journeyNotification: {
-                Shape: JourneyNotification | null;
-                Name: "JourneyNotification";
-                Nullable: true;
-            };
             journey: {
                 Shape: Journey;
                 Name: "Journey";
                 Nullable: false;
+            };
+            journeyNotification: {
+                Shape: JourneyNotification | null;
+                Name: "JourneyNotification";
+                Nullable: true;
             };
         };
     };
@@ -306,12 +306,22 @@ export default interface PrismaTypes {
         Where: Prisma.JourneyWhereInput;
         Create: {};
         Update: {};
-        RelationName: "actions" | "blocks" | "chatButtons" | "creatorImageBlock" | "host" | "logoImageBlock" | "menuStepBlock" | "primaryImageBlock" | "team" | "journeyCollectionJourneys" | "journeyNotifications" | "journeyTags" | "journeyVisitors" | "userInvites" | "userJourneys";
-        ListRelations: "actions" | "blocks" | "chatButtons" | "journeyCollectionJourneys" | "journeyNotifications" | "journeyTags" | "journeyVisitors" | "userInvites" | "userJourneys";
+        RelationName: "userJourneys" | "team" | "userInvites" | "blocks" | "chatButtons" | "host" | "journeyTags" | "actions" | "primaryImageBlock" | "creatorImageBlock" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications" | "logoImageBlock" | "menuStepBlock";
+        ListRelations: "userJourneys" | "userInvites" | "blocks" | "chatButtons" | "journeyTags" | "actions" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications";
         Relations: {
-            actions: {
-                Shape: Action[];
-                Name: "Action";
+            userJourneys: {
+                Shape: UserJourney[];
+                Name: "UserJourney";
+                Nullable: false;
+            };
+            team: {
+                Shape: Team;
+                Name: "Team";
+                Nullable: false;
+            };
+            userInvites: {
+                Shape: UserInvite[];
+                Name: "UserInvite";
                 Nullable: false;
             };
             blocks: {
@@ -324,34 +334,34 @@ export default interface PrismaTypes {
                 Name: "ChatButton";
                 Nullable: false;
             };
-            creatorImageBlock: {
-                Shape: Block | null;
-                Name: "Block";
-                Nullable: true;
-            };
             host: {
                 Shape: Host | null;
                 Name: "Host";
                 Nullable: true;
             };
-            logoImageBlock: {
-                Shape: Block | null;
-                Name: "Block";
-                Nullable: true;
+            journeyTags: {
+                Shape: JourneyTag[];
+                Name: "JourneyTag";
+                Nullable: false;
             };
-            menuStepBlock: {
-                Shape: Block | null;
-                Name: "Block";
-                Nullable: true;
+            actions: {
+                Shape: Action[];
+                Name: "Action";
+                Nullable: false;
             };
             primaryImageBlock: {
                 Shape: Block | null;
                 Name: "Block";
                 Nullable: true;
             };
-            team: {
-                Shape: Team;
-                Name: "Team";
+            creatorImageBlock: {
+                Shape: Block | null;
+                Name: "Block";
+                Nullable: true;
+            };
+            journeyVisitors: {
+                Shape: JourneyVisitor[];
+                Name: "JourneyVisitor";
                 Nullable: false;
             };
             journeyCollectionJourneys: {
@@ -364,25 +374,15 @@ export default interface PrismaTypes {
                 Name: "JourneyNotification";
                 Nullable: false;
             };
-            journeyTags: {
-                Shape: JourneyTag[];
-                Name: "JourneyTag";
-                Nullable: false;
+            logoImageBlock: {
+                Shape: Block | null;
+                Name: "Block";
+                Nullable: true;
             };
-            journeyVisitors: {
-                Shape: JourneyVisitor[];
-                Name: "JourneyVisitor";
-                Nullable: false;
-            };
-            userInvites: {
-                Shape: UserInvite[];
-                Name: "UserInvite";
-                Nullable: false;
-            };
-            userJourneys: {
-                Shape: UserJourney[];
-                Name: "UserJourney";
-                Nullable: false;
+            menuStepBlock: {
+                Shape: Block | null;
+                Name: "Block";
+                Nullable: true;
             };
         };
     };
@@ -444,17 +444,27 @@ export default interface PrismaTypes {
         Where: Prisma.BlockWhereInput;
         Create: {};
         Update: {};
-        RelationName: "targetActions" | "action" | "coverBlock" | "coverBlockParent" | "journey" | "nextBlock" | "nextBlockParents" | "parentBlock" | "childBlocks" | "posterBlock" | "posterBlockParent" | "creatorImageBlockParent" | "logoImageBlockParent" | "menuStepBlockParent" | "primaryImageBlockParent";
-        ListRelations: "targetActions" | "nextBlockParents" | "childBlocks";
+        RelationName: "action" | "journey" | "posterBlock" | "posterBlockParent" | "coverBlock" | "coverBlockParent" | "primaryImageBlockParent" | "creatorImageBlockParent" | "nextBlock" | "nextBlockParents" | "parentBlock" | "childBlocks" | "targetActions" | "menuStepBlockParent" | "logoImageBlockParent";
+        ListRelations: "nextBlockParents" | "childBlocks" | "targetActions";
         Relations: {
-            targetActions: {
-                Shape: Action[];
-                Name: "Action";
-                Nullable: false;
-            };
             action: {
                 Shape: Action | null;
                 Name: "Action";
+                Nullable: true;
+            };
+            journey: {
+                Shape: Journey;
+                Name: "Journey";
+                Nullable: false;
+            };
+            posterBlock: {
+                Shape: Block | null;
+                Name: "Block";
+                Nullable: true;
+            };
+            posterBlockParent: {
+                Shape: Block | null;
+                Name: "Block";
                 Nullable: true;
             };
             coverBlock: {
@@ -467,10 +477,15 @@ export default interface PrismaTypes {
                 Name: "Block";
                 Nullable: true;
             };
-            journey: {
-                Shape: Journey;
+            primaryImageBlockParent: {
+                Shape: Journey | null;
                 Name: "Journey";
-                Nullable: false;
+                Nullable: true;
+            };
+            creatorImageBlockParent: {
+                Shape: Journey | null;
+                Name: "Journey";
+                Nullable: true;
             };
             nextBlock: {
                 Shape: Block | null;
@@ -492,32 +507,17 @@ export default interface PrismaTypes {
                 Name: "Block";
                 Nullable: false;
             };
-            posterBlock: {
-                Shape: Block | null;
-                Name: "Block";
-                Nullable: true;
-            };
-            posterBlockParent: {
-                Shape: Block | null;
-                Name: "Block";
-                Nullable: true;
-            };
-            creatorImageBlockParent: {
-                Shape: Journey | null;
-                Name: "Journey";
-                Nullable: true;
-            };
-            logoImageBlockParent: {
-                Shape: Journey | null;
-                Name: "Journey";
-                Nullable: true;
+            targetActions: {
+                Shape: Action[];
+                Name: "Action";
+                Nullable: false;
             };
             menuStepBlockParent: {
                 Shape: Journey | null;
                 Name: "Journey";
                 Nullable: true;
             };
-            primaryImageBlockParent: {
+            logoImageBlockParent: {
                 Shape: Journey | null;
                 Name: "Journey";
                 Nullable: true;
@@ -534,23 +534,23 @@ export default interface PrismaTypes {
         Where: Prisma.ActionWhereInput;
         Create: {};
         Update: {};
-        RelationName: "block" | "journey" | "parentBlock";
+        RelationName: "parentBlock" | "journey" | "block";
         ListRelations: never;
         Relations: {
-            block: {
-                Shape: Block | null;
+            parentBlock: {
+                Shape: Block;
                 Name: "Block";
-                Nullable: true;
+                Nullable: false;
             };
             journey: {
                 Shape: Journey | null;
                 Name: "Journey";
                 Nullable: true;
             };
-            parentBlock: {
-                Shape: Block;
+            block: {
+                Shape: Block | null;
                 Name: "Block";
-                Nullable: false;
+                Nullable: true;
             };
         };
     };
@@ -578,7 +578,7 @@ export default interface PrismaTypes {
         Where: Prisma.JourneyNotificationWhereInput;
         Create: {};
         Update: {};
-        RelationName: "journey" | "userJourney" | "userTeam";
+        RelationName: "journey" | "userTeam" | "userJourney";
         ListRelations: never;
         Relations: {
             journey: {
@@ -586,14 +586,14 @@ export default interface PrismaTypes {
                 Name: "Journey";
                 Nullable: false;
             };
-            userJourney: {
-                Shape: UserJourney | null;
-                Name: "UserJourney";
-                Nullable: true;
-            };
             userTeam: {
                 Shape: UserTeam | null;
                 Name: "UserTeam";
+                Nullable: true;
+            };
+            userJourney: {
+                Shape: UserJourney | null;
+                Name: "UserJourney";
                 Nullable: true;
             };
         };

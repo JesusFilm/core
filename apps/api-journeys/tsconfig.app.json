@@ -14,5 +14,9 @@
     "target": "es2021"
   },
   "exclude": ["**/*.spec.ts", "jest.config.ts"],
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "../api-journeys-modern/src/emails/stories/apiJourneysConfig.tsx"
+  ]
 }

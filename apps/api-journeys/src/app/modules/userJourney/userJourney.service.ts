@@ -8,7 +8,7 @@ import {
   JourneyAccessRequest,
   JourneyRequestApproved,
   JourneyWithTeamAndUserJourney
-} from '../email/email.consumer'
+} from '../../lib/prisma.types'
 
 type OmittedUser = Omit<User, 'id' | 'emailVerified'>
 

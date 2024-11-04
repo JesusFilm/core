@@ -2,14 +2,14 @@ import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 
+import { Team } from '.prisma/api-journeys-client'
 import { User } from '@core/nest/common/firebaseClient'
 
-import { Team } from '../../__generated__/graphql'
 import {
   TeamInviteAccepted,
   TeamInviteJob,
   TeamWithUserTeam
-} from '../email/email.consumer'
+} from '../../lib/prisma.types'
 
 @Injectable()
 export class UserTeamInviteService {

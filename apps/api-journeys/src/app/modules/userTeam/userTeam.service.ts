@@ -2,7 +2,7 @@ import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 
-import { TeamRemoved } from '../email/email.consumer'
+import { TeamRemoved } from '../../lib/prisma.types'
 
 @Injectable()
 export class UserTeamService {
