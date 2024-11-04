@@ -241,7 +241,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
               sx={{ display: { xs: 'none', sm: 'flex' } }}
             >
               {journey?.primaryImageBlock?.src == null ? (
-                <GridEmptyIcon color="error" />
+                <GridEmptyIcon color="secondary" />
               ) : (
                 <Image
                   src={journey.primaryImageBlock.src}
