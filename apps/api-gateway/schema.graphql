@@ -394,6 +394,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   deleteCloudflareVideo(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!) : CloudflareImage! @join__field(graph: API_MEDIA)  @deprecated(reason: "use createCloudflareImageFromPrompt") 
   triggerUnsplashDownload(url: String!) : Boolean! @join__field(graph: API_MEDIA) 
+  createMuxVideoUploadByFile(name: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
+  createMuxVideoUploadByUrl(url: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
+  deleteMuxVideo(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   videoCreate(input: VideoCreateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoUpdate(input: VideoUpdateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoDescriptionCreate(input: VideoTranslationCreateInput!) : VideoDescription! @join__field(graph: API_MEDIA) 
@@ -675,6 +678,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   bibleBooks: [BibleBook!]! @join__field(graph: API_MEDIA) 
   bibleCitations: [BibleCitation!]! @join__field(graph: API_MEDIA) 
   keywords: [Keyword!]! @join__field(graph: API_MEDIA) 
+  getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
+  getMyMuxVideo(id: ID!) : MuxVideo! @join__field(graph: API_MEDIA) 
   adminVideo(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
   adminVideos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
   adminVideosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
@@ -2123,6 +2128,14 @@ type Keyword @join__type(graph: API_MEDIA)  {
 type LanguageWithSlug @join__type(graph: API_MEDIA)  {
   language: Language!
   slug: String!
+}
+
+type MuxVideo @join__type(graph: API_MEDIA)  {
+  id: ID!
+  uploadUrl: String
+  userId: ID!
+  createdAt: Date!
+  readyToStream: Boolean!
 }
 
 type TagName @join__type(graph: API_MEDIA)  {

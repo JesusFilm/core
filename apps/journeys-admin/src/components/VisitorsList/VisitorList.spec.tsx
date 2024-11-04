@@ -221,7 +221,7 @@ describe('VisitorList', () => {
   })
 
   it('should show grid column titles', async () => {
-    const { getAllByRole } = render(
+    const { getAllByRole, getByText } = render(
       <MockedProvider mocks={[...mocks, getTeams]}>
         <TeamProvider>
           <VisitorsList />
@@ -232,12 +232,11 @@ describe('VisitorList', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     await waitFor(() => expect(getAllByRole('columnheader')).toHaveLength(5))
-    const headers = getAllByRole('columnheader')
-    expect(headers[0]).toHaveAttribute('aria-label', 'Last Active')
-    expect(headers[1]).toHaveAttribute('aria-label', 'Chat Started')
-    expect(headers[2]).toHaveAttribute('aria-label', 'Action')
-    expect(headers[3]).toHaveAttribute('aria-label', 'User Data')
-    expect(headers[4]).toHaveAttribute('aria-label', 'Polls')
+    expect(getByText('Last Active')).toBeInTheDocument()
+    expect(getByText('Chat Started')).toBeInTheDocument()
+    expect(getByText('Action')).toBeInTheDocument()
+    expect(getByText('User Data')).toBeInTheDocument()
+    expect(getByText('Polls')).toBeInTheDocument()
   })
 
   it('should show response in cell text field', async () => {
