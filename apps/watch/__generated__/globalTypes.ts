@@ -389,6 +389,7 @@ export interface VideosFilter {
   labels?: VideoLabel[] | null;
   ids?: string[] | null;
   subtitleLanguageIds?: string[] | null;
+  published?: boolean | null;
 }
 
 //==============================================================
