@@ -137,13 +137,13 @@ export function BackgroundColor(): ReactElement {
     }
   }
 
-  function validateHexString(color: string): boolean {
+  function isValidHex(color: string): boolean {
     const hexColorRegex = /^#[0-9A-Fa-f]{6}$/
     return hexColorRegex.test(color)
   }
 
   async function handleFieldChange(color: string): Promise<void> {
-    if (validateHexString(color)) {
+    if (isValidHex(color)) {
       await handleColorChange(color)
     }
     if (color.length < 8) {
@@ -152,7 +152,7 @@ export function BackgroundColor(): ReactElement {
   }
 
   async function handleBlur(color: string): Promise<void> {
-    if (validateHexString(color)) {
+    if (isValidHex(color)) {
       await handleColorChange(color)
     } else {
       setColor(selectedColor)
@@ -202,8 +202,8 @@ export function BackgroundColor(): ReactElement {
           onBlur={async (e) => {
             await handleBlur(e.target.value)
           }}
-          helperText={!validateHexString(color) ? 'Invalid HEX color code' : ''}
-          error={!validateHexString(color)}
+          helperText={!isValidHex(color) ? 'Invalid HEX color code' : ''}
+          error={!isValidHex(color)}
           sx={{ flexGrow: 1 }}
           InputProps={{
             startAdornment: (
