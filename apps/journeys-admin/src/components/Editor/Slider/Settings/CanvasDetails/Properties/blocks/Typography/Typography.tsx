@@ -36,8 +36,10 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
         id={`${id}-typography-variant`}
         icon={<Type2Icon />}
         name={t('Text Variant')}
-        value={capitalize(
-          lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
+        value={t(
+          capitalize(
+            lowerCase(variant?.toString() ?? 'body2').replace('h', 'header')
+          )
         )}
       >
         <Variant />
@@ -47,7 +49,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
         id={`${id}-typography-color`}
         icon={<ColorDisplayIcon color={color} />}
         name={t('Color')}
-        value={capitalize(color?.toString() ?? 'primary')}
+        value={capitalize(color?.toString() ?? t('Primary'))}
       >
         <Color />
       </Accordion>
@@ -56,7 +58,7 @@ export function Typography(block: TreeBlock<TypographyBlock>): ReactElement {
         id={`${id}-typography-alignment`}
         icon={<AlignLeftIcon />}
         name={t('Text Alignment')}
-        value={capitalize(align?.toString() ?? 'Left')}
+        value={capitalize(align?.toString() ?? t('Left'))}
       >
         <Align />
       </Accordion>

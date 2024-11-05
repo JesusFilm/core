@@ -153,7 +153,7 @@ export function Card({
         icon={<FlexAlignBottom1Icon />}
         id={`${id}-layout`}
         name={t('Layout')}
-        value={fullscreen ? 'Expanded' : 'Contained'}
+        value={fullscreen ? t('Expanded') : t('Contained')}
       >
         <CardLayout />
       </Accordion>
