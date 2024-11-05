@@ -20,6 +20,10 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Tooltip } from '../../../../../Tooltip'
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../BaseNode'
+import {
+  ARROW_OFFSET,
+  ORIGINAL_TOOLTIP_MARGIN
+} from '../../../../../Tooltip/Tooltip'
 
 // Calculates the tooltip offset to work with react flow zoom
 const getOffset = (store: ReactFlowStore): number => {
@@ -28,7 +32,10 @@ const getOffset = (store: ReactFlowStore): number => {
   // (react flow zoom min/max, tooltip offset to match zoom) used to calculate slope-intercept:
   // (0.5, -4)
   // (2.0, 5)
-  return 6 * zoom - 7
+  const slope = 6 * zoom - 7
+
+  // Needed to 're-add' the original tooltip placement margin so the tooltip placement will scale correctly
+  return slope + ORIGINAL_TOOLTIP_MARGIN - ARROW_OFFSET
 }
 
 export function SocialPreviewNode(): ReactElement {
@@ -89,22 +96,10 @@ export function SocialPreviewNode(): ReactElement {
       {({ selected }) => (
         <Tooltip
           title={t('Social Media Preview')}
-          placement="top"
+          offset={scaledOffset}
           open={activeSlide === ActiveSlide.JourneyFlow && showTooltip}
           onOpen={() => setShowTooltip(true)}
           onClose={() => setShowTooltip(false)}
-          slotProps={{
-            popper: {
-              modifiers: [
-                {
-                  name: 'offset',
-                  options: {
-                    offset: [0, scaledOffset]
-                  }
-                }
-              ]
-            }
-          }}
         >
           <Card
             data-testid="SocialPreviewNode"
@@ -119,8 +114,8 @@ export function SocialPreviewNode(): ReactElement {
                   selected === true
                     ? theme.palette.primary.main
                     : selected === 'descendant'
-                    ? theme.palette.divider
-                    : 'transparent'
+                      ? theme.palette.divider
+                      : 'transparent'
                 }`,
               outlineOffset: '5px',
               ...(showAnalytics === true && {

@@ -13,20 +13,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useCustomDomainsQuery } from '../../../../../../libs/useCustomDomainsQuery'
 import { Tooltip } from '../../../../../Tooltip'
 
-const tooltipProps = {
-  placement: 'top' as const,
-  slotProps: {
-    popper: {
-      sx: {
-        [`&.${tooltipClasses.popper}[data-popper-placement*="top"] .${tooltipClasses.tooltip}`]:
-          {
-            marginBottom: '6px'
-          }
-      }
-    }
-  }
-}
-
 interface MessageBubbleProps {
   height?: number
   width: number
@@ -117,7 +103,7 @@ export function Message(): ReactElement {
             <MessageBubble width={315} direction="right">
               <Stack direction="column" sx={{ p: 1 }}>
                 <Stack direction="row" gap={2} alignItems="center">
-                  <Tooltip title={t('Social Image')} {...tooltipProps}>
+                  <Tooltip title={t('Social Image')}>
                     {journey?.primaryImageBlock?.src == null ? (
                       <Box
                         width={78}
@@ -146,7 +132,7 @@ export function Message(): ReactElement {
                     gap={1.5}
                     data-testid="SecondaryText"
                   >
-                    <Tooltip title={t('Headline')} {...tooltipProps}>
+                    <Tooltip title={t('Headline')}>
                       {isEmpty(journey?.seoTitle?.trim()) ? (
                         <Box
                           width={205}
@@ -168,7 +154,7 @@ export function Message(): ReactElement {
                       )}
                     </Tooltip>
 
-                    <Tooltip title={t('Secondary Text')} {...tooltipProps}>
+                    <Tooltip title={t('Secondary Text')}>
                       {isEmpty(journey?.seoDescription?.trim()) ? (
                         <Box
                           width={144}
