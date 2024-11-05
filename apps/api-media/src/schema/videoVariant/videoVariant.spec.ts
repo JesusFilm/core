@@ -26,6 +26,7 @@ describe('videoVariant', () => {
         videoVariants {
           id
           hls
+          downloadable
           downloads {
             id
             quality
@@ -71,6 +72,7 @@ describe('videoVariant', () => {
           edition: 'base',
           slug: 'videoSlug',
           videoId: 'videoId',
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -122,6 +124,7 @@ describe('videoVariant', () => {
         {
           id: 'videoVariantId',
           hls: null,
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -164,6 +167,7 @@ describe('videoVariant', () => {
           edition: 'base',
           slug: 'videoSlug',
           videoId: 'videoId',
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -217,6 +221,7 @@ describe('videoVariant', () => {
         {
           id: 'videoVariantId',
           hls: null,
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -259,6 +264,7 @@ describe('videoVariant', () => {
           edition: 'base',
           slug: 'videoSlug',
           videoId: 'videoId',
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -302,6 +308,7 @@ describe('videoVariant', () => {
         {
           id: 'videoVariantId',
           hls: null,
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -360,7 +367,8 @@ describe('videoVariant', () => {
           slug: 'videoSlug',
           videoId: 'videoId',
           languageId: 'languageId',
-          share: 'share'
+          share: 'share',
+          downloadable: true
         })
         const result = await authClient({
           document: VIDEO_VARIANT_CREATE_MUTATION,
@@ -374,7 +382,8 @@ describe('videoVariant', () => {
               edition: 'base',
               slug: 'videoSlug',
               videoId: 'videoId',
-              share: 'share'
+              share: 'share',
+              downloadable: true
             }
           }
         })
@@ -388,7 +397,8 @@ describe('videoVariant', () => {
             edition: 'base',
             slug: 'videoSlug',
             videoId: 'videoId',
-            share: 'share'
+            share: 'share',
+            downloadable: true
           }
         })
         expect(result).toHaveProperty('data.videoVariantCreate', {
@@ -409,7 +419,8 @@ describe('videoVariant', () => {
               edition: 'base',
               slug: 'videoSlug',
               videoId: 'videoId',
-              share: 'share'
+              share: 'share',
+              downloadable: true
             }
           }
         })
@@ -441,7 +452,8 @@ describe('videoVariant', () => {
           slug: 'videoSlug',
           videoId: 'videoId',
           languageId: 'languageId',
-          share: 'share'
+          share: 'share',
+          downloadable: true
         })
         const result = await authClient({
           document: VIDEO_VARIANT_UPDATE_MUTATION,
@@ -455,7 +467,8 @@ describe('videoVariant', () => {
               edition: 'base',
               slug: 'videoSlug',
               videoId: 'videoId',
-              share: 'share'
+              share: 'share',
+              downloadable: true
             }
           }
         })
@@ -469,7 +482,8 @@ describe('videoVariant', () => {
             edition: 'base',
             slug: 'videoSlug',
             videoId: 'videoId',
-            share: 'share'
+            share: 'share',
+            downloadable: true
           }
         })
         expect(result).toHaveProperty('data.videoVariantUpdate', {
@@ -490,7 +504,8 @@ describe('videoVariant', () => {
               edition: 'base',
               slug: 'videoSlug',
               videoId: 'videoId',
-              share: 'share'
+              share: 'share',
+              downloadable: true
             }
           }
         })
@@ -522,7 +537,8 @@ describe('videoVariant', () => {
           slug: 'videoSlug',
           videoId: 'videoId',
           languageId: 'languageId',
-          share: 'share'
+          share: 'share',
+          downloadable: true
         })
         const result = await authClient({
           document: VIDEO_VARIANT_DELETE_MUTATION,

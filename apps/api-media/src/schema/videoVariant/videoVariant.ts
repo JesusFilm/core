@@ -13,6 +13,7 @@ builder.prismaObject('VideoVariant', {
     hls: t.exposeString('hls', { nullable: true }),
     dash: t.exposeString('dash', { nullable: true }),
     share: t.exposeString('share', { nullable: true }),
+    downloadable: t.exposeBoolean('downloadable'),
     downloads: t.relation('downloads'),
     duration: t.int({ resolve: ({ duration }) => duration ?? 0 }),
     language: t.field({
@@ -78,7 +79,10 @@ builder.mutationFields((t) => ({
     resolve: async (query, _parent, { input }) => {
       return await prisma.videoVariant.create({
         ...query,
-        data: input
+        data: {
+          ...input,
+          downloadable: input.downloadable ?? true
+        }
       })
     }
   }),
@@ -99,7 +103,8 @@ builder.mutationFields((t) => ({
           languageId: input.languageId ?? undefined,
           slug: input.slug ?? undefined,
           videoId: input.videoId ?? undefined,
-          edition: input.edition ?? undefined
+          edition: input.edition ?? undefined,
+          downloadable: input.downloadable ?? undefined
         }
       })
     }
