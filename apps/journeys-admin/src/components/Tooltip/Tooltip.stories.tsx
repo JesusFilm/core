@@ -1,51 +1,65 @@
 import Button from '@mui/material/Button'
 import { Meta, StoryObj } from '@storybook/react'
-import { ComponentProps } from 'react'
+import { ComponentPropsWithoutRef } from 'react'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { Tooltip } from '.'
 
-const TooltipDemo: Meta<typeof Tooltip> = {
+type StoryArgs = ComponentPropsWithoutRef<typeof Tooltip>
+
+const meta = {
   ...simpleComponentConfig,
   component: Tooltip,
-  title: 'Journeys-Admin/Tooltip'
-}
+  title: 'Journeys-Admin/Tooltip',
+  decorators: [
+    ...simpleComponentConfig.decorators,
+    (Story) => (
+      <div
+        style={{
+          height: '100vh',
+          display: 'grid',
+          placeItems: 'center',
+          border: '1px solid orange'
+        }}
+      >
+        <Story />
+      </div>
+    )
+  ]
+} satisfies Meta<StoryArgs>
 
-type Story = StoryObj<ComponentProps<typeof Tooltip>>
+export default meta
 
-const Template: Story = {
-  render: (args) => (
-    <Tooltip {...args}>
-      <Button>Tooltip</Button>
-    </Tooltip>
-  )
-}
+type Story = StoryObj<typeof meta>
 
-export const Default = {
-  ...Template,
+export const Default: Story = {
   args: {
     title: 'Default',
+    children: <Button>Hello world</Button>
+  }
+}
+
+export const Controlled: Story = {
+  args: {
+    ...Default.args,
+    title: 'Controlled',
     open: true
   }
 }
 
-export const Placed = {
-  ...Template,
+export const Placed: Story = {
   args: {
+    ...Default.args,
     title: 'Placed',
-    placement: 'right',
-    open: true
+    placement: 'bottom'
   }
 }
 
-export const WithoutArrow = {
-  ...Template,
+export const Offset: Story = {
   args: {
-    title: 'Arrow',
-    arrow: false,
-    open: true
+    ...Default.args,
+    title: 'Offset',
+    offset: 24
   }
 }
-
-export default TooltipDemo
