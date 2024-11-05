@@ -307,11 +307,6 @@ export class JourneyResolver {
             }
           ]
         }
-      } else {
-        filter.journeyCollectionJourneys = { none: {} }
-        filter.team = {
-          customDomains: { none: { routeAllTeamJourneys: true } }
-        }
       }
     }
     const journey = await this.prismaService.journey.findUnique({

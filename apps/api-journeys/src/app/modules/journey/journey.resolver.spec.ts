@@ -777,9 +777,7 @@ describe('JourneyResolver', () => {
       )
       expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
         where: {
-          slug: 'journey-slug',
-          journeyCollectionJourneys: { none: {} },
-          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
+          slug: 'journey-slug'
         }
       })
     })
@@ -791,9 +789,7 @@ describe('JourneyResolver', () => {
       )
       expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
         where: {
-          id: 'journeyId',
-          journeyCollectionJourneys: { none: {} },
-          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
+          id: 'journeyId'
         }
       })
     })
