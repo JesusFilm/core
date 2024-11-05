@@ -5,10 +5,10 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
+import { object, string } from 'yup'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -25,6 +25,7 @@ import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { CardBlockBackgroundColorUpdate } from '../../../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
 import { CardFields } from '../../../../../../../../../../__generated__/CardFields'
+import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 
 import { DebouncedHexColorPicker } from './DebouncedHexColorPicker'
 import { PaletteColorPicker } from './PaletteColorPicker'
@@ -71,6 +72,7 @@ export function BackgroundColor(): ReactElement {
   const [cardBlockUpdate] = useMutation<CardBlockBackgroundColorUpdate>(
     CARD_BLOCK_BACKGROUND_COLOR_UPDATE
   )
+  const { t } = useTranslation('apps-journeys-admin')
 
   const cardBlock = (
     selectedBlock?.__typename === 'CardBlock'
@@ -89,11 +91,6 @@ export function BackgroundColor(): ReactElement {
   const [tabValue, setTabValue] = useState(0)
   const selectedColor =
     cardBlock?.backgroundColor ?? cardTheme.palette.background.paper
-  const [color, setColor] = useState<string>(selectedColor)
-
-  useEffect(() => {
-    setColor(selectedColor)
-  }, [selectedColor])
 
   function handleTabChange(_event, newValue: number): void {
     setTabValue(newValue)
@@ -142,22 +139,16 @@ export function BackgroundColor(): ReactElement {
     return hexColorRegex.test(color)
   }
 
-  async function handleFieldChange(color: string): Promise<void> {
-    if (isValidHex(color)) {
-      await handleColorChange(color)
-    }
-    if (color.length < 8) {
-      setColor(color)
-    }
-  }
-
-  async function handleBlur(color: string): Promise<void> {
-    if (isValidHex(color)) {
-      await handleColorChange(color)
-    } else {
-      setColor(selectedColor)
-    }
-  }
+  const validationSchema = object({
+    color: string()
+      .required(t('Invalid HEX color code'))
+      .test('valid-hex-color', t('Invalid HEX color code'), (value) => {
+        if (isValidHex(value)) {
+          void handleColorChange(value)
+          return true
+        }
+      })
+  })
 
   const palettePicker = (
     <PaletteColorPicker
@@ -180,8 +171,6 @@ export function BackgroundColor(): ReactElement {
     </Box>
   )
 
-  const { t } = useTranslation('apps-journeys-admin')
-
   return (
     <>
       <Stack
@@ -191,30 +180,22 @@ export function BackgroundColor(): ReactElement {
         data-testid="BackgroundColor"
       >
         <Swatch id={`bg-color-${selectedColor}`} color={selectedColor} />
-        <TextField
+        <TextFieldForm
+          id="color"
           data-testid="bgColorTextField"
-          variant="filled"
           hiddenLabel
-          value={color}
-          onChange={async (e) => {
-            await handleFieldChange(e.target.value)
-          }}
-          onBlur={async (e) => {
-            await handleBlur(e.target.value)
-          }}
-          helperText={!isValidHex(color) ? 'Invalid HEX color code' : ''}
-          error={!isValidHex(color)}
-          sx={{ flexGrow: 1 }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Edit2Icon
-                  onClick={(e) => handleTabChange(e, 1)}
-                  style={{ cursor: 'pointer' }}
-                />
-              </InputAdornment>
-            )
-          }}
+          label=""
+          initialValue={selectedColor}
+          validationSchema={validationSchema}
+          onSubmit={handleColorChange}
+          startIcon={
+            <InputAdornment position="start">
+              <Edit2Icon
+                onClick={(e) => handleTabChange(e, 1)}
+                style={{ cursor: 'pointer' }}
+              />
+            </InputAdornment>
+          }
         />
       </Stack>
       <Box

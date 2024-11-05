@@ -304,10 +304,7 @@ describe('BackgroundColor', () => {
     const textField = screen.getByRole('textbox')
     fireEvent.change(textField, { target: { value: '#B0BEC' } })
 
-    expect(screen.getByText('Invalid HEX color code')).toBeInTheDocument()
-
-    fireEvent.blur(textField)
-    expect(textField).toHaveValue('#FEFEFE')
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
 
     fireEvent.change(textField, { target: { value: '#B0BEC5' } })
     await waitFor(() => expect(result).toHaveBeenCalled())
