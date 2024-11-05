@@ -28,6 +28,7 @@ export function HelpButton(): ReactElement {
           alignItems="center"
           sx={{ px: 4, py: 3, color: 'secondary.main' }}
           justifyContent="space-between"
+          spacing={3}
         >
           <Typography variant="body2" color="secondary.main">
             {t('Learn how to get your direct chat link for any platform')}
