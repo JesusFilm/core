@@ -574,6 +574,7 @@ input VideoVariantCreateInput {
   duration: Int
   languageId: String!
   slug: String!
+  downloadable: Boolean!
 }
 
 type VideoVariantDownload {
@@ -620,6 +621,7 @@ input VideoVariantUpdateInput {
   duration: Int
   languageId: String
   slug: String
+  downloadable: Boolean
 }
 
 input VideosFilter {
