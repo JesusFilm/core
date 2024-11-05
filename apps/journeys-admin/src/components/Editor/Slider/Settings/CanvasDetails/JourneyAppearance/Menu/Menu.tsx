@@ -13,7 +13,12 @@ export function Menu(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <Accordion id="menu" icon={<Menu1 />} name={t('Menu')}>
+    <Accordion
+      id="menu"
+      icon={<Menu1 sx={{ opacity: 0.85 }} />}
+      name={t('Menu')}
+      height="80px"
+    >
       <Stack sx={{ p: 4, pt: 2 }} spacing={4} data-testid="Menu">
         <MenuIconSelect />
         <MenuActionButton />

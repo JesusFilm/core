@@ -46,7 +46,12 @@ export function DisplayTitle(): ReactElement {
   }
 
   return (
-    <Accordion id="display title" icon={<Type3 />} name={t('Display Title')}>
+    <Accordion
+      id="display title"
+      icon={<Type3 sx={{ opacity: 0.85 }} />}
+      name={t('Display Title')}
+      height="80px"
+    >
       <Stack sx={{ p: 4, pt: 2 }} data-testid="DisplayTitle">
         <TextFieldForm
           id="display-title"

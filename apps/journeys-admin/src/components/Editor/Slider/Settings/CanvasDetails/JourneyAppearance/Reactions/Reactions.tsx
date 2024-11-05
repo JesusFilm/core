@@ -57,7 +57,12 @@ export function Reactions(): ReactElement {
   }
 
   return (
-    <Accordion id="reactions" icon={<Share />} name={t('Reactions')}>
+    <Accordion
+      id="reactions"
+      icon={<Share sx={{ opacity: 0.85 }} />}
+      name={t('Reactions')}
+      height="80px"
+    >
       <Stack sx={{ pb: 4 }} data-testid="Reactions">
         <ReactionOption
           title={t('Share')}

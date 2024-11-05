@@ -37,8 +37,9 @@ export function Chat(): ReactElement {
   return (
     <Accordion
       id="chat platforms"
-      icon={<MessageTyping />}
+      icon={<MessageTyping sx={{ opacity: 0.85 }} />}
       name={t('Chat Widget')}
+      height="80px"
     >
       <Box data-testid="Chat">
         <ChatOption

@@ -205,7 +205,12 @@ export function Logo(): ReactElement {
   }
 
   return (
-    <Accordion id="logo" icon={<DiamondIcon />} name={t('Logo')}>
+    <Accordion
+      id="logo"
+      icon={<DiamondIcon sx={{ opacity: 0.85 }} />}
+      name={t('Logo')}
+      height="80px"
+    >
       <Stack gap={4} sx={{ p: 4, pt: 2 }} data-testid="Logo">
         <ImageSource
           selectedBlock={imageBlock}

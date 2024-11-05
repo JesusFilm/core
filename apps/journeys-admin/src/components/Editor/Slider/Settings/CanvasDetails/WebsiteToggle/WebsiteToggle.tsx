@@ -49,6 +49,7 @@ export function WebsiteToggle(): ReactElement {
       fullWidth
       sx={{
         p: 4,
+        pb: 0,
         '& .MuiToggleButton-root': {
           '&:first-of-type': {
             borderTopLeftRadius: 8,

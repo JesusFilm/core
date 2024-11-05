@@ -17,6 +17,7 @@ interface AccordionProps {
   name: string
   value?: string
   param?: string
+  height?: string
   children: ReactNode
 }
 
@@ -26,6 +27,7 @@ export function Accordion({
   name,
   value,
   param,
+  height,
   children
 }: AccordionProps): ReactElement {
   const router = useRouter()
@@ -64,12 +66,21 @@ export function Accordion({
       expanded={expanded}
       onChange={handleClick}
       onClick={(e) => e.stopPropagation()}
-      sx={{ p: 0, '&.Mui-expanded:before': { opacity: 1 } }}
+      sx={{
+        p: 0,
+        '&.Mui-expanded:before': { opacity: 1 }
+      }}
       data-testid={`Accordion-${id ?? ''}`}
     >
       <AccordionSummary
-        sx={{ p: 4, '.MuiAccordionSummary-content': { m: 0 } }}
-        expandIcon={<ExpandMoreIcon sx={{ color: 'primary.main' }} />}
+        sx={{
+          p: 4,
+          '.MuiAccordionSummary-content': { m: 0 },
+          height: height ?? 'auto'
+        }}
+        expandIcon={
+          <ExpandMoreIcon sx={{ color: 'secondary.light', opacity: 0.7 }} />
+        }
         data-testid="AccordionSummary"
       >
         <Stack spacing={3} alignItems="center" direction="row">
@@ -83,7 +94,7 @@ export function Accordion({
                 <Typography noWrap>{value !== '' ? value : 'None'}</Typography>
               </>
             ) : (
-              <Typography variant="subtitle1" noWrap>
+              <Typography variant="subtitle2" noWrap>
                 {name}
               </Typography>
             )}

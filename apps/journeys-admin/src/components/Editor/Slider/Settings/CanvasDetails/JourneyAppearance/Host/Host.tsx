@@ -124,8 +124,9 @@ export function Host(): ReactElement {
   return (
     <Accordion
       id="author details"
-      icon={<UserProfileCircleIcon />}
+      icon={<UserProfileCircleIcon sx={{ opacity: 0.85 }} />}
       name={t('Hosted By')}
+      height="80px"
     >
       <Box data-testid="Host">
         {openHostSelection && (
