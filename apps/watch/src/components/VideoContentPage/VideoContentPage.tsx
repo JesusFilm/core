@@ -138,12 +138,14 @@ export function VideoContentPage(): ReactElement {
             <VideoContent />
             <Box sx={{ display: { xs: 'none', md: 'block' } }}>
               <Stack spacing={5} mb={8} direction={{ md: 'column', lg: 'row' }}>
-                {variant != null && variant.downloads.length > 0 && (
-                  <DownloadButton
-                    variant="button"
-                    onClick={() => setOpenDownload(true)}
-                  />
-                )}
+                {variant != null &&
+                  variant.downloads.length > 0 &&
+                  variant.downloadable && (
+                    <DownloadButton
+                      variant="button"
+                      onClick={() => setOpenDownload(true)}
+                    />
+                  )}
                 <ShareButton
                   variant="button"
                   onClick={() => setOpenShare(true)}
