@@ -16,6 +16,7 @@ builder.mutationType({
   fields: (t) => ({
     siteCreate: t.withAuth({ isAuthenticated: true }).prismaField({
       type: 'sites',
+      nullable: false,
       errors: {
         types: [Error]
       },

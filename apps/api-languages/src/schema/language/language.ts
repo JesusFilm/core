@@ -20,30 +20,31 @@ const LanguagesFilter = builder.inputType('LanguagesFilter', {
 
 builder.prismaObject('AudioPreview', {
   fields: (t) => ({
-    language: t.relation('language'),
-    value: t.exposeString('value'),
-    duration: t.exposeInt('duration'),
-    size: t.exposeInt('size'),
-    bitrate: t.exposeInt('bitrate'),
-    codec: t.exposeString('codec')
+    language: t.relation('language', { nullable: false }),
+    value: t.exposeString('value', { nullable: false }),
+    duration: t.exposeInt('duration', { nullable: false }),
+    size: t.exposeInt('size', { nullable: false }),
+    bitrate: t.exposeInt('bitrate', { nullable: false }),
+    codec: t.exposeString('codec', { nullable: false })
   })
 })
 
 builder.prismaObject('LanguageName', {
   fields: (t) => ({
-    value: t.exposeString('value'),
-    primary: t.exposeBoolean('primary'),
-    language: t.relation('language')
+    value: t.exposeString('value', { nullable: false }),
+    primary: t.exposeBoolean('primary', { nullable: false }),
+    language: t.relation('language', { nullable: false })
   })
 })
 
 export const Language = builder.prismaObject('Language', {
   fields: (t) => ({
-    id: t.exposeID('id'),
-    bcp47: t.exposeString('bcp47', { nullable: true }),
-    iso3: t.exposeString('iso3', { nullable: true }),
-    slug: t.exposeString('slug', { nullable: true }),
+    id: t.exposeID('id', { nullable: false }),
+    bcp47: t.exposeString('bcp47'),
+    iso3: t.exposeString('iso3'),
+    slug: t.exposeString('slug'),
     name: t.relation('name', {
+      nullable: false,
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
@@ -63,10 +64,9 @@ export const Language = builder.prismaObject('Language', {
         }
       }
     }),
-    countryLanguages: t.relation('countryLanguages'),
-    audioPreview: t.relation('audioPreview', { nullable: true }),
+    countryLanguages: t.relation('countryLanguages', { nullable: false }),
+    audioPreview: t.relation('audioPreview'),
     primaryCountryId: t.string({
-      nullable: true,
       resolve: async (parent) => {
         const primaryCountryLanguage = await prisma.countryLanguage.findFirst({
           where: {
@@ -81,6 +81,7 @@ export const Language = builder.prismaObject('Language', {
       }
     }),
     speakerCount: t.int({
+      nullable: false,
       resolve: async (parent) => {
         const result = await prisma.countryLanguage.aggregate({
           where: { languageId: parent.id },
@@ -90,6 +91,7 @@ export const Language = builder.prismaObject('Language', {
       }
     }),
     countriesCount: t.int({
+      nullable: false,
       resolve: async (parent) => {
         return await prisma.countryLanguage.count({
           where: { languageId: parent.id }
@@ -150,6 +152,7 @@ builder.queryFields((t) => ({
   }),
 
   languagesCount: t.int({
+    nullable: false,
     args: { where: t.arg({ type: LanguagesFilter, required: false }) },
     resolve: async (_parent, { where }) => {
       const filter: Prisma.LanguageWhereInput = {
