@@ -5,7 +5,10 @@ import MuiTooltip, {
 } from '@mui/material/Tooltip'
 import { ReactElement } from 'react'
 
-const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
+export const ARROW_OFFSET = 6
+export const ORIGINAL_TOOLTIP_MARGIN = 14
+
+const StyledTooltip = styled(({ className, ...props }: MuiTooltipProps) => (
   <MuiTooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
   [`& .${tooltipClasses.tooltip}`]: {
@@ -18,16 +21,55 @@ const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
   },
   [`& .${tooltipClasses.arrow}`]: {
     color: theme.palette.secondary.dark
-  }
+  },
+  // Reset margins so the offset will start from the edge of the anchor
+  [`&.${tooltipClasses.popper}[data-popper-placement*="bottom"] .${tooltipClasses.tooltip}`]:
+    {
+      marginTop: '0px'
+    },
+  [`&.${tooltipClasses.popper}[data-popper-placement*="top"] .${tooltipClasses.tooltip}`]:
+    {
+      marginBottom: '0px'
+    }
 }))
 
-interface TooltipProps extends MuiTooltipProps {
-  offset?: string | number
+interface TooltipProps
+  extends Pick<
+    MuiTooltipProps,
+    'title' | 'open' | 'children' | 'onOpen' | 'onClose'
+  > {
+  offset?: number
+  placement?: 'top' | 'bottom'
 }
 
-export function Tooltip({ children, ...rest }: TooltipProps): ReactElement {
+export function Tooltip({
+  children,
+  title,
+  placement = 'top',
+  offset = 0,
+  ...rest
+}: TooltipProps): ReactElement {
+  console.log({ offset })
   return (
-    <StyledTooltip arrow {...rest} enterTouchDelay={0}>
+    <StyledTooltip
+      {...rest}
+      title={title}
+      placement={placement}
+      arrow
+      enterTouchDelay={0}
+      slotProps={{
+        popper: {
+          modifiers: [
+            {
+              name: 'offset',
+              options: {
+                offset: [0, offset + ARROW_OFFSET]
+              }
+            }
+          ]
+        }
+      }}
+    >
       {children}
     </StyledTooltip>
   )
