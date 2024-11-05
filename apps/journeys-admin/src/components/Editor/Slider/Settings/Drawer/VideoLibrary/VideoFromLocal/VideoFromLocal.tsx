@@ -36,8 +36,9 @@ export function VideoFromLocal({
       <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
         {query === '' && (
           <Box sx={{ pb: 4, px: 6 }}>
+            {/* eslint-disable-next-line i18next/no-literal-string */}
             <Typography variant="overline" color="primary">
-              {'Jesus Film Library'}
+              Jesus Film Library
             </Typography>
             <Typography variant="h6">{t('Featured Videos')}</Typography>
           </Box>
