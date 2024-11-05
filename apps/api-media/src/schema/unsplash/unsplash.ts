@@ -15,6 +15,7 @@ import {
 builder.queryFields((t) => ({
   listUnsplashCollectionPhotos: t.field({
     type: [UnsplashPhoto],
+    nullable: false,
     args: {
       collectionId: t.arg.string({ required: true }),
       page: t.arg.int(),
@@ -32,6 +33,7 @@ builder.queryFields((t) => ({
   }),
   searchUnsplashPhotos: t.field({
     type: UnsplashQueryResponse,
+    nullable: false,
     args: {
       query: t.arg.string({ required: true }),
       page: t.arg.int(),
@@ -72,6 +74,7 @@ builder.queryFields((t) => ({
 builder.mutationFields((t) => ({
   triggerUnsplashDownload: t.field({
     type: 'Boolean',
+    nullable: false,
     args: {
       url: t.arg.string({ required: true })
     },

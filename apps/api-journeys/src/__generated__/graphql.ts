@@ -2460,7 +2460,6 @@ export type Query = {
   userTeamInvites: Array<UserTeamInvite>;
   userTeams: Array<UserTeam>;
   video: Video;
-  videoCloudflareAssets: Array<CloudflareR2>;
   videoEdition?: Maybe<VideoEdition>;
   videoEditions: Array<VideoEdition>;
   videoVariants: Array<VideoVariant>;
@@ -2734,11 +2733,6 @@ export type QueryUserTeamsArgs = {
 export type QueryVideoArgs = {
   id: Scalars['ID']['input'];
   idType?: InputMaybe<IdType>;
-};
-
-
-export type QueryVideoCloudflareAssetsArgs = {
-  videoId: Scalars['ID']['input'];
 };
 
 
@@ -3515,6 +3509,7 @@ export type Video = {
   children: Array<Video>;
   /** the number value of the amount of children on a video */
   childrenCount: Scalars['Int']['output'];
+  cloudflareAssets: Array<CloudflareR2>;
   description: Array<VideoDescription>;
   id: Scalars['ID']['output'];
   /** @deprecated use images.mobileCinematicHigh */

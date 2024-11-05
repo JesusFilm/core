@@ -7,9 +7,9 @@ export const UnsplashPhotoLinks =
 
 UnsplashPhotoLinks.implement({
   fields: (t) => ({
-    self: t.exposeString('self'),
-    html: t.exposeString('html'),
-    download: t.exposeString('download'),
-    download_location: t.exposeString('download_location')
+    self: t.exposeString('self', { nullable: false }),
+    html: t.exposeString('html', { nullable: false }),
+    download: t.exposeString('download', { nullable: false }),
+    download_location: t.exposeString('download_location', { nullable: false })
   })
 })

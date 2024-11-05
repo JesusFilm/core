@@ -679,7 +679,7 @@
   "{{ displayName }} & Team": "{{ displayName }} & Team",
   "{{ displayName }} Team": "{{ displayName }} Команда",
   "Manage Members": "Управление участниками",
-  "Invite team member": "Пригласить члена команды",
+  "Invite team member": "Пригласить участника команды",
   "Invited": "Приглашенный",
   "Manager": "Менеджер",
   "Member": "Член",
