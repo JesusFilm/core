@@ -18,12 +18,12 @@ import {
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { Tooltip } from '../../../../../Tooltip'
-import { useUpdateEdge } from '../../libs/useUpdateEdge'
-import { BaseNode, HandleVariant } from '../BaseNode'
 import {
   ARROW_OFFSET,
   ORIGINAL_TOOLTIP_MARGIN
 } from '../../../../../Tooltip/Tooltip'
+import { useUpdateEdge } from '../../libs/useUpdateEdge'
+import { BaseNode, HandleVariant } from '../BaseNode'
 
 // Calculates the tooltip offset to work with react flow zoom
 const getOffset = (store: ReactFlowStore): number => {
