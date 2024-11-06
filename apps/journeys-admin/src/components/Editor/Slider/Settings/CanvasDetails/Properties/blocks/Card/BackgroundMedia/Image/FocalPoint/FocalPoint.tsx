@@ -50,17 +50,17 @@ export function FocalPoint({
     [imageBlock, updateImageBlock]
   )
 
+  function updatePoint(point: Position): void {
+    const newPosition = clampPosition(point)
+    setLocalPosition(newPosition)
+    debouncedUpdateImageBlock(newPosition)
+  }
+
   function handleMouseMove(e: React.MouseEvent): void {
     if (isDragging) {
       const point = calculatePoint(e, imageRef)
       if (point != null) updatePoint(point)
     }
-  }
-
-  function updatePoint(point: Position): void {
-    const newPosition = clampPosition(point)
-    setLocalPosition(newPosition)
-    debouncedUpdateImageBlock(newPosition)
   }
 
   function handleMouseDown(e: React.MouseEvent): void {
