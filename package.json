@@ -261,7 +261,7 @@
     "@types/react-window": "^1.8.8",
     "@types/stylis": "^4.2.0",
     "@types/ua-parser-js": "^0.7.37",
-    "@types/uuid": "^9.0.3",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "7.18.0",
     "@typescript-eslint/parser": "7.18.0",
     "@vidavidorra/commitlint-config": "^5.0.2",
