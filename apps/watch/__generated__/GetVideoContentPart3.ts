@@ -63,6 +63,7 @@ export interface GetVideoContentPart3_content_variant {
   id: string;
   duration: number;
   hls: string | null;
+  downloadable: boolean;
   downloads: GetVideoContentPart3_content_variant_downloads[];
   language: GetVideoContentPart3_content_variant_language;
   /**

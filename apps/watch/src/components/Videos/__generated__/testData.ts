@@ -31,7 +31,7 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'VideoDescription',
         value:
-          "This film is a perfect introduction to Jesus through the Gospel of Luke. Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion. \n\nGod creates everything and loves mankind. But mankind disobeys God. God and mankind are separated, but God loves mankind so much, He arranges redemption for mankind. He sends his Son Jesus to be a perfect sacrifice to make amends for us.\n\nBefore Jesus arrives, God prepares mankind. Prophets speak of the birth, the life, and the death of Jesus.\n\nJesus attracts attention. He teaches in parables no one really understands, gives sight to the blind, and helps those who no one sees as worth helping.\n\nHe scares the Jewish leaders, they see him as a threat. So they arrange, through Judas the traitor and their Roman oppressors, for the crucifixion of Jesus. They think the matter is settled. But the women who serve Jesus discover an empty tomb. The disciples panic. When Jesus appears, they doubt He's real. But it's what He proclaimed all along: He is their perfect sacrifice, their Savior, victor over death. He ascends to heaven, telling His followers to tell others about Him and His teachings."
+          "This film is a perfect introduction to Jesus through the Gospel of Luke. Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion. &#13;&#13;God creates everything and loves mankind. But mankind disobeys God. God and mankind are separated, but God loves mankind so much, He arranges redemption for mankind. He sends his Son Jesus to be a perfect sacrifice to make amends for us.&#13;&#13;Before Jesus arrives, God prepares mankind. Prophets speak of the birth, the life, and the death of Jesus.&#13;&#13;Jesus attracts attention. He teaches in parables no one really understands, gives sight to the blind, and helps those who no one sees as worth helping.&#13;&#13;He scares the Jewish leaders, they see him as a threat. So they arrange, through Judas the traitor and their Roman oppressors, for the crucifixion of Jesus. They think the matter is settled. But the women who serve Jesus discover an empty tomb. The disciples panic. When Jesus appears, they doubt He's real. But it's what He proclaimed all along: He is their perfect sacrifice, their Savior, victor over death. He ascends to heaven, telling His followers to tell others about Him and His teachings."
       }
     ],
     studyQuestions: [
@@ -60,17 +60,18 @@ export const videos: VideoContentFields[] = [
       id: '1_529-jf-0-0',
       duration: 7674,
       hls: 'https://arc.gt/j67rz',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.low,
-          size: 207296233,
+          size: 207141494,
           url: 'https://arc.gt/y1s23'
         },
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.high,
-          size: 2361587773,
+          size: 2358523707,
           url: 'https://arc.gt/7geui'
         }
       ],
@@ -80,9 +81,9 @@ export const videos: VideoContentFields[] = [
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'jesus/english',
-      subtitleCount: 32
+      subtitleCount: 36
     },
-    variantLanguagesCount: 2039,
+    variantLanguagesCount: 2168,
     slug: 'jesus',
     childrenCount: 61
   },
@@ -90,13 +91,7 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '2_GOJ-0-0',
     label: VideoLabel.featureFilm,
-    images: [
-      {
-        __typename: 'CloudflareImage',
-        mobileCinematicHigh:
-          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_GOJ-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-      }
-    ],
+    images: [],
     imageAlt: [
       { __typename: 'VideoImageAlt', value: 'Life of Jesus (Gospel of John)' }
     ],
@@ -111,7 +106,7 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'VideoDescription',
         value:
-          'And truly Jesus did many other signs in the presence of His disciples, which are not written in this book; but these are written that you may believe that Jesus is the Christ, the Son of God, and that believing you may have life in His name. -John 20:30-31 NKJV\n\n" I have come that they may have life, and that they may have it more abundantly." - John 10:10 NKJV\n\n"And this is eternal life, that they may know You, the only true God, and Jesus Christ whom You have sent." - John 17:3 NKJV'
+          'And truly Jesus did many other signs in the presence of His disciples, which are not written in this book; but these are written that you may believe that Jesus is the Christ, the Son of God, and that believing you may have life in His name. -John 20:30-31 NKJV&#13;&#13;" I have come that they may have life, and that they may have it more abundantly." - John 10:10 NKJV&#13;&#13;"And this is eternal life, that they may know You, the only true God, and Jesus Christ whom You have sent." - John 17:3 NKJV'
       }
     ],
     studyQuestions: [],
@@ -123,6 +118,7 @@ export const videos: VideoContentFields[] = [
       id: '2_529-GOJ-0-0',
       duration: 10994,
       hls: 'https://arc.gt/u3kd6',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -145,7 +141,7 @@ export const videos: VideoContentFields[] = [
       slug: 'life-of-jesus-gospel-of-john/english',
       subtitleCount: 0
     },
-    variantLanguagesCount: 23,
+    variantLanguagesCount: 24,
     slug: 'life-of-jesus-gospel-of-john',
     childrenCount: 49
   },
@@ -172,7 +168,7 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'VideoDescription',
         value:
-          "Jesus gets into a boat and tells His disciples they should all go to the other side of the lake. Along the way, Jesus falls asleep. A storm starts to rage. Waves stretch high over the bow. And the boat starts to take on water.\n\nThe whole time, Jesus stays asleep. The disciples hold on tight. They try to keep the boat afloat. Finally, Peter cries out to the still sleeping Jesus. He tells Jesus that the boat is taking on water and that they'll all be drowned.\n\nJesus stands and puts a hand out toward the storm. The storm clears. And the seas immediately calm."
+          "Jesus gets into a boat and tells His disciples they should all go to the other side of the lake. Along the way, Jesus falls asleep. A storm starts to rage. Waves stretch high over the bow. And the boat starts to take on water.&#13;&#13;The whole time, Jesus stays asleep. The disciples hold on tight. They try to keep the boat afloat. Finally, Peter cries out to the still sleeping Jesus. He tells Jesus that the boat is taking on water and that they'll all be drowned.&#13;&#13;Jesus stands and puts a hand out toward the storm. The storm clears. And the seas immediately calm."
       }
     ],
     studyQuestions: [
@@ -195,6 +191,7 @@ export const videos: VideoContentFields[] = [
       id: '1_529-jf6119-0-0',
       duration: 119,
       hls: 'https://arc.gt/69sos',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -215,9 +212,9 @@ export const videos: VideoContentFields[] = [
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'jesus-calms-the-storm/english',
-      subtitleCount: 32
+      subtitleCount: 36
     },
-    variantLanguagesCount: 2012,
+    variantLanguagesCount: 2141,
     slug: 'jesus-calms-the-storm',
     childrenCount: 0
   },
@@ -225,13 +222,7 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '1_wl604423-0-0',
     label: VideoLabel.segment,
-    images: [
-      {
-        __typename: 'CloudflareImage',
-        mobileCinematicHigh:
-          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_wl604423-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-      }
-    ],
+    images: [],
     imageAlt: [
       {
         __typename: 'VideoImageAlt',
@@ -277,6 +268,7 @@ export const videos: VideoContentFields[] = [
       id: '1_529-wl604423-0-0',
       duration: 190,
       hls: 'https://arc.gt/0sgr2',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -299,21 +291,15 @@ export const videos: VideoContentFields[] = [
       slug: 'the-woman-with-the-issue-of-blood/english',
       subtitleCount: 31
     },
-    variantLanguagesCount: 216,
+    variantLanguagesCount: 229,
     slug: 'the-woman-with-the-issue-of-blood',
     childrenCount: 0
   },
   {
     __typename: 'Video',
     id: 'MAG1',
-    label: VideoLabel.featureFilm,
-    images: [
-      {
-        __typename: 'CloudflareImage',
-        mobileCinematicHigh:
-          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/high_mag_collection_640x300br.jpg/f=jpg,w=1280,h=600,q=95'
-      }
-    ],
+    label: VideoLabel.collection,
+    images: [],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'Magdalena' }],
     snippet: [
       {
@@ -333,20 +319,21 @@ export const videos: VideoContentFields[] = [
     title: [{ __typename: 'VideoTitle', value: 'Magdalena' }],
     variant: {
       __typename: 'VideoVariant',
-      id: '1_529-wl60-0-0',
-      duration: 3665,
+      id: '529-MAG1',
+      duration: 3658,
       hls: 'https://arc.gt/d8p35',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.low,
-          size: 98929472,
+          size: 98861290,
           url: 'https://arc.gt/v50a9'
         },
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.high,
-          size: 1127091509,
+          size: 1099718055,
           url: 'https://arc.gt/29xoy'
         }
       ],
@@ -355,24 +342,18 @@ export const videos: VideoContentFields[] = [
         id: '529',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
-      slug: 'magdalena/english',
-      subtitleCount: 31
+      slug: 'magdalena-2/english',
+      subtitleCount: 0
     },
-    variantLanguagesCount: 217,
-    slug: 'magdalena',
+    variantLanguagesCount: 230,
+    slug: 'magdalena-2',
     childrenCount: 46
   },
   {
     __typename: 'Video',
     id: '1_wl7-0-0',
     label: VideoLabel.series,
-    images: [
-      {
-        __typename: 'CloudflareImage',
-        mobileCinematicHigh:
-          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_wl7-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-      }
-    ],
+    images: [],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'Reflections of Hope' }],
     snippet: [
       {
@@ -395,6 +376,7 @@ export const videos: VideoContentFields[] = [
       id: '1_529-wl7-0-0',
       duration: 0,
       hls: null,
+      downloadable: true,
       downloads: [],
       language: {
         __typename: 'Language',
@@ -404,7 +386,7 @@ export const videos: VideoContentFields[] = [
       slug: 'reflections-of-hope/english',
       subtitleCount: 0
     },
-    variantLanguagesCount: 216,
+    variantLanguagesCount: 229,
     slug: 'reflections-of-hope',
     childrenCount: 7
   },
@@ -412,13 +394,7 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '3_0-8DWJ-WIJ_06-0-0',
     label: VideoLabel.episode,
-    images: [
-      {
-        __typename: 'CloudflareImage',
-        mobileCinematicHigh:
-          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/3_0-8DWJ-WIJ_06-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-      }
-    ],
+    images: [],
     imageAlt: [
       { __typename: 'VideoImageAlt', value: 'Day 6: Jesus Died for Me' }
     ],
@@ -433,7 +409,7 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'VideoDescription',
         value:
-          "They arrive at the place where the crosses are being set up. Others are being tied to their crosses. Jesus is stripped and led to His own cross. They throw Him down on it. There are cries as the others are nailed to their crosses.\n\nThe nails are hammered through Jesus's wrists and feet as He screams. Then slowly, the crosses are erected as Romans pulls the ropes. Jesus is lifted high in the air. He hangs on the cross, tired and in pain. He prays for those in the crowd. He asks God to forgive them because they don't know what they do.\n\nThe crowd murmurs at the feet of the cross. Annas and Caiaphas comment that He saved others. They wonder why He doesn't save Himself. The crowd starts to jeer. They urge Him to save Himself. But He doesn't."
+          "They arrive at the place where the crosses are being set up. Others are being tied to their crosses. Jesus is stripped and led to His own cross. They throw Him down on it. There are cries as the others are nailed to their crosses.&#13;&#13;The nails are hammered through Jesus's wrists and feet as He screams. Then slowly, the crosses are erected as Romans pulls the ropes. Jesus is lifted high in the air. He hangs on the cross, tired and in pain. He prays for those in the crowd. He asks God to forgive them because they don't know what they do.&#13;&#13;The crowd murmurs at the feet of the cross. Annas and Caiaphas comment that He saved others. They wonder why He doesn't save Himself. The crowd starts to jeer. They urge Him to save Himself. But He doesn't."
       }
     ],
     studyQuestions: [
@@ -452,6 +428,7 @@ export const videos: VideoContentFields[] = [
       id: '3_529-0-8DWJ-WIJ_06-0-0',
       duration: 488,
       hls: 'https://arc.gt/xqav7',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -482,13 +459,7 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '2_Acts-0-0',
     label: VideoLabel.featureFilm,
-    images: [
-      {
-        __typename: 'CloudflareImage',
-        mobileCinematicHigh:
-          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_Acts-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-      }
-    ],
+    images: [],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'Book of Acts' }],
     snippet: [
       {
@@ -517,6 +488,7 @@ export const videos: VideoContentFields[] = [
       id: '2_529-Acts-0-0',
       duration: 11530,
       hls: 'https://arc.gt/6x6ke',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -547,13 +519,7 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '2_GOJ4904-0-0',
     label: VideoLabel.segment,
-    images: [
-      {
-        __typename: 'CloudflareImage',
-        mobileCinematicHigh:
-          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_GOJ4904-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-      }
-    ],
+    images: [],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'Wedding in Cana' }],
     snippet: [
       {
@@ -585,6 +551,7 @@ export const videos: VideoContentFields[] = [
       id: '2_529-GOJ4904-0-0',
       duration: 213,
       hls: 'https://arc.gt/29cgr',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -607,7 +574,7 @@ export const videos: VideoContentFields[] = [
       slug: 'wedding-in-cana/english',
       subtitleCount: 0
     },
-    variantLanguagesCount: 23,
+    variantLanguagesCount: 24,
     slug: 'wedding-in-cana',
     childrenCount: 0
   },
@@ -615,13 +582,7 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: 'LUMOCollection',
     label: VideoLabel.collection,
-    images: [
-      {
-        __typename: 'CloudflareImage',
-        mobileCinematicHigh:
-          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/LUMOCollection.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-      }
-    ],
+    images: [],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'LUMO' }],
     snippet: [{ __typename: 'VideoSnippet', value: 'LUMO content collection' }],
     description: [
@@ -634,6 +595,7 @@ export const videos: VideoContentFields[] = [
       id: '529-LUMOCollection',
       duration: 0,
       hls: null,
+      downloadable: true,
       downloads: [],
       language: {
         __typename: 'Language',
@@ -643,21 +605,15 @@ export const videos: VideoContentFields[] = [
       slug: 'lumo/english',
       subtitleCount: 0
     },
-    variantLanguagesCount: 29,
+    variantLanguagesCount: 57,
     slug: 'lumo',
-    childrenCount: 4
+    childrenCount: 5
   },
   {
     __typename: 'Video',
     id: '2_Acts7331-0-0',
     label: VideoLabel.segment,
-    images: [
-      {
-        __typename: 'CloudflareImage',
-        mobileCinematicHigh:
-          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_Acts7331-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-      }
-    ],
+    images: [],
     imageAlt: [
       {
         __typename: 'VideoImageAlt',
@@ -707,6 +663,7 @@ export const videos: VideoContentFields[] = [
       id: '2_529-Acts7331-0-0',
       duration: 298,
       hls: 'https://arc.gt/esnsq',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -737,13 +694,7 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '3_0-8DWJ-WIJ',
     label: VideoLabel.series,
-    images: [
-      {
-        __typename: 'CloudflareImage',
-        mobileCinematicHigh:
-          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/3_0-8DWJ-WIJ.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-      }
-    ],
+    images: [],
     imageAlt: [
       { __typename: 'VideoImageAlt', value: '8 Days with Jesus: Who is Jesus?' }
     ],
@@ -758,7 +709,7 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'VideoDescription',
         value:
-          'MentorLink International and The JESUS Film Project have partnered to develop "Days with Jesus", a series of innovative tools specifically designed to help users deepen their walk with Christ. "Days with Jesus" delivers video clips from The JESUS Film along with thought-provoking questions designed to challenge and transform a person’s heart, character, values and motives. Take this opportunity to enhance and deepen your understanding of Jesus, the Son of God. Visit www.mentorlink.org for more information.\n\nAbout Days with Jesus:\nMentorLink International and The JESUS Film Project have partnered to develop "Days with Jesus", a series of innovative tools specially designed to help users deepen their walk with Christ. "Days with Jesus" uses The JESUS Film, an already-successful means for reaching people with the Gospel, and unpacks it one step further. Each video segment from The JESUS Film is carefully selected to convey God’s message of truth, and each question has been deliberately chosen and worded. Our prayer for this series is that people would learn from Jesus how to be like Jesus.\n\n8 Days with Jesus: Who is Jesus? will introduce you to Jesus and who He is. Take this opportunity to enhance and deepen your understanding of Jesus, the Son of God. \n\nVisit www.mentorlink.org for more information.'
+          'MentorLink International and The JESUS Film Project have partnered to develop "Days with Jesus", a series of innovative tools specifically designed to help users deepen their walk with Christ. "Days with Jesus" delivers video clips from The JESUS Film along with thought-provoking questions designed to challenge and transform a person’s heart, character, values and motives. Take this opportunity to enhance and deepen your understanding of Jesus, the Son of God. Visit www.mentorlink.org for more information.&#13;&#13;About Days with Jesus:&#13;MentorLink International and The JESUS Film Project have partnered to develop "Days with Jesus", a series of innovative tools specially designed to help users deepen their walk with Christ. "Days with Jesus" uses The JESUS Film, an already-successful means for reaching people with the Gospel, and unpacks it one step further. Each video segment from The JESUS Film is carefully selected to convey God’s message of truth, and each question has been deliberately chosen and worded. Our prayer for this series is that people would learn from Jesus how to be like Jesus.&#13;&#13;8 Days with Jesus: Who is Jesus? will introduce you to Jesus and who He is. Take this opportunity to enhance and deepen your understanding of Jesus, the Son of God. &#13;&#13;Visit www.mentorlink.org for more information.'
       }
     ],
     studyQuestions: [],
@@ -770,6 +721,7 @@ export const videos: VideoContentFields[] = [
       id: '3_529-0-8DWJ-WIJ',
       duration: 0,
       hls: null,
+      downloadable: true,
       downloads: [],
       language: {
         __typename: 'Language',
@@ -787,13 +739,7 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '2_ChosenWitness',
     label: VideoLabel.shortFilm,
-    images: [
-      {
-        __typename: 'CloudflareImage',
-        mobileCinematicHigh:
-          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_ChosenWitness.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-      }
-    ],
+    images: [],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'Chosen Witness' }],
     snippet: [
       {
@@ -834,19 +780,20 @@ export const videos: VideoContentFields[] = [
     variant: {
       __typename: 'VideoVariant',
       id: '2_529-ChosenWitness',
-      duration: 566,
+      duration: 565,
       hls: 'https://arc.gt/3mcdc',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.low,
-          size: 15193611,
+          size: 15189642,
           url: 'https://arc.gt/gkvqh'
         },
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.high,
-          size: 172701431,
+          size: 173112311,
           url: 'https://arc.gt/6vvi2'
         }
       ],
@@ -856,9 +803,9 @@ export const videos: VideoContentFields[] = [
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'chosen-witness/english',
-      subtitleCount: 1
+      subtitleCount: 0
     },
-    variantLanguagesCount: 42,
+    variantLanguagesCount: 49,
     slug: 'chosen-witness',
     childrenCount: 0
   },
@@ -866,13 +813,7 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: 'GOLukeCollection',
     label: VideoLabel.collection,
-    images: [
-      {
-        __typename: 'CloudflareImage',
-        mobileCinematicHigh:
-          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/GOLukeCollection.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-      }
-    ],
+    images: [],
     imageAlt: [
       { __typename: 'VideoImageAlt', value: 'LUMO - The Gospel of Luke' }
     ],
@@ -880,14 +821,14 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'VideoSnippet',
         value:
-          "Luke's Gospel, more than any other, fits the category of ancient biography. Luke acts as a 'narrator' of events rather than the conventional author, painting a picture of Jesus as a very human character, full of compassion for all the suffering world. Luke sees Jesus as the 'Savior' of all people irrespective of their beliefs, always on the side of the needy and the deprived against the rich and the powerful. He constantly challenges those in power for their self-righteousness. This film about the life of Jesus takes the actual Gospel text as it's script, word-for-word, unedited. Five years in the making, this epic production has been critically acclaimed by leading religious scholars as a unique and highly authentic telling of the Jesus story. \n \nFor more information please visit: https://lumoproject.com/\nFollow us on Facebook - https://www.facebook.com/thelumoproject\nFollow us on Twitter - https://twitter.com/TheLumoProject"
+          "Luke's Gospel, more than any other, fits the category of ancient biography. Luke acts as a 'narrator' of events rather than the conventional author, painting a picture of Jesus as a very human character, full of compassion for all the suffering world. Luke sees Jesus as the 'Savior' of all people irrespective of their beliefs, always on the side of the needy and the deprived against the rich and the powerful. He constantly challenges those in power for their self-righteousness. This film about the life of Jesus takes the actual Gospel text as it's script, word-for-word, unedited. Five years in the making, this epic production has been critically acclaimed by leading religious scholars as a unique and highly authentic telling of the Jesus story. &#13; &#13;For more information please visit: https://lumoproject.com/&#13;Follow us on Facebook - https://www.facebook.com/thelumoproject&#13;Follow us on Twitter - https://twitter.com/TheLumoProject"
       }
     ],
     description: [
       {
         __typename: 'VideoDescription',
         value:
-          "Luke's Gospel, more than any other, fits the category of ancient biography. Luke acts as a 'narrator' of events rather than the conventional author, painting a picture of Jesus as a very human character, full of compassion for all the suffering world. Luke sees Jesus as the 'Savior' of all people irrespective of their beliefs, always on the side of the needy and the deprived against the rich and the powerful. He constantly challenges those in power for their self-righteousness. This film about the life of Jesus takes the actual Gospel text as it's script, word-for-word, unedited. Five years in the making, this epic production has been critically acclaimed by leading religious scholars as a unique and highly authentic telling of the Jesus story. \n \nFor more information please visit: https://lumoproject.com/\nFollow us on Facebook - https://www.facebook.com/thelumoproject\nFollow us on Twitter - https://twitter.com/TheLumoProject"
+          "Luke's Gospel, more than any other, fits the category of ancient biography. Luke acts as a 'narrator' of events rather than the conventional author, painting a picture of Jesus as a very human character, full of compassion for all the suffering world. Luke sees Jesus as the 'Savior' of all people irrespective of their beliefs, always on the side of the needy and the deprived against the rich and the powerful. He constantly challenges those in power for their self-righteousness. This film about the life of Jesus takes the actual Gospel text as it's script, word-for-word, unedited. Five years in the making, this epic production has been critically acclaimed by leading religious scholars as a unique and highly authentic telling of the Jesus story. &#13; &#13;For more information please visit: https://lumoproject.com/&#13;Follow us on Facebook - https://www.facebook.com/thelumoproject&#13;Follow us on Twitter - https://twitter.com/TheLumoProject"
       }
     ],
     studyQuestions: [],
@@ -897,6 +838,7 @@ export const videos: VideoContentFields[] = [
       id: '529-GOLukeCollection',
       duration: 0,
       hls: null,
+      downloadable: true,
       downloads: [],
       language: {
         __typename: 'Language',
@@ -906,7 +848,7 @@ export const videos: VideoContentFields[] = [
       slug: 'lumo-the-gospel-of-luke/english',
       subtitleCount: 0
     },
-    variantLanguagesCount: 29,
+    variantLanguagesCount: 55,
     slug: 'lumo-the-gospel-of-luke',
     childrenCount: 26
   },
@@ -935,7 +877,7 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'VideoDescription',
         value:
-          "Jesus enters the town surrounded by crowds pushing in on Him. Zacchaeus, a short man, tries to see Jesus. But he can't see above the crowds or get through them. He climbs a tree. Jesus calls out to him.\n\nHe tells Zacchaeus to come down from the tree because He wants to have dinner with him. People are appalled. Zacchaeus is the town tax collector. But Zacchaeus is more than happy. He comes down from the tree and leads the way.\n\nTo download the entire lesson, go to: http://katw-kidstory.com/download/english-kidstory-jesus-film-lessons/"
+          "Jesus enters the town surrounded by crowds pushing in on Him. Zacchaeus, a short man, tries to see Jesus. But he can't see above the crowds or get through them. He climbs a tree. Jesus calls out to him.&#13;&#13;He tells Zacchaeus to come down from the tree because He wants to have dinner with him. People are appalled. Zacchaeus is the town tax collector. But Zacchaeus is more than happy. He comes down from the tree and leads the way.&#13;&#13;To download the entire lesson, go to: http://katw-kidstory.com/download/english-kidstory-jesus-film-lessons/"
       }
     ],
     studyQuestions: [
@@ -976,6 +918,7 @@ export const videos: VideoContentFields[] = [
       id: '1_529-cl1309-0-0',
       duration: 124,
       hls: 'https://arc.gt/2174d',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -998,7 +941,7 @@ export const videos: VideoContentFields[] = [
       slug: 'storyclubs-jesus-and-zacchaeus/english',
       subtitleCount: 0
     },
-    variantLanguagesCount: 184,
+    variantLanguagesCount: 188,
     slug: 'storyclubs-jesus-and-zacchaeus',
     childrenCount: 0
   },
@@ -1025,7 +968,7 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'VideoDescription',
         value:
-          "Luke makes his introduction as the careful author of this Gospel. The angel Gabriel appears to Mary, a virgin in Nazareth. He announces to her that she has found favor with God and will give birth to Jesus, the Son of God.\n\nThrough Jesus' birth, prophecies are fulfilled by the arrangement of events. God leaves no detail unnoticed. The same can be said of our own lives."
+          "Luke makes his introduction as the careful author of this Gospel. The angel Gabriel appears to Mary, a virgin in Nazareth. He announces to her that she has found favor with God and will give birth to Jesus, the Son of God.&#13;&#13;Through Jesus' birth, prophecies are fulfilled by the arrangement of events. God leaves no detail unnoticed. The same can be said of our own lives."
       }
     ],
     studyQuestions: [
@@ -1048,6 +991,7 @@ export const videos: VideoContentFields[] = [
       id: '1_529-jf6102-0-0',
       duration: 223,
       hls: 'https://arc.gt/ijec5',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -1068,9 +1012,9 @@ export const videos: VideoContentFields[] = [
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'birth-of-jesus/english',
-      subtitleCount: 32
+      subtitleCount: 36
     },
-    variantLanguagesCount: 2011,
+    variantLanguagesCount: 2140,
     slug: 'birth-of-jesus',
     childrenCount: 0
   },
@@ -1078,13 +1022,7 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '2_0-FallingPlates',
     label: VideoLabel.shortFilm,
-    images: [
-      {
-        __typename: 'CloudflareImage',
-        mobileCinematicHigh:
-          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-      }
-    ],
+    images: [],
     imageAlt: [{ __typename: 'VideoImageAlt', value: '#FallingPlates' }],
     snippet: [
       {
@@ -1097,7 +1035,7 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'VideoDescription',
         value:
-          '#FallingPlates leads through a series of visual metaphors: creation, the fall, Christ’s coming and resurrection, redemption, and our salvation. The video ends with Jesus asking you to respond to His life altering question, “Will you follow me?”.\n\n#FallingPlates is an award winning short film about life, death & love of a Savior. It’s a flying 4 minute video depiction of the Gospel message with viral momentum (over 4 million views).\n\nAfter you showing the #FallingPlates video to a friend, ask: “Sometime, I’d like to hear more about your spiritual journey... would you be up for that?” And, during that conversation (or in the next one) you will ask if you can meet to hear his or her story.\n\nAn Easy Approach...\nExplore Past Experiences: Where they’ve been\n- What was your religious background as a child?\n- What have you tried in your spiritual journey since?\n\nExplore Present Attitudes: Where they are\n- Where are you now in your spiritual journey?\n- How has your search left you feeling?\n\nExplore Future Direction: Where they are going\n- Do you think you are moving toward God, away from God, or staying about the same?\n- On a scale of 1-10, how would you rate your desire to know God personally?\n- Proceed with sharing the Gospel.\n\nContinue the Conversation: http://www.fallingplates.com/ \n\nTRANSLATION requests for this video email: FallingPlatesVideo@gmail.com'
+          '#FallingPlates leads through a series of visual metaphors: creation, the fall, Christ’s coming and resurrection, redemption, and our salvation. The video ends with Jesus asking you to respond to His life altering question, “Will you follow me?”.&#13;&#13;#FallingPlates is an award winning short film about life, death & love of a Savior. It’s a flying 4 minute video depiction of the Gospel message with viral momentum (over 4 million views).&#13;&#13;After you showing the #FallingPlates video to a friend, ask: “Sometime, I’d like to hear more about your spiritual journey... would you be up for that?” And, during that conversation (or in the next one) you will ask if you can meet to hear his or her story.&#13;&#13;An Easy Approach...&#13;Explore Past Experiences: Where they’ve been&#13;- What was your religious background as a child?&#13;- What have you tried in your spiritual journey since?&#13;&#13;Explore Present Attitudes: Where they are&#13;- Where are you now in your spiritual journey?&#13;- How has your search left you feeling?&#13;&#13;Explore Future Direction: Where they are going&#13;- Do you think you are moving toward God, away from God, or staying about the same?&#13;- On a scale of 1-10, how would you rate your desire to know God personally?&#13;- Proceed with sharing the Gospel.&#13;&#13;Continue the Conversation: http://www.fallingplates.com/ &#13;&#13;TRANSLATION requests for this video email: FallingPlatesVideo@gmail.com'
       }
     ],
     studyQuestions: [
@@ -1127,16 +1065,30 @@ export const videos: VideoContentFields[] = [
       id: '2_529-0-FallingPlates',
       duration: 247,
       hls: 'https://arc.gt/zbrvj',
-      downloads: [],
+      downloadable: true,
+      downloads: [
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.low,
+          size: 6627874,
+          url: 'https://arc.gt/du6y7'
+        },
+        {
+          __typename: 'VideoVariantDownload',
+          quality: VideoVariantDownloadQuality.high,
+          size: 75259326,
+          url: 'https://arc.gt/g7kxc'
+        }
+      ],
       language: {
         __typename: 'Language',
         id: '529',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'fallingplates/english',
-      subtitleCount: 7
+      subtitleCount: 76
     },
-    variantLanguagesCount: 39,
+    variantLanguagesCount: 59,
     slug: 'fallingplates',
     childrenCount: 0
   },
@@ -1144,13 +1096,7 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '2_Acts7345-0-0',
     label: VideoLabel.segment,
-    images: [
-      {
-        __typename: 'CloudflareImage',
-        mobileCinematicHigh:
-          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_Acts7345-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-      }
-    ],
+    images: [],
     imageAlt: [
       { __typename: 'VideoImageAlt', value: 'Paul and Silas in Prison' }
     ],
@@ -1189,6 +1135,7 @@ export const videos: VideoContentFields[] = [
       id: '2_529-Acts7345-0-0',
       duration: 369,
       hls: 'https://arc.gt/cpywt',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -1219,13 +1166,7 @@ export const videos: VideoContentFields[] = [
     __typename: 'Video',
     id: '1_mld-0-0',
     label: VideoLabel.shortFilm,
-    images: [
-      {
-        __typename: 'CloudflareImage',
-        mobileCinematicHigh:
-          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_mld-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-      }
-    ],
+    images: [],
     imageAlt: [{ __typename: 'VideoImageAlt', value: 'My Last Day' }],
     snippet: [
       {
@@ -1238,7 +1179,7 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'VideoDescription',
         value:
-          "In a beautiful animé style, a prisoner watches as Jesus gets flogged in Pilate's courtyard. He remembers Jesus teaching and wonders why they're hurting an innocent man. Horrified, he remembers his own crime.\n\nThe crowds in the courtyard scream for Jesus to be crucified. The thief, another man, and Jesus are loaded with the beams for their crosses and march to Golgotha. \n\nThey arrive and nails are driven through their wrists. Each man is hung on a cross, their feet nailed to a wooden shelf.Our thief claims Jesus is the Messiah and asks that Jesus remember him. Jesus promises him they will be in paradise together that day. A dark storm overwhelms the hill and Jesus dies.\n\nThe thief passes away with a gasp and sees Jesus in a beautiful place."
+          "In a beautiful animé style, a prisoner watches as Jesus gets flogged in Pilate's courtyard. He remembers Jesus teaching and wonders why they're hurting an innocent man. Horrified, he remembers his own crime.&#13;&#13;The crowds in the courtyard scream for Jesus to be crucified. The thief, another man, and Jesus are loaded with the beams for their crosses and march to Golgotha. &#13;&#13;They arrive and nails are driven through their wrists. Each man is hung on a cross, their feet nailed to a wooden shelf.Our thief claims Jesus is the Messiah and asks that Jesus remember him. Jesus promises him they will be in paradise together that day. A dark storm overwhelms the hill and Jesus dies.&#13;&#13;The thief passes away with a gasp and sees Jesus in a beautiful place."
       }
     ],
     studyQuestions: [
@@ -1262,17 +1203,18 @@ export const videos: VideoContentFields[] = [
       id: '1_529-mld-0-0',
       duration: 554,
       hls: 'https://arc.gt/1b10x',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.low,
-          size: 14955855,
+          size: 14835823,
           url: 'https://arc.gt/zquza'
         },
         {
           __typename: 'VideoVariantDownload',
           quality: VideoVariantDownloadQuality.high,
-          size: 170469865,
+          size: 169098910,
           url: 'https://arc.gt/xcf7k'
         }
       ],
@@ -1284,9 +1226,9 @@ export const videos: VideoContentFields[] = [
       slug: 'my-last-day/english',
       subtitleCount: 7
     },
-    variantLanguagesCount: 275,
+    variantLanguagesCount: 286,
     slug: 'my-last-day',
-    childrenCount: 1
+    childrenCount: 0
   },
   {
     __typename: 'Video',
@@ -1311,7 +1253,7 @@ export const videos: VideoContentFields[] = [
       {
         __typename: 'VideoDescription',
         value:
-          'The story of Jesus fits within the larger story of the Judeo Christian tradition. The purpose of everything since creation has been to point to the life of Jesus.\n\nAll of creation speaks of the majesty of God. As God created man and woman he intended them to live in peace with him forever. But because of their disobedience mankind was separated from God. But God still loved mankind so throughout the Scriptures God reveals his plan to save the world.'
+          'The story of Jesus fits within the larger story of the Judeo Christian tradition. The purpose of everything since creation has been to point to the life of Jesus.&#13;&#13;All of creation speaks of the majesty of God. As God created man and woman he intended them to live in peace with him forever. But because of their disobedience mankind was separated from God. But God still loved mankind so throughout the Scriptures God reveals his plan to save the world.'
       }
     ],
     studyQuestions: [],
@@ -1321,6 +1263,7 @@ export const videos: VideoContentFields[] = [
       id: '1_529-jf6101-0-0',
       duration: 488,
       hls: 'https://arc.gt/pm6g1',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -1341,9 +1284,9 @@ export const videos: VideoContentFields[] = [
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'the-beginning/english',
-      subtitleCount: 32
+      subtitleCount: 36
     },
-    variantLanguagesCount: 2006,
+    variantLanguagesCount: 2135,
     slug: 'the-beginning',
     childrenCount: 0
   }
