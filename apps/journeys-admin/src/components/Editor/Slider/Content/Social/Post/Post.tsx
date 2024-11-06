@@ -1,7 +1,6 @@
 import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import Stack from '@mui/material/Stack'
-import { tooltipClasses } from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/system/Box'
 import isEmpty from 'lodash/isEmpty'
@@ -12,20 +11,6 @@ import { ReactElement } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { Tooltip } from '../../../../../Tooltip'
-
-const tooltipProps = {
-  placement: 'top' as const,
-  slotProps: {
-    popper: {
-      sx: {
-        [`&.${tooltipClasses.popper}[data-popper-placement*="top"] .${tooltipClasses.tooltip}`]:
-          {
-            marginBottom: '6px'
-          }
-      }
-    }
-  }
-}
 
 export function Post(): ReactElement {
   const { journey } = useJourney()
@@ -90,7 +75,7 @@ export function Post(): ReactElement {
                 bgcolor="background.default"
               />
             </Stack>
-            <Tooltip title={t('Social Image')} {...tooltipProps}>
+            <Tooltip title={t('Social Image')}>
               <CardMedia
                 sx={{
                   mb: 2.5,
@@ -126,7 +111,7 @@ export function Post(): ReactElement {
               </CardMedia>
             </Tooltip>
             <Stack gap={1.5} sx={{ mb: 2.75 }}>
-              <Tooltip title={t('Headline')} {...tooltipProps}>
+              <Tooltip title={t('Headline')}>
                 {isEmpty(journey?.seoTitle?.trim()) ? (
                   <Box
                     width={208}
@@ -147,7 +132,7 @@ export function Post(): ReactElement {
                   </Typography>
                 )}
               </Tooltip>
-              <Tooltip title={t('Secondary Text')} {...tooltipProps}>
+              <Tooltip title={t('Secondary Text')}>
                 {isEmpty(journey?.seoDescription?.trim()) ? (
                   <Box
                     width={208}
