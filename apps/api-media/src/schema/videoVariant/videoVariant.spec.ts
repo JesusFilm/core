@@ -453,7 +453,7 @@ describe('videoVariant', () => {
           videoId: 'videoId',
           languageId: 'languageId',
           share: 'share',
-          downloadable: false
+          downloadable: true
         })
         const result = await authClient({
           document: VIDEO_VARIANT_UPDATE_MUTATION,
@@ -468,7 +468,7 @@ describe('videoVariant', () => {
               slug: 'videoSlug',
               videoId: 'videoId',
               share: 'share',
-              downloadable: false
+              downloadable: true
             }
           }
         })
@@ -483,7 +483,7 @@ describe('videoVariant', () => {
             slug: 'videoSlug',
             videoId: 'videoId',
             share: 'share',
-            downloadable: false
+            downloadable: true
           }
         })
         expect(result).toHaveProperty('data.videoVariantUpdate', {

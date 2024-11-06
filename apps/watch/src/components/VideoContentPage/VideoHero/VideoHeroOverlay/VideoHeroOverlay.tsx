@@ -163,14 +163,16 @@ export function VideoHeroOverlay({
             </Box>
           </Stack>
         </Stack>
-        {variant != null && variant.downloads.length > 0 && (
-          <DownloadDialog
-            open={openDownload}
-            onClose={() => {
-              setOpenDownload(false)
-            }}
-          />
-        )}
+        {variant != null &&
+          variant.downloads.length > 0 &&
+          variant.downloadable && (
+            <DownloadDialog
+              open={openDownload}
+              onClose={() => {
+                setOpenDownload(false)
+              }}
+            />
+          )}
         <ShareDialog open={openShare} onClose={() => setOpenShare(false)} />
       </Container>
     </Box>
