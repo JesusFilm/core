@@ -49,7 +49,6 @@ export function Tooltip({
   offset = 0,
   ...rest
 }: TooltipProps): ReactElement {
-  console.log({ offset })
   return (
     <StyledTooltip
       {...rest}

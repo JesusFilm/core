@@ -20,7 +20,6 @@ const meta = {
           height: '100vh',
           display: 'grid',
           placeItems: 'center',
-          border: '1px solid orange'
         }}
       >
         <Story />
