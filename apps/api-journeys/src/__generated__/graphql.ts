@@ -313,6 +313,28 @@ export type CloudflareImage = {
   videoStill?: Maybe<Scalars['String']['output']>;
 };
 
+export type CloudflareR2 = {
+  __typename?: 'CloudflareR2';
+  createdAt: Scalars['Date']['output'];
+  fileName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  publicUrl?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['Date']['output'];
+  uploadUrl?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['ID']['output'];
+};
+
+export type CloudflareR2CreateInput = {
+  fileName: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  videoId: Scalars['String']['input'];
+};
+
+export type CloudflareR2UpdateInput = {
+  fileName: Scalars['String']['input'];
+  id: Scalars['String']['input'];
+};
+
 export type CloudflareVideo = {
   __typename?: 'CloudflareVideo';
   createdAt: Scalars['Date']['output'];
@@ -1206,6 +1228,9 @@ export type Mutation = {
   chatButtonRemove: ChatButton;
   chatButtonUpdate: ChatButton;
   chatOpenEventCreate: ChatOpenEvent;
+  cloudflareR2Create: CloudflareR2;
+  cloudflareR2Delete: CloudflareR2;
+  cloudflareR2Update: CloudflareR2;
   cloudflareUploadComplete: Scalars['Boolean']['output'];
   createCloudflareImageFromPrompt: CloudflareImage;
   createCloudflareUploadByFile: CloudflareImage;
@@ -1214,6 +1239,8 @@ export type Mutation = {
   createCloudflareVideoUploadByUrl: CloudflareVideo;
   /** @deprecated use createCloudflareImageFromPrompt */
   createImageBySegmindPrompt: CloudflareImage;
+  createMuxVideoUploadByFile: MuxVideo;
+  createMuxVideoUploadByUrl: MuxVideo;
   createVerificationRequest?: Maybe<Scalars['Boolean']['output']>;
   customDomainCheck: CustomDomainCheck;
   customDomainCreate: CustomDomain;
@@ -1221,6 +1248,7 @@ export type Mutation = {
   customDomainUpdate: CustomDomain;
   deleteCloudflareImage: Scalars['Boolean']['output'];
   deleteCloudflareVideo: Scalars['Boolean']['output'];
+  deleteMuxVideo: Scalars['Boolean']['output'];
   hostCreate: Host;
   hostDelete: Host;
   hostUpdate: Host;
@@ -1304,6 +1332,9 @@ export type Mutation = {
   videoDescriptionCreate: VideoDescription;
   videoDescriptionDelete: VideoDescription;
   videoDescriptionUpdate: VideoDescription;
+  videoEditionCreate: VideoEdition;
+  videoEditionDelete: VideoEdition;
+  videoEditionUpdate: VideoEdition;
   videoExpandEventCreate: VideoExpandEvent;
   videoImageAltCreate: VideoImageAlt;
   videoImageAltDelete: VideoImageAlt;
@@ -1452,6 +1483,21 @@ export type MutationChatOpenEventCreateArgs = {
 };
 
 
+export type MutationCloudflareR2CreateArgs = {
+  input: CloudflareR2CreateInput;
+};
+
+
+export type MutationCloudflareR2DeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationCloudflareR2UpdateArgs = {
+  input: CloudflareR2UpdateInput;
+};
+
+
 export type MutationCloudflareUploadCompleteArgs = {
   id: Scalars['ID']['input'];
 };
@@ -1491,6 +1537,16 @@ export type MutationCreateImageBySegmindPromptArgs = {
 };
 
 
+export type MutationCreateMuxVideoUploadByFileArgs = {
+  name: Scalars['String']['input'];
+};
+
+
+export type MutationCreateMuxVideoUploadByUrlArgs = {
+  url: Scalars['String']['input'];
+};
+
+
 export type MutationCreateVerificationRequestArgs = {
   input?: InputMaybe<CreateVerificationRequestInput>;
 };
@@ -1523,6 +1579,11 @@ export type MutationDeleteCloudflareImageArgs = {
 
 
 export type MutationDeleteCloudflareVideoArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteMuxVideoArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -1923,6 +1984,21 @@ export type MutationVideoDescriptionUpdateArgs = {
 };
 
 
+export type MutationVideoEditionCreateArgs = {
+  input: VideoEditionCreateInput;
+};
+
+
+export type MutationVideoEditionDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoEditionUpdateArgs = {
+  input: VideoEditionUpdateInput;
+};
+
+
 export type MutationVideoExpandEventCreateArgs = {
   input: VideoExpandEventCreateInput;
 };
@@ -2073,6 +2149,15 @@ export type MutationSiteCreateResult = Error | MutationSiteCreateSuccess;
 export type MutationSiteCreateSuccess = {
   __typename?: 'MutationSiteCreateSuccess';
   data: Site;
+};
+
+export type MuxVideo = {
+  __typename?: 'MuxVideo';
+  createdAt: Scalars['Date']['output'];
+  id: Scalars['ID']['output'];
+  readyToStream: Scalars['Boolean']['output'];
+  uploadUrl?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['ID']['output'];
 };
 
 export type NavigateToBlockAction = Action & {
@@ -2316,6 +2401,8 @@ export type Query = {
   getMyCloudflareImages: Array<CloudflareImage>;
   getMyCloudflareVideo: CloudflareVideo;
   getMyCloudflareVideos: Array<CloudflareVideo>;
+  getMyMuxVideo: MuxVideo;
+  getMyMuxVideos: Array<MuxVideo>;
   getUserRole?: Maybe<UserRole>;
   hosts: Array<Host>;
   integrations: Array<Integration>;
@@ -2363,6 +2450,7 @@ export type Query = {
   me?: Maybe<User>;
   searchUnsplashPhotos: UnsplashQueryResponse;
   tags: Array<Tag>;
+  taxonomies: Array<Taxonomy>;
   team: Team;
   teams: Array<Team>;
   user?: Maybe<User>;
@@ -2372,6 +2460,8 @@ export type Query = {
   userTeamInvites: Array<UserTeamInvite>;
   userTeams: Array<UserTeam>;
   video: Video;
+  videoEdition?: Maybe<VideoEdition>;
+  videoEditions: Array<VideoEdition>;
   videoVariants: Array<VideoVariant>;
   videos: Array<Video>;
   videosCount: Scalars['Int']['output'];
@@ -2461,6 +2551,17 @@ export type QueryGetMyCloudflareVideoArgs = {
 
 
 export type QueryGetMyCloudflareVideosArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetMyMuxVideoArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetMyMuxVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -2587,6 +2688,12 @@ export type QuerySearchUnsplashPhotosArgs = {
 };
 
 
+export type QueryTaxonomiesArgs = {
+  category?: InputMaybe<Scalars['String']['input']>;
+  languageCodes?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+
 export type QueryTeamArgs = {
   id: Scalars['ID']['input'];
 };
@@ -2626,6 +2733,11 @@ export type QueryUserTeamsArgs = {
 export type QueryVideoArgs = {
   id: Scalars['ID']['input'];
   idType?: InputMaybe<IdType>;
+};
+
+
+export type QueryVideoEditionArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -2997,6 +3109,29 @@ export type TagName = {
   language: Language;
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
+};
+
+export type Taxonomy = {
+  __typename?: 'Taxonomy';
+  category: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Array<TaxonomyName>;
+  term: Scalars['String']['output'];
+};
+
+
+export type TaxonomyNameArgs = {
+  category?: InputMaybe<Scalars['String']['input']>;
+  languageCodes?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type TaxonomyName = {
+  __typename?: 'TaxonomyName';
+  id: Scalars['ID']['output'];
+  label: Scalars['String']['output'];
+  language: Language;
+  taxonomy: Taxonomy;
+  term: Scalars['String']['output'];
 };
 
 export type Team = {
@@ -3374,6 +3509,7 @@ export type Video = {
   children: Array<Video>;
   /** the number value of the amount of children on a video */
   childrenCount: Scalars['Int']['output'];
+  cloudflareAssets: Array<CloudflareR2>;
   description: Array<VideoDescription>;
   id: Scalars['ID']['output'];
   /** @deprecated use images.mobileCinematicHigh */
@@ -3728,6 +3864,16 @@ export type VideoEdition = {
   name?: Maybe<Scalars['String']['output']>;
   videoSubtitles: Array<VideoSubtitle>;
   videoVariants: Array<VideoVariant>;
+};
+
+export type VideoEditionCreateInput = {
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type VideoEditionUpdateInput = {
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type VideoExpandEvent = Event & {
@@ -4295,27 +4441,6 @@ export enum Link__Purpose {
   Security = 'SECURITY'
 }
 
-export type GetUserQueryVariables = Exact<{
-  userId: Scalars['ID']['input'];
-}>;
-
-
-export type GetUserQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: string, email: string, firstName: string, imageUrl?: string | null } | null };
-
-export type GetUserByEmailQueryVariables = Exact<{
-  email: Scalars['String']['input'];
-}>;
-
-
-export type GetUserByEmailQuery = { __typename?: 'Query', userByEmail?: { __typename?: 'User', id: string, email: string, firstName: string, imageUrl?: string | null } | null };
-
-export type UserQueryVariables = Exact<{
-  userId: Scalars['ID']['input'];
-}>;
-
-
-export type UserQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: string, firstName: string, email: string, imageUrl?: string | null } | null };
-
 export type GetLanguagesQueryVariables = Exact<{
   languageId: Scalars['ID']['input'];
 }>;
@@ -4331,8 +4456,5 @@ export type SiteCreateMutationVariables = Exact<{
 export type SiteCreateMutation = { __typename?: 'Mutation', siteCreate: { __typename: 'Error', message: string } | { __typename?: 'MutationSiteCreateSuccess', data: { __typename: 'Site', id: string, domain: string, memberships: Array<{ __typename: 'SiteMembership', id: string, role: string }>, goals: Array<{ __typename: 'SiteGoal', id: string, eventName?: string | null }>, sharedLinks: Array<{ __typename: 'SiteSharedLink', id: string, slug: string }> } } };
 
 
-export const GetUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}}]} as unknown as DocumentNode<GetUserQuery, GetUserQueryVariables>;
-export const GetUserByEmailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserByEmail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userByEmail"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}}]} as unknown as DocumentNode<GetUserByEmailQuery, GetUserByEmailQueryVariables>;
-export const UserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"User"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}}]} as unknown as DocumentNode<UserQuery, UserQueryVariables>;
 export const GetLanguagesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetLanguages"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"language"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bcp47"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<GetLanguagesQuery, GetLanguagesQueryVariables>;
 export const SiteCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SiteCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Error"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationSiteCreateSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"domain"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"memberships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventName"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sharedLinks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SiteCreateMutation, SiteCreateMutationVariables>;

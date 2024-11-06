@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, CloudflareVideo, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, UserMediaRole } from ".prisma/api-media-client";
+import type { Prisma, CloudflareImage, CloudflareVideo, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole } from ".prisma/api-media-client";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
@@ -35,6 +35,40 @@ export default interface PrismaTypes {
         ListRelations: never;
         Relations: {};
     };
+    MuxVideo: {
+        Name: "MuxVideo";
+        Shape: MuxVideo;
+        Include: never;
+        Select: Prisma.MuxVideoSelect;
+        OrderBy: Prisma.MuxVideoOrderByWithRelationInput;
+        WhereUnique: Prisma.MuxVideoWhereUniqueInput;
+        Where: Prisma.MuxVideoWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: never;
+        ListRelations: never;
+        Relations: {};
+    };
+    CloudflareR2: {
+        Name: "CloudflareR2";
+        Shape: CloudflareR2;
+        Include: Prisma.CloudflareR2Include;
+        Select: Prisma.CloudflareR2Select;
+        OrderBy: Prisma.CloudflareR2OrderByWithRelationInput;
+        WhereUnique: Prisma.CloudflareR2WhereUniqueInput;
+        Where: Prisma.CloudflareR2WhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "video";
+        ListRelations: never;
+        Relations: {
+            video: {
+                Shape: Video | null;
+                Name: "Video";
+                Nullable: true;
+            };
+        };
+    };
     Video: {
         Name: "Video";
         Shape: Video;
@@ -45,8 +79,8 @@ export default interface PrismaTypes {
         Where: Prisma.VideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images";
-        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images";
+        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets";
+        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets";
         Relations: {
             title: {
                 Shape: VideoTitle[];
@@ -106,6 +140,11 @@ export default interface PrismaTypes {
             images: {
                 Shape: CloudflareImage[];
                 Name: "CloudflareImage";
+                Nullable: false;
+            };
+            cloudflareAssets: {
+                Shape: CloudflareR2[];
+                Name: "CloudflareR2";
                 Nullable: false;
             };
         };
@@ -485,6 +524,46 @@ export default interface PrismaTypes {
             tag: {
                 Shape: Tag;
                 Name: "Tag";
+                Nullable: false;
+            };
+        };
+    };
+    Taxonomy: {
+        Name: "Taxonomy";
+        Shape: Taxonomy;
+        Include: Prisma.TaxonomyInclude;
+        Select: Prisma.TaxonomySelect;
+        OrderBy: Prisma.TaxonomyOrderByWithRelationInput;
+        WhereUnique: Prisma.TaxonomyWhereUniqueInput;
+        Where: Prisma.TaxonomyWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "name";
+        ListRelations: "name";
+        Relations: {
+            name: {
+                Shape: TaxonomyName[];
+                Name: "TaxonomyName";
+                Nullable: false;
+            };
+        };
+    };
+    TaxonomyName: {
+        Name: "TaxonomyName";
+        Shape: TaxonomyName;
+        Include: Prisma.TaxonomyNameInclude;
+        Select: Prisma.TaxonomyNameSelect;
+        OrderBy: Prisma.TaxonomyNameOrderByWithRelationInput;
+        WhereUnique: Prisma.TaxonomyNameWhereUniqueInput;
+        Where: Prisma.TaxonomyNameWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "taxonomy";
+        ListRelations: never;
+        Relations: {
+            taxonomy: {
+                Shape: Taxonomy;
+                Name: "Taxonomy";
                 Nullable: false;
             };
         };

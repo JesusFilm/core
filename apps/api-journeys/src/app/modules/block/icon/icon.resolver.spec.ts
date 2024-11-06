@@ -19,7 +19,7 @@ import { IconBlockResolver } from './icon.resolver'
 
 describe('Icon', () => {
   let resolver: IconBlockResolver,
-    service: BlockService,
+    service: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
     ability: AppAbility
 
@@ -34,7 +34,8 @@ describe('Icon', () => {
     parentOrder: 0,
     name: IconName.ArrowForwardRounded,
     color: IconColor.secondary,
-    size: IconSize.lg
+    size: IconSize.lg,
+    updatedAt: '2024-10-21T04:32:25.858Z'
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -54,18 +55,14 @@ describe('Icon', () => {
     size: IconSize.sm
   }
 
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      update: jest.fn((input) => input)
-    })
-  }
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        blockService,
+        {
+          provide: BlockService,
+          useValue: mockDeep<BlockService>()
+        },
         IconBlockResolver,
         {
           provide: PrismaService,
@@ -74,7 +71,9 @@ describe('Icon', () => {
       ]
     }).compile()
     resolver = module.get<IconBlockResolver>(IconBlockResolver)
-    service = await module.resolve(BlockService)
+    service = module.get<BlockService>(
+      BlockService
+    ) as DeepMockProxy<BlockService>
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
@@ -114,6 +113,17 @@ describe('Icon', () => {
           }
         }
       })
+    })
+
+    it('should set journey updatedAt when IconBlock is created', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(await resolver.iconBlockCreate(ability, blockCreateInput)).toEqual(
+        blockWithUserTeam
+      )
+      expect(service.setJourneyUpdatedAt).toHaveBeenCalledWith(
+        prismaService,
+        blockWithUserTeam
+      )
     })
 
     it('throws error if not authorized', async () => {

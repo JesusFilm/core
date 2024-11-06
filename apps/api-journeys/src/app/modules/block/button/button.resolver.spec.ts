@@ -19,7 +19,7 @@ import { ButtonBlockResolver } from './button.resolver'
 
 describe('ButtonBlock', () => {
   let resolver: ButtonBlockResolver,
-    service: BlockService,
+    service: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
     ability: AppAbility
 
@@ -35,7 +35,8 @@ describe('ButtonBlock', () => {
     label: 'label',
     variant: ButtonVariant.contained,
     color: ButtonColor.primary,
-    size: ButtonSize.large
+    size: ButtonSize.large,
+    updatedAt: '2024-10-21T04:32:25.858Z'
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -59,20 +60,15 @@ describe('ButtonBlock', () => {
     startIconId: 'start1',
     endIconId: 'end1'
   }
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      getSiblings: jest.fn(() => [block, block]),
-      update: jest.fn((input) => input),
-      validateBlock: jest.fn()
-    })
-  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        blockService,
+        {
+          provide: BlockService,
+          useValue: mockDeep<BlockService>()
+        },
         ButtonBlockResolver,
         {
           provide: PrismaService,
@@ -81,10 +77,17 @@ describe('ButtonBlock', () => {
       ]
     }).compile()
     resolver = module.get<ButtonBlockResolver>(ButtonBlockResolver)
-    service = await module.resolve(BlockService)
+    service = module.get<BlockService>(
+      BlockService
+    ) as DeepMockProxy<BlockService>
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
+    service.getSiblings.mockResolvedValue([
+      { ...block, action: null },
+      { ...block, action: null }
+    ])
+
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
   })
 
@@ -125,6 +128,17 @@ describe('ButtonBlock', () => {
       expect(service.getSiblings).toHaveBeenCalledWith(
         blockCreateInput.journeyId,
         blockCreateInput.parentBlockId
+      )
+    })
+
+    it('should set the journey updatedAt when button is created', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.buttonBlockCreate(ability, blockCreateInput)
+      ).toEqual(blockWithUserTeam)
+      expect(service.setJourneyUpdatedAt).toHaveBeenCalledWith(
+        prismaService,
+        blockWithUserTeam
       )
     })
 
