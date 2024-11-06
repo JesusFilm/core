@@ -29,7 +29,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
+import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
 import { GetPlausibleJourneyFlowViewed } from '../../../../__generated__/GetPlausibleJourneyFlowViewed'
 import {
@@ -241,7 +241,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
               sx={{ display: { xs: 'none', sm: 'flex' } }}
             >
               {journey?.primaryImageBlock?.src == null ? (
-                <ThumbsUpIcon color="error" />
+                <GridEmptyIcon color="secondary" />
               ) : (
                 <Image
                   src={journey.primaryImageBlock.src}
