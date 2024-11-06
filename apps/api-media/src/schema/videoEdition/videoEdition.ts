@@ -6,16 +6,17 @@ import { VideoEditionCreateInput } from './inputs/videoEditionCreate'
 
 builder.prismaObject('VideoEdition', {
   fields: (t) => ({
-    id: t.exposeID('id'),
-    name: t.exposeString('name', { nullable: true }),
-    videoVariants: t.relation('videoVariants'),
-    videoSubtitles: t.relation('videoSubtitles')
+    id: t.exposeID('id', { nullable: false }),
+    name: t.exposeString('name'),
+    videoVariants: t.relation('videoVariants', { nullable: false }),
+    videoSubtitles: t.relation('videoSubtitles', { nullable: false })
   })
 })
 
 builder.queryFields((t) => ({
   videoEditions: t.prismaField({
     type: ['VideoEdition'],
+    nullable: false,
     resolve: async (query) => {
       return await prisma.videoEdition.findMany({
         ...query
@@ -24,7 +25,6 @@ builder.queryFields((t) => ({
   }),
   videoEdition: t.prismaField({
     type: 'VideoEdition',
-    nullable: true,
     args: {
       id: t.arg.id({ required: true })
     },
@@ -40,6 +40,7 @@ builder.queryFields((t) => ({
 builder.mutationFields((t) => ({
   videoEditionCreate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoEdition',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoEditionCreateInput, required: true })
     },
@@ -55,6 +56,7 @@ builder.mutationFields((t) => ({
   }),
   videoEditionUpdate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoEdition',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoEditionUpdateInput, required: true })
     },
@@ -70,6 +72,7 @@ builder.mutationFields((t) => ({
   }),
   videoEditionDelete: t.prismaField({
     type: 'VideoEdition',
+    nullable: false,
     args: {
       id: t.arg.id({ required: true })
     },

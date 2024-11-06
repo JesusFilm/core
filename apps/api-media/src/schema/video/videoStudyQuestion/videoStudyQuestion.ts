@@ -13,11 +13,12 @@ import {
 builder.prismaObject('VideoStudyQuestion', {
   include: { order: true },
   fields: (t) => ({
-    id: t.exposeID('id'),
-    value: t.exposeString('value'),
-    primary: t.exposeBoolean('primary'),
+    id: t.exposeID('id', { nullable: false }),
+    value: t.exposeString('value', { nullable: false }),
+    primary: t.exposeBoolean('primary', { nullable: false }),
     language: t.field({
       type: Language,
+      nullable: false,
       resolve: ({ languageId: id }) => ({ id })
     })
   })
@@ -26,6 +27,7 @@ builder.prismaObject('VideoStudyQuestion', {
 builder.mutationFields((t) => ({
   videoStudyQuestionCreate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoStudyQuestion',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoStudyQuestionCreateInput, required: true })
     },
@@ -52,6 +54,7 @@ builder.mutationFields((t) => ({
   }),
   videoStudyQuestionUpdate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoStudyQuestion',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoStudyQuestionUpdateInput, required: true })
     },
@@ -95,6 +98,7 @@ builder.mutationFields((t) => ({
   }),
   videoStudyQuestionDelete: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoStudyQuestion',
+    nullable: false,
     args: {
       id: t.arg.id({ required: true })
     },
