@@ -141,13 +141,17 @@ export function BackgroundColor(): ReactElement {
 
   const validationSchema = object({
     color: string()
-      .required(t('Invalid HEX color code'))
-      .test('valid-hex-color', t('Invalid HEX color code'), (value) => {
-        if (isValidHex(value)) {
-          void handleColorChange(value)
-          return true
+      .required(t('Invalid {{ HEX }} color code', { HEX: 'HEX' }))
+      .test(
+        'valid-hex-color',
+        t('Invalid {{ HEX }} color code', { HEX: 'HEX' }),
+        (value) => {
+          if (isValidHex(value)) {
+            void handleColorChange(value)
+            return true
+          }
         }
-      })
+      )
   })
 
   const palettePicker = (
@@ -184,7 +188,6 @@ export function BackgroundColor(): ReactElement {
           id="color"
           data-testid="bgColorTextField"
           hiddenLabel
-          label=""
           initialValue={selectedColor}
           validationSchema={validationSchema}
           onSubmit={handleColorChange}
