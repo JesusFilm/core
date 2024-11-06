@@ -110,7 +110,8 @@ builder.mutationFields((t) => ({
           languageId: input.languageId ?? undefined,
           slug: input.slug ?? undefined,
           videoId: input.videoId ?? undefined,
-          edition: input.edition ?? undefined
+          edition: input.edition ?? undefined,
+          downloadable: input.downloadable ?? undefined
         }
       })
     }
