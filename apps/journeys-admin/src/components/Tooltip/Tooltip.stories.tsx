@@ -19,7 +19,7 @@ const meta = {
         style={{
           height: '100vh',
           display: 'grid',
-          placeItems: 'center',
+          placeItems: 'center'
         }}
       >
         <Story />
