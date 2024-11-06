@@ -1,5 +1,10 @@
 import { PureAbility } from '@casl/ability'
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  Logger
+} from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { GqlExecutionContext } from '@nestjs/graphql'
 
@@ -28,6 +33,8 @@ import { CASL_POLICY_KEY, CaslPolicyHandler } from './decorators/caslPolicy'
  */
 @Injectable()
 export class CaslGuard implements CanActivate {
+  private readonly logger = new Logger(CaslGuard.name)
+
   constructor(
     private readonly reflector: Reflector,
     private readonly caslFactory: CaslFactory
@@ -43,7 +50,7 @@ export class CaslGuard implements CanActivate {
     }>().req
 
     if (req.userId == null) {
-      req.userId = await contextToUserId(context)
+      req.userId = contextToUserId(context, this.logger)
     }
 
     if (req.userId == null) return false

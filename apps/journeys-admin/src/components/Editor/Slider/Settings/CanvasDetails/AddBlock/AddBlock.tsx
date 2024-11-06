@@ -7,13 +7,11 @@ import {
   ActiveCanvasDetailsDrawer,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../__generated__/BlockFields'
 import { Drawer } from '../../Drawer'
 
 import { NewButtonButton } from './NewButtonButton'
-import { NewFormButton } from './NewFormButton'
 import { NewImageButton } from './NewImageButton'
 import { NewRadioQuestionButton } from './NewRadioQuestionButton'
 import { NewSignUpButton } from './NewSignUpButton'
@@ -23,7 +21,6 @@ import { NewVideoButton } from './NewVideoButton'
 
 export function AddBlock(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { formiumForm } = useFlags()
   const {
     state: { selectedStep },
     dispatch
@@ -33,9 +30,8 @@ export function AddBlock(): ReactElement {
     (block) => block.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
 
-  const hasChildBlock = cardBlock?.children?.some(
-    (block) => block.id !== cardBlock.coverBlockId
-  )
+  const hasChildBlock =
+    cardBlock?.children != null && cardBlock?.children?.length > 0
 
   function onClose(): void {
     dispatch({
@@ -68,11 +64,6 @@ export function AddBlock(): ReactElement {
         <Grid item xs={6} md={12}>
           <NewButtonButton />
         </Grid>
-        {formiumForm && (
-          <Grid item xs={6} md={12}>
-            <NewFormButton />
-          </Grid>
-        )}
       </Grid>
     </Drawer>
   )

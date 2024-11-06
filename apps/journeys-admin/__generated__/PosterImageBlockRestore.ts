@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface PosterImageBlockRestore_blockRestore_StepBlock {
-  __typename: "StepBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
@@ -27,6 +27,8 @@ export interface PosterImageBlockRestore_blockRestore_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export type PosterImageBlockRestore_blockRestore = PosterImageBlockRestore_blockRestore_StepBlock | PosterImageBlockRestore_blockRestore_ImageBlock;

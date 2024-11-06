@@ -68,7 +68,9 @@ export function SocialPreviewNode(): ReactElement {
     <BaseNode
       id="SocialPreview"
       selected={activeContent === ActiveContent.Social}
-      sourceHandle={HandleVariant.Shown}
+      sourceHandle={
+        showAnalytics === true ? HandleVariant.Disabled : HandleVariant.Shown
+      }
       targetHandle={
         showAnalytics === true ? HandleVariant.Shown : HandleVariant.Hidden
       }
@@ -90,8 +92,8 @@ export function SocialPreviewNode(): ReactElement {
                 selected === true
                   ? theme.palette.primary.main
                   : selected === 'descendant'
-                  ? theme.palette.divider
-                  : 'transparent'
+                    ? theme.palette.divider
+                    : 'transparent'
               }`,
             outlineOffset: '5px',
             ...(showAnalytics === true && {

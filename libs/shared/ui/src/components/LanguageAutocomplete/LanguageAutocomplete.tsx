@@ -1,11 +1,23 @@
 import Autocomplete, {
   AutocompleteRenderInputParams
 } from '@mui/material/Autocomplete'
+import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
-import Stack from '@mui/material/Stack'
+import { PopperProps } from '@mui/material/Popper'
+import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
-import { HTMLAttributes, ReactElement, ReactNode, useMemo } from 'react'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import {
+  HTMLAttributes,
+  ReactElement,
+  ReactNode,
+  forwardRef,
+  useMemo
+} from 'react'
+import { FixedSizeList as List } from 'react-window'
+
+import { defaultRenderOption } from './defaultRenderOption'
+import { OuterElement, OuterElementContext } from './OuterElement'
 
 export interface Language {
   id: string
@@ -31,6 +43,7 @@ export interface LanguageAutocompleteProps {
   helperText?: string
   renderInput?: (params: AutocompleteRenderInputParams) => ReactNode
   renderOption?: (params: HTMLAttributes<HTMLLIElement>) => ReactNode
+  popper?: Omit<PopperProps, 'open'>
 }
 
 export function LanguageAutocomplete({
@@ -40,7 +53,8 @@ export function LanguageAutocomplete({
   loading,
   renderInput,
   renderOption,
-  helperText
+  helperText,
+  popper
 }: LanguageAutocompleteProps): ReactElement {
   const options = useMemo(() => {
     return (
@@ -90,23 +104,48 @@ export function LanguageAutocomplete({
     />
   )
 
-  const defaultRenderOption = (
-    props: HTMLAttributes<HTMLLIElement>,
-    { localName, nativeName, id }: LanguageOption
-  ): ReactNode => {
-    return (
-      <li {...props} key={id}>
-        <Stack>
-          <Typography>{localName ?? nativeName}</Typography>
-          {localName != null && nativeName != null && (
-            <Typography variant="body2" color="text.secondary">
-              {nativeName}
-            </Typography>
-          )}
-        </Stack>
-      </li>
+  const ListboxComponent = forwardRef<
+    HTMLDivElement,
+    HTMLAttributes<HTMLElement>
+  >(function ListboxComponent(props: any, ref): ReactElement {
+    const { children, ...other } = props
+    const theme = useTheme()
+    const smUp = useMediaQuery(theme.breakpoints.up('sm'), {
+      noSsr: true
+    })
+
+    const itemData: Array<React.ReactElement<unknown>> = []
+    ;(props?.children as Array<React.ReactElement<unknown>>).forEach(
+      (
+        item: React.ReactElement<unknown> & {
+          children?: Array<React.ReactElement<unknown>>
+        }
+      ) => {
+        itemData.push(item)
+        itemData.push(...(item.children ?? []))
+      }
     )
-  }
+
+    const itemCount = itemData.length
+    const itemSize = 45
+    return (
+      <Box ref={ref}>
+        <OuterElementContext.Provider value={other}>
+          <List
+            itemData={itemData}
+            outerElementType={OuterElement}
+            height={Math.min(itemCount * itemSize + 10, smUp ? 400 : 200)}
+            width="100%"
+            itemSize={itemSize}
+            overscanCount={5}
+            itemCount={itemCount}
+          >
+            {renderOption != null ? renderOption : defaultRenderOption}
+          </List>
+        </OuterElementContext.Provider>
+      </Box>
+    )
+  })
 
   return (
     <Autocomplete
@@ -116,12 +155,22 @@ export function LanguageAutocomplete({
       getOptionLabel={({ localName, nativeName }) =>
         localName ?? nativeName ?? ''
       }
-      onChange={(_event, option) => handleChange(option)}
+      onChange={(_event, option) => {
+        handleChange(option)
+      }}
       options={sortedOptions}
       loading={loading}
       disablePortal={process.env.NODE_ENV === 'test'}
       renderInput={renderInput != null ? renderInput : defaultRenderInput}
-      renderOption={renderOption != null ? renderOption : defaultRenderOption}
+      renderOption={(props, option, state) => {
+        return [props, option, state.index] as React.ReactNode
+      }}
+      slots={{
+        listbox: ListboxComponent
+      }}
+      slotProps={{
+        popper
+      }}
     />
   )
 }

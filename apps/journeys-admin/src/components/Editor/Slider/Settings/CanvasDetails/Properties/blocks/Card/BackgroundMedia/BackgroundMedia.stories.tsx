@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -127,8 +128,13 @@ const video: TreeBlock<VideoBlock> = {
         value: 'FallingPlates'
       }
     ],
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -151,7 +157,9 @@ const poster: TreeBlock<ImageBlock> = {
   blurhash: '',
   alt: 'poster',
   children: [],
-  scale: null
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const image: TreeBlock<ImageBlock> = {
@@ -165,7 +173,9 @@ const image: TreeBlock<ImageBlock> = {
   height: 1080,
   blurhash: '',
   children: [],
-  scale: null
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const videoLanguages: GetVideoVariantLanguages_video = {
@@ -206,17 +216,19 @@ const Template: StoryObj<typeof BackgroundMedia> = {
         }
       ]}
     >
-      <ThemeProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <EditorProvider
-            initialState={{
-              ...args
-            }}
-          >
-            <BackgroundMedia />
-          </EditorProvider>
-        </JourneyProvider>
-      </ThemeProvider>
+      <InstantSearchTestWrapper>
+        <ThemeProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <EditorProvider
+              initialState={{
+                ...args
+              }}
+            >
+              <BackgroundMedia />
+            </EditorProvider>
+          </JourneyProvider>
+        </ThemeProvider>
+      </InstantSearchTestWrapper>
     </MockedProvider>
   )
 }

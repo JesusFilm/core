@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/router'
@@ -20,6 +21,7 @@ interface PageWrapperProps {
   title?: string
   showMainHeader?: boolean
   showNavBar?: boolean
+  fadeInNavBar?: boolean
   backHref?: string
   backHrefHistory?: boolean
   mainHeaderChildren?: ReactNode
@@ -44,6 +46,7 @@ export function PageWrapper({
   title,
   showMainHeader = true,
   showNavBar = true,
+  fadeInNavBar = false,
   backHref,
   backHrefHistory,
   mainHeaderChildren,
@@ -75,25 +78,33 @@ export function PageWrapper({
         data-testid="JourneysAdminPageWrapper"
       >
         <Stack direction={{ md: 'row' }} sx={{ height: 'inherit' }}>
-          {showNavBar && (
-            <NavigationDrawer
-              open={open}
-              onClose={setOpen}
-              user={user}
-              selectedPage={router?.pathname?.split('/')[1]}
-            />
-          )}
+          <Box
+            sx={{
+              minWidth: navbar.width,
+              backgroundColor: background ?? 'background.default'
+            }}
+          >
+            {showNavBar && (
+              <Fade in appear={fadeInNavBar} timeout={500}>
+                <Box>
+                  <NavigationDrawer
+                    open={open}
+                    onClose={setOpen}
+                    user={user}
+                    selectedPage={router?.pathname?.split('/')[1]}
+                  />
+                </Box>
+              </Fade>
+            )}
+          </Box>
 
           <Stack
             flexGrow={1}
             direction={{ xs: 'column', md: 'row' }}
             sx={{
               backgroundColor: background ?? 'background.default',
-              width: {
-                xs: '100vw',
-                md: showNavBar ? `calc(100vw - ${navbar.width})` : '100vw'
-              },
-              pt: { xs: showAppHeader ? toolbar.height : 0, md: 0 },
+              width: '100%',
+              pt: { xs: toolbar.height, md: 0 },
               pb: {
                 xs: bottomPanelChildren != null ? bottomPanel.height : 0,
                 md: 0

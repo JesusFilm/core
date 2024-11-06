@@ -34,6 +34,7 @@ type Journey @key(fields: "id") {
   publishedAt: DateTime
   trashedAt: DateTime
   featuredAt: DateTime
+  updatedAt: DateTime!
   createdAt: DateTime!
   status: JourneyStatus!
   """

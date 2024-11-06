@@ -39,7 +39,9 @@ describe('StepHeader', () => {
               height: 10,
               width: 10,
               blurhash: 'blurhash',
-              scale: 1
+              scale: 1,
+              focalLeft: 50,
+              focalTop: 50
             }
           }
         }}
@@ -53,5 +55,6 @@ describe('StepHeader', () => {
       'src',
       'https://example.com/logo.png'
     )
+    expect(screen.getByTestId('StepHeaderMenu')).toBeInTheDocument()
   })
 })

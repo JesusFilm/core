@@ -33,12 +33,6 @@ describe('canBlockHaveAction', () => {
     ).toBe(true)
   })
 
-  it('should return true for form block', () => {
-    expect(
-      canBlockHaveAction({ typename: 'FormBlock' } as unknown as Block)
-    ).toBe(true)
-  })
-
   it('should return true if block is not supported', () => {
     expect(
       canBlockHaveAction({ typename: 'TypographyBlock' } as unknown as Block)

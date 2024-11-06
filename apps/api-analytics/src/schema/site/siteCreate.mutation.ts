@@ -14,11 +14,9 @@ const SiteCreateInput = builder.inputType('SiteCreateInput', {
 
 builder.mutationType({
   fields: (t) => ({
-    siteCreate: t.prismaField({
+    siteCreate: t.withAuth({ isAuthenticated: true }).prismaField({
       type: 'sites',
-      authz: {
-        rules: ['IsAuthenticated']
-      },
+      nullable: false,
       errors: {
         types: [Error]
       },
@@ -38,7 +36,7 @@ builder.mutationType({
               site_memberships: {
                 create: {
                   users: {
-                    connect: { id: context.currentUser?.id }
+                    connect: { id: context.currentUser.id }
                   },
                   role: 'owner',
                   inserted_at: new Date(),
@@ -75,28 +73,26 @@ builder.mutationType({
               'Unique constraint failed on the fields: (`domain`)'
             )
           ) {
-            if (context.currentUser?.id != null) {
-              const site = await prisma.sites.findUnique({
-                ...query,
-                include: {
-                  ...query.include,
-                  site_memberships: {
-                    where: {
-                      role: 'owner',
-                      user_id: context.currentUser.id
-                    }
+            const site = await prisma.sites.findUnique({
+              ...query,
+              include: {
+                ...query.include,
+                site_memberships: {
+                  where: {
+                    role: 'owner',
+                    user_id: context.currentUser.id
                   }
-                },
-                where: {
-                  domain: input.domain
                 }
-              })
-              if (
-                site?.site_memberships != null &&
-                site?.site_memberships.length > 0
-              )
-                return site
-            }
+              },
+              where: {
+                domain: input.domain
+              }
+            })
+            if (
+              site?.site_memberships != null &&
+              site?.site_memberships.length > 0
+            )
+              return site
             throw new Error('domain already exists')
           }
 

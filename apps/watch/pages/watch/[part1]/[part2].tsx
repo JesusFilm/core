@@ -1,5 +1,4 @@
 import { ApolloError, gql } from '@apollo/client'
-import algoliasearch from 'algoliasearch'
 import type { GetStaticPaths, GetStaticProps } from 'next'
 import dynamic from 'next/dynamic'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
@@ -7,7 +6,12 @@ import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 import { InstantSearch } from 'react-instantsearch'
 
-import type { GetVideoContent } from '../../../__generated__/GetVideoContent'
+import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
+
+import type {
+  GetVideoContent,
+  GetVideoContentVariables
+} from '../../../__generated__/GetVideoContent'
 import type { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../../../src/libs/apolloClient'
@@ -46,16 +50,12 @@ const DynamicVideoContainerPage = dynamic(
     )
 )
 
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
-  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
-)
-
 export default function Part2Page({ content }: Part2PageProps): ReactElement {
+  const searchClient = useInstantSearchClient()
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   return (
-    <InstantSearch insights searchClient={searchClient} indexName={indexName}>
+    <InstantSearch searchClient={searchClient} indexName={indexName} insights>
       <SnackbarProvider>
         <LanguageProvider>
           <VideoProvider value={{ content }}>
@@ -103,7 +103,10 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
 
   const client = createApolloClient()
   try {
-    const { data } = await client.query<GetVideoContent>({
+    const { data } = await client.query<
+      GetVideoContent,
+      GetVideoContentVariables
+    >({
       query: GET_VIDEO_CONTENT,
       variables: {
         id: `${contentId}/${languageId}`
@@ -131,7 +134,9 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
     if (
       error instanceof ApolloError &&
       error.graphQLErrors.some(
-        ({ extensions }) => extensions?.code === 'NOT_FOUND'
+        ({ extensions, message }) =>
+          extensions?.code === 'NOT_FOUND' ||
+          message?.startsWith('Video not found')
       )
     )
       return {

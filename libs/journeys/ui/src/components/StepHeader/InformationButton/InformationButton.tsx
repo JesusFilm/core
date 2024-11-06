@@ -45,7 +45,7 @@ export function InformationButton({
           aria-controls="more-info"
           aria-haspopup="true"
           aria-expanded={open ? 'true' : 'false'}
-          sx={{ mx: 2, mt: 1, ...sx }}
+          sx={sx}
           onClick={handleClick}
         >
           <InfoOutlinedIcon
@@ -74,7 +74,7 @@ export function InformationButton({
             {journey?.team?.publicTitle !== '' &&
             journey?.team?.publicTitle !== null
               ? journey?.team?.publicTitle
-              : journey?.team?.title ?? ''}
+              : (journey?.team?.title ?? '')}
           </Typography>
         </MuiMenuItem>
         <Divider />
@@ -123,7 +123,7 @@ export function InformationButton({
                   journey?.team?.publicTitle !== '' &&
                   journey?.team?.publicTitle !== null
                     ? journey?.team?.publicTitle
-                    : journey?.team?.title ?? ''
+                    : (journey?.team?.title ?? '')
               }
             )}
           </Typography>

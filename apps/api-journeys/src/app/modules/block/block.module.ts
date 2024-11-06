@@ -9,7 +9,6 @@ import { BlockResolver } from './block.resolver'
 import { BlockService } from './block.service'
 import { ButtonBlockResolver } from './button/button.resolver'
 import { CardBlockResolver } from './card/card.resolver'
-import { FormBlockResolver } from './form/form.resolver'
 import { IconBlockResolver } from './icon/icon.resolver'
 import { ImageBlockResolver } from './image/image.resolver'
 import { RadioOptionBlockResolver } from './radioOption/radioOption.resolver'
@@ -28,7 +27,6 @@ import { VideoTriggerResolver } from './videoTrigger/videoTrigger.resolver'
     BlockResolver,
     ButtonBlockResolver,
     CardBlockResolver,
-    FormBlockResolver,
     IconBlockResolver,
     ImageBlockResolver,
     PrismaService,

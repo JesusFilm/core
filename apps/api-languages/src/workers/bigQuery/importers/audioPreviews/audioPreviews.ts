@@ -1,3 +1,4 @@
+import omit from 'lodash/omit'
 import { Logger } from 'pino'
 import { z } from 'zod'
 
@@ -5,13 +6,20 @@ import { prisma } from '../../../../lib/prisma'
 import { parse, parseMany, processTable } from '../../importer'
 import { getLanguageIds } from '../languages'
 
-const audioPreviewSchema = z.object({
-  languageId: z.number().transform(String),
-  duration: z.number(),
-  size: z.number(),
-  value: z.string(),
-  updatedAt: z.object({ value: z.string() }).transform((value) => value.value)
-})
+const audioPreviewSchema = z
+  .object({
+    languageId: z.number().transform(String),
+    duration: z.number(),
+    size: z.number(),
+    value: z.string(),
+    bitrate: z.number(),
+    container: z.string(),
+    updatedAt: z.object({ value: z.string() }).transform((value) => value.value)
+  })
+  .transform((value) => ({
+    ...omit(value, ['container']),
+    codec: value.container
+  }))
 
 export async function importAudioPreviews(logger?: Logger): Promise<void> {
   await processTable(

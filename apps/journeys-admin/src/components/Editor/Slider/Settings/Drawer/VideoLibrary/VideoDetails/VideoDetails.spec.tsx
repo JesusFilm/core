@@ -35,7 +35,9 @@ describe('VideoDetails', () => {
     height: 0,
     blurhash: '',
     children: [],
-    scale: null
+    scale: null,
+    focalLeft: 50,
+    focalTop: 50
   }
   const videoBlock: TreeBlock<VideoBlock> = {
     id: 'videoBlockId',
@@ -74,8 +76,13 @@ describe('VideoDetails', () => {
         video: {
           id: '2_Acts7302-0-0',
           primaryLanguageId: '529',
-          image:
-            'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+          images: [
+            {
+              __typename: 'CloudflareImage',
+              mobileCinematicHigh:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_Acts7302-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+            }
+          ],
           title: [
             {
               primary: true,
@@ -137,7 +144,7 @@ describe('VideoDetails', () => {
     expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
     const imageTag = videoPlayer.querySelector('.vjs-poster > picture > img')
     expect(imageTag?.getAttribute('src')).toBe(
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg'
+      'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_Acts7302-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
     )
   })
 

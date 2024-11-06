@@ -1,7 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -45,15 +45,12 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
-jest.mock('react-gtm-module', () => ({
-  __esModule: true,
-  default: {
-    dataLayer: jest.fn()
-  }
+jest.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: jest.fn()
 }))
 
-const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
-  typeof TagManager.dataLayer
+const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+  typeof sendGTMEvent
 >
 
 jest.mock('next-plausible', () => ({
@@ -196,6 +193,8 @@ describe('CardBlock', () => {
     parentBlockId: 'card',
     parentOrder: 0,
     scale: null,
+    focalLeft: 50,
+    focalTop: 50,
     children: []
   }
 
@@ -228,8 +227,13 @@ describe('CardBlock', () => {
           value: 'FallingPlates'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '2_0-FallingPlates-529',
@@ -486,15 +490,13 @@ describe('CardBlock', () => {
         })
       }
     })
-    expect(mockedDataLayer).toHaveBeenCalledWith({
-      dataLayer: {
-        event: 'step_next',
-        eventId: 'uuid',
-        blockId: 'step1.id',
-        stepName: 'Step {{number}}',
-        targetStepId: 'step2.id',
-        targetStepName: 'Step {{number}}'
-      }
+    expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+      event: 'step_next',
+      eventId: 'uuid',
+      blockId: 'step1.id',
+      stepName: 'Step {{number}}',
+      targetStepId: 'step2.id',
+      targetStepName: 'Step {{number}}'
     })
   })
 
@@ -544,15 +546,13 @@ describe('CardBlock', () => {
         })
       }
     })
-    expect(mockedDataLayer).toHaveBeenCalledWith({
-      dataLayer: {
-        event: 'step_prev',
-        eventId: 'uuid',
-        blockId: 'step2.id',
-        stepName: 'Step {{number}}',
-        targetStepId: 'step1.id',
-        targetStepName: 'Step {{number}}'
-      }
+    expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+      event: 'step_prev',
+      eventId: 'uuid',
+      blockId: 'step2.id',
+      stepName: 'Step {{number}}',
+      targetStepId: 'step1.id',
+      targetStepName: 'Step {{number}}'
     })
   })
 

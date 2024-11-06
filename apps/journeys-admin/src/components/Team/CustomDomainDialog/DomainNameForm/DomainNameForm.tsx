@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import { Formik } from 'formik'
@@ -18,11 +19,15 @@ import {
   DeleteCustomDomainVariables
 } from '../../../../../__generated__/DeleteCustomDomain'
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
-import { CustomDomainCreateInput } from '../../../../../__generated__/globalTypes'
+import {
+  CustomDomainCreateInput,
+  UserTeamRole
+} from '../../../../../__generated__/globalTypes'
 
 interface DomainNameFormProps {
   customDomain?: CustomDomain
   loading?: boolean
+  currentUserTeamRole: UserTeamRole
 }
 
 export const DELETE_CUSTOM_DOMAIN = gql`
@@ -52,7 +57,8 @@ export const CREATE_CUSTOM_DOMAIN = gql`
 
 export function DomainNameForm({
   customDomain,
-  loading
+  loading,
+  currentUserTeamRole
 }: DomainNameFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -161,6 +167,11 @@ export function DomainNameForm({
             'This domain is already connected to another NextSteps Team'
           )
         }
+        if (e.graphQLErrors?.[0]?.extensions?.code === 'FORBIDDEN') {
+          errorMessage = t(
+            'You do not have the required permissions to set a custom domain, please contact your team manager'
+          )
+        }
         enqueueSnackbar(errorMessage, {
           variant: 'error',
           preventDuplicate: false
@@ -193,7 +204,6 @@ export function DomainNameForm({
       }) => (
         <>
           <TextField
-            disabled={isSubmitting}
             id="name"
             name="name"
             autoFocus
@@ -205,22 +215,31 @@ export function DomainNameForm({
             error={errors.name != null}
             onChange={handleChange}
             onBlur={handleBlur}
+            disabled={
+              isSubmitting || currentUserTeamRole !== UserTeamRole.manager
+            }
             helperText={
               <>
                 {touched.name != null && errors.name != null
                   ? errors.name
-                  : ' '}
+                  : currentUserTeamRole !== UserTeamRole.manager
+                    ? t('Only team managers can update the custom domain')
+                    : ' '}
               </>
             }
             label={t('Domain Name')}
           />
-          <Button
-            disabled={isSubmitting}
-            onClick={() => handleSubmit()}
-            sx={{ width: 120, height: 55 }}
-          >
-            {t('Connect')}
-          </Button>
+          <Box>
+            <Button
+              disabled={
+                isSubmitting || currentUserTeamRole !== UserTeamRole.manager
+              }
+              onClick={() => handleSubmit()}
+              sx={{ width: 120, height: 55 }}
+            >
+              {t('Connect')}
+            </Button>
+          </Box>
         </>
       )}
     </Formik>
@@ -234,17 +253,27 @@ export function DomainNameForm({
         placeholder="your.nextstep.is"
         variant="filled"
         hiddenLabel
-        InputProps={{ readOnly: true }}
+        helperText={
+          <>
+            {currentUserTeamRole !== UserTeamRole.manager
+              ? t('Only team managers can update the custom domain')
+              : ''}
+          </>
+        }
+        slotProps={{ input: { readOnly: true } }}
       />
-      <Button
-        disabled={customDomain == null && loading === true}
-        onClick={async () => await handleDisconnect()}
-        sx={{ width: 120, height: 55 }}
-      >
-        {customDomain == null && loading === true
-          ? t('Connect')
-          : t('Disconnect')}
-      </Button>
+
+      <Box>
+        <Button
+          disabled={currentUserTeamRole !== UserTeamRole.manager}
+          onClick={async () => await handleDisconnect()}
+          sx={{ width: 120, height: 55 }}
+        >
+          {customDomain == null && loading === true
+            ? t('Connect')
+            : t('Disconnect')}
+        </Button>
+      </Box>
     </>
   )
 }

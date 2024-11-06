@@ -53,7 +53,8 @@ export function TypographyEdit({
   }, [undo?.id])
 
   useEffect(() => {
-    setValue(content)
+    if (value !== content) setValue(content)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [content])
 
   function resetCommandInput(): void {

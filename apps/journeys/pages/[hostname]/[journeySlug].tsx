@@ -37,6 +37,7 @@ function HostJourneyPage({
   if (isIframe) {
     void router.push('/embed/[journeySlug]', `/embed/${journey.slug}`)
   }
+
   return (
     <>
       <Head>
@@ -100,6 +101,7 @@ export const getStaticProps: GetStaticProps<HostJourneyPageProps> = async (
     const { rtl, locale } = getJourneyRTL(data.journey)
     return {
       props: {
+        hostname: context.params?.hostname?.toString() ?? '',
         host: context.params?.host?.toString() ?? '',
         ...(await serverSideTranslations(
           context.locale ?? 'en',

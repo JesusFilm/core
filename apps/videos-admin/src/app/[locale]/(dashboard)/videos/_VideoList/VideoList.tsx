@@ -9,9 +9,11 @@ import {
   GridColumnVisibilityModel,
   GridFilterModel,
   GridPaginationModel,
+  GridRenderCellParams,
   GridRowParams,
   GridRowsProp,
   GridToolbar,
+  GridValidRowModel,
   MuiEvent,
   getGridStringOperators,
   gridClasses
@@ -21,15 +23,17 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
-export const GET_VIDEOS_AND_COUNT = graphql(`
-  query GetVideosAndCount(
+import { PublishedChip } from '../../../../../components/PublishedChip'
+
+export const GET_ADMIN_VIDEOS_AND_COUNT = graphql(`
+  query GetAdminVideosAndCount(
     $limit: Int
     $offset: Int
     $showTitle: Boolean!
     $showSnippet: Boolean!
     $where: VideosFilter
   ) {
-    videos(limit: $limit, offset: $offset, where: $where) {
+    adminVideos(limit: $limit, offset: $offset, where: $where) {
       id
       title @include(if: $showTitle) {
         primary
@@ -39,15 +43,16 @@ export const GET_VIDEOS_AND_COUNT = graphql(`
         primary
         value
       }
+      published
     }
-    videosCount(where: $where)
+    adminVideosCount(where: $where)
   }
 `)
 
-type VideosFilter = VariablesOf<typeof GET_VIDEOS_AND_COUNT>['where']
-export type GetVideosAndCount = ResultOf<typeof GET_VIDEOS_AND_COUNT>
-export type GetVideosAndCountVariables = VariablesOf<
-  typeof GET_VIDEOS_AND_COUNT
+type VideosFilter = VariablesOf<typeof GET_ADMIN_VIDEOS_AND_COUNT>['where']
+export type GetAdminVideosAndCount = ResultOf<typeof GET_ADMIN_VIDEOS_AND_COUNT>
+export type GetAdminVideosAndCountVariables = VariablesOf<
+  typeof GET_ADMIN_VIDEOS_AND_COUNT
 >
 
 export function VideoList(): ReactElement {
@@ -74,9 +79,9 @@ export function VideoList(): ReactElement {
   const pathname = usePathname()
 
   const { data, loading, fetchMore } = useQuery<
-    GetVideosAndCount,
-    GetVideosAndCountVariables
-  >(GET_VIDEOS_AND_COUNT, {
+    GetAdminVideosAndCount,
+    GetAdminVideosAndCountVariables
+  >(GET_ADMIN_VIDEOS_AND_COUNT, {
     variables: {
       limit: videosLimit,
       offset: paginationModel.page * videosLimit,
@@ -87,13 +92,14 @@ export function VideoList(): ReactElement {
   })
 
   const rows: GridRowsProp =
-    data?.videos?.map((video) => {
+    data?.adminVideos?.map((video) => {
       const title = video?.title?.find(({ primary }) => primary)?.value
       const description = video?.snippet?.find(({ primary }) => primary)?.value
       return {
         id: video.id,
         title,
-        description
+        description,
+        published: video.published
       }
     }) ?? []
 
@@ -113,6 +119,14 @@ export function VideoList(): ReactElement {
       filterOperators: getGridStringOperators().filter(
         (operator) => operator.value === 'equals'
       )
+    },
+    {
+      field: 'published',
+      headerName: t('Published'),
+      minWidth: 150,
+      renderCell: (
+        params: GridRenderCellParams<GridValidRowModel, boolean>
+      ) => <PublishedChip published={params.value ?? false} />
     },
     {
       field: 'description',
@@ -183,7 +197,7 @@ export function VideoList(): ReactElement {
         paginationModel={paginationModel}
         paginationMode="server"
         onPaginationModelChange={handleChangePage}
-        rowCount={data?.videosCount ?? 0}
+        rowCount={data?.adminVideosCount ?? 0}
         onRowClick={handleClick}
         slots={{
           toolbar: GridToolbar

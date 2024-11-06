@@ -7,4 +7,5 @@ module "ecs-task" {
   environment_variables = local.environment_variables
   alb_listener_arn      = var.alb_listener_arn
   alb_dns_name          = var.alb_dns_name
+  dd_source             = "@graphql-hive/gateway"
 }

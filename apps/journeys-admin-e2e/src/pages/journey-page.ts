@@ -30,7 +30,7 @@ export class JourneyPage {
     await this.enterJourneysTypography()
     await this.clickDoneBtn()
     await this.clickThreeDotBtnOfCustomJourney()
-    await this.clickTitleInThreeDotOptions()
+    await this.clickJourneyDetailsInThreeDotOptions()
     await this.enterTitle()
     await this.clickSaveBtn()
     await this.backIcon()
@@ -183,7 +183,7 @@ export class JourneyPage {
     await this.enterJourneysTypographyForTemplate()
     await this.clickDoneBtn()
     await this.clickThreeDotBtnOfCustomJourney()
-    await this.clickTitleInThreeDotOptions()
+    await this.clickJourneyDetailsInThreeDotOptions()
     await this.enterTitle()
     await this.clickSaveBtn()
     await this.backIcon()
@@ -288,11 +288,11 @@ export class JourneyPage {
     await this.page.locator('button#edit-journey-actions').click()
   }
 
-  async clickTitleInThreeDotOptions() {
+  async clickJourneyDetailsInThreeDotOptions() {
     await this.page
       .locator(
         'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
-        { hasText: 'Title' }
+        { hasText: 'Edit Details' }
       )
       .click()
   }
@@ -931,7 +931,8 @@ export class JourneyPage {
 
   async clickPreviewBtnInCustomJourneyPage() {
     await this.page
-      .locator('div[data-testid="PreviewItem"] a[aria-label="Preview"]')
+      .getByTestId('PreviewItem')
+      .getByRole('link', { name: 'Preview' })
       .click()
   }
 
@@ -943,7 +944,7 @@ export class JourneyPage {
     await newPage.waitForLoadState()
     // await expect(await newPage.locator('h3[data-testid="JourneysTypography"]')).toHaveText(this.existingJourneyName)
     const tabName: string = await newPage.title()
-    await expect(tabName.includes(journeyName)).toBeTruthy()
+    expect(tabName.includes(journeyName)).toBeTruthy()
     const slidesCount = await newPage
       .locator(
         'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'

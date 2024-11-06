@@ -111,11 +111,14 @@ jobs:
           DOPPLER_API_USERS_TOKEN: ${{ secrets.DOPPLER_API_USERS_TOKEN }}
           DOPPLER_API_MEDIA_TOKEN: ${{ secrets.DOPPLER_API_MEDIA_TOKEN }}
           DOPPLER_ARCLIGHT_TOKEN: ${{ secrets.DOPPLER_ARCLIGHT_TOKEN }}
+          DOPPLER_DOCS_TOKEN: ${{ secrets.DOPPLER_DOCS_TOKEN }}
           DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
           DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
           DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
           DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
           DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}
+          NEXT_PUBLIC_VERCEL_ENV: stage
+          NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         with:
           targets: fetch-secrets, extract-translations, build
           projects: ${{ inputs.name }}
@@ -132,7 +135,7 @@ jobs:
       # ECS Deployment
       - name: Configure ECS AWS credentials
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
@@ -141,7 +144,7 @@ jobs:
       - name: Login to Amazon ECR
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
         id: login-ecr-ecs
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build, tag, and push the image to Amazon ECR
         if: contains(steps.affected-apps.outputs.apps, inputs.name)
@@ -150,7 +153,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apps/${{ inputs.name }}/Dockerfile
+          docker build --build-arg SERVICE_VERSION=$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apps/${{ inputs.name }}/Dockerfile
           echo "Pushing image to ECR..."
           docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT

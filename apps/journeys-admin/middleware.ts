@@ -15,6 +15,7 @@ const SUPPORTED_LOCALES = [
   'id', // Indonesian
   'th', // Thai
   'ja', // Japanese
+  'ko', // Korean
   'ru', // Russian
   'tr', // Turkish
   'zh', // Chinese
@@ -59,8 +60,8 @@ function getSupportedLocale(input?: string): string {
   return isSupported(input)
     ? input
     : isSupported(languageCode)
-    ? languageCode
-    : 'en'
+      ? languageCode
+      : 'en'
 }
 
 function getBrowserLanguage(req: NextRequest): string {

@@ -2,22 +2,25 @@ FROM node:20-alpine
 
 EXPOSE 4002
 
+ARG SERVICE_VERSION=0.0.1
+ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
 ENV PRISMA_LOCATION_USERS=/app/node_modules/.prisma/api-users-client
 
 RUN apk upgrade --update-cache --available && \
+    apk add g++ make python3 py3-pip curl-dev && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /app
 COPY ./dist/apps/api-users .
 
 # dependencies that nestjs needs
-RUN npm install --production --silent
+RUN npm install --production
 
 WORKDIR /prisma
 COPY ./apps/api-users/db .
 RUN npx prisma@^5.2.0 generate --generator client
 
 WORKDIR /app
-RUN npm install tslib@^2.6.2 @prisma/client@^5.2.0 pino-pretty@^10.2.0
 
+RUN npm install @prisma/client@^5.2.0
 CMD npx prisma@^5.2.0 migrate deploy --schema /prisma/schema.prisma; node ./main.js

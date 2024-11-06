@@ -1,11 +1,11 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import MuiButton from '@mui/material/Button'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
 import { MouseEvent, ReactElement, useMemo } from 'react'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -188,21 +188,17 @@ export function Button({
     }
 
     if (action?.__typename === 'LinkAction') {
-      TagManager.dataLayer({
-        dataLayer: {
-          ...eventProperties,
-          event: 'outbound_action_click',
-          buttonLabel: label,
-          outboundActionType: getLinkActionGoal(action.url),
-          outboundActionValue: action.url
-        }
+      sendGTMEvent({
+        ...eventProperties,
+        event: 'outbound_action_click',
+        buttonLabel: label,
+        outboundActionType: getLinkActionGoal(action.url),
+        outboundActionValue: action.url
       })
     } else {
-      TagManager.dataLayer({
-        dataLayer: {
-          ...eventProperties,
-          event: 'button_click'
-        }
+      sendGTMEvent({
+        ...eventProperties,
+        event: 'button_click'
       })
     }
   }
@@ -229,10 +225,10 @@ export function Button({
           size === 'large'
             ? 6
             : size === 'medium'
-            ? 5
-            : size === 'small'
-            ? 4
-            : 5
+              ? 5
+              : size === 'small'
+                ? 4
+                : 5
       }}
       data-testid={`JourneysButton-${blockId}`}
     >
@@ -261,8 +257,8 @@ export function Button({
           {editableLabel != null
             ? editableLabel
             : label !== ''
-            ? label
-            : t('Submit')}
+              ? label
+              : t('Submit')}
         </span>
       </MuiButton>
     </Box>

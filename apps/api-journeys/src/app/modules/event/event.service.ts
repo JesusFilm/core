@@ -10,11 +10,14 @@ import {
   Visitor
 } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import { EventsNotificationJob } from '@core/yoga/emailEvents/types'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
-import { EventsNotificationJob } from '../email/emailEvents/emailEvents.consumer'
 import { VisitorService } from '../visitor/visitor.service'
+
+const TWO_MINUTES = 2 * 60 * 1000 // in milliseconds
+const ONE_DAY = 24 * 60 * 60 // in seconds
 
 @Injectable()
 export class EventService {
@@ -98,9 +101,9 @@ export class EventService {
         },
         {
           jobId,
-          delay: 2 * 60 * 1000, // delay for 2 minutes
+          delay: TWO_MINUTES,
           removeOnComplete: true,
-          removeOnFail: { age: 24 * 36000 } // keep up to 24 hours
+          removeOnFail: { age: ONE_DAY, count: 50 }
         }
       )
     } else {
@@ -112,9 +115,9 @@ export class EventService {
         },
         {
           jobId,
-          delay: 2 * 60 * 1000, // delay for 2 minutes
+          delay: TWO_MINUTES,
           removeOnComplete: true,
-          removeOnFail: { age: 24 * 36000 } // keep up to 24 hours
+          removeOnFail: { age: ONE_DAY, count: 50 }
         }
       )
     }
@@ -129,7 +132,7 @@ export class EventService {
     const visitorEmailJob = await this.emailQueue.getJob(jobId)
 
     if (visitorEmailJob != null) {
-      const baseDelay = 2 * 60 * 1000
+      const baseDelay = TWO_MINUTES
       const delayInMilliseconds = (delay ?? 0) * 1000
       const delayTimer = Math.max(delayInMilliseconds, baseDelay)
       await visitorEmailJob.changeDelay(delayTimer)

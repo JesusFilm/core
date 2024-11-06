@@ -1,12 +1,20 @@
 import { ApolloError, gql } from '@apollo/client'
-import algoliasearch from 'algoliasearch'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 import { InstantSearch } from 'react-instantsearch'
 
-import { GetVideoContainerAndVideoContent } from '../../../../__generated__/GetVideoContainerAndVideoContent'
+import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
+
+import {
+  GetVideoContainerPart2,
+  GetVideoContainerPart2Variables
+} from '../../../../__generated__/GetVideoContainerPart2'
+import {
+  GetVideoContentPart3,
+  GetVideoContentPart3Variables
+} from '../../../../__generated__/GetVideoContentPart3'
 import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
 import i18nConfig from '../../../../next-i18next.config'
 import { VideoContentPage } from '../../../../src/components/VideoContentPage'
@@ -17,26 +25,23 @@ import { slugMap } from '../../../../src/libs/slugMap'
 import { VIDEO_CONTENT_FIELDS } from '../../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../../src/libs/videoContext'
 
-export const GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT = gql`
+export const GET_VIDEO_CONTAINER_PART_2 = gql`
   ${VIDEO_CONTENT_FIELDS}
-  query GetVideoContainerAndVideoContent(
-    $containerId: ID!
-    $contentId: ID!
-    $languageId: ID
-  ) {
+  query GetVideoContainerPart2($containerId: ID!, $languageId: ID) {
     container: video(id: $containerId, idType: slug) {
-      ...VideoContentFields
-    }
-    content: video(id: $contentId, idType: slug) {
       ...VideoContentFields
     }
   }
 `
 
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
-  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ?? ''
-)
+export const GET_VIDEO_CONTENT_PART_3 = gql`
+  ${VIDEO_CONTENT_FIELDS}
+  query GetVideoContentPart3($contentId: ID!, $languageId: ID) {
+    content: video(id: $contentId, idType: slug) {
+      ...VideoContentFields
+    }
+  }
+`
 
 interface Part3PageProps {
   container: VideoContentFields
@@ -47,10 +52,11 @@ export default function Part3Page({
   container,
   content
 }: Part3PageProps): ReactElement {
+  const searchClient = useInstantSearchClient()
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   return (
-    <InstantSearch insights searchClient={searchClient} indexName={indexName}>
+    <InstantSearch searchClient={searchClient} indexName={indexName} insights>
       <SnackbarProvider>
         <LanguageProvider>
           <VideoProvider value={{ content, container }}>
@@ -101,14 +107,21 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
 
   const client = createApolloClient()
   try {
-    const { data } = await client.query<GetVideoContainerAndVideoContent>({
-      query: GET_VIDEO_CONTAINER_AND_VIDEO_CONTENT,
-      variables: {
-        containerId: `${containerId}/${languageId}`,
-        contentId: `${contentId}/${languageId}`
-      }
-    })
-    if (data.container == null || data.content == null) {
+    const [{ data: containerData }, { data: contentData }] = await Promise.all([
+      client.query<GetVideoContainerPart2, GetVideoContainerPart2Variables>({
+        query: GET_VIDEO_CONTAINER_PART_2,
+        variables: {
+          containerId: `${containerId}/${languageId}`
+        }
+      }),
+      client.query<GetVideoContentPart3, GetVideoContentPart3Variables>({
+        query: GET_VIDEO_CONTENT_PART_3,
+        variables: {
+          contentId: `${contentId}/${languageId}`
+        }
+      })
+    ])
+    if (containerData.container == null || contentData.content == null) {
       return {
         revalidate: 1,
         notFound: true
@@ -118,8 +131,8 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
       revalidate: 3600,
       props: {
         flags: await getFlags(),
-        container: data.container,
-        content: data.content,
+        container: containerData.container,
+        content: contentData.content,
         ...(await serverSideTranslations(
           context.locale ?? 'en',
           ['apps-watch'],
@@ -131,7 +144,9 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
     if (
       error instanceof ApolloError &&
       error.graphQLErrors.some(
-        ({ extensions }) => extensions?.code === 'NOT_FOUND'
+        ({ extensions, message }) =>
+          extensions?.code === 'NOT_FOUND' ||
+          message?.startsWith('Video not found')
       )
     )
       return {

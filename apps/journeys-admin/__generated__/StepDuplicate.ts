@@ -86,38 +86,6 @@ export interface StepDuplicate_blockDuplicate_CardBlock {
   fullscreen: boolean;
 }
 
-export interface StepDuplicate_blockDuplicate_FormBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface StepDuplicate_blockDuplicate_FormBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface StepDuplicate_blockDuplicate_FormBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type StepDuplicate_blockDuplicate_FormBlock_action = StepDuplicate_blockDuplicate_FormBlock_action_NavigateToBlockAction | StepDuplicate_blockDuplicate_FormBlock_action_LinkAction | StepDuplicate_blockDuplicate_FormBlock_action_EmailAction;
-
-export interface StepDuplicate_blockDuplicate_FormBlock {
-  __typename: "FormBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  form: any | null;
-  action: StepDuplicate_blockDuplicate_FormBlock_action | null;
-}
-
 export interface StepDuplicate_blockDuplicate_IconBlock {
   __typename: "IconBlock";
   id: string;
@@ -143,6 +111,8 @@ export interface StepDuplicate_blockDuplicate_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface StepDuplicate_blockDuplicate_RadioOptionBlock_action_NavigateToBlockAction {
@@ -281,6 +251,11 @@ export interface StepDuplicate_blockDuplicate_VideoBlock_video_title {
   value: string;
 }
 
+export interface StepDuplicate_blockDuplicate_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface StepDuplicate_blockDuplicate_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -303,7 +278,7 @@ export interface StepDuplicate_blockDuplicate_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: StepDuplicate_blockDuplicate_VideoBlock_video_title[];
-  image: string | null;
+  images: StepDuplicate_blockDuplicate_VideoBlock_video_images[];
   variant: StepDuplicate_blockDuplicate_VideoBlock_video_variant | null;
   variantLanguages: StepDuplicate_blockDuplicate_VideoBlock_video_variantLanguages[];
 }
@@ -446,7 +421,7 @@ export interface StepDuplicate_blockDuplicate_VideoTriggerBlock {
   triggerAction: StepDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction;
 }
 
-export type StepDuplicate_blockDuplicate = StepDuplicate_blockDuplicate_GridContainerBlock | StepDuplicate_blockDuplicate_ButtonBlock | StepDuplicate_blockDuplicate_CardBlock | StepDuplicate_blockDuplicate_FormBlock | StepDuplicate_blockDuplicate_IconBlock | StepDuplicate_blockDuplicate_ImageBlock | StepDuplicate_blockDuplicate_RadioOptionBlock | StepDuplicate_blockDuplicate_RadioQuestionBlock | StepDuplicate_blockDuplicate_SignUpBlock | StepDuplicate_blockDuplicate_StepBlock | StepDuplicate_blockDuplicate_TextResponseBlock | StepDuplicate_blockDuplicate_TypographyBlock | StepDuplicate_blockDuplicate_VideoBlock | StepDuplicate_blockDuplicate_VideoTriggerBlock;
+export type StepDuplicate_blockDuplicate = StepDuplicate_blockDuplicate_GridContainerBlock | StepDuplicate_blockDuplicate_ButtonBlock | StepDuplicate_blockDuplicate_CardBlock | StepDuplicate_blockDuplicate_IconBlock | StepDuplicate_blockDuplicate_ImageBlock | StepDuplicate_blockDuplicate_RadioOptionBlock | StepDuplicate_blockDuplicate_RadioQuestionBlock | StepDuplicate_blockDuplicate_SignUpBlock | StepDuplicate_blockDuplicate_StepBlock | StepDuplicate_blockDuplicate_TextResponseBlock | StepDuplicate_blockDuplicate_TypographyBlock | StepDuplicate_blockDuplicate_VideoBlock | StepDuplicate_blockDuplicate_VideoTriggerBlock;
 
 export interface StepDuplicate {
   /**

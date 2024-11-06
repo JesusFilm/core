@@ -1,8 +1,8 @@
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
-import { ReactElement, useMemo } from 'react'
-import { NodeProps } from 'reactflow'
+import { ReactElement } from 'react'
+import { NodeProps, useUpdateNodeInternals } from 'reactflow'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
@@ -26,12 +26,12 @@ export function StepBlockNode({
     state: { steps, selectedStep, activeContent, showAnalytics }
   } = useEditor()
   const { journey } = useJourney()
-  const step = steps?.find((step) => step.id === id)
 
-  const actionBlocks = useMemo(
-    () => (step != null ? [step, ...filterActionBlocks(step)] : []),
-    [step]
-  )
+  const updateNodeInternals = useUpdateNodeInternals()
+
+  const step = steps?.find((step) => step.id === id)
+  const actionBlocks = filterActionBlocks(step)
+  updateNodeInternals(step?.id ?? '')
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
@@ -41,8 +41,8 @@ export function StepBlockNode({
   const targetHandleVariant = isMenuCard
     ? HandleVariant.None
     : showAnalytics === true
-    ? HandleVariant.Disabled
-    : HandleVariant.Shown
+      ? HandleVariant.Disabled
+      : HandleVariant.Shown
 
   return step != null ? (
     <Stack sx={{ position: 'relative' }}>
@@ -84,7 +84,10 @@ export function StepBlockNode({
         >
           {() => <StepBlockNodeCard step={step} selected={isSelected} />}
         </BaseNode>
-        <Stack direction="column" sx={{}}>
+        <Stack direction="column">
+          {journey?.website !== true && (
+            <ActionButton stepId={step.id} block={step} selected={isSelected} />
+          )}
           {actionBlocks.map((block) => (
             <ActionButton
               key={block.id}

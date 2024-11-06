@@ -21,7 +21,7 @@ locals {
     zone_id = data.aws_route53_zone.route53_central_jesusfilm_org.zone_id
     alb_target_group = merge(local.alb_target_group, {
       health_check_path = "/health"
-      health_check_port = "8088"
+      health_check_port = "4000"
     })
   }
 
@@ -63,6 +63,16 @@ module "api-analytics" {
 
 module "api-journeys" {
   source        = "../../../apps/api-journeys/infrastructure"
+  ecs_config    = local.internal_ecs_config
+  doppler_token = data.aws_ssm_parameter.doppler_api_journeys_prod_token.value
+  alb = {
+    arn      = module.prod.internal_alb.arn
+    dns_name = module.prod.internal_alb.dns_name
+  }
+}
+
+module "api-journeys-modern" {
+  source        = "../../../apps/api-journeys-modern/infrastructure"
   ecs_config    = local.internal_ecs_config
   doppler_token = data.aws_ssm_parameter.doppler_api_journeys_prod_token.value
   alb = {
@@ -178,4 +188,7 @@ module "eks" {
   subnet_ids         = concat(module.prod.vpc.internal_subnets, module.prod.vpc.public_subnets)
   security_group_ids = [module.prod.ecs.internal_ecs_security_group_id, module.prod.ecs.public_ecs_security_group_id]
   vpc_id             = module.prod.vpc.id
+  subnet_ids_2a      = ["subnet-0b7c1e14af0ffb3ea", "subnet-036663ddfdb3b94b0"]
+  subnet_ids_2b      = ["subnet-05c389158df4b940a", "subnet-01aa708571a3e499c"]
+  subnet_ids_2c      = ["subnet-02f4c2a33ace122c5", "subnet-0aa10af01283bbcdb"]
 }

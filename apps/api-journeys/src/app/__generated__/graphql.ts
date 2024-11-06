@@ -150,6 +150,7 @@ export enum MessagePlatform {
     telegram = "telegram",
     whatsApp = "whatsApp",
     instagram = "instagram",
+    kakaoTalk = "kakaoTalk",
     viber = "viber",
     vk = "vk",
     snapchat = "snapchat",
@@ -332,18 +333,6 @@ export class CardBlockUpdateInput {
     themeName?: Nullable<ThemeName>;
 }
 
-export class FormBlockCreateInput {
-    id?: Nullable<string>;
-    journeyId: string;
-    parentBlockId: string;
-}
-
-export class FormBlockUpdateInput {
-    projectId?: Nullable<string>;
-    apiToken?: Nullable<string>;
-    formSlug?: Nullable<string>;
-}
-
 export class IconBlockCreateInput {
     id?: Nullable<string>;
     parentBlockId: string;
@@ -370,6 +359,8 @@ export class ImageBlockCreateInput {
     height?: Nullable<number>;
     isCover?: Nullable<boolean>;
     scale?: Nullable<number>;
+    focalTop?: Nullable<number>;
+    focalLeft?: Nullable<number>;
 }
 
 export class ImageBlockUpdateInput {
@@ -380,6 +371,8 @@ export class ImageBlockUpdateInput {
     width?: Nullable<number>;
     height?: Nullable<number>;
     scale?: Nullable<number>;
+    focalTop?: Nullable<number>;
+    focalLeft?: Nullable<number>;
 }
 
 export class RadioOptionBlockCreateInput {
@@ -929,10 +922,6 @@ export abstract class IMutation {
 
     abstract cardBlockUpdate(id: string, input: CardBlockUpdateInput, journeyId?: Nullable<string>): CardBlock | Promise<CardBlock>;
 
-    abstract formBlockCreate(input: FormBlockCreateInput): FormBlock | Promise<FormBlock>;
-
-    abstract formBlockUpdate(id: string, input: FormBlockUpdateInput): Nullable<FormBlock> | Promise<Nullable<FormBlock>>;
-
     abstract iconBlockCreate(input: IconBlockCreateInput): IconBlock | Promise<IconBlock>;
 
     abstract iconBlockUpdate(id: string, input: IconBlockUpdateInput, journeyId?: Nullable<string>): IconBlock | Promise<IconBlock>;
@@ -1061,8 +1050,6 @@ export abstract class IMutation {
 
     abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
 
-    abstract journeyProfileOnboardingFormComplete(): JourneyProfile | Promise<JourneyProfile>;
-
     abstract updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
 
     abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
@@ -1123,6 +1110,7 @@ export class Journey {
     publishedAt?: Nullable<DateTime>;
     trashedAt?: Nullable<DateTime>;
     featuredAt?: Nullable<DateTime>;
+    updatedAt: DateTime;
     createdAt: DateTime;
     status: JourneyStatus;
     seoTitle?: Nullable<string>;
@@ -1241,33 +1229,6 @@ export class CardBlock implements Block {
     themeName?: Nullable<ThemeName>;
 }
 
-export class FormiumProject {
-    __typename?: 'FormiumProject';
-    id: string;
-    name: string;
-}
-
-export class FormiumForm {
-    __typename?: 'FormiumForm';
-    slug: string;
-    name: string;
-}
-
-export class FormBlock implements Block {
-    __typename?: 'FormBlock';
-    id: string;
-    journeyId: string;
-    parentBlockId?: Nullable<string>;
-    parentOrder?: Nullable<number>;
-    action?: Nullable<Action>;
-    form?: Nullable<Json>;
-    projects: FormiumProject[];
-    projectId?: Nullable<string>;
-    forms: FormiumForm[];
-    formSlug?: Nullable<string>;
-    apiTokenExists: boolean;
-}
-
 export class GridContainerBlock implements Block {
     __typename?: 'GridContainerBlock';
     id: string;
@@ -1314,6 +1275,8 @@ export class ImageBlock implements Block {
     alt: string;
     blurhash: string;
     scale?: Nullable<number>;
+    focalTop?: Nullable<number>;
+    focalLeft?: Nullable<number>;
 }
 
 export class RadioOptionBlock implements Block {
@@ -1704,7 +1667,6 @@ export class JourneyProfile {
     userId: string;
     acceptedTermsAt?: Nullable<DateTime>;
     lastActiveTeamId?: Nullable<string>;
-    onboardingFormCompletedAt?: Nullable<DateTime>;
     journeyFlowBackButtonClicked?: Nullable<boolean>;
     plausibleJourneyFlowViewed?: Nullable<boolean>;
     plausibleDashboardViewed?: Nullable<boolean>;

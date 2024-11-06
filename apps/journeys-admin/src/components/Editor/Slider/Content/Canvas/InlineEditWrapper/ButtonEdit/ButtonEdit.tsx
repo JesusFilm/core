@@ -56,7 +56,8 @@ export function ButtonEdit({
   }, [undo?.id])
 
   useEffect(() => {
-    setValue(label)
+    if (value !== label) setValue(label)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [label])
 
   function resetCommandInput(): void {
@@ -124,9 +125,6 @@ export function ButtonEdit({
           fullWidth
           multiline
           autoFocus
-          inputRef={(ref) => {
-            if (ref != null) ref.focus()
-          }}
           onFocus={(e) =>
             e.currentTarget.setSelectionRange(
               e.currentTarget.value.length,

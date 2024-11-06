@@ -14,7 +14,9 @@ const image: ImageBlock = {
   width: 1920,
   height: 1080,
   blurhash: '',
-  scale: null
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 describe('ImageBlockThumbnail', () => {
@@ -47,11 +49,11 @@ describe('ImageBlockThumbnail', () => {
       const img = await screen.getByRole('img')
       expect(img).toHaveAttribute(
         'src',
-        'https://images.unsplash.com/photo-1?cs=tinysrgb&fit=crop&fm=jpg&ixid=1&ixlib=rb-4.0.3&q=80&w=55&h=55&auto=format'
+        'https://images.unsplash.com/photo-1?cs=tinysrgb&fit=crop&fm=jpg&ixid=1&ixlib=rb-4.0.3&q=80&w=56&h=56&auto=format'
       )
       expect(img).toHaveAttribute(
         'srcset',
-        'https://images.unsplash.com/photo-1?cs=tinysrgb&fit=crop&fm=jpg&ixid=1&ixlib=rb-4.0.3&q=80&w=55&h=55&auto=format&dpr=2 2x'
+        'https://images.unsplash.com/photo-1?cs=tinysrgb&fit=crop&fm=jpg&ixid=1&ixlib=rb-4.0.3&q=80&w=56&h=56&auto=format&dpr=2 2x'
       )
     })
   })

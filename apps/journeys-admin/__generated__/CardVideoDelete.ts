@@ -10,12 +10,17 @@ import { VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 // ====================================================
 
 export interface CardVideoDelete_video_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
 }
 
 export interface CardVideoDelete_video_VideoBlock_video_title {
   __typename: "VideoTitle";
   value: string;
+}
+
+export interface CardVideoDelete_video_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
 }
 
 export interface CardVideoDelete_video_VideoBlock_video_variant {
@@ -40,7 +45,7 @@ export interface CardVideoDelete_video_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: CardVideoDelete_video_VideoBlock_video_title[];
-  image: string | null;
+  images: CardVideoDelete_video_VideoBlock_video_images[];
   variant: CardVideoDelete_video_VideoBlock_video_variant | null;
   variantLanguages: CardVideoDelete_video_VideoBlock_video_variantLanguages[];
 }

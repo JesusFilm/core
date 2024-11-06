@@ -86,38 +86,6 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_CardBlock {
   fullscreen: boolean;
 }
 
-export interface StepBlockRestoreFromSocialPreview_blockRestore_FormBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface StepBlockRestoreFromSocialPreview_blockRestore_FormBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface StepBlockRestoreFromSocialPreview_blockRestore_FormBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type StepBlockRestoreFromSocialPreview_blockRestore_FormBlock_action = StepBlockRestoreFromSocialPreview_blockRestore_FormBlock_action_NavigateToBlockAction | StepBlockRestoreFromSocialPreview_blockRestore_FormBlock_action_LinkAction | StepBlockRestoreFromSocialPreview_blockRestore_FormBlock_action_EmailAction;
-
-export interface StepBlockRestoreFromSocialPreview_blockRestore_FormBlock {
-  __typename: "FormBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  form: any | null;
-  action: StepBlockRestoreFromSocialPreview_blockRestore_FormBlock_action | null;
-}
-
 export interface StepBlockRestoreFromSocialPreview_blockRestore_IconBlock {
   __typename: "IconBlock";
   id: string;
@@ -143,6 +111,8 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -281,6 +251,11 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video
   value: string;
 }
 
+export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -303,7 +278,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video
   __typename: "Video";
   id: string;
   title: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_title[];
-  image: string | null;
+  images: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_images[];
   variant: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_variant | null;
   variantLanguages: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_variantLanguages[];
 }
@@ -446,10 +421,10 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBloc
   triggerAction: StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type StepBlockRestoreFromSocialPreview_blockRestore = StepBlockRestoreFromSocialPreview_blockRestore_GridContainerBlock | StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock | StepBlockRestoreFromSocialPreview_blockRestore_CardBlock | StepBlockRestoreFromSocialPreview_blockRestore_FormBlock | StepBlockRestoreFromSocialPreview_blockRestore_IconBlock | StepBlockRestoreFromSocialPreview_blockRestore_ImageBlock | StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock | StepBlockRestoreFromSocialPreview_blockRestore_RadioQuestionBlock | StepBlockRestoreFromSocialPreview_blockRestore_SignUpBlock | StepBlockRestoreFromSocialPreview_blockRestore_StepBlock | StepBlockRestoreFromSocialPreview_blockRestore_TextResponseBlock | StepBlockRestoreFromSocialPreview_blockRestore_TypographyBlock | StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock | StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock;
+export type StepBlockRestoreFromSocialPreview_blockRestore = StepBlockRestoreFromSocialPreview_blockRestore_GridContainerBlock | StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock | StepBlockRestoreFromSocialPreview_blockRestore_CardBlock | StepBlockRestoreFromSocialPreview_blockRestore_IconBlock | StepBlockRestoreFromSocialPreview_blockRestore_ImageBlock | StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock | StepBlockRestoreFromSocialPreview_blockRestore_RadioQuestionBlock | StepBlockRestoreFromSocialPreview_blockRestore_SignUpBlock | StepBlockRestoreFromSocialPreview_blockRestore_StepBlock | StepBlockRestoreFromSocialPreview_blockRestore_TextResponseBlock | StepBlockRestoreFromSocialPreview_blockRestore_TypographyBlock | StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock | StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock;
 
 export interface StepBlockRestoreFromSocialPreview_blockOrderUpdate {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
 }

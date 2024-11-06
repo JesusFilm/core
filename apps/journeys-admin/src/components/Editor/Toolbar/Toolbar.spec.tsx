@@ -71,7 +71,26 @@ describe('Toolbar', () => {
       title: 'My Awesome Journey Title',
       description: 'My Awesome Journey Description',
       primaryImageBlock: null,
-      status: JourneyStatus.draft
+      status: JourneyStatus.draft,
+      language: {
+        __typename: 'Language',
+        id: '529',
+        name: [
+          {
+            value: 'English',
+            primary: true,
+            __typename: 'LanguageName'
+          }
+        ]
+      }
+    } as unknown as Journey,
+    variant: 'admin'
+  }
+
+  const noDescriptionJourney = {
+    journey: {
+      ...defaultJourney.journey,
+      description: ''
     } as unknown as Journey,
     variant: 'admin'
   }
@@ -92,6 +111,17 @@ describe('Toolbar', () => {
         blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
       },
       status: JourneyStatus.draft,
+      language: {
+        __typename: 'Language',
+        id: '529',
+        name: [
+          {
+            value: 'English',
+            primary: true,
+            __typename: 'LanguageName'
+          }
+        ]
+      },
       variant: 'admin'
     } as unknown as Journey,
 
@@ -109,6 +139,7 @@ describe('Toolbar', () => {
   it('should render NextSteps logo on Toolbar', () => {
     render(toolbar(defaultJourney))
     expect(screen.getByAltText('Next Steps')).toBeInTheDocument() // NextSteps logo
+    expect(screen.getByTestId('NextStepsLogo')).toHaveAttribute('href', '/')
   })
 
   it('should render help scout beacon', () => {
@@ -116,12 +147,23 @@ describe('Toolbar', () => {
     expect(screen.getByTestId('HelpScoutBeaconIconButton')).toBeInTheDocument()
   })
 
-  it('should render title & description on Toolbar', () => {
+  it('should render title, globe, dot, language and description on Toolbar', () => {
     render(toolbar(defaultJourney))
     expect(screen.getByText('My Awesome Journey Title')).toBeInTheDocument()
+    expect(screen.getByTestId('Globe1Icon')).toBeInTheDocument()
+    expect(screen.getByText('English')).toBeInTheDocument()
+    expect(screen.queryByTestId('DescriptionDot')).toBeInTheDocument()
     expect(
       screen.getByText('My Awesome Journey Description')
     ).toBeInTheDocument()
+  })
+
+  it('should not show dot if there is no description', () => {
+    render(toolbar(noDescriptionJourney))
+    expect(screen.queryByTestId('DescriptionDot')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('My Awesome Journey Description')
+    ).not.toBeInTheDocument()
   })
 
   it('should open the title dialog when selected', async () => {
@@ -129,7 +171,7 @@ describe('Toolbar', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Click to edit' }))
     await waitFor(() => {
-      expect(screen.getByTestId('TitleDescriptionDialog')).toBeInTheDocument()
+      expect(screen.getByTestId('JourneyDetailsDialog')).toBeInTheDocument()
     })
   })
 

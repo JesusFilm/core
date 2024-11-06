@@ -1,6 +1,7 @@
 @font-face {
   font-family: 'ApercuBold';
-  src: url('/watch/assets/fonts/apercu_bold.eot') format('embedded-opentype'),
+  src:
+    url('/watch/assets/fonts/apercu_bold.eot') format('embedded-opentype'),
     url('/watch/assets/fonts/apercu_bold.woff2') format('woff2'),
     url('/watch/assets/fonts/apercu_bold.woff') format('woff'),
     url('/watch/assets/fonts/apercu_bold.ttf') format('truetype'),
@@ -13,7 +14,8 @@
 
 @font-face {
   font-family: 'Apercu';
-  src: url('/watch/assets/fonts/apercu_regular.woff2') format('woff2'),
+  src:
+    url('/watch/assets/fonts/apercu_regular.woff2') format('woff2'),
     url('/watch/assets/fonts/apercu_regular.woff') format('woff'),
     url('/watch/assets/fonts/apercu_regular.ttf') format('truetype'),
     url('/watch/assets/fonts/apercu_regular.svg') format('svg'),

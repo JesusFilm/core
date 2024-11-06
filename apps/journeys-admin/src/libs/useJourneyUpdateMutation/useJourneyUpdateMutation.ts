@@ -22,6 +22,12 @@ export const JOURNEY_SETTINGS_UPDATE = gql`
       strategySlug
       language {
         id
+        bcp47
+        iso3
+        name {
+          value
+          primary
+        }
       }
       tags {
         id

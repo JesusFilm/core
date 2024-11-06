@@ -1,6 +1,7 @@
 import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { EmotionCache } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
+import { GoogleTagManager } from '@next/third-parties/google'
 import { AppProps as NextJsAppProps } from 'next/app'
 import Head from 'next/head'
 import Script from 'next/script'
@@ -8,7 +9,6 @@ import { SSRConfig, appWithTranslation, useTranslation } from 'next-i18next'
 import { DefaultSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, useEffect } from 'react'
-import TagManager from 'react-gtm-module'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
@@ -56,16 +56,11 @@ function JourneysAdminApp({
   })
 
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_GTM_ID != null)
-      TagManager.initialize({ gtmId: process.env.NEXT_PUBLIC_GTM_ID })
-
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side')
     if (jssStyles != null) {
       jssStyles.parentElement?.removeChild(jssStyles)
     }
-
-    TagManager.dataLayer({ dataLayer: { userId: user?.id } })
   }, [user])
 
   return (
@@ -129,6 +124,10 @@ function JourneysAdminApp({
                   horizontal: 'right'
                 }}
               >
+                <GoogleTagManager
+                  gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''}
+                  dataLayer={{ userId: user?.id }}
+                />
                 <Component {...pageProps} />
               </SnackbarProvider>
             </TeamProvider>

@@ -100,38 +100,6 @@ export interface GetAdminJourney_journey_blocks_CardBlock {
   fullscreen: boolean;
 }
 
-export interface GetAdminJourney_journey_blocks_FormBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface GetAdminJourney_journey_blocks_FormBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface GetAdminJourney_journey_blocks_FormBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type GetAdminJourney_journey_blocks_FormBlock_action = GetAdminJourney_journey_blocks_FormBlock_action_NavigateToBlockAction | GetAdminJourney_journey_blocks_FormBlock_action_LinkAction | GetAdminJourney_journey_blocks_FormBlock_action_EmailAction;
-
-export interface GetAdminJourney_journey_blocks_FormBlock {
-  __typename: "FormBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  form: any | null;
-  action: GetAdminJourney_journey_blocks_FormBlock_action | null;
-}
-
 export interface GetAdminJourney_journey_blocks_IconBlock {
   __typename: "IconBlock";
   id: string;
@@ -157,6 +125,8 @@ export interface GetAdminJourney_journey_blocks_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetAdminJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
@@ -285,6 +255,11 @@ export interface GetAdminJourney_journey_blocks_VideoBlock_video_title {
   value: string;
 }
 
+export interface GetAdminJourney_journey_blocks_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface GetAdminJourney_journey_blocks_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -307,7 +282,7 @@ export interface GetAdminJourney_journey_blocks_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: GetAdminJourney_journey_blocks_VideoBlock_video_title[];
-  image: string | null;
+  images: GetAdminJourney_journey_blocks_VideoBlock_video_images[];
   variant: GetAdminJourney_journey_blocks_VideoBlock_video_variant | null;
   variantLanguages: GetAdminJourney_journey_blocks_VideoBlock_video_variantLanguages[];
 }
@@ -450,7 +425,7 @@ export interface GetAdminJourney_journey_blocks_VideoTriggerBlock {
   triggerAction: GetAdminJourney_journey_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetAdminJourney_journey_blocks = GetAdminJourney_journey_blocks_GridContainerBlock | GetAdminJourney_journey_blocks_ButtonBlock | GetAdminJourney_journey_blocks_CardBlock | GetAdminJourney_journey_blocks_FormBlock | GetAdminJourney_journey_blocks_IconBlock | GetAdminJourney_journey_blocks_ImageBlock | GetAdminJourney_journey_blocks_RadioOptionBlock | GetAdminJourney_journey_blocks_RadioQuestionBlock | GetAdminJourney_journey_blocks_SignUpBlock | GetAdminJourney_journey_blocks_StepBlock | GetAdminJourney_journey_blocks_TextResponseBlock | GetAdminJourney_journey_blocks_TypographyBlock | GetAdminJourney_journey_blocks_VideoBlock | GetAdminJourney_journey_blocks_VideoTriggerBlock;
+export type GetAdminJourney_journey_blocks = GetAdminJourney_journey_blocks_GridContainerBlock | GetAdminJourney_journey_blocks_ButtonBlock | GetAdminJourney_journey_blocks_CardBlock | GetAdminJourney_journey_blocks_IconBlock | GetAdminJourney_journey_blocks_ImageBlock | GetAdminJourney_journey_blocks_RadioOptionBlock | GetAdminJourney_journey_blocks_RadioQuestionBlock | GetAdminJourney_journey_blocks_SignUpBlock | GetAdminJourney_journey_blocks_StepBlock | GetAdminJourney_journey_blocks_TextResponseBlock | GetAdminJourney_journey_blocks_TypographyBlock | GetAdminJourney_journey_blocks_VideoBlock | GetAdminJourney_journey_blocks_VideoTriggerBlock;
 
 export interface GetAdminJourney_journey_primaryImageBlock {
   __typename: "ImageBlock";
@@ -467,6 +442,8 @@ export interface GetAdminJourney_journey_primaryImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetAdminJourney_journey_creatorImageBlock {
@@ -484,6 +461,8 @@ export interface GetAdminJourney_journey_creatorImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetAdminJourney_journey_userJourneys_user {
@@ -563,6 +542,8 @@ export interface GetAdminJourney_journey_logoImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetAdminJourney_journey_menuStepBlock {

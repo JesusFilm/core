@@ -3,6 +3,7 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
@@ -43,13 +44,15 @@ import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { Items } from './Items'
 import { CommandRedoItem } from './Items/CommandRedoItem'
 import { CommandUndoItem } from './Items/CommandUndoItem'
+import { PreviewItem } from './Items/PreviewItem'
+import { JourneyDetails } from './JourneyDetails'
 import { Menu } from './Menu'
 
-const TitleDescriptionDialog = dynamic(
+const JourneyDetailsDialog = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/Toolbar/TitleDescriptionDialog" */ './TitleDescriptionDialog/TitleDescriptionDialog'
-    ).then((mod) => mod.TitleDescriptionDialog),
+      /* webpackChunkName: "Editor/Toolbar/JourneyDetails/JourneyDetailsDialog" */ './JourneyDetails/JourneyDetailsDialog/JourneyDetailsDialog'
+    ).then((mod) => mod.JourneyDetailsDialog),
   { ssr: false }
 )
 
@@ -89,7 +92,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState<boolean | null>(null)
 
   const helpScoutRef = useRef(null)
   const menuRef = useRef(null)
@@ -150,7 +153,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   }
 
   function handleDialogOpen(): void {
-    setRoute('title')
+    setRoute('journeyDetails')
     setDialogOpen(true)
   }
 
@@ -171,16 +174,20 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         flexShrink: 0
       }}
     >
-      <Image
-        src={logo}
-        alt="Next Steps"
-        height={32}
-        width={32}
-        style={{
-          maxWidth: '100%',
-          height: 'auto'
-        }}
-      />
+      <NextLink href="/" passHref legacyBehavior>
+        <IconButton data-testid="NextStepsLogo" disableRipple>
+          <Image
+            src={logo}
+            alt="Next Steps"
+            height={32}
+            width={32}
+            style={{
+              maxWidth: '100%',
+              height: 'auto'
+            }}
+          />
+        </IconButton>
+      </NextLink>
       <NextLink href="/" passHref legacyBehavior>
         <Tooltip title="See all journeys" placement="bottom" arrow>
           <IconButton data-testid="ToolbarBackButton">
@@ -188,63 +195,73 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           </IconButton>
         </Tooltip>
       </NextLink>
-      {journey != null && (
-        <>
-          <CommandUndoItem variant="icon-button" />
-          <CommandRedoItem variant="icon-button" />
-
-          <Tooltip
-            title={t('Social Image')}
-            arrow
-            PopperProps={{
-              modifiers: [
-                {
-                  name: 'offset',
-                  options: {
-                    offset: [0, -11]
-                  }
+      <Stack
+        gap={2}
+        direction="row"
+        data-testid="CommandUndoRedo"
+        sx={{ mr: 1 }}
+      >
+        <CommandUndoItem variant="icon-button" />
+        <CommandRedoItem variant="icon-button" />
+      </Stack>
+      <Stack
+        direction="row"
+        gap={2}
+        data-testid="JourneyDetails"
+        sx={{ minWidth: 0, display: { xs: 'none', md: 'inline-flex' } }}
+      >
+        <Tooltip
+          title={t('Social Image')}
+          arrow
+          PopperProps={{
+            modifiers: [
+              {
+                name: 'offset',
+                options: {
+                  offset: [0, -11]
                 }
-              ]
-            }}
+              }
+            ]
+          }}
+        >
+          <Button
+            onClick={handleSocialImageClick}
+            data-testid="ToolbarSocialImage"
+            style={{ backgroundColor: 'transparent', minWidth: 'auto' }}
+            disableRipple
+            sx={{ px: 0 }}
           >
-            <Button
-              onClick={handleSocialImageClick}
-              data-testid="ToolbarSocialImage"
-              style={{ backgroundColor: 'transparent' }}
-              disableRipple
+            <Box
+              bgcolor={(theme) => theme.palette.background.default}
+              borderRadius="4px"
+              width={50}
+              height={50}
+              justifyContent="center"
+              alignItems="center"
+              sx={{ display: { xs: 'none', sm: 'flex' } }}
             >
-              <Box
-                bgcolor={(theme) => theme.palette.background.default}
-                borderRadius="4px"
-                width={50}
-                height={50}
-                justifyContent="center"
-                alignItems="center"
-                sx={{ display: { xs: 'none', sm: 'flex' } }}
-              >
-                {journey?.primaryImageBlock?.src == null ? (
-                  <ThumbsUpIcon color="error" />
-                ) : (
-                  <Image
-                    src={journey.primaryImageBlock.src}
-                    alt={journey.primaryImageBlock.alt}
-                    width={50}
-                    height={50}
-                    style={{
-                      borderRadius: '4px',
-                      objectFit: 'cover'
-                    }}
-                  />
-                )}
-              </Box>
-            </Button>
-          </Tooltip>
-
+              {journey?.primaryImageBlock?.src == null ? (
+                <ThumbsUpIcon color="error" />
+              ) : (
+                <Image
+                  src={journey.primaryImageBlock.src}
+                  alt={journey.primaryImageBlock.alt}
+                  width={50}
+                  height={50}
+                  style={{
+                    borderRadius: '4px',
+                    objectFit: 'cover'
+                  }}
+                />
+              )}
+            </Box>
+          </Button>
+        </Tooltip>
+        {journey != null ? (
           <Stack flexGrow={1} flexShrink={1} sx={{ minWidth: 0 }}>
             <Box
               flexShrink={1}
               sx={{
-                display: 'inline-flex',
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis'
@@ -280,58 +297,60 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                     flexShrink: 1
                   }}
                 >
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      overflow: 'hidden',
-                      whiteSpace: 'nowrap',
-                      textOverflow: 'ellipsis',
-                      flexShrink: 1
-                    }}
-                  >
-                    {journey.title}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      maxWidth: 'auto',
-                      overflow: 'hidden',
-                      whiteSpace: 'nowrap',
-                      textOverflow: 'ellipsis',
-                      flexShrink: 1,
-                      fontWeight: 'normal'
-                    }}
-                  >
-                    {journey.description}
-                  </Typography>
+                  <JourneyDetails />
                 </Button>
               </Tooltip>
             </Box>
-
-            <TitleDescriptionDialog
-              open={dialogOpen}
-              onClose={handleDialogClose}
-            />
+            {dialogOpen != null && (
+              <JourneyDetailsDialog
+                open={dialogOpen}
+                onClose={handleDialogClose}
+              />
+            )}
           </Stack>
-          <Items />
-        </>
-      )}
-      <Box ref={menuRef}>
-        <Menu user={user} />
-      </Box>
-      <Box
-        ref={helpScoutRef}
-        sx={{
-          display: { xs: 'none', sm: 'block' }
-        }}
+        ) : (
+          <Stack flexGrow={1}>
+            <Typography
+              variant="subtitle1"
+              sx={{ display: { xs: 'none', md: 'block' } }}
+            >
+              <Skeleton width="40%" />
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ display: { xs: 'none', md: 'block' } }}
+            >
+              <Skeleton width="80%" />
+            </Typography>
+          </Stack>
+        )}
+      </Stack>
+      <Stack
+        flexDirection="row"
+        gap={2}
+        flexGrow={1}
+        justifyContent="flex-end"
+        alignItems="center"
       >
-        <HelpScoutBeacon
-          userInfo={{
-            name: user?.displayName ?? '',
-            email: user?.email ?? ''
+        <Items />
+        <PreviewItem variant="icon-button" />
+        <Box ref={menuRef}>
+          <Menu user={user} />
+        </Box>
+        <Box
+          ref={helpScoutRef}
+          sx={{
+            display: { xs: 'none', md: 'block' }
           }}
-        />
-      </Box>
+        >
+          <HelpScoutBeacon
+            userInfo={{
+              name: user?.displayName ?? '',
+              email: user?.email ?? ''
+            }}
+          />
+        </Box>
+      </Stack>
       {editorAnalytics && (
         <NotificationPopover
           title={t('New Feature Feedback')}

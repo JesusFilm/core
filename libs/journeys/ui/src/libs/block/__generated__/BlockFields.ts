@@ -86,38 +86,6 @@ export interface BlockFields_CardBlock {
   fullscreen: boolean;
 }
 
-export interface BlockFields_FormBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface BlockFields_FormBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface BlockFields_FormBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type BlockFields_FormBlock_action = BlockFields_FormBlock_action_NavigateToBlockAction | BlockFields_FormBlock_action_LinkAction | BlockFields_FormBlock_action_EmailAction;
-
-export interface BlockFields_FormBlock {
-  __typename: "FormBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  form: any | null;
-  action: BlockFields_FormBlock_action | null;
-}
-
 export interface BlockFields_IconBlock {
   __typename: "IconBlock";
   id: string;
@@ -143,6 +111,8 @@ export interface BlockFields_ImageBlock {
    */
   blurhash: string;
   scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface BlockFields_RadioOptionBlock_action_NavigateToBlockAction {
@@ -271,6 +241,11 @@ export interface BlockFields_VideoBlock_video_title {
   value: string;
 }
 
+export interface BlockFields_VideoBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface BlockFields_VideoBlock_video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -293,7 +268,7 @@ export interface BlockFields_VideoBlock_video {
   __typename: "Video";
   id: string;
   title: BlockFields_VideoBlock_video_title[];
-  image: string | null;
+  images: BlockFields_VideoBlock_video_images[];
   variant: BlockFields_VideoBlock_video_variant | null;
   variantLanguages: BlockFields_VideoBlock_video_variantLanguages[];
 }
@@ -436,4 +411,4 @@ export interface BlockFields_VideoTriggerBlock {
   triggerAction: BlockFields_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockFields = BlockFields_GridContainerBlock | BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_FormBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TextResponseBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;
+export type BlockFields = BlockFields_GridContainerBlock | BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TextResponseBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;

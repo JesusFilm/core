@@ -27,7 +27,7 @@ jest.mock('./transformInput', () => {
 
 describe('ImageBlockResolver', () => {
   let resolver: ImageBlockResolver,
-    service: BlockService,
+    service: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
     ability: AppAbility
 
@@ -43,7 +43,8 @@ describe('ImageBlockResolver', () => {
     alt: 'grid image',
     width: 640,
     height: 425,
-    blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ'
+    blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ',
+    updatedAt: '2024-10-21T04:32:25.858Z'
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -59,7 +60,9 @@ describe('ImageBlockResolver', () => {
   const blockUpdateInput: ImageBlockUpdateInput = {
     parentBlockId: 'parentBlockId',
     src: 'https://unsplash.it/640/425?image=42',
-    alt: 'grid image'
+    alt: 'grid image',
+    focalTop: 20,
+    focalLeft: 20
   }
   const parentBlock = {
     id: 'parentBlockId',
@@ -69,20 +72,15 @@ describe('ImageBlockResolver', () => {
     coverBlockId: 'coverBlockId',
     fullscreen: true
   } as unknown as Block
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      getSiblings: jest.fn(() => [block, block]),
-      removeBlockAndChildren: jest.fn((input) => input),
-      update: jest.fn((input) => input)
-    })
-  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        blockService,
+        {
+          provide: BlockService,
+          useValue: mockDeep<BlockService>()
+        },
         ImageBlockResolver,
         {
           provide: PrismaService,
@@ -91,11 +89,17 @@ describe('ImageBlockResolver', () => {
       ]
     }).compile()
     resolver = module.get<ImageBlockResolver>(ImageBlockResolver)
-    service = await module.resolve(BlockService)
+    service = module.get<BlockService>(
+      BlockService
+    ) as DeepMockProxy<BlockService>
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+    service.getSiblings.mockResolvedValue([
+      { ...block, action: null },
+      { ...block, action: null }
+    ])
   })
 
   describe('imageBlockCreate', () => {
@@ -123,6 +127,58 @@ describe('ImageBlockResolver', () => {
           src: 'https://unsplash.it/640/425?image=42',
           typename: 'ImageBlock',
           width: 640
+        },
+        include: {
+          action: true,
+          journey: {
+            include: {
+              team: { include: { userTeams: true } },
+              userJourneys: true
+            }
+          }
+        }
+      })
+      expect(service.getSiblings).toHaveBeenCalledWith(
+        blockCreateInput.journeyId,
+        blockCreateInput.parentBlockId
+      )
+    })
+
+    it('should set journey updatedAt when image is created', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.imageBlockCreate(ability, blockCreateInput)
+      ).toEqual(blockWithUserTeam)
+      expect(service.setJourneyUpdatedAt).toHaveBeenCalledWith(
+        prismaService,
+        blockWithUserTeam
+      )
+    })
+
+    it('creates an ImageBlock with a focal point', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.imageBlockCreate(ability, {
+          ...blockCreateInput,
+          focalTop: 50,
+          focalLeft: 50
+        })
+      ).toEqual(blockWithUserTeam)
+      expect(prismaService.block.create).toHaveBeenCalledWith({
+        data: {
+          id: 'blockId',
+          journey: { connect: { id: 'journeyId' } },
+          parentBlock: { connect: { id: 'parentBlockId' } },
+          parentOrder: 2,
+          alt: 'grid image',
+          blurhash: 'UHFO~6Yk^6#M@-5b,1J5@[or[k6o};Fxi^OZ',
+          coverBlockParent: undefined,
+          height: 425,
+          src: 'https://unsplash.it/640/425?image=42',
+          typename: 'ImageBlock',
+          width: 640,
+          focalTop: 50,
+          focalLeft: 50
         },
         include: {
           action: true,
@@ -247,10 +303,7 @@ describe('ImageBlockResolver', () => {
         ...blockCreateInput,
         isCover: true
       })
-      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
-        block,
-        prismaService
-      )
+      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(block)
     })
   })
 

@@ -87,13 +87,13 @@
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "rover subgraph introspect http://localhost:4001/graphql > apps/api-journeys/schema.graphql"
+        "command": "npx -y @apollo/rover@0.23.0 subgraph introspect http://localhost:4001/graphql > apps/api-journeys/schema.graphql"
       }
     },
     "subgraph-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "rover subgraph check API-GATEWAY-0zuda@current --name api-journeys --schema apps/api-journeys/schema.graphql"
+        "command": "npx hive schema:check apps/api-journeys/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys"
       }
     },
     "fetch-secrets": {
@@ -175,16 +175,6 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "codecov -f coverage/apps/api-journeys/cobertura-coverage.xml -F apps.api-journeys"
-      }
-    },
-    "email": {
-      "executor": "nx:run-commands",
-      "options": {
-        "parallel": false,
-        "commands": [
-          "if lsof -Pi :4601 -sTCP:LISTEN -t>/dev/null; then\nkill -9 $(lsof -Pi :4601 -sTCP:LISTEN -t)\nfi",
-          "email dev --dir apps/api-journeys/src/app/emails/templates --port 4601"
-        ]
       }
     }
   },

@@ -25,7 +25,7 @@ export function HeaderTabButtons(): ReactElement {
 
   const headerItems = compact([
     strategies
-      ? { label: t('Strategies'), icon: <TerminalIcon />, href: '/strategies' }
+      ? { label: t('Resources'), icon: <TerminalIcon />, href: '/resources' }
       : undefined,
     journeys
       ? { label: t('Journeys'), icon: <JourneysIcon />, href: '/journeys' }
@@ -77,7 +77,7 @@ export function HeaderTabButtons(): ReactElement {
                 borderRadius: '40px !important',
                 border: '2px solid',
                 borderColor:
-                  router?.pathname?.startsWith(href) ?? false
+                  (router?.pathname?.startsWith(href) ?? false)
                     ? (theme) => theme.palette.primary.main
                     : 'transparent'
               }}

@@ -50,7 +50,7 @@ jobs:
       #ECS Deployment
       - name: Configure ECS AWS credentials
         if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
@@ -59,7 +59,7 @@ jobs:
       - name: Login to Amazon ECR
         if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
         id: login-ecr-ecs
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build, tag, and push the image to Amazon ECR
         if: contains(steps.affected-apps.outputs.apps, 'api-gateway')
@@ -68,7 +68,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/jfp-api-gateway-stage:$IMAGE_TAG -t $ECR_REGISTRY/jfp-api-gateway-stage:latest . -f apps/api-gateway/Dockerfile
+          docker build --build-arg SERVICE_VERSION=$IMAGE_TAG -t $ECR_REGISTRY/jfp-api-gateway-stage:$IMAGE_TAG -t $ECR_REGISTRY/jfp-api-gateway-stage:latest . -f apps/api-gateway/Dockerfile
           echo "Pushing image to ECR..."
           docker push -a $ECR_REGISTRY/jfp-api-gateway-stage
           echo "image=$ECR_REGISTRY/jfp-api-gateway-stage:$IMAGE_TAG" >> $GITHUB_OUTPUT

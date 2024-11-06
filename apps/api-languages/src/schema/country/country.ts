@@ -6,23 +6,24 @@ import { Language } from '../language/language'
 
 const CountryName = builder.prismaObject('CountryName', {
   fields: (t) => ({
-    value: t.exposeString('value'),
-    primary: t.exposeBoolean('primary'),
-    language: t.relation('language')
+    value: t.exposeString('value', { nullable: false }),
+    primary: t.exposeBoolean('primary', { nullable: false }),
+    language: t.relation('language', { nullable: false })
   })
 })
 
 const Country = builder.prismaObject('Country', {
   fields: (t) => ({
-    id: t.exposeID('id'),
-    population: t.exposeInt('population', { nullable: true }),
-    latitude: t.exposeFloat('latitude', { nullable: true }),
-    longitude: t.exposeFloat('longitude', { nullable: true }),
-    flagPngSrc: t.exposeString('flagPngSrc', { nullable: true }),
-    flagWebpSrc: t.exposeString('flagWebpSrc', { nullable: true }),
-    languages: t.relation('languages', { type: Language }),
+    id: t.exposeID('id', { nullable: false }),
+    population: t.exposeInt('population'),
+    latitude: t.exposeFloat('latitude'),
+    longitude: t.exposeFloat('longitude'),
+    flagPngSrc: t.exposeString('flagPngSrc'),
+    flagWebpSrc: t.exposeString('flagWebpSrc'),
+    languages: t.relation('languages', { type: Language, nullable: false }),
     name: t.prismaField({
       type: [CountryName],
+      nullable: false,
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
@@ -42,8 +43,27 @@ const Country = builder.prismaObject('Country', {
         })
       }
     }),
-    continent: t.relation('continent'),
-    countryLanguages: t.relation('countryLanguages')
+    continent: t.relation('continent', { nullable: false, onNull: 'error' }),
+    countryLanguages: t.relation('countryLanguages', { nullable: false }),
+    languageCount: t.int({
+      nullable: false,
+      resolve: async (country) => {
+        return await prisma.countryLanguage.count({
+          where: { countryId: country.id }
+        })
+      }
+    }),
+    languageHavingMediaCount: t.int({
+      nullable: false,
+      resolve: async (country) => {
+        return await prisma.language.count({
+          where: {
+            countryLanguages: { some: { countryId: country.id } },
+            hasVideos: true
+          }
+        })
+      }
+    })
   })
 })
 
@@ -56,7 +76,6 @@ builder.asEntity(Country, {
 builder.queryFields((t) => ({
   country: t.prismaField({
     type: 'Country',
-    nullable: true,
     args: {
       id: t.arg.id({ required: true })
     },

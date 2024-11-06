@@ -19,8 +19,8 @@ describe('Items', () => {
       </SnackbarProvider>
     )
     expect(getByTestId('AnalyticsItem')).toBeInTheDocument()
+    expect(getByTestId('ResponsesItem')).toBeInTheDocument()
     expect(getByTestId('StrategyItem')).toBeInTheDocument()
     expect(getByTestId('ShareItem')).toBeInTheDocument()
-    expect(getByTestId('PreviewItem')).toBeInTheDocument()
   })
 })

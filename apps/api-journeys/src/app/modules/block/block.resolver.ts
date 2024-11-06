@@ -10,6 +10,7 @@ import { BlockDuplicateIdMap, BlocksFilter } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
+import { INCLUDE_JOURNEY_ACL } from '../journey/journey.acl'
 
 import { BlockService, BlockWithAction } from './block.service'
 
@@ -36,14 +37,10 @@ export class BlockResolver {
       where: { id, deletedAt: null },
       include: {
         action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
+        ...INCLUDE_JOURNEY_ACL
       }
     })
+
     if (block == null)
       throw new GraphQLError('block not found', {
         extensions: { code: 'NOT_FOUND' }
@@ -52,7 +49,20 @@ export class BlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.blockService.reorderBlock(block, parentOrder)
+
+    return await this.prismaService.$transaction(async (tx) => {
+      const reorderedBlocks = await this.blockService.reorderBlock(
+        block,
+        parentOrder
+      )
+      await tx.journey.update({
+        where: {
+          id: block.journeyId
+        },
+        data: { updatedAt: new Date().toISOString() }
+      })
+      return reorderedBlocks
+    })
   }
 
   @Mutation()
@@ -69,12 +79,7 @@ export class BlockResolver {
       where: { id, deletedAt: null },
       include: {
         action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
+        ...INCLUDE_JOURNEY_ACL
       }
     })
 
@@ -86,13 +91,23 @@ export class BlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.blockService.duplicateBlock(
-      block,
-      parentOrder,
-      idMap,
-      x,
-      y
-    )
+
+    return await this.prismaService.$transaction(async (tx) => {
+      const duplicatedBlocks = await this.blockService.duplicateBlock(
+        block,
+        parentOrder,
+        idMap,
+        x,
+        y
+      )
+      await tx.journey.update({
+        where: {
+          id: block.journeyId
+        },
+        data: { updatedAt: new Date().toISOString() }
+      })
+      return duplicatedBlocks
+    })
   }
 
   @Mutation()
@@ -105,14 +120,10 @@ export class BlockResolver {
       where: { id, deletedAt: null },
       include: {
         action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
+        ...INCLUDE_JOURNEY_ACL
       }
     })
+
     if (block == null)
       throw new GraphQLError('block not found', {
         extensions: { code: 'NOT_FOUND' }
@@ -134,12 +145,7 @@ export class BlockResolver {
       where: { id, deletedAt: null },
       include: {
         action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
+        ...INCLUDE_JOURNEY_ACL
       }
     })
 
@@ -174,12 +180,7 @@ export class BlockResolver {
       },
       include: {
         action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
+        ...INCLUDE_JOURNEY_ACL
       }
     })
     return blocks
@@ -195,12 +196,7 @@ export class BlockResolver {
       where: { id },
       include: {
         action: true,
-        journey: {
-          include: {
-            team: { include: { userTeams: true } },
-            userJourneys: true
-          }
-        }
+        ...INCLUDE_JOURNEY_ACL
       }
     })
 
@@ -246,6 +242,12 @@ export class BlockResolver {
         blocks
       )
 
+      await tx.journey.update({
+        where: {
+          id: updatedBlock.journeyId
+        },
+        data: { updatedAt: new Date().toISOString() }
+      })
       return [...siblings, ...children]
     })
   }

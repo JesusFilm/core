@@ -63,17 +63,21 @@ describe('TermsAndConditions', () => {
       result
     }
 
-    const { getByRole } = render(
+    const { getByRole, queryByRole } = render(
       <MockedProvider mocks={[createJourneyProfileMock]}>
         <TermsAndConditions />
       </MockedProvider>
     )
     fireEvent.click(getByRole('checkbox'))
     fireEvent.click(getByRole('button', { name: 'Next' }))
+    expect(getByRole('progressbar')).toBeInTheDocument()
 
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(queryByRole('progressbar')).not.toBeInTheDocument()
+
+    // TODO: change back to '/onboarding-form' once formium replacement is in
     expect(push).toHaveBeenCalledWith({
-      pathname: '/onboarding-form',
+      pathname: '/teams/new',
       query: { redirect: null }
     })
   })
@@ -102,20 +106,23 @@ describe('TermsAndConditions', () => {
       result
     }
 
-    const { getByRole } = render(
+    const { getByRole, queryByRole } = render(
       <MockedProvider mocks={[createJourneyProfileMock]}>
         <TermsAndConditions />
       </MockedProvider>
     )
     fireEvent.click(getByRole('checkbox'))
     fireEvent.click(getByRole('button', { name: 'Next' }))
+    expect(getByRole('progressbar')).toBeInTheDocument()
 
     await waitFor(() => expect(result).toHaveBeenCalled())
 
+    // TODO: change back to '/onboarding-form' once formium replacement is in
     expect(push).toHaveBeenCalledWith({
-      pathname: '/onboarding-form',
+      pathname: '/teams/new',
       query: { redirect: 'custom-location' }
     })
+    expect(queryByRole('progressbar')).not.toBeInTheDocument()
   })
 
   it('should link to terms of use page', () => {

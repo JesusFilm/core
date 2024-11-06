@@ -13,9 +13,7 @@ import { VideoBlockSource } from '../../../../../../../../../../__generated__/gl
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { Drawer } from '../../../../../Drawer'
 import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../Drawer/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
-import { videos } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/data'
 import { GET_VIDEO } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
-import { GET_VIDEOS } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/VideoFromLocal'
 
 import { VideoOptions } from './VideoOptions'
 
@@ -54,8 +52,13 @@ const video: TreeBlock<VideoBlock> = {
         value: 'FallingPlates'
       }
     ],
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -94,24 +97,6 @@ const Template: StoryObj<
   render: ({ selectedBlock }) => (
     <MockedProvider
       mocks={[
-        {
-          request: {
-            query: GET_VIDEOS,
-            variables: {
-              offset: 0,
-              limit: 5,
-              where: {
-                availableVariantLanguageIds: ['529'],
-                title: null
-              }
-            }
-          },
-          result: {
-            data: {
-              videos
-            }
-          }
-        },
         {
           request: {
             query: GET_VIDEO,

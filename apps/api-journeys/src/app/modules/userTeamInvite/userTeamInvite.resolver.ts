@@ -4,13 +4,12 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 
-import { Prisma, UserTeamInvite } from '.prisma/api-journeys-client'
+import { Prisma, Team, UserTeamInvite } from '.prisma/api-journeys-client'
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
 import { User } from '@core/nest/common/firebaseClient'
 import { CurrentUser } from '@core/nest/decorators/CurrentUser'
 
 import {
-  Team,
   UserTeamInviteCreateInput,
   UserTeamRole
 } from '../../__generated__/graphql'
@@ -123,6 +122,10 @@ export class UserTeamInviteResolver {
     @CurrentUser()
     user: User
   ): Promise<UserTeamInvite[]> {
+    if (user.email == null)
+      throw new GraphQLError('User must have an email to accept invites', {
+        extensions: { code: 'BAD_REQUEST' }
+      })
     const userTeamInvites = await this.prismaService.userTeamInvite.findMany({
       where: {
         email: user.email,

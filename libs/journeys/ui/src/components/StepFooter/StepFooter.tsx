@@ -6,6 +6,14 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+import {
+  getFooterMobileHeight,
+  getTitle,
+  hasChatWidget,
+  hasCombinedFooter,
+  hasHostAvatar,
+  hasHostDetails
+} from '../Card/utils/getFooterElements'
 import { InformationButton } from '../StepHeader/InformationButton'
 
 import { ChatButtons } from './ChatButtons'
@@ -16,24 +24,22 @@ import { HostTitleLocation } from './HostTitleLocation'
 interface StepFooterProps {
   onFooterClick?: () => void
   sx?: SxProps
-  title?: string
 }
 
 export function StepFooter({
   onFooterClick,
-  sx,
-  title
+  sx
 }: StepFooterProps): ReactElement {
   const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-  const hasAvatar =
-    variant === 'admin' ||
-    journey?.host?.src1 != null ||
-    journey?.host?.src2 != null
 
-  const hasChatWidget =
-    variant === 'admin' ||
-    (journey?.chatButtons != null && journey?.chatButtons.length > 0)
+  const hostAvatar = hasHostAvatar({ journey, variant })
+  const hostDetails = hasHostDetails({ journey })
+  const chat = hasChatWidget({ journey, variant })
+  const title = getTitle({ journey })
+
+  const footerMobileHeight = getFooterMobileHeight({ journey, variant })
+  const combinedFooter = hasCombinedFooter({ journey, variant })
 
   const isWebsite = journey?.website === true
 
@@ -67,7 +73,7 @@ export function StepFooter({
           width: '100%'
         }}
       >
-        {!isWebsite && (
+        {!isWebsite && !combinedFooter && (
           <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
             <FooterButtonList />
           </Box>
@@ -76,16 +82,20 @@ export function StepFooter({
         <Stack
           sx={{
             width: '100%',
-            height: 52,
+            height: { xs: footerMobileHeight, sm: 52 },
             flexDirection: rtl ? 'row-reverse' : 'row',
             alignItems: 'center',
             justifyContent: isWebsite ? 'space-between' : undefined
           }}
           gap={4}
         >
-          {isWebsite ? (
-            <InformationButton sx={{ m: 0, p: 0 }} />
-          ) : (
+          {!isWebsite && combinedFooter && (
+            <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
+              <FooterButtonList />
+            </Box>
+          )}
+          {isWebsite && <InformationButton sx={{ p: 0 }} />}
+          {!isWebsite && (
             <Stack
               sx={{
                 width: '100%',
@@ -95,31 +105,33 @@ export function StepFooter({
               }}
               gap={2}
             >
-              {hasAvatar && (
+              {hostAvatar && (
                 <HostAvatars
                   hasPlaceholder={variant === 'admin'}
                   avatarSrc1={journey?.host?.src1}
                   avatarSrc2={journey?.host?.src2}
                 />
               )}
-              <Stack sx={{ flex: '1 1 100%', minWidth: 0 }}>
-                <Typography
-                  variant="subtitle1"
-                  sx={{
-                    zIndex: 1,
-                    // Always dark mode on lg breakpoint
-                    color: { xs: 'primary.main', lg: 'white' },
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis'
-                  }}
-                >
-                  {title != null
-                    ? title
-                    : journey?.displayTitle ?? journey?.seoTitle}
-                </Typography>
-                <HostTitleLocation />
-              </Stack>
+              {(title != null || hostDetails) && (
+                <Stack sx={{ flex: '1 1 100%', minWidth: 0 }}>
+                  {title != null && (
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        zIndex: 1,
+                        // Always dark mode on lg breakpoint
+                        color: { xs: 'primary.main', lg: 'white' },
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                    >
+                      {title}
+                    </Typography>
+                  )}
+                  {hostDetails && <HostTitleLocation />}
+                </Stack>
+              )}
 
               <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
                 <FooterButtonList />
@@ -127,7 +139,7 @@ export function StepFooter({
             </Stack>
           )}
 
-          {hasChatWidget && (
+          {chat && (
             <Box>
               <ChatButtons />
             </Box>

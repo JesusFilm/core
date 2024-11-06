@@ -148,7 +148,9 @@ export const publishedJourney: Journey = {
       parentBlockId: 'card0.id',
       parentOrder: 0,
       blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
-      scale: null
+      scale: null,
+      focalLeft: 50,
+      focalTop: 50
     },
     {
       id: 'typographyBlockId1',
@@ -301,8 +303,13 @@ export const blocks: Block[] = [
           value: 'FallingPlates'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '2_0-FallingPlates-529',
@@ -326,7 +333,9 @@ export const blocks: Block[] = [
     parentBlockId: 'video0.id',
     parentOrder: 4,
     blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
-    scale: null
+    scale: null,
+    focalLeft: 50,
+    focalTop: 50
   },
   {
     id: 'step1.id',
@@ -405,7 +414,9 @@ export const blocks: Block[] = [
     parentBlockId: 'card1.id',
     parentOrder: 3,
     blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG',
-    scale: null
+    scale: null,
+    focalLeft: 50,
+    focalTop: 50
   },
 
   {
@@ -503,7 +514,9 @@ export const blocks: Block[] = [
     parentBlockId: 'card2.id',
     parentOrder: 2,
     blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@',
-    scale: null
+    scale: null,
+    focalLeft: 50,
+    focalTop: 50
   },
   {
     id: 'step3.id',
@@ -587,7 +600,9 @@ export const blocks: Block[] = [
     parentBlockId: 'card3.id',
     parentOrder: 2,
     blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA',
-    scale: null
+    scale: null,
+    focalLeft: 50,
+    focalTop: 50
   },
   {
     id: 'step4.id',
@@ -622,8 +637,13 @@ export const blocks: Block[] = [
           value: 'FallingPlates'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '2_0-FallingPlates-529',
@@ -647,7 +667,9 @@ export const blocks: Block[] = [
     blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
     parentBlockId: 'video1.id',
     parentOrder: 0,
-    scale: null
+    scale: null,
+    focalLeft: 50,
+    focalTop: 50
   },
   {
     id: 'step5.id',
@@ -679,7 +701,9 @@ export const blocks: Block[] = [
     parentBlockId: 'card5.id',
     parentOrder: 0,
     blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
-    scale: null
+    scale: null,
+    focalLeft: 50,
+    focalTop: 50
   },
   {
     __typename: 'SignUpBlock',
@@ -729,7 +753,9 @@ export const blocks: Block[] = [
     parentBlockId: 'card6.id',
     parentOrder: 0,
     blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
-    scale: null
+    scale: null,
+    focalLeft: 50,
+    focalTop: 50
   },
   {
     id: 'typographyBlockId11',
