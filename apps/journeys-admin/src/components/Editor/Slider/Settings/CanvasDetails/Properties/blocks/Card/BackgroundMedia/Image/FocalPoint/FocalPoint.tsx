@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography'
 import debounce from 'lodash/debounce'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import { ReactElement, useCallback, useRef, useState } from 'react'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../../../../../__generated__/globalTypes'
