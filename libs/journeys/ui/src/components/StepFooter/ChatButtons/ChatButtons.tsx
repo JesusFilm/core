@@ -81,7 +81,6 @@ function Filled(): ReactElement[] {
 
   const activeBlock = blockHistory[blockHistory.length - 1]
   const isWebsite = journey?.website === true
-  const showDefault = variant === 'admin' && chatButtons?.length === 0
 
   const [chatButtonEventCreate] = useMutation<
     ChatButtonEventCreate,
