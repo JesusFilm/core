@@ -4176,6 +4176,7 @@ export type VideoUpdateInput = {
 export type VideoVariant = {
   __typename?: 'VideoVariant';
   dash?: Maybe<Scalars['String']['output']>;
+  downloadable: Scalars['Boolean']['output'];
   downloads: Array<VideoVariantDownload>;
   duration: Scalars['Int']['output'];
   hls?: Maybe<Scalars['String']['output']>;
@@ -4197,6 +4198,7 @@ export type VideoVariantSubtitleArgs = {
 
 export type VideoVariantCreateInput = {
   dash?: InputMaybe<Scalars['String']['input']>;
+  downloadable: Scalars['Boolean']['input'];
   duration?: InputMaybe<Scalars['Int']['input']>;
   edition: Scalars['String']['input'];
   hls?: InputMaybe<Scalars['String']['input']>;
@@ -4244,6 +4246,7 @@ export type VideoVariantDownloadUpdateInput = {
 
 export type VideoVariantUpdateInput = {
   dash?: InputMaybe<Scalars['String']['input']>;
+  downloadable?: InputMaybe<Scalars['Boolean']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   edition?: InputMaybe<Scalars['String']['input']>;
   hls?: InputMaybe<Scalars['String']['input']>;

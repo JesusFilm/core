@@ -171,6 +171,7 @@ model VideoVariant {
   hls          String?
   dash         String?
   share        String?
+  downloadable Boolean                @default(true)
   downloads    VideoVariantDownload[]
   duration     Int?
   languageId   String
