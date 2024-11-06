@@ -113,7 +113,7 @@ export function StepFooter({
               )}
               {(title != null || hostDetails) && (
                 <Stack sx={{ flex: '1 1 100%', minWidth: 0 }}>
-                  {title != null && (
+                  {title != null && journey?.showDisplayTitle === true && (
                     <Typography
                       variant="subtitle1"
                       sx={{
@@ -128,7 +128,9 @@ export function StepFooter({
                       {title}
                     </Typography>
                   )}
-                  {hostDetails && <HostTitleLocation />}
+                  {journey?.showHosts === true && hostDetails && (
+                    <HostTitleLocation />
+                  )}
                 </Stack>
               )}
 

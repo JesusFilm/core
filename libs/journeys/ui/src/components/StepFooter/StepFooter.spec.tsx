@@ -126,24 +126,6 @@ describe('StepFooter', () => {
     expect(screen.getByTestId('Plus2Icon')).toBeInTheDocument()
   })
 
-  it('should render custom title', () => {
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <JourneyProvider
-            value={{
-              variant: 'admin',
-              journey: { ...journey, seoTitle: 'discovery journey title' }
-            }}
-          >
-            <StepFooter onFooterClick={jest.fn()} />
-          </JourneyProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-    expect(screen.getByText('discovery journey title')).toBeInTheDocument()
-  })
-
   describe('Journey', () => {
     it('should display social media title if no display title', () => {
       render(
