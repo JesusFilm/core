@@ -154,8 +154,12 @@ export function BackgroundMediaVideo({
                 id: cache.identify({ __typename: 'Journey', id: journey.id }),
                 fields: {
                   blocks(existingBlockRefs = []) {
+                    const newData = data.videoBlockCreate
+                    if (newData.source === VideoBlockSource.cloudflare)
+                      newData.image = null
+
                     const newBlockRef = cache.writeFragment({
-                      data: data.videoBlockCreate,
+                      data: newData,
                       fragment: gql`
                         fragment NewBlock on Block {
                           id
