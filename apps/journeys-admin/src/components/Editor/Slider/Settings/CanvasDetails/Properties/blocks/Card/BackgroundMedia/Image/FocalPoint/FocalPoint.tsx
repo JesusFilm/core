@@ -50,6 +50,13 @@ export function FocalPoint({
     [imageBlock, updateImageBlock]
   )
 
+  function handleMouseMove(e: React.MouseEvent): void {
+    if (isDragging) {
+      const point = calculatePoint(e, imageRef)
+      if (point != null) updatePoint(point)
+    }
+  }
+
   function updatePoint(point: Position): void {
     const newPosition = clampPosition(point)
     setLocalPosition(newPosition)
@@ -65,13 +72,6 @@ export function FocalPoint({
     setIsDragging(false)
   }
 
-  function handleMouseMove(e: MouseEvent): void {
-    if (isDragging) {
-      const point = calculatePoint(e, imageRef)
-      if (point != null) updatePoint(point)
-    }
-  }
-
   function handleClick(e: React.MouseEvent): void {
     const point = calculatePoint(e, imageRef)
     if (point != null) {
@@ -79,22 +79,13 @@ export function FocalPoint({
     }
   }
 
-  useEffect(() => {
-    document.addEventListener('mousemove', handleMouseMove)
-    document.addEventListener('mouseup', handleMouseUp)
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDragging])
-
   return (
     <>
       {imageBlock?.src != null && (
         <Stack gap={4}>
           <Typography variant="subtitle2">{t('Focal Point')}</Typography>
           <Box
+            onMouseMove={handleMouseMove}
             sx={{
               width: '100%',
               height: 200,
@@ -178,6 +169,7 @@ export function FocalPoint({
                 }}
               />
               <Box
+                draggable
                 data-testid="focal-point-dot"
                 sx={{
                   width: 25,
@@ -193,7 +185,10 @@ export function FocalPoint({
                   border: '2px solid white',
                   boxShadow: (theme) => theme.shadows[3]
                 }}
-                onMouseDown={handleMouseDown}
+                onMouseDown={(e) => {
+                  handleMouseDown(e)
+                }}
+                onMouseUp={handleMouseUp}
               />
             </Box>
           </Box>
