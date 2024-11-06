@@ -2460,7 +2460,6 @@ export type Query = {
   userTeamInvites: Array<UserTeamInvite>;
   userTeams: Array<UserTeam>;
   video: Video;
-  videoCloudflareAssets: Array<CloudflareR2>;
   videoEdition?: Maybe<VideoEdition>;
   videoEditions: Array<VideoEdition>;
   videoVariants: Array<VideoVariant>;
@@ -2734,11 +2733,6 @@ export type QueryUserTeamsArgs = {
 export type QueryVideoArgs = {
   id: Scalars['ID']['input'];
   idType?: InputMaybe<IdType>;
-};
-
-
-export type QueryVideoCloudflareAssetsArgs = {
-  videoId: Scalars['ID']['input'];
 };
 
 
@@ -3515,6 +3509,7 @@ export type Video = {
   children: Array<Video>;
   /** the number value of the amount of children on a video */
   childrenCount: Scalars['Int']['output'];
+  cloudflareAssets: Array<CloudflareR2>;
   description: Array<VideoDescription>;
   id: Scalars['ID']['output'];
   /** @deprecated use images.mobileCinematicHigh */
@@ -4181,6 +4176,7 @@ export type VideoUpdateInput = {
 export type VideoVariant = {
   __typename?: 'VideoVariant';
   dash?: Maybe<Scalars['String']['output']>;
+  downloadable: Scalars['Boolean']['output'];
   downloads: Array<VideoVariantDownload>;
   duration: Scalars['Int']['output'];
   hls?: Maybe<Scalars['String']['output']>;
@@ -4202,6 +4198,7 @@ export type VideoVariantSubtitleArgs = {
 
 export type VideoVariantCreateInput = {
   dash?: InputMaybe<Scalars['String']['input']>;
+  downloadable: Scalars['Boolean']['input'];
   duration?: InputMaybe<Scalars['Int']['input']>;
   edition: Scalars['String']['input'];
   hls?: InputMaybe<Scalars['String']['input']>;
@@ -4249,6 +4246,7 @@ export type VideoVariantDownloadUpdateInput = {
 
 export type VideoVariantUpdateInput = {
   dash?: InputMaybe<Scalars['String']['input']>;
+  downloadable?: InputMaybe<Scalars['Boolean']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   edition?: InputMaybe<Scalars['String']['input']>;
   hls?: InputMaybe<Scalars['String']['input']>;
