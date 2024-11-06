@@ -214,7 +214,7 @@
     "@graphql-codegen/client-preset": "^4.3.0",
     "@graphql-hive/cli": "^0.44.0",
     "@graphql-tools/executor-http": "^1.0.9",
-    "@mermaid-js/mermaid-cli": "^10.8.0",
+    "@mermaid-js/mermaid-cli": "^11.0.0",
     "@nestjs/schematics": "10.2.3",
     "@nestjs/testing": "10.4.7",
     "@nx/devkit": "20.0.9",
