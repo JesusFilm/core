@@ -92,8 +92,8 @@ describe('FocalPoint', () => {
 
     const dot = screen.getByTestId('focal-point-dot')
     fireEvent.mouseDown(dot)
-    fireEvent.mouseMove(document, { clientX: 75, clientY: 75 })
-    fireEvent.mouseUp(document)
+    fireEvent.mouseMove(dot, { clientX: 75, clientY: 75 })
+    fireEvent.mouseUp(dot)
 
     await waitFor(() => {
       expect(updateImageBlock).toHaveBeenCalledWith({
