@@ -231,6 +231,7 @@
   "Medium": "กลาง",
   "Large": "ใหญ่",
   "Contained": "ประกอบ",
+  "Invalid {{ HEX }} color code": "Invalid {{ HEX }} color code",
   "Palette": "พาเล็ต",
   "None": "ไม่มี",
   "Background": "พื้นหลัง",
