@@ -180,19 +180,11 @@ export function SelectableWrapper({
         anchorEl={selectableRef.current}
         isVideoBlock={isVideoBlock}
       />
-      {isHovered && (
+      {isHovered && !isVideoBlock && (
         <Popper
           open={!open}
           anchorEl={selectableRef.current}
           placement="left"
-          modifiers={[
-            {
-              name: 'offset',
-              options: {
-                offset: () => [0, isVideoBlock ? -70 : 0]
-              }
-            }
-          ]}
           {...listeners}
           ref={setActivatorNodeRef}
         >
