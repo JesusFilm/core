@@ -207,7 +207,12 @@ describe('Toolbar', () => {
     expect(
       screen.getByAltText('random image from unsplash')
     ).toBeInTheDocument()
-    expect(screen.queryByTestId('ThumbsUpIcon')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('GridEmptyIcon')).not.toBeInTheDocument()
+  })
+
+  it('should render Empty Grid icon for no social image', () => {
+    render(toolbar(defaultJourney))
+    expect(screen.getByTestId('GridEmptyIcon')).toBeInTheDocument()
   })
 
   it('should open the tooltip when the image is hovered over', async () => {
