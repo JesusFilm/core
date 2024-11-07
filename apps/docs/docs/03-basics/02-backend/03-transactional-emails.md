@@ -210,7 +210,7 @@ import { render } from '@react-email/render'
   async someEmailJob(job: Job<SomeEmailJob>): Promise<void> {
       /* ..arrange all the data needed for the email ...*/
 
-      const html = render(
+      const html = await render(
         SomeJobTemplate({
           email: job.data.email,
           someData: job.data.someData,
@@ -219,7 +219,7 @@ import { render } from '@react-email/render'
           pretty: true
         }
       )
-      const text = render(
+      const text = await render(
         SomeJobTemplate({
           email: job.data.email,
           someData: job.data.someData,

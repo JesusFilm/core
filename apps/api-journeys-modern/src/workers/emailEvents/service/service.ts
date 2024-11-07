@@ -3,7 +3,6 @@ import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 import { graphql } from 'gql.tada'
 
-import { Prisma } from '.prisma/api-journeys-modern-client'
 import { sendEmail } from '@core/yoga/email'
 import {
   ApiUsersJob,
@@ -77,7 +76,7 @@ async function visitorEventEmails(
         process.env.JOURNEYS_ADMIN_URL ?? ''
       }/journeys/${journey.id}?manageAccess=true`
 
-      const text = render(
+      const text = await render(
         VisitorInteraction({
           title: journey.title,
           recipient: data.user,
@@ -88,7 +87,7 @@ async function visitorEventEmails(
         { plainText: true }
       )
 
-      const html = render(
+      const html = await render(
         VisitorInteraction({
           title: journey.title,
           recipient: data.user,
