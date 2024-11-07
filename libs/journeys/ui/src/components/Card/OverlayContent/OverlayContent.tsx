@@ -4,6 +4,7 @@ import { ReactElement, ReactNode } from 'react'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 import { getFooterMobileSpacing } from '../utils/getFooterElements'
+import { showHeader } from '../utils/getHeaderElements'
 
 interface OverlayContentProps {
   children: ReactNode
@@ -73,15 +74,30 @@ export function OverlayContent({
     mb: { xs: footerMobileSpacing, sm: 10 }
   }
 
+  const hasHeader = showHeader(journey, variant)
+
+  const conditionalWebsiteStyles =
+    journey?.website === true
+      ? {
+          mb: 0,
+          '& > *': {
+            '&:first-child': { mt: hasHeader ? 20 : 6 },
+            '&:last-child': { mb: 20 }
+          }
+        }
+      : {
+          ...topBottomMarginsOnContent,
+          ...footerSpacing
+        }
+
   return (
     <Box
       data-testid="CardOverlayContent"
       sx={{
         ...enableVerticalScroll,
-        ...topBottomEdgeFadeEffect,
-        ...topBottomMarginsOnContent,
+        // ...topBottomEdgeFadeEffect,
+        ...conditionalWebsiteStyles,
         ...mobileNotchPadding,
-        ...footerSpacing,
         ...sx
       }}
     >
