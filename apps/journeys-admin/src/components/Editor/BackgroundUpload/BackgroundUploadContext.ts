@@ -10,6 +10,7 @@ export enum UploadStatus {
 
 export interface UploadQueueItem {
   id: string
+  videoBlockId?: string
   fileName: string
   status: UploadStatus
   error?: DetailedError | Error
@@ -27,6 +28,7 @@ export interface Context {
   activeUploads: () => number
   uploadMenuOpen: boolean
   setUploadMenuOpen: (menuOpen: boolean) => void
+  setUpload: (id: string, upload: Partial<UploadQueueItem>) => void
 }
 
 export const BackgroundUploadContext = createContext<Context | undefined>(

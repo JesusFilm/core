@@ -7,6 +7,7 @@ import { DefaultHttpStack, Upload } from 'tus-js-client'
 
 import { CreateCloudflareVideoUploadByFileMutation } from '../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
 import { GetMyCloudflareVideoQuery } from '../../../../__generated__/GetMyCloudflareVideoQuery'
+import { RefreshVideoBlockImageQuery } from '../../../../__generated__/RefreshVideoBlockImageQuery'
 
 import {
   BackgroundUploadContext,
@@ -45,6 +46,17 @@ export const GET_MY_CLOUDFLARE_VIDEO_QUERY = gql`
   }
 `
 
+export const REFRESH_VIDEO_BLOCK_IMAGE_QUERY = gql`
+  query RefreshVideoBlockImageQuery($id: ID!) {
+    block(id: $id) {
+      id
+      ... on VideoBlock {
+        image
+      }
+    }
+  }
+`
+
 export function BackgroundUploadProvider({
   children
 }: BackgroundUploadProviderProps): ReactElement {
@@ -55,6 +67,11 @@ export function BackgroundUploadProvider({
     useMutation<CreateCloudflareVideoUploadByFileMutation>(
       CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION
     )
+
+  const [refreshVideoBlockImage] = useLazyQuery<RefreshVideoBlockImageQuery>(
+    REFRESH_VIDEO_BLOCK_IMAGE_QUERY
+  )
+
   const [getMyCloudflareVideo, { stopPolling }] =
     useLazyQuery<GetMyCloudflareVideoQuery>(GET_MY_CLOUDFLARE_VIDEO_QUERY, {
       pollInterval: 1000,
@@ -74,6 +91,13 @@ export function BackgroundUploadProvider({
                 }
               })
             )
+            const upload = uploadQueue[data.getMyCloudflareVideo.id]
+            if (upload?.videoBlockId == null) return
+            void refreshVideoBlockImage({
+              variables: {
+                id: uploadQueue[data.getMyCloudflareVideo.id].videoBlockId
+              }
+            })
           }
         }
       }
@@ -167,6 +191,15 @@ export function BackgroundUploadProvider({
     throw new Error('No file selected')
   }
 
+  function setUpload(id: string, upload: Partial<UploadQueueItem>): void {
+    setUploadQueue(
+      produce((draft) => {
+        const existing = draft[id]
+        if (existing == null) return
+        Object.assign(existing, { ...existing, ...upload })
+      })
+    )
+  }
   const [uploadMenuOpen, setUploadMenuOpen] = useState(false)
 
   const value = {
@@ -174,6 +207,7 @@ export function BackgroundUploadProvider({
     setUploadMenuOpen,
     uploadCloudflareVideo,
     uploadQueue,
+    setUpload,
     activeUploads: () =>
       Object.entries(uploadQueue).filter(
         ([id, item]) => item.status !== UploadStatus.complete

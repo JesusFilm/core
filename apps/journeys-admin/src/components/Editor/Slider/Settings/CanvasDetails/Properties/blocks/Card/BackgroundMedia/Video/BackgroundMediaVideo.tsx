@@ -34,6 +34,7 @@ import { blockDeleteUpdate } from '../../../../../../../../../../libs/blockDelet
 import { blockRestoreUpdate } from '../../../../../../../../../../libs/useBlockRestoreMutation'
 import { useCoverBlockDeleteMutation } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation'
 import { useCoverBlockRestoreMutation } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation'
+import { useBackgroundUpload } from '../../../../../../../../BackgroundUpload'
 import { VideoBlockEditor } from '../../../../../../Drawer/VideoBlockEditor'
 
 export const COVER_VIDEO_BLOCK_CREATE = gql`
@@ -74,6 +75,7 @@ export function BackgroundMediaVideo({
   ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock> | undefined
   const { add } = useCommand()
   const { journey } = useJourney()
+  const { setUpload } = useBackgroundUpload()
   const {
     state: { selectedStep },
     dispatch
@@ -155,8 +157,10 @@ export function BackgroundMediaVideo({
                 fields: {
                   blocks(existingBlockRefs = []) {
                     const newData = data.videoBlockCreate
-                    if (newData.source === VideoBlockSource.cloudflare)
-                      newData.image = null
+                    if (newData.videoId != null)
+                      setUpload(newData.videoId, {
+                        videoBlockId: data?.videoBlockCreate.id
+                      })
 
                     const newBlockRef = cache.writeFragment({
                       data: newData,
@@ -165,6 +169,15 @@ export function BackgroundMediaVideo({
                           id
                         }
                       `
+                    })
+                    // if (newData.source === VideoBlockSource.cloudflare)
+                    //   newData.image = null
+                    cache.modify({
+                      fields: {
+                        image() {
+                          return null
+                        }
+                      }
                     })
                     return [...existingBlockRefs, newBlockRef]
                   }
