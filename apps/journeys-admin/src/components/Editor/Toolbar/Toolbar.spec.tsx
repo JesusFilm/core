@@ -16,6 +16,7 @@ import {
   UpdatePlausibleJourneyFlowViewedVariables
 } from '../../../../__generated__/UpdatePlausibleJourneyFlowViewed'
 import { TestEditorState } from '../../../libs/TestEditorState'
+import { BackgroundUploadProvider } from '../BackgroundUpload'
 
 import {
   GET_PLAUSIBLE_JOURNEY_FLOW_VIEWED,
@@ -258,20 +259,22 @@ describe('Toolbar', () => {
             { ...mockGetPlausibleJourneyFlowViewed, result: result2 }
           ]}
         >
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney.journey,
-                variant: 'admin'
-              }}
-            >
-              <EditorProvider initialState={initialState}>
-                <TestEditorState />
-                <Toolbar />
-                <Slider />
-              </EditorProvider>
-            </JourneyProvider>
-          </SnackbarProvider>
+          <BackgroundUploadProvider>
+            <SnackbarProvider>
+              <JourneyProvider
+                value={{
+                  journey: defaultJourney.journey,
+                  variant: 'admin'
+                }}
+              >
+                <EditorProvider initialState={initialState}>
+                  <TestEditorState />
+                  <Toolbar />
+                  <Slider />
+                </EditorProvider>
+              </JourneyProvider>
+            </SnackbarProvider>
+          </BackgroundUploadProvider>
         </MockedProvider>
       </FlagsProvider>
     )
@@ -301,20 +304,22 @@ describe('Toolbar', () => {
             { ...mockGetPlausibleJourneyFlowViewed, result }
           ]}
         >
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney.journey,
-                variant: 'admin'
-              }}
-            >
-              <EditorProvider initialState={initialState}>
-                <TestEditorState />
-                <Toolbar />
-                <Slider />
-              </EditorProvider>
-            </JourneyProvider>
-          </SnackbarProvider>
+          <BackgroundUploadProvider>
+            <SnackbarProvider>
+              <JourneyProvider
+                value={{
+                  journey: defaultJourney.journey,
+                  variant: 'admin'
+                }}
+              >
+                <EditorProvider initialState={initialState}>
+                  <TestEditorState />
+                  <Toolbar />
+                  <Slider />
+                </EditorProvider>
+              </JourneyProvider>
+            </SnackbarProvider>
+          </BackgroundUploadProvider>
         </MockedProvider>
       </FlagsProvider>
     )
@@ -326,15 +331,17 @@ describe('Toolbar', () => {
   function toolbar(journey): ReactElement {
     return (
       <MockedProvider>
-        <SnackbarProvider>
-          <JourneyProvider value={journey}>
-            <EditorProvider>
-              <TestEditorState />
-              <Toolbar />
-              <Slider />
-            </EditorProvider>
-          </JourneyProvider>
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <JourneyProvider value={journey}>
+              <EditorProvider>
+                <TestEditorState />
+                <Toolbar />
+                <Slider />
+              </EditorProvider>
+            </JourneyProvider>
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
   }
