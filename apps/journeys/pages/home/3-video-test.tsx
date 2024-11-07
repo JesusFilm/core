@@ -12,7 +12,6 @@ export default function ThreeVideoTest(): ReactElement {
     playerRef.current = videojs(playerRef.current, {
       ...defaultVideoJsOptions
     })
-    playerRef.current.hlsQualitySelector({ displayCurrentQuality: true })
   }
   const brightcovePlayerRef = useRef(null)
   const cloudflarePlayerRef = useRef(null)
