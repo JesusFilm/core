@@ -16,7 +16,7 @@ export function SelectableWrapper({
   children
 }: WrapperProps): ReactElement {
   const [open, setOpen] = useState(false)
-  const [isHovered, setIsHovered] = useState(false)
+  const [isHovering, setIsHovering] = useState(false)
   const selectableRef = useRef<HTMLDivElement>(null)
   const {
     state: { selectedBlock },
@@ -141,8 +141,8 @@ export function SelectableWrapper({
   return isSelectable ? (
     <Box
       ref={setNodeRef}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
     >
       <Box
         ref={selectableRef}
@@ -180,13 +180,15 @@ export function SelectableWrapper({
         anchorEl={selectableRef.current}
         isVideoBlock={isVideoBlock}
       />
-      {isHovered && !isVideoBlock && (
+      {!isVideoBlock && (
         <Popper
           open={!open}
           anchorEl={selectableRef.current}
           placement="left"
           {...listeners}
           ref={setActivatorNodeRef}
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
         >
           <DragIcon
             fontSize="large"
@@ -196,7 +198,7 @@ export function SelectableWrapper({
               top: '-18px',
               cursor: isDragging ? 'grabbing' : 'grab',
               transform: 'rotate(90deg)',
-              opacity: isDragging ? 0 : 1
+              opacity: isDragging || !isHovering ? 0 : 1
             }}
           />
         </Popper>
