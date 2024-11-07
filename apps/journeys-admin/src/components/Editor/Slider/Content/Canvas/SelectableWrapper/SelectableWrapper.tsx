@@ -1,11 +1,13 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import Box from '@mui/material/Box'
+import Popper from '@mui/material/Popper'
 import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import DragIcon from '@core/shared/ui/icons/Drag'
 
 import { QuickControls } from '../QuickControls'
 
@@ -14,6 +16,7 @@ export function SelectableWrapper({
   children
 }: WrapperProps): ReactElement {
   const [open, setOpen] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
   const selectableRef = useRef<HTMLDivElement>(null)
   const {
     state: { selectedBlock },
@@ -21,12 +24,12 @@ export function SelectableWrapper({
   } = useEditor()
 
   const {
-    attributes,
     listeners,
     setNodeRef,
     transform,
     transition,
-    isDragging
+    isDragging,
+    setActivatorNodeRef
   } = useSortable({
     id: block.id
   })
@@ -133,12 +136,16 @@ export function SelectableWrapper({
     transition
   }
 
+  const isVideoBlock = selectedBlock?.__typename === 'VideoBlock'
+
   return isSelectable ? (
-    <Box ref={setNodeRef}>
+    <Box
+      ref={setNodeRef}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <Box
         ref={selectableRef}
-        {...listeners}
-        {...attributes}
         style={style}
         data-testid={`SelectableWrapper-${block.id}`}
         className={
@@ -162,18 +169,46 @@ export function SelectableWrapper({
           zIndex: selectedBlock?.id === block.id ? 1 : 0,
           ...videoOutlineStyles
         }}
-        // if changing the event handlers or their functions, please check RadioOptionBlock events are being propogated properly i.e - can be re-ordered
         onClickCapture={handleSelectBlock}
         onClick={blockNonSelectionEvents}
         onMouseDown={blockNonSelectionEvents}
       >
-        <Box ref={selectableRef}>{children}</Box>
+        <Box>{children}</Box>
       </Box>
       <QuickControls
         open={open}
         anchorEl={selectableRef.current}
-        block={block}
+        isVideoBlock={isVideoBlock}
       />
+      {isHovered && (
+        <Popper
+          open={!open}
+          anchorEl={selectableRef.current}
+          placement="left"
+          modifiers={[
+            {
+              name: 'offset',
+              options: {
+                offset: () => [0, isVideoBlock ? -70 : 0]
+              }
+            }
+          ]}
+          {...listeners}
+          ref={setActivatorNodeRef}
+        >
+          <DragIcon
+            fontSize="large"
+            style={{
+              position: 'absolute',
+              left: '-30px',
+              top: '-18px',
+              cursor: isDragging ? 'grabbing' : 'grab',
+              transform: 'rotate(90deg)',
+              opacity: isDragging ? 0 : 1
+            }}
+          />
+        </Popper>
+      )}
     </Box>
   ) : (
     children
