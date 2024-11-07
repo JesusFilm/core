@@ -2,12 +2,8 @@ import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import lint from '@commitlint/lint'
 import load from '@commitlint/load'
-import {
-  LintOptions,
-  LintOutcome,
-  ParserOptions,
-  ParserPreset
-} from '@commitlint/types'
+import { LintOptions, LintOutcome, ParserPreset } from '@commitlint/types'
+import { Options } from 'conventional-commits-parser'
 import { danger, fail, markdown, warn } from 'danger'
 import config from './commitlint.config'
 
@@ -123,7 +119,7 @@ export default async () => {
 async function lintPrTitle(title: string): Promise<LintOutcome> {
   const loaded = await load(config)
   const parserOpts = selectParserOpts(loaded.parserPreset)
-  const opts: LintOptions & { parserOpts: ParserOptions } = {
+  const opts: LintOptions & { parserOpts: Options } = {
     parserOpts: parserOpts ?? {},
     plugins: loaded.plugins ?? {},
     ignores: loaded.ignores ?? [],
@@ -132,7 +128,7 @@ async function lintPrTitle(title: string): Promise<LintOutcome> {
   return lint(title, loaded.rules, opts)
 }
 
-function selectParserOpts(preset?: ParserPreset): ParserOptions | undefined {
+function selectParserOpts(preset?: ParserPreset): Options | undefined {
   if (typeof preset !== 'object') return undefined
   if (typeof preset.parserOpts !== 'object') return undefined
   return preset.parserOpts ?? undefined
