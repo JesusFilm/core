@@ -231,6 +231,7 @@
   "Medium": "Средний",
   "Large": "Большой",
   "Contained": "Содержится",
+  "Invalid {{ HEX }} color code": "Неверный код цвета {{ HEX }}",
   "Palette": "Палитра",
   "None": "Никто",
   "Background": "Фон",
