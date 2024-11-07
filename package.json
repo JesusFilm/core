@@ -270,7 +270,7 @@
     "chalk": "^4.1.2",
     "checkly": "^4.9.1",
     "chromatic": "^7.1.0",
-    "copy-webpack-plugin": "^10.2.4",
+    "copy-webpack-plugin": "^12.0.0",
     "cosmiconfig": "^8.3.4",
     "cosmiconfig-toml-loader": "^1.0.0",
     "cosmiconfig-typescript-loader": "^4.4.0",
