@@ -1,6 +1,6 @@
 import CrowdinTranslations from './crowdin-translations.png'
 
-# Translation Process & Locale Management Guide
+# Translations Implementation Guide
 
 ## Understanding Locales
 
