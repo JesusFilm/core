@@ -1,3 +1,5 @@
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import Box from '@mui/material/Box'
 import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
@@ -17,6 +19,9 @@ export function SelectableWrapper({
     state: { selectedBlock },
     dispatch
   } = useEditor()
+
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: block.id })
 
   const isSelectable =
     selectedBlock != null &&
@@ -114,10 +119,18 @@ export function SelectableWrapper({
     setOpen(selectedBlock?.id === block.id)
   }, [selectedBlock, block])
 
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition
+  }
+
   return isSelectable ? (
     <>
       <Box
-        ref={selectableRef}
+        ref={setNodeRef}
+        {...listeners}
+        {...attributes}
+        style={style}
         data-testid={`SelectableWrapper-${block.id}`}
         className={
           block.__typename === 'RadioOptionBlock'
@@ -145,7 +158,7 @@ export function SelectableWrapper({
         onClick={blockNonSelectionEvents}
         onMouseDown={blockNonSelectionEvents}
       >
-        {children}
+        <Box ref={selectableRef}>{children}</Box>
       </Box>
       <QuickControls
         open={open}

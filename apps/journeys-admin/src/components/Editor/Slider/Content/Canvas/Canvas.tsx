@@ -26,6 +26,7 @@ import { Hotkeys } from '../../../Hotkeys'
 
 import { CanvasFooter } from './CanvasFooter'
 import { CardWrapper } from './CardWrapper'
+import { DropArea } from './DropArea'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import {
@@ -291,20 +292,22 @@ export function Canvas(): ReactElement {
                               }
                             />
                           </ThemeProvider>
-                          <BlockRenderer
-                            block={selectedStep}
-                            wrappers={{
-                              Wrapper: SelectableWrapper,
-                              TypographyWrapper: InlineEditWrapper,
-                              ButtonWrapper: InlineEditWrapper,
-                              RadioQuestionWrapper: InlineEditWrapper,
-                              RadioOptionWrapper: InlineEditWrapper,
-                              TextResponseWrapper: InlineEditWrapper,
-                              SignUpWrapper: InlineEditWrapper,
-                              VideoWrapper,
-                              CardWrapper
-                            }}
-                          />
+                          <DropArea>
+                            <BlockRenderer
+                              block={selectedStep}
+                              wrappers={{
+                                Wrapper: SelectableWrapper,
+                                TypographyWrapper: InlineEditWrapper,
+                                ButtonWrapper: InlineEditWrapper,
+                                RadioQuestionWrapper: InlineEditWrapper,
+                                RadioOptionWrapper: InlineEditWrapper,
+                                TextResponseWrapper: InlineEditWrapper,
+                                SignUpWrapper: InlineEditWrapper,
+                                VideoWrapper,
+                                CardWrapper
+                              }}
+                            />
+                          </DropArea>
                           <ThemeProvider
                             themeName={ThemeName.journeyUi}
                             themeMode={theme.themeMode}
