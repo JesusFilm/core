@@ -20,8 +20,16 @@ export function SelectableWrapper({
     dispatch
   } = useEditor()
 
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: block.id })
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({
+    id: block.id
+  })
 
   const isSelectable =
     selectedBlock != null &&
@@ -120,14 +128,15 @@ export function SelectableWrapper({
   }, [selectedBlock, block])
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
+    opacity: isDragging ? 0.5 : 1,
     transition
   }
 
   return isSelectable ? (
-    <>
+    <Box ref={setNodeRef}>
       <Box
-        ref={setNodeRef}
+        ref={selectableRef}
         {...listeners}
         {...attributes}
         style={style}
@@ -165,7 +174,7 @@ export function SelectableWrapper({
         anchorEl={selectableRef.current}
         block={block}
       />
-    </>
+    </Box>
   ) : (
     children
   )
