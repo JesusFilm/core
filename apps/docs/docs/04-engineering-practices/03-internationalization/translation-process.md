@@ -1,83 +1,214 @@
 import CrowdinTranslations from './crowdin-translations.png'
-import LanguageTranslated from './language-translated.png'
 
-# Translation Process
+# Translations Implementation Guide
 
-## Crowdin
+## Understanding Locales
 
-After your files have been committed and your pull request (PR) has been merged into production, our [Crowdin GitHub integration](https://support.crowdin.com/github-integration/) will initiate. This process involves uploading any changes to the `locales/en` directory.
+### What is a Locale?
 
-### DeepL
+A locale is a combination of language and region settings that defines a user's language, region, and cultural preferences. Think of it as a digital passport that tells our application how to present information to users from different parts of the world.
 
-We have incorporated [DeepL](https://www.deepl.com/en/translator), an AI-powered machine translation engine, into our workflow. When Crowdin receives new texts for translation, DeepL automatically translates them. Upon detecting these new translations, Crowdin will automatically synchronize with GitHub and generate a new PR containing the translated texts. This procedure typically requires a minimum of 5 to 10 minutes.
+For example, users from different regions might expect:
 
-<img src={CrowdinTranslations} height="650" width="900"/>
+- Different date formats (MM/DD/YYYY vs DD/MM/YYYY)
+- Different number formats (1,000.00 vs 1.000,00)
+- Different translations for the same language (UK English vs US English)
+- Different currency symbols and formats
 
-Developers are required to assign themselves to the PR created by Crowdin if it is relevant to their work. Additionally, developers should update the PR labels and seek a review from another team member as part of their responsibilities. Once the PR has been approved and reviewed successfully, developers are responsible for merging the changes into the production branch promptly.
+### Locale Structure and Standards
 
-Translations from DeepL may not accurately capture the intended context. DeepL is unable to discern context until a local user provides clarification. For now translations from DeepL will undergo verification by the users of our app. It's worth noting that DeepL does not support our entire list of translations, leading to instances where some translations returned may be in English.
+A locale identifier follows the language-script-region format, using standardized ISO codes:
+
+```
+language-SCRIPT-REGION
+   |       |      |
+   |       |      └─ Country/Region code (ISO 3166-1): US, GB, CN
+   |       └─ Script code (ISO 15924): Hans (Simplified), Hant (Traditional)
+   └─ Language code (ISO 639-1): en, es, zh
+```
+
+**ISO Standards Used:**
+
+- **ISO 639-1**: Two-letter language codes
+
+  - Example: 'en' for English, 'zh' for Chinese
+  - Identifies the base language
+
+- **ISO 15924**: Four-letter script codes
+
+  - Example: 'Hans' for Simplified Chinese, 'Arab' for Arabic
+  - Identifies how the language is written
+
+- **ISO 3166-1**: Two-letter country/region codes
+  - Example: 'US' for United States, 'CN' for China
+  - Identifies specific regional variants
+
+> **Note**: While we use the language-script-region format, locale identifiers can be constructed in various ways depending on your needs. For a comprehensive guide on locale codes and standards, see [MDN's guide on locale codes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl#locales_argument).
+
+### Currently Supported Countries and Regions
+
+Our application currently supports these locales:
+
+| Locale Code    | Language   | Region/Variant    |
+| -------------- | ---------- | ----------------- |
+| am, am-ET      | Amharic    | Ethiopia          |
+| ar, ar-SA      | Arabic     | Saudi Arabia      |
+| bn, bn-BD      | Bengali    | Bangladesh        |
+| my, my-MM      | Burmese    | Myanmar           |
+| zh, zh-Hans-CN | Chinese    | Simplified, China |
+| en             | English    | Default Variant   |
+| fr, fr-FR      | French     | France            |
+| hi, hi-IN      | Hindi      | India             |
+| id, id-ID      | Indonesian | Indonesia         |
+| ja, ja-JP      | Japanese   | Japan             |
+| ko, ko-KR      | Korean     | Korea             |
+| ru, ru-RU      | Russian    | Russia            |
+| es, es-ES      | Spanish    | Spain             |
+| tl, tl-PH      | Tagalog    | Philippines       |
+| th, th-TH      | Thai       | Thailand          |
+| tr, tr-TR      | Turkish    | Turkey            |
+| ur, ur-PK      | Urdu       | Pakistan          |
+| vi, vi-VN      | Vietnamese | Vietnam           |
+
+## Translation Workflow
+
+### 1. Crowdin Integration
+
+[Crowdin](https://support.crowdin.com/github-integration/) is our translation management platform that automates the translation process. Here's how it works:
+
+1. **Source Upload**:
+
+   - Developer merges changes containing English text into production
+   - Changes in `locales/en` directory trigger Crowdin
+   - Crowdin extracts new or modified text for translation
+
+2. **Translation Process**:
+   - Crowdin detects new content
+   - DeepL automatically generates initial translations
+   - Translation team reviews translations (optional)
+   - Crowdin automatically creates a GitHub PR with new translations
+
+> **Important**: Crowdin will create and push Pull Requests with translations automatically, regardless of whether the translation team has reviewed them. This ensures continuous deployment but means that manual review of translations should be done post-deployment if needed.
+
+### 2. DeepL Machine Translation
+
+[DeepL](https://www.deepl.com) is our AI-powered translation service that provides initial translations.
+
+**Advantages:**
+
+- Quick initial translations (5-10 minutes)
+- High-quality machine translation
+- Supports many major languages
+
+**Limitations:**
+
+- May miss contextual nuances
+- Not all languages supported
+- Some translations remain in English
+- Requires human verification
 
 ## Adding New Languages
 
-When introducing a new language to our system, it's important to follow a step-by-step process for a smooth integration and reliable multilingual support.
+### Prerequisites
 
-### Managing Translations With Crowdin
+**Translation Readiness Check**:
 
-In our localization process, we collaborate with a translations manager from Jesus Film that oversees Crowdin. Their pivotal role is to ensure that all files are translated into our desired languages. Once the translations manager confirms the full translation of a language, the next step is to add support for that language within a project.
+- When new translations are ready, Crowdin will automatically create a Pull Request containing the translated files
+  <img src={CrowdinTranslations} height="650" width="900"/>
 
-<img src={LanguageTranslated} height="50" width="900"/>
+- The PR will contain all new translations that have been completed, either by translators or AI
+- If you can't find the translations you need, connect with a translation manager or a developer who has access to Crowdin
 
-### 1. Update next i18n Configuration
+### Implementation Steps
 
-Modify the `next-i18next.config.js` file of the desired project. Add the new locale by including the two-letter language code of the desired language (e.g., `ar` for Arabic) in the `locales` array.
+#### 1. Update next-i18next Configuration
 
-If you're targeting a specific variant, such as Chinese Simplified (e.g., `zh-Hans-CN`), include both the full locale or `code-script-region` of the variant and the two-letter language code. This dual inclusion ensures a fallback language for users. Consider the specific use case for which you are adding it.
+The `next-i18next.config.js` file manages language support and fallback behavior. Before diving into configuration approaches, it's important to understand how Crowdin and next-i18next handle locales differently:
 
-Update the fallback language array to support the added locales. Crowdin provides the language locale in the format of `code-region`. This format supports specific language variants. Note that if a locale already has a folder under the global `libs/locales`, there is no need to add a fallback language for it.
+- **Crowdin** returns translations in `language-region` format folders (e.g., `ar-SA`, `es-ES`)
+- **next-i18next** by default looks for the simple language code folders (e.g., `ar`, `es`)
 
-```jsx
-import path from 'path'
+To bridge this gap, we must configure the fallbacks to map between them. For example, when the application looks for translations in `ar/`, we have to set the fallback to follow the pattern from Crowdin `ar-SA/`.
 
-/**
- * @type {import('next-i18next').UserConfig}
- **/
+There are two approaches to handling locales, depending on whether you need to support multiple variants of a language:
+
+### Case 1: Single Variant Languages
+
+For languages that don't require variant support (e.g., French, Spanish), use the simpler `language-REGION` format:
+
+```javascript
 const i18nConfig = {
   i18n: {
-    defaultLocale: 'en',
     locales: [
-      'en',
-      'es', // Spanish
-      'ar', // Arabic
-      'zh', // Two-letter version for Chinese (Simplified)
-      // Add the new locale here with two-letter language code and specific variants when needed
-      'zh-Hans-CN' // Chinese (Simplified) with a specific variant
+      'en', // English (required)
+      'fr', // French (generic)
+      'es' // Spanish (generic)
     ],
     fallbackLng: {
       default: ['en'],
-      ar: ['ar-SA'],
-      es: ['es-ES'],
-      // Ensure that specific variants are also included in fallbackLng
-      zh: ['zh-Hans-CN'] // Mapping the two-letter code to the right folder
-    },
-    localePath: path.resolve('./libs/locales')
+      fr: ['fr-FR'], // French falls back to France French
+      es: ['es-ES'] // Spanish falls back to Spain Spanish
+    }
   }
 }
-
-export default i18nConfig
 ```
 
-### 2. Update Supported Locales in Middleware
+### Case 2: Multiple Variant Languages
 
-Ensure the middleware file is updated if your project includes one, reflecting the recent changes.
+For languages that have multiple variants (e.g., Chinese with Simplified and Traditional), use the full `language-SCRIPT-REGION` format:
 
-```jsx
+**Setup Steps:**
+
+1. First, in Crowdin:
+
+   - Go to Language Mapping settings
+   - Add custom codes for each variant
+   - Example for Chinese:
+     ```
+     Chinese Simplified → zh-Hans-CN
+     Chinese Traditional → zh-Hant-TW
+     ```
+
+2. Then, in next-i18next:
+   ```javascript
+   const i18nConfig = {
+     i18n: {
+       locales: [
+         'en', // English (required)
+         'es', // Spanish (generic)
+         'fr', // French (generic)
+         'zh', // Generic Chinese
+         'zh-Hans-CN', // Simplified Chinese
+         'zh-Hant-TW' // Traditional Chinese
+       ],
+       fallbackLng: {
+         default: ['en'],
+         es: ['es-ES'], // Spanish falls back to Spain Spanish
+         fr: ['fr-FR'], // French falls back to France French
+         zh: ['zh-Hans-CN'], // Generic Chinese defaults to Simplified
+         'zh-Hant-TW': ['zh', 'en'] // Traditional falls back to generic, then English
+       }
+     }
+   }
+   ```
+
+> **Important Notes:**
+>
+> - For single variant languages, use simple language-REGION format
+> - For multiple variants, set up custom codes in Crowdin first
+> - Always test fallback behavior after configuration
+> - Maintain consistency between Crowdin settings and next-i18next config
+
+#### 2. Update Middleware Configuration
+
+If your project uses middleware for routing or locale detection, update the supported locales list:
+
+```javascript
 const supportedLocales = [
-  'en', // English
-  'es', // Spanish
-  'ar', // Arabic
-  'zh', // Include the two-letter version for Chinese (Simplified)
-  'zh-Hans-CN' // Include the new locale with variant here
+  'en', // English (required)
+  'es', // Spanish (generic)
+  'ar', // Arabic (generic)
+  'zh', // Chinese (generic)
+  'zh-Hans-CN' // Chinese Simplified (specific variant)
 ]
 ```
-
-By following these steps, you ensure clarity in adding both the two-letter language code and specific variants directly in the `locales` array. Additionally, when adding a specific variant, always define its two-letter version for consistency and proper fallback handling. This allows for seamless integration of new translations while maintaining a standardized approach.
