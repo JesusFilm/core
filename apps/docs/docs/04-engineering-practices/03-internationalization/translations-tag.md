@@ -32,9 +32,9 @@ In this example, the `t` function wraps the text intended for translation. Ensur
 
 Don't forget to run the `nx` command `extract-translations` for the project to gather all strings requiring translations into a namespaced file.
 
-### Parameterized Translations
+### Interpolation
 
-The `t` function supports parameterized translations, allowing you to include placeholders in your translation strings and replace them dynamically.
+The `t` function supports parameterized translations or interpolation, allowing you to include placeholders in your translation strings and replace them dynamically.
 
 ```jsx
 import { useTranslation } from 'next-i18next'
