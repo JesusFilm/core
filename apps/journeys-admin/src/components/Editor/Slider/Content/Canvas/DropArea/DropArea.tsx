@@ -1,9 +1,18 @@
-import { DndContext, DragEndEvent, useDroppable } from '@dnd-kit/core'
+import {
+  Active,
+  DndContext,
+  DragOverEvent,
+  DragOverlay,
+  DragStartEvent,
+  closestCenter,
+  useDroppable
+} from '@dnd-kit/core'
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { SortableContext } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
-import { ReactElement, ReactNode } from 'react'
+import { ReactElement, ReactNode, useMemo, useState } from 'react'
 
+import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
@@ -22,11 +31,18 @@ export function DropArea({ children }: DropAreaProps): ReactElement {
   const { setNodeRef } = useDroppable({
     id: 'block-dropzone'
   })
+  const [active, setActive] = useState<Active | null>(null)
 
   const {
     state: { selectedStep }
   } = useEditor()
   const { add } = useCommand()
+
+  const activeItem = useMemo(
+    () =>
+      selectedStep?.children[0].children.find((item) => item.id === active?.id),
+    [active?.id, selectedStep?.children]
+  )
 
   const items =
     selectedStep?.children[0].children.filter(
@@ -74,7 +90,12 @@ export function DropArea({ children }: DropAreaProps): ReactElement {
     })
   }
 
-  function dragEndEvent(e: DragEndEvent): void {
+  function handleDragStart(e: DragStartEvent): void {
+    const { active } = e
+    setActive(active)
+  }
+
+  function handleDragEnd(e: DragOverEvent): void {
     const { over, active } = e
     if (over != null && active.id !== over.id) {
       const moveIndex =
@@ -85,12 +106,24 @@ export function DropArea({ children }: DropAreaProps): ReactElement {
   }
 
   return (
-    <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={dragEndEvent}>
+    <DndContext
+      modifiers={[restrictToVerticalAxis]}
+      onDragEnd={handleDragEnd}
+      onDragStart={handleDragStart}
+      collisionDetection={closestCenter}
+    >
       <SortableContext items={itemIds}>
         <Box height="100%" width="100%" ref={setNodeRef}>
           {children}
         </Box>
       </SortableContext>
+      <DragOverlay>
+        {activeItem != null ? (
+          <Box sx={{ opacity: 0.4 }}>
+            <BlockRenderer block={activeItem} />
+          </Box>
+        ) : null}
+      </DragOverlay>
     </DndContext>
   )
 }
