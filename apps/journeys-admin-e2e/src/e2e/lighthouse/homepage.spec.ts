@@ -1,10 +1,11 @@
 /* eslint-disable playwright/expect-expect */
 import { chromium, test } from '@playwright/test'
+import { Config } from 'lighthouse'
 import { playAudit } from 'playwright-lighthouse'
 
 import { LandingPage } from '../../pages/landing-page'
 
-const config = {
+const config: Config = {
   extends: 'lighthouse:default',
   settings: {
     formFactor: 'desktop',
