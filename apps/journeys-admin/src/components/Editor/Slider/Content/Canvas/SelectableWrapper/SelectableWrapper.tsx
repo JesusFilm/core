@@ -163,8 +163,8 @@ export function SelectableWrapper({
         boxShadow:
           block.id === dragId
             ? isAbove
-              ? '0px 2px 0 0 #C52D3A'
-              : '0px -2px 0 0 #C52D3A'
+              ? '0px 3px 0 0 #C52D3A'
+              : '0px -3px 0 0 #C52D3A'
             : 'none'
       }}
     >
