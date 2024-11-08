@@ -1,5 +1,5 @@
+import { DragOverEvent, useDndMonitor } from '@dnd-kit/core'
 import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
 import Box from '@mui/material/Box'
 import Popper from '@mui/material/Popper'
 import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
@@ -18,20 +18,43 @@ export function SelectableWrapper({
   const [open, setOpen] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
   const selectableRef = useRef<HTMLDivElement>(null)
+  const [dragPositionId, setDragPositionId] = useState<string | null>(null)
+  const [isAbove, setIsAbove] = useState(false)
   const {
-    state: { selectedBlock },
+    state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
 
-  const {
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-    setActivatorNodeRef
-  } = useSortable({
-    id: block.id
+  const { listeners, setNodeRef, transition, isDragging, setActivatorNodeRef } =
+    useSortable({
+      id: block.id,
+      animateLayoutChanges: () => true
+    })
+
+  const blockIds = (
+    selectedStep?.children[0].children.filter(
+      (block) =>
+        block != null &&
+        block.__typename !== 'StepBlock' &&
+        block.__typename !== 'CardBlock' &&
+        block.__typename !== 'IconBlock' &&
+        block.parentOrder !== null
+    ) ?? []
+  ).map((block) => block.id)
+
+  useDndMonitor({
+    onDragOver(e: DragOverEvent): void {
+      const { active, over } = e
+      if (over != null) {
+        setDragPositionId(over.id as string)
+        const overIndex = blockIds.indexOf(over.id as string)
+        const activeIndex = blockIds.indexOf(active.id as string)
+        setIsAbove(activeIndex < overIndex)
+      }
+    },
+    onDragEnd() {
+      setDragPositionId(null)
+    }
   })
 
   const isSelectable =
@@ -130,12 +153,6 @@ export function SelectableWrapper({
     setOpen(selectedBlock?.id === block.id)
   }, [selectedBlock, block])
 
-  const style = {
-    transform: CSS.Translate.toString(transform),
-    opacity: isDragging ? 0.5 : 1,
-    transition
-  }
-
   const isVideoBlock = selectedBlock?.__typename === 'VideoBlock'
 
   return isSelectable ? (
@@ -143,10 +160,21 @@ export function SelectableWrapper({
       ref={setNodeRef}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
+      sx={{
+        boxShadow:
+          block.id === dragPositionId
+            ? isAbove
+              ? '0px 2px 0 0 #C52D3A'
+              : '0px -2px 0 0 #C52D3A'
+            : 'none'
+      }}
     >
       <Box
         ref={selectableRef}
-        style={style}
+        style={{
+          opacity: isDragging ? 0 : 1,
+          transition
+        }}
         data-testid={`SelectableWrapper-${block.id}`}
         className={
           block.__typename === 'RadioOptionBlock'
@@ -167,6 +195,7 @@ export function SelectableWrapper({
           transition: (theme) => theme.transitions.create('outline-color'),
           outlineOffset: '5px',
           zIndex: selectedBlock?.id === block.id ? 1 : 0,
+
           ...videoOutlineStyles
         }}
         onClickCapture={handleSelectBlock}
