@@ -231,7 +231,7 @@ export function SelectableWrapper({
               top: '-18px',
               cursor: isDragging ? 'grabbing' : 'grab',
               transform: 'rotate(90deg)',
-              opacity: dragId != null || !isHovering ? 0 : 1
+              opacity: dragId != null || !isHovering || isDragging ? 0 : 1
             }}
           />
         </Popper>
