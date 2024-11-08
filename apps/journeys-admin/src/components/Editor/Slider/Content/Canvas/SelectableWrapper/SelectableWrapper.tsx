@@ -18,7 +18,7 @@ export function SelectableWrapper({
   const [open, setOpen] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
   const selectableRef = useRef<HTMLDivElement>(null)
-  const [dragPositionId, setDragPositionId] = useState<string | null>(null)
+  const [dragId, setDragId] = useState<string | null>(null)
   const [isAbove, setIsAbove] = useState(false)
   const {
     state: { selectedBlock, selectedStep },
@@ -27,8 +27,7 @@ export function SelectableWrapper({
 
   const { listeners, setNodeRef, transition, isDragging, setActivatorNodeRef } =
     useSortable({
-      id: block.id,
-      animateLayoutChanges: () => true
+      id: block.id
     })
 
   const blockIds = (
@@ -46,14 +45,14 @@ export function SelectableWrapper({
     onDragOver(e: DragOverEvent): void {
       const { active, over } = e
       if (over != null) {
-        setDragPositionId(over.id as string)
+        setDragId(over.id as string)
         const overIndex = blockIds.indexOf(over.id as string)
         const activeIndex = blockIds.indexOf(active.id as string)
         setIsAbove(activeIndex < overIndex)
       }
     },
     onDragEnd() {
-      setDragPositionId(null)
+      setDragId(null)
     }
   })
 
@@ -162,7 +161,7 @@ export function SelectableWrapper({
       onMouseLeave={() => setIsHovering(false)}
       sx={{
         boxShadow:
-          block.id === dragPositionId
+          block.id === dragId
             ? isAbove
               ? '0px 2px 0 0 #C52D3A'
               : '0px -2px 0 0 #C52D3A'
@@ -227,7 +226,7 @@ export function SelectableWrapper({
               top: '-18px',
               cursor: isDragging ? 'grabbing' : 'grab',
               transform: 'rotate(90deg)',
-              opacity: isDragging || !isHovering ? 0 : 1
+              opacity: dragId != null || !isHovering ? 0 : 1
             }}
           />
         </Popper>
