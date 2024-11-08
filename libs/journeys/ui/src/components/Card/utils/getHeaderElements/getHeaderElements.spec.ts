@@ -1,5 +1,6 @@
-import { showHeader } from '.'
 import { defaultJourney } from '../../../TemplateView/data'
+
+import { showHeader } from '.'
 
 describe('getHeaderElements', () => {
   describe('showHeader', () => {
