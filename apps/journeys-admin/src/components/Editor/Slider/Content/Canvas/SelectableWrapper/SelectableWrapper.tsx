@@ -44,11 +44,13 @@ export function SelectableWrapper({
   useDndMonitor({
     onDragOver(e: DragOverEvent): void {
       const { active, over } = e
-      if (over != null) {
+      if (over != null && active.id !== over.id) {
         setDragId(over.id as string)
         const overIndex = blockIds.indexOf(over.id as string)
         const activeIndex = blockIds.indexOf(active.id as string)
         setIsAbove(activeIndex < overIndex)
+      } else {
+        setDragId(null)
       }
     },
     onDragEnd() {
@@ -210,7 +212,10 @@ export function SelectableWrapper({
       />
       {!isVideoBlock && (
         <Popper
-          open={!open}
+          open={
+            selectedBlock.__typename === 'StepBlock' ||
+            selectedBlock.__typename === 'CardBlock'
+          }
           anchorEl={selectableRef.current}
           placement="left"
           {...listeners}
