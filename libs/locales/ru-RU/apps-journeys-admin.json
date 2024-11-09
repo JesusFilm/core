@@ -690,7 +690,7 @@
   "Shared With Me": "Поделился со мной",
   "More journeys here": "Больше путешествий здесь",
   "Journeys are grouped by teams. You can switch between teams by using this dropdown.": "Путешествия группируются по командам. ",
-  "{{ teamName }} updated.": "{{ teamName }} обновленный.",
+  "{{ teamName }} updated.": "{{ teamName }} обновлено.",
   "Team updated.": "Команда обновлена.",
   "Failed to update the team. Reload the page or try again.": "Не удалось обновить команду. ",
   "Change Team Name": "Изменить название команды",
