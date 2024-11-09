@@ -12,14 +12,7 @@ module.exports = [
   { ignores: ['apps/docs-e2e/eslint.config.js'] },
   ...compat.extends('plugin:playwright/recommended'),
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-    // Override or add rules here
-    rules: {}
-  },
-  {
     files: ['**/*.ts', '**/*.tsx'],
-    // Override or add rules here
-    rules: {},
     languageOptions: {
       parserOptions: { project: ['apps/docs-e2e/tsconfig.*?.json'] }
     }
