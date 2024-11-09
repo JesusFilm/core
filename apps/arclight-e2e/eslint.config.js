@@ -12,14 +12,7 @@ module.exports = [
   ...compat.extends('plugin:playwright/recommended'),
   { ignores: ['apps/arclight-e2e/eslint.config.js'] },
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-    // Override or add rules here
-    rules: {}
-  },
-  {
     files: ['**/*.ts', '**/*.tsx'],
-    // Override or add rules here
-    rules: {},
     languageOptions: {
       parserOptions: { project: ['apps/arclight-e2e/tsconfig.*?.json'] }
     }

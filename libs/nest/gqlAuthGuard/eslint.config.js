@@ -5,8 +5,6 @@ module.exports = [
   { ignores: ['libs/nest/gqlAuthGuard/eslint.config.js'] },
   {
     files: ['**/*.ts', '**/*.tsx'],
-    // Override or add rules here
-    rules: {},
     languageOptions: {
       parserOptions: { project: ['libs/nest/gqlAuthGuard/tsconfig.*?.json'] }
     }

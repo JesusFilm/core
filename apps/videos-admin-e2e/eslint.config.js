@@ -12,20 +12,13 @@ module.exports = [
   ...compat.extends('plugin:playwright/recommended'),
   { ignores: ['apps/videos-admin-e2e/eslint.config.js'] },
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-    // Override or add rules here
-    rules: {}
-  },
-  {
     files: ['**/*.ts', '**/*.tsx'],
-    // Override or add rules here
-    rules: {},
     languageOptions: {
       parserOptions: { project: ['apps/videos-admin-e2e/tsconfig.*?.json'] }
     }
   },
   {
-    files: ['src/plugins/index.js'],
+    files: ['apps/videos-admin-e2e/src/plugins/index.js'],
     rules: {
       '@typescript-eslint/no-var-requires': 'off',
       'no-undef': 'off'

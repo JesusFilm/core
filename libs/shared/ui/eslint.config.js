@@ -33,11 +33,6 @@ module.exports = [
   },
   ...compat.extends('plugin:@nx/react-typescript'),
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-    // Override or add rules here
-    rules: {}
-  },
-  {
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
       'no-void': ['error', { allowAsStatement: true }],
@@ -46,15 +41,5 @@ module.exports = [
     languageOptions: {
       parserOptions: { project: ['libs/shared/ui/tsconfig.*?.json'] }
     }
-  },
-  {
-    files: ['**/*.js', '**/*.jsx'],
-    // Override or add rules here
-    rules: {}
-  },
-  {
-    files: ['**/*.tsx', '**/*.jsx'],
-    // Override or add rules here
-    rules: {}
   }
 ]

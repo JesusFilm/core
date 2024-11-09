@@ -40,15 +40,5 @@ module.exports = [
     languageOptions: {
       parserOptions: { project: ['libs/shared/ui-dynamic/tsconfig.*?.json'] }
     }
-  },
-  {
-    files: ['**/*.js', '**/*.jsx'],
-    // Override or add rules here
-    rules: {}
-  },
-  {
-    files: ['**/*.tsx', '**/*.jsx'],
-    // Override or add rules here
-    rules: {}
   }
 ]

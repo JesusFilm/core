@@ -22,8 +22,6 @@ module.exports = [
   { rules: { 'i18next/no-literal-string': 'off' } },
   {
     files: ['**/*.ts', '**/*.tsx'],
-    // Override or add rules here
-    rules: {},
     languageOptions: {
       parserOptions: { project: ['libs/yoga/tsconfig.*?.json'] }
     }

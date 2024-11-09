@@ -26,21 +26,9 @@ module.exports = [
   },
   { rules: { 'i18next/no-literal-string': 'off' } },
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-    // Override or add rules here
-    rules: {}
-  },
-  {
     files: ['**/*.ts', '**/*.tsx'],
-    // Override or add rules here
-    rules: {},
     languageOptions: {
       parserOptions: { project: ['apps/api-journeys-modern/tsconfig.*?.json'] }
     }
-  },
-  {
-    files: ['**/*.js', '**/*.jsx'],
-    // Override or add rules here
-    rules: {}
   }
 ]

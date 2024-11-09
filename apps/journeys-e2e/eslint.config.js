@@ -12,20 +12,13 @@ module.exports = [
   { ignores: ['apps/journeys-e2e/eslint.config.js'] },
   ...compat.extends('plugin:playwright/recommended'),
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-    // Override or add rules here
-    rules: {}
-  },
-  {
     files: ['**/*.ts', '**/*.tsx'],
-    // Override or add rules here
-    rules: {},
     languageOptions: {
       parserOptions: { project: ['apps/journeys-e2e/tsconfig.*?.json'] }
     }
   },
   {
-    files: ['src/plugins/index.js'],
+    files: ['apps/journeys-e2e/src/plugins/index.js'],
     rules: {
       '@typescript-eslint/no-var-requires': 'off',
       'no-undef': 'off'
