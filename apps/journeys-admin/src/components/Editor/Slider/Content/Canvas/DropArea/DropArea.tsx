@@ -7,7 +7,6 @@ import {
   closestCenter,
   useDroppable
 } from '@dnd-kit/core'
-import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import { SortableContext } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
 import { ReactElement, ReactNode, useMemo, useState } from 'react'
@@ -107,7 +106,6 @@ export function DropArea({ children }: DropAreaProps): ReactElement {
 
   return (
     <DndContext
-      modifiers={[restrictToVerticalAxis]}
       onDragEnd={handleDragEnd}
       onDragStart={handleDragStart}
       collisionDetection={closestCenter}
@@ -117,9 +115,9 @@ export function DropArea({ children }: DropAreaProps): ReactElement {
           {children}
         </Box>
       </SortableContext>
-      <DragOverlay>
+      <DragOverlay dropAnimation={null}>
         {activeItem != null ? (
-          <Box sx={{ opacity: 0.4 }}>
+          <Box>
             <BlockRenderer block={activeItem} />
           </Box>
         ) : null}
