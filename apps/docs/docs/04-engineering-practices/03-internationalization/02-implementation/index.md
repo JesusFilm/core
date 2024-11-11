@@ -2,6 +2,8 @@ import CrowdinTranslations from './crowdin-translations.png'
 
 # Translations Implementation Guide
 
+This document provides a detailed guide on the process for adding a new language to a project in Core.
+
 ## Understanding Locales
 
 ### What is a Locale?
@@ -201,5 +203,3 @@ const supportedLocales = [
   'zh-Hans-CN' // Chinese Simplified (specific variant)
 ]
 ```
-
-For more details about how the middleware or the architure of how languages works, see [Architecture](./03-architecture.md)

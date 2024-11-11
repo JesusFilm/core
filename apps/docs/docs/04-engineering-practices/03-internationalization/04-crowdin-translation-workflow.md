@@ -1,6 +1,6 @@
 # Crowdin Translation Workflow
 
-This document outlines the process for managing translations from initial access to production deployment.
+This document outlines the process for translators to review and refine translations, followed by steps to implement those updates in production.
 
 ## Prerequisites
 
