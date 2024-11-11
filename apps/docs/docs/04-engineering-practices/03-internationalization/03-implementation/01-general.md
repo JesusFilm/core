@@ -45,31 +45,6 @@ language-SCRIPT-REGION
 
 > **Note**: While we use the language-script-region format, locale identifiers can be constructed in various ways depending on your needs. For a comprehensive guide on locale codes and standards, see [MDN's guide on locale codes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl#locales_argument).
 
-### Currently Supported Countries and Regions
-
-Our application currently supports these locales:
-
-| Locale Code    | Language   | Region/Variant    |
-| -------------- | ---------- | ----------------- |
-| am, am-ET      | Amharic    | Ethiopia          |
-| ar, ar-SA      | Arabic     | Saudi Arabia      |
-| bn, bn-BD      | Bengali    | Bangladesh        |
-| my, my-MM      | Burmese    | Myanmar           |
-| zh, zh-Hans-CN | Chinese    | Simplified, China |
-| en             | English    | Default Variant   |
-| fr, fr-FR      | French     | France            |
-| hi, hi-IN      | Hindi      | India             |
-| id, id-ID      | Indonesian | Indonesia         |
-| ja, ja-JP      | Japanese   | Japan             |
-| ko, ko-KR      | Korean     | Korea             |
-| ru, ru-RU      | Russian    | Russia            |
-| es, es-ES      | Spanish    | Spain             |
-| tl, tl-PH      | Tagalog    | Philippines       |
-| th, th-TH      | Thai       | Thailand          |
-| tr, tr-TR      | Turkish    | Turkey            |
-| ur, ur-PK      | Urdu       | Pakistan          |
-| vi, vi-VN      | Vietnamese | Vietnam           |
-
 ## Translation Workflow
 
 ### 1. Crowdin Integration
@@ -123,12 +98,25 @@ Our application currently supports these locales:
 
 #### 1. Update next-i18next Configuration
 
-The `next-i18next.config.js` file manages language support and fallback behavior. Before diving into configuration approaches, it's important to understand how Crowdin and next-i18next handle locales differently:
+The `next-i18next.config.js` file handles language support and fallback behavior for translations. Understanding how next-i18next and Crowdin work together is essential for proper configuration:
 
-- **Crowdin** returns translations in `language-region` format folders (e.g., `ar-SA`, `es-ES`)
-- **next-i18next** by default looks for the simple language code folders (e.g., `ar`, `es`)
+- **next-i18next** reads from folders that match the language codes defined in your locales list (e.g., locales: [`ar`, `es`])
 
-To bridge this gap, we must configure the fallbacks to map between them. For example, when the application looks for translations in `ar/`, we have to set the fallback to follow the pattern from Crowdin `ar-SA/`.
+- **Crowdin** by default we set it to return the folders in the `%locale%` (language-region) format (e.g., `ar-SA`, `es-ES`):
+- This format can be configured differently, but we chose this to support different variants that may come from a language
+- Example: `es-ES` for European Spanish, `es-MX` for Mexican Spanish
+
+To connect these formats, we configure fallbacks to map between them. When the application looks for translations in `ar/`, we set the fallback to check Crowdin's format `ar-SA/`:
+
+````javascript
+const i18nConfig = {
+ i18n: {
+   locales: ['ar'],
+   fallbackLng: {
+     ar: ['ar-SA']  // Maps 'ar' to look in 'ar-SA' folder
+   }
+ }
+}
 
 There are two approaches to handling locales, depending on whether you need to support multiple variants of a language:
 
@@ -151,7 +139,7 @@ const i18nConfig = {
     }
   }
 }
-```
+````
 
 ### Case 2: Multiple Variant Languages
 
