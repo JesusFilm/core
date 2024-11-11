@@ -200,3 +200,5 @@ const supportedLocales = [
   'zh-Hans-CN' // Chinese Simplified (specific variant)
 ]
 ```
+
+For more details about how the middleware or the architure of how languages works, see [Architecture](./03-architecture.md)

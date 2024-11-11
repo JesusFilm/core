@@ -1,27 +1,27 @@
 # Supported Languages
 
-These are the languages currently supported in Core. Do note that not all the languages listed have been translated yet. Please take the time to look into what's been translated.
+These are the languages currently supported in Core. Do note that not all the languages listed have been translated yet. Please take the time to look into what's been translated in Crowdin.
 
-| Locales List Format | Crowdin Returned Format | Language   | Region/Variant     |
-| ------------------- | ----------------------- | ---------- | ------------------ |
-| am                  | am-ET                   | Amharic    | Ethiopia           |
-| ar                  | ar-SA                   | Arabic     | Saudi Arabia       |
-| bn                  | bn-BD                   | Bengali    | Bangladesh         |
-| my                  | my-MM                   | Burmese    | Myanmar            |
-| zh-Hans-CN          | zh-Hans-CN              | Chinese    | Simplified, China  |
-| zh-Hant-TW          | zh-Hant-TW              | Chinese    | Traditional, China |
-| en                  | en                      | English    | Default Variant    |
-| fr                  | fr-FR                   | French     | France             |
-| hi                  | hi-IN                   | Hindi      | India              |
-| id                  | id-ID                   | Indonesian | Indonesia          |
-| ja                  | ja-JP                   | Japanese   | Japan              |
-| ko                  | ko-KR                   | Korean     | Korea              |
-| ru                  | ru-RU                   | Russian    | Russia             |
-| es                  | es-ES                   | Spanish    | Spain              |
-| tl                  | tl-PH                   | Tagalog    | Philippines        |
-| th                  | th-TH                   | Thai       | Thailand           |
-| tr                  | tr-TR                   | Turkish    | Turkey             |
-| ur                  | ur-PK                   | Urdu       | Pakistan           |
-| vi                  | vi-VN                   | Vietnamese | Vietnam            |
+| Language   | Region/Variant     | Locales List Format | Crowdin Returned Format |
+| ---------- | ------------------ | ------------------- | ----------------------- |
+| Amharic    | Ethiopia           | am                  | am-ET                   |
+| Arabic     | Saudi Arabia       | ar                  | ar-SA                   |
+| Bengali    | Bangladesh         | bn                  | bn-BD                   |
+| Burmese    | Myanmar            | my                  | my-MM                   |
+| Chinese    | Simplified, China  | zh-Hans-CN          | zh-Hans-CN              |
+| Chinese    | Traditional, China | zh-Hant-TW          | zh-Hant-TW              |
+| English    | Default Variant    | en                  | en                      |
+| French     | France             | fr                  | fr-FR                   |
+| Hindi      | India              | hi                  | hi-IN                   |
+| Indonesian | Indonesia          | id                  | id-ID                   |
+| Japanese   | Japan              | ja                  | ja-JP                   |
+| Korean     | Korea              | ko                  | ko-KR                   |
+| Russian    | Russia             | ru                  | ru-RU                   |
+| Spanish    | Spain              | es                  | es-ES                   |
+| Tagalog    | Philippines        | tl                  | tl-PH                   |
+| Thai       | Thailand           | th                  | th-TH                   |
+| Turkish    | Turkey             | tr                  | tr-TR                   |
+| Urdu       | Pakistan           | ur                  | ur-PK                   |
+| Vietnamese | Vietnam            | vi                  | vi-VN                   |
 
-Note: While most languages in the locales list use two-letter codes, some variants like Chinese Traditional (`zh-Hant-TW`) require more specific codes to properly support different versions of the same language.
+Note: While most languages in the locales list use two-letter codes, some variants like Chinese Traditional (`zh-Hant-TW`) require more specific codes to properly support different versions of the same language using the format language-SCRIPT-REGION format.
