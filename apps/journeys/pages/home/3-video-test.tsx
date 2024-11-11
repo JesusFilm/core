@@ -4,13 +4,26 @@ import Grid from '@mui/material/Grid2'
 import { ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
 
-import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import 'video.js/dist/video-js.css'
 
 export default function ThreeVideoTest(): ReactElement {
   const initPlayer = (playerRef): void => {
     playerRef.current = videojs(playerRef.current, {
-      ...defaultVideoJsOptions
+      enableSmoothSeeking: true,
+      experimentalSvgIcons: true,
+      preload: 'none',
+      html5: {
+        vhs: {
+          limitRenditionByPlayerDimensions: false,
+          useNetworkInformationApi: true,
+          useDevicePixelRatio: true
+        },
+        hls: {
+          limitRenditionByPlayerDimensions: false,
+          useNetworkInformationApi: true,
+          useDevicePixelRatio: true
+        }
+      }
     })
   }
   const brightcovePlayerRef = useRef(null)

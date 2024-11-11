@@ -196,6 +196,7 @@
     "util": "^0.12.4",
     "vercel": "^37.0.0",
     "video.js": "^8.17.4",
+    "videojs-mux": "^4.20.1",
     "videojs-youtube": "^3.0.1",
     "xliff": "^6.2.1",
     "yup": "^1.0.0",
