@@ -6,6 +6,7 @@ import { ReactElement } from 'react'
 interface TabLabelProps {
   label: string
   count?: number
+  loading?: boolean
 }
 
 export function TabLabel({ label, count }: TabLabelProps): ReactElement {

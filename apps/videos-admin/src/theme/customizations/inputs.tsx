@@ -400,13 +400,19 @@ export const inputsCustomizations: Components<Theme> = {
         },
         [`&.${outlinedInputClasses.focused}`]: {
           outline: `3px solid ${alpha(brand[500], 0.5)}`,
-          borderColor: brand[400]
+          borderColor: brand[400],
+          '&.Mui-error': {
+            outline: `3px solid ${alpha(theme.palette.error.main, 0.5)}`
+          }
         },
         ...theme.applyStyles('dark', {
           '&:hover': {
             borderColor: grey[500]
           }
         }),
+        '&.Mui-error': {
+          borderColor: theme.palette.error.main
+        },
         variants: [
           {
             props: {

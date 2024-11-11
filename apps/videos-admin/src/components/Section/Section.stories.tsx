@@ -12,7 +12,7 @@ type StoryArgs = ComponentPropsWithoutRef<typeof Section>
 
 const meta = {
   ...videosAdminConfig,
-  title: 'Videos-Admin/Video/Edit/Section',
+  title: 'Videos-Admin/Section',
   component: Section,
   parameters: {
     nextjs: {
@@ -43,12 +43,5 @@ export const WithAction: Story = {
       startIcon: <Plus2 />
     },
     children: <Typography>Action section content</Typography>
-  }
-}
-
-export const WithFallback: Story = {
-  args: {
-    title: 'Empty Section',
-    children: <Section.Fallback>Nothing to show</Section.Fallback>
   }
 }

@@ -6,6 +6,9 @@ export const GET_VIDEO = graphql(`
     video(id: $videoId) {
       id
       image
+      images(aspectRatio: banner) {
+        mobileCinematicHigh
+      }
       imageAlt {
         id
         value

@@ -29,60 +29,62 @@ export const GET_ADMIN_VIDEO = graphql(`
         id
         value
       }
-      children {
-        id
-        title {
-          id
-          value
-        }
-        images(aspectRatio: banner) {
-          id
-          mobileCinematicHigh
-        }
-        imageAlt {
-          id
-          value
-        }
-      }
-      variants {
-        id
-        slug
-        language {
-          id
-          name {
-            value
-          }
-          slug
-        }
-        downloads {
-          id
-          quality
-          size
-          height
-          width
-          url
-        }
-      }
       studyQuestions {
         id
         value
         primary
       }
       variantLanguagesCount
-      subtitles {
-        id
-        edition
-        vttSrc
-        srtSrc
-        value
-        language {
-          id
-          name {
-            value
-          }
-          slug
-        }
-      }
+      childrenCount
+      # children {
+      #   id
+      #   title {
+      #     id
+      #     value
+      #   }
+      #   images(aspectRatio: banner) {
+      #     id
+      #     mobileCinematicHigh
+      #   }
+      #   imageAlt {
+      #     id
+      #     value
+      #   }
+      # }
+      # variants {
+      #   id
+      #   slug
+      #   language {
+      #     id
+      #     name {
+      #       value
+      #     }
+      #     slug
+      #   }
+      #   downloads {
+      #     id
+      #     quality
+      #     size
+      #     height
+      #     width
+      #     url
+      #   }
+      # }
+
+      # subtitles {
+      #   id
+      #   edition
+      #   vttSrc
+      #   srtSrc
+      #   value
+      #   language {
+      #     id
+      #     name {
+      #       value
+      #     }
+      #     slug
+      #   }
+      # }
     }
   }
 `)
