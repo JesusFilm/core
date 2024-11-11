@@ -122,13 +122,13 @@ resource "datadog_integration_aws" "sandbox" {
 
 module "datadog_log_forwarder" {
   source     = "terraform-aws-modules/datadog-forwarders/aws//modules/log_forwarder"
-  version    = "5.1.0"
+  version    = "6.1.0"
   dd_api_key = data.aws_ssm_parameter.datadog_api_key.value
 
 }
 
 module "datadog_rds_enhanced_monitoring_forwarder" {
   source     = "terraform-aws-modules/datadog-forwarders/aws//modules/rds_enhanced_monitoring_forwarder"
-  version    = "5.1.0"
+  version    = "6.1.0"
   dd_api_key = data.aws_ssm_parameter.datadog_api_key.value
 }
