@@ -175,7 +175,6 @@ type MuxVideo {
 type Query {
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
-  videoCloudflareAssets(videoId: ID!): [CloudflareR2!]!
   getMyCloudflareVideos(offset: Int, limit: Int): [CloudflareVideo!]!
   getMyCloudflareVideo(id: ID!): CloudflareVideo!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
@@ -367,6 +366,7 @@ type Video
   label: VideoLabel!
   primaryLanguageId: ID!
   published: Boolean!
+  cloudflareAssets: [CloudflareR2!]!
   title(languageId: ID, primary: Boolean): [VideoTitle!]!
   snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
   description(languageId: ID, primary: Boolean): [VideoDescription!]!
@@ -552,6 +552,7 @@ type VideoVariant {
   hls: String
   dash: String
   share: String
+  downloadable: Boolean!
   downloads: [VideoVariantDownload!]!
   duration: Int!
   language: Language!
@@ -573,6 +574,7 @@ input VideoVariantCreateInput {
   duration: Int
   languageId: String!
   slug: String!
+  downloadable: Boolean!
 }
 
 type VideoVariantDownload {
@@ -619,6 +621,7 @@ input VideoVariantUpdateInput {
   duration: Int
   languageId: String
   slug: String
+  downloadable: Boolean
 }
 
 input VideosFilter {

@@ -2,13 +2,13 @@ import { builder } from '../builder'
 
 builder.prismaObject('CountryLanguage', {
   fields: (t) => ({
-    id: t.exposeID('id'),
-    language: t.relation('language'),
-    country: t.relation('country'),
-    speakers: t.exposeInt('speakers'),
-    displaySpeakers: t.exposeInt('displaySpeakers', { nullable: true }),
-    primary: t.exposeBoolean('primary'),
-    suggested: t.exposeBoolean('suggested'),
-    order: t.exposeInt('order', { nullable: true })
+    id: t.exposeID('id', { nullable: false }),
+    language: t.relation('language', { nullable: false }),
+    country: t.relation('country', { nullable: false }),
+    speakers: t.exposeInt('speakers', { nullable: false }),
+    displaySpeakers: t.exposeInt('displaySpeakers'),
+    primary: t.exposeBoolean('primary', { nullable: false }),
+    suggested: t.exposeBoolean('suggested', { nullable: false }),
+    order: t.exposeInt('order')
   })
 })

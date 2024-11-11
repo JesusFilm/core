@@ -60,6 +60,7 @@ export const videos: VideoContentFields[] = [
       id: '1_529-jf-0-0',
       duration: 7674,
       hls: 'https://arc.gt/j67rz',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -123,6 +124,7 @@ export const videos: VideoContentFields[] = [
       id: '2_529-GOJ-0-0',
       duration: 10994,
       hls: 'https://arc.gt/u3kd6',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -195,6 +197,7 @@ export const videos: VideoContentFields[] = [
       id: '1_529-jf6119-0-0',
       duration: 119,
       hls: 'https://arc.gt/69sos',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -277,6 +280,7 @@ export const videos: VideoContentFields[] = [
       id: '1_529-wl604423-0-0',
       duration: 190,
       hls: 'https://arc.gt/0sgr2',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -336,6 +340,7 @@ export const videos: VideoContentFields[] = [
       id: '1_529-wl60-0-0',
       duration: 3665,
       hls: 'https://arc.gt/d8p35',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -395,6 +400,7 @@ export const videos: VideoContentFields[] = [
       id: '1_529-wl7-0-0',
       duration: 0,
       hls: null,
+      downloadable: true,
       downloads: [],
       language: {
         __typename: 'Language',
@@ -452,6 +458,7 @@ export const videos: VideoContentFields[] = [
       id: '3_529-0-8DWJ-WIJ_06-0-0',
       duration: 488,
       hls: 'https://arc.gt/xqav7',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -517,6 +524,7 @@ export const videos: VideoContentFields[] = [
       id: '2_529-Acts-0-0',
       duration: 11530,
       hls: 'https://arc.gt/6x6ke',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -585,6 +593,7 @@ export const videos: VideoContentFields[] = [
       id: '2_529-GOJ4904-0-0',
       duration: 213,
       hls: 'https://arc.gt/29cgr',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -634,6 +643,7 @@ export const videos: VideoContentFields[] = [
       id: '529-LUMOCollection',
       duration: 0,
       hls: null,
+      downloadable: true,
       downloads: [],
       language: {
         __typename: 'Language',
@@ -707,6 +717,7 @@ export const videos: VideoContentFields[] = [
       id: '2_529-Acts7331-0-0',
       duration: 298,
       hls: 'https://arc.gt/esnsq',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -770,6 +781,7 @@ export const videos: VideoContentFields[] = [
       id: '3_529-0-8DWJ-WIJ',
       duration: 0,
       hls: null,
+      downloadable: true,
       downloads: [],
       language: {
         __typename: 'Language',
@@ -836,6 +848,7 @@ export const videos: VideoContentFields[] = [
       id: '2_529-ChosenWitness',
       duration: 566,
       hls: 'https://arc.gt/3mcdc',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -897,6 +910,7 @@ export const videos: VideoContentFields[] = [
       id: '529-GOLukeCollection',
       duration: 0,
       hls: null,
+      downloadable: true,
       downloads: [],
       language: {
         __typename: 'Language',
@@ -976,6 +990,7 @@ export const videos: VideoContentFields[] = [
       id: '1_529-cl1309-0-0',
       duration: 124,
       hls: 'https://arc.gt/2174d',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -1048,6 +1063,7 @@ export const videos: VideoContentFields[] = [
       id: '1_529-jf6102-0-0',
       duration: 223,
       hls: 'https://arc.gt/ijec5',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -1127,6 +1143,7 @@ export const videos: VideoContentFields[] = [
       id: '2_529-0-FallingPlates',
       duration: 247,
       hls: 'https://arc.gt/zbrvj',
+      downloadable: true,
       downloads: [],
       language: {
         __typename: 'Language',
@@ -1189,6 +1206,7 @@ export const videos: VideoContentFields[] = [
       id: '2_529-Acts7345-0-0',
       duration: 369,
       hls: 'https://arc.gt/cpywt',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -1262,6 +1280,7 @@ export const videos: VideoContentFields[] = [
       id: '1_529-mld-0-0',
       duration: 554,
       hls: 'https://arc.gt/1b10x',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
@@ -1321,6 +1340,7 @@ export const videos: VideoContentFields[] = [
       id: '1_529-jf6101-0-0',
       duration: 488,
       hls: 'https://arc.gt/pm6g1',
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',
