@@ -1,17 +1,19 @@
 'use client'
 
-import { Button } from '@mui/material'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { useParams, usePathname, useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { PublishedChip } from '../../../../../../components/PublishedChip'
 import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
 
 export function VideoView(): ReactElement {
+  const t = useTranslations()
   const params = useParams<{ videoId: string; locale: string }>()
   const pathname = usePathname()
   const router = useRouter()
@@ -20,7 +22,7 @@ export function VideoView(): ReactElement {
     variables: { videoId: params?.videoId as string }
   })
 
-  const handleEdit = () => {
+  function handleEdit(): void {
     router.push(`${pathname}/edit`)
   }
 
@@ -44,7 +46,7 @@ export function VideoView(): ReactElement {
           size="small"
           sx={{ ml: 'auto', width: 'min-width' }}
         >
-          Edit
+          {t('Edit')}
         </Button>
       </Stack>
       <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
