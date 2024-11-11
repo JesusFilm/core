@@ -1274,7 +1274,7 @@ export type Mutation = {
   /** Updates template */
   journeyTemplate: Journey;
   journeyUpdate: Journey;
-  journeyViewEventCreate: JourneyViewEvent;
+  journeyViewEventCreate?: Maybe<JourneyViewEvent>;
   /** Sets journeys statuses to archived */
   journeysArchive?: Maybe<Array<Maybe<Journey>>>;
   /** Sets journeys statuses to deleted */
