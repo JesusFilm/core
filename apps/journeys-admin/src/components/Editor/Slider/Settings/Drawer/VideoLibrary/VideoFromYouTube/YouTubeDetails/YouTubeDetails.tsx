@@ -69,8 +69,7 @@ export function YouTubeDetails({
       playerRef.current = videojs(videoRef.current, {
         ...defaultVideoJsOptions,
         fluid: true,
-        controls: true,
-        poster: data?.snippet?.thumbnails?.default?.url ?? undefined
+        controls: true
       })
       playerRef.current.on('playing', () => {
         setPlaying(true)
