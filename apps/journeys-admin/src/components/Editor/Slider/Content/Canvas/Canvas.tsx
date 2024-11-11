@@ -212,6 +212,7 @@ export function Canvas(): ReactElement {
                 dir={rtl ? 'rtl' : 'ltr'}
                 // frameRef assists to see if user is copying text from typog blocks
                 ref={frameRef}
+                scrolling="no"
               >
                 {({ document }) => (
                   <ThemeProvider {...theme} rtl={rtl} locale={locale}>

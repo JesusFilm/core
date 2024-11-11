@@ -4,11 +4,9 @@ import {
   DragOverEvent,
   DragOverlay,
   DragStartEvent,
-  closestCenter,
-  useDroppable
+  closestCenter
 } from '@dnd-kit/core'
 import { SortableContext } from '@dnd-kit/sortable'
-import Box from '@mui/material/Box'
 import { ReactElement, ReactNode, useMemo, useState } from 'react'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -27,9 +25,6 @@ interface DropAreaProps {
 
 export function DropArea({ children }: DropAreaProps): ReactElement {
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
-  const { setNodeRef } = useDroppable({
-    id: 'block-dropzone'
-  })
   const [active, setActive] = useState<Active | null>(null)
 
   const {
@@ -110,17 +105,9 @@ export function DropArea({ children }: DropAreaProps): ReactElement {
       onDragStart={handleDragStart}
       collisionDetection={closestCenter}
     >
-      <SortableContext items={itemIds}>
-        <Box height="100%" width="100%" ref={setNodeRef}>
-          {children}
-        </Box>
-      </SortableContext>
+      <SortableContext items={itemIds}>{children}</SortableContext>
       <DragOverlay dropAnimation={null}>
-        {activeItem != null ? (
-          <Box>
-            <BlockRenderer block={activeItem} />
-          </Box>
-        ) : null}
+        {activeItem != null ? <BlockRenderer block={activeItem} /> : null}
       </DragOverlay>
     </DndContext>
   )
