@@ -9,18 +9,25 @@ import { VideoVariantUpdateInput } from './inputs/videoVariantUpdate'
 
 builder.prismaObject('VideoVariant', {
   fields: (t) => ({
-    id: t.exposeID('id'),
-    hls: t.exposeString('hls', { nullable: true }),
-    dash: t.exposeString('dash', { nullable: true }),
-    share: t.exposeString('share', { nullable: true }),
-    downloads: t.relation('downloads'),
-    duration: t.int({ resolve: ({ duration }) => duration ?? 0 }),
+    id: t.exposeID('id', { nullable: false }),
+    hls: t.exposeString('hls'),
+    dash: t.exposeString('dash'),
+    share: t.exposeString('share'),
+    downloadable: t.exposeBoolean('downloadable', { nullable: false }),
+    downloads: t.relation('downloads', { nullable: false }),
+    duration: t.int({
+      nullable: false,
+      resolve: ({ duration }) => duration ?? 0
+    }),
     language: t.field({
       type: Language,
+      nullable: false,
       resolve: ({ languageId: id }) => ({ id })
     }),
+    videoEdition: t.relation('videoEdition', { nullable: false }),
     subtitle: t.prismaField({
       type: ['VideoSubtitle'],
+      nullable: false,
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
@@ -45,6 +52,7 @@ builder.prismaObject('VideoVariant', {
       }
     }),
     subtitleCount: t.int({
+      nullable: false,
       resolve: async (parent) => {
         if (parent.videoId == null) return 0
         return await prisma.videoSubtitle.count({
@@ -53,6 +61,7 @@ builder.prismaObject('VideoVariant', {
       }
     }),
     slug: t.exposeString('slug', {
+      nullable: false,
       description: 'slug is a permanent link to the video variant.'
     })
   })
@@ -61,6 +70,7 @@ builder.prismaObject('VideoVariant', {
 builder.queryFields((t) => ({
   videoVariants: t.prismaField({
     type: ['VideoVariant'],
+    nullable: false,
     resolve: async (query) =>
       await prisma.videoVariant.findMany({
         ...query
@@ -69,13 +79,11 @@ builder.queryFields((t) => ({
 }))
 
 builder.mutationFields((t) => ({
-  videoVariantCreate: t.prismaField({
+  videoVariantCreate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoVariant',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoVariantCreateInput, required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { input }) => {
       return await prisma.videoVariant.create({
@@ -84,13 +92,11 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  videoVariantUpdate: t.prismaField({
+  videoVariantUpdate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoVariant',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoVariantUpdateInput, required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { input }) => {
       return await prisma.videoVariant.update({
@@ -104,18 +110,17 @@ builder.mutationFields((t) => ({
           languageId: input.languageId ?? undefined,
           slug: input.slug ?? undefined,
           videoId: input.videoId ?? undefined,
-          edition: input.edition ?? undefined
+          edition: input.edition ?? undefined,
+          downloadable: input.downloadable ?? undefined
         }
       })
     }
   }),
-  videoVariantDelete: t.prismaField({
+  videoVariantDelete: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoVariant',
+    nullable: false,
     args: {
       id: t.arg.id({ required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { id }) => {
       return await prisma.videoVariant.delete({

@@ -1,4 +1,8 @@
-import { VideoVariant, VideoVariantDownload } from '.prisma/api-media-client'
+import {
+  VideoEdition,
+  VideoVariant,
+  VideoVariantDownload
+} from '.prisma/api-media-client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
@@ -22,6 +26,7 @@ describe('videoVariant', () => {
         videoVariants {
           id
           hls
+          downloadable
           downloads {
             id
             quality
@@ -44,12 +49,17 @@ describe('videoVariant', () => {
           }
           subtitleCount
           slug
+          videoEdition {
+            id
+            name
+          }
         }
       }
     `)
 
     type VideoVariantAndIncludes = VideoVariant & {
       downloads: VideoVariantDownload[]
+      videoEdition: VideoEdition
     }
 
     it('should query videoVariants', async () => {
@@ -62,6 +72,7 @@ describe('videoVariant', () => {
           edition: 'base',
           slug: 'videoSlug',
           videoId: 'videoId',
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -70,7 +81,11 @@ describe('videoVariant', () => {
               url: 'url',
               videoVariantId: 'videoVariantId'
             }
-          ]
+          ],
+          videoEdition: {
+            id: 'videoEditionId',
+            name: 'videoEditionName'
+          }
         }
       ] as VideoVariantAndIncludes[])
       prismaMock.videoSubtitle.findMany.mockResolvedValueOnce([
@@ -90,7 +105,8 @@ describe('videoVariant', () => {
       })
       expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
         include: {
-          downloads: true
+          downloads: true,
+          videoEdition: true
         }
       })
       expect(prismaMock.videoSubtitle.findMany).toHaveBeenCalledWith({
@@ -108,6 +124,7 @@ describe('videoVariant', () => {
         {
           id: 'videoVariantId',
           hls: null,
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -118,6 +135,10 @@ describe('videoVariant', () => {
               width: 0
             }
           ],
+          videoEdition: {
+            id: 'videoEditionId',
+            name: 'videoEditionName'
+          },
           duration: 0,
           language: { id: 'languageId' },
           subtitle: [
@@ -146,6 +167,7 @@ describe('videoVariant', () => {
           edition: 'base',
           slug: 'videoSlug',
           videoId: 'videoId',
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -156,7 +178,11 @@ describe('videoVariant', () => {
               width: 0,
               videoVariantId: 'videoVariantId'
             }
-          ]
+          ],
+          videoEdition: {
+            id: 'videoEditionId',
+            name: 'videoEditionName'
+          }
         }
       ] as VideoVariantAndIncludes[])
       prismaMock.videoSubtitle.findMany.mockResolvedValueOnce([
@@ -176,7 +202,8 @@ describe('videoVariant', () => {
       })
       expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
         include: {
-          downloads: true
+          downloads: true,
+          videoEdition: true
         }
       })
       expect(prismaMock.videoSubtitle.findMany).toHaveBeenCalledWith({
@@ -194,6 +221,7 @@ describe('videoVariant', () => {
         {
           id: 'videoVariantId',
           hls: null,
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -204,6 +232,10 @@ describe('videoVariant', () => {
               url: 'url'
             }
           ],
+          videoEdition: {
+            id: 'videoEditionId',
+            name: 'videoEditionName'
+          },
           duration: 768,
           language: { id: 'languageId' },
           subtitle: [
@@ -232,6 +264,7 @@ describe('videoVariant', () => {
           edition: 'base',
           slug: 'videoSlug',
           videoId: 'videoId',
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -242,7 +275,11 @@ describe('videoVariant', () => {
               height: 0,
               width: 0
             }
-          ]
+          ],
+          videoEdition: {
+            id: 'videoEditionId',
+            name: 'videoEditionName'
+          }
         }
       ] as VideoVariantAndIncludes[])
       prismaMock.videoSubtitle.findMany.mockResolvedValueOnce([
@@ -263,13 +300,15 @@ describe('videoVariant', () => {
       })
       expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
         include: {
-          downloads: true
+          downloads: true,
+          videoEdition: true
         }
       })
       expect(data).toHaveProperty('data.videoVariants', [
         {
           id: 'videoVariantId',
           hls: null,
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -280,6 +319,10 @@ describe('videoVariant', () => {
               width: 0
             }
           ],
+          videoEdition: {
+            id: 'videoEditionId',
+            name: 'videoEditionName'
+          },
           duration: 768,
           language: { id: 'languageId' },
           subtitle: [
@@ -324,7 +367,8 @@ describe('videoVariant', () => {
           slug: 'videoSlug',
           videoId: 'videoId',
           languageId: 'languageId',
-          share: 'share'
+          share: 'share',
+          downloadable: true
         })
         const result = await authClient({
           document: VIDEO_VARIANT_CREATE_MUTATION,
@@ -338,7 +382,8 @@ describe('videoVariant', () => {
               edition: 'base',
               slug: 'videoSlug',
               videoId: 'videoId',
-              share: 'share'
+              share: 'share',
+              downloadable: true
             }
           }
         })
@@ -352,7 +397,8 @@ describe('videoVariant', () => {
             edition: 'base',
             slug: 'videoSlug',
             videoId: 'videoId',
-            share: 'share'
+            share: 'share',
+            downloadable: true
           }
         })
         expect(result).toHaveProperty('data.videoVariantCreate', {
@@ -373,7 +419,8 @@ describe('videoVariant', () => {
               edition: 'base',
               slug: 'videoSlug',
               videoId: 'videoId',
-              share: 'share'
+              share: 'share',
+              downloadable: true
             }
           }
         })
@@ -405,7 +452,8 @@ describe('videoVariant', () => {
           slug: 'videoSlug',
           videoId: 'videoId',
           languageId: 'languageId',
-          share: 'share'
+          share: 'share',
+          downloadable: false
         })
         const result = await authClient({
           document: VIDEO_VARIANT_UPDATE_MUTATION,
@@ -419,7 +467,8 @@ describe('videoVariant', () => {
               edition: 'base',
               slug: 'videoSlug',
               videoId: 'videoId',
-              share: 'share'
+              share: 'share',
+              downloadable: false
             }
           }
         })
@@ -433,7 +482,8 @@ describe('videoVariant', () => {
             edition: 'base',
             slug: 'videoSlug',
             videoId: 'videoId',
-            share: 'share'
+            share: 'share',
+            downloadable: false
           }
         })
         expect(result).toHaveProperty('data.videoVariantUpdate', {
@@ -454,7 +504,8 @@ describe('videoVariant', () => {
               edition: 'base',
               slug: 'videoSlug',
               videoId: 'videoId',
-              share: 'share'
+              share: 'share',
+              downloadable: true
             }
           }
         })
@@ -486,7 +537,8 @@ describe('videoVariant', () => {
           slug: 'videoSlug',
           videoId: 'videoId',
           languageId: 'languageId',
-          share: 'share'
+          share: 'share',
+          downloadable: true
         })
         const result = await authClient({
           document: VIDEO_VARIANT_DELETE_MUTATION,

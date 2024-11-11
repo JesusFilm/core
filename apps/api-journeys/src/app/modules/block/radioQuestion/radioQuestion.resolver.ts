@@ -11,6 +11,7 @@ import { RadioQuestionBlockCreateInput } from '../../../__generated__/graphql'
 import { Action, AppAbility } from '../../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../../lib/casl/caslGuard'
 import { PrismaService } from '../../../lib/prisma.service'
+import { INCLUDE_JOURNEY_ACL } from '../../journey/journey.acl'
 import { BlockService } from '../block.service'
 
 @Resolver('RadioQuestionBlock')
@@ -41,12 +42,7 @@ export class RadioQuestionBlockResolver {
         },
         include: {
           action: true,
-          journey: {
-            include: {
-              team: { include: { userTeams: true } },
-              userJourneys: true
-            }
-          }
+          ...INCLUDE_JOURNEY_ACL
         }
       })
       if (!ability.can(Action.Update, subject('Journey', block.journey)))

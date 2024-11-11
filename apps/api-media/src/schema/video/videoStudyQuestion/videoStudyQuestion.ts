@@ -13,24 +13,23 @@ import {
 builder.prismaObject('VideoStudyQuestion', {
   include: { order: true },
   fields: (t) => ({
-    id: t.exposeID('id'),
-    value: t.exposeString('value'),
-    primary: t.exposeBoolean('primary'),
+    id: t.exposeID('id', { nullable: false }),
+    value: t.exposeString('value', { nullable: false }),
+    primary: t.exposeBoolean('primary', { nullable: false }),
     language: t.field({
       type: Language,
+      nullable: false,
       resolve: ({ languageId: id }) => ({ id })
     })
   })
 })
 
 builder.mutationFields((t) => ({
-  videoStudyQuestionCreate: t.prismaField({
+  videoStudyQuestionCreate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoStudyQuestion',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoStudyQuestionCreateInput, required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { input }) => {
       return await prisma.$transaction(
@@ -53,13 +52,11 @@ builder.mutationFields((t) => ({
       )
     }
   }),
-  videoStudyQuestionUpdate: t.prismaField({
+  videoStudyQuestionUpdate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoStudyQuestion',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoStudyQuestionUpdateInput, required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { input }) => {
       return await prisma.$transaction(
@@ -99,13 +96,11 @@ builder.mutationFields((t) => ({
       )
     }
   }),
-  videoStudyQuestionDelete: t.prismaField({
+  videoStudyQuestionDelete: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoStudyQuestion',
+    nullable: false,
     args: {
       id: t.arg.id({ required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { id }) => {
       const existing = await prisma.videoStudyQuestion.findUnique({

@@ -6,24 +6,23 @@ import { VideoTranslationUpdateInput } from '../inputs/videoTranslationUpdate'
 
 builder.prismaObject('VideoDescription', {
   fields: (t) => ({
-    id: t.exposeID('id'),
-    value: t.exposeString('value'),
-    primary: t.exposeBoolean('primary'),
+    id: t.exposeID('id', { nullable: false }),
+    value: t.exposeString('value', { nullable: false }),
+    primary: t.exposeBoolean('primary', { nullable: false }),
     language: t.field({
       type: Language,
+      nullable: false,
       resolve: ({ languageId: id }) => ({ id })
     })
   })
 })
 
 builder.mutationFields((t) => ({
-  videoDescriptionCreate: t.prismaField({
+  videoDescriptionCreate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoDescription',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoTranslationCreateInput, required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { input }) => {
       return await prisma.videoDescription.create({
@@ -35,13 +34,11 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  videoDescriptionUpdate: t.prismaField({
+  videoDescriptionUpdate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoDescription',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoTranslationUpdateInput, required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { input }) => {
       return await prisma.videoDescription.update({
@@ -55,13 +52,11 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  videoDescriptionDelete: t.prismaField({
+  videoDescriptionDelete: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoDescription',
+    nullable: false,
     args: {
       id: t.arg.id({ required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { id }) => {
       return await prisma.videoDescription.delete({

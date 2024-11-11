@@ -42,6 +42,27 @@ type CloudflareImage {
   videoStill: String
 }
 
+type CloudflareR2 {
+  id: ID!
+  fileName: String!
+  uploadUrl: String
+  userId: ID!
+  publicUrl: String
+  createdAt: Date!
+  updatedAt: Date!
+}
+
+input CloudflareR2CreateInput {
+  id: String
+  fileName: String!
+  videoId: String!
+}
+
+input CloudflareR2UpdateInput {
+  id: String!
+  fileName: String!
+}
+
 type CloudflareVideo {
   id: ID!
   uploadUrl: String
@@ -101,11 +122,17 @@ type Mutation {
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
   deleteCloudflareImage(id: ID!): Boolean!
   cloudflareUploadComplete(id: ID!): Boolean!
+  cloudflareR2Create(input: CloudflareR2CreateInput!): CloudflareR2!
+  cloudflareR2Update(input: CloudflareR2UpdateInput!): CloudflareR2!
+  cloudflareR2Delete(id: ID!): CloudflareR2!
   createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo!
   createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo!
   deleteCloudflareVideo(id: ID!): Boolean!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!
+  createMuxVideoUploadByFile(name: String!): MuxVideo!
+  createMuxVideoUploadByUrl(url: String!): MuxVideo!
+  deleteMuxVideo(id: ID!): Boolean!
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
@@ -126,12 +153,23 @@ type Mutation {
   videoTitleCreate(input: VideoTranslationCreateInput!): VideoTitle!
   videoTitleUpdate(input: VideoTranslationUpdateInput!): VideoTitle!
   videoTitleDelete(id: ID!): VideoTitle!
+  videoEditionCreate(input: VideoEditionCreateInput!): VideoEdition!
+  videoEditionUpdate(input: VideoEditionUpdateInput!): VideoEdition!
+  videoEditionDelete(id: ID!): VideoEdition!
   videoVariantCreate(input: VideoVariantCreateInput!): VideoVariant!
   videoVariantUpdate(input: VideoVariantUpdateInput!): VideoVariant!
   videoVariantDelete(id: ID!): VideoVariant!
   videoVariantDownloadCreate(input: VideoVariantDownloadCreateInput!): VideoVariantDownload!
   videoVariantDownloadUpdate(input: VideoVariantDownloadUpdateInput!): VideoVariantDownload!
   videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
+}
+
+type MuxVideo {
+  id: ID!
+  uploadUrl: String
+  userId: ID!
+  createdAt: Date!
+  readyToStream: Boolean!
 }
 
 type Query {
@@ -144,14 +182,19 @@ type Query {
   bibleBooks: [BibleBook!]!
   bibleCitations: [BibleCitation!]!
   keywords: [Keyword!]!
+  getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
+  getMyMuxVideo(id: ID!): MuxVideo!
   adminVideo(id: ID!, idType: IdType = databaseId): Video!
   adminVideos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   adminVideosCount(where: VideosFilter): Int!
   video(id: ID!, idType: IdType = databaseId): Video!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   videosCount(where: VideosFilter): Int!
+  videoEditions: [VideoEdition!]!
+  videoEdition(id: ID!): VideoEdition
   videoVariants: [VideoVariant!]!
   tags: [Tag!]!
+  taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
 }
 
 enum SegmindModel {
@@ -184,6 +227,21 @@ type TagName {
   value: String!
   primary: Boolean!
   language: Language!
+}
+
+type Taxonomy {
+  id: ID!
+  category: String!
+  term: String!
+  name(languageCodes: [String!], category: String): [TaxonomyName!]!
+}
+
+type TaxonomyName {
+  id: ID!
+  term: String!
+  label: String!
+  language: Language!
+  taxonomy: Taxonomy!
 }
 
 enum UnsplashColor {
@@ -308,6 +366,7 @@ type Video
   label: VideoLabel!
   primaryLanguageId: ID!
   published: Boolean!
+  cloudflareAssets: [CloudflareR2!]!
   title(languageId: ID, primary: Boolean): [VideoTitle!]!
   snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
   description(languageId: ID, primary: Boolean): [VideoDescription!]!
@@ -352,6 +411,23 @@ type VideoDescription {
   value: String!
   primary: Boolean!
   language: Language!
+}
+
+type VideoEdition {
+  id: ID!
+  name: String
+  videoVariants: [VideoVariant!]!
+  videoSubtitles: [VideoSubtitle!]!
+}
+
+input VideoEditionCreateInput {
+  id: ID!
+  name: String
+}
+
+input VideoEditionUpdateInput {
+  id: ID!
+  name: String
 }
 
 type VideoImageAlt {
@@ -417,6 +493,7 @@ type VideoSubtitle {
   srtSrc: String
   value: String!
   language: Language!
+  videoEdition: VideoEdition!
 }
 
 input VideoSubtitleCreateInput {
@@ -475,9 +552,11 @@ type VideoVariant {
   hls: String
   dash: String
   share: String
+  downloadable: Boolean!
   downloads: [VideoVariantDownload!]!
   duration: Int!
   language: Language!
+  videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
   subtitleCount: Int!
 
@@ -495,6 +574,7 @@ input VideoVariantCreateInput {
   duration: Int
   languageId: String!
   slug: String!
+  downloadable: Boolean!
 }
 
 type VideoVariantDownload {
@@ -541,6 +621,7 @@ input VideoVariantUpdateInput {
   duration: Int
   languageId: String
   slug: String
+  downloadable: Boolean
 }
 
 input VideosFilter {

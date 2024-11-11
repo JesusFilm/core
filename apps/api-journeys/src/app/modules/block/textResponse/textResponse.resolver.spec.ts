@@ -17,7 +17,7 @@ import { TextResponseBlockResolver } from './textResponse.resolver'
 
 describe('TextResponseBlockResolver', () => {
   let resolver: TextResponseBlockResolver,
-    service: BlockService,
+    service: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
     ability: AppAbility
 
@@ -31,7 +31,8 @@ describe('TextResponseBlockResolver', () => {
     typename: 'TextResponseBlock',
     parentOrder: 1,
     submitIconId: 'submitIconId',
-    submitLabel: 'Submit'
+    submitLabel: 'Submit',
+    updatedAt: '2024-10-21T04:32:25.858Z'
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -51,20 +52,15 @@ describe('TextResponseBlockResolver', () => {
     integrationId: 'integrationId',
     type: TextResponseType.email
   }
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      getSiblings: jest.fn(() => [block, block]),
-      update: jest.fn((input) => input),
-      validateBlock: jest.fn()
-    })
-  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        blockService,
+        {
+          provide: BlockService,
+          useValue: mockDeep<BlockService>()
+        },
         TextResponseBlockResolver,
         {
           provide: PrismaService,
@@ -73,11 +69,17 @@ describe('TextResponseBlockResolver', () => {
       ]
     }).compile()
     resolver = module.get<TextResponseBlockResolver>(TextResponseBlockResolver)
-    service = await module.resolve(BlockService)
+    service = module.get<BlockService>(
+      BlockService
+    ) as DeepMockProxy<BlockService>
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+    service.getSiblings.mockResolvedValue([
+      { ...block, action: null },
+      { ...block, action: null }
+    ])
   })
 
   describe('TextResponseBlockCreate', () => {
@@ -113,6 +115,17 @@ describe('TextResponseBlockResolver', () => {
       expect(service.getSiblings).toHaveBeenCalledWith(
         blockCreateInput.journeyId,
         blockCreateInput.parentBlockId
+      )
+    })
+
+    it('should update journey updatedAt when text response is created', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.textResponseBlockCreate(ability, blockCreateInput)
+      ).toEqual(blockWithUserTeam)
+      expect(service.setJourneyUpdatedAt).toHaveBeenCalledWith(
+        prismaService,
+        blockWithUserTeam
       )
     })
 

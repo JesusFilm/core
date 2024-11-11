@@ -28,6 +28,7 @@ import {
   ReactFlow,
   type ReactFlowInstance,
   type ReactFlowProps,
+  SelectionDragHandler,
   updateEdge as reactFlowUpdateEdge,
   useEdgesState,
   useNodesState
@@ -374,6 +375,36 @@ export function JourneyFlow(): ReactElement {
       }
     })
   }
+
+  const onSelectionDragStop: SelectionDragHandler = (_event, nodes): void => {
+    if (steps == null || data == null) return
+    const stepNodes = nodes.filter((node) => node.type === 'StepBlock')
+
+    add({
+      parameters: {
+        execute: {
+          input: stepNodes.map((node) => ({
+            id: node.id,
+            x: Math.trunc(node.position.x),
+            y: Math.trunc(node.position.y)
+          }))
+        },
+        undo: {
+          input: (
+            data.blocks as GetStepBlocksWithPosition_blocks_StepBlock[]
+          ).map((step) => ({
+            id: step.id,
+            x: step.x,
+            y: step.y
+          }))
+        }
+      },
+      execute({ input }) {
+        blockPositionUpdate(input)
+      }
+    })
+  }
+
   const onEdgeUpdateStart = useCallback<
     NonNullable<ReactFlowProps['onEdgeUpdateStart']>
   >(() => {
@@ -464,12 +495,14 @@ export function JourneyFlow(): ReactElement {
         onConnectEnd={onConnectEnd}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
+        onSelectionDragStop={onSelectionDragStop}
         onEdgeUpdate={showAnalytics === true ? undefined : onEdgeUpdate}
         onEdgeUpdateStart={onEdgeUpdateStart}
         onEdgeUpdateEnd={onEdgeUpdateEnd}
         onSelectionChange={onSelectionChange}
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
+        minZoom={0.3}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         proOptions={{ hideAttribution: true }}

@@ -7,26 +7,25 @@ import { VideoVariantDownloadUpdateInput } from './inputs/videoVariantDownloadUp
 
 builder.prismaObject('VideoVariantDownload', {
   fields: (t) => ({
-    id: t.exposeID('id'),
+    id: t.exposeID('id', { nullable: false }),
     quality: t.field({
       type: VideoVariantDownloadQuality,
+      nullable: false,
       resolve: ({ quality }) => quality
     }),
-    size: t.float({ resolve: ({ size }) => size ?? 0 }),
-    height: t.int({ resolve: ({ height }) => height ?? 0 }),
-    width: t.int({ resolve: ({ width }) => width ?? 0 }),
-    url: t.exposeString('url')
+    size: t.float({ nullable: false, resolve: ({ size }) => size ?? 0 }),
+    height: t.int({ nullable: false, resolve: ({ height }) => height ?? 0 }),
+    width: t.int({ nullable: false, resolve: ({ width }) => width ?? 0 }),
+    url: t.exposeString('url', { nullable: false })
   })
 })
 
 builder.mutationFields((t) => ({
-  videoVariantDownloadCreate: t.prismaField({
+  videoVariantDownloadCreate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoVariantDownload',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoVariantDownloadCreateInput, required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (_query, _parent, { input }) => {
       return await prisma.videoVariantDownload.create({
@@ -37,13 +36,11 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  videoVariantDownloadUpdate: t.prismaField({
+  videoVariantDownloadUpdate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoVariantDownload',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoVariantDownloadUpdateInput, required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (_query, _parent, { input }) => {
       return await prisma.videoVariantDownload.update({
@@ -59,13 +56,11 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  videoVariantDownloadDelete: t.prismaField({
+  videoVariantDownloadDelete: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoVariantDownload',
+    nullable: false,
     args: {
       id: t.arg.id({ required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (_query, _parent, { id }) => {
       return await prisma.videoVariantDownload.delete({

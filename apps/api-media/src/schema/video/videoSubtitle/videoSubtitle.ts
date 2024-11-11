@@ -7,30 +7,31 @@ import { VideoSubtitleUpdateInput } from './inputs/videoSubtitleUpdate'
 
 builder.prismaObject('VideoSubtitle', {
   fields: (t) => ({
-    id: t.exposeID('id'),
-    languageId: t.exposeID('languageId'),
-    primary: t.exposeBoolean('primary'),
-    edition: t.exposeString('edition'),
-    vttSrc: t.exposeString('vttSrc', { nullable: true }),
-    srtSrc: t.exposeString('srtSrc', { nullable: true }),
+    id: t.exposeID('id', { nullable: false }),
+    languageId: t.exposeID('languageId', { nullable: false }),
+    primary: t.exposeBoolean('primary', { nullable: false }),
+    edition: t.exposeString('edition', { nullable: false }),
+    vttSrc: t.exposeString('vttSrc'),
+    srtSrc: t.exposeString('srtSrc'),
     value: t.string({
+      nullable: false,
       resolve: ({ vttSrc, srtSrc }) => vttSrc ?? srtSrc ?? ''
     }),
     language: t.field({
       type: Language,
+      nullable: false,
       resolve: ({ languageId: id }) => ({ id })
-    })
+    }),
+    videoEdition: t.relation('videoEdition', { nullable: false })
   })
 })
 
 builder.mutationFields((t) => ({
-  videoSubtitleCreate: t.prismaField({
+  videoSubtitleCreate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoSubtitle',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoSubtitleCreateInput, required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { input }) => {
       return await prisma.videoSubtitle.create({
@@ -42,13 +43,11 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  videoSubtitleUpdate: t.prismaField({
+  videoSubtitleUpdate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoSubtitle',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoSubtitleUpdateInput, required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { input }) => {
       return await prisma.videoSubtitle.update({
@@ -64,13 +63,11 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  videoSubtitleDelete: t.prismaField({
+  videoSubtitleDelete: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoSubtitle',
+    nullable: false,
     args: {
       id: t.arg.id({ required: true })
-    },
-    authScopes: {
-      isPublisher: true
     },
     resolve: async (query, _parent, { id }) => {
       return await prisma.videoSubtitle.delete({

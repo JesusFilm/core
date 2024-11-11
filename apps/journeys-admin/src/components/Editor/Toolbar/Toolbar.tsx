@@ -29,7 +29,7 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
+import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
 import { GetPlausibleJourneyFlowViewed } from '../../../../__generated__/GetPlausibleJourneyFlowViewed'
 import {
@@ -92,7 +92,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState<boolean | null>(null)
 
   const helpScoutRef = useRef(null)
   const menuRef = useRef(null)
@@ -241,7 +241,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
               sx={{ display: { xs: 'none', sm: 'flex' } }}
             >
               {journey?.primaryImageBlock?.src == null ? (
-                <ThumbsUpIcon color="error" />
+                <GridEmptyIcon color="secondary" />
               ) : (
                 <Image
                   src={journey.primaryImageBlock.src}
@@ -301,10 +301,12 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                 </Button>
               </Tooltip>
             </Box>
-            <JourneyDetailsDialog
-              open={dialogOpen}
-              onClose={handleDialogClose}
-            />
+            {dialogOpen != null && (
+              <JourneyDetailsDialog
+                open={dialogOpen}
+                onClose={handleDialogClose}
+              />
+            )}
           </Stack>
         ) : (
           <Stack flexGrow={1}>

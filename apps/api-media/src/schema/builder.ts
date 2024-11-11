@@ -33,6 +33,9 @@ export const builder = new SchemaBuilder<{
     isAuthenticated: boolean
     isPublisher: boolean
   }
+  AuthContexts: {
+    isAuthenticated: Context & { user: User }
+  }
   PrismaTypes: PrismaTypes
   Scalars: {
     Date: { Input: Date; Output: Date }
