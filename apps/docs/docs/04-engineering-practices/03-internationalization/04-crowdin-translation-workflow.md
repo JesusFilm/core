@@ -13,7 +13,6 @@ This document outlines the process for managing translations from initial access
 ### 1. Access Provisioning
 
 - Translator is granted access to the Crowdin platform
-- Specific language permissions are set up for the translator
 
 ### 2. Translation Review
 
@@ -25,13 +24,13 @@ This document outlines the process for managing translations from initial access
 ### 3. Translation Approval
 
 - Authorized reviewer checks the suggested changes
-- Reviews suggestions for accuracy and consistency
 - Approves appropriate translation changes
 - Marks translations as verified
 
-### 4. Integration Sync
+### 4. GitHub Integration Sync
 
 - Authorized user accesses the Integrations tab in Crowdin
+- Navigates to the GitHub integration modal
 - Initiates sync process to update translations
 - Confirms successful sync completion
 
