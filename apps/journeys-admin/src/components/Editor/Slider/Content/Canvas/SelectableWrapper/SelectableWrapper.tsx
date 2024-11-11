@@ -155,9 +155,6 @@ export function SelectableWrapper({
   }, [selectedBlock, block])
 
   const isVideoBlock = block?.__typename === 'VideoBlock'
-  const isRadioOptionBlock = block.__typename === 'RadioOptionBlock'
-
-  console.log()
 
   return isSelectable ? (
     <Box
@@ -181,7 +178,7 @@ export function SelectableWrapper({
         }}
         data-testid={`SelectableWrapper-${block.id}`}
         className={
-          isRadioOptionBlock
+          selectedBlock.__typename === 'RadioOptionBlock'
             ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
             : ''
         }
@@ -213,7 +210,7 @@ export function SelectableWrapper({
         anchorEl={selectableRef.current}
         isVideoBlock={isVideoBlock}
       />
-      {!isVideoBlock && !isRadioOptionBlock && (
+      {!isVideoBlock && block.__typename !== 'RadioOptionBlock' && (
         <Popper
           open={
             selectedBlock.__typename === 'StepBlock' ||

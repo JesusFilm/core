@@ -7,6 +7,7 @@ import {
   closestCenter
 } from '@dnd-kit/core'
 import { SortableContext } from '@dnd-kit/sortable'
+import Box from '@mui/material/Box'
 import { ReactElement, ReactNode, useMemo, useState } from 'react'
 
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -107,7 +108,18 @@ export function DropArea({ children }: DropAreaProps): ReactElement {
     >
       <SortableContext items={itemIds}>{children}</SortableContext>
       <DragOverlay dropAnimation={null}>
-        {activeItem != null ? <BlockRenderer block={activeItem} /> : null}
+        {activeItem != null ? (
+          <Box
+            sx={{
+              transform:
+                activeItem.__typename === 'ButtonBlock'
+                  ? 'translateY(-20px)'
+                  : 'auto'
+            }}
+          >
+            <BlockRenderer block={activeItem} />
+          </Box>
+        ) : null}
       </DragOverlay>
     </DndContext>
   )
