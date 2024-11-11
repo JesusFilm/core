@@ -13,9 +13,7 @@ A locale is a combination of language and region settings that defines a user's 
 For example, users from different regions might expect:
 
 - Different date formats (MM/DD/YYYY vs DD/MM/YYYY)
-- Different number formats (1,000.00 vs 1.000,00)
 - Different translations for the same language (UK English vs US English)
-- Different currency symbols and formats
 
 ### Locale Structure and Standards
 
