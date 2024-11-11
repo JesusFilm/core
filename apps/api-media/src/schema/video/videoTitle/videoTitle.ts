@@ -6,11 +6,12 @@ import { VideoTranslationUpdateInput } from '../inputs/videoTranslationUpdate'
 
 builder.prismaObject('VideoTitle', {
   fields: (t) => ({
-    id: t.exposeID('id'),
-    value: t.exposeString('value'),
-    primary: t.exposeBoolean('primary'),
+    id: t.exposeID('id', { nullable: false }),
+    value: t.exposeString('value', { nullable: false }),
+    primary: t.exposeBoolean('primary', { nullable: false }),
     language: t.field({
       type: Language,
+      nullable: false,
       resolve: ({ languageId: id }) => ({ id })
     })
   })
@@ -19,6 +20,7 @@ builder.prismaObject('VideoTitle', {
 builder.mutationFields((t) => ({
   videoTitleCreate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoTitle',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoTranslationCreateInput, required: true })
     },
@@ -34,6 +36,7 @@ builder.mutationFields((t) => ({
   }),
   videoTitleUpdate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoTitle',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoTranslationUpdateInput, required: true })
     },
@@ -51,6 +54,7 @@ builder.mutationFields((t) => ({
   }),
   videoTitleDelete: t.withAuth({ isPublisher: true }).prismaField({
     type: 'VideoTitle',
+    nullable: false,
     args: {
       id: t.arg.id({ required: true })
     },

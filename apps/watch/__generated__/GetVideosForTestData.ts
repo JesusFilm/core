@@ -63,6 +63,7 @@ export interface GetVideosForTestData_videos_variant {
   id: string;
   duration: number;
   hls: string | null;
+  downloadable: boolean;
   downloads: GetVideosForTestData_videos_variant_downloads[];
   language: GetVideosForTestData_videos_variant_language;
   /**

@@ -6,23 +6,25 @@ import { Language } from '../language'
 
 builder.prismaObject('TaxonomyName', {
   fields: (t) => ({
-    id: t.exposeID('id'),
-    term: t.exposeString('term'),
-    label: t.exposeString('label'),
+    id: t.exposeID('id', { nullable: false }),
+    term: t.exposeString('term', { nullable: false }),
+    label: t.exposeString('label', { nullable: false }),
     language: t.field({
       type: Language,
+      nullable: false,
       resolve: ({ languageId: id, languageCode: bcp47 }) => ({ id, bcp47 })
     }),
-    taxonomy: t.relation('taxonomy')
+    taxonomy: t.relation('taxonomy', { nullable: false })
   })
 })
 
 builder.prismaObject('Taxonomy', {
   fields: (t) => ({
-    id: t.exposeID('id'),
-    category: t.exposeString('category'),
-    term: t.exposeString('term'),
+    id: t.exposeID('id', { nullable: false }),
+    category: t.exposeString('category', { nullable: false }),
+    term: t.exposeString('term', { nullable: false }),
     name: t.relation('name', {
+      nullable: false,
       args: {
         languageCodes: t.arg.stringList({ required: false }),
         category: t.arg.string({ required: false })

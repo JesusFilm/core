@@ -1,5 +1,6 @@
 {
-  "extends": ["../../.eslintrc.json"],
+  "extends": ["../../.eslintrc.json", "plugin:@nx/react-typescript"],
+  "plugins": ["react", "i18next"],
   "ignorePatterns": ["!**/*"],
   "overrides": [
     {
@@ -17,5 +18,8 @@
       "files": ["*.js", "*.jsx"],
       "rules": {}
     }
-  ]
+  ],
+  "rules": {
+    "i18next/no-literal-string": "off"
+  }
 }
