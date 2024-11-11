@@ -44,9 +44,9 @@ export function JourneySort({
   const chipRef = useRef(null)
 
   const sortOrderLabel = {
+    updatedAt: t('Last Modified'),
     createdAt: t('Date Created'),
-    title: t('Name'),
-    updatedAt: t('Last Modified')
+    title: t('Name')
   }
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export function JourneySort({
       <FormControl component="fieldset" fullWidth>
         <RadioGroup
           aria-label="sort-by-options"
-          defaultValue={sortOrder ?? SortOrder.UPDATED_AT}
+          defaultValue={sortOrder}
           name="sort-by-buttons-group"
           onChange={handleSubmit}
         >

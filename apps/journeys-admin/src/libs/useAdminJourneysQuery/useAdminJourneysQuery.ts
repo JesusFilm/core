@@ -20,6 +20,7 @@ export const GET_ADMIN_JOURNEYS = gql`
       title
       createdAt
       publishedAt
+      updatedAt
       trashedAt
       description
       slug

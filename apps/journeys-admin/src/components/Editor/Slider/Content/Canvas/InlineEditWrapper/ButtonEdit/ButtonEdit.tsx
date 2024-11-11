@@ -7,6 +7,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import {
   ButtonBlockUpdateContent,
@@ -33,7 +34,7 @@ export function ButtonEdit({
   ...buttonProps
 }: ButtonEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-
+  const { journey } = useJourney()
   const [buttonBlockUpdate] = useMutation<
     ButtonBlockUpdateContent,
     ButtonBlockUpdateContentVariables
@@ -106,6 +107,17 @@ export function ButtonEdit({
           context: {
             debounceKey: `ButtonBlock:${id}`,
             ...context
+          },
+          update(cache, { data }) {
+            if (data == null && journey == null) return
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journey?.id }),
+              fields: {
+                updatedAt() {
+                  return new Date().toISOString()
+                }
+              }
+            })
           }
         })
       }

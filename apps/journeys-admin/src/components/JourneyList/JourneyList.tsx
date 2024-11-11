@@ -58,7 +58,7 @@ const TrashedJourneyList = dynamic(
 export function JourneyList({
   user
 }: Pick<JourneyListProps, 'user'>): ReactElement {
-  const [sortOrder, setSortOrder] = useState<SortOrder>()
+  const [sortOrder, setSortOrder] = useState<SortOrder>(SortOrder.UPDATED_AT)
   const router = useRouter()
   const [event, setEvent] = useState<JourneyListEvent>()
 
