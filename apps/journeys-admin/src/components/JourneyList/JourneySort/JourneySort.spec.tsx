@@ -9,12 +9,12 @@ const JourneySortMock = ({ ...args }): ReactElement => {
 }
 
 describe('JourneyList/JourneySort', () => {
-  it('should sort by date created by default', () => {
+  it('should sort by date modified by default', () => {
     const { getByRole, getByLabelText } = render(<JourneySortMock />)
 
     fireEvent.click(getByRole('button', { name: 'Sort By' }))
 
-    expect(getByLabelText('Date Created')).toBeChecked()
+    expect(getByLabelText('Last Modified')).toBeChecked()
   })
 
   it('should sort by name', async () => {
@@ -28,12 +28,22 @@ describe('JourneyList/JourneySort', () => {
 
   it('should sort by date created', () => {
     const { getByRole, getByLabelText } = render(<JourneySortMock />)
-
     fireEvent.click(getByRole('button', { name: 'Sort By' }))
     fireEvent.click(getByLabelText('Name'))
     fireEvent.click(getByLabelText('Date Created'))
 
     const updatedButton = getByRole('button', { name: 'Date Created' })
+    expect(updatedButton).toBeInTheDocument()
+  })
+
+  it('should sort by date modified', () => {
+    const { getByRole, getByLabelText } = render(<JourneySortMock />)
+
+    fireEvent.click(getByRole('button', { name: 'Sort By' }))
+    fireEvent.click(getByLabelText('Name'))
+    fireEvent.click(getByLabelText('Last Modified'))
+
+    const updatedButton = getByRole('button', { name: 'Last Modified' })
     expect(updatedButton).toBeInTheDocument()
   })
 

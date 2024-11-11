@@ -20,7 +20,8 @@ import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 export enum SortOrder {
   CREATED_AT = 'createdAt',
-  TITLE = 'title'
+  TITLE = 'title',
+  UPDATED_AT = 'updatedAt'
 }
 
 interface JourneySortProps {
@@ -44,7 +45,8 @@ export function JourneySort({
 
   const sortOrderLabel = {
     createdAt: t('Date Created'),
-    title: t('Name')
+    title: t('Name'),
+    updatedAt: t('Last Modified')
   }
 
   useEffect(() => {
@@ -72,10 +74,15 @@ export function JourneySort({
       <FormControl component="fieldset" fullWidth>
         <RadioGroup
           aria-label="sort-by-options"
-          defaultValue={sortOrder ?? SortOrder.CREATED_AT}
+          defaultValue={sortOrder ?? SortOrder.UPDATED_AT}
           name="sort-by-buttons-group"
           onChange={handleSubmit}
         >
+          <FormControlLabel
+            value={SortOrder.UPDATED_AT}
+            control={<Radio />}
+            label={sortOrderLabel.updatedAt}
+          />
           <FormControlLabel
             value={SortOrder.CREATED_AT}
             control={<Radio />}
