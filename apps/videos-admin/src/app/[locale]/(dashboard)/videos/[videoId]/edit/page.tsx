@@ -1,11 +1,18 @@
 'use client'
 
-import { Box, Button, Divider, Tab, Tabs, Typography , styled } from '@mui/material'
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Divider from '@mui/material/Divider'
+import { styled } from '@mui/material/styles'
+import Tab from '@mui/material/Tab'
+import Tabs from '@mui/material/Tabs'
+import Typography from '@mui/material/Typography'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 
 import { Drawer } from '../../../../../../components/Drawer'
+// import { createFilledContext } from '../../../../../../libs/createFilledContext'
 import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
 
 import { Children } from './Children'
@@ -16,23 +23,22 @@ import { Subtitles } from './Subtitles'
 import { TabContainer } from './Tabs/TabContainer'
 import { TabLabel } from './Tabs/TabLabel'
 import { Variants } from './Variants'
-import { createFilledContext } from '../../../../../../libs/createFilledContext'
 
 const DRAWER_WIDTH = 500
 
-export enum ActiveDrawerContent {
-  StudyQuestion = 0
-}
+// export enum ActiveDrawerContent {
+//   StudyQuestion = 0
+// }
 
-interface EditorContext {
-  activeDrawerContent: ActiveDrawerContent
-  showDrawer: boolean
-}
+// interface IEditorContext {
+//   activeDrawerContent: ActiveDrawerContent
+//   showDrawer: boolean
+// }
 
-const EditorContext = createFilledContext<EditorContext>({
-  activeDrawerContent: ActiveDrawerContent.StudyQuestion,
-  showDrawer: false
-})
+// const EditorContext = createFilledContext<IEditorContext>({
+//   activeDrawerContent: ActiveDrawerContent.StudyQuestion,
+//   showDrawer: false
+// })
 
 const Container = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'open'
@@ -85,7 +91,7 @@ export default function EditPage(): ReactElement {
           <Container>
             <Typography variant="h4">{t('Edit Video')}</Typography>
             <Button onClick={() => setOpen((prev) => !prev)}>
-              Open Drawer
+              {t('Open Drawer')}
             </Button>
             <Tabs
               value={tabValue}
@@ -128,7 +134,7 @@ export default function EditPage(): ReactElement {
             onClose={() => setOpen(false)}
           >
             <Section title={t('Section')}>
-              <h1>This is drawer content</h1>
+              <h1>{t('This is drawer content')}</h1>
             </Section>
           </Drawer>
         </>

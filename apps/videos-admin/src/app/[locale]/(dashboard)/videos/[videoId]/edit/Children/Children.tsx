@@ -1,7 +1,9 @@
 import { DndContext } from '@dnd-kit/core'
 import { SortableContext } from '@dnd-kit/sortable'
-import { Stack, Typography } from '@mui/material'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { usePathname, useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import Edit2 from '@core/shared/ui/icons/Edit2'
@@ -14,9 +16,10 @@ import { Section } from '../Section'
 export function Children({ childVideos }): ReactElement {
   const pathname = usePathname()
   const router = useRouter()
+  const t = useTranslations()
 
   if (childVideos.length === 0) {
-    return <Typography>No children to show</Typography>
+    return <Typography>{t('No children to show')}</Typography>
   }
 
   const view = (id: string): void => {
