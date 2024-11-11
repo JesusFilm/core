@@ -5,7 +5,7 @@ import { keyAsId } from '@core/nest/decorators/KeyAsId'
 import { JourneyViewEventCreateInput } from '../../../__generated__/graphql'
 import { PrismaService } from '../../../lib/prisma.service'
 import { VisitorService } from '../../visitor/visitor.service'
-import { EventService } from '../event.service'
+import { EventService, ONE_DAY } from '../event.service'
 
 import { JourneyViewEventResolver } from './journey.resolver'
 
@@ -56,6 +56,13 @@ describe('JourneyViewEventResolver', () => {
   const visitorWithId = keyAsId(visitor)
   const newVisitorWithId = keyAsId(newVisitor)
 
+  const mockCurrentDate: Date = new Date('2024-10-22T03:39:39.268Z')
+
+  beforeAll(async () => {
+    jest.useFakeTimers()
+    jest.setSystemTime(mockCurrentDate)
+  })
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -77,6 +84,7 @@ describe('JourneyViewEventResolver', () => {
       })
     prismaService.journeyVisitor.upsert = jest.fn().mockResolvedValueOnce(null)
     prismaService.visitor.update = jest.fn().mockResolvedValueOnce(null)
+    prismaService.event.findFirst = jest.fn().mockResolvedValueOnce(null)
   })
 
   describe('JourneyViewEventCreate', () => {
@@ -88,6 +96,31 @@ describe('JourneyViewEventResolver', () => {
         typename: 'JourneyViewEvent',
         visitor: {
           connect: { id: visitorWithId.id }
+        }
+      })
+    })
+
+    it('should return undefined if event already exists', async () => {
+      const compareDate = new Date(Date.now() - ONE_DAY * 1000)
+
+      prismaService.event.findFirst = jest.fn().mockResolvedValueOnce({
+        id: '1',
+        journeyId: input.journeyId,
+        createdAt: mockCurrentDate
+      })
+
+      expect(
+        await resolver.journeyViewEventCreate('user.id', userAgent, input)
+      ).toBeUndefined()
+
+      expect(prismaService.event.findFirst).toHaveBeenCalledWith({
+        where: {
+          typename: 'JourneyViewEvent',
+          journeyId: input.journeyId,
+          visitorId: visitorWithId.id,
+          createdAt: {
+            gte: compareDate
+          }
         }
       })
     })
