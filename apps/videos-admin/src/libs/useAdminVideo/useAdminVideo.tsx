@@ -5,24 +5,86 @@ export const GET_ADMIN_VIDEO = graphql(`
   query GetAdminVideo($videoId: ID!) {
     adminVideo(id: $videoId) {
       id
+      slug
+      label
+      published
       images(aspectRatio: banner) {
+        id
         mobileCinematicHigh
       }
       imageAlt {
         id
         value
       }
+      noIndex
       title {
         id
         value
       }
       description {
-        value
         id
+        value
       }
-      label
+      snippet {
+        id
+        value
+      }
+      studyQuestions {
+        id
+        value
+        primary
+      }
       variantLanguagesCount
-      published
+      childrenCount
+      # children {
+      #   id
+      #   title {
+      #     id
+      #     value
+      #   }
+      #   images(aspectRatio: banner) {
+      #     id
+      #     mobileCinematicHigh
+      #   }
+      #   imageAlt {
+      #     id
+      #     value
+      #   }
+      # }
+      # variants {
+      #   id
+      #   slug
+      #   language {
+      #     id
+      #     name {
+      #       value
+      #     }
+      #     slug
+      #   }
+      #   downloads {
+      #     id
+      #     quality
+      #     size
+      #     height
+      #     width
+      #     url
+      #   }
+      # }
+
+      # subtitles {
+      #   id
+      #   edition
+      #   vttSrc
+      #   srtSrc
+      #   value
+      #   language {
+      #     id
+      #     name {
+      #       value
+      #     }
+      #     slug
+      #   }
+      # }
     }
   }
 `)
