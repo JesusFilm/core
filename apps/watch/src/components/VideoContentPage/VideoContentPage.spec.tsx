@@ -134,4 +134,17 @@ describe('VideoContentPage', () => {
     fireEvent.click(getByRole('button', { name: 'Download' }))
     expect(getByRole('dialog', { name: 'Download Video' })).toBeInTheDocument()
   })
+
+  it('should not render download button if no downloads', () => {
+    const { queryByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: videos[5] }}>
+            <VideoContentPage />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(queryByRole('button', { name: 'Download' })).not.toBeInTheDocument()
+  })
 })
