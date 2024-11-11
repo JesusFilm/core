@@ -2,7 +2,7 @@ import CrowdinTranslations from './crowdin-translations.png'
 
 # Translations Implementation Guide
 
-This document provides a detailed guide on the process for adding a new language to a project in Core.
+This document provides a detailed guide on the process for adding a new language to a project in Core. This assumes that you have a working knowledge of how to set up internationalization for a project.
 
 ## Understanding Locales
 
@@ -90,9 +90,8 @@ language-SCRIPT-REGION
 
 **Translation Readiness Check**:
 
-- When new translations are ready, Crowdin will automatically create a Pull Request containing the translated files
+- When new translations are ready, Crowdin will automatically create a Pull Request containing the translated files.
   <img src={CrowdinTranslations} height="650" width="900"/>
-
 - The PR will contain all new translations that have been completed, either by translators or AI
 - If you can't find the translations you need, connect with a translation manager or a developer who has access to Crowdin
 
