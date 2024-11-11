@@ -103,20 +103,21 @@ The `next-i18next.config.js` file handles language support and fallback behavior
 - **next-i18next** reads from folders that match the language codes defined in your locales list (e.g., locales: [`ar`, `es`])
 
 - **Crowdin** by default we set it to return the folders in the `%locale%` (language-region) format (e.g., `ar-SA`, `es-ES`):
-- This format can be configured differently, but we chose this to support different variants that may come from a language
-- Example: `es-ES` for European Spanish, `es-MX` for Mexican Spanish
+  - This format can be configured differently, but we chose this to support different variants that may come from a language
+  - Example: `es-ES` for European Spanish, `es-MX` for Mexican Spanish
 
 To connect these formats, we configure fallbacks to map between them. When the application looks for translations in `ar/`, we set the fallback to check Crowdin's format `ar-SA/`:
 
-````javascript
+```javascript
 const i18nConfig = {
- i18n: {
-   locales: ['ar'],
-   fallbackLng: {
-     ar: ['ar-SA']  // Maps 'ar' to look in 'ar-SA' folder
-   }
- }
+  i18n: {
+    locales: ['ar'],
+    fallbackLng: {
+      ar: ['ar-SA'] // Maps 'ar' to look in 'ar-SA' folder
+    }
+  }
 }
+```
 
 There are two approaches to handling locales, depending on whether you need to support multiple variants of a language:
 
@@ -139,7 +140,7 @@ const i18nConfig = {
     }
   }
 }
-````
+```
 
 ### Case 2: Multiple Variant Languages
 
