@@ -142,6 +142,7 @@ model Event {
   @@index(visitorId)
   @@index(blockId)
   @@index(userId)
+  @@index([journeyId, visitorId, typename, createdAt(sort: Desc)])
 }
 
 model Visitor {

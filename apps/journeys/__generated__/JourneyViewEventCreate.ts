@@ -15,7 +15,7 @@ export interface JourneyViewEventCreate_journeyViewEventCreate {
 }
 
 export interface JourneyViewEventCreate {
-  journeyViewEventCreate: JourneyViewEventCreate_journeyViewEventCreate;
+  journeyViewEventCreate: JourneyViewEventCreate_journeyViewEventCreate | null;
 }
 
 export interface JourneyViewEventCreateVariables {
