@@ -64,6 +64,8 @@ language-SCRIPT-REGION
    - DeepL automatically generates initial translations
    - Translation team reviews translations (optional)
    - Crowdin automatically creates a GitHub PR with new translations
+     - This is configured in our crowdin.yml file.
+     - For more information see [Crowdin GitHub Integration](https://support.crowdin.com/github-integration/) and [Crowdin Configuration File](https://support.crowdin.com/developer/configuration-file/)
 
 > **Important**: Crowdin will create and push Pull Requests with translations automatically, regardless of whether the translation team has reviewed them. This ensures continuous deployment but means that manual review of translations should be done post-deployment if needed.
 
