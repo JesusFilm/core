@@ -5,10 +5,10 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
+import { object, string } from 'yup'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -25,6 +25,7 @@ import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { CardBlockBackgroundColorUpdate } from '../../../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
 import { CardFields } from '../../../../../../../../../../__generated__/CardFields'
+import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 
 import { DebouncedHexColorPicker } from './DebouncedHexColorPicker'
 import { PaletteColorPicker } from './PaletteColorPicker'
@@ -71,6 +72,7 @@ export function BackgroundColor(): ReactElement {
   const [cardBlockUpdate] = useMutation<CardBlockBackgroundColorUpdate>(
     CARD_BLOCK_BACKGROUND_COLOR_UPDATE
   )
+  const { t } = useTranslation('apps-journeys-admin')
 
   const cardBlock = (
     selectedBlock?.__typename === 'CardBlock'
@@ -132,6 +134,26 @@ export function BackgroundColor(): ReactElement {
     }
   }
 
+  function isValidHex(color: string): boolean {
+    const hexColorRegex = /^#[0-9A-Fa-f]{6}$/
+    return hexColorRegex.test(color)
+  }
+
+  const validationSchema = object({
+    color: string()
+      .required(t('Invalid {{ HEX }} color code', { HEX: 'HEX' }))
+      .test(
+        'valid-hex-color',
+        t('Invalid {{ HEX }} color code', { HEX: 'HEX' }),
+        (value) => {
+          if (isValidHex(value)) {
+            void handleColorChange(value)
+            return true
+          }
+        }
+      )
+  })
+
   const palettePicker = (
     <PaletteColorPicker
       selectedColor={selectedColor}
@@ -153,8 +175,6 @@ export function BackgroundColor(): ReactElement {
     </Box>
   )
 
-  const { t } = useTranslation('apps-journeys-admin')
-
   return (
     <>
       <Stack
@@ -164,23 +184,21 @@ export function BackgroundColor(): ReactElement {
         data-testid="BackgroundColor"
       >
         <Swatch id={`bg-color-${selectedColor}`} color={selectedColor} />
-        <TextField
+        <TextFieldForm
+          id="color"
           data-testid="bgColorTextField"
-          variant="filled"
           hiddenLabel
-          value={selectedColor}
-          onChange={async (e) => await handleColorChange(e.target.value)}
-          sx={{ flexGrow: 1 }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <Edit2Icon
-                  onClick={(e) => handleTabChange(e, 1)}
-                  style={{ cursor: 'pointer' }}
-                />
-              </InputAdornment>
-            )
-          }}
+          initialValue={selectedColor}
+          validationSchema={validationSchema}
+          onSubmit={handleColorChange}
+          startIcon={
+            <InputAdornment position="start">
+              <Edit2Icon
+                onClick={(e) => handleTabChange(e, 1)}
+                style={{ cursor: 'pointer' }}
+              />
+            </InputAdornment>
+          }
         />
       </Stack>
       <Box
