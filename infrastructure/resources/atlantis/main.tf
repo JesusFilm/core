@@ -5,7 +5,7 @@ resource "aws_iam_access_key" "jfp_terraform_user_access_key" {
 
 module "atlantis" {
   source  = "terraform-aws-modules/atlantis/aws"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   name = "atlantis"
   # user needed because of https://github.com/runatlantis/atlantis/issues/2221
