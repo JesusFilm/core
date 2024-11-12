@@ -190,7 +190,7 @@
     "swr": "^2.0.0",
     "ts-morph": "^16.0.0",
     "tslib": "^2.6.2",
-    "tus-js-client": "^3.1.1",
+    "tus-js-client": "^4.0.0",
     "ua-parser-js": "^1.0.33",
     "unsplash-js": "^7.0.19",
     "util": "^0.12.4",
