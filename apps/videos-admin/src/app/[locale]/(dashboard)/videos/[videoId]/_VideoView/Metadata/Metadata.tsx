@@ -180,6 +180,7 @@ export function Metadata({
                       video?.published === true ? 'published' : 'unpublished'
                     }
                     onChange={handleStatusChange}
+                    inputProps={{ readOnly: !isEdit }}
                   >
                     {videoStatuses.map(({ label, value }) => (
                       <MenuItem key={label} value={value}>
@@ -190,7 +191,11 @@ export function Metadata({
                 </FormControl>
                 <FormControl>
                   <FormLabel>{t('Label')}</FormLabel>
-                  <Select value={video?.label} onChange={handleLabelChange}>
+                  <Select
+                    value={video?.label}
+                    onChange={handleLabelChange}
+                    inputProps={{ readOnly: !isEdit }}
+                  >
                     {videoLabels.map(({ label, value }) => (
                       <MenuItem key={value} value={value}>
                         {label}
@@ -204,6 +209,7 @@ export function Metadata({
                     <Checkbox
                       defaultChecked={video?.noIndex === true}
                       onChange={updateNoIndex}
+                      disabled={!isEdit}
                     />
                   }
                 />
@@ -215,6 +221,7 @@ export function Metadata({
             <Stack gap={2}>
               <UpdateableField
                 label="Alt"
+                variant="textfield"
                 {...video?.imageAlt?.[0]}
                 handleUpdate={updateAlt}
               />

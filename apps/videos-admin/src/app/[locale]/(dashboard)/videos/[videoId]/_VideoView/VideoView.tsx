@@ -42,8 +42,6 @@ export function VideoView(): ReactElement {
     setTabValue(newValue)
   }
 
-  console.log('isEdit', isEdit)
-
   return (
     <Stack
       gap={2}
