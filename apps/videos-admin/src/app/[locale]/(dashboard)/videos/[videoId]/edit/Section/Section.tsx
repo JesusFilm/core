@@ -1,6 +1,7 @@
-import Box from '@mui/material/Box'
+import Box, { BoxProps } from '@mui/material/Box'
 import Button, { ButtonProps as MuiButtonProps } from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
+import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { MouseEvent, ReactElement, ReactNode } from 'react'
 
@@ -22,12 +23,18 @@ interface SectionProps {
     onClick: (e: MouseEvent<HTMLButtonElement>) => void
   }
   children: ReactNode
+  sx?: SxProps
+  boxProps?: BoxProps
+
 }
 
 export function Section({
   title,
   action,
-  children
+  children,
+  sx,
+  boxProps
+
 }: SectionProps): ReactElement {
   return (
     <Stack
@@ -36,7 +43,8 @@ export function Section({
         borderColor: 'divider',
         overflow: 'hidden',
         borderRadius: 1,
-        width: '100%'
+        width: '100%',
+        ...sx
       }}
       data-testid={`${title}-section`}
     >
@@ -66,7 +74,9 @@ export function Section({
           </Button>
         )}
       </Stack>
-      <Box sx={{ padding: 2 }}>{children}</Box>
+      <Box sx={{ padding: 2 }} {...boxProps}>
+        {children}
+      </Box>
     </Stack>
   )
 }

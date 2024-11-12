@@ -182,7 +182,7 @@ export function VideoList(): ReactElement {
   }
 
   return (
-    <Box sx={{ height: 'calc(100vh - 90px)', width: '100%' }}>
+    <Box sx={{ height: 'calc(100vh - 150px)', width: '100%' }}>
       <DataGrid
         getRowClassName={(params) =>
           params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
