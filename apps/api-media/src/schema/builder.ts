@@ -3,6 +3,7 @@ import { tracer } from '@core/yoga/tracer'
 
 import SchemaBuilder from '@pothos/core'
 import DirectivesPlugin from '@pothos/plugin-directives'
+import ErrorsPlugin from '@pothos/plugin-errors'
 import FederationPlugin from '@pothos/plugin-federation'
 import pluginName from '@pothos/plugin-prisma'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
@@ -35,6 +36,7 @@ export const builder = new SchemaBuilder<{
   }
   AuthContexts: {
     isAuthenticated: Context & { user: User }
+    isPublisher: Context & { user: User }
   }
   PrismaTypes: PrismaTypes
   Scalars: {
@@ -45,6 +47,7 @@ export const builder = new SchemaBuilder<{
   plugins: [
     TracingPlugin,
     ScopeAuthPlugin,
+    ErrorsPlugin,
     PrismaPlugin,
     DirectivesPlugin,
     FederationPlugin

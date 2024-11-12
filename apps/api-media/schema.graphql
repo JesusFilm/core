@@ -76,6 +76,12 @@ A date string, such as 2007-12-03, compliant with the `full-date` format outline
 """
 scalar Date
 
+type Error
+  @shareable
+{
+  message: String!
+}
+
 enum IdType {
   databaseId
   slug
@@ -133,6 +139,12 @@ type Mutation {
   createMuxVideoUploadByFile(name: String!): MuxVideo!
   createMuxVideoUploadByUrl(url: String!): MuxVideo!
   deleteMuxVideo(id: ID!): Boolean!
+  shortLinkDomainCreate(input: ShortLinkDomainCreateInput!): MutationShortLinkDomainCreateResult!
+  shortLinkDomainUpdate(id: String!, input: ShortLinkDomainUpdateInput!): MutationShortLinkDomainUpdateResult!
+  shortLinkDomainDelete(id: String!): MutationShortLinkDomainDeleteResult!
+  shortLinkCreate(input: ShortLinkCreateInput!): MutationShortLinkCreateResult!
+  shortLinkUpdate(id: String!, input: ShortLinkUpdateInput!): MutationShortLinkUpdateResult!
+  shortLinkDelete(id: String!): MutationShortLinkDeleteResult!
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
@@ -164,12 +176,55 @@ type Mutation {
   videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
 }
 
+union MutationShortLinkCreateResult = PrismaClientKnownRequestError | MutationShortLinkCreateSuccess
+
+type MutationShortLinkCreateSuccess {
+  data: ShortLink!
+}
+
+union MutationShortLinkDeleteResult = PrismaClientKnownRequestError | MutationShortLinkDeleteSuccess
+
+type MutationShortLinkDeleteSuccess {
+  data: ShortLink!
+}
+
+union MutationShortLinkDomainCreateResult = PrismaClientKnownRequestError | MutationShortLinkDomainCreateSuccess
+
+type MutationShortLinkDomainCreateSuccess {
+  data: ShortLinkDomain!
+}
+
+union MutationShortLinkDomainDeleteResult = PrismaClientKnownRequestError | MutationShortLinkDomainDeleteSuccess
+
+type MutationShortLinkDomainDeleteSuccess {
+  data: ShortLinkDomain!
+}
+
+union MutationShortLinkDomainUpdateResult = PrismaClientKnownRequestError | MutationShortLinkDomainUpdateSuccess
+
+type MutationShortLinkDomainUpdateSuccess {
+  data: ShortLinkDomain!
+}
+
+union MutationShortLinkUpdateResult = PrismaClientKnownRequestError | MutationShortLinkUpdateSuccess
+
+type MutationShortLinkUpdateSuccess {
+  data: ShortLink!
+}
+
 type MuxVideo {
   id: ID!
   uploadUrl: String
   userId: ID!
   createdAt: Date!
   readyToStream: Boolean!
+}
+
+type PrismaClientKnownRequestError
+  @shareable
+{
+  message: String
+  code: String
 }
 
 type Query {
@@ -184,6 +239,13 @@ type Query {
   keywords: [Keyword!]!
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!): MuxVideo!
+  shortLinkDomains(
+    """Filter by service (including domains with no services set)"""
+    service: Service
+  ): [ShortLinkDomain!]!
+  shortLinkDomain(id: String!): QueryShortLinkDomainResult!
+  shortLink(pathname: String!, hostname: String!): QueryShortLinkResult!
+  shortLinks(hostname: String): [ShortLink!]!
   adminVideo(id: ID!, idType: IdType = databaseId): Video!
   adminVideos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   adminVideosCount(where: VideosFilter): Int!
@@ -195,6 +257,18 @@ type Query {
   videoVariants: [VideoVariant!]!
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
+}
+
+union QueryShortLinkDomainResult = PrismaClientKnownRequestError | QueryShortLinkDomainSuccess
+
+type QueryShortLinkDomainSuccess {
+  data: ShortLinkDomain!
+}
+
+union QueryShortLinkResult = PrismaClientKnownRequestError | QueryShortLinkSuccess
+
+type QueryShortLinkSuccess {
+  data: ShortLink!
 }
 
 enum SegmindModel {
@@ -211,6 +285,48 @@ enum Service {
   apiTags
   apiUsers
   apiVideos
+}
+
+type ShortLink
+  @key(fields: "id")
+{
+  id: ID!
+  pathname: String!
+  to: String!
+  domain: ShortLinkDomain!
+  service: Service!
+}
+
+input ShortLinkCreateInput {
+  pathname: String!
+  to: String!
+  hostname: String!
+  service: Service!
+}
+
+type ShortLinkDomain {
+  id: ID!
+  hostname: String!
+  createdAt: Date!
+  updatedAt: Date!
+
+  """
+  The services that are enabled for this domain, if empty then this domain can be used by all services
+  """
+  services: [Service!]!
+}
+
+input ShortLinkDomainCreateInput {
+  hostname: String!
+  services: [Service!]
+}
+
+input ShortLinkDomainUpdateInput {
+  services: [Service!]!
+}
+
+input ShortLinkUpdateInput {
+  to: String!
 }
 
 type Tag

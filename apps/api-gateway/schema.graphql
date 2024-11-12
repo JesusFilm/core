@@ -92,7 +92,7 @@ A date string, such as 2007-12-03, compliant with the `full-date` format outline
 """
 scalar Date @join__type(graph: API_MEDIA) 
 
-type Error @join__type(graph: API_ANALYTICS)  {
+type Error @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  {
   message: String!
 }
 
@@ -397,6 +397,12 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   createMuxVideoUploadByFile(name: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
   createMuxVideoUploadByUrl(url: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
   deleteMuxVideo(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
+  shortLinkDomainCreate(input: ShortLinkDomainCreateInput!) : MutationShortLinkDomainCreateResult! @join__field(graph: API_MEDIA) 
+  shortLinkDomainUpdate(id: String!, input: ShortLinkDomainUpdateInput!) : MutationShortLinkDomainUpdateResult! @join__field(graph: API_MEDIA) 
+  shortLinkDomainDelete(id: String!) : MutationShortLinkDomainDeleteResult! @join__field(graph: API_MEDIA) 
+  shortLinkCreate(input: ShortLinkCreateInput!) : MutationShortLinkCreateResult! @join__field(graph: API_MEDIA) 
+  shortLinkUpdate(id: String!, input: ShortLinkUpdateInput!) : MutationShortLinkUpdateResult! @join__field(graph: API_MEDIA) 
+  shortLinkDelete(id: String!) : MutationShortLinkDeleteResult! @join__field(graph: API_MEDIA) 
   videoCreate(input: VideoCreateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoUpdate(input: VideoUpdateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoDescriptionCreate(input: VideoTranslationCreateInput!) : VideoDescription! @join__field(graph: API_MEDIA) 
@@ -679,6 +685,15 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   keywords: [Keyword!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideo(id: ID!) : MuxVideo! @join__field(graph: API_MEDIA) 
+  shortLinkDomains(
+    """
+    Filter by service (including domains with no services set)
+    """
+    service: Service
+  ): [ShortLinkDomain!]! @join__field(graph: API_MEDIA) 
+  shortLinkDomain(id: String!) : QueryShortLinkDomainResult! @join__field(graph: API_MEDIA) 
+  shortLink(pathname: String!, hostname: String!) : QueryShortLinkResult! @join__field(graph: API_MEDIA) 
+  shortLinks(hostname: String) : [ShortLink!]! @join__field(graph: API_MEDIA) 
   adminVideo(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
   adminVideos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
   adminVideosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
@@ -2130,12 +2145,68 @@ type LanguageWithSlug @join__type(graph: API_MEDIA)  {
   slug: String!
 }
 
+type MutationShortLinkCreateSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLink!
+}
+
+type MutationShortLinkDeleteSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLink!
+}
+
+type MutationShortLinkDomainCreateSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkDomain!
+}
+
+type MutationShortLinkDomainDeleteSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkDomain!
+}
+
+type MutationShortLinkDomainUpdateSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkDomain!
+}
+
+type MutationShortLinkUpdateSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLink!
+}
+
 type MuxVideo @join__type(graph: API_MEDIA)  {
   id: ID!
   uploadUrl: String
   userId: ID!
   createdAt: Date!
   readyToStream: Boolean!
+}
+
+type PrismaClientKnownRequestError @join__type(graph: API_MEDIA)  {
+  message: String
+  code: String
+}
+
+type QueryShortLinkDomainSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkDomain!
+}
+
+type QueryShortLinkSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLink!
+}
+
+type ShortLink @join__type(graph: API_MEDIA, key: "id")  {
+  id: ID!
+  pathname: String!
+  to: String!
+  domain: ShortLinkDomain!
+  service: Service!
+}
+
+type ShortLinkDomain @join__type(graph: API_MEDIA)  {
+  id: ID!
+  hostname: String!
+  createdAt: Date!
+  updatedAt: Date!
+  """
+  The services that are enabled for this domain, if empty then this domain can be used by all services
+  """
+  services: [Service!]!
 }
 
 type TagName @join__type(graph: API_MEDIA)  {
@@ -2342,6 +2413,22 @@ interface Integration @join__type(graph: API_JOURNEYS)  {
 }
 
 union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMember(graph: API_ANALYTICS, member: "Error")  @join__unionMember(graph: API_ANALYTICS, member: "MutationSiteCreateSuccess")  = Error | MutationSiteCreateSuccess
+
+union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "PrismaClientKnownRequestError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = PrismaClientKnownRequestError | MutationShortLinkCreateSuccess
+
+union MutationShortLinkDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "PrismaClientKnownRequestError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDeleteSuccess")  = PrismaClientKnownRequestError | MutationShortLinkDeleteSuccess
+
+union MutationShortLinkDomainCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "PrismaClientKnownRequestError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainCreateSuccess")  = PrismaClientKnownRequestError | MutationShortLinkDomainCreateSuccess
+
+union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "PrismaClientKnownRequestError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainDeleteSuccess")  = PrismaClientKnownRequestError | MutationShortLinkDomainDeleteSuccess
+
+union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "PrismaClientKnownRequestError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = PrismaClientKnownRequestError | MutationShortLinkDomainUpdateSuccess
+
+union MutationShortLinkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "PrismaClientKnownRequestError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkUpdateSuccess")  = PrismaClientKnownRequestError | MutationShortLinkUpdateSuccess
+
+union QueryShortLinkDomainResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "PrismaClientKnownRequestError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkDomainSuccess")  = PrismaClientKnownRequestError | QueryShortLinkDomainSuccess
+
+union QueryShortLinkResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "PrismaClientKnownRequestError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkSuccess")  = PrismaClientKnownRequestError | QueryShortLinkSuccess
 
 enum ThemeMode @join__type(graph: API_JOURNEYS)  {
   dark @join__enumValue(graph: API_JOURNEYS) 
@@ -3748,6 +3835,26 @@ input CloudflareR2UpdateInput @join__type(graph: API_MEDIA)  {
 input ImageInput @join__type(graph: API_MEDIA)  {
   aspectRatio: ImageAspectRatio
   videoId: ID
+}
+
+input ShortLinkCreateInput @join__type(graph: API_MEDIA)  {
+  pathname: String!
+  to: String!
+  hostname: String!
+  service: Service!
+}
+
+input ShortLinkDomainCreateInput @join__type(graph: API_MEDIA)  {
+  hostname: String!
+  services: [Service!]
+}
+
+input ShortLinkDomainUpdateInput @join__type(graph: API_MEDIA)  {
+  services: [Service!]!
+}
+
+input ShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
+  to: String!
 }
 
 input VideoCreateInput @join__type(graph: API_MEDIA)  {

@@ -1,7 +1,9 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: [])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@shareable"])
 
-type Error {
+type Error
+  @shareable
+{
   message: String!
 }
 

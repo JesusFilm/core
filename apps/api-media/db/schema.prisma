@@ -406,3 +406,32 @@ model UserMediaRole {
   userId String      @unique
   roles  MediaRole[]
 }
+
+model ShortLinkDomain {
+  id         String      @id @default(uuid())
+  /// the hostname including subdomain, domain, and TLD, but excluding port
+  hostname   String      @unique
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  /// which services are able to use this domain in their short links
+  services   Service[]
+  shortLinks ShortLink[]
+}
+
+model ShortLink {
+  id        String          @id @default(uuid())
+  /// should include the leading slash
+  pathname  String
+  /// the full URL to redirect
+  to        String
+  domainId  String
+  /// the user created this short link
+  userId    String
+  /// the service that created this short link
+  service   Service
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  domain    ShortLinkDomain @relation(fields: [domainId], references: [id], onDelete: Restrict)
+
+  @@unique([pathname, domainId])
+}

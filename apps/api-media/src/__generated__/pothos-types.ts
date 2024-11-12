@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, CloudflareVideo, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole } from ".prisma/api-media-client";
+import type { Prisma, CloudflareImage, CloudflareVideo, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink } from ".prisma/api-media-client";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
@@ -581,5 +581,45 @@ export default interface PrismaTypes {
         RelationName: never;
         ListRelations: never;
         Relations: {};
+    };
+    ShortLinkDomain: {
+        Name: "ShortLinkDomain";
+        Shape: ShortLinkDomain;
+        Include: Prisma.ShortLinkDomainInclude;
+        Select: Prisma.ShortLinkDomainSelect;
+        OrderBy: Prisma.ShortLinkDomainOrderByWithRelationInput;
+        WhereUnique: Prisma.ShortLinkDomainWhereUniqueInput;
+        Where: Prisma.ShortLinkDomainWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "shortLinks";
+        ListRelations: "shortLinks";
+        Relations: {
+            shortLinks: {
+                Shape: ShortLink[];
+                Name: "ShortLink";
+                Nullable: false;
+            };
+        };
+    };
+    ShortLink: {
+        Name: "ShortLink";
+        Shape: ShortLink;
+        Include: Prisma.ShortLinkInclude;
+        Select: Prisma.ShortLinkSelect;
+        OrderBy: Prisma.ShortLinkOrderByWithRelationInput;
+        WhereUnique: Prisma.ShortLinkWhereUniqueInput;
+        Where: Prisma.ShortLinkWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "domain";
+        ListRelations: never;
+        Relations: {
+            domain: {
+                Shape: ShortLinkDomain;
+                Name: "ShortLinkDomain";
+                Nullable: false;
+            };
+        };
     };
 }
