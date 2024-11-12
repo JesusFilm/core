@@ -35,20 +35,23 @@ export function DeleteJourneyDialog({
   const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
 
-  const [deleteJourney] = useMutation<JourneyDelete>(JOURNEY_DELETE, {
-    variables: {
-      ids: [id]
-    },
-    optimisticResponse: {
-      journeysDelete: [
-        {
-          id,
-          status: JourneyStatus.deleted,
-          __typename: 'Journey'
-        }
-      ]
+  const [deleteJourney, { loading }] = useMutation<JourneyDelete>(
+    JOURNEY_DELETE,
+    {
+      variables: {
+        ids: [id]
+      },
+      optimisticResponse: {
+        journeysDelete: [
+          {
+            id,
+            status: JourneyStatus.deleted,
+            __typename: 'Journey'
+          }
+        ]
+      }
     }
-  })
+  )
 
   async function handleDelete(): Promise<void> {
     try {
@@ -74,6 +77,7 @@ export function DeleteJourneyDialog({
       open={open}
       onClose={handleClose}
       dialogTitle={{ title: t('Delete Forever?'), closeButton: true }}
+      loading={loading}
       dialogAction={{
         onSubmit: handleDelete,
         submitLabel: t('Delete'),

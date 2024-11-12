@@ -32,7 +32,7 @@ export function TrashJourneyDialog({
   handleClose,
   refetch
 }: TrashJourneyDialogProps): ReactElement {
-  const [trashJourney] = useMutation<JourneyTrash>(JOURNEY_TRASH, {
+  const [trashJourney, { loading }] = useMutation<JourneyTrash>(JOURNEY_TRASH, {
     variables: {
       ids: [id]
     },
@@ -74,6 +74,7 @@ export function TrashJourneyDialog({
       open={open}
       onClose={handleClose}
       dialogTitle={{ title: t('Trash Journey?'), closeButton: true }}
+      loading={loading}
       dialogAction={{
         onSubmit: handleTrash,
         submitLabel: t('Delete'),
