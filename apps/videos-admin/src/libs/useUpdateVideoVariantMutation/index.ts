@@ -1,0 +1,1 @@
+export { useUpdateVideoVariantMutation } from './useUpdateVideoVariantMutation'

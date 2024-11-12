@@ -25,6 +25,7 @@ interface SectionProps {
   children: ReactNode
   sx?: SxProps
   boxProps?: BoxProps
+
 }
 
 export function Section({
@@ -33,6 +34,7 @@ export function Section({
   children,
   sx,
   boxProps
+
 }: SectionProps): ReactElement {
   return (
     <Stack
