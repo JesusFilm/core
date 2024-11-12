@@ -38,6 +38,10 @@ data "aws_ssm_parameter" "doppler_api_media_prod_token" {
   name = "/terraform/prd/DOPPLER_API_MEDIA_PROD_TOKEN"
 }
 
+data "aws_ssm_parameter" "doppler_arclight_prod_token" {
+  name = "/terraform/prd/DOPPLER_ARCLIGHT_PROD_TOKEN"
+}
+
 data "aws_ssm_parameter" "cloudflared_prod_token" {
   name = "/terraform/prd/CLOUDFLARED_PROD_TOKEN"
 }
