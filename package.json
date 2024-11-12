@@ -121,7 +121,7 @@
     "elkjs": "^0.9.1",
     "express": "4.21.1",
     "firebase": "^9.16.0",
-    "firebase-admin": "^11.11.1",
+    "firebase-admin": "^13.0.0",
     "firebaseui": "^6.1.0",
     "form-data": "^4.0.0",
     "formik": "^2.4.4",
