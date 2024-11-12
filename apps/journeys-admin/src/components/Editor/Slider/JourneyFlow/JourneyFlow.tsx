@@ -14,8 +14,6 @@ import {
 } from 'react'
 import {
   Background,
-  ControlButton,
-  Controls,
   type Edge,
   type Node,
   type NodeDragHandler,
@@ -40,7 +38,6 @@ import { isActionBlock } from '@core/journeys/ui/isActionBlock'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
 import type {
   GetStepBlocksWithPosition,
@@ -50,6 +47,7 @@ import type {
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
+import { Controls } from './Controls'
 import { CustomEdge } from './edges/CustomEdge'
 import { ReferrerEdge } from './edges/ReferrerEdge'
 import { StartEdge } from './edges/StartEdge'
@@ -533,13 +531,7 @@ export function JourneyFlow(): ReactElement {
                 </>
               </Panel>
             )}
-            <Controls showInteractive={false}>
-              <ControlButton
-                onClick={async () => await allBlockPositionUpdate()}
-              >
-                <ArrowRefresh6Icon />
-              </ControlButton>
-            </Controls>
+            <Controls handleReset={allBlockPositionUpdate} />
           </>
         )}
         <Background
