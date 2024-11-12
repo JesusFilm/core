@@ -108,7 +108,7 @@
     "axios": "^1.6.8",
     "blurhash": "^2.0.5",
     "bullmq": "^5.1.11",
-    "cache-manager": "^5.2.3",
+    "cache-manager": "^6.0.0",
     "canvas": "^2.11.2",
     "cloudflare": "^3.5.0",
     "clsx": "^2.0.0",
