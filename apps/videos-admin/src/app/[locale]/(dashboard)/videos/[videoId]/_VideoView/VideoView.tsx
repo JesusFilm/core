@@ -7,7 +7,6 @@ import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
-import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 
@@ -24,13 +23,10 @@ import { Variants } from './Variants'
 
 export function VideoView(): ReactElement {
   const t = useTranslations()
-  const params = useParams<{ videoId: string; locale: string }>()
   const [tabValue, setTabValue] = useState(0)
   const [isEdit, setIsEdit] = useState(false)
 
-  const { data, loading } = useAdminVideo({
-    variables: { videoId: params?.videoId as string }
-  })
+  const { data, loading } = useAdminVideo({})
 
   const video = data?.adminVideo
 

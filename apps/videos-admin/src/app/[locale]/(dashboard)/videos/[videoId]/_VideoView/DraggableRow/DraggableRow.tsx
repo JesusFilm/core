@@ -1,17 +1,13 @@
 import { useSortable } from '@dnd-kit/sortable'
-import {
-  Box,
-  FormControl,
-  IconButton,
-  IconButtonProps,
-  InputLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Stack,
-  Typography
-} from '@mui/material'
+import Box from '@mui/material/Box'
+import FormControl from '@mui/material/FormControl'
+import IconButton, { IconButtonProps } from '@mui/material/IconButton'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
+import Stack from '@mui/material/Stack'
 import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon'
+import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
@@ -63,8 +59,7 @@ export function DraggableRow({
 
   //   router.push(`/${locale}/${entity}/${id}`)
   // }
-
-  const clickEvent = (e): void => {
+  function clickEvent(e): void {
     if (e.currentTarget !== e.target) return
 
     handleClick?.(id)
@@ -101,7 +96,7 @@ export function DraggableRow({
         width: '100%'
       }}
     >
-      <IconButton {...listeners}>
+      <IconButton {...listeners} sx={{ cursor: 'move' }}>
         <Drag fontSize="large" />
       </IconButton>
       {img != null && (
