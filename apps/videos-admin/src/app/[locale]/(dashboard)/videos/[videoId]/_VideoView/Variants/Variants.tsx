@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import { ReactElement, useMemo, useState } from 'react'
 
 import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
-import { Section } from '../Section/Section'
+import { Section } from '../Section'
 
 import { VariantCard } from './VariantCard'
 import { VariantModal } from './VariantModal'
