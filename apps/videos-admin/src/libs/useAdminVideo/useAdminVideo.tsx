@@ -29,6 +29,8 @@ export const GET_ADMIN_VIDEO = graphql(`
 
 export type GetAdminVideo = ResultOf<typeof GET_ADMIN_VIDEO>
 export type GetAdminVideoVariables = VariablesOf<typeof GET_ADMIN_VIDEO>
+export type GetAdminVideoVariant =
+  GetAdminVideo['adminVideo']['variants'][number]
 
 export function useAdminVideo(
   options: QueryHookOptions<GetAdminVideo, GetAdminVideoVariables>
