@@ -7,14 +7,17 @@ import { ReactElement, useState } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Edit2 from '@core/shared/ui/icons/Edit2'
 
-import { GetAdminVideo } from '../../../../../../../../libs/useAdminVideo'
+import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 import { VideoImageUpload } from './VideoImageUpload'
 
-function getImageFields(video): { src: string | null; alt: string | null } {
+function getImageFields(video: AdminVideo): {
+  src: string | null | undefined
+  alt: string | null | undefined
+} {
   if (video == null) return { src: null, alt: null }
-  const src = video?.images?.at(-1).mobileCinematicHigh
-  const alt = video?.imageAlt?.at(-1).value
+  const src = video?.image
+  const alt = video?.imageAlt?.at(-1)?.value
 
   return {
     src,
@@ -23,7 +26,7 @@ function getImageFields(video): { src: string | null; alt: string | null } {
 }
 
 interface VideoImageProps {
-  video: GetAdminVideo['adminVideo']
+  video: AdminVideo
   isEdit: boolean
 }
 
