@@ -1,12 +1,15 @@
-import { Button, IconButton, Modal } from '@mui/material'
 import Box from '@mui/material/Box'
-import { useTranslations } from 'next-intl'
+import IconButton from '@mui/material/IconButton'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
+
 import { Dialog } from '@core/shared/ui/Dialog'
-import { VideoImageUpload } from './VideoImageUpload'
-import { GetAdminVideo } from '../../../../../../../../libs/useAdminVideo'
 import Edit2 from '@core/shared/ui/icons/Edit2'
+
+import { GetAdminVideo } from '../../../../../../../../libs/useAdminVideo'
+
+import { VideoImageUpload } from './VideoImageUpload'
 
 function getImageFields(video): { src: string | null; alt: string | null } {
   if (video == null) return { src: null, alt: null }
@@ -21,17 +24,18 @@ function getImageFields(video): { src: string | null; alt: string | null } {
 
 interface VideoImageProps {
   video: GetAdminVideo['adminVideo']
+  isEdit: boolean
 }
 
-export function VideoImage({ video }: VideoImageProps): ReactElement {
+export function VideoImage({ video, isEdit }: VideoImageProps): ReactElement {
   const t = useTranslations()
   const [show, setShow] = useState(false)
 
-  const handleOpen = () => {
+  function handleOpen(): void {
     setShow(true)
   }
 
-  const handleClose = () => {
+  function handleClose(): void {
     setShow(false)
   }
 
@@ -56,13 +60,15 @@ export function VideoImage({ video }: VideoImageProps): ReactElement {
           objectFit="cover"
           priority
         />
-        <IconButton
-          onClick={handleOpen}
-          size="small"
-          sx={{ position: 'absolute', top: 4, right: 4 }}
-        >
-          <Edit2 />
-        </IconButton>
+        {isEdit ? (
+          <IconButton
+            onClick={handleOpen}
+            size="small"
+            sx={{ position: 'absolute', top: 4, right: 4 }}
+          >
+            <Edit2 />
+          </IconButton>
+        ) : null}
       </Box>
       <Dialog
         open={show}

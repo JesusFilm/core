@@ -216,16 +216,16 @@ export function Metadata({
               </Stack>
             </Stack>
           </Section>
-
           <Section title={t('Image')}>
             <Stack gap={2}>
               <UpdateableField
                 label="Alt"
+                isEdit={isEdit}
                 variant="textfield"
                 {...video?.imageAlt?.[0]}
                 handleUpdate={updateAlt}
               />
-              <VideoImage video={video} />
+              <VideoImage video={video} isEdit={isEdit} />
             </Stack>
           </Section>
 
