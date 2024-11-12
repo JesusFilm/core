@@ -8,6 +8,7 @@ export const GET_ADMIN_VIDEO = graphql(`
       slug
       label
       published
+      image
       images(aspectRatio: banner) {
         id
         mobileCinematicHigh
@@ -90,6 +91,8 @@ export type GetAdminVideo = ResultOf<typeof GET_ADMIN_VIDEO>
 export type GetAdminVideoVariables = VariablesOf<typeof GET_ADMIN_VIDEO>
 export type GetAdminVideoVariant =
   GetAdminVideo['adminVideo']['variants'][number]
+
+export type GetAdminVideo_AdminVideo = GetAdminVideo['adminVideo']
 
 export function useAdminVideo(
   options: QueryHookOptions<GetAdminVideo, GetAdminVideoVariables>

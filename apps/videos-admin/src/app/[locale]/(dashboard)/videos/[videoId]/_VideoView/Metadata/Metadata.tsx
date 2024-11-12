@@ -1,16 +1,13 @@
 import { useMutation } from '@apollo/client'
-import {
-  Box,
-  Checkbox,
-  CircularProgress,
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Stack
-} from '@mui/material'
+import Box from '@mui/material/Box'
+import Checkbox from '@mui/material/Checkbox'
+import CircularProgress from '@mui/material/CircularProgress'
+import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import FormLabel from '@mui/material/FormLabel'
+import MenuItem from '@mui/material/MenuItem'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
+import Stack from '@mui/material/Stack'
 import { graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
@@ -95,9 +92,14 @@ const VIDEO_IMAGE_ALT_UPDATE = graphql(`
 interface MetadataProps {
   video: any
   loading: boolean
+  isEdit: boolean
 }
 
-export function Metadata({ video, loading }: MetadataProps): ReactElement {
+export function Metadata({
+  video,
+  loading,
+  isEdit
+}: MetadataProps): ReactElement {
   const t = useTranslations()
 
   const updateTitle = useUpdateMutation(VIDEO_TITLE_UPDATE)
@@ -141,105 +143,120 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
 
   return (
     <Stack gap={2} data-testid="VideoMetadata">
-      {loading ? <Box sx={{ height: 240, display: 'grid', placeItems: 'center'}}> <CircularProgress /> </Box> : (
-        <> 
+      {loading ? (
+        <Box sx={{ height: 240, display: 'grid', placeItems: 'center' }}>
+          {' '}
+          <CircularProgress />{' '}
+        </Box>
+      ) : (
+        <>
           <Section title={t('Information')}>
             <Stack gap={2}>
               <Stack direction="row" gap={2}>
                 <UpdateableField
-              label="Title"
-              {...video?.title?.[0]}
-              handleUpdate={updateTitle}
-              fullWidth
-            />
+                  isEdit={isEdit}
+                  variant="textfield"
+                  label="Title"
+                  {...video?.title?.[0]}
+                  handleUpdate={updateTitle}
+                  fullWidth
+                />
                 <UpdateableField
-              id="none"
-              handleUpdate={() => null}
-              value={video?.slug ?? ''}
-              label="Slug"
-              disabled
-              fullWidth
-            />
+                  isEdit={isEdit}
+                  variant="textfield"
+                  id="none"
+                  handleUpdate={() => null}
+                  value={video?.slug ?? ''}
+                  label="Slug"
+                  disabled
+                  fullWidth
+                />
               </Stack>
               <Stack direction="row" alignItems="center" gap={2}>
                 <FormControl>
                   <FormLabel>{t('Status')}</FormLabel>
                   <Select
-                defaultValue={
-                  video?.published === true ? 'published' : 'unpublished'
-                }
-                onChange={handleStatusChange}
-              >
+                    defaultValue={
+                      video?.published === true ? 'published' : 'unpublished'
+                    }
+                    onChange={handleStatusChange}
+                    inputProps={{ readOnly: !isEdit }}
+                  >
                     {videoStatuses.map(({ label, value }) => (
                       <MenuItem key={label} value={value}>
                         {label}
                       </MenuItem>
-                ))}
+                    ))}
                   </Select>
                 </FormControl>
                 <FormControl>
                   <FormLabel>{t('Label')}</FormLabel>
-                  <Select value={video?.label} onChange={handleLabelChange}>
+                  <Select
+                    value={video?.label}
+                    onChange={handleLabelChange}
+                    inputProps={{ readOnly: !isEdit }}
+                  >
                     {videoLabels.map(({ label, value }) => (
                       <MenuItem key={value} value={value}>
                         {label}
                       </MenuItem>
-                ))}
+                    ))}
                   </Select>
                 </FormControl>
-
                 <FormControlLabel
-              label="No Index"
-              control={
-                <Checkbox
-                  defaultChecked={video?.noIndex === true}
-                  onChange={updateNoIndex}
+                  label="No Index"
+                  control={
+                    <Checkbox
+                      defaultChecked={video?.noIndex === true}
+                      onChange={updateNoIndex}
+                      disabled={!isEdit}
+                    />
+                  }
                 />
-              }
-            />
               </Stack>
             </Stack>
           </Section>
-
           <Section title={t('Image')}>
             <Stack gap={2}>
               <UpdateableField
-            label="Alt"
-            {...video?.imageAlt?.[0]}
-            handleUpdate={updateAlt}
-          />
-              <VideoImage video={video} />
+                label="Alt"
+                isEdit={isEdit}
+                variant="textfield"
+                {...video?.imageAlt?.[0]}
+                handleUpdate={updateAlt}
+              />
+              <VideoImage video={video} isEdit={isEdit} />
             </Stack>
           </Section>
 
           <Section title={t('Snippet')}>
             <Textarea
-          defaultValue={video?.snippet?.[0].value}
-          onBlur={(e) =>
-            updateSnippet({
-              id: video?.snippet?.[0].id,
-              value: e.target.value
-            })
-          }
-          minRows={6}
-          maxRows={6}
-          sx={{ minWidth: '100%', maxWidth: '100%' }}
-        />
+              defaultValue={video?.snippet?.[0].value}
+              onBlur={(e) =>
+                updateSnippet({
+                  id: video?.snippet?.[0].id,
+                  value: e.target.value
+                })
+              }
+              minRows={6}
+              maxRows={6}
+              sx={{ minWidth: '100%', maxWidth: '100%' }}
+            />
           </Section>
 
           <Section title={t('Description')}>
             <Textarea
-          defaultValue={video?.description?.[0].value}
-          onBlur={(e) =>
-            updateDescription({
-              id: video?.description?.[0].id,
-              value: e.target.value
-            })
-          }
-          minRows={8}
-          maxRows={8}
-          sx={{ minWidth: '100%', maxWidth: '100%' }}
-        />
+              defaultValue={video?.description?.[0].value}
+              onBlur={(e) =>
+                updateDescription({
+                  id: video?.description?.[0].id,
+                  value: e.target.value
+                })
+              }
+              minRows={8}
+              maxRows={8}
+              sx={{ minWidth: '100%', maxWidth: '100%' }}
+            />
           </Section>
 
           <StudyQuestions studyQuestions={video?.studyQuestions} />
