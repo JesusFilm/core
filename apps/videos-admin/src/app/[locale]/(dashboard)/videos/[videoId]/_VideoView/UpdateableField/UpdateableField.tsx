@@ -1,20 +1,23 @@
-import FormControl from '@mui/material/FormControl'
+import Box from '@mui/material/Box'
 import FormLabel from '@mui/material/FormLabel'
-import TextField from '@mui/material/TextField'
+import { Theme } from '@mui/material/styles'
+import { TextareaAutosizeProps } from '@mui/material/TextareaAutosize'
+import TextField, { TextFieldProps } from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { MUIStyledCommonProps } from '@mui/system/createStyled'
 import { ReactElement } from 'react'
 
 import { Textarea } from '../../../../../../../components/Textarea'
 
 interface UpdateableFieldProps {
   id: string
-  label: string
+  label?: string
   value: string
   handleUpdate: (input: { id: string; value: string }) => void
-  fullWidth?: boolean
-  disabled?: boolean
   variant: 'textfield' | 'textarea'
   isEdit: boolean
+  textAreaProps?: MUIStyledCommonProps<Theme> & TextareaAutosizeProps
+  textFieldProps?: TextFieldProps
 }
 
 export function UpdateableField({
@@ -22,16 +25,17 @@ export function UpdateableField({
   id,
   value: initialValue,
   handleUpdate,
-  disabled,
   variant,
-  isEdit
+  isEdit,
+  textAreaProps,
+  textFieldProps
 }: UpdateableFieldProps): ReactElement {
-  const handleBlur = (e): void => {
-    handleUpdate({ id, value: e.target.value })
+  function handleBlur(value: string): void {
+    handleUpdate({ id, value })
   }
 
   return (
-    <FormControl>
+    <Box>
       <FormLabel id={label} htmlFor={label}>
         <Typography variant="body2" fontWeight={500}>
           {label}
@@ -41,27 +45,21 @@ export function UpdateableField({
         <Textarea
           id={label}
           defaultValue={initialValue}
-          // value={value}
-          // onChange={(e) => setValue(e.target.value)}
-          onBlur={handleBlur}
+          onBlur={(e) => handleBlur(e.target.value)}
           minRows={6}
           maxRows={6}
-          sx={{ width: '100%' }}
+          disabled={!isEdit}
+          {...textAreaProps}
         />
       )}
       {variant === 'textfield' && (
         <TextField
-          disabled={disabled}
+          disabled={!isEdit}
           defaultValue={initialValue}
-          onBlur={handleBlur}
-          fullWidth
-          slotProps={{
-            input: {
-              readOnly: !isEdit
-            }
-          }}
+          onBlur={(e) => handleBlur(e.target.value)}
+          {...textFieldProps}
         />
       )}
-    </FormControl>
+    </Box>
   )
 }

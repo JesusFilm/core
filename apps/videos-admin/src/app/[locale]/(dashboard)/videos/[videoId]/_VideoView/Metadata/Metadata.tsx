@@ -12,7 +12,6 @@ import { graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
-import { Textarea } from '../../../../../../../components/Textarea'
 import { Section } from '../Section'
 import { UpdateableField } from '../UpdateableField'
 
@@ -168,8 +167,6 @@ export function Metadata({
                   handleUpdate={() => null}
                   value={video?.slug ?? ''}
                   label="Slug"
-                  disabled
-                  fullWidth
                 />
               </Stack>
               <Stack direction="row" alignItems="center" gap={2}>
@@ -222,43 +219,43 @@ export function Metadata({
                 label="Alt"
                 isEdit={isEdit}
                 variant="textfield"
+                textFieldProps={{
+                  fullWidth: true
+                }}
                 {...video?.imageAlt?.[0]}
                 handleUpdate={updateAlt}
               />
               <VideoImage video={video} isEdit={isEdit} />
             </Stack>
           </Section>
-
           <Section title={t('Snippet')}>
-            <Textarea
-              defaultValue={video?.snippet?.[0].value}
-              onBlur={(e) =>
-                updateSnippet({
-                  id: video?.snippet?.[0].id,
-                  value: e.target.value
-                })
-              }
-              minRows={6}
-              maxRows={6}
-              sx={{ minWidth: '100%', maxWidth: '100%' }}
+            <UpdateableField
+              variant="textarea"
+              id="Snippet"
+              isEdit={isEdit}
+              handleUpdate={updateSnippet}
+              value={video?.snippet?.[0].value}
+              textAreaProps={{
+                sx: {
+                  width: '100%'
+                }
+              }}
             />
           </Section>
-
           <Section title={t('Description')}>
-            <Textarea
-              defaultValue={video?.description?.[0].value}
-              onBlur={(e) =>
-                updateDescription({
-                  id: video?.description?.[0].id,
-                  value: e.target.value
-                })
-              }
-              minRows={8}
-              maxRows={8}
-              sx={{ minWidth: '100%', maxWidth: '100%' }}
+            <UpdateableField
+              variant="textarea"
+              id="Description"
+              isEdit={isEdit}
+              handleUpdate={updateDescription}
+              value={video?.description?.[0].value}
+              textAreaProps={{
+                sx: {
+                  width: '100%'
+                }
+              }}
             />
           </Section>
-
           <StudyQuestions studyQuestions={video?.studyQuestions} />
         </>
       )}

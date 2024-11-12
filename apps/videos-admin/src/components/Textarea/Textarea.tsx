@@ -24,7 +24,7 @@ const grey = {
 }
 
 export const Textarea = styled(TextareaAutosize)(
-  ({ theme }) => `
+  ({ theme, disabled }) => `
   box-sizing: border-box;
   width: 320px;
   font-family: 'IBM Plex Sans', sans-serif;
@@ -33,7 +33,7 @@ export const Textarea = styled(TextareaAutosize)(
   line-height: 1.5;
   padding: 8px 12px;
   border-radius: 8px;
-  color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
+   color: ${disabled === true ? grey[500] : theme.palette.mode === 'dark' ? grey[300] : grey[900]};
   background: ${
     theme.palette.mode === 'dark' ? theme.palette.background.default : '#fff'
   };
@@ -43,7 +43,7 @@ export const Textarea = styled(TextareaAutosize)(
   };
 
   &:hover {
-    border-color: ${blue[400]};
+    border-color: ${grey[500]};
   }
 
   &:focus {
