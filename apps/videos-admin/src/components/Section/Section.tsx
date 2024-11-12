@@ -4,16 +4,6 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { MouseEvent, ReactElement, ReactNode } from 'react'
 
-function SectionFallback({ children }: { children: string }): ReactElement {
-  return (
-    <Box sx={{ display: 'grid', placeItems: 'center', padding: 2 }}>
-      <Typography variant="subtitle2" fontWeight={500}>
-        {children}
-      </Typography>
-    </Box>
-  )
-}
-
 interface SectionProps {
   title: string
   action?: {
@@ -41,7 +31,7 @@ export function Section({
         width: '100%',
         gridColumn: gridColumn ?? 'auto'
       }}
-      data-testid={`${title}-section`}
+      data-testid={`${title}Section`}
     >
       <Stack
         sx={{
@@ -73,5 +63,3 @@ export function Section({
     </Stack>
   )
 }
-
-Section.Fallback = SectionFallback
