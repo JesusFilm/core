@@ -33,7 +33,7 @@ export function Controls({ handleReset }: ControlsProps): ReactElement {
         icon={<Maximise2 />}
       />
       <ControlItem
-        onClick={handleReset}
+        onClick={async () => await handleReset(false)}
         title={t('Reset layout')}
         icon={<ArrowRefresh6Icon />}
       />
