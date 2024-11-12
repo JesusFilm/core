@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import Tooltip from '@mui/material/Tooltip'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -19,24 +20,32 @@ export function Controls({ handleReset }: ControlsProps): ReactElement {
   return (
     <Control showInteractive={false} showFitView={false} showZoom={false}>
       <Tooltip title={t('Zoom in')} arrow placement="right">
-        <ControlButton onClick={() => zoomIn()}>
-          <Plus1 />
-        </ControlButton>
+        <Box>
+          <ControlButton onClick={() => zoomIn()}>
+            <Plus1 />
+          </ControlButton>
+        </Box>
       </Tooltip>
       <Tooltip title={t('Zoom out')} arrow placement="right">
-        <ControlButton onClick={() => zoomOut()}>
-          <Dash />
-        </ControlButton>
+        <Box>
+          <ControlButton onClick={() => zoomOut()}>
+            <Dash />
+          </ControlButton>
+        </Box>
       </Tooltip>
       <Tooltip title={t('Recenter')} arrow placement="right">
-        <ControlButton onClick={() => fitView()}>
-          <Maximise2 />
-        </ControlButton>
+        <Box>
+          <ControlButton onClick={() => fitView()}>
+            <Maximise2 />
+          </ControlButton>
+        </Box>
       </Tooltip>
       <Tooltip title={t('Reset layout')} arrow placement="right">
-        <ControlButton onClick={async () => await handleReset()}>
-          <ArrowRefresh6Icon />
-        </ControlButton>
+        <Box>
+          <ControlButton onClick={async () => await handleReset()}>
+            <ArrowRefresh6Icon />
+          </ControlButton>
+        </Box>
       </Tooltip>
     </Control>
   )
