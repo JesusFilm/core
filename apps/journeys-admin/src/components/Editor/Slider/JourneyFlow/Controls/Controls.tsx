@@ -2,11 +2,7 @@ import Box from '@mui/material/Box'
 import Tooltip from '@mui/material/Tooltip'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
-import {
-  ControlButton,
-  Controls as ControlItems,
-  useReactFlow
-} from 'reactflow'
+import { Controls as Control, ControlButton, useReactFlow } from 'reactflow'
 
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 import Dash from '@core/shared/ui/icons/Dash'
@@ -32,7 +28,7 @@ export function Controls({ handleReset }: ControlsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <ControlItems showInteractive={false} showFitView={false} showZoom={false}>
+    <Control showInteractive={false} showFitView={false} showZoom={false}>
       <ControlItem onClick={zoomIn} title={t('Zoom in')}>
         <Plus1 />
       </ControlItem>
@@ -45,6 +41,6 @@ export function Controls({ handleReset }: ControlsProps): ReactElement {
       <ControlItem onClick={handleReset} title={t('Reset layout')}>
         <ArrowRefresh6Icon />
       </ControlItem>
-    </ControlItems>
+    </Control>
   )
 }
