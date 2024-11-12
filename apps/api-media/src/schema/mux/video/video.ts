@@ -10,19 +10,21 @@ import {
 
 builder.prismaObject('MuxVideo', {
   fields: (t) => ({
-    id: t.exposeID('id'),
-    uploadUrl: t.exposeString('uploadUrl', { nullable: true }),
-    userId: t.exposeID('userId'),
+    id: t.exposeID('id', { nullable: false }),
+    uploadUrl: t.exposeString('uploadUrl'),
+    userId: t.exposeID('userId', { nullable: false }),
     createdAt: t.expose('createdAt', {
-      type: 'Date'
+      type: 'Date',
+      nullable: false
     }),
-    readyToStream: t.exposeBoolean('readyToStream')
+    readyToStream: t.exposeBoolean('readyToStream', { nullable: false })
   })
 })
 
 builder.queryFields((t) => ({
   getMyMuxVideos: t.withAuth({ isAuthenticated: true }).prismaField({
     type: ['MuxVideo'],
+    nullable: false,
     args: {
       offset: t.arg.int({ required: false }),
       limit: t.arg.int({ required: false })
@@ -40,6 +42,7 @@ builder.queryFields((t) => ({
   }),
   getMyMuxVideo: t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'MuxVideo',
+    nullable: false,
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
@@ -74,6 +77,7 @@ builder.mutationFields((t) => ({
     .withAuth({ isAuthenticated: true })
     .prismaField({
       type: 'MuxVideo',
+      nullable: false,
       args: {
         name: t.arg({ type: 'String', required: true })
       },
@@ -95,6 +99,7 @@ builder.mutationFields((t) => ({
     }),
   createMuxVideoUploadByUrl: t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'MuxVideo',
+    nullable: false,
     args: {
       url: t.arg({ type: 'String', required: true })
     },
@@ -113,6 +118,7 @@ builder.mutationFields((t) => ({
     }
   }),
   deleteMuxVideo: t.withAuth({ isAuthenticated: true }).boolean({
+    nullable: false,
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
