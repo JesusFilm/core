@@ -9,6 +9,7 @@ import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import get from 'lodash/get'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
+import { isValidInterop } from '@core/yoga/interop'
 
 import { prisma } from './lib/prisma'
 import { logger } from './logger'
@@ -21,13 +22,27 @@ export const yoga = createYoga<Record<string, unknown>, Context>({
   context: ({ request, params }) => {
     const payload = get(params, 'extensions.jwt.payload')
     const currentUser = getUserFromPayload(payload, logger)
+    if (currentUser != null)
+      return {
+        type: 'authenticated',
+        currentUser
+      }
+
     const interopToken = request.headers.get('interop-token')
     const ipAddress = request.headers.get('x-forwarded-for')
+    if (
+      interopToken != null &&
+      ipAddress != null &&
+      isValidInterop({ interopToken, ipAddress })
+    )
+      return {
+        type: 'interop',
+        interopToken,
+        ipAddress
+      }
 
     return {
-      currentUser,
-      interopToken,
-      ipAddress
+      type: 'public'
     }
   },
   plugins: [
