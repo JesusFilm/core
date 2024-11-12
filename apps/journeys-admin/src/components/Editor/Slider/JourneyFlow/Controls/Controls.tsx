@@ -13,11 +13,11 @@ interface ControlsProps {
   handleReset: (boolean?) => Promise<void>
 }
 
-function ControlItem({ onClick, title, children }): ReactNode {
+function ControlItem({ onClick, title, icon }): ReactNode {
   return (
     <Tooltip title={title} arrow placement="right">
       <Box>
-        <ControlButton onClick={onClick}>{children}</ControlButton>
+        <ControlButton onClick={onClick}>{icon}</ControlButton>
       </Box>
     </Tooltip>
   )
@@ -29,18 +29,18 @@ export function Controls({ handleReset }: ControlsProps): ReactElement {
 
   return (
     <Control showInteractive={false} showFitView={false} showZoom={false}>
-      <ControlItem onClick={zoomIn} title={t('Zoom in')}>
-        <Plus1 />
-      </ControlItem>
-      <ControlItem onClick={zoomOut} title={t('Zoom out')}>
-        <Dash />
-      </ControlItem>
-      <ControlItem onClick={fitView} title={t('Recenter')}>
-        <Maximise2 />
-      </ControlItem>
-      <ControlItem onClick={handleReset} title={t('Reset layout')}>
-        <ArrowRefresh6Icon />
-      </ControlItem>
+      <ControlItem onClick={zoomIn} title={t('Zoom in')} icon={<Plus1 />} />
+      <ControlItem onClick={zoomOut} title={t('Zoom out')} icon={<Dash />} />
+      <ControlItem
+        onClick={fitView}
+        title={t('Recenter')}
+        icon={<Maximise2 />}
+      />
+      <ControlItem
+        onClick={handleReset}
+        title={t('Reset layout')}
+        icon={<ArrowRefresh6Icon />}
+      />
     </Control>
   )
 }
