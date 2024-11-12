@@ -42,6 +42,8 @@ export function VideoView(): ReactElement {
     setTabValue(newValue)
   }
 
+  console.log('isEdit', isEdit)
+
   return (
     <Stack
       gap={2}
@@ -98,7 +100,7 @@ export function VideoView(): ReactElement {
               </Tabs>
               <Divider sx={{ mb: 4 }} />
               <TabContainer value={tabValue} index={0}>
-                <Metadata video={video} loading={loading} />
+                <Metadata video={video} loading={loading} isEdit={isEdit} />
               </TabContainer>
               <TabContainer value={tabValue} index={1}>
                 <Children childVideos={video?.children} />

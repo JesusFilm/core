@@ -92,9 +92,14 @@ const VIDEO_IMAGE_ALT_UPDATE = graphql(`
 interface MetadataProps {
   video: any
   loading: boolean
+  isEdit: boolean
 }
 
-export function Metadata({ video, loading }: MetadataProps): ReactElement {
+export function Metadata({
+  video,
+  loading,
+  isEdit
+}: MetadataProps): ReactElement {
   const t = useTranslations()
 
   const updateTitle = useUpdateMutation(VIDEO_TITLE_UPDATE)
@@ -149,12 +154,16 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
             <Stack gap={2}>
               <Stack direction="row" gap={2}>
                 <UpdateableField
+                  isEdit={isEdit}
+                  variant="textfield"
                   label="Title"
                   {...video?.title?.[0]}
                   handleUpdate={updateTitle}
                   fullWidth
                 />
                 <UpdateableField
+                  isEdit={isEdit}
+                  variant="textfield"
                   id="none"
                   handleUpdate={() => null}
                   value={video?.slug ?? ''}

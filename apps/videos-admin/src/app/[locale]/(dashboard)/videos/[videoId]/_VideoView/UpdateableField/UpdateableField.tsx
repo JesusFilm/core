@@ -1,4 +1,7 @@
-import { FormControl, FormLabel, TextField, Typography } from '@mui/material'
+import FormControl from '@mui/material/FormControl'
+import FormLabel from '@mui/material/FormLabel'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import { Textarea } from '../../../../../../../components/Textarea'
@@ -10,7 +13,8 @@ interface UpdateableFieldProps {
   handleUpdate: (input: { id: string; value: string }) => void
   fullWidth?: boolean
   disabled?: boolean
-  variant?: 'textfield' | 'textarea'
+  variant: 'textfield' | 'textarea'
+  isEdit: boolean
 }
 
 export function UpdateableField({
@@ -19,7 +23,8 @@ export function UpdateableField({
   value: initialValue,
   handleUpdate,
   disabled,
-  variant = 'textfield'
+  variant,
+  isEdit
 }: UpdateableFieldProps): ReactElement {
   const handleBlur = (e): void => {
     handleUpdate({ id, value: e.target.value })
@@ -50,6 +55,11 @@ export function UpdateableField({
           defaultValue={initialValue}
           onBlur={handleBlur}
           fullWidth
+          slotProps={{
+            input: {
+              readOnly: !isEdit
+            }
+          }}
         />
       )}
     </FormControl>
