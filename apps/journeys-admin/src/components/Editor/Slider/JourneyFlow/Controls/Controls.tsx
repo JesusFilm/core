@@ -13,14 +13,10 @@ interface ControlsProps {
   handleReset: (boolean?) => Promise<void>
 }
 
-function ControlItem({ onClick, title, icon }): ReactNode {
-  return (
-    <Tooltip title={title} arrow placement="right">
-      <Box>
-        <ControlButton onClick={onClick}>{icon}</ControlButton>
-      </Box>
-    </Tooltip>
-  )
+interface ControlItemProps {
+  onClick: () => void
+  title: string
+  icon: ReactNode
 }
 
 export function Controls({ handleReset }: ControlsProps): ReactElement {
@@ -42,5 +38,15 @@ export function Controls({ handleReset }: ControlsProps): ReactElement {
         icon={<ArrowRefresh6Icon />}
       />
     </Control>
+  )
+}
+
+function ControlItem({ onClick, title, icon }: ControlItemProps): ReactNode {
+  return (
+    <Tooltip title={title} arrow placement="right">
+      <Box>
+        <ControlButton onClick={onClick}>{icon}</ControlButton>
+      </Box>
+    </Tooltip>
   )
 }
