@@ -29,6 +29,29 @@ jest.mock('node-fetch', () => {
 })
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
+jest.mock('@mux/mux-node', () => {
+  const originalModule = jest.requireActual('@mux/mux-node')
+  return {
+    __esModule: true,
+    ...originalModule,
+    getClient: jest.fn().mockImplementation(() => ({
+      video: {
+        assets: {
+          retrieve: jest.fn().mockResolvedValue({
+            id: 'videoId',
+            duration: 100,
+            static_renditions: [
+              {
+                url: 'https://mux.com/video.mp4'
+              }
+            ]
+          })
+        }
+      }
+    }))
+  }
+})
+
 describe('VideoBlockResolver', () => {
   let resolver: VideoBlockResolver,
     service: DeepMockProxy<BlockService>,
@@ -387,6 +410,52 @@ describe('VideoBlockResolver', () => {
             title: 'What is the Bible?',
             parentOrder: 2,
             objectFit: null,
+            typename: 'VideoBlock'
+          },
+          include: {
+            action: true,
+            journey: {
+              include: {
+                team: { include: { userTeams: true } },
+                userJourneys: true
+              }
+            }
+          }
+        })
+      })
+    })
+
+    describe('Mux Source', () => {
+      beforeEach(() => {
+        process.env.MUX_ACCESS_TOKEN_ID = 'accessTokenId'
+        process.env.MUX_SECRET_KEY = 'secretKey'
+      })
+
+      it('creates a VideoBlock', async () => {
+        prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+        expect(
+          await resolver.videoBlockCreate(ability, {
+            id: 'blockId',
+            journeyId: 'journeyId',
+            parentBlockId: 'parentBlockId',
+            videoId: 'videoId',
+            videoVariantLanguageId: 'videoVariantLanguageId',
+            source: VideoBlockSource.mux
+          })
+        ).toEqual(blockWithUserTeam)
+        expect(prismaService.block.create).toHaveBeenCalledWith({
+          data: {
+            id: 'blockId',
+            videoId: 'videoId',
+            videoVariantLanguageId: 'videoVariantLanguageId',
+            source: VideoBlockSource.mux,
+            journey: { connect: { id: 'journeyId' } },
+            parentBlock: {
+              connect: {
+                id: 'parentBlockId'
+              }
+            },
+            parentOrder: 2,
             typename: 'VideoBlock'
           },
           include: {

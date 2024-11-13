@@ -5,6 +5,7 @@ import { GraphQLError } from 'graphql'
 import omit from 'lodash/omit'
 import fetch from 'node-fetch'
 import { object, string } from 'yup'
+import Mux from '@mux/mux-node'
 
 import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
@@ -32,6 +33,9 @@ const videoBlockCloudflareSchema = object().shape({
 const videoBlockInternalSchema = object().shape({
   videoId: string().nullable(),
   videoVariantLanguageId: string().nullable()
+})
+const videoBlockMuxSchema = object().shape({
+  videoId: string().nullable()
 })
 
 export interface YoutubeVideosData {
@@ -93,6 +97,19 @@ function parseISO8601Duration(duration: string): number {
   )
 }
 
+function getClient(): Mux {
+  if (process.env.MUX_ACCESS_TOKEN_ID == null)
+    throw new Error('Missing MUX_ACCESS_TOKEN_ID')
+
+  if (process.env.MUX_SECRET_KEY == null)
+    throw new Error('Missing MUX_SECRET_KEY')
+
+  return new Mux({
+    tokenId: process.env.MUX_ACCESS_TOKEN_ID,
+    tokenSecret: process.env.MUX_SECRET_KEY
+  })
+}
+
 @Resolver('VideoBlock')
 export class VideoBlockResolver {
   constructor(
@@ -126,6 +143,13 @@ export class VideoBlockResolver {
       case VideoBlockSource.internal:
         await videoBlockInternalSchema.validate(input)
         break
+      case VideoBlockSource.mux:
+        await videoBlockMuxSchema.validate(input)
+        input = {
+          ...input,
+          ...(await this.fetchFieldsFromMux(input.videoId as string)),
+          objectFit: null
+        }
     }
     return await this.prismaService.$transaction(async (tx) => {
       if (input.isCover === true) {
@@ -263,6 +287,18 @@ export class VideoBlockResolver {
         }
         await videoBlockInternalSchema.validate({ ...block, ...input })
         break
+      case VideoBlockSource.mux:
+        await videoBlockMuxSchema.validate({
+          ...block,
+          ...input
+        })
+        if (input.videoId != null) {
+          input = {
+            ...(await this.fetchFieldsFromMux(input.videoId)),
+            ...input
+          }
+        }
+        break
     }
     return await this.blockService.update(id, input)
   }
@@ -350,6 +386,24 @@ export class VideoBlockResolver {
       image: `${response.result.thumbnail}?time=2s&height=768`,
       duration: Math.round(response.result.duration),
       endAt: Math.round(response.result.duration)
+    }
+  }
+
+  private async fetchFieldsFromMux(
+    videoId: string
+  ): Promise<Pick<VideoBlock, 'title' | 'image' | 'duration' | 'endAt'>> {
+    const response = await await getClient().video.assets.retrieve(videoId)
+
+    if (response == null) {
+      throw new GraphQLError('videoId cannot be found on Mux', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    }
+    return {
+      title: response.id,
+      image: `${response.static_renditions?.[0].url}`,
+      duration: Math.round(response.duration ?? 0),
+      endAt: Math.round(response.duration ?? 0)
     }
   }
 }
