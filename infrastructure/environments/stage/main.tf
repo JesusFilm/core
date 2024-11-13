@@ -152,7 +152,7 @@ module "arclight" {
   source = "../../../apps/arclight/infrastructure"
   ecs_config = merge(local.public_ecs_config, {
     alb_target_group = merge(local.alb_target_group, {
-      health_check_path = "/api/health"
+      health_check_path = "/"
       health_check_port = "3000"
     })
   })
