@@ -10,7 +10,7 @@ export const STEP_NODE_OFFSET = -8
 export const STEP_NODE_DUPLICATE_OFFSET = 225
 export const NODE_EXTRA_DETECTION_WIDTH = 30
 
-export const LINK_NODE_WIDTH = 224
+export const LINK_NODE_WIDTH = 216
 export const LINK_NODE_HEIGHT = 45
 export const LINK_NODE_WIDTH_GAP_LEFT = 300
 export const LINK_NODE_WIDTH_GAP_RIGHT = 200
