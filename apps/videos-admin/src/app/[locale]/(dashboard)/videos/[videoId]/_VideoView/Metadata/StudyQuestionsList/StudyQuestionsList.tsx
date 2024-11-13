@@ -7,8 +7,8 @@ import { ReactElement, useState } from 'react'
 
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
-import { OrderedItem } from '../../../../../../../../components/OrderedItem'
 import { OrderedList } from '../../../../../../../../components/OrderedList'
+import { OrderedItem } from '../../../../../../../../components/OrderedList/OrderedItem'
 import { GetAdminVideo_AdminVideo_StudyQuestions as StudyQuestions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { Section } from '../../Section'
 
