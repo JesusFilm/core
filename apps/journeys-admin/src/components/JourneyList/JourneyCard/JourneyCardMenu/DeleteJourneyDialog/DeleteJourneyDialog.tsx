@@ -34,34 +34,28 @@ export function DeleteJourneyDialog({
 }: DeleteJourneyDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const [isRefetching, setIsRefetching] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const [deleteJourney, { loading: isLoading }] = useMutation<JourneyDelete>(
-    JOURNEY_DELETE,
-    {
-      variables: {
-        ids: [id]
-      },
-      optimisticResponse: {
-        journeysDelete: [
-          {
-            id,
-            status: JourneyStatus.deleted,
-            __typename: 'Journey'
-          }
-        ]
-      }
+  const [deleteJourney] = useMutation<JourneyDelete>(JOURNEY_DELETE, {
+    variables: {
+      ids: [id]
+    },
+    optimisticResponse: {
+      journeysDelete: [
+        {
+          id,
+          status: JourneyStatus.deleted,
+          __typename: 'Journey'
+        }
+      ]
     }
-  )
+  })
 
   async function handleDelete(): Promise<void> {
+    setLoading(true)
     try {
       await deleteJourney()
-      if (refetch != null) {
-        setIsRefetching(true)
-        await refetch()
-        setIsRefetching(false)
-      }
+      await refetch?.()
       enqueueSnackbar(t('Journey Deleted'), {
         variant: 'success',
         preventDuplicate: true
@@ -74,10 +68,11 @@ export function DeleteJourneyDialog({
           preventDuplicate: true
         })
       }
+      setLoading(false)
+    } finally {
+      setLoading(false)
     }
   }
-
-  const loading = isLoading || isRefetching
 
   return (
     <Dialog

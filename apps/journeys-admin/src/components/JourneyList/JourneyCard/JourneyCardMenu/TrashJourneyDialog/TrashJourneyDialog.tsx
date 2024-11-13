@@ -34,34 +34,28 @@ export function TrashJourneyDialog({
 }: TrashJourneyDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const [isRefetching, setIsRefetching] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const [trashJourney, { loading: isLoading }] = useMutation<JourneyTrash>(
-    JOURNEY_TRASH,
-    {
-      variables: {
-        ids: [id]
-      },
-      optimisticResponse: {
-        journeysTrash: [
-          {
-            id,
-            status: JourneyStatus.deleted,
-            __typename: 'Journey'
-          }
-        ]
-      }
+  const [trashJourney] = useMutation<JourneyTrash>(JOURNEY_TRASH, {
+    variables: {
+      ids: [id]
+    },
+    optimisticResponse: {
+      journeysTrash: [
+        {
+          id,
+          status: JourneyStatus.deleted,
+          __typename: 'Journey'
+        }
+      ]
     }
-  )
+  })
 
   async function handleTrash(): Promise<void> {
+    setLoading(true)
     try {
       await trashJourney()
-      if (refetch != null) {
-        setIsRefetching(true)
-        await refetch()
-        setIsRefetching(false)
-      }
+      await refetch?.()
       enqueueSnackbar(t('Journey trashed'), {
         variant: 'success',
         preventDuplicate: true
@@ -74,10 +68,11 @@ export function TrashJourneyDialog({
           preventDuplicate: true
         })
       }
+      setLoading(false)
+    } finally {
+      setLoading(false)
     }
   }
-
-  const loading = isLoading || isRefetching
 
   return (
     <Dialog
