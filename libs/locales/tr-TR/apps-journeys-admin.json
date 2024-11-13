@@ -231,6 +231,7 @@
   "Medium": "Orta",
   "Large": "Büyük",
   "Contained": "Kapalı",
+  "Invalid {{ HEX }} color code": "Geçersiz {{ HEX }} renk kodu",
   "Palette": "Palet",
   "None": "Hiçbiri",
   "Background": "Arka plan",
