@@ -40,18 +40,20 @@ export async function getPresignedUrl(fileName: string): Promise<string> {
 
 builder.prismaObject('CloudflareR2', {
   fields: (t) => ({
-    id: t.exposeID('id'),
-    fileName: t.exposeString('fileName'),
-    uploadUrl: t
+    id: t.exposeID('id', { nullable: false }),
+    fileName: t.exposeString('fileName', { nullable: false }),
+    uploadUrl: t.withAuth({ isPublisher: true }).exposeString('uploadUrl'),
+    userId: t
       .withAuth({ isPublisher: true })
-      .exposeString('uploadUrl', { nullable: true }),
-    userId: t.withAuth({ isPublisher: true }).exposeID('userId'),
-    publicUrl: t.exposeString('publicUrl', { nullable: true }),
+      .exposeID('userId', { nullable: false }),
+    publicUrl: t.exposeString('publicUrl'),
     createdAt: t.expose('createdAt', {
-      type: 'Date'
+      type: 'Date',
+      nullable: false
     }),
     updatedAt: t.expose('updatedAt', {
-      type: 'Date'
+      type: 'Date',
+      nullable: false
     })
   })
 })
@@ -59,6 +61,7 @@ builder.prismaObject('CloudflareR2', {
 builder.mutationFields((t) => ({
   cloudflareR2Create: t.withAuth({ isPublisher: true }).prismaField({
     type: 'CloudflareR2',
+    nullable: false,
     args: {
       input: t.arg({ type: CloudflareR2CreateInput, required: true })
     },
@@ -80,6 +83,7 @@ builder.mutationFields((t) => ({
   }),
   cloudflareR2Update: t.withAuth({ isPublisher: true }).prismaField({
     type: 'CloudflareR2',
+    nullable: false,
     args: {
       input: t.arg({ type: CloudflareR2UpdateInput, required: true })
     },
@@ -100,6 +104,7 @@ builder.mutationFields((t) => ({
   }),
   cloudflareR2Delete: t.withAuth({ isPublisher: true }).prismaField({
     type: 'CloudflareR2',
+    nullable: false,
     args: {
       id: t.arg.id({ required: true })
     },

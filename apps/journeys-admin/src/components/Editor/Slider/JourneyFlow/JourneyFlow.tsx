@@ -14,8 +14,6 @@ import {
 } from 'react'
 import {
   Background,
-  ControlButton,
-  Controls,
   type Edge,
   type Node,
   type NodeDragHandler,
@@ -28,6 +26,7 @@ import {
   ReactFlow,
   type ReactFlowInstance,
   type ReactFlowProps,
+  SelectionDragHandler,
   updateEdge as reactFlowUpdateEdge,
   useEdgesState,
   useNodesState
@@ -39,7 +38,6 @@ import { isActionBlock } from '@core/journeys/ui/isActionBlock'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
 import type {
   GetStepBlocksWithPosition,
@@ -49,6 +47,7 @@ import type {
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
+import { Controls } from './Controls'
 import { CustomEdge } from './edges/CustomEdge'
 import { ReferrerEdge } from './edges/ReferrerEdge'
 import { StartEdge } from './edges/StartEdge'
@@ -374,6 +373,36 @@ export function JourneyFlow(): ReactElement {
       }
     })
   }
+
+  const onSelectionDragStop: SelectionDragHandler = (_event, nodes): void => {
+    if (steps == null || data == null) return
+    const stepNodes = nodes.filter((node) => node.type === 'StepBlock')
+
+    add({
+      parameters: {
+        execute: {
+          input: stepNodes.map((node) => ({
+            id: node.id,
+            x: Math.trunc(node.position.x),
+            y: Math.trunc(node.position.y)
+          }))
+        },
+        undo: {
+          input: (
+            data.blocks as GetStepBlocksWithPosition_blocks_StepBlock[]
+          ).map((step) => ({
+            id: step.id,
+            x: step.x,
+            y: step.y
+          }))
+        }
+      },
+      execute({ input }) {
+        blockPositionUpdate(input)
+      }
+    })
+  }
+
   const onEdgeUpdateStart = useCallback<
     NonNullable<ReactFlowProps['onEdgeUpdateStart']>
   >(() => {
@@ -464,12 +493,14 @@ export function JourneyFlow(): ReactElement {
         onConnectEnd={onConnectEnd}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
+        onSelectionDragStop={onSelectionDragStop}
         onEdgeUpdate={showAnalytics === true ? undefined : onEdgeUpdate}
         onEdgeUpdateStart={onEdgeUpdateStart}
         onEdgeUpdateEnd={onEdgeUpdateEnd}
         onSelectionChange={onSelectionChange}
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
+        minZoom={0.1}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         proOptions={{ hideAttribution: true }}
@@ -500,13 +531,7 @@ export function JourneyFlow(): ReactElement {
                 </>
               </Panel>
             )}
-            <Controls showInteractive={false}>
-              <ControlButton
-                onClick={async () => await allBlockPositionUpdate()}
-              >
-                <ArrowRefresh6Icon />
-              </ControlButton>
-            </Controls>
+            <Controls handleReset={allBlockPositionUpdate} />
           </>
         )}
         <Background

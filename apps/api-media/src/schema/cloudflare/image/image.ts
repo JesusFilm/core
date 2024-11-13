@@ -19,24 +19,22 @@ function baseUrl(id: string): string {
 
 builder.prismaObject('CloudflareImage', {
   fields: (t) => ({
-    id: t.exposeID('id'),
-    uploadUrl: t.exposeString('uploadUrl', { nullable: true }),
-    userId: t.exposeID('userId'),
+    id: t.exposeID('id', { nullable: false }),
+    uploadUrl: t.exposeString('uploadUrl'),
+    userId: t.exposeID('userId', { nullable: false }),
     createdAt: t.expose('createdAt', {
-      type: 'Date'
+      type: 'Date',
+      nullable: false
     }),
     aspectRatio: t.expose('aspectRatio', {
-      type: ImageAspectRatio,
-      nullable: true
+      type: ImageAspectRatio
     }),
     url: t.field({
       type: 'String',
-      nullable: true,
       resolve: ({ id }) => baseUrl(id)
     }),
     mobileCinematicHigh: t.field({
       type: 'String',
-      nullable: true,
       resolve: ({ id, aspectRatio }) =>
         aspectRatio === 'banner'
           ? `${baseUrl(id)}/f=jpg,w=1280,h=600,q=95`
@@ -44,7 +42,6 @@ builder.prismaObject('CloudflareImage', {
     }),
     mobileCinematicLow: t.field({
       type: 'String',
-      nullable: true,
       resolve: ({ id, aspectRatio }) =>
         aspectRatio === 'banner'
           ? `${baseUrl(id)}/f=jpg,w=640,h=300,q=95`
@@ -52,7 +49,6 @@ builder.prismaObject('CloudflareImage', {
     }),
     mobileCinematicVeryLow: t.field({
       type: 'String',
-      nullable: true,
       resolve: ({ id, aspectRatio }) =>
         aspectRatio === 'banner'
           ? `${baseUrl(id)}/f=webp,w=640,h=300,q=50`
@@ -60,13 +56,11 @@ builder.prismaObject('CloudflareImage', {
     }),
     thumbnail: t.field({
       type: 'String',
-      nullable: true,
       resolve: ({ id, aspectRatio }) =>
         aspectRatio === 'hd' ? `${baseUrl(id)}/f=jpg,w=120,h=68,q=95` : null
     }),
     videoStill: t.field({
       type: 'String',
-      nullable: true,
       resolve: ({ id, aspectRatio }) =>
         aspectRatio === 'hd' ? `${baseUrl(id)}/f=jpg,w=1920,h=1080,q=95` : null
     })
@@ -76,6 +70,7 @@ builder.prismaObject('CloudflareImage', {
 builder.queryFields((t) => ({
   getMyCloudflareImages: t.withAuth({ isAuthenticated: true }).prismaField({
     type: ['CloudflareImage'],
+    nullable: false,
     args: {
       offset: t.arg.int({ required: false }),
       limit: t.arg.int({ required: false })
@@ -91,6 +86,7 @@ builder.queryFields((t) => ({
   }),
   getMyCloudflareImage: t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'CloudflareImage',
+    nullable: false,
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
@@ -108,6 +104,7 @@ builder.mutationFields((t) => ({
     .withAuth({ isAuthenticated: true })
     .prismaField({
       type: 'CloudflareImage',
+      nullable: false,
       args: {
         input: t.arg({ type: ImageInput, required: false })
       },
@@ -130,6 +127,7 @@ builder.mutationFields((t) => ({
     .withAuth({ isAuthenticated: true })
     .prismaField({
       type: 'CloudflareImage',
+      nullable: false,
       args: {
         url: t.arg.string({ required: true }),
         input: t.arg({ type: ImageInput, required: false })
@@ -153,6 +151,7 @@ builder.mutationFields((t) => ({
     .withAuth({ isAuthenticated: true })
     .prismaField({
       type: 'CloudflareImage',
+      nullable: false,
       args: {
         prompt: t.arg.string({ required: true }),
         input: t.arg({ type: ImageInput, required: false })
@@ -175,6 +174,7 @@ builder.mutationFields((t) => ({
       }
     }),
   deleteCloudflareImage: t.withAuth({ isAuthenticated: true }).boolean({
+    nullable: false,
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
@@ -190,6 +190,7 @@ builder.mutationFields((t) => ({
     }
   }),
   cloudflareUploadComplete: t.withAuth({ isAuthenticated: true }).boolean({
+    nullable: false,
     args: {
       id: t.arg({ type: 'ID', required: true })
     },

@@ -130,6 +130,9 @@ type Mutation {
   deleteCloudflareVideo(id: ID!): Boolean!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!
+  createMuxVideoUploadByFile(name: String!): MuxVideo!
+  createMuxVideoUploadByUrl(url: String!): MuxVideo!
+  deleteMuxVideo(id: ID!): Boolean!
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
@@ -161,10 +164,17 @@ type Mutation {
   videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
 }
 
+type MuxVideo {
+  id: ID!
+  uploadUrl: String
+  userId: ID!
+  createdAt: Date!
+  readyToStream: Boolean!
+}
+
 type Query {
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
-  videoCloudflareAssets(videoId: ID!): [CloudflareR2!]!
   getMyCloudflareVideos(offset: Int, limit: Int): [CloudflareVideo!]!
   getMyCloudflareVideo(id: ID!): CloudflareVideo!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
@@ -172,6 +182,8 @@ type Query {
   bibleBooks: [BibleBook!]!
   bibleCitations: [BibleCitation!]!
   keywords: [Keyword!]!
+  getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
+  getMyMuxVideo(id: ID!): MuxVideo!
   adminVideo(id: ID!, idType: IdType = databaseId): Video!
   adminVideos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   adminVideosCount(where: VideosFilter): Int!
@@ -354,6 +366,7 @@ type Video
   label: VideoLabel!
   primaryLanguageId: ID!
   published: Boolean!
+  cloudflareAssets: [CloudflareR2!]!
   title(languageId: ID, primary: Boolean): [VideoTitle!]!
   snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
   description(languageId: ID, primary: Boolean): [VideoDescription!]!
@@ -539,6 +552,7 @@ type VideoVariant {
   hls: String
   dash: String
   share: String
+  downloadable: Boolean!
   downloads: [VideoVariantDownload!]!
   duration: Int!
   language: Language!
@@ -560,6 +574,7 @@ input VideoVariantCreateInput {
   duration: Int
   languageId: String!
   slug: String!
+  downloadable: Boolean!
 }
 
 type VideoVariantDownload {
@@ -606,6 +621,7 @@ input VideoVariantUpdateInput {
   duration: Int
   languageId: String
   slug: String
+  downloadable: Boolean
 }
 
 input VideosFilter {
