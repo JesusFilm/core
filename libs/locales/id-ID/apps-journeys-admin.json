@@ -231,6 +231,7 @@
   "Medium": "Sedang",
   "Large": "Besar",
   "Contained": "Terkandung",
+  "Invalid {{ HEX }} color code": "Kode warna {{ HEX }} tidak valid",
   "Palette": "Palet",
   "None": "Tidak ada",
   "Background": "Latar Belakang",

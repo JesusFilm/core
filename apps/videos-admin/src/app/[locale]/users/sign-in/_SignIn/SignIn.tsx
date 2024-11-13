@@ -3,27 +3,21 @@
 import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
-import {
-  UserCredential,
-  getRedirectResult,
-  signInWithEmailAndPassword
-} from 'firebase/auth'
+import { UserCredential, signInWithEmailAndPassword } from 'firebase/auth'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useState } from 'react'
 import { useLoadingCallback } from 'react-loading-hook'
 
 import minimalLogo from '../../../../../assets/minimal-logo.png'
 import { CenterPage } from '../../../../../components/CenterPage'
-import { getFirebaseAuth } from '../../../../../libs/auth/firebase'
+import {
+  getFirebaseAuth,
+  loginWithGoogle
+} from '../../../../../libs/auth/firebase'
 import { useRedirectAfterLogin } from '../../../../../libs/auth/useRedirectAfterLogin'
 import { loginWithCredential } from '../../../../api'
 
-import {
-  getGoogleProvider,
-  loginWithProvider,
-  loginWithProviderUsingRedirect
-} from './firebase'
 import { GoogleIcon } from './GoogleIcon'
 import { PasswordForm, PasswordFormValue } from './PasswordForm'
 
@@ -55,41 +49,10 @@ export function SignIn(): ReactElement {
       setHasLogged(false)
 
       const auth = getFirebaseAuth()
-      await handleLogin(await loginWithProvider(auth, getGoogleProvider(auth)))
+      await handleLogin(await loginWithGoogle(auth))
 
       setHasLogged(true)
     })
-
-  const [
-    handleLoginWithGoogleUsingRedirect,
-    isGoogleUsingRedirectLoading,
-    googleUsingRedirectError
-  ] = useLoadingCallback(async () => {
-    setHasLogged(false)
-
-    const auth = getFirebaseAuth()
-    await loginWithProviderUsingRedirect(auth, getGoogleProvider(auth))
-
-    setHasLogged(true)
-  })
-
-  const handleLoginWithRedirect = useCallback(
-    async function (): Promise<void> {
-      const auth = getFirebaseAuth()
-      const credential = await getRedirectResult(auth)
-
-      if (credential?.user != null) {
-        await handleLogin(credential)
-
-        setHasLogged(true)
-      }
-    },
-    [handleLogin]
-  )
-
-  useEffect(() => {
-    void handleLoginWithRedirect()
-  }, [handleLoginWithRedirect])
 
   return (
     <CenterPage>
@@ -113,30 +76,18 @@ export function SignIn(): ReactElement {
         <PasswordForm
           loading={isEmailLoading}
           onSubmit={handleLoginWithEmailAndPassword}
-          error={emailPasswordError ?? googleError ?? googleUsingRedirectError}
+          error={emailPasswordError ?? googleError}
         >
-          {process.env.NEXT_PUBLIC_VERCEL_ENV == null ? (
-            <LoadingButton
-              variant="outlined"
-              loading={isGoogleLoading}
-              disabled={isGoogleLoading}
-              onClick={handleLoginWithGoogle}
-              startIcon={<GoogleIcon />}
-              fullWidth
-            >
-              {t('Sign in with Google')}
-            </LoadingButton>
-          ) : (
-            <LoadingButton
-              loading={isGoogleUsingRedirectLoading}
-              disabled={isGoogleUsingRedirectLoading}
-              onClick={handleLoginWithGoogleUsingRedirect}
-              startIcon={<GoogleIcon />}
-              fullWidth
-            >
-              {t('Sign in with Google')}
-            </LoadingButton>
-          )}
+          <LoadingButton
+            variant="outlined"
+            loading={isGoogleLoading}
+            disabled={isGoogleLoading}
+            onClick={handleLoginWithGoogle}
+            startIcon={<GoogleIcon />}
+            fullWidth
+          >
+            {t('Sign in with Google')}
+          </LoadingButton>
         </PasswordForm>
       )}
     </CenterPage>
