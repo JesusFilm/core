@@ -25,7 +25,6 @@ export function AlgoliaVideoGrid(props: VideoGridProps): ReactElement {
       if (videoId == null) return
       const item = algoliaVideos.filter((item) => item.id === videoId)
       sendEvent('click', item, 'Video Clicked')
-      console.log('I got called', item)
     }
 
   return (
