@@ -119,8 +119,8 @@ interface OrderedItemProps {
   id: string
   label: string
   idx: number
-  // total: number
-  // onOrderUpdate: (input: { id: string; order: number }) => void
+  total: number
+  onOrderUpdate: (input: { id: string; order: number }) => void
   onClick?: (id: string) => void
   actions?: Array<{
     label: string
@@ -132,8 +132,8 @@ export function OrderedItem({
   id,
   label,
   idx,
-  // total,
-  // onOrderUpdate,
+  total,
+  onOrderUpdate,
   onClick,
   actions
 }: OrderedItemProps): ReactElement {
@@ -151,16 +151,16 @@ export function OrderedItem({
       ? { transform: `translate3d(0px, ${transform.y}px, 0)`, transition }
       : undefined
 
-  // const handleClick = (e: MouseEvent<HTMLDivElement>): void => {
-  //   if (e.currentTarget !== e.target) return
+  const handleClick = (e: MouseEvent<HTMLDivElement>): void => {
+    if (e.currentTarget !== e.target) return
 
-  //   onClick?.(id)
-  // }
+    onClick?.(id)
+  }
 
   return (
     <OrderedProvider value={{ id }}>
       <Stack
-        // onClick={handleClick}
+        onClick={handleClick}
         data-testid="OrderedItem"
         id={id}
         ref={setNodeRef}
@@ -186,7 +186,7 @@ export function OrderedItem({
           <Drag fontSize="large" />
         </IconButton>
         <Label>{label}</Label>
-        {/* <Dropdown idx={idx} total={total} updateOrder={onOrderUpdate} /> */}
+        <Dropdown idx={idx} total={total} updateOrder={onOrderUpdate} />
         {/* {img != null && (
           <Box
             sx={{
@@ -207,7 +207,7 @@ export function OrderedItem({
             />
           </Box>
         )} */}
-        {/* {actions != null && actions.length > 0 && <Actions actions={actions} />} */}
+        {actions != null && actions.length > 0 && <Actions actions={actions} />}
       </Stack>
     </OrderedProvider>
   )

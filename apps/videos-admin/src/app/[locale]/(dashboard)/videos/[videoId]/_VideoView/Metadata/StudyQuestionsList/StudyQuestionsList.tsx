@@ -72,15 +72,15 @@ export function StudyQuestionsList({
       }}
     >
       {totalQuestions > 0 ? (
-        <OrderedList onOrderUpdate={updateOrder} items={studyQuestions}>
+        <OrderedList onOrderUpdate={updateOrder} items={studyQuestionItems}>
           {studyQuestionItems?.map(({ id, value }, idx) => (
             <OrderedItem
               key={id}
               id={id}
               label={value}
               idx={idx}
-              // total={totalQuestions}
-              // onOrderUpdate={updateOrder}
+              total={totalQuestions}
+              onOrderUpdate={updateOrder}
               actions={[{ label: 'view', handler: () => null }]}
             />
           ))}
