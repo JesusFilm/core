@@ -68,7 +68,9 @@ export function Step({
       })
       if (journey != null) {
         const search =
-          window.location.search !== '' ? `/${window.location.search}` : ''
+          window.location.search === '' || window.location.search == null
+            ? ''
+            : `/${window.location.search}`
         const key = keyify({
           stepId: input.blockId,
           event: 'pageview',

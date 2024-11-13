@@ -86,6 +86,23 @@ describe('transformJourneyAnalytics', () => {
           visitors: 3
         }
       ],
+      journeyUtmCampaign: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: 'shortLink1',
+          visitors: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: 'shortLink2',
+          visitors: 3
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: 'shortLink3',
+          visitors: 2
+        }
+      ],
       journeyVisitorsPageExits: [
         {
           __typename: 'PlausibleStatsResponse',

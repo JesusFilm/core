@@ -151,11 +151,13 @@ const block: TreeBlock<StepFields> = {
 describe('Step', () => {
   const originalLocation = window.location
   const mockOrigin = 'https://example.com'
+  // const mockSearch = '?utm_source=source&utm_campaign=campaign'
 
   beforeAll(() => {
     Object.defineProperty(window, 'location', {
       value: {
         origin: mockOrigin
+        // search: mockSearch
       }
     })
   })
@@ -204,6 +206,51 @@ describe('Step', () => {
     )
     expect(mockPlausible).toHaveBeenCalledWith('pageview', {
       u: `${mockOrigin}/journeyId/Step1`,
+      props: {
+        id: 'uuid',
+        blockId: 'Step1',
+        value: 'Step {{number}}',
+        key: keyify({
+          stepId: 'Step1',
+          event: 'pageview',
+          blockId: 'Step1'
+        }),
+        simpleKey: keyify({
+          stepId: 'Step1',
+          event: 'pageview',
+          blockId: 'Step1'
+        })
+      }
+    })
+  })
+
+  it('should create a stepViewEvent with a UTM code', async () => {
+    const mockSearch = '?utm_source=source&utm_campaign=campaign'
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin,
+        search: mockSearch
+      }
+    })
+
+    mockUuidv4.mockReturnValueOnce('uuid')
+    treeBlocksVar([block])
+    blockHistoryVar([block])
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    render(
+      <MockedProvider mocks={[mockStepViewEventCreate]}>
+        <JourneyProvider value={{ journey }}>
+          <Step {...block} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(mockStepViewEventCreate.result).toHaveBeenCalled()
+    )
+    expect(mockPlausible).toHaveBeenCalledWith('pageview', {
+      u: `${mockOrigin}/journeyId/Step1/${mockSearch}`,
       props: {
         id: 'uuid',
         blockId: 'Step1',
