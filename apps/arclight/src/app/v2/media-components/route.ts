@@ -7,7 +7,6 @@ import { paramsToRecord } from '../../../lib/paramsToRecord'
 /* TODO: 
   querystring:
 isDeprecated,
-metadataLanguageTags,
 subTypes
 */
 
@@ -19,13 +18,14 @@ const GET_LANGUAGE_ID_FROM_BCP47 = graphql(`
   }
 `)
 
-const GET_VIDEOS = graphql(`
-  query GetVideos(
+const GET_VIDEOS_WITH_FALLBACK = graphql(`
+  query GetVideosWithFallback(
     $limit: Int
     $offset: Int
     $ids: [ID!]
     $languageIds: [ID!]
-    $languageId: ID!
+    $languageId: ID
+    $fallbackLanguageId: ID
   ) {
     videosCount(where: { ids: $ids, availableVariantLanguageIds: $languageIds })
     videos(
@@ -45,14 +45,38 @@ const GET_VIDEOS = graphql(`
       primaryLanguageId
       title(languageId: $languageId) {
         value
+        language {
+          bcp47
+        }
+      }
+      fallbackTitle: title(languageId: $fallbackLanguageId) {
+        value
       }
       description(languageId: $languageId) {
+        value
+        language {
+          bcp47
+        }
+      }
+      fallbackDescription: description(languageId: $fallbackLanguageId) {
         value
       }
       snippet(languageId: $languageId) {
         value
+        language {
+          bcp47
+        }
+      }
+      fallbackSnippet: snippet(languageId: $fallbackLanguageId) {
+        value
       }
       studyQuestions(languageId: $languageId) {
+        value
+        language {
+          bcp47
+        }
+      }
+      fallbackStudyQuestions: studyQuestions(languageId: $fallbackLanguageId) {
         value
       }
       bibleCitations {
@@ -90,26 +114,38 @@ export async function GET(request: NextRequest): Promise<Response> {
   const limit = Number(query.get('limit') ?? 10000)
   const offset = (page - 1) * limit
   const expand = query.get('expand') ?? ''
-  const languageIds = query.get('languageIds')?.split(',').filter(Boolean) ?? []
+  const languageIds =
+    query.get('languageIds')?.split(',').filter(Boolean) ?? undefined
   const ids = query.get('ids')?.split(',').filter(Boolean) ?? undefined
   const metadataLanguageTags =
     query.get('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
 
-  const { data: languageIdData } =
-    metadataLanguageTags.length > 0
-      ? await getApolloClient().query<
-          ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
-        >({
-          query: GET_LANGUAGE_ID_FROM_BCP47,
-          variables: { bcp47: metadataLanguageTags[0] }
-        })
-      : { data: { language: { id: '529' } } }
-  const defaultLanguageId = languageIdData.language?.id ?? '529'
-
-  const { data } = await getApolloClient().query<ResultOf<typeof GET_VIDEOS>>({
-    query: GET_VIDEOS,
+  let languageId = '529'
+  let fallbackLanguageId
+  if (metadataLanguageTags.length > 0) {
+    const { data: languageIdData } = await getApolloClient().query<
+      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
+    >({
+      query: GET_LANGUAGE_ID_FROM_BCP47,
+      variables: { bcp47: metadataLanguageTags[0] }
+    })
+    languageId = languageIdData.language?.id ?? '529'
+  } else if (metadataLanguageTags.length > 1) {
+    const { data: languageIdData } = await getApolloClient().query<
+      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
+    >({
+      query: GET_LANGUAGE_ID_FROM_BCP47,
+      variables: { bcp47: metadataLanguageTags[1] }
+    })
+    fallbackLanguageId = languageIdData.language?.id ?? undefined
+  }
+  const { data } = await getApolloClient().query<
+    ResultOf<typeof GET_VIDEOS_WITH_FALLBACK>
+  >({
+    query: GET_VIDEOS_WITH_FALLBACK,
     variables: {
-      defaultLanguageId,
+      languageId,
+      fallbackLanguageId,
       languageIds,
       limit,
       offset,
@@ -164,11 +200,13 @@ export async function GET(request: NextRequest): Promise<Response> {
       verseEnd: citation.verseEnd
     })),
     primaryLanguageId: Number(video.primaryLanguageId),
-    title: video.title[0].value,
-    shortDescription: video.snippet[0].value,
-    longDescription: video.description[0].value,
+    title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
+    shortDescription:
+      video.snippet[0]?.value ?? video.fallbackSnippet[0]?.value ?? '',
+    longDescription:
+      video.description[0]?.value ?? video.fallbackDescription[0]?.value ?? '',
     studyQuestions: video.studyQuestions.map((question) => question.value),
-    metadataLanguageTag: video.variant?.language.bcp47 ?? 'en',
+    metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
     ...(expand.includes('languageIds')
       ? { languageIds: video.variantLanguages.map(({ id }) => Number(id)) }
       : {})
