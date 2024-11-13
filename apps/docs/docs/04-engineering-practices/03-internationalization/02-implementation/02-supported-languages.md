@@ -1,6 +1,6 @@
 # Supported Languages
 
-These are the languages currently supported in Core. Do note that not all the languages listed have been translated yet. Please take the time to look into what's been translated in Crowdin.
+Below are the languages currently supported in Core. Note that not all of the languages listed have translations yet. Please take the time to look into what has been translated in Crowdin.
 
 | Language   | Region/Variant     | Locales List Format | Crowdin Returned Format |
 | ---------- | ------------------ | ------------------- | ----------------------- |
@@ -24,4 +24,4 @@ These are the languages currently supported in Core. Do note that not all the la
 | Urdu       | Pakistan           | ur                  | ur-PK                   |
 | Vietnamese | Vietnam            | vi                  | vi-VN                   |
 
-Note: While most languages in the locales list use two-letter codes, some variants like Chinese Traditional (`zh-Hant-TW`) require more specific codes to properly support different versions of the same language using the format language-SCRIPT-REGION format.
+Note: While most languages in the locales list use two-letter codes, some variants such as Traditional Chinese (`zh-Hant-TW`) require more specific codes to properly support different versions of the same language using the format (`language-SCRIPT-REGION`) format.

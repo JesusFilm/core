@@ -2,13 +2,13 @@ import CrowdinTranslations from './crowdin-translations.png'
 
 # Translations Implementation Guide
 
-This document provides a detailed guide on the process for adding a new language to a project in Core. This assumes that you have a working knowledge of how to set up internationalization for a project.
+This document provides a detailed guide on the process of adding a new language to a project in Core. This assumes that you have knowledge of how to set up internationalization for a project.
 
 ## Understanding Locales
 
 ### What is a Locale?
 
-A locale is a combination of language and region settings that defines a user's language, region, and cultural preferences. Think of it as a digital passport that tells our application how to present information to users from different parts of the world.
+A locale is a combination of language and region settings that define a user's language, region, and cultural preferences. It can be thought of as a digital passport that tells the application on how to present information to users from different parts of the world.
 
 For example, users from different regions might expect:
 
@@ -17,7 +17,7 @@ For example, users from different regions might expect:
 
 ### Locale Structure and Standards
 
-A locale identifier follows the language-script-region format, using standardized ISO codes:
+A locale identifier follows the (`language-SCRIPT-REGION`) format, using standardized ISO codes:
 
 ```
 language-SCRIPT-REGION
@@ -62,7 +62,7 @@ language-SCRIPT-REGION
    - DeepL automatically generates initial translations
    - Translation team reviews translations (optional)
    - Crowdin automatically creates a GitHub PR with new translations
-     - This is configured in our crowdin.yml file.
+     - This is configured in our crowdin.yml file
      - For more information see [Crowdin GitHub Integration](https://support.crowdin.com/github-integration/) and [Crowdin Configuration File](https://support.crowdin.com/developer/configuration-file/)
 
 > **Important**: Crowdin will create and push Pull Requests with translations automatically, regardless of whether the translation team has reviewed them. This ensures continuous deployment but means that manual review of translations should be done post-deployment if needed.
@@ -90,7 +90,7 @@ language-SCRIPT-REGION
 
 **Translation Readiness Check**:
 
-- When new translations are ready, Crowdin will automatically create a Pull Request containing the translated files.
+- When new translations are ready, Crowdin will automatically create a Pull Request containing the translated files
   <img src={CrowdinTranslations} height="650" width="900"/>
 - The PR will contain all new translations that have been completed, either by translators or AI
 - If you can't find the translations you need, connect with a translation manager or a developer who has access to Crowdin
@@ -120,7 +120,7 @@ const i18nConfig = {
 }
 ```
 
-There are two approaches to handling locales, depending on whether you need to support multiple variants of a language:
+There are two approaches to handling locales, depending on whether you need to support multiple variants of a language.
 
 ### Case 1: Single Variant Languages
 
