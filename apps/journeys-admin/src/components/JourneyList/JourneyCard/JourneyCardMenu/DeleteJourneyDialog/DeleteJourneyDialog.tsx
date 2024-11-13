@@ -32,8 +32,8 @@ export function DeleteJourneyDialog({
   handleClose,
   refetch
 }: DeleteJourneyDialogProps): ReactElement {
-  const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
 
   const [deleteJourney, { loading }] = useMutation<JourneyDelete>(
     JOURNEY_DELETE,

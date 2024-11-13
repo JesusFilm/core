@@ -32,6 +32,9 @@ export function TrashJourneyDialog({
   handleClose,
   refetch
 }: TrashJourneyDialogProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
+
   const [trashJourney, { loading }] = useMutation<JourneyTrash>(JOURNEY_TRASH, {
     variables: {
       ids: [id]
@@ -47,18 +50,15 @@ export function TrashJourneyDialog({
     }
   })
 
-  const { enqueueSnackbar } = useSnackbar()
-  const { t } = useTranslation('apps-journeys-admin')
-
   async function handleTrash(): Promise<void> {
     try {
       await trashJourney()
+      handleClose()
       enqueueSnackbar(t('Journey trashed'), {
         variant: 'success',
         preventDuplicate: true
       })
       await refetch?.()
-      handleClose()
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
