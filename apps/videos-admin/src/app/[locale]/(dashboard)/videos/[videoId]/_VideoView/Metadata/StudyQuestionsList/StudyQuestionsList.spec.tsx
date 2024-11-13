@@ -1,10 +1,29 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react"
-import { StudyQuestions, UPDATE_STUDY_QUESTION_ORDER, UpdateStudyQuestionOrder, UpdateStudyQuestionOrderVariables } from "./StudyQuestions"
-import { mockStudyQuestions } from "./data.mock"
-import { NextIntlClientProvider } from "next-intl"
-import { MockedProvider, MockedResponse } from "@apollo/client/testing"
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
+import { NextIntlClientProvider } from 'next-intl'
 
-const getUpdateStudyQuestionOrderMock = <T extends { id: string; order: number}>(input: T): MockedResponse<UpdateStudyQuestionOrder, UpdateStudyQuestionOrderVariables> => ({
+import { mockStudyQuestions } from './data.mock'
+import {
+  StudyQuestionsList,
+  UPDATE_STUDY_QUESTION_ORDER,
+  UpdateStudyQuestionOrder,
+  UpdateStudyQuestionOrderVariables
+} from './StudyQuestionsList'
+
+const getUpdateStudyQuestionOrderMock = <
+  T extends { id: string; order: number }
+>(
+  input: T
+): MockedResponse<
+  UpdateStudyQuestionOrder,
+  UpdateStudyQuestionOrderVariables
+> => ({
   request: {
     query: UPDATE_STUDY_QUESTION_ORDER,
     variables: {
@@ -25,27 +44,35 @@ describe('StudyQuestions', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <StudyQuestions studyQuestions={mockStudyQuestions} />
+          <StudyQuestionsList studyQuestions={mockStudyQuestions} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
 
     expect(screen.getByText('Study Questions')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Add Question'})).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Add Question' })
+    ).toBeInTheDocument()
 
     const questions = screen.getAllByTestId('OrderedItem')
-    expect(questions.length).toBe(3)
+    expect(questions).toHaveLength(3)
 
-    expect(within(questions[0]).getByText('Study question 1 text')).toBeInTheDocument()
-    expect(within(questions[1]).getByText('Study question 2 text')).toBeInTheDocument()
-    expect(within(questions[2]).getByText('Study question 3 text')).toBeInTheDocument()
+    expect(
+      within(questions[0]).getByText('Study question 1 text')
+    ).toBeInTheDocument()
+    expect(
+      within(questions[1]).getByText('Study question 2 text')
+    ).toBeInTheDocument()
+    expect(
+      within(questions[2]).getByText('Study question 3 text')
+    ).toBeInTheDocument()
   })
 
   it('should update order on drag', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <StudyQuestions studyQuestions={mockStudyQuestions} />
+          <StudyQuestionsList studyQuestions={mockStudyQuestions} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -56,12 +83,15 @@ describe('StudyQuestions', () => {
   })
 
   it('should update order on order select update', async () => {
-    const mockOrderUpdate = getUpdateStudyQuestionOrderMock({ id: 'studyQuestion.1', order: 3 })
+    const mockOrderUpdate = getUpdateStudyQuestionOrderMock({
+      id: 'studyQuestion.1',
+      order: 3
+    })
 
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider mocks={[mockOrderUpdate]}>
-          <StudyQuestions studyQuestions={mockStudyQuestions} />
+          <StudyQuestionsList studyQuestions={mockStudyQuestions} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -81,7 +111,7 @@ describe('StudyQuestions', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <StudyQuestions studyQuestions={[]} />
+          <StudyQuestionsList studyQuestions={[]} />
         </MockedProvider>
       </NextIntlClientProvider>
     )

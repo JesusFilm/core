@@ -1,4 +1,3 @@
-import { UniqueIdentifier } from '@dnd-kit/core'
 import { useSortable } from '@dnd-kit/sortable'
 import FormControl from '@mui/material/FormControl'
 import IconButton from '@mui/material/IconButton'
@@ -7,9 +6,8 @@ import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
-import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon'
+// import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
-import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { MouseEvent, ReactElement, useState } from 'react'
 
@@ -121,8 +119,8 @@ interface OrderedItemProps {
   id: string
   label: string
   idx: number
-  total: number
-  onOrderUpdate: (input: { id: string; order: number }) => void
+  // total: number
+  // onOrderUpdate: (input: { id: string; order: number }) => void
   onClick?: (id: string) => void
   actions?: Array<{
     label: string
@@ -134,33 +132,40 @@ export function OrderedItem({
   id,
   label,
   idx,
-  total,
-  onOrderUpdate,
+  // total,
+  // onOrderUpdate,
   onClick,
   actions
 }: OrderedItemProps): ReactElement {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id })
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    setActivatorNodeRef
+  } = useSortable({ id })
 
   const style =
     transform != null
       ? { transform: `translate3d(0px, ${transform.y}px, 0)`, transition }
       : undefined
 
-  const handleClick = (e: MouseEvent<HTMLDivElement>): void => {
-    if (e.currentTarget !== e.target) return
+  // const handleClick = (e: MouseEvent<HTMLDivElement>): void => {
+  //   if (e.currentTarget !== e.target) return
 
-    onClick?.(id)
-  }
+  //   onClick?.(id)
+  // }
 
   return (
     <OrderedProvider value={{ id }}>
       <Stack
-        onClick={handleClick}
+        // onClick={handleClick}
         data-testid="OrderedItem"
-        id={`ordered-item-${id}`}
+        id={id}
         ref={setNodeRef}
         {...attributes}
+        {...listeners}
         direction="row"
         gap={2}
         sx={{
@@ -174,11 +179,14 @@ export function OrderedItem({
           width: '100%'
         }}
       >
-        <IconButton {...listeners} aria-label="ordered-item-drag-handle">
+        <IconButton
+          aria-label="ordered-item-drag-handle"
+          ref={setActivatorNodeRef}
+        >
           <Drag fontSize="large" />
         </IconButton>
         <Label>{label}</Label>
-        <Dropdown idx={idx} total={total} updateOrder={onOrderUpdate} />
+        {/* <Dropdown idx={idx} total={total} updateOrder={onOrderUpdate} /> */}
         {/* {img != null && (
           <Box
             sx={{
@@ -199,7 +207,7 @@ export function OrderedItem({
             />
           </Box>
         )} */}
-        {actions != null && actions.length > 0 && <Actions actions={actions} />}
+        {/* {actions != null && actions.length > 0 && <Actions actions={actions} />} */}
       </Stack>
     </OrderedProvider>
   )

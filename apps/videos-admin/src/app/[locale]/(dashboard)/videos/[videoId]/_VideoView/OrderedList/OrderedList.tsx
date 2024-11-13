@@ -8,7 +8,7 @@ interface BaseItem {
 }
 
 export interface OrderedListProps<T extends BaseItem> {
-  onOrderUpdate: (input: { id: string; order: number }) => void
+  onOrderUpdate: (e: DragEndEvent) => void
   items: T[]
   children: ReactNode
 }
@@ -18,14 +18,8 @@ export function OrderedList<T extends BaseItem>({
   items,
   children
 }: OrderedListProps<T>): ReactElement {
-  const handleDragEnd = async (e: DragEndEvent): Promise<void> => {
-    if (e.over == null) return
-
-    if (e.active.id !== e.over.id) {
-      const newIndex = items.findIndex((item) => item.id === e.over?.id)
-
-      await onOrderUpdate({ id: e.active.id as string, order: newIndex + 1 })
-    }
+  async function handleDragEnd(e: DragEndEvent): Promise<void> {
+    await onOrderUpdate(e)
   }
 
   return (
