@@ -1,5 +1,13 @@
-import { DndContext, DragEndEvent } from '@dnd-kit/core'
-import { SortableContext } from '@dnd-kit/sortable'
+import {
+  DndContext,
+  DragEndEvent,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors
+} from '@dnd-kit/core'
+import { SortableContext, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import Stack from '@mui/material/Stack'
 import { ReactElement, ReactNode } from 'react'
 
@@ -22,8 +30,16 @@ export function OrderedList<T extends BaseItem>({
     await onOrderUpdate(e)
   }
 
+  const sensors = useSensors(
+    useSensor(MouseSensor, {}),
+    useSensor(TouchSensor, {}),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates
+    })
+  )
+
   return (
-    <DndContext onDragEnd={handleDragEnd}>
+    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <SortableContext items={items}>
         <Stack gap={1}>{children}</Stack>
       </SortableContext>

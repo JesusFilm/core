@@ -57,7 +57,7 @@ export function OrderedItem({
   return (
     <Stack
       onClick={handleClick}
-      data-testid="OrderedItem"
+      data-testid={`OrderedItem-${idx}`}
       id={id}
       ref={setNodeRef}
       {...attributes}
@@ -75,6 +75,7 @@ export function OrderedItem({
       }}
     >
       <IconButton
+        data-testid={`OrderedItemDragHandle-${idx}`}
         sx={{ cursor: 'move' }}
         aria-label="ordered-item-drag-handle"
         ref={setActivatorNodeRef}

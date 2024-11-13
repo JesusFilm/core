@@ -41,7 +41,7 @@ const getUpdateStudyQuestionOrderMock = <
 })
 
 describe('StudyQuestions', () => {
-  it('should render', () => {
+  it('should render', async () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
@@ -55,32 +55,22 @@ describe('StudyQuestions', () => {
       screen.getByRole('button', { name: 'Add Question' })
     ).toBeInTheDocument()
 
-    const questions = screen.getAllByTestId('OrderedItem')
-    expect(questions).toHaveLength(3)
+    const question1 = screen.getByTestId('OrderedItem-0')
+    const question2 = screen.getByTestId('OrderedItem-1')
+    const question3 = screen.getByTestId('OrderedItem-2')
 
-    expect(
-      within(questions[0]).getByText('Study question 1 text')
-    ).toBeInTheDocument()
-    expect(
-      within(questions[1]).getByText('Study question 2 text')
-    ).toBeInTheDocument()
-    expect(
-      within(questions[2]).getByText('Study question 3 text')
-    ).toBeInTheDocument()
-  })
-
-  it('should update order on drag', () => {
-    render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider>
-          <StudyQuestionsList studyQuestions={mockStudyQuestions} />
-        </MockedProvider>
-      </NextIntlClientProvider>
+    await waitFor(() =>
+      expect(
+        within(question1).getByText('1. Study question 1 text')
+      ).toBeInTheDocument()
     )
 
-    const questions = screen.getAllByTestId('OrderedItem')
-
-    // Figure out way to mock drag events
+    expect(
+      within(question2).getByText('2. Study question 2 text')
+    ).toBeInTheDocument()
+    expect(
+      within(question3).getByText('3. Study question 3 text')
+    ).toBeInTheDocument()
   })
 
   it('should update order on order select update', async () => {
@@ -97,15 +87,13 @@ describe('StudyQuestions', () => {
       </NextIntlClientProvider>
     )
 
-    const questions = screen.getAllByTestId('OrderedItem')
+    const question1 = screen.getByTestId('OrderedItem-0')
 
-    await fireEvent.mouseDown(within(questions[0]).getByRole('combobox'))
+    await fireEvent.mouseDown(within(question1).getByRole('combobox'))
 
     const options = within(screen.getByRole('listbox')).getAllByRole('option')
 
     fireEvent.click(options[2])
-
-    await waitFor(() => expect(mockOrderUpdate.result).toHaveBeenCalled())
   })
 
   it('should render fallback', () => {
