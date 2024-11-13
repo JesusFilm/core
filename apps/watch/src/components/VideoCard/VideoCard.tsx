@@ -24,7 +24,7 @@ interface VideoCardProps {
   index?: number
   active?: boolean
   imageSx?: SxProps
-  onClick?: (videoId?: string) => (event: MouseEvent<HTMLElement>) => void
+  onClick?: (videoId?: string) => (event: MouseEvent) => void
 }
 
 const ImageButton = styled(ButtonBase)(() => ({

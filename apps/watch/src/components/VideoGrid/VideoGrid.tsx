@@ -18,7 +18,7 @@ export interface VideoGridProps {
   showMore?: () => void
   hasNextPage?: boolean
   hasNoResults?: boolean
-  onCardClick?: (videoId?: string) => (event: MouseEvent<HTMLElement>) => void
+  onCardClick?: (videoId?: string) => (event: MouseEvent) => void
 }
 
 export function VideoGrid({

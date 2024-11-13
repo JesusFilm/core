@@ -20,7 +20,7 @@ export function AlgoliaVideoGrid(props: VideoGridProps): ReactElement {
 
   const handleClick =
     (videoId?: string) =>
-    (event: MouseEvent<HTMLAnchorElement>): void => {
+    (event: MouseEvent): void => {
       event.stopPropagation()
       if (videoId == null) return
       const item = algoliaVideos.filter((item) => item.id === videoId)
