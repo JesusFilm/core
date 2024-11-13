@@ -3,6 +3,14 @@ import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
 import { paramsToRecord } from '../../../../../lib/paramsToRecord'
+import { getWebEmbedPlayer } from '../../../../../lib/stringsForArclight/webEmbedStrings'
+
+/*
+TODO
+languageIds,
+metadatLanguageTags,
+platform
+*/
 
 const GET_VIDEO_LANGUAGES = graphql(`
   query GetVideoVariants($id: ID!) {
@@ -30,6 +38,8 @@ const GET_VIDEO_LANGUAGES = graphql(`
           size
           quality
           url
+          width
+          height
         }
         language {
           id
@@ -52,9 +62,8 @@ export async function GET(
 
   const apiKey = query.get('apiKey') ?? '616db012e9a951.51499299'
   const platform = query.get('platform') ?? 'ios'
-  const apiSessionId = '6622f10d2260a8.05128925'
-
   const languageIds = query.get('languageIds')?.split(',') ?? []
+  const apiSessionId = '6622f10d2260a8.05128925'
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_VIDEO_LANGUAGES>
@@ -83,127 +92,16 @@ export async function GET(
               (download) => download.quality === 'high'
             )
 
-            const subtitleUrls =
-              platform === 'android'
-                ? {
-                    vtt:
-                      variant.subtitle?.map((subtitle) => ({
-                        languageId: Number(subtitle.language?.id),
-                        languageName: subtitle.language?.name[0].value,
-                        languageTag: subtitle.language?.bcp47,
-                        url: subtitle.vttSrc
-                      })) ?? [],
-                    srt:
-                      variant.subtitle?.map((subtitle) => ({
-                        languageId: Number(subtitle.language?.id),
-                        languageName: subtitle.language?.name[0].value,
-                        languageTag: subtitle.language?.bcp47,
-                        url: subtitle.srtSrc
-                      })) ?? []
-                  }
-                : {
-                    vtt:
-                      variant.subtitle?.map((subtitle) => ({
-                        languageId: Number(subtitle.language?.id),
-                        languageName: subtitle.language?.name[0].value,
-                        languageTag: subtitle.language?.bcp47,
-                        url: subtitle.vttSrc
-                      })) ?? []
-                  }
-
-            const streamingUrls =
-              platform === 'web'
-                ? {}
-                : platform === 'android'
-                  ? {
-                      dash: [{ videoBitrate: 0, url: variant.dash }],
-                      hls: [{ videoBitrate: 0, url: variant.hls }],
-                      http: []
-                    }
-                  : {
-                      m3u8: [{ videoBitrate: 0, url: variant.hls }],
-                      http: []
-                    }
-
-            const url = `https://api.arclight.org/videoPlayerUrl?refId=${variant.id}&apiSessionId=${apiSessionId}&player=bc.vanilla6&dtm=0&playerStyle=vanilla`
-
-            const cleanString = (str: string): string =>
-              str.replace(/\s+/g, ' ').trim()
-
-            const webEmbedPlayer =
-              platform === 'web'
-                ? cleanString(`
-            <div class="arc-cont">
-              <iframe src="${url}" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
-              <style>
-                .arc-cont {
-                  position: relative;
-                  display: block;
-                  margin: 10px auto;
-                  width: 100%;
-                }
-                .arc-cont:after {
-                  padding-top: 59%;
-                  display: block;
-                  content: "";
-                }
-                .arc-cont > iframe {
-                  position: absolute;
-                  top: 0;
-                  bottom: 0;
-                  right: 0;
-                  left: 0;
-                  width: 98%;
-                  height: 98%;
-                  border: 0;
-                }
-              </style>
-            </div>`)
-                : undefined
-
-            const webEmbedSharePlayer =
-              platform === 'web'
-                ? cleanString(`
-            <div class="arc-cont">
-              <iframe src="${url}" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
-              <style>
-                .arc-cont {
-                  position: relative;
-                  display: block;
-                  margin: 10px auto;
-                  width: 100%;
-                }
-                .arc-cont:after {
-                  padding-top: 59%;
-                  display: block;
-                  content: "";
-                }
-                .arc-cont > iframe {
-                  position: absolute;
-                  top: 0;
-                  bottom: 0;
-                  right: 0;
-                  left: 0;
-                  width: 98%;
-                  height: 98%;
-                  border: 0;
-                }
-              </style>
-            </div>`)
-                : undefined
-
-            return {
-              mediaComponentId,
-              languageId: Number(variant.language?.id),
-              refId: variant.id,
-              lengthInMilliseconds: variant.duration,
-              subtitleUrls,
-              downloadUrls: {
+            let downloadUrls = {}
+            if (downloadLow != null || downloadHigh != null) {
+              downloadUrls = {
                 low:
                   downloadLow == null
                     ? undefined
                     : {
                         url: downloadLow.url,
+                        height: downloadLow.height,
+                        width: downloadLow.width,
                         sizeInBytes: downloadLow.size
                       },
                 high:
@@ -211,11 +109,89 @@ export async function GET(
                     ? undefined
                     : {
                         url: downloadHigh.url,
+                        height: downloadHigh.height,
+                        width: downloadHigh.width,
                         sizeInBytes: downloadHigh.size
                       }
-              },
+              }
+            }
+
+            let subtitleUrls = {}
+            if (variant.subtitle?.length > 0) {
+              switch (platform) {
+                case 'android':
+                  subtitleUrls = {
+                    vtt: variant.subtitle?.map((subtitle) => ({
+                      languageId: Number(subtitle.language?.id),
+                      languageName: subtitle.language?.name[0].value,
+                      languageTag: subtitle.language?.bcp47,
+                      url: subtitle.vttSrc
+                    })),
+                    srt: variant.subtitle?.map((subtitle) => ({
+                      languageId: Number(subtitle.language?.id),
+                      languageName: subtitle.language?.name[0].value,
+                      languageTag: subtitle.language?.bcp47,
+                      url: subtitle.srtSrc
+                    }))
+                  }
+                  break
+                case 'ios':
+                case 'web':
+                  subtitleUrls = {
+                    m3u8: variant.subtitle?.map((subtitle) => ({
+                      languageId: Number(subtitle.language?.id),
+                      languageName: subtitle.language?.name[0].value,
+                      languageTag: subtitle.language?.bcp47,
+                      url: subtitle.srtSrc
+                    }))
+                  }
+                  break
+              }
+            }
+
+            let streamingUrls = {}
+            if (variant.hls != null) {
+              switch (platform) {
+                case 'web':
+                  streamingUrls = {}
+                  break
+                case 'android':
+                  streamingUrls = {
+                    dash: [{ videoBitrate: 0, url: variant.dash }],
+                    hls: [{ videoBitrate: 0, url: variant.hls }],
+                    http: []
+                  }
+                  break
+                case 'ios':
+                  streamingUrls = {
+                    m3u8: [{ videoBitrate: 0, url: variant.hls }],
+                    http: []
+                  }
+                  break
+              }
+            }
+
+            let shareUrl = variant.share
+            if (shareUrl == null) {
+              shareUrl = `https://arc.gt/s/${variant.id}/${variant.language?.id}`
+            }
+
+            const url = `https://api.arclight.org/videoPlayerUrl?refId=${variant.id}&apiSessionId=${apiSessionId}&player=bc.vanilla6&dtm=0&playerStyle=vanilla`
+
+            const webEmbedPlayer =
+              platform === 'web' ? getWebEmbedPlayer(url) : undefined
+            const webEmbedSharePlayer =
+              platform === 'web' ? getWebEmbedPlayer(url) : undefined
+
+            return {
+              mediaComponentId,
+              languageId: Number(variant.language?.id),
+              refId: variant.id,
+              lengthInMilliseconds: variant.duration,
+              subtitleUrls,
+              downloadUrls,
               streamingUrls,
-              shareUrl: variant.share ?? '',
+              shareUrl,
               socialMediaUrls: {},
               ...(platform === 'web' && {
                 webEmbedPlayer,
