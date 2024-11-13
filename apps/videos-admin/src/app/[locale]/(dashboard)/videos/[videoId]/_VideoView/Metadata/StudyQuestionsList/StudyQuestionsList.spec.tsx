@@ -33,7 +33,8 @@ const getUpdateStudyQuestionOrderMock = <
   result: jest.fn(() => ({
     data: {
       videoStudyQuestionUpdate: {
-        id: input.id
+        id: input.id,
+        value: 'Study questions value'
       }
     }
   }))

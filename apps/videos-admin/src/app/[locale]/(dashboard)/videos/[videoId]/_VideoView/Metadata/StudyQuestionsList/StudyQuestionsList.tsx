@@ -7,9 +7,9 @@ import { ReactElement, useState } from 'react'
 
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
+import { OrderedItem } from '../../../../../../../../components/OrderedItem'
+import { OrderedList } from '../../../../../../../../components/OrderedList'
 import { GetAdminVideo_AdminVideo_StudyQuestions as StudyQuestions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { OrderedItem } from '../../OrderedItem'
-import { OrderedList } from '../../OrderedList'
 import { Section } from '../../Section'
 
 export const UPDATE_STUDY_QUESTION_ORDER = graphql(`
