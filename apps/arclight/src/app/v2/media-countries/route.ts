@@ -32,6 +32,11 @@ const GET_COUNTRIES = graphql(`
           value
         }
       }
+      countryLanguages {
+        language {
+          id
+        }
+      }
       languageCount
       languageHavingMediaCount
     }
@@ -43,6 +48,7 @@ export async function GET(request: NextRequest): Promise<Response> {
 
   const page = Number(query.get('page') ?? 1)
   const limit = Number(query.get('limit') ?? 10)
+  const expand = query.get('expand')
   const offset = (page - 1) * limit
 
   const { data } = await getApolloClient().query<
@@ -99,6 +105,13 @@ export async function GET(request: NextRequest): Promise<Response> {
           webpLossy50: country.flagWebpSrc
         }
       },
+      ...(expand === 'languageIds'
+        ? {
+            languageIds: country.countryLanguages.map((countryLanguage) =>
+              Number(countryLanguage.language.id)
+            )
+          }
+        : {}),
       _links: {
         self: {
           href: `http://api.arclight.org/v2/media-countries/${country.id}?apiKey=3a21a65d4gf98hZ7`
