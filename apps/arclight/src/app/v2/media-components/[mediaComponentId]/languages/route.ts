@@ -3,14 +3,10 @@ import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
 import { paramsToRecord } from '../../../../../lib/paramsToRecord'
-import { getWebEmbedPlayer } from '../../../../../lib/stringsForArclight/webEmbedStrings'
-
-/*
-TODO
-languageIds,
-metadatLanguageTags,
-platform
-*/
+import {
+  getWebEmbedPlayer,
+  getWebEmbedSharePlayer
+} from '../../../../../lib/stringsForArclight/webEmbedStrings'
 
 const GET_VIDEO_LANGUAGES = graphql(`
   query GetVideoVariants($id: ID!) {
@@ -176,12 +172,11 @@ export async function GET(
               shareUrl = `https://arc.gt/s/${variant.id}/${variant.language?.id}`
             }
 
-            const url = `https://api.arclight.org/videoPlayerUrl?refId=${variant.id}&apiSessionId=${apiSessionId}&player=bc.vanilla6&dtm=0&playerStyle=vanilla`
-
-            const webEmbedPlayer =
-              platform === 'web' ? getWebEmbedPlayer(url) : undefined
-            const webEmbedSharePlayer =
-              platform === 'web' ? getWebEmbedPlayer(url) : undefined
+            const webEmbedPlayer = getWebEmbedPlayer(variant.id, apiSessionId)
+            const webEmbedSharePlayer = getWebEmbedSharePlayer(
+              variant.id,
+              apiSessionId
+            )
 
             return {
               mediaComponentId,
