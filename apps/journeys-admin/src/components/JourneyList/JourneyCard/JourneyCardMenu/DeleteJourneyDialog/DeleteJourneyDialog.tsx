@@ -2,7 +2,7 @@ import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -34,8 +34,9 @@ export function DeleteJourneyDialog({
 }: DeleteJourneyDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
+  const [isRefetching, setIsRefetching] = useState(false)
 
-  const [deleteJourney, { loading }] = useMutation<JourneyDelete>(
+  const [deleteJourney, { loading: isLoading }] = useMutation<JourneyDelete>(
     JOURNEY_DELETE,
     {
       variables: {
@@ -56,12 +57,16 @@ export function DeleteJourneyDialog({
   async function handleDelete(): Promise<void> {
     try {
       await deleteJourney()
-      handleClose()
+      if (refetch != null) {
+        setIsRefetching(true)
+        await refetch()
+        setIsRefetching(false)
+      }
       enqueueSnackbar(t('Journey Deleted'), {
         variant: 'success',
         preventDuplicate: true
       })
-      await refetch?.()
+      handleClose()
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
@@ -71,6 +76,8 @@ export function DeleteJourneyDialog({
       }
     }
   }
+
+  const loading = isLoading || isRefetching
 
   return (
     <Dialog

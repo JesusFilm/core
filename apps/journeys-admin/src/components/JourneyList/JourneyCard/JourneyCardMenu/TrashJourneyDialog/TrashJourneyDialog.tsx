@@ -2,7 +2,7 @@ import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -34,31 +34,39 @@ export function TrashJourneyDialog({
 }: TrashJourneyDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
+  const [isRefetching, setIsRefetching] = useState(false)
 
-  const [trashJourney, { loading }] = useMutation<JourneyTrash>(JOURNEY_TRASH, {
-    variables: {
-      ids: [id]
-    },
-    optimisticResponse: {
-      journeysTrash: [
-        {
-          id,
-          status: JourneyStatus.deleted,
-          __typename: 'Journey'
-        }
-      ]
+  const [trashJourney, { loading: isLoading }] = useMutation<JourneyTrash>(
+    JOURNEY_TRASH,
+    {
+      variables: {
+        ids: [id]
+      },
+      optimisticResponse: {
+        journeysTrash: [
+          {
+            id,
+            status: JourneyStatus.deleted,
+            __typename: 'Journey'
+          }
+        ]
+      }
     }
-  })
+  )
 
   async function handleTrash(): Promise<void> {
     try {
       await trashJourney()
-      handleClose()
+      if (refetch != null) {
+        setIsRefetching(true)
+        await refetch()
+        setIsRefetching(false)
+      }
       enqueueSnackbar(t('Journey trashed'), {
         variant: 'success',
         preventDuplicate: true
       })
-      await refetch?.()
+      handleClose()
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
@@ -68,6 +76,8 @@ export function TrashJourneyDialog({
       }
     }
   }
+
+  const loading = isLoading || isRefetching
 
   return (
     <Dialog
