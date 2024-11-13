@@ -5,6 +5,8 @@ describe('tracer', () => {
     expect(Object.keys(tracer)).toEqual([
       '_tracer',
       'appsec',
+      'dogstatsd',
+      'llmobs',
       'default',
       'tracer'
     ])
