@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 
-import { videosAdminConfig } from '../../../../../../../libs/storybookConfig'
+import { videosAdminConfig } from '../../../libs/storybookConfig'
 
 import { OrderedItem } from './OrderedItem'
 

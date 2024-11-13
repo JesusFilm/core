@@ -13,10 +13,11 @@ import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { Textarea } from '../../../../../../../components/Textarea'
+import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { Section } from '../Section'
 import { UpdateableField } from '../UpdateableField'
 
-import { StudyQuestions } from './StudyQuestions'
+import { StudyQuestionsList } from './StudyQuestionsList'
 import { VideoImage } from './VideoImage'
 
 function useUpdateMutation(mutation) {
@@ -90,7 +91,7 @@ const VIDEO_IMAGE_ALT_UPDATE = graphql(`
 `)
 
 interface MetadataProps {
-  video: any
+  video: AdminVideo
   loading: boolean
   isEdit: boolean
 }
@@ -177,7 +178,7 @@ export function Metadata({
                   <FormLabel>{t('Status')}</FormLabel>
                   <Select
                     defaultValue={
-                      video?.published === true ? 'published' : 'unpublished'
+                      video?.published ? 'published' : 'unpublished'
                     }
                     onChange={handleStatusChange}
                     inputProps={{ readOnly: !isEdit }}
@@ -258,8 +259,7 @@ export function Metadata({
               sx={{ minWidth: '100%', maxWidth: '100%' }}
             />
           </Section>
-
-          <StudyQuestions studyQuestions={video?.studyQuestions} />
+          <StudyQuestionsList studyQuestions={video?.studyQuestions} />
         </>
       )}
     </Stack>

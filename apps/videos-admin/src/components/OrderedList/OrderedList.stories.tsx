@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 
-import { videosAdminConfig } from '../../../../../../../libs/storybookConfig'
-import { OrderedItem } from '../OrderedItem'
+import { videosAdminConfig } from '../../libs/storybookConfig'
+import { OrderedItem } from './OrderedItem'
 
 import { OrderedList } from './OrderedList'
 
@@ -31,7 +31,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 const Template: Story = {
-  render: ({ items, ...args}) => (
+  render: ({ items, ...args }) => (
     <OrderedList<Item> {...args}>
       {items.map(({ id, value }, i) => (
         <OrderedItem key={i} id={id} value={value} />
@@ -42,7 +42,7 @@ const Template: Story = {
 
 export const Default: Story = {
   args: {
-    items: [{ id: 'OrderedItem.1', value: 'Ordered row'}]
+    items: [{ id: 'OrderedItem.1', value: 'Ordered row' }]
   }
 }
 
