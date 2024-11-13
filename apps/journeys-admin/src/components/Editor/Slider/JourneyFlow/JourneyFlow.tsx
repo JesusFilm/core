@@ -502,7 +502,7 @@ export function JourneyFlow(): ReactElement {
         onSelectionChange={onSelectionChange}
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
-        minZoom={0.3}
+        minZoom={0.1}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         proOptions={{ hideAttribution: true }}
