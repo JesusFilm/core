@@ -70,7 +70,8 @@ export function YouTubeDetails({
       playerRef.current = videojs(videoRef.current, {
         ...defaultVideoJsOptions,
         fluid: true,
-        controls: true
+        controls: true,
+        poster: data?.snippet?.thumbnails?.default?.url ?? undefined
       })
       playerRef.current.on('playing', () => {
         setPlaying(true)
@@ -104,7 +105,12 @@ export function YouTubeDetails({
             sx={{
               borderRadius: 3,
               position: 'relative',
-              overflow: 'hidden'
+              overflow: 'hidden',
+              '& .vjs-poster img': {
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
+              }
             }}
           >
             <video
