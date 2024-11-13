@@ -64,6 +64,12 @@ export function StudyQuestionsList({
     id: string
     order: number
   }): Promise<void> {
+    const oldIndex = studyQuestionItems.findIndex(
+      (item) => item.id === input.id
+    )
+    setStudyQuestionItems((items) => {
+      return arrayMove(items, oldIndex, input.order)
+    })
     await updateStudyQuestionOrder({
       variables: {
         input: { id: input.id.toString(), order: input.order + 1 }

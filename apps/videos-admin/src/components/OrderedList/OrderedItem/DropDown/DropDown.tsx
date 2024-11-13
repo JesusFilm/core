@@ -32,9 +32,9 @@ export function DropDown({
   return (
     <FormControl sx={{ ml: 'auto' }}>
       <InputLabel>{t('Order')}</InputLabel>
-      <Select value={idx + 1} size="small" onChange={handleChange}>
+      <Select value={idx} size="small" onChange={handleChange}>
         {[...Array(total)].map((_, i) => (
-          <MenuItem key={i} value={i + 1}>
+          <MenuItem key={i} value={i}>
             <Typography>{i + 1}</Typography>
           </MenuItem>
         ))}
