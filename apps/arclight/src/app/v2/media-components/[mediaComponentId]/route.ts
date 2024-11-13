@@ -6,10 +6,12 @@ import { paramsToRecord } from '../../../../lib/paramsToRecord'
 
 /* TODO: 
   querystring:
-    apiKey
-    expand
-    filter
-    metadataLanguageTags
+    expand,
+    ids,
+    isDeprecated,
+    languageIds,
+    metadataLanguageTags,
+    subTypes
 */
 
 const GET_VIDEO = graphql(`
@@ -50,6 +52,7 @@ const GET_VIDEO = graphql(`
         language {
           bcp47
         }
+        downloadable
         downloads {
           height
           width
@@ -114,8 +117,7 @@ export async function GET(
     },
     lengthInMilliseconds: video.variant?.duration ?? 0,
     containsCount: video.childrenCount,
-    // TODO: Needs new field in the schema
-    isDownloadable: true,
+    isDownloadable: video.variant?.downloadable ?? false,
     downloadSizes: {
       approximateSmallDownloadSizeInBytes:
         video.variant?.downloads?.find(({ quality }) => quality === 'low')
@@ -142,7 +144,6 @@ export async function GET(
       sampleMediaComponentLanguage: {
         href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/529?platform=web&apiKey=616db012e9a951.51499299`
       },
-      // TODO: Needs data, endpoint, etc
       osisBibleBooks: {
         href: 'http://api.arclight.org/v2/taxonomies/osisBibleBooks?apiKey=616db012e9a951.51499299'
       },
