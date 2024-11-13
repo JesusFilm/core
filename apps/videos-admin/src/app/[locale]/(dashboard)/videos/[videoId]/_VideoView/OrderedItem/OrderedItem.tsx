@@ -1,14 +1,11 @@
 import { useSortable } from '@dnd-kit/sortable'
-import FormControl from '@mui/material/FormControl'
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import InputLabel from '@mui/material/InputLabel'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 // import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
-import { useTranslations } from 'next-intl'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import Drag from '@core/shared/ui/icons/Drag'
@@ -45,7 +42,7 @@ function Actions({ actions }: ActionsProps): ReactElement {
   }
 
   return (
-    <div>
+    <Box sx={{ ml: 'auto' }}>
       <IconButton
         aria-label="ordered-item-actions"
         size="small"
@@ -71,43 +68,7 @@ function Actions({ actions }: ActionsProps): ReactElement {
           </MenuItem>
         ))}
       </Menu>
-    </div>
-  )
-}
-
-interface DropdownProps {
-  idx: number
-  total: number
-  updateOrder: (input: { id: string; order: number }) => void
-}
-
-function Dropdown({ total, idx, updateOrder }: DropdownProps): ReactElement {
-  const t = useTranslations()
-  const { id } = useOrder()
-
-  const handleChange = (e: SelectChangeEvent<number>): void => {
-    let newOrder = e.target.value
-
-    if (typeof newOrder === 'string') {
-      newOrder = Number(newOrder)
-    }
-
-    if (typeof newOrder !== 'number') return
-
-    updateOrder({ id, order: newOrder })
-  }
-
-  return (
-    <FormControl sx={{ ml: 'auto' }}>
-      <InputLabel>{t('Order')}</InputLabel>
-      <Select value={idx + 1} size="small" onChange={handleChange}>
-        {[...Array(total)].map((_, i) => (
-          <MenuItem key={i} value={i + 1}>
-            <Typography>{i + 1}</Typography>
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+    </Box>
   )
 }
 
@@ -165,7 +126,6 @@ export function OrderedItem({
         id={id}
         ref={setNodeRef}
         {...attributes}
-        {...listeners}
         direction="row"
         gap={2}
         sx={{
@@ -180,13 +140,14 @@ export function OrderedItem({
         }}
       >
         <IconButton
+          sx={{ cursor: 'move' }}
           aria-label="ordered-item-drag-handle"
           ref={setActivatorNodeRef}
+          {...listeners}
         >
           <Drag fontSize="large" />
         </IconButton>
-        <Label>{label}</Label>
-        <Dropdown idx={idx} total={total} updateOrder={onOrderUpdate} />
+        <Label>{`${idx + 1}. ${label}`}</Label>
         {/* {img != null && (
           <Box
             sx={{
@@ -214,5 +175,4 @@ export function OrderedItem({
 }
 
 OrderedItem.Label = Label
-OrderedItem.Dropdown = Dropdown
 OrderedItem.Actions = Actions

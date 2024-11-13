@@ -39,25 +39,36 @@ export function StudyQuestionsList({
   const [studyQuestionItems, setStudyQuestionItems] = useState(studyQuestions)
   const [updateStudyQuestionOrder] = useMutation(UPDATE_STUDY_QUESTION_ORDER)
 
-  async function updateOrder(e: DragEndEvent): Promise<void> {
+  async function updateOrderOnDrag(e: DragEndEvent): Promise<void> {
     const { active, over } = e
     if (over == null) return
     if (e.active.id !== over.id) {
+      const oldIndex = studyQuestionItems.findIndex(
+        (item) => item.id === active.id
+      )
       const newIndex = studyQuestionItems.findIndex(
-        (item) => item.id === e.over?.id
+        (item) => item.id === over.id
       )
       setStudyQuestionItems((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id)
-        const newIndex = items.findIndex((item) => item.id === over.id)
-
         return arrayMove(items, oldIndex, newIndex)
       })
-      await updateStudyQuestionOrder({
+      void updateStudyQuestionOrder({
         variables: {
           input: { id: active.id.toString(), order: newIndex + 1 }
         }
       })
     }
+  }
+
+  async function updateOrderOnChange(input: {
+    id: string
+    order: number
+  }): Promise<void> {
+    await updateStudyQuestionOrder({
+      variables: {
+        input: { id: input.id.toString(), order: input.order + 1 }
+      }
+    })
   }
 
   const totalQuestions = studyQuestionItems?.length ?? 0
@@ -72,7 +83,10 @@ export function StudyQuestionsList({
       }}
     >
       {totalQuestions > 0 ? (
-        <OrderedList onOrderUpdate={updateOrder} items={studyQuestionItems}>
+        <OrderedList
+          onOrderUpdate={updateOrderOnDrag}
+          items={studyQuestionItems}
+        >
           {studyQuestionItems?.map(({ id, value }, idx) => (
             <OrderedItem
               key={id}
@@ -80,8 +94,8 @@ export function StudyQuestionsList({
               label={value}
               idx={idx}
               total={totalQuestions}
-              onOrderUpdate={updateOrder}
-              actions={[{ label: 'view', handler: () => null }]}
+              onOrderUpdate={updateOrderOnChange}
+              actions={[{ label: t('Edit'), handler: () => null }]}
             />
           ))}
         </OrderedList>
