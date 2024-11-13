@@ -9,17 +9,12 @@ import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
-import type { ReactElement } from 'react'
+import type { MouseEvent, ReactElement } from 'react'
 
-import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
-import {
-  type CoreVideo,
-  transformAlgoliaVideos as transformItems
-} from '../../libs/algolia/transformAlgoliaVideos'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 
 interface VideoCardProps {
@@ -29,6 +24,7 @@ interface VideoCardProps {
   index?: number
   active?: boolean
   imageSx?: SxProps
+  onClick?: (videoId?: string) => (event: MouseEvent<HTMLElement>) => void
 }
 
 const ImageButton = styled(ButtonBase)(() => ({
@@ -70,7 +66,8 @@ export function VideoCard({
   variant = 'expanded',
   index,
   active,
-  imageSx
+  imageSx,
+  onClick: handleClick
 }: VideoCardProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
@@ -79,14 +76,6 @@ export function VideoCard({
     video?.childrenCount ?? 0
   )
   const href = getSlug(containerSlug, video?.label, video?.variant?.slug)
-
-  const { items, sendEvent } = useAlgoliaVideos<CoreVideo>({ transformItems })
-  const item = items.filter((item) => item.id === video?.id)
-
-  const handleClick = (event): void => {
-    event.stopPropagation()
-    sendEvent('click', item, 'Video Clicked')
-  }
 
   return (
     <NextLink href={href} passHref legacyBehavior>
@@ -97,7 +86,7 @@ export function VideoCard({
         sx={{ pointerEvents: video != null ? 'auto' : 'none' }}
         aria-label="VideoCard"
         data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}
-        onClick={handleClick}
+        onClick={handleClick?.(video?.id)}
       >
         <Stack spacing={3}>
           <ImageButton
