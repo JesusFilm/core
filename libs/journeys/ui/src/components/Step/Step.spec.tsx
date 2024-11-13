@@ -151,13 +151,11 @@ const block: TreeBlock<StepFields> = {
 describe('Step', () => {
   const originalLocation = window.location
   const mockOrigin = 'https://example.com'
-  // const mockSearch = '?utm_source=source&utm_campaign=campaign'
 
   beforeAll(() => {
     Object.defineProperty(window, 'location', {
       value: {
         origin: mockOrigin
-        // search: mockSearch
       }
     })
   })
