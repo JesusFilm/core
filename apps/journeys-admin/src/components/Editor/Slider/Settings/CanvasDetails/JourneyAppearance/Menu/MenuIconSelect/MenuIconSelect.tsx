@@ -123,6 +123,8 @@ export function MenuIconSelect(): ReactElement {
         sx={{
           width: 'min-content',
           borderRadius: 2,
+          minWidth: 100,
+          minHeight: 80,
           '& .MuiSelect-icon': {
             color: 'primary.main',
             mr: 1.5

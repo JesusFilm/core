@@ -1,5 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -31,8 +37,10 @@ describe('DisplayTitle', () => {
       </MockedProvider>
     )
 
-    const accordion = screen.getByRole('button', { name: 'Display Title' })
+    const accordion = screen.getByTestId('AccordionSummary')
     expect(accordion).toBeInTheDocument()
+    expect(within(accordion).getByText('Display Title')).toBeInTheDocument()
+    expect(within(accordion).getByRole('checkbox')).toBeInTheDocument()
 
     fireEvent.click(accordion)
 
@@ -60,7 +68,7 @@ describe('DisplayTitle', () => {
       </MockedProvider>
     )
 
-    const accordion = screen.getByRole('button', { name: 'Display Title' })
+    const accordion = screen.getByTestId('AccordionSummary')
     expect(accordion).toBeInTheDocument()
 
     fireEvent.click(accordion)
@@ -85,7 +93,7 @@ describe('DisplayTitle', () => {
       </MockedProvider>
     )
 
-    const accordion = screen.getByRole('button', { name: 'Display Title' })
+    const accordion = screen.getByTestId('AccordionSummary')
     expect(accordion).toBeInTheDocument()
 
     fireEvent.click(accordion)
@@ -119,7 +127,7 @@ describe('DisplayTitle', () => {
       </MockedProvider>
     )
 
-    const accordion = screen.getByRole('button', { name: 'Display Title' })
+    const accordion = screen.getByTestId('AccordionSummary')
     expect(accordion).toBeInTheDocument()
 
     fireEvent.click(accordion)
