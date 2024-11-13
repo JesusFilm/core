@@ -231,6 +231,7 @@
   "Medium": "Medium",
   "Large": "대형",
   "Contained": "포함",
+  "Invalid {{ HEX }} color code": "잘못된 {{ HEX }} 색상 코드",
   "Palette": "팔레트",
   "None": "없음",
   "Background": "배경",
