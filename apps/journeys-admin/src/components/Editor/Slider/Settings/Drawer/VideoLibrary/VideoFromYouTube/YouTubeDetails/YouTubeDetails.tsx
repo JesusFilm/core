@@ -106,7 +106,7 @@ export function YouTubeDetails({
               borderRadius: 3,
               position: 'relative',
               overflow: 'hidden',
-              '> .vjs-poster img': {
+              '& .vjs-poster img': {
                 width: '100%',
                 height: '100%',
                 objectFit: 'cover'
