@@ -236,6 +236,7 @@
   "Medium": "Medium",
   "Large": "Large",
   "Contained": "Contained",
+  "Invalid {{ HEX }} color code": "Invalid {{ HEX }} color code",
   "Palette": "Palette",
   "Background": "Background",
   "Style": "Style",

@@ -231,6 +231,7 @@
   "Medium": "ミディアム",
   "Large": "大型",
   "Contained": "含有",
+  "Invalid {{ HEX }} color code": "{{ HEX }} 無効なカラーコード",
   "Palette": "パレット",
   "None": "なし",
   "Background": "背景",
