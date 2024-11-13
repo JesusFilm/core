@@ -52,7 +52,7 @@ export function StudyQuestionsList({
       setStudyQuestionItems((items) => {
         return arrayMove(items, oldIndex, newIndex)
       })
-      void updateStudyQuestionOrder({
+      await updateStudyQuestionOrder({
         variables: {
           input: { id: active.id.toString(), order: newIndex + 1 }
         }
