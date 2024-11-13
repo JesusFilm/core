@@ -1,15 +1,20 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen, waitFor } from '@testing-library/react'
-import { useParams } from 'next/navigation'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { useParams  } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 import { VideoView } from './VideoView'
 
+const mockPush = jest.fn()
+
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
-  useParams: jest.fn()
+  useParams: jest.fn(),
+  useRouter: () => ({
+    push: mockPush
+  })
 }))
 
 const mockUseParams = useParams as jest.MockedFunction<typeof mockUseParams>
@@ -36,5 +41,23 @@ describe('VideoView', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('JESUS')).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'JESUS' })).toBeInTheDocument()
+  })
+
+  it('should navigate to edit page', () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+
+    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
+
+    render(
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+        <NextIntlClientProvider locale="en">
+          <VideoView />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))    
+
+    expect(mockPush).toHaveBeenCalled()
   })
 })

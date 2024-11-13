@@ -18,6 +18,8 @@ export const useAdminVideoMock: MockedResponse<
     data: {
       adminVideo: {
         id: '1_jf-0-0',
+        label: 'episode',
+        slug: 'jesus',
         images: [
           {
             mobileCinematicHigh:

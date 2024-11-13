@@ -4,13 +4,13 @@ import {
   useColorScheme
 } from '@mui/material/styles'
 import { Decorator, StoryContext } from '@storybook/react'
+import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
 import { sharedUiConfig } from '@core/shared/ui/sharedUiConfig'
 
 import { theme } from '../../theme'
-import { NextIntlClientProvider } from 'next-intl'
 
 function StorySlot({
   storyComponent,
