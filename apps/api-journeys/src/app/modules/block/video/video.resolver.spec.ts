@@ -29,28 +29,23 @@ jest.mock('node-fetch', () => {
 })
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
-jest.mock('@mux/mux-node', () => {
-  const originalModule = jest.requireActual('@mux/mux-node')
-  return {
-    __esModule: true,
-    ...originalModule,
-    getClient: jest.fn().mockImplementation(() => ({
-      video: {
-        assets: {
-          retrieve: jest.fn().mockResolvedValue({
-            id: 'videoId',
-            duration: 100,
-            static_renditions: [
-              {
-                url: 'https://mux.com/video.mp4'
-              }
-            ]
-          })
-        }
+jest.mock('@mux/mux-node', () =>
+  jest.fn().mockImplementation(() => ({
+    video: {
+      assets: {
+        retrieve: jest.fn().mockResolvedValue({
+          id: 'videoId',
+          duration: 100,
+          static_renditions: [
+            {
+              url: 'https://mux.com/video.mp4'
+            }
+          ]
+        })
       }
-    }))
-  }
-})
+    }
+  }))
+)
 
 describe('VideoBlockResolver', () => {
   let resolver: VideoBlockResolver,
@@ -442,7 +437,12 @@ describe('VideoBlockResolver', () => {
             videoVariantLanguageId: 'videoVariantLanguageId',
             source: VideoBlockSource.mux
           })
-        ).toEqual(blockWithUserTeam)
+        ).toEqual({
+          ...blockWithUserTeam,
+          duration: 100,
+          endAt: 100,
+          image: 'https://mux.com/video.mp4'
+        })
         expect(prismaService.block.create).toHaveBeenCalledWith({
           data: {
             id: 'blockId',
