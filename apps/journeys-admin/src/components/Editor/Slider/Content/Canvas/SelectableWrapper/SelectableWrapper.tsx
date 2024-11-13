@@ -158,7 +158,7 @@ export function SelectableWrapper({
 
   return isSelectable ? (
     <Box
-      ref={setNodeRef}
+      ref={block.__typename !== 'RadioOptionBlock' ? setNodeRef : undefined}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       sx={{
