@@ -94,7 +94,7 @@ export function StudyQuestionsList({
               label={value}
               idx={idx}
               total={totalQuestions}
-              onOrderUpdate={updateOrderOnChange}
+              onChange={updateOrderOnChange}
               actions={[{ label: t('Edit'), handler: () => null }]}
             />
           ))}
