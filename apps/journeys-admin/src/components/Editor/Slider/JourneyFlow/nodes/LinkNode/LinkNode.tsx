@@ -48,8 +48,8 @@ export function LinkNode({ id }: NodeProps): ReactElement {
         alignItems="center"
         direction="row"
         sx={{
-          px: 3,
-          margin: 0,
+          pr: 3,
+          m: 0,
           height: LINK_NODE_HEIGHT,
           width: LINK_NODE_WIDTH,
           borderRadius: 2,
@@ -92,7 +92,8 @@ export function LinkNode({ id }: NodeProps): ReactElement {
             sx={{
               width: '100%',
               fontSize: 10,
-              lineHeight: '12px'
+              lineHeight: '12px',
+              pr: 3
             }}
           >
             {actionDetail}
