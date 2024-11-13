@@ -38,6 +38,7 @@ export function YouTubeDetails({
   id,
   onSelect
 }: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player>()
   const [playing, setPlaying] = useState(false)
@@ -69,8 +70,7 @@ export function YouTubeDetails({
       playerRef.current = videojs(videoRef.current, {
         ...defaultVideoJsOptions,
         fluid: true,
-        controls: true,
-        poster: data?.snippet?.thumbnails?.default?.url ?? undefined
+        controls: true
       })
       playerRef.current.on('playing', () => {
         setPlaying(true)
@@ -79,7 +79,6 @@ export function YouTubeDetails({
   }, [data])
 
   const loading = data == null && error == null
-  const { t } = useTranslation('apps-journeys-admin')
 
   return (
     <Stack spacing={4} sx={{ p: 6 }} data-testid="YoutubeDetails">
