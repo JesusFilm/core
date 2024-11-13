@@ -151,14 +151,16 @@ export function VideoContentPage(): ReactElement {
               </Stack>
             </Box>
           </Stack>
-          {variant != null && variant.downloads.length > 0 && (
-            <DownloadDialog
-              open={openDownload}
-              onClose={() => {
-                setOpenDownload(false)
-              }}
-            />
-          )}
+          {variant != null &&
+            variant.downloadable &&
+            variant.downloads.length > 0 && (
+              <DownloadDialog
+                open={openDownload}
+                onClose={() => {
+                  setOpenDownload(false)
+                }}
+              />
+            )}
           <ShareDialog open={openShare} onClose={() => setOpenShare(false)} />
         </Container>
       </PageWrapper>
