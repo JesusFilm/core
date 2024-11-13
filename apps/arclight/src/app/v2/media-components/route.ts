@@ -4,10 +4,8 @@ import { NextRequest } from 'next/server'
 import { getApolloClient } from '../../../lib/apolloClient'
 import { paramsToRecord } from '../../../lib/paramsToRecord'
 
-/* TODO: 
-  querystring:
-isDeprecated,
-subTypes
+/* TODO:
+  isDeprecated,
 */
 
 const GET_LANGUAGE_ID_FROM_BCP47 = graphql(`
@@ -26,8 +24,15 @@ const GET_VIDEOS_WITH_FALLBACK = graphql(`
     $languageIds: [ID!]
     $languageId: ID
     $fallbackLanguageId: ID
+    $labels: [VideoLabel!]
   ) {
-    videosCount(where: { ids: $ids, availableVariantLanguageIds: $languageIds })
+    videosCount(
+      where: {
+        ids: $ids
+        availableVariantLanguageIds: $languageIds
+        labels: $labels
+      }
+    )
     videos(
       limit: $limit
       offset: $offset
@@ -114,6 +119,7 @@ export async function GET(request: NextRequest): Promise<Response> {
   const limit = Number(query.get('limit') ?? 10000)
   const offset = (page - 1) * limit
   const expand = query.get('expand') ?? ''
+  const subTypes = query.get('subTypes')?.split(',').filter(Boolean) ?? []
   const languageIds =
     query.get('languageIds')?.split(',').filter(Boolean) ?? undefined
   const ids = query.get('ids')?.split(',').filter(Boolean) ?? undefined
@@ -149,6 +155,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       languageIds,
       limit,
       offset,
+      labels: subTypes,
       ...(ids != null ? { ids } : {})
     }
   })
