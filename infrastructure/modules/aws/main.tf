@@ -132,6 +132,11 @@ resource "aws_lb_listener_certificate" "acm_nextstep_is" {
   certificate_arn = data.aws_acm_certificate.acm_nextstep_is.arn
 }
 
+resource "aws_lb_listener_certificate" "acm_core_arclight_org" {
+  listener_arn    = module.public_alb_listener.arn
+  certificate_arn = data.aws_acm_certificate.acm_core_arclight_org.arn
+}
+
 resource "aws_lb_listener_certificate" "acm_core_stage_arclight_org" {
   listener_arn    = module.public_alb_listener.arn
   certificate_arn = data.aws_acm_certificate.acm_core_stage_arclight_org.arn

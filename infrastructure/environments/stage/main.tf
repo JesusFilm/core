@@ -159,7 +159,7 @@ module "arclight" {
   doppler_token    = data.aws_ssm_parameter.doppler_arclight_stage_token.value
   alb_listener_arn = module.stage.public_alb.alb_listener.arn
   alb_dns_name     = module.stage.public_alb.dns_name
-  host_name        = "core-stage.arlight.org"
+  host_name        = "core-stage.arclight.org"
   env              = "stage"
 }
 
