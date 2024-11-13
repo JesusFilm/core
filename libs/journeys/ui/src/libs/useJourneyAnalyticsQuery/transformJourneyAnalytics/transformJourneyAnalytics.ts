@@ -44,13 +44,9 @@ export function transformJourneyAnalytics(
     journeyVisitorsPageExits,
     journeyReferrer,
     journeyAggregateVisitors,
-    journeyActionsSums,
-    journeyUtmCampaign
+    journeyActionsSums
+    // journeyUtmCampaign
   } = data
-
-  // http://localhost:4100/to?utm_source=ns-qr-code&utm_campaign=test
-  console.log('journeyUtmCampaign: ', journeyUtmCampaign)
-  console.log('journeyReferrer: ', journeyReferrer)
 
   const journeyEvents = getJourneyEvents(journeyStepsActions)
   const journeyEventsSums = getJourneyEvents(journeyActionsSums)
