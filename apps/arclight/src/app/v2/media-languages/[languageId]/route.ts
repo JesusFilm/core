@@ -5,12 +5,16 @@ import { getApolloClient } from '../../../../lib/apolloClient'
 import { paramsToRecord } from '../../../../lib/paramsToRecord'
 
 const GET_LANGUAGE = graphql(`
-  query GetLanguage($id: ID!, $languageId: ID, $fallbackLanguageId: ID) {
+  query GetLanguage(
+    $id: ID!
+    $metadataLanguageId: ID
+    $fallbackLanguageId: ID
+  ) {
     language(id: $id, idType: databaseId) {
       id
       iso3
       bcp47
-      name(languageId: $languageId) {
+      name(languageId: $metadataLanguageId) {
         value
         primary
         language {
@@ -100,7 +104,9 @@ export async function GET(
     {
       query: GET_LANGUAGE,
       variables: {
-        id: languageId
+        id: languageId,
+        metadataLanguageId,
+        fallbackLanguageId
       }
     }
   )
@@ -161,7 +167,7 @@ export async function GET(
     nameNative: language.nameNative.find(({ primary }) => primary)?.value,
     alternateLanguageName: '',
     alternateLanguageNameNative: '',
-    metadataLanguageTag: 'en',
+    metadataLanguageTag: language.name[0]?.language.bcp47 ?? '',
     _links: {
       self: {
         href: `http://api.arclight.org/v2/media-languages/${languageId}?${queryString}`
