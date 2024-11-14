@@ -68,7 +68,6 @@ export function DeleteJourneyDialog({
           preventDuplicate: true
         })
       }
-      setLoading(false)
     } finally {
       setLoading(false)
     }
