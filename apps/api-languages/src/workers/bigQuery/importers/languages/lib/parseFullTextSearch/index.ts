@@ -1,0 +1,1 @@
+export { parseFullTextSearch } from './parseFullTextSearch'

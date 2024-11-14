@@ -2,6 +2,7 @@ import { Prisma } from '.prisma/api-languages-client'
 
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
+import { parseFullTextSearch } from '../../workers/bigQuery/importers/languages/lib/parseFullTextSearch'
 
 enum LanguageIdType {
   databaseId = 'databaseId',
@@ -14,6 +15,12 @@ const LanguagesFilter = builder.inputType('LanguagesFilter', {
   fields: (t) => ({
     ids: t.field({
       type: ['ID']
+    }),
+    bcp47: t.field({
+      type: ['String']
+    }),
+    iso3: t.field({
+      type: ['String']
     })
   })
 })
@@ -80,14 +87,14 @@ export const Language = builder.prismaObject('Language', {
         return primaryCountryLanguage?.countryId ?? null
       }
     }),
-    speakerCount: t.int({
+    speakerCount: t.string({
       nullable: false,
       resolve: async (parent) => {
         const result = await prisma.countryLanguage.aggregate({
           where: { languageId: parent.id },
           _sum: { speakers: true }
         })
-        return result._sum.speakers ?? 0
+        return result._sum.speakers?.toString() ?? '0'
       }
     }),
     countriesCount: t.int({
@@ -135,13 +142,27 @@ builder.queryFields((t) => ({
     args: {
       offset: t.arg.int({ required: false }),
       limit: t.arg.int({ required: false }),
-      where: t.arg({ type: LanguagesFilter, required: false })
+      where: t.arg({ type: LanguagesFilter, required: false }),
+      term: t.arg.string({ required: false })
     },
-    resolve: async (query, _parent, { offset, limit, where }) => {
+    resolve: async (query, _parent, { offset, limit, where, term }) => {
       const filter: Prisma.LanguageWhereInput = {
         hasVideos: true
       }
-      if (where?.ids != null) filter.id = { in: where?.ids }
+      if (where?.ids != null) filter.id = { in: where.ids }
+      if (where?.bcp47 != null) filter.bcp47 = { in: where.bcp47 }
+      if (where?.iso3 != null) filter.iso3 = { in: where.iso3 }
+      if (term != null) {
+        const searchQuery = parseFullTextSearch(term)
+        filter.name = {
+          some: {
+            value: {
+              contains: searchQuery,
+              mode: 'insensitive'
+            }
+          }
+        }
+      }
       return await prisma.language.findMany({
         ...query,
         where: filter,
@@ -153,12 +174,28 @@ builder.queryFields((t) => ({
 
   languagesCount: t.int({
     nullable: false,
-    args: { where: t.arg({ type: LanguagesFilter, required: false }) },
-    resolve: async (_parent, { where }) => {
+    args: {
+      where: t.arg({ type: LanguagesFilter, required: false }),
+      term: t.arg.string({ required: false })
+    },
+    resolve: async (_parent, { where, term }) => {
       const filter: Prisma.LanguageWhereInput = {
         hasVideos: true
       }
       if (where?.ids != null) filter.id = { in: where.ids }
+      if (where?.bcp47 != null) filter.bcp47 = { in: where.bcp47 }
+      if (where?.iso3 != null) filter.iso3 = { in: where.iso3 }
+      if (term != null) {
+        const searchQuery = parseFullTextSearch(term)
+        filter.name = {
+          some: {
+            value: {
+              contains: searchQuery,
+              mode: 'insensitive'
+            }
+          }
+        }
+      }
       return await prisma.language.count({
         where: filter
       })

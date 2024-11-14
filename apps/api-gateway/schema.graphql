@@ -650,8 +650,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   """
   visitor(id: ID!) : Visitor! @join__field(graph: API_JOURNEYS) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
-  languages(offset: Int, limit: Int, where: LanguagesFilter) : [Language!]! @join__field(graph: API_LANGUAGES) 
-  languagesCount(where: LanguagesFilter) : Int! @join__field(graph: API_LANGUAGES) 
+  languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
+  languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
   country(id: ID!) : Country @join__field(graph: API_LANGUAGES) 
   countries: [Country!]! @join__field(graph: API_LANGUAGES) 
   getMyCloudflareImages(offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
@@ -1123,7 +1123,7 @@ type Language @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: AP
   countryLanguages: [CountryLanguage!]! @join__field(graph: API_LANGUAGES) 
   audioPreview: AudioPreview @join__field(graph: API_LANGUAGES) 
   primaryCountryId: String @join__field(graph: API_LANGUAGES) 
-  speakerCount: Int! @join__field(graph: API_LANGUAGES) 
+  speakerCount: String! @join__field(graph: API_LANGUAGES) 
   countriesCount: Int! @join__field(graph: API_LANGUAGES) 
   seriesCount: Int! @join__field(graph: API_MEDIA) 
   featureFilmCount: Int! @join__field(graph: API_MEDIA) 
@@ -3732,6 +3732,8 @@ input VisitorUpdateInput @join__type(graph: API_JOURNEYS)  {
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
   ids: [ID!]
+  bcp47: [String!]
+  iso3: [String!]
 }
 
 input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
