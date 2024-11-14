@@ -4,16 +4,8 @@ import { NextRequest } from 'next/server'
 import { getApolloClient } from '../../../../lib/apolloClient'
 import { paramsToRecord } from '../../../../lib/paramsToRecord'
 
-/* TODO: 
-  querystring:
-    apiKey
-    expand
-    filter
-    metadataLanguageTags
-*/
-
 const GET_VIDEO = graphql(`
-  query GetVideo($id: ID!) {
+  query GetVideo($id: ID!, $languageId: ID, $fallbackLanguageId: ID) {
     video(id: $id) {
       id
       label
@@ -25,16 +17,40 @@ const GET_VIDEO = graphql(`
         mobileCinematicLow
         mobileCinematicVeryLow
       }
-      title {
+      title(languageId: $languageId) {
+        value
+        language {
+          bcp47
+        }
+      }
+      fallbackTitle: title(languageId: $fallbackLanguageId) {
         value
       }
-      description {
+      description(languageId: $languageId) {
+        value
+        language {
+          bcp47
+        }
+      }
+      fallbackDescription: description(languageId: $fallbackLanguageId) {
         value
       }
-      snippet {
+      snippet(languageId: $languageId) {
+        value
+        language {
+          bcp47
+        }
+      }
+      fallbackSnippet: snippet(languageId: $fallbackLanguageId) {
         value
       }
-      studyQuestions {
+      studyQuestions(languageId: $languageId) {
+        value
+        language {
+          bcp47
+        }
+      }
+      fallbackStudyQuestions: studyQuestions(languageId: $fallbackLanguageId) {
         value
       }
       bibleCitations {
@@ -45,11 +61,15 @@ const GET_VIDEO = graphql(`
         verseEnd
       }
       childrenCount
+      variantLanguages {
+        id
+      }
       variant {
         duration
         language {
           bcp47
         }
+        downloadable
         downloads {
           height
           width
@@ -57,6 +77,14 @@ const GET_VIDEO = graphql(`
           size
         }
       }
+    }
+  }
+`)
+
+const GET_LANGUAGE_ID_FROM_BCP47 = graphql(`
+  query GetLanguageIdFromBCP47($bcp47: ID!) {
+    language(id: $bcp47, idType: bcp47) {
+      id
     }
   }
 `)
@@ -69,11 +97,37 @@ export async function GET(
   { params: { mediaComponentId } }: GetParams
 ): Promise<Response> {
   const query = req.nextUrl.searchParams
+  const expand = query.get('expand') ?? ''
+  const filter = query.get('filter') ?? ''
+
+  const metadataLanguageTags =
+    query.get('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
+
+  let languageId = '529'
+  let fallbackLanguageId
+  if (metadataLanguageTags.length > 0) {
+    const { data: languageIdData } = await getApolloClient().query<
+      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
+    >({
+      query: GET_LANGUAGE_ID_FROM_BCP47,
+      variables: { bcp47: metadataLanguageTags[0] }
+    })
+    languageId = languageIdData.language?.id ?? '529'
+  } else if (metadataLanguageTags.length > 1) {
+    const { data: languageIdData } = await getApolloClient().query<
+      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
+    >({
+      query: GET_LANGUAGE_ID_FROM_BCP47,
+      variables: { bcp47: metadataLanguageTags[1] }
+    })
+    fallbackLanguageId = languageIdData.language?.id ?? undefined
+  }
 
   const { data } = await getApolloClient().query<ResultOf<typeof GET_VIDEO>>({
     query: GET_VIDEO,
     variables: {
-      languageId: '529',
+      languageId,
+      fallbackLanguageId,
       id: mediaComponentId
     }
   })
@@ -90,6 +144,25 @@ export async function GET(
   const mediaComponentLinksQuerystring = new URLSearchParams(
     queryObject
   ).toString()
+
+  const descriptorsonlyResponse = {
+    mediaComponentId,
+    title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
+    shortDescription:
+      video.snippet[0]?.value ?? video.fallbackSnippet[0]?.value ?? '',
+    longDescription:
+      video.description[0]?.value ?? video.fallbackDescription[0]?.value ?? '',
+    studyQuestions: video.studyQuestions.map((question) => question.value),
+    metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
+    _links: {
+      self: {
+        href: `http://api.arclight.org/v2/media-components/${mediaComponentId}`
+      },
+      mediaComponentLinks: {
+        href: `http://api.arclight.org/v2/media-component-links/${mediaComponentId}`
+      }
+    }
+  }
 
   const response = {
     mediaComponentId,
@@ -114,8 +187,7 @@ export async function GET(
     },
     lengthInMilliseconds: video.variant?.duration ?? 0,
     containsCount: video.childrenCount,
-    // TODO: Needs new field in the schema
-    isDownloadable: true,
+    isDownloadable: video.variant?.downloadable ?? false,
     downloadSizes: {
       approximateSmallDownloadSizeInBytes:
         video.variant?.downloads?.find(({ quality }) => quality === 'low')
@@ -131,18 +203,22 @@ export async function GET(
       chapterEnd: citation.chapterEnd,
       verseEnd: citation.verseEnd
     })),
+    ...(expand.includes('languageIds')
+      ? { languageIds: video.variantLanguages.map(({ id }) => Number(id)) }
+      : {}),
     primaryLanguageId: Number(video.primaryLanguageId),
-    title: video.title[0].value,
-    shortDescription: video.snippet[0].value,
-    longDescription: video.description[0].value,
+    title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
+    shortDescription:
+      video.snippet[0]?.value ?? video.fallbackSnippet[0]?.value ?? '',
+    longDescription:
+      video.description[0]?.value ?? video.fallbackDescription[0]?.value ?? '',
     studyQuestions: video.studyQuestions.map((question) => question.value),
-    metadataLanguageTag: video.variant?.language.bcp47 ?? 'en',
+    metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
     _links: {
       // TODO: Needs to be completed
       sampleMediaComponentLanguage: {
         href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/529?platform=web&apiKey=616db012e9a951.51499299`
       },
-      // TODO: Needs data, endpoint, etc
       osisBibleBooks: {
         href: 'http://api.arclight.org/v2/taxonomies/osisBibleBooks?apiKey=616db012e9a951.51499299'
       },
@@ -154,5 +230,11 @@ export async function GET(
       }
     }
   }
-  return new Response(JSON.stringify(response), { status: 200 })
+  if (filter.includes('descriptorsonly')) {
+    return new Response(JSON.stringify(descriptorsonlyResponse), {
+      status: 200
+    })
+  } else {
+    return new Response(JSON.stringify(response), { status: 200 })
+  }
 }

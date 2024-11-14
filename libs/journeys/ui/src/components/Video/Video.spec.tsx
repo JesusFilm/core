@@ -1,9 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { EditorProvider } from '../../libs/EditorProvider'
+import { JourneyProvider } from '../../libs/JourneyProvider'
 
 import { VideoFields } from './__generated__/VideoFields'
 
@@ -77,23 +78,48 @@ const block: TreeBlock<VideoFields> = {
 }
 
 describe('Video', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('should render internal video', () => {
-    const { getByTestId } = render(
+    render(
       <MockedProvider>
         <Video {...block} />
       </MockedProvider>
     )
-    const sourceTag = getByTestId('JourneysVideo-video0.id').querySelector(
-      '.vjs-tech source'
-    )
+    const sourceTag = screen
+      .getByTestId('JourneysVideo-video0.id')
+      .querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toBe(
       'https://arc.gt/hls/2_0-FallingPlates/529'
     )
     expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
   })
 
+  it('should render a YouTube video', () => {
+    render(
+      <MockedProvider>
+        <Video
+          {...{
+            ...block,
+            source: VideoBlockSource.youTube,
+            videoId: 'videoId'
+          }}
+        />
+      </MockedProvider>
+    )
+    const sourceTag = screen
+      .getByTestId('JourneysVideo-video0.id')
+      .querySelector('.vjs-tech source')
+    expect(sourceTag?.getAttribute('src')).toBe(
+      'https://www.youtube.com/embed/videoId?start=10&end=0'
+    )
+    expect(sourceTag?.getAttribute('type')).toBe('video/youtube')
+  })
+
   it('should render cloudflare video', () => {
-    const { getByTestId } = render(
+    render(
       <MockedProvider>
         <Video
           {...{
@@ -104,22 +130,82 @@ describe('Video', () => {
         />
       </MockedProvider>
     )
-    const sourceTag = getByTestId('JourneysVideo-video0.id').querySelector(
-      '.vjs-tech source'
-    )
+    const sourceTag = screen
+      .getByTestId('JourneysVideo-video0.id')
+      .querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toBe(
       'https://customer-.cloudflarestream.com/videoId/manifest/video.m3u8?clientBandwidthHint=10'
     )
     expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
   })
 
-  it('should render an image if videoId is null', () => {
-    const { getByTestId } = render(
+  it('should render poster block image', () => {
+    render(
+      <MockedProvider>
+        <Video {...block} />
+      </MockedProvider>
+    )
+    const posterBlockImage = screen.getByRole('img')
+    expect(posterBlockImage).toHaveAttribute(
+      'alt',
+      'random image from unsplash'
+    )
+  })
+
+  it('should render video image when posterBlockId is null', () => {
+    render(
+      <MockedProvider>
+        <Video {...block} posterBlockId={null} />
+      </MockedProvider>
+    )
+    const videoImage = screen.getByRole('img')
+    // video image alt is set to video image
+    expect(videoImage).toHaveAttribute('alt', 'video image')
+  })
+
+  it('should not render an image if videoId is null', () => {
+    render(
       <MockedProvider>
         <Video {...block} videoId={null} />
       </MockedProvider>
     )
-    expect(getByTestId('VideocamRoundedIcon')).toHaveClass('MuiSvgIcon-root')
+    expect(screen.getByTestId('VideocamRoundedIcon')).toHaveClass(
+      'MuiSvgIcon-root'
+    )
+  })
+
+  it('should not render video image if source is YouTube and not in Next Steps Admin', () => {
+    render(
+      <MockedProvider>
+        <Video
+          {...{
+            ...block,
+            source: VideoBlockSource.youTube,
+            videoId: 'videoId'
+          }}
+          posterBlockId={null}
+        />
+      </MockedProvider>
+    )
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+  })
+
+  it('should render video image if source is YouTube and in Next Steps Admin', () => {
+    render(
+      <JourneyProvider value={{ variant: 'admin' }}>
+        <Video
+          {...{
+            ...block,
+            source: VideoBlockSource.youTube,
+            image: 'https://i.ytimg.com/vi/id/hqdefault.jpg'
+          }}
+          posterBlockId={null}
+        />
+      </JourneyProvider>
+    )
+    const videoImage = screen.getByRole('img')
+    // video image alt is set to video image
+    expect(videoImage).toHaveAttribute('alt', 'video image')
   })
 })
 
