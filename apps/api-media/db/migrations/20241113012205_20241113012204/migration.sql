@@ -23,6 +23,13 @@ CREATE TABLE "ShortLink" (
     CONSTRAINT "ShortLink_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "ShortLinkBlocklistDomain" (
+    "hostname" TEXT NOT NULL,
+
+    CONSTRAINT "ShortLinkBlocklistDomain_pkey" PRIMARY KEY ("hostname")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "ShortLinkDomain_hostname_key" ON "ShortLinkDomain"("hostname");
 

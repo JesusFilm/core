@@ -30,6 +30,16 @@ export async function cli(argv = process.argv): Promise<void> {
       queue = new Queue(queueName, { connection })
       break
     }
+    case 'blocklist': {
+      const config = await import(
+        /* webpackChunkName: "blocklist" */
+        './blocklist'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
     case 'crowdin': {
       const config = await import(
         /* webpackChunkName: "crowdin" */

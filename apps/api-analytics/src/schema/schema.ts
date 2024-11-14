@@ -1,6 +1,6 @@
 // Developers must add an import for every resolver
 // and object type in the schema
-import './objects/error'
+import './error'
 import './site'
 import { builder } from './builder'
 

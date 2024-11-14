@@ -1,6 +1,12 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
+type BaseError implements Error
+  @shareable
+{
+  message: String
+}
+
 type BibleBook {
   id: ID!
   name(languageId: ID, primary: Boolean): [BibleBookName!]!
@@ -76,10 +82,8 @@ A date string, such as 2007-12-03, compliant with the `full-date` format outline
 """
 scalar Date
 
-type Error
-  @shareable
-{
-  message: String!
+interface Error {
+  message: String
 }
 
 enum IdType {
@@ -96,6 +100,11 @@ input ImageInput {
   aspectRatio: ImageAspectRatio
   videoId: ID
 }
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
 
 type Keyword {
   id: ID!
@@ -139,11 +148,11 @@ type Mutation {
   createMuxVideoUploadByFile(name: String!): MuxVideo!
   createMuxVideoUploadByUrl(url: String!): MuxVideo!
   deleteMuxVideo(id: ID!): Boolean!
-  shortLinkDomainCreate(input: ShortLinkDomainCreateInput!): MutationShortLinkDomainCreateResult!
-  shortLinkDomainUpdate(id: String!, input: ShortLinkDomainUpdateInput!): MutationShortLinkDomainUpdateResult!
+  shortLinkDomainCreate(input: MutationShortLinkDomainCreateInput!): MutationShortLinkDomainCreateResult!
+  shortLinkDomainUpdate(input: MutationShortLinkDomainUpdateInput!): MutationShortLinkDomainUpdateResult!
   shortLinkDomainDelete(id: String!): MutationShortLinkDomainDeleteResult!
-  shortLinkCreate(input: ShortLinkCreateInput!): MutationShortLinkCreateResult!
-  shortLinkUpdate(id: String!, input: ShortLinkUpdateInput!): MutationShortLinkUpdateResult!
+  shortLinkCreate(input: MutationShortLinkCreateInput!): MutationShortLinkCreateResult!
+  shortLinkUpdate(input: MutationShortLinkUpdateInput!): MutationShortLinkUpdateResult!
   shortLinkDelete(id: String!): MutationShortLinkDeleteResult!
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
@@ -176,37 +185,59 @@ type Mutation {
   videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
 }
 
-union MutationShortLinkCreateResult = PrismaClientKnownRequestError | MutationShortLinkCreateSuccess
+input MutationShortLinkCreateInput {
+  pathname: String!
+  to: String!
+  hostname: String!
+  service: Service!
+}
+
+union MutationShortLinkCreateResult = ZodError | NotUniqueError | BaseError | MutationShortLinkCreateSuccess
 
 type MutationShortLinkCreateSuccess {
   data: ShortLink!
 }
 
-union MutationShortLinkDeleteResult = PrismaClientKnownRequestError | MutationShortLinkDeleteSuccess
+union MutationShortLinkDeleteResult = NotFoundError | BaseError | MutationShortLinkDeleteSuccess
 
 type MutationShortLinkDeleteSuccess {
   data: ShortLink!
 }
 
-union MutationShortLinkDomainCreateResult = PrismaClientKnownRequestError | MutationShortLinkDomainCreateSuccess
+input MutationShortLinkDomainCreateInput {
+  hostname: String!
+  services: [Service!]
+}
+
+union MutationShortLinkDomainCreateResult = NotUniqueError | BaseError | MutationShortLinkDomainCreateSuccess
 
 type MutationShortLinkDomainCreateSuccess {
   data: ShortLinkDomain!
 }
 
-union MutationShortLinkDomainDeleteResult = PrismaClientKnownRequestError | MutationShortLinkDomainDeleteSuccess
+union MutationShortLinkDomainDeleteResult = NotFoundError | BaseError | MutationShortLinkDomainDeleteSuccess
 
 type MutationShortLinkDomainDeleteSuccess {
   data: ShortLinkDomain!
 }
 
-union MutationShortLinkDomainUpdateResult = PrismaClientKnownRequestError | MutationShortLinkDomainUpdateSuccess
+input MutationShortLinkDomainUpdateInput {
+  id: String!
+  services: [Service!]!
+}
+
+union MutationShortLinkDomainUpdateResult = NotFoundError | BaseError | MutationShortLinkDomainUpdateSuccess
 
 type MutationShortLinkDomainUpdateSuccess {
   data: ShortLinkDomain!
 }
 
-union MutationShortLinkUpdateResult = PrismaClientKnownRequestError | MutationShortLinkUpdateSuccess
+input MutationShortLinkUpdateInput {
+  id: String!
+  to: String!
+}
+
+union MutationShortLinkUpdateResult = ZodError | NotFoundError | BaseError | MutationShortLinkUpdateSuccess
 
 type MutationShortLinkUpdateSuccess {
   data: ShortLink!
@@ -220,11 +251,38 @@ type MuxVideo {
   readyToStream: Boolean!
 }
 
-type PrismaClientKnownRequestError
+type NotFoundError implements Error
   @shareable
 {
   message: String
-  code: String
+
+  """The arguments that caused the not found error"""
+  location: [NotFoundErrorLocation!]
+}
+
+type NotFoundErrorLocation {
+  """An array describing the path in the arguments that caused this error"""
+  path: [String!]
+
+  """The value that was provided at the path"""
+  value: String
+}
+
+type NotUniqueError implements Error
+  @shareable
+{
+  message: String
+
+  """The arguments that caused the uniqueness violation"""
+  location: [NotUniqueErrorLocation!]
+}
+
+type NotUniqueErrorLocation {
+  """An array describing the path in the arguments that caused this error"""
+  path: [String!]
+
+  """The value that was provided at the path"""
+  value: String
 }
 
 type Query {
@@ -259,13 +317,13 @@ type Query {
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
 }
 
-union QueryShortLinkDomainResult = PrismaClientKnownRequestError | QueryShortLinkDomainSuccess
+union QueryShortLinkDomainResult = NotFoundError | BaseError | QueryShortLinkDomainSuccess
 
 type QueryShortLinkDomainSuccess {
   data: ShortLinkDomain!
 }
 
-union QueryShortLinkResult = PrismaClientKnownRequestError | QueryShortLinkSuccess
+union QueryShortLinkResult = NotFoundError | BaseError | QueryShortLinkSuccess
 
 type QueryShortLinkSuccess {
   data: ShortLink!
@@ -297,13 +355,6 @@ type ShortLink
   service: Service!
 }
 
-input ShortLinkCreateInput {
-  pathname: String!
-  to: String!
-  hostname: String!
-  service: Service!
-}
-
 type ShortLinkDomain {
   id: ID!
   hostname: String!
@@ -314,19 +365,6 @@ type ShortLinkDomain {
   The services that are enabled for this domain, if empty then this domain can be used by all services
   """
   services: [Service!]!
-}
-
-input ShortLinkDomainCreateInput {
-  hostname: String!
-  services: [Service!]
-}
-
-input ShortLinkDomainUpdateInput {
-  services: [Service!]!
-}
-
-input ShortLinkUpdateInput {
-  to: String!
 }
 
 type Tag
@@ -746,4 +784,16 @@ input VideosFilter {
   labels: [VideoLabel!]
   ids: [ID!]
   subtitleLanguageIds: [ID!]
+}
+
+type ZodError implements Error
+  @shareable
+{
+  message: String
+  fieldErrors: [ZodFieldError!]
+}
+
+type ZodFieldError {
+  message: String
+  path: [String!]
 }

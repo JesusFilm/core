@@ -435,3 +435,8 @@ model ShortLink {
 
   @@unique([pathname, domainId])
 }
+
+model ShortLinkBlocklistDomain {
+  /// the hostname including subdomain, domain, and TLD, but excluding port
+  hostname String @id
+}

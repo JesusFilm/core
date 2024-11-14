@@ -65,6 +65,12 @@ async function main(): Promise<void> {
   )
   run(
     await import(
+      /* webpackChunkName: "blocklist" */
+      './blocklist'
+    )
+  )
+  run(
+    await import(
       /* webpackChunkName: "crowdin" */
       './crowdin'
     )

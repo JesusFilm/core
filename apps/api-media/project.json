@@ -151,6 +151,12 @@
         "command": "npm run ts-node apps/api-media/src/workers/cli.ts algolia"
       }
     },
+    "queue-blocklist": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apps/api-media/src/workers/cli.ts blocklist"
+      }
+    },
     "queue-seed": {
       "executor": "nx:run-commands",
       "options": {

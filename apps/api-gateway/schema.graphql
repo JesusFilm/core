@@ -92,8 +92,13 @@ A date string, such as 2007-12-03, compliant with the `full-date` format outline
 """
 scalar Date @join__type(graph: API_MEDIA) 
 
-type Error @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  {
-  message: String!
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON @join__type(graph: API_MEDIA) 
+
+type BaseError implements Error @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  @join__implements(graph: API_ANALYTICS, interface: "Error")  @join__implements(graph: API_MEDIA, interface: "Error")  {
+  message: String
 }
 
 type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
@@ -397,11 +402,11 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   createMuxVideoUploadByFile(name: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
   createMuxVideoUploadByUrl(url: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
   deleteMuxVideo(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
-  shortLinkDomainCreate(input: ShortLinkDomainCreateInput!) : MutationShortLinkDomainCreateResult! @join__field(graph: API_MEDIA) 
-  shortLinkDomainUpdate(id: String!, input: ShortLinkDomainUpdateInput!) : MutationShortLinkDomainUpdateResult! @join__field(graph: API_MEDIA) 
+  shortLinkDomainCreate(input: MutationShortLinkDomainCreateInput!) : MutationShortLinkDomainCreateResult! @join__field(graph: API_MEDIA) 
+  shortLinkDomainUpdate(input: MutationShortLinkDomainUpdateInput!) : MutationShortLinkDomainUpdateResult! @join__field(graph: API_MEDIA) 
   shortLinkDomainDelete(id: String!) : MutationShortLinkDomainDeleteResult! @join__field(graph: API_MEDIA) 
-  shortLinkCreate(input: ShortLinkCreateInput!) : MutationShortLinkCreateResult! @join__field(graph: API_MEDIA) 
-  shortLinkUpdate(id: String!, input: ShortLinkUpdateInput!) : MutationShortLinkUpdateResult! @join__field(graph: API_MEDIA) 
+  shortLinkCreate(input: MutationShortLinkCreateInput!) : MutationShortLinkCreateResult! @join__field(graph: API_MEDIA) 
+  shortLinkUpdate(input: MutationShortLinkUpdateInput!) : MutationShortLinkUpdateResult! @join__field(graph: API_MEDIA) 
   shortLinkDelete(id: String!) : MutationShortLinkDeleteResult! @join__field(graph: API_MEDIA) 
   videoCreate(input: VideoCreateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoUpdate(input: VideoUpdateInput!) : Video! @join__field(graph: API_MEDIA) 
@@ -2177,9 +2182,42 @@ type MuxVideo @join__type(graph: API_MEDIA)  {
   readyToStream: Boolean!
 }
 
-type PrismaClientKnownRequestError @join__type(graph: API_MEDIA)  {
+type NotFoundError implements Error @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "Error")  {
   message: String
-  code: String
+  """
+  The arguments that caused the not found error
+  """
+  location: [NotFoundErrorLocation!]
+}
+
+type NotFoundErrorLocation @join__type(graph: API_MEDIA)  {
+  """
+  An array describing the path in the arguments that caused this error
+  """
+  path: [String!]
+  """
+  The value that was provided at the path
+  """
+  value: String
+}
+
+type NotUniqueError implements Error @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "Error")  {
+  message: String
+  """
+  The arguments that caused the uniqueness violation
+  """
+  location: [NotUniqueErrorLocation!]
+}
+
+type NotUniqueErrorLocation @join__type(graph: API_MEDIA)  {
+  """
+  An array describing the path in the arguments that caused this error
+  """
+  path: [String!]
+  """
+  The value that was provided at the path
+  """
+  value: String
 }
 
 type QueryShortLinkDomainSuccess @join__type(graph: API_MEDIA)  {
@@ -2385,6 +2423,20 @@ type VideoVariantDownload @join__type(graph: API_MEDIA)  {
   url: String!
 }
 
+type ZodError implements Error @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "Error")  {
+  message: String
+  fieldErrors: [ZodFieldError!]
+}
+
+type ZodFieldError @join__type(graph: API_MEDIA)  {
+  message: String
+  path: [String!]
+}
+
+interface Error @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  {
+  message: String
+}
+
 interface Action @join__type(graph: API_JOURNEYS)  {
   parentBlockId: ID!
   parentBlock: Block!
@@ -2412,23 +2464,23 @@ interface Integration @join__type(graph: API_JOURNEYS)  {
   type: IntegrationType!
 }
 
-union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMember(graph: API_ANALYTICS, member: "Error")  @join__unionMember(graph: API_ANALYTICS, member: "MutationSiteCreateSuccess")  = Error | MutationSiteCreateSuccess
+union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMember(graph: API_ANALYTICS, member: "BaseError")  @join__unionMember(graph: API_ANALYTICS, member: "MutationSiteCreateSuccess")  = BaseError | MutationSiteCreateSuccess
 
-union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "PrismaClientKnownRequestError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = PrismaClientKnownRequestError | MutationShortLinkCreateSuccess
+union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "BaseError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = ZodError | NotUniqueError | BaseError | MutationShortLinkCreateSuccess
 
-union MutationShortLinkDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "PrismaClientKnownRequestError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDeleteSuccess")  = PrismaClientKnownRequestError | MutationShortLinkDeleteSuccess
+union MutationShortLinkDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "BaseError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDeleteSuccess")  = NotFoundError | BaseError | MutationShortLinkDeleteSuccess
 
-union MutationShortLinkDomainCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "PrismaClientKnownRequestError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainCreateSuccess")  = PrismaClientKnownRequestError | MutationShortLinkDomainCreateSuccess
+union MutationShortLinkDomainCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "BaseError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainCreateSuccess")  = NotUniqueError | BaseError | MutationShortLinkDomainCreateSuccess
 
-union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "PrismaClientKnownRequestError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainDeleteSuccess")  = PrismaClientKnownRequestError | MutationShortLinkDomainDeleteSuccess
+union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "BaseError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainDeleteSuccess")  = NotFoundError | BaseError | MutationShortLinkDomainDeleteSuccess
 
-union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "PrismaClientKnownRequestError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = PrismaClientKnownRequestError | MutationShortLinkDomainUpdateSuccess
+union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "BaseError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = NotFoundError | BaseError | MutationShortLinkDomainUpdateSuccess
 
-union MutationShortLinkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "PrismaClientKnownRequestError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkUpdateSuccess")  = PrismaClientKnownRequestError | MutationShortLinkUpdateSuccess
+union MutationShortLinkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "BaseError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkUpdateSuccess")  = ZodError | NotFoundError | BaseError | MutationShortLinkUpdateSuccess
 
-union QueryShortLinkDomainResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "PrismaClientKnownRequestError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkDomainSuccess")  = PrismaClientKnownRequestError | QueryShortLinkDomainSuccess
+union QueryShortLinkDomainResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "BaseError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkDomainSuccess")  = NotFoundError | BaseError | QueryShortLinkDomainSuccess
 
-union QueryShortLinkResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "PrismaClientKnownRequestError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkSuccess")  = PrismaClientKnownRequestError | QueryShortLinkSuccess
+union QueryShortLinkResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "BaseError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkSuccess")  = NotFoundError | BaseError | QueryShortLinkSuccess
 
 enum ThemeMode @join__type(graph: API_JOURNEYS)  {
   dark @join__enumValue(graph: API_JOURNEYS) 
@@ -2734,6 +2786,15 @@ enum SegmindModel @join__type(graph: API_MEDIA)  {
   tinysd1__5_txt2img @join__enumValue(graph: API_MEDIA) 
 }
 
+enum Service @join__type(graph: API_MEDIA)  {
+  apiJourneys @join__enumValue(graph: API_MEDIA) 
+  apiLanguages @join__enumValue(graph: API_MEDIA) 
+  apiMedia @join__enumValue(graph: API_MEDIA) 
+  apiTags @join__enumValue(graph: API_MEDIA) 
+  apiUsers @join__enumValue(graph: API_MEDIA) 
+  apiVideos @join__enumValue(graph: API_MEDIA) 
+}
+
 enum UnsplashPhotoOrientation @join__type(graph: API_MEDIA)  {
   landscape @join__enumValue(graph: API_MEDIA) 
   portrait @join__enumValue(graph: API_MEDIA) 
@@ -2763,15 +2824,6 @@ enum UnsplashColor @join__type(graph: API_MEDIA)  {
   green @join__enumValue(graph: API_MEDIA) 
   teal @join__enumValue(graph: API_MEDIA) 
   blue @join__enumValue(graph: API_MEDIA) 
-}
-
-enum Service @join__type(graph: API_MEDIA)  {
-  apiJourneys @join__enumValue(graph: API_MEDIA) 
-  apiLanguages @join__enumValue(graph: API_MEDIA) 
-  apiMedia @join__enumValue(graph: API_MEDIA) 
-  apiTags @join__enumValue(graph: API_MEDIA) 
-  apiUsers @join__enumValue(graph: API_MEDIA) 
-  apiVideos @join__enumValue(graph: API_MEDIA) 
 }
 
 enum VideoLabel @join__type(graph: API_MEDIA)  {
@@ -3837,23 +3889,25 @@ input ImageInput @join__type(graph: API_MEDIA)  {
   videoId: ID
 }
 
-input ShortLinkCreateInput @join__type(graph: API_MEDIA)  {
+input MutationShortLinkCreateInput @join__type(graph: API_MEDIA)  {
   pathname: String!
   to: String!
   hostname: String!
   service: Service!
 }
 
-input ShortLinkDomainCreateInput @join__type(graph: API_MEDIA)  {
+input MutationShortLinkDomainCreateInput @join__type(graph: API_MEDIA)  {
   hostname: String!
   services: [Service!]
 }
 
-input ShortLinkDomainUpdateInput @join__type(graph: API_MEDIA)  {
+input MutationShortLinkDomainUpdateInput @join__type(graph: API_MEDIA)  {
+  id: String!
   services: [Service!]!
 }
 
-input ShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
+input MutationShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
+  id: String!
   to: String!
 }
 

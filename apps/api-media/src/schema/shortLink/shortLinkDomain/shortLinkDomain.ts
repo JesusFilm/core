@@ -3,9 +3,7 @@ import { Prisma } from '.prisma/api-media-client'
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { Service } from '../../enums/service'
-
-import { ShortLinkDomainCreateInput } from './input/shortLinkDomainCreate'
-import { ShortLinkDomainUpdateInput } from './input/shortLinkDomainUpdate'
+import { NotFoundError, NotUniqueError } from '../../error'
 
 builder.prismaObject('ShortLinkDomain', {
   fields: (t) => ({
@@ -54,71 +52,133 @@ builder.queryFields((t) => ({
   shortLinkDomain: t.prismaField({
     type: 'ShortLinkDomain',
     errors: {
-      types: [Prisma.PrismaClientKnownRequestError]
+      types: [NotFoundError]
     },
     nullable: false,
     args: {
       id: t.arg.string({ required: true })
     },
-    resolve: async (query, _, { id }) =>
-      await prisma.shortLinkDomain.findFirstOrThrow({
-        ...query,
-        where: { id }
-      })
+    resolve: async (query, _, { id }) => {
+      try {
+        return await prisma.shortLinkDomain.findFirstOrThrow({
+          ...query,
+          where: { id }
+        })
+      } catch (e) {
+        if (
+          e instanceof Prisma.PrismaClientKnownRequestError &&
+          e.code === 'P2025'
+        )
+          throw new NotFoundError('short link domain not found', [
+            {
+              path: ['id'],
+              value: id
+            }
+          ])
+        throw e
+      }
+    }
   })
 }))
 
 builder.mutationFields((t) => ({
-  shortLinkDomainCreate: t.withAuth({ isPublisher: true }).prismaField({
-    type: 'ShortLinkDomain',
-    errors: {
-      types: [Prisma.PrismaClientKnownRequestError]
-    },
-    nullable: false,
-    args: {
-      input: t.arg({ type: ShortLinkDomainCreateInput, required: true })
-    },
-    resolve: async (query, _, { input: { hostname, services } }) =>
-      await prisma.shortLinkDomain.create({
-        ...query,
-        data: {
-          hostname,
-          services: services ?? []
+  shortLinkDomainCreate: t
+    .withAuth({ isPublisher: true })
+    .prismaFieldWithInput({
+      type: 'ShortLinkDomain',
+      errors: {
+        types: [NotUniqueError]
+      },
+      nullable: false,
+      input: {
+        hostname: t.input.string({ required: true }),
+        services: t.input.field({ type: [Service], required: false })
+      },
+      resolve: async (query, _, { input: { hostname, services } }) => {
+        try {
+          return await prisma.shortLinkDomain.create({
+            ...query,
+            data: {
+              hostname,
+              services: services ?? []
+            }
+          })
+        } catch (e) {
+          if (
+            e instanceof Prisma.PrismaClientKnownRequestError &&
+            e.code === 'P2002'
+          )
+            throw new NotUniqueError('short link domain already exists', [
+              { path: ['input', 'hostname'], value: hostname }
+            ])
+          throw e
         }
-      })
-  }),
-  shortLinkDomainUpdate: t.withAuth({ isPublisher: true }).prismaField({
-    type: 'ShortLinkDomain',
-    errors: {
-      types: [Prisma.PrismaClientKnownRequestError]
-    },
-    nullable: false,
-    args: {
-      id: t.arg.string({ required: true }),
-      input: t.arg({ type: ShortLinkDomainUpdateInput, required: true })
-    },
-    resolve: async (query, _, { id, input: { services } }) =>
-      await prisma.shortLinkDomain.update({
-        ...query,
-        where: { id },
-        data: {
-          services
+      }
+    }),
+  shortLinkDomainUpdate: t
+    .withAuth({ isPublisher: true })
+    .prismaFieldWithInput({
+      type: 'ShortLinkDomain',
+      errors: {
+        types: [NotFoundError]
+      },
+      nullable: false,
+      input: {
+        id: t.input.string({ required: true }),
+        services: t.input.field({ type: [Service], required: true })
+      },
+      resolve: async (query, _, { input: { id, services } }) => {
+        try {
+          return await prisma.shortLinkDomain.update({
+            ...query,
+            where: { id },
+            data: {
+              services
+            }
+          })
+        } catch (e) {
+          if (
+            e instanceof Prisma.PrismaClientKnownRequestError &&
+            e.code === 'P2025'
+          )
+            throw new NotFoundError('short link domain not found', [
+              {
+                path: ['input', 'id'],
+                value: id
+              }
+            ])
+          throw e
         }
-      })
-  }),
+      }
+    }),
   shortLinkDomainDelete: t.withAuth({ isPublisher: true }).prismaField({
     type: 'ShortLinkDomain',
     errors: {
-      types: [Prisma.PrismaClientKnownRequestError]
+      types: [NotFoundError]
     },
     nullable: false,
     args: {
       id: t.arg.string({ required: true })
     },
-    resolve: async (query, _, { id }) =>
-      await prisma.shortLinkDomain.delete({
-        ...query,
-        where: { id }
-      })
+    resolve: async (query, _, { id }) => {
+      try {
+        return await prisma.shortLinkDomain.delete({
+          ...query,
+          where: { id }
+        })
+      } catch (e) {
+        if (
+          e instanceof Prisma.PrismaClientKnownRequestError &&
+          e.code === 'P2025'
+        )
+          throw new NotFoundError('short link domain not found', [
+            {
+              path: ['id'],
+              value: id
+            }
+          ])
+        throw e
+      }
+    }
   })
 }))

@@ -8,8 +8,10 @@ import FederationPlugin from '@pothos/plugin-federation'
 import pluginName from '@pothos/plugin-prisma'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
+import WithInputPlugin from '@pothos/plugin-with-input'
+import ZodPlugin from '@pothos/plugin-zod'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
-import { DateResolver } from 'graphql-scalars'
+import { DateResolver, JSONResolver } from 'graphql-scalars'
 
 import { MediaRole, Prisma } from '.prisma/api-media-client'
 import { User } from '@core/yoga/firebaseClient'
@@ -41,6 +43,7 @@ export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes
   Scalars: {
     Date: { Input: Date; Output: Date }
+    JSON: { Input: Record<string, unknown>; Output: Record<string, unknown> }
     ID: { Input: string; Output: number | string }
   }
 }>({
@@ -49,9 +52,14 @@ export const builder = new SchemaBuilder<{
     ScopeAuthPlugin,
     ErrorsPlugin,
     PrismaPlugin,
+    ZodPlugin,
+    WithInputPlugin,
     DirectivesPlugin,
     FederationPlugin
   ],
+  errors: {
+    defaultTypes: [Error]
+  },
   tracing: {
     default: (config) => isRootField(config),
     wrap: (resolver, options) => createSpan(resolver, options)
@@ -69,7 +77,8 @@ export const builder = new SchemaBuilder<{
   }
 })
 
-builder.addScalarType('Date', DateResolver, {})
+builder.addScalarType('Date', DateResolver)
+builder.addScalarType('JSON', JSONResolver)
 
 builder.queryType({})
 

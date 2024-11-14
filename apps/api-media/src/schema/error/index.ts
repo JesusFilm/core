@@ -1,2 +1,5 @@
 import './error'
-import './prismaClientKnownRequestError'
+import './ZodError'
+
+export { NotFoundError } from './NotFoundError'
+export { NotUniqueError } from './NotUniqueError'
