@@ -17,6 +17,8 @@ export type Scalars = {
   /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   Date: { input: any; output: any; }
   DateTime: { input: any; output: any; }
+  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+  JSON: { input: any; output: any; }
   Json: { input: any; output: any; }
   join__FieldSet: { input: any; output: any; }
   link__Import: { input: any; output: any; }
@@ -36,6 +38,11 @@ export type AudioPreview = {
   language: Language;
   size: Scalars['Int']['output'];
   value: Scalars['String']['output'];
+};
+
+export type BaseError = Error & {
+  __typename?: 'BaseError';
+  message?: Maybe<Scalars['String']['output']>;
 };
 
 export type BibleBook = {
@@ -494,8 +501,7 @@ export type EmailActionInput = {
 };
 
 export type Error = {
-  __typename?: 'Error';
-  message: Scalars['String']['output'];
+  message?: Maybe<Scalars['String']['output']>;
 };
 
 export type Event = {
@@ -1288,6 +1294,12 @@ export type Mutation = {
   radioQuestionBlockCreate: RadioQuestionBlock;
   radioQuestionBlockUpdate: RadioQuestionBlock;
   radioQuestionSubmissionEventCreate: RadioQuestionSubmissionEvent;
+  shortLinkCreate: MutationShortLinkCreateResult;
+  shortLinkDelete: MutationShortLinkDeleteResult;
+  shortLinkDomainCreate: MutationShortLinkDomainCreateResult;
+  shortLinkDomainDelete: MutationShortLinkDomainDeleteResult;
+  shortLinkDomainUpdate: MutationShortLinkDomainUpdateResult;
+  shortLinkUpdate: MutationShortLinkUpdateResult;
   signUpBlockCreate: SignUpBlock;
   signUpBlockUpdate?: Maybe<SignUpBlock>;
   signUpSubmissionEventCreate: SignUpSubmissionEvent;
@@ -1762,6 +1774,36 @@ export type MutationRadioQuestionSubmissionEventCreateArgs = {
 };
 
 
+export type MutationShortLinkCreateArgs = {
+  input: MutationShortLinkCreateInput;
+};
+
+
+export type MutationShortLinkDeleteArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationShortLinkDomainCreateArgs = {
+  input: MutationShortLinkDomainCreateInput;
+};
+
+
+export type MutationShortLinkDomainDeleteArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationShortLinkDomainUpdateArgs = {
+  input: MutationShortLinkDomainUpdateInput;
+};
+
+
+export type MutationShortLinkUpdateArgs = {
+  input: MutationShortLinkUpdateInput;
+};
+
+
 export type MutationSignUpBlockCreateArgs = {
   input: SignUpBlockCreateInput;
 };
@@ -2144,7 +2186,71 @@ export type MutationVisitorUpdateForCurrentUserArgs = {
   input: VisitorUpdateInput;
 };
 
-export type MutationSiteCreateResult = Error | MutationSiteCreateSuccess;
+export type MutationShortLinkCreateInput = {
+  hostname: Scalars['String']['input'];
+  pathname: Scalars['String']['input'];
+  service: Service;
+  to: Scalars['String']['input'];
+};
+
+export type MutationShortLinkCreateResult = MutationShortLinkCreateSuccess | NotUniqueError | ZodError;
+
+export type MutationShortLinkCreateSuccess = {
+  __typename?: 'MutationShortLinkCreateSuccess';
+  data: ShortLink;
+};
+
+export type MutationShortLinkDeleteResult = MutationShortLinkDeleteSuccess | NotFoundError;
+
+export type MutationShortLinkDeleteSuccess = {
+  __typename?: 'MutationShortLinkDeleteSuccess';
+  data: ShortLink;
+};
+
+export type MutationShortLinkDomainCreateInput = {
+  hostname: Scalars['String']['input'];
+  services?: InputMaybe<Array<Service>>;
+};
+
+export type MutationShortLinkDomainCreateResult = MutationShortLinkDomainCreateSuccess | NotUniqueError;
+
+export type MutationShortLinkDomainCreateSuccess = {
+  __typename?: 'MutationShortLinkDomainCreateSuccess';
+  data: ShortLinkDomain;
+};
+
+export type MutationShortLinkDomainDeleteResult = MutationShortLinkDomainDeleteSuccess | NotFoundError;
+
+export type MutationShortLinkDomainDeleteSuccess = {
+  __typename?: 'MutationShortLinkDomainDeleteSuccess';
+  data: ShortLinkDomain;
+};
+
+export type MutationShortLinkDomainUpdateInput = {
+  id: Scalars['String']['input'];
+  services: Array<Service>;
+};
+
+export type MutationShortLinkDomainUpdateResult = MutationShortLinkDomainUpdateSuccess | NotFoundError;
+
+export type MutationShortLinkDomainUpdateSuccess = {
+  __typename?: 'MutationShortLinkDomainUpdateSuccess';
+  data: ShortLinkDomain;
+};
+
+export type MutationShortLinkUpdateInput = {
+  id: Scalars['String']['input'];
+  to: Scalars['String']['input'];
+};
+
+export type MutationShortLinkUpdateResult = MutationShortLinkUpdateSuccess | NotFoundError | ZodError;
+
+export type MutationShortLinkUpdateSuccess = {
+  __typename?: 'MutationShortLinkUpdateSuccess';
+  data: ShortLink;
+};
+
+export type MutationSiteCreateResult = BaseError | MutationSiteCreateSuccess;
 
 export type MutationSiteCreateSuccess = {
   __typename?: 'MutationSiteCreateSuccess';
@@ -2171,6 +2277,36 @@ export type NavigateToBlockAction = Action & {
 export type NavigateToBlockActionInput = {
   blockId: Scalars['String']['input'];
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type NotFoundError = Error & {
+  __typename?: 'NotFoundError';
+  /** The arguments that caused the not found error */
+  location?: Maybe<Array<NotFoundErrorLocation>>;
+  message?: Maybe<Scalars['String']['output']>;
+};
+
+export type NotFoundErrorLocation = {
+  __typename?: 'NotFoundErrorLocation';
+  /** An array describing the path in the arguments that caused this error */
+  path?: Maybe<Array<Scalars['String']['output']>>;
+  /** The value that was provided at the path */
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export type NotUniqueError = Error & {
+  __typename?: 'NotUniqueError';
+  /** The arguments that caused the uniqueness violation */
+  location?: Maybe<Array<NotUniqueErrorLocation>>;
+  message?: Maybe<Scalars['String']['output']>;
+};
+
+export type NotUniqueErrorLocation = {
+  __typename?: 'NotUniqueErrorLocation';
+  /** An array describing the path in the arguments that caused this error */
+  path?: Maybe<Array<Scalars['String']['output']>>;
+  /** The value that was provided at the path */
+  value?: Maybe<Scalars['String']['output']>;
 };
 
 export type OperatingSystem = {
@@ -2449,6 +2585,11 @@ export type Query = {
   listUnsplashCollectionPhotos: Array<UnsplashPhoto>;
   me?: Maybe<User>;
   searchUnsplashPhotos: UnsplashQueryResponse;
+  shortLink: QueryShortLinkResult;
+  shortLinkByPath: QueryShortLinkByPathResult;
+  shortLinkDomain: QueryShortLinkDomainResult;
+  shortLinkDomains: Array<ShortLinkDomain>;
+  shortLinks: Array<ShortLink>;
   tags: Array<Tag>;
   taxonomies: Array<Taxonomy>;
   team: Team;
@@ -2688,6 +2829,32 @@ export type QuerySearchUnsplashPhotosArgs = {
 };
 
 
+export type QueryShortLinkArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryShortLinkByPathArgs = {
+  hostname: Scalars['String']['input'];
+  pathname: Scalars['String']['input'];
+};
+
+
+export type QueryShortLinkDomainArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryShortLinkDomainsArgs = {
+  service?: InputMaybe<Service>;
+};
+
+
+export type QueryShortLinksArgs = {
+  hostname?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryTaxonomiesArgs = {
   category?: InputMaybe<Scalars['String']['input']>;
   languageCodes?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -2762,6 +2929,27 @@ export type QueryVisitorsConnectionArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   teamId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type QueryShortLinkByPathResult = NotFoundError | QueryShortLinkByPathSuccess;
+
+export type QueryShortLinkByPathSuccess = {
+  __typename?: 'QueryShortLinkByPathSuccess';
+  data: ShortLink;
+};
+
+export type QueryShortLinkDomainResult = NotFoundError | QueryShortLinkDomainSuccess;
+
+export type QueryShortLinkDomainSuccess = {
+  __typename?: 'QueryShortLinkDomainSuccess';
+  data: ShortLinkDomain;
+};
+
+export type QueryShortLinkResult = NotFoundError | QueryShortLinkSuccess;
+
+export type QueryShortLinkSuccess = {
+  __typename?: 'QueryShortLinkSuccess';
+  data: ShortLink;
 };
 
 export type RadioOptionBlock = Block & {
@@ -2849,6 +3037,25 @@ export enum Service {
   ApiUsers = 'apiUsers',
   ApiVideos = 'apiVideos'
 }
+
+export type ShortLink = {
+  __typename?: 'ShortLink';
+  domain: ShortLinkDomain;
+  id: Scalars['ID']['output'];
+  pathname: Scalars['String']['output'];
+  service: Service;
+  to: Scalars['String']['output'];
+};
+
+export type ShortLinkDomain = {
+  __typename?: 'ShortLinkDomain';
+  createdAt: Scalars['Date']['output'];
+  hostname: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  /** The services that are enabled for this domain, if empty then this domain can be used by all services */
+  services: Array<Service>;
+  updatedAt: Scalars['Date']['output'];
+};
 
 export type SignUpBlock = Block & {
   __typename?: 'SignUpBlock';
@@ -4428,6 +4635,18 @@ export type VisitorsConnection = {
   pageInfo: PageInfo;
 };
 
+export type ZodError = Error & {
+  __typename?: 'ZodError';
+  fieldErrors?: Maybe<Array<ZodFieldError>>;
+  message?: Maybe<Scalars['String']['output']>;
+};
+
+export type ZodFieldError = {
+  __typename?: 'ZodFieldError';
+  message?: Maybe<Scalars['String']['output']>;
+  path?: Maybe<Array<Scalars['String']['output']>>;
+};
+
 export enum Join__Graph {
   ApiAnalytics = 'API_ANALYTICS',
   ApiJourneys = 'API_JOURNEYS',
@@ -4456,7 +4675,7 @@ export type SiteCreateMutationVariables = Exact<{
 }>;
 
 
-export type SiteCreateMutation = { __typename?: 'Mutation', siteCreate: { __typename: 'Error', message: string } | { __typename?: 'MutationSiteCreateSuccess', data: { __typename: 'Site', id: string, domain: string, memberships: Array<{ __typename: 'SiteMembership', id: string, role: string }>, goals: Array<{ __typename: 'SiteGoal', id: string, eventName?: string | null }>, sharedLinks: Array<{ __typename: 'SiteSharedLink', id: string, slug: string }> } } };
+export type SiteCreateMutation = { __typename?: 'Mutation', siteCreate: { __typename: 'BaseError', message?: string | null } | { __typename?: 'MutationSiteCreateSuccess', data: { __typename: 'Site', id: string, domain: string, memberships: Array<{ __typename: 'SiteMembership', id: string, role: string }>, goals: Array<{ __typename: 'SiteGoal', id: string, eventName?: string | null }>, sharedLinks: Array<{ __typename: 'SiteSharedLink', id: string, slug: string }> } } };
 
 
 export const GetLanguagesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetLanguages"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"language"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bcp47"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<GetLanguagesQuery, GetLanguagesQueryVariables>;

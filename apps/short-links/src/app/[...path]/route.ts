@@ -6,9 +6,8 @@ import { getApolloClient } from '../../lib/apolloClient'
 
 const GET_SHORT_LINK = graphql(`
   query GetShortLink($hostname: String!, $pathname: String!) {
-    shortLink(hostname: $hostname, pathname: $pathname) {
-      __typename
-      ... on QueryShortLinkSuccess {
+    shortLink: shortLinkByPath(hostname: $hostname, pathname: $pathname) {
+      ... on QueryShortLinkByPathSuccess {
         data {
           to
         }
@@ -27,8 +26,10 @@ export async function GET(request: NextRequest): Promise<void> {
     variables: { hostname, pathname }
   })
 
-  if (data.shortLink.__typename === 'QueryShortLinkSuccess')
-    return redirect(data.shortLink.data.to)
-
-  return notFound()
+  switch (data.shortLink.__typename) {
+    case 'QueryShortLinkByPathSuccess':
+      return redirect(data.shortLink.data.to)
+    case 'NotFoundError':
+      return notFound()
+  }
 }
