@@ -1,4 +1,5 @@
 import { ResultOf, graphql } from 'gql.tada'
+
 import { getApolloClient } from './apolloClient'
 
 const GET_LANGUAGE_ID_FROM_BCP47 = graphql(`

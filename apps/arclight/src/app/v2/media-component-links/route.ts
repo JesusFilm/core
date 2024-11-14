@@ -2,8 +2,8 @@ import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../lib/apolloClient'
-import { paramsToRecord } from '../../../lib/paramsToRecord'
 import { getLanguageIdsFromTags } from '../../../lib/getLanguageIdsFromTags'
+import { paramsToRecord } from '../../../lib/paramsToRecord'
 
 const GET_VIDEOS_CHILDREN = graphql(`
   query GetVideosChildren(
