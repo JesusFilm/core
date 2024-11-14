@@ -1,8 +1,4 @@
-import {
-  Prisma,
-  Team,
-  UserJourneyRole
-} from '.prisma/api-journeys-modern-client'
+import { Prisma, Team } from '.prisma/api-journeys-modern-client'
 import { User } from '@core/yoga/firebaseClient'
 
 export type ApiJourneysJob =
