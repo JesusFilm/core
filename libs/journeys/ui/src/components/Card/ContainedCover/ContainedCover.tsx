@@ -188,6 +188,7 @@ export function ContainedCover({
             blurDataURL={backgroundBlur}
             layout="fill"
             objectFit="cover"
+            objectPosition={`${imageBlock.focalLeft}% ${imageBlock.focalTop}%`}
           />
         )}
       </Box>
