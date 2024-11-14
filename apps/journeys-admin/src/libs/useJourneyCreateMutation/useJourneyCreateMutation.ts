@@ -7,6 +7,11 @@ import {
   CreateJourney,
   CreateJourney_journeyCreate as Journey
 } from '../../../__generated__/CreateJourney'
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName
+} from '../../../__generated__/globalTypes'
 
 export const CREATE_JOURNEY = gql`
   mutation CreateJourney(
@@ -120,27 +125,81 @@ export function useJourneyCreateMutation(): {
     useMutation<CreateJourney>(CREATE_JOURNEY)
   const { activeTeam } = useTeam()
 
+  const defaultJourneyValues = {
+    title: 'Untitled Journey',
+    description:
+      'Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.',
+    alt: 'two hot air balloons in the sky',
+    headlineTypographyContent: 'The Journey Is On',
+    bodyTypographyContent: '"Go, and lead the people on their way..."',
+    captionTypographyContent: 'Deutoronomy 10:11'
+  }
+
   return {
     createJourney: async (): Promise<Journey | undefined> => {
       try {
-        const journeyId = uuidv4()
-        const stepId = uuidv4()
-        const cardId = uuidv4()
-        const imageId = uuidv4()
+        const ids = {
+          journeyId: uuidv4(),
+          stepId: uuidv4(),
+          cardId: uuidv4(),
+          imageId: uuidv4()
+        }
+
         const { data } = await createJourney({
           variables: {
-            journeyId,
-            title: 'Untitled Journey',
-            description:
-              'Use journey description for notes about the audience, topic, traffic source, etc. Only you and other editors can see it.',
-            stepId,
-            cardId,
-            imageId,
-            alt: 'two hot air balloons in the sky',
-            headlineTypographyContent: 'The Journey Is On',
-            bodyTypographyContent: '"Go, and lead the people on their way..."',
-            captionTypographyContent: 'Deutoronomy 10:11',
+            ...ids,
+            ...defaultJourneyValues,
             teamId: activeTeam?.id
+          },
+          optimisticResponse: {
+            journeyCreate: {
+              __typename: 'Journey',
+              id: ids.journeyId,
+              title: defaultJourneyValues.title,
+              description: defaultJourneyValues.description,
+              createdAt: new Date().toISOString(),
+              publishedAt: null,
+              slug: 'untitled-journey',
+              themeName: ThemeName.base,
+              themeMode: ThemeMode.dark,
+              language: {
+                __typename: 'Language',
+                id: '529',
+                name: [
+                  {
+                    __typename: 'LanguageName',
+                    value: 'English',
+                    primary: true
+                  }
+                ]
+              },
+              status: JourneyStatus.draft,
+              userJourneys: []
+            },
+            stepBlockCreate: {
+              __typename: 'StepBlock',
+              id: ids.stepId
+            },
+            cardBlockCreate: {
+              __typename: 'CardBlock',
+              id: ids.cardId
+            },
+            imageBlockCreate: {
+              __typename: 'ImageBlock',
+              id: ids.imageId
+            },
+            headlineTypographyBlockCreate: {
+              __typename: 'TypographyBlock',
+              id: uuidv4()
+            },
+            bodyTypographyBlockCreate: {
+              __typename: 'TypographyBlock',
+              id: uuidv4()
+            },
+            captionTypographyBlockCreate: {
+              __typename: 'TypographyBlock',
+              id: uuidv4()
+            }
           },
           update(cache, { data }) {
             if (data?.journeyCreate != null) {
