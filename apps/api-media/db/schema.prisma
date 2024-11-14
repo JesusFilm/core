@@ -420,7 +420,7 @@ model ShortLinkDomain {
 
 model ShortLink {
   id        String          @id @default(uuid())
-  /// should include the leading slash
+  /// should not include the leading slash
   pathname  String
   /// the full URL to redirect
   to        String
