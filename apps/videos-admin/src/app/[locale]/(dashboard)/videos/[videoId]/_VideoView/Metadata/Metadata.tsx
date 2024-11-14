@@ -1,12 +1,6 @@
 import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
-import Checkbox from '@mui/material/Checkbox'
 import CircularProgress from '@mui/material/CircularProgress'
-import FormControl from '@mui/material/FormControl'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import FormLabel from '@mui/material/FormLabel'
-import MenuItem from '@mui/material/MenuItem'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import { graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
@@ -18,6 +12,7 @@ import { UpdateableField } from '../UpdateableField'
 
 import { StudyQuestions } from './StudyQuestions'
 import { VideoImage } from './VideoImage'
+import { VideoInformation } from './VideoInformation'
 
 function useUpdateMutation(mutation) {
   const [updateMutation] = useMutation(mutation)
@@ -28,30 +23,6 @@ function useUpdateMutation(mutation) {
     })
   }
 }
-
-const videoLabels = [
-  { label: 'Collection', value: 'collection' },
-  { label: 'Episode', value: 'episode' },
-  { label: 'Feature Film', value: 'featureFilm' },
-  { label: 'Segment', value: 'segment' },
-  { label: 'Series', value: 'series' },
-  { label: 'Short Film', value: 'shortFilm' },
-  { label: 'Trailer', value: 'trailer' },
-  { label: 'Behind The Scenes', value: 'behindTheScenes' }
-]
-
-const videoStatuses = [
-  { label: 'Published', value: 'published' },
-  { label: 'Unpublished', value: 'unpublished' }
-]
-
-const VIDEO_TITLE_UPDATE = graphql(`
-  mutation UpdateVideoTitle($input: VideoTranslationUpdateInput!) {
-    videoTitleUpdate(input: $input) {
-      id
-    }
-  }
-`)
 
 const VIDEO_DESCRIPTION_UPDATE = graphql(`
   mutation UpdateVideoDescription($input: VideoTranslationUpdateInput!) {
@@ -65,17 +36,6 @@ const VIDEO_SNIPPET_UPDATE = graphql(`
   mutation UpdateVideoSnippet($input: VideoTranslationUpdateInput!) {
     videoSnippetUpdate(input: $input) {
       id
-    }
-  }
-`)
-
-const VIDEO_UPDATE = graphql(`
-  mutation UpdateVideo($input: VideoUpdateInput!) {
-    videoUpdate(input: $input) {
-      id
-      label
-      published
-      noIndex
     }
   }
 `)
@@ -102,119 +62,20 @@ export function Metadata({
 }: MetadataProps): ReactElement {
   const t = useTranslations()
 
-  const updateTitle = useUpdateMutation(VIDEO_TITLE_UPDATE)
   const updateDescription = useUpdateMutation(VIDEO_DESCRIPTION_UPDATE)
   const updateSnippet = useUpdateMutation(VIDEO_SNIPPET_UPDATE)
-  const [updateVideo] = useMutation(VIDEO_UPDATE)
   const updateAlt = useUpdateMutation(VIDEO_IMAGE_ALT_UPDATE)
-
-  const handleLabelChange = (e: SelectChangeEvent<any>): void => {
-    void updateVideo({
-      variables: {
-        input: {
-          id: video?.id,
-          label: e.target.value
-        }
-      }
-    })
-  }
-
-  const handleStatusChange = (e: SelectChangeEvent): void => {
-    void updateVideo({
-      variables: {
-        input: {
-          id: video?.id,
-          published: e.target.value === 'published'
-        }
-      }
-    })
-  }
-
-  const updateNoIndex = (e): void => {
-    void updateVideo({
-      variables: {
-        input: {
-          id: video?.id,
-          noIndex: e.target.checked
-        }
-      }
-    })
-  }
 
   return (
     <Stack gap={2} data-testid="VideoMetadata">
       {loading ? (
         <Box sx={{ height: 240, display: 'grid', placeItems: 'center' }}>
-          {' '}
-          <CircularProgress />{' '}
+          <CircularProgress />
         </Box>
       ) : (
         <>
-          <Section title={t('Information')}>
-            <Stack gap={2}>
-              <Stack direction="row" gap={2}>
-                <UpdateableField
-                  isEdit={isEdit}
-                  variant="textfield"
-                  label="Title"
-                  {...video?.title?.[0]}
-                  handleUpdate={updateTitle}
-                  fullWidth
-                />
-                <UpdateableField
-                  isEdit={isEdit}
-                  variant="textfield"
-                  id="none"
-                  handleUpdate={() => null}
-                  value={video?.slug ?? ''}
-                  label="Slug"
-                  disabled
-                  fullWidth
-                />
-              </Stack>
-              <Stack direction="row" alignItems="center" gap={2}>
-                <FormControl>
-                  <FormLabel>{t('Status')}</FormLabel>
-                  <Select
-                    defaultValue={
-                      video?.published === true ? 'published' : 'unpublished'
-                    }
-                    onChange={handleStatusChange}
-                    inputProps={{ readOnly: !isEdit }}
-                  >
-                    {videoStatuses.map(({ label, value }) => (
-                      <MenuItem key={label} value={value}>
-                        {label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl>
-                  <FormLabel>{t('Label')}</FormLabel>
-                  <Select
-                    value={video?.label}
-                    onChange={handleLabelChange}
-                    inputProps={{ readOnly: !isEdit }}
-                  >
-                    {videoLabels.map(({ label, value }) => (
-                      <MenuItem key={value} value={value}>
-                        {label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControlLabel
-                  label="No Index"
-                  control={
-                    <Checkbox
-                      defaultChecked={video?.noIndex === true}
-                      onChange={updateNoIndex}
-                      disabled={!isEdit}
-                    />
-                  }
-                />
-              </Stack>
-            </Stack>
+          <Section title="Information">
+            <VideoInformation isEdit={isEdit} />
           </Section>
           <Section title={t('Image')}>
             <Stack gap={2}>
@@ -243,7 +104,6 @@ export function Metadata({
               sx={{ minWidth: '100%', maxWidth: '100%' }}
             />
           </Section>
-
           <Section title={t('Description')}>
             <Textarea
               defaultValue={video?.description?.[0].value}
@@ -258,7 +118,6 @@ export function Metadata({
               sx={{ minWidth: '100%', maxWidth: '100%' }}
             />
           </Section>
-
           <StudyQuestions studyQuestions={video?.studyQuestions} />
         </>
       )}
