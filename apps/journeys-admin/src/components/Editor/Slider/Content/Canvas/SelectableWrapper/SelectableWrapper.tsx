@@ -196,23 +196,24 @@ export function SelectableWrapper({
         onClick={blockNonSelectionEvents}
         onMouseDown={blockNonSelectionEvents}
       >
-        <Divider
-          orientation="horizontal"
-          sx={{
-            display: block.id === dragId && !isAbove ? 'auto' : 'none',
-            height: '2px',
-            backgroundColor: '#C52D3A'
-          }}
-        />
+        <Popper
+          open={block.id === dragId}
+          anchorEl={selectableRef.current}
+          placement={isAbove ? 'bottom' : 'top'}
+        >
+          <Divider
+            orientation="horizontal"
+            sx={{
+              width: '315px',
+              height: '2px',
+              mt: '6px',
+              mb: '6px',
+              backgroundColor: '#C52D3A',
+              zIndex: 0
+            }}
+          />
+        </Popper>
         {children}
-        <Divider
-          orientation="horizontal"
-          sx={{
-            display: block.id === dragId && isAbove ? 'auto' : 'none',
-            height: '2px',
-            backgroundColor: '#C52D3A'
-          }}
-        />
       </Box>
       <QuickControls
         open={open}
