@@ -544,6 +544,7 @@
   "Are you sure you would like to delete the journey immediately? You will not be able to undo or restore these journeys.": "Are you sure you would like to delete the journey immediately? You will not be able to undo or restore these journeys.",
   "Journey Duplicated": "Journey Duplicated",
   "Journey Copied": "Journey Copied",
+  "Failed to duplicate journey": "Failed to duplicate journey",
   "Duplicate": "Duplicate",
   "Copy to Another Team": "Copy to Another Team",
   "Journey Restored": "Journey Restored",
