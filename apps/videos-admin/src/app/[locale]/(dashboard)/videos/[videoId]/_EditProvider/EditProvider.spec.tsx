@@ -28,7 +28,7 @@ describe('EditProvider', () => {
       expect(screen.getByText('isEdit: true')).toBeInTheDocument()
     })
 
-    test('should throw error when not wrapped inside `UserProvider`', () => {
+    it('should throw error when not wrapped inside `UserProvider`', () => {
       expect(() => render(<TestEditProvider />)).toThrow(
         'The useEdit hook must be a descendant of the EditProvider context'
       )
