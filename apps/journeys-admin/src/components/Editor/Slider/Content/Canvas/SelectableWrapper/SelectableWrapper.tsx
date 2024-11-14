@@ -155,10 +155,11 @@ export function SelectableWrapper({
   }, [selectedBlock, block])
 
   const isVideoBlock = block?.__typename === 'VideoBlock'
+  const isRadioOptionBlock = block?.__typename === 'RadioOptionBlock'
 
   return isSelectable ? (
     <Box
-      ref={block.__typename !== 'RadioOptionBlock' ? setNodeRef : undefined}
+      ref={!isRadioOptionBlock ? setNodeRef : undefined}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       sx={{
@@ -210,14 +211,14 @@ export function SelectableWrapper({
         anchorEl={selectableRef.current}
         isVideoBlock={isVideoBlock}
       />
-      {!isVideoBlock && block.__typename !== 'RadioOptionBlock' && (
+      {!isVideoBlock && (
         <Popper
           open={
             selectedBlock.__typename === 'StepBlock' ||
             selectedBlock.__typename === 'CardBlock'
           }
           anchorEl={selectableRef.current}
-          placement="left"
+          placement={isRadioOptionBlock ? 'right' : 'left'}
           {...listeners}
           ref={setActivatorNodeRef}
           onMouseEnter={() => setIsHovering(true)}
@@ -227,11 +228,13 @@ export function SelectableWrapper({
             fontSize="large"
             style={{
               position: 'absolute',
-              left: '-30px',
+              left: isRadioOptionBlock ? undefined : '-30px',
+              right: isRadioOptionBlock ? '0px' : undefined,
               top: '-18px',
               cursor: isDragging ? 'grabbing' : 'grab',
               transform: 'rotate(90deg)',
-              opacity: dragId != null || !isHovering || isDragging ? 0 : 1
+              opacity: dragId != null || !isHovering || isDragging ? 0 : 1,
+              color: isRadioOptionBlock ? '#000000' : 'secondary.dark'
             }}
           />
         </Popper>
