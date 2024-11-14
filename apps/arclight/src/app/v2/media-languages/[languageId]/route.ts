@@ -79,9 +79,10 @@ export async function GET(
     })
 
     if (data.language == null) {
+      const metadataTagsString = metadataLanguageTags.join(', ')
       return new Response(
         JSON.stringify({
-          message: `Parameter "metadataLanguageTags" of value "${metadataLanguageTags}" violated a constraint "Not acceptable metadata language tag(s): ${metadataLanguageTags}"`,
+          message: `Parameter "metadataLanguageTags" of value "${metadataTagsString}" violated a constraint "Not acceptable metadata language tag(s): ${metadataTagsString}"`,
           logref: 400
         }),
         { status: 400 }
