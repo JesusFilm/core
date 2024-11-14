@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { SaveButton } from '.'
+import { SaveButton } from './SaveButton'
 
 describe('SaveButton', () => {
   it('should render save button as disabled', () => {
