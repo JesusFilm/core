@@ -140,6 +140,7 @@
     "launchdarkly-node-server-sdk": "^7.0.3",
     "leaflet": "^1.9.4",
     "lodash": "^4.17.21",
+    "nanoid": "^3.3.7",
     "nestjs-ddtrace": "3.0.3",
     "nestjs-pino": "^3.4.0",
     "next": "14.2.17",

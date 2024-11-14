@@ -23,7 +23,10 @@ export async function GET(request: NextRequest): Promise<void> {
 
   const { data } = await client.query({
     query: GET_SHORT_LINK,
-    variables: { hostname, pathname }
+    variables: {
+      hostname,
+      pathname: pathname.substring(1)
+    }
   })
 
   switch (data.shortLink.__typename) {

@@ -3897,7 +3897,10 @@ input ImageInput @join__type(graph: API_MEDIA)  {
 }
 
 input MutationShortLinkCreateInput @join__type(graph: API_MEDIA)  {
-  pathname: String!
+  """
+  defaults to a random 11 character string that is URL friendly
+  """
+  pathname: String
   to: String!
   hostname: String!
   service: Service!

@@ -2188,7 +2188,8 @@ export type MutationVisitorUpdateForCurrentUserArgs = {
 
 export type MutationShortLinkCreateInput = {
   hostname: Scalars['String']['input'];
-  pathname: Scalars['String']['input'];
+  /** defaults to a random 11 character string that is URL friendly */
+  pathname?: InputMaybe<Scalars['String']['input']>;
   service: Service;
   to: Scalars['String']['input'];
 };

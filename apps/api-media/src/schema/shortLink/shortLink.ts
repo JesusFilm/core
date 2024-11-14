@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid'
 import { ZodError } from 'zod'
 
 import { Prisma } from '.prisma/api-media-client'
@@ -112,7 +113,11 @@ builder.mutationFields((t) => ({
       },
       nullable: false,
       input: {
-        pathname: t.input.string({ required: true }),
+        pathname: t.input.string({
+          required: false,
+          description:
+            'defaults to a random 11 character string that is URL friendly'
+        }),
         to: t.input.string({
           required: true,
           validate: {
@@ -158,9 +163,10 @@ builder.mutationFields((t) => ({
       resolve: async (
         query,
         _,
-        { input: { pathname, to, hostname, service } },
+        { input: { pathname: inputPathname, to, hostname, service } },
         context
       ) => {
+        const pathname = inputPathname ?? nanoid(11)
         try {
           return await prisma.shortLink.create({
             ...query,
