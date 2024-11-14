@@ -106,7 +106,7 @@ export function TermsAndConditions(): ReactElement {
       <Button
         data-testid="TermsAndConditionsNextButton"
         variant="contained"
-        disabled={!accepted}
+        disabled={!accepted || loading}
         onClick={handleJourneyProfileCreate}
         sx={{
           height: 54,
