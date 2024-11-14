@@ -4,24 +4,40 @@ import { NextRequest } from 'next/server'
 import { getApolloClient } from '../../../lib/apolloClient'
 import { paramsToRecord } from '../../../lib/paramsToRecord'
 
-/* TODO: 
-  querystring:
-    apiKey
-    term
-    ids
-    languageIds
-    type
-    subTypes
-    contentTypes
-    expand
-    filter
-    metadataLanguageTags
-    isDeprecated
+/* TODO:
+  isDeprecated,
 */
 
-const GET_VIDEOS = graphql(`
-  query GetVideos($limit: Int, $offset: Int) {
-    videos(limit: $limit, offset: $offset) {
+const GET_LANGUAGE_ID_FROM_BCP47 = graphql(`
+  query GetLanguageIdFromBCP47($bcp47: ID!) {
+    language(id: $bcp47, idType: bcp47) {
+      id
+    }
+  }
+`)
+
+const GET_VIDEOS_WITH_FALLBACK = graphql(`
+  query GetVideosWithFallback(
+    $limit: Int
+    $offset: Int
+    $ids: [ID!]
+    $languageIds: [ID!]
+    $languageId: ID
+    $fallbackLanguageId: ID
+    $labels: [VideoLabel!]
+  ) {
+    videosCount(
+      where: {
+        ids: $ids
+        availableVariantLanguageIds: $languageIds
+        labels: $labels
+      }
+    )
+    videos(
+      limit: $limit
+      offset: $offset
+      where: { ids: $ids, availableVariantLanguageIds: $languageIds }
+    ) {
       id
       label
       images {
@@ -32,16 +48,40 @@ const GET_VIDEOS = graphql(`
         mobileCinematicVeryLow
       }
       primaryLanguageId
-      title {
+      title(languageId: $languageId) {
+        value
+        language {
+          bcp47
+        }
+      }
+      fallbackTitle: title(languageId: $fallbackLanguageId) {
         value
       }
-      description {
+      description(languageId: $languageId) {
+        value
+        language {
+          bcp47
+        }
+      }
+      fallbackDescription: description(languageId: $fallbackLanguageId) {
         value
       }
-      snippet {
+      snippet(languageId: $languageId) {
+        value
+        language {
+          bcp47
+        }
+      }
+      fallbackSnippet: snippet(languageId: $fallbackLanguageId) {
         value
       }
-      studyQuestions {
+      studyQuestions(languageId: $languageId) {
+        value
+        language {
+          bcp47
+        }
+      }
+      fallbackStudyQuestions: studyQuestions(languageId: $fallbackLanguageId) {
         value
       }
       bibleCitations {
@@ -52,11 +92,15 @@ const GET_VIDEOS = graphql(`
         verseEnd
       }
       childrenCount
+      variantLanguages {
+        id
+      }
       variant {
         duration
         language {
           bcp47
         }
+        downloadable
         downloads {
           height
           width
@@ -74,13 +118,45 @@ export async function GET(request: NextRequest): Promise<Response> {
   const page = Number(query.get('page') ?? 1)
   const limit = Number(query.get('limit') ?? 10000)
   const offset = (page - 1) * limit
+  const expand = query.get('expand') ?? ''
+  const subTypes = query.get('subTypes')?.split(',').filter(Boolean) ?? []
+  const languageIds =
+    query.get('languageIds')?.split(',').filter(Boolean) ?? undefined
+  const ids = query.get('ids')?.split(',').filter(Boolean) ?? undefined
+  const metadataLanguageTags =
+    query.get('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
 
-  const { data } = await getApolloClient().query<ResultOf<typeof GET_VIDEOS>>({
-    query: GET_VIDEOS,
+  let languageId = '529'
+  let fallbackLanguageId
+  if (metadataLanguageTags.length > 0) {
+    const { data: languageIdData } = await getApolloClient().query<
+      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
+    >({
+      query: GET_LANGUAGE_ID_FROM_BCP47,
+      variables: { bcp47: metadataLanguageTags[0] }
+    })
+    languageId = languageIdData.language?.id ?? '529'
+  } else if (metadataLanguageTags.length > 1) {
+    const { data: languageIdData } = await getApolloClient().query<
+      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
+    >({
+      query: GET_LANGUAGE_ID_FROM_BCP47,
+      variables: { bcp47: metadataLanguageTags[1] }
+    })
+    fallbackLanguageId = languageIdData.language?.id ?? undefined
+  }
+  const { data } = await getApolloClient().query<
+    ResultOf<typeof GET_VIDEOS_WITH_FALLBACK>
+  >({
+    query: GET_VIDEOS_WITH_FALLBACK,
     variables: {
-      languageId: '529',
+      languageId,
+      fallbackLanguageId,
+      languageIds,
       limit,
-      offset
+      offset,
+      labels: subTypes,
+      ...(ids != null ? { ids } : {})
     }
   })
 
@@ -89,6 +165,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     page: page.toString(),
     limit: limit.toString()
   }
+  const lastPage = Math.ceil(data.videosCount / limit)
 
   const mediaComponents = data.videos.map((video) => ({
     mediaComponentId: video.id,
@@ -113,8 +190,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     },
     lengthInMilliseconds: video.variant?.duration ?? 0,
     containsCount: video.childrenCount,
-    // TODO: Needs new field in the schema
-    isDownloadable: true,
+    isDownloadable: video.variant?.downloadable ?? false,
     downloadSizes: {
       approximateSmallDownloadSizeInBytes:
         video.variant?.downloads?.find(({ quality }) => quality === 'low')
@@ -131,11 +207,16 @@ export async function GET(request: NextRequest): Promise<Response> {
       verseEnd: citation.verseEnd
     })),
     primaryLanguageId: Number(video.primaryLanguageId),
-    title: video.title[0].value,
-    shortDescription: video.snippet[0].value,
-    longDescription: video.description[0].value,
+    title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
+    shortDescription:
+      video.snippet[0]?.value ?? video.fallbackSnippet[0]?.value ?? '',
+    longDescription:
+      video.description[0]?.value ?? video.fallbackDescription[0]?.value ?? '',
     studyQuestions: video.studyQuestions.map((question) => question.value),
-    metadataLanguageTag: video.variant?.language.bcp47 ?? 'en'
+    metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
+    ...(expand.includes('languageIds')
+      ? { languageIds: video.variantLanguages.map(({ id }) => Number(id)) }
+      : {})
   }))
 
   const queryString = new URLSearchParams(queryObject).toString()
@@ -143,24 +224,24 @@ export async function GET(request: NextRequest): Promise<Response> {
     ...queryObject,
     page: '1'
   }).toString()
-  // TODO: Needs new query in gql
   const lastQueryString = new URLSearchParams({
     ...queryObject,
-    page: '1192'
+    page: lastPage.toString()
   }).toString()
   const nextQueryString = new URLSearchParams({
     ...queryObject,
     page: (page + 1).toString()
   }).toString()
+  const previousQueryString = new URLSearchParams({
+    ...queryObject,
+    page: (page - 1).toString()
+  }).toString()
 
   const response = {
     page,
     limit,
-    // TODO: Needs new query in gql
-    pages: 1192,
-    // TODO: Needs new query in gql
-    total: 1192,
-    // TODO: Needs new query in gql
+    pages: lastPage,
+    total: data.videosCount,
     apiSessionId: '',
     _links: {
       self: {
@@ -172,9 +253,20 @@ export async function GET(request: NextRequest): Promise<Response> {
       last: {
         href: `https://api.arclight.com/v2/mediaComponents?${lastQueryString}`
       },
-      next: {
-        href: `https://api.arclight.com/v2/mediaComponents?${nextQueryString}`
-      }
+      ...(page < lastPage
+        ? {
+            next: {
+              href: `https://api.arclight.com/v2/mediaComponents?${nextQueryString}`
+            }
+          }
+        : {}),
+      ...(page > 1
+        ? {
+            previous: {
+              href: `https://api.arclight.com/v2/mediaComponents?${previousQueryString}`
+            }
+          }
+        : {})
     },
     _embedded: {
       mediaComponents

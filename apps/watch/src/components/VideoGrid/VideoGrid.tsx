@@ -2,7 +2,7 @@ import AddRounded from '@mui/icons-material/AddRounded'
 import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
-import type { ComponentProps, ReactElement } from 'react'
+import type { ComponentProps, MouseEvent, ReactElement } from 'react'
 
 import { EmptySearch } from '@core/journeys/ui/EmptySearch'
 
@@ -18,6 +18,7 @@ export interface VideoGridProps {
   showMore?: () => void
   hasNextPage?: boolean
   hasNoResults?: boolean
+  onCardClick?: (videoId?: string) => (event: MouseEvent) => void
 }
 
 export function VideoGrid({
@@ -28,7 +29,8 @@ export function VideoGrid({
   loading = false,
   showMore,
   hasNextPage = true,
-  hasNoResults = false
+  hasNoResults = false,
+  onCardClick
 }: VideoGridProps): ReactElement {
   return (
     <Grid
@@ -44,6 +46,7 @@ export function VideoGrid({
               video={video}
               containerSlug={containerSlug}
               variant={variant}
+              onClick={onCardClick}
             />
           </Grid>
         ))}

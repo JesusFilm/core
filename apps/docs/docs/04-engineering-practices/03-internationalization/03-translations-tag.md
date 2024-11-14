@@ -32,9 +32,9 @@ In this example, the `t` function wraps the text intended for translation. Ensur
 
 Don't forget to run the `nx` command `extract-translations` for the project to gather all strings requiring translations into a namespaced file.
 
-### Parameterized Translations
+### Interpolation
 
-The `t` function supports parameterized translations, allowing you to include placeholders in your translation strings and replace them dynamically.
+The `t` function supports interpolation (parameterized translations), allowing you to include placeholders in your translation strings and replace them dynamically.
 
 ```jsx
 import { useTranslation } from 'next-i18next'
@@ -42,6 +42,7 @@ import { useTranslation } from 'next-i18next'
 function Component() {
   const { t } = useTranslation('apps-journeys-admin') // include a namespace
   const itemValue = 5
+  // Some logic here
   return <div>{t('{{ value }} of an item', { value: itemValue })}</div>
 }
 ```
@@ -63,7 +64,7 @@ function Component() {
 const incorrectTranslation = t(`js variable here: ${name}`)
 ```
 
-Explanation: Embedding JavaScript variables directly using template literals within the `t` function can lead to unpredictable behavior. Use parameterized translations with appropriate placeholders for a safer and more predictable outcome.
+Explanation: Embedding JavaScript variables directly using template literals within the `t` function can lead to unpredictable behavior. Use interpolation with appropriate placeholders for a safer and more predictable outcome.
 
 ### Incorrect Usage of Multiple `t` Calls Within JSX
 
@@ -72,7 +73,7 @@ Explanation: Embedding JavaScript variables directly using template literals wit
 {t('this is')}<strong>{t('special')}</strong>{t('test')}
 ```
 
-Explanation: Nesting multiple `t` calls within JSX without a clear structure can result in translation inconsistencies. Prefer parameterized translations or the `<Trans>` component for complex scenarios involving HTML tags.
+Explanation: Nesting multiple `t` calls within JSX without a clear structure can result in translation inconsistencies. Prefer interpolation or the `<Trans>` component for complex scenarios involving HTML tags.
 
 ## `Trans` Component
 
