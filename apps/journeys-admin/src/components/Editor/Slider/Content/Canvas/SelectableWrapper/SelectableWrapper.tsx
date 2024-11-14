@@ -179,7 +179,7 @@ export function SelectableWrapper({
         }}
         data-testid={`SelectableWrapper-${block.id}`}
         className={
-          selectedBlock.__typename === 'RadioOptionBlock'
+          isRadioOptionBlock
             ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
             : ''
         }
@@ -197,9 +197,9 @@ export function SelectableWrapper({
           transition: (theme) => theme.transitions.create('outline-color'),
           outlineOffset: '5px',
           zIndex: selectedBlock?.id === block.id ? 1 : 0,
-
           ...videoOutlineStyles
         }}
+        // if changing the event handlers or their functions, please check RadioOptionBlock events are being propogated properly i.e - can be re-ordered
         onClickCapture={handleSelectBlock}
         onClick={blockNonSelectionEvents}
         onMouseDown={blockNonSelectionEvents}
