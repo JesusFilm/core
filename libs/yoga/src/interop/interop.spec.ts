@@ -81,6 +81,31 @@ describe('interop', () => {
       ).toBeNull()
     })
 
+    it('should return null when ipAddress is blank and NAT_ADDRESSES does not include loopback address', () => {
+      process.env.INTEROP_TOKEN = 'correct-token'
+      process.env.NAT_ADDRESSES = '1.1.1.1'
+      expect(
+        getInteropContext({
+          interopToken: 'correct-token',
+          ipAddress: ''
+        })
+      ).toBeNull()
+    })
+
+    it('should return interopContext when ipAddress is blank and NAT_ADDRESSES includes loopback address', () => {
+      process.env.INTEROP_TOKEN = 'correct-token'
+      process.env.NAT_ADDRESSES = '1.1.1.1,127.0.0.1'
+      expect(
+        getInteropContext({
+          interopToken: 'correct-token',
+          ipAddress: ''
+        })
+      ).toEqual({
+        interopToken: 'correct-token',
+        ipAddress: '127.0.0.1'
+      })
+    })
+
     it('should return interopContext when ipAddress is null and NAT_ADDRESSES includes loopback address', () => {
       process.env.INTEROP_TOKEN = 'correct-token'
       process.env.NAT_ADDRESSES = '1.1.1.1,127.0.0.1'

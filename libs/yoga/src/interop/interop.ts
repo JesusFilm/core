@@ -16,9 +16,9 @@ export function getInteropContext({
   const ipAddress = z
     .string()
     .ip()
-    .nullable()
-    .transform((value) => value ?? '127.0.0.1')
-    .parse(ipAddressInput)
+    .parse(
+      ipAddressInput === '' ? '127.0.0.1' : (ipAddressInput ?? '127.0.0.1')
+    )
 
   if (
     interopToken == null ||

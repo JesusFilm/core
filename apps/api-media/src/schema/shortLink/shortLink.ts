@@ -9,12 +9,24 @@ import { Service } from '../enums/service'
 import { NotFoundError, NotUniqueError } from '../error'
 
 const ShortLink = builder.prismaObject('ShortLink', {
+  description: 'A short link that redirects to a full URL',
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
-    pathname: t.exposeString('pathname', { nullable: false }),
-    to: t.exposeString('to', { nullable: false }),
+    pathname: t.exposeString('pathname', {
+      nullable: false,
+      description: 'short link path not including the leading slash'
+    }),
+    to: t.exposeString('to', {
+      nullable: false,
+      description:
+        'the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to'
+    }),
     domain: t.relation('domain', { nullable: false }),
-    service: t.expose('service', { type: Service, nullable: false })
+    service: t.expose('service', {
+      type: Service,
+      nullable: false,
+      description: 'the service that created this short link'
+    })
   })
 })
 
@@ -27,12 +39,20 @@ builder.asEntity(ShortLink, {
 builder.queryFields((t) => ({
   shortLinkByPath: t.prismaField({
     type: 'ShortLink',
+    description: 'find a short link by path and hostname',
     errors: {
       types: [NotFoundError]
     },
     args: {
-      pathname: t.arg.string({ required: true }),
-      hostname: t.arg.string({ required: true })
+      pathname: t.arg.string({
+        required: true,
+        description: 'short link path not including the leading slash'
+      }),
+      hostname: t.arg.string({
+        required: true,
+        description:
+          'the hostname including subdomain, domain, and TLD, but excluding port'
+      })
     },
     nullable: false,
     resolve: async (query, _, { pathname, hostname }) => {
@@ -58,6 +78,7 @@ builder.queryFields((t) => ({
     .withAuth({ isPublisher: true, isValidInterop: true })
     .prismaField({
       type: 'ShortLink',
+      description: 'find a short link by id',
       errors: {
         types: [NotFoundError]
       },
@@ -87,9 +108,13 @@ builder.queryFields((t) => ({
     .withAuth({ isPublisher: true, isValidInterop: true })
     .prismaField({
       type: ['ShortLink'],
+      description: 'find all short links with optional hostname filter',
       nullable: false,
       args: {
-        hostname: t.arg.string()
+        hostname: t.arg.string({
+          description:
+            'the hostname including subdomain, domain, and TLD, but excluding port'
+        })
       },
       resolve: async (query, _, { hostname }) =>
         await prisma.shortLink.findMany({
@@ -108,6 +133,7 @@ builder.mutationFields((t) => ({
     .withAuth({ isPublisher: true, isValidInterop: true })
     .prismaFieldWithInput({
       type: 'ShortLink',
+      description: 'create a new short link',
       errors: {
         types: [ZodError, NotUniqueError]
       },
@@ -116,10 +142,12 @@ builder.mutationFields((t) => ({
         pathname: t.input.string({
           required: false,
           description:
-            'defaults to a random 11 character string that is URL friendly'
+            'short link path not including the leading slash (defaults to a random 11 character string that is URL friendly)'
         }),
         to: t.input.string({
           required: true,
+          description:
+            'the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to',
           validate: {
             url: true,
             refine: [
@@ -137,8 +165,16 @@ builder.mutationFields((t) => ({
             ]
           }
         }),
-        hostname: t.input.string({ required: true }),
-        service: t.input.field({ type: Service, required: true })
+        hostname: t.input.string({
+          required: true,
+          description:
+            'the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to'
+        }),
+        service: t.input.field({
+          type: Service,
+          required: true,
+          description: 'the service that created this short link'
+        })
       },
       validate: [
         async ({ input: { hostname, service } }) => {
@@ -196,6 +232,7 @@ builder.mutationFields((t) => ({
     .withAuth({ isPublisher: true, isValidInterop: true })
     .prismaFieldWithInput({
       type: 'ShortLink',
+      description: 'update an existing short link',
       errors: {
         types: [ZodError, NotFoundError]
       },
@@ -204,6 +241,8 @@ builder.mutationFields((t) => ({
         id: t.input.string({ required: true }),
         to: t.input.string({
           required: true,
+          description:
+            'the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to',
           validate: {
             url: true,
             refine: [
@@ -248,6 +287,7 @@ builder.mutationFields((t) => ({
     .withAuth({ isPublisher: true, isValidInterop: true })
     .prismaField({
       type: 'ShortLink',
+      description: 'delete an existing short link',
       errors: {
         types: [NotFoundError]
       },

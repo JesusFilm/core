@@ -397,11 +397,29 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   createMuxVideoUploadByFile(name: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
   createMuxVideoUploadByUrl(url: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
   deleteMuxVideo(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
+  """
+  Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)
+  """
   shortLinkDomainCreate(input: MutationShortLinkDomainCreateInput!) : MutationShortLinkDomainCreateResult! @join__field(graph: API_MEDIA) 
+  """
+  Update services that can use this short link domain
+  """
   shortLinkDomainUpdate(input: MutationShortLinkDomainUpdateInput!) : MutationShortLinkDomainUpdateResult! @join__field(graph: API_MEDIA) 
+  """
+  delete an existing short link domain (all related short links must be deleted first)
+  """
   shortLinkDomainDelete(id: String!) : MutationShortLinkDomainDeleteResult! @join__field(graph: API_MEDIA) 
+  """
+  create a new short link
+  """
   shortLinkCreate(input: MutationShortLinkCreateInput!) : MutationShortLinkCreateResult! @join__field(graph: API_MEDIA) 
+  """
+  update an existing short link
+  """
   shortLinkUpdate(input: MutationShortLinkUpdateInput!) : MutationShortLinkUpdateResult! @join__field(graph: API_MEDIA) 
+  """
+  delete an existing short link
+  """
   shortLinkDelete(id: String!) : MutationShortLinkDeleteResult! @join__field(graph: API_MEDIA) 
   videoCreate(input: VideoCreateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoUpdate(input: VideoUpdateInput!) : Video! @join__field(graph: API_MEDIA) 
@@ -685,16 +703,45 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   keywords: [Keyword!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideo(id: ID!) : MuxVideo! @join__field(graph: API_MEDIA) 
+  """
+  List of short link domains that can be used for short links
+  """
   shortLinkDomains(
     """
     Filter by service (including domains with no services set)
     """
     service: Service
   ): [ShortLinkDomain!]! @join__field(graph: API_MEDIA) 
+  """
+  Find a short link domain by id
+  """
   shortLinkDomain(id: String!) : QueryShortLinkDomainResult! @join__field(graph: API_MEDIA) 
-  shortLinkByPath(pathname: String!, hostname: String!) : QueryShortLinkByPathResult! @join__field(graph: API_MEDIA) 
+  """
+  find a short link by path and hostname
+  """
+  shortLinkByPath(
+    """
+    short link path not including the leading slash
+    """
+    pathname: String!
+    """
+    the hostname including subdomain, domain, and TLD, but excluding port
+    """
+    hostname: String!
+  ): QueryShortLinkByPathResult! @join__field(graph: API_MEDIA) 
+  """
+  find a short link by id
+  """
   shortLink(id: String!) : QueryShortLinkResult! @join__field(graph: API_MEDIA) 
-  shortLinks(hostname: String) : [ShortLink!]! @join__field(graph: API_MEDIA) 
+  """
+  find all short links with optional hostname filter
+  """
+  shortLinks(
+    """
+    the hostname including subdomain, domain, and TLD, but excluding port
+    """
+    hostname: String
+  ): [ShortLink!]! @join__field(graph: API_MEDIA) 
   adminVideo(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
   adminVideos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
   adminVideosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
@@ -2135,6 +2182,25 @@ type CloudflareVideo @join__type(graph: API_MEDIA)  {
   readyToStream: Boolean!
 }
 
+type ForeignKeyConstraintError implements Error @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "Error")  {
+  message: String
+  """
+  The arguments that caused the foriegn key constraint violation
+  """
+  location: [ForeignKeyConstraintErrorLocation!]
+}
+
+type ForeignKeyConstraintErrorLocation @join__type(graph: API_MEDIA)  {
+  """
+  An array describing the path in the arguments that caused this error
+  """
+  path: [String!]
+  """
+  The value that was provided at the path
+  """
+  value: String
+}
+
 type Keyword @join__type(graph: API_MEDIA)  {
   id: ID!
   value: String!
@@ -2228,14 +2294,29 @@ type QueryShortLinkSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLink!
 }
 
+"""
+A short link that redirects to a full URL
+"""
 type ShortLink @join__type(graph: API_MEDIA, key: "id")  {
   id: ID!
+  """
+  short link path not including the leading slash
+  """
   pathname: String!
+  """
+  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  """
   to: String!
   domain: ShortLinkDomain!
+  """
+  the service that created this short link
+  """
   service: Service!
 }
 
+"""
+A domain that can be used for short links
+"""
 type ShortLinkDomain @join__type(graph: API_MEDIA)  {
   id: ID!
   hostname: String!
@@ -2472,7 +2553,7 @@ union MutationShortLinkDeleteResult @join__type(graph: API_MEDIA)  @join__unionM
 
 union MutationShortLinkDomainCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainCreateSuccess")  = NotUniqueError | MutationShortLinkDomainCreateSuccess
 
-union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainDeleteSuccess")  = NotFoundError | MutationShortLinkDomainDeleteSuccess
+union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ForeignKeyConstraintError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainDeleteSuccess")  = NotFoundError | ForeignKeyConstraintError | MutationShortLinkDomainDeleteSuccess
 
 union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = NotFoundError | MutationShortLinkDomainUpdateSuccess
 
@@ -3893,26 +3974,47 @@ input ImageInput @join__type(graph: API_MEDIA)  {
 
 input MutationShortLinkCreateInput @join__type(graph: API_MEDIA)  {
   """
-  defaults to a random 11 character string that is URL friendly
+  short link path not including the leading slash (defaults to a random 11 character string that is URL friendly)
   """
   pathname: String
+  """
+  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  """
   to: String!
+  """
+  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  """
   hostname: String!
+  """
+  the service that created this short link
+  """
   service: Service!
 }
 
 input MutationShortLinkDomainCreateInput @join__type(graph: API_MEDIA)  {
+  """
+  the hostname including subdomain, domain, and TLD, but excluding port
+  """
   hostname: String!
+  """
+  the services that are enabled for this domain, if empty then this domain can be used by all services
+  """
   services: [Service!]
 }
 
 input MutationShortLinkDomainUpdateInput @join__type(graph: API_MEDIA)  {
   id: String!
+  """
+  the services that are enabled for this domain, if empty then this domain can be used by all services
+  """
   services: [Service!]!
 }
 
 input MutationShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
   id: String!
+  """
+  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  """
   to: String!
 }
 

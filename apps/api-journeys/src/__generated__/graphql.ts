@@ -17,8 +17,6 @@ export type Scalars = {
   /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   Date: { input: any; output: any; }
   DateTime: { input: any; output: any; }
-  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
-  JSON: { input: any; output: any; }
   Json: { input: any; output: any; }
   join__FieldSet: { input: any; output: any; }
   link__Import: { input: any; output: any; }
@@ -509,6 +507,21 @@ export type Event = {
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   label?: Maybe<Scalars['String']['output']>;
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export type ForeignKeyConstraintError = Error & {
+  __typename?: 'ForeignKeyConstraintError';
+  /** The arguments that caused the foriegn key constraint violation */
+  location?: Maybe<Array<ForeignKeyConstraintErrorLocation>>;
+  message?: Maybe<Scalars['String']['output']>;
+};
+
+export type ForeignKeyConstraintErrorLocation = {
+  __typename?: 'ForeignKeyConstraintErrorLocation';
+  /** An array describing the path in the arguments that caused this error */
+  path?: Maybe<Array<Scalars['String']['output']>>;
+  /** The value that was provided at the path */
   value?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1294,11 +1307,17 @@ export type Mutation = {
   radioQuestionBlockCreate: RadioQuestionBlock;
   radioQuestionBlockUpdate: RadioQuestionBlock;
   radioQuestionSubmissionEventCreate: RadioQuestionSubmissionEvent;
+  /** create a new short link */
   shortLinkCreate: MutationShortLinkCreateResult;
+  /** delete an existing short link */
   shortLinkDelete: MutationShortLinkDeleteResult;
+  /** Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service) */
   shortLinkDomainCreate: MutationShortLinkDomainCreateResult;
+  /** delete an existing short link domain (all related short links must be deleted first) */
   shortLinkDomainDelete: MutationShortLinkDomainDeleteResult;
+  /** Update services that can use this short link domain */
   shortLinkDomainUpdate: MutationShortLinkDomainUpdateResult;
+  /** update an existing short link */
   shortLinkUpdate: MutationShortLinkUpdateResult;
   signUpBlockCreate: SignUpBlock;
   signUpBlockUpdate?: Maybe<SignUpBlock>;
@@ -2187,10 +2206,13 @@ export type MutationVisitorUpdateForCurrentUserArgs = {
 };
 
 export type MutationShortLinkCreateInput = {
+  /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   hostname: Scalars['String']['input'];
-  /** defaults to a random 11 character string that is URL friendly */
+  /** short link path not including the leading slash (defaults to a random 11 character string that is URL friendly) */
   pathname?: InputMaybe<Scalars['String']['input']>;
+  /** the service that created this short link */
   service: Service;
+  /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   to: Scalars['String']['input'];
 };
 
@@ -2209,7 +2231,9 @@ export type MutationShortLinkDeleteSuccess = {
 };
 
 export type MutationShortLinkDomainCreateInput = {
+  /** the hostname including subdomain, domain, and TLD, but excluding port */
   hostname: Scalars['String']['input'];
+  /** the services that are enabled for this domain, if empty then this domain can be used by all services */
   services?: InputMaybe<Array<Service>>;
 };
 
@@ -2220,7 +2244,7 @@ export type MutationShortLinkDomainCreateSuccess = {
   data: ShortLinkDomain;
 };
 
-export type MutationShortLinkDomainDeleteResult = MutationShortLinkDomainDeleteSuccess | NotFoundError;
+export type MutationShortLinkDomainDeleteResult = ForeignKeyConstraintError | MutationShortLinkDomainDeleteSuccess | NotFoundError;
 
 export type MutationShortLinkDomainDeleteSuccess = {
   __typename?: 'MutationShortLinkDomainDeleteSuccess';
@@ -2229,6 +2253,7 @@ export type MutationShortLinkDomainDeleteSuccess = {
 
 export type MutationShortLinkDomainUpdateInput = {
   id: Scalars['String']['input'];
+  /** the services that are enabled for this domain, if empty then this domain can be used by all services */
   services: Array<Service>;
 };
 
@@ -2241,6 +2266,7 @@ export type MutationShortLinkDomainUpdateSuccess = {
 
 export type MutationShortLinkUpdateInput = {
   id: Scalars['String']['input'];
+  /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   to: Scalars['String']['input'];
 };
 
@@ -2586,10 +2612,15 @@ export type Query = {
   listUnsplashCollectionPhotos: Array<UnsplashPhoto>;
   me?: Maybe<User>;
   searchUnsplashPhotos: UnsplashQueryResponse;
+  /** find a short link by id */
   shortLink: QueryShortLinkResult;
+  /** find a short link by path and hostname */
   shortLinkByPath: QueryShortLinkByPathResult;
+  /** Find a short link domain by id */
   shortLinkDomain: QueryShortLinkDomainResult;
+  /** List of short link domains that can be used for short links */
   shortLinkDomains: Array<ShortLinkDomain>;
+  /** find all short links with optional hostname filter */
   shortLinks: Array<ShortLink>;
   tags: Array<Tag>;
   taxonomies: Array<Taxonomy>;
@@ -3039,15 +3070,20 @@ export enum Service {
   ApiVideos = 'apiVideos'
 }
 
+/** A short link that redirects to a full URL */
 export type ShortLink = {
   __typename?: 'ShortLink';
   domain: ShortLinkDomain;
   id: Scalars['ID']['output'];
+  /** short link path not including the leading slash */
   pathname: Scalars['String']['output'];
+  /** the service that created this short link */
   service: Service;
+  /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   to: Scalars['String']['output'];
 };
 
+/** A domain that can be used for short links */
 export type ShortLinkDomain = {
   __typename?: 'ShortLinkDomain';
   createdAt: Scalars['Date']['output'];

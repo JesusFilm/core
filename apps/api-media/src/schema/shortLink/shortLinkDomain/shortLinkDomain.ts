@@ -3,9 +3,14 @@ import { Prisma } from '.prisma/api-media-client'
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 import { Service } from '../../enums/service'
-import { NotFoundError, NotUniqueError } from '../../error'
+import {
+  ForeignKeyConstraintError,
+  NotFoundError,
+  NotUniqueError
+} from '../../error'
 
 builder.prismaObject('ShortLinkDomain', {
+  description: 'A domain that can be used for short links',
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     hostname: t.exposeString('hostname', { nullable: false }),
@@ -23,6 +28,7 @@ builder.prismaObject('ShortLinkDomain', {
 builder.queryFields((t) => ({
   shortLinkDomains: t.prismaField({
     type: ['ShortLinkDomain'],
+    description: 'List of short link domains that can be used for short links',
     nullable: false,
     args: {
       service: t.arg({
@@ -51,6 +57,7 @@ builder.queryFields((t) => ({
   }),
   shortLinkDomain: t.prismaField({
     type: 'ShortLinkDomain',
+    description: 'Find a short link domain by id',
     errors: {
       types: [NotFoundError]
     },
@@ -86,13 +93,24 @@ builder.mutationFields((t) => ({
     .withAuth({ isPublisher: true })
     .prismaFieldWithInput({
       type: 'ShortLinkDomain',
+      description:
+        'Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)',
       errors: {
         types: [NotUniqueError]
       },
       nullable: false,
       input: {
-        hostname: t.input.string({ required: true }),
-        services: t.input.field({ type: [Service], required: false })
+        hostname: t.input.string({
+          required: true,
+          description:
+            'the hostname including subdomain, domain, and TLD, but excluding port'
+        }),
+        services: t.input.field({
+          type: [Service],
+          required: false,
+          description:
+            'the services that are enabled for this domain, if empty then this domain can be used by all services'
+        })
       },
       resolve: async (query, _, { input: { hostname, services } }) => {
         try {
@@ -119,13 +137,19 @@ builder.mutationFields((t) => ({
     .withAuth({ isPublisher: true })
     .prismaFieldWithInput({
       type: 'ShortLinkDomain',
+      description: 'Update services that can use this short link domain',
       errors: {
         types: [NotFoundError]
       },
       nullable: false,
       input: {
         id: t.input.string({ required: true }),
-        services: t.input.field({ type: [Service], required: true })
+        services: t.input.field({
+          type: [Service],
+          required: true,
+          description:
+            'the services that are enabled for this domain, if empty then this domain can be used by all services'
+        })
       },
       resolve: async (query, _, { input: { id, services } }) => {
         try {
@@ -151,10 +175,12 @@ builder.mutationFields((t) => ({
         }
       }
     }),
-  shortLinkDomainDelete: t.withAuth({ isPublisher: true }).prismaField({
+  shortLinkDomainDelete: t.prismaField({
     type: 'ShortLinkDomain',
+    description:
+      'delete an existing short link domain (all related short links must be deleted first)',
     errors: {
-      types: [NotFoundError]
+      types: [NotFoundError, ForeignKeyConstraintError]
     },
     nullable: false,
     args: {
@@ -167,16 +193,29 @@ builder.mutationFields((t) => ({
           where: { id }
         })
       } catch (e) {
-        if (
-          e instanceof Prisma.PrismaClientKnownRequestError &&
-          e.code === 'P2025'
-        )
-          throw new NotFoundError('short link domain not found', [
-            {
-              path: ['id'],
-              value: id
-            }
-          ])
+        if (e instanceof Prisma.PrismaClientKnownRequestError) {
+          if (e.code === 'P2025') {
+            // P2025: Record to delete not found
+            throw new NotFoundError('short link domain not found', [
+              {
+                path: ['id'],
+                value: id
+              }
+            ])
+          }
+          if (e.code === 'P2003') {
+            // P2003: Record to delete is in use
+            throw new ForeignKeyConstraintError(
+              'short link domain still has associated short links',
+              [
+                {
+                  path: ['id'],
+                  value: id
+                }
+              ]
+            )
+          }
+        }
         throw e
       }
     }

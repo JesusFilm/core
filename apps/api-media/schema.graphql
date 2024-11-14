@@ -86,6 +86,23 @@ interface Error {
   message: String
 }
 
+type ForeignKeyConstraintError implements Error
+  @shareable
+{
+  message: String
+
+  """The arguments that caused the foriegn key constraint violation"""
+  location: [ForeignKeyConstraintErrorLocation!]
+}
+
+type ForeignKeyConstraintErrorLocation {
+  """An array describing the path in the arguments that caused this error"""
+  path: [String!]
+
+  """The value that was provided at the path"""
+  value: String
+}
+
 enum IdType {
   databaseId
   slug
@@ -143,11 +160,27 @@ type Mutation {
   createMuxVideoUploadByFile(name: String!): MuxVideo!
   createMuxVideoUploadByUrl(url: String!): MuxVideo!
   deleteMuxVideo(id: ID!): Boolean!
+
+  """
+  Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)
+  """
   shortLinkDomainCreate(input: MutationShortLinkDomainCreateInput!): MutationShortLinkDomainCreateResult!
+
+  """Update services that can use this short link domain"""
   shortLinkDomainUpdate(input: MutationShortLinkDomainUpdateInput!): MutationShortLinkDomainUpdateResult!
+
+  """
+  delete an existing short link domain (all related short links must be deleted first)
+  """
   shortLinkDomainDelete(id: String!): MutationShortLinkDomainDeleteResult!
+
+  """create a new short link"""
   shortLinkCreate(input: MutationShortLinkCreateInput!): MutationShortLinkCreateResult!
+
+  """update an existing short link"""
   shortLinkUpdate(input: MutationShortLinkUpdateInput!): MutationShortLinkUpdateResult!
+
+  """delete an existing short link"""
   shortLinkDelete(id: String!): MutationShortLinkDeleteResult!
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
@@ -181,10 +214,22 @@ type Mutation {
 }
 
 input MutationShortLinkCreateInput {
-  """defaults to a random 11 character string that is URL friendly"""
+  """
+  short link path not including the leading slash (defaults to a random 11 character string that is URL friendly)
+  """
   pathname: String
+
+  """
+  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  """
   to: String!
+
+  """
+  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  """
   hostname: String!
+
+  """the service that created this short link"""
   service: Service!
 }
 
@@ -201,7 +246,12 @@ type MutationShortLinkDeleteSuccess {
 }
 
 input MutationShortLinkDomainCreateInput {
+  """the hostname including subdomain, domain, and TLD, but excluding port"""
   hostname: String!
+
+  """
+  the services that are enabled for this domain, if empty then this domain can be used by all services
+  """
   services: [Service!]
 }
 
@@ -211,7 +261,7 @@ type MutationShortLinkDomainCreateSuccess {
   data: ShortLinkDomain!
 }
 
-union MutationShortLinkDomainDeleteResult = NotFoundError | MutationShortLinkDomainDeleteSuccess
+union MutationShortLinkDomainDeleteResult = NotFoundError | ForeignKeyConstraintError | MutationShortLinkDomainDeleteSuccess
 
 type MutationShortLinkDomainDeleteSuccess {
   data: ShortLinkDomain!
@@ -219,6 +269,10 @@ type MutationShortLinkDomainDeleteSuccess {
 
 input MutationShortLinkDomainUpdateInput {
   id: String!
+
+  """
+  the services that are enabled for this domain, if empty then this domain can be used by all services
+  """
   services: [Service!]!
 }
 
@@ -230,6 +284,10 @@ type MutationShortLinkDomainUpdateSuccess {
 
 input MutationShortLinkUpdateInput {
   id: String!
+
+  """
+  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  """
   to: String!
 }
 
@@ -293,14 +351,33 @@ type Query {
   keywords: [Keyword!]!
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!): MuxVideo!
+
+  """List of short link domains that can be used for short links"""
   shortLinkDomains(
     """Filter by service (including domains with no services set)"""
     service: Service
   ): [ShortLinkDomain!]!
+
+  """Find a short link domain by id"""
   shortLinkDomain(id: String!): QueryShortLinkDomainResult!
-  shortLinkByPath(pathname: String!, hostname: String!): QueryShortLinkByPathResult!
+
+  """find a short link by path and hostname"""
+  shortLinkByPath(
+    """short link path not including the leading slash"""
+    pathname: String!
+
+    """the hostname including subdomain, domain, and TLD, but excluding port"""
+    hostname: String!
+  ): QueryShortLinkByPathResult!
+
+  """find a short link by id"""
   shortLink(id: String!): QueryShortLinkResult!
-  shortLinks(hostname: String): [ShortLink!]!
+
+  """find all short links with optional hostname filter"""
+  shortLinks(
+    """the hostname including subdomain, domain, and TLD, but excluding port"""
+    hostname: String
+  ): [ShortLink!]!
   adminVideo(id: ID!, idType: IdType = databaseId): Video!
   adminVideos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   adminVideosCount(where: VideosFilter): Int!
@@ -348,16 +425,26 @@ enum Service {
   apiVideos
 }
 
+"""A short link that redirects to a full URL"""
 type ShortLink
   @key(fields: "id")
 {
   id: ID!
+
+  """short link path not including the leading slash"""
   pathname: String!
+
+  """
+  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  """
   to: String!
   domain: ShortLinkDomain!
+
+  """the service that created this short link"""
   service: Service!
 }
 
+"""A domain that can be used for short links"""
 type ShortLinkDomain {
   id: ID!
   hostname: String!

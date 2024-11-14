@@ -422,7 +422,7 @@ model ShortLink {
   id        String          @id @default(uuid())
   /// should not include the leading slash
   pathname  String
-  /// the full URL to redirect
+  /// the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
   to        String
   domainId  String
   /// the user created this short link (if empty, it was created by a subgraph)
