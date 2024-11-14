@@ -92,11 +92,6 @@ A date string, such as 2007-12-03, compliant with the `full-date` format outline
 """
 scalar Date @join__type(graph: API_MEDIA) 
 
-"""
-The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
-"""
-scalar JSON @join__type(graph: API_MEDIA) 
-
 type BaseError implements Error @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  @join__implements(graph: API_ANALYTICS, interface: "Error")  @join__implements(graph: API_MEDIA, interface: "Error")  {
   message: String
 }

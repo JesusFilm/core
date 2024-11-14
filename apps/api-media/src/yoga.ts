@@ -14,7 +14,7 @@ import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import get from 'lodash/get'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
-import { isValidInterop } from '@core/yoga/interop'
+import { getInteropContext } from '@core/yoga/interop'
 
 import { prisma } from './lib/prisma'
 import { logger } from './logger'
@@ -23,7 +23,10 @@ import { Context } from './schema/builder'
 
 export const cache = createInMemoryCache()
 
-export const yoga = createYoga<Record<string, unknown>, Context>({
+export const yoga = createYoga<
+  Record<string, unknown>,
+  Context & ReturnType<typeof initContextCache>
+>({
   schema,
   logging: logger,
   context: async ({ request, params }) => {
@@ -45,16 +48,12 @@ export const yoga = createYoga<Record<string, unknown>, Context>({
 
     const interopToken = request.headers.get('interop-token')
     const ipAddress = request.headers.get('x-forwarded-for')
-    if (
-      interopToken != null &&
-      ipAddress != null &&
-      isValidInterop({ interopToken, ipAddress })
-    )
+    const interopContext = getInteropContext({ interopToken, ipAddress })
+    if (interopContext != null)
       return {
         ...initContextCache(),
         type: 'interop',
-        interopToken,
-        ipAddress
+        ...interopContext
       }
 
     return {

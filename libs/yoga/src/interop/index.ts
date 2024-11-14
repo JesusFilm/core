@@ -1,1 +1,1 @@
-export { isValidInterop, InteropContext } from './Interop'
+export { getInteropContext, InteropContext } from './interop'

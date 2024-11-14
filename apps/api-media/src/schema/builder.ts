@@ -11,7 +11,7 @@ import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import WithInputPlugin from '@pothos/plugin-with-input'
 import ZodPlugin from '@pothos/plugin-zod'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
-import { DateResolver, JSONResolver } from 'graphql-scalars'
+import { DateResolver } from 'graphql-scalars'
 
 import { MediaRole, Prisma } from '.prisma/api-media-client'
 import { User } from '@core/yoga/firebaseClient'
@@ -60,7 +60,6 @@ export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes
   Scalars: {
     Date: { Input: Date; Output: Date }
-    JSON: { Input: Record<string, unknown>; Output: Record<string, unknown> }
     ID: { Input: string; Output: number | string }
   }
 }>({
@@ -110,7 +109,6 @@ export const builder = new SchemaBuilder<{
 })
 
 builder.addScalarType('Date', DateResolver)
-builder.addScalarType('JSON', JSONResolver)
 
 builder.queryType({})
 
