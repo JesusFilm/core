@@ -3,8 +3,7 @@ import {
   DndContext,
   DragOverEvent,
   DragOverlay,
-  DragStartEvent,
-  closestCenter
+  DragStartEvent
 } from '@dnd-kit/core'
 import { SortableContext } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
@@ -101,11 +100,7 @@ export function DropArea({ children }: DropAreaProps): ReactElement {
   }
 
   return (
-    <DndContext
-      onDragEnd={handleDragEnd}
-      onDragStart={handleDragStart}
-      collisionDetection={closestCenter}
-    >
+    <DndContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
       <SortableContext items={itemIds}>{children}</SortableContext>
       <DragOverlay dropAnimation={null}>
         {activeItem != null ? (

@@ -1,6 +1,7 @@
 import { DragOverEvent, useDndMonitor } from '@dnd-kit/core'
 import { useSortable } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
 import Popper from '@mui/material/Popper'
 import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
@@ -25,7 +26,7 @@ export function SelectableWrapper({
     dispatch
   } = useEditor()
 
-  const { listeners, setNodeRef, transition, isDragging, setActivatorNodeRef } =
+  const { listeners, setNodeRef, isDragging, setActivatorNodeRef } =
     useSortable({
       id: block.id
     })
@@ -123,7 +124,6 @@ export function SelectableWrapper({
           top: 0,
           left: 0,
           outlineOffset: '-3px',
-          borderRadius: '20px',
           my: '0px !important',
           '&:first-child': {
             '& > *': { zIndex: -1 }
@@ -159,52 +159,60 @@ export function SelectableWrapper({
 
   return isSelectable ? (
     <Box
+      className={
+        isRadioOptionBlock
+          ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
+          : ''
+      }
       ref={!isRadioOptionBlock ? setNodeRef : undefined}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       sx={{
-        boxShadow:
-          block.id === dragId
-            ? isAbove
-              ? '0px 3px 0 0 #C52D3A'
-              : '0px -3px 0 0 #C52D3A'
-            : 'none'
+        '&:first-child': {
+          '& > *': { mt: '0px' }
+        },
+        '&:last-child': {
+          '& > *': { mb: '0px' }
+        },
+        opacity: isDragging ? 0.4 : 1,
+        outline: '2px solid',
+        outlineColor:
+          selectedBlock?.id === block.id ? '#C52D3A' : 'transparent',
+        transition: (theme) => theme.transitions.create('outline-color'),
+        outlineOffset: '5px',
+        zIndex: selectedBlock?.id === block.id ? 1 : 0,
+        borderRadius: isVideoBlock ? '20px !important' : borderRadius,
+        ...videoOutlineStyles
       }}
     >
       <Box
         ref={selectableRef}
-        style={{
-          opacity: isDragging ? 0.4 : 1,
-          transition
-        }}
         data-testid={`SelectableWrapper-${block.id}`}
-        className={
-          isRadioOptionBlock
-            ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
-            : ''
-        }
         sx={{
-          '&:first-child': {
-            '& > *': { mt: '0px' }
-          },
-          '&:last-child': {
-            '& > *': { mb: '0px' }
-          },
-          borderRadius,
-          outline: '2px solid ',
-          outlineColor:
-            selectedBlock?.id === block.id ? '#C52D3A' : 'transparent',
-          transition: (theme) => theme.transitions.create('outline-color'),
-          outlineOffset: '5px',
-          zIndex: selectedBlock?.id === block.id ? 1 : 0,
-          ...videoOutlineStyles
+          borderRadius
         }}
         // if changing the event handlers or their functions, please check RadioOptionBlock events are being propogated properly i.e - can be re-ordered
         onClickCapture={handleSelectBlock}
         onClick={blockNonSelectionEvents}
         onMouseDown={blockNonSelectionEvents}
       >
-        <Box>{children}</Box>
+        <Divider
+          orientation="horizontal"
+          sx={{
+            display: block.id === dragId && !isAbove ? 'auto' : 'none',
+            height: '2px',
+            backgroundColor: '#C52D3A'
+          }}
+        />
+        {children}
+        <Divider
+          orientation="horizontal"
+          sx={{
+            display: block.id === dragId && isAbove ? 'auto' : 'none',
+            height: '2px',
+            backgroundColor: '#C52D3A'
+          }}
+        />
       </Box>
       <QuickControls
         open={open}
