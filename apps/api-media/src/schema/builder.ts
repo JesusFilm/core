@@ -15,16 +15,32 @@ import { DateResolver, JSONResolver } from 'graphql-scalars'
 
 import { MediaRole, Prisma } from '.prisma/api-media-client'
 import { User } from '@core/yoga/firebaseClient'
+import { InteropContext } from '@core/yoga/interop'
 
 import type PrismaTypes from '../__generated__/pothos-types'
 import { prisma } from '../lib/prisma'
 
 const PrismaPlugin = pluginName
 
-export interface Context {
-  currentRoles: MediaRole[]
-  user: User | null
+interface BaseContext {
+  type: string
 }
+
+interface PublicContext extends BaseContext {
+  type: 'public'
+}
+
+interface AuthenticatedContext extends BaseContext {
+  type: 'authenticated'
+  user: User
+  currentRoles: MediaRole[]
+}
+
+interface LocalInteropContext extends BaseContext, InteropContext {
+  type: 'interop'
+}
+
+export type Context = LocalInteropContext | PublicContext | AuthenticatedContext
 
 const createSpan = createOpenTelemetryWrapper(tracer, {
   includeSource: true
@@ -37,8 +53,9 @@ export const builder = new SchemaBuilder<{
     isPublisher: boolean
   }
   AuthContexts: {
-    isAuthenticated: Context & { user: User }
-    isPublisher: Context & { user: User }
+    isAuthenticated: Extract<Context, { type: 'authenticated' }>
+    isPublisher: Extract<Context, { type: 'authenticated' }>
+    isValidInterop: Extract<Context, { type: 'interop' }>
   }
   PrismaTypes: PrismaTypes
   Scalars: {
@@ -57,18 +74,33 @@ export const builder = new SchemaBuilder<{
     DirectivesPlugin,
     FederationPlugin
   ],
-  errors: {
-    defaultTypes: [Error]
-  },
   tracing: {
     default: (config) => isRootField(config),
     wrap: (resolver, options) => createSpan(resolver, options)
   },
   scopeAuth: {
-    authScopes: async (context) => ({
-      isAuthenticated: context.user != null,
-      isPublisher: context.currentRoles.includes('publisher') ?? false
-    })
+    authScopes: async (context: Context) => {
+      switch (context.type) {
+        case 'authenticated':
+          return {
+            isAuthenticated: true,
+            isPublisher: context.currentRoles.includes('publisher'),
+            isValidInterop: false
+          }
+        case 'interop':
+          return {
+            isAuthenticated: false,
+            isPublisher: false,
+            isValidInterop: true
+          }
+        default:
+          return {
+            isAuthenticated: false,
+            isPublisher: false,
+            isValidInterop: false
+          }
+      }
+    }
   },
   prisma: {
     client: prisma,

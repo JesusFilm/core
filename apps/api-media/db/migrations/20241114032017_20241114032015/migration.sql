@@ -15,7 +15,7 @@ CREATE TABLE "ShortLink" (
     "pathname" TEXT NOT NULL,
     "to" TEXT NOT NULL,
     "domainId" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "userId" TEXT,
     "service" "Service" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

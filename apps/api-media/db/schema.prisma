@@ -425,8 +425,8 @@ model ShortLink {
   /// the full URL to redirect
   to        String
   domainId  String
-  /// the user created this short link
-  userId    String
+  /// the user created this short link (if empty, it was created by a subgraph)
+  userId    String?
   /// the service that created this short link
   service   Service
   createdAt DateTime        @default(now())

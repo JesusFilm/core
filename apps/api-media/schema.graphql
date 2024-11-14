@@ -192,13 +192,13 @@ input MutationShortLinkCreateInput {
   service: Service!
 }
 
-union MutationShortLinkCreateResult = ZodError | NotUniqueError | BaseError | MutationShortLinkCreateSuccess
+union MutationShortLinkCreateResult = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
 
 type MutationShortLinkCreateSuccess {
   data: ShortLink!
 }
 
-union MutationShortLinkDeleteResult = NotFoundError | BaseError | MutationShortLinkDeleteSuccess
+union MutationShortLinkDeleteResult = NotFoundError | MutationShortLinkDeleteSuccess
 
 type MutationShortLinkDeleteSuccess {
   data: ShortLink!
@@ -209,13 +209,13 @@ input MutationShortLinkDomainCreateInput {
   services: [Service!]
 }
 
-union MutationShortLinkDomainCreateResult = NotUniqueError | BaseError | MutationShortLinkDomainCreateSuccess
+union MutationShortLinkDomainCreateResult = NotUniqueError | MutationShortLinkDomainCreateSuccess
 
 type MutationShortLinkDomainCreateSuccess {
   data: ShortLinkDomain!
 }
 
-union MutationShortLinkDomainDeleteResult = NotFoundError | BaseError | MutationShortLinkDomainDeleteSuccess
+union MutationShortLinkDomainDeleteResult = NotFoundError | MutationShortLinkDomainDeleteSuccess
 
 type MutationShortLinkDomainDeleteSuccess {
   data: ShortLinkDomain!
@@ -226,7 +226,7 @@ input MutationShortLinkDomainUpdateInput {
   services: [Service!]!
 }
 
-union MutationShortLinkDomainUpdateResult = NotFoundError | BaseError | MutationShortLinkDomainUpdateSuccess
+union MutationShortLinkDomainUpdateResult = NotFoundError | MutationShortLinkDomainUpdateSuccess
 
 type MutationShortLinkDomainUpdateSuccess {
   data: ShortLinkDomain!
@@ -237,7 +237,7 @@ input MutationShortLinkUpdateInput {
   to: String!
 }
 
-union MutationShortLinkUpdateResult = ZodError | NotFoundError | BaseError | MutationShortLinkUpdateSuccess
+union MutationShortLinkUpdateResult = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
 
 type MutationShortLinkUpdateSuccess {
   data: ShortLink!
@@ -302,7 +302,8 @@ type Query {
     service: Service
   ): [ShortLinkDomain!]!
   shortLinkDomain(id: String!): QueryShortLinkDomainResult!
-  shortLink(pathname: String!, hostname: String!): QueryShortLinkResult!
+  shortLinkByPath(pathname: String!, hostname: String!): QueryShortLinkByPathResult!
+  shortLink(id: String!): QueryShortLinkResult!
   shortLinks(hostname: String): [ShortLink!]!
   adminVideo(id: ID!, idType: IdType = databaseId): Video!
   adminVideos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
@@ -317,13 +318,19 @@ type Query {
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
 }
 
-union QueryShortLinkDomainResult = NotFoundError | BaseError | QueryShortLinkDomainSuccess
+union QueryShortLinkByPathResult = NotFoundError | QueryShortLinkByPathSuccess
+
+type QueryShortLinkByPathSuccess {
+  data: ShortLink!
+}
+
+union QueryShortLinkDomainResult = NotFoundError | QueryShortLinkDomainSuccess
 
 type QueryShortLinkDomainSuccess {
   data: ShortLinkDomain!
 }
 
-union QueryShortLinkResult = NotFoundError | BaseError | QueryShortLinkSuccess
+union QueryShortLinkResult = NotFoundError | QueryShortLinkSuccess
 
 type QueryShortLinkSuccess {
   data: ShortLink!

@@ -14,6 +14,7 @@ import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import get from 'lodash/get'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
+import { isValidInterop } from '@core/yoga/interop'
 
 import { prisma } from './lib/prisma'
 import { logger } from './logger'
@@ -25,21 +26,40 @@ export const cache = createInMemoryCache()
 export const yoga = createYoga<Record<string, unknown>, Context>({
   schema,
   logging: logger,
-  context: async ({ params }) => {
+  context: async ({ request, params }) => {
     const payload = get(params, 'extensions.jwt.payload')
     const user = getUserFromPayload(payload, logger)
 
+    if (user != null)
+      return {
+        ...initContextCache(),
+        type: 'authenticated',
+        user,
+        currentRoles:
+          (
+            await prisma.userMediaRole.findUnique({
+              where: { userId: user.id }
+            })
+          )?.roles ?? []
+      }
+
+    const interopToken = request.headers.get('interop-token')
+    const ipAddress = request.headers.get('x-forwarded-for')
+    if (
+      interopToken != null &&
+      ipAddress != null &&
+      isValidInterop({ interopToken, ipAddress })
+    )
+      return {
+        ...initContextCache(),
+        type: 'interop',
+        interopToken,
+        ipAddress
+      }
+
     return {
       ...initContextCache(),
-      user,
-      currentRoles:
-        user?.id != null
-          ? ((
-              await prisma.userMediaRole.findUnique({
-                where: { userId: user.id }
-              })
-            )?.roles ?? [])
-          : []
+      type: 'public'
     }
   },
   plugins: [
