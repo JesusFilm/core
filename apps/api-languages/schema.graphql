@@ -67,7 +67,7 @@ type Language
   countryLanguages: [CountryLanguage!]!
   audioPreview: AudioPreview
   primaryCountryId: String
-  speakerCount: Int!
+  speakerCount: String!
   countriesCount: Int!
 }
 
@@ -84,12 +84,14 @@ type LanguageName {
 
 input LanguagesFilter {
   ids: [ID!]
+  bcp47: [String!]
+  iso3: [String!]
 }
 
 type Query {
   language(id: ID!, idType: LanguageIdType = databaseId): Language
-  languages(offset: Int, limit: Int, where: LanguagesFilter): [Language!]!
-  languagesCount(where: LanguagesFilter): Int!
+  languages(offset: Int, limit: Int, where: LanguagesFilter, term: String): [Language!]!
+  languagesCount(where: LanguagesFilter, term: String): Int!
   country(id: ID!): Country
   countries: [Country!]!
 }
