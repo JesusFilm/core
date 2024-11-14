@@ -36,7 +36,11 @@ export function Image(block: TreeBlock<ImageBlock>): ReactElement {
         id={`${id}-image-options`}
         icon={<Image3Icon />}
         name={t('Image Source')}
-        value={block?.alt ?? ''}
+        value={
+          block?.alt === 'Default Image Icon'
+            ? t('Default Image Icon')
+            : (block?.alt ?? '')
+        }
       >
         <ImageOptions />
       </Accordion>
