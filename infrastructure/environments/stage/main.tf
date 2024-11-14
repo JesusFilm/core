@@ -148,6 +148,21 @@ module "api-media" {
   }
 }
 
+module "arclight" {
+  source = "../../../apps/arclight/infrastructure"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/"
+      health_check_port = "3000"
+    })
+  })
+  doppler_token    = data.aws_ssm_parameter.doppler_arclight_stage_token.value
+  alb_listener_arn = module.stage.public_alb.alb_listener.arn
+  alb_dns_name     = module.stage.public_alb.dns_name
+  host_name        = "core-stage.arclight.org"
+  env              = "stage"
+}
+
 module "bastion" {
   source             = "../../modules/aws/ec2-bastion"
   name               = "bastion"
