@@ -62,7 +62,6 @@ export function DuplicateJourneyMenuItem({
         variant: 'error',
         preventDuplicate: true
       })
-      setLoading(false)
     } finally {
       setLoading(false)
     }
