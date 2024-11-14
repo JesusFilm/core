@@ -26,8 +26,9 @@ However, if:
 - Your code changes touch other feature/s
 - You haven't been with us for very long and don't feel comfortable
 - Or you are a Junior Product Engineer
-  Submit it for QA approval before pushing in the change.
-  Some UX changes would also fit in this category (of no design review), especially smaller, isolated changes. But all UX changes will need to be QA approved.
+
+Submit it for QA approval before pushing in the change.
+Some UX changes would also fit in this category (of no design review), especially smaller, isolated changes. But all UX changes will need to be QA approved.
 
 ## UI Tests
 
