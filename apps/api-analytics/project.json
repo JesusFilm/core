@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-analytics/src",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
@@ -116,6 +117,5 @@
         "command": "gql.tada generate output --tsconfig apps/api-analytics/tsconfig.json"
       }
     }
-  },
-  "tags": []
+  }
 }
