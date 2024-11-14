@@ -1,8 +1,8 @@
 import { Prisma } from '.prisma/api-languages-client'
 
 import { prisma } from '../../lib/prisma'
-import { builder } from '../builder'
 import { parseFullTextSearch } from '../../workers/bigQuery/importers/languages/lib/parseFullTextSearch'
+import { builder } from '../builder'
 
 enum LanguageIdType {
   databaseId = 'databaseId',
