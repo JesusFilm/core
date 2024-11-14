@@ -12,5 +12,8 @@ module.exports = {
   verbose: true,
   namespaceSeparator: false,
   keySeparator: false,
-  useKeysAsDefaultValue: true
+  useKeysAsDefaultValue: true,
+  defaultValue: function (lng, ns, key) {
+    return key
+  }
 }

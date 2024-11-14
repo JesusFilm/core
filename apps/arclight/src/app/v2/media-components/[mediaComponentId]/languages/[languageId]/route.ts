@@ -2,15 +2,10 @@ import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../../../../lib/apolloClient'
-
-/* TODO: 
-  querystring:
-    apiKey
-    platform
-    reduce (only for web)
-    expand
-    metadataLanguageTags
-*/
+import {
+  getWebEmbedPlayer,
+  getWebEmbedSharePlayer
+} from '../../../../../../lib/stringsForArclight/webEmbedStrings'
 
 interface GetParams {
   params: { mediaComponentId: string; languageId: string }
@@ -71,10 +66,10 @@ export async function GET(
   // TODO: implement
   const apiSessionId = '6622f10d2260a8.05128925'
 
-  if (data.video == null || data.video.variant == null)
-    return new Response(null, { status: 404 })
-
   const video = data.video
+
+  if (video == null || video.variant == null)
+    return new Response(null, { status: 404 })
 
   const downloadLow = video.variant?.downloads?.find(
     (download) => download.quality === 'low'
@@ -82,6 +77,7 @@ export async function GET(
   const downloadHigh = video.variant?.downloads?.find(
     (download) => download.quality === 'high'
   )
+
   const downloadUrls = {
     low:
       downloadLow == null
@@ -103,69 +99,17 @@ export async function GET(
           }
   }
 
-  const url = `https://api.arclight.org/videoPlayerUrl?refId=${video.variant?.id}&apiSessionId=${apiSessionId}&player=bc.vanilla6&dtm=0&playerStyle=vanilla`
+  const webEmbedPlayer = getWebEmbedPlayer(video.variant.id, apiSessionId)
+  const webEmbedSharePlayer = getWebEmbedSharePlayer(
+    video.variant.id,
+    apiSessionId
+  )
 
-  const cleanString = (str: string): string => str.replace(/\s+/g, ' ').trim()
-
-  const webEmbedPlayer = cleanString(`
-  <div class="arc-cont">
-    <iframe src="${url}" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
-    <style>
-      .arc-cont {
-        position: relative;
-        display: block;
-        margin: 10px auto;
-        width: 100%;
-      }
-      .arc-cont:after {
-        padding-top: 59%;
-        display: block;
-        content: "";
-      }
-      .arc-cont > iframe {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        right: 0;
-        left: 0;
-        width: 98%;
-        height: 98%;
-        border: 0;
-      }
-    </style>
-  </div>`)
-
-  const webEmbedSharePlayer = cleanString(`
-  <div class="arc-cont">
-    <iframe src="${url}" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
-    <style>
-      .arc-cont {
-        position: relative;
-        display: block;
-        margin: 10px auto;
-        width: 100%;
-      }
-      .arc-cont:after {
-        padding-top: 59%;
-        display: block;
-        content: "";
-      }
-      .arc-cont > iframe {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        right: 0;
-        left: 0;
-        width: 98%;
-        height: 98%;
-        border: 0;
-      }
-    </style>
-  </div>`)
-
-  const subtitleUrls =
-    platform === 'android'
-      ? {
+  let subtitleUrls = {}
+  if (video.variant?.subtitle != null && video.variant?.subtitle.length > 0) {
+    switch (platform) {
+      case 'android':
+        subtitleUrls = {
           vtt:
             video.variant?.subtitle?.map((subtitle) => ({
               languageId: Number(subtitle.language?.id),
@@ -181,7 +125,10 @@ export async function GET(
               url: subtitle.srtSrc
             })) ?? []
         }
-      : {
+        break
+      case 'web':
+      case 'ios':
+        subtitleUrls = {
           vtt:
             video.variant?.subtitle?.map((subtitle) => ({
               languageId: Number(subtitle.language?.id),
@@ -190,26 +137,32 @@ export async function GET(
               url: subtitle.vttSrc
             })) ?? []
         }
+    }
+  }
 
-  const streamingUrls =
-    platform === 'web'
-      ? {}
-      : platform === 'android'
-        ? {
-            dash: [{ videoBitrate: 0, url: video.variant?.dash }],
-            hls: [{ videoBitrate: 0, url: video.variant?.hls }],
-            http: []
-          }
-        : {
-            m3u8: [{ videoBitrate: 0, url: video.variant?.hls }],
-            http: []
-          }
+  let streamingUrls = {}
+  if (video.variant?.hls != null || video.variant?.dash != null) {
+    switch (platform) {
+      case 'android':
+        streamingUrls = {
+          dash: [{ videoBitrate: 0, url: video.variant?.dash }],
+          hls: [{ videoBitrate: 0, url: video.variant?.hls }],
+          http: []
+        }
+        break
+      case 'ios':
+        streamingUrls = {
+          m3u8: [{ videoBitrate: 0, url: video.variant?.hls }],
+          http: []
+        }
+        break
+    }
+  }
 
   const response = {
     mediaComponentId,
     languageId: Number(languageId),
     refId: video.variant?.id,
-    // TODO create api session id
     apiSessionId,
     platform,
     lengthInMilliseconds: video.variant?.duration ?? 0,

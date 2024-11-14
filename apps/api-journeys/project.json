@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-journeys/src",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
@@ -177,6 +178,5 @@
         "command": "codecov -f coverage/apps/api-journeys/cobertura-coverage.xml -F apps.api-journeys"
       }
     }
-  },
-  "tags": []
+  }
 }

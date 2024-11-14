@@ -133,3 +133,53 @@ export async function getStaticProps({ locale }) {
   };
 }
 ```
+
+6. (Optional) Add a middleware to detect user's preferred language by creating a `middleware.ts` file in the project root. This middleware will:
+
+- Detect and manage user language preferences using browser settings and cookies
+- Handle redirects for language-specific routes
+- Use cookie fingerprinting to version language preferences
+
+Basic implementation example:
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server'
+
+const DEFAULT_LOCALE = 'en'
+const SUPPORTED_LOCALES = ['en', 'es', 'fr'] // Add your supported locales
+// Fingerprint is used to version cookies and may be referenced by other components
+// (e.g., LanguageSwitcher)
+const COOKIE_FINGERPRINT = '00001' // Increment when updating cookie logic
+
+export function middleware(req: NextRequest): NextResponse | undefined {
+  // Skip internal paths and static files
+  if (req.nextUrl.pathname.startsWith('/_next') || req.nextUrl.pathname.includes('/api/') || /\.(.*)$/.test(req.nextUrl.pathname)) {
+    return
+  }
+
+  // Get stored language preference with fingerprint
+  const localeCookie = req.cookies.get('NEXT_LOCALE')?.value
+  const [fingerprint, storedLocale] = localeCookie?.split('---') ?? []
+
+  // If no valid fingerprinted cookie exists, get browser preference
+  const preferredLanguage = (fingerprint === COOKIE_FINGERPRINT ? storedLocale : null) ?? req.headers.get('accept-language')?.split(',')[0] ?? DEFAULT_LOCALE
+
+  // Redirect to appropriate language path if needed
+  if (preferredLanguage !== req.nextUrl.locale) {
+    const response = NextResponse.redirect(new URL(`/${preferredLanguage}${req.nextUrl.pathname}${req.nextUrl.search}`, req.url))
+    response.cookies.set('NEXT_LOCALE', `${COOKIE_FINGERPRINT}---${preferredLanguage}`)
+    return response
+  }
+
+  return NextResponse.next()
+}
+```
+
+> **Important Notes:**
+>
+> - Update `SUPPORTED_LOCALES` with your project's supported languages
+> - Increment the `COOKIE_FINGERPRINT` when updating cookie logic to invalidate old preferences
+>   - Note that this fingerprint may be referenced in other components like `LanguageSwitcher`
+>   - For more information, read about Cookie Versioning
+> - Adjust the locale detection logic based on your needs
+> - Consider adding language fallbacks for regional variants (e.g., 'en-US' → 'en')

@@ -231,6 +231,7 @@
   "Medium": "中型",
   "Large": "大型",
   "Contained": "包含",
+  "Invalid {{ HEX }} color code": "无效 {{ HEX }} 颜色代码",
   "Palette": "调色板",
   "None": "没有任何",
   "Background": "背景介绍",

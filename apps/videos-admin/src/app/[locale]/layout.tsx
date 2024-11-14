@@ -23,7 +23,7 @@ export default async function LocaleLayout({
       <body>
         <AuthProvider user={user}>
           <NextIntlClientProvider messages={messages}>
-            <ApolloProvider>
+            <ApolloProvider user={user}>
               <AppRouterCacheProvider>{children}</AppRouterCacheProvider>
             </ApolloProvider>
           </NextIntlClientProvider>
