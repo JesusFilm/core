@@ -18,6 +18,15 @@ describe('EditProvider', () => {
   })
 
   describe('EditProvider', () => {
+    it('should have default values if no initial state', () => {
+      render(
+        <EditProvider>
+          <TestEditProvider />
+        </EditProvider>
+      )
+
+      expect(screen.getByText('isEdit: false')).toBeInTheDocument()
+    })
     it('should set initial state', () => {
       render(
         <EditProvider initialState={{ isEdit: true }}>
