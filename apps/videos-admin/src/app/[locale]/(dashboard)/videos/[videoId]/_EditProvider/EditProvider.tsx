@@ -10,8 +10,8 @@ import {
 
 export interface EditState {
   /**
-   * isEdit indicates which if the edit variant of an component should be displayed.
-   * Otherwise the component will be in 'readonly' mode.
+   * isEdit indicates if the edit variant of an component should be displayed.
+   * Otherwise the component will be in 'readonly' or 'disabled' mode.
    */
   isEdit: boolean
 }
@@ -42,24 +42,18 @@ export function useEdit(): Context {
   const context = useContext(EditContext)
   if (context == null)
     throw new Error(
-      'The useEdit hook must be a descendant of the EditProvider context'
+      'The useEdit hook must be used within an EditProvider context'
     )
-
   return context
 }
 
-interface EditorProviderProps {
-  initialState?: EditState
+interface EditProviderProps {
   children: ReactElement
 }
 
-export function EditProvider({
-  initialState,
-  children
-}: EditorProviderProps): ReactElement {
+export function EditProvider({ children }: EditProviderProps): ReactElement {
   const [state, dispatch] = useReducer(reducer, {
-    ...initialState,
-    isEdit: initialState?.isEdit ?? false
+    isEdit: false
   })
 
   return (

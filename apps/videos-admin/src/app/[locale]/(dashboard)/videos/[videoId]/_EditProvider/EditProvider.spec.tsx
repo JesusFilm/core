@@ -18,7 +18,7 @@ describe('EditProvider', () => {
   })
 
   describe('EditProvider', () => {
-    it('should have default values if no initial state', () => {
+    it('isEdit should be false by default', () => {
       render(
         <EditProvider>
           <TestEditProvider />
@@ -27,19 +27,10 @@ describe('EditProvider', () => {
 
       expect(screen.getByText('isEdit: false')).toBeInTheDocument()
     })
-    it('should set initial state', () => {
-      render(
-        <EditProvider initialState={{ isEdit: true }}>
-          <TestEditProvider />
-        </EditProvider>
-      )
-
-      expect(screen.getByText('isEdit: true')).toBeInTheDocument()
-    })
 
     it('should throw error when not wrapped inside `UserProvider`', () => {
       expect(() => render(<TestEditProvider />)).toThrow(
-        'The useEdit hook must be a descendant of the EditProvider context'
+        'The useEdit hook must be used within an EditProvider context'
       )
     })
   })
