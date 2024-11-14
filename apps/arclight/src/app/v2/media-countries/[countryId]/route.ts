@@ -153,7 +153,7 @@ export async function GET(
 
   const queryString = new URLSearchParams(queryObject).toString()
 
-  let response: MediaCountryResponse = {
+  const response: MediaCountryResponse = {
     countryId,
     name: country.name?.[0]?.value ?? country.fallbackName?.[0]?.value ?? '',
     continentName:
