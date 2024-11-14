@@ -4,9 +4,6 @@ import dynamic from 'next/dynamic'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
-import { InstantSearch } from 'react-instantsearch'
-
-import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
 import type {
   GetVideoContent,
@@ -51,23 +48,18 @@ const DynamicVideoContainerPage = dynamic(
 )
 
 export default function Part2Page({ content }: Part2PageProps): ReactElement {
-  const searchClient = useInstantSearchClient()
-  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-
   return (
-    <InstantSearch searchClient={searchClient} indexName={indexName} insights>
-      <SnackbarProvider>
-        <LanguageProvider>
-          <VideoProvider value={{ content }}>
-            {content.variant?.hls != null ? (
-              <DynamicVideoContentPage />
-            ) : (
-              <DynamicVideoContainerPage />
-            )}
-          </VideoProvider>
-        </LanguageProvider>
-      </SnackbarProvider>
-    </InstantSearch>
+    <SnackbarProvider>
+      <LanguageProvider>
+        <VideoProvider value={{ content }}>
+          {content.variant?.hls != null ? (
+            <DynamicVideoContentPage />
+          ) : (
+            <DynamicVideoContainerPage />
+          )}
+        </VideoProvider>
+      </LanguageProvider>
+    </SnackbarProvider>
   )
 }
 
