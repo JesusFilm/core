@@ -210,7 +210,7 @@
     "@commitlint/lint": "^17.7.0",
     "@docusaurus/module-type-aliases": "^3.0.1",
     "@emotion/babel-plugin": "11.12.0",
-    "@eslint/eslintrc": "^2.1.1",
+    "@eslint/eslintrc": "^3.0.0",
     "@eslint/js": "~8.57.0",
     "@graphql-codegen/cli": "^5.0.2",
     "@graphql-codegen/client-preset": "^4.3.0",
