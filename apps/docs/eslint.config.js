@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 const { FlatCompat } = require('@eslint/eslintrc')
 const js = require('@eslint/js')
 const typescriptPlugin = require('@typescript-eslint/eslint-plugin')
