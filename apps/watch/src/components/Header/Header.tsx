@@ -9,20 +9,29 @@ import IconButton from '@mui/material/IconButton'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import Toolbar from '@mui/material/Toolbar'
 import useScrollTrigger from '@mui/material/useScrollTrigger'
-import Image from 'next/image'
 import NextLink from 'next/link'
 import { MouseEventHandler, ReactElement, forwardRef, useState } from 'react'
+import Lottie from 'react-lottie'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import minimalLogo from './assets/minimal-logo.png'
+import animationData from './assets/LottieLogo.json'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 import { HeaderTabButtons } from './HeaderTabButtons'
 
 interface LocalAppBarProps extends AppBarProps {
   showDivider?: boolean
   onMenuClick: MouseEventHandler<HTMLButtonElement>
+}
+
+const defaultLottieOptions = {
+  loop: false,
+  autoplay: true,
+  animationData,
+  renderSettings: {
+    preserveAspectRatio: 'xMidYMid slice'
+  }
 }
 
 const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
@@ -53,9 +62,9 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
               <Grid item sx={{ gridRow: 1 }}>
                 <Box
                   sx={{
-                    width: { xs: '64px', md: '76px', xl: '88px' },
-                    marginLeft: {
-                      xs: '-8px',
+                    width: { xs: '160px', md: '192px', xl: '224px' },
+                    ml: {
+                      xs: '-14px',
                       md: '-14px',
                       xl: '-16px',
                       xxl: '0px'
@@ -63,13 +72,10 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
                   }}
                 >
                   <NextLink href="/watch">
-                    <Image
-                      src={minimalLogo}
-                      alt="Watch Logo"
+                    <Lottie
+                      options={defaultLottieOptions}
                       style={{
-                        cursor: 'pointer',
-                        maxWidth: '100%',
-                        height: 'auto'
+                        cursor: 'pointer'
                       }}
                     />
                   </NextLink>
