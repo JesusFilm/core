@@ -1,5 +1,7 @@
-import { Prisma, ShortLink, ShortLinkDomain } from '.prisma/api-media-client'
 import { nanoid } from 'nanoid'
+
+import { Prisma, ShortLink, ShortLinkDomain } from '.prisma/api-media-client'
+
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
