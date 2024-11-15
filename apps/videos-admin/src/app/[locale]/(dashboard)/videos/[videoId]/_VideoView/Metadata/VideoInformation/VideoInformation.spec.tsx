@@ -15,6 +15,43 @@ jest.mock('next/navigation', () => ({
 const mockUseParams = useParams as jest.MockedFunction<typeof mockUseParams>
 
 describe('VideoInformation', () => {
+  const mockUpdateVideoInformation = {
+    request: {
+      query: UPDATE_VIDEO_INFORMATION,
+      variables: {
+        titleInput: {
+          id: 'bb35d6a2-682e-4909-9218-4fbf5f4cd5b8',
+          value: 'new title'
+        },
+        infoInput: {
+          id: '1_jf-0-0',
+          slug: 'jesus',
+          published: true,
+          label: 'featureFilm',
+          noIndex: false
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        videoTitleUpdate: {
+          id: 'bb35d6a2-682e-4909-9218-4fbf5f4cd5b8',
+          value: 'new title'
+        },
+        videoUpdate: {
+          id: '1_jf-0-0',
+          slug: 'jesus',
+          published: true,
+          label: 'featureFilm',
+          noIndex: false
+        }
+      }
+    }))
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
   it('should disable all fields if not in edit mode', () => {
     render(
       <MockedProvider>
@@ -153,40 +190,6 @@ describe('VideoInformation', () => {
     mockUseParams.mockReturnValue({ videoId: 'someId' })
     const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
 
-    const mockUpdateVideoInformation = {
-      request: {
-        query: UPDATE_VIDEO_INFORMATION,
-        variables: {
-          titleInput: {
-            id: 'bb35d6a2-682e-4909-9218-4fbf5f4cd5b8',
-            value: 'new title'
-          },
-          infoInput: {
-            id: '1_jf-0-0',
-            slug: 'jesus',
-            published: true,
-            label: 'featureFilm',
-            noIndex: false
-          }
-        }
-      },
-      result: jest.fn(() => ({
-        data: {
-          videoTitleUpdate: {
-            id: 'bb35d6a2-682e-4909-9218-4fbf5f4cd5b8',
-            value: 'new title'
-          },
-          videoUpdate: {
-            id: '1_jf-0-0',
-            slug: 'jesus',
-            published: true,
-            label: 'featureFilm',
-            noIndex: false
-          }
-        }
-      }))
-    }
-
     render(
       <MockedProvider
         mocks={[{ ...useAdminVideoMock, result }, mockUpdateVideoInformation]}
@@ -210,6 +213,32 @@ describe('VideoInformation', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
     await waitFor(() =>
       expect(mockUpdateVideoInformation.result).toHaveBeenCalled()
+    )
+  })
+
+  it('should not call update if there is no video data', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
+
+    render(
+      <MockedProvider mocks={[mockUpdateVideoInformation]}>
+        <NextIntlClientProvider locale="en">
+          <VideoInformation isEdit={true} />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
+    fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
+      target: { value: 'new title' }
+    })
+    expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue(
+      'new title'
+    )
+    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+    await waitFor(() =>
+      expect(mockUpdateVideoInformation.result).not.toHaveBeenCalled()
     )
   })
 
