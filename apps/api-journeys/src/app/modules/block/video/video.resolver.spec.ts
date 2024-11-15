@@ -38,7 +38,7 @@ jest.mock('@mux/mux-node', () =>
           duration: 100,
           static_renditions: [
             {
-              url: 'https://mux.com/video.mp4'
+              url: 'https://mux.com/video.jpg'
             }
           ]
         })
@@ -107,7 +107,7 @@ describe('VideoBlockResolver', () => {
     ...blockWithUserTeam,
     duration: 100,
     endAt: 100,
-    image: 'https://mux.com/video.mp4'
+    image: 'https://mux.com/video.jpg'
   }
 
   beforeAll(() => {
@@ -450,7 +450,7 @@ describe('VideoBlockResolver', () => {
             id: 'blockId',
             duration: 100,
             endAt: 100,
-            image: 'https://mux.com/video.mp4',
+            image: 'https://mux.com/video.jpg',
             objectFit: null,
             videoId: 'videoId',
             title: 'videoId',
@@ -652,7 +652,7 @@ describe('VideoBlockResolver', () => {
                   'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg',
                 uid: 'ea95132c15732412d22c1476fa83f27a',
                 meta: {
-                  name: 'video.mp4'
+                  name: 'video.jpg'
                 }
               },
               success: true
@@ -669,7 +669,7 @@ describe('VideoBlockResolver', () => {
           endAt: 100,
           image:
             'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg?time=2s&height=768',
-          title: 'video.mp4'
+          title: 'video.jpg'
         })
         expect(mockFetch).toHaveBeenCalledWith(
           expect.stringMatching(
@@ -748,7 +748,7 @@ describe('VideoBlockResolver', () => {
           source: VideoBlockSource.mux,
           duration: 100,
           endAt: 100,
-          image: 'https://mux.com/video.mp4',
+          image: 'https://mux.com/video.jpg',
           title: 'videoId'
         })
       })
@@ -764,7 +764,7 @@ describe('VideoBlockResolver', () => {
           source: VideoBlockSource.mux,
           duration: 100,
           endAt: 100,
-          image: 'https://mux.com/video.mp4',
+          image: 'https://mux.com/video.jpg',
           title: 'videoId'
         })
       })
@@ -773,11 +773,11 @@ describe('VideoBlockResolver', () => {
         prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
         await resolver.videoBlockUpdate(ability, 'blockId', {
           autoplay: true,
-          source: VideoBlockSource.cloudflare
+          source: VideoBlockSource.mux
         })
         expect(service.update).toHaveBeenCalledWith('blockId', {
           autoplay: true,
-          source: VideoBlockSource.cloudflare
+          source: VideoBlockSource.mux
         })
       })
     })
