@@ -253,9 +253,15 @@ builder.mutationFields((t) => ({
             url: true,
             refine: [
               async (to) => {
+                let hostname: string
+                try {
+                  hostname = new URL(to).hostname
+                } catch (e) {
+                  return true
+                }
                 return (
                   (await prisma.shortLinkBlocklistDomain.findFirst({
-                    where: { hostname: new URL(to).hostname }
+                    where: { hostname }
                   })) == null
                 )
               },
