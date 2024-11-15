@@ -217,7 +217,7 @@ export class TemplatePage {
         )
         .first()
     ).toHaveAttribute('data-testid', 'bullet-active')
-    for (let slide = 1; slide < slidesCount; slide++) {
+    if (slidesCount > 1) {
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')
         .hover({ force: true })
@@ -229,9 +229,8 @@ export class TemplatePage {
           .locator(
             'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
           )
-          .nth(slide)
+          .nth(1)
       ).toHaveAttribute('data-testid', 'bullet-active')
-      break
     }
 
     await newPage.close()
@@ -264,35 +263,27 @@ export class TemplatePage {
     const addedSevenMinsTime = new Date(
       new Date().getTime() + 7 * sixtySecondsTimeout
     )
-    console.log('Current time is ' + currentTime.toString())
-    console.log('Added wait time is ' + addedSevenMinsTime.toString())
+    console.log(`Current time is ${currentTime.toString()}`)
+    console.log(`Added wait time is ${addedSevenMinsTime.toString()}`)
     while (new Date() < addedSevenMinsTime) {
       if (new Date() > addedSevenMinsTime) {
         break
       }
       // Wait for the edited content to appear. If it does not appear, the if-else block will handle the situation, so no assertion is needed here.
-      await await await await await await await await await await await expect(
-        newPage.locator(
-          '//div[@data-testid="CardOverlayContentContainer"]//*[@data-testid="JourneysTypography"]',
-          { hasText: editedText }
-        )
-      )
-        .toHaveCount(1, { timeout: 5000 })
-        .catch(() => console.log(''))
-      if (
-        await newPage
-          .locator(
+      try {
+        await expect(
+          newPage.locator(
             '//div[@data-testid="CardOverlayContentContainer"]//*[@data-testid="JourneysTypography"]',
             { hasText: editedText }
           )
-          .isVisible()
-      ) {
+        ).toHaveCount(1, { timeout: 5000 })
         break
-      } else {
+      } catch {
+        console.log('')
         await newPage.reload({ waitUntil: 'load' })
       }
     }
-    console.log('After while loop ' + new Date().toString())
+    console.log(`After while loop ${new Date().toString()}`)
     await expect(
       newPage.locator(
         '//div[@data-testid="CardOverlayContentContainer"]//*[@data-testid="JourneysTypography"]',

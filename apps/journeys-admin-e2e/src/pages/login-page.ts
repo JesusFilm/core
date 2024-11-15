@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 import { getEmail, getPassword } from '../framework/helpers'
 

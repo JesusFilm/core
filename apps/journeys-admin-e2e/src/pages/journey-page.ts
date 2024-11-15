@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 import testData from '../utils/testData.json'
 
@@ -231,7 +231,7 @@ export class JourneyPage {
 
   async setJourneyName(journey: string) {
     journeyName =
-      (journey == 'firstJourneyName'
+      (journey === 'firstJourneyName'
         ? testData.journey.firstJourneyName
         : testData.journey.secondJourneyName) + randomNumber
   }
@@ -255,16 +255,15 @@ export class JourneyPage {
           .isVisible()
       ) {
         break
-      } else {
-        await this.page
-          .frameLocator(this.journeyCardFrame)
-          .first()
-          .locator(
-            'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
-          )
-          .first()
-          .click({ timeout: sixtySecondsTimeout, delay: 1000 })
       }
+      await this.page
+        .frameLocator(this.journeyCardFrame)
+        .first()
+        .locator(
+          'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
+        )
+        .first()
+        .click({ timeout: sixtySecondsTimeout, delay: 1000 })
     }
     await this.page
       .frameLocator(this.journeyCardFrame)
@@ -343,21 +342,21 @@ export class JourneyPage {
       )
       .click({ delay: 3000 })
     // verifying that the 'Create Template' option is disappeared, if not once again clicking on that option
-    await await await await await await await await await await await expect(
-      this.page.locator(
-        'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
-        { hasText: 'Create Template' }
-      )
-    )
-      .toBeHidden({ timeout: sixtySecondsTimeout })
-      .catch(async () => {
-        await this.page
-          .locator(
-            'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
-            { hasText: 'Create Template' }
-          )
-          .click({ delay: 3000 })
-      })
+    try {
+      await expect(
+        this.page.locator(
+          'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
+          { hasText: 'Create Template' }
+        )
+      ).toBeHidden({ timeout: sixtySecondsTimeout })
+    } catch {
+      await this.page
+        .locator(
+          'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
+          { hasText: 'Create Template' }
+        )
+        .click({ delay: 3000 })
+    }
     await this.page.waitForURL('**/publisher/**', { timeout: 60000 })
   }
 
@@ -375,9 +374,7 @@ export class JourneyPage {
   async clickThreeDotOfCreatedNewTemple() {
     await this.page
       .locator(
-        "//h6[text()='" +
-          journeyName +
-          "']//ancestor::a/following-sibling::div//button[@id='journey-actions']"
+        `//h6[text()='${journeyName}']//ancestor::a/following-sibling::div//button[@id='journey-actions']`
       )
       .click()
   }
@@ -448,9 +445,7 @@ export class JourneyPage {
   async clickThreeDotOfCreatedNewJourney() {
     await this.page
       .locator(
-        "//div[text()='" +
-          journeyName +
-          "']//ancestor::a/following-sibling::div//button[@id='journey-actions']"
+        `//div[text()='${journeyName}']//ancestor::a/following-sibling::div//button[@id='journey-actions']`
       )
       .click()
   }
@@ -602,7 +597,7 @@ export class JourneyPage {
   }
 
   async getCurrentUrl() {
-    console.log('current Url is ' + this.page.url())
+    console.log(`current Url is ${this.page.url()}`)
   }
 
   async verifyAllJourneyMovedToArchivedTab() {
@@ -624,7 +619,7 @@ export class JourneyPage {
         matchCount = matchCount + 1
       }
     }
-    expect(matchCount == this.journeyList.length).toBeTruthy()
+    expect(matchCount === this.journeyList.length).toBeTruthy()
   }
 
   async verifyActiveTabShowsEmptyMessage() {
@@ -669,7 +664,7 @@ export class JourneyPage {
         matchCount = matchCount + 1
       }
     }
-    expect(matchCount == this.journeyList.length).toBeTruthy()
+    expect(matchCount === this.journeyList.length).toBeTruthy()
   }
 
   async getJourneyListOfTrashTab() {
@@ -706,7 +701,7 @@ export class JourneyPage {
         matchCount = matchCount + 1
       }
     }
-    expect(matchCount == this.journeyList.length).toBeTruthy()
+    expect(matchCount === this.journeyList.length).toBeTruthy()
   }
 
   async verifyAlljourneysAreDeletedFromTrashTab() {
@@ -796,8 +791,8 @@ export class JourneyPage {
     list: string[],
     expectedSortedList: string[]
   ) {
-    list.map((str) => str.toLowerCase()).sort(Intl.Collator().compare)
-    expect(list.join().trim() == expectedSortedList.join().trim()).toBeTruthy()
+    list.map((str) => str.toLowerCase()).sort((a, b) => Intl.Collator().compare(a, b))
+    expect(list.join().trim() === expectedSortedList.join().trim()).toBeTruthy()
   }
 
   async verifyNewlyJouyneysAreSortedByNames() {
@@ -812,7 +807,7 @@ export class JourneyPage {
       )
       .locator('span[data-testid="new-journey-badge"] div')
       .count()
-    if (journeyListCount != 0) {
+    if (journeyListCount !== 0) {
       const journeyList = await this.page
         .locator(
           'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
@@ -873,12 +868,12 @@ export class JourneyPage {
     expectedSortedList: string[],
     list: string[]
   ) {
-    list.sort(function (a: string, b: string) {
+    list.sort((a: string, b: string) => {
       const dateA = new Date(a)
       const dateB = new Date(b)
       return dateB.getTime() - dateA.getTime()
     })
-    expect(list.join().trim() == expectedSortedList.join().trim()).toBeTruthy()
+    expect(list.join().trim() === expectedSortedList.join().trim()).toBeTruthy()
   }
 
   async verifyNewlyJourneyAreSortedByDates() {
@@ -893,7 +888,7 @@ export class JourneyPage {
       )
       .locator('span[data-testid="new-journey-badge"] + span')
       .count()
-    if (journeysDescriptionCount != 0) {
+    if (journeysDescriptionCount !== 0) {
       const journeysDescriptionList = await this.page
         .locator(
           'div[id*="active-status-panel-tabpanel"] div[aria-label="journey-card"]',
@@ -1079,14 +1074,13 @@ export class JourneyPage {
           .isVisible()
       ) {
         break
-      } else {
-        await this.page
-          .frameLocator(this.journeyCardFrame)
-          .first()
-          .locator(typographyPath)
-          .first()
-          .click({ timeout: sixtySecondsTimeout, delay: 1000 })
       }
+      await this.page
+        .frameLocator(this.journeyCardFrame)
+        .first()
+        .locator(typographyPath)
+        .first()
+        .click({ timeout: sixtySecondsTimeout, delay: 1000 })
     }
     await this.page
       .frameLocator(this.journeyCardFrame)

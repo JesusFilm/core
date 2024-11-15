@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 import testData from '../utils/testData.json'
 
@@ -134,7 +134,7 @@ export class Publisher {
       if (
         (await this.page
           .locator('div[aria-label="template-card"]', { hasText: templateName })
-          .count()) == 1
+          .count()) === 1
       ) {
         this.templateName = templateName
         break
@@ -145,9 +145,7 @@ export class Publisher {
   async clickThreeDotOfTemple() {
     await this.page
       .locator(
-        "//h6[text()='" +
-          this.templateName +
-          "']//ancestor::a/following-sibling::div//button[@id='journey-actions']"
+        `//h6[text()='${this.templateName}']//ancestor::a/following-sibling::div//button[@id='journey-actions']`
       )
       .first()
       .click()
@@ -355,7 +353,7 @@ export class Publisher {
         matchCount = matchCount + 1
       }
     }
-    expect(matchCount == this.templateList.length).toBeTruthy()
+    expect(matchCount === this.templateList.length).toBeTruthy()
   }
 
   async getTemplateListOfArchivedTab() {
@@ -400,7 +398,7 @@ export class Publisher {
         matchCount = matchCount + 1
       }
     }
-    expect(matchCount == this.templateList.length).toBeTruthy()
+    expect(matchCount === this.templateList.length).toBeTruthy()
   }
 
   async verifyAllTemplateMovedToTrashTab() {
@@ -422,7 +420,7 @@ export class Publisher {
         matchCount = matchCount + 1
       }
     }
-    expect(matchCount == this.templateList.length).toBeTruthy()
+    expect(matchCount === this.templateList.length).toBeTruthy()
   }
 
   async getTemplateListOfTrashTab() {
@@ -553,7 +551,7 @@ export class Publisher {
   }
 
   async addFilterBelowCategoryTab(filter: string) {
-    if (filter == 'Felt Needs' || filter == 'Collections') {
+    if (filter === 'Felt Needs' || filter === 'Collections') {
       let selectedFilter = ' '
       switch (filter) {
         case 'Felt Needs': {

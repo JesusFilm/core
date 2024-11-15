@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 const thirtySecondsTimeout = 30000
 
@@ -121,7 +121,7 @@ export class ProfilePage {
     const selectedValue = await this.page
       .locator('div[role="dialog"] div[aria-haspopup="listbox"] p')
       .innerText()
-    this.selectedLanguage = selectedValue == language ? 'français' : language
+    this.selectedLanguage = selectedValue === language ? 'français' : language
     await this.page
       .locator('div[role="dialog"] div[aria-haspopup="listbox"]')
       .click()
@@ -145,7 +145,7 @@ export class ProfilePage {
   }
 
   async verifySelectedLanguageUpdatedOnTheSite() {
-    const sampleText = this.selectedLanguage == 'français' ? 'Langue' : 'Lengua'
+    const sampleText = this.selectedLanguage === 'français' ? 'Langue' : 'Lengua'
     await expect(
       this.page.locator('li[data-testid="JourneysAdminMenuItemLanguage"]', {
         hasText: sampleText

@@ -1,4 +1,4 @@
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 const sixtySecondsTimeout = 60000
 
@@ -11,10 +11,8 @@ export class LeftNav {
 
   async clickProfile(): Promise<void> {
     try {
-      const profileListItem = await this.page.waitForSelector(
-        '[data-testid="NavigationListItemProfile"]',
-        { timeout: 60000 }
-      )
+      const profileListItem = this.page.locator('[data-testid="NavigationListItemProfile"]')
+      await profileListItem.waitFor({ timeout: 60000 })
 
       // Click on Profile
       await profileListItem.click()
@@ -42,7 +40,7 @@ export class LeftNav {
   async logout(): Promise<void> {
     // Click on Log out
     await Promise.all([
-      this.page.waitForSelector('[data-testid="JourneysAdminMenuItemLogOut"]'),
+      this.page.locator('[data-testid="JourneysAdminMenuItemLogOut"]').waitFor(),
       this.page.click('[data-testid="JourneysAdminMenuItemLogOut"]')
     ])
   }

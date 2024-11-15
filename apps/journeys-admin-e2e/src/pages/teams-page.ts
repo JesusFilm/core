@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 import testData from '../utils/testData.json'
 

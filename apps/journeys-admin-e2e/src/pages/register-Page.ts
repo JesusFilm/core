@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 import { getOTP, getPassword } from '../framework/helpers'
 import testData from '../utils/testData.json'
@@ -46,7 +46,7 @@ export class Register {
   }
 
   async enterUserName() {
-    this.userEmail = 'playwright' + randomNumber + '@example.com'
+    this.userEmail = `playwright${randomNumber}@example.com`
     await this.page.locator('input#username').fill(this.userEmail)
   }
 
@@ -183,29 +183,19 @@ export class Register {
 
   async verifyMoreJourneyHerePopup() {
     // waiting for 'More journeys here' appear if it is don't, we doesn't need to assert the script
-    await await await await await await await await await await await expect(
-      this.page.locator('div[class*="MuiPopover-paper"] h6', {
-        hasText: 'More journeys here'
-      })
-    )
-      .toBeVisible({ timeout: 5000 })
-      .catch(async () => {
-        console.log('More journeys here is not appear')
-      })
-    // verifying whether the 'More journeys here' appear. if it is, clicking on the dismiss btn
-    await await await await await await await await await await await expect(
-      this.page.locator('div[class*="MuiPopover-paper"] h6', {
-        hasText: 'More journeys here'
-      })
-    )
-      .toHaveCount(0, { timeout: 5000 })
-      .catch(async () => {
-        await this.page
-          .locator('div[class*="MuiPopover-paper"] button', {
-            hasText: 'Dismiss'
-          })
-          .click()
-      })
+  const moreJourneysLocator = this.page.locator('div[class*="MuiPopover-paper"] h6', {
+    hasText: 'More journeys here'
+  });
+
+  try {
+    await expect(moreJourneysLocator).toBeVisible({ timeout: 5000 });
+    const dismissButtonLocator = this.page.locator('div[class*="MuiPopover-paper"] button', {
+      hasText: 'Dismiss'
+    });
+    await dismissButtonLocator.click();
+  } catch {
+    console.log('More journeys here is not appear');
+  }
   }
 
   async getUserEmailId() {
@@ -220,16 +210,16 @@ export class Register {
 
   async retryCreateYourWorkSpacePage() {
     // clicking on 'Next' button twice if the Create Your Workspace page doesn't appears
-    await await await await await await await await await await await expect(
-      this.page.locator(
-        'div[data-testid="JourneysAdminOnboardingPageWrapper"] h2',
-        { hasText: 'Create Your Workspace' }
-      )
-    )
-      .toBeVisible({ timeout: 10000 })
-      .catch(async () => {
-        await this.clickNextBtnOfTermsAndConditions()
-      })
+    try {
+      await expect(
+        this.page.locator(
+          'div[data-testid="JourneysAdminOnboardingPageWrapper"] h2',
+          { hasText: 'Create Your Workspace' }
+        )
+      ).toBeVisible({ timeout: 10000 })
+    } catch {
+      await this.clickNextBtnOfTermsAndConditions()
+    }
   }
 
   async verifyCreateYourWorkspacePage() {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 import testData from '../utils/testData.json'
 
@@ -22,7 +22,7 @@ export class JourneyLevelActions {
     randomNumber =
       dayjs().format('DDMMYY-hhmmss') +
       Math.floor(Math.random() * (100 - 999 + 1) + 999)
-    this.memberEmail = 'playwright' + randomNumber + '@example.com'
+    this.memberEmail = `playwright${randomNumber}@example.com`
   }
 
   async setBrowserContext(context) {
@@ -176,7 +176,7 @@ export class JourneyLevelActions {
   async verifyExistingJourneyDuplicate() {
     await expect(
       this.page.locator('span[data-testid="new-journey-badge"] div', {
-        hasText: this.existingJourneyName + ' copy'
+        hasText: `${this.existingJourneyName} copy`
       })
     ).toBeVisible()
   }
@@ -247,19 +247,19 @@ export class JourneyLevelActions {
       })
       .click({ delay: 2000, timeout: 30000 })
     // After selecting the option from the list, check that the menu items list got closed, if not then again select the same option from the menu items in catch block
-    await await await await await await await await await await await expect(
-      this.page.locator(
-        'div[id=edit-journey-actions][aria-hidden="true"] ul[aria-labelledby="edit-journey-actions"] li'
-      )
-    )
-      .not.toHaveCount(0)
-      .catch(async () => {
-        await this.page
-          .locator('ul[aria-labelledby="edit-journey-actions"] li', {
-            hasText: option
-          })
-          .click({ delay: 2000, timeout: 30000 })
-      })
+    try {
+      await expect(
+        this.page.locator(
+          'div[id=edit-journey-actions][aria-hidden="true"] ul[aria-labelledby="edit-journey-actions"] li'
+        )
+      ).not.toHaveCount(0)
+    } catch {
+      await this.page
+        .locator('ul[aria-labelledby="edit-journey-actions"] li', {
+          hasText: option
+        })
+        .click({ delay: 2000, timeout: 30000 })
+    }
   }
 
   async enterDescription() {
@@ -284,7 +284,7 @@ export class JourneyLevelActions {
     const selectedValue = await this.page
       .locator('input[placeholder="Search Language"]')
       .getAttribute('value', { timeout: 30000 })
-    this.selectedLanguage = selectedValue == language ? 'Malayalam' : language
+    this.selectedLanguage = selectedValue === language ? 'Malayalam' : language
     await this.page.locator('input[placeholder="Search Language"]').click()
     await expect(this.page.locator('span[role="progressbar"]')).toBeHidden({
       timeout: 30000
@@ -299,10 +299,8 @@ export class JourneyLevelActions {
           .isVisible()
       ) {
         break
-      } else {
-        expect(scroll != 299).toBeTruthy()
-        await this.sleep(600)
       }
+      expect(scroll !== 299).toBeTruthy()
       await this.page
         .locator("div[class *='MuiAutocomplete-popper'] li")
         .last()
