@@ -280,6 +280,8 @@ export interface JourneysQueryOptions {
 
 export interface LanguagesFilter {
   ids?: string[] | null;
+  bcp47?: string[] | null;
+  iso3?: string[] | null;
 }
 
 export interface RadioQuestionSubmissionEventCreateInput {

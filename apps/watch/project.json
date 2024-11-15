@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/watch",
   "projectType": "application",
+  "tags": ["doppler_config:stg_dev"],
   "implicitDependencies": ["locales"],
   "targets": {
     "build": {
@@ -195,6 +196,5 @@
         "command": "codecov -f coverage/apps/watch/cobertura-coverage.xml -F apps.watch"
       }
     }
-  },
-  "tags": ["doppler_config:stg_dev"]
+  }
 }
