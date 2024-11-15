@@ -3743,6 +3743,7 @@ export enum VideoBlockObjectFit {
 export enum VideoBlockSource {
   Cloudflare = 'cloudflare',
   Internal = 'internal',
+  Mux = 'mux',
   YouTube = 'youTube'
 }
 

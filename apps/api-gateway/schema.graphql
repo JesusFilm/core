@@ -2506,6 +2506,7 @@ enum VideoBlockSource @join__type(graph: API_JOURNEYS)  {
   internal @join__enumValue(graph: API_JOURNEYS) 
   youTube @join__enumValue(graph: API_JOURNEYS) 
   cloudflare @join__enumValue(graph: API_JOURNEYS) 
+  mux @join__enumValue(graph: API_JOURNEYS) 
 }
 
 enum VideoBlockObjectFit @join__type(graph: API_JOURNEYS)  {
