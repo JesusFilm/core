@@ -37,7 +37,7 @@ interface VideoInformationProps {
   isEdit: boolean
 }
 
-const UPDATE_VIDEO_INFORMATION = graphql(`
+export const UPDATE_VIDEO_INFORMATION = graphql(`
   mutation UpdateVideoInformation(
     $titleInput: VideoTranslationUpdateInput!
     $infoInput: VideoUpdateInput!
@@ -68,10 +68,10 @@ export function VideoInformation({
   const video = data?.adminVideo
 
   const validationSchema = object().shape({
-    title: string().trim().required(t('Required')),
-    slug: string().trim().required(t('Required')),
-    published: string().required(),
-    label: string().required(t('Required')),
+    title: string().trim().required(t('Title is required')),
+    slug: string().trim().required(t('Slug is required')),
+    published: string().required(t('Published is required')),
+    label: string().required(t('Label is required')),
     noIndex: boolean()
   })
 
@@ -151,7 +151,7 @@ export function VideoInformation({
                   disabled={!isEdit}
                 >
                   {videoStatuses.map(({ label, value }) => (
-                    <MenuItem key={label} value={value}>
+                    <MenuItem key={value} value={value}>
                       {label}
                     </MenuItem>
                   ))}
@@ -164,7 +164,7 @@ export function VideoInformation({
                   id="label"
                   name="label"
                   label="Label"
-                  value={values?.label}
+                  value={values.label}
                   onChange={handleChange}
                   disabled={!isEdit}
                 >

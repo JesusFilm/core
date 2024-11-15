@@ -90,7 +90,6 @@ export function Metadata({
               <VideoImage video={video} isEdit={isEdit} />
             </Stack>
           </Section>
-
           <Section title={t('Snippet')}>
             <Textarea
               defaultValue={video?.snippet?.[0].value}

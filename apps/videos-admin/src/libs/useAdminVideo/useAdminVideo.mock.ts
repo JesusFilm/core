@@ -18,6 +18,7 @@ export const useAdminVideoMock: MockedResponse<
     data: {
       adminVideo: {
         id: '1_jf-0-0',
+        slug: 'jesus',
         images: [
           {
             mobileCinematicHigh:
@@ -45,7 +46,8 @@ export const useAdminVideoMock: MockedResponse<
         ],
         label: 'featureFilm',
         variantLanguagesCount: 2150,
-        published: true
+        published: true,
+        noIndex: false
       }
     }
   }
