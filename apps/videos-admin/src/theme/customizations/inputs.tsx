@@ -421,7 +421,7 @@ export const inputsCustomizations: Components<Theme> = {
               size: 'medium'
             },
             style: {
-              height: '2.5rem'
+              height: '3rem'
             }
           }
         ]
