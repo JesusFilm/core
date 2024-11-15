@@ -13,6 +13,7 @@ import { ReactElement, SyntheticEvent, useState } from 'react'
 
 import { PublishedChip } from '../../../../../../components/PublishedChip'
 import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
+import { useEdit } from '../_EditProvider'
 
 import { Children } from './Children'
 import { Editions } from './Editions'
@@ -23,17 +24,20 @@ import { TabLabel } from './Tabs/TabLabel'
 import { Variants } from './Variants'
 
 export function VideoView(): ReactElement {
+  const {
+    state: { isEdit },
+    dispatch
+  } = useEdit()
   const t = useTranslations()
   const params = useParams<{ videoId: string; locale: string }>()
   const [tabValue, setTabValue] = useState(0)
-  const [isEdit, setIsEdit] = useState(false)
   const { data, loading } = useAdminVideo({
     variables: { videoId: params?.videoId as string }
   })
   const video = data?.adminVideo
 
   function handleEdit(): void {
-    setIsEdit(!isEdit)
+    dispatch({ type: 'SetEditStateAction', isEdit: !isEdit })
   }
 
   function handleTabChange(e: SyntheticEvent, newValue: number): void {

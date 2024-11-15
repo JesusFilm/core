@@ -11,6 +11,8 @@ import { SortableContext, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import Stack from '@mui/material/Stack'
 import { ReactElement, ReactNode } from 'react'
 
+import { useEdit } from '../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
+
 interface BaseItem {
   id: string
 }
@@ -26,6 +28,10 @@ export function OrderedList<T extends BaseItem>({
   items,
   children
 }: OrderedListProps<T>): ReactElement {
+  const {
+    state: { isEdit }
+  } = useEdit()
+
   async function handleDragEnd(e: DragEndEvent): Promise<void> {
     await onOrderUpdate(e)
   }
@@ -40,7 +46,7 @@ export function OrderedList<T extends BaseItem>({
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <SortableContext items={items}>
+      <SortableContext items={items} disabled={!isEdit}>
         <Stack gap={1}>{children}</Stack>
       </SortableContext>
     </DndContext>

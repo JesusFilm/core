@@ -10,6 +10,7 @@ import Plus2 from '@core/shared/ui/icons/Plus2'
 import { OrderedList } from '../../../../../../../../components/OrderedList'
 import { OrderedItem } from '../../../../../../../../components/OrderedList/OrderedItem'
 import { GetAdminVideo_AdminVideo_StudyQuestions as StudyQuestions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useEdit } from '../../../_EditProvider'
 import { Section } from '../../Section'
 
 export const UPDATE_STUDY_QUESTION_ORDER = graphql(`
@@ -35,6 +36,9 @@ interface StudyQuestionsListProps {
 export function StudyQuestionsList({
   studyQuestions
 }: StudyQuestionsListProps): ReactElement | null {
+  const {
+    state: { isEdit }
+  } = useEdit()
   const t = useTranslations()
   const [studyQuestionItems, setStudyQuestionItems] = useState(studyQuestions)
   const [updateStudyQuestionOrder] = useMutation(UPDATE_STUDY_QUESTION_ORDER)
@@ -82,11 +86,15 @@ export function StudyQuestionsList({
   return (
     <Section
       title={t('Study Questions')}
-      action={{
-        label: t('Add Question'),
-        startIcon: <Plus2 />,
-        onClick: () => alert('Create new Question')
-      }}
+      action={
+        isEdit
+          ? {
+              label: t('Add Question'),
+              startIcon: <Plus2 />,
+              onClick: () => alert('Create new Question')
+            }
+          : undefined
+      }
     >
       {totalQuestions > 0 ? (
         <OrderedList
