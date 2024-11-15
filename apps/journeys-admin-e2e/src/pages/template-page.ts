@@ -1,7 +1,7 @@
 /* eslint-disable playwright/no-force-option */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 const sixtySecondsTimeout = 60000
 
@@ -15,10 +15,16 @@ export class TemplatePage {
     this.page = page
   }
 
-  async verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(filterOption: string) {
-    await this.clickDropDownOpenIconForFilters('Topics, holidays, felt needs, collections')
+  async verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(
+    filterOption: string
+  ) {
+    await this.clickDropDownOpenIconForFilters(
+      'Topics, holidays, felt needs, collections'
+    )
     await this.selectCheckBoxesForTopicDropDown(filterOption)
-    await this.clickDropDownCloseIconForFilters('Topics, holidays, felt needs, collections')
+    await this.clickDropDownCloseIconForFilters(
+      'Topics, holidays, felt needs, collections'
+    )
     await this.verifyTheTemplateOfSelectedFilterOption()
     await this.filterClearIcon()
   }
@@ -108,125 +114,305 @@ export class TemplatePage {
   }
 
   async navigateToTempalatePage() {
-    await this.page.locator('a[data-testid="NavigationListItemTemplates"]').click({ timeout: sixtySecondsTimeout })
-    await expect(this.page.locator('div[data-testid="TemplateGallery"]')).toBeVisible({timeout : sixtySecondsTimeout})
+    await this.page
+      .locator('a[data-testid="NavigationListItemTemplates"]')
+      .click({ timeout: sixtySecondsTimeout })
+    await expect(
+      this.page.locator('div[data-testid="TemplateGallery"]')
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
+
   async selectExistingTemplate() {
-    this.selecetdTemplated = await this.page.locator('div[aria-label="templateGalleryCard"] h6').first().innerText()
-    await this.page.locator('div[aria-label="templateGalleryCard"]').first().click()
+    this.selecetdTemplated = await this.page
+      .locator('div[aria-label="templateGalleryCard"] h6')
+      .first()
+      .innerText()
+    await this.page
+      .locator('div[aria-label="templateGalleryCard"]')
+      .first()
+      .click()
   }
+
   async verifySelectedTemplatePage() {
-    await expect(this.page.locator('div[data-testid="JourneysAdminTemplateViewHeader"] h1')).toHaveText(this.selecetdTemplated, { timeout: sixtySecondsTimeout })
+    await expect(
+      this.page.locator('div[data-testid="JourneysAdminTemplateViewHeader"] h1')
+    ).toHaveText(this.selecetdTemplated, { timeout: sixtySecondsTimeout })
   }
+
   async clickUseThisTemplateButton() {
-    await this.page.locator('div[data-testid="JourneysAdminTemplateViewHeader"] button[data-testid="CreateJourneyButton"]').first().click()
+    await this.page
+      .locator(
+        'div[data-testid="JourneysAdminTemplateViewHeader"] button[data-testid="CreateJourneyButton"]'
+      )
+      .first()
+      .click()
   }
+
   async selectTeamInAddJourneyToTeamPopup() {
-    await this.page.locator('div[data-testid="CopyToTeamDialog"][aria-hidden="true"] + div[data-testid="CopyToTeamDialog"]').last().locator('div[data-testid="team-duplicate-select"] div[aria-haspopup="listbox"]').first().click()
-    this.selectedTeam = await this.page.locator('div[id="menu-teamSelect"] ul[role="listbox"] li').first().getAttribute('aria-label')
-    await this.page.locator('div[id="menu-teamSelect"] ul[role="listbox"] li').first().click()
+    await this.page
+      .locator(
+        'div[data-testid="CopyToTeamDialog"][aria-hidden="true"] + div[data-testid="CopyToTeamDialog"]'
+      )
+      .last()
+      .locator(
+        'div[data-testid="team-duplicate-select"] div[aria-haspopup="listbox"]'
+      )
+      .first()
+      .click()
+    this.selectedTeam = await this.page
+      .locator('div[id="menu-teamSelect"] ul[role="listbox"] li')
+      .first()
+      .getAttribute('aria-label')
+    await this.page
+      .locator('div[id="menu-teamSelect"] ul[role="listbox"] li')
+      .first()
+      .click()
   }
+
   async clickAddBtnInPopup() {
-    await this.page.locator('div[data-testid="CopyToTeamDialog"][aria-hidden="true"] + div[data-testid="CopyToTeamDialog"]').last().locator('div[data-testid="dialog-action"] button', { hasText: 'Add' }).click()
+    await this.page
+      .locator(
+        'div[data-testid="CopyToTeamDialog"][aria-hidden="true"] + div[data-testid="CopyToTeamDialog"]'
+      )
+      .last()
+      .locator('div[data-testid="dialog-action"] button', { hasText: 'Add' })
+      .click()
   }
+
   async verifySelectedTemplateInCustomJourneyPage() {
-    await expect(this.page.locator('div[data-testid="JourneyDetails"] button[type="button"] p', { hasText: this.selecetdTemplated })).toBeVisible({ timeout: sixtySecondsTimeout })
+    await expect(
+      this.page.locator(
+        'div[data-testid="JourneyDetails"] button[type="button"] p',
+        { hasText: this.selecetdTemplated }
+      )
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
+
   async clickPreviewBtnInJourneyTemplatePage() {
-    await this.page.locator('div[data-testid="JourneysAdminTemplateViewHeader"] a[data-testid="PreviewTemplateButton"]').first().click()
+    await this.page
+      .locator(
+        'div[data-testid="JourneysAdminTemplateViewHeader"] a[data-testid="PreviewTemplateButton"]'
+      )
+      .first()
+      .click()
   }
+
   async verifyPreviewTemplateInJourneyTemplate() {
     const [newPage] = await Promise.all([
       this.context.waitForEvent('page'),
       await this.clickPreviewBtnInJourneyTemplatePage()
     ])
-    await newPage.waitForLoadState();
-    let tabName: string = await newPage.title()
-    await expect(tabName.includes(this.selecetdTemplated)).toBeTruthy()
-    let slidesCount = await newPage.locator('div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]').count()
-    await expect(await newPage.locator('div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]').first()).toHaveAttribute('data-testid', 'bullet-active')
+    await newPage.waitForLoadState()
+    const tabName: string = await newPage.title()
+    expect(tabName.includes(this.selecetdTemplated)).toBeTruthy()
+    const slidesCount = await newPage
+      .locator(
+        'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
+      )
+      .count()
+    await expect(
+      newPage
+        .locator(
+          'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
+        )
+        .first()
+    ).toHaveAttribute('data-testid', 'bullet-active')
     for (let slide = 1; slide < slidesCount; slide++) {
-      await newPage.locator('button[data-testid="ConductorNavigationButtonNext"]').hover({ force: true })
-      await newPage.locator('button[data-testid="ConductorNavigationButtonNext"]').click({ force: true })
-      await expect(newPage.locator('div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]').nth(slide)).toHaveAttribute('data-testid', 'bullet-active')
-      break;
+      await newPage
+        .locator('button[data-testid="ConductorNavigationButtonNext"]')
+        .hover({ force: true })
+      await newPage
+        .locator('button[data-testid="ConductorNavigationButtonNext"]')
+        .click({ force: true })
+      await expect(
+        newPage
+          .locator(
+            'div[data-testid="pagination-bullets"] svg[data-testid*="bullet"]'
+          )
+          .nth(slide)
+      ).toHaveAttribute('data-testid', 'bullet-active')
+      break
     }
 
     await newPage.close()
   }
+
   async setBrowserContext(context) {
     this.context = context
   }
-  async clickEditInJourneyTemplatePage() {
-    await this.page.locator('div[data-testid="JourneysAdminTemplateViewHeader"] a[data-testid="TemplateEditButton"]').first().click()
-  }
-  async verifyTemplateIsEdited(editedText) {
 
+  async clickEditInJourneyTemplatePage() {
+    await this.page
+      .locator(
+        'div[data-testid="JourneysAdminTemplateViewHeader"] a[data-testid="TemplateEditButton"]'
+      )
+      .first()
+      .click()
+  }
+
+  async verifyTemplateIsEdited(editedText) {
     const [newPage] = await Promise.all([
       this.context.waitForEvent('page'),
       await this.clickPreviewBtnInJourneyTemplatePage()
     ])
-    await newPage.waitForLoadState();
-    let tabName: string = await newPage.title()
-    await newPage.reload({ waitUntil: "load" })
+    await newPage.waitForLoadState()
+    const tabName: string = await newPage.title()
+    await newPage.reload({ waitUntil: 'load' })
     expect(tabName.includes(this.selecetdTemplated)).toBeTruthy()
-    await newPage.reload({ waitUntil: "load" })
-    let currentTime = new Date()
-    let addedSevenMinsTime = new Date(new Date().getTime() + 7*sixtySecondsTimeout)
-    console.log('Current time is '+currentTime.toString())
-    console.log('Added wait time is '+addedSevenMinsTime.toString())
-    while(new Date()<addedSevenMinsTime){
-      if(new Date()>addedSevenMinsTime){
+    await newPage.reload({ waitUntil: 'load' })
+    const currentTime = new Date()
+    const addedSevenMinsTime = new Date(
+      new Date().getTime() + 7 * sixtySecondsTimeout
+    )
+    console.log('Current time is ' + currentTime.toString())
+    console.log('Added wait time is ' + addedSevenMinsTime.toString())
+    while (new Date() < addedSevenMinsTime) {
+      if (new Date() > addedSevenMinsTime) {
         break
       }
       // Wait for the edited content to appear. If it does not appear, the if-else block will handle the situation, so no assertion is needed here.
-      await expect(newPage.locator('//div[@data-testid="CardOverlayContentContainer"]//*[@data-testid="JourneysTypography"]', { hasText: editedText })).toHaveCount(1, { timeout: 5000 }).catch(() => console.log(''));
-      if (await newPage.locator('//div[@data-testid="CardOverlayContentContainer"]//*[@data-testid="JourneysTypography"]', { hasText: editedText }).isVisible()) {
+      await await await await await await await await await await await expect(
+        newPage.locator(
+          '//div[@data-testid="CardOverlayContentContainer"]//*[@data-testid="JourneysTypography"]',
+          { hasText: editedText }
+        )
+      )
+        .toHaveCount(1, { timeout: 5000 })
+        .catch(() => console.log(''))
+      if (
+        await newPage
+          .locator(
+            '//div[@data-testid="CardOverlayContentContainer"]//*[@data-testid="JourneysTypography"]',
+            { hasText: editedText }
+          )
+          .isVisible()
+      ) {
         break
       } else {
-        await newPage.reload({ waitUntil: "load" })
+        await newPage.reload({ waitUntil: 'load' })
       }
     }
     console.log('After while loop ' + new Date().toString())
-    await expect(newPage.locator('//div[@data-testid="CardOverlayContentContainer"]//*[@data-testid="JourneysTypography"]', { hasText: editedText })).toHaveCount(1)
+    await expect(
+      newPage.locator(
+        '//div[@data-testid="CardOverlayContentContainer"]//*[@data-testid="JourneysTypography"]',
+        { hasText: editedText }
+      )
+    ).toHaveCount(1)
   }
+
   async clickDropDownOpenIconForFilters(filterOption: string) {
-    await this.page.locator('div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]', { hasText: filterOption }).locator('button[aria-label="Open"]').click()
+    await this.page
+      .locator(
+        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
+        { hasText: filterOption }
+      )
+      .locator('button[aria-label="Open"]')
+      .click()
   }
+
   async selectCheckBoxesForTopicDropDown(option: string) {
-    this.selectedFilterOption = await this.page.locator('div[data-popper-placement="bottom"] div[role="listbox"] li ul', { hasText: option }).locator('li[role="option"] p').first().innerText()
-    await this.page.locator('div[data-popper-placement="bottom"] div[role="listbox"] li ul', { hasText: option }).locator('li[role="option"] input').first().click()
+    this.selectedFilterOption = await this.page
+      .locator(
+        'div[data-popper-placement="bottom"] div[role="listbox"] li ul',
+        { hasText: option }
+      )
+      .locator('li[role="option"] p')
+      .first()
+      .innerText()
+    await this.page
+      .locator(
+        'div[data-popper-placement="bottom"] div[role="listbox"] li ul',
+        { hasText: option }
+      )
+      .locator('li[role="option"] input')
+      .first()
+      .click()
   }
+
   async clickDropDownCloseIconForFilters(filterOption: string) {
-    await this.page.locator('div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]', { hasText: filterOption }).locator('button[aria-label="Close"]').click()
+    await this.page
+      .locator(
+        'div[class*="MuiGrid-item"] > div[class*="MuiAutocomplete-root"]',
+        { hasText: filterOption }
+      )
+      .locator('button[aria-label="Close"]')
+      .click()
   }
-  async verifyTheTemplateOfSelectedFilterOption(){
-    await expect(this.page.locator('div[data-testid="JourneysAdminTemplateSections"] div[data-testid*="gallery-carousel"]',{hasText : this.selectedFilterOption})).toBeVisible({timeout : sixtySecondsTimeout})
-    await expect(await this.page.locator('div[data-testid="JourneysAdminTemplateSections"] div[data-testid*="gallery-carousel"]',{hasText : this.selectedFilterOption}).locator('a[data-testid="templateGalleryCard"]').count()).toBeGreaterThanOrEqual(1)
+
+  async verifyTheTemplateOfSelectedFilterOption() {
+    await expect(
+      this.page.locator(
+        'div[data-testid="JourneysAdminTemplateSections"] div[data-testid*="gallery-carousel"]',
+        { hasText: this.selectedFilterOption }
+      )
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
+    expect(
+      await this.page
+        .locator(
+          'div[data-testid="JourneysAdminTemplateSections"] div[data-testid*="gallery-carousel"]',
+          { hasText: this.selectedFilterOption }
+        )
+        .locator('a[data-testid="templateGalleryCard"]')
+        .count()
+    ).toBeGreaterThanOrEqual(1)
   }
+
   async filterClearIcon() {
     await this.page.locator('button[aria-label="Clear"]').click()
   }
+
   async hoverTheTopicFilterField() {
-    await this.page.locator('div[class*="MuiGrid-item"]', { hasText: "Topics, holidays, felt needs, collections" }).hover()
+    await this.page
+      .locator('div[class*="MuiGrid-item"]', {
+        hasText: 'Topics, holidays, felt needs, collections'
+      })
+      .hover()
   }
+
   async selectCheckBoxForFilters() {
-    this.selectedFilterOption = await this.page.locator('div[data-popper-placement="bottom"] div[role="listbox"] li[role="option"] p').first().innerText()
-    await this.page.locator('div[data-popper-placement="bottom"] div[role="listbox"] li[role="option"] input').first().click()
+    this.selectedFilterOption = await this.page
+      .locator(
+        'div[data-popper-placement="bottom"] div[role="listbox"] li[role="option"] p'
+      )
+      .first()
+      .innerText()
+    await this.page
+      .locator(
+        'div[data-popper-placement="bottom"] div[role="listbox"] li[role="option"] input'
+      )
+      .first()
+      .click()
   }
 
   async selectSlideFilters(slideFilter: string) {
     this.selectedFilterOption = slideFilter
-    await this.page.locator('div[aria-live="polite"] div[class*="swiper-slide"] h3', { hasText: slideFilter }).click()
+    await this.page
+      .locator('div[aria-live="polite"] div[class*="swiper-slide"] h3', {
+        hasText: slideFilter
+      })
+      .click()
   }
 
   async selectFilterBtnBelowSlideFilters(slideFilter: string) {
     this.selectedFilterOption = slideFilter
-    await this.page.locator('div[data-testid="felt-needs-carousel"] + div button h6[class*="MuiTypography-subtitle2"]', { hasText: slideFilter }).click()
+    await this.page
+      .locator(
+        'div[data-testid="felt-needs-carousel"] + div button h6[class*="MuiTypography-subtitle2"]',
+        { hasText: slideFilter }
+      )
+      .click()
   }
-  async clickHelpBtn() {
-    await expect(this.page.getByTestId('MainPanelBody').locator('button[aria-label="Help"]')).toBeEnabled({ timeout: 30000 })
-    await this.page.getByTestId('MainPanelBody').locator('button[aria-label="Help"]').click({delay : 3000})
-}
-}
 
+  async clickHelpBtn() {
+    await expect(
+      this.page
+        .getByTestId('MainPanelBody')
+        .locator('button[aria-label="Help"]')
+    ).toBeEnabled({ timeout: 30000 })
+    await this.page
+      .getByTestId('MainPanelBody')
+      .locator('button[aria-label="Help"]')
+      .click({ delay: 3000 })
+  }
+}

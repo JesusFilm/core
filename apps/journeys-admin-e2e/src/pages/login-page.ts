@@ -27,8 +27,13 @@ export class LoginPage {
   async clickSubmitButton(): Promise<void> {
     await this.page.locator('button[type="submit"]').click()
   }
+
   async waitUntilDiscoverPageLoaded() {
-    await expect(this.page.locator('div[data-testid="JourneysAdminContainedIconButton"] button')).toBeVisible({ timeout: 65000 })
+    await expect(
+      this.page.locator(
+        'div[data-testid="JourneysAdminContainedIconButton"] button'
+      )
+    ).toBeVisible({ timeout: 65000 })
   }
 
   // async verifyCreateCustomJourneyBtn() {
@@ -42,13 +47,13 @@ export class LoginPage {
   //   await expect(this.page.locator('div[aria-haspopup="listbox"]', { hasText: 'Shared With Me' })).toBeHidden().catch(async () => {
   //     await this.selectFirstTeam()
   //   })
-   
+
   // }
   // async selectFirstTeam() {
   //   await this.page.locator('div[aria-haspopup="listbox"]').click({ timeout: 60000 })
   //   await this.page.locator('ul[role="listbox"] li[role="option"]').first().click()
   // }
-  
+
   async login(): Promise<void> {
     const email = await getEmail()
     await this.fillExistingEmail(email)
@@ -58,6 +63,7 @@ export class LoginPage {
     await this.clickSubmitButton()
     await this.waitUntilDiscoverPageLoaded()
   }
+
   async logInWithCreatedNewUser(userName: string) {
     await this.fillExistingEmail(userName)
     await this.clickSubmitButton()

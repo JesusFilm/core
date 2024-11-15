@@ -15,113 +15,229 @@ export class Register {
   name: string
   userEmail: string
   constructor(page: Page) {
-      this.page = page
-      randomNumber = dayjs().format("DDMMYYhhmmss") + Math.floor(Math.random() * (100 - 999 + 1) + 999);
+    this.page = page
+    randomNumber =
+      dayjs().format('DDMMYYhhmmss') +
+      Math.floor(Math.random() * (100 - 999 + 1) + 999)
   }
-  async registerNewAccount(){
-      let otp = await getOTP()
-      let password= await getPassword()
-      await this.enterUserName()
-      await this.clickSignInWithEmailBtn()
-      await this.enterName()
-      await this.enterPassword(password)
-      await this.clickSignUpBtn()
-      await this.verifyPageNavigatedToVerifyYourEmailPage()
-      await this.enterOTP(otp)
-      await this.clickValidateEmailBtn()
-      await this.verifyPageNavigatedBeforeStartPage()
-      await this.clickIAgreeBtn()
-      await this.clickNextBtn()
-      await this.retryCreateYourWorkSpacePage()
-      // await this.verifyPageNavigatedFewQuestionsPage()
-      // await this.clickNextBtnInFewQuestionPage()
-      await this.verifyCreateYourWorkspacePage()
-      await this.entetTeamName()
-      await this.clickCreateBtn()
-      await this.waitUntilDiscoverPageLoaded()
-      await this.waitUntilTheToestMsgDisappear()
+
+  async registerNewAccount() {
+    const otp = await getOTP()
+    const password = await getPassword()
+    await this.enterUserName()
+    await this.clickSignInWithEmailBtn()
+    await this.enterName()
+    await this.enterPassword(password)
+    await this.clickSignUpBtn()
+    await this.verifyPageNavigatedToVerifyYourEmailPage()
+    await this.enterOTP(otp)
+    await this.clickValidateEmailBtn()
+    await this.verifyPageNavigatedBeforeStartPage()
+    await this.clickIAgreeBtn()
+    await this.clickNextBtn()
+    await this.retryCreateYourWorkSpacePage()
+    // await this.verifyPageNavigatedFewQuestionsPage()
+    // await this.clickNextBtnInFewQuestionPage()
+    await this.verifyCreateYourWorkspacePage()
+    await this.entetTeamName()
+    await this.clickCreateBtn()
+    await this.waitUntilDiscoverPageLoaded()
+    await this.waitUntilTheToestMsgDisappear()
   }
+
   async enterUserName() {
-      this.userEmail = "playwright" + randomNumber + "@example.com"
-      await this.page.locator('input#username').fill(this.userEmail)
+    this.userEmail = 'playwright' + randomNumber + '@example.com'
+    await this.page.locator('input#username').fill(this.userEmail)
   }
+
   async clickSignInWithEmailBtn() {
-      await this.page.locator('form[data-testid="EmailSignInForm"] button[type="submit"]').click()
+    await this.page
+      .locator('form[data-testid="EmailSignInForm"] button[type="submit"]')
+      .click()
   }
+
   async enterName() {
-      await this.page.locator('input#name').fill(testData.register.userName + randomNumber);
+    await this.page
+      .locator('input#name')
+      .fill(testData.register.userName + randomNumber)
   }
+
   async enterPassword(password: string) {
-      await this.page.locator('input#new-password').fill(password);
+    await this.page.locator('input#new-password').fill(password)
   }
+
   async clickSignUpBtn() {
-      await this.page.locator('form[data-testid="RegisterForm"] button', { hasText: 'Sign Up' }).click()
-  }
-  async verifyPageNavigatedToVerifyYourEmailPage() {
-      await expect(this.page.locator('div[data-testid="JourneysAdminOnboardingPageWrapper"]', { hasText: 'Verify Your Email' })).toBeVisible({ timeout: 30000 })
-  }
-  async enterOTP(otp) {
-      await this.page.locator('form[data-testid="EmailInviteForm"] div[class*="MuiAccordionSummary"]').first().click()
-      await expect(this.page.locator('form[data-testid="EmailInviteForm"] div[class*="MuiAccordionSummary"]').first()).toHaveAttribute("aria-expanded", "true")
-      await this.page.locator('div[role="region"]  input[name="token"]').fill(otp)
-  }
-  async clickValidateEmailBtn() {
-      await this.page.locator('button[type="submit"]', { hasText: 'Validate Email' }).click()
-  }
-  async verifyPageNavigatedBeforeStartPage() {
-      await expect(this.page.locator('div[data-testid="JourneysAdminOnboardingPageWrapper"]', { hasText: 'Terms and Conditions' })).toBeVisible({ timeout: 60000 })
-  }
-  async clickIAgreeBtn() {
-      await this.page.locator('input[aria-labelledby="i-agree-label"]').check()
-  }
-  async clickNextBtn() {
-      await this.page.locator('button[type="button"]', { hasText: 'Next' }).click({ delay: 2000 })
-  }
-  async verifyPageNavigatedFewQuestionsPage() {
-      await expect(this.page.locator('div[data-testid="JourneysAdminOnboardingPageWrapper"]', { hasText: 'User Insights' })).toBeVisible({ timeout: 50000 })
-
-  }
-  async clickNextBtnInFewQuestionPage() {
-      await this.page.locator('button[type="submit"]', { hasText: 'Next' }).click({ delay: 3000 })
-  }
-  async entetTeamName() {
-      await this.page.locator('input#title').fill(testData.teams.teamName + randomNumber, { timeout: 60000 })
-  }
-  async clickCreateBtn() {
-      await this.page.locator('button[type="button"]', { hasText: 'Create' }).click()
-  }
-  async verifyPageNavigatedInviteTeammatesPage() {
-      await expect(this.page.locator('div[data-testid="JourneysAdminOnboardingPageWrapper"] span', { hasText: 'Invite Teammates' })).toBeVisible({ timeout: 50000 })
-  }
-  async clickSkipBtn() {
-      await this.page.locator('button[type="button"]', { hasText: 'Skip' }).click()
-  }
-  async waitUntilDiscoverPageLoaded() {
-      await expect(this.page.locator('div[data-testid="JourneysAdminContainedIconButton"] button')).toBeVisible({ timeout: 65000 })
-  }
-  async waitUntilTheToestMsgDisappear() {
-      await expect(this.page.locator('div#notistack-snackbar')).toHaveCount(0, { timeout: 30000 })
-  }
-  async verifyMoreJourneyHerePopup(){
-      // waiting for 'More journeys here' appear if it is don't, we doesn't need to assert the script
-      await expect(this.page.locator('div[class*="MuiPopover-paper"] h6',{hasText : 'More journeys here'})).toBeVisible({timeout : 5000}).catch(async () => {console.log('More journeys here is not appear')})
-      // verifying whether the 'More journeys here' appear. if it is, clicking on the dismiss btn
-      await expect(this.page.locator('div[class*="MuiPopover-paper"] h6',{hasText : 'More journeys here'})).toHaveCount(0,{timeout : 5000}).catch(async () => {await this.page.locator('div[class*="MuiPopover-paper"] button',{hasText : 'Dismiss'}).click()})
-
-  }
-  async getUserEmailId() {
-      return this.userEmail;
-  }
-  async clickNextBtnOfTermsAndConditions(){
-      await this.page.locator('button[data-testid="TermsAndConditionsNextButton"]').click()
-    }
-    async retryCreateYourWorkSpacePage(){
-      // clicking on 'Next' button twice if the Create Your Workspace page doesn't appears
-      await expect(this.page.locator('div[data-testid="JourneysAdminOnboardingPageWrapper"] h2',{hasText : 'Create Your Workspace'})).toBeVisible({timeout : 10000}).catch(async()=>{
-          await this.clickNextBtnOfTermsAndConditions()
+    await this.page
+      .locator('form[data-testid="RegisterForm"] button', {
+        hasText: 'Sign Up'
       })
-    }
-    async verifyCreateYourWorkspacePage() {
-      await expect(this.page.locator('div[data-testid="JourneysAdminOnboardingPageWrapper"] h2',{hasText : 'Create Your Workspace'})).toBeVisible({timeout : 10000})
-    }
+      .click()
+  }
+
+  async verifyPageNavigatedToVerifyYourEmailPage() {
+    await expect(
+      this.page.locator(
+        'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
+        { hasText: 'Verify Your Email' }
+      )
+    ).toBeVisible({ timeout: 30000 })
+  }
+
+  async enterOTP(otp) {
+    await this.page
+      .locator(
+        'form[data-testid="EmailInviteForm"] div[class*="MuiAccordionSummary"]'
+      )
+      .first()
+      .click()
+    await expect(
+      this.page
+        .locator(
+          'form[data-testid="EmailInviteForm"] div[class*="MuiAccordionSummary"]'
+        )
+        .first()
+    ).toHaveAttribute('aria-expanded', 'true')
+    await this.page.locator('div[role="region"]  input[name="token"]').fill(otp)
+  }
+
+  async clickValidateEmailBtn() {
+    await this.page
+      .locator('button[type="submit"]', { hasText: 'Validate Email' })
+      .click()
+  }
+
+  async verifyPageNavigatedBeforeStartPage() {
+    await expect(
+      this.page.locator(
+        'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
+        { hasText: 'Terms and Conditions' }
+      )
+    ).toBeVisible({ timeout: 60000 })
+  }
+
+  async clickIAgreeBtn() {
+    await this.page.locator('input[aria-labelledby="i-agree-label"]').check()
+  }
+
+  async clickNextBtn() {
+    await this.page
+      .locator('button[type="button"]', { hasText: 'Next' })
+      .click({ delay: 2000 })
+  }
+
+  async verifyPageNavigatedFewQuestionsPage() {
+    await expect(
+      this.page.locator(
+        'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
+        { hasText: 'User Insights' }
+      )
+    ).toBeVisible({ timeout: 50000 })
+  }
+
+  async clickNextBtnInFewQuestionPage() {
+    await this.page
+      .locator('button[type="submit"]', { hasText: 'Next' })
+      .click({ delay: 3000 })
+  }
+
+  async entetTeamName() {
+    await this.page
+      .locator('input#title')
+      .fill(testData.teams.teamName + randomNumber, { timeout: 60000 })
+  }
+
+  async clickCreateBtn() {
+    await this.page
+      .locator('button[type="button"]', { hasText: 'Create' })
+      .click()
+  }
+
+  async verifyPageNavigatedInviteTeammatesPage() {
+    await expect(
+      this.page.locator(
+        'div[data-testid="JourneysAdminOnboardingPageWrapper"] span',
+        { hasText: 'Invite Teammates' }
+      )
+    ).toBeVisible({ timeout: 50000 })
+  }
+
+  async clickSkipBtn() {
+    await this.page
+      .locator('button[type="button"]', { hasText: 'Skip' })
+      .click()
+  }
+
+  async waitUntilDiscoverPageLoaded() {
+    await expect(
+      this.page.locator(
+        'div[data-testid="JourneysAdminContainedIconButton"] button'
+      )
+    ).toBeVisible({ timeout: 65000 })
+  }
+
+  async waitUntilTheToestMsgDisappear() {
+    await expect(this.page.locator('div#notistack-snackbar')).toHaveCount(0, {
+      timeout: 30000
+    })
+  }
+
+  async verifyMoreJourneyHerePopup() {
+    // waiting for 'More journeys here' appear if it is don't, we doesn't need to assert the script
+    await await await await await await await await await await await expect(
+      this.page.locator('div[class*="MuiPopover-paper"] h6', {
+        hasText: 'More journeys here'
+      })
+    )
+      .toBeVisible({ timeout: 5000 })
+      .catch(async () => {
+        console.log('More journeys here is not appear')
+      })
+    // verifying whether the 'More journeys here' appear. if it is, clicking on the dismiss btn
+    await await await await await await await await await await await expect(
+      this.page.locator('div[class*="MuiPopover-paper"] h6', {
+        hasText: 'More journeys here'
+      })
+    )
+      .toHaveCount(0, { timeout: 5000 })
+      .catch(async () => {
+        await this.page
+          .locator('div[class*="MuiPopover-paper"] button', {
+            hasText: 'Dismiss'
+          })
+          .click()
+      })
+  }
+
+  async getUserEmailId() {
+    return this.userEmail
+  }
+
+  async clickNextBtnOfTermsAndConditions() {
+    await this.page
+      .locator('button[data-testid="TermsAndConditionsNextButton"]')
+      .click()
+  }
+
+  async retryCreateYourWorkSpacePage() {
+    // clicking on 'Next' button twice if the Create Your Workspace page doesn't appears
+    await await await await await await await await await await await expect(
+      this.page.locator(
+        'div[data-testid="JourneysAdminOnboardingPageWrapper"] h2',
+        { hasText: 'Create Your Workspace' }
+      )
+    )
+      .toBeVisible({ timeout: 10000 })
+      .catch(async () => {
+        await this.clickNextBtnOfTermsAndConditions()
+      })
+  }
+
+  async verifyCreateYourWorkspacePage() {
+    await expect(
+      this.page.locator(
+        'div[data-testid="JourneysAdminOnboardingPageWrapper"] h2',
+        { hasText: 'Create Your Workspace' }
+      )
+    ).toBeVisible({ timeout: 10000 })
+  }
 }
