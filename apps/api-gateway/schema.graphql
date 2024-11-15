@@ -92,7 +92,7 @@ A date string, such as 2007-12-03, compliant with the `full-date` format outline
 """
 scalar Date @join__type(graph: API_MEDIA) 
 
-type BaseError implements Error @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  @join__implements(graph: API_ANALYTICS, interface: "Error")  @join__implements(graph: API_MEDIA, interface: "Error")  {
+type Error implements BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  @join__implements(graph: API_ANALYTICS, interface: "BaseError")  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
   message: String
 }
 
@@ -2182,7 +2182,7 @@ type CloudflareVideo @join__type(graph: API_MEDIA)  {
   readyToStream: Boolean!
 }
 
-type ForeignKeyConstraintError implements Error @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "Error")  {
+type ForeignKeyConstraintError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
   message: String
   """
   The arguments that caused the foriegn key constraint violation
@@ -2244,7 +2244,7 @@ type MuxVideo @join__type(graph: API_MEDIA)  {
   readyToStream: Boolean!
 }
 
-type NotFoundError implements Error @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "Error")  {
+type NotFoundError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
   message: String
   """
   The arguments that caused the not found error
@@ -2263,7 +2263,7 @@ type NotFoundErrorLocation @join__type(graph: API_MEDIA)  {
   value: String
 }
 
-type NotUniqueError implements Error @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "Error")  {
+type NotUniqueError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
   message: String
   """
   The arguments that caused the uniqueness violation
@@ -2504,7 +2504,7 @@ type VideoVariantDownload @join__type(graph: API_MEDIA)  {
   url: String!
 }
 
-type ZodError implements Error @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "Error")  {
+type ZodError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
   message: String
   fieldErrors: [ZodFieldError!]
 }
@@ -2514,7 +2514,7 @@ type ZodFieldError @join__type(graph: API_MEDIA)  {
   path: [String!]
 }
 
-interface Error @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  {
+interface BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  {
   message: String
 }
 
@@ -2545,7 +2545,7 @@ interface Integration @join__type(graph: API_JOURNEYS)  {
   type: IntegrationType!
 }
 
-union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMember(graph: API_ANALYTICS, member: "BaseError")  @join__unionMember(graph: API_ANALYTICS, member: "MutationSiteCreateSuccess")  = BaseError | MutationSiteCreateSuccess
+union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMember(graph: API_ANALYTICS, member: "Error")  @join__unionMember(graph: API_ANALYTICS, member: "MutationSiteCreateSuccess")  = Error | MutationSiteCreateSuccess
 
 union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
 

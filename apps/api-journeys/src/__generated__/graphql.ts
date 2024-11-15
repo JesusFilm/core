@@ -38,8 +38,7 @@ export type AudioPreview = {
   value: Scalars['String']['output'];
 };
 
-export type BaseError = Error & {
-  __typename?: 'BaseError';
+export type BaseError = {
   message?: Maybe<Scalars['String']['output']>;
 };
 
@@ -498,7 +497,8 @@ export type EmailActionInput = {
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type Error = {
+export type Error = BaseError & {
+  __typename?: 'Error';
   message?: Maybe<Scalars['String']['output']>;
 };
 
@@ -510,7 +510,7 @@ export type Event = {
   value?: Maybe<Scalars['String']['output']>;
 };
 
-export type ForeignKeyConstraintError = Error & {
+export type ForeignKeyConstraintError = BaseError & {
   __typename?: 'ForeignKeyConstraintError';
   /** The arguments that caused the foriegn key constraint violation */
   location?: Maybe<Array<ForeignKeyConstraintErrorLocation>>;
@@ -2279,7 +2279,7 @@ export type MutationShortLinkUpdateSuccess = {
   data: ShortLink;
 };
 
-export type MutationSiteCreateResult = BaseError | MutationSiteCreateSuccess;
+export type MutationSiteCreateResult = Error | MutationSiteCreateSuccess;
 
 export type MutationSiteCreateSuccess = {
   __typename?: 'MutationSiteCreateSuccess';
@@ -2308,7 +2308,7 @@ export type NavigateToBlockActionInput = {
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type NotFoundError = Error & {
+export type NotFoundError = BaseError & {
   __typename?: 'NotFoundError';
   /** The arguments that caused the not found error */
   location?: Maybe<Array<NotFoundErrorLocation>>;
@@ -2323,7 +2323,7 @@ export type NotFoundErrorLocation = {
   value?: Maybe<Scalars['String']['output']>;
 };
 
-export type NotUniqueError = Error & {
+export type NotUniqueError = BaseError & {
   __typename?: 'NotUniqueError';
   /** The arguments that caused the uniqueness violation */
   location?: Maybe<Array<NotUniqueErrorLocation>>;
@@ -4676,7 +4676,7 @@ export type VisitorsConnection = {
   pageInfo: PageInfo;
 };
 
-export type ZodError = Error & {
+export type ZodError = BaseError & {
   __typename?: 'ZodError';
   fieldErrors?: Maybe<Array<ZodFieldError>>;
   message?: Maybe<Scalars['String']['output']>;
@@ -4716,7 +4716,7 @@ export type SiteCreateMutationVariables = Exact<{
 }>;
 
 
-export type SiteCreateMutation = { __typename?: 'Mutation', siteCreate: { __typename: 'BaseError', message?: string | null } | { __typename?: 'MutationSiteCreateSuccess', data: { __typename: 'Site', id: string, domain: string, memberships: Array<{ __typename: 'SiteMembership', id: string, role: string }>, goals: Array<{ __typename: 'SiteGoal', id: string, eventName?: string | null }>, sharedLinks: Array<{ __typename: 'SiteSharedLink', id: string, slug: string }> } } };
+export type SiteCreateMutation = { __typename?: 'Mutation', siteCreate: { __typename: 'Error', message?: string | null } | { __typename?: 'MutationSiteCreateSuccess', data: { __typename: 'Site', id: string, domain: string, memberships: Array<{ __typename: 'SiteMembership', id: string, role: string }>, goals: Array<{ __typename: 'SiteGoal', id: string, eventName?: string | null }>, sharedLinks: Array<{ __typename: 'SiteSharedLink', id: string, slug: string }> } } };
 
 
 export const GetLanguagesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetLanguages"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"language"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bcp47"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<GetLanguagesQuery, GetLanguagesQueryVariables>;

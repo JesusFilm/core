@@ -1,9 +1,7 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
-type BaseError implements Error
-  @shareable
-{
+interface BaseError {
   message: String
 }
 
@@ -82,11 +80,13 @@ A date string, such as 2007-12-03, compliant with the `full-date` format outline
 """
 scalar Date
 
-interface Error {
+type Error implements BaseError
+  @shareable
+{
   message: String
 }
 
-type ForeignKeyConstraintError implements Error
+type ForeignKeyConstraintError implements BaseError
   @shareable
 {
   message: String
@@ -305,7 +305,7 @@ type MuxVideo {
   readyToStream: Boolean!
 }
 
-type NotFoundError implements Error
+type NotFoundError implements BaseError
   @shareable
 {
   message: String
@@ -322,7 +322,7 @@ type NotFoundErrorLocation {
   value: String
 }
 
-type NotUniqueError implements Error
+type NotUniqueError implements BaseError
   @shareable
 {
   message: String
@@ -876,7 +876,7 @@ input VideosFilter {
   subtitleLanguageIds: [ID!]
 }
 
-type ZodError implements Error
+type ZodError implements BaseError
   @shareable
 {
   message: String

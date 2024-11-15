@@ -1,13 +1,15 @@
 import { builder } from '../builder'
 
-export const ErrorInterface = builder.interfaceRef<Error>('Error').implement({
-  fields: (t) => ({
-    message: t.exposeString('message')
+export const ErrorInterface = builder
+  .interfaceRef<Error>('BaseError')
+  .implement({
+    fields: (t) => ({
+      message: t.exposeString('message')
+    })
   })
-})
 
 builder.objectType(Error, {
-  name: 'BaseError',
+  name: 'Error',
   shareable: true,
   interfaces: [ErrorInterface]
 })

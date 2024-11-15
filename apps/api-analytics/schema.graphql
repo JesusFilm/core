@@ -1,13 +1,13 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@shareable"])
 
-type BaseError implements Error
-  @shareable
-{
+interface BaseError {
   message: String
 }
 
-interface Error {
+type Error implements BaseError
+  @shareable
+{
   message: String
 }
 
@@ -15,7 +15,7 @@ type Mutation {
   siteCreate(input: SiteCreateInput!): MutationSiteCreateResult!
 }
 
-union MutationSiteCreateResult = BaseError | MutationSiteCreateSuccess
+union MutationSiteCreateResult = Error | MutationSiteCreateSuccess
 
 type MutationSiteCreateSuccess {
   data: Site!
