@@ -6,12 +6,17 @@ import { MouseEvent, ReactElement, useState } from 'react'
 
 import More from '@core/shared/ui/icons/More'
 
+import { useEdit } from '../../../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
+
 interface ActionsProps {
   id: string
   actions: Array<{ label: string; handler: (id: string) => void }>
 }
 
 export function Actions({ id, actions }: ActionsProps): ReactElement {
+  const {
+    state: { isEdit }
+  } = useEdit()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
 
@@ -27,6 +32,7 @@ export function Actions({ id, actions }: ActionsProps): ReactElement {
   return (
     <Box>
       <IconButton
+        disabled={!isEdit}
         aria-label="ordered-item-actions"
         size="small"
         onClick={handleClick}

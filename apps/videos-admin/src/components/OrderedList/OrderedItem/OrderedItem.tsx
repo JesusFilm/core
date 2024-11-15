@@ -8,6 +8,8 @@ import { MouseEvent, ReactElement } from 'react'
 
 import Drag from '@core/shared/ui/icons/Drag'
 
+import { useEdit } from '../../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
+
 import { Actions } from './Actions'
 import { DropDown } from './DropDown'
 
@@ -43,7 +45,9 @@ export function OrderedItem({
     transition,
     setActivatorNodeRef
   } = useSortable({ id })
-
+  const {
+    state: { isEdit }
+  } = useEdit()
   const style =
     transform != null
       ? { transform: `translate3d(0px, ${transform.y}px, 0)`, transition }
@@ -75,6 +79,7 @@ export function OrderedItem({
       }}
     >
       <IconButton
+        disabled={!isEdit}
         data-testid={`OrderedItemDragHandle-${idx}`}
         sx={{ cursor: 'move' }}
         aria-label="ordered-item-drag-handle"
@@ -84,7 +89,7 @@ export function OrderedItem({
         <Drag fontSize="large" />
       </IconButton>
       <Typography variant="subtitle2">{`${idx + 1}. ${label}`}</Typography>
-      {onChange != null && (
+      {onChange != null && isEdit && (
         <DropDown id={id} idx={idx} total={total} onChange={onChange} />
       )}
       {img != null && (
@@ -107,7 +112,7 @@ export function OrderedItem({
           />
         </Box>
       )}
-      {actions != null && actions.length > 0 && (
+      {actions != null && actions.length > 0 && isEdit && (
         <Actions actions={actions} id={id} />
       )}
     </Stack>

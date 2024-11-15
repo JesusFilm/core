@@ -6,6 +6,8 @@ import Typography from '@mui/material/Typography'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
+import { useEdit } from '../../../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
+
 interface DropdownProps {
   id: string
   idx: number
@@ -19,6 +21,9 @@ export function DropDown({
   total,
   onChange
 }: DropdownProps): ReactElement {
+  const {
+    state: { isEdit }
+  } = useEdit()
   const t = useTranslations()
   function handleChange(e: SelectChangeEvent<number>): void {
     let newOrder = e.target.value
@@ -32,7 +37,12 @@ export function DropDown({
   return (
     <FormControl sx={{ ml: 'auto' }}>
       <InputLabel>{t('Order')}</InputLabel>
-      <Select value={idx} size="small" onChange={handleChange}>
+      <Select
+        value={idx}
+        size="small"
+        onChange={handleChange}
+        disabled={!isEdit}
+      >
         {[...Array(total)].map((_, i) => (
           <MenuItem key={i} value={i}>
             <Typography>{i + 1}</Typography>
