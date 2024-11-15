@@ -284,6 +284,7 @@ export function QrCodeDialog({
             variant="contained"
             sx={{ maxWidth: 200, alignSelf: 'end' }}
             onClick={handleSubmit}
+            disabled={to === url}
           >
             {t('Save Changes')}
           </Button>
