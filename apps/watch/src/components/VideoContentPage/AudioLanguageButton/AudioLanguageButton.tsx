@@ -4,6 +4,7 @@ import LanguageOutlined from '@mui/icons-material/LanguageOutlined'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
+import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
@@ -64,7 +65,8 @@ export function AudioLanguageButton({
             width: 'inherit',
             color: 'background.paper',
             '&:hover': {
-              backgroundColor: 'transparent'
+              backgroundColor: ({ palette }) =>
+                alpha(palette.background.paper, 0.1)
             }
           }}
         >
