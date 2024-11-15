@@ -1133,7 +1133,7 @@ export type Language = {
   seriesCount: Scalars['Int']['output'];
   shortFilmCount: Scalars['Int']['output'];
   slug?: Maybe<Scalars['String']['output']>;
-  speakerCount: Scalars['Int']['output'];
+  speakerCount: Scalars['String']['output'];
 };
 
 
@@ -1161,7 +1161,9 @@ export type LanguageWithSlug = {
 };
 
 export type LanguagesFilter = {
+  bcp47?: InputMaybe<Array<Scalars['String']['input']>>;
   ids?: InputMaybe<Array<Scalars['ID']['input']>>;
+  iso3?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 export type LinkAction = Action & {
@@ -2827,11 +2829,13 @@ export type QueryLanguageArgs = {
 export type QueryLanguagesArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  term?: InputMaybe<Scalars['String']['input']>;
   where?: InputMaybe<LanguagesFilter>;
 };
 
 
 export type QueryLanguagesCountArgs = {
+  term?: InputMaybe<Scalars['String']['input']>;
   where?: InputMaybe<LanguagesFilter>;
 };
 

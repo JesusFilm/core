@@ -53,6 +53,7 @@ export function ExpandedCover({
           blurDataURL={backgroundBlur}
           layout="fill"
           objectFit="cover"
+          objectPosition={`${imageBlock.focalLeft}% ${imageBlock.focalTop}%`}
         />
       )}
       <Stack

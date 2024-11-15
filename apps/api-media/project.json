@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-media/src",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
@@ -179,6 +180,5 @@
         "command": "gql.tada generate output --tsconfig apps/api-media/tsconfig.json"
       }
     }
-  },
-  "tags": []
+  }
 }
