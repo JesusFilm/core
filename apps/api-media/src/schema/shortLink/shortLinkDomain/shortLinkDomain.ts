@@ -26,7 +26,7 @@ builder.prismaObject('ShortLinkDomain', {
 })
 
 builder.queryFields((t) => ({
-  shortLinkDomains: t.prismaField({
+  shortLinkDomains: t.withAuth({ isAuthenticated: true }).prismaField({
     type: ['ShortLinkDomain'],
     description: 'List of short link domains that can be used for short links',
     nullable: false,
@@ -55,7 +55,7 @@ builder.queryFields((t) => ({
         }
       })
   }),
-  shortLinkDomain: t.prismaField({
+  shortLinkDomain: t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'ShortLinkDomain',
     description: 'Find a short link domain by id',
     errors: {
@@ -175,7 +175,7 @@ builder.mutationFields((t) => ({
         }
       }
     }),
-  shortLinkDomainDelete: t.prismaField({
+  shortLinkDomainDelete: t.withAuth({ isPublisher: true }).prismaField({
     type: 'ShortLinkDomain',
     description:
       'delete an existing short link domain (all related short links must be deleted first)',
