@@ -791,7 +791,9 @@ export class JourneyPage {
     list: string[],
     expectedSortedList: string[]
   ) {
-    list.map((str) => str.toLowerCase()).sort((a, b) => Intl.Collator().compare(a, b))
+    list
+      .map((str) => str.toLowerCase())
+      .sort((a, b) => Intl.Collator().compare(a, b))
     expect(list.join().trim() === expectedSortedList.join().trim()).toBeTruthy()
   }
 

@@ -145,7 +145,8 @@ export class ProfilePage {
   }
 
   async verifySelectedLanguageUpdatedOnTheSite() {
-    const sampleText = this.selectedLanguage === 'français' ? 'Langue' : 'Lengua'
+    const sampleText =
+      this.selectedLanguage === 'français' ? 'Langue' : 'Lengua'
     await expect(
       this.page.locator('li[data-testid="JourneysAdminMenuItemLanguage"]', {
         hasText: sampleText

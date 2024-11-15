@@ -11,7 +11,9 @@ export class LeftNav {
 
   async clickProfile(): Promise<void> {
     try {
-      const profileListItem = this.page.locator('[data-testid="NavigationListItemProfile"]')
+      const profileListItem = this.page.locator(
+        '[data-testid="NavigationListItemProfile"]'
+      )
       await profileListItem.waitFor({ timeout: 60000 })
 
       // Click on Profile
@@ -40,7 +42,9 @@ export class LeftNav {
   async logout(): Promise<void> {
     // Click on Log out
     await Promise.all([
-      this.page.locator('[data-testid="JourneysAdminMenuItemLogOut"]').waitFor(),
+      this.page
+        .locator('[data-testid="JourneysAdminMenuItemLogOut"]')
+        .waitFor(),
       this.page.click('[data-testid="JourneysAdminMenuItemLogOut"]')
     ])
   }

@@ -183,19 +183,25 @@ export class Register {
 
   async verifyMoreJourneyHerePopup() {
     // waiting for 'More journeys here' appear if it is don't, we doesn't need to assert the script
-  const moreJourneysLocator = this.page.locator('div[class*="MuiPopover-paper"] h6', {
-    hasText: 'More journeys here'
-  });
+    const moreJourneysLocator = this.page.locator(
+      'div[class*="MuiPopover-paper"] h6',
+      {
+        hasText: 'More journeys here'
+      }
+    )
 
-  try {
-    await expect(moreJourneysLocator).toBeVisible({ timeout: 5000 });
-    const dismissButtonLocator = this.page.locator('div[class*="MuiPopover-paper"] button', {
-      hasText: 'Dismiss'
-    });
-    await dismissButtonLocator.click();
-  } catch {
-    console.log('More journeys here is not appear');
-  }
+    try {
+      await expect(moreJourneysLocator).toBeVisible({ timeout: 5000 })
+      const dismissButtonLocator = this.page.locator(
+        'div[class*="MuiPopover-paper"] button',
+        {
+          hasText: 'Dismiss'
+        }
+      )
+      await dismissButtonLocator.click()
+    } catch {
+      console.log('More journeys here is not appear')
+    }
   }
 
   async getUserEmailId() {
