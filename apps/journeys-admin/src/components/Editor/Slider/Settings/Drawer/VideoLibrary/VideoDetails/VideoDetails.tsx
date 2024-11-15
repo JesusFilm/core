@@ -20,6 +20,7 @@ import {
 import { Drawer } from '../../Drawer'
 import { CloudflareDetails } from '../VideoFromCloudflare/CloudflareDetails'
 import { LocalDetails } from '../VideoFromLocal/LocalDetails'
+import { MuxDetails } from '../VideoFromMux/MuxDetails'
 import { YouTubeDetails } from '../VideoFromYouTube/YouTubeDetails'
 
 export interface VideoDetailsProps {
@@ -72,6 +73,9 @@ export function VideoDetails({
       break
     case VideoBlockSource.internal:
       Details = LocalDetails
+      break
+    case VideoBlockSource.mux:
+      Details = YouTubeDetails
       break
     case VideoBlockSource.youTube:
       Details = YouTubeDetails

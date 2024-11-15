@@ -50,7 +50,8 @@ function getVideoDescription(videoBlock: VideoBlock): string {
         videoBlock.video?.variantLanguages
       ),
       [VideoBlockSource.youTube]: 'YouTube Media',
-      [VideoBlockSource.cloudflare]: 'Uploaded Media'
+      [VideoBlockSource.cloudflare]: 'Uploaded Media',
+      [VideoBlockSource.mux]: 'Uploaded Media'
     }[videoBlock.source] ?? 'Internal Media'
   )
 }
