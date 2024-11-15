@@ -28,6 +28,8 @@ module.exports = [
       'react-hooks': reactHooksPlugin
     },
     rules: {
+      ...reactPlugin.configs['jsx-runtime'].rules,
+      ...reactHooksPlugin.configs.recommended.rules,
       ...nextPlugin.configs.recommended.rules,
       ...nextPlugin.configs['core-web-vitals'].rules
     }
@@ -44,7 +46,9 @@ module.exports = [
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
       'no-void': ['error', { allowAsStatement: true }],
-      '@typescript-eslint/no-misused-promises': 'off'
+      '@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/no-require-imports': 'warn',
+      '@typescript-eslint/require-await': 'warn'
     },
     languageOptions: {
       parserOptions: { project: ['apps/journeys/tsconfig.*?.json'] }
