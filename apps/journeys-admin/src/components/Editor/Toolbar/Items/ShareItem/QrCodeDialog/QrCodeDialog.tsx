@@ -65,13 +65,13 @@ export function QrCodeDialog({
   const [bgColor, setBgColor] = useState('#ffffff')
   const [fgColor, setFgColor] = useState('#000000')
   const [imageUrl, setImageUrl] = useState(
-    'https://static.zpao.com/favicon.png'
+    'https://images.unsplash.com/photo-1731275539163-09b8e4f7cac2?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMDR8fHxlbnwwfHx8fHw%3D'
   )
   const [background, setBackground] = useState(false)
   const [imageHeight, setImageHeight] = useState(33)
   const [imageWidth, setImageWidth] = useState(33)
   const [imageOpacity, setImageOpacity] = useState(1)
-  const [cors, setCors] = useState<'anonymous' | undefined>(undefined)
+  const [cors, setCors] = useState<'anonymous' | undefined>('anonymous')
 
   useEffect(() => {
     setUrl(initialSlugUrl ?? initialJourneyUrl ?? '')
@@ -167,9 +167,10 @@ export function QrCodeDialog({
             <ButtonGroup
               variant="contained"
               ref={anchorRef}
-              sx={{ borderRadius: 3, width: 201 }}
+              sx={{ borderRadius: 3 }}
             >
               <Button
+                fullWidth
                 onClick={() => {
                   handleDownloadQrCode('png')
                   setShowDownloadMenu(false)
