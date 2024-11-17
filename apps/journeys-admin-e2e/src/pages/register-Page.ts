@@ -38,6 +38,7 @@ export class Register {
     // disable while formium is broken
     // await this.verifyPageNavigatedFewQuestionsPage()
     // await this.clickNextBtnInFewQuestionPage()
+    await this.waitUntilTeamInputNameVisible()
     await this.enterTeamName()
     await this.clickCreateBtn()
     await this.waitUntilDiscoverPageLoaded()
