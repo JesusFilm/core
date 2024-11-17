@@ -3,10 +3,12 @@ import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 interface SaveButtonProps {
-  disabled: boolean
+  disabled?: boolean
 }
 
-export function SaveButton({ disabled }: SaveButtonProps): ReactElement {
+export function SaveButton({
+  disabled = false
+}: SaveButtonProps): ReactElement {
   const t = useTranslations()
 
   return (
