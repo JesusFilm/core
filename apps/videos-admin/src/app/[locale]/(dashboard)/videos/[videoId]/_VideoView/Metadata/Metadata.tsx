@@ -14,6 +14,7 @@ import { UpdateableField } from '../UpdateableField'
 import { StudyQuestionsList } from './StudyQuestionsList'
 import { VideoImage } from './VideoImage'
 import { VideoInformation } from './VideoInformation'
+import { useEdit } from '../../_EditProvider'
 
 function useUpdateMutation(mutation) {
   const [updateMutation] = useMutation(mutation)
@@ -53,15 +54,13 @@ const VIDEO_IMAGE_ALT_UPDATE = graphql(`
 interface MetadataProps {
   video: AdminVideo
   loading: boolean
-  isEdit: boolean
 }
 
-export function Metadata({
-  video,
-  loading,
-  isEdit
-}: MetadataProps): ReactElement {
+export function Metadata({ video, loading }: MetadataProps): ReactElement {
   const t = useTranslations()
+  const {
+    state: { isEdit }
+  } = useEdit()
 
   const updateDescription = useUpdateMutation(VIDEO_DESCRIPTION_UPDATE)
   const updateSnippet = useUpdateMutation(VIDEO_SNIPPET_UPDATE)
@@ -76,7 +75,7 @@ export function Metadata({
       ) : (
         <>
           <Section title={t('Information')}>
-            <VideoInformation isEdit={isEdit} />
+            <VideoInformation />
           </Section>
           <Section title={t('Image')}>
             <Stack gap={2}>

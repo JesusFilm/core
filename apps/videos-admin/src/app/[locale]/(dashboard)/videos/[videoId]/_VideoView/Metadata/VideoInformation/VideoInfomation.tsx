@@ -16,6 +16,7 @@ import { boolean, object, string } from 'yup'
 
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { useAdminVideo } from '../../../../../../../../libs/useAdminVideo'
+import { useEdit } from '../../../_EditProvider'
 
 const videoStatuses = [
   { label: 'Published', value: 'published' },
@@ -32,10 +33,6 @@ const videoLabels = [
   { label: 'Trailer', value: 'trailer' },
   { label: 'Behind The Scenes', value: 'behindTheScenes' }
 ]
-
-interface VideoInformationProps {
-  isEdit: boolean
-}
 
 export const UPDATE_VIDEO_INFORMATION = graphql(`
   mutation UpdateVideoInformation(
@@ -56,10 +53,11 @@ export const UPDATE_VIDEO_INFORMATION = graphql(`
   }
 `)
 
-export function VideoInformation({
-  isEdit
-}: VideoInformationProps): ReactElement {
+export function VideoInformation(): ReactElement {
   const t = useTranslations()
+  const {
+    state: { isEdit }
+  } = useEdit()
   const [updateVideoInformation] = useMutation(UPDATE_VIDEO_INFORMATION)
   const params = useParams<{ videoId: string; locale: string }>()
   const { data } = useAdminVideo({
