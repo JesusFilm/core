@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation'
 import { VideoInformation, UPDATE_VIDEO_INFORMATION } from './VideoInfomation'
 
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { EditProvider } from '../../../_EditProvider'
 
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
@@ -56,7 +57,9 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <VideoInformation isEdit={false} />
+          <EditProvider initialState={{ isEdit: false }}>
+            <VideoInformation />
+          </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -78,7 +81,9 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <VideoInformation isEdit={false} />
+          <EditProvider initialState={{ isEdit: false }}>
+            <VideoInformation />
+          </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -92,7 +97,9 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <VideoInformation isEdit={true} />
+          <EditProvider initialState={{ isEdit: true }}>
+            <VideoInformation />
+          </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -107,7 +114,9 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <VideoInformation isEdit={true} />
+          <EditProvider initialState={{ isEdit: true }}>
+            <VideoInformation />
+          </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -129,7 +138,9 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <VideoInformation isEdit={true} />
+          <EditProvider initialState={{ isEdit: true }}>
+            <VideoInformation />
+          </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -151,7 +162,9 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <VideoInformation isEdit={true} />
+          <EditProvider initialState={{ isEdit: true }}>
+            <VideoInformation />
+          </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -173,7 +186,9 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <VideoInformation isEdit={true} />
+          <EditProvider initialState={{ isEdit: true }}>
+            <VideoInformation />
+          </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -195,7 +210,9 @@ describe('VideoInformation', () => {
         mocks={[{ ...useAdminVideoMock, result }, mockUpdateVideoInformation]}
       >
         <NextIntlClientProvider locale="en">
-          <VideoInformation isEdit={true} />
+          <EditProvider initialState={{ isEdit: true }}>
+            <VideoInformation />
+          </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -223,7 +240,9 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider mocks={[mockUpdateVideoInformation]}>
         <NextIntlClientProvider locale="en">
-          <VideoInformation isEdit={true} />
+          <EditProvider initialState={{ isEdit: true }}>
+            <VideoInformation />
+          </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -249,7 +268,9 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <VideoInformation isEdit={true} />
+          <EditProvider initialState={{ isEdit: true }}>
+            <VideoInformation />
+          </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
