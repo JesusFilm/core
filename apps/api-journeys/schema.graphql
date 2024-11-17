@@ -1048,6 +1048,7 @@ enum VideoBlockSource {
   internal
   youTube
   cloudflare
+  mux
 }
 
 enum VideoBlockObjectFit {
