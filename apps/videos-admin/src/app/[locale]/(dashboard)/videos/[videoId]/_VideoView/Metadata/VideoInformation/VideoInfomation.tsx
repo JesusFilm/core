@@ -143,7 +143,7 @@ export function VideoInformation(): ReactElement {
                   labelId="status-select-label"
                   id="status"
                   name="published"
-                  label="Status"
+                  label={t('Status')}
                   value={values.published}
                   onChange={handleChange}
                   disabled={!isEdit}
@@ -161,7 +161,7 @@ export function VideoInformation(): ReactElement {
                   labelId="label-select-label"
                   id="label"
                   name="label"
-                  label="Label"
+                  label={t('Label')}
                   value={values.label}
                   onChange={handleChange}
                   disabled={!isEdit}
@@ -174,7 +174,7 @@ export function VideoInformation(): ReactElement {
                 </Select>
               </FormControl>
               <FormControlLabel
-                label="No Index"
+                label={t('No Index')}
                 control={
                   <Checkbox
                     name="noIndex"
