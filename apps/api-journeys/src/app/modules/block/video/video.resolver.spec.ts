@@ -29,6 +29,24 @@ jest.mock('node-fetch', () => {
 })
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
+jest.mock('@mux/mux-node', () =>
+  jest.fn().mockImplementation(() => ({
+    video: {
+      assets: {
+        retrieve: jest.fn().mockResolvedValue({
+          id: 'videoId',
+          duration: 100,
+          static_renditions: [
+            {
+              url: 'https://mux.com/video.jpg'
+            }
+          ]
+        })
+      }
+    }
+  }))
+)
+
 describe('VideoBlockResolver', () => {
   let resolver: VideoBlockResolver,
     service: DeepMockProxy<BlockService>,
@@ -84,6 +102,18 @@ describe('VideoBlockResolver', () => {
     coverBlockId: 'coverBlockId',
     fullscreen: true
   } as unknown as Block
+
+  const muxBlock = {
+    ...blockWithUserTeam,
+    duration: 100,
+    endAt: 100,
+    image: 'https://mux.com/video.jpg'
+  }
+
+  beforeAll(() => {
+    process.env.MUX_ACCESS_TOKEN_ID = 'accessTokenId'
+    process.env.MUX_SECRET_KEY = 'secretKey'
+  })
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -402,6 +432,52 @@ describe('VideoBlockResolver', () => {
       })
     })
 
+    describe('Mux Source', () => {
+      it('creates a VideoBlock', async () => {
+        prismaService.block.create.mockResolvedValueOnce(muxBlock)
+        expect(
+          await resolver.videoBlockCreate(ability, {
+            id: 'blockId',
+            journeyId: 'journeyId',
+            parentBlockId: 'parentBlockId',
+            videoId: 'videoId',
+            videoVariantLanguageId: 'videoVariantLanguageId',
+            source: VideoBlockSource.mux
+          })
+        ).toEqual(muxBlock)
+        expect(prismaService.block.create).toHaveBeenCalledWith({
+          data: {
+            id: 'blockId',
+            duration: 100,
+            endAt: 100,
+            image: 'https://mux.com/video.jpg',
+            objectFit: null,
+            videoId: 'videoId',
+            title: 'videoId',
+            videoVariantLanguageId: 'videoVariantLanguageId',
+            source: VideoBlockSource.mux,
+            journey: { connect: { id: 'journeyId' } },
+            parentBlock: {
+              connect: {
+                id: 'parentBlockId'
+              }
+            },
+            parentOrder: 2,
+            typename: 'VideoBlock'
+          },
+          include: {
+            action: true,
+            journey: {
+              include: {
+                team: { include: { userTeams: true } },
+                userJourneys: true
+              }
+            }
+          }
+        })
+      })
+    })
+
     it('should only allow one video block per parent', async () => {
       prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
       prismaService.block.findFirst.mockResolvedValueOnce(block)
@@ -576,7 +652,7 @@ describe('VideoBlockResolver', () => {
                   'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg',
                 uid: 'ea95132c15732412d22c1476fa83f27a',
                 meta: {
-                  name: 'video.mp4'
+                  name: 'video.jpg'
                 }
               },
               success: true
@@ -593,7 +669,7 @@ describe('VideoBlockResolver', () => {
           endAt: 100,
           image:
             'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg?time=2s&height=768',
-          title: 'video.mp4'
+          title: 'video.jpg'
         })
         expect(mockFetch).toHaveBeenCalledWith(
           expect.stringMatching(
@@ -656,6 +732,52 @@ describe('VideoBlockResolver', () => {
         expect(service.update).toHaveBeenCalledWith('blockId', {
           autoplay: true,
           source: VideoBlockSource.cloudflare
+        })
+      })
+    })
+
+    describe('Mux Source', () => {
+      it('updates videoId', async () => {
+        prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+        await resolver.videoBlockUpdate(ability, 'blockId', {
+          videoId: 'ea95132c15732412d22c1476fa83f27a',
+          source: VideoBlockSource.mux
+        })
+        expect(service.update).toHaveBeenCalledWith('blockId', {
+          videoId: 'ea95132c15732412d22c1476fa83f27a',
+          source: VideoBlockSource.mux,
+          duration: 100,
+          endAt: 100,
+          image: 'https://mux.com/video.jpg',
+          title: 'videoId'
+        })
+      })
+
+      it('updates videoId title when meta name not present', async () => {
+        prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+        await resolver.videoBlockUpdate(ability, 'blockId', {
+          videoId: 'ea95132c15732412d22c1476fa83f27a',
+          source: VideoBlockSource.mux
+        })
+        expect(service.update).toHaveBeenCalledWith('blockId', {
+          videoId: 'ea95132c15732412d22c1476fa83f27a',
+          source: VideoBlockSource.mux,
+          duration: 100,
+          endAt: 100,
+          image: 'https://mux.com/video.jpg',
+          title: 'videoId'
+        })
+      })
+
+      it('updates a VideoBlock', async () => {
+        prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+        await resolver.videoBlockUpdate(ability, 'blockId', {
+          autoplay: true,
+          source: VideoBlockSource.mux
+        })
+        expect(service.update).toHaveBeenCalledWith('blockId', {
+          autoplay: true,
+          source: VideoBlockSource.mux
         })
       })
     })

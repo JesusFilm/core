@@ -122,7 +122,8 @@ describe('api-users', () => {
     beforeAll(() => {
       process.env = {
         ...process.env,
-        INTEROP_TOKEN: 'token'
+        INTEROP_TOKEN: 'token',
+        NAT_ADDRESSES: '1.1.1.1,127.0.0.1'
       }
     })
 
@@ -133,6 +134,7 @@ describe('api-users', () => {
     })
 
     it('should query user if interop token is valid', async () => {
+      getUserFromPayloadMock.mockReturnValueOnce(null)
       prismaMock.user.findUnique.mockResolvedValue(user)
       const data = await authClient({
         document: USER_QUERY,
@@ -180,7 +182,8 @@ describe('api-users', () => {
     beforeAll(() => {
       process.env = {
         ...process.env,
-        INTEROP_TOKEN: 'token'
+        INTEROP_TOKEN: 'token',
+        NAT_ADDRESSES: '1.1.1.1,127.0.0.1'
       }
     })
 
@@ -191,6 +194,7 @@ describe('api-users', () => {
     })
 
     it('should query user if interop token is valid', async () => {
+      getUserFromPayloadMock.mockReturnValueOnce(null)
       prismaMock.user.findUnique.mockResolvedValue(user)
       const data = await authClient({
         document: USER_QUERY,

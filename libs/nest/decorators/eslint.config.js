@@ -7,6 +7,9 @@ module.exports = [
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parserOptions: { project: ['libs/nest/decorators/tsconfig.*?.json'] }
+    },
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off'
     }
   }
 ]

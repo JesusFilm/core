@@ -4,17 +4,6 @@ import { NextRequest } from 'next/server'
 import { getApolloClient } from '../../../lib/apolloClient'
 import { paramsToRecord } from '../../../lib/paramsToRecord'
 
-/* TODO: 
-  querystring:
-    apiKey
-    ids
-    rel
-    languageIds
-    expand
-    metadataLanguageTags
-    isDeprecated
-*/
-
 const GET_COUNTRIES_LANGUAGES = graphql(`
   query GetCountriesLanguages {
     countries {
@@ -39,6 +28,7 @@ export async function GET(request: NextRequest): Promise<Response> {
   const queryObject: Record<string, string> = {
     ...paramsToRecord(query.entries())
   }
+  const ids = queryObject.ids?.split(',') ?? []
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_COUNTRIES_LANGUAGES>
@@ -47,6 +37,7 @@ export async function GET(request: NextRequest): Promise<Response> {
   })
 
   const mediaCountriesLinks = [...data.countries]
+    .filter((country) => (ids.length > 0 ? ids?.includes(country.id) : true))
     .sort((a, b) => a.id.localeCompare(b.id))
     .map((country) => ({
       countryId: country.id,

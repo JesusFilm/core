@@ -104,7 +104,7 @@ describe('language', () => {
         language: { id: audioPreview.languageId }
       },
       primaryCountryId: 'US',
-      speakerCount: 1000000,
+      speakerCount: '1000000',
       countriesCount: 10
     })
   })
@@ -173,7 +173,7 @@ describe('language', () => {
         language: { id: audioPreview.languageId }
       },
       primaryCountryId: 'US',
-      speakerCount: 1000000,
+      speakerCount: '1000000',
       countriesCount: 10
     })
   })
