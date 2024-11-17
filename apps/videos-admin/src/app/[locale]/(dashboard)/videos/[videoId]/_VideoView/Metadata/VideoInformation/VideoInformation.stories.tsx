@@ -8,6 +8,9 @@ import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { fn } from '@storybook/test'
+import { useParams } from 'next/navigation'
+import { EditProvider } from '../../../_EditProvider'
 
 const meta: Meta<typeof VideoInformation> = {
   ...videosAdminConfig,
@@ -15,12 +18,21 @@ const meta: Meta<typeof VideoInformation> = {
   title: 'Videos-Admin/VideoInformation'
 }
 
+export const mockuseParams = fn(useParams).mockName('useParams')
+
 type Story = StoryObj<ComponentProps<typeof VideoInformation>>
 
 const Template: Story = {
+  async beforeEach() {
+    // 👇 Set the return value for the getUserFromSession function
+    mockuseParams.mockReturnValue({ videoId: 'someId' })
+  },
+
   render: ({ isEdit }) => (
     <NextIntlClientProvider locale="en">
-      <VideoInformation isEdit={isEdit} />
+      <EditProvider>
+        <VideoInformation />
+      </EditProvider>
     </NextIntlClientProvider>
   )
 }
