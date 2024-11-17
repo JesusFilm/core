@@ -35,10 +35,11 @@ export class Register {
     await this.verifyPageNavigatedBeforeStartPage()
     await this.clickIAgreeBtn()
     await this.clickNextBtn()
+    // update function below depending if step after Next Button changes
+    await this.waitUntilTeamInputNameVisible()
     // disable while formium is broken
     // await this.verifyPageNavigatedFewQuestionsPage()
     // await this.clickNextBtnInFewQuestionPage()
-    await this.waitUntilTeamInputNameVisible()
     await this.enterTeamName()
     await this.clickCreateBtn()
     await this.waitUntilDiscoverPageLoaded()
