@@ -56,7 +56,7 @@ export function VideoView(): ReactElement {
         flexWrap="wrap"
         sx={{ mb: 2, alignItems: 'center' }}
       >
-        {isEdit ? <Typography variant="h4">{t('Editing')} :</Typography> : null}
+        {isEdit && <Typography variant="h4">{t('Editing')} :</Typography>}
         <Typography variant="h4">{data?.adminVideo.title[0].value}</Typography>
         <PublishedChip published={data?.adminVideo.published ?? false} />
         <Button
@@ -100,7 +100,7 @@ export function VideoView(): ReactElement {
               </Tabs>
               <Divider sx={{ mb: 4 }} />
               <TabContainer value={tabValue} index={0}>
-                <Metadata video={video} loading={loading} isEdit={isEdit} />
+                <Metadata video={video} loading={loading} />
               </TabContainer>
               <TabContainer value={tabValue} index={1}>
                 <Children childVideos={video?.children} />
