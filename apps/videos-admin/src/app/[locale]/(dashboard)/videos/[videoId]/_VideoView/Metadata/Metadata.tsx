@@ -75,7 +75,7 @@ export function Metadata({
         </Box>
       ) : (
         <>
-          <Section title="Information">
+          <Section title={t('Information')}>
             <VideoInformation isEdit={isEdit} />
           </Section>
           <Section title={t('Image')}>
