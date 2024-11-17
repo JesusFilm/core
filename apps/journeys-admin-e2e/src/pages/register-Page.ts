@@ -35,7 +35,6 @@ export class Register {
     await this.verifyPageNavigatedBeforeStartPage()
     await this.clickIAgreeBtn()
     await this.clickNextBtn()
-    await this.clickNextBtn()
     // disable while formium is broken
     // await this.verifyPageNavigatedFewQuestionsPage()
     // await this.clickNextBtnInFewQuestionPage()

@@ -32,13 +32,15 @@ export const JOURNEY_PROFILE_CREATE = gql`
 `
 
 export function TermsAndConditions(): ReactElement {
-  const [accepted, setAccepted] = useState(false)
+  const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
+
   const [loading, setLoading] = useState(false)
+  const [accepted, setAccepted] = useState(false)
 
   const [journeyProfileCreate] = useMutation<JourneyProfileCreate>(
     JOURNEY_PROFILE_CREATE
   )
-  const router = useRouter()
 
   const handleJourneyProfileCreate = async (): Promise<void> => {
     setLoading(true)
@@ -50,7 +52,7 @@ export function TermsAndConditions(): ReactElement {
     })
     setLoading(false)
   }
-  const { t } = useTranslation('apps-journeys-admin')
+
   return (
     <>
       <Typography variant="subtitle1">
