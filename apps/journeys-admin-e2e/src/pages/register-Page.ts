@@ -38,7 +38,7 @@ export class Register {
     // disable while formium is broken
     // await this.verifyPageNavigatedFewQuestionsPage()
     // await this.clickNextBtnInFewQuestionPage()
-    await this.entetTeamName()
+    await this.enterTeamName()
     await this.clickCreateBtn()
     await this.waitUntilDiscoverPageLoaded()
     await this.waitUntilTheToestMsgDisappear()
@@ -126,7 +126,13 @@ export class Register {
       .click()
   }
 
-  async entetTeamName() {
+  async waitUntilTeamInputNameVisible() {
+    await expect(this.page.locator('input#title')).toBeVisible({
+      timeout: sixtySecondsTimeout
+    })
+  }
+
+  async enterTeamName() {
     await this.page
       .locator('input#title')
       .fill(testData.teams.teamName + randomNumber)
