@@ -209,13 +209,24 @@ describe('shortLink', () => {
       const SHORT_LINKS_QUERY = graphql(`
         query ShortLinksQuery($hostname: String) {
           shortLinks(hostname: $hostname) {
-            id
-            pathname
-            to
-            domain {
-              hostname
+            edges {
+              node {
+                id
+                pathname
+                to
+                domain {
+                  hostname
+                }
+                service
+              }
             }
-            service
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+              startCursor
+              endCursor
+            }
+            totalCount
           }
         }
       `)
@@ -239,20 +250,32 @@ describe('shortLink', () => {
           }
         }
         prismaMock.shortLink.findMany.mockResolvedValue([shortLink])
+        prismaMock.shortLink.count.mockResolvedValue(1)
         const result = await client({
           document: SHORT_LINKS_QUERY
         })
         expect(result).toEqual({
           data: {
-            shortLinks: [
-              {
-                id: 'testId',
-                pathname: 'testPath',
-                to: 'https://example.com',
-                domain: { hostname: 'example.com' },
-                service: 'apiJourneys'
-              }
-            ]
+            shortLinks: {
+              edges: [
+                {
+                  node: {
+                    id: 'testId',
+                    pathname: 'testPath',
+                    to: 'https://example.com',
+                    domain: { hostname: 'example.com' },
+                    service: 'apiJourneys'
+                  }
+                }
+              ],
+              pageInfo: {
+                hasNextPage: false,
+                hasPreviousPage: false,
+                startCursor: 'R1BDOlM6dGVzdElk',
+                endCursor: 'R1BDOlM6dGVzdElk'
+              },
+              totalCount: 1
+            }
           }
         })
         expect(prismaMock.shortLink.findMany).toHaveBeenCalled()
@@ -277,27 +300,41 @@ describe('shortLink', () => {
           }
         }
         prismaMock.shortLink.findMany.mockResolvedValue([shortLink])
+        prismaMock.shortLink.count.mockResolvedValue(10)
         const result = await client({
           document: SHORT_LINKS_QUERY,
           variables: { hostname: 'example.com' }
         })
         expect(result).toEqual({
           data: {
-            shortLinks: [
-              {
-                id: 'testId',
-                pathname: 'testPath',
-                to: 'https://example.com',
-                domain: { hostname: 'example.com' },
-                service: 'apiJourneys'
-              }
-            ]
+            shortLinks: {
+              edges: [
+                {
+                  node: {
+                    id: 'testId',
+                    pathname: 'testPath',
+                    to: 'https://example.com',
+                    domain: { hostname: 'example.com' },
+                    service: 'apiJourneys'
+                  }
+                }
+              ],
+              pageInfo: {
+                hasNextPage: false,
+                hasPreviousPage: false,
+                startCursor: 'R1BDOlM6dGVzdElk',
+                endCursor: 'R1BDOlM6dGVzdElk'
+              },
+              totalCount: 10
+            }
           }
         })
         expect(prismaMock.shortLink.findMany).toHaveBeenCalledWith({
           include: { domain: true },
           where: { domain: { hostname: 'example.com' } },
-          orderBy: { domain: { hostname: 'asc' }, pathname: 'asc' }
+          orderBy: { domain: { hostname: 'asc' }, pathname: 'asc' },
+          skip: 0,
+          take: 21
         })
       })
     })

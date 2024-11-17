@@ -6,6 +6,7 @@ import DirectivesPlugin from '@pothos/plugin-directives'
 import ErrorsPlugin from '@pothos/plugin-errors'
 import FederationPlugin from '@pothos/plugin-federation'
 import pluginName from '@pothos/plugin-prisma'
+import RelayPlugin from '@pothos/plugin-relay'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import WithInputPlugin from '@pothos/plugin-with-input'
@@ -68,6 +69,7 @@ export const builder = new SchemaBuilder<{
     ScopeAuthPlugin,
     ErrorsPlugin,
     PrismaPlugin,
+    RelayPlugin,
     ZodPlugin,
     WithInputPlugin,
     DirectivesPlugin,
@@ -105,6 +107,11 @@ export const builder = new SchemaBuilder<{
     client: prisma,
     dmmf: Prisma.dmmf,
     onUnusedQuery: process.env.NODE_ENV === 'production' ? null : 'warn'
+  },
+  relay: {
+    pageInfoTypeOptions: {
+      shareable: true
+    }
   }
 })
 

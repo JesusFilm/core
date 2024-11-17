@@ -26,8 +26,9 @@ builder.prismaObject('ShortLinkDomain', {
 })
 
 builder.queryFields((t) => ({
-  shortLinkDomains: t.withAuth({ isAuthenticated: true }).prismaField({
-    type: ['ShortLinkDomain'],
+  shortLinkDomains: t.withAuth({ isAuthenticated: true }).prismaConnection({
+    type: 'ShortLinkDomain',
+    cursor: 'id',
     description: 'List of short link domains that can be used for short links',
     nullable: false,
     args: {
@@ -53,6 +54,19 @@ builder.queryFields((t) => ({
         orderBy: {
           hostname: 'asc'
         }
+      }),
+    totalCount: async (query, { service }) =>
+      await prisma.shortLinkDomain.count({
+        ...query,
+        where:
+          service != null
+            ? {
+                OR: [
+                  { services: { hasEvery: [service] } },
+                  { services: { isEmpty: true } }
+                ]
+              }
+            : undefined
       })
   }),
   shortLinkDomain: t.withAuth({ isAuthenticated: true }).prismaField({

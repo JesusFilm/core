@@ -106,8 +106,9 @@ builder.queryFields((t) => ({
     }),
   shortLinks: t
     .withAuth({ isPublisher: true, isValidInterop: true })
-    .prismaField({
-      type: ['ShortLink'],
+    .prismaConnection({
+      cursor: 'id',
+      type: 'ShortLink',
       description: 'find all short links with optional hostname filter',
       nullable: false,
       args: {
@@ -124,6 +125,10 @@ builder.queryFields((t) => ({
             domain: { hostname: 'asc' },
             pathname: 'asc'
           }
+        }),
+      totalCount: async (_, { hostname }) =>
+        await prisma.shortLink.count({
+          where: hostname != null ? { domain: { hostname } } : undefined
         })
     })
 }))

@@ -12,11 +12,22 @@ describe('shortLinkDomain', () => {
       const SHORT_LINK_DOMAINS_QUERY = graphql(`
         query ShortLinkDomainsQuery($service: Service) {
           shortLinkDomains(service: $service) {
-            id
-            hostname
-            createdAt
-            updatedAt
-            services
+            edges {
+              node {
+                id
+                hostname
+                createdAt
+                updatedAt
+                services
+              }
+            }
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+              startCursor
+              endCursor
+            }
+            totalCount
           }
         }
       `)
@@ -31,23 +42,36 @@ describe('shortLinkDomain', () => {
             services: []
           }
         ])
+        prismaMock.shortLinkDomain.count.mockResolvedValue(1)
         const result = await client({
           document: SHORT_LINK_DOMAINS_QUERY
         })
         expect(result).toEqual({
           data: {
-            shortLinkDomains: [
-              {
-                id: 'testId',
-                hostname: 'example.com',
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
-                services: []
-              }
-            ]
+            shortLinkDomains: {
+              edges: [
+                {
+                  node: {
+                    id: 'testId',
+                    hostname: 'example.com',
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String),
+                    services: []
+                  }
+                }
+              ],
+              pageInfo: {
+                hasNextPage: false,
+                hasPreviousPage: false,
+                startCursor: 'R1BDOlM6dGVzdElk',
+                endCursor: 'R1BDOlM6dGVzdElk'
+              },
+              totalCount: 1
+            }
           }
         })
         expect(prismaMock.shortLinkDomain.findMany).toHaveBeenCalled()
+        expect(prismaMock.shortLinkDomain.count).toHaveBeenCalled()
       })
 
       it('should fetch short link domains filtered by service', async () => {
@@ -60,21 +84,33 @@ describe('shortLinkDomain', () => {
             services: ['apiJourneys']
           }
         ])
+        prismaMock.shortLinkDomain.count.mockResolvedValue(1)
         const result = await client({
           document: SHORT_LINK_DOMAINS_QUERY,
           variables: { service: 'apiJourneys' }
         })
         expect(result).toEqual({
           data: {
-            shortLinkDomains: [
-              {
-                id: 'testId',
-                hostname: 'example.com',
-                createdAt: expect.any(String),
-                updatedAt: expect.any(String),
-                services: ['apiJourneys']
-              }
-            ]
+            shortLinkDomains: {
+              edges: [
+                {
+                  node: {
+                    id: 'testId',
+                    hostname: 'example.com',
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String),
+                    services: ['apiJourneys']
+                  }
+                }
+              ],
+              pageInfo: {
+                hasNextPage: false,
+                hasPreviousPage: false,
+                startCursor: 'R1BDOlM6dGVzdElk',
+                endCursor: 'R1BDOlM6dGVzdElk'
+              },
+              totalCount: 1
+            }
           }
         })
         expect(prismaMock.shortLinkDomain.findMany).toHaveBeenCalledWith({
@@ -84,7 +120,17 @@ describe('shortLinkDomain', () => {
               { services: { isEmpty: true } }
             ]
           },
-          orderBy: { hostname: 'asc' }
+          orderBy: { hostname: 'asc' },
+          skip: 0,
+          take: 21
+        })
+        expect(prismaMock.shortLinkDomain.count).toHaveBeenCalledWith({
+          where: {
+            OR: [
+              { services: { hasEvery: ['apiJourneys'] } },
+              { services: { isEmpty: true } }
+            ]
+          }
         })
       })
     })
