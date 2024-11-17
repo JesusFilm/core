@@ -6,7 +6,6 @@ import { ComponentProps } from 'react'
 import { VideoInformation } from './VideoInfomation'
 import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { fn } from '@storybook/test'
 import { useParams } from 'next/navigation'
@@ -18,19 +17,12 @@ const meta: Meta<typeof VideoInformation> = {
   title: 'Videos-Admin/VideoInformation'
 }
 
-export const mockuseParams = fn(useParams).mockName('useParams')
-
 type Story = StoryObj<ComponentProps<typeof VideoInformation>>
 
 const Template: Story = {
-  async beforeEach() {
-    // 👇 Set the return value for the getUserFromSession function
-    mockuseParams.mockReturnValue({ videoId: 'someId' })
-  },
-
-  render: ({ isEdit }) => (
+  render: ({ ...args }) => (
     <NextIntlClientProvider locale="en">
-      <EditProvider>
+      <EditProvider initialState={args.state}>
         <VideoInformation />
       </EditProvider>
     </NextIntlClientProvider>
@@ -39,7 +31,11 @@ const Template: Story = {
 
 export const Default = {
   ...Template,
-  args: { isEdit: false },
+  args: {
+    state: {
+      isEdit: false
+    }
+  },
   parameters: {
     apolloClient: {
       mocks: [useAdminVideoMock]
@@ -49,7 +45,11 @@ export const Default = {
 
 export const Edit = {
   ...Template,
-  args: { isEdit: true },
+  args: {
+    state: {
+      isEdit: true
+    }
+  },
   parameters: {
     apolloClient: {
       mocks: [useAdminVideoMock]
@@ -59,7 +59,11 @@ export const Edit = {
 
 export const Required = {
   ...Template,
-  args: { isEdit: true },
+  args: {
+    state: {
+      isEdit: true
+    }
+  },
   parameters: {
     apolloClient: {
       mocks: [useAdminVideoMock]

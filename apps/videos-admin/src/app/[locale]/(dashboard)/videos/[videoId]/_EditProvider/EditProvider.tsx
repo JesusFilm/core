@@ -49,11 +49,16 @@ export function useEdit(): Context {
 
 interface EditProviderProps {
   children: ReactElement
+  initialState?: Partial<EditState>
 }
 
-export function EditProvider({ children }: EditProviderProps): ReactElement {
+export function EditProvider({
+  children,
+  initialState
+}: EditProviderProps): ReactElement {
   const [state, dispatch] = useReducer(reducer, {
-    isEdit: false
+    isEdit: false,
+    ...initialState
   })
 
   return (
