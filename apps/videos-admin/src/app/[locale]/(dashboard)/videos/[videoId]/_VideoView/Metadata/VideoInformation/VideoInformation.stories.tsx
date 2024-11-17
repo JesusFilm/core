@@ -7,14 +7,16 @@ import { VideoInformation } from './VideoInfomation'
 import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import userEvent from '@testing-library/user-event'
-import { fn } from '@storybook/test'
-import { useParams } from 'next/navigation'
 import { EditProvider } from '../../../_EditProvider'
 
 const meta: Meta<typeof VideoInformation> = {
   ...videosAdminConfig,
   component: VideoInformation,
-  title: 'Videos-Admin/VideoInformation'
+  title: 'Videos-Admin/VideoInformation',
+  parameters: {
+    ...videosAdminConfig.parameters,
+    tags: ['!autodocs']
+  }
 }
 
 type Story = StoryObj<ComponentProps<typeof VideoInformation>>
@@ -39,6 +41,15 @@ export const Default = {
   parameters: {
     apolloClient: {
       mocks: [useAdminVideoMock]
+    },
+    nextjs: {
+      appDirectory: true,
+      navigation: {
+        segments: [
+          ['videoId', 'someId'],
+          ['locale', 'en']
+        ]
+      }
     }
   }
 }
@@ -53,6 +64,15 @@ export const Edit = {
   parameters: {
     apolloClient: {
       mocks: [useAdminVideoMock]
+    },
+    nextjs: {
+      appDirectory: true,
+      navigation: {
+        segments: [
+          ['videoId', 'someId'],
+          ['locale', 'en']
+        ]
+      }
     }
   }
 }
@@ -67,10 +87,20 @@ export const Required = {
   parameters: {
     apolloClient: {
       mocks: [useAdminVideoMock]
+    },
+    nextjs: {
+      appDirectory: true,
+      navigation: {
+        segments: [
+          ['videoId', 'someId'],
+          ['locale', 'en']
+        ]
+      }
     }
   },
   play: async () => {
-    await userEvent.click(screen.getByRole('checkbox', { name: 'No Index' }))
+    await userEvent.type(screen.getByRole('textbox', { name: 'Title' }), 'a')
+    await userEvent.clear(screen.getByRole('textbox', { name: 'Title' }))
   }
 }
 
