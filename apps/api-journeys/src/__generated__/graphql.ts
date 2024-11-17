@@ -2351,6 +2351,8 @@ export type PageInfo = {
   endCursor?: Maybe<Scalars['String']['output']>;
   /** When paginating forwards, are there more items? */
   hasNextPage: Scalars['Boolean']['output'];
+  /** When paginating backwards, are there more items? */
+  hasPreviousPage: Scalars['Boolean']['output'];
   /** When paginating backwards, the cursor to continue. */
   startCursor?: Maybe<Scalars['String']['output']>;
 };
@@ -2621,9 +2623,9 @@ export type Query = {
   /** Find a short link domain by id */
   shortLinkDomain: QueryShortLinkDomainResult;
   /** List of short link domains that can be used for short links */
-  shortLinkDomains: Array<ShortLinkDomain>;
+  shortLinkDomains: QueryShortLinkDomainsConnection;
   /** find all short links with optional hostname filter */
-  shortLinks: Array<ShortLink>;
+  shortLinks: QueryShortLinksConnection;
   tags: Array<Tag>;
   taxonomies: Array<Taxonomy>;
   team: Team;
@@ -2882,12 +2884,20 @@ export type QueryShortLinkDomainArgs = {
 
 
 export type QueryShortLinkDomainsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
   service?: InputMaybe<Service>;
 };
 
 
 export type QueryShortLinksArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
   hostname?: InputMaybe<Scalars['String']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -2981,11 +2991,37 @@ export type QueryShortLinkDomainSuccess = {
   data: ShortLinkDomain;
 };
 
+export type QueryShortLinkDomainsConnection = {
+  __typename?: 'QueryShortLinkDomainsConnection';
+  edges?: Maybe<Array<Maybe<QueryShortLinkDomainsConnectionEdge>>>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type QueryShortLinkDomainsConnectionEdge = {
+  __typename?: 'QueryShortLinkDomainsConnectionEdge';
+  cursor: Scalars['String']['output'];
+  node?: Maybe<ShortLinkDomain>;
+};
+
 export type QueryShortLinkResult = NotFoundError | QueryShortLinkSuccess;
 
 export type QueryShortLinkSuccess = {
   __typename?: 'QueryShortLinkSuccess';
   data: ShortLink;
+};
+
+export type QueryShortLinksConnection = {
+  __typename?: 'QueryShortLinksConnection';
+  edges?: Maybe<Array<Maybe<QueryShortLinksConnectionEdge>>>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type QueryShortLinksConnectionEdge = {
+  __typename?: 'QueryShortLinksConnectionEdge';
+  cursor: Scalars['String']['output'];
+  node?: Maybe<ShortLink>;
 };
 
 export type RadioOptionBlock = Block & {

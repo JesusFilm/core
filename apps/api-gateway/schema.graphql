@@ -711,7 +711,11 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     Filter by service (including domains with no services set)
     """
     service: Service
-  ): [ShortLinkDomain!]! @join__field(graph: API_MEDIA) 
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): QueryShortLinkDomainsConnection! @join__field(graph: API_MEDIA) 
   """
   Find a short link domain by id
   """
@@ -741,7 +745,11 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     the hostname including subdomain, domain, and TLD, but excluding port
     """
     hostname: String
-  ): [ShortLink!]! @join__field(graph: API_MEDIA) 
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): QueryShortLinksConnection! @join__field(graph: API_MEDIA) 
   adminVideo(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
   adminVideos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
   adminVideosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
@@ -2029,11 +2037,15 @@ type VisitorEdge @join__type(graph: API_JOURNEYS)  {
 """
 Information about pagination in a connection.
 """
-type PageInfo @join__type(graph: API_JOURNEYS)  {
+type PageInfo @join__type(graph: API_JOURNEYS)  @join__type(graph: API_MEDIA)  {
   """
   When paginating forwards, are there more items?
   """
   hasNextPage: Boolean!
+  """
+  When paginating backwards, are there more items?
+  """
+  hasPreviousPage: Boolean!
   """
   When paginating backwards, the cursor to continue.
   """
@@ -2290,8 +2302,30 @@ type QueryShortLinkDomainSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLinkDomain!
 }
 
+type QueryShortLinkDomainsConnection @join__type(graph: API_MEDIA)  {
+  pageInfo: PageInfo!
+  edges: [QueryShortLinkDomainsConnectionEdge]
+  totalCount: Int!
+}
+
+type QueryShortLinkDomainsConnectionEdge @join__type(graph: API_MEDIA)  {
+  node: ShortLinkDomain
+  cursor: String!
+}
+
 type QueryShortLinkSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLink!
+}
+
+type QueryShortLinksConnection @join__type(graph: API_MEDIA)  {
+  pageInfo: PageInfo!
+  edges: [QueryShortLinksConnectionEdge]
+  totalCount: Int!
+}
+
+type QueryShortLinksConnectionEdge @join__type(graph: API_MEDIA)  {
+  node: ShortLink
+  cursor: String!
 }
 
 """
