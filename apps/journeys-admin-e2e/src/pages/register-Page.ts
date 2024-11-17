@@ -35,8 +35,6 @@ export class Register {
     await this.verifyPageNavigatedBeforeStartPage()
     await this.clickIAgreeBtn()
     await this.clickNextBtn()
-    // update function below depending if step after Next Button changes
-    await this.waitUntilTeamInputNameVisible()
     // disable while formium is broken
     // await this.verifyPageNavigatedFewQuestionsPage()
     // await this.clickNextBtnInFewQuestionPage()
@@ -126,12 +124,6 @@ export class Register {
     await this.page
       .locator('button[data-testid="TermsAndConditionsNextButton"]')
       .click()
-  }
-
-  async waitUntilTeamInputNameVisible() {
-    await expect(this.page.locator('input#title')).toBeVisible({
-      timeout: sixtySecondsTimeout
-    })
   }
 
   async enterTeamName() {
