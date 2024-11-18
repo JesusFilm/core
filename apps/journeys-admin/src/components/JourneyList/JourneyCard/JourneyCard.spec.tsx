@@ -8,10 +8,6 @@ import { defaultJourney } from '../journeyListData'
 import { JourneyCard } from './JourneyCard'
 
 describe('JourneyCard', () => {
-  beforeEach(() => {
-    jest.resetAllMocks()
-  })
-
   it('should have correct link on title', () => {
     render(
       <SnackbarProvider>
