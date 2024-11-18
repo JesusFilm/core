@@ -1,22 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-
-import { useNavigationState } from '@core/journeys/ui/useNavigationState'
 
 import { ThemeProvider } from '../../ThemeProvider'
 import { defaultJourney } from '../journeyListData'
 
 import { JourneyCard } from './JourneyCard'
-
-jest.mock('@core/journeys/ui/useNavigationState', () => ({
-  __esModule: true,
-  useNavigationState: jest.fn()
-}))
-
-const mockUseNavigationState = useNavigationState as jest.MockedFunction<
-  typeof useNavigationState
->
 
 describe('JourneyCard', () => {
   beforeEach(() => {
@@ -42,8 +31,6 @@ describe('JourneyCard', () => {
   })
 
   it('should disable card interaction after initial click to prevent multiple navigations', () => {
-    mockUseNavigationState.mockReturnValue(true)
-
     render(
       <SnackbarProvider>
         <MockedProvider>

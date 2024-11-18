@@ -4,9 +4,7 @@ import CardActionArea from '@mui/material/CardActionArea'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import NextLink from 'next/link'
-import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
-
-import { useNavigationState } from '@core/journeys/ui/useNavigationState'
+import { ReactElement, useEffect, useRef } from 'react'
 
 import {
   GetAdminJourneys,
@@ -32,7 +30,6 @@ export function JourneyCard({
   refetch
 }: JourneyCardProps): ReactElement {
   const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
-  const isNavigating = useNavigationState()
 
   useEffect(() => {
     if (duplicatedJourneyId != null && duplicatedJourneyRef.current != null) {
@@ -70,10 +67,7 @@ export function JourneyCard({
           legacyBehavior
           prefetch={false}
         >
-          <CardActionArea
-            disabled={isNavigating}
-            sx={{ borderRadius: 0, opacity: isNavigating ? 0.5 : 1 }}
-          >
+          <CardActionArea sx={{ borderRadius: 0 }}>
             <CardContent sx={{ px: 6, py: 4 }}>
               <JourneyCardText journey={journey} variant={variant} />
             </CardContent>

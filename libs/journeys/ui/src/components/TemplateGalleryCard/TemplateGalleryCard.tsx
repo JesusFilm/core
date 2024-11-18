@@ -14,7 +14,6 @@ import { ReactElement } from 'react'
 
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
-import { useNavigationState } from '../../libs/useNavigationState'
 
 interface HoverLayerProps {
   className?: string
@@ -55,8 +54,6 @@ export function TemplateGalleryCard({
   const theme = useTheme()
   const router = useRouter()
 
-  const isNavigating = useNavigationState()
-
   const journeyBasePath = router.pathname.startsWith('/journeys')
     ? '/journeys'
     : '/templates'
@@ -89,13 +86,11 @@ export function TemplateGalleryCard({
       sx={{
         border: 'none',
         backgroundColor: 'transparent',
+        cursor: 'pointer',
         width: { xs: 130, md: 180, xl: 240 },
         borderRadius: 2,
         boxShadow: 'none',
         p: 2,
-        pointerEvents: isNavigating ? 'none' : 'auto',
-        cursor: isNavigating ? 'not-allowed' : 'pointer',
-        opacity: isNavigating ? 0.5 : 1,
         transition: (theme) => theme.transitions.create('background-color'),
         '& .MuiImageBackground-root': {
           transition: (theme) => theme.transitions.create('transform')
