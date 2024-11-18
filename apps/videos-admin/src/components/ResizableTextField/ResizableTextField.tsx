@@ -6,10 +6,10 @@ interface ResizableTextFieldProps {
   id: string
   name: string
   value: string
-  handleChange: (e: React.ChangeEvent) => void
-  error: boolean
-  helperText: string
-  disabled: boolean
+  handleChange?: (e: React.ChangeEvent) => void
+  error?: boolean
+  helperText?: string
+  disabled?: boolean
 }
 
 export function ResizableTextField({
@@ -17,9 +17,9 @@ export function ResizableTextField({
   name,
   value,
   handleChange,
-  error,
+  error = false,
   helperText,
-  disabled
+  disabled = false
 }: ResizableTextFieldProps): ReactElement {
   const theme = useTheme()
   return (
