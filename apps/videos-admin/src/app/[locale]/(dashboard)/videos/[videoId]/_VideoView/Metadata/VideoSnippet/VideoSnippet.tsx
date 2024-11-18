@@ -8,12 +8,10 @@ import Stack from '@mui/material/Stack'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { Form, Formik, FormikValues } from 'formik'
 import { object, string } from 'yup'
-import TextField from '@mui/material/TextField'
-import { StyledEngineProvider, useTheme } from '@mui/material/styles'
 import { ReactElement } from 'react'
 import { ResizableTextField } from '../../../../../../../../components/ResizableTextField'
 
-const VIDEO_SNIPPET_UPDATE = graphql(`
+export const UPDATE_VIDEO_SNIPPET = graphql(`
   mutation UpdateVideoSnippet($input: VideoTranslationUpdateInput!) {
     videoSnippetUpdate(input: $input) {
       id
@@ -24,11 +22,10 @@ const VIDEO_SNIPPET_UPDATE = graphql(`
 
 export function VideoSnippet(): ReactElement {
   const t = useTranslations()
-  const theme = useTheme()
   const {
     state: { isEdit }
   } = useEdit()
-  const [updateVideoSnippet] = useMutation(VIDEO_SNIPPET_UPDATE)
+  const [updateVideoSnippet] = useMutation(UPDATE_VIDEO_SNIPPET)
   const params = useParams<{ videoId: string; locale: string }>()
   const { data } = useAdminVideo({
     variables: { videoId: params?.videoId as string }
