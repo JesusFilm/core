@@ -1,5 +1,7 @@
 import { Video } from 'cloudflare/resources/stream/stream'
 
+import { CloudflareVideo } from '.prisma/api-media-client'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
@@ -347,7 +349,7 @@ describe('cloudflareVideo', () => {
         })
         prismaMock.cloudflareVideo.findUniqueOrThrow.mockResolvedValue({
           userId: 'notUser'
-        })
+        } as unknown as CloudflareVideo)
         const result = await authClient({
           document: DELETE_CLOUDFLARE_VIDEO_MUTATION
         })
@@ -377,7 +379,7 @@ describe('cloudflareVideo', () => {
         })
         prismaMock.cloudflareVideo.findUniqueOrThrow.mockResolvedValue({
           userId: 'testUserId'
-        })
+        } as unknown as CloudflareVideo)
         const result = await authClient({
           document: DELETE_CLOUDFLARE_VIDEO_MUTATION
         })

@@ -1,6 +1,6 @@
 import { Response } from 'node-fetch'
 
-import { ImageAspectRatio } from '.prisma/api-media-client'
+import { CloudflareImage, ImageAspectRatio } from '.prisma/api-media-client'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
@@ -401,7 +401,7 @@ describe('cloudflareImage', () => {
         })
         prismaMock.cloudflareImage.findUniqueOrThrow.mockResolvedValue({
           userId: 'notUser'
-        })
+        } as unknown as CloudflareImage)
         const result = await authClient({
           document: DELETE_CLOUDFLARE_IMAGE_MUTATION
         })
@@ -424,7 +424,7 @@ describe('cloudflareImage', () => {
       it('should return true if not publisher', async () => {
         prismaMock.cloudflareImage.findUniqueOrThrow.mockResolvedValue({
           userId: 'testUserId'
-        })
+        } as unknown as CloudflareImage)
         const result = await client({
           document: DELETE_CLOUDFLARE_IMAGE_MUTATION
         })

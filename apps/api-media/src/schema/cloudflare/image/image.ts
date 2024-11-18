@@ -1,3 +1,5 @@
+import { Prisma } from '.prisma/api-media-client'
+
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 
@@ -179,7 +181,7 @@ builder.mutationFields((t) => ({
       id: t.arg({ type: 'ID', required: true })
     },
     resolve: async (_root, { id }, { user, currentRoles }) => {
-      const where = { id }
+      const where: Prisma.CloudflareImageWhereUniqueInput = { id }
       if (!currentRoles.includes('publisher')) {
         where.userId = user.id
       }

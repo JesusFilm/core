@@ -1,3 +1,5 @@
+import { Prisma } from '.prisma/api-media-client'
+
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 
@@ -125,7 +127,7 @@ builder.mutationFields((t) => ({
     resolve: async (_root, { id }, { user, currentRoles }) => {
       if (user == null) throw new Error('User not found')
 
-      const where = { id }
+      const where: Prisma.MuxVideoWhereUniqueInput = { id }
       if (!currentRoles.includes('publisher')) {
         where.userId = user.id
       }
