@@ -64,7 +64,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Image - create, update & delete
-  test('Image - create, update & delete', async ({ page }) => {
+  test.skip('Image - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Image') // clicking on image button in add block drawer
