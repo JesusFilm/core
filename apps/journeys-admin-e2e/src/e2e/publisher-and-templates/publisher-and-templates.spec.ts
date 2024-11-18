@@ -161,7 +161,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   // Publisher-> Select existing template -> Three dots on top right -> Template Settings -> About
-  test.skip('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> About', async ({
+  test.fixme('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> About', async ({
     page
   }) => {
     const publisherPage = new Publisher(page)
@@ -185,7 +185,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   // Publisher-> Select existing template -> Three dots on top right -> Language
-  test.skip('Publisher-> Select existing template -> Three dots on top right -> Language', async ({
+  test.fixme('Publisher-> Select existing template -> Three dots on top right -> Language', async ({
     page
   }) => {
     const publisherPage = new Publisher(page)

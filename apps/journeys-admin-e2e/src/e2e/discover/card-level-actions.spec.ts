@@ -64,7 +64,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Image - create, update & delete
-  test.skip('Image - create, update & delete', async ({ page }) => {
+  test.fixme('Image - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Image') // clicking on image button in add block drawer
@@ -83,7 +83,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Video - create, update & delete
-  test.skip('Video - create, update & delete', async ({ page }) => {
+  test.fixme('Video - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.deleteAllAddedCardProperties() // deleting all the added properties in the card
     await cardLevelActionPage.clickOnVideoJourneyCard() // clicking on the journey card
