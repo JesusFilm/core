@@ -93,5 +93,5 @@ type Query {
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String): [Language!]!
   languagesCount(where: LanguagesFilter, term: String): Int!
   country(id: ID!): Country
-  countries: [Country!]!
+  countries(term: String): [Country!]!
 }
