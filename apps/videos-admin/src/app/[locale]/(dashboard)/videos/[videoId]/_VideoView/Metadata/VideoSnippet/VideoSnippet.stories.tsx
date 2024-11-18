@@ -35,7 +35,7 @@ export const Default = {
   ...Template,
   args: {
     state: {
-      isEdit: false
+      isEdit: true
     }
   },
   parameters: {
@@ -54,11 +54,11 @@ export const Default = {
   }
 }
 
-export const Edit = {
+export const Disabled = {
   ...Template,
   args: {
     state: {
-      isEdit: true
+      isEdit: false
     }
   },
   parameters: {

@@ -61,10 +61,9 @@ export function VideoSnippet(): ReactElement {
         <Form>
           <Stack gap={2}>
             <ResizableTextField
-              id="snippet"
               name="snippet"
               value={values.snippet}
-              handleChange={(e) => handleChange(e)}
+              onChange={handleChange}
               error={Boolean(errors.snippet)}
               helperText={errors.snippet as string}
               disabled={!isEdit}

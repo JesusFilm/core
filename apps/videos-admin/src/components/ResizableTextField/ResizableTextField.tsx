@@ -1,52 +1,22 @@
-import { StyledEngineProvider, useTheme } from '@mui/material/styles'
-import TextField from '@mui/material/TextField'
+import { StyledEngineProvider } from '@mui/material/styles'
 import { ReactElement } from 'react'
+import { TextField, TextFieldProps } from '@mui/material'
 
-interface ResizableTextFieldProps {
-  id: string
-  name: string
-  value: string
-  handleChange?: (e: React.ChangeEvent) => void
-  error?: boolean
-  helperText?: string
-  disabled?: boolean
-  minRows?: number
-  maxRows?: number
-}
-
-export function ResizableTextField({
-  id,
-  name,
-  value,
-  handleChange,
-  error = false,
-  helperText,
-  disabled = false,
-  minRows = 3,
-  maxRows = 3
-}: ResizableTextFieldProps): ReactElement {
-  const theme = useTheme()
+export function ResizableTextField(
+  props: Omit<TextFieldProps, 'variant | multiline | sx'>
+): ReactElement {
   return (
     <StyledEngineProvider injectFirst>
       <TextField
-        hiddenLabel
-        id={id}
-        name={name}
-        variant="filled"
-        value={value}
-        onChange={handleChange}
-        error={error}
-        helperText={helperText}
+        {...props}
+        variant="outlined"
         multiline
-        minRows={minRows}
-        maxRows={maxRows}
-        fullWidth
-        disabled={disabled}
+        hiddenLabel
         sx={{
-          '.MuiFilledInput-root': {
-            backgroundColor: theme.palette.background.paper
+          '.MuiOutlinedInput-root': {
+            height: 'fit-content'
           },
-          '& .MuiFilledInput-input': {
+          '& .MuiOutlinedInput-input': {
             resize: 'vertical'
           }
         }}
