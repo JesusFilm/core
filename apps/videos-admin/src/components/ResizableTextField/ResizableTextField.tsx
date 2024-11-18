@@ -10,6 +10,8 @@ interface ResizableTextFieldProps {
   error?: boolean
   helperText?: string
   disabled?: boolean
+  minRows?: number
+  maxRows?: number
 }
 
 export function ResizableTextField({
@@ -19,7 +21,9 @@ export function ResizableTextField({
   handleChange,
   error = false,
   helperText,
-  disabled = false
+  disabled = false,
+  minRows = 3,
+  maxRows = 3
 }: ResizableTextFieldProps): ReactElement {
   const theme = useTheme()
   return (
@@ -34,8 +38,8 @@ export function ResizableTextField({
         error={error}
         helperText={helperText}
         multiline
-        minRows={6}
-        maxRows={6}
+        minRows={minRows}
+        maxRows={maxRows}
         fullWidth
         disabled={disabled}
         sx={{
