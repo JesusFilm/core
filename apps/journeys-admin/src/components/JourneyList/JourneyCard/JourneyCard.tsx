@@ -6,6 +6,8 @@ import CardContent from '@mui/material/CardContent'
 import NextLink from 'next/link'
 import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
+import { useNavigationState } from '@core/journeys/ui/useNavigationState'
+
 import {
   GetAdminJourneys,
   GetAdminJourneys_journeys as Journey
@@ -15,7 +17,6 @@ import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardVariant } from './journeyCardVariant'
-import { useNavigationState } from '@core/journeys/ui/useNavigationState'
 
 interface JourneyCardProps {
   journey: Journey
