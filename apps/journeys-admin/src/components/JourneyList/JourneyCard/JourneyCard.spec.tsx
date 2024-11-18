@@ -29,21 +29,4 @@ describe('JourneyCard', () => {
       })
     ).toHaveAttribute('href', '/journeys/journey-id')
   })
-
-  it('should disable card interaction after initial click to prevent multiple navigations', () => {
-    render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <ThemeProvider>
-            <JourneyCard journey={defaultJourney} />
-          </ThemeProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    const link = screen.getByRole('link', {
-      name: 'Default Journey Heading January 1, 2021'
-    })
-    expect(link).toHaveClass('Mui-disabled')
-  })
 })

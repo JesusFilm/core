@@ -65,7 +65,7 @@ export function JourneyCard({
           href={`/journeys/${journey.id}`}
           passHref
           legacyBehavior
-          prefetch={false}
+          prefetch
         >
           <CardActionArea sx={{ borderRadius: 0 }}>
             <CardContent sx={{ px: 6, py: 4 }}>
