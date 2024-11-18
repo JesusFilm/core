@@ -2239,7 +2239,7 @@ export type MutationShortLinkDomainCreateInput = {
   services?: InputMaybe<Array<Service>>;
 };
 
-export type MutationShortLinkDomainCreateResult = MutationShortLinkDomainCreateSuccess | NotUniqueError;
+export type MutationShortLinkDomainCreateResult = MutationShortLinkDomainCreateSuccess | NotUniqueError | ZodError;
 
 export type MutationShortLinkDomainCreateSuccess = {
   __typename?: 'MutationShortLinkDomainCreateSuccess';

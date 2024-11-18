@@ -255,7 +255,7 @@ input MutationShortLinkDomainCreateInput {
   services: [Service!]
 }
 
-union MutationShortLinkDomainCreateResult = NotUniqueError | MutationShortLinkDomainCreateSuccess
+union MutationShortLinkDomainCreateResult = ZodError | NotUniqueError | MutationShortLinkDomainCreateSuccess
 
 type MutationShortLinkDomainCreateSuccess {
   data: ShortLinkDomain!
