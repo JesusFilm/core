@@ -183,11 +183,12 @@ builder.mutationFields((t) => ({
       if (!currentRoles.includes('publisher')) {
         where.userId = user.id
       }
-      await prisma.cloudflareImage.findUniqueOrThrow({
+      const image = await prisma.cloudflareImage.findUniqueOrThrow({
         where
       })
 
-      await deleteImage(id)
+      // only delete cloudflare asset if original user
+      if (image.userId === user.id) await deleteImage(id)
 
       await prisma.cloudflareImage.delete({ where: { id } })
       return true

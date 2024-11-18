@@ -399,6 +399,9 @@ describe('cloudflareImage', () => {
           userId: 'userId',
           roles: ['publisher']
         })
+        prismaMock.cloudflareImage.findUniqueOrThrow.mockResolvedValue({
+          userId: 'notUser'
+        })
         const result = await authClient({
           document: DELETE_CLOUDFLARE_IMAGE_MUTATION
         })
@@ -407,7 +410,7 @@ describe('cloudflareImage', () => {
         ).toHaveBeenCalledWith({
           where: { id: 'testId' }
         })
-        expect(mockDeleteImage).toHaveBeenCalledWith('testId')
+        expect(mockDeleteImage).not.toHaveBeenCalled()
         expect(result).toEqual({
           data: {
             deleteCloudflareImage: true
@@ -419,6 +422,9 @@ describe('cloudflareImage', () => {
       })
 
       it('should return true if not publisher', async () => {
+        prismaMock.cloudflareImage.findUniqueOrThrow.mockResolvedValue({
+          userId: 'testUserId'
+        })
         const result = await client({
           document: DELETE_CLOUDFLARE_IMAGE_MUTATION
         })

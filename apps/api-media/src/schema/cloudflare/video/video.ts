@@ -126,11 +126,12 @@ builder.mutationFields((t) => ({
       if (!currentRoles.includes('publisher')) {
         where.userId = user.id
       }
-      await prisma.cloudflareVideo.findUniqueOrThrow({
+      const video = await prisma.cloudflareVideo.findUniqueOrThrow({
         where
       })
 
-      await deleteVideo(id)
+      // only delete cloudflare asset if original user
+      if (video.userId === user.id) await deleteVideo(id)
 
       await prisma.cloudflareVideo.delete({ where: { id } })
 

@@ -33,6 +33,16 @@ jest.mock('./service', () => ({
 
 describe('cloudflareVideo', () => {
   const client = getClient()
+  const authClient = getClient({
+    headers: {
+      authorization: 'token'
+    },
+    context: {
+      currentUser: {
+        id: 'userId'
+      }
+    }
+  })
 
   describe('queries', () => {
     describe('getMyCloudflareVideos', () => {
@@ -335,10 +345,13 @@ describe('cloudflareVideo', () => {
           userId: 'userId',
           roles: ['publisher']
         })
-        const result = await client({
+        prismaMock.cloudflareVideo.findUniqueOrThrow.mockResolvedValue({
+          userId: 'notUser'
+        })
+        const result = await authClient({
           document: DELETE_CLOUDFLARE_VIDEO_MUTATION
         })
-        expect(mockDeleteVideo).toHaveBeenCalledWith('testId')
+        expect(mockDeleteVideo).not.toHaveBeenCalled()
         expect(result).toEqual({
           data: {
             deleteCloudflareVideo: true
@@ -362,7 +375,10 @@ describe('cloudflareVideo', () => {
           userId: 'userId',
           roles: []
         })
-        const result = await client({
+        prismaMock.cloudflareVideo.findUniqueOrThrow.mockResolvedValue({
+          userId: 'testUserId'
+        })
+        const result = await authClient({
           document: DELETE_CLOUDFLARE_VIDEO_MUTATION
         })
         expect(mockDeleteVideo).toHaveBeenCalledWith('testId')
