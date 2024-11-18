@@ -15,6 +15,7 @@ import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardVariant } from './journeyCardVariant'
+import { useNavigationState } from '@core/journeys/ui/useNavigationState'
 
 interface JourneyCardProps {
   journey: Journey
@@ -30,12 +31,7 @@ export function JourneyCard({
   refetch
 }: JourneyCardProps): ReactElement {
   const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
-  const [isLoading, setIsLoading] = useState(false)
-
-  function handleClick(e: MouseEvent<HTMLButtonElement>): void {
-    if (isLoading) e.preventDefault()
-    setIsLoading(true)
-  }
+  const isNavigating = useNavigationState()
 
   useEffect(() => {
     if (duplicatedJourneyId != null && duplicatedJourneyRef.current != null) {
@@ -74,9 +70,8 @@ export function JourneyCard({
           prefetch={false}
         >
           <CardActionArea
-            disabled={isLoading}
-            onClick={handleClick}
-            sx={{ borderRadius: 0, opacity: isLoading ? 0.5 : 1 }}
+            disabled={isNavigating}
+            sx={{ borderRadius: 0, opacity: isNavigating ? 0.5 : 1 }}
           >
             <CardContent sx={{ px: 6, py: 4 }}>
               <JourneyCardText journey={journey} variant={variant} />
