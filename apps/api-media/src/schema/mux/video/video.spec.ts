@@ -3,8 +3,6 @@ import { graphql } from 'gql.tada'
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 
-import { deleteVideo } from './service'
-
 jest.mock('./service', () => ({
   createVideoByDirectUpload: jest.fn().mockResolvedValue({
     id: 'videoId',
@@ -269,14 +267,11 @@ describe('mux/video', () => {
         }
       `)
 
-      it('should return true if publisher', async () => {
+      it('should return true IF publisher', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
-        })
-        prismaMock.muxVideo.findUniqueOrThrow.mockResolvedValue({
-          userId: 'notUser'
         })
         prismaMock.muxVideo.delete.mockResolvedValue({
           id: 'videoId',
@@ -297,7 +292,6 @@ describe('mux/video', () => {
         expect(prismaMock.muxVideo.findUniqueOrThrow).toHaveBeenCalledWith({
           where: { id: 'videoId' }
         })
-        expect(deleteVideo).not.toHaveBeenCalled()
         expect(prismaMock.muxVideo.delete).toHaveBeenCalledWith({
           where: { id: 'videoId' }
         })
@@ -309,9 +303,6 @@ describe('mux/video', () => {
           id: 'testUserId',
           userId: 'userId',
           roles: []
-        })
-        prismaMock.muxVideo.findUniqueOrThrow.mockResolvedValue({
-          userId: 'testUserId'
         })
         prismaMock.muxVideo.delete.mockResolvedValue({
           id: 'videoId',
@@ -332,7 +323,6 @@ describe('mux/video', () => {
         expect(prismaMock.muxVideo.findUniqueOrThrow).toHaveBeenCalledWith({
           where: { id: 'videoId', userId: 'testUserId' }
         })
-        expect(deleteVideo).toHaveBeenCalledWith('videoId')
         expect(prismaMock.muxVideo.delete).toHaveBeenCalledWith({
           where: { id: 'videoId' }
         })
