@@ -122,11 +122,15 @@ builder.mutationFields((t) => ({
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
-    resolve: async (_root, { id }, { user }) => {
+    resolve: async (_root, { id }, { user, currentRoles }) => {
       if (user == null) throw new Error('User not found')
 
+      const where = { id }
+      if (!currentRoles.includes('publisher')) {
+        where.userId = user.id
+      }
       await prisma.muxVideo.findUniqueOrThrow({
-        where: { id, userId: user.id }
+        where
       })
 
       await deleteVideo(id)

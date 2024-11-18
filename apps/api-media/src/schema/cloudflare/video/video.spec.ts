@@ -329,7 +329,12 @@ describe('cloudflareVideo', () => {
         }
       `)
 
-      it('should return true', async () => {
+      it('should return true if publisher', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'testUserId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
         const result = await client({
           document: DELETE_CLOUDFLARE_VIDEO_MUTATION
         })
@@ -337,6 +342,41 @@ describe('cloudflareVideo', () => {
         expect(result).toEqual({
           data: {
             deleteCloudflareVideo: true
+          }
+        })
+        expect(
+          prismaMock.cloudflareVideo.findUniqueOrThrow
+        ).toHaveBeenCalledWith({
+          where: {
+            id: 'testId'
+          }
+        })
+        expect(prismaMock.cloudflareVideo.delete).toHaveBeenCalledWith({
+          where: { id: 'testId' }
+        })
+      })
+
+      it('should return true if not publisher', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'testUserId',
+          userId: 'userId',
+          roles: []
+        })
+        const result = await client({
+          document: DELETE_CLOUDFLARE_VIDEO_MUTATION
+        })
+        expect(mockDeleteVideo).toHaveBeenCalledWith('testId')
+        expect(result).toEqual({
+          data: {
+            deleteCloudflareVideo: true
+          }
+        })
+        expect(
+          prismaMock.cloudflareVideo.findUniqueOrThrow
+        ).toHaveBeenCalledWith({
+          where: {
+            id: 'testId',
+            userId: 'testUserId'
           }
         })
         expect(prismaMock.cloudflareVideo.delete).toHaveBeenCalledWith({
