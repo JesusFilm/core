@@ -11,17 +11,13 @@ import 'video.js/dist/video-js.css'
 
 export function MuxDetails({
   id,
-  playbackId,
   image
-}: Pick<
-  VideoDetailsProps,
-  'open' | 'id' | 'onSelect' | 'image' | 'playbackId'
->): ReactElement {
+}: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player>()
 
   useEffect(() => {
-    if (videoRef.current != null && playbackId != null) {
+    if (videoRef.current != null && id != null) {
       playerRef.current = videojs(videoRef.current, {
         ...defaultVideoJsOptions,
         fluid: true,
@@ -46,7 +42,7 @@ export function MuxDetails({
           playsInline
         >
           <source
-            src={`https://stream.mux.com/${playbackId ?? ''}.m3u8`}
+            src={`https://stream.mux.com/${id ?? ''}.m3u8`}
             type="application/x-mpegURL"
           />
         </video>

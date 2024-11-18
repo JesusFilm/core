@@ -75,7 +75,7 @@ export function VideoDetails({
       Details = LocalDetails
       break
     case VideoBlockSource.mux:
-      Details = YouTubeDetails
+      Details = MuxDetails
       break
     case VideoBlockSource.youTube:
       Details = YouTubeDetails
