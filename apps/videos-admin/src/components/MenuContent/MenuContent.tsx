@@ -1,4 +1,5 @@
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded'
+import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
 import VideoLibraryRoundedIcon from '@mui/icons-material/VideoLibraryRounded'
 import List from '@mui/material/List'
@@ -34,6 +35,12 @@ export function MenuContent(): ReactElement {
       text: t('Video Library'),
       icon: <VideoLibraryRoundedIcon />,
       href: `/${params?.locale?.toString() ?? 'en'}/videos`,
+      startsWith: true
+    },
+    {
+      text: t('Short Links'),
+      icon: <LinkRoundedIcon />,
+      href: `/${params?.locale?.toString() ?? 'en'}/short-links`,
       startsWith: true
     }
   ]

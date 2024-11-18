@@ -1,4 +1,7 @@
-import { offsetLimitPagination } from '@apollo/client/utilities'
+import {
+  offsetLimitPagination,
+  relayStylePagination
+} from '@apollo/client/utilities'
 
 interface VideoData {
   __ref: string
@@ -31,7 +34,9 @@ export const cache = {
               (args?.offset ?? 0) + (args?.limit ?? 100)
             ) as VideoData[]
           }
-        }
+        },
+        shortLinkDomains: relayStylePagination(),
+        shortLinks: relayStylePagination()
       }
     }
   }

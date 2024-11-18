@@ -26,7 +26,7 @@ describe('NavbarBreadcrumbs', () => {
     expect(screen.getByText('Dashboard')).toBeInTheDocument()
   })
 
-  it('should show icon and values for existing breadcrumbs', async () => {
+  it('should show icon and values for videos', async () => {
     mockedUsePathname.mockReturnValue('/en/videos')
     render(
       <NextIntlClientProvider locale="en">
@@ -36,6 +36,18 @@ describe('NavbarBreadcrumbs', () => {
 
     expect(screen.getByTestId('VideoLibraryRoundedIcon')).toBeInTheDocument()
     expect(screen.getByText('Video Library')).toBeInTheDocument()
+  })
+
+  it('should show icon and values for short-links', async () => {
+    mockedUsePathname.mockReturnValue('/en/short-links')
+    render(
+      <NextIntlClientProvider locale="en">
+        <NavbarBreadcrumbs />
+      </NextIntlClientProvider>
+    )
+
+    expect(screen.getByTestId('LinkRoundedIcon')).toBeInTheDocument()
+    expect(screen.getByText('Short Links')).toBeInTheDocument()
   })
 
   it('should handle routes that are not predefined', async () => {

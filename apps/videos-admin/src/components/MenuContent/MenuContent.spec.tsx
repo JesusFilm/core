@@ -15,6 +15,9 @@ describe('MenuContent', () => {
     expect(
       screen.getByRole('link', { name: 'Video Library' })
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: 'Short Links' })
+    ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Settings' })).toBeInTheDocument()
   })
 })

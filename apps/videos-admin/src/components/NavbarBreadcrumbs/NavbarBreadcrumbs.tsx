@@ -1,4 +1,5 @@
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded'
+import LinkRoundedIcon from '@mui/icons-material/LinkRounded'
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
 import VideoLibraryRoundedIcon from '@mui/icons-material/VideoLibraryRounded'
@@ -45,6 +46,10 @@ export function NavbarBreadcrumbs(): ReactElement {
     settings: {
       icon: <SettingsRoundedIcon fontSize="inherit" />,
       value: t('Settings')
+    },
+    'short-links': {
+      icon: <LinkRoundedIcon fontSize="inherit" />,
+      value: t('Short Links')
     }
   }
 
