@@ -15,6 +15,7 @@ import { StudyQuestionsList } from './StudyQuestionsList'
 import { VideoImage } from './VideoImage'
 import { VideoInformation } from './VideoInformation'
 import { useEdit } from '../../_EditProvider'
+import { VideoSnippet } from './VideoSnippet'
 
 function useUpdateMutation(mutation) {
   const [updateMutation] = useMutation(mutation)
@@ -29,14 +30,6 @@ function useUpdateMutation(mutation) {
 const VIDEO_DESCRIPTION_UPDATE = graphql(`
   mutation UpdateVideoDescription($input: VideoTranslationUpdateInput!) {
     videoDescriptionUpdate(input: $input) {
-      id
-    }
-  }
-`)
-
-const VIDEO_SNIPPET_UPDATE = graphql(`
-  mutation UpdateVideoSnippet($input: VideoTranslationUpdateInput!) {
-    videoSnippetUpdate(input: $input) {
       id
     }
   }
@@ -63,7 +56,6 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
   } = useEdit()
 
   const updateDescription = useUpdateMutation(VIDEO_DESCRIPTION_UPDATE)
-  const updateSnippet = useUpdateMutation(VIDEO_SNIPPET_UPDATE)
   const updateAlt = useUpdateMutation(VIDEO_IMAGE_ALT_UPDATE)
 
   return (
@@ -90,18 +82,7 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
             </Stack>
           </Section>
           <Section title={t('Snippet')}>
-            <Textarea
-              defaultValue={video?.snippet?.[0].value}
-              onBlur={(e) =>
-                updateSnippet({
-                  id: video?.snippet?.[0].id,
-                  value: e.target.value
-                })
-              }
-              minRows={6}
-              maxRows={6}
-              sx={{ minWidth: '100%', maxWidth: '100%' }}
-            />
+            <VideoSnippet />
           </Section>
           <Section title={t('Description')}>
             <Textarea

@@ -44,6 +44,12 @@ export const useAdminVideoMock: MockedResponse<
             id: '41f0dad1-f2b4-4850-8ebe-c60e3ca1e64f'
           }
         ],
+        snippet: [
+          {
+            id: 'f4634713-33c2-43b6-b2e1-47263037c871',
+            value: 'Jesus snippet text'
+          }
+        ],
         label: 'featureFilm',
         variantLanguagesCount: 2150,
         published: true,
