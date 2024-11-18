@@ -71,6 +71,8 @@ export function VideoSnippet(): ReactElement {
               error={Boolean(errors.snippet)}
               helperText={errors.snippet as string}
               disabled={!isEdit}
+              minRows={6}
+              maxRows={6}
             />
             {isEdit && (
               <Stack direction="row" justifyContent="flex-end">
