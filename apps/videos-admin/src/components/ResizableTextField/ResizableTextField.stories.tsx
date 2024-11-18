@@ -14,13 +14,15 @@ const meta: Meta<typeof ResizableTextField> = {
 type Story = StoryObj<ComponentProps<typeof ResizableTextField>>
 
 const Template: Story = {
-  render: ({ disabled }) => (
+  render: ({ disabled, error, helperText }) => (
     <NextIntlClientProvider locale="en">
       <ResizableTextField
         id="someId"
         name="some name"
         value="some text"
         disabled={disabled}
+        error={error}
+        helperText={helperText}
       />
     </NextIntlClientProvider>
   )
@@ -34,6 +36,11 @@ export const Default = {
 export const Disabled = {
   ...Template,
   args: { disabled: true }
+}
+
+export const Error = {
+  ...Template,
+  args: { error: true, helperText: 'Error text here' }
 }
 
 export default meta
