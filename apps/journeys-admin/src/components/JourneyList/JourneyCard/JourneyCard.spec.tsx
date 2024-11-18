@@ -2,10 +2,12 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { useNavigationState } from '@core/journeys/ui/useNavigationState'
+
 import { ThemeProvider } from '../../ThemeProvider'
 import { defaultJourney } from '../journeyListData'
+
 import { JourneyCard } from './JourneyCard'
-import { useNavigationState } from '@core/journeys/ui/useNavigationState'
 
 jest.mock('@core/journeys/ui/useNavigationState', () => ({
   __esModule: true,
