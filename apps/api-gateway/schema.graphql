@@ -2540,12 +2540,12 @@ type VideoVariantDownload @join__type(graph: API_MEDIA)  {
 
 type ZodError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
   message: String
-  fieldErrors: [ZodFieldError!]
+  fieldErrors: [ZodFieldError!]!
 }
 
 type ZodFieldError @join__type(graph: API_MEDIA)  {
-  message: String
-  path: [String!]
+  message: String!
+  path: [String!]!
 }
 
 interface BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  {

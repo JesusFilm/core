@@ -1,4 +1,4 @@
-import { ZodError, ZodFormattedError, ZodIssueCode } from 'zod'
+import { ZodError, ZodFormattedError } from 'zod'
 
 import { builder } from '../builder'
 
@@ -36,8 +36,8 @@ const ZodFieldError = builder
   }>('ZodFieldError')
   .implement({
     fields: (t) => ({
-      message: t.exposeString('message'),
-      path: t.exposeStringList('path')
+      message: t.exposeString('message', { nullable: false }),
+      path: t.exposeStringList('path', { nullable: false })
     })
   })
 
@@ -49,7 +49,8 @@ builder.objectType(ZodError, {
   fields: (t) => ({
     fieldErrors: t.field({
       type: [ZodFieldError],
-      resolve: (err) => flattenErrors(err.format(), [])
+      resolve: (err) => flattenErrors(err.format(), []),
+      nullable: false
     })
   })
 })

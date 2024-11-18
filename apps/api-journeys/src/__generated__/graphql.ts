@@ -4715,14 +4715,14 @@ export type VisitorsConnection = {
 
 export type ZodError = BaseError & {
   __typename?: 'ZodError';
-  fieldErrors?: Maybe<Array<ZodFieldError>>;
+  fieldErrors: Array<ZodFieldError>;
   message?: Maybe<Scalars['String']['output']>;
 };
 
 export type ZodFieldError = {
   __typename?: 'ZodFieldError';
-  message?: Maybe<Scalars['String']['output']>;
-  path?: Maybe<Array<Scalars['String']['output']>>;
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
 };
 
 export enum Join__Graph {

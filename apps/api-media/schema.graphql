@@ -919,10 +919,10 @@ type ZodError implements BaseError
   @shareable
 {
   message: String
-  fieldErrors: [ZodFieldError!]
+  fieldErrors: [ZodFieldError!]!
 }
 
 type ZodFieldError {
-  message: String
-  path: [String!]
+  message: String!
+  path: [String!]!
 }
