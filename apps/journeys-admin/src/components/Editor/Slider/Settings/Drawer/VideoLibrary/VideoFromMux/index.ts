@@ -1,1 +1,1 @@
-export { VideoFromCloudflare } from './VideoFromCloudflare'
+export { VideoFromMux } from './VideoFromMux'

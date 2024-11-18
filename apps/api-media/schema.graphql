@@ -166,6 +166,7 @@ type Mutation {
 
 type MuxVideo {
   id: ID!
+  playbackId: String
   uploadUrl: String
   userId: ID!
   createdAt: Date!

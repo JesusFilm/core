@@ -17,30 +17,25 @@ import {
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
-import { CreateCloudflareVideoUploadByFileMutation } from '../../../../../../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
-import { GetMyCloudflareVideoQuery } from '../../../../../../../../../__generated__/GetMyCloudflareVideoQuery'
+import { CreateMuxVideoUploadByFileMutation } from '../../../../../../../../../__generated__/CreateMuxVideoUploadByFileMutation'
+import { GetMyMuxVideoQuery } from '../../../../../../../../../__generated__/GetMyMuxVideoQuery'
 
-import { fileToCloudflareUpload, getBuffer } from './utils/addByFileUtils'
+import { fileToMuxUpload, getBuffer } from './utils/addByFileUtils'
 
-export const CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
-  mutation CreateCloudflareVideoUploadByFileMutation(
-    $uploadLength: Int!
-    $name: String!
-  ) {
-    createCloudflareVideoUploadByFile(
-      uploadLength: $uploadLength
-      name: $name
-    ) {
+export const CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
+  mutation CreateMuxVideoUploadByFileMutation($name: String!) {
+    createMuxVideoUploadByFile(name: $name) {
       uploadUrl
       id
     }
   }
 `
 
-export const GET_MY_CLOUDFLARE_VIDEO_QUERY = gql`
-  query GetMyCloudflareVideoQuery($id: ID!) {
-    getMyCloudflareVideo(id: $id) {
+export const GET_MY_MUX_VIDEO_QUERY = gql`
+  query GetMyMuxVideoQuery($id: ID!) {
+    getMyMuxVideo(id: $id) {
       id
+      playbackId
       readyToStream
     }
   }
@@ -72,37 +67,35 @@ export function AddByFile({
     setProgress(0)
   }
 
-  const [createCloudflareVideoUploadByFile, { data }] =
-    useMutation<CreateCloudflareVideoUploadByFileMutation>(
-      CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION
+  const [createMuxVideoUploadByFile, { data }] =
+    useMutation<CreateMuxVideoUploadByFileMutation>(
+      CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION
     )
-  const [getMyCloudflareVideo, { stopPolling }] =
-    useLazyQuery<GetMyCloudflareVideoQuery>(GET_MY_CLOUDFLARE_VIDEO_QUERY, {
+  const [getMyMuxVideo, { stopPolling }] = useLazyQuery<GetMyMuxVideoQuery>(
+    GET_MY_MUX_VIDEO_QUERY,
+    {
       pollInterval: 1000,
       notifyOnNetworkStatusChange: true,
       onCompleted: (data) => {
         if (
-          data.getMyCloudflareVideo?.readyToStream &&
-          data.getMyCloudflareVideo.id != null
+          data.getMyMuxVideo?.readyToStream &&
+          data.getMyMuxVideo.id != null
         ) {
           stopPolling()
-          onChange(data.getMyCloudflareVideo.id)
+          onChange(data.getMyMuxVideo.id)
           resetUploadStatus()
         }
       }
-    })
+    }
+  )
 
   useEffect(() => {
-    if (processing && data?.createCloudflareVideoUploadByFile?.id != null) {
-      void getMyCloudflareVideo({
-        variables: { id: data.createCloudflareVideoUploadByFile.id }
+    if (processing && data?.createMuxVideoUploadByFile?.id != null) {
+      void getMyMuxVideo({
+        variables: { id: data.createMuxVideoUploadByFile.id }
       })
     }
-  }, [
-    processing,
-    getMyCloudflareVideo,
-    data?.createCloudflareVideoUploadByFile?.id
-  ])
+  }, [processing, getMyMuxVideo, data?.createMuxVideoUploadByFile?.id])
 
   const onDrop = async (): Promise<void> => {
     setfileTooLarge(false)
@@ -114,12 +107,12 @@ export function AddByFile({
 
   function uploadVideo(
     file: File,
-    data: CreateCloudflareVideoUploadByFileMutation
+    data: CreateMuxVideoUploadByFileMutation
   ): Upload {
     setUploading(true)
     const upload = new Upload(getBuffer(file), {
       httpStack: httpStack ?? new DefaultHttpStack({}),
-      uploadUrl: data.createCloudflareVideoUploadByFile.uploadUrl,
+      uploadUrl: data.createMuxVideoUploadByFile.uploadUrl,
       chunkSize: 150 * 1024 * 1024,
       onSuccess: (): void => {
         setUploading(false)
@@ -139,13 +132,13 @@ export function AddByFile({
 
   const onDropAccepted = async (files: File[]): Promise<void> => {
     if (files.length > 0) {
-      const { data } = await createCloudflareVideoUploadByFile(
-        fileToCloudflareUpload(files[0])
+      const { data } = await createMuxVideoUploadByFile(
+        fileToMuxUpload(files[0])
       )
 
       if (
-        data?.createCloudflareVideoUploadByFile?.uploadUrl != null &&
-        data?.createCloudflareVideoUploadByFile?.id != null
+        data?.createMuxVideoUploadByFile?.uploadUrl != null &&
+        data?.createMuxVideoUploadByFile?.id != null
       ) {
         uploadVideo(files[0], data)
       }

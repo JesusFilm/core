@@ -11,6 +11,7 @@ import {
 builder.prismaObject('MuxVideo', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    playbackId: t.exposeString('playbackId'),
     uploadUrl: t.exposeString('uploadUrl'),
     userId: t.exposeID('userId', { nullable: false }),
     createdAt: t.expose('createdAt', {
@@ -54,15 +55,19 @@ builder.queryFields((t) => ({
         where: { id, userId: user.id }
       })
 
-      if (!video.readyToStream) {
+      if (!video.readyToStream || video.playbackId == null) {
         const muxVideo = await getVideo(id)
 
-        if (muxVideo.status === 'ready') {
+        if (
+          muxVideo.status === 'ready' ||
+          muxVideo.playback_ids?.[0].id != null
+        ) {
           return await prisma.muxVideo.update({
             ...query,
             where: { id },
             data: {
-              readyToStream: true
+              readyToStream: muxVideo.status === 'ready',
+              playbackId: muxVideo.playback_ids?.[0].id
             }
           })
         }

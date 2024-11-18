@@ -26,11 +26,11 @@ const VideoDetails = dynamic(
     ).then((mod) => mod.VideoDetails),
   { ssr: false }
 )
-const VideoFromCloudflare = dynamic(
+const VideoFromMux = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/VideoLibrary/VideoFromCloudflare/VideoFromCloudflare" */ './VideoFromCloudflare'
-    ).then((mod) => mod.VideoFromCloudflare),
+      /* webpackChunkName: "Editor/VideoLibrary/VideoFromCMux/VideoFromMux" */ './VideoFromMux'
+    ).then((mod) => mod.VideoFromMux),
   { ssr: false }
 )
 
@@ -175,7 +175,7 @@ export function VideoLibrary({
             sx={{ flexGrow: 1, overflow: 'auto' }}
             unmountUntilVisible
           >
-            <VideoFromCloudflare onSelect={onSelect} />
+            <VideoFromMux onSelect={onSelect} />
           </TabPanel>
         </Box>
       </Drawer>

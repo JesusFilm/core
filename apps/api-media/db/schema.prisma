@@ -58,6 +58,7 @@ model CloudflareVideo {
 
 model MuxVideo {
   id            String   @id @default(uuid())
+  playbackId    String?
   uploadUrl     String?
   userId        String
   name          String?

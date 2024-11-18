@@ -1,14 +1,13 @@
 import type { ReadStream } from 'fs'
 
-import { CreateCloudflareVideoUploadByFileMutationVariables } from '../../../../../../../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
+import { CreateMuxVideoUploadByFileMutationVariables } from '../../../../../../../../../../__generated__/CreateMuxVideoUploadByFileMutation'
 
-export function fileToCloudflareUpload(file: File): {
-  variables: CreateCloudflareVideoUploadByFileMutationVariables
+export function fileToMuxUpload(file: File): {
+  variables: CreateMuxVideoUploadByFileMutationVariables
 } {
   const fileName = file.name.split('.')[0]
   return {
     variables: {
-      uploadLength: file.size,
       name: fileName
     }
   }

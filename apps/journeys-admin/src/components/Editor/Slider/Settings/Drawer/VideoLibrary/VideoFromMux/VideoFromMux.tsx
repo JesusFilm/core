@@ -12,9 +12,7 @@ interface VideoFromMuxProps {
   onSelect: (block: VideoBlockUpdateInput) => void
 }
 
-export function VideoFromCloudflare({
-  onSelect
-}: VideoFromMuxProps): ReactElement {
+export function VideoFromMux({ onSelect }: VideoFromMuxProps): ReactElement {
   const handleChange = (id: string): void => {
     const block: VideoBlockUpdateInput = {
       videoId: id,
