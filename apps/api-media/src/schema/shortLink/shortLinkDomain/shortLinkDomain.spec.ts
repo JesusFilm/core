@@ -250,6 +250,13 @@ describe('shortLinkDomain', () => {
                 value
               }
             }
+            ... on ZodError {
+              message
+              fieldErrors {
+                message
+                path
+              }
+            }
           }
         }
       `)
@@ -350,6 +357,41 @@ describe('shortLinkDomain', () => {
             shortLinkDomainCreate: {
               message: 'short link domain already exists',
               location: [{ path: ['input', 'hostname'], value: 'example.com' }]
+            }
+          }
+        })
+      })
+
+      it('should return a validation error if the hostname is invalid', async () => {
+        const result = await client({
+          document: SHORT_LINK_DOMAIN_CREATE_MUTATION,
+          variables: {
+            input: {
+              hostname: 'hostname invalid',
+              services: ['apiJourneys']
+            }
+          }
+        })
+        expect(result).toEqual({
+          data: {
+            shortLinkDomainCreate: {
+              message: JSON.stringify(
+                [
+                  {
+                    code: 'custom',
+                    message: 'hostname must be valid',
+                    path: ['input', 'hostname']
+                  }
+                ],
+                null,
+                2
+              ),
+              fieldErrors: [
+                {
+                  message: 'hostname must be valid',
+                  path: ['input', 'hostname']
+                }
+              ]
             }
           }
         })

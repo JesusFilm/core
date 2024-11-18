@@ -1,3 +1,5 @@
+import { ZodError } from 'zod'
+
 import { Prisma } from '.prisma/api-media-client'
 
 import { prisma } from '../../../lib/prisma'
@@ -110,14 +112,24 @@ builder.mutationFields((t) => ({
       description:
         'Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)',
       errors: {
-        types: [NotUniqueError]
+        types: [ZodError, NotUniqueError]
       },
       nullable: false,
       input: {
         hostname: t.input.string({
           required: true,
           description:
-            'the hostname including subdomain, domain, and TLD, but excluding port'
+            'the hostname including subdomain, domain, and TLD, but excluding port',
+          validate: [
+            (value) => {
+              try {
+                return new URL(`https://${value}`).hostname === value
+              } catch {
+                return false
+              }
+            },
+            'hostname must be valid'
+          ]
         }),
         services: t.input.field({
           type: [Service],
