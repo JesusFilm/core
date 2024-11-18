@@ -64,7 +64,11 @@ const journey: Journey = {
 describe('TemplateGalleryCard', () => {
   beforeEach(() => {
     mockUseRouter.mockReturnValue({
-      pathname: '/templates'
+      pathname: '/templates',
+      events: {
+        on: jest.fn(),
+        off: jest.fn()
+      }
     } as unknown as NextRouter)
   })
 
@@ -140,7 +144,11 @@ describe('TemplateGalleryCard from different route', () => {
 
   it('should link to journeys details when not at /templates', () => {
     mockUseRouter.mockReturnValue({
-      pathname: '/blah'
+      pathname: '/blah',
+      events: {
+        on: jest.fn(),
+        off: jest.fn()
+      }
     } as unknown as NextRouter)
 
     const { getByTestId } = render(<TemplateGalleryCard item={journey} />)
@@ -152,7 +160,11 @@ describe('TemplateGalleryCard from different route', () => {
 
   it('should link to journeys details when in watch', () => {
     mockUseRouter.mockReturnValue({
-      pathname: '/journeys'
+      pathname: '/journeys',
+      events: {
+        on: jest.fn(),
+        off: jest.fn()
+      }
     } as unknown as NextRouter)
 
     const { getByTestId } = render(<TemplateGalleryCard item={journey} />)
@@ -164,7 +176,11 @@ describe('TemplateGalleryCard from different route', () => {
 
   it('should focus templategallerycard', async () => {
     mockUseRouter.mockReturnValue({
-      pathname: '/journeys'
+      pathname: '/journeys',
+      events: {
+        on: jest.fn(),
+        off: jest.fn()
+      }
     } as unknown as NextRouter)
     render(<TemplateGalleryCard item={journey} />)
 
