@@ -49,7 +49,7 @@ describe('interop', () => {
       ).toBeNull()
     })
 
-    it('should return null when ipAddress is invalid', () => {
+    it('should return null when ipAddress is not a nat address', () => {
       process.env.INTEROP_TOKEN = 'correct-token'
       process.env.NAT_ADDRESSES = '1.1.1.1'
       expect(
@@ -58,6 +58,17 @@ describe('interop', () => {
           ipAddress: '8.8.8.8'
         })
       ).toBeNull()
+    })
+
+    it('should throw error when ipAddress is invalid', () => {
+      process.env.INTEROP_TOKEN = 'correct-token'
+      process.env.NAT_ADDRESSES = '1.1.1.1'
+      expect(() =>
+        getInteropContext({
+          interopToken: 'correct-token',
+          ipAddress: 'invalid_ip_address'
+        })
+      ).toThrow('Invalid IP address (invalid_ip_address)')
     })
 
     it('should return null when NAT_ADDRESSES is not set', () => {

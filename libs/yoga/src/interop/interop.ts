@@ -13,12 +13,12 @@ export function getInteropContext({
   ipAddress: string | null
 }): InteropContext | null {
   const interopToken = z.string().nullable().parse(interopTokenInput)
+  const normalizedIpAddress =
+    ipAddressInput === '' ? '127.0.0.1' : (ipAddressInput ?? '127.0.0.1')
   const ipAddress = z
     .string()
-    .ip()
-    .parse(
-      ipAddressInput === '' ? '127.0.0.1' : (ipAddressInput ?? '127.0.0.1')
-    )
+    .ip({ message: `Invalid IP address (${normalizedIpAddress})` })
+    .parse(normalizedIpAddress)
 
   if (
     interopToken == null ||
