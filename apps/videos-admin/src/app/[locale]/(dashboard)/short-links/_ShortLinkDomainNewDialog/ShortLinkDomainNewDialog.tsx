@@ -30,6 +30,12 @@ const CREATE_SHORT_LINK_DOMAIN = graphql(`
       ... on NotUniqueError {
         message
       }
+      ... on ZodError {
+        fieldErrors {
+          message
+          path
+        }
+      }
     }
   }
 `)
@@ -75,6 +81,18 @@ export function ShortLinkDomainNewDialog({
                 formikHelpers.setErrors({
                   hostname: t('Hostname is not unique')
                 })
+                break
+              case 'ZodError':
+                formikHelpers.setErrors(
+                  result.data.shortLinkDomainCreate.fieldErrors.reduce(
+                    (acc, fieldError) => {
+                      const path = fieldError.path.at(-1)
+                      if (path) acc[path] = fieldError.message
+                      return acc
+                    },
+                    {} as Record<string, string>
+                  )
+                )
                 break
             }
           } catch (e) {
