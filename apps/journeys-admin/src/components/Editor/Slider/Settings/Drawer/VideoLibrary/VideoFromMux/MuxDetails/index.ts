@@ -1,1 +1,1 @@
-export { CloudflareDetails } from './CloudflareDetails'
+export { MuxDetails } from './MuxDetails'
