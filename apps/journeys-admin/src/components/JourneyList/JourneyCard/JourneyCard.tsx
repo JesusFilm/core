@@ -67,7 +67,12 @@ export function JourneyCard({
       data-testid={`JourneyCard-${journey.id}`}
     >
       <>
-        <NextLink href={`/journeys/${journey.id}`} passHref legacyBehavior>
+        <NextLink
+          href={`/journeys/${journey.id}`}
+          passHref
+          legacyBehavior
+          prefetch
+        >
           <CardActionArea
             disabled={isLoading}
             onClick={handleClick}
