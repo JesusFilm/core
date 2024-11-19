@@ -6,7 +6,6 @@ import { graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
-import { Textarea } from '../../../../../../../components/Textarea'
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { Section } from '../Section'
 import { UpdateableField } from '../UpdateableField'
@@ -16,6 +15,7 @@ import { VideoImage } from './VideoImage'
 import { VideoInformation } from './VideoInformation'
 import { useEdit } from '../../_EditProvider'
 import { VideoSnippet } from './VideoSnippet'
+import { VideoDescription } from './VideoDescription'
 
 function useUpdateMutation(mutation) {
   const [updateMutation] = useMutation(mutation)
@@ -26,14 +26,6 @@ function useUpdateMutation(mutation) {
     })
   }
 }
-
-const VIDEO_DESCRIPTION_UPDATE = graphql(`
-  mutation UpdateVideoDescription($input: VideoTranslationUpdateInput!) {
-    videoDescriptionUpdate(input: $input) {
-      id
-    }
-  }
-`)
 
 const VIDEO_IMAGE_ALT_UPDATE = graphql(`
   mutation UpdateVideoImageAlt($input: VideoTranslationUpdateInput!) {
@@ -55,7 +47,6 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
     state: { isEdit }
   } = useEdit()
 
-  const updateDescription = useUpdateMutation(VIDEO_DESCRIPTION_UPDATE)
   const updateAlt = useUpdateMutation(VIDEO_IMAGE_ALT_UPDATE)
 
   return (
@@ -85,18 +76,7 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
             <VideoSnippet />
           </Section>
           <Section title={t('Description')}>
-            <Textarea
-              defaultValue={video?.description?.[0].value}
-              onBlur={(e) =>
-                updateDescription({
-                  id: video?.description?.[0].id,
-                  value: e.target.value
-                })
-              }
-              minRows={8}
-              maxRows={8}
-              sx={{ minWidth: '100%', maxWidth: '100%' }}
-            />
+            <VideoDescription />
           </Section>
           <StudyQuestionsList studyQuestions={video?.studyQuestions} />
         </>
