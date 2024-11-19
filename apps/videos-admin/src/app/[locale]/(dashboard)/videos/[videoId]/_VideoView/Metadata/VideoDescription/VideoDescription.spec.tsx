@@ -82,7 +82,7 @@ describe('VideoDescription', () => {
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
   })
 
-  it('should enable save button if snippet has been changed', async () => {
+  it('should enable save button if description has been changed', async () => {
     mockUseParams.mockReturnValue({ videoId: 'someId' })
     const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
 
@@ -106,7 +106,7 @@ describe('VideoDescription', () => {
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
   })
 
-  it('should update video snippet on submit', async () => {
+  it('should update video description on submit', async () => {
     mockUseParams.mockReturnValue({ videoId: 'someId' })
     const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
 
