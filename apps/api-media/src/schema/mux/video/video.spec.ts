@@ -267,7 +267,7 @@ describe('mux/video', () => {
         }
       `)
 
-      it('should return true', async () => {
+      it('should return true IF publisher', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -288,6 +288,40 @@ describe('mux/video', () => {
           variables: {
             id: 'videoId'
           }
+        })
+        expect(prismaMock.muxVideo.findUniqueOrThrow).toHaveBeenCalledWith({
+          where: { id: 'videoId' }
+        })
+        expect(prismaMock.muxVideo.delete).toHaveBeenCalledWith({
+          where: { id: 'videoId' }
+        })
+        expect(result).toHaveProperty('data.deleteMuxVideo', true)
+      })
+
+      it('should return true if not publisher', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'testUserId',
+          userId: 'userId',
+          roles: []
+        })
+        prismaMock.muxVideo.delete.mockResolvedValue({
+          id: 'videoId',
+          name: 'videoName',
+          uploadUrl: null,
+          userId: 'testUserId',
+          createdAt: new Date(),
+          readyToStream: true,
+          downloadable: false,
+          updatedAt: new Date()
+        })
+        const result = await authClient({
+          document: DELETE_MUX_VIDEO,
+          variables: {
+            id: 'videoId'
+          }
+        })
+        expect(prismaMock.muxVideo.findUniqueOrThrow).toHaveBeenCalledWith({
+          where: { id: 'videoId', userId: 'testUserId' }
         })
         expect(prismaMock.muxVideo.delete).toHaveBeenCalledWith({
           where: { id: 'videoId' }
