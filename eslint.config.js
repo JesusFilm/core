@@ -1,29 +1,82 @@
 const { FlatCompat } = require('@eslint/eslintrc')
-const js = require('@eslint/js')
 const nxEslintPlugin = require('@nx/eslint-plugin')
 const eslintPluginImport = require('eslint-plugin-import')
-const love = require('eslint-config-love')
+const loveConfig = require('eslint-config-love')
 const nodePlugin = require('eslint-plugin-n')
 const promisePlugin = require('eslint-plugin-promise')
+const tsParser = require('@typescript-eslint/parser')
+const prettierConfig = require('eslint-config-prettier')
+const tseslint = require('typescript-eslint')
+const eslint = require('@eslint/js')
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended
+  recommendedConfig: eslint.configs.recommended
 })
 
-module.exports = [
+const config = [
+  eslint.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
   {
-    ...love,
+    ...loveConfig,
+    ...prettierConfig,
     plugins: {
       '@nx': nxEslintPlugin,
       import: eslintPluginImport,
       n: nodePlugin,
       promise: promisePlugin
+    },
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: __dirname
+      }
     }
   },
   { settings: { 'import/internal-regex': '^(@core|.prisma)' } },
   {
     rules: {
+      '@typescript-eslint/await-thenable': 'off',
+      '@typescript-eslint/ban-tslint-comment': 'off',
+      '@typescript-eslint/class-methods-use-this': 'off',
+      '@typescript-eslint/consistent-indexed-object-style': 'off',
+      '@typescript-eslint/consistent-type-exports': 'off',
+      '@typescript-eslint/consistent-type-imports': 'off',
+      '@typescript-eslint/init-declarations': 'off',
+      '@typescript-eslint/no-confusing-void-expression': 'off',
+      '@typescript-eslint/no-duplicate-type-constituents': 'off',
+      '@typescript-eslint/no-empty-function': [
+        'error',
+        { allow: ['decoratedFunctions'] }
+      ],
+      '@typescript-eslint/no-empty-interface': 'off',
+      '@typescript-eslint/no-empty-object': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-extra-semi': 'off',
+      '@typescript-eslint/no-import-type-side-effects': 'off',
+      '@typescript-eslint/no-loop-func': 'warn',
+      '@typescript-eslint/no-magic-numbers': 'off',
+      '@typescript-eslint/max-params': 'off',
+      '@typescript-eslint/no-meaningless-void-operator': 'off',
+      '@typescript-eslint/no-redundant-type-constituents': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-unnecessary-condition': 'off',
+      '@typescript-eslint/no-unnecessary-template-expression': 'off',
+      '@typescript-eslint/no-unnecessary-type-arguments': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-enum-comparison': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/non-nullable-type-assertion-style': 'off',
+      '@typescript-eslint/only-throw-error': 'warn',
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      '@typescript-eslint/prefer-optional-chain': 'off',
+      '@typescript-eslint/require-await': 'off',
       'import/no-absolute-path': 'error',
       'import/default': 'error',
       'import/namespace': 'error',
@@ -64,10 +117,10 @@ module.exports = [
       'import/no-named-default': 'error',
       'import/no-anonymous-default-export': 'error',
       'import/dynamic-import-chunkname': 'error',
-      '@typescript-eslint/no-empty-function': [
-        'error',
-        { allow: ['decoratedFunctions'] }
-      ],
+      'no-extra-semi': 'off',
+      'no-empty': 'warn',
+      'no-magic-numbers': 'off',
+
       'no-multiple-empty-lines': ['error', { max: 1 }],
       'no-restricted-imports': [
         'error',
@@ -130,40 +183,6 @@ module.exports = [
       ]
     }
   },
-  ...compat
-    .config({ extends: ['plugin:@nx/typescript', 'prettier'] })
-    .map((config) => ({
-      ...config,
-      files: ['**/*.ts', '**/*.tsx'],
-      rules: {
-        ...config.rules,
-        '@typescript-eslint/consistent-type-imports': 'off',
-        '@typescript-eslint/await-thenable': 'off',
-        '@typescript-eslint/no-confusing-void-expression': 'off',
-        '@typescript-eslint/consistent-type-exports': 'off',
-        '@typescript-eslint/ban-tslint-comment': 'off',
-        '@typescript-eslint/consistent-indexed-object-style': 'off',
-        '@typescript-eslint/prefer-nullish-coalescing': 'off',
-        '@typescript-eslint/prefer-optional-chain': 'off',
-        '@typescript-eslint/non-nullable-type-assertion-style': 'off',
-        '@typescript-eslint/no-extra-semi': 'off',
-        '@typescript-eslint/no-unsafe-argument': 'off',
-        'no-extra-semi': 'off'
-      }
-    })),
-  ...compat
-    .config({
-      extends: ['plugin:@nx/javascript', 'standard', 'prettier']
-    })
-    .map((config) => ({
-      ...config,
-      files: ['**/*.js', '**/*.jsx'],
-      rules: {
-        ...config.rules,
-        '@typescript-eslint/no-extra-semi': 'off',
-        'no-extra-semi': 'off'
-      }
-    })),
   ...compat
     .config({ extends: ['plugin:i18next/recommended'] })
     .map((config) => ({
@@ -230,3 +249,5 @@ module.exports = [
     })),
   { ignores: ['jest.config.ts', '.next', '.docusaurus'] }
 ]
+
+module.exports = tseslint.config(...config)

@@ -1048,7 +1048,9 @@ export class CardLevelActionPage {
           '//button[text()="Change Video"]//ancestor::div[@data-testid="SettingsDrawerContent"]/preceding-sibling::header//button[@aria-label="close-image-library"]'
         )
         .click({ delay: 3000 })
-    } catch (err) {}
+    } catch {
+      /* empty */
+    }
   }
 
   async deleteAllThePollOptions() {

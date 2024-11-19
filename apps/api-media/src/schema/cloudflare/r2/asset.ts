@@ -108,7 +108,7 @@ builder.mutationFields((t) => ({
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (query, _parent, { id }, { user }) => {
+    resolve: async (query, _parent, { id }) => {
       return await prisma.cloudflareR2.delete({
         ...query,
         where: { id }
