@@ -48,6 +48,7 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
           </Section>
           <Section title={t('Description')}>
             <VideoDescription />
+            <VideoDescription />
           </Section>
           <StudyQuestionsList studyQuestions={video?.studyQuestions} />
         </>
