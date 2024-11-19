@@ -20,7 +20,7 @@ describe('interop', () => {
       expect(
         getInteropContext({
           interopToken: 'correct-token',
-          ipAddress: '1.1.1.1'
+          ipAddress: '1.1.1.1, 10.11.10.220'
         })
       ).toEqual({
         interopToken: 'correct-token',
@@ -56,6 +56,17 @@ describe('interop', () => {
         getInteropContext({
           interopToken: 'correct-token',
           ipAddress: '8.8.8.8'
+        })
+      ).toBeNull()
+    })
+
+    it('should return null when ipAddress is an array of addresses but does not match', () => {
+      process.env.INTEROP_TOKEN = 'correct-token'
+      process.env.NAT_ADDRESSES = '1.1.1.1'
+      expect(
+        getInteropContext({
+          interopToken: 'correct-token',
+          ipAddress: '172.183.37.94, 10.11.10.220'
         })
       ).toBeNull()
     })

@@ -17,11 +17,15 @@ export function getInteropContext({
   if (interopToken == null || interopToken !== process.env.INTEROP_TOKEN)
     return null
 
-  const normalizedIpAddress =
+  const normalizedIpAddress = (
     ipAddressInput === '' ? '127.0.0.1' : (ipAddressInput ?? '127.0.0.1')
+  ).split(', ')[0]
+
   const ipAddress = z
     .string()
-    .ip({ message: `Invalid IP address (${normalizedIpAddress})` })
+    .ip({
+      message: `Invalid IP address (${normalizedIpAddress})`
+    })
     .parse(normalizedIpAddress)
 
   if (!validateIpV4(ipAddress)) return null
