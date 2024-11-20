@@ -16,7 +16,10 @@ function getImageFields(video: AdminVideo): {
   alt: string | null | undefined
 } {
   if (video == null) return { src: null, alt: null }
-  const src = video?.image
+  const src =
+    video?.images?.at(-1)?.url != null
+      ? `${video?.images?.at(-1)?.url}/public`
+      : null
   const alt = video?.imageAlt?.at(-1)?.value
 
   return {
@@ -74,6 +77,7 @@ export function VideoImage({ video, isEdit }: VideoImageProps): ReactElement {
         ) : null}
       </Box>
       <Dialog
+        testId="VideoImageUploadDialog"
         open={show}
         onClose={handleClose}
         dialogTitle={{ title: t('Change Image'), closeButton: true }}
@@ -82,7 +86,7 @@ export function VideoImage({ video, isEdit }: VideoImageProps): ReactElement {
           '& .MuiPaper-root': { maxWidth: 400 }
         }}
       >
-        <VideoImageUpload video={video} />
+        <VideoImageUpload video={video} onUploadComplete={handleClose} />
       </Dialog>
     </>
   )
