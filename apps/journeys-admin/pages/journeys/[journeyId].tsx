@@ -24,10 +24,6 @@ import {
   GetCustomDomainsVariables
 } from '../../__generated__/GetCustomDomains'
 import {
-  GetSSRAdminJourney,
-  GetSSRAdminJourneyVariables
-} from '../../__generated__/GetSSRAdminJourney'
-import {
   UserJourneyOpen,
   UserJourneyOpenVariables
 } from '../../__generated__/UserJourneyOpen'
@@ -137,7 +133,7 @@ function JourneyEditPage({ status }): ReactElement {
 
 export const getServerSideProps = withUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, query, resolvedUrl }) => {
+})(async ({ user, locale, resolvedUrl }) => {
   if (user == null)
     return { redirect: { permanent: false, destination: '/users/sign-in' } }
 
@@ -148,61 +144,6 @@ export const getServerSideProps = withUserTokenSSR({
   })
 
   if (redirect != null) return { redirect }
-
-  // try {
-  //   const { data } = await apolloClient.query<
-  //     GetSSRAdminJourney,
-  //     GetSSRAdminJourneyVariables
-  //   >({
-  //     query: GET_SSR_ADMIN_JOURNEY,
-  //     variables: {
-  //       id: query?.journeyId as string
-  //     }
-  //   })
-
-  //   if (data.journey?.team?.id != null) {
-  //     // from: src/components/Editor/Properties/JourneyLink/JourneyLink.tsx
-  //     await apolloClient.query<GetCustomDomains, GetCustomDomainsVariables>({
-  //       query: GET_CUSTOM_DOMAINS,
-  //       variables: {
-  //         teamId: data.journey.team.id
-  //       }
-  //     })
-  //   }
-
-  //   if (data.journey?.template === true) {
-  //     return {
-  //       redirect: {
-  //         permanent: false,
-  //         destination: `/publisher/${data.journey?.id}`
-  //       }
-  //     }
-  //   }
-  //   await apolloClient.mutate<UserJourneyOpen, UserJourneyOpenVariables>({
-  //     mutation: USER_JOURNEY_OPEN,
-  //     variables: { id: data.journey?.id }
-  //   })
-  // } catch (error) {
-  //   if (error.message === 'journey not found') {
-  //     return {
-  //       redirect: {
-  //         permanent: false,
-  //         destination: '/'
-  //       }
-  //     }
-  //   }
-  //   if (error.message === 'user is not allowed to view journey') {
-  //     return {
-  //       props: {
-  //         status: 'noAccess',
-  //         ...translations,
-  //         flags,
-  //         initialApolloState: apolloClient.cache.extract()
-  //       }
-  //     }
-  //   }
-  //   throw error
-  // }
 
   return {
     props: {
