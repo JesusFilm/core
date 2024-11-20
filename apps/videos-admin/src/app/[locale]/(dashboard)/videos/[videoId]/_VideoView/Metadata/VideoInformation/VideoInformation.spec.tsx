@@ -236,7 +236,6 @@ describe('VideoInformation', () => {
 
   it('should not call update if there is no video data', async () => {
     mockUseParams.mockReturnValue({ videoId: 'someId' })
-    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
 
     render(
       <MockedProvider mocks={[mockUpdateVideoInformation]}>
