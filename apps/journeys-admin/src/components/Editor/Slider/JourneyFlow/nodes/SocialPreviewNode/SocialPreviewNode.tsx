@@ -175,6 +175,9 @@ export function SocialPreviewNode(): ReactElement {
                 width={118.5}
                 height={90}
                 priority
+                placeholder="blur"
+                loading="eager"
+                blurDataURL={journey.primaryImageBlock.blurhash}
                 style={{
                   borderRadius: 1.5,
                   maxWidth: '100%',
