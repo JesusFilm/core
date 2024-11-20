@@ -2,6 +2,7 @@ import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../lib/apolloClient'
+import { getLanguageIdsFromTags } from '../../../lib/getLanguageIdsFromTags'
 
 /*
  * TODO
@@ -9,7 +10,11 @@ import { getApolloClient } from '../../../lib/apolloClient'
  */
 
 const GET_VIDEO = graphql(`
-  query GetVideos($term: String!) {
+  query GetVideos(
+    $term: String!
+    $metadataLanguageId: ID
+    $fallbackLanguageId: ID
+  ) {
     videos(where: { title: $term }) {
       id
       label
@@ -21,16 +26,28 @@ const GET_VIDEO = graphql(`
         mobileCinematicLow
         mobileCinematicVeryLow
       }
-      title {
+      title(languageId: $metadataLanguageId) {
         value
       }
-      description {
+      fallbackTitle: title(languageId: $fallbackLanguageId) {
         value
       }
-      snippet {
+      description(languageId: $metadataLanguageId) {
         value
       }
-      studyQuestions {
+      fallbackDescription: description(languageId: $fallbackLanguageId) {
+        value
+      }
+      snippet(languageId: $metadataLanguageId) {
+        value
+      }
+      fallbackSnippet: snippet(languageId: $fallbackLanguageId) {
+        value
+      }
+      studyQuestions(languageId: $metadataLanguageId) {
+        value
+      }
+      fallbackStudyQuestions: studyQuestions(languageId: $fallbackLanguageId) {
         value
       }
       bibleCitations {
@@ -101,6 +118,15 @@ export async function GET(request: NextRequest): Promise<Response> {
   const apiKey = query.get('apiKey') ?? ''
   const term = query.get('term') ?? ''
   const bulk = query.get('bulk') ?? 'false'
+  const metadataLanguageTags =
+    query.get('metadataLanguageTags')?.split(',') ?? []
+
+  const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
+  if (languageResult instanceof Response) {
+    return languageResult
+  }
+
+  const { metadataLanguageId, fallbackLanguageId } = languageResult
 
   if (term === '') {
     return new Response(
@@ -119,7 +145,9 @@ export async function GET(request: NextRequest): Promise<Response> {
   >({
     query: GET_LANGUAGES,
     variables: {
-      term
+      term,
+      metadataLanguageId,
+      fallbackLanguageId
     }
   })
   const languages = languagesData.languages
@@ -129,10 +157,15 @@ export async function GET(request: NextRequest): Promise<Response> {
   >({
     query: GET_VIDEO,
     variables: {
-      term
+      term,
+      metadataLanguageId,
+      fallbackLanguageId
     }
   })
-  const videos = videosData.videos
+  const videos = videosData.videos.filter(
+    (video) =>
+      video.title[0]?.value != null || video.fallbackTitle[0]?.value != null
+  )
 
   const { data: countriesData } = await getApolloClient().query<
     ResultOf<typeof GET_COUNTRIES>
@@ -237,13 +270,21 @@ export async function GET(request: NextRequest): Promise<Response> {
               verseEnd: citation.verseEnd
             })),
             primaryLanguageId: Number(video.primaryLanguageId),
-            title: video.title[0]?.value ?? '',
-            shortDescription: video.snippet[0]?.value ?? '',
-            longDescription: video.description[0]?.value ?? '',
-            studyQuestions: video.studyQuestions.map(
-              (question) => question.value
-            ),
-            metadataLanguageTag: 'en'
+            title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
+            shortDescription:
+              video.snippet[0]?.value ?? video.fallbackSnippet[0]?.value ?? '',
+            longDescription:
+              video.description[0]?.value ??
+              video.fallbackDescription[0]?.value ??
+              '',
+            studyQuestions: (video.studyQuestions.length > 0
+              ? video.studyQuestions
+              : video.fallbackStudyQuestions
+            ).map((question) => question.value),
+            metadataLanguageTag:
+              video.title[0]?.value != null
+                ? metadataLanguageTags[0]
+                : (metadataLanguageTags[1] ?? 'en')
           }))
         }
       }
