@@ -4,6 +4,7 @@ import CardActionArea from '@mui/material/CardActionArea'
 import CardActions from '@mui/material/CardActions'
 import CardContent from '@mui/material/CardContent'
 import NextLink from 'next/link'
+import { useRouter } from 'next/router'
 import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
 import {
@@ -29,6 +30,8 @@ export function JourneyCard({
   variant = JourneyCardVariant.default,
   refetch
 }: JourneyCardProps): ReactElement {
+  const router = useRouter()
+
   const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -45,6 +48,16 @@ export function JourneyCard({
       })
     }
   }, [duplicatedJourneyId, journey])
+
+  useEffect(() => {
+    function handleRouteChangeComplete(): void {
+      setIsLoading(false)
+    }
+    router.events.on('routeChangeComplete', handleRouteChangeComplete)
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChangeComplete)
+    }
+  })
 
   return (
     <Card
