@@ -1,4 +1,4 @@
-import { resolveAny } from 'node:dns/promises'
+import { resolve4, resolveCname } from 'node:dns/promises'
 
 import { Prisma } from '.prisma/api-media-client'
 
@@ -7,10 +7,14 @@ import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
 jest.mock('node:dns/promises', () => ({
-  resolveAny: jest.fn().mockResolvedValue([])
+  resolve4: jest.fn().mockResolvedValue([]),
+  resolveCname: jest.fn().mockResolvedValue([])
 }))
 
-const mockResolveAny = resolveAny as jest.MockedFunction<typeof resolveAny>
+const mockResolve4 = resolve4 as jest.MockedFunction<typeof resolve4>
+const mockResolveCname = resolveCname as jest.MockedFunction<
+  typeof resolveCname
+>
 
 describe('shortLinkDomain', () => {
   const client = getClient()
@@ -236,10 +240,7 @@ describe('shortLinkDomain', () => {
       })
 
       it('should resolve valid field to true when a record present', async () => {
-        mockResolveAny.mockResolvedValueOnce([
-          { type: 'A', address: '1.1.1.1', ttl: 300 },
-          { type: 'A', address: '76.76.21.21', ttl: 300 }
-        ])
+        mockResolve4.mockResolvedValueOnce(['1.1.1.1', '76.76.21.21'])
         prismaMock.shortLinkDomain.findFirstOrThrow.mockResolvedValue({
           id: 'testId',
           hostname: 'example.com',
@@ -268,9 +269,9 @@ describe('shortLinkDomain', () => {
       })
 
       it('should resolve valid field to true when cname record present', async () => {
-        mockResolveAny.mockResolvedValueOnce([
-          { type: 'CNAME', value: 'other-url' },
-          { type: 'CNAME', value: 'cname.vercel-dns.com' }
+        mockResolveCname.mockResolvedValueOnce([
+          'other-url',
+          'cname.vercel-dns.com'
         ])
         prismaMock.shortLinkDomain.findFirstOrThrow.mockResolvedValue({
           id: 'testId',
