@@ -21,8 +21,10 @@ export const useAdminVideoMock: MockedResponse<
         slug: 'jesus',
         images: [
           {
+            id: 'imageId',
             mobileCinematicHigh:
-              'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg'
+              'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
+            url: 'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg'
           }
         ],
         imageAlt: [
@@ -52,7 +54,12 @@ export const useAdminVideoMock: MockedResponse<
         label: 'featureFilm',
         variantLanguagesCount: 2150,
         published: true,
-        noIndex: false
+        noIndex: false,
+        image: null,
+        children: [],
+        variants: [],
+        studyQuestions: [],
+        subtitles: []
       }
     }
   }

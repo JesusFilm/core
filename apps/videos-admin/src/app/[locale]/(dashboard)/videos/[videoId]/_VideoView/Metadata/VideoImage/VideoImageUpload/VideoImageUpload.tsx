@@ -1,25 +1,25 @@
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
-import { ReactElement, useReducer, useState } from 'react'
-import { useDropzone } from 'react-dropzone'
-import Upload1Icon from '@core/shared/ui/icons/Upload1'
+import { gql, useApolloClient, useMutation } from '@apollo/client'
 import type FormDataType from 'form-data'
-import { graphql, ResultOf, VariablesOf } from 'gql.tada'
-import { useMutation } from '@apollo/client'
-import { FileUpload } from '../FileUpload'
+import { ResultOf, VariablesOf, graphql } from 'gql.tada'
+import { useTranslations } from 'next-intl'
+import fetch from 'node-fetch'
+import { useSnackbar } from 'notistack'
+import { ReactElement, useState } from 'react'
+
 import { GetAdminVideo } from '../../../../../../../../../libs/useAdminVideo'
+import { FileUpload } from '../FileUpload'
 
 export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = graphql(`
   mutation CreateCloudflareUploadByFile($input: ImageInput!) {
     createCloudflareUploadByFile(input: $input) {
+      __typename
       uploadUrl
       id
+      url
+      mobileCinematicHigh
     }
   }
 `)
-
-
 
 export type CreateCloudflareUploadByFile = ResultOf<
   typeof CREATE_CLOUDFLARE_UPLOAD_BY_FILE
@@ -41,102 +41,143 @@ export type CloudflareUploadCompleteVariables = VariablesOf<
 >
 
 export const DELETE_VIDEO_CLOUDFLARE_IMAGE = graphql(`
-mutation DeleteVideoCloudflareImage($id: ID!) {
-  deleteCloudflareImage(id: $id)
-}
-  `)
+  mutation DeleteVideoCloudflareImage($id: ID!) {
+    deleteCloudflareImage(id: $id)
+  }
+`)
 
-function getFileExtension(path: string): string | null {
-  const regex = /(?:\.([^.]+))?$/
+export type DeleteVideoCloudflareImage = ResultOf<
+  typeof DELETE_VIDEO_CLOUDFLARE_IMAGE
+>
 
-  const match = path.match(regex)
-
-  return match != null ? match[1] : null
-}
-
-function getFileName(path: string): string | null {
-  const fileName = path.match(/[^/]+$/)
-
-  return fileName != null ? fileName[0] : null
-}
+export type DeleteVideoCloudflareImageVariables = VariablesOf<
+  typeof DELETE_VIDEO_CLOUDFLARE_IMAGE
+>
 
 interface VideoImageUpload {
   video: GetAdminVideo['adminVideo']
+  onUploadComplete?: () => void
 }
 
-export function VideoImageUpload({ video }: VideoImageUpload): ReactElement {
+export function VideoImageUpload({
+  video,
+  onUploadComplete
+}: VideoImageUpload): ReactElement {
+  const t = useTranslations()
+  const { enqueueSnackbar } = useSnackbar()
+  const [loading, setLoading] = useState(false)
+  const { cache } = useApolloClient()
   const [createCloudflareUploadByFile] =
     useMutation<CreateCloudflareUploadByFile>(CREATE_CLOUDFLARE_UPLOAD_BY_FILE)
   const [uploadComplete] = useMutation<CloudflareUploadComplete>(
     CLOUDFLARE_UPLOAD_COMPLETE
   )
 
-  console.log({video})
-
   const [deleteImage] = useMutation(DELETE_VIDEO_CLOUDFLARE_IMAGE)
 
   const handleDrop = async (file: File): Promise<void> => {
-    if (file == null) null
-
+    if (file == null) return
+    setLoading(true)
     const { data } = await createCloudflareUploadByFile({
       variables: {
         input: {
           videoId: video.id,
           aspectRatio: 'banner'
         }
+      },
+      onError() {
+        setLoading(false)
       }
     })
 
-    console.log({ data })
-
     if (data?.createCloudflareUploadByFile == null) {
-      // dispatch('Error')
+      setLoading(false)
+      enqueueSnackbar(t('Uploading failed, please try again'), {
+        variant: 'error',
+        preventDuplicate: false
+      })
       return
     }
 
-    const { id, uploadUrl } = data?.createCloudflareUploadByFile
+    const { id, uploadUrl } = data.createCloudflareUploadByFile
 
     if (uploadUrl != null) {
-      const formData = new FormData()
-      formData.append('file', file)
-
       try {
+        const formData = new FormData()
+        formData.append('file', file)
         const response = await (
           await fetch(uploadUrl, {
             method: 'POST',
             body: formData as unknown as FormDataType
           })
         ).json()
-        console.log({ response })
 
-        // response.success === true ? d
-        const src = `https://imagedelivery.net/${
-          process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
-        }/${id}/public`
+        if (response.errors.length !== 0)
+          throw new Error(t('Uploading failed, please try again'))
 
-        const completeResponse = await uploadComplete({
+        await uploadComplete({
           variables: {
             id
           }
         })
-        console.log({ completeResponse })
-
-        const deleteResponse = await deleteImage({
+        await deleteImage({
           variables: {
             id: video.images[0].id
           }
         })
-        console.log({ deleteResponse })
+        if (response.success) {
+          cache.modify({
+            id: cache.identify({ id: video.id, __typename: 'Video' }),
+            fields: {
+              images(refs = []) {
+                const newRef = cache.writeFragment({
+                  data: data.createCloudflareUploadByFile,
+                  fragment: gql`
+                    fragment NewCloudflareImage on CloudflareImage {
+                      id
+                      url
+                      uploadUrl
+                      mobileCinematicHigh
+                    }
+                  `
+                })
+                return [...refs, newRef]
+              }
+            }
+          })
+          cache.modify({
+            id: cache.identify({ id: video.id, __typename: 'Video' }),
+            fields: {
+              images(refs, { readField }) {
+                return refs.filter(
+                  (ref) => video.images[0].id !== readField('id', ref)
+                )
+              }
+            }
+          })
+          enqueueSnackbar(t('Image uploaded successfully'), {
+            variant: 'success',
+            preventDuplicate: false
+          })
+        }
       } catch {
-        // dispatch('Error')
+        enqueueSnackbar(t('Uploading failed, please try again'), {
+          variant: 'error',
+          preventDuplicate: false
+        })
+      } finally {
+        setLoading(false)
       }
     }
-
-    // const fileName = file.name.split('.')[0]
-    // const ext = getFileExtension(file.name)
-
-    // handleDrop({ file, fileName: file.name, fileExtension: ext })
+    setLoading(false)
   }
 
-  return <FileUpload onDrop={handleDrop} accept={{ 'image/*': [] }} />
+  return (
+    <FileUpload
+      onDrop={handleDrop}
+      accept={{ 'image/*': [] }}
+      onUploadComplete={onUploadComplete}
+      loading={loading}
+    />
+  )
 }
