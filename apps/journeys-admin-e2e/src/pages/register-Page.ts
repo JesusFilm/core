@@ -35,10 +35,11 @@ export class Register {
     await this.verifyPageNavigatedBeforeStartPage()
     await this.clickIAgreeBtn()
     await this.clickNextBtn()
+    await this.waitUntilTeamsPageLoaded()
     // disable while formium is broken
     // await this.verifyPageNavigatedFewQuestionsPage()
     // await this.clickNextBtnInFewQuestionPage()
-    // await this.enterTeamName()
+    await this.enterTeamName()
     await this.clickCreateBtn()
     await this.waitUntilDiscoverPageLoaded()
     await this.waitUntilTheToestMsgDisappear()
@@ -124,6 +125,12 @@ export class Register {
     await this.page
       .locator('button[data-testid="TermsAndConditionsNextButton"]')
       .click()
+  }
+
+  async waitUntilTeamsPageLoaded() {
+    await expect(
+      this.page.locator('form[data-testid="CreateTeamForm"]')
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
 
   async enterTeamName() {

@@ -75,7 +75,7 @@ export function TeamOnboarding({ user }: TeamOnboardingProps): ReactElement {
         isValid,
         isSubmitting
       }) => (
-        <Form>
+        <Form data-testid="CreateTeamForm">
           <Stack spacing={4}>
             <TextField
               id="title"
