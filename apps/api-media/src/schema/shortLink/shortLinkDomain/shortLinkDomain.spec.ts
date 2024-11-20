@@ -1,8 +1,16 @@
+import { resolveAny } from 'node:dns/promises'
+
 import { Prisma } from '.prisma/api-media-client'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
+
+jest.mock('node:dns/promises', () => ({
+  resolveAny: jest.fn().mockResolvedValue([])
+}))
+
+const mockResolveAny = resolveAny as jest.MockedFunction<typeof resolveAny>
 
 describe('shortLinkDomain', () => {
   const client = getClient()
@@ -146,6 +154,7 @@ describe('shortLinkDomain', () => {
                 createdAt
                 updatedAt
                 services
+                valid
               }
             }
             ... on NotFoundError {
@@ -158,6 +167,14 @@ describe('shortLinkDomain', () => {
           }
         }
       `)
+
+      beforeEach(() => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+      })
 
       it('should fetch a short link domain by id', async () => {
         prismaMock.shortLinkDomain.findFirstOrThrow.mockResolvedValue({
@@ -179,7 +196,8 @@ describe('shortLinkDomain', () => {
                 hostname: 'example.com',
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
-                services: []
+                services: [],
+                valid: false
               }
             }
           }
@@ -212,6 +230,70 @@ describe('shortLinkDomain', () => {
                   value: 'testId'
                 }
               ]
+            }
+          }
+        })
+      })
+
+      it('should resolve valid field to true when a record present', async () => {
+        mockResolveAny.mockResolvedValueOnce([
+          { type: 'A', address: '1.1.1.1', ttl: 300 },
+          { type: 'A', address: '76.76.21.21', ttl: 300 }
+        ])
+        prismaMock.shortLinkDomain.findFirstOrThrow.mockResolvedValue({
+          id: 'testId',
+          hostname: 'example.com',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          services: []
+        })
+        const result = await client({
+          document: SHORT_LINK_DOMAIN_QUERY,
+          variables: { id: 'testId' }
+        })
+        expect(result).toEqual({
+          data: {
+            shortLinkDomain: {
+              data: {
+                id: 'testId',
+                hostname: 'example.com',
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
+                services: [],
+                valid: true
+              }
+            }
+          }
+        })
+      })
+
+      it('should resolve valid field to true when cname record present', async () => {
+        mockResolveAny.mockResolvedValueOnce([
+          { type: 'CNAME', value: 'other-url' },
+          { type: 'CNAME', value: 'cname.vercel-dns.com' }
+        ])
+        prismaMock.shortLinkDomain.findFirstOrThrow.mockResolvedValue({
+          id: 'testId',
+          hostname: 'example.com',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          services: []
+        })
+        const result = await client({
+          document: SHORT_LINK_DOMAIN_QUERY,
+          variables: { id: 'testId' }
+        })
+        expect(result).toEqual({
+          data: {
+            shortLinkDomain: {
+              data: {
+                id: 'testId',
+                hostname: 'example.com',
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
+                services: [],
+                valid: true
+              }
             }
           }
         })
