@@ -80,13 +80,22 @@ const GET_VIDEO = graphql(`
 `)
 
 const GET_LANGUAGES = graphql(`
-  query GetLanguagesWithTags($term: String, $limit: Int) {
+  query GetLanguagesWithTags(
+    $term: String
+    $limit: Int
+    $metadataLanguageId: ID
+    $fallbackLanguageId: ID
+  ) {
     languagesCount(term: $term)
     languages(limit: $limit, term: $term) {
       id
       iso3
       bcp47
-      name {
+      name(languageId: $metadataLanguageId) {
+        value
+        primary
+      }
+      fallbackName: name(languageId: $fallbackLanguageId) {
         value
         primary
       }
@@ -96,14 +105,24 @@ const GET_LANGUAGES = graphql(`
 `)
 
 const GET_COUNTRIES = graphql(`
-  query GetCountries($term: String!) {
+  query GetCountries(
+    $term: String!
+    $metadataLanguageId: ID
+    $fallbackLanguageId: ID
+  ) {
     countries(term: $term) {
       id
-      name {
+      name(languageId: $metadataLanguageId) {
+        value
+      }
+      fallbackName: name(languageId: $fallbackLanguageId) {
         value
       }
       continent {
-        name {
+        name(languageId: $metadataLanguageId) {
+          value
+        }
+        fallbackName: name(languageId: $fallbackLanguageId) {
           value
         }
       }
@@ -150,7 +169,10 @@ export async function GET(request: NextRequest): Promise<Response> {
       fallbackLanguageId
     }
   })
-  const languages = languagesData.languages
+  const languages = languagesData.languages.filter(
+    (language) =>
+      language.name[0]?.value != null || language.fallbackName[0]?.value != null
+  )
 
   const { data: videosData } = await getApolloClient().query<
     ResultOf<typeof GET_VIDEO>
@@ -172,10 +194,15 @@ export async function GET(request: NextRequest): Promise<Response> {
   >({
     query: GET_COUNTRIES,
     variables: {
-      term
+      term,
+      metadataLanguageId,
+      fallbackLanguageId
     }
   })
-  const countries = countriesData.countries
+  const countries = countriesData.countries.filter(
+    (country) =>
+      country.name[0]?.value != null || country.fallbackName[0]?.value != null
+  )
 
   let transformedResponse
   if (bulk === 'true') {
@@ -207,9 +234,16 @@ export async function GET(request: NextRequest): Promise<Response> {
           resourceCount: videos.length + countries.length + languages.length,
           mediaCountries: countries.map((country) => ({
             countryId: country.id,
-            name: country.name[0]?.value ?? '',
-            continentName: country.continent.name[0]?.value ?? '',
-            metadataLanguageTag: 'en',
+            name:
+              country.name[0]?.value ?? country.fallbackName[0]?.value ?? '',
+            continentName:
+              country.continent.name[0]?.value ??
+              country.continent.fallbackName[0]?.value ??
+              '',
+            metadataLanguageTag:
+              country.name[0]?.value != null
+                ? metadataLanguageTags[0]
+                : (metadataLanguageTags[1] ?? 'en'),
             longitude: country.longitude,
             latitude: country.latitude,
             _links: {
@@ -223,10 +257,17 @@ export async function GET(request: NextRequest): Promise<Response> {
             iso3: language.iso3,
             bcp47: language.bcp47,
             primaryCountryId: language.primaryCountryId,
-            name: language.name.find(({ primary }) => !primary)?.value ?? '',
+            name:
+              language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
             nameNative:
-              language.name.find(({ primary }) => primary)?.value ?? '',
-            metadataLanguageTag: 'en',
+              (
+                language.name.find(({ primary }) => primary) ??
+                language.fallbackName.find(({ primary }) => primary)
+              )?.value ?? '',
+            metadataLanguageTag:
+              language.name[0]?.value != null
+                ? metadataLanguageTags[0]
+                : (metadataLanguageTags[1] ?? 'en'),
             _links: {
               self: {
                 href: `http://api.arclight.org/v2/media-languages/${language.id}?apiKey=${apiKey}`
