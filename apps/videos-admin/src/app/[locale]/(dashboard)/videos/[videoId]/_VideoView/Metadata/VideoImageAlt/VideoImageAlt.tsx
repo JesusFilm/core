@@ -1,5 +1,6 @@
 import { useMutation } from '@apollo/client'
 import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
 import { useParams } from 'next/navigation'
@@ -7,26 +8,25 @@ import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import { ResizableTextField } from '../../../../../../../../components/ResizableTextField'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { useAdminVideo } from '../../../../../../../../libs/useAdminVideo'
 import { useEdit } from '../../../_EditProvider'
 
-export const UPDATE_VIDEO_DESCRIPTION = graphql(`
-  mutation UpdateVideoDescription($input: VideoTranslationUpdateInput!) {
-    videoDescriptionUpdate(input: $input) {
+export const UPDATE_VIDEO_IMAGE_ALT = graphql(`
+  mutation UpdateVideoImageAlt($input: VideoTranslationUpdateInput!) {
+    videoImageAltUpdate(input: $input) {
       id
       value
     }
   }
 `)
 
-export function VideoDescription(): ReactElement {
+export function VideoImageAlt(): ReactElement {
   const t = useTranslations()
   const {
     state: { isEdit }
   } = useEdit()
-  const [updateVideoDescription] = useMutation(UPDATE_VIDEO_DESCRIPTION)
+  const [updateVideoImageAlt] = useMutation(UPDATE_VIDEO_IMAGE_ALT)
   const params = useParams<{ videoId: string; locale: string }>()
   const { data } = useAdminVideo({
     variables: { videoId: params?.videoId as string }
@@ -34,18 +34,18 @@ export function VideoDescription(): ReactElement {
   const video = data?.adminVideo
 
   const validationSchema = object().shape({
-    description: string().required(t('Description is required'))
+    imageAlt: string().trim().required(t('Image Alt is required'))
   })
 
-  async function handleUpdateVideoDescription(
+  async function handleUpdateVideoImageAlt(
     values: FormikValues
   ): Promise<void> {
     if (video == null) return
-    await updateVideoDescription({
+    await updateVideoImageAlt({
       variables: {
         input: {
-          id: video.description[0].id,
-          value: values.description
+          id: video.imageAlt[0].id,
+          value: values.imageAlt
         }
       }
     })
@@ -54,25 +54,29 @@ export function VideoDescription(): ReactElement {
   return (
     <Formik
       initialValues={{
-        description: video?.description?.[0].value
+        imageAlt: video?.imageAlt?.[0].value
       }}
-      onSubmit={handleUpdateVideoDescription}
+      onSubmit={handleUpdateVideoImageAlt}
       validationSchema={validationSchema}
       enableReinitialize
     >
       {({ values, errors, handleChange, isValid, isSubmitting, dirty }) => (
         <Form>
           <Stack gap={2}>
-            <ResizableTextField
-              name="description"
-              value={values.description}
-              onChange={handleChange}
-              error={Boolean(errors.description)}
-              helperText={errors.description as string}
-              disabled={!isEdit}
-              minRows={6}
-              maxRows={6}
-            />
+            <Stack direction="row" gap={2}>
+              <TextField
+                id="imageAlt"
+                name="imageAlt"
+                label={t('Image Alt')}
+                fullWidth
+                value={values.imageAlt}
+                variant="outlined"
+                error={Boolean(errors.imageAlt)}
+                onChange={handleChange}
+                helperText={errors.imageAlt as string}
+                disabled={!isEdit}
+              />
+            </Stack>
             {isEdit && (
               <Stack direction="row" justifyContent="flex-end">
                 <SaveButton disabled={!isValid || isSubmitting || !dirty} />

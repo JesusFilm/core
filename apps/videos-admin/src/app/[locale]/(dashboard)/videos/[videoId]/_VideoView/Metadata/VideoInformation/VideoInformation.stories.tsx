@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { screen } from '@testing-library/react'
+import { screen, userEvent } from '@storybook/test'
 import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
-import { VideoInformation } from './VideoInfomation'
 import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import userEvent from '@testing-library/user-event'
 import { EditProvider } from '../../../_EditProvider'
+
+import { VideoInformation } from './VideoInfomation'
 
 const meta: Meta<typeof VideoInformation> = {
   ...videosAdminConfig,
