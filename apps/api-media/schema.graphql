@@ -494,6 +494,11 @@ type ShortLinkDomain {
   The services that are enabled for this domain, if empty then this domain can be used by all services
   """
   services: [Service!]!
+
+  """
+  Whether the domain is valid (has a CNAME record or A record pointing to the short link service)
+  """
+  valid: Boolean!
 }
 
 type Tag

@@ -3132,6 +3132,8 @@ export type ShortLinkDomain = {
   /** The services that are enabled for this domain, if empty then this domain can be used by all services */
   services: Array<Service>;
   updatedAt: Scalars['Date']['output'];
+  /** Whether the domain is valid (has a CNAME record or A record pointing to the short link service) */
+  valid: Scalars['Boolean']['output'];
 };
 
 export type SignUpBlock = Block & {

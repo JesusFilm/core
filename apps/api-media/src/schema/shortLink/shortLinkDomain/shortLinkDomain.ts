@@ -1,3 +1,5 @@
+import { resolveAny } from 'node:dns/promises'
+
 import { ZodError } from 'zod'
 
 import { Prisma } from '.prisma/api-media-client'
@@ -23,6 +25,24 @@ builder.prismaObject('ShortLinkDomain', {
       nullable: false,
       description:
         'The services that are enabled for this domain, if empty then this domain can be used by all services'
+    }),
+    valid: t.field({
+      type: 'Boolean',
+      authScopes: { isPublisher: true },
+      nullable: false,
+      description:
+        'Whether the domain is valid (has a CNAME record or A record pointing to the short link service)',
+      resolve: async ({ hostname }) => {
+        try {
+          return (await resolveAny(hostname)).some(
+            (r) =>
+              (r.type === 'A' && r.address === '76.76.21.21') ||
+              (r.type === 'CNAME' && r.value === 'cname.vercel-dns.com')
+          )
+        } catch {
+          return false
+        }
+      }
     })
   })
 })
