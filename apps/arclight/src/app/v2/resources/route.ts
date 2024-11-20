@@ -4,11 +4,6 @@ import { NextRequest } from 'next/server'
 import { getApolloClient } from '../../../lib/apolloClient'
 import { getLanguageIdsFromTags } from '../../../lib/getLanguageIdsFromTags'
 
-/*
- * TODO
- * metadataLanguageTags
- */
-
 const GET_VIDEO = graphql(`
   query GetVideos(
     $term: String!
