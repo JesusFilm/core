@@ -110,11 +110,7 @@ export function TemplateGalleryCard({
         }
       }}
     >
-      <NextLink
-        href="/templates/070a91a8-de63-4d36-a7b2-b4c12b755416"
-        passHref
-        legacyBehavior
-      >
+      <NextLink href={journeyIdPath} passHref legacyBehavior prefetch>
         <Box
           component="a"
           tabIndex={-1}
