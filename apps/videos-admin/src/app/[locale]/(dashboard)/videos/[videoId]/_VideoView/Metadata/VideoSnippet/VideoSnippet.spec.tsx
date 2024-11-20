@@ -1,11 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
 import { useParams } from 'next/navigation'
+import { NextIntlClientProvider } from 'next-intl'
 
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { EditProvider } from '../../../_EditProvider'
-import { VideoSnippet, UPDATE_VIDEO_SNIPPET } from './VideoSnippet'
+
+import { UPDATE_VIDEO_SNIPPET, VideoSnippet } from './VideoSnippet'
 
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
@@ -38,6 +39,7 @@ describe('VideoSnippet', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
+
   it('should disable field if not in edit mode', () => {
     render(
       <MockedProvider>
@@ -138,7 +140,6 @@ describe('VideoSnippet', () => {
 
   it('should not call update if there is no video data', async () => {
     mockUseParams.mockReturnValue({ videoId: 'someId' })
-    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
 
     render(
       <MockedProvider mocks={[mockUpdateVideoSnippet]}>

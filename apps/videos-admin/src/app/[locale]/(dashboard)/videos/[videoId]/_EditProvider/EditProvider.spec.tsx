@@ -1,8 +1,7 @@
-import { render, renderHook, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
-import { EditProvider, EditState, reducer, useEdit } from './EditProvider'
+import { EditProvider, EditState, reducer } from './EditProvider'
 import { TestEditProvider } from './TestEditProvider'
-import { ReactNode } from 'react'
 
 describe('EditProvider', () => {
   const state: EditState = {
