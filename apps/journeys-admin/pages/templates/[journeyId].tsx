@@ -116,16 +116,12 @@ function TemplateDetailsPage(): ReactElement {
   )
 }
 
-export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
-  user,
+export const getServerSideProps: GetStaticProps = async ({
   locale,
-  resolvedUrl,
   params
 }) => {
-  const { redirect, apolloClient, translations } = await initAndAuthApp({
-    user,
-    locale,
-    resolvedUrl
+  const { apolloClient, translations } = await initAndAuthApp({
+    locale
   })
 
   if (params?.journeyId == null) {
@@ -137,7 +133,7 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
     }
   }
 
-  if (redirect != null) return { redirect }
+  // if (redirect != null) return { redirect }
 
   try {
     // TemplateDetailsPage
@@ -182,6 +178,6 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
       initialApolloState: apolloClient.cache.extract()
     }
   }
-})
+}
 
 export default withUser()(TemplateDetailsPage)
