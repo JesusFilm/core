@@ -22,7 +22,10 @@ import { ArchivedJourneyList } from '.'
 
 jest.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+  useRouter: jest.fn(() => ({
+    query: { tab: 'active' },
+    events: { on: jest.fn(), off: jest.fn() }
+  }))
 }))
 
 const archivedJourneysMock: MockedResponse<
