@@ -2521,6 +2521,11 @@ export type QueryBlocksArgs = {
 };
 
 
+export type QueryCountriesArgs = {
+  term?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryCountryArgs = {
   id: Scalars['ID']['input'];
 };
