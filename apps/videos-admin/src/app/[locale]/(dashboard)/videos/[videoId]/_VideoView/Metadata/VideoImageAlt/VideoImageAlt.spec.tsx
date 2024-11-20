@@ -6,7 +6,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { EditProvider } from '../../../_EditProvider'
 
-import { UPDATE_VIDEO_DESCRIPTION, VideoDescription } from './VideoDescription'
+import { UPDATE_VIDEO_IMAGE_ALT, VideoImageAlt } from './VideoImageAlt'
 
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
@@ -15,22 +15,22 @@ jest.mock('next/navigation', () => ({
 
 const mockUseParams = useParams as jest.MockedFunction<typeof mockUseParams>
 
-describe('VideoDescription', () => {
-  const mockUpdateVideoDescription = {
+describe('VideoImageAlt', () => {
+  const mockUpdateVideoImageAlt = {
     request: {
-      query: UPDATE_VIDEO_DESCRIPTION,
+      query: UPDATE_VIDEO_IMAGE_ALT,
       variables: {
         input: {
-          id: 'c1afff2e-057e-4e4a-a48c-11f005ffbb06',
-          value: 'video description text'
+          id: 'e53b7688-f286-4743-983d-e8dacce35ad9',
+          value: 'video image alt text'
         }
       }
     },
     result: jest.fn(() => ({
       data: {
-        videoDescriptionUpdate: {
-          id: 'c1afff2e-057e-4e4a-a48c-11f005ffbb06',
-          value: 'video description text'
+        VideoImageAltUpdate: {
+          id: 'e53b7688-f286-4743-983d-e8dacce35ad9',
+          value: 'video image alt text'
         }
       }
     }))
@@ -45,7 +45,7 @@ describe('VideoDescription', () => {
       <MockedProvider>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: false }}>
-            <VideoDescription />
+            <VideoImageAlt />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
@@ -59,7 +59,7 @@ describe('VideoDescription', () => {
       <MockedProvider>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: false }}>
-            <VideoDescription />
+            <VideoImageAlt />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
@@ -75,7 +75,7 @@ describe('VideoDescription', () => {
       <MockedProvider>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: true }}>
-            <VideoDescription />
+            <VideoImageAlt />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
@@ -84,7 +84,7 @@ describe('VideoDescription', () => {
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
   })
 
-  it('should enable save button if description has been changed', async () => {
+  it('should enable save button if image alt has been changed', async () => {
     mockUseParams.mockReturnValue({ videoId: 'someId' })
     const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
 
@@ -92,7 +92,7 @@ describe('VideoDescription', () => {
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: true }}>
-            <VideoDescription />
+            <VideoImageAlt />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
@@ -100,7 +100,7 @@ describe('VideoDescription', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByRole('textbox')).toHaveValue('Jesus description text')
+    expect(screen.getByRole('textbox')).toHaveValue('JESUS')
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'Hello' }
     })
@@ -108,17 +108,17 @@ describe('VideoDescription', () => {
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
   })
 
-  it('should update video description on submit', async () => {
+  it('should update video image alt on submit', async () => {
     mockUseParams.mockReturnValue({ videoId: 'someId' })
     const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
 
     render(
       <MockedProvider
-        mocks={[{ ...useAdminVideoMock, result }, mockUpdateVideoDescription]}
+        mocks={[{ ...useAdminVideoMock, result }, mockUpdateVideoImageAlt]}
       >
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: true }}>
-            <VideoDescription />
+            <VideoImageAlt />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
@@ -126,15 +126,15 @@ describe('VideoDescription', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByRole('textbox')).toHaveValue('Jesus description text')
+    expect(screen.getByRole('textbox')).toHaveValue('JESUS')
     fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'video description text' }
+      target: { value: 'video image alt text' }
     })
-    expect(screen.getByRole('textbox')).toHaveValue('video description text')
+    expect(screen.getByRole('textbox')).toHaveValue('video image alt text')
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
     await waitFor(() =>
-      expect(mockUpdateVideoDescription.result).toHaveBeenCalled()
+      expect(mockUpdateVideoImageAlt.result).toHaveBeenCalled()
     )
   })
 
@@ -143,10 +143,10 @@ describe('VideoDescription', () => {
     const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
 
     render(
-      <MockedProvider mocks={[mockUpdateVideoDescription]}>
+      <MockedProvider mocks={[mockUpdateVideoImageAlt]}>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: true }}>
-            <VideoDescription />
+            <VideoImageAlt />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
@@ -154,17 +154,17 @@ describe('VideoDescription', () => {
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'video description text' }
+      target: { value: 'video image alt text' }
     })
-    expect(screen.getByRole('textbox')).toHaveValue('video description text')
+    expect(screen.getByRole('textbox')).toHaveValue('video image alt text')
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
     await waitFor(() =>
-      expect(mockUpdateVideoDescription.result).not.toHaveBeenCalled()
+      expect(mockUpdateVideoImageAlt.result).not.toHaveBeenCalled()
     )
   })
 
-  it('should require description field', async () => {
+  it('should require image alt field', async () => {
     mockUseParams.mockReturnValue({ videoId: 'someId' })
     const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
 
@@ -172,7 +172,7 @@ describe('VideoDescription', () => {
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: true }}>
-            <VideoDescription />
+            <VideoImageAlt />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
@@ -180,12 +180,12 @@ describe('VideoDescription', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByRole('textbox')).toHaveValue('Jesus description text')
-    fireEvent.change(screen.getByRole('textbox'), {
+    expect(screen.getByRole('textbox')).toHaveValue('JESUS')
+    fireEvent.change(screen.getByRole('textbox', { name: 'Image Alt' }), {
       target: { value: '' }
     })
     await waitFor(() =>
-      expect(screen.getByText('Description is required')).toBeInTheDocument()
+      expect(screen.getByText('Image Alt is required')).toBeInTheDocument()
     )
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
   })

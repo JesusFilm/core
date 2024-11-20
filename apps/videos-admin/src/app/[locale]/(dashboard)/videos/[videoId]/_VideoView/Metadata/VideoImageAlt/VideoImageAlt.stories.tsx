@@ -7,25 +7,25 @@ import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { EditProvider } from '../../../_EditProvider'
 
-import { VideoDescription } from './VideoDescription'
+import { VideoImageAlt } from './VideoImageAlt'
 
-const meta: Meta<typeof VideoDescription> = {
+const meta: Meta<typeof VideoImageAlt> = {
   ...videosAdminConfig,
-  component: VideoDescription,
-  title: 'Videos-Admin/VideoDescription',
+  component: VideoImageAlt,
+  title: 'Videos-Admin/VideoImageAlt',
   parameters: {
     ...videosAdminConfig.parameters,
     tags: ['!autodocs']
   }
 }
 
-type Story = StoryObj<ComponentProps<typeof VideoDescription>>
+type Story = StoryObj<ComponentProps<typeof VideoImageAlt>>
 
 const Template: Story = {
   render: ({ ...args }) => (
     <NextIntlClientProvider locale="en">
       <EditProvider initialState={args.state}>
-        <VideoDescription />
+        <VideoImageAlt />
       </EditProvider>
     </NextIntlClientProvider>
   )
@@ -99,8 +99,11 @@ export const Required = {
     }
   },
   play: async () => {
-    await userEvent.type(screen.getByRole('textbox'), 'a')
-    await userEvent.clear(screen.getByRole('textbox'))
+    await userEvent.type(
+      screen.getByRole('textbox', { name: 'Image Alt' }),
+      'a'
+    )
+    await userEvent.clear(screen.getByRole('textbox', { name: 'Image Alt' }))
   }
 }
 

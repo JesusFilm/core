@@ -3,6 +3,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
+
 import { ResizableTextField } from './ResizableTextField'
 
 const meta: Meta<typeof ResizableTextField> = {
