@@ -5,15 +5,15 @@ import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useEdit } from '../../_EditProvider'
 import { Section } from '../Section'
 
 import { StudyQuestionsList } from './StudyQuestionsList'
-import { VideoImage } from './VideoImage'
-import { VideoInformation } from './VideoInformation'
-import { useEdit } from '../../_EditProvider'
-import { VideoSnippet } from './VideoSnippet'
 import { VideoDescription } from './VideoDescription'
+import { VideoImage } from './VideoImage'
 import { VideoImageAlt } from './VideoImageAlt'
+import { VideoInformation } from './VideoInformation'
+import { VideoSnippet } from './VideoSnippet'
 
 interface MetadataProps {
   video: AdminVideo
@@ -47,7 +47,6 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
             <VideoSnippet />
           </Section>
           <Section title={t('Description')}>
-            <VideoDescription />
             <VideoDescription />
           </Section>
           <StudyQuestionsList studyQuestions={video?.studyQuestions} />
