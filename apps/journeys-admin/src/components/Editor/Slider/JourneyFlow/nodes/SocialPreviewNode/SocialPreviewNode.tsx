@@ -174,6 +174,7 @@ export function SocialPreviewNode(): ReactElement {
                 alt={journey.primaryImageBlock.alt ?? ''}
                 width={118.5}
                 height={90}
+                priority
                 style={{
                   borderRadius: 1.5,
                   maxWidth: '100%',
