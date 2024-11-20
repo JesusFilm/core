@@ -1,11 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
 import { useParams } from 'next/navigation'
+import { NextIntlClientProvider } from 'next-intl'
 
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { EditProvider } from '../../../_EditProvider'
-import { VideoImageAlt, UPDATE_VIDEO_IMAGE_ALT } from './VideoImageAlt'
+
+import { UPDATE_VIDEO_IMAGE_ALT, VideoImageAlt } from './VideoImageAlt'
 
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
@@ -38,6 +39,7 @@ describe('VideoImageAlt', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
+
   it('should disable field if not in edit mode', () => {
     render(
       <MockedProvider>

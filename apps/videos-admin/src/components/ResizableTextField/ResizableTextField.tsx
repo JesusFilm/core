@@ -1,5 +1,5 @@
+import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { ReactElement } from 'react'
-import { TextField, TextFieldProps } from '@mui/material'
 
 export function ResizableTextField(
   props: Omit<TextFieldProps, 'variant | multiline | sx'>
