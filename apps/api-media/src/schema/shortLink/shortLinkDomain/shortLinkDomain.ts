@@ -1,4 +1,4 @@
-import { resolveAny } from 'node:dns/promises'
+import { resolve4, resolveCname } from 'node:dns/promises'
 
 import { ZodError } from 'zod'
 
@@ -34,10 +34,12 @@ builder.prismaObject('ShortLinkDomain', {
         'Whether the domain is valid (has a CNAME record or A record pointing to the short link service)',
       resolve: async ({ hostname }) => {
         try {
-          return (await resolveAny(hostname)).some(
-            (r) =>
-              (r.type === 'A' && r.address === '76.76.21.21') ||
-              (r.type === 'CNAME' && r.value === 'cname.vercel-dns.com')
+          const records = [
+            ...(await resolve4(hostname)),
+            ...(await resolveCname(hostname))
+          ]
+          return records.some(
+            (r) => r === '76.76.21.21' || r === 'cname.vercel-dns.com'
           )
         } catch {
           return false
