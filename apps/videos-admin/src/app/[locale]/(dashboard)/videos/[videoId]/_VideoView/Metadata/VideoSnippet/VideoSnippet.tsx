@@ -52,7 +52,7 @@ export function VideoSnippet({
   return (
     <Formik
       initialValues={{
-        snippet: videoSnippets?.[0].value
+        snippet: videoSnippets[0].value
       }}
       onSubmit={handleUpdateVideoSnippet}
       validationSchema={validationSchema}

@@ -1,20 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { useParams } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { EditProvider } from '../../../_EditProvider'
 
 import { UPDATE_VIDEO_SNIPPET, VideoSnippet } from './VideoSnippet'
 import { mockVideoSnippets } from './VideoSnippet.data'
-
-jest.mock('next/navigation', () => ({
-  ...jest.requireActual('next/navigation'),
-  useParams: jest.fn()
-}))
-
-const mockUseParams = useParams as jest.MockedFunction<typeof mockUseParams>
 
 describe('VideoSnippet', () => {
   const mockUpdateVideoSnippet = {
@@ -86,11 +77,8 @@ describe('VideoSnippet', () => {
   })
 
   it('should enable save button if snippet has been changed', async () => {
-    mockUseParams.mockReturnValue({ videoId: 'someId' })
-    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
-
     render(
-      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+      <MockedProvider>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: true }}>
             <VideoSnippet videoSnippets={mockVideoSnippets} />
@@ -109,8 +97,6 @@ describe('VideoSnippet', () => {
   })
 
   it('should update video snippet on submit', async () => {
-    mockUseParams.mockReturnValue({ videoId: 'someId' })
-
     render(
       <MockedProvider mocks={[mockUpdateVideoSnippet]}>
         <NextIntlClientProvider locale="en">
@@ -135,8 +121,6 @@ describe('VideoSnippet', () => {
   })
 
   it('should not call update if there is no video data', async () => {
-    mockUseParams.mockReturnValue({ videoId: 'someId' })
-
     render(
       <MockedProvider mocks={[mockUpdateVideoSnippet]}>
         <NextIntlClientProvider locale="en">
@@ -160,8 +144,6 @@ describe('VideoSnippet', () => {
   })
 
   it('should require snippet field', async () => {
-    mockUseParams.mockReturnValue({ videoId: 'someId' })
-
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">

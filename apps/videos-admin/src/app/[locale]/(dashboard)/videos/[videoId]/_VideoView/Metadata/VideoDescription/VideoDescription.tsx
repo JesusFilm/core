@@ -2,14 +2,13 @@ import { useMutation } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
-import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
 import { ResizableTextField } from '../../../../../../../../components/ResizableTextField'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
-import { useAdminVideo } from '../../../../../../../../libs/useAdminVideo'
+import { GetAdminVideo_AdminVideo_VideoDescriptions as VideoDescriptions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useEdit } from '../../../_EditProvider'
 
 export const UPDATE_VIDEO_DESCRIPTION = graphql(`
@@ -21,17 +20,18 @@ export const UPDATE_VIDEO_DESCRIPTION = graphql(`
   }
 `)
 
-export function VideoDescription(): ReactElement {
+interface VideoDescriptionProps {
+  videoDescriptions: VideoDescriptions
+}
+
+export function VideoDescription({
+  videoDescriptions
+}: VideoDescriptionProps): ReactElement {
   const t = useTranslations()
   const {
     state: { isEdit }
   } = useEdit()
   const [updateVideoDescription] = useMutation(UPDATE_VIDEO_DESCRIPTION)
-  const params = useParams<{ videoId: string; locale: string }>()
-  const { data } = useAdminVideo({
-    variables: { videoId: params?.videoId as string }
-  })
-  const video = data?.adminVideo
 
   const validationSchema = object().shape({
     description: string().required(t('Description is required'))
@@ -40,11 +40,11 @@ export function VideoDescription(): ReactElement {
   async function handleUpdateVideoDescription(
     values: FormikValues
   ): Promise<void> {
-    if (video == null) return
+    if (videoDescriptions == null) return
     await updateVideoDescription({
       variables: {
         input: {
-          id: video.description[0].id,
+          id: videoDescriptions[0].id,
           value: values.description
         }
       }
@@ -54,7 +54,7 @@ export function VideoDescription(): ReactElement {
   return (
     <Formik
       initialValues={{
-        description: video?.description?.[0].value
+        description: videoDescriptions[0].value
       }}
       onSubmit={handleUpdateVideoDescription}
       validationSchema={validationSchema}

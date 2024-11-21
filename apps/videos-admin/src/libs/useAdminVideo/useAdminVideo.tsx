@@ -95,6 +95,8 @@ export type GetAdminVideoVariant =
 export type GetAdminVideo_AdminVideo = GetAdminVideo['adminVideo']
 export type GetAdminVideo_AdminVideo_VideoSnippets =
   GetAdminVideo['adminVideo']['snippet']
+export type GetAdminVideo_AdminVideo_VideoDescriptions =
+  GetAdminVideo['adminVideo']['description']
 export type GetAdminVideo_AdminVideo_StudyQuestions =
   GetAdminVideo['adminVideo']['studyQuestions']
 
