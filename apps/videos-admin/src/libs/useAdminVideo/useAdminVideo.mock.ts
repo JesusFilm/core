@@ -42,14 +42,16 @@ export const useAdminVideoMock: MockedResponse<
         ],
         description: [
           {
-            id: 'c1afff2e-057e-4e4a-a48c-11f005ffbb06',
-            value: 'Jesus description text'
+            id: '6aef078b-6fea-4577-b440-b002a0cdeb58',
+            value:
+              "This film is a perfect introduction to Jesus through the Gospel of Luke. Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion. &#13;&#13;God creates everything and loves mankind. But mankind disobeys God. God and mankind are separated, but God loves mankind so much, He arranges redemption for mankind. He sends his Son Jesus to be a perfect sacrifice to make amends for us.&#13;&#13;Before Jesus arrives, God prepares mankind. Prophets speak of the birth, the life, and the death of Jesus.&#13;&#13;Jesus attracts attention. He teaches in parables no one really understands, gives sight to the blind, and helps those who no one sees as worth helping.&#13;&#13;He scares the Jewish leaders, they see him as a threat. So they arrange, through Judas the traitor and their Roman oppressors, for the crucifixion of Jesus. They think the matter is settled. But the women who serve Jesus discover an empty tomb. The disciples panic. When Jesus appears, they doubt He's real. But it's what He proclaimed all along: He is their perfect sacrifice, their Savior, victor over death. He ascends to heaven, telling His followers to tell others about Him and His teachings."
           }
         ],
         snippet: [
           {
-            id: 'f4634713-33c2-43b6-b2e1-47263037c871',
-            value: 'Jesus snippet text'
+            id: 'e3645175-c05b-4760-a0ac-fdcb894655be',
+            value:
+              'Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion.'
           }
         ],
         children: [
@@ -211,6 +213,25 @@ export const useAdminVideoMock: MockedResponse<
               'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLnoCI-529-31474.srt',
             value:
               'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLnoCI-529-31474.vtt',
+            language: {
+              id: '529',
+              name: [
+                {
+                  value: 'English'
+                }
+              ],
+              slug: 'english'
+            }
+          },
+          {
+            id: 'f9817d7e-389f-44ef-8b29-12d75f1ef68f',
+            edition: 'otwcc',
+            vttSrc:
+              'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-OTwCC-529-31474.vtt',
+            srtSrc:
+              'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-OTwCC-529-31474.srt',
+            value:
+              'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-OTwCC-529-31474.vtt',
             language: {
               id: '529',
               name: [
