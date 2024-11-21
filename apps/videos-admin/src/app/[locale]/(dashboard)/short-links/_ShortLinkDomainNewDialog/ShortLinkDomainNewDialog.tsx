@@ -50,8 +50,11 @@ export function ShortLinkDomainNewDialog({
   onClose
 }: ShortLinkDomainNewDialogProps): ReactElement {
   const t = useTranslations()
-  const [createShortLinkDomain, { loading, data }] = useMutation(
-    CREATE_SHORT_LINK_DOMAIN
+  const [createShortLinkDomain, { loading }] = useMutation(
+    CREATE_SHORT_LINK_DOMAIN,
+    {
+      refetchQueries: ['GetShortLinkDomains']
+    }
   )
 
   type MutationShortLinkDomainCreateInput = VariablesOf<
@@ -141,7 +144,7 @@ export function ShortLinkDomainNewDialog({
                 variant="contained"
                 loading={loading}
               >
-                {t('Add')}
+                {t('Add Domain')}
               </LoadingButton>
             </DialogActions>
           </Form>

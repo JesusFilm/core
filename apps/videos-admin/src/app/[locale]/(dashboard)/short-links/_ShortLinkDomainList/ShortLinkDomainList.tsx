@@ -1,26 +1,21 @@
 'use client'
 
 import { useQuery } from '@apollo/client'
+import CheckCircleOutlineRoundedIcon from '@mui/icons-material/CheckCircleOutlineRounded'
+import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded'
 import Box from '@mui/material/Box'
+import Chip from '@mui/material/Chip'
+import Stack from '@mui/material/Stack'
+import Tooltip from '@mui/material/Tooltip'
 import {
   DataGrid,
-  GridCallbackDetails,
   GridColDef,
-  GridColumnVisibilityModel,
-  GridFilterModel,
   GridPaginationMeta,
   GridPaginationModel,
-  GridRenderCellParams,
-  GridRowParams,
   GridRowsProp,
-  GridToolbar,
-  GridValidRowModel,
-  MuiEvent,
-  getGridStringOperators,
   gridClasses
 } from '@mui/x-data-grid'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
-import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -42,13 +37,12 @@ export const GET_SHORT_LINK_DOMAINS = graphql(`
           id
           hostname
           services
+          valid
         }
       }
     }
   }
 `)
-
-type Service = VariablesOf<typeof GET_SHORT_LINK_DOMAINS>['service']
 
 const PAGE_SIZE = 50
 
@@ -95,20 +89,66 @@ export function ShortLinkDomainList(): ReactElement {
       field: 'id',
       headerName: t('ID'),
       filterable: false,
-      sortable: false
+      sortable: false,
+      width: 330
     },
     {
       field: 'hostname',
       headerName: t('Host Name'),
       filterable: false,
-      sortable: false
+      sortable: false,
+      flex: 1
     },
     {
       field: 'services',
       headerName: t('Services'),
-      flex: 1,
       filterable: false,
-      sortable: false
+      sortable: false,
+      display: 'flex',
+      flex: 1,
+      renderCell: ({ row: { services } }) => {
+        function serviceToLabel(service: (typeof services)[number]) {
+          switch (service) {
+            case 'apiJourneys':
+              return t('Journeys')
+            case 'apiMedia':
+              return t('Media')
+            default:
+              return service
+          }
+        }
+
+        return (
+          <Stack spacing={1} direction="row">
+            {services.map((service) => (
+              <Chip key={service} label={serviceToLabel(service)} />
+            ))}
+          </Stack>
+        )
+      }
+    },
+    {
+      field: 'valid',
+      headerName: t('Status'),
+      filterable: false,
+      sortable: false,
+      display: 'flex',
+      resizable: false,
+      width: 80,
+      align: 'center',
+      renderCell: ({ row: { valid } }) => {
+        return valid ? (
+          <CheckCircleOutlineRoundedIcon color="success" />
+        ) : (
+          <Tooltip
+            title={t(
+              'CNAME Record (cname.vercel-dns.com) or A Record (76.76.21.21) does not exist for this Host Name'
+            )}
+          >
+            <ErrorOutlineRoundedIcon color="error" />
+          </Tooltip>
+        )
+      }
     }
   ]
 
@@ -118,7 +158,8 @@ export function ShortLinkDomainList(): ReactElement {
         result.push({
           id: shortLinkDomain.node.id,
           hostname: shortLinkDomain.node.hostname,
-          services: shortLinkDomain.node.services
+          services: shortLinkDomain.node.services,
+          valid: shortLinkDomain.node.valid
         })
       return result
     }, [] as GridValidRowModel[]) ?? []

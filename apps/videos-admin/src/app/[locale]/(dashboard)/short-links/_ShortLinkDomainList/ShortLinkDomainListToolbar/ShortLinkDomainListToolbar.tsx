@@ -1,3 +1,4 @@
+import AddIcon from '@mui/icons-material/AddRounded'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import {
@@ -25,13 +26,18 @@ export function ShortLinkDomainListToolbar(): ReactElement {
   const handleClose = () => setOpen(false)
 
   return (
-    <GridToolbarContainer>
+    <GridToolbarContainer sx={{ p: 1 }}>
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
       <GridToolbarDensitySelector />
       <Box flexGrow={1} />
-      <Button variant="contained" color="primary" onClick={handleOpen}>
-        {t('Add Short Link Domain')}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleOpen}
+        startIcon={<AddIcon />}
+      >
+        {t('Add Domain')}
       </Button>
       {open != null && (
         <DynamicShortLinkDomainNewDialog open={open} onClose={handleClose} />
