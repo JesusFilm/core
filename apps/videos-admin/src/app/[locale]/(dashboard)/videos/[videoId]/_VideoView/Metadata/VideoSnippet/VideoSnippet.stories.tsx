@@ -46,16 +46,16 @@ const Template: Story = {
 export const Default = {
   ...Template,
   args: {
-    state: { isEdit: true },
+    state: { isEdit: false },
     videoSnippets: mockVideoSnippets
   }
 }
 
-export const Disabled = {
+export const Editable = {
   ...Template,
   args: {
     state: {
-      isEdit: false
+      isEdit: true
     },
     videoSnippets: mockVideoSnippets
   }

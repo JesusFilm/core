@@ -39,17 +39,17 @@ export const Default = {
   ...Template,
   args: {
     state: {
-      isEdit: true
+      isEdit: false
     },
     videoImageAlts: mockVideoImageAlt
   }
 }
 
-export const Disabled = {
+export const Editable = {
   ...Template,
   args: {
     state: {
-      isEdit: false
+      isEdit: true
     },
     videoImageAlts: mockVideoImageAlt
   }

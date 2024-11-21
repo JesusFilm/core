@@ -43,7 +43,7 @@ export const Default = {
   }
 }
 
-export const Edit = {
+export const Editable = {
   ...Template,
   args: {
     state: {
