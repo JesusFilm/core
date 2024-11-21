@@ -161,10 +161,6 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
     setDialogOpen(false)
   }
 
-  useEffect(() => {
-    void router.prefetch('/')
-  }, [router])
-
   return (
     <Stack
       data-testid="Toolbar"
@@ -178,7 +174,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         flexShrink: 0
       }}
     >
-      <NextLink href="/" passHref legacyBehavior>
+      <NextLink href="/" passHref legacyBehavior prefetch>
         <IconButton data-testid="NextStepsLogo" disableRipple>
           <Image
             src={logo}
@@ -192,7 +188,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           />
         </IconButton>
       </NextLink>
-      <NextLink href="/" passHref legacyBehavior>
+      <NextLink href="/" passHref legacyBehavior prefetch>
         <Tooltip title="See all journeys" placement="bottom" arrow>
           <IconButton data-testid="ToolbarBackButton">
             <FormatListBulletedIcon />
