@@ -3,9 +3,9 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { EditProvider } from '../../../_EditProvider'
+import { mockVideo } from '../../data.mock'
 
 import { UPDATE_VIDEO_SNIPPET, VideoSnippet } from './VideoSnippet'
-import { mockVideoSnippets } from './VideoSnippet.data'
 
 describe('VideoSnippet', () => {
   const mockUpdateVideoSnippet = {
@@ -13,7 +13,7 @@ describe('VideoSnippet', () => {
       query: UPDATE_VIDEO_SNIPPET,
       variables: {
         input: {
-          id: 'videoSnippet.1',
+          id: 'e3645175-c05b-4760-a0ac-fdcb894655be',
           value: 'new snippet text'
         }
       }
@@ -21,12 +21,14 @@ describe('VideoSnippet', () => {
     result: jest.fn(() => ({
       data: {
         videoSnippetUpdate: {
-          id: 'videoSnippet.1',
+          id: 'e3645175-c05b-4760-a0ac-fdcb894655be',
           value: 'new snippet text'
         }
       }
     }))
   }
+
+  const mockVideoSnippets = mockVideo.snippet
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -88,7 +90,9 @@ describe('VideoSnippet', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByRole('textbox')).toHaveValue('Video snippet 1 text')
+    expect(screen.getByRole('textbox')).toHaveValue(
+      'Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion.'
+    )
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'Hello' }
     })
@@ -108,7 +112,9 @@ describe('VideoSnippet', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByRole('textbox')).toHaveValue('Video snippet 1 text')
+    expect(screen.getByRole('textbox')).toHaveValue(
+      'Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion.'
+    )
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'new snippet text' }
     })
@@ -132,7 +138,9 @@ describe('VideoSnippet', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByRole('textbox')).toHaveValue('Video snippet 1 text')
+    expect(screen.getByRole('textbox')).toHaveValue(
+      'Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion.'
+    )
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: '' }
     })

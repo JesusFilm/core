@@ -5,9 +5,9 @@ import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
 import { EditProvider, EditState } from '../../../_EditProvider'
+import { mockVideo } from '../../data.mock'
 
 import { VideoSnippet } from './VideoSnippet'
-import { mockVideoSnippets } from './VideoSnippet.data'
 
 const meta: Meta<typeof VideoSnippet> = {
   ...videosAdminConfig,
@@ -24,6 +24,8 @@ const meta: Meta<typeof VideoSnippet> = {
     }
   }
 }
+
+const mockVideoSnippets = mockVideo.snippet
 
 type Story = StoryObj<
   ComponentProps<typeof VideoSnippet> & {
