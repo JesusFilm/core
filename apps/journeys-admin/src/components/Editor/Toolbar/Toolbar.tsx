@@ -174,7 +174,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         flexShrink: 0
       }}
     >
-      <NextLink href="/" passHref legacyBehavior prefetch>
+      <NextLink href="/" passHref legacyBehavior>
         <IconButton data-testid="NextStepsLogo" disableRipple>
           <Image
             src={logo}
@@ -188,7 +188,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           />
         </IconButton>
       </NextLink>
-      <NextLink href="/" passHref legacyBehavior prefetch>
+      <NextLink href="/" passHref legacyBehavior>
         <Tooltip title="See all journeys" placement="bottom" arrow>
           <IconButton data-testid="ToolbarBackButton">
             <FormatListBulletedIcon />

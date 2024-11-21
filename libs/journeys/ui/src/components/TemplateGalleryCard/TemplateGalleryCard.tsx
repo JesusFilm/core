@@ -10,7 +10,7 @@ import Image from 'next/image'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
@@ -79,6 +79,17 @@ export function TemplateGalleryCard({
         }).replace(' ', ', ')
       : ''
 
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Prefetching in development mode')
+    } else {
+      console.log('Prefetching in production mode')
+    }
+    if (journey?.id != null) {
+      void router.prefetch(journeyIdPath)
+    }
+  }, [journey?.id, journeyIdPath, router])
+
   return (
     <Card
       aria-label="templateGalleryCard"
@@ -110,7 +121,7 @@ export function TemplateGalleryCard({
         }
       }}
     >
-      <NextLink href={journeyIdPath} passHref legacyBehavior prefetch>
+      <NextLink href={journeyIdPath}>
         <Box
           component="a"
           tabIndex={-1}
