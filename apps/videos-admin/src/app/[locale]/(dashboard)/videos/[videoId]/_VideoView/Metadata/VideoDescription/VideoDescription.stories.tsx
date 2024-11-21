@@ -20,7 +20,7 @@ const meta: Meta<typeof VideoDescription> = {
 }
 
 type Story = StoryObj<
-  ComponentProps<typeof VideoDescription> & { state: EditState }
+  ComponentProps<typeof VideoDescription> & { state: Partial<EditState> }
 >
 
 const Template: Story = {

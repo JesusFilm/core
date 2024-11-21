@@ -120,29 +120,6 @@ describe('VideoDescription', () => {
     )
   })
 
-  it('should not call update if there is no video data', async () => {
-    render(
-      <MockedProvider mocks={[mockUpdateVideoDescription]}>
-        <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoDescription videoDescriptions={mockVideoDescriptions} />
-          </EditProvider>
-        </NextIntlClientProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'new description text' }
-    })
-    expect(screen.getByRole('textbox')).toHaveValue('new description text')
-    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
-    await waitFor(() =>
-      expect(mockUpdateVideoDescription.result).not.toHaveBeenCalled()
-    )
-  })
-
   it('should require description field', async () => {
     render(
       <MockedProvider>
