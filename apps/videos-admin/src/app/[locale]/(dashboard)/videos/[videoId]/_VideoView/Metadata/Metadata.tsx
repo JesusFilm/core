@@ -39,7 +39,7 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
           </Section>
           <Section title={t('Image')}>
             <Stack gap={2}>
-              <VideoImageAlt />
+              <VideoImageAlt video={video?.imageAlt} />
               <VideoImage video={video} isEdit={isEdit} />
             </Stack>
           </Section>

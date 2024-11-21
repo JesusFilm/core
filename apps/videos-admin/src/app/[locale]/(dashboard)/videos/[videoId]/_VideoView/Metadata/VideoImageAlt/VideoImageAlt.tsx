@@ -3,13 +3,12 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
-import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
 import { SaveButton } from '../../../../../../../../components/SaveButton'
-import { useAdminVideo } from '../../../../../../../../libs/useAdminVideo'
+import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useEdit } from '../../../_EditProvider'
 
 export const UPDATE_VIDEO_IMAGE_ALT = graphql(`
@@ -21,17 +20,18 @@ export const UPDATE_VIDEO_IMAGE_ALT = graphql(`
   }
 `)
 
-export function VideoImageAlt(): ReactElement {
+interface VideoImageAltProps {
+  videoImageAlts: VideoImageAlts
+}
+
+export function VideoImageAlt({
+  videoImageAlts
+}: VideoImageAltProps): ReactElement {
   const t = useTranslations()
   const {
     state: { isEdit }
   } = useEdit()
   const [updateVideoImageAlt] = useMutation(UPDATE_VIDEO_IMAGE_ALT)
-  const params = useParams<{ videoId: string; locale: string }>()
-  const { data } = useAdminVideo({
-    variables: { videoId: params?.videoId as string }
-  })
-  const video = data?.adminVideo
 
   const validationSchema = object().shape({
     imageAlt: string().trim().required(t('Image Alt is required'))
@@ -40,11 +40,11 @@ export function VideoImageAlt(): ReactElement {
   async function handleUpdateVideoImageAlt(
     values: FormikValues
   ): Promise<void> {
-    if (video == null) return
+    if (videoImageAlts == null) return
     await updateVideoImageAlt({
       variables: {
         input: {
-          id: video.imageAlt[0].id,
+          id: videoImageAlts[0].id,
           value: values.imageAlt
         }
       }
@@ -54,7 +54,7 @@ export function VideoImageAlt(): ReactElement {
   return (
     <Formik
       initialValues={{
-        imageAlt: video?.imageAlt?.[0].value
+        imageAlt: videoImageAlts?.[0].value
       }}
       onSubmit={handleUpdateVideoImageAlt}
       validationSchema={validationSchema}
