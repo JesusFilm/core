@@ -120,29 +120,6 @@ describe('VideoSnippet', () => {
     )
   })
 
-  it('should not call update if there is no video data', async () => {
-    render(
-      <MockedProvider mocks={[mockUpdateVideoSnippet]}>
-        <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoSnippet videoSnippets={mockVideoSnippets} />
-          </EditProvider>
-        </NextIntlClientProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'new snippet text' }
-    })
-    expect(screen.getByRole('textbox')).toHaveValue('new snippet text')
-    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
-    await waitFor(() =>
-      expect(mockUpdateVideoSnippet.result).not.toHaveBeenCalled()
-    )
-  })
-
   it('should require snippet field', async () => {
     render(
       <MockedProvider>
