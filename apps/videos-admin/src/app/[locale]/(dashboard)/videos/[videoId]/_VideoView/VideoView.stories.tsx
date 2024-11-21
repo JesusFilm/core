@@ -39,7 +39,7 @@ export const Default = {
   },
   parameters: {
     apolloClient: {
-      mocks: [useAdminVideoMock, useAdminVideoMock, useAdminVideoMock]
+      mocks: [useAdminVideoMock]
     },
     nextjs: {
       appDirectory: true,

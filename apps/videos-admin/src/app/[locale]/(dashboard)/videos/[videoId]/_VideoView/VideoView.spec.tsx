@@ -22,12 +22,7 @@ describe('VideoView', () => {
     const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
 
     render(
-      <MockedProvider
-        mocks={[
-          { ...useAdminVideoMock, result },
-          { ...useAdminVideoMock, result }
-        ]}
-      >
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
           <EditProvider>
             <VideoView />

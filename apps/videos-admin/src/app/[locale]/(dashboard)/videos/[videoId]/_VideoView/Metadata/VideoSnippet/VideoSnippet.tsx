@@ -1,15 +1,15 @@
-import { useTranslations } from 'next-intl'
-import { useEdit } from '../../../_EditProvider'
-import { useParams } from 'next/navigation'
-import { useAdminVideo } from '../../../../../../../../libs/useAdminVideo'
 import { useMutation } from '@apollo/client'
-import { graphql } from 'gql.tada'
 import Stack from '@mui/material/Stack'
-import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { Form, Formik, FormikValues } from 'formik'
-import { object, string } from 'yup'
+import { graphql } from 'gql.tada'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
+import { object, string } from 'yup'
+
 import { ResizableTextField } from '../../../../../../../../components/ResizableTextField'
+import { SaveButton } from '../../../../../../../../components/SaveButton'
+import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useEdit } from '../../../_EditProvider'
 
 export const UPDATE_VIDEO_SNIPPET = graphql(`
   mutation UpdateVideoSnippet($input: VideoTranslationUpdateInput!) {
@@ -20,28 +20,29 @@ export const UPDATE_VIDEO_SNIPPET = graphql(`
   }
 `)
 
-export function VideoSnippet(): ReactElement {
+interface VideoSnippetProps {
+  videoSnippets: VideoSnippets
+}
+
+export function VideoSnippet({
+  videoSnippets
+}: VideoSnippetProps): ReactElement {
   const t = useTranslations()
   const {
     state: { isEdit }
   } = useEdit()
   const [updateVideoSnippet] = useMutation(UPDATE_VIDEO_SNIPPET)
-  const params = useParams<{ videoId: string; locale: string }>()
-  const { data } = useAdminVideo({
-    variables: { videoId: params?.videoId as string }
-  })
-  const video = data?.adminVideo
 
   const validationSchema = object().shape({
     snippet: string().required(t('Snippet is required'))
   })
 
   async function handleUpdateVideoSnippet(values: FormikValues): Promise<void> {
-    if (video == null) return
+    if (videoSnippets == null) return
     await updateVideoSnippet({
       variables: {
         input: {
-          id: video.snippet[0].id,
+          id: videoSnippets[0].id,
           value: values.snippet
         }
       }
@@ -51,7 +52,7 @@ export function VideoSnippet(): ReactElement {
   return (
     <Formik
       initialValues={{
-        snippet: video?.snippet?.[0].value
+        snippet: videoSnippets[0].value
       }}
       onSubmit={handleUpdateVideoSnippet}
       validationSchema={validationSchema}
