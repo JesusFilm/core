@@ -53,7 +53,7 @@ export function VideoImageAlt({
   return (
     <Formik
       initialValues={{
-        imageAlt: videoImageAlts?.[0]?.value
+        imageAlt: videoImageAlts?.[0].value
       }}
       onSubmit={handleUpdateVideoImageAlt}
       validationSchema={validationSchema}
