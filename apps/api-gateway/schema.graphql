@@ -2132,6 +2132,8 @@ type LanguageWithSlug @join__type(graph: API_MEDIA)  {
 
 type MuxVideo @join__type(graph: API_MEDIA)  {
   id: ID!
+  assetId: String
+  uploadId: String
   playbackId: String
   uploadUrl: String
   userId: ID!

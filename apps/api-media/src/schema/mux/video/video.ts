@@ -5,12 +5,15 @@ import {
   createVideoByDirectUpload,
   createVideoFromUrl,
   deleteVideo,
+  getUpload,
   getVideo
 } from './service'
 
 builder.prismaObject('MuxVideo', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    assetId: t.exposeString('assetId'),
+    uploadId: t.exposeString('uploadId'),
     playbackId: t.exposeString('playbackId'),
     uploadUrl: t.exposeString('uploadUrl'),
     userId: t.exposeID('userId', { nullable: false }),
@@ -50,23 +53,32 @@ builder.queryFields((t) => ({
     resolve: async (query, _root, { id }, { user }) => {
       if (user == null) throw new Error('User not found')
 
-      const video = await prisma.muxVideo.findFirstOrThrow({
+      let video = await prisma.muxVideo.findFirstOrThrow({
         ...query,
         where: { id, userId: user.id }
       })
 
-      if (!video.readyToStream || video.playbackId == null) {
-        const muxVideo = await getVideo(id)
-
-        if (
-          muxVideo.status === 'ready' ||
-          muxVideo.playback_ids?.[0].id != null
-        ) {
-          return await prisma.muxVideo.update({
+      if (video.assetId == null && video.uploadId != null) {
+        const muxUpload = await getUpload(video.uploadId)
+        if (muxUpload.asset_id != null) {
+          video = await prisma.muxVideo.update({
             ...query,
             where: { id },
             data: {
-              readyToStream: muxVideo.status === 'ready',
+              assetId: muxUpload.asset_id
+            }
+          })
+        }
+      }
+      if (video.assetId != null && !video.readyToStream) {
+        const muxVideo = await getVideo(video.assetId)
+
+        if (muxVideo.playback_ids?.[0].id != null) {
+          video = await prisma.muxVideo.update({
+            ...query,
+            where: { id },
+            data: {
+              readyToStream: true,
               playbackId: muxVideo.playback_ids?.[0].id
             }
           })
@@ -94,7 +106,7 @@ builder.mutationFields((t) => ({
         return await prisma.muxVideo.create({
           ...query,
           data: {
-            id,
+            uploadId: id,
             uploadUrl,
             userId: user.id,
             name
@@ -116,7 +128,7 @@ builder.mutationFields((t) => ({
       return await prisma.muxVideo.create({
         ...query,
         data: {
-          id,
+          assetId: id,
           userId: user.id
         }
       })

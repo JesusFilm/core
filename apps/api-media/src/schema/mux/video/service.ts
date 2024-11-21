@@ -24,6 +24,7 @@ export async function createVideoByDirectUpload(
   const response = await getClient().video.uploads.create({
     cors_origin: process.env.CORS_ORIGIN,
     new_asset_settings: {
+      encoding_tier: 'smart',
       playback_policy: ['public'],
       max_resolution_tier: maxResolution,
       mp4_support: downloadable ? 'capped-1080p' : 'none'
@@ -56,6 +57,7 @@ export async function createVideoFromUrl(
         url
       }
     ],
+    encoding_tier: 'smart',
     playback_policy: ['public'],
     max_resolution_tier: maxResolution,
     mp4_support: downloadable ? 'capped-1080p' : 'none'
@@ -64,6 +66,10 @@ export async function createVideoFromUrl(
 
 export async function getVideo(videoId: string): Promise<Mux.Video.Asset> {
   return await getClient().video.assets.retrieve(videoId)
+}
+
+export async function getUpload(uploadId: string): Promise<Mux.Video.Upload> {
+  return await getClient().video.uploads.retrieve(uploadId)
 }
 
 export async function deleteVideo(videoId: string): Promise<void> {

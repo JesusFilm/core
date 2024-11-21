@@ -60,6 +60,8 @@ model MuxVideo {
   id            String   @id @default(uuid())
   playbackId    String?
   uploadUrl     String?
+  uploadId      String?
+  assetId       String?
   userId        String
   name          String?
   downloadable  Boolean  @default(false)

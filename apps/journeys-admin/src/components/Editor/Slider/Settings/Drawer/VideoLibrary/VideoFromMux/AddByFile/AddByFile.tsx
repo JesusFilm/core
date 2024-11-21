@@ -4,15 +4,10 @@ import Button from '@mui/material/Button'
 import LinearProgress from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { UpChunk } from '@mux/upchunk'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 import { FileRejection, useDropzone } from 'react-dropzone'
-import {
-  DefaultHttpStack,
-  DetailedError,
-  HttpStack,
-  Upload
-} from 'tus-js-client'
 
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
@@ -20,7 +15,7 @@ import Upload1Icon from '@core/shared/ui/icons/Upload1'
 import { CreateMuxVideoUploadByFileMutation } from '../../../../../../../../../__generated__/CreateMuxVideoUploadByFileMutation'
 import { GetMyMuxVideoQuery } from '../../../../../../../../../__generated__/GetMyMuxVideoQuery'
 
-import { fileToMuxUpload, getBuffer } from './utils/addByFileUtils'
+import { fileToMuxUpload } from './utils/addByFileUtils'
 
 export const CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
   mutation CreateMuxVideoUploadByFileMutation($name: String!) {
@@ -43,13 +38,9 @@ export const GET_MY_MUX_VIDEO_QUERY = gql`
 
 interface AddByFileProps {
   onChange: (id: string) => void
-  httpStack?: HttpStack // required for testing in jest
 }
 
-export function AddByFile({
-  onChange,
-  httpStack
-}: AddByFileProps): ReactElement {
+export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   const [uploading, setUploading] = useState(false)
@@ -58,7 +49,7 @@ export function AddByFile({
   const [fileTooLarge, setfileTooLarge] = useState(false)
   const [tooManyFiles, settooManyFiles] = useState(false)
   const [fileInvalidType, setfileInvalidType] = useState(false)
-  const [error, setError] = useState<Error | DetailedError>()
+  const [error, setError] = useState<Error>()
   const [progress, setProgress] = useState(0)
 
   function resetUploadStatus(): void {
@@ -79,7 +70,7 @@ export function AddByFile({
       onCompleted: (data) => {
         if (
           data.getMyMuxVideo?.readyToStream &&
-          data.getMyMuxVideo.id != null
+          data.getMyMuxVideo.playbackId != null
         ) {
           stopPolling()
           onChange(data.getMyMuxVideo.id)
@@ -108,26 +99,24 @@ export function AddByFile({
   function uploadVideo(
     file: File,
     data: CreateMuxVideoUploadByFileMutation
-  ): Upload {
+  ): void {
     setUploading(true)
-    const upload = new Upload(getBuffer(file), {
-      httpStack: httpStack ?? new DefaultHttpStack({}),
-      uploadUrl: data.createMuxVideoUploadByFile.uploadUrl,
-      chunkSize: 150 * 1024 * 1024,
-      onSuccess: (): void => {
-        setUploading(false)
-        setProcessing(true)
-      },
-      onError: (err): void => {
-        setError(err)
-        resetUploadStatus()
-      },
-      onProgress(bytesUploaded, bytesTotal): void {
-        setProgress((bytesUploaded / bytesTotal) * 100)
-      }
+    const upload = UpChunk.createUpload({
+      file: file,
+      endpoint: data.createMuxVideoUploadByFile.uploadUrl ?? '',
+      chunkSize: 5120
     })
-    upload.start()
-    return upload
+    upload.on('success', (): void => {
+      setUploading(false)
+      setProcessing(true)
+    })
+    upload.on('error', (err): void => {
+      setError(err.detail)
+      resetUploadStatus()
+    })
+    upload.on('progress', (progress): void => {
+      setProgress(progress.detail * 100)
+    })
   }
 
   const onDropAccepted = async (files: File[]): Promise<void> => {
