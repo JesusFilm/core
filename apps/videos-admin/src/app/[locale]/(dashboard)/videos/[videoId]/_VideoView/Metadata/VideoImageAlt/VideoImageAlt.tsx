@@ -40,7 +40,6 @@ export function VideoImageAlt({
   async function handleUpdateVideoImageAlt(
     values: FormikValues
   ): Promise<void> {
-    if (videoImageAlts == null) return
     await updateVideoImageAlt({
       variables: {
         input: {
@@ -54,7 +53,7 @@ export function VideoImageAlt({
   return (
     <Formik
       initialValues={{
-        imageAlt: videoImageAlts?.[0].value
+        imageAlt: videoImageAlts?.[0]?.value
       }}
       onSubmit={handleUpdateVideoImageAlt}
       validationSchema={validationSchema}

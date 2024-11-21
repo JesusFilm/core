@@ -120,29 +120,6 @@ describe('VideoImageAlt', () => {
     )
   })
 
-  it('should not call update if there is no video data', async () => {
-    render(
-      <MockedProvider mocks={[mockUpdateVideoImageAlt]}>
-        <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
-          </EditProvider>
-        </NextIntlClientProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'new video image alt text' }
-    })
-    expect(screen.getByRole('textbox')).toHaveValue('new video image alt text')
-    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
-    await waitFor(() =>
-      expect(mockUpdateVideoImageAlt.result).not.toHaveBeenCalled()
-    )
-  })
-
   it('should require image alt field', async () => {
     render(
       <MockedProvider>
