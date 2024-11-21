@@ -5,9 +5,9 @@ import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
 import { EditProvider, EditState } from '../../../_EditProvider'
+import { mockVideo } from '../../data.mock'
 
 import { VideoImageAlt } from './VideoImageAlt'
-import { mockVideoImageAlt } from './VideoImageAlt.data'
 
 const meta: Meta<typeof VideoImageAlt> = {
   ...videosAdminConfig,
@@ -18,6 +18,8 @@ const meta: Meta<typeof VideoImageAlt> = {
     tags: ['!autodocs']
   }
 }
+
+const mockVideoImageAlt = mockVideo.imageAlt
 
 type Story = StoryObj<
   ComponentProps<typeof VideoImageAlt> & { state: Partial<EditState> }

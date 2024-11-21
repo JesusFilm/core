@@ -3,9 +3,9 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { EditProvider } from '../../../_EditProvider'
+import { mockVideo } from '../../data.mock'
 
 import { UPDATE_VIDEO_IMAGE_ALT, VideoImageAlt } from './VideoImageAlt'
-import { mockVideoImageAlt } from './VideoImageAlt.data'
 
 describe('VideoImageAlt', () => {
   const mockUpdateVideoImageAlt = {
@@ -13,7 +13,7 @@ describe('VideoImageAlt', () => {
       query: UPDATE_VIDEO_IMAGE_ALT,
       variables: {
         input: {
-          id: 'videoImageAlt.1',
+          id: '0ae6181d-591d-4f27-a034-4607fec2686c',
           value: 'new video image alt text'
         }
       }
@@ -21,12 +21,14 @@ describe('VideoImageAlt', () => {
     result: jest.fn(() => ({
       data: {
         VideoImageAltUpdate: {
-          id: 'videoImageAlt.1',
+          id: '0ae6181d-591d-4f27-a034-4607fec2686c',
           value: 'new video image alt text'
         }
       }
     }))
   }
+
+  const mockVideoImageAlt = mockVideo.imageAlt
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -88,7 +90,7 @@ describe('VideoImageAlt', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByRole('textbox')).toHaveValue('Video image alt 1 text')
+    expect(screen.getByRole('textbox')).toHaveValue('JESUS')
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'Hello' }
     })
@@ -108,7 +110,7 @@ describe('VideoImageAlt', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByRole('textbox')).toHaveValue('Video image alt 1 text')
+    expect(screen.getByRole('textbox')).toHaveValue('JESUS')
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'new video image alt text' }
     })
@@ -132,7 +134,7 @@ describe('VideoImageAlt', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByRole('textbox')).toHaveValue('Video image alt 1 text')
+    expect(screen.getByRole('textbox')).toHaveValue('JESUS')
     fireEvent.change(screen.getByRole('textbox', { name: 'Image Alt' }), {
       target: { value: '' }
     })
