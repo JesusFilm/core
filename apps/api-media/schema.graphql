@@ -403,9 +403,16 @@ type VideoBlock
   @key(fields: "videoId source")
   @extends
 {
-  source: String! @external
+  source: VideoBlockSource! @external
   videoId: ID! @external
-  playlistId: ID
+  playbackId: ID
+}
+
+enum VideoBlockSource {
+  internal
+  youTube
+  cloudflare
+  mux
 }
 
 input VideoCreateInput {
