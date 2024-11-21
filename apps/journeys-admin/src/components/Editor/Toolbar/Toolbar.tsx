@@ -161,6 +161,10 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
     setDialogOpen(false)
   }
 
+  useEffect(() => {
+    void router.prefetch('/')
+  }, [router])
+
   return (
     <Stack
       data-testid="Toolbar"
