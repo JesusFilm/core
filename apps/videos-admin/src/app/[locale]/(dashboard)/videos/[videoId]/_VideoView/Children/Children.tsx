@@ -1,77 +1,90 @@
-import { DndContext } from '@dnd-kit/core'
-import { SortableContext } from '@dnd-kit/sortable'
-import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 
 import Edit2 from '@core/shared/ui/icons/Edit2'
 import EyeOpen from '@core/shared/ui/icons/EyeOpen'
 import Trash2 from '@core/shared/ui/icons/Trash2'
 
-import { DraggableRow } from '../DraggableRow'
 import { Section } from '../Section'
+import { useEdit } from '../../_EditProvider'
+import { OrderedList } from '../../../../../../../components/OrderedList'
+import { OrderedItem } from '../../../../../../../components/OrderedList/OrderedItem'
+import { GetAdminVideo_AdminVideo_Children as VideoChildren } from '../../../../../../../libs/useAdminVideo'
 
-export function Children({ childVideos }): ReactElement {
+import Stack from '@mui/material/Stack'
+
+interface ChildrenProps {
+  childVideos: VideoChildren
+}
+
+export function Children({ childVideos }: ChildrenProps): ReactElement {
   const pathname = usePathname()
   const router = useRouter()
   const t = useTranslations()
+  const {
+    state: { isEdit }
+  } = useEdit()
 
   if (childVideos.length === 0) {
     return <Typography>{t('No children to show')}</Typography>
   }
 
-  const view = (id: string): void => {
+  const videos = useMemo(() => childVideos.map((video) => video), [childVideos])
+
+  function view(id: string): void {
     if (pathname == null) return
-
     const [, locale, entity] = pathname.split('/')
-
     router.push(`/${locale}/${entity}/${id}`)
   }
 
-  const edit = (id: string): void => {
+  function edit(id: string): void {
     if (pathname == null) return
-
     const [, locale, entity] = pathname.split('/')
-
     router.push(`/${locale}/${entity}/${id}/edit`)
   }
 
+  function updateOrderOnDrag(): void {}
+  function updateOrderOnChange(): void {}
+
   return (
-    <DndContext>
-      <SortableContext items={childVideos}>
-        <Section
-          title="Children"
-          action={{
-            label: 'Create Child',
-            onClick: () => alert('Create child')
-          }}
-        >
-          <Stack gap={1} sx={{ height: '600px', overflowY: 'scroll' }}>
-            {childVideos.map((child, idx) => (
-              <DraggableRow
-                id={child.id}
-                key={child.id}
-                label={child.title[0].value}
-                idx={idx}
-                count={childVideos.length}
-                img={{
-                  src: child.images[0].mobileCinematicHigh,
-                  alt: child.imageAlt[0].value
-                }}
-                actions={[
+    <Section
+      title={t('Children')}
+      action={
+        isEdit
+          ? {
+              label: 'Create Child',
+              onClick: () => alert('Create child')
+            }
+          : undefined
+      }
+      boxProps={{
+        sx: { p: 0, height: 'calc(100vh - 400px)', overflowY: 'scroll' }
+      }}
+    >
+      {videos.length > 0 ? (
+        <OrderedList onOrderUpdate={updateOrderOnDrag} items={videos}>
+          {videos.map(({ id, title, images, imageAlt }, i) => (
+            <>
+              <OrderedItem
+                key={id}
+                id={id}
+                label={title[0].value}
+                idx={i}
+                onChange={updateOrderOnChange}
+                iconButtons={[
                   {
                     Icon: EyeOpen,
                     events: {
-                      onClick: () => view(child.id)
+                      onClick: () => view(id)
                     },
                     name: 'View'
                   },
                   {
                     Icon: Edit2,
                     events: {
-                      onClick: () => edit(child.id)
+                      onClick: () => edit(id)
                     },
                     name: 'Edit'
                   },
@@ -91,11 +104,17 @@ export function Children({ childVideos }): ReactElement {
                     }
                   }
                 ]}
+                img={{
+                  src: images?.[0]?.mobileCinematicHigh as string,
+                  alt: imageAlt[0].value
+                }}
               />
-            ))}
-          </Stack>
-        </Section>
-      </SortableContext>
-    </DndContext>
+            </>
+          ))}
+        </OrderedList>
+      ) : (
+        <Section.Fallback>{t('No children to show')}</Section.Fallback>
+      )}
+    </Section>
   )
 }

@@ -100,10 +100,10 @@ export function VideoView(): ReactElement {
               </Tabs>
               <Divider sx={{ mb: 4 }} />
               <TabContainer value={tabValue} index={0}>
-                <Metadata video={video} loading={loading} />
+                {video != null && <Metadata video={video} loading={loading} />}
               </TabContainer>
               <TabContainer value={tabValue} index={1}>
-                <Children childVideos={video?.children} />
+                <Children childVideos={video?.children ?? []} />
               </TabContainer>
               <TabContainer value={tabValue} index={2}>
                 <Variants variants={video?.variants} />

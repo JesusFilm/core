@@ -1,41 +1,51 @@
 import { useSortable } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
+import IconButton, { IconButtonProps } from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-import { MouseEvent, ReactElement } from 'react'
+import { CSSProperties, MouseEvent, ReactElement, useMemo } from 'react'
 
 import Drag from '@core/shared/ui/icons/Drag'
 
 import { useEdit } from '../../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
 
-import { Actions } from './Actions'
-import { DropDown } from './DropDown'
+import { OrderItemMenu } from './OrderItemMenu'
+import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon'
+import { OrderItemIcons } from './OrderItemIcons'
 
 interface OrderedItemProps {
   id: string
   label: string
   idx: number
-  total: number
   img?: { src: string; alt: string }
   onClick?: (id: string) => void
-  actions?: Array<{
+  menuActions?: Array<{
     label: string
     handler: (id: string) => void
   }>
+  iconButtons?: Array<{
+    name: string
+    Icon: typeof SvgIcon
+    events: { [key: string]: (id: string) => void }
+    slotProps?: {
+      button?: IconButtonProps
+      icon?: SvgIconProps
+    }
+  }>
   onChange?: (input: { id: string; order: number }) => void
+  virtualStyles?: CSSProperties
 }
 
 export function OrderedItem({
   id,
   label,
   idx,
-  total,
   img,
-  onChange,
   onClick,
-  actions
+  menuActions,
+  iconButtons,
+  virtualStyles
 }: OrderedItemProps): ReactElement {
   const {
     attributes,
@@ -44,7 +54,12 @@ export function OrderedItem({
     transform,
     transition,
     setActivatorNodeRef
-  } = useSortable({ id })
+  } = useSortable({
+    id,
+    data: {
+      index: idx
+    }
+  })
   const {
     state: { isEdit }
   } = useEdit()
@@ -57,6 +72,16 @@ export function OrderedItem({
     if (e.currentTarget !== e.target) return
     onClick?.(id)
   }
+
+  const iconMemoButtons = useMemo(
+    () => iconButtons?.map((button) => button),
+    [iconButtons]
+  )
+
+  const menuActionButtons = useMemo(
+    () => menuActions?.map((actions) => actions),
+    [menuActions, id]
+  )
 
   return (
     <Stack
@@ -75,7 +100,8 @@ export function OrderedItem({
         backgroundColor: 'background.default',
         p: 1,
         borderRadius: 1,
-        width: '100%'
+        width: '100%',
+        ...virtualStyles
       }}
     >
       <IconButton
@@ -88,10 +114,6 @@ export function OrderedItem({
       >
         <Drag fontSize="large" />
       </IconButton>
-      <Typography variant="subtitle2">{`${idx + 1}. ${label}`}</Typography>
-      {onChange != null && isEdit && (
-        <DropDown id={id} idx={idx} total={total} onChange={onChange} />
-      )}
       {img != null && (
         <Box
           sx={{
@@ -112,9 +134,15 @@ export function OrderedItem({
           />
         </Box>
       )}
-      {actions != null && actions.length > 0 && isEdit && (
-        <Actions actions={actions} id={id} />
-      )}
+      <Typography variant="subtitle2">{`${idx + 1}. ${label}`}</Typography>
+      <Box sx={{ ml: 'auto' }}>
+        {iconMemoButtons != null && iconMemoButtons.length > 0 && isEdit && (
+          <OrderItemIcons iconButtons={iconMemoButtons}></OrderItemIcons>
+        )}
+        {menuActionButtons != null &&
+          menuActionButtons.length > 0 &&
+          isEdit && <OrderItemMenu actions={menuActionButtons} id={id} />}
+      </Box>
     </Stack>
   )
 }

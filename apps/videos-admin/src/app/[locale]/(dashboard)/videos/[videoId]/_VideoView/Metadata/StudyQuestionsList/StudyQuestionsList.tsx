@@ -107,9 +107,8 @@ export function StudyQuestionsList({
               id={id}
               label={value}
               idx={idx}
-              total={totalQuestions}
               onChange={updateOrderOnChange}
-              actions={[{ label: t('Edit'), handler: () => null }]}
+              menuActions={[{ label: t('Edit'), handler: () => null }]}
             />
           ))}
         </OrderedList>

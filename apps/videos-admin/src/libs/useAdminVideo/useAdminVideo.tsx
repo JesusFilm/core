@@ -95,6 +95,8 @@ export type GetAdminVideoVariant =
 export type GetAdminVideo_AdminVideo = GetAdminVideo['adminVideo']
 export type GetAdminVideo_AdminVideo_StudyQuestions =
   GetAdminVideo['adminVideo']['studyQuestions']
+export type GetAdminVideo_AdminVideo_Children =
+  GetAdminVideo['adminVideo']['children']
 
 export function useAdminVideo(
   options: QueryHookOptions<GetAdminVideo, GetAdminVideoVariables>
