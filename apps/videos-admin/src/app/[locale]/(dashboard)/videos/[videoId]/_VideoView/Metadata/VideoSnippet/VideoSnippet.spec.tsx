@@ -6,8 +6,8 @@ import { NextIntlClientProvider } from 'next-intl'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { EditProvider } from '../../../_EditProvider'
 
-import { mockVideoSnippets } from './data.mock'
 import { UPDATE_VIDEO_SNIPPET, VideoSnippet } from './VideoSnippet'
+import { mockVideoSnippets } from './VideoSnippet.data'
 
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
