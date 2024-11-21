@@ -30,6 +30,7 @@ export const GET_MY_MUX_VIDEO_QUERY = gql`
   query GetMyMuxVideoQuery($id: ID!) {
     getMyMuxVideo(id: $id) {
       id
+      assetId
       playbackId
       readyToStream
     }
@@ -69,11 +70,11 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
       notifyOnNetworkStatusChange: true,
       onCompleted: (data) => {
         if (
-          data.getMyMuxVideo?.readyToStream &&
-          data.getMyMuxVideo.playbackId != null
+          data.getMyMuxVideo.playbackId != null &&
+          data.getMyMuxVideo.assetId != null
         ) {
           stopPolling()
-          onChange(data.getMyMuxVideo.id)
+          onChange(data.getMyMuxVideo.assetId)
           resetUploadStatus()
         }
       }
@@ -102,7 +103,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   ): void {
     setUploading(true)
     const upload = UpChunk.createUpload({
-      file: file,
+      file,
       endpoint: data.createMuxVideoUploadByFile.uploadUrl ?? '',
       chunkSize: 5120
     })

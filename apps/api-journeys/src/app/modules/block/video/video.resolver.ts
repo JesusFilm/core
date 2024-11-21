@@ -294,8 +294,8 @@ export class VideoBlockResolver {
         })
         if (input.videoId != null) {
           input = {
-            ...(await this.fetchFieldsFromMux(input.videoId)),
-            ...input
+            ...input,
+            ...(await this.fetchFieldsFromMux(input.videoId))
           }
         }
         break
@@ -391,7 +391,9 @@ export class VideoBlockResolver {
 
   private async fetchFieldsFromMux(
     videoId: string
-  ): Promise<Pick<VideoBlock, 'title' | 'image' | 'duration' | 'endAt'>> {
+  ): Promise<
+    Pick<VideoBlock, 'title' | 'image' | 'duration' | 'endAt' | 'videoId'>
+  > {
     const response = await await getClient().video.assets.retrieve(videoId)
 
     if (response == null) {
@@ -399,9 +401,15 @@ export class VideoBlockResolver {
         extensions: { code: 'NOT_FOUND' }
       })
     }
+    if (response.playback_ids?.[0].id == null) {
+      throw new GraphQLError('playbackId cannot be found on Mux', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    }
     return {
+      videoId: response.playback_ids[0].id,
       title: response.id,
-      image: `${response.static_renditions?.[0].url}`,
+      image: `https://image.mux.com/${response.playback_ids[0].id}/thumbnail.png?width=1920&height=1080&time=1`,
       duration: Math.round(response.duration ?? 0),
       endAt: Math.round(response.duration ?? 0)
     }
