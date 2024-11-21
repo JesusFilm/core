@@ -499,3 +499,39 @@ builder.mutationFields((t) => ({
     }
   })
 }))
+
+enum VideoBlockSource {
+  internal = 'internal',
+  youTube = 'youTube',
+  cloudflare = 'cloudflare',
+  mux = 'mux'
+}
+
+builder
+  .externalRef(
+    'VideoBlock',
+    builder.selection<{ videoId: string; source: VideoBlockSource }>(
+      'videoId source'
+    )
+  )
+  .implement({
+    externalFields: (t) => ({
+      source: t.field({ type: VideoBlockSource, nullable: false }),
+      videoId: t.id({ nullable: false })
+    }),
+    fields: (t) => ({
+      playbackId: t.field({
+        type: 'ID',
+        nullable: true,
+        resolve: async ({ videoId, source }) => {
+          if (source === VideoBlockSource.mux) {
+            const video = await prisma.muxVideo.findUnique({
+              where: { id: videoId }
+            })
+            return video?.playbackId
+          }
+          return null
+        }
+      })
+    })
+  })

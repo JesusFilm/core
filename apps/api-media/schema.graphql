@@ -399,6 +399,15 @@ type Video
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
 }
 
+type VideoBlock
+  @key(fields: "videoId source")
+  @extends
+{
+  source: String! @external
+  videoId: ID! @external
+  playlistId: ID
+}
+
 input VideoCreateInput {
   id: String!
   label: VideoLabel!
