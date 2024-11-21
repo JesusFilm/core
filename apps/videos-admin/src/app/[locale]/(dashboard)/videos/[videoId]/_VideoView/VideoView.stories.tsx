@@ -4,7 +4,7 @@ import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../../../../../libs/storybookConfig'
 import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider } from '../_EditProvider'
+import { EditProvider, EditState } from '../_EditProvider'
 
 import { VideoView } from './VideoView'
 
@@ -18,12 +18,14 @@ const meta: Meta<typeof VideoView> = {
   }
 }
 
-type Story = StoryObj<ComponentProps<typeof VideoView>>
+type Story = StoryObj<
+  ComponentProps<typeof VideoView> & { state: Partial<EditState> }
+>
 
 const Template: Story = {
-  render: ({ ...args }) => (
+  render: ({ state }) => (
     <NextIntlClientProvider locale="en">
-      <EditProvider initialState={args.state}>
+      <EditProvider initialState={state}>
         <VideoView />
       </EditProvider>
     </NextIntlClientProvider>
@@ -35,6 +37,29 @@ export const Default = {
   args: {
     state: {
       isEdit: false
+    }
+  },
+  parameters: {
+    apolloClient: {
+      mocks: [useAdminVideoMock]
+    },
+    nextjs: {
+      appDirectory: true,
+      navigation: {
+        segments: [
+          ['videoId', 'someId'],
+          ['locale', 'en']
+        ]
+      }
+    }
+  }
+}
+
+export const Editable = {
+  ...Template,
+  args: {
+    state: {
+      isEdit: true
     }
   },
   parameters: {
