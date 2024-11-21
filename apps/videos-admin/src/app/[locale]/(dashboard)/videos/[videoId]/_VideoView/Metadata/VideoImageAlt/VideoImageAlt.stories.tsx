@@ -4,10 +4,10 @@ import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
-import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider } from '../../../_EditProvider'
+import { EditProvider, EditState } from '../../../_EditProvider'
 
 import { VideoImageAlt } from './VideoImageAlt'
+import { mockVideoImageAlt } from './VideoImageAlt.data'
 
 const meta: Meta<typeof VideoImageAlt> = {
   ...videosAdminConfig,
@@ -19,13 +19,15 @@ const meta: Meta<typeof VideoImageAlt> = {
   }
 }
 
-type Story = StoryObj<ComponentProps<typeof VideoImageAlt>>
+type Story = StoryObj<
+  ComponentProps<typeof VideoImageAlt> & { state: Partial<EditState> }
+>
 
 const Template: Story = {
-  render: ({ ...args }) => (
+  render: ({ state, videoImageAlts }) => (
     <NextIntlClientProvider locale="en">
-      <EditProvider initialState={args.state}>
-        <VideoImageAlt />
+      <EditProvider initialState={state}>
+        <VideoImageAlt videoImageAlts={videoImageAlts} />
       </EditProvider>
     </NextIntlClientProvider>
   )
@@ -36,21 +38,8 @@ export const Default = {
   args: {
     state: {
       isEdit: true
-    }
-  },
-  parameters: {
-    apolloClient: {
-      mocks: [useAdminVideoMock]
     },
-    nextjs: {
-      appDirectory: true,
-      navigation: {
-        segments: [
-          ['videoId', 'someId'],
-          ['locale', 'en']
-        ]
-      }
-    }
+    videoImageAlts: mockVideoImageAlt
   }
 }
 
@@ -59,21 +48,8 @@ export const Disabled = {
   args: {
     state: {
       isEdit: false
-    }
-  },
-  parameters: {
-    apolloClient: {
-      mocks: [useAdminVideoMock]
     },
-    nextjs: {
-      appDirectory: true,
-      navigation: {
-        segments: [
-          ['videoId', 'someId'],
-          ['locale', 'en']
-        ]
-      }
-    }
+    videoImageAlts: mockVideoImageAlt
   }
 }
 
@@ -82,21 +58,8 @@ export const Required = {
   args: {
     state: {
       isEdit: true
-    }
-  },
-  parameters: {
-    apolloClient: {
-      mocks: [useAdminVideoMock]
     },
-    nextjs: {
-      appDirectory: true,
-      navigation: {
-        segments: [
-          ['videoId', 'someId'],
-          ['locale', 'en']
-        ]
-      }
-    }
+    videoImageAlts: mockVideoImageAlt
   },
   play: async () => {
     await userEvent.type(
