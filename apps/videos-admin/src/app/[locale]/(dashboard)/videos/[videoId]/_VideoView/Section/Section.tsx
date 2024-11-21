@@ -25,7 +25,6 @@ interface SectionProps {
   children: ReactNode
   sx?: SxProps
   boxProps?: BoxProps
-
 }
 
 export function Section({
@@ -34,7 +33,6 @@ export function Section({
   children,
   sx,
   boxProps
-
 }: SectionProps): ReactElement {
   return (
     <Stack
@@ -46,6 +44,7 @@ export function Section({
         width: '100%',
         ...sx
       }}
+      id={`${title}-section`}
       data-testid={`${title}-section`}
     >
       <Stack
