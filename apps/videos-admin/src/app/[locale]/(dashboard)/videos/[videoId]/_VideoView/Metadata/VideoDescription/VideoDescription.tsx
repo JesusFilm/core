@@ -65,6 +65,7 @@ export function VideoDescription({
           <Stack gap={2}>
             <ResizableTextField
               name="description"
+              aria-label="description"
               value={values.description}
               onChange={handleChange}
               error={Boolean(errors.description)}

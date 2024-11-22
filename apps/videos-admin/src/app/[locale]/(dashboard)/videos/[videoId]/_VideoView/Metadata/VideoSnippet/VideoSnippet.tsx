@@ -63,6 +63,7 @@ export function VideoSnippet({
           <Stack gap={2}>
             <ResizableTextField
               name="snippet"
+              aria-label="snippet"
               value={values.snippet}
               onChange={handleChange}
               error={Boolean(errors.snippet)}

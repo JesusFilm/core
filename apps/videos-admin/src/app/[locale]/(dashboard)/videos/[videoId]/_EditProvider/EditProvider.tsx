@@ -3,6 +3,7 @@
 import {
   Dispatch,
   ReactElement,
+  ReactNode,
   createContext,
   useContext,
   useReducer
@@ -48,7 +49,7 @@ export function useEdit(): Context {
 }
 
 interface EditProviderProps {
-  children: ReactElement
+  children: ReactNode
   initialState?: Partial<EditState>
 }
 
