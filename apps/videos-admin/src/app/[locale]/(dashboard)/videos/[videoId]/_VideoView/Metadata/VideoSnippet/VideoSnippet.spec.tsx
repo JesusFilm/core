@@ -2,8 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
+import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { EditProvider } from '../../../_EditProvider'
-import { mockVideo } from '../../data.mock'
 
 import { UPDATE_VIDEO_SNIPPET, VideoSnippet } from './VideoSnippet'
 
@@ -28,7 +29,8 @@ describe('VideoSnippet', () => {
     }))
   }
 
-  const mockVideoSnippets = mockVideo.snippet
+  const mockVideoSnippets: VideoSnippets =
+    useAdminVideoMock['result']?.['data']?.['adminVideo']?.['snippet']
 
   beforeEach(() => {
     jest.clearAllMocks()

@@ -2,8 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
+import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { EditProvider } from '../../../_EditProvider'
-import { mockVideo } from '../../data.mock'
 
 import { UPDATE_VIDEO_IMAGE_ALT, VideoImageAlt } from './VideoImageAlt'
 
@@ -13,7 +14,7 @@ describe('VideoImageAlt', () => {
       query: UPDATE_VIDEO_IMAGE_ALT,
       variables: {
         input: {
-          id: '0ae6181d-591d-4f27-a034-4607fec2686c',
+          id: 'e53b7688-f286-4743-983d-e8dacce35ad9',
           value: 'new video image alt text'
         }
       }
@@ -21,14 +22,15 @@ describe('VideoImageAlt', () => {
     result: jest.fn(() => ({
       data: {
         VideoImageAltUpdate: {
-          id: '0ae6181d-591d-4f27-a034-4607fec2686c',
+          id: 'e53b7688-f286-4743-983d-e8dacce35ad9',
           value: 'new video image alt text'
         }
       }
     }))
   }
 
-  const mockVideoImageAlt = mockVideo.imageAlt
+  const mockVideoImageAlt: VideoImageAlts =
+    useAdminVideoMock['result']?.['data']?.['adminVideo']?.['imageAlt']
 
   beforeEach(() => {
     jest.clearAllMocks()

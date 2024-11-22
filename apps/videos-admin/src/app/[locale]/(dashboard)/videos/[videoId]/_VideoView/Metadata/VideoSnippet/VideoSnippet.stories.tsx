@@ -4,8 +4,9 @@ import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
+import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { EditProvider, EditState } from '../../../_EditProvider'
-import { mockVideo } from '../../data.mock'
 
 import { VideoSnippet } from './VideoSnippet'
 
@@ -25,7 +26,8 @@ const meta: Meta<typeof VideoSnippet> = {
   }
 }
 
-const mockVideoSnippets = mockVideo.snippet
+const mockVideoSnippets: VideoSnippets =
+  useAdminVideoMock['result']?.['data']?.['adminVideo']?.['snippet']
 
 type Story = StoryObj<
   ComponentProps<typeof VideoSnippet> & {

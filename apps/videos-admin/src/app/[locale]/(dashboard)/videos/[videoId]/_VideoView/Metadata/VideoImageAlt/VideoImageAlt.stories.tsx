@@ -4,8 +4,9 @@ import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
+import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { EditProvider, EditState } from '../../../_EditProvider'
-import { mockVideo } from '../../data.mock'
 
 import { VideoImageAlt } from './VideoImageAlt'
 
@@ -19,7 +20,8 @@ const meta: Meta<typeof VideoImageAlt> = {
   }
 }
 
-const mockVideoImageAlt = mockVideo.imageAlt
+const mockVideoImageAlt: VideoImageAlts =
+  useAdminVideoMock['result']?.['data']?.['adminVideo']?.['imageAlt']
 
 type Story = StoryObj<
   ComponentProps<typeof VideoImageAlt> & { state: Partial<EditState> }
