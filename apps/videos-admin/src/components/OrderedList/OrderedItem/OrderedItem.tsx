@@ -2,6 +2,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
 import IconButton, { IconButtonProps } from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { CSSProperties, MouseEvent, ReactElement, useMemo } from 'react'
@@ -10,9 +11,8 @@ import Drag from '@core/shared/ui/icons/Drag'
 
 import { useEdit } from '../../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
 
-import { OrderItemMenu } from './OrderItemMenu'
-import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon'
 import { OrderItemIcons } from './OrderItemIcons'
+import { OrderItemMenu } from './OrderItemMenu'
 
 interface OrderedItemProps {
   id: string
@@ -33,7 +33,6 @@ interface OrderedItemProps {
       icon?: SvgIconProps
     }
   }>
-  onChange?: (input: { id: string; order: number }) => void
   virtualStyles?: CSSProperties
 }
 
@@ -137,7 +136,7 @@ export function OrderedItem({
       <Typography variant="subtitle2">{`${idx + 1}. ${label}`}</Typography>
       <Box sx={{ ml: 'auto' }}>
         {iconMemoButtons != null && iconMemoButtons.length > 0 && isEdit && (
-          <OrderItemIcons iconButtons={iconMemoButtons}></OrderItemIcons>
+          <OrderItemIcons iconButtons={iconMemoButtons} />
         )}
         {menuActionButtons != null &&
           menuActionButtons.length > 0 &&

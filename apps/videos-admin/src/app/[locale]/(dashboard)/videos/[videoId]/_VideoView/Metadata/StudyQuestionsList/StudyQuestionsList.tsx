@@ -64,23 +64,6 @@ export function StudyQuestionsList({
     }
   }
 
-  async function updateOrderOnChange(input: {
-    id: string
-    order: number
-  }): Promise<void> {
-    const oldIndex = studyQuestionItems.findIndex(
-      (item) => item.id === input.id
-    )
-    setStudyQuestionItems((items) => {
-      return arrayMove(items, oldIndex, input.order)
-    })
-    await updateStudyQuestionOrder({
-      variables: {
-        input: { id: input.id.toString(), order: input.order + 1 }
-      }
-    })
-  }
-
   const totalQuestions = studyQuestionItems?.length ?? 0
 
   return (
@@ -107,7 +90,6 @@ export function StudyQuestionsList({
               id={id}
               label={value}
               idx={idx}
-              onChange={updateOrderOnChange}
               menuActions={[{ label: t('Edit'), handler: () => null }]}
             />
           ))}

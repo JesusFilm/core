@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { EditProvider } from '../_EditProvider'
 
 import { VideoView } from './VideoView'
 
@@ -23,9 +24,11 @@ describe('VideoView', () => {
 
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
-        <NextIntlClientProvider locale="en">
-          <VideoView />
-        </NextIntlClientProvider>
+        <EditProvider>
+          <NextIntlClientProvider locale="en">
+            <VideoView />
+          </NextIntlClientProvider>
+        </EditProvider>
       </MockedProvider>
     )
 

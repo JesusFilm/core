@@ -8,7 +8,6 @@ export const GET_ADMIN_VIDEO = graphql(`
       slug
       label
       published
-      image
       images(aspectRatio: banner) {
         id
         mobileCinematicHigh
