@@ -1,0 +1,1 @@
+export { RelatedVideos } from './RelatedVideos'

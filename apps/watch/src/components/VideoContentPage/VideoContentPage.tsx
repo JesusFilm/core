@@ -3,6 +3,9 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
+import { InstantSearch } from 'react-instantsearch'
+
+import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { useVideo } from '../../libs/videoContext'
@@ -14,6 +17,7 @@ import { getSlug } from '../VideoCard'
 import { VideoCarousel } from '../VideoCarousel'
 
 import { DownloadButton } from './DownloadButton'
+import { RelatedVideos } from './RelatedVideos'
 import { VideoContent } from './VideoContent/VideoContent'
 import { VideoHeading } from './VideoHeading'
 import { VideoHero } from './VideoHero'
@@ -43,6 +47,8 @@ export function VideoContentPage(): ReactElement {
 
   const ogSlug = getSlug(container?.slug, label, variant?.slug)
   const realChildren = children.filter((video) => video.variant !== null)
+
+  const searchClient = useInstantSearchClient()
 
   return (
     <>
@@ -80,90 +86,100 @@ export function VideoContentPage(): ReactElement {
           cardType: 'summary_large_image'
         }}
       />
-      <PageWrapper
-        hideHeader
-        hero={
-          <>
-            <VideoHero
-              onPlay={() => setHasPlayed(true)}
-              hasPlayed={hasPlayed}
-            />
-            <Stack
-              sx={{
-                backgroundColor: 'background.default',
-                py:
-                  hasPlayed ||
-                  (container?.childrenCount ?? 0) > 0 ||
-                  childrenCount > 0
-                    ? 5
-                    : 0
-              }}
-              spacing={5}
-            >
-              <VideoHeading
-                loading={loading}
-                hasPlayed={hasPlayed}
-                videos={realChildren}
-                onShareClick={() => setOpenShare(true)}
-                onDownloadClick={() => setOpenDownload(true)}
-              />
-              {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&
-                (realChildren.length === children.length ||
-                  realChildren.length > 0) && (
-                  <Box pb={4}>
-                    <VideoCarousel
-                      loading={loading}
-                      videos={realChildren}
-                      containerSlug={container?.slug ?? slug}
-                      activeVideoId={id}
-                    />
-                  </Box>
-                )}
-            </Stack>
-          </>
-        }
-        testId="VideoContentPage"
+      <InstantSearch
+        searchClient={searchClient}
+        indexName={process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''}
       >
-        <Container maxWidth="xxl" sx={{ mb: 24 }}>
-          <Stack
-            direction="row"
-            spacing="40px"
-            sx={{
-              mx: 0,
-              mt: { xs: 5, md: 10 },
-              mb: { xs: 5, md: 10 },
-              maxWidth: '100%'
-            }}
-          >
-            <VideoContent />
-            <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-              <Stack spacing={5} mb={8} direction={{ md: 'column', lg: 'row' }}>
-                {variant != null && variant.downloads.length > 0 && (
-                  <DownloadButton
-                    variant="button"
-                    onClick={() => setOpenDownload(true)}
-                  />
-                )}
-                <ShareButton
-                  variant="button"
-                  onClick={() => setOpenShare(true)}
-                />
-              </Stack>
-            </Box>
-          </Stack>
-          {variant != null &&
-            variant.downloadable &&
-            variant.downloads.length > 0 && (
-              <DownloadDialog
-                open={openDownload}
-                onClose={() => {
-                  setOpenDownload(false)
-                }}
+        <PageWrapper
+          hideHeader
+          hero={
+            <>
+              <VideoHero
+                onPlay={() => setHasPlayed(true)}
+                hasPlayed={hasPlayed}
               />
-            )}
-          <ShareDialog open={openShare} onClose={() => setOpenShare(false)} />
-        </Container>
-      </PageWrapper>
+              <Stack
+                sx={{
+                  backgroundColor: 'background.default',
+                  py:
+                    hasPlayed ||
+                    (container?.childrenCount ?? 0) > 0 ||
+                    childrenCount > 0
+                      ? 5
+                      : 0
+                }}
+                spacing={5}
+              >
+                <VideoHeading
+                  loading={loading}
+                  hasPlayed={hasPlayed}
+                  videos={realChildren}
+                  onShareClick={() => setOpenShare(true)}
+                  onDownloadClick={() => setOpenDownload(true)}
+                />
+                {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&
+                  (realChildren.length === children.length ||
+                    realChildren.length > 0) && (
+                    <Box pb={4}>
+                      <VideoCarousel
+                        loading={loading}
+                        videos={realChildren}
+                        containerSlug={container?.slug ?? slug}
+                        activeVideoId={id}
+                      />
+                    </Box>
+                  )}
+              </Stack>
+            </>
+          }
+          testId="VideoContentPage"
+        >
+          <Container maxWidth="xxl" sx={{ mb: 24 }}>
+            <Stack
+              direction="row"
+              spacing="40px"
+              sx={{
+                mx: 0,
+                mt: { xs: 5, md: 10 },
+                mb: { xs: 5, md: 10 },
+                maxWidth: '100%'
+              }}
+            >
+              <VideoContent />
+              <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                <Stack
+                  spacing={5}
+                  mb={8}
+                  direction={{ md: 'column', lg: 'row' }}
+                >
+                  {variant != null && variant.downloads.length > 0 && (
+                    <DownloadButton
+                      variant="button"
+                      onClick={() => setOpenDownload(true)}
+                    />
+                  )}
+                  <ShareButton
+                    variant="button"
+                    onClick={() => setOpenShare(true)}
+                  />
+                </Stack>
+              </Box>
+            </Stack>
+            {variant != null &&
+              variant.downloadable &&
+              variant.downloads.length > 0 && (
+                <DownloadDialog
+                  open={openDownload}
+                  onClose={() => {
+                    setOpenDownload(false)
+                  }}
+                />
+              )}
+            <ShareDialog open={openShare} onClose={() => setOpenShare(false)} />
+            <RelatedVideos />
+          </Container>
+        </PageWrapper>
+      </InstantSearch>
     </>
   )
 }
