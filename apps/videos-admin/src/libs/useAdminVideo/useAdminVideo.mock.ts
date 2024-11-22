@@ -25,7 +25,8 @@ export const useAdminVideoMock: MockedResponse<
           {
             id: '1_jf-0-0.mobileCinematicHigh.jpg',
             mobileCinematicHigh:
-              'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+              'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+            url: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg'
           }
         ],
         imageAlt: [

@@ -58,7 +58,13 @@ export const yoga = createYoga<Record<string, unknown>, Context>({
     }),
     process.env.NODE_ENV !== 'test'
       ? useResponseCache({
-          session: () => null,
+          session: (request) =>
+            get(request, '_json.extensions.jwt.payload.user_id') ??
+            request.headers.get('interop-token') ??
+            null,
+          enabled: (request) =>
+            get(request, '_json.extensions.jwt.payload.user_id') == null &&
+            request.headers.get('interop-token') == null,
           cache,
           ttlPerSchemaCoordinate: {
             'Query.getMyCloudflareVideo': 0
