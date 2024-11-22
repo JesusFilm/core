@@ -11,269 +11,77 @@ export const mockVideo = {
   __typename: 'Video',
   id: '1_jf-0-0',
   label: VideoLabel.featureFilm,
-  image:
-    'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
   images: [
     {
-      id: '1_jf-0-0.mobileCinematicHigh.jpg',
+      __typename: 'CloudflareImage',
       mobileCinematicHigh:
-        'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
-      __typename: 'CloudflareImage'
+        'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
     }
   ],
-  imageAlt: [
-    {
-      id: '0ae6181d-591d-4f27-a034-4607fec2686c',
-      value: 'JESUS',
-      __typename: 'VideoImageAlt'
-    }
-  ],
+  imageAlt: [{ __typename: 'VideoImageAlt', value: 'JESUS' }],
   snippet: [
     {
-      id: 'e3645175-c05b-4760-a0ac-fdcb894655be',
+      __typename: 'VideoSnippet',
       value:
-        'Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion.',
-      __typename: 'VideoSnippet'
+        'Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion.'
     }
   ],
   description: [
     {
-      id: '6aef078b-6fea-4577-b440-b002a0cdeb58',
+      __typename: 'VideoDescription',
       value:
-        "This film is a perfect introduction to Jesus through the Gospel of Luke. Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion. &#13;&#13;God creates everything and loves mankind. But mankind disobeys God. God and mankind are separated, but God loves mankind so much, He arranges redemption for mankind. He sends his Son Jesus to be a perfect sacrifice to make amends for us.&#13;&#13;Before Jesus arrives, God prepares mankind. Prophets speak of the birth, the life, and the death of Jesus.&#13;&#13;Jesus attracts attention. He teaches in parables no one really understands, gives sight to the blind, and helps those who no one sees as worth helping.&#13;&#13;He scares the Jewish leaders, they see him as a threat. So they arrange, through Judas the traitor and their Roman oppressors, for the crucifixion of Jesus. They think the matter is settled. But the women who serve Jesus discover an empty tomb. The disciples panic. When Jesus appears, they doubt He's real. But it's what He proclaimed all along: He is their perfect sacrifice, their Savior, victor over death. He ascends to heaven, telling His followers to tell others about Him and His teachings.",
-      __typename: 'VideoDescription'
+        "This film is a perfect introduction to Jesus through the Gospel of Luke. Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion. \n\nGod creates everything and loves mankind. But mankind disobeys God. God and mankind are separated, but God loves mankind so much, He arranges redemption for mankind. He sends his Son Jesus to be a perfect sacrifice to make amends for us.\n\nBefore Jesus arrives, God prepares mankind. Prophets speak of the birth, the life, and the death of Jesus.\n\nJesus attracts attention. He teaches in parables no one really understands, gives sight to the blind, and helps those who no one sees as worth helping.\n\nHe scares the Jewish leaders, they see him as a threat. So they arrange, through Judas the traitor and their Roman oppressors, for the crucifixion of Jesus. They think the matter is settled. But the women who serve Jesus discover an empty tomb. The disciples panic. When Jesus appears, they doubt He's real. But it's what He proclaimed all along: He is their perfect sacrifice, their Savior, victor over death. He ascends to heaven, telling His followers to tell others about Him and His teachings."
     }
   ],
   studyQuestions: [
     {
-      id: '2481b77c-7eff-4039-9173-d5383ebdd222',
-      value: "How is the sacrifice of Jesus part of God's plan?",
-      __typename: 'VideoStudyQuestion'
+      __typename: 'VideoStudyQuestion',
+      value: "How is the sacrifice of Jesus part of God's plan?"
     },
     {
-      id: 'e22f7314-0d2f-4ef3-835f-155d41706a19',
+      __typename: 'VideoStudyQuestion',
       value:
-        'How do the different groups of people respond to Jesus and His teachings?',
-      __typename: 'VideoStudyQuestion'
+        'How do the different groups of people respond to Jesus and His teachings?'
     },
     {
-      id: '66c0d6a0-2861-4aaa-984d-47049d97292d',
+      __typename: 'VideoStudyQuestion',
       value:
-        'What are some of the miracles Jesus performed? How do they affect those people?',
-      __typename: 'VideoStudyQuestion'
+        'What are some of the miracles Jesus performed? How do they affect those people?'
     },
     {
-      id: '8c5cb753-a161-435e-8233-27b735d577ec',
-      value: 'How do you respond to the life of Jesus?',
-      __typename: 'VideoStudyQuestion'
+      __typename: 'VideoStudyQuestion',
+      value: 'How do you respond to the life of Jesus?'
     }
   ],
-  title: [
-    {
-      id: '7524d1ca-75d9-451b-9fdd-e67d86295431',
-      value: 'JESUS',
-      __typename: 'VideoTitle'
-    }
-  ],
-  variants: [
-    {
-      id: '1_4334-jf-0-0',
-      slug: 'jesus/munukutuba',
-      downloads: [
-        {
-          id: '529a0228-67ce-4b08-bc78-cecf1b7ec358',
-          quality: VideoVariantDownloadQuality.high,
-          size: 2248469346,
-          height: 360,
-          width: 640,
-          url: 'https://arc.gt/4d9ez',
-          __typename: 'VideoVariantDownload'
-        },
-        {
-          id: 'de3c0487-1ab5-488e-b4f0-03001e21579c',
-          quality: VideoVariantDownloadQuality.low,
-          size: 197621170,
-          height: 180,
-          width: 320,
-          url: 'https://arc.gt/f4rc6',
-          __typename: 'VideoVariantDownload'
-        }
-      ],
-      __typename: 'VideoVariant',
-      language: {
-        id: '4334',
-        name: [
-          {
-            value: 'Munukutuba',
-            __typename: 'LanguageName'
-          }
-        ],
-        slug: 'munukutuba',
-        __typename: 'Language'
+  title: [{ __typename: 'VideoTitle', value: 'JESUS' }],
+  variant: {
+    __typename: 'VideoVariant',
+    id: '1_529-jf-0-0',
+    duration: 7674,
+    hls: 'https://arc.gt/j67rz',
+    downloads: [
+      {
+        __typename: 'VideoVariantDownload',
+        quality: VideoVariantDownloadQuality.low,
+        size: 207296233,
+        url: 'https://arc.gt/y1s23'
+      },
+      {
+        __typename: 'VideoVariantDownload',
+        quality: VideoVariantDownloadQuality.high,
+        size: 2361587773,
+        url: 'https://arc.gt/7geui'
       }
+    ],
+    language: {
+      __typename: 'Language',
+      id: '529',
+      name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
     },
-    {
-      id: '1_19558-jf-0-0',
-      slug: 'jesus/kom',
-      downloads: [
-        {
-          id: 'fe363739-adb1-4871-be5b-97d3e7871038',
-          quality: VideoVariantDownloadQuality.high,
-          size: 2248493878,
-          height: 360,
-          width: 640,
-          url: 'https://arc.gt/rfjdj',
-          __typename: 'VideoVariantDownload'
-        },
-        {
-          id: 'd04e8895-e9db-4e80-8f40-f666028ba06f',
-          quality: VideoVariantDownloadQuality.low,
-          size: 197627995,
-          height: 180,
-          width: 320,
-          url: 'https://arc.gt/v5okf',
-          __typename: 'VideoVariantDownload'
-        }
-      ],
-      __typename: 'VideoVariant',
-      language: {
-        id: '19558',
-        name: [
-          {
-            value: 'Kom',
-            __typename: 'LanguageName'
-          }
-        ],
-        slug: 'kom',
-        __typename: 'Language'
-      }
-    }
-  ],
-  subtitles: [
-    {
-      id: '97c4bc0e-6a2d-4650-9b60-91b99293ba1b',
-      edition: 'jltib',
-      vttSrc:
-        'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.vtt',
-      srtSrc:
-        'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.srt',
-      value:
-        'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.vtt',
-      __typename: 'VideoSubtitle',
-      language: {
-        id: '529',
-        name: [
-          {
-            value: 'English',
-            __typename: 'LanguageName'
-          }
-        ],
-        slug: 'english',
-        __typename: 'Language'
-      }
-    },
-    {
-      id: 'ffc10f33-d24b-4011-85c3-f7e448323b52',
-      edition: 'jlnoci',
-      vttSrc:
-        'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLnoCI-529-31474.vtt',
-      srtSrc:
-        'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLnoCI-529-31474.srt',
-      value:
-        'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLnoCI-529-31474.vtt',
-      __typename: 'VideoSubtitle',
-      language: {
-        id: '529',
-        name: [
-          {
-            value: 'English',
-            __typename: 'LanguageName'
-          }
-        ],
-        slug: 'english',
-        __typename: 'Language'
-      }
-    },
-    {
-      id: 'f9817d7e-389f-44ef-8b29-12d75f1ef68f',
-      edition: 'otwcc',
-      vttSrc:
-        'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-OTwCC-529-31474.vtt',
-      srtSrc:
-        'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-OTwCC-529-31474.srt',
-      value:
-        'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-OTwCC-529-31474.vtt',
-      __typename: 'VideoSubtitle',
-      language: {
-        id: '529',
-        name: [
-          {
-            value: 'English',
-            __typename: 'LanguageName'
-          }
-        ],
-        slug: 'english',
-        __typename: 'Language'
-      }
-    }
-  ],
-  children: [
-    {
-      id: '1_jf6101-0-0',
-      title: [
-        {
-          id: '892b4bcc-471f-4323-9ef1-3e85c4e6ebde',
-          value: 'The Beginning',
-          __typename: 'VideoTitle'
-        }
-      ],
-      images: [
-        {
-          id: '1_jf6101-0-0.mobileCinematicHigh.jpg',
-          mobileCinematicHigh:
-            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6101-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
-          __typename: 'CloudflareImage'
-        }
-      ],
-      imageAlt: [
-        {
-          id: '383b93e5-f478-47e0-9711-e615d2316c50',
-          value: 'The Beginning',
-          __typename: 'VideoImageAlt'
-        }
-      ],
-      __typename: 'Video'
-    },
-    {
-      id: '1_jf6102-0-0',
-      title: [
-        {
-          id: 'ccfd9ffe-710c-4f48-bb96-c539133bff5b',
-          value: 'Birth of Jesus',
-          __typename: 'VideoTitle'
-        }
-      ],
-      images: [
-        {
-          id: '1_jf6102-0-0.mobileCinematicHigh.jpg',
-          mobileCinematicHigh:
-            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6102-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
-          __typename: 'CloudflareImage'
-        }
-      ],
-      imageAlt: [
-        {
-          id: 'a24232ca-aefe-431e-a9f0-ad43316cb287',
-          value: 'Birth of Jesus',
-          __typename: 'VideoImageAlt'
-        }
-      ],
-      __typename: 'Video'
-    }
-  ],
+    slug: 'jesus/english',
+    subtitleCount: 32
+  },
   variantLanguagesCount: 2039,
-  published: true,
-  noIndex: false,
   slug: 'jesus',
   childrenCount: 61
 }
