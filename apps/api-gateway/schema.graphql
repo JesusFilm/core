@@ -2354,6 +2354,7 @@ A domain that can be used for short links
 type ShortLinkDomain @join__type(graph: API_MEDIA)  {
   id: ID!
   hostname: String!
+  apexName: String!
   createdAt: Date!
   updatedAt: Date!
   """
@@ -2361,9 +2362,43 @@ type ShortLinkDomain @join__type(graph: API_MEDIA)  {
   """
   services: [Service!]!
   """
-  Whether the domain is valid (has a CNAME record or A record pointing to the short link service)
+  check status of the domain
   """
-  valid: Boolean!
+  check: ShortLinkDomainCheck!
+}
+
+type ShortLinkDomainCheck @join__type(graph: API_MEDIA)  {
+  """
+  Is the domain correctly configured in the DNS? If false, A Record and CNAME Record should be added by the user.
+  """
+  configured: Boolean!
+  """
+  Does the domain belong to the short link application? If false, verification will be populated.
+  """
+  verified: Boolean!
+  """
+  Verification records to be added to the DNS to confirm ownership.
+  """
+  verification: [ShortLinkDomainVerfication!]!
+}
+
+type ShortLinkDomainVerfication @join__type(graph: API_MEDIA)  {
+  """
+  Type of verification
+  """
+  type: String!
+  """
+  Domain name
+  """
+  domain: String!
+  """
+  Value of the verification
+  """
+  value: String!
+  """
+  Reason for the verification
+  """
+  reason: String!
 }
 
 type TagName @join__type(graph: API_MEDIA)  {

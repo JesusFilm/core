@@ -487,6 +487,7 @@ type ShortLink
 type ShortLinkDomain {
   id: ID!
   hostname: String!
+  apexName: String!
   createdAt: Date!
   updatedAt: Date!
 
@@ -495,10 +496,37 @@ type ShortLinkDomain {
   """
   services: [Service!]!
 
+  """check status of the domain"""
+  check: ShortLinkDomainCheck!
+}
+
+type ShortLinkDomainCheck {
   """
-  Whether the domain is valid (has a CNAME record or A record pointing to the short link service)
+  Is the domain correctly configured in the DNS? If false, A Record and CNAME Record should be added by the user.
   """
-  valid: Boolean!
+  configured: Boolean!
+
+  """
+  Does the domain belong to the short link application? If false, verification will be populated.
+  """
+  verified: Boolean!
+
+  """Verification records to be added to the DNS to confirm ownership."""
+  verification: [ShortLinkDomainVerfication!]!
+}
+
+type ShortLinkDomainVerfication {
+  """Type of verification"""
+  type: String!
+
+  """Domain name"""
+  domain: String!
+
+  """Value of the verification"""
+  value: String!
+
+  """Reason for the verification"""
+  reason: String!
 }
 
 type Tag
