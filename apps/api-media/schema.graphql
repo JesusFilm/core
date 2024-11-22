@@ -400,12 +400,14 @@ type Video
 }
 
 type VideoBlock
-  @key(fields: "videoId source")
+  @key(fields: "videoId source duration")
   @extends
 {
   source: VideoBlockSource! @external
   videoId: ID! @external
   playbackId: ID
+  assetId: ID
+  duration: Int @shareable
 }
 
 enum VideoBlockSource {

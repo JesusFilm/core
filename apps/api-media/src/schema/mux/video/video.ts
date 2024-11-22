@@ -167,9 +167,31 @@ builder.enumType(VideoBlockSource, { name: 'VideoBlockSource' })
 builder
   .externalRef(
     'VideoBlock',
-    builder.selection<{ videoId: string; source: VideoBlockSource }>(
-      'videoId source'
-    )
+    builder.selection<{
+      videoId: string
+      source: VideoBlockSource
+      duration: number
+    }>('videoId source duration'),
+    async (entity) => {
+      if (entity.source === VideoBlockSource.mux) {
+        const video = await prisma.muxVideo.findUnique({
+          where: { id: entity.videoId },
+          select: { assetId: true, playbackId: true, duration: true }
+        })
+        return {
+          ...entity,
+          assetId: video?.assetId,
+          playbackId: video?.playbackId,
+          duration: video?.duration
+        }
+      }
+
+      return {
+        ...entity,
+        assetId: null,
+        playbackId: null
+      }
+    }
   )
   .implement({
     externalFields: (t) => ({
@@ -177,18 +199,8 @@ builder
       videoId: t.id({ nullable: false })
     }),
     fields: (t) => ({
-      playbackId: t.field({
-        type: 'ID',
-        nullable: true,
-        resolve: async ({ videoId, source }) => {
-          if (source === VideoBlockSource.mux) {
-            const video = await prisma.muxVideo.findUnique({
-              where: { id: videoId }
-            })
-            return video?.playbackId
-          }
-          return null
-        }
-      })
+      playbackId: t.exposeID('playbackId', { nullable: true }),
+      assetId: t.exposeID('assetId', { nullable: true }),
+      duration: t.exposeInt('duration', { nullable: true, shareable: true })
     })
   })

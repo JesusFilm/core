@@ -58,18 +58,20 @@ model CloudflareVideo {
 
 model MuxVideo {
   id            String   @id @default(uuid())
-  playbackId    String?
+  playbackId    String?  @unique
   uploadUrl     String?
-  uploadId      String?
-  assetId       String?
+  uploadId      String?  @unique
+  assetId       String?  @unique
   userId        String
   name          String?
+  duration      Int      @default(0)
   downloadable  Boolean  @default(false)
   createdAt     DateTime @default(now())
   readyToStream Boolean  @default(false)
   updatedAt     DateTime @default(now()) @updatedAt
 
   @@index(userId(type: Hash))
+  @@index(assetId(type: Hash))
 }
 
 model CloudflareR2 {

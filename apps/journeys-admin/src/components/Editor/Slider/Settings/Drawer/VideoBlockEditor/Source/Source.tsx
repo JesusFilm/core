@@ -58,7 +58,7 @@ const SourceFromMux = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceFromCloudflare/SourceFromMux" */ './SourceFromMux'
-    ).then((mod) => mod.SourceFromCloudflare),
+    ).then((mod) => mod.SourceFromMux),
   { ssr: false }
 )
 
