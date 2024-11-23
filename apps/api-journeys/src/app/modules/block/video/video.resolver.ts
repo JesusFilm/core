@@ -409,7 +409,7 @@ export class VideoBlockResolver {
     return {
       videoId: response.playback_ids[0].id,
       title: response.id,
-      image: `https://image.mux.com/${response.playback_ids[0].id}/thumbnail.png?width=1920&height=1080&time=1`,
+      image: `https://image.mux.com/${response.playback_ids[0].id}/thumbnail.png?time=1`,
       duration: Math.round(response.duration ?? 0),
       endAt: Math.round(response.duration ?? 0)
     }

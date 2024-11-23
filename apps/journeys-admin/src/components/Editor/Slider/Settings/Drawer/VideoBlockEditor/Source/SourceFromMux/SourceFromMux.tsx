@@ -18,17 +18,15 @@ interface SourceFromMuxProps {
 export function SourceFromCloudflare({
   selectedBlock
 }: SourceFromMuxProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const IMG_HEIGHT = 56
   const IMG_WIDTH = 56
+  const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
       <Box sx={{ ml: 2, mr: 4 }}>
         <ImageBlockThumbnail
           selectedBlock={{
-            src: selectedBlock.image ?? '',
-            height: IMG_HEIGHT,
-            width: IMG_WIDTH,
+            src: `${selectedBlock.image ?? ''}&width=${IMG_WIDTH}&height=${IMG_HEIGHT}`,
             alt: selectedBlock.title ?? ''
           }}
           Icon={VideoOnIcon}

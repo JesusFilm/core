@@ -79,7 +79,8 @@ builder.queryFields((t) => ({
             where: { id },
             data: {
               readyToStream: true,
-              playbackId: muxVideo.playback_ids?.[0].id
+              playbackId: muxVideo.playback_ids?.[0].id,
+              duration: muxVideo.duration
             }
           })
         }
