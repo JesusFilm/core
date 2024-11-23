@@ -1,7 +1,7 @@
 import { Prisma } from '.prisma/api-languages-client'
 
+import { parseFullTextSearch } from '../../lib/parseFullTextSearch'
 import { prisma } from '../../lib/prisma'
-import { parseFullTextSearch } from '../../workers/bigQuery/importers/languages/lib/parseFullTextSearch'
 import { builder } from '../builder'
 
 enum LanguageIdType {

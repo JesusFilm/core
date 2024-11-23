@@ -1,5 +1,6 @@
 import { Prisma } from '.prisma/api-languages-client'
 
+import { parseFullTextSearch } from '../../lib/parseFullTextSearch'
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 import { Language } from '../language/language'
@@ -88,6 +89,25 @@ builder.queryFields((t) => ({
   countries: t.prismaField({
     type: ['Country'],
     nullable: false,
-    resolve: async (query) => await prisma.country.findMany(query)
+    args: {
+      term: t.arg.string({ required: false })
+    },
+    resolve: async (query, _parent, { term }) => {
+      const filter: Prisma.CountryWhereInput = {}
+      if (term != null) {
+        filter.name = {
+          some: {
+            value: {
+              contains: parseFullTextSearch(term),
+              mode: 'insensitive'
+            }
+          }
+        }
+      }
+      return await prisma.country.findMany({
+        ...query,
+        where: filter
+      })
+    }
   })
 }))
