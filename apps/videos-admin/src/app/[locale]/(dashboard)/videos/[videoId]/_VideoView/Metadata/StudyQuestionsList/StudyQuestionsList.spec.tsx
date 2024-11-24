@@ -1,21 +1,11 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within
-} from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { mockStudyQuestions } from './data.mock'
-import {
-  StudyQuestionsList,
-  UPDATE_STUDY_QUESTION_ORDER,
-  UpdateStudyQuestionOrder,
-  UpdateStudyQuestionOrderVariables
-} from './StudyQuestionsList'
 import { EditProvider } from '../../../_EditProvider'
+
+import { mockStudyQuestions } from './data.mock'
+import { StudyQuestionsList } from './StudyQuestionsList'
 
 describe('StudyQuestions', () => {
   it('should render', async () => {

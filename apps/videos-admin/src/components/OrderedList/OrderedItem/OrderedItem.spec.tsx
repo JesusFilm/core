@@ -1,58 +1,44 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react"
-import { NextIntlClientProvider } from "next-intl"
+import { fireEvent, render, screen, within } from '@testing-library/react'
+import { NextIntlClientProvider } from 'next-intl'
 
-import { OrderedItem } from "./OrderedItem"
+import Edit2 from '@core/shared/ui/icons/Edit2'
+import EyeOpen from '@core/shared/ui/icons/EyeOpen'
+
+import { EditProvider } from '../../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
+
+import { OrderedItem } from './OrderedItem'
 
 describe('OrderedItem', () => {
-  const updateOrderMock = jest.fn()
-
   it('should render', () => {
     render(
       <NextIntlClientProvider locale="en">
-        <OrderedItem id='item.id' label="Ordered item" idx={0} total={1} onOrderUpdate={updateOrderMock} />
+        <EditProvider initialState={{ isEdit: true }}>
+          <OrderedItem id="item.id" label="Ordered item" idx={0} />
+        </EditProvider>
       </NextIntlClientProvider>
     )
 
-    expect(screen.getByRole('button', { name: 'ordered-item-drag-handle'})).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'ordered-item-drag-handle' })
+    ).toBeInTheDocument()
 
-    const orderSelect = screen.getByRole('combobox')
-
-    expect(screen.getByText('Ordered item')).toBeInTheDocument()
-    expect(orderSelect).toBeInTheDocument()
-    expect(orderSelect).toHaveTextContent('1')
+    expect(screen.getByText('1. Ordered item')).toBeInTheDocument()
+    expect(screen.getByTestId('OrderedItemDragHandle-0')).toBeInTheDocument()
   })
 
-  it('should emit update event', async () => {
-    render(
-      <NextIntlClientProvider locale="en">
-        <OrderedItem id='item.id' label="Ordered item" idx={0} total={2} onOrderUpdate={updateOrderMock} />
-      </NextIntlClientProvider>
-    )
-    const orderSelect = screen.getByRole('combobox')
-
-    await fireEvent.mouseDown(orderSelect)
-
-    const listbox = screen.getByRole('listbox')
-    expect(listbox).toBeInTheDocument()
-
-    const options = within(listbox).getAllByRole('option')
-
-    expect(options.length).toBe(2)
-    expect(options[0]).toHaveAttribute('aria-selected', "true")
-    expect(options[1]).toHaveAttribute('aria-selected', "false")
-
-    fireEvent.click(options[1])
-    expect(updateOrderMock).toHaveBeenCalledWith({ id: 'item.id', order: 2})
-  })
-
-  it('should render actions', async () => {
+  it('should render menu with actions', async () => {
     const viewHandlerMock = jest.fn()
 
     render(
       <NextIntlClientProvider locale="en">
-        <OrderedItem id='item.id' label="Ordered item" idx={0} total={1} onOrderUpdate={updateOrderMock} actions={[
-          { label: 'View', handler: viewHandlerMock }
-        ]}/>
+        <EditProvider initialState={{ isEdit: true }}>
+          <OrderedItem
+            id="item.id"
+            label="Ordered item"
+            idx={0}
+            menuActions={[{ label: 'View', handler: viewHandlerMock }]}
+          />
+        </EditProvider>
       </NextIntlClientProvider>
     )
 
@@ -61,14 +47,59 @@ describe('OrderedItem', () => {
 
     await fireEvent.click(actions)
 
-    const actionMenu = screen.getByRole('menu', { name: 'ordered-item-actions-menu'})
+    const actionMenu = screen.getByRole('menu', {
+      name: 'ordered-item-actions-menu'
+    })
     expect(actionMenu).toBeInTheDocument()
 
-    const actionButton = within(actionMenu).getByRole('menuitem', { name: 'View' })
+    const actionButton = within(actionMenu).getByRole('menuitem', {
+      name: 'View'
+    })
     expect(actionButton).toBeInTheDocument()
 
     fireEvent.click(actionButton)
 
     expect(viewHandlerMock).toHaveBeenCalledWith('item.id')
+  })
+
+  it('should render icon buttons', async () => {
+    const viewOnClick = jest.fn()
+    const editOnClick = jest.fn()
+
+    render(
+      <NextIntlClientProvider locale="en">
+        <EditProvider initialState={{ isEdit: true }}>
+          <OrderedItem
+            id="item.id"
+            label="Ordered item"
+            idx={0}
+            iconButtons={[
+              {
+                Icon: EyeOpen,
+                events: {
+                  onClick: viewOnClick
+                },
+                name: 'View'
+              },
+              {
+                Icon: Edit2,
+                events: {
+                  onClick: editOnClick
+                },
+                name: 'Edit'
+              }
+            ]}
+          />
+        </EditProvider>
+      </NextIntlClientProvider>
+    )
+
+    const viewButton = screen.getByTestId('EyeOpenIcon')
+    const editButton = screen.getByTestId('Edit2Icon')
+
+    fireEvent.click(editButton)
+    expect(editOnClick).toHaveBeenCalled()
+    fireEvent.click(viewButton)
+    expect(viewOnClick).toHaveBeenCalled()
   })
 })
