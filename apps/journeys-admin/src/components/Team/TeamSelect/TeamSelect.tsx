@@ -42,6 +42,12 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
           lastActiveTeamId: team?.id ?? null
         }
       },
+      optimisticResponse: {
+        journeyProfileUpdate: {
+          id: team?.id as string,
+          __typename: 'JourneyProfile'
+        }
+      },
       onCompleted() {
         void client.refetchQueries({ include: ['GetAdminJourneys'] })
       }
