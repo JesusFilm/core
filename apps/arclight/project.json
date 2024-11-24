@@ -138,6 +138,12 @@
       "options": {
         "command": "gql.tada generate output --tsconfig apps/arclight/tsconfig.json"
       }
+    },
+    "extract-translations": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": []
+      }
     }
   }
 }
