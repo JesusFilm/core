@@ -9,7 +9,6 @@ import type { Page } from 'playwright-core'
 import testData from '../utils/testData.json'
 
 const sixtySecondsTimeout = 60000
-/* eslint-disable @typescript-eslint/lines-between-class-members */
 export class CardLevelActionPage {
   readonly page: Page
   randomNumber: string
