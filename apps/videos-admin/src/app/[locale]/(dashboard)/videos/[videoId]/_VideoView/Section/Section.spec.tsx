@@ -1,7 +1,9 @@
+import Typography from '@mui/material/Typography'
 import { fireEvent, render, screen } from '@testing-library/react'
-import { Section } from './Section'
-import { Typography } from '@mui/material'
+
 import Plus2 from '@core/shared/ui/icons/Plus2'
+
+import { Section } from './Section'
 
 describe('Section', () => {
   it('should render without action', () => {
@@ -39,5 +41,11 @@ describe('Section', () => {
     fireEvent.click(button)
 
     expect(handleClick).toHaveBeenCalled()
+  })
+
+  it('should render fallback', () => {
+    render(<Section.Fallback>Nothing to display</Section.Fallback>)
+
+    expect(screen.getByText('Nothing to display')).toBeInTheDocument()
   })
 })
