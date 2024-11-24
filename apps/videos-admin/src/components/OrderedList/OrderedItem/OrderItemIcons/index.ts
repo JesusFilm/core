@@ -1,1 +1,0 @@
-export { OrderItemIcons } from './OrderItemIcons'

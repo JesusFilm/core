@@ -11,8 +11,8 @@ import Drag from '@core/shared/ui/icons/Drag'
 
 import { useEdit } from '../../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
 
-import { OrderItemIcons } from './OrderItemIcons'
-import { OrderItemMenu } from './OrderItemMenu'
+import { OrderedItemIcons } from './OrderedItemIcons'
+import { OrderedItemMenu } from './OrderedItemMenu'
 
 interface OrderedItemProps {
   id: string
@@ -136,11 +136,11 @@ export function OrderedItem({
       <Typography variant="subtitle2">{`${idx + 1}. ${label}`}</Typography>
       <Box sx={{ ml: 'auto' }}>
         {iconMemoButtons != null && iconMemoButtons.length > 0 && isEdit && (
-          <OrderItemIcons iconButtons={iconMemoButtons} />
+          <OrderedItemIcons iconButtons={iconMemoButtons} />
         )}
         {menuActionButtons != null &&
           menuActionButtons.length > 0 &&
-          isEdit && <OrderItemMenu actions={menuActionButtons} id={id} />}
+          isEdit && <OrderedItemMenu actions={menuActionButtons} id={id} />}
       </Box>
     </Stack>
   )

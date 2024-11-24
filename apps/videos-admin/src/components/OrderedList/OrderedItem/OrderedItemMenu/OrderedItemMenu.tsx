@@ -2,21 +2,21 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import { memo, MouseEvent, ReactElement, useMemo, useState } from 'react'
+import { MouseEvent, ReactElement, memo, useMemo, useState } from 'react'
 
 import More from '@core/shared/ui/icons/More'
 
 import { useEdit } from '../../../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
 
-interface OrderItemMenuProps {
+interface OrderedItemMenuProps {
   id: string
   actions: Array<{ label: string; handler: (id: string) => void }>
 }
 
-export const OrderItemMenu = memo(function OrderItemMenu({
+export const OrderedItemMenu = memo(function OrderedItemMenu({
   id,
   actions
-}: OrderItemMenuProps): ReactElement {
+}: OrderedItemMenuProps): ReactElement {
   const {
     state: { isEdit }
   } = useEdit()

@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon'
 import { ReactElement, memo } from 'react'
 
-interface OrderItemProps {
+interface OrderedItemIconsProps {
   iconButtons: Array<{
     name: string
     Icon: typeof SvgIcon
@@ -15,9 +15,9 @@ interface OrderItemProps {
   }>
 }
 
-export const OrderItemIcons = memo(function OrderItemIcons({
+export const OrderedItemIcons = memo(function OrderedItemIcons({
   iconButtons
-}: OrderItemProps): ReactElement {
+}: OrderedItemIconsProps): ReactElement {
   return (
     <Stack direction="row" gap={0.75}>
       {iconButtons.map(({ Icon, events, name, slotProps }) => (
