@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 import { EditProvider } from '../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
 import { OrderedList } from './OrderedList'
-import { DragEndEvent } from '@dnd-kit/core'
 import { OrderedItem } from './OrderedItem'
 
 describe('OrderedList', () => {
