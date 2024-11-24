@@ -49,7 +49,7 @@ export const Empty: Story = {
   }
 }
 
-export const Editing: Story = {
+export const Editable: Story = {
   ...Template,
   args: {
     childVideos: childVideos,

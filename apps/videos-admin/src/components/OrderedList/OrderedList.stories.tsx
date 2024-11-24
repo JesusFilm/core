@@ -59,7 +59,7 @@ export const Default: Story = {
   }
 }
 
-export const Editing: Story = {
+export const Editable: Story = {
   ...Template,
   args: {
     items: [

@@ -47,7 +47,7 @@ export const Default: Story = {
   }
 }
 
-export const Editing: Story = {
+export const Editable: Story = {
   ...Template,
   args: {
     id: 'orderedItem.1',
@@ -115,7 +115,7 @@ export const WithImage: Story = {
 export const Complete: Story = {
   ...Template,
   args: {
-    ...Editing.args,
+    ...Editable.args,
     ...WithImage.args,
     ...WithMenuItem.args,
     ...WithIconButtons.args
