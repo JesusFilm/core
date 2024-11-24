@@ -11,6 +11,7 @@ export const GET_ADMIN_VIDEO = graphql(`
       images(aspectRatio: banner) {
         id
         mobileCinematicHigh
+        url
       }
       imageAlt {
         id
