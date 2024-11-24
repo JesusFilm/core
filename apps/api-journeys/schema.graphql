@@ -306,6 +306,9 @@ type Mutation {
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
   updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference
+  qrCodeCreate(input: QrCodeCreateInput!): QrCode!
+  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!): QrCode!
+  qrCodeDelete(id: ID!): QrCode!
   teamCreate(input: TeamCreateInput): Team!
   teamUpdate(id: ID!, input: TeamUpdateInput): Team!
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
@@ -495,6 +498,8 @@ extend type Query {
   corresponds to the main visitor graph.
   """
   journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType): [PlausibleStatsResponse!]!
+  qrCode(id: ID!): QrCode!
+  qrCodes(where: QrCodesFilter!): [QrCode!]!
   teams: [Team!]!
   team(id: ID!): Team!
   userInvites(journeyId: ID!): [UserInvite!]
@@ -795,6 +800,32 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+}
+
+type QrCode
+  @key(fields: "id")
+{
+  qrCodeImageBlock: ImageBlock
+  id: ID!
+
+  """Team where the Qr Code belongs to"""
+  teamId: ID!
+
+  """Journey where the Qr Code was created from"""
+  journeyId: ID!
+
+  """Block where the Qr Code can point to"""
+  toBlockId: ID
+
+  """
+  Journey where the Qr Code points to, defaults to the journey the Qr Code was created from
+  """
+  toJourneyId: ID!
+
+  """ShortLink that handles the redirection"""
+  shortLink: ShortLink!
+  color: String
+  backgroundColor: String
 }
 
 type RadioOptionBlock implements Block {
@@ -2631,6 +2662,32 @@ input PlausibleStatsTimeseriesFilter {
   interval: String
 }
 
+extend type ShortLink
+  @key(fields: "id")
+{
+  id: ID! @external
+}
+
+input QrCodesFilter {
+  journeyId: ID
+  teamId: ID
+}
+
+input QrCodeCreateInput {
+  teamId: ID!
+  journeyId: ID!
+  toJourneyId: ID
+  toBlockId: ID
+}
+
+input QrCodeUpdateInput {
+  toBlockId: ID
+  toJourneyId: ID
+  color: String
+  backgroundColor: String
+  qrCodeImageBlockId: ID
+}
+
 type Team
   @key(fields: "id")
 {
@@ -2642,6 +2699,7 @@ type Team
   userTeams: [UserTeam!]!
   customDomains: [CustomDomain!]!
   integrations: [Integration!]!
+  qrCodes: [QrCode!]!
 }
 
 input TeamCreateInput {
@@ -2974,4 +3032,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | Visitor
+union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | QrCode | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | Visitor

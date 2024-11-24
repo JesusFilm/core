@@ -805,6 +805,26 @@ export class PlausibleStatsTimeseriesFilter {
     interval?: Nullable<string>;
 }
 
+export class QrCodesFilter {
+    journeyId?: Nullable<string>;
+    teamId?: Nullable<string>;
+}
+
+export class QrCodeCreateInput {
+    teamId: string;
+    journeyId: string;
+    toJourneyId?: Nullable<string>;
+    toBlockId?: Nullable<string>;
+}
+
+export class QrCodeUpdateInput {
+    toBlockId?: Nullable<string>;
+    toJourneyId?: Nullable<string>;
+    color?: Nullable<string>;
+    backgroundColor?: Nullable<string>;
+    qrCodeImageBlockId?: Nullable<string>;
+}
+
 export class TeamCreateInput {
     title: string;
     publicTitle?: Nullable<string>;
@@ -1053,6 +1073,12 @@ export abstract class IMutation {
 
     abstract updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
 
+    abstract qrCodeCreate(input: QrCodeCreateInput): QrCode | Promise<QrCode>;
+
+    abstract qrCodeUpdate(id: string, input: QrCodeUpdateInput): QrCode | Promise<QrCode>;
+
+    abstract qrCodeDelete(id: string): QrCode | Promise<QrCode>;
+
     abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
 
     abstract teamUpdate(id: string, input?: Nullable<TeamUpdateInput>): Team | Promise<Team>;
@@ -1183,6 +1209,10 @@ export abstract class IQuery {
 
     abstract journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
 
+    abstract qrCode(id: string): QrCode | Promise<QrCode>;
+
+    abstract qrCodes(where: QrCodesFilter): QrCode[] | Promise<QrCode[]>;
+
     abstract teams(): Team[] | Promise<Team[]>;
 
     abstract team(id: string): Team | Promise<Team>;
@@ -1278,6 +1308,19 @@ export class ImageBlock implements Block {
     scale?: Nullable<number>;
     focalTop?: Nullable<number>;
     focalLeft?: Nullable<number>;
+}
+
+export class QrCode {
+    __typename?: 'QrCode';
+    qrCodeImageBlock?: Nullable<ImageBlock>;
+    id: string;
+    teamId: string;
+    journeyId: string;
+    toBlockId?: Nullable<string>;
+    toJourneyId: string;
+    shortLink: ShortLink;
+    color?: Nullable<string>;
+    backgroundColor?: Nullable<string>;
 }
 
 export class RadioOptionBlock implements Block {
@@ -1755,6 +1798,7 @@ export class Team {
     userTeams: UserTeam[];
     customDomains: CustomDomain[];
     integrations: Integration[];
+    qrCodes: QrCode[];
 }
 
 export class UserInvite {
@@ -1868,6 +1912,10 @@ export class Language {
 }
 
 export class Tag {
+    id: string;
+}
+
+export class ShortLink {
     id: string;
 }
 

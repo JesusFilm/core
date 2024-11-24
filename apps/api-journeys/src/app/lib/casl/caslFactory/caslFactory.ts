@@ -8,6 +8,7 @@ import { blockAcl } from '../../../modules/block/block.acl'
 import { customDomainAcl } from '../../../modules/customDomain/customDomain.acl'
 import { hostAcl } from '../../../modules/host/host.acl'
 import { integrationAcl } from '../../../modules/integration/integration.acl'
+import { qrCodeAcl } from '../../../modules/qrCode/qrCode.acl'
 import { journeyAcl } from '../../../modules/journey/journey.acl'
 import { JourneyCollectionAcl } from '../../../modules/journeyCollection/journeyCollection.acl'
 import { journeyNotificationAcl } from '../../../modules/journeyNotification/journeyNotification.acl'
@@ -56,6 +57,7 @@ export class AppCaslFactory extends CaslFactory<Role> {
       customDomainAcl,
       hostAcl,
       integrationAcl,
+      qrCodeAcl,
       journeyAcl,
       JourneyCollectionAcl,
       journeyNotificationAcl,

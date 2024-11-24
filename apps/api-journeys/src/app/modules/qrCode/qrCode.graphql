@@ -1,0 +1,70 @@
+extend type ShortLink @key(fields: "id") {
+  id: ID! @external
+}
+
+type QrCode @key(fields: "id") {
+  id: ID!
+  """
+  Team where the Qr Code belongs to
+  """
+  teamId: ID!
+  """
+  Journey where the Qr Code was created from
+  """
+  journeyId: ID!
+  """
+  Block where the Qr Code can point to
+  """
+  toBlockId: ID
+  """
+  Journey where the Qr Code points to, defaults to the journey the Qr Code was created from
+  """
+  toJourneyId: ID!
+  """
+  ShortLink that handles the redirection
+  """
+  shortLink: ShortLink!
+  color: String
+  backgroundColor: String
+}
+
+input QrCodesFilter {
+  journeyId: ID
+  teamId: ID
+}
+
+extend type Query {
+  qrCode(id: ID!): QrCode!
+  qrCodes(where: QrCodesFilter!): [QrCode!]!
+}
+
+input QrCodeCreateInput {
+  teamId: ID!
+  journeyId: ID!
+  toJourneyId: ID
+  toBlockId: ID
+}
+
+input QrCodeUpdateInput {
+  toBlockId: ID
+  toJourneyId: ID
+  color: String
+  backgroundColor: String
+  qrCodeImageBlockId: ID
+}
+
+extend type Mutation {
+  qrCodeCreate(input: QrCodeCreateInput!): QrCode!
+  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!): QrCode!
+  qrCodeDelete(id: ID!): QrCode!
+}
+
+# Todo
+# Handle journey duplicate (qr code/image/short link)
+# Handle dynamic hostname changes
+# Handle dynamic slug changes
+
+# Behavior
+# Team member and manager can manage (not shared with me journeys)
+# Changing the "to" will have a delay
+# Changing the image will change the QR code (will need reprint)
