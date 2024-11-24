@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
+
 import { EditProvider } from '../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
-import { OrderedList } from './OrderedList'
+
 import { OrderedItem } from './OrderedItem'
+import { OrderedList } from './OrderedList'
 
 describe('OrderedList', () => {
   it('should provide dnd context', () => {
@@ -11,7 +13,7 @@ describe('OrderedList', () => {
       <NextIntlClientProvider locale="en">
         <EditProvider initialState={{ isEdit: true }}>
           <OrderedList onOrderUpdate={onOrderUpdateMock} items={[]}>
-            <OrderedItem id={'1'} label={'test'} idx={0}></OrderedItem>
+            <OrderedItem id="1" label="test" idx={0} />
           </OrderedList>
         </EditProvider>
       </NextIntlClientProvider>

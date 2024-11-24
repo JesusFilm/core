@@ -102,4 +102,29 @@ describe('OrderedItem', () => {
     fireEvent.click(viewButton)
     expect(viewOnClick).toHaveBeenCalled()
   })
+
+  it('should render image', async () => {
+    render(
+      <NextIntlClientProvider locale="en">
+        <EditProvider initialState={{ isEdit: true }}>
+          <OrderedItem
+            id="item.id"
+            label="Ordered item"
+            idx={0}
+            img={{
+              src: 'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
+              alt: 'JESUS'
+            }}
+          />
+        </EditProvider>
+      </NextIntlClientProvider>
+    )
+
+    expect(screen.getByRole('img')).toBeInTheDocument()
+    expect(screen.getByRole('img')).toHaveAttribute(
+      'src',
+      'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg'
+    )
+    expect(screen.getByRole('img')).toHaveAttribute('alt', 'JESUS')
+  })
 })

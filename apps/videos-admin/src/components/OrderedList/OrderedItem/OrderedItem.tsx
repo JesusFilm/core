@@ -134,14 +134,14 @@ export function OrderedItem({
         </Box>
       )}
       <Typography variant="subtitle2">{`${idx + 1}. ${label}`}</Typography>
-      <Box sx={{ ml: 'auto' }}>
+      <Stack sx={{ ml: 'auto' }} flexDirection="row">
         {iconMemoButtons != null && iconMemoButtons.length > 0 && isEdit && (
           <OrderedItemIcons iconButtons={iconMemoButtons} />
         )}
         {menuActionButtons != null &&
           menuActionButtons.length > 0 &&
           isEdit && <OrderedItemMenu actions={menuActionButtons} id={id} />}
-      </Box>
+      </Stack>
     </Stack>
   )
 }
