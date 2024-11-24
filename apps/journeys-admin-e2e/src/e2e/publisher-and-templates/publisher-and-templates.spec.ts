@@ -161,48 +161,50 @@ test.describe('Publisher page functionality', () => {
   })
 
   // Publisher-> Select existing template -> Three dots on top right -> Template Settings -> About
-  test.fixme('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> About', async ({
-    page
-  }) => {
-    const publisherPage = new Publisher(page)
-    const cardLevelActionPage = new CardLevelActionPage(page)
-    await publisherPage.navigateToPublisherPage() // navigating to the publisher page
-    await publisherPage.getExistingTemplateName() // getting name of existing template
-    await publisherPage.clickOnTemplateInPublisherPage() // clicking on existing template
-    await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
-    await publisherPage.clickTheDotOptionsInEditTemplatePage(
-      'Template Settings'
-    ) // clicking Template Settings option from the three dot options
-    await publisherPage.clickTabInTemplateSettingPopup('About') // clicking on the About tab in the Template setting popup
-    await publisherPage.enterCreatorDescription() // entering value on the description field
-    await publisherPage.getImgScrUnderAboutTab() // gettimg the image field scr value
-    await publisherPage.clickImageUploadPlusIcon() // clicking on the image uplaod plus icon
-    await cardLevelActionPage.clickImageSelectionTab('Custom') // clicking on the Custom tab in the image popup
-    await cardLevelActionPage.uploadImageInCustomTab() // uploading an image in the Custom tab
-    await publisherPage.verifyImageUploaded() // verifying image got uploaded in the 'Template Settings' popup
-    await publisherPage.clickSaveBtn() // clicking on the save button
-    await publisherPage.verifyTemplateSettingSaveToastMessage() // verifying 'Template settings have been saved' toast message
-  })
+  test.fixme(
+    'Publisher-> Select existing template -> Three dots on top right -> Template Settings -> About',
+    async ({ page }) => {
+      const publisherPage = new Publisher(page)
+      const cardLevelActionPage = new CardLevelActionPage(page)
+      await publisherPage.navigateToPublisherPage() // navigating to the publisher page
+      await publisherPage.getExistingTemplateName() // getting name of existing template
+      await publisherPage.clickOnTemplateInPublisherPage() // clicking on existing template
+      await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
+      await publisherPage.clickTheDotOptionsInEditTemplatePage(
+        'Template Settings'
+      ) // clicking Template Settings option from the three dot options
+      await publisherPage.clickTabInTemplateSettingPopup('About') // clicking on the About tab in the Template setting popup
+      await publisherPage.enterCreatorDescription() // entering value on the description field
+      await publisherPage.getImgScrUnderAboutTab() // gettimg the image field scr value
+      await publisherPage.clickImageUploadPlusIcon() // clicking on the image uplaod plus icon
+      await cardLevelActionPage.clickImageSelectionTab('Custom') // clicking on the Custom tab in the image popup
+      await cardLevelActionPage.uploadImageInCustomTab() // uploading an image in the Custom tab
+      await publisherPage.verifyImageUploaded() // verifying image got uploaded in the 'Template Settings' popup
+      await publisherPage.clickSaveBtn() // clicking on the save button
+      await publisherPage.verifyTemplateSettingSaveToastMessage() // verifying 'Template settings have been saved' toast message
+    }
+  )
 
   // Publisher-> Select existing template -> Three dots on top right -> Language
-  test.fixme('Publisher-> Select existing template -> Three dots on top right -> Language', async ({
-    page
-  }) => {
-    const publisherPage = new Publisher(page)
-    const journeyLevelActions = new JourneyLevelActions(page)
-    await publisherPage.navigateToPublisherPage() // navigating to the publisher page
-    await publisherPage.getExistingTemplateName() // getting name of existing template
-    await publisherPage.clickOnTemplateInPublisherPage() // clicking on existing template
-    await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
-    await publisherPage.clickTheDotOptionsInEditTemplatePage('Edit Details') // clicking Language option from the three dot options
-    await journeyLevelActions.enterLanguage('Abau') // selecting language in the edit language popup
-    await publisherPage.clickSaveBtn() // clicking on save button in the 'edit language' popup
-    await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
-    await publisherPage.clickTheDotOptionsInEditTemplatePage('Edit Details') // clicking Language option from the three dot options
-    await journeyLevelActions.verifySelectedLanguageInLanguagePopup() // verify selecetd language is upadetd in the edit language popup
-    await journeyLevelActions.enterLanguage('English') //  clicking on save button in the 'edit language' popup
-    await publisherPage.clickSaveBtn() // clicking on save button in the 'edit language' popup
-  })
+  test.fixme(
+    'Publisher-> Select existing template -> Three dots on top right -> Language',
+    async ({ page }) => {
+      const publisherPage = new Publisher(page)
+      const journeyLevelActions = new JourneyLevelActions(page)
+      await publisherPage.navigateToPublisherPage() // navigating to the publisher page
+      await publisherPage.getExistingTemplateName() // getting name of existing template
+      await publisherPage.clickOnTemplateInPublisherPage() // clicking on existing template
+      await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
+      await publisherPage.clickTheDotOptionsInEditTemplatePage('Edit Details') // clicking Language option from the three dot options
+      await journeyLevelActions.enterLanguage('Abau') // selecting language in the edit language popup
+      await publisherPage.clickSaveBtn() // clicking on save button in the 'edit language' popup
+      await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
+      await publisherPage.clickTheDotOptionsInEditTemplatePage('Edit Details') // clicking Language option from the three dot options
+      await journeyLevelActions.verifySelectedLanguageInLanguagePopup() // verify selecetd language is upadetd in the edit language popup
+      await journeyLevelActions.enterLanguage('English') //  clicking on save button in the 'edit language' popup
+      await publisherPage.clickSaveBtn() // clicking on save button in the 'edit language' popup
+    }
+  )
 })
 
 test.describe('Verify template page functionality', () => {
