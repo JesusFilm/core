@@ -1,12 +1,12 @@
+import { useTranslations } from 'next-intl'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { FixedSizeList } from 'react-window'
 
 import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
 import { Section } from '../Section'
 
 import { VariantCard } from './VariantCard'
 import { VariantModal } from './VariantModal'
-import { FixedSizeList } from 'react-window'
-import { useTranslations } from 'next-intl'
 
 const ITEM_SIZE = 80
 
