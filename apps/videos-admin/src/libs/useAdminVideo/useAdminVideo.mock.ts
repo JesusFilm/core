@@ -267,12 +267,7 @@ export const useAdminVideoMock: MockedResponse<
         label: 'featureFilm',
         variantLanguagesCount: 2150,
         published: true,
-        noIndex: false,
-        image: null,
-        children: [],
-        variants: [],
-        studyQuestions: [],
-        subtitles: []
+        noIndex: false
       }
     }
   }
