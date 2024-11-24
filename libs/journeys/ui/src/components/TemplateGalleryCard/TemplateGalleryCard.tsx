@@ -14,6 +14,7 @@ import { ReactElement } from 'react'
 
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
 import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+import { useNavigationState } from '../../libs/useNavigationState'
 
 interface HoverLayerProps {
   className?: string
@@ -50,6 +51,7 @@ export function TemplateGalleryCard({
   priority
 }: TemplateGalleryCardProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
+  const isNavigating = useNavigationState()
 
   const theme = useTheme()
   const router = useRouter()
@@ -87,6 +89,8 @@ export function TemplateGalleryCard({
         border: 'none',
         backgroundColor: 'transparent',
         cursor: 'pointer',
+        pointerEvents: isNavigating ? 'none' : 'auto',
+        opacity: isNavigating ? 0.5 : 1,
         width: { xs: 130, md: 180, xl: 240 },
         borderRadius: 2,
         boxShadow: 'none',
