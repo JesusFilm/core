@@ -3126,14 +3126,37 @@ export type ShortLink = {
 /** A domain that can be used for short links */
 export type ShortLinkDomain = {
   __typename?: 'ShortLinkDomain';
+  apexName: Scalars['String']['output'];
+  /** check status of the domain */
+  check: ShortLinkDomainCheck;
   createdAt: Scalars['Date']['output'];
   hostname: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   /** The services that are enabled for this domain, if empty then this domain can be used by all services */
   services: Array<Service>;
   updatedAt: Scalars['Date']['output'];
-  /** Whether the domain is valid (has a CNAME record or A record pointing to the short link service) */
-  valid: Scalars['Boolean']['output'];
+};
+
+export type ShortLinkDomainCheck = {
+  __typename?: 'ShortLinkDomainCheck';
+  /** Is the domain correctly configured in the DNS? If false, A Record and CNAME Record should be added by the user. */
+  configured: Scalars['Boolean']['output'];
+  /** Verification records to be added to the DNS to confirm ownership. */
+  verification: Array<ShortLinkDomainVerfication>;
+  /** Does the domain belong to the short link application? If false, verification will be populated. */
+  verified: Scalars['Boolean']['output'];
+};
+
+export type ShortLinkDomainVerfication = {
+  __typename?: 'ShortLinkDomainVerfication';
+  /** Domain name */
+  domain: Scalars['String']['output'];
+  /** Reason for the verification */
+  reason: Scalars['String']['output'];
+  /** Type of verification */
+  type: Scalars['String']['output'];
+  /** Value of the verification */
+  value: Scalars['String']['output'];
 };
 
 export type SignUpBlock = Block & {

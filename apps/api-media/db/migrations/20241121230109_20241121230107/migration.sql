@@ -2,6 +2,7 @@
 CREATE TABLE "ShortLinkDomain" (
     "id" TEXT NOT NULL,
     "hostname" TEXT NOT NULL,
+    "apexName" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "services" "Service"[],
