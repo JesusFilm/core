@@ -19,8 +19,6 @@ export const useAdminVideoMock: MockedResponse<
       adminVideo: {
         id: '1_jf-0-0',
         slug: 'jesus',
-        image:
-          'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
         images: [
           {
             id: '1_jf-0-0.mobileCinematicHigh.jpg',
