@@ -92,6 +92,8 @@ export type GetAdminVideo = ResultOf<typeof GET_ADMIN_VIDEO>
 export type GetAdminVideoVariables = VariablesOf<typeof GET_ADMIN_VIDEO>
 export type GetAdminVideoVariant =
   GetAdminVideo['adminVideo']['variants'][number]
+export type GetAdminVideoVariant_Downloads =
+  GetAdminVideo['adminVideo']['variants'][number]['downloads']
 
 export type GetAdminVideo_AdminVideo = GetAdminVideo['adminVideo']
 export type GetAdminVideo_AdminVideo_VideoSnippets =
