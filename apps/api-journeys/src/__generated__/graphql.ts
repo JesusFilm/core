@@ -2563,30 +2563,34 @@ export type PowerBiEmbed = {
 export type QrCode = {
   __typename?: 'QrCode';
   backgroundColor?: Maybe<Scalars['String']['output']>;
-  blockId?: Maybe<Scalars['ID']['output']>;
   color?: Maybe<Scalars['String']['output']>;
-  customDomain?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  /** Journey where the Qr Code was created from */
   journeyId: Scalars['ID']['output'];
   qrCodeImageBlock?: Maybe<ImageBlock>;
+  /** ShortLink that handles the redirection */
   shortLink: ShortLink;
+  /** Team where the Qr Code belongs to */
   teamId: Scalars['ID']['output'];
+  /** Block where the Qr Code can point to */
+  toBlockId?: Maybe<Scalars['ID']['output']>;
+  /** Journey where the Qr Code points to, defaults to the journey the Qr Code was created from */
+  toJourneyId: Scalars['ID']['output'];
 };
 
 export type QrCodeCreateInput = {
-  blockId?: InputMaybe<Scalars['ID']['input']>;
-  customDomain?: InputMaybe<Scalars['String']['input']>;
   journeyId: Scalars['ID']['input'];
   teamId: Scalars['ID']['input'];
+  toBlockId?: InputMaybe<Scalars['ID']['input']>;
+  toJourneyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type QrCodeUpdateInput = {
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
-  blockId?: InputMaybe<Scalars['ID']['input']>;
   color?: InputMaybe<Scalars['String']['input']>;
-  customDomain?: InputMaybe<Scalars['String']['input']>;
-  journeyId?: InputMaybe<Scalars['ID']['input']>;
   qrCodeImageBlockId?: InputMaybe<Scalars['ID']['input']>;
+  toBlockId?: InputMaybe<Scalars['ID']['input']>;
+  toJourneyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type QrCodesFilter = {
