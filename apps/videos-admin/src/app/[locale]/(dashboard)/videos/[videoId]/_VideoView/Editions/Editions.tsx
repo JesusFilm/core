@@ -7,6 +7,7 @@ export function Editions({ editions }): ReactElement {
   return (
     <Stack>
       <h1>{t('Editions')}</h1>
+      <p>{t('this section is still under construction, check back later')}</p>
     </Stack>
   )
 }
