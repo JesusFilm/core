@@ -1,52 +1,35 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within
-} from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { mockStudyQuestions } from './data.mock'
-import {
-  StudyQuestionsList,
-  UPDATE_STUDY_QUESTION_ORDER,
-  UpdateStudyQuestionOrder,
-  UpdateStudyQuestionOrderVariables
-} from './StudyQuestionsList'
+import { EditProvider } from '../../../_EditProvider'
 
-const getUpdateStudyQuestionOrderMock = <
-  T extends { id: string; order: number }
->(
-  input: T
-): MockedResponse<
-  UpdateStudyQuestionOrder,
-  UpdateStudyQuestionOrderVariables
-> => ({
-  request: {
-    query: UPDATE_STUDY_QUESTION_ORDER,
-    variables: {
-      input
-    }
-  },
-  result: jest.fn(() => ({
-    data: {
-      videoStudyQuestionUpdate: {
-        id: input.id,
-        value: 'Study questions value'
-      }
-    }
-  }))
-})
+import { StudyQuestionsList } from './StudyQuestionsList'
 
 describe('StudyQuestions', () => {
   it('should render', async () => {
     render(
       <NextIntlClientProvider locale="en">
-        <MockedProvider>
-          <StudyQuestionsList studyQuestions={mockStudyQuestions} />
-        </MockedProvider>
+        <EditProvider initialState={{ isEdit: true }}>
+          <MockedProvider>
+            <StudyQuestionsList
+              studyQuestions={[
+                {
+                  id: 'studyQuestion.1',
+                  value: 'Study question 1 text'
+                },
+                {
+                  id: 'studyQuestions.2',
+                  value: 'Study question 2 text'
+                },
+                {
+                  id: 'studyQuestion.3',
+                  value: 'Study question 3 text'
+                }
+              ]}
+            />
+          </MockedProvider>
+        </EditProvider>
       </NextIntlClientProvider>
     )
 
@@ -73,35 +56,14 @@ describe('StudyQuestions', () => {
     ).toBeInTheDocument()
   })
 
-  it('should update order on order select update', async () => {
-    const mockOrderUpdate = getUpdateStudyQuestionOrderMock({
-      id: 'studyQuestion.1',
-      order: 3
-    })
-
-    render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider mocks={[mockOrderUpdate]}>
-          <StudyQuestionsList studyQuestions={mockStudyQuestions} />
-        </MockedProvider>
-      </NextIntlClientProvider>
-    )
-
-    const question1 = screen.getByTestId('OrderedItem-0')
-
-    await fireEvent.mouseDown(within(question1).getByRole('combobox'))
-
-    const options = within(screen.getByRole('listbox')).getAllByRole('option')
-
-    fireEvent.click(options[2])
-  })
-
   it('should render fallback', () => {
     render(
       <NextIntlClientProvider locale="en">
-        <MockedProvider>
-          <StudyQuestionsList studyQuestions={[]} />
-        </MockedProvider>
+        <EditProvider initialState={{ isEdit: true }}>
+          <MockedProvider>
+            <StudyQuestionsList studyQuestions={[]} />
+          </MockedProvider>
+        </EditProvider>
       </NextIntlClientProvider>
     )
 

@@ -13,7 +13,7 @@ import { ReactElement, ReactNode } from 'react'
 
 import { useEdit } from '../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
 
-interface BaseItem {
+export interface BaseItem {
   id: string
 }
 

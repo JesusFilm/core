@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { EditProvider } from '../_EditProvider'
+
 import { TestEditProvider } from '../_EditProvider/TestEditProvider'
 
 import { VideoView } from './VideoView'

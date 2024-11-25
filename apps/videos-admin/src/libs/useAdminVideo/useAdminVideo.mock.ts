@@ -99,6 +99,28 @@ export const useAdminVideoMock: MockedResponse<
                 value: 'Birth of Jesus'
               }
             ]
+          },
+          {
+            id: '1_jf6103-0-0',
+            title: [
+              {
+                id: '0dea1010-9fc3-4680-b4c2-6f700c9a0fd6',
+                value: 'Childhood of Jesus'
+              }
+            ],
+            images: [
+              {
+                id: '1_jf6103-0-0.mobileCinematicHigh.jpg',
+                mobileCinematicHigh:
+                  'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6103-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+              }
+            ],
+            imageAlt: [
+              {
+                id: 'eb26c30e-c2f9-480d-8187-f00fcb3fe149',
+                value: 'Childhood of Jesus'
+              }
+            ]
           }
         ],
         studyQuestions: [
