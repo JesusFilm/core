@@ -1,16 +1,24 @@
-import { MockedProvider } from "@apollo/client/testing"
-import { render, screen } from "@testing-library/react"
-import { NextIntlClientProvider } from "next-intl"
-import { mockVideo } from '../data.mock'
+import { MockedProvider } from '@apollo/client/testing'
+import { render, screen } from '@testing-library/react'
+import { NextIntlClientProvider } from 'next-intl'
 
-import { Metadata } from "./Metadata"
+import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { EditProvider } from '../../_EditProvider'
+
+import { Metadata } from './Metadata'
 
 describe('Metadata', () => {
+  const mockAdminVideo: AdminVideo =
+    useAdminVideoMock['result']?.['data']?.['adminVideo']
+
   it('should render loading fallback', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <Metadata loading video={{}} />
+          <EditProvider>
+            <Metadata loading video={mockAdminVideo} />
+          </EditProvider>
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -22,15 +30,17 @@ describe('Metadata', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <Metadata loading={false} video={mockVideo} />
+          <EditProvider>
+            <Metadata loading={false} video={mockAdminVideo} />
+          </EditProvider>
         </MockedProvider>
       </NextIntlClientProvider>
     )
 
-  expect(screen.getByText('Information')).toBeInTheDocument()
-  expect(screen.getByText('Image')).toBeInTheDocument()
-  expect(screen.getByText('Snippet')).toBeInTheDocument()
-  expect(screen.getByText('Description')).toBeInTheDocument()
-  expect(screen.getByText('Study Questions')).toBeInTheDocument()
+    expect(screen.getByText('Information')).toBeInTheDocument()
+    expect(screen.getByText('Image')).toBeInTheDocument()
+    expect(screen.getByText('Snippet')).toBeInTheDocument()
+    expect(screen.getByText('Description')).toBeInTheDocument()
+    expect(screen.getByText('Study Questions')).toBeInTheDocument()
   })
 })

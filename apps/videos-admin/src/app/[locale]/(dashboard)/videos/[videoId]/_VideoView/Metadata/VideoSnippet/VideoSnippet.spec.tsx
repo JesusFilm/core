@@ -1,19 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { useParams } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 
+import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { EditProvider } from '../../../_EditProvider'
 
 import { UPDATE_VIDEO_SNIPPET, VideoSnippet } from './VideoSnippet'
-
-jest.mock('next/navigation', () => ({
-  ...jest.requireActual('next/navigation'),
-  useParams: jest.fn()
-}))
-
-const mockUseParams = useParams as jest.MockedFunction<typeof mockUseParams>
 
 describe('VideoSnippet', () => {
   const mockUpdateVideoSnippet = {
@@ -21,20 +14,23 @@ describe('VideoSnippet', () => {
       query: UPDATE_VIDEO_SNIPPET,
       variables: {
         input: {
-          id: 'f4634713-33c2-43b6-b2e1-47263037c871',
-          value: 'video snippet text'
+          id: 'e3645175-c05b-4760-a0ac-fdcb894655be',
+          value: 'new snippet text'
         }
       }
     },
     result: jest.fn(() => ({
       data: {
         videoSnippetUpdate: {
-          id: 'f4634713-33c2-43b6-b2e1-47263037c871',
-          value: 'video snippet text'
+          id: 'e3645175-c05b-4760-a0ac-fdcb894655be',
+          value: 'new snippet text'
         }
       }
     }))
   }
+
+  const mockVideoSnippets: VideoSnippets =
+    useAdminVideoMock['result']?.['data']?.['adminVideo']?.['snippet']
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -45,7 +41,7 @@ describe('VideoSnippet', () => {
       <MockedProvider>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: false }}>
-            <VideoSnippet />
+            <VideoSnippet videoSnippets={mockVideoSnippets} />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
@@ -59,7 +55,7 @@ describe('VideoSnippet', () => {
       <MockedProvider>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: false }}>
-            <VideoSnippet />
+            <VideoSnippet videoSnippets={mockVideoSnippets} />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
@@ -75,7 +71,7 @@ describe('VideoSnippet', () => {
       <MockedProvider>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: true }}>
-            <VideoSnippet />
+            <VideoSnippet videoSnippets={mockVideoSnippets} />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
@@ -85,22 +81,20 @@ describe('VideoSnippet', () => {
   })
 
   it('should enable save button if snippet has been changed', async () => {
-    mockUseParams.mockReturnValue({ videoId: 'someId' })
-    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
-
     render(
-      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+      <MockedProvider>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: true }}>
-            <VideoSnippet />
+            <VideoSnippet videoSnippets={mockVideoSnippets} />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByRole('textbox')).toHaveValue('Jesus snippet text')
+    expect(screen.getByRole('textbox')).toHaveValue(
+      'Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion.'
+    )
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'Hello' }
     })
@@ -109,28 +103,24 @@ describe('VideoSnippet', () => {
   })
 
   it('should update video snippet on submit', async () => {
-    mockUseParams.mockReturnValue({ videoId: 'someId' })
-    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
-
     render(
-      <MockedProvider
-        mocks={[{ ...useAdminVideoMock, result }, mockUpdateVideoSnippet]}
-      >
+      <MockedProvider mocks={[mockUpdateVideoSnippet]}>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: true }}>
-            <VideoSnippet />
+            <VideoSnippet videoSnippets={mockVideoSnippets} />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByRole('textbox')).toHaveValue('Jesus snippet text')
+    expect(screen.getByRole('textbox')).toHaveValue(
+      'Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion.'
+    )
     fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'video snippet text' }
+      target: { value: 'new snippet text' }
     })
-    expect(screen.getByRole('textbox')).toHaveValue('video snippet text')
+    expect(screen.getByRole('textbox')).toHaveValue('new snippet text')
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
     fireEvent.click(screen.getByRole('button', { name: 'Save' }))
     await waitFor(() =>
@@ -138,48 +128,21 @@ describe('VideoSnippet', () => {
     )
   })
 
-  it('should not call update if there is no video data', async () => {
-    mockUseParams.mockReturnValue({ videoId: 'someId' })
-
-    render(
-      <MockedProvider mocks={[mockUpdateVideoSnippet]}>
-        <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoSnippet />
-          </EditProvider>
-        </NextIntlClientProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    fireEvent.change(screen.getByRole('textbox'), {
-      target: { value: 'video snippet text' }
-    })
-    expect(screen.getByRole('textbox')).toHaveValue('video snippet text')
-    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
-    await waitFor(() =>
-      expect(mockUpdateVideoSnippet.result).not.toHaveBeenCalled()
-    )
-  })
-
   it('should require snippet field', async () => {
-    mockUseParams.mockReturnValue({ videoId: 'someId' })
-    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
-
     render(
-      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+      <MockedProvider>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: true }}>
-            <VideoSnippet />
+            <VideoSnippet videoSnippets={mockVideoSnippets} />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByRole('textbox')).toHaveValue('Jesus snippet text')
+    expect(screen.getByRole('textbox')).toHaveValue(
+      'Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion.'
+    )
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: '' }
     })
