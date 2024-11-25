@@ -85,7 +85,7 @@ export function Children({ childVideos }: ChildrenProps): ReactElement {
       action={
         isEdit
           ? {
-              label: 'Create Child',
+              label: t('Create Child'),
               onClick: () => alert('Create child')
             }
           : undefined
