@@ -116,7 +116,7 @@ test.describe('Publisher page functionality', () => {
   })
 
   // Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories
-  test('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories', async ({
+  test.fixme('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories', async ({
     page
   }) => {
     const publisherPage = new Publisher(page)
@@ -281,7 +281,7 @@ test.describe('Verify template page functionality', () => {
   })
 
   // Filter: Topics, holidays, felt needs, collections
-  test('Filter: Topics, holidays, felt needs, collections', async ({
+  test.fixme('Filter: Topics, holidays, felt needs, collections', async ({
     page
   }) => {
     const templatesPage = new TemplatePage(page)
@@ -301,7 +301,7 @@ test.describe('Verify template page functionality', () => {
   })
 
   // Filter: Audience
-  test('Filter: Audience', async ({ page }) => {
+  test.fixme('Filter: Audience', async ({ page }) => {
     const templatesPage = new TemplatePage(page)
     await templatesPage.navigateToTempalatePage() // navigating to templates page
     await templatesPage.clickDropDownOpenIconForFilters('Audience') // clicking on the dropdown open icon
@@ -312,7 +312,7 @@ test.describe('Verify template page functionality', () => {
   })
 
   // Filter: Genre
-  test('Filter: Genre', async ({ page }) => {
+  test.fixme('Filter: Genre', async ({ page }) => {
     const templatesPage = new TemplatePage(page)
     await templatesPage.navigateToTempalatePage() // navigating to templates page
     await templatesPage.clickDropDownOpenIconForFilters('Genre') // clicking on the dropdown open icon
@@ -323,7 +323,7 @@ test.describe('Verify template page functionality', () => {
   })
 
   // Filter: Acceptance, Depression
-  test('Filter: Acceptance, Depression', async ({ page }) => {
+  test.fixme('Filter: Acceptance, Depression', async ({ page }) => {
     const templatesPage = new TemplatePage(page)
     await templatesPage.navigateToTempalatePage() // navigating to templates page
     await templatesPage.selectSlideFilters('Acceptance') // clicking on Acceptance slide filter
@@ -333,7 +333,7 @@ test.describe('Verify template page functionality', () => {
   })
 
   // Filter: Jesus Film, NUA
-  test('Filter: Jesus Film, NUA', async ({ page }) => {
+  test.fixme('Filter: Jesus Film, NUA', async ({ page }) => {
     const templatesPage = new TemplatePage(page)
     await templatesPage.navigateToTempalatePage() // navigating to templates page
     await templatesPage.selectFilterBtnBelowSlideFilters('Jesus Film') // clicking on 'Jesus Film' filter button

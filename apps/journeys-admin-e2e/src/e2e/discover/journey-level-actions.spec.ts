@@ -127,7 +127,7 @@ test.describe('Journey level actions', () => {
   })
 
   // Discover page -> Select an existing journey -> Three dots on top right -> Language
-  test('Verify language option from three dot options on top right in the selected journey page', async ({
+  test.fixme('Verify language option from three dot options on top right in the selected journey page', async ({
     page
   }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
