@@ -223,6 +223,8 @@ jobs:
         include:
           - app: journeys
             github-ref-name: stage
+          - app: short-links
+            github-ref-name: stage
     runs-on: ubuntu-latest
     permissions:
       deployments: write
