@@ -1,3 +1,4 @@
+import { useMutation } from '@apollo/client'
 import {
   Box,
   Button,
@@ -13,20 +14,19 @@ import {
   TableRow,
   Typography
 } from '@mui/material'
+import { graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useReducer, useState } from 'react'
-import useDownloader from 'react-use-downloader'
 import { FileRejection, useDropzone } from 'react-dropzone'
+import useDownloader from 'react-use-downloader'
 
 import { Dialog } from '@core/shared/ui/Dialog'
-import Download2 from '@core/shared/ui/icons/Download2'
-import Trash2 from '@core/shared/ui/icons/Trash2'
-import Upload2 from '@core/shared/ui/icons/Upload2'
-import Upload1Icon from '@core/shared/ui/icons/Upload1'
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import ChevronUp from '@core/shared/ui/icons/ChevronUp'
-import { graphql } from 'gql.tada'
-import { useMutation } from '@apollo/client'
+import Download2 from '@core/shared/ui/icons/Download2'
+import Trash2 from '@core/shared/ui/icons/Trash2'
+import Upload1Icon from '@core/shared/ui/icons/Upload1'
+import Upload2 from '@core/shared/ui/icons/Upload2'
 
 function getFileExtension(path: string): string | null {
   const regex = /(?:\.([^.]+))?$/
@@ -115,8 +115,8 @@ function FileUpload({ subtitle }): ReactElement {
             isDragAccept || state.uploading
               ? 'rgba(239, 239, 239, 0.9)'
               : state.error != null || state.rejected
-              ? 'rgba(197, 45, 58, 0.08)'
-              : 'background.paper',
+                ? 'rgba(197, 45, 58, 0.08)'
+                : 'background.paper',
           borderColor: 'divider',
           borderStyle: noBorder ? undefined : 'dashed',
           borderRadius: 1,
@@ -278,7 +278,7 @@ export function Subtitles({ subtitles, videoId }): ReactElement {
         <Table sx={{ minWidth: 700 }} size="small">
           <TableHead>
             <TableRow>
-              <TableCell></TableCell>
+              <TableCell />
               <TableCell>{t('Edition')}</TableCell>
               <TableCell>{t('Language')}</TableCell>
               <TableCell>{t('Actions')}</TableCell>
