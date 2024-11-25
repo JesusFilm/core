@@ -9,7 +9,7 @@ import {
 } from '@nestjs/graphql'
 import { v4 as uuidv4 } from 'uuid'
 
-import { Block, Prisma, QrCode } from '.prisma/api-journeys-client'
+import { Prisma, QrCode } from '.prisma/api-journeys-client'
 import { ShortLink } from '.prisma/api-media-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
