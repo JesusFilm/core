@@ -22,10 +22,10 @@ interface TeamSelectProps {
 }
 
 export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
-  const { query, activeTeam, setActiveTeam } = useTeam()
   const { t } = useTranslation('apps-journeys-admin')
   const anchorRef = useRef(null)
   const currentRef = anchorRef.current
+  const { query, activeTeam, setActiveTeam } = useTeam()
   const [open, setOpen] = useState(onboarding ?? false)
 
   const [updateLastActiveTeamId, { client }] =
@@ -44,7 +44,8 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
       },
       optimisticResponse: {
         journeyProfileUpdate: {
-          id: team?.id as string,
+          id: query.data?.getJourneyProfile?.id as string,
+          lastActiveTeamId: team?.id ?? null,
           __typename: 'JourneyProfile'
         }
       },

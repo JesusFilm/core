@@ -12,6 +12,7 @@ import { JourneyProfileUpdateInput } from "./globalTypes";
 export interface UpdateLastActiveTeamId_journeyProfileUpdate {
   __typename: "JourneyProfile";
   id: string;
+  lastActiveTeamId: string | null;
 }
 
 export interface UpdateLastActiveTeamId {
