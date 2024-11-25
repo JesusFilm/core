@@ -1,18 +1,22 @@
-import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
-import Modal, { ModalProps } from '@mui/material/Modal'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
+import { Theme } from '@mui/material/styles'
+
+import { Dialog } from '@core/shared/ui/Dialog'
 
 import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
 import { Downloads } from '../Downloads'
+import useMediaQuery from '@mui/material/useMediaQuery'
 
-interface VariantModalProps extends Omit<ModalProps, 'children'> {
+interface VariantModalProps {
   variant?: GetAdminVideoVariant
+  onClose: () => void
+  open: boolean
 }
 
 export function VariantModal({
@@ -24,24 +28,19 @@ export function VariantModal({
 
   if (variant == null) return null
 
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+
   return (
-    <Modal open={open} onClose={onClose}>
-      <Stack
-        gap={2}
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          bgcolor: 'background.paper',
-          border: '2px solid',
-          borderColor: 'divider',
-          borderRadius: 1,
-          p: 4
-        }}
-      >
-        <Typography variant="h2">{t('Variant')}</Typography>
-        <Typography variant="h6">{variant.language.name[0].value}</Typography>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullscreen={!smUp}
+      dialogTitle={{ title: t('Variant'), closeButton: true }}
+      slotProps={{ titleButton: { size: 'small' } }}
+      divider
+    >
+      <Stack gap={4}>
+        <Typography variant="h2">{variant.language.name[0].value}</Typography>
         <FormControl>
           <Stack direction="row">
             <Stack direction="column">
@@ -50,9 +49,8 @@ export function VariantModal({
             </Stack>
           </Stack>
         </FormControl>
-
         <Downloads downloads={variant.downloads} />
       </Stack>
-    </Modal>
+    </Dialog>
   )
 }

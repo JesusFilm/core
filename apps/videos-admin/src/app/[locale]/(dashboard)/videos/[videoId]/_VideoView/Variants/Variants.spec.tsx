@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideoVariant as VideoVariants } from '../../../../../../../libs/useAdminVideo'
@@ -7,6 +7,10 @@ import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAd
 import { EditProvider } from '../../_EditProvider'
 
 import { Variants } from './Variants'
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => false
+}))
 
 describe('Variants', () => {
   const mockVideoVariants: VideoVariants[] =
@@ -47,7 +51,7 @@ describe('Variants', () => {
     ).toBeInTheDocument()
   })
 
-  it('should close variant modal', () => {
+  it('should close variant modal', async () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
@@ -68,8 +72,10 @@ describe('Variants', () => {
     if (backdrop) {
       fireEvent.click(backdrop)
     }
-    expect(
-      screen.queryByRole('heading', { level: 4, name: 'Downloads' })
-    ).not.toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        screen.queryByRole('heading', { level: 4, name: 'Downloads' })
+      ).not.toBeInTheDocument()
+    )
   })
 })
