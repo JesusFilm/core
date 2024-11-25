@@ -1,12 +1,12 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 import { Accept, useDropzone } from 'react-dropzone'
-import CircularProgress from '@mui/material/CircularProgress'
 
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
-import { useTranslations } from 'next-intl'
 
 interface FileUploadProps {
   onDrop: (file: File) => Promise<void>

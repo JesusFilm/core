@@ -1,12 +1,18 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 import fetch, { Response } from 'node-fetch'
+import { SnackbarProvider } from 'notistack'
+
+import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+
 import {
   CLOUDFLARE_UPLOAD_COMPLETE,
+  CREATE_CLOUDFLARE_UPLOAD_BY_FILE,
   CloudflareUploadComplete,
   CloudflareUploadCompleteVariables,
-  CREATE_CLOUDFLARE_UPLOAD_BY_FILE,
   CreateCloudflareUploadByFile,
   CreateCloudflareUploadByFileVariables,
   DELETE_VIDEO_CLOUDFLARE_IMAGE,
@@ -14,10 +20,6 @@ import {
   DeleteVideoCloudflareImageVariables,
   VideoImageUpload
 } from './VideoImageUpload'
-import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useAdminVideoMock } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { InMemoryCache } from '@apollo/client'
-import { SnackbarProvider } from 'notistack'
 
 jest.mock('node-fetch', () => {
   const originalModule = jest.requireActual('node-fetch')
@@ -101,6 +103,7 @@ const mockDeleteCloudflareImage: MockedResponse<
 describe('VideoImageUpload', () => {
   const video: AdminVideo =
     useAdminVideoMock['result']?.['data']?.['adminVideo']
+
   it('should call mutations on file drop', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,

@@ -1,5 +1,6 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
+
 import { FileUpload } from './FileUpload'
 
 describe('FileUpload', () => {
@@ -67,7 +68,7 @@ describe('FileUpload', () => {
           accept={{
             'image/*': []
           }}
-          loading={true}
+          loading
         />
       </NextIntlClientProvider>
     )
