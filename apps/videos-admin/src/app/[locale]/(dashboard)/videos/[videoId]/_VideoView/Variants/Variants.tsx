@@ -81,14 +81,14 @@ export function Variants({
               />
             )}
           </FixedSizeList>
-          {variantsMap != null && selected != null && (
-            <VariantModal
-              open={open}
-              onClose={handleClose}
-              variant={variantsMap.get(selected)}
-            />
-          )}
         </Section>
+      )}
+      {variantsMap != null && selected != null && (
+        <VariantModal
+          open={open}
+          onClose={handleClose}
+          variant={variantsMap.get(selected)}
+        />
       )}
     </>
   )
