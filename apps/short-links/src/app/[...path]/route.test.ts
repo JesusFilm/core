@@ -8,7 +8,8 @@ import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../lib/apolloClient'
 
-import { GET, GET_SHORT_LINK } from './route'
+import { GET_SHORT_LINK_QUERY } from './getShortLinkQuery'
+import { GET } from './route'
 
 jest.mock('next/navigation', () => ({
   notFound: jest.fn(),
@@ -40,12 +41,12 @@ describe('GET', () => {
               to: 'https://example.com'
             }
           }
-        } as ResultOf<typeof GET_SHORT_LINK>,
-        GET_SHORT_LINK,
+        } as ResultOf<typeof GET_SHORT_LINK_QUERY>,
+        GET_SHORT_LINK_QUERY,
         {
           hostname: 'short.link',
           pathname: 'test'
-        } as VariablesOf<typeof GET_SHORT_LINK>
+        } as VariablesOf<typeof GET_SHORT_LINK_QUERY>
       )
     )
     const request = new NextRequest('https://short.link/test')
@@ -62,12 +63,12 @@ describe('GET', () => {
           shortLink: {
             __typename: 'NotFoundError'
           }
-        } as ResultOf<typeof GET_SHORT_LINK>,
-        GET_SHORT_LINK,
+        } as ResultOf<typeof GET_SHORT_LINK_QUERY>,
+        GET_SHORT_LINK_QUERY,
         {
           hostname: 'short.link',
           pathname: 'test'
-        } as VariablesOf<typeof GET_SHORT_LINK>
+        } as VariablesOf<typeof GET_SHORT_LINK_QUERY>
       )
     )
     const request = new NextRequest('https://short.link/test')
