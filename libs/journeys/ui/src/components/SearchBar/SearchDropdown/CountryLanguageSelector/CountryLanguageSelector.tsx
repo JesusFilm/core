@@ -27,7 +27,8 @@ export function CountryLanguageSelector({
 
   const spokenLanguages = getTopSpokenLanguages({
     country: data?.country,
-    availableLanguages: items
+    availableLanguages: items,
+    limit: 2
   })
 
   function handleClick(language: string): void {
