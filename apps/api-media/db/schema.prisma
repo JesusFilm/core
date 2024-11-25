@@ -411,6 +411,8 @@ model ShortLinkDomain {
   id         String      @id @default(uuid())
   /// the hostname including subdomain, domain, and TLD, but excluding port
   hostname   String      @unique
+  /// the name of the apex domain (e.g. "example.com" for "www.example.com")
+  apexName   String
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   /// which services are able to use this domain in their short links

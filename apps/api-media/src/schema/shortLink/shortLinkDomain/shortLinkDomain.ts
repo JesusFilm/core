@@ -11,11 +11,19 @@ import {
   NotUniqueError
 } from '../../error'
 
+import { ShortLinkDomainCheckRef } from './objects/shortLinkDomainCheck'
+import {
+  addVercelDomain,
+  checkVercelDomain,
+  removeVercelDomain
+} from './shortLinkDomain.service'
+
 builder.prismaObject('ShortLinkDomain', {
   description: 'A domain that can be used for short links',
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     hostname: t.exposeString('hostname', { nullable: false }),
+    apexName: t.exposeString('apexName', { nullable: false }),
     createdAt: t.expose('createdAt', { type: 'Date', nullable: false }),
     updatedAt: t.expose('updatedAt', { type: 'Date', nullable: false }),
     services: t.expose('services', {
@@ -23,6 +31,13 @@ builder.prismaObject('ShortLinkDomain', {
       nullable: false,
       description:
         'The services that are enabled for this domain, if empty then this domain can be used by all services'
+    }),
+    check: t.field({
+      type: ShortLinkDomainCheckRef,
+      authScopes: { isPublisher: true },
+      nullable: false,
+      description: 'check status of the domain',
+      resolve: async ({ hostname }) => await checkVercelDomain(hostname)
     })
   })
 })
@@ -83,10 +98,12 @@ builder.queryFields((t) => ({
     },
     resolve: async (query, _, { id }) => {
       try {
-        return await prisma.shortLinkDomain.findFirstOrThrow({
+        const domain = await prisma.shortLinkDomain.findFirstOrThrow({
           ...query,
           where: { id }
         })
+        const check = await checkVercelDomain(domain.hostname)
+        return { ...domain, check }
       } catch (e) {
         if (
           e instanceof Prisma.PrismaClientKnownRequestError &&
@@ -139,24 +156,31 @@ builder.mutationFields((t) => ({
         })
       },
       resolve: async (query, _, { input: { hostname, services } }) => {
-        try {
-          return await prisma.shortLinkDomain.create({
-            ...query,
-            data: {
-              hostname,
-              services: services ?? []
+        return await prisma.$transaction(async (tx) => {
+          try {
+            const { apexName } = await addVercelDomain(hostname)
+            const shortLinkDomain = await tx.shortLinkDomain.create({
+              ...query,
+              data: {
+                hostname,
+                apexName,
+                services: services ?? []
+              }
+            })
+            return shortLinkDomain
+          } catch (e) {
+            if (
+              e instanceof Prisma.PrismaClientKnownRequestError &&
+              e.code === 'P2002'
+            ) {
+              throw new NotUniqueError('short link domain already exists', [
+                { path: ['input', 'hostname'], value: hostname }
+              ])
             }
-          })
-        } catch (e) {
-          if (
-            e instanceof Prisma.PrismaClientKnownRequestError &&
-            e.code === 'P2002'
-          )
-            throw new NotUniqueError('short link domain already exists', [
-              { path: ['input', 'hostname'], value: hostname }
-            ])
-          throw e
-        }
+            await removeVercelDomain(hostname)
+            throw e
+          }
+        })
       }
     }),
   shortLinkDomainUpdate: t
@@ -213,37 +237,41 @@ builder.mutationFields((t) => ({
       id: t.arg.string({ required: true })
     },
     resolve: async (query, _, { id }) => {
-      try {
-        return await prisma.shortLinkDomain.delete({
-          ...query,
-          where: { id }
-        })
-      } catch (e) {
-        if (e instanceof Prisma.PrismaClientKnownRequestError) {
-          if (e.code === 'P2025') {
-            // P2025: Record to delete not found
-            throw new NotFoundError('short link domain not found', [
-              {
-                path: ['id'],
-                value: id
-              }
-            ])
-          }
-          if (e.code === 'P2003') {
-            // P2003: Record to delete is in use
-            throw new ForeignKeyConstraintError(
-              'short link domain still has associated short links',
-              [
+      return await prisma.$transaction(async (tx) => {
+        try {
+          const shortLinkDomain = await tx.shortLinkDomain.delete({
+            ...query,
+            where: { id }
+          })
+          await removeVercelDomain(shortLinkDomain.hostname)
+          return shortLinkDomain
+        } catch (e) {
+          if (e instanceof Prisma.PrismaClientKnownRequestError) {
+            if (e.code === 'P2025') {
+              // P2025: Record to delete not found
+              throw new NotFoundError('short link domain not found', [
                 {
                   path: ['id'],
                   value: id
                 }
-              ]
-            )
+              ])
+            }
+            if (e.code === 'P2003') {
+              // P2003: Record to delete is in use
+              throw new ForeignKeyConstraintError(
+                'short link domain still has associated short links',
+                [
+                  {
+                    path: ['id'],
+                    value: id
+                  }
+                ]
+              )
+            }
           }
+          throw e
         }
-        throw e
-      }
+      })
     }
   })
 }))

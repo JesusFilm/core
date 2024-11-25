@@ -4,8 +4,50 @@ import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
+import {
+  addVercelDomain,
+  checkVercelDomain,
+  removeVercelDomain
+} from './shortLinkDomain.service'
+
+jest.mock('node:dns/promises', () => ({
+  resolve4: jest.fn().mockResolvedValue([]),
+  resolveCname: jest.fn().mockResolvedValue([])
+}))
+
+jest.mock('./shortLinkDomain.service', () => ({
+  checkVercelDomain: jest.fn(),
+  addVercelDomain: jest.fn(),
+  removeVercelDomain: jest.fn()
+}))
+
+const mockCheckVercelDomain = checkVercelDomain as jest.MockedFunction<
+  typeof checkVercelDomain
+>
+const mockAddVercelDomain = addVercelDomain as jest.MockedFunction<
+  typeof addVercelDomain
+>
+const mockRemoveVercelDomain = removeVercelDomain as jest.MockedFunction<
+  typeof removeVercelDomain
+>
+
 describe('shortLinkDomain', () => {
   const client = getClient()
+
+  beforeEach(() => {
+    prismaMock.$transaction.mockImplementation(
+      async (cb) => await cb(prismaMock)
+    )
+    prismaMock.userMediaRole.findUnique.mockResolvedValue({
+      id: 'userId',
+      userId: 'userId',
+      roles: ['publisher']
+    })
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
 
   describe('queries', () => {
     describe('shortLinkDomains', () => {
@@ -19,6 +61,16 @@ describe('shortLinkDomain', () => {
                 createdAt
                 updatedAt
                 services
+                check {
+                  configured
+                  verified
+                  verification {
+                    type
+                    domain
+                    value
+                    reason
+                  }
+                }
               }
             }
             pageInfo {
@@ -36,13 +88,19 @@ describe('shortLinkDomain', () => {
         prismaMock.shortLinkDomain.findMany.mockResolvedValue([
           {
             id: 'testId',
-            hostname: 'example.com',
+            hostname: 'www.example.com',
+            apexName: 'example.com',
             createdAt: new Date(),
             updatedAt: new Date(),
             services: []
           }
         ])
         prismaMock.shortLinkDomain.count.mockResolvedValue(1)
+        mockCheckVercelDomain.mockResolvedValue({
+          configured: true,
+          verified: true,
+          verification: []
+        })
         const result = await client({
           document: SHORT_LINK_DOMAINS_QUERY
         })
@@ -53,10 +111,15 @@ describe('shortLinkDomain', () => {
                 {
                   node: {
                     id: 'testId',
-                    hostname: 'example.com',
+                    hostname: 'www.example.com',
                     createdAt: expect.any(String),
                     updatedAt: expect.any(String),
-                    services: []
+                    services: [],
+                    check: {
+                      configured: true,
+                      verified: true,
+                      verification: []
+                    }
                   }
                 }
               ],
@@ -78,13 +141,26 @@ describe('shortLinkDomain', () => {
         prismaMock.shortLinkDomain.findMany.mockResolvedValue([
           {
             id: 'testId',
-            hostname: 'example.com',
+            hostname: 'www.example.com',
+            apexName: 'example.com',
             createdAt: new Date(),
             updatedAt: new Date(),
             services: ['apiJourneys']
           }
         ])
         prismaMock.shortLinkDomain.count.mockResolvedValue(1)
+        mockCheckVercelDomain.mockResolvedValue({
+          configured: false,
+          verified: false,
+          verification: [
+            {
+              type: 'A',
+              domain: 'example.com',
+              value: 'value',
+              reason: 'reason'
+            }
+          ]
+        })
         const result = await client({
           document: SHORT_LINK_DOMAINS_QUERY,
           variables: { service: 'apiJourneys' }
@@ -96,10 +172,22 @@ describe('shortLinkDomain', () => {
                 {
                   node: {
                     id: 'testId',
-                    hostname: 'example.com',
+                    hostname: 'www.example.com',
                     createdAt: expect.any(String),
                     updatedAt: expect.any(String),
-                    services: ['apiJourneys']
+                    services: ['apiJourneys'],
+                    check: {
+                      configured: false,
+                      verified: false,
+                      verification: [
+                        {
+                          type: 'A',
+                          domain: 'example.com',
+                          value: 'value',
+                          reason: 'reason'
+                        }
+                      ]
+                    }
                   }
                 }
               ],
@@ -146,6 +234,16 @@ describe('shortLinkDomain', () => {
                 createdAt
                 updatedAt
                 services
+                check {
+                  configured
+                  verified
+                  verification {
+                    type
+                    domain
+                    value
+                    reason
+                  }
+                }
               }
             }
             ... on NotFoundError {
@@ -159,13 +257,27 @@ describe('shortLinkDomain', () => {
         }
       `)
 
+      beforeEach(() => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+      })
+
       it('should fetch a short link domain by id', async () => {
         prismaMock.shortLinkDomain.findFirstOrThrow.mockResolvedValue({
           id: 'testId',
-          hostname: 'example.com',
+          hostname: 'www.example.com',
+          apexName: 'example.com',
           createdAt: new Date(),
           updatedAt: new Date(),
           services: []
+        })
+        mockCheckVercelDomain.mockResolvedValue({
+          configured: true,
+          verified: true,
+          verification: []
         })
         const result = await client({
           document: SHORT_LINK_DOMAIN_QUERY,
@@ -176,10 +288,15 @@ describe('shortLinkDomain', () => {
             shortLinkDomain: {
               data: {
                 id: 'testId',
-                hostname: 'example.com',
+                hostname: 'www.example.com',
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
-                services: []
+                services: [],
+                check: {
+                  configured: true,
+                  verified: true,
+                  verification: []
+                }
               }
             }
           }
@@ -189,6 +306,7 @@ describe('shortLinkDomain', () => {
         ).toHaveBeenCalledWith({
           where: { id: 'testId' }
         })
+        expect(mockCheckVercelDomain).toHaveBeenCalledWith('www.example.com')
       })
 
       it('should return a NotFoundError if the short link domain does not exist', async () => {
@@ -220,14 +338,6 @@ describe('shortLinkDomain', () => {
   })
 
   describe('mutations', () => {
-    beforeEach(() => {
-      prismaMock.userMediaRole.findUnique.mockResolvedValue({
-        id: 'userId',
-        userId: 'userId',
-        roles: ['publisher']
-      })
-    })
-
     describe('shortLinkDomainCreate', () => {
       const SHORT_LINK_DOMAIN_CREATE_MUTATION = graphql(`
         mutation ShortLinkDomainCreateMutation(
@@ -262,9 +372,15 @@ describe('shortLinkDomain', () => {
       `)
 
       it('should create a short link domain', async () => {
+        mockAddVercelDomain.mockResolvedValue({
+          name: 'www.example.com',
+          apexName: 'example.com',
+          verified: false
+        })
         prismaMock.shortLinkDomain.create.mockResolvedValue({
           id: 'testId',
-          hostname: 'example.com',
+          hostname: 'www.example.com',
+          apexName: 'example.com',
           createdAt: new Date(),
           updatedAt: new Date(),
           services: ['apiJourneys']
@@ -283,7 +399,7 @@ describe('shortLinkDomain', () => {
             shortLinkDomainCreate: {
               data: {
                 id: 'testId',
-                hostname: 'example.com',
+                hostname: 'www.example.com',
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
                 services: ['apiJourneys']
@@ -294,15 +410,23 @@ describe('shortLinkDomain', () => {
         expect(prismaMock.shortLinkDomain.create).toHaveBeenCalledWith({
           data: {
             hostname: 'example.com',
+            apexName: 'example.com',
             services: ['apiJourneys']
           }
         })
+        expect(mockAddVercelDomain).toHaveBeenCalledWith('example.com')
       })
 
       it('should create a short link domain with no services provided', async () => {
+        mockAddVercelDomain.mockResolvedValue({
+          name: 'www.example.com',
+          apexName: 'example.com',
+          verified: false
+        })
         prismaMock.shortLinkDomain.create.mockResolvedValue({
           id: 'testId',
-          hostname: 'example.com',
+          hostname: 'www.example.com',
+          apexName: 'example.com',
           createdAt: new Date(),
           updatedAt: new Date(),
           services: []
@@ -311,7 +435,7 @@ describe('shortLinkDomain', () => {
           document: SHORT_LINK_DOMAIN_CREATE_MUTATION,
           variables: {
             input: {
-              hostname: 'example.com'
+              hostname: 'www.example.com'
             }
           }
         })
@@ -320,7 +444,7 @@ describe('shortLinkDomain', () => {
             shortLinkDomainCreate: {
               data: {
                 id: 'testId',
-                hostname: 'example.com',
+                hostname: 'www.example.com',
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
                 services: []
@@ -330,13 +454,20 @@ describe('shortLinkDomain', () => {
         })
         expect(prismaMock.shortLinkDomain.create).toHaveBeenCalledWith({
           data: {
-            hostname: 'example.com',
+            apexName: 'example.com',
+            hostname: 'www.example.com',
             services: []
           }
         })
+        expect(mockAddVercelDomain).toHaveBeenCalledWith('www.example.com')
       })
 
       it('should return a NotUniqueError if the short link domain already exists', async () => {
+        mockAddVercelDomain.mockResolvedValue({
+          name: 'www.example.com',
+          apexName: 'example.com',
+          verified: false
+        })
         prismaMock.shortLinkDomain.create.mockRejectedValue(
           new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
             code: 'P2002',
@@ -347,7 +478,7 @@ describe('shortLinkDomain', () => {
           document: SHORT_LINK_DOMAIN_CREATE_MUTATION,
           variables: {
             input: {
-              hostname: 'example.com',
+              hostname: 'www.example.com',
               services: ['apiJourneys']
             }
           }
@@ -356,10 +487,13 @@ describe('shortLinkDomain', () => {
           data: {
             shortLinkDomainCreate: {
               message: 'short link domain already exists',
-              location: [{ path: ['input', 'hostname'], value: 'example.com' }]
+              location: [
+                { path: ['input', 'hostname'], value: 'www.example.com' }
+              ]
             }
           }
         })
+        expect(mockAddVercelDomain).toHaveBeenCalledWith('www.example.com')
       })
 
       it('should return a validation error if the hostname is invalid', async () => {
@@ -396,6 +530,31 @@ describe('shortLinkDomain', () => {
           }
         })
       })
+
+      it('should call removeVercelDomain if an error occurs during creation', async () => {
+        mockAddVercelDomain.mockResolvedValue({
+          name: 'www.example.com',
+          apexName: 'example.com',
+          verified: false
+        })
+        prismaMock.shortLinkDomain.create.mockRejectedValue(
+          new Prisma.PrismaClientKnownRequestError('Some error', {
+            code: 'P2003',
+            clientVersion: 'prismaVersion'
+          })
+        )
+        await client({
+          document: SHORT_LINK_DOMAIN_CREATE_MUTATION,
+          variables: {
+            input: {
+              hostname: 'www.example.com',
+              services: ['apiJourneys']
+            }
+          }
+        })
+        expect(mockAddVercelDomain).toHaveBeenCalledWith('www.example.com')
+        expect(mockRemoveVercelDomain).toHaveBeenCalledWith('www.example.com')
+      })
     })
 
     describe('shortLinkDomainUpdate', () => {
@@ -427,7 +586,8 @@ describe('shortLinkDomain', () => {
       it('should update a short link domain', async () => {
         prismaMock.shortLinkDomain.update.mockResolvedValue({
           id: 'testId',
-          hostname: 'example.com',
+          hostname: 'www.example.com',
+          apexName: 'example.com',
           createdAt: new Date(),
           updatedAt: new Date(),
           services: ['apiJourneys']
@@ -446,7 +606,7 @@ describe('shortLinkDomain', () => {
             shortLinkDomainUpdate: {
               data: {
                 id: 'testId',
-                hostname: 'example.com',
+                hostname: 'www.example.com',
                 createdAt: expect.any(String),
                 updatedAt: expect.any(String),
                 services: ['apiJourneys']
@@ -517,9 +677,11 @@ describe('shortLinkDomain', () => {
       `)
 
       it('should delete a short link domain', async () => {
+        mockRemoveVercelDomain.mockResolvedValue(true)
         prismaMock.shortLinkDomain.delete.mockResolvedValue({
           id: 'testId',
-          hostname: 'example.com',
+          hostname: 'www.example.com',
+          apexName: 'example.com',
           createdAt: new Date(),
           updatedAt: new Date(),
           services: []
@@ -540,6 +702,7 @@ describe('shortLinkDomain', () => {
         expect(prismaMock.shortLinkDomain.delete).toHaveBeenCalledWith({
           where: { id: 'testId' }
         })
+        expect(mockRemoveVercelDomain).toHaveBeenCalledWith('www.example.com')
       })
 
       it('should return a NotFoundError if the short link domain does not exist', async () => {
@@ -561,6 +724,9 @@ describe('shortLinkDomain', () => {
             }
           }
         })
+        expect(mockRemoveVercelDomain).not.toHaveBeenCalledWith(
+          'www.example.com'
+        )
       })
 
       it('should return a ForeignKeyConstraintError if the short link domain has associated short links', async () => {
