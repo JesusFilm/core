@@ -91,7 +91,7 @@ const mockDeleteCloudflareImage: MockedResponse<
 > = {
   request: {
     query: DELETE_VIDEO_CLOUDFLARE_IMAGE,
-    variables: { id: 'imageId' }
+    variables: { id: '1_jf-0-0.mobileCinematicHigh.jpg' }
   },
   result: {
     data: {
@@ -178,7 +178,12 @@ describe('VideoImageUpload', () => {
         url: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369300'
       },
       ROOT_MUTATION: { __typename: 'Mutation' },
-      'Video:1_jf-0-0': { images: [{ __ref: 'CloudflareImage:uploadId' }] },
+      'Video:1_jf-0-0': {
+        images: [
+          { __ref: 'CloudflareImage:imageId' },
+          { __ref: 'CloudflareImage:uploadId' }
+        ]
+      },
       __META: { extraRootIds: ['CloudflareImage:uploadId'] }
     })
   })
