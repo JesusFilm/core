@@ -87,6 +87,8 @@ export class JourneyVisitorService {
       })),
       pageInfo: {
         hasNextPage: result.length > first,
+        // mocked in place to match sharable PageInfo type
+        hasPreviousPage: false,
         startCursor: result.length > 0 ? result[0].id : null,
         endCursor:
           result.length > 0 ? sendResult[sendResult.length - 1].id : null
