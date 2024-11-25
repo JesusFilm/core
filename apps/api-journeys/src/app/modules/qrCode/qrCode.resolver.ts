@@ -113,8 +113,6 @@ export class QrCodeResolver {
         where: { id },
         data: {
           ...input,
-          qrCodeImageBlockId:
-            input.qrCodeImageBlockId ?? qrCode.qrCodeImageBlockId,
           toJourneyId: input.toJourneyId ?? qrCode.toJourneyId
         }
       })
@@ -133,24 +131,8 @@ export class QrCodeResolver {
     const qrCode = await this.getQrCode(id)
     return await this.prismaService.$transaction(async (tx) => {
       await this.qrCodeService.deleteShortLink(qrCode.shortLinkId)
-      if (qrCode.qrCodeImageBlockId != null) {
-        await tx.block.delete({
-          where: { id: qrCode.qrCodeImageBlockId }
-        })
-      }
       return await tx.qrCode.delete({ where: { id } })
     })
-  }
-
-  @ResolveField()
-  async qrCodeImageBlock(@Parent() qrCode: QrCode): Promise<Block | null> {
-    if (qrCode.qrCodeImageBlockId == null) return null
-    const block = await this.prismaService.block.findUnique({
-      where: { id: qrCode.qrCodeImageBlockId },
-      include: { action: true }
-    })
-    if (block?.journeyId !== qrCode.journeyId) return null
-    return block
   }
 
   @ResolveField()

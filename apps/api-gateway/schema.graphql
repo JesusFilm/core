@@ -4006,7 +4006,6 @@ input QrCodeUpdateInput @join__type(graph: API_JOURNEYS)  {
   toJourneyId: ID
   color: String
   backgroundColor: String
-  qrCodeImageBlockId: ID
 }
 
 input TeamCreateInput @join__type(graph: API_JOURNEYS)  {

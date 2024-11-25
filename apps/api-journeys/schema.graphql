@@ -2685,7 +2685,6 @@ input QrCodeUpdateInput {
   toJourneyId: ID
   color: String
   backgroundColor: String
-  qrCodeImageBlockId: ID
 }
 
 type Team

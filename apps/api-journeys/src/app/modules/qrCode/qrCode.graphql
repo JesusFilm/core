@@ -50,7 +50,6 @@ input QrCodeUpdateInput {
   toJourneyId: ID
   color: String
   backgroundColor: String
-  qrCodeImageBlockId: ID
 }
 
 extend type Mutation {

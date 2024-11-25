@@ -537,7 +537,6 @@ model Block {
   menuStepBlockParent     Journey?             @relation("MenuStepBlock")
   logoImageBlockParent    Journey?             @relation("LogoImageBlock")
   slug                    String?
-  qrCodeImageBlockParent  QrCode?              @relation("QrCodeImageBlock")
 
   @@unique([slug, journeyId])
   @@index(journeyId)
@@ -619,16 +618,14 @@ model JourneyCollectionJourneys {
 }
 
 model QrCode {
-  id                 String  @id @default(uuid())
-  teamId             String
-  journeyId          String
-  toJourneyId        String
-  toBlockId          String?
-  shortLinkId        String
-  customDomain       String?
-  color              String? @default("#000000")
-  backgroundColor    String? @default("#FFFFFF")
-  qrCodeImageBlockId String? @unique
-  qrCodeImageBlock   Block?  @relation("QrCodeImageBlock", fields: [qrCodeImageBlockId], references: [id], onDelete: SetNull)
-  Team               Team    @relation(fields: [teamId], references: [id])
+  id              String  @id @default(uuid())
+  teamId          String
+  journeyId       String
+  toJourneyId     String
+  toBlockId       String?
+  shortLinkId     String
+  customDomain    String?
+  color           String? @default("#000000")
+  backgroundColor String? @default("#FFFFFF")
+  Team            Team    @relation(fields: [teamId], references: [id])
 }

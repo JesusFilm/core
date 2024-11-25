@@ -822,7 +822,6 @@ export class QrCodeUpdateInput {
     toJourneyId?: Nullable<string>;
     color?: Nullable<string>;
     backgroundColor?: Nullable<string>;
-    qrCodeImageBlockId?: Nullable<string>;
 }
 
 export class TeamCreateInput {
