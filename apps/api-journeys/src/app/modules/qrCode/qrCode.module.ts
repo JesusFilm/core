@@ -6,9 +6,10 @@ import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { QrCodeResolver } from './qrCode.resolver'
+import { QrCodeService } from './qrCode.service'
 
 @Module({
   imports: [CaslAuthModule.register(AppCaslFactory)],
-  providers: [QrCodeResolver, PrismaService]
+  providers: [QrCodeResolver, QrCodeService, PrismaService]
 })
 export class QrCodeModule {}
