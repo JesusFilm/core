@@ -4,8 +4,9 @@ import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
+import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider } from '../../../_EditProvider'
+import { EditProvider, EditState } from '../../../_EditProvider'
 
 import { VideoInformation } from './VideoInfomation'
 
@@ -19,13 +20,18 @@ const meta: Meta<typeof VideoInformation> = {
   }
 }
 
-type Story = StoryObj<ComponentProps<typeof VideoInformation>>
+const mockVideo: AdminVideo =
+  useAdminVideoMock['result']?.['data']?.['adminVideo']
+
+type Story = StoryObj<
+  ComponentProps<typeof VideoInformation> & { state: Partial<EditState> }
+>
 
 const Template: Story = {
-  render: ({ ...args }) => (
+  render: ({ state, video }) => (
     <NextIntlClientProvider locale="en">
-      <EditProvider initialState={args.state}>
-        <VideoInformation />
+      <EditProvider initialState={state}>
+        <VideoInformation video={video} />
       </EditProvider>
     </NextIntlClientProvider>
   )
@@ -36,44 +42,18 @@ export const Default = {
   args: {
     state: {
       isEdit: false
-    }
-  },
-  parameters: {
-    apolloClient: {
-      mocks: [useAdminVideoMock]
     },
-    nextjs: {
-      appDirectory: true,
-      navigation: {
-        segments: [
-          ['videoId', 'someId'],
-          ['locale', 'en']
-        ]
-      }
-    }
+    video: mockVideo
   }
 }
 
-export const Edit = {
+export const Editable = {
   ...Template,
   args: {
     state: {
       isEdit: true
-    }
-  },
-  parameters: {
-    apolloClient: {
-      mocks: [useAdminVideoMock]
     },
-    nextjs: {
-      appDirectory: true,
-      navigation: {
-        segments: [
-          ['videoId', 'someId'],
-          ['locale', 'en']
-        ]
-      }
-    }
+    video: mockVideo
   }
 }
 
@@ -82,21 +62,8 @@ export const Required = {
   args: {
     state: {
       isEdit: true
-    }
-  },
-  parameters: {
-    apolloClient: {
-      mocks: [useAdminVideoMock]
     },
-    nextjs: {
-      appDirectory: true,
-      navigation: {
-        segments: [
-          ['videoId', 'someId'],
-          ['locale', 'en']
-        ]
-      }
-    }
+    video: mockVideo
   },
   play: async () => {
     await userEvent.type(screen.getByRole('textbox', { name: 'Title' }), 'a')

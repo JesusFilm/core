@@ -1,19 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { useParams } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 
+import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { EditProvider } from '../../../_EditProvider'
 
 import { UPDATE_VIDEO_INFORMATION, VideoInformation } from './VideoInfomation'
-
-jest.mock('next/navigation', () => ({
-  ...jest.requireActual('next/navigation'),
-  useParams: jest.fn()
-}))
-
-const mockUseParams = useParams as jest.MockedFunction<typeof mockUseParams>
 
 describe('VideoInformation', () => {
   const mockUpdateVideoInformation = {
@@ -50,6 +43,9 @@ describe('VideoInformation', () => {
     }))
   }
 
+  const mockVideo: AdminVideo =
+    useAdminVideoMock['result']?.['data']?.['adminVideo']
+
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -59,7 +55,7 @@ describe('VideoInformation', () => {
       <MockedProvider>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: false }}>
-            <VideoInformation />
+            <VideoInformation video={mockVideo} />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
@@ -83,7 +79,7 @@ describe('VideoInformation', () => {
       <MockedProvider>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: false }}>
-            <VideoInformation />
+            <VideoInformation video={mockVideo} />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
@@ -99,7 +95,7 @@ describe('VideoInformation', () => {
       <MockedProvider>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation />
+            <VideoInformation video={mockVideo} />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
@@ -109,20 +105,16 @@ describe('VideoInformation', () => {
   })
 
   it('should enable save button if title field has been changed', async () => {
-    mockUseParams.mockReturnValue({ videoId: 'someId' })
-    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
-
     render(
-      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+      <MockedProvider>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation />
+            <VideoInformation video={mockVideo} />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('JESUS')
     fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
@@ -133,20 +125,16 @@ describe('VideoInformation', () => {
   })
 
   it('should enable save button if status has been changed', async () => {
-    mockUseParams.mockReturnValue({ videoId: 'someId' })
-    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
-
     render(
-      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+      <MockedProvider>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation />
+            <VideoInformation video={mockVideo} />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Status' }))
     fireEvent.click(screen.getByRole('option', { name: 'Unpublished' }))
@@ -157,20 +145,16 @@ describe('VideoInformation', () => {
   })
 
   it('should enable save button if label has been changed', async () => {
-    mockUseParams.mockReturnValue({ videoId: 'someId' })
-    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
-
     render(
-      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+      <MockedProvider>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation />
+            <VideoInformation video={mockVideo} />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Label' }))
     fireEvent.click(screen.getByRole('option', { name: 'Short Film' }))
@@ -181,20 +165,16 @@ describe('VideoInformation', () => {
   })
 
   it('should enable save button if no index has been changed', async () => {
-    mockUseParams.mockReturnValue({ videoId: 'someId' })
-    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
-
     render(
-      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+      <MockedProvider>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation />
+            <VideoInformation video={mockVideo} />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     expect(screen.getByRole('checkbox', { name: 'No Index' })).not.toBeChecked()
     fireEvent.click(screen.getByRole('checkbox', { name: 'No Index' }))
@@ -203,22 +183,16 @@ describe('VideoInformation', () => {
   })
 
   it('should update video information on submit', async () => {
-    mockUseParams.mockReturnValue({ videoId: 'someId' })
-    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
-
     render(
-      <MockedProvider
-        mocks={[{ ...useAdminVideoMock, result }, mockUpdateVideoInformation]}
-      >
+      <MockedProvider mocks={[mockUpdateVideoInformation]}>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation />
+            <VideoInformation video={mockVideo} />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('JESUS')
     fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
@@ -234,48 +208,17 @@ describe('VideoInformation', () => {
     )
   })
 
-  it('should not call update if there is no video data', async () => {
-    mockUseParams.mockReturnValue({ videoId: 'someId' })
-
-    render(
-      <MockedProvider mocks={[mockUpdateVideoInformation]}>
-        <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation />
-          </EditProvider>
-        </NextIntlClientProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
-      target: { value: 'new title' }
-    })
-    expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue(
-      'new title'
-    )
-    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
-    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
-    await waitFor(() =>
-      expect(mockUpdateVideoInformation.result).not.toHaveBeenCalled()
-    )
-  })
-
   it('should require title field', async () => {
-    mockUseParams.mockReturnValue({ videoId: 'someId' })
-    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
-
     render(
-      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+      <MockedProvider>
         <NextIntlClientProvider locale="en">
           <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation />
+            <VideoInformation video={mockVideo} />
           </EditProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('JESUS')
     fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {

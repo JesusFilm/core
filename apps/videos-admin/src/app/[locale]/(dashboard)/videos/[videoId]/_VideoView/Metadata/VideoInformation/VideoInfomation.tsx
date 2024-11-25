@@ -9,13 +9,12 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
-import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 import { boolean, object, string } from 'yup'
 
 import { SaveButton } from '../../../../../../../../components/SaveButton'
-import { useAdminVideo } from '../../../../../../../../libs/useAdminVideo'
+import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useEdit } from '../../../_EditProvider'
 
 const videoStatuses = [
@@ -53,17 +52,18 @@ export const UPDATE_VIDEO_INFORMATION = graphql(`
   }
 `)
 
-export function VideoInformation(): ReactElement {
+interface VideoInformationProps {
+  video: AdminVideo
+}
+
+export function VideoInformation({
+  video
+}: VideoInformationProps): ReactElement {
   const t = useTranslations()
   const {
     state: { isEdit }
   } = useEdit()
   const [updateVideoInformation] = useMutation(UPDATE_VIDEO_INFORMATION)
-  const params = useParams<{ videoId: string; locale: string }>()
-  const { data } = useAdminVideo({
-    variables: { videoId: params?.videoId as string }
-  })
-  const video = data?.adminVideo
 
   const validationSchema = object().shape({
     title: string().trim().required(t('Title is required')),
@@ -76,7 +76,6 @@ export function VideoInformation(): ReactElement {
   async function handleUpdateVideoInformation(
     values: FormikValues
   ): Promise<void> {
-    if (video == null) return
     await updateVideoInformation({
       variables: {
         infoInput: {
@@ -97,11 +96,11 @@ export function VideoInformation(): ReactElement {
   return (
     <Formik
       initialValues={{
-        title: video?.title?.[0].value,
-        slug: video?.slug,
-        published: video?.published === true ? 'published' : 'unpublished',
-        label: video?.label,
-        noIndex: video?.noIndex
+        title: video.title[0].value,
+        slug: video.slug,
+        published: video.published === true ? 'published' : 'unpublished',
+        label: video.label,
+        noIndex: video.noIndex
       }}
       onSubmit={handleUpdateVideoInformation}
       validationSchema={validationSchema}
