@@ -1,19 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { ComponentPropsWithoutRef } from 'react'
+import { ComponentProps } from 'react'
 
+import { EditProvider } from '../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
 import { videosAdminConfig } from '../../libs/storybookConfig'
-import { OrderedItem } from './OrderedItem'
 
-import { OrderedList } from './OrderedList'
+import { OrderedItem } from './OrderedItem'
+import { BaseItem, OrderedList } from './OrderedList'
 
 interface Item {
   id: string
   value: string
 }
 
-type StoryArgs = ComponentPropsWithoutRef<typeof OrderedList<Item>>
+type Story = StoryObj<ComponentProps<typeof OrderedList> & { isEdit: boolean }>
 
-const meta = {
+const meta: Meta = {
   ...videosAdminConfig,
   title: 'Videos-Admin/Video/Edit/OrderedList',
   component: OrderedList,
@@ -25,38 +26,48 @@ const meta = {
       defaultViewport: 'none'
     }
   }
-} satisfies Meta<StoryArgs>
-
-export default meta
-type Story = StoryObj<typeof meta>
+}
 
 const Template: Story = {
-  render: ({ items, ...args }) => (
-    <OrderedList<Item> {...args}>
-      {items.map(({ id, value }, i) => (
-        <OrderedItem key={i} id={id} value={value} />
-      ))}
-    </OrderedList>
+  render: (args) => (
+    <EditProvider initialState={{ isEdit: args.isEdit }}>
+      <OrderedList<{ id: string; value: string }>
+        items={args.items as unknown as Item[]}
+        onOrderUpdate={args.onOrderUpdate}
+      >
+        {args.items.map((item, i) => (
+          <OrderedItem
+            key={i}
+            id={item.id}
+            label={(item as Item).value}
+            idx={i}
+          />
+        ))}
+      </OrderedList>
+    </EditProvider>
   )
 }
 
 export const Default: Story = {
+  ...Template,
   args: {
-    items: [{ id: 'OrderedItem.1', value: 'Ordered row' }]
+    items: [
+      { id: 'OrderedItem.1', value: 'Ordered row 1' } as BaseItem,
+      { id: 'OrderedItem.2', value: 'Ordered row 2' } as BaseItem
+    ],
+    isEdit: false
   }
 }
 
-export const WithActions: Story = {
+export const Editable: Story = {
+  ...Template,
   args: {
-    id: 'OrderedItem.1',
-    label: 'Ordered row',
-    idx: 0,
-    total: 1,
-    onOrderUpdate: ({ id, order }) => alert(`Update ${id} order to: ${order}`),
-    actions: [
-      { label: 'View', handler: (id) => alert(`View ${id}`) },
-      { label: 'Edit', handler: (id) => alert(`Edit ${id}`) },
-      { label: 'Delete', handler: (id) => alert(`Delete ${id}`) }
-    ]
+    items: [
+      { id: 'OrderedItem.1', value: 'Ordered row 1' } as BaseItem,
+      { id: 'OrderedItem.2', value: 'Ordered row 2' } as BaseItem
+    ],
+    isEdit: true
   }
 }
+
+export default meta

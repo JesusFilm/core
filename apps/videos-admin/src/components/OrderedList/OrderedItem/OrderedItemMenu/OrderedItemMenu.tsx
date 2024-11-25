@@ -2,18 +2,21 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
-import { MouseEvent, ReactElement, useState } from 'react'
+import { MouseEvent, ReactElement, memo, useMemo, useState } from 'react'
 
 import More from '@core/shared/ui/icons/More'
 
 import { useEdit } from '../../../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
 
-interface ActionsProps {
+interface OrderedItemMenuProps {
   id: string
   actions: Array<{ label: string; handler: (id: string) => void }>
 }
 
-export function Actions({ id, actions }: ActionsProps): ReactElement {
+export const OrderedItemMenu = memo(function OrderedItemMenu({
+  id,
+  actions
+}: OrderedItemMenuProps): ReactElement {
   const {
     state: { isEdit }
   } = useEdit()
@@ -28,6 +31,8 @@ export function Actions({ id, actions }: ActionsProps): ReactElement {
     setAnchorEl(null)
     handler(id)
   }
+
+  const actionItems = useMemo(() => actions.map((action) => action), [actions])
 
   return (
     <Box>
@@ -48,7 +53,7 @@ export function Actions({ id, actions }: ActionsProps): ReactElement {
           'aria-label': 'ordered-item-actions-menu'
         }}
       >
-        {actions.map(({ label, handler }) => (
+        {actionItems.map(({ label, handler }) => (
           <MenuItem
             key={`${label}-action`}
             onClick={() => handleAction(handler)}
@@ -59,4 +64,4 @@ export function Actions({ id, actions }: ActionsProps): ReactElement {
       </Menu>
     </Box>
   )
-}
+})

@@ -102,7 +102,7 @@ export function VideoView(): ReactElement {
                 {video != null && <Metadata video={video} loading={loading} />}
               </TabContainer>
               <TabContainer value={tabValue} index={1}>
-                <Children childVideos={video?.children} />
+                <Children childVideos={video?.children ?? []} />
               </TabContainer>
               <TabContainer value={tabValue} index={2}>
                 <Variants variants={video?.variants} />

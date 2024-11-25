@@ -1,6 +1,6 @@
-import Box from '@mui/material/Box'
-import Stack from '@mui/material/Stack'
-import { ReactElement, useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { FixedSizeList } from 'react-window'
 
 import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
 import { Section } from '../Section'
@@ -8,12 +8,23 @@ import { Section } from '../Section'
 import { VariantCard } from './VariantCard'
 import { VariantModal } from './VariantModal'
 
+const ITEM_SIZE = 80
+
 export function Variants({
   variants
 }: {
   variants?: GetAdminVideoVariant[]
 }): ReactElement {
+  const t = useTranslations()
   const [open, setOpen] = useState(false)
+  const [size, setSize] = useState<{
+    height: number
+    width: number
+  }>({
+    height: 0,
+    width: 0
+  })
+
   const [selected, setSelected] = useState<string | null>(null)
   const handleOpen = (variantId?: string): void => {
     setOpen(true)
@@ -25,6 +36,21 @@ export function Variants({
     return new Map(variants.map((variant) => [variant.id, variant]))
   }, [variants])
 
+  function getVariantSectionDimensions(): void {
+    const section = document.getElementById('Variants-section')
+    if (section == null) return
+    const { width, height } = section.getBoundingClientRect()
+    setSize({ width, height })
+  }
+
+  useEffect(() => {
+    getVariantSectionDimensions()
+    window.addEventListener('resize', getVariantSectionDimensions)
+    return () => {
+      window.removeEventListener('resize', getVariantSectionDimensions)
+    }
+  }, [])
+
   return (
     <>
       {variants != null && (
@@ -32,23 +58,29 @@ export function Variants({
           boxProps={{
             sx: { p: 0, height: 'calc(100vh - 400px)' }
           }}
-          title="Variants"
+          title={t('Variants')}
           action={{
-            label: 'Create Variant',
+            label: t('Create Variant'),
             onClick: () => alert('Create variant')
           }}
         >
-          <Box sx={{ p: 4, overflowY: 'scroll', height: '100%' }}>
-            <Stack gap={1}>
-              {variants?.map((variant, idx) => (
-                <VariantCard
-                  key={idx}
-                  variant={variant}
-                  onClick={() => handleOpen(variant?.id)}
-                />
-              ))}
-            </Stack>
-          </Box>
+          <FixedSizeList
+            width={size.width}
+            height={size.height}
+            itemData={variants}
+            itemCount={variants.length}
+            itemSize={ITEM_SIZE}
+            overscanCount={10}
+          >
+            {({ index, style, data: items }) => (
+              <VariantCard
+                key={index}
+                variant={items[index]}
+                onClick={() => handleOpen(items[index]?.id)}
+                style={style}
+              />
+            )}
+          </FixedSizeList>
           {variantsMap != null && selected != null && (
             <VariantModal
               open={open}
