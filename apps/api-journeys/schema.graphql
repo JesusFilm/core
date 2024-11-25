@@ -255,7 +255,7 @@ type Mutation {
   customDomainCheck(id: ID!): CustomDomainCheck!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
-  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent!
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent!
