@@ -61,6 +61,7 @@ describe('shortLink', () => {
           domain: {
             id: 'domainId',
             hostname: 'example.com',
+            apexName: 'example.com',
             createdAt: new Date(),
             updatedAt: new Date(),
             services: []
@@ -154,6 +155,7 @@ describe('shortLink', () => {
           domain: {
             id: 'domainId',
             hostname: 'example.com',
+            apexName: 'example.com',
             createdAt: new Date(),
             updatedAt: new Date(),
             services: []
@@ -244,6 +246,7 @@ describe('shortLink', () => {
           domain: {
             id: 'domainId',
             hostname: 'example.com',
+            apexName: 'example.com',
             createdAt: new Date(),
             updatedAt: new Date(),
             services: []
@@ -294,6 +297,7 @@ describe('shortLink', () => {
           domain: {
             id: 'domainId',
             hostname: 'example.com',
+            apexName: 'example.com',
             createdAt: new Date(),
             updatedAt: new Date(),
             services: []
@@ -388,6 +392,7 @@ describe('shortLink', () => {
         prismaMock.shortLinkDomain.findFirst.mockResolvedValue({
           id: 'domainId',
           hostname: 'example.com',
+          apexName: 'example.com',
           createdAt: new Date(),
           updatedAt: new Date(),
           services: ['apiJourneys']
@@ -405,6 +410,7 @@ describe('shortLink', () => {
           domain: {
             id: 'domainId',
             hostname: 'example.com',
+            apexName: 'example.com',
             createdAt: new Date(),
             updatedAt: new Date(),
             services: []
@@ -451,6 +457,7 @@ describe('shortLink', () => {
         prismaMock.shortLinkDomain.findFirst.mockResolvedValue({
           id: 'domainId',
           hostname: 'example.com',
+          apexName: 'example.com',
           createdAt: new Date(),
           updatedAt: new Date(),
           services: ['apiJourneys']
@@ -470,6 +477,7 @@ describe('shortLink', () => {
           domain: {
             id: 'domainId',
             hostname: 'example.com',
+            apexName: 'example.com',
             createdAt: new Date(),
             updatedAt: new Date(),
             services: []
@@ -516,6 +524,7 @@ describe('shortLink', () => {
         prismaMock.shortLinkDomain.findFirst.mockResolvedValue({
           id: 'domainId',
           hostname: 'example.com',
+          apexName: 'example.com',
           createdAt: new Date(),
           updatedAt: new Date(),
           services: ['apiJourneys']
@@ -555,6 +564,7 @@ describe('shortLink', () => {
         prismaMock.shortLinkDomain.findFirst.mockResolvedValue({
           id: 'domainId',
           hostname: 'example.com',
+          apexName: 'example.com',
           createdAt: new Date(),
           updatedAt: new Date(),
           services: ['apiJourneys']
@@ -640,6 +650,7 @@ describe('shortLink', () => {
         prismaMock.shortLinkDomain.findFirst.mockResolvedValue({
           id: 'domainId',
           hostname: 'example.com',
+          apexName: 'example.com',
           createdAt: new Date(),
           updatedAt: new Date(),
           services: ['apiJourneys']
@@ -734,6 +745,7 @@ describe('shortLink', () => {
           domain: {
             id: 'domainId',
             hostname: 'example.com',
+            apexName: 'example.com',
             createdAt: new Date(),
             updatedAt: new Date(),
             services: []
@@ -905,6 +917,7 @@ describe('shortLink', () => {
           domain: {
             id: 'domainId',
             hostname: 'example.com',
+            apexName: 'example.com',
             createdAt: new Date(),
             updatedAt: new Date(),
             services: []
