@@ -9,22 +9,12 @@ import Typography from '@mui/material/Typography'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
-import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
+import { GetAdminVideoVariant_Downloads as VariantDownloads } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
-function bytesToSize(bytes): string {
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
-  if (bytes === 0) return 'n/a'
-  const i = parseInt(
-    Math.floor(Math.log(bytes) / Math.log(1024)).toString(),
-    10
-  )
-
-  if (i === 0) return `${bytes} ${sizes[i]})`
-  return `${(bytes / 1024 ** i).toFixed(1)} ${sizes[i]}`
-}
+import { bytesToSize } from './utils/bytesToSize'
 
 interface DownloadsProps {
-  downloads: GetAdminVideoVariant['downloads']
+  downloads: VariantDownloads
 }
 
 export function Downloads({ downloads }: DownloadsProps): ReactElement {
