@@ -4,19 +4,18 @@
 import { createMockClient } from '@apollo/client/testing'
 import { ResultOf, VariablesOf } from 'gql.tada'
 import { notFound, redirect } from 'next/navigation'
-import { NextRequest } from 'next/server'
 
-import { getApolloClient } from '../../lib/apolloClient'
+import { getApolloClient } from '../../../lib/apolloClient'
 
 import { GET_SHORT_LINK_QUERY } from './getShortLinkQuery'
-import { GET } from './route'
+import PathnamePage from './page'
 
 jest.mock('next/navigation', () => ({
   notFound: jest.fn(),
   redirect: jest.fn()
 }))
 
-jest.mock('../../lib/apolloClient', () => ({
+jest.mock('../../../lib/apolloClient', () => ({
   getApolloClient: jest.fn()
 }))
 
@@ -24,7 +23,7 @@ const mockGetApolloClient = getApolloClient as jest.MockedFunction<
   typeof getApolloClient
 >
 
-describe('GET', () => {
+describe('PathnamePage', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -49,9 +48,9 @@ describe('GET', () => {
         } as VariablesOf<typeof GET_SHORT_LINK_QUERY>
       )
     )
-    const request = new NextRequest('https://short.link/test')
-    await GET(request)
-
+    await PathnamePage({
+      params: Promise.resolve({ hostname: 'short.link', pathname: ['test'] })
+    })
     expect(redirect).toHaveBeenCalledWith('https://example.com')
     expect(notFound).not.toHaveBeenCalled()
   })
@@ -71,8 +70,9 @@ describe('GET', () => {
         } as VariablesOf<typeof GET_SHORT_LINK_QUERY>
       )
     )
-    const request = new NextRequest('https://short.link/test')
-    await GET(request)
+    await PathnamePage({
+      params: Promise.resolve({ hostname: 'short.link', pathname: ['test'] })
+    })
 
     expect(notFound).toHaveBeenCalled()
     expect(redirect).not.toHaveBeenCalled()

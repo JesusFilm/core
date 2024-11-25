@@ -27,7 +27,8 @@ module.exports = [
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     rules: {
-      '@next/next/no-html-link-for-pages': ['error', 'apps/short-links/pages']
+      '@next/next/no-html-link-for-pages': ['error', 'apps/short-links/pages'],
+      'i18next/no-literal-string': 'off'
     }
   },
   {

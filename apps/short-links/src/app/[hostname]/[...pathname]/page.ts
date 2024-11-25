@@ -1,27 +1,30 @@
 import { notFound, redirect } from 'next/navigation'
-import { type NextRequest } from 'next/server'
+import { ReactElement } from 'react'
 
-import { getApolloClient } from '../../lib/apolloClient'
+import { getApolloClient } from '../../../lib/apolloClient'
 
 import { GET_SHORT_LINK_QUERY } from './getShortLinkQuery'
 
-export async function GET(request: NextRequest): Promise<void> {
-  const hostname = request.nextUrl.hostname
-  const pathname = request.nextUrl.pathname
+export default async function PathnamePage({
+  params
+}: {
+  params: Promise<{ hostname: string; pathname: string[] }>
+}): Promise<ReactElement> {
+  const { pathname, hostname } = await params
   const client = getApolloClient()
 
   const { data } = await client.query({
     query: GET_SHORT_LINK_QUERY,
     variables: {
       hostname,
-      pathname: pathname.substring(1)
+      pathname: pathname.join('/')
     }
   })
 
   switch (data.shortLink.__typename) {
     case 'QueryShortLinkByPathSuccess':
       return redirect(data.shortLink.data.to)
-    case 'NotFoundError':
+    default:
       return notFound()
   }
 }
