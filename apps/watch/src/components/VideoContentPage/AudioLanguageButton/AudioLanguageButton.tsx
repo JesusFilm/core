@@ -64,9 +64,10 @@ export function AudioLanguageButton({
             justifyContent: 'flex-end',
             width: 'inherit',
             color: 'background.paper',
+            px: 0,
+            py: 1,
             '&:hover': {
-              backgroundColor: ({ palette }) =>
-                alpha(palette.background.paper, 0.1)
+              backgroundColor: 'transparent'
             }
           }}
         >
