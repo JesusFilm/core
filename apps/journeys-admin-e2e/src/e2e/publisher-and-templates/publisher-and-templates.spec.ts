@@ -116,49 +116,54 @@ test.describe('Publisher page functionality', () => {
   })
 
   // Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories
-  test.fixme('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories', async ({
-    page
-  }) => {
-    const publisherPage = new Publisher(page)
-    const journeyPage = new JourneyPage(page)
-    const templatesPage = new TemplatePage(page)
-    await publisherPage.navigateToPublisherPage() // navigating to the publisher page
-    await publisherPage.getExistingTemplateName() // getting name of existing template
-    await publisherPage.clickOnTemplateInPublisherPage() // clicking on existing template
-    await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
-    await publisherPage.clickTheDotOptionsInEditTemplatePage(
-      'Template Settings'
-    ) // clicking Template Settings option from the three dot options
-    await publisherPage.clickTabInTemplateSettingPopup('Categories') // clicking on the Categories tab in the Template setting popup
-    await publisherPage.setFilterBelowCategoriesTabInTemplateSettingPopup(
-      'Topics'
-    ) // added filter on the Topics filter field for the template
-    await publisherPage.setFilterBelowCategoriesTabInTemplateSettingPopup(
-      'Felt Needs'
-    ) // added filter on the 'Felt Needs' filter field for the template
-    await publisherPage.setFilterBelowCategoriesTabInTemplateSettingPopup(
-      'Holidays'
-    ) // added filter on the Holidays filter field for the template
-    await publisherPage.setFilterBelowCategoriesTabInTemplateSettingPopup(
-      'Audience'
-    ) // added filter on the Audience filter field for the template
-    await publisherPage.setFilterBelowCategoriesTabInTemplateSettingPopup(
-      'Genre'
-    ) // added filter on the Genre filter field for the template
-    await publisherPage.setFilterBelowCategoriesTabInTemplateSettingPopup(
-      'Collections'
-    ) // added filter on the Collections filter field for the template
-    await publisherPage.clickSaveBtn() // clicking on save button
-    await publisherPage.verifyTemplateSettingSaveToastMessage() // verifying 'Template settings have been saved' toast message
-    await journeyPage.backIcon() // clicking on the back Icon
-    await templatesPage.navigateToTempalatePage() // navigating to templates page
-    await publisherPage.verifyCreatedTemplatInEnteredFilterOption('Topics') // Verifying that the template with the added Topic filter is fetched by filtering the Topics.
-    await publisherPage.verifyCreatedTemplatInEnteredFilterOption('Felt Needs') // Verifying that the template with the added 'Felt Needs' filter is fetched by filtering the 'Felt Needs'.
-    await publisherPage.verifyCreatedTemplatInEnteredFilterOption('Holidays') // Verifying that the template with the added Holidays filter is fetched by filtering the Holidays.
-    await publisherPage.verifyCreatedTemplatInEnteredFilterOption('Collections') // Verifying that the template with the added Collections filter is fetched by filtering the Collections.
-    await publisherPage.verifyCreatedTemplatInEnteredFilter('Genre') // Verifying that the template with the added Genre filter is fetched by filtering the Genre.
-    await publisherPage.verifyCreatedTemplatInEnteredFilter('Audience') // Verifying that the template with the added Audience filter is fetched by filtering the Audience.
-  })
+  test.fixme(
+    'Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories',
+    async ({ page }) => {
+      const publisherPage = new Publisher(page)
+      const journeyPage = new JourneyPage(page)
+      const templatesPage = new TemplatePage(page)
+      await publisherPage.navigateToPublisherPage() // navigating to the publisher page
+      await publisherPage.getExistingTemplateName() // getting name of existing template
+      await publisherPage.clickOnTemplateInPublisherPage() // clicking on existing template
+      await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
+      await publisherPage.clickTheDotOptionsInEditTemplatePage(
+        'Template Settings'
+      ) // clicking Template Settings option from the three dot options
+      await publisherPage.clickTabInTemplateSettingPopup('Categories') // clicking on the Categories tab in the Template setting popup
+      await publisherPage.setFilterBelowCategoriesTabInTemplateSettingPopup(
+        'Topics'
+      ) // added filter on the Topics filter field for the template
+      await publisherPage.setFilterBelowCategoriesTabInTemplateSettingPopup(
+        'Felt Needs'
+      ) // added filter on the 'Felt Needs' filter field for the template
+      await publisherPage.setFilterBelowCategoriesTabInTemplateSettingPopup(
+        'Holidays'
+      ) // added filter on the Holidays filter field for the template
+      await publisherPage.setFilterBelowCategoriesTabInTemplateSettingPopup(
+        'Audience'
+      ) // added filter on the Audience filter field for the template
+      await publisherPage.setFilterBelowCategoriesTabInTemplateSettingPopup(
+        'Genre'
+      ) // added filter on the Genre filter field for the template
+      await publisherPage.setFilterBelowCategoriesTabInTemplateSettingPopup(
+        'Collections'
+      ) // added filter on the Collections filter field for the template
+      await publisherPage.clickSaveBtn() // clicking on save button
+      await publisherPage.verifyTemplateSettingSaveToastMessage() // verifying 'Template settings have been saved' toast message
+      await journeyPage.backIcon() // clicking on the back Icon
+      await templatesPage.navigateToTempalatePage() // navigating to templates page
+      await publisherPage.verifyCreatedTemplatInEnteredFilterOption('Topics') // Verifying that the template with the added Topic filter is fetched by filtering the Topics.
+      await publisherPage.verifyCreatedTemplatInEnteredFilterOption(
+        'Felt Needs'
+      ) // Verifying that the template with the added 'Felt Needs' filter is fetched by filtering the 'Felt Needs'.
+      await publisherPage.verifyCreatedTemplatInEnteredFilterOption('Holidays') // Verifying that the template with the added Holidays filter is fetched by filtering the Holidays.
+      await publisherPage.verifyCreatedTemplatInEnteredFilterOption(
+        'Collections'
+      ) // Verifying that the template with the added Collections filter is fetched by filtering the Collections.
+      await publisherPage.verifyCreatedTemplatInEnteredFilter('Genre') // Verifying that the template with the added Genre filter is fetched by filtering the Genre.
+      await publisherPage.verifyCreatedTemplatInEnteredFilter('Audience') // Verifying that the template with the added Audience filter is fetched by filtering the Audience.
+    }
+  )
 
   // Publisher-> Select existing template -> Three dots on top right -> Template Settings -> About
   test.fixme(
@@ -281,24 +286,25 @@ test.describe('Verify template page functionality', () => {
   })
 
   // Filter: Topics, holidays, felt needs, collections
-  test.fixme('Filter: Topics, holidays, felt needs, collections', async ({
-    page
-  }) => {
-    const templatesPage = new TemplatePage(page)
-    await templatesPage.navigateToTempalatePage() // navigating to templates page
-    await templatesPage.verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(
-      'Topics'
-    ) // Verifying that Topics templates are fetched by filtering the Topics.
-    await templatesPage.verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(
-      'Holidays'
-    ) // Verifying that holiday templates are fetched by filtering the holidays.
-    await templatesPage.verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(
-      'Felt Needs'
-    ) // Verifying that 'Felt Needs' templates are fetched by filtering the 'Felt Needs'.
-    await templatesPage.verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(
-      'Collections'
-    ) // Verifying that Collections templates are fetched by filtering the Collections.
-  })
+  test.fixme(
+    'Filter: Topics, holidays, felt needs, collections',
+    async ({ page }) => {
+      const templatesPage = new TemplatePage(page)
+      await templatesPage.navigateToTempalatePage() // navigating to templates page
+      await templatesPage.verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(
+        'Topics'
+      ) // Verifying that Topics templates are fetched by filtering the Topics.
+      await templatesPage.verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(
+        'Holidays'
+      ) // Verifying that holiday templates are fetched by filtering the holidays.
+      await templatesPage.verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(
+        'Felt Needs'
+      ) // Verifying that 'Felt Needs' templates are fetched by filtering the 'Felt Needs'.
+      await templatesPage.verifyFilterOfTopicsAndHolidaysAndFeltNeedsAndCollections(
+        'Collections'
+      ) // Verifying that Collections templates are fetched by filtering the Collections.
+    }
+  )
 
   // Filter: Audience
   test.fixme('Filter: Audience', async ({ page }) => {
