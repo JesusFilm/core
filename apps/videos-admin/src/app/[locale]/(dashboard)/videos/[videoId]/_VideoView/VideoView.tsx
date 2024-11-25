@@ -18,7 +18,6 @@ import { useEdit } from '../_EditProvider'
 import { Children } from './Children'
 import { Editions } from './Editions'
 import { Metadata } from './Metadata'
-import { Subtitles } from './Subtitles'
 import { TabContainer } from './Tabs/TabContainer'
 import { TabLabel } from './Tabs/TabLabel'
 import { Variants } from './Variants'
@@ -40,7 +39,7 @@ export function VideoView(): ReactElement {
     dispatch({ type: 'SetEditStateAction', isEdit: !isEdit })
   }
 
-  function handleTabChange(e: SyntheticEvent, newValue: number): void {
+  function handleTabChange(_e: SyntheticEvent, newValue: number): void {
     setTabValue(newValue)
   }
 
@@ -110,7 +109,6 @@ export function VideoView(): ReactElement {
               </TabContainer>
               <TabContainer value={tabValue} index={3}>
                 <Editions editions={[]} />
-                <Subtitles subtitles={video?.subtitles} videoId={video?.id} />
               </TabContainer>
             </>
           )}
