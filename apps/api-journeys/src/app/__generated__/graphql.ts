@@ -1309,19 +1309,6 @@ export class ImageBlock implements Block {
     focalLeft?: Nullable<number>;
 }
 
-export class QrCode {
-    __typename?: 'QrCode';
-    qrCodeImageBlock?: Nullable<ImageBlock>;
-    id: string;
-    teamId: string;
-    journeyId: string;
-    toBlockId?: Nullable<string>;
-    toJourneyId: string;
-    shortLink: ShortLink;
-    color?: Nullable<string>;
-    backgroundColor?: Nullable<string>;
-}
-
 export class RadioOptionBlock implements Block {
     __typename?: 'RadioOptionBlock';
     id: string;
@@ -1785,6 +1772,18 @@ export class PlausibleStatsResponse {
     events?: Nullable<number>;
     conversionRate?: Nullable<number>;
     timeOnPage?: Nullable<number>;
+}
+
+export class QrCode {
+    __typename?: 'QrCode';
+    id: string;
+    teamId: string;
+    journeyId: string;
+    toBlockId?: Nullable<string>;
+    toJourneyId: string;
+    shortLink: ShortLink;
+    color?: Nullable<string>;
+    backgroundColor?: Nullable<string>;
 }
 
 export class Team {

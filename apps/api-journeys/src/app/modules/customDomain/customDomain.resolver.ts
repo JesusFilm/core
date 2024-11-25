@@ -158,7 +158,6 @@ export class CustomDomainResolver {
       throw new GraphQLError('user is not allowed to update custom domain', {
         extensions: { code: 'FORBIDDEN' }
       })
-
     return await this.prismaService.customDomain.update({
       where: { id },
       data: {

@@ -74,7 +74,3 @@ extend type Journey {
   creatorImageBlock: ImageBlock
   logoImageBlock: ImageBlock
 }
-
-extend type QrCode {
-  qrCodeImageBlock: ImageBlock
-}

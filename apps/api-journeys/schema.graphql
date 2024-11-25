@@ -802,32 +802,6 @@ input ImageBlockUpdateInput {
   focalLeft: Int
 }
 
-type QrCode
-  @key(fields: "id")
-{
-  qrCodeImageBlock: ImageBlock
-  id: ID!
-
-  """Team where the Qr Code belongs to"""
-  teamId: ID!
-
-  """Journey where the Qr Code was created from"""
-  journeyId: ID!
-
-  """Block where the Qr Code can point to"""
-  toBlockId: ID
-
-  """
-  Journey where the Qr Code points to, defaults to the journey the Qr Code was created from
-  """
-  toJourneyId: ID!
-
-  """ShortLink that handles the redirection"""
-  shortLink: ShortLink!
-  color: String
-  backgroundColor: String
-}
-
 type RadioOptionBlock implements Block {
   id: ID!
   journeyId: ID!
@@ -2666,6 +2640,31 @@ extend type ShortLink
   @key(fields: "id")
 {
   id: ID! @external
+}
+
+type QrCode
+  @key(fields: "id")
+{
+  id: ID!
+
+  """Team where the Qr Code belongs to"""
+  teamId: ID!
+
+  """Journey where the Qr Code was created from"""
+  journeyId: ID!
+
+  """Block where the Qr Code can point to"""
+  toBlockId: ID
+
+  """
+  Journey where the Qr Code points to, defaults to the journey the Qr Code was created from
+  """
+  toJourneyId: ID!
+
+  """ShortLink that handles the redirection"""
+  shortLink: ShortLink!
+  color: String
+  backgroundColor: String
 }
 
 input QrCodesFilter {
