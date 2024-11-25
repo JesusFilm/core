@@ -124,11 +124,9 @@ const DELETE_SHORT_LINK = graphql(`
 export class QrCodeResolver {
   constructor(private readonly prismaService: PrismaService) {}
   async getQrCode(@Args('id') id: string): Promise<QrCode> {
-    const qrCode = await this.prismaService.qrCode.findUnique({
+    return await this.prismaService.qrCode.findUniqueOrThrow({
       where: { id }
     })
-    if (qrCode == null) throw new Error('QrCode not found')
-    return qrCode
   }
   async handleShortLinkResponse(
     handleSuccess: () => Promise<QrCode>,
@@ -157,10 +155,9 @@ export class QrCodeResolver {
     @Args('toJourneyId') toJourneyId: string,
     @Args('toBlockId') toBlockId: string | undefined | null
   ): Promise<string> {
-    const journey = await this.prismaService.journey.findUnique({
+    const journey = await this.prismaService.journey.findUniqueOrThrow({
       where: { id: toJourneyId }
     })
-    if (journey == null) throw new Error('Journey not found')
     const customDomain = await this.prismaService.customDomain.findMany({
       where: { teamId }
     })[0]
@@ -188,11 +185,16 @@ export class QrCodeResolver {
     @Args('input') input: QrCodeCreateInput,
     @CaslAbility() ability: AppAbility
   ): Promise<QrCode> {
-    const id = uuidv4()
-    const to = this.getTo(id, input.teamId, input.journeyId, input.toBlockId)
     if (ability.cannot(Action.Manage, 'QrCode')) {
       throw new Error('User is not allowed to create the QrCode')
     }
+    const id = uuidv4()
+    const to = await this.getTo(
+      id,
+      input.teamId,
+      input.journeyId,
+      input.toBlockId
+    )
     try {
       return await this.prismaService.$transaction(async (tx) => {
         const {
@@ -234,7 +236,7 @@ export class QrCodeResolver {
     return await this.prismaService.$transaction(async (tx) => {
       let response = undefined
       if (input.toJourneyId != null || input.toBlockId != null) {
-        const to = this.getTo(
+        const to = await this.getTo(
           id,
           qrCode.teamId,
           input.toJourneyId ?? qrCode.toJourneyId,
