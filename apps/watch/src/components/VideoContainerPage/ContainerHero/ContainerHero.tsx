@@ -70,7 +70,8 @@ export function ContainerHero({
               variant="h1"
               color="secondary.contrastText"
               sx={{
-                zIndex: 2
+                zIndex: 2,
+                fontSize: { xs: 28, sm: 36, md: 48, xl: 64 }
               }}
             >
               {title[0].value}
@@ -87,7 +88,9 @@ export function ContainerHero({
               zIndex: 1
             }}
           >
-            <AudioLanguageButton componentVariant="button" />
+            <Box sx={{ mb: 1 }}>
+              <AudioLanguageButton componentVariant="button" />
+            </Box>
             <IconButton
               sx={{
                 display: { xs: 'flex', sm: 'none' },
@@ -96,7 +99,6 @@ export function ContainerHero({
               onClick={() => openDialog()}
             >
               <ShareOutlinedIcon
-                color="primary"
                 sx={{
                   zIndex: 2
                 }}
