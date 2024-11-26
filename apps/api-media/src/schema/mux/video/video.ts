@@ -73,7 +73,10 @@ builder.queryFields((t) => ({
           })
         }
       }
-      if (video.assetId != null && !video.readyToStream) {
+      if (
+        video.assetId != null &&
+        (!video.readyToStream || video.playbackId == null)
+      ) {
         const muxVideo = await getVideo(video.assetId)
         console.log('status', muxVideo.status)
 
@@ -85,7 +88,7 @@ builder.queryFields((t) => ({
             ...query,
             where: { id },
             data: {
-              readyToStream: true,
+              readyToStream: muxVideo.status === 'ready',
               playbackId: muxVideo.playback_ids?.[0].id,
               duration: Math.ceil(muxVideo.duration ?? 0)
             }
@@ -119,7 +122,10 @@ builder.queryFields((t) => ({
           })
         }
       }
-      if (video.assetId != null && !video.readyToStream) {
+      if (
+        video.assetId != null &&
+        (!video.readyToStream || video.playbackId == null)
+      ) {
         const muxVideo = await getVideo(video.assetId)
 
         if (
@@ -130,7 +136,7 @@ builder.queryFields((t) => ({
             ...query,
             where: { id },
             data: {
-              readyToStream: true,
+              readyToStream: muxVideo.status === 'ready',
               playbackId: muxVideo.playback_ids?.[0].id,
               duration: Math.ceil(muxVideo.duration ?? 0)
             }

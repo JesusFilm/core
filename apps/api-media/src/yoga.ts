@@ -61,7 +61,9 @@ export const yoga = createYoga<Record<string, unknown>, Context>({
           session: () => null,
           cache,
           ttlPerSchemaCoordinate: {
-            'Query.getMyCloudflareVideo': 0
+            'Query.getMyCloudflareVideo': 0,
+            'Query.getMyMuxVideo': 0,
+            'Query.getMuxVideo': 0
           },
           ttlPerType: {
             User: 1000
