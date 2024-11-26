@@ -1840,6 +1840,7 @@ export class VisitorEdge {
 export class PageInfo {
     __typename?: 'PageInfo';
     hasNextPage: boolean;
+    hasPreviousPage: boolean;
     startCursor?: Nullable<string>;
     endCursor?: Nullable<string>;
 }
