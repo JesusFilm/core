@@ -1,8 +1,4 @@
-import {
-  JourneyStatus,
-  UserJourneyRole,
-  UserTeamRole
-} from '.prisma/api-journeys-client'
+import { UserJourneyRole, UserTeamRole } from '.prisma/api-journeys-client'
 
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
@@ -18,4 +14,25 @@ export const qrCodeAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
       }
     }
   })
+
+  // read and update journey as a journey editor
+  can([Action.Read, Action.Update], 'QrCode', {
+    journey: {
+      userJourneys: {
+        some: {
+          userId: user.id,
+          role: UserJourneyRole.editor
+        }
+      }
+    }
+  })
+
+  if (user.roles?.includes('publisher') === true) {
+    // publisher can mange QrCodes for templates
+    can(Action.Manage, 'QrCode', {
+      journey: {
+        template: true
+      }
+    })
+  }
 }

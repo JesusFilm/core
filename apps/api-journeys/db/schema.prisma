@@ -410,6 +410,7 @@ model Journey {
   menuStepBlockId           String?                     @unique
   menuStepBlock             Block?                      @relation("MenuStepBlock", fields: [menuStepBlockId], references: [id], onDelete: SetNull)
   menuButtonIcon            JourneyMenuButtonIcon?
+  QrCode                    QrCode[]
 
   @@index(title)
 }
@@ -629,4 +630,5 @@ model QrCode {
   color           String? @default("#000000")
   backgroundColor String? @default("#FFFFFF")
   Team            Team    @relation(fields: [teamId], references: [id])
+  journey         Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 }
