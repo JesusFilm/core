@@ -68,9 +68,6 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     }),
     GraphQLModule.forRoot<ApolloFederationDriverConfig>({
       driver: ApolloFederationDriver,
-      // autoSchemaFile: {
-      //   federation: 2
-      // },
       typePaths:
         process.env.NODE_ENV !== 'production'
           ? [
