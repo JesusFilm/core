@@ -34,7 +34,6 @@ describe('VariantCard', () => {
     )
 
     fireEvent.click(screen.getByText('Munukutuba'))
-
     expect(screen.getByText('Variant')).toBeInTheDocument()
     expect(screen.getByText('Slug')).toBeInTheDocument()
   })
