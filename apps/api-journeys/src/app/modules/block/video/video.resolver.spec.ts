@@ -29,23 +29,23 @@ jest.mock('node-fetch', () => {
 })
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
-jest.mock('@mux/mux-node', () =>
-  jest.fn().mockImplementation(() => ({
-    video: {
-      assets: {
-        retrieve: jest.fn().mockResolvedValue({
-          id: 'videoId',
-          duration: 100,
-          static_renditions: [
-            {
-              url: 'https://mux.com/video.jpg'
-            }
-          ]
-        })
-      }
-    }
-  }))
-)
+// jest.mock('@mux/mux-node', () =>
+//   jest.fn().mockImplementation(() => ({
+//     video: {
+//       assets: {
+//         retrieve: jest.fn().mockResolvedValue({
+//           id: 'videoId',
+//           duration: 100,
+//           static_renditions: [
+//             {
+//               url: 'https://mux.com/video.jpg'
+//             }
+//           ]
+//         })
+//       }
+//     }
+//   }))
+// )
 
 describe('VideoBlockResolver', () => {
   let resolver: VideoBlockResolver,
@@ -111,8 +111,8 @@ describe('VideoBlockResolver', () => {
   }
 
   beforeAll(() => {
-    process.env.MUX_ACCESS_TOKEN_ID = 'accessTokenId'
-    process.env.MUX_SECRET_KEY = 'secretKey'
+    process.env.MUX_UGC_ACCESS_TOKEN_ID = 'accessTokenId'
+    process.env.MUX_UGC_SECRET_KEY = 'secretKey'
   })
 
   beforeEach(async () => {

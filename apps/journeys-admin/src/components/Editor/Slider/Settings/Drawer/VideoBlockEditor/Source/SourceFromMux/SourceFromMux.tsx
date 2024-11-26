@@ -15,7 +15,7 @@ interface SourceFromMuxProps {
   selectedBlock: TreeBlock<VideoBlock>
 }
 
-export function SourceFromCloudflare({
+export function SourceFromMux({
   selectedBlock
 }: SourceFromMuxProps): ReactElement {
   const IMG_HEIGHT = 56

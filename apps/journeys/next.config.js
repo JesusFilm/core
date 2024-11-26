@@ -28,7 +28,8 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'customer-209o3ptmsiaetvfx.cloudflarestream.com'
       },
-      { protocol: 'https', hostname: 'cloudflarestream.com' }
+      { protocol: 'https', hostname: 'cloudflarestream.com' },
+      { protocol: 'https', hostname: 'image.mux.com' }
     ]
   },
   productionBrowserSourceMaps: true,

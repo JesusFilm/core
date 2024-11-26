@@ -679,6 +679,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   keywords: [Keyword!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideo(id: ID!) : MuxVideo! @join__field(graph: API_MEDIA) 
+  getMuxVideo(id: ID!) : MuxVideo @join__field(graph: API_MEDIA) 
   adminVideo(id: ID!, idType: IdType = databaseId) : Video! @join__field(graph: API_MEDIA) 
   adminVideos(where: VideosFilter, offset: Int, limit: Int) : [Video!]! @join__field(graph: API_MEDIA) 
   adminVideosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
@@ -916,7 +917,7 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId")  @join_
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
 }
 
-type VideoBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(graph: API_MEDIA, key: "videoId source duration", extension: true)  @join__implements(graph: API_JOURNEYS, interface: "Block")  {
+type VideoBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(graph: API_MEDIA, key: "videoId source", extension: true)  @join__implements(graph: API_JOURNEYS, interface: "Block")  {
   id: ID! @join__field(graph: API_JOURNEYS) 
   journeyId: ID! @join__field(graph: API_JOURNEYS) 
   parentBlockId: ID @join__field(graph: API_JOURNEYS) 
@@ -984,7 +985,7 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(g
   For other sources this is automatically populated.
   duration in seconds.
   """
-  duration: Int
+  duration: Int @join__field(graph: API_JOURNEYS) 
   """
   action that should be performed when the video ends
   """
@@ -2135,6 +2136,7 @@ type LanguageWithSlug @join__type(graph: API_MEDIA)  {
 type MuxVideo @join__type(graph: API_MEDIA)  {
   id: ID!
   assetId: String
+  duration: Int
   uploadId: String
   playbackId: String
   uploadUrl: String

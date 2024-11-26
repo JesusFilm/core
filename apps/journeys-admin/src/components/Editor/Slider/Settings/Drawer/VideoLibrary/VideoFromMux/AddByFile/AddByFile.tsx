@@ -71,10 +71,11 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
       onCompleted: (data) => {
         if (
           data.getMyMuxVideo.playbackId != null &&
-          data.getMyMuxVideo.assetId != null
+          data.getMyMuxVideo.assetId != null &&
+          data.getMyMuxVideo.readyToStream
         ) {
           stopPolling()
-          onChange(data.getMyMuxVideo.assetId)
+          onChange(data.getMyMuxVideo.id)
           resetUploadStatus()
         }
       }

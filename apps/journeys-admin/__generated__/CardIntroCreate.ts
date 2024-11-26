@@ -224,6 +224,8 @@ export interface CardIntroCreate_video {
    * For other sources only videoId needs to be set.
    */
   videoId: string | null;
+  assetId: string | null;
+  playbackId: string | null;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.

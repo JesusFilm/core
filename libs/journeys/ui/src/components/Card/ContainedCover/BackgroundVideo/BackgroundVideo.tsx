@@ -28,6 +28,7 @@ export function BackgroundVideo({
   children,
   video,
   videoId,
+  playbackId,
   startAt,
   endAt,
   objectFit,
@@ -115,6 +116,8 @@ export function BackgroundVideo({
     }
   }
 
+  console.log('source', source)
+  console.log('playbackId', playbackId)
   return (
     <Box
       height="100%"
@@ -174,6 +177,12 @@ export function BackgroundVideo({
               startAt ?? 0
             }&end=${endAt ?? 0}`}
             type="video/youtube"
+          />
+        )}
+        {source === VideoBlockSource.mux && playbackId != null && (
+          <source
+            src={`https://stream.mux.com/${playbackId}.m3u8`}
+            type="application/x-mpegURL"
           />
         )}
       </StyledVideo>
