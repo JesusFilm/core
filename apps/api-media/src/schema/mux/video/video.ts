@@ -80,7 +80,6 @@ builder.queryFields((t) => ({
         (!video.readyToStream || video.playbackId == null)
       ) {
         const muxVideo = await getVideo(video.assetId)
-        console.log('status', muxVideo.status)
 
         if (
           muxVideo.status === 'ready' &&
