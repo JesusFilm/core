@@ -52,6 +52,7 @@ describe('VisitorService', () => {
       edges: [],
       pageInfo: {
         hasNextPage: false,
+        hasPreviousPage: false,
         startCursor: null,
         endCursor: null
       }
