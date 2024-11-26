@@ -1,10 +1,11 @@
 const { FlatCompat } = require('@eslint/eslintrc')
 const js = require('@eslint/js')
-const baseConfig = require('../../eslint.config.js')
-const globals = require('globals')
 const nextPlugin = require('@next/eslint-plugin-next')
 const reactPlugin = require('eslint-plugin-react')
 const reactHooksPlugin = require('eslint-plugin-react-hooks')
+const globals = require('globals')
+
+const baseConfig = require('../../eslint.config.js')
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
@@ -27,6 +28,8 @@ module.exports = [
       'react-hooks': reactHooksPlugin
     },
     rules: {
+      ...reactPlugin.configs['jsx-runtime'].rules,
+      ...reactHooksPlugin.configs.recommended.rules,
       ...nextPlugin.configs.recommended.rules,
       ...nextPlugin.configs['core-web-vitals'].rules
     }
@@ -39,7 +42,10 @@ module.exports = [
       '@next/next/no-html-link-for-pages': [
         'error',
         'apps/journeys-admin/pages/'
-      ]
+      ],
+      'no-void': ['error', { allowAsStatement: true }],
+      '@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/require-await': 'off'
     }
   },
   {

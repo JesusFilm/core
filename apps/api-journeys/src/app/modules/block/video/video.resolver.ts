@@ -5,6 +5,7 @@ import {
   gql
 } from '@apollo/client'
 import { subject } from '@casl/ability'
+import Mux from '@mux/mux-node'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
@@ -113,6 +114,19 @@ function parseISO8601Duration(duration: string): number {
     (((years * 365 + weeks * 7 + days) * 24 + hours) * 60 + minutes) * 60 +
     seconds
   )
+}
+
+function getClient(): Mux {
+  if (process.env.MUX_ACCESS_TOKEN_ID == null)
+    throw new Error('Missing MUX_ACCESS_TOKEN_ID')
+
+  if (process.env.MUX_SECRET_KEY == null)
+    throw new Error('Missing MUX_SECRET_KEY')
+
+  return new Mux({
+    tokenId: process.env.MUX_ACCESS_TOKEN_ID,
+    tokenSecret: process.env.MUX_SECRET_KEY
+  })
 }
 
 @Resolver('VideoBlock')
@@ -422,6 +436,7 @@ export class VideoBlockResolver {
         extensions: { code: 'NOT_FOUND' }
       })
     }
+
     if (data.getMuxVideo.playbackId == null) {
       throw new GraphQLError('playbackId cannot be found on Mux', {
         extensions: { code: 'NOT_FOUND' }

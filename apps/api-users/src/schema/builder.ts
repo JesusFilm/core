@@ -11,39 +11,35 @@ import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
 
 import { Prisma } from '.prisma/api-users-client'
 import { User } from '@core/yoga/firebaseClient'
+import { InteropContext } from '@core/yoga/interop'
 
 import type PrismaTypes from '../__generated__/pothos-types'
 import { prisma } from '../lib/prisma'
 
 const PrismaPlugin = pluginName
 
-export interface Context {
-  currentUser: User | null
-  interopToken?: string | null
-  ipAddress?: string | null
+interface BaseContext {
+  type: string
 }
+
+interface PublicContext extends BaseContext {
+  type: 'public'
+}
+
+interface AuthenticatedContext extends BaseContext {
+  type: 'authenticated'
+  currentUser: User
+}
+
+interface LocalInteropContext extends BaseContext, InteropContext {
+  type: 'interop'
+}
+
+export type Context = LocalInteropContext | PublicContext | AuthenticatedContext
 
 const createSpan = createOpenTelemetryWrapper(tracer, {
   includeSource: true
 })
-
-export function validateIpV4(s?: string | null): boolean {
-  if (s == null) return true // localhost
-
-  const match = s.match(/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/g)
-  const ip = match?.[0] ?? ''
-  const validIps = process.env.NAT_ADDRESSES?.split(',') ?? []
-  return validIps.includes(ip)
-}
-
-export function isValidInterOp(
-  token?: string | null,
-  address?: string | null
-): boolean {
-  if (token == null) return false
-  const validIp = validateIpV4(address)
-  return token === process.env.INTEROP_TOKEN && validIp
-}
 
 export const builder = new SchemaBuilder<{
   Context: Context
@@ -54,12 +50,12 @@ export const builder = new SchemaBuilder<{
   AuthScopes: {
     isAuthenticated: boolean
     isSuperAdmin: boolean
-    isValidInterOp: boolean
+    isValidInterop: boolean
   }
   AuthContexts: {
-    isAuthenticated: Context & { currentUser: User }
-    isSuperAdmin: Context & { currentUser: User }
-    isValidInterOp: Context & { interopToken: string; ipAddress: string }
+    isAuthenticated: Extract<Context, { type: 'authenticated' }>
+    isSuperAdmin: Extract<Context, { type: 'authenticated' }>
+    isValidInterop: Extract<Context, { type: 'interop' }>
   }
 }>({
   plugins: [
@@ -71,18 +67,33 @@ export const builder = new SchemaBuilder<{
   ],
   scopeAuth: {
     authorizeOnSubscribe: true,
-    authScopes: async (context: Context) => ({
-      isAuthenticated: context.currentUser != null,
-      isSuperAdmin: async () => {
-        if (context.currentUser == null) return false
-
-        const user = await prisma.user.findUnique({
-          where: { userId: context.currentUser.id }
-        })
-        return user?.superAdmin ?? false
-      },
-      isValidInterOp: isValidInterOp(context.interopToken, context.ipAddress)
-    })
+    authScopes: async (context: Context) => {
+      switch (context.type) {
+        case 'authenticated':
+          return {
+            isAuthenticated: true,
+            isSuperAdmin:
+              (
+                await prisma.user.findUnique({
+                  where: { userId: context.currentUser.id }
+                })
+              )?.superAdmin ?? false,
+            isValidInterop: false
+          }
+        case 'interop':
+          return {
+            isAuthenticated: false,
+            isSuperAdmin: false,
+            isValidInterop: true
+          }
+        default:
+          return {
+            isAuthenticated: false,
+            isSuperAdmin: false,
+            isValidInterop: false
+          }
+      }
+    }
   },
   tracing: {
     default: (config) => isRootField(config),

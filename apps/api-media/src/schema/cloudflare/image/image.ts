@@ -1,3 +1,5 @@
+import { Prisma } from '.prisma/api-media-client'
+
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 
@@ -178,12 +180,17 @@ builder.mutationFields((t) => ({
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
-    resolve: async (_root, { id }, { user }) => {
-      await prisma.cloudflareImage.findUniqueOrThrow({
-        where: { id, userId: user.id }
+    resolve: async (_root, { id }, { user, currentRoles }) => {
+      const where: Prisma.CloudflareImageWhereUniqueInput = { id }
+      if (!currentRoles.includes('publisher')) {
+        where.userId = user.id
+      }
+      const image = await prisma.cloudflareImage.findUniqueOrThrow({
+        where
       })
 
-      await deleteImage(id)
+      // only delete cloudflare asset if original user
+      if (image.userId === user.id) await deleteImage(id)
 
       await prisma.cloudflareImage.delete({ where: { id } })
       return true

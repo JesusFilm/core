@@ -29,24 +29,6 @@ jest.mock('node-fetch', () => {
 })
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
-// jest.mock('@mux/mux-node', () =>
-//   jest.fn().mockImplementation(() => ({
-//     video: {
-//       assets: {
-//         retrieve: jest.fn().mockResolvedValue({
-//           id: 'videoId',
-//           duration: 100,
-//           static_renditions: [
-//             {
-//               url: 'https://mux.com/video.jpg'
-//             }
-//           ]
-//         })
-//       }
-//     }
-//   }))
-// )
-
 describe('VideoBlockResolver', () => {
   let resolver: VideoBlockResolver,
     service: DeepMockProxy<BlockService>,
