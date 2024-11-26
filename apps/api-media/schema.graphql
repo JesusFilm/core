@@ -299,6 +299,10 @@ type MutationShortLinkUpdateSuccess {
 
 type MuxVideo {
   id: ID!
+  assetId: String
+  duration: Int
+  uploadId: String
+  playbackId: String
   uploadUrl: String
   userId: ID!
   createdAt: Date!
@@ -360,6 +364,7 @@ type Query {
   keywords: [Keyword!]!
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!): MuxVideo!
+  getMuxVideo(id: ID!): MuxVideo
 
   """List of short link domains that can be used for short links"""
   shortLinkDomains(
@@ -710,6 +715,23 @@ type Video
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
   variant(languageId: ID): VideoVariant
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
+}
+
+type VideoBlock
+  @key(fields: "videoId source")
+  @extends
+{
+  source: VideoBlockSource! @external
+  videoId: ID! @external
+  playbackId: ID
+  assetId: ID
+}
+
+enum VideoBlockSource {
+  internal
+  youTube
+  cloudflare
+  mux
 }
 
 input VideoCreateInput {
