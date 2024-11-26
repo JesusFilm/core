@@ -13,13 +13,9 @@ type QrCode @key(fields: "id") {
   """
   journeyId: ID!
   """
-  Block where the Qr Code can point to
+  The destination the QR code will direct to
   """
-  toBlockId: ID
-  """
-  Journey where the Qr Code points to, defaults to the journey the Qr Code was created from
-  """
-  toJourneyId: ID!
+  destination: String!
   """
   ShortLink that handles the redirection
   """
@@ -41,13 +37,10 @@ extend type Query {
 input QrCodeCreateInput {
   teamId: ID!
   journeyId: ID!
-  toJourneyId: ID
-  toBlockId: ID
 }
 
 input QrCodeUpdateInput {
-  toBlockId: ID
-  toJourneyId: ID
+  newDestination: String
   color: String
   backgroundColor: String
 }
@@ -58,10 +51,10 @@ extend type Mutation {
   qrCodeDelete(id: ID!): QrCode!
 }
 
-# Todo
-# Handle journey duplicate (qr code/image/short link)
-# Handle dynamic hostname changes
-# Handle dynamic slug changes
+# TODO
+# Permissions
+# Add for shared with me
+# Add for publishers in template journeys
 
 # Behavior
 # Team member and manager can manage (not shared with me journeys)

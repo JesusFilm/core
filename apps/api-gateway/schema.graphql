@@ -1888,13 +1888,9 @@ type QrCode @join__type(graph: API_JOURNEYS, key: "id")  {
   """
   journeyId: ID!
   """
-  Block where the Qr Code can point to
+  The destination the QR code will direct to
   """
-  toBlockId: ID
-  """
-  Journey where the Qr Code points to, defaults to the journey the Qr Code was created from
-  """
-  toJourneyId: ID!
+  destination: String!
   """
   ShortLink that handles the redirection
   """
@@ -3996,13 +3992,10 @@ input QrCodesFilter @join__type(graph: API_JOURNEYS)  {
 input QrCodeCreateInput @join__type(graph: API_JOURNEYS)  {
   teamId: ID!
   journeyId: ID!
-  toJourneyId: ID
-  toBlockId: ID
 }
 
 input QrCodeUpdateInput @join__type(graph: API_JOURNEYS)  {
-  toBlockId: ID
-  toJourneyId: ID
+  newDestination: String
   color: String
   backgroundColor: String
 }

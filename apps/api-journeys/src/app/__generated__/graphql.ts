@@ -813,13 +813,10 @@ export class QrCodesFilter {
 export class QrCodeCreateInput {
     teamId: string;
     journeyId: string;
-    toJourneyId?: Nullable<string>;
-    toBlockId?: Nullable<string>;
 }
 
 export class QrCodeUpdateInput {
-    toBlockId?: Nullable<string>;
-    toJourneyId?: Nullable<string>;
+    newDestination?: Nullable<string>;
     color?: Nullable<string>;
     backgroundColor?: Nullable<string>;
 }
@@ -1779,8 +1776,7 @@ export class QrCode {
     id: string;
     teamId: string;
     journeyId: string;
-    toBlockId?: Nullable<string>;
-    toJourneyId: string;
+    destination: string;
     shortLink: ShortLink;
     color?: Nullable<string>;
     backgroundColor?: Nullable<string>;

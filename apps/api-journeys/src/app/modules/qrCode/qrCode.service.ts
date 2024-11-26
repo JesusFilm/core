@@ -111,7 +111,7 @@ export class QrCodeService {
     qrCodeId: string,
     teamId: string,
     toJourneyId: string,
-    toBlockId: string | undefined | null
+    toBlockId?: string | undefined | null
   ): Promise<string> {
     const journey = await this.prismaService.journey.findUniqueOrThrow({
       where: { id: toJourneyId }
@@ -120,9 +120,10 @@ export class QrCodeService {
       where: { teamId }
     })[0]
 
-    const deployment = 'http://localhost:4100' // TODO - replace with ENV
     const base =
-      customDomain?.name != null ? `https://${customDomain.name}` : deployment
+      customDomain?.name != null
+        ? `https://${customDomain.name}`
+        : process.env.JOURNEYS_URL
     const path = `${journey.slug}${toBlockId != null ? `/${toBlockId}` : ''}`
     const utm = `?utm_source=ns-qr-code&utm_campaign=${qrCodeId}`
 
@@ -224,7 +225,6 @@ export class QrCodeService {
 
     try {
       qrCodes.forEach(async (qrCode) => {
-        // TODO: call getTo will cause journey and team to be re fetched for each qr code
         const to = await this.getTo(
           qrCode.id,
           qrCode.teamId,

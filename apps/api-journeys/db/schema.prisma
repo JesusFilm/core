@@ -621,6 +621,7 @@ model QrCode {
   id              String  @id @default(uuid())
   teamId          String
   journeyId       String
+  destination     String?
   toJourneyId     String
   toBlockId       String?
   shortLinkId     String

@@ -2653,13 +2653,8 @@ type QrCode
   """Journey where the Qr Code was created from"""
   journeyId: ID!
 
-  """Block where the Qr Code can point to"""
-  toBlockId: ID
-
-  """
-  Journey where the Qr Code points to, defaults to the journey the Qr Code was created from
-  """
-  toJourneyId: ID!
+  """The destination the QR code will direct to"""
+  destination: String!
 
   """ShortLink that handles the redirection"""
   shortLink: ShortLink!
@@ -2675,13 +2670,10 @@ input QrCodesFilter {
 input QrCodeCreateInput {
   teamId: ID!
   journeyId: ID!
-  toJourneyId: ID
-  toBlockId: ID
 }
 
 input QrCodeUpdateInput {
-  toBlockId: ID
-  toJourneyId: ID
+  newDestination: String
   color: String
   backgroundColor: String
 }

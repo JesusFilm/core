@@ -3,6 +3,7 @@ CREATE TABLE "QrCode" (
     "id" TEXT NOT NULL,
     "teamId" TEXT NOT NULL,
     "journeyId" TEXT NOT NULL,
+    "destination" TEXT,
     "toJourneyId" TEXT NOT NULL,
     "toBlockId" TEXT,
     "shortLinkId" TEXT NOT NULL,
