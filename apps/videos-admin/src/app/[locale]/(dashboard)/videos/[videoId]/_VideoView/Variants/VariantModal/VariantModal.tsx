@@ -6,12 +6,17 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslations } from 'next-intl'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
+import videojs from 'video.js'
+import Player from 'video.js/dist/types/player'
 
+import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
 import { Downloads } from '../Downloads'
+
+import 'video.js/dist/video-js.css'
 
 interface VariantModalProps {
   variant?: GetAdminVideoVariant
@@ -25,10 +30,38 @@ export function VariantModal({
   onClose
 }: VariantModalProps): ReactElement | null {
   const t = useTranslations()
-
-  if (variant == null) return null
-
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+
+  // if (variant == null) return null
+
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const playerRef = useRef<Player>()
+
+  const videoSrc = variant?.downloads.find(
+    (download) => download.quality === 'low'
+  )?.url
+
+  console.log('videoSrc', videoSrc)
+
+  useEffect(() => {
+    console.log('called')
+    if (videoRef.current != null) {
+      console.log('videoRef', videoRef)
+      console.log('playerRef', playerRef)
+
+      playerRef.current = videojs(videoRef.current, {
+        ...defaultVideoJsOptions,
+        fluid: true,
+        controls: true
+        // liveui: true
+      })
+      console.log(videoSrc)
+      playerRef.current.src({
+        src: videoSrc,
+        type: 'video/mp4'
+      })
+    }
+  }, [variant, open])
 
   return (
     <Dialog
@@ -40,16 +73,22 @@ export function VariantModal({
       divider
     >
       <Stack gap={4}>
-        <Typography variant="h2">{variant.language.name[0].value}</Typography>
+        <Typography variant="h2">{variant?.language.name[0].value}</Typography>
         <FormControl>
           <Stack direction="row">
             <Stack direction="column">
               <FormLabel>{t('Slug')}</FormLabel>
-              <TextField disabled defaultValue={variant.slug} />
+              <TextField disabled defaultValue={variant?.slug} />
             </Stack>
           </Stack>
         </FormControl>
-        <Downloads downloads={variant.downloads} />
+        <video ref={videoRef} className="video-js vjs-big-play-centered">
+          <source src={videoSrc} type="video/mp4" />
+        </video>
+        <video controls>
+          <source src={videoSrc} type="video/mp4" />
+        </video>
+        <Downloads downloads={variant?.downloads} />
       </Stack>
     </Dialog>
   )
