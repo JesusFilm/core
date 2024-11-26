@@ -35,7 +35,7 @@ describe('ContainerHero', () => {
       </VideoProvider>
     )
 
-    expect(screen.getByText('Collection')).toBeInTheDocument()
+    expect(screen.getByText('Collection \u2022 3 items')).toBeInTheDocument()
   })
 
   it('should render hero for a series', () => {
@@ -45,7 +45,7 @@ describe('ContainerHero', () => {
       </VideoProvider>
     )
 
-    expect(screen.getByText('Series')).toBeInTheDocument()
+    expect(screen.getByText('Series \u2022 3 episodes')).toBeInTheDocument()
   })
 
   it('should call openDialog on click', () => {
@@ -55,7 +55,7 @@ describe('ContainerHero', () => {
         <ContainerHero openDialog={openDialog} />
       </VideoProvider>
     )
-    fireEvent.click(screen.getByRole('button'))
+    fireEvent.click(screen.getByRole('button', { name: 'share' }))
     expect(openDialog).toHaveBeenCalled()
   })
 
@@ -69,17 +69,5 @@ describe('ContainerHero', () => {
     )
 
     expect(screen.getByTestId('AudioLanguageButton')).toBeInTheDocument()
-  })
-
-  it('should render count of total children', () => {
-    const openDialog = jest.fn()
-
-    render(
-      <VideoProvider value={{ content: defaultVideo }}>
-        <ContainerHero openDialog={openDialog} />
-      </VideoProvider>
-    )
-
-    expect(screen.getByText('Collection \u2022 3 items')).toBeInTheDocument()
   })
 })

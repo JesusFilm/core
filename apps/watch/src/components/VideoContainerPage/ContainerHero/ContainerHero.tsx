@@ -97,6 +97,7 @@ export function ContainerHero({
                 ml: 'auto'
               }}
               onClick={() => openDialog()}
+              aria-label="share"
             >
               <ShareOutlinedIcon
                 sx={{
