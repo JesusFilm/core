@@ -25,7 +25,7 @@ const GET_VIDEO_VARIANT = graphql(`
           language {
             id
             bcp47
-            name(languageId: $languageId) {
+            name {
               value
             }
           }
@@ -40,6 +40,63 @@ const GET_VIDEO_VARIANT = graphql(`
           url
         }
       }
+      children {
+        id
+        label
+        primaryLanguageId
+        variant {
+          hls
+          duration
+          downloadable
+          downloads {
+            height
+            width
+            quality
+            size
+          }
+          subtitle {
+            language {
+              id
+              bcp47
+              name {
+                value
+              }
+            }
+            vttSrc
+            srtSrc
+          }
+        }
+        images {
+          thumbnail
+          videoStill
+          mobileCinematicHigh
+          mobileCinematicLow
+          mobileCinematicVeryLow
+        }
+        title(languageId: $languageId) {
+          value
+        }
+        snippet(languageId: $languageId) {
+          value
+        }
+        description(languageId: $languageId) {
+          value
+        }
+        studyQuestions(languageId: $languageId) {
+          value
+        }
+        bibleCitations {
+          osisId
+          chapterStart
+          verseStart
+          chapterEnd
+          verseEnd
+        }
+        childrenCount
+        variantLanguages {
+          id
+        }
+      }
     }
   }
 `)
@@ -50,6 +107,7 @@ export async function GET(
 ): Promise<Response> {
   const { mediaComponentId, languageId } = params
   const query = req.nextUrl.searchParams
+  const expand = query.get('expand') ?? ''
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_VIDEO_VARIANT>
@@ -170,13 +228,11 @@ export async function GET(
     downloadUrls,
     streamingUrls,
     shareUrl: video.variant?.share ?? '',
-    // socialMediaUrls never implemented in arclight
     socialMediaUrls: {},
     ...(platform === 'web' && {
       webEmbedPlayer,
       webEmbedSharePlayer
     }),
-    // openGraphVideoPlayer never implemented in arclight in languages/id
     openGraphVideoPlayer: 'https://jesusfilm.org/',
     _links: {
       self: {
@@ -188,7 +244,81 @@ export async function GET(
       mediaLanguage: {
         href: `https://api.arclight.com/v2/media-languages/${languageId}?apiKey=${apiKey}`
       }
-    }
+    },
+    ...(expand.includes('contains') &&
+      video.children && {
+        _embedded: {
+          contains: video.children.map((child) => ({
+            mediaComponentId: child.id,
+            languageId: Number(languageId),
+            refId: `${child.id}_${languageId}-${child.label}`,
+            apiSessionId,
+            lengthInMilliseconds: child.variant?.duration ?? 0,
+            subtitleUrls: {
+              vtt:
+                child.variant?.subtitle?.map((subtitle) => ({
+                  languageId: Number(subtitle.language?.id),
+                  languageName: subtitle.language?.name[0].value,
+                  languageTag: subtitle.language?.bcp47,
+                  url: subtitle.vttSrc
+                })) ?? []
+            },
+            downloadUrls: {
+              low: child.variant?.downloads?.find(
+                (d) => d.quality === 'low'
+              ) && {
+                url: `https://arc.gt/${Math.random().toString(36).substring(2, 7)}?apiSessionId=${apiSessionId}`,
+                height:
+                  child.variant.downloads.find((d) => d.quality === 'low')
+                    ?.height ?? 240,
+                width:
+                  child.variant.downloads.find((d) => d.quality === 'low')
+                    ?.width ?? 426,
+                sizeInBytes:
+                  child.variant.downloads.find((d) => d.quality === 'low')
+                    ?.size ?? 0
+              },
+              high: child.variant?.downloads?.find(
+                (d) => d.quality === 'high'
+              ) && {
+                url: `https://arc.gt/${Math.random().toString(36).substring(2, 7)}?apiSessionId=${apiSessionId}`,
+                height:
+                  child.variant.downloads.find((d) => d.quality === 'high')
+                    ?.height ?? 720,
+                width:
+                  child.variant.downloads.find((d) => d.quality === 'high')
+                    ?.width ?? 1280,
+                sizeInBytes:
+                  child.variant.downloads.find((d) => d.quality === 'high')
+                    ?.size ?? 0
+              }
+            },
+            streamingUrls: {
+              m3u8: [
+                {
+                  videoBitrate: 0,
+                  videoContainer: 'M2TS',
+                  url: child.variant?.hls ?? ''
+                }
+              ],
+              http: []
+            },
+            shareUrl: `https://arc.gt/${Math.random().toString(36).substring(2, 7)}?apiSessionId=${apiSessionId}`,
+            socialMediaUrls: {},
+            _links: {
+              self: {
+                href: `http://api.arclight.org/v2/media-components/${child.id}/languages/${languageId}?apiKey=${apiKey}`
+              },
+              mediaComponent: {
+                href: `http://api.arclight.org/v2/media-components/${child.id}?apiKey=${apiKey}`
+              },
+              mediaLanguage: {
+                href: `http://api.arclight.org/v2/media-languages/${languageId}?apiKey=${apiKey}`
+              }
+            }
+          }))
+        }
+      })
   }
 
   return new Response(JSON.stringify(response), { status: 200 })
