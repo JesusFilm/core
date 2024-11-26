@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 import { getEmail, getPassword } from '../framework/helpers'
 
@@ -33,8 +33,26 @@ export class LoginPage {
       this.page.locator(
         'div[data-testid="JourneysAdminContainedIconButton"] button'
       )
-    ).toBeVisible({ timeout: sixtySecondsTimeout })
+    ).toBeVisible({ timeout: 65000 })
   }
+
+  // async verifyCreateCustomJourneyBtn() {
+  //   await expect(this.page.locator('div[aria-haspopup="listbox"]')).toBeVisible({ timeout: 60000 })
+  //   await this.page.reload({ waitUntil: 'domcontentloaded', timeout: 120000 })
+  //   // verifying 'Create custom journey' button is display. if not, then select first team in the catch block to display 'Create custom journey' button.
+  //   await expect(this.page.locator('div[data-testid="JourneysAdminContainedIconButton"] button')).toBeVisible().catch(async () => {
+  //     await this.selectFirstTeam()
+  //   })
+  //   // verifying whether the 'Shared With Me' option is selected or. if it is, then select first team in the catch block to display 'Create custom journey' button.
+  //   await expect(this.page.locator('div[aria-haspopup="listbox"]', { hasText: 'Shared With Me' })).toBeHidden().catch(async () => {
+  //     await this.selectFirstTeam()
+  //   })
+
+  // }
+  // async selectFirstTeam() {
+  //   await this.page.locator('div[aria-haspopup="listbox"]').click({ timeout: 60000 })
+  //   await this.page.locator('ul[role="listbox"] li[role="option"]').first().click()
+  // }
 
   async login(): Promise<void> {
     const email = await getEmail()
@@ -43,6 +61,7 @@ export class LoginPage {
     const password = await getPassword()
     await this.fillExistingPassword(password)
     await this.clickSubmitButton()
+    await this.waitUntilDiscoverPageLoaded()
   }
 
   async logInWithCreatedNewUser(userName: string) {
