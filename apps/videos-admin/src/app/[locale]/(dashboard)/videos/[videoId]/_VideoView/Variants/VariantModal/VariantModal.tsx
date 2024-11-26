@@ -1,17 +1,17 @@
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import Stack from '@mui/material/Stack'
+import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
-import { Theme } from '@mui/material/styles'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
 import { Downloads } from '../Downloads'
-import useMediaQuery from '@mui/material/useMediaQuery'
 
 interface VariantModalProps {
   variant?: GetAdminVideoVariant

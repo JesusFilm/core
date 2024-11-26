@@ -7,6 +7,7 @@ import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAd
 import { EditProvider } from '../../_EditProvider'
 
 import { Variants } from './Variants'
+
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => false
