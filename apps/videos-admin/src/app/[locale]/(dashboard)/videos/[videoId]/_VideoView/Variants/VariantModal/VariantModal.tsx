@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import Stack from '@mui/material/Stack'
@@ -6,7 +7,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslations } from 'next-intl'
-import { ReactElement, useEffect, useRef } from 'react'
+import { ReactElement, useCallback, useRef } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
@@ -19,9 +20,9 @@ import { Downloads } from '../Downloads'
 import 'video.js/dist/video-js.css'
 
 interface VariantModalProps {
-  variant?: GetAdminVideoVariant
-  onClose: () => void
-  open: boolean
+  variant: GetAdminVideoVariant
+  onClose?: () => void
+  open?: boolean
 }
 
 export function VariantModal({
@@ -31,37 +32,21 @@ export function VariantModal({
 }: VariantModalProps): ReactElement | null {
   const t = useTranslations()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-
-  // if (variant == null) return null
-
-  const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player>()
+
+  const videoRef = useCallback((node: HTMLVideoElement | null) => {
+    if (node == null) return
+    playerRef.current = videojs(node, {
+      ...defaultVideoJsOptions,
+      fluid: true,
+      controls: true,
+      liveui: true
+    })
+  }, [])
 
   const videoSrc = variant?.downloads.find(
     (download) => download.quality === 'low'
   )?.url
-
-  console.log('videoSrc', videoSrc)
-
-  useEffect(() => {
-    console.log('called')
-    if (videoRef.current != null) {
-      console.log('videoRef', videoRef)
-      console.log('playerRef', playerRef)
-
-      playerRef.current = videojs(videoRef.current, {
-        ...defaultVideoJsOptions,
-        fluid: true,
-        controls: true
-        // liveui: true
-      })
-      console.log(videoSrc)
-      playerRef.current.src({
-        src: videoSrc,
-        type: 'video/mp4'
-      })
-    }
-  }, [variant, open])
 
   return (
     <Dialog
@@ -73,7 +58,7 @@ export function VariantModal({
       divider
     >
       <Stack gap={4}>
-        <Typography variant="h2">{variant?.language.name[0].value}</Typography>
+        <Typography variant="h2">{variant.language.name[0].value}</Typography>
         <FormControl>
           <Stack direction="row">
             <Stack direction="column">
@@ -82,13 +67,23 @@ export function VariantModal({
             </Stack>
           </Stack>
         </FormControl>
-        <video ref={videoRef} className="video-js vjs-big-play-centered">
-          <source src={videoSrc} type="video/mp4" />
-        </video>
-        <video controls>
-          <source src={videoSrc} type="video/mp4" />
-        </video>
-        <Downloads downloads={variant?.downloads} />
+        <Box
+          sx={{
+            borderRadius: 3,
+            position: 'relative',
+            overflow: 'hidden'
+          }}
+        >
+          <video
+            ref={videoRef}
+            className="video-js vjs-big-play-centered"
+            playsInline
+          >
+            <source src={videoSrc} type="video/mp4" />
+          </video>
+        </Box>
+
+        <Downloads downloads={variant.downloads} />
       </Stack>
     </Dialog>
   )
