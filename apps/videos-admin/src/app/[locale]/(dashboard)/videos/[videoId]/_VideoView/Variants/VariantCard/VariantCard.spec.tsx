@@ -6,6 +6,11 @@ import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/us
 
 import { VariantCard } from './VariantCard'
 
+jest.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: () => true
+}))
+
 const variant: GetAdminVideoVariant =
   useAdminVideoMock?.['result']?.['data']['adminVideo']['variants'][0]
 
@@ -21,15 +26,16 @@ describe('VariantCard', () => {
     expect(screen.getByText('jesus/munukutuba')).toBeInTheDocument()
   })
 
-  it('should handle onClick', () => {
-    const mockOnClick = jest.fn()
-
+  it('should open variant dialog on click', () => {
     render(
       <NextIntlClientProvider locale="en">
-        <VariantCard variant={variant} onClick={mockOnClick} />
+        <VariantCard variant={variant} />
       </NextIntlClientProvider>
     )
-    fireEvent.click(screen.getByRole('button'))
-    expect(mockOnClick).toHaveBeenCalled()
+
+    fireEvent.click(screen.getByText('Munukutuba'))
+
+    expect(screen.getByText('Variant')).toBeInTheDocument()
+    expect(screen.getByText('Slug')).toBeInTheDocument()
   })
 })
