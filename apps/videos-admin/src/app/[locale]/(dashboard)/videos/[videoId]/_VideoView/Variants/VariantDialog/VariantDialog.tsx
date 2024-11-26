@@ -19,17 +19,17 @@ import { Downloads } from '../Downloads'
 
 import 'video.js/dist/video-js.css'
 
-interface VariantModalProps {
+interface VariantDialogProps {
   variant: GetAdminVideoVariant
   onClose?: () => void
   open?: boolean
 }
 
-export function VariantModal({
+export function VariantDialog({
   variant,
   open,
   onClose
-}: VariantModalProps): ReactElement | null {
+}: VariantDialogProps): ReactElement | null {
   const t = useTranslations()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const playerRef = useRef<Player>()
