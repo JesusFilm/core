@@ -59,8 +59,12 @@ describe('CountryLanguageSelector', () => {
       </SearchBarProvider>
     )
 
-    await waitFor(() => expect(screen.getByText('English')).toBeInTheDocument())
-    expect(screen.getByText('Spanish, Latin American')).toBeInTheDocument()
+    await waitFor(() => expect(screen.getAllByRole('button')).toHaveLength(2))
+
+    expect(
+      screen.getByRole('button', { name: 'Spanish, Latin American' })
+    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'English' })).toBeInTheDocument()
   })
 
   it('should refine the language when clicked', async () => {
