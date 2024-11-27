@@ -127,6 +127,7 @@ model Video {
   keywords               Keyword[]            @relation("VideoToKeyword")
   images                 CloudflareImage[]
   cloudflareAssets       CloudflareR2[]
+  videoEdition           VideoEdition[]
 
   @@index(label)
   @@index(childIds)
@@ -187,10 +188,14 @@ model VideoVariant {
 }
 
 model VideoEdition {
-  id             String          @id
-  name           String?
+  id             String          @id @default(uuid())
+  name           String
+  videoId        String
+  video          Video           @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoVariants  VideoVariant[]
   videoSubtitles VideoSubtitle[]
+
+  @@unique([videoId, name])
 }
 
 model VideoSubtitle {
