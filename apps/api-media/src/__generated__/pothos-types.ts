@@ -264,10 +264,10 @@ export default interface PrismaTypes {
         Where: Prisma.VideoSubtitleWhereInput;
         Create: {};
         Update: {};
-        RelationName: "Video" | "videoEdition";
+        RelationName: "video" | "videoEdition";
         ListRelations: never;
         Relations: {
-            Video: {
+            video: {
                 Shape: Video;
                 Name: "Video";
                 Nullable: false;

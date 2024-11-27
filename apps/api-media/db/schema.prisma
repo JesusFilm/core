@@ -206,7 +206,7 @@ model VideoSubtitle {
   srtSrc       String?
   primary      Boolean
   languageId   String
-  Video        Video        @relation(fields: [videoId], references: [id])
+  video        Video        @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoEdition VideoEdition @relation(fields: [edition], references: [id])
 
   @@unique([videoId, edition, languageId])
