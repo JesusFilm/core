@@ -17,7 +17,7 @@ test.describe('Teams', () => {
     await landingPage.goToAdminUrl()
     await register.registerNewAccount() // registering new user account
     userEmail = await register.getUserEmailId() // storing the registered user email id
-    console.log('userName : ' + userEmail)
+    console.log(`userName : ${userEmail}`)
     await page.close()
   })
 
@@ -29,24 +29,21 @@ test.describe('Teams', () => {
   })
 
   /*
-1. Create a new team
-2. Create a journey (just one card) for newly created team
-3. Rename the team
-*/
-  test.fixme(
-    'Create a team and create a journey then rename the team',
-    async ({ page }) => {
-      test.setTimeout(120000)
-
-      const teamsPage = new TeamsPage(page)
-      const journeyName = new JourneyPage(page)
-      // 1. Create a new team - Verify the user able to create the new team through New team option in menu icon in discover page
-      await teamsPage.createNewTeamAndVerifyCreatedTeam()
-      // 2. Create a journey (just one card) for newly created team - Newly created journeys for Newly created team are displayed
-      await teamsPage.clickCreateJourneyBtn() // clicking create journey button in the center of the page for the new created team
-      await journeyName.createAndVerifyCustomJourney()
-      // 3. Rename the team (created team) - Verify the user able to rename the team through rename option in menu icon in discover page
-      await teamsPage.verifyCreatedTeamRenamed()
-    }
-  )
+  1. Create a new team
+  2. Create a journey (just one card) for newly created team
+  3. Rename the team
+  */
+  test('Create a team and create a journey then rename the team', async ({
+    page
+  }) => {
+    const teamsPage = new TeamsPage(page)
+    const journeyName = new JourneyPage(page)
+    // 1. Create a new team - Verify the user able to create the new team through New team option in menu icon in discover page
+    await teamsPage.createNewTeamAndVerifyCreatedTeam()
+    // 2. Create a journey (just one card) for newly created team - Newly created journeys for Newly created team are displayed
+    await teamsPage.clickCreateJourneyBtn() // clicking create journey button in the center of the page for the new created team
+    await journeyName.createAndVerifyCustomJourney()
+    // 3. Rename the team (created team) - Verify the user able to rename the team through rename option in menu icon in discover page
+    await teamsPage.verifyCreatedTeamRenamed()
+  })
 })

@@ -13,6 +13,10 @@ import { TemplateGalleryCard } from '.'
 
 import '../../../test/i18n'
 
+jest.mock('@core/journeys/ui/useNavigationState', () => ({
+  useNavigationState: jest.fn(() => false)
+}))
+
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()

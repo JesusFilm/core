@@ -2,6 +2,7 @@ import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
+import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
 import { paramsToRecord } from '../../../../lib/paramsToRecord'
 
 const GET_LANGUAGE = graphql(`
@@ -46,14 +47,6 @@ const GET_LANGUAGE = graphql(`
   }
 `)
 
-const GET_LANGUAGE_ID_FROM_BCP47 = graphql(`
-  query GetLanguageIdFromBCP47($bcp47: ID!) {
-    language(id: $bcp47, idType: bcp47) {
-      id
-    }
-  }
-`)
-
 interface GetParams {
   params: { languageId: string }
 }
@@ -67,39 +60,12 @@ export async function GET(
   const metadataLanguageTags =
     query.get('metadataLanguageTags')?.split(',') ?? []
 
-  let metadataLanguageId = '529'
-  let fallbackLanguageId = ''
-
-  if (metadataLanguageTags.length > 0) {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
-    >({
-      query: GET_LANGUAGE_ID_FROM_BCP47,
-      variables: { bcp47: metadataLanguageTags[0] }
-    })
-
-    if (data.language == null) {
-      const metadataTagsString = metadataLanguageTags.join(', ')
-      return new Response(
-        JSON.stringify({
-          message: `Parameter "metadataLanguageTags" of value "${metadataTagsString}" violated a constraint "Not acceptable metadata language tag(s): ${metadataTagsString}"`,
-          logref: 400
-        }),
-        { status: 400 }
-      )
-    }
-
-    metadataLanguageId = data.language?.id
+  const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
+  if (languageResult instanceof Response) {
+    return languageResult
   }
-  if (metadataLanguageTags.length > 1) {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
-    >({
-      query: GET_LANGUAGE_ID_FROM_BCP47,
-      variables: { bcp47: metadataLanguageTags[1] }
-    })
-    fallbackLanguageId = data.language?.id ?? ''
-  }
+
+  const { metadataLanguageId, fallbackLanguageId } = languageResult
 
   const { data } = await getApolloClient().query<ResultOf<typeof GET_LANGUAGE>>(
     {
@@ -126,6 +92,21 @@ export async function GET(
       { status: 404 }
     )
 
+  if (
+    metadataLanguageTags.length > 0 &&
+    language.name[0]?.value == null &&
+    language.fallbackName[0]?.value == null
+  ) {
+    return new Response(
+      JSON.stringify({
+        message: `Unable to generate metadata for media language [${languageId}] acceptable according to metadata language(s) [${metadataLanguageTags.join(
+          ','
+        )}]`,
+        logref: 406
+      }),
+      { status: 400 }
+    )
+  }
   const queryString = new URLSearchParams(queryObject).toString()
 
   const response = {

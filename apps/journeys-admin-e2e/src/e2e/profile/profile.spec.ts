@@ -16,7 +16,7 @@ test.describe('verify profile page functionalities', () => {
     await landingPage.goToAdminUrl()
     await register.registerNewAccount() // registering new user account
     userEmail = await register.getUserEmailId() // storing the registered user email id
-    console.log('userName : ' + userEmail)
+    console.log(`userName : ${userEmail}`)
     await page.close()
   })
 
@@ -45,5 +45,21 @@ test.describe('verify profile page functionalities', () => {
     await profilePage.clickLogout() // clicking the logout button
     await profilePage.verifyLogoutToastMsg() // verifying the toast message
     await profilePage.verifyloggedOut() // verifying the user is logged out and the login page is displayed
+  })
+
+  // Verify the user able to change language through language options
+  test('Verify the user able to change language through language options', async ({
+    page
+  }) => {
+    const profilePage = new ProfilePage(page)
+    await profilePage.clickProfileIconInNavBar() // clicking the profile icon in navigation list Item
+    await profilePage.clickLanguageOption() // clicking language option
+    await profilePage.enterLanguage('español') // selecting language in the edit language popup
+    await profilePage.verifySelectedLanguageUpdatedInChangeLangPopup() // verifying seleceted language is updated in the chnage language popuo
+    await profilePage.popupCloseBtn() // closing the change language popup
+    await profilePage.verifySelectedLanguageUpdatedOnTheSite() // verifying selected language is updated on the whole site
+    await profilePage.clickLanguageOption() // clicking language option
+    await profilePage.enterLanguage('English') // selecting language in the edit language popup
+    await profilePage.popupCloseBtn() // closing the change language popup
   })
 })

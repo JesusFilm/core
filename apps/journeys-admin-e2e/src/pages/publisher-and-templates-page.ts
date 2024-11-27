@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 import testData from '../utils/testData.json'
 
@@ -145,9 +145,7 @@ export class Publisher {
   async clickThreeDotOfTemple() {
     await this.page
       .locator(
-        "//h6[text()='" +
-          this.templateName +
-          "']//ancestor::a/following-sibling::div//button[@id='journey-actions']"
+        `//h6[text()='${this.templateName}']//ancestor::a/following-sibling::div//button[@id='journey-actions']`
       )
       .first()
       .click()
@@ -517,11 +515,11 @@ export class Publisher {
 
   async setFilterBelowCategoryTab(filter: string) {
     const selectedFilter = await this.page
-      .locator('div[role="presentation"] ul[role="listbox"] li')
+      .locator('div[role="presentation"] div[role="listbox"] li')
       .first()
       .innerText()
     await this.page
-      .locator('div[role="presentation"] ul[role="listbox"] li')
+      .locator('div[role="presentation"] div[role="listbox"] li')
       .first()
       .click()
     switch (filter) {
@@ -566,7 +564,7 @@ export class Publisher {
         }
       }
       await this.page
-        .locator('div[role="presentation"] ul[role="listbox"] li', {
+        .locator('div[role="presentation"] div[role="listbox"] li', {
           hasText: selectedFilter
         })
         .first()
@@ -590,6 +588,9 @@ export class Publisher {
       })
       .locator('button[aria-label="Close"]')
       .click()
+    await expect(
+      this.page.locator('div[role="presentation"] div[role="listbox"] li')
+    ).toHaveCount(0)
   }
 
   async clickTabInTemplateSettingPopup(tabName: string) {
@@ -638,9 +639,10 @@ export class Publisher {
       }
     }
     await this.page
-      .locator('div[data-popper-placement="bottom"] ul[role="listbox"] li ul', {
-        hasText: option
-      })
+      .locator(
+        'div[data-popper-placement="bottom"] div[role="listbox"]  li ul',
+        { hasText: option }
+      )
       .locator('li[role="option"]', { hasText: selectedFilter })
       .first()
       .click()
@@ -747,7 +749,7 @@ export class Publisher {
     }
     await this.page
       .locator(
-        'div[data-popper-placement="bottom"] ul[role="listbox"] li[role="option"] p',
+        'div[data-popper-placement="bottom"] div[role="listbox"] li[role="option"] p',
         { hasText: selectedFilter }
       )
       .click()
@@ -770,7 +772,6 @@ export class Publisher {
   async clickImageUploadPlusIcon() {
     await this.page
       .locator('div[role="dialog"] div[data-testid="ImageBlockHeader"] button')
-      // eslint-disable-next-line playwright/no-force-option
       .click({ force: true })
   }
 
@@ -802,8 +803,18 @@ export class Publisher {
       this.page.locator(
         'div[role="dialog"] div[id*="about-tabpanel"] div[data-testid="ImageBlockHeader"] img'
       )
-    ).not.toHaveAttribute('src', this.uploadedImgSrc as string, {
-      timeout: 30000
-    })
+    ).not.toHaveAttribute('src', this.uploadedImgSrc, { timeout: 30000 })
+  }
+
+  async clickHelpBtn() {
+    await expect(
+      this.page
+        .getByTestId('MainPanelHeader')
+        .locator('button[aria-label="Help"]')
+    ).toBeEnabled({ timeout: 30000 })
+    await this.page
+      .getByTestId('MainPanelHeader')
+      .locator('button[aria-label="Help"]')
+      .click({ delay: 3000 })
   }
 }

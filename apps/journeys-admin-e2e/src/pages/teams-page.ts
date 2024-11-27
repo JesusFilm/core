@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 import testData from '../utils/testData.json'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
+
 export class TeamsPage {
   readonly page: Page
   constructor(page: Page) {
@@ -21,7 +22,6 @@ export class TeamsPage {
   memberEmail = ''
 
   async createNewTeamAndVerifyCreatedTeam() {
-    await this.clickDismissIfDialogueComesUp()
     await this.clickThreeDotOfTeams()
     await this.clickThreeDotOptions('New Team')
     await this.enterTeamName()
@@ -29,8 +29,8 @@ export class TeamsPage {
     await this.verifyTeamCreatedSnackbarMsg()
     await this.clickDiaLogBoxCloseBtn()
     await this.clickTeamSelectionDropDown()
-    await this.selectLastTeam() // due to bug
-    await this.clickTeamSelectionDropDown()
+    // await this.selectLastTeam() // due to bug
+    // await this.clickTeamSelectionDropDown()
     await this.selectCreatedNewTeam()
     await this.verifyTeamNameUpdatedInTeamSelectDropdown()
   }
@@ -60,14 +60,6 @@ export class TeamsPage {
   async verifyMemberAddedViaPlusIconAtTopOfTheRightCorner() {
     await this.clickMemberPlusIcon()
     await this.verifyMemberAdded()
-  }
-
-  async clickDismissIfDialogueComesUp() {
-    // First time user journey - Dismiss the "More journeys here" dialogue
-    const selector = 'div.MuiStack-root button:has-text("Dismiss")'
-    if (await this.page.isVisible(selector)) {
-      await this.page.click(selector)
-    }
   }
 
   async clickThreeDotOfTeams() {
@@ -100,7 +92,7 @@ export class TeamsPage {
       })
     ).toBeVisible()
     await expect(this.page.locator('div#notistack-snackbar')).toHaveCount(0, {
-      timeout: thirtySecondsTimeout
+      timeout: 30000
     })
   }
 
@@ -114,7 +106,9 @@ export class TeamsPage {
 
   async selectLastTeam() {
     await this.page
-      .locator('ul[role="listbox"] li[role="option"]')
+      .locator('ul[role="listbox"] li[role="option"]', {
+        hasNotText: 'Shared With Me'
+      })
       .last()
       .click()
   }
@@ -139,10 +133,8 @@ export class TeamsPage {
 
   async enterTeamRename() {
     this.renameTeamName = testData.teams.teamRename + randomNumber
-    await this.page.getByLabel('Team Name', { exact: true }).clear()
-    await this.page
-      .getByLabel('Team Name', { exact: true })
-      .fill(this.renameTeamName)
+    await this.page.locator('input#title').clear()
+    await this.page.locator('input#title').fill(this.renameTeamName)
   }
 
   async clickSaveBtn() {
@@ -156,13 +148,14 @@ export class TeamsPage {
       this.renameTeamName + ' updated.'
     )
     await expect(this.page.locator('div#notistack-snackbar')).toHaveCount(0, {
-      timeout: thirtySecondsTimeout
+      timeout: 30000
     })
   }
 
   async verifyRenamedTeamNameUpdatedInTeamSelectDropdown() {
     await expect(this.page.locator('div[aria-haspopup="listbox"]')).toHaveText(
-      this.renameTeamName
+      this.renameTeamName,
+      { timeout: 60000 }
     )
   }
 

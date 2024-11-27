@@ -59,6 +59,7 @@ export async function GET(
   const apiKey = query.get('apiKey') ?? '616db012e9a951.51499299'
   const platform = query.get('platform') ?? 'ios'
   const languageIds = query.get('languageIds')?.split(',') ?? []
+  const reduce = query.get('reduce') ?? ''
   const apiSessionId = '6622f10d2260a8.05128925'
 
   const { data } = await getApolloClient().query<
@@ -96,8 +97,10 @@ export async function GET(
                     ? undefined
                     : {
                         url: downloadLow.url,
-                        height: downloadLow.height,
-                        width: downloadLow.width,
+                        ...(!reduce.includes('quantities') && {
+                          height: downloadLow.height,
+                          width: downloadLow.width
+                        }),
                         sizeInBytes: downloadLow.size
                       },
                 high:
@@ -105,8 +108,10 @@ export async function GET(
                     ? undefined
                     : {
                         url: downloadHigh.url,
-                        height: downloadHigh.height,
-                        width: downloadHigh.width,
+                        ...(!reduce.includes('quantities') && {
+                          height: downloadHigh.height,
+                          width: downloadHigh.width
+                        }),
                         sizeInBytes: downloadHigh.size
                       }
               }
@@ -132,6 +137,15 @@ export async function GET(
                   }
                   break
                 case 'ios':
+                  subtitleUrls = {
+                    vtt: variant.subtitle?.map((subtitle) => ({
+                      languageId: Number(subtitle.language?.id),
+                      languageName: subtitle.language?.name[0].value,
+                      languageTag: subtitle.language?.bcp47,
+                      url: subtitle.vttSrc
+                    }))
+                  }
+                  break
                 case 'web':
                   subtitleUrls = {
                     m3u8: variant.subtitle?.map((subtitle) => ({

@@ -17,7 +17,7 @@ test.describe('verify custom journey page', () => {
     await landingPage.goToAdminUrl()
     await register.registerNewAccount() // registering new user account
     userEmail = await register.getUserEmailId() // storing the registered user email id
-    console.log('userEmail : ' + userEmail)
+    console.log(`userEamil : ${userEmail}`)
     await page.close()
   })
 
@@ -35,42 +35,37 @@ test.describe('verify custom journey page', () => {
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
   })
 
-  // TODO: e2e: Update this as per journey flow diagram
   // Verify the user able to delete the journey card in create custom journey page
-  test.fixme('Detele journey card in custom journey page', async ({ page }) => {
+  test('Detele journey card in custom journey page', async ({ page }) => {
     const journeyPage = new JourneyPage(page)
     const cardLevelActionPage = new CardLevelActionPage(page)
     await journeyPage.clickCreateCustomJourney() // clicking the create custom journey button
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top of right corner of the custom journey page
-    await journeyPage.clickJourneyDetailsInThreeDotOptions() // clicking on the journey details option of the thre dot options
-    await journeyPage.enterTitle() // entering title on the title field in the 'journey details' popup
+    await journeyPage.clickEditDetailsInThreeDotOptions() // clicking on the title option of the thre dot options
+    await journeyPage.enterTitle() // entering title on the title field in the 'edit title' popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
     await cardLevelActionPage.hoverOnExistingCard() // hovering the mourse on the existing card in the card list from custom journey page
-    await cardLevelActionPage.clickThreeDotOfCard() // clicking three dot at the top of the right corner in the selected card
+    await cardLevelActionPage.clicThreeDotOfCard() // clicking three dot at the top of the right corner in the selected card
     await cardLevelActionPage.clickDeleteCard() // clicking on the 'delete card' option of the the three dot options
     await journeyPage.clickDeleteBtn() //  clicking on delete button in the 'delete card' popup
     await cardLevelActionPage.verifyCardDeletedInCustomJournetPage() // verifying the card is deleted from the card list in the custom journey page
   })
 
-  // TODO: e2e: Update this as per journey flow diagram
   // Verify the user able to copy the existing journey card in create journey page
-  test.fixme(
-    'Duplicate journey card in custom journey page',
-    async ({ page }) => {
-      const journeyPage = new JourneyPage(page)
-      const cardLevelActionPage = new CardLevelActionPage(page)
-      await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
-      await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top of right corner of the custom journey page
-      await journeyPage.clickJourneyDetailsInThreeDotOptions() // clicking on the title option of the three dot options
-      await journeyPage.enterTitle() // entering title on the title field in the 'journey details' popup
-      await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
-      await cardLevelActionPage.getjourneyCardCount() // getting the card list count in the custom journey page
-      await cardLevelActionPage.hoverOnExistingCard() // hovering the mourse on the existing card in the card list from custom journey page
-      await cardLevelActionPage.clickThreeDotOfCard() // clicking three dot at the top of the right corner in the selected card
-      await cardLevelActionPage.clickDuplicateCard() // clicking on the 'duplicate card' option of the the three dot options
-      await cardLevelActionPage.verifyCardDuplicated() // verifying the card gets duplicated
-    }
-  )
+  test('Duplicate journey card in custom journey page', async ({ page }) => {
+    const journeyPage = new JourneyPage(page)
+    const cardLevelActionPage = new CardLevelActionPage(page)
+    await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
+    await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top of right corner of the custom journey page
+    await journeyPage.clickEditDetailsInThreeDotOptions() // clicking on the title option of the thre dot options
+    await journeyPage.enterTitle() // entering title on the title field in the 'edit title' popup
+    await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
+    await cardLevelActionPage.getjourneyCardCount() // getting the card list count in the custom journey page
+    await cardLevelActionPage.hoverOnExistingCard() // hovering the mourse on the existing card in the card list from custom journey page
+    await cardLevelActionPage.clicThreeDotOfCard() // clicking three dot at the top of the right corner in the selected card
+    await cardLevelActionPage.clickDuplicateCard() // clicking on the 'duplicate card' option of the the three dot options
+    await cardLevelActionPage.verifyCardDuplicated() // verifying the card gets duplicated
+  })
 
   // Verify the user able to preview the journey card in full screen mode in create custom journey page
   test('preview the journey from the custom journey page', async ({
@@ -81,7 +76,7 @@ test.describe('verify custom journey page', () => {
     await journeyPage.setBrowserContext(context) // setting browser context
     await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top of right corner of the custom journey page
-    await journeyPage.clickJourneyDetailsInThreeDotOptions() // clicking on the title option of the thre dot options
+    await journeyPage.clickEditDetailsInThreeDotOptions() // clicking on the title option of the thre dot options
     await journeyPage.enterTitle() // entering title on the title field in the 'edit title' popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
     await journeyPage.enterJourneysTypography() // typing text on journeys typography field

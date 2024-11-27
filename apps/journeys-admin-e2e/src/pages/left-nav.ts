@@ -1,4 +1,4 @@
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 const sixtySecondsTimeout = 60000
 
@@ -11,11 +11,10 @@ export class LeftNav {
 
   async clickProfile(): Promise<void> {
     try {
-      // eslint-disable-next-line playwright/no-wait-for-selector
-      const profileListItem = await this.page.waitForSelector(
-        '[data-testid="NavigationListItemProfile"]',
-        { timeout: sixtySecondsTimeout }
+      const profileListItem = this.page.locator(
+        '[data-testid="NavigationListItemProfile"]'
       )
+      await profileListItem.waitFor({ timeout: 60000 })
 
       // Click on Profile
       await profileListItem.click()
@@ -43,8 +42,9 @@ export class LeftNav {
   async logout(): Promise<void> {
     // Click on Log out
     await Promise.all([
-      // eslint-disable-next-line playwright/no-wait-for-selector
-      this.page.waitForSelector('[data-testid="JourneysAdminMenuItemLogOut"]'),
+      this.page
+        .locator('[data-testid="JourneysAdminMenuItemLogOut"]')
+        .waitFor(),
       this.page.click('[data-testid="JourneysAdminMenuItemLogOut"]')
     ])
   }
