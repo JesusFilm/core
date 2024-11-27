@@ -344,6 +344,10 @@ describe('video', () => {
           variantLanguages {
             id
           }
+          videoEdition {
+            id
+            name
+          }
           variantLanguagesCount
           slug
           noIndex
@@ -443,6 +447,12 @@ describe('video', () => {
         noIndex: null,
         primaryLanguageId: 'primaryLanguageId',
         slug: '',
+        videoEdition: [
+          {
+            id: 'editionId',
+            name: 'base'
+          }
+        ],
         snippet: [
           {
             id: 'snippetId',
