@@ -79,7 +79,7 @@ export async function importMany(
 
   for (const videoSubtitle of videoSubtitles) {
     try {
-      const res = await prisma.videoEdition.upsert({
+      await prisma.videoEdition.upsert({
         where: {
           videoId_name: {
             videoId: videoSubtitle.videoId,
@@ -92,8 +92,7 @@ export async function importMany(
           name: videoSubtitle.edition
         }
       })
-      videoSubtitle.edition = res.id
-    } catch (e) {
+    } catch (e: any) {
       logger?.warn(
         videoSubtitle,
         `subtitle for ${videoSubtitle.videoId} failed to import with prisma error: ${e}`

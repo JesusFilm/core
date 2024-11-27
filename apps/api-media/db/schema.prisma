@@ -177,10 +177,10 @@ model VideoVariant {
   duration     Int?
   languageId   String
   edition      String                 @default("base")
-  videoEdition VideoEdition           @relation(fields: [edition], references: [id])
+  videoEdition VideoEdition           @relation(fields: [videoId, edition], references: [videoId, name])
   slug         String                 @unique
   video        Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
-  videoId      String?
+  videoId      String
 
   @@unique([languageId, videoId])
   @@index(languageId(type: Hash))
@@ -207,7 +207,7 @@ model VideoSubtitle {
   primary      Boolean
   languageId   String
   video        Video        @relation(fields: [videoId], references: [id], onDelete: Cascade)
-  videoEdition VideoEdition @relation(fields: [edition], references: [id])
+  videoEdition VideoEdition @relation(fields: [videoId, edition], references: [videoId, name])
 
   @@unique([videoId, edition, languageId])
   @@index(languageId(type: Hash))

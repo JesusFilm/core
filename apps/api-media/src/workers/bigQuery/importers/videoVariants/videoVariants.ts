@@ -138,7 +138,7 @@ export async function importMany(rows: unknown[]): Promise<void> {
   )
 
   for (const transformedVideoVariant of transformedVideoVariants) {
-    const res = await prisma.videoEdition.upsert({
+    await prisma.videoEdition.upsert({
       where: {
         videoId_name: {
           videoId: transformedVideoVariant.videoId,
@@ -151,7 +151,6 @@ export async function importMany(rows: unknown[]): Promise<void> {
         name: transformedVideoVariant.edition
       }
     })
-    transformedVideoVariant.edition = res.id
   }
 
   await prisma.videoVariant.createMany({
