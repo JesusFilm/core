@@ -39,8 +39,7 @@ export function VariantDialog({
     playerRef.current = videojs(node, {
       ...defaultVideoJsOptions,
       fluid: true,
-      controls: true,
-      liveui: true
+      controls: true
     })
   }, [])
 
