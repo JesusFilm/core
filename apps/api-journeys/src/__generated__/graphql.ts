@@ -3855,6 +3855,7 @@ export type Video = {
   variantLanguagesCount: Scalars['Int']['output'];
   variantLanguagesWithSlug: Array<LanguageWithSlug>;
   variants: Array<VideoVariant>;
+  videoEdition?: Maybe<Array<VideoEdition>>;
   /** @deprecated use images.videoStill */
   videoStill?: Maybe<Scalars['String']['output']>;
 };
@@ -4182,8 +4183,9 @@ export type VideoEdition = {
 };
 
 export type VideoEditionCreateInput = {
-  id: Scalars['ID']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  name: Scalars['String']['input'];
+  videoId: Scalars['String']['input'];
 };
 
 export type VideoEditionUpdateInput = {
