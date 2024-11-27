@@ -5,6 +5,7 @@ import { graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
+import unescape from 'lodash/unescape'
 
 import { ResizableTextField } from '../../../../../../../../components/ResizableTextField'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
@@ -50,11 +51,15 @@ export function VideoDescription({
       }
     })
   }
+  const description = unescape(videoDescriptions?.[0].value).replace(
+    /&#13;/g,
+    '\n'
+  )
 
   return (
     <Formik
       initialValues={{
-        description: videoDescriptions?.[0].value
+        description: description
       }}
       onSubmit={handleUpdateVideoDescription}
       validationSchema={validationSchema}
