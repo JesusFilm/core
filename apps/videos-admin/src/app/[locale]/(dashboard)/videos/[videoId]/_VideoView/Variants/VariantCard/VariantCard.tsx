@@ -5,7 +5,8 @@ import Typography from '@mui/material/Typography'
 import { CSSProperties, ReactElement, useState } from 'react'
 
 import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
-import { VariantDialog } from '../VariantDialog'
+
+import { VariantDialog } from './VariantDialog'
 
 export interface VariantCardProps {
   variant: GetAdminVideoVariant
@@ -46,7 +47,11 @@ export function VariantCard({
         </CardActionArea>
       </Card>
       {open != null && (
-        <VariantDialog open={open} onClose={handleClose} variant={variant} />
+        <VariantDialog
+          open={open}
+          handleClose={handleClose}
+          variant={variant}
+        />
       )}
     </>
   )

@@ -14,21 +14,21 @@ import Player from 'video.js/dist/types/player'
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { Dialog } from '@core/shared/ui/Dialog'
 
-import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
-import { Downloads } from '../Downloads'
+import { GetAdminVideoVariant } from '../../../../../../../../../libs/useAdminVideo'
+import { Downloads } from '../../Downloads'
 
 import 'video.js/dist/video-js.css'
 
 interface VariantDialogProps {
   variant: GetAdminVideoVariant
-  onClose?: () => void
+  handleClose?: () => void
   open?: boolean
 }
 
 export function VariantDialog({
   variant,
   open,
-  onClose
+  handleClose
 }: VariantDialogProps): ReactElement | null {
   const t = useTranslations()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -51,7 +51,7 @@ export function VariantDialog({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       fullscreen={!smUp}
       dialogTitle={{ title: t('Variant'), closeButton: true }}
       slotProps={{ titleButton: { size: 'small' } }}
@@ -63,7 +63,7 @@ export function VariantDialog({
           <Stack direction="row">
             <Stack direction="column">
               <FormLabel>{t('Slug')}</FormLabel>
-              <TextField disabled defaultValue={variant?.slug} />
+              <TextField disabled defaultValue={variant.slug} />
             </Stack>
           </Stack>
         </FormControl>
