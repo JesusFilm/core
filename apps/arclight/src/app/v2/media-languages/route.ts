@@ -2,6 +2,7 @@ import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../lib/apolloClient'
+import { getLanguageIdsFromTags } from '../../../lib/getLanguageIdsFromTags'
 import { paramsToRecord } from '../../../lib/paramsToRecord'
 
 const GET_LANGUAGES = graphql(`
@@ -11,7 +12,7 @@ const GET_LANGUAGES = graphql(`
     $ids: [ID!]
     $bcp47: [String!]
     $iso3: [String!]
-    $languageId: ID
+    $metadataLanguageId: ID
     $fallbackLanguageId: ID
     $term: String
   ) {
@@ -28,7 +29,7 @@ const GET_LANGUAGES = graphql(`
       id
       iso3
       bcp47
-      name(languageId: $languageId) {
+      name(languageId: $metadataLanguageId) {
         value
         primary
         language {
@@ -60,14 +61,6 @@ const GET_LANGUAGES = graphql(`
   }
 `)
 
-const GET_LANGUAGE_ID_FROM_BCP47 = graphql(`
-  query GetLanguageIdFromBCP47($bcp47: ID!) {
-    language(id: $bcp47, idType: bcp47) {
-      id
-    }
-  }
-`)
-
 export async function GET(request: NextRequest): Promise<Response> {
   const query = request.nextUrl.searchParams
 
@@ -81,38 +74,12 @@ export async function GET(request: NextRequest): Promise<Response> {
     query.get('metadataLanguageTags')?.split(',') ?? []
   const term = query.get('term')
 
-  let languageId = '529'
-  let fallbackLanguageId = ''
-  if (metadataLanguageTags.length > 0) {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
-    >({
-      query: GET_LANGUAGE_ID_FROM_BCP47,
-      variables: { bcp47: metadataLanguageTags[0] }
-    })
-
-    if (data.language == null) {
-      const metadataTagsString = metadataLanguageTags.join(', ')
-      return new Response(
-        JSON.stringify({
-          message: `Parameter "metadataLanguageTags" of value "${metadataTagsString}" violated a constraint "Not acceptable metadata language tag(s): ${metadataTagsString}"`,
-          logref: 400
-        }),
-        { status: 400 }
-      )
-    }
-
-    languageId = data.language?.id
+  const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
+  if (languageResult instanceof Response) {
+    return languageResult
   }
-  if (metadataLanguageTags.length > 1) {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
-    >({
-      query: GET_LANGUAGE_ID_FROM_BCP47,
-      variables: { bcp47: metadataLanguageTags[1] }
-    })
-    fallbackLanguageId = data.language?.id ?? ''
-  }
+
+  const { metadataLanguageId, fallbackLanguageId } = languageResult
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_LANGUAGES>
@@ -124,7 +91,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       ids,
       bcp47,
       iso3,
-      languageId,
+      metadataLanguageId,
       fallbackLanguageId,
       term
     }
@@ -156,53 +123,59 @@ export async function GET(request: NextRequest): Promise<Response> {
     page: (page - 1).toString()
   }).toString()
 
-  const mediaLanguages = languages.map((language) => ({
-    languageId: Number(language.id),
-    iso3: language.iso3,
-    bcp47: language.bcp47,
-    counts: {
-      speakerCount: {
-        value: language.speakerCount,
-        description: 'Number of speakers'
+  const mediaLanguages = languages
+    .filter(
+      (language) =>
+        language.name[0]?.value != null ||
+        language.fallbackName[0]?.value != null
+    )
+    .map((language) => ({
+      languageId: Number(language.id),
+      iso3: language.iso3,
+      bcp47: language.bcp47,
+      counts: {
+        speakerCount: {
+          value: language.speakerCount,
+          description: 'Number of speakers'
+        },
+        countriesCount: {
+          value: language.countriesCount,
+          description: 'Number of countries'
+        },
+        series: {
+          value: language.seriesCount,
+          description: 'Series'
+        },
+        featureFilm: {
+          value: language.featureFilmCount,
+          description: 'Feature Film'
+        },
+        shortFilm: {
+          value: language.shortFilmCount,
+          description: 'Short Film'
+        }
       },
-      countriesCount: {
-        value: language.countriesCount,
-        description: 'Number of countries'
-      },
-      series: {
-        value: language.seriesCount,
-        description: 'Series'
-      },
-      featureFilm: {
-        value: language.featureFilmCount,
-        description: 'Feature Film'
-      },
-      shortFilm: {
-        value: language.shortFilmCount,
-        description: 'Short Film'
+      audioPreview:
+        language.audioPreview != null
+          ? {
+              url: language.audioPreview.value,
+              audioBitrate: language.audioPreview.bitrate,
+              audioContainer: language.audioPreview.codec,
+              sizeInBytes: language.audioPreview.size
+            }
+          : null,
+      primaryCountryId: language.primaryCountryId ?? '',
+      name: language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
+      nameNative: language.nameNative.find(({ primary }) => primary)?.value,
+      alternateLanguageName: '',
+      alternateLanguageNameNative: '',
+      metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
+      _links: {
+        self: {
+          href: `/v2/media-languages/${language.id}`
+        }
       }
-    },
-    audioPreview:
-      language.audioPreview != null
-        ? {
-            url: language.audioPreview.value,
-            audioBitrate: language.audioPreview.bitrate,
-            audioContainer: language.audioPreview.codec,
-            sizeInBytes: language.audioPreview.size
-          }
-        : null,
-    primaryCountryId: language.primaryCountryId ?? '',
-    name: language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
-    nameNative: language.nameNative.find(({ primary }) => primary)?.value,
-    alternateLanguageName: '',
-    alternateLanguageNameNative: '',
-    metadataLanguageTag: language.name[0]?.language.bcp47 ?? '',
-    _links: {
-      self: {
-        href: `/v2/media-languages/${language.id}`
-      }
-    }
-  }))
+    }))
 
   const response = {
     page,
