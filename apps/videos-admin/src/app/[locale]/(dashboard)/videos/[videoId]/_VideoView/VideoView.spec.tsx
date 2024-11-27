@@ -1,10 +1,10 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import unescape from 'lodash/unescape'
 import { useParams } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
-import unescape from 'lodash/unescape'
-import { GetAdminVideo_AdminVideo_VideoDescriptions as VideoDescriptions } from '../../../../../../libs/useAdminVideo/useAdminVideo'
 
+import { GetAdminVideo_AdminVideo_VideoDescriptions as VideoDescriptions } from '../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { EditProvider } from '../_EditProvider'
 import { TestEditProvider } from '../_EditProvider/TestEditProvider'
