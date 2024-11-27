@@ -82,7 +82,6 @@ export function VariantDialog({
             <source src={videoSrc} type="video/mp4" />
           </video>
         </Box>
-
         <Downloads downloads={variant.downloads} />
       </Stack>
     </Dialog>
