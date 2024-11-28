@@ -59,7 +59,7 @@ export function VideoDescription({
   return (
     <Formik
       initialValues={{
-        description: description
+        description
       }}
       onSubmit={handleUpdateVideoDescription}
       validationSchema={validationSchema}

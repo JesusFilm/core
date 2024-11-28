@@ -1,10 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import unescape from 'lodash/unescape'
 import { useParams } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { GetAdminVideo_AdminVideo_VideoDescriptions as VideoDescriptions } from '../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { EditProvider } from '../_EditProvider'
 import { TestEditProvider } from '../_EditProvider/TestEditProvider'
@@ -18,8 +16,6 @@ jest.mock('next/navigation', () => ({
 }))
 
 const mockUseParams = useParams as jest.MockedFunction<typeof mockUseParams>
-const mockVideoDescriptions: VideoDescriptions =
-  useAdminVideoMock['result']?.['data']?.['adminVideo']?.['description']
 
 describe('VideoView', () => {
   it('should get video details', async () => {
