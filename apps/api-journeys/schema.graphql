@@ -2642,9 +2642,7 @@ extend type ShortLink
   id: ID! @external
 }
 
-type QrCode
-  @key(fields: "id")
-{
+type QrCode {
   id: ID!
 
   """Team where the Qr Code belongs to"""
@@ -2670,6 +2668,10 @@ input QrCodeCreateInput {
 }
 
 input QrCodeUpdateInput {
+  """
+  journey url where the QR code redirects to, will be parsed and
+  stored as ids
+  """
   to: String
   color: String
   backgroundColor: String
@@ -3019,4 +3021,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | QrCode | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | Visitor
+union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | Visitor

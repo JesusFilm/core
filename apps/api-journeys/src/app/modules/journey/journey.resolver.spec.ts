@@ -151,10 +151,6 @@ describe('JourneyResolver', () => {
           provide: QrCodeService,
           useValue: mockDeep<QrCodeService>()
         },
-        {
-          provide: QrCodeService,
-          useValue: mockDeep<QrCodeService>()
-        },
         BlockResolver,
         UserRoleResolver,
         UserRoleService,

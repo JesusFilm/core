@@ -9,6 +9,7 @@ import {
   Resolver
 } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
+import omit from 'lodash/omit'
 import { v4 as uuidv4 } from 'uuid'
 
 import { Prisma, QrCode } from '.prisma/api-journeys-client'
@@ -63,7 +64,9 @@ export class QrCodeResolver {
 
     return await this.prismaService.$transaction(async (tx) => {
       if (process.env.JOURNEY_SHORTLINK_DOMAIN == null)
-        throw new Error('Shortlink domain not set')
+        throw new GraphQLError('Shortlink domain not set', {
+          extensions: { code: 'INTERNAL_SERVER_ERROR' }
+        })
 
       const shortLinkCreate = await this.qrCodeService.createShortLink({
         hostname: process.env.JOURNEY_SHORTLINK_DOMAIN,
@@ -98,7 +101,7 @@ export class QrCodeResolver {
   ): Promise<QrCode> {
     const qrCode = await this.getQrCode(id)
     const updateInput = {
-      ...input,
+      ...omit(input, 'to'),
       toJourneyId: qrCode.toJourneyId,
       toBlockId: qrCode.toBlockId
     }
@@ -106,7 +109,7 @@ export class QrCodeResolver {
     return await this.prismaService.$transaction(async (tx) => {
       if (input.to != null) {
         const { toJourneyId, toBlockId } =
-          await this.qrCodeService.decodeAndVerifyTo(qrCode, input.to)
+          await this.qrCodeService.parseAndVerifyTo(qrCode, input.to)
         const to = await this.qrCodeService.getTo(
           id,
           qrCode.teamId,

@@ -1877,7 +1877,7 @@ type ShortLink @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: A
   service: Service! @join__field(graph: API_MEDIA) 
 }
 
-type QrCode @join__type(graph: API_JOURNEYS, key: "id")  {
+type QrCode @join__type(graph: API_JOURNEYS)  {
   id: ID!
   """
   Team where the Qr Code belongs to
@@ -3991,6 +3991,10 @@ input QrCodeCreateInput @join__type(graph: API_JOURNEYS)  {
 }
 
 input QrCodeUpdateInput @join__type(graph: API_JOURNEYS)  {
+  """
+  journey url where the QR code redirects to, will be parsed and
+  stored as ids
+  """
   to: String
   color: String
   backgroundColor: String

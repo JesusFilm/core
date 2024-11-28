@@ -1,6 +1,7 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { Injectable } from '@nestjs/common'
 import { graphql } from 'gql.tada'
+import { GraphQLError } from 'graphql'
 
 import { QrCode } from '.prisma/api-journeys-client'
 import { ShortLink } from '.prisma/api-media-client'
@@ -118,11 +119,15 @@ export class QrCodeService {
     })
 
     if (shortLink.__typename === 'NotFoundError') {
-      throw new Error(shortLink.message)
+      throw new GraphQLError(shortLink.message, {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
     } else if (shortLink.__typename === 'QueryShortLinkSuccess') {
       return shortLink.data
     } else {
-      throw new Error('Unexpected error occurred in short link query')
+      throw new GraphQLError('Unexpected error occurred in short link query', {
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
     }
   }
 
@@ -147,13 +152,20 @@ export class QrCodeService {
       shortLinkCreate.__typename === 'ZodError' ||
       shortLinkCreate.__typename === 'NotUniqueError'
     ) {
-      throw new Error(shortLinkCreate.message)
+      throw new GraphQLError(shortLinkCreate.message, {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
     } else if (
       shortLinkCreate.__typename === 'MutationShortLinkCreateSuccess'
     ) {
       return shortLinkCreate
     } else {
-      throw new Error('Unexpected error occurred in short link creation')
+      throw new GraphQLError(
+        'Unexpected error occurred in short link creation',
+        {
+          extensions: { code: 'INTERNAL_SERVER_ERROR' }
+        }
+      )
     }
   }
 
@@ -178,13 +190,17 @@ export class QrCodeService {
       shortLinkUpdate.__typename === 'ZodError' ||
       shortLinkUpdate.__typename === 'NotFoundError'
     ) {
-      throw new Error(shortLinkUpdate.message)
+      throw new GraphQLError(shortLinkUpdate.message, {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
     } else if (
       shortLinkUpdate.__typename === 'MutationShortLinkUpdateSuccess'
     ) {
       return shortLinkUpdate
     } else {
-      throw new Error('Unexpected error occurred in short link update')
+      throw new GraphQLError('Unexpected error occurred in short link update', {
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
     }
   }
 
@@ -204,13 +220,20 @@ export class QrCodeService {
     })
 
     if (shortLinkDelete.__typename === 'NotFoundError') {
-      throw new Error(shortLinkDelete.message)
+      throw new GraphQLError(shortLinkDelete.message, {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
     } else if (
       shortLinkDelete.__typename === 'MutationShortLinkDeleteSuccess'
     ) {
       return shortLinkDelete
     } else {
-      throw new Error('Unexpected error occurred in short link deletion')
+      throw new GraphQLError(
+        'Unexpected error occurred in short link deletion',
+        {
+          extensions: { code: 'INTERNAL_SERVER_ERROR' }
+        }
+      )
     }
   }
 
@@ -271,8 +294,8 @@ export class QrCodeService {
           }
         })
       })
-    } catch (e) {
-      throw new Error('Error updating team short links')
+    } catch (error) {
+      throw new GraphQLError(error.message)
     }
   }
 
@@ -300,12 +323,12 @@ export class QrCodeService {
           input: { id: qrCode.shortLinkId, to }
         }
       })
-    } catch (e) {
-      throw new Error('Error updating short link')
+    } catch (error) {
+      throw new GraphQLError(error.message)
     }
   }
 
-  async decodeAndVerifyTo(
+  async parseAndVerifyTo(
     qrCode: QrCode,
     to: string
   ): Promise<{ toJourneyId: string; toBlockId?: string | null | undefined }> {
@@ -315,7 +338,10 @@ export class QrCodeService {
     const journeySlug = pathArray[1]
     const blockId = pathArray[2]
 
-    if (hostname == null || journeySlug == null) throw new Error('Invalid to')
+    if (hostname == null || journeySlug == null)
+      throw new GraphQLError('Invalid to', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
 
     const customDomain = (
       await this.prismaService.customDomain.findMany({
@@ -327,9 +353,13 @@ export class QrCodeService {
       customDomain.name != null &&
       customDomain.name !== hostname
     ) {
-      throw new Error('Invalid hostname')
+      throw new GraphQLError('Invalid hostname', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
     } else if (origin !== process.env.JOURNEYS_URL) {
-      throw new Error('Invalid hostname')
+      throw new GraphQLError('Invalid hostname', {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
     }
 
     const journey = await this.prismaService.journey.findFirstOrThrow({

@@ -413,12 +413,12 @@ describe('QrCodeService', () => {
     })
   })
 
-  describe('decodeAndVerifyTo', () => {
+  describe('parseAndVerifyTo', () => {
     it('returns the journeyId of to', async () => {
       prismaService.customDomain.findMany.mockResolvedValueOnce([])
       prismaService.journey.findFirstOrThrow.mockResolvedValueOnce(toJourney)
 
-      const result = await service.decodeAndVerifyTo(
+      const result = await service.parseAndVerifyTo(
         qrCode,
         'https://your.nextstep.is/journeySlug'
       )
@@ -433,7 +433,7 @@ describe('QrCodeService', () => {
       prismaService.journey.findFirstOrThrow.mockResolvedValueOnce(toJourney)
       prismaService.block.findFirstOrThrow.mockResolvedValueOnce(toBlock)
 
-      const result = await service.decodeAndVerifyTo(
+      const result = await service.parseAndVerifyTo(
         qrCode,
         'https://your.nextstep.is/toJourneySlug/toBlockId'
       )
@@ -445,7 +445,7 @@ describe('QrCodeService', () => {
 
     it('validates to is a url', async () => {
       await expect(
-        service.decodeAndVerifyTo(qrCode, 'invalid-journey-url')
+        service.parseAndVerifyTo(qrCode, 'invalid-journey-url')
       ).rejects.toThrow('Invalid URL')
     })
 
@@ -453,7 +453,7 @@ describe('QrCodeService', () => {
       prismaService.customDomain.findMany.mockResolvedValueOnce([])
 
       await expect(
-        service.decodeAndVerifyTo(qrCode, 'https://invalid.hostname.is')
+        service.parseAndVerifyTo(qrCode, 'https://invalid.hostname.is')
       ).rejects.toThrow('Invalid hostname')
     })
 
@@ -463,7 +463,7 @@ describe('QrCodeService', () => {
       ])
 
       await expect(
-        service.decodeAndVerifyTo(qrCode, 'https://your.nextstep.is')
+        service.parseAndVerifyTo(qrCode, 'https://your.nextstep.is')
       ).rejects.toThrow('Invalid hostname')
     })
 
@@ -474,10 +474,7 @@ describe('QrCodeService', () => {
       )
 
       await expect(
-        service.decodeAndVerifyTo(
-          qrCode,
-          'https://your.nextstep.is/journeySlug'
-        )
+        service.parseAndVerifyTo(qrCode, 'https://your.nextstep.is/journeySlug')
       ).rejects.toThrow('Journey not found')
     })
 
@@ -489,7 +486,7 @@ describe('QrCodeService', () => {
       )
 
       await expect(
-        service.decodeAndVerifyTo(
+        service.parseAndVerifyTo(
           qrCode,
           'https://your.nextstep.is/toJourneySlug/toBlockId'
         )

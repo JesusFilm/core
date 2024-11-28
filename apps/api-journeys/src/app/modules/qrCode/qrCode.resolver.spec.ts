@@ -162,7 +162,7 @@ describe('QrCode', () => {
 
   describe('qrCodeUpdate', () => {
     beforeEach(() => {
-      qrCodeService.decodeAndVerifyTo.mockResolvedValue({
+      qrCodeService.parseAndVerifyTo.mockResolvedValue({
         toJourneyId: 'toJourneyId',
         toBlockId: 'toBlockId'
       })
@@ -184,7 +184,6 @@ describe('QrCode', () => {
       expect(prismaService.qrCode.update).toHaveBeenCalledWith({
         where: { id: 'qrCodeId' },
         data: {
-          to: 'updatedTo',
           color: '#AAAAAA',
           backgroundColor: '#BBBBBB',
           toJourneyId: 'toJourneyId',

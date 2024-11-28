@@ -2,7 +2,7 @@ extend type ShortLink @key(fields: "id") {
   id: ID! @external
 }
 
-type QrCode @key(fields: "id") {
+type QrCode {
   id: ID!
   """
   Team where the Qr Code belongs to
@@ -36,6 +36,10 @@ input QrCodeCreateInput {
 }
 
 input QrCodeUpdateInput {
+  """
+  journey url where the QR code redirects to, will be parsed and
+  stored as ids
+  """
   to: String
   color: String
   backgroundColor: String
