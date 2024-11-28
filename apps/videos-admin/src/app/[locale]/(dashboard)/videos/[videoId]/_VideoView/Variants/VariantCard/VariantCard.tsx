@@ -1,7 +1,6 @@
-import Card from '@mui/material/Card'
-import CardActionArea from '@mui/material/CardActionArea'
-import CardContent from '@mui/material/CardContent'
-import Typography from '@mui/material/Typography'
+import ListItem from '@mui/material/ListItem'
+import ListItemButton from '@mui/material/ListItemButton'
+import ListItemText from '@mui/material/ListItemText'
 import { CSSProperties, ReactElement, useState } from 'react'
 
 import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
@@ -9,11 +8,13 @@ import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo
 import { VariantDialog } from './VariantDialog'
 
 export interface VariantCardProps {
+  key: number
   variant: GetAdminVideoVariant
   style?: CSSProperties
 }
 
 export function VariantCard({
+  key,
   variant,
   style
 }: VariantCardProps): ReactElement {
@@ -29,23 +30,14 @@ export function VariantCard({
 
   return (
     <>
-      <Card
-        key={variant.id}
-        sx={{
-          p: 0,
-          '&.MuiCard-root': { height: '80px', position: 'static', ...style }
-        }}
-        onClick={handleOpen}
-      >
-        <CardActionArea sx={{ p: 2 }}>
-          <CardContent>
-            <Typography variant="h6">
-              {variant.language.name[0].value}
-            </Typography>
-            <Typography variant="body1">{variant.slug}</Typography>
-          </CardContent>
-        </CardActionArea>
-      </Card>
+      <ListItem style={style} key={key} component="div">
+        <ListItemButton onClick={handleOpen} sx={{ height: '100%' }}>
+          <ListItemText
+            primary={variant.language.name[0].value}
+            secondary={variant.language.id}
+          />
+        </ListItemButton>
+      </ListItem>
       {open != null && (
         <VariantDialog
           open={open}
