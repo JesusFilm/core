@@ -1882,15 +1882,11 @@ type QrCode @join__type(graph: API_JOURNEYS, key: "id")  {
   """
   Team where the Qr Code belongs to
   """
-  teamId: ID!
+  team: Team
   """
   Journey where the Qr Code was created from
   """
-  journeyId: ID!
-  """
-  The destination the QR code will direct to
-  """
-  destination: String!
+  journey: Journey
   """
   ShortLink that handles the redirection
   """
@@ -3995,7 +3991,7 @@ input QrCodeCreateInput @join__type(graph: API_JOURNEYS)  {
 }
 
 input QrCodeUpdateInput @join__type(graph: API_JOURNEYS)  {
-  newDestination: String
+  to: String
   color: String
   backgroundColor: String
 }

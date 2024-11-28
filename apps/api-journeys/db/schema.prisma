@@ -622,13 +622,11 @@ model QrCode {
   id              String  @id @default(uuid())
   teamId          String
   journeyId       String
-  destination     String?
   toJourneyId     String
   toBlockId       String?
   shortLinkId     String
-  customDomain    String?
   color           String? @default("#000000")
   backgroundColor String? @default("#FFFFFF")
-  Team            Team    @relation(fields: [teamId], references: [id])
-  journey         Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  team            Team    @relation(fields: [teamId], references: [id])
+  journey         Journey @relation(fields: [journeyId], references: [id])
 }

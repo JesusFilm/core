@@ -2648,13 +2648,10 @@ type QrCode
   id: ID!
 
   """Team where the Qr Code belongs to"""
-  teamId: ID!
+  team: Team
 
   """Journey where the Qr Code was created from"""
-  journeyId: ID!
-
-  """The destination the QR code will direct to"""
-  destination: String!
+  journey: Journey
 
   """ShortLink that handles the redirection"""
   shortLink: ShortLink!
@@ -2673,7 +2670,7 @@ input QrCodeCreateInput {
 }
 
 input QrCodeUpdateInput {
-  newDestination: String
+  to: String
   color: String
   backgroundColor: String
 }

@@ -7,15 +7,11 @@ type QrCode @key(fields: "id") {
   """
   Team where the Qr Code belongs to
   """
-  teamId: ID!
+  team: Team
   """
   Journey where the Qr Code was created from
   """
-  journeyId: ID!
-  """
-  The destination the QR code will direct to
-  """
-  destination: String!
+  journey: Journey
   """
   ShortLink that handles the redirection
   """
@@ -40,7 +36,7 @@ input QrCodeCreateInput {
 }
 
 input QrCodeUpdateInput {
-  newDestination: String
+  to: String
   color: String
   backgroundColor: String
 }
@@ -50,13 +46,3 @@ extend type Mutation {
   qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!): QrCode!
   qrCodeDelete(id: ID!): QrCode!
 }
-
-# TODO
-# Permissions
-# Add for shared with me
-# Add for publishers in template journeys
-
-# Behavior
-# Team member and manager can manage (not shared with me journeys)
-# Changing the "to" will have a delay
-# Changing the image will change the QR code (will need reprint)

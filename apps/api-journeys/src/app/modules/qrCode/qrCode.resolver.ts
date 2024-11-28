@@ -1,3 +1,4 @@
+import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
 import {
   Args,
@@ -7,10 +8,10 @@ import {
   ResolveField,
   Resolver
 } from '@nestjs/graphql'
+import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
 import { Prisma, QrCode } from '.prisma/api-journeys-client'
-import { ShortLink } from '.prisma/api-media-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
 import { Service } from '../../../__generated__/graphql'
@@ -38,59 +39,16 @@ export class QrCodeResolver {
     })
   }
 
-  async decodeAndVerifyDestination(
-    qrCode: QrCode,
-    destination: string
-  ): Promise<{ toJourneyId: string; toBlockId?: string | null | undefined }> {
-    const { origin, hostname, pathname } = new URL(destination)
-
-    const pathArray = pathname.split('/')
-    const journeySlug = pathArray[0]
-    const blockId = pathArray[1]
-
-    if (hostname == null || journeySlug == null)
-      throw new Error('Invalid destination')
-
-    const customDomain = await this.prismaService.customDomain.findMany({
-      where: { teamId: qrCode.teamId }
-    })[0]
-    if (
-      customDomain != null &&
-      customDomain.name != null &&
-      customDomain.name !== hostname
-    ) {
-      throw new Error('Invalid hostname')
-    } else if (origin !== process.env.JOURNEYS_URL) {
-      throw new Error('Invalid hostname')
-    }
-
-    const journey = await this.prismaService.journey.findFirstOrThrow({
-      where: { slug: journeySlug }
-    })
-
-    const block =
-      blockId != null
-        ? await this.prismaService.block.findFirstOrThrow({
-            where: { journeyId: journey.id, id: blockId }
-          })
-        : undefined
-
-    return {
-      toJourneyId: journey.id,
-      toBlockId: block?.id ?? undefined
-    }
-  }
-
   @Query()
   async qrCode(@Args('id') id: string): Promise<QrCode> {
     return await this.getQrCode(id)
   }
 
   @Query()
-  async qrCodes(@Args('where') where?: QrCodesFilter): Promise<QrCode[]> {
+  async qrCodes(@Args('where') where: QrCodesFilter): Promise<QrCode[]> {
     const filter: Prisma.QrCodeWhereInput = {}
-    if (where?.journeyId) filter.journeyId = where.journeyId
-    if (where?.teamId) filter.teamId = where.teamId
+    if (where.journeyId) filter.journeyId = where.journeyId
+    if (where.teamId) filter.teamId = where.teamId
     return await this.prismaService.qrCode.findMany({ where: filter })
   }
 
@@ -100,19 +58,17 @@ export class QrCodeResolver {
     @Args('input') input: QrCodeCreateInput,
     @CaslAbility() ability: AppAbility
   ): Promise<QrCode> {
-    if (ability.cannot(Action.Manage, 'QrCode')) {
-      throw new Error('User is not allowed to create the QrCode')
-    }
     const id = uuidv4()
     const to = await this.qrCodeService.getTo(id, input.teamId, input.journeyId)
 
     return await this.prismaService.$transaction(async (tx) => {
       const shortLinkCreate = await this.qrCodeService.createShortLink({
-        hostname: 'localhost',
+        hostname: 'localhost', // TODO replace with env
         to,
         service: Service.ApiJourneys
       })
-      return await tx.qrCode.create({
+
+      const qrCode = await tx.qrCode.create({
         data: {
           ...input,
           id,
@@ -120,6 +76,13 @@ export class QrCodeResolver {
           shortLinkId: shortLinkCreate.data.id
         }
       })
+
+      if (ability.cannot(Action.Manage, subject('QrCode', qrCode))) {
+        throw new GraphQLError('User is not allowed to create the QrCode', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      }
+      return qrCode
     })
   }
 
@@ -130,22 +93,17 @@ export class QrCodeResolver {
     @Args('input') input: QrCodeUpdateInput,
     @CaslAbility() ability: AppAbility
   ): Promise<QrCode> {
-    if (ability.cannot(Action.Manage, 'QrCode')) {
-      throw new Error('User is not allowed to update the QrCode')
-    }
-
     const qrCode = await this.getQrCode(id)
     const updateInput = {
       ...input,
-      destination: qrCode.destination,
       toJourneyId: qrCode.toJourneyId,
       toBlockId: qrCode.toBlockId
     }
 
     return await this.prismaService.$transaction(async (tx) => {
-      if (input.newDestination != null) {
+      if (input.to != null) {
         const { toJourneyId, toBlockId } =
-          await this.decodeAndVerifyDestination(qrCode, input.newDestination)
+          await this.qrCodeService.decodeAndVerifyTo(qrCode, input.to)
         const to = await this.qrCodeService.getTo(
           id,
           qrCode.teamId,
@@ -161,6 +119,11 @@ export class QrCodeResolver {
         if (toBlockId != null) updateInput.toBlockId = toBlockId
       }
 
+      if (ability.cannot(Action.Manage, subject('QrCode', qrCode))) {
+        throw new GraphQLError('User is not allowed to update the QrCode', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      }
       return await tx.qrCode.update({
         where: { id },
         data: updateInput
@@ -174,10 +137,12 @@ export class QrCodeResolver {
     @Args('id') id: string,
     @CaslAbility() ability: AppAbility
   ): Promise<QrCode> {
-    if (ability.cannot(Action.Manage, 'QrCode')) {
-      throw new Error('User is not allowed to create the QrCode')
-    }
     const qrCode = await this.getQrCode(id)
+    if (ability.cannot(Action.Manage, subject('QrCode', qrCode))) {
+      throw new GraphQLError('User is not allowed to create the QrCode', {
+        extensions: { code: 'FORBIDDEN' }
+      })
+    }
     return await this.prismaService.$transaction(async (tx) => {
       await this.qrCodeService.deleteShortLink(qrCode.shortLinkId)
       return await tx.qrCode.delete({ where: { id } })
@@ -185,13 +150,10 @@ export class QrCodeResolver {
   }
 
   @ResolveField()
-  async shortLink(@Parent() qrCode: QrCode): Promise<ShortLink> {
-    return await this.qrCodeService.getShortLink(qrCode.shortLinkId)
-  }
-
-  @ResolveField()
-  async destination(@Parent() qrCode: QrCode): Promise<string> {
-    const shortLink = await this.qrCodeService.getShortLink(qrCode.shortLinkId)
-    return shortLink.to.split('?utm')[0]
+  async shortLink(@Parent() qrCode: QrCode): Promise<{
+    __typename: 'ShortLink'
+    id: string
+  }> {
+    return { __typename: 'ShortLink', id: qrCode.shortLinkId }
   }
 }

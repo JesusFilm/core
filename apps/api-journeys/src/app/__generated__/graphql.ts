@@ -816,7 +816,7 @@ export class QrCodeCreateInput {
 }
 
 export class QrCodeUpdateInput {
-    newDestination?: Nullable<string>;
+    to?: Nullable<string>;
     color?: Nullable<string>;
     backgroundColor?: Nullable<string>;
 }
@@ -1774,9 +1774,8 @@ export class PlausibleStatsResponse {
 export class QrCode {
     __typename?: 'QrCode';
     id: string;
-    teamId: string;
-    journeyId: string;
-    destination: string;
+    team?: Nullable<Team>;
+    journey?: Nullable<Journey>;
     shortLink: ShortLink;
     color?: Nullable<string>;
     backgroundColor?: Nullable<string>;

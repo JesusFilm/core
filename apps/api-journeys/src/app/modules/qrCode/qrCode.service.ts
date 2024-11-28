@@ -2,11 +2,13 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import { Injectable } from '@nestjs/common'
 import { graphql } from 'gql.tada'
 
+import { QrCode } from '.prisma/api-journeys-client'
 import { ShortLink } from '.prisma/api-media-client'
 
 import {
   MutationShortLinkCreateInput,
   MutationShortLinkCreateSuccess,
+  MutationShortLinkDeleteSuccess,
   MutationShortLinkUpdateInput,
   MutationShortLinkUpdateSuccess
 } from '../../../__generated__/graphql'
@@ -19,11 +21,6 @@ const httpLink = createHttpLink({
     'x-graphql-client-name': 'api-journeys',
     'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
   }
-})
-
-const apollo = new ApolloClient({
-  link: httpLink,
-  cache: new InMemoryCache()
 })
 
 export const GET_SHORT_LINK = graphql(`
@@ -107,30 +104,12 @@ export const DELETE_SHORT_LINK = graphql(`
 export class QrCodeService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getTo(
-    qrCodeId: string,
-    teamId: string,
-    toJourneyId: string,
-    toBlockId?: string | undefined | null
-  ): Promise<string> {
-    const journey = await this.prismaService.journey.findUniqueOrThrow({
-      where: { id: toJourneyId }
-    })
-    const customDomain = await this.prismaService.customDomain.findMany({
-      where: { teamId }
-    })[0]
-
-    const base =
-      customDomain?.name != null
-        ? `https://${customDomain.name}`
-        : process.env.JOURNEYS_URL
-    const path = `${journey.slug}${toBlockId != null ? `/${toBlockId}` : ''}`
-    const utm = `?utm_source=ns-qr-code&utm_campaign=${qrCodeId}`
-
-    return `${base}/${path}${utm}`
-  }
-
   async getShortLink(id: string): Promise<ShortLink> {
+    const apollo = new ApolloClient({
+      link: httpLink,
+      cache: new InMemoryCache()
+    })
+
     const {
       data: { shortLink }
     } = await apollo.query({
@@ -150,6 +129,11 @@ export class QrCodeService {
   async createShortLink(
     input: MutationShortLinkCreateInput
   ): Promise<MutationShortLinkCreateSuccess> {
+    const apollo = new ApolloClient({
+      link: httpLink,
+      cache: new InMemoryCache()
+    })
+
     const {
       data: { shortLinkCreate }
     } = await apollo.mutate({
@@ -176,6 +160,11 @@ export class QrCodeService {
   async updateShortLink(
     input: MutationShortLinkUpdateInput
   ): Promise<MutationShortLinkUpdateSuccess> {
+    const apollo = new ApolloClient({
+      link: httpLink,
+      cache: new InMemoryCache()
+    })
+
     const {
       data: { shortLinkUpdate }
     } = await apollo.mutate({
@@ -199,7 +188,12 @@ export class QrCodeService {
     }
   }
 
-  async deleteShortLink(id: string): Promise<void> {
+  async deleteShortLink(id: string): Promise<MutationShortLinkDeleteSuccess> {
+    const apollo = new ApolloClient({
+      link: httpLink,
+      cache: new InMemoryCache()
+    })
+
     const {
       data: { shortLinkDelete }
     } = await apollo.mutate({
@@ -212,13 +206,51 @@ export class QrCodeService {
     if (shortLinkDelete.__typename === 'NotFoundError') {
       throw new Error(shortLinkDelete.message)
     } else if (
-      shortLinkDelete.__typename !== 'MutationShortLinkDeleteSuccess'
+      shortLinkDelete.__typename === 'MutationShortLinkDeleteSuccess'
     ) {
+      return shortLinkDelete
+    } else {
       throw new Error('Unexpected error occurred in short link deletion')
     }
   }
 
+  async getTo(
+    qrCodeId: string,
+    teamId: string,
+    toJourneyId: string,
+    toBlockId?: string | undefined | null
+  ): Promise<string> {
+    const journey = await this.prismaService.journey.findUniqueOrThrow({
+      where: { id: toJourneyId }
+    })
+    const customDomain = (
+      await this.prismaService.customDomain.findMany({
+        where: { teamId }
+      })
+    )[0]
+    const block =
+      toBlockId != null
+        ? await this.prismaService.block.findUniqueOrThrow({
+            where: { journeyId: journey.id, id: toBlockId }
+          })
+        : null
+
+    const base =
+      customDomain?.name != null
+        ? `https://${customDomain.name}`
+        : process.env.JOURNEYS_URL
+    const path = `${journey.slug}${block != null ? `/${block.id}` : ''}`
+    const utm = `?utm_source=ns-qr-code&utm_campaign=${qrCodeId}`
+
+    return `${base}/${path}${utm}`
+  }
+
   async updateTeamShortLinks(teamId: string): Promise<void> {
+    const apollo = new ApolloClient({
+      link: httpLink,
+      cache: new InMemoryCache()
+    })
+
     const qrCodes = await this.prismaService.qrCode.findMany({
       where: { teamId }
     })
@@ -245,9 +277,15 @@ export class QrCodeService {
   }
 
   async updateJourneyShortLink(toJourneyId: string): Promise<void> {
+    const apollo = new ApolloClient({
+      link: httpLink,
+      cache: new InMemoryCache()
+    })
+
     const qrCode = await this.prismaService.qrCode.findFirstOrThrow({
       where: { toJourneyId }
     })
+
     const to = await this.getTo(
       qrCode.id,
       qrCode.teamId,
@@ -264,6 +302,50 @@ export class QrCodeService {
       })
     } catch (e) {
       throw new Error('Error updating short link')
+    }
+  }
+
+  async decodeAndVerifyTo(
+    qrCode: QrCode,
+    to: string
+  ): Promise<{ toJourneyId: string; toBlockId?: string | null | undefined }> {
+    const { origin, hostname, pathname } = new URL(to)
+
+    const pathArray = pathname.split('/')
+    const journeySlug = pathArray[1]
+    const blockId = pathArray[2]
+
+    if (hostname == null || journeySlug == null) throw new Error('Invalid to')
+
+    const customDomain = (
+      await this.prismaService.customDomain.findMany({
+        where: { teamId: qrCode.teamId }
+      })
+    )[0]
+    if (
+      customDomain != null &&
+      customDomain.name != null &&
+      customDomain.name !== hostname
+    ) {
+      throw new Error('Invalid hostname')
+    } else if (origin !== process.env.JOURNEYS_URL) {
+      throw new Error('Invalid hostname')
+    }
+
+    const journey = await this.prismaService.journey.findFirstOrThrow({
+      where: { slug: journeySlug }
+    })
+
+    const block =
+      blockId != null
+        ? await this.prismaService.block.findFirstOrThrow({
+            where: { journeyId: journey.id, id: blockId }
+          })
+        : undefined
+
+    return {
+      toJourneyId: journey.id,
+      toBlockId: block?.id ?? undefined
     }
   }
 }
