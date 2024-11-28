@@ -25,6 +25,7 @@ import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
+import { INCLUDE_QR_CODE_ACL } from './qrCode.acl'
 import { QrCodeService } from './qrCode.service'
 
 @Resolver('QrCode')
@@ -36,7 +37,10 @@ export class QrCodeResolver {
 
   async getQrCode(@Args('id') id: string): Promise<QrCode> {
     return await this.prismaService.qrCode.findUniqueOrThrow({
-      where: { id }
+      where: { id },
+      include: {
+        ...INCLUDE_QR_CODE_ACL
+      }
     })
   }
 
@@ -68,8 +72,13 @@ export class QrCodeResolver {
           extensions: { code: 'INTERNAL_SERVER_ERROR' }
         })
 
+      // TODO: No port in hostname
+      const hostname =
+        process.env.JOURNEY_SHORTLINK_DOMAIN === 'localhost:4700'
+          ? 'localhost'
+          : process.env.JOURNEY_SHORTLINK_DOMAIN
       const shortLinkCreate = await this.qrCodeService.createShortLink({
-        hostname: process.env.JOURNEY_SHORTLINK_DOMAIN,
+        hostname,
         to,
         service: Service.ApiJourneys
       })
@@ -80,6 +89,9 @@ export class QrCodeResolver {
           id,
           toJourneyId: input.journeyId,
           shortLinkId: shortLinkCreate.data.id
+        },
+        include: {
+          ...INCLUDE_QR_CODE_ACL
         }
       })
 
@@ -145,7 +157,7 @@ export class QrCodeResolver {
   ): Promise<QrCode> {
     const qrCode = await this.getQrCode(id)
     if (ability.cannot(Action.Manage, subject('QrCode', qrCode))) {
-      throw new GraphQLError('User is not allowed to create the QrCode', {
+      throw new GraphQLError('User is not allowed to delete the QrCode', {
         extensions: { code: 'FORBIDDEN' }
       })
     }

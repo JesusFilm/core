@@ -9,6 +9,7 @@ import { MutationShortLinkCreateSuccess } from '../../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
+import { INCLUDE_QR_CODE_ACL } from './qrCode.acl'
 import { QrCodeResolver } from './qrCode.resolver'
 import { QrCodeService } from './qrCode.service'
 
@@ -92,7 +93,10 @@ describe('QrCode', () => {
       prismaService.qrCode.findUniqueOrThrow.mockResolvedValue(qrCode)
       expect(await resolver.qrCode(qrCode.id)).toEqual(qrCode)
       expect(prismaService.qrCode.findUniqueOrThrow).toHaveBeenCalledWith({
-        where: { id: qrCode.id }
+        where: { id: qrCode.id },
+        include: {
+          ...INCLUDE_QR_CODE_ACL
+        }
       })
     })
   })
@@ -144,7 +148,10 @@ describe('QrCode', () => {
         'journeyId'
       )
       expect(prismaService.qrCode.create).toHaveBeenCalledWith({
-        data: qrCode
+        data: qrCode,
+        include: {
+          ...INCLUDE_QR_CODE_ACL
+        }
       })
     })
 
@@ -221,7 +228,7 @@ describe('QrCode', () => {
     it('throws error if not authorized', async () => {
       prismaService.qrCode.findUniqueOrThrow.mockResolvedValue(qrCodeUnauth)
       await expect(resolver.qrCodeDelete('qrCodeId', ability)).rejects.toThrow(
-        'User is not allowed to create the QrCode'
+        'User is not allowed to delete the QrCode'
       )
     })
   })
