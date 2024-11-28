@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import Stack from '@mui/material/Stack'
@@ -6,6 +7,7 @@ import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useCallback, useRef } from 'react'
 import videojs from 'video.js'
@@ -31,6 +33,8 @@ export function VariantDialog({
   handleClose
 }: VariantDialogProps): ReactElement | null {
   const t = useTranslations()
+  const router = useRouter()
+  const pathname = usePathname()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const playerRef = useRef<Player>()
 
@@ -47,6 +51,12 @@ export function VariantDialog({
     (download) => download.quality === 'low'
   )?.url
 
+  function handleClick(): void {
+    router.push(
+      `${pathname}/${variant.id}?language=${variant.language.id}?edit=true`
+    )
+  }
+
   return (
     <Dialog
       open={open}
@@ -57,7 +67,14 @@ export function VariantDialog({
       divider
     >
       <Stack gap={4}>
-        <Typography variant="h2">{variant.language.name[0].value}</Typography>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          onClick={handleClick}
+        >
+          <Typography variant="h2">{variant.language.name[0].value}</Typography>
+          <Button variant="contained">{t('Edit')}</Button>
+        </Stack>
         <FormControl>
           <Stack direction="row">
             <Stack direction="column">

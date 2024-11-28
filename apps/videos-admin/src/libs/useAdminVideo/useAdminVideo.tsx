@@ -2,7 +2,7 @@ import { QueryHookOptions, QueryResult, useQuery } from '@apollo/client'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 
 export const GET_ADMIN_VIDEO = graphql(`
-  query GetAdminVideo($videoId: ID!) {
+  query GetAdminVideo($videoId: ID!, $languageId: ID) {
     adminVideo(id: $videoId) {
       id
       slug
@@ -18,15 +18,15 @@ export const GET_ADMIN_VIDEO = graphql(`
         value
       }
       noIndex
-      title {
+      title(languageId: $languageId) {
         id
         value
       }
-      description {
+      description(languageId: $languageId) {
         id
         value
       }
-      snippet {
+      snippet(languageId: $languageId) {
         id
         value
       }
