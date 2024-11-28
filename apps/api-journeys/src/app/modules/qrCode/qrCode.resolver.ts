@@ -62,8 +62,11 @@ export class QrCodeResolver {
     const to = await this.qrCodeService.getTo(id, input.teamId, input.journeyId)
 
     return await this.prismaService.$transaction(async (tx) => {
+      if (process.env.JOURNEY_SHORTLINK_DOMAIN == null)
+        throw new Error('Shortlink domain not set')
+
       const shortLinkCreate = await this.qrCodeService.createShortLink({
-        hostname: 'localhost', // TODO replace with env
+        hostname: process.env.JOURNEY_SHORTLINK_DOMAIN,
         to,
         service: Service.ApiJourneys
       })

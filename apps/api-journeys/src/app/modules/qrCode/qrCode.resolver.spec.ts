@@ -127,6 +127,7 @@ describe('QrCode', () => {
       prismaService.$transaction.mockImplementation(
         async (callback) => await callback(prismaService)
       )
+      process.env.JOURNEY_SHORTLINK_DOMAIN = 'nxstp.is'
     })
 
     it('should create qr code', async () => {
