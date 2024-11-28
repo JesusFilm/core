@@ -2564,15 +2564,13 @@ export type QrCode = {
   __typename?: 'QrCode';
   backgroundColor?: Maybe<Scalars['String']['output']>;
   color?: Maybe<Scalars['String']['output']>;
-  /** The destination the QR code will direct to */
-  destination: Scalars['String']['output'];
   id: Scalars['ID']['output'];
   /** Journey where the Qr Code was created from */
-  journeyId: Scalars['ID']['output'];
+  journey?: Maybe<Journey>;
   /** ShortLink that handles the redirection */
   shortLink: ShortLink;
   /** Team where the Qr Code belongs to */
-  teamId: Scalars['ID']['output'];
+  team?: Maybe<Team>;
 };
 
 export type QrCodeCreateInput = {
@@ -2583,7 +2581,7 @@ export type QrCodeCreateInput = {
 export type QrCodeUpdateInput = {
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
   color?: InputMaybe<Scalars['String']['input']>;
-  newDestination?: InputMaybe<Scalars['String']['input']>;
+  to?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type QrCodesFilter = {
