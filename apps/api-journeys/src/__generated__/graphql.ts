@@ -2581,6 +2581,10 @@ export type QrCodeCreateInput = {
 export type QrCodeUpdateInput = {
   backgroundColor?: InputMaybe<Scalars['String']['input']>;
   color?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * journey url where the QR code redirects to, will be parsed and
+   * stored as ids
+   */
   to?: InputMaybe<Scalars['String']['input']>;
 };
 
