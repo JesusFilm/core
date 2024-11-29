@@ -242,7 +242,8 @@ const Video = builder.prismaObject('Video', {
       resolve: async (query, parent) =>
         await prisma.videoVariant.findMany({
           ...query,
-          where: { videoId: parent.id }
+          where: { videoId: parent.id },
+          orderBy: { languageId: 'asc' }
         })
     }),
     subtitles: t.relation('subtitles', {
