@@ -72,13 +72,8 @@ export class QrCodeResolver {
           extensions: { code: 'INTERNAL_SERVER_ERROR' }
         })
 
-      // TODO: No port in hostname
-      const hostname =
-        process.env.JOURNEY_SHORTLINK_DOMAIN === 'localhost:4700'
-          ? 'localhost'
-          : process.env.JOURNEY_SHORTLINK_DOMAIN
       const shortLinkCreate = await this.qrCodeService.createShortLink({
-        hostname,
+        hostname: process.env.JOURNEY_SHORTLINK_DOMAIN,
         to,
         service: Service.ApiJourneys
       })
