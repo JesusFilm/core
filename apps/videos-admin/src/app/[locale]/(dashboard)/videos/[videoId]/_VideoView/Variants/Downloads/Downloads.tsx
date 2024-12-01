@@ -38,7 +38,7 @@ export function Downloads({ downloads }: DownloadsProps): ReactElement {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {downloads?.map(({ id, quality, size, width, height, url }) => (
+                {downloads.map(({ id, quality, size, width, height, url }) => (
                   <TableRow key={id}>
                     <TableCell>{quality}</TableCell>
                     <TableCell>{bytesToSize(size)}</TableCell>
