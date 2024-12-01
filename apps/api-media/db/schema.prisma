@@ -127,7 +127,7 @@ model Video {
   keywords               Keyword[]            @relation("VideoToKeyword")
   images                 CloudflareImage[]
   cloudflareAssets       CloudflareR2[]
-  videoEdition           VideoEdition[]
+  videoEditions          VideoEdition[]
 
   @@index(label)
   @@index(childIds)

@@ -683,7 +683,7 @@ type Video
   primaryLanguageId: ID!
   published: Boolean!
   cloudflareAssets: [CloudflareR2!]!
-  videoEdition: [VideoEdition!]!
+  videoEditions: [VideoEdition!]!
   title(languageId: ID, primary: Boolean): [VideoTitle!]!
   snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
   description(languageId: ID, primary: Boolean): [VideoDescription!]!
