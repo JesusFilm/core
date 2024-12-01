@@ -2,6 +2,7 @@ import { useMutation } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
+import unescape from 'lodash/unescape'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
@@ -49,10 +50,12 @@ export function VideoSnippet({
     })
   }
 
+  const snippet = unescape(videoSnippets?.[0].value).replace(/&#13;/g, '\n')
+
   return (
     <Formik
       initialValues={{
-        snippet: videoSnippets?.[0].value
+        snippet
       }}
       onSubmit={handleUpdateVideoSnippet}
       validationSchema={validationSchema}
