@@ -14,7 +14,7 @@ import { GetAdminVideoVariant_Downloads as VariantDownloads } from '../../../../
 import { bytesToSize } from './utils/bytesToSize'
 
 interface DownloadsProps {
-  downloads?: VariantDownloads
+  downloads: VariantDownloads
 }
 
 export function Downloads({ downloads }: DownloadsProps): ReactElement {
@@ -24,7 +24,7 @@ export function Downloads({ downloads }: DownloadsProps): ReactElement {
     <>
       <Typography variant="h4">{t('Downloads')}</Typography>
       <>
-        {downloads?.length === 0 ? (
+        {downloads.length === 0 ? (
           <Typography>{t('No downloads available')}</Typography>
         ) : (
           <TableContainer component={Paper}>
