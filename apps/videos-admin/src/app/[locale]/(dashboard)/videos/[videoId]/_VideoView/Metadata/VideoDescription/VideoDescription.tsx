@@ -10,7 +10,6 @@ import { object, string } from 'yup'
 import { ResizableTextField } from '../../../../../../../../components/ResizableTextField'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo_VideoDescriptions as VideoDescriptions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useEdit } from '../../../_EditProvider'
 
 export const UPDATE_VIDEO_DESCRIPTION = graphql(`
   mutation UpdateVideoDescription($input: VideoTranslationUpdateInput!) {
@@ -29,9 +28,6 @@ export function VideoDescription({
   videoDescriptions
 }: VideoDescriptionProps): ReactElement {
   const t = useTranslations()
-  const {
-    state: { isEdit }
-  } = useEdit()
   const [updateVideoDescription] = useMutation(UPDATE_VIDEO_DESCRIPTION)
 
   const validationSchema = object().shape({
@@ -75,15 +71,13 @@ export function VideoDescription({
               onChange={handleChange}
               error={Boolean(errors.description)}
               helperText={errors.description as string}
-              disabled={!isEdit}
               minRows={6}
               maxRows={6}
             />
-            {isEdit && (
-              <Stack direction="row" justifyContent="flex-end">
-                <SaveButton disabled={!isValid || isSubmitting || !dirty} />
-              </Stack>
-            )}
+
+            <Stack direction="row" justifyContent="flex-end">
+              <SaveButton disabled={!isValid || isSubmitting || !dirty} />
+            </Stack>
           </Stack>
         </Form>
       )}

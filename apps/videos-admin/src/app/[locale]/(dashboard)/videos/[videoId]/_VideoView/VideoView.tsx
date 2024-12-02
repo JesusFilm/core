@@ -1,7 +1,6 @@
 'use client'
 
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
@@ -13,7 +12,6 @@ import { ReactElement, SyntheticEvent, useState } from 'react'
 
 import { PublishedChip } from '../../../../../../components/PublishedChip'
 import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
-import { useEdit } from '../_EditProvider'
 
 import { Children } from './Children'
 import { Editions } from './Editions'
@@ -23,10 +21,6 @@ import { TabLabel } from './Tabs/TabLabel'
 import { Variants } from './Variants'
 
 export function VideoView(): ReactElement {
-  const {
-    state: { isEdit },
-    dispatch
-  } = useEdit()
   const t = useTranslations()
   const params = useParams<{ videoId: string; locale: string }>()
   const [tabValue, setTabValue] = useState(0)
@@ -34,10 +28,6 @@ export function VideoView(): ReactElement {
     variables: { videoId: params?.videoId as string }
   })
   const video = data?.adminVideo
-
-  function handleEdit(): void {
-    dispatch({ type: 'SetEditStateAction', isEdit: !isEdit })
-  }
 
   function handleTabChange(_e: SyntheticEvent, newValue: number): void {
     setTabValue(newValue)
@@ -55,17 +45,9 @@ export function VideoView(): ReactElement {
         flexWrap="wrap"
         sx={{ mb: 2, alignItems: 'center' }}
       >
-        {isEdit && <Typography variant="h4">{t('Editing')} :</Typography>}
+        <Typography variant="h4">{t('Editing')} :</Typography>
         <Typography variant="h4">{data?.adminVideo.title[0].value}</Typography>
         <PublishedChip published={data?.adminVideo.published ?? false} />
-        <Button
-          onClick={handleEdit}
-          variant="outlined"
-          size="small"
-          sx={{ ml: 'auto', width: 'min-width' }}
-        >
-          {!isEdit ? t('Edit') : t('Cancel')}
-        </Button>
       </Stack>
       <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
         <Box width="100%">

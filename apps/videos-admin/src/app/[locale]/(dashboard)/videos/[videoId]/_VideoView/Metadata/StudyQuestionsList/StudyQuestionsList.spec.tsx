@@ -2,34 +2,30 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { EditProvider } from '../../../_EditProvider'
-
 import { StudyQuestionsList } from './StudyQuestionsList'
 
 describe('StudyQuestions', () => {
   it('should render', async () => {
     render(
       <NextIntlClientProvider locale="en">
-        <EditProvider initialState={{ isEdit: true }}>
-          <MockedProvider>
-            <StudyQuestionsList
-              studyQuestions={[
-                {
-                  id: 'studyQuestion.1',
-                  value: 'Study question 1 text'
-                },
-                {
-                  id: 'studyQuestions.2',
-                  value: 'Study question 2 text'
-                },
-                {
-                  id: 'studyQuestion.3',
-                  value: 'Study question 3 text'
-                }
-              ]}
-            />
-          </MockedProvider>
-        </EditProvider>
+        <MockedProvider>
+          <StudyQuestionsList
+            studyQuestions={[
+              {
+                id: 'studyQuestion.1',
+                value: 'Study question 1 text'
+              },
+              {
+                id: 'studyQuestions.2',
+                value: 'Study question 2 text'
+              },
+              {
+                id: 'studyQuestion.3',
+                value: 'Study question 3 text'
+              }
+            ]}
+          />
+        </MockedProvider>
       </NextIntlClientProvider>
     )
 
@@ -59,11 +55,9 @@ describe('StudyQuestions', () => {
   it('should render fallback', () => {
     render(
       <NextIntlClientProvider locale="en">
-        <EditProvider initialState={{ isEdit: true }}>
-          <MockedProvider>
-            <StudyQuestionsList studyQuestions={[]} />
-          </MockedProvider>
-        </EditProvider>
+        <MockedProvider>
+          <StudyQuestionsList studyQuestions={[]} />
+        </MockedProvider>
       </NextIntlClientProvider>
     )
 
