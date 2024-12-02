@@ -8,13 +8,11 @@ import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo
 import { VariantDialog } from './VariantDialog'
 
 export interface VariantCardProps {
-  key: number
   variant: GetAdminVideoVariant
   style?: CSSProperties
 }
 
 export function VariantCard({
-  key,
   variant,
   style
 }: VariantCardProps): ReactElement {
@@ -30,7 +28,7 @@ export function VariantCard({
 
   return (
     <>
-      <ListItem style={style} key={key} component="div">
+      <ListItem style={style} component="div">
         <ListItemButton onClick={handleOpen} sx={{ height: '100%' }}>
           <ListItemText
             primary={variant.language.name[0].value}

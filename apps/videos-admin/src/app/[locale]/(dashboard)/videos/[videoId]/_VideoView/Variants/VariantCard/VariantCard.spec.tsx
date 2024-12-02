@@ -18,7 +18,7 @@ describe('VariantCard', () => {
   it('should display language and languageId of variant', () => {
     render(
       <NextIntlClientProvider locale="en">
-        <VariantCard key={1} variant={variant} />
+        <VariantCard variant={variant} />
       </NextIntlClientProvider>
     )
 
@@ -29,7 +29,7 @@ describe('VariantCard', () => {
   it('should open variant dialog on click', () => {
     render(
       <NextIntlClientProvider locale="en">
-        <VariantCard key={1} variant={variant} />
+        <VariantCard variant={variant} />
       </NextIntlClientProvider>
     )
 

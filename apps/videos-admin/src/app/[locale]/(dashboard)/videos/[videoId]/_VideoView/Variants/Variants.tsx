@@ -60,7 +60,7 @@ export function Variants({
             overscanCount={10}
           >
             {({ index, style, data: items }) => (
-              <VariantCard key={index} variant={items[index]} style={style} />
+              <VariantCard variant={items[index]} style={style} />
             )}
           </FixedSizeList>
         </Section>
