@@ -1,20 +1,16 @@
+import Card from '@mui/material/Card'
+import Divider from '@mui/material/Divider'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-
-import { Form, Formik, FormikValues } from 'formik'
 import { useTranslations } from 'next-intl'
-import { ReactElement, useState, MouseEvent } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { GetAdminVideo_AdminVideo_VideoEditions as VideoEditions } from '../../../../../../../libs/useAdminVideo'
-import InputLabel from '@mui/material/InputLabel'
-import FormControl from '@mui/material/FormControl'
 import { Section } from '../Section'
-import { Dialog } from '@core/shared/ui/Dialog'
-import Card from '@mui/material/Card'
-import Divider from '@mui/material/Divider'
-import Box from '@mui/material/Box'
 
 interface EditionsProps {
   editions?: VideoEditions
