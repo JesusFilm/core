@@ -69,18 +69,29 @@ export const GET_ADMIN_VIDEO = graphql(`
         value
       }
       variantLanguagesCount
-      subtitles {
+      videoEditions {
         id
-        edition
-        vttSrc
-        srtSrc
-        value
-        language {
+        name
+        videoSubtitles {
           id
-          name {
-            value
+          languageId
+          vttSrc
+          srtSrc
+          language {
+            id
+            name {
+              value
+            }
+            slug
           }
+        }
+        videoVariants {
+          id
           slug
+          videoEdition {
+            id
+            name
+          }
         }
       }
     }
@@ -105,6 +116,8 @@ export type GetAdminVideo_AdminVideo_StudyQuestions =
   GetAdminVideo['adminVideo']['studyQuestions']
 export type GetAdminVideo_AdminVideo_Children =
   GetAdminVideo['adminVideo']['children']
+export type GetAdminVideo_AdminVideo_VideoEditions =
+  GetAdminVideo['adminVideo']['videoEditions']
 
 export function useAdminVideo(
   options: QueryHookOptions<GetAdminVideo, GetAdminVideoVariables>

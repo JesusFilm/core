@@ -108,7 +108,7 @@ export function VideoView(): ReactElement {
                 <Variants variants={video?.variants} />
               </TabContainer>
               <TabContainer value={tabValue} index={3}>
-                <Editions editions={[]} />
+                <Editions editions={video?.videoEditions} />
               </TabContainer>
             </>
           )}
