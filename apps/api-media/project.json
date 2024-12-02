@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-media/src",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
@@ -151,6 +152,12 @@
         "command": "npm run ts-node apps/api-media/src/workers/cli.ts algolia"
       }
     },
+    "queue-blocklist": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apps/api-media/src/workers/cli.ts blocklist"
+      }
+    },
     "queue-seed": {
       "executor": "nx:run-commands",
       "options": {
@@ -173,6 +180,5 @@
         "command": "gql.tada generate output --tsconfig apps/api-media/tsconfig.json"
       }
     }
-  },
-  "tags": []
+  }
 }

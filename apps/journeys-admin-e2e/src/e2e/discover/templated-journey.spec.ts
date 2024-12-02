@@ -16,7 +16,7 @@ test.describe('verify see link and see all templates', () => {
     await landingPage.goToAdminUrl()
     await register.registerNewAccount() // registering new user account
     userEmail = await register.getUserEmailId() // storing the registered user email id
-    console.log('userEmail : ' + userEmail)
+    console.log(`userEmail : ${userEmail}`)
     await page.close()
   })
 
