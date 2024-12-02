@@ -68,8 +68,8 @@ import { ReferrerNode } from './nodes/ReferrerNode'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
-
 import 'reactflow/dist/style.css'
+import { useStepAndBlockSelection } from './utils/useStepAndBlockSelection'
 
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
@@ -99,7 +99,7 @@ export function JourneyFlow(): ReactElement {
   const { editorAnalytics } = useFlags()
   const theme = useTheme()
   const {
-    state: { steps, activeSlide, showAnalytics, analytics, selectedStep },
+    state: { steps, activeSlide, showAnalytics, analytics },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
@@ -111,7 +111,7 @@ export function JourneyFlow(): ReactElement {
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [referrerNodes, setReferrerNodes] = useNodesState([])
   const [referrerEdges, setReferrerEdges] = useEdgesState([])
-  const [dragTimeStamp, setDragTimeStamp] = useState(0)
+  const dragTimeStampRef = useRef(0)
 
   const createStepFromStep = useCreateStepFromStep()
   const createStepFromAction = useCreateStepFromAction()
@@ -121,6 +121,7 @@ export function JourneyFlow(): ReactElement {
   const { onSelectionChange } = useDeleteOnKeyPress()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
   const { add } = useCommand()
+  const handleStepSelection = useStepAndBlockSelection()
 
   const { data, loading } = useQuery<
     GetStepBlocksWithPosition,
@@ -344,23 +345,7 @@ export function JourneyFlow(): ReactElement {
   )
 
   const isClickOrTouch = (endDragTimeStamp: number): boolean => {
-    return endDragTimeStamp - dragTimeStamp < 150
-  }
-
-  const callDispatches = (stepId: string): void => {
-    const currentStep = steps?.find((innerStep) => innerStep.id === stepId)
-    if (selectedStep?.id === currentStep?.id && showAnalytics !== true) {
-      dispatch({
-        type: 'SetSelectedBlockAction',
-        selectedBlock: selectedStep
-      })
-      dispatch({
-        type: 'SetSelectedAttributeIdAction',
-        selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
-      })
-    } else {
-      dispatch({ type: 'SetSelectedStepAction', selectedStep: currentStep })
-    }
+    return endDragTimeStamp - dragTimeStampRef.current < 150
   }
 
   const onNodeDragStop: NodeDragHandler = (_event, node): void => {
@@ -375,7 +360,7 @@ export function JourneyFlow(): ReactElement {
     // else go through standard positioning logic below
 
     if (isClickOrTouch(_event.timeStamp)) {
-      callDispatches(step.id)
+      handleStepSelection(step.id)
     } else {
       const x = Math.trunc(node.position.x)
       const y = Math.trunc(node.position.y)
@@ -492,22 +477,8 @@ export function JourneyFlow(): ReactElement {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
-        onNodeDragStart={(_event, node) => {
-          // console.log(_event)
-          // console.log('drag start')
-          setDragTimeStamp(_event.timeStamp)
-          // need to determine whether it's being dragged or clicked/tapped
-          // if clicked, and is the selected step, then call setselectedblock
-          // if drag, then select that step
-
-          // const step = data?.blocks.find(
-          //   (step) => step.__typename === 'StepBlock' && step.id === node.id
-          // )
-          // if (step == null || step.__typename !== 'StepBlock') return
-          // dispatch({
-          //   type: 'SetSelectedStepByIdAction',
-          //   selectedStepId: step.id
-          // })
+        onNodeDragStart={(_event) => {
+          dragTimeStampRef.current = _event.timeStamp
         }}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
