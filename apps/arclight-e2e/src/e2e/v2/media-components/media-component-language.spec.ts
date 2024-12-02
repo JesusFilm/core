@@ -1,29 +1,29 @@
 import { expect, test } from '@playwright/test'
 
-import {
-  convertArrayToObject,
-  getObjectDiff
-} from '../../../utils/media-component-utils'
+import { getObjectDiff } from '../../../utils/media-component-utils'
 
-test('compare media component languages between environments', async ({
+test('compare specific media component languages between environments', async ({
   request
 }) => {
   const baseUrl = 'http://localhost:4600'
   const compareUrl = 'https://api.arclight.org'
   const apiKey = process.env.API_KEY
   const mediaComponentId = '2_0-ConsideringChristmas'
+  const languageId = '529'
 
   const queryParams = new URLSearchParams({
     apiKey: apiKey || '3a21a65d4gf98hZ7',
-    mediaComponentId: mediaComponentId
+    mediaComponentId,
+    languageId
   })
 
+  // Fetch responses from both environments
   const [baseResponse, compareResponse] = await Promise.all([
     request.get(
-      `${baseUrl}/v2/media-components/${mediaComponentId}/languages?${queryParams}`
+      `${baseUrl}/v2/media-components/${mediaComponentId}/languages/${languageId}?${queryParams}`
     ),
     request.get(
-      `${compareUrl}/v2/media-components/${mediaComponentId}/languages?${queryParams}`
+      `${compareUrl}/v2/media-components/${mediaComponentId}/languages/${languageId}?${queryParams}`
     )
   ])
 
@@ -34,43 +34,36 @@ test('compare media component languages between environments', async ({
     const baseData = await baseResponse.json()
     const compareData = await compareResponse.json()
 
-    const baseLanguages = baseData._embedded.mediaComponentLanguage
-    const compareLanguages = compareData._embedded.mediaComponentLanguage
+    // Remove fields that will always be different
+    delete baseData.downloadUrls
+    delete baseData._links
+    delete baseData.shareUrl
+    delete baseData.apiSessionId
 
-    for (const language of baseLanguages) {
-      delete language._links
-      delete language.downloadUrls
-      delete language.shareUrl
-    }
+    delete compareData.downloadUrls
+    delete compareData._links
+    delete compareData.shareUrl
+    delete compareData.apiSessionId
 
-    for (const language of compareLanguages) {
-      delete language._links
-      delete language.downloadUrls
-      delete language.shareUrl
-    }
+    // Compare the media component languages
+    if (!baseData.mediaComponentId) {
+      console.log(
+        `Media Component Languages for ${mediaComponentId} only exist in compare environment`
+      )
+      expect(false).toBeTruthy()
+    } else if (!compareData.mediaComponentId) {
+      console.log(
+        `Media Component Languages for ${mediaComponentId} only exist in base environment`
+      )
+      expect(false).toBeTruthy()
+    } else {
+      const differences = getObjectDiff(baseData, compareData)
 
-    const baseLanguageMap = convertArrayToObject(baseLanguages, 'languageId')
-    const compareLanguageMap = convertArrayToObject(
-      compareLanguages,
-      'languageId'
-    )
-
-    const differences = getObjectDiff(baseLanguageMap, compareLanguageMap)
-
-    for (const diffId of differences) {
-      if (!baseLanguageMap[diffId]) {
-        console.log(`Language ${diffId} only exists in compare environment`)
-      } else if (!compareLanguageMap[diffId]) {
-        console.log(`Language ${diffId} only exists in base environment`)
-      } else {
-        const specificDiffs = getObjectDiff(
-          baseLanguageMap[diffId],
-          compareLanguageMap[diffId]
-        )
-        console.log(`Differences in language ${diffId}:`, specificDiffs)
+      if (differences.length > 0) {
+        console.log('Differences found:', differences)
       }
-    }
 
-    expect(differences).toHaveLength(0)
+      expect(differences).toHaveLength(0)
+    }
   }
 })
