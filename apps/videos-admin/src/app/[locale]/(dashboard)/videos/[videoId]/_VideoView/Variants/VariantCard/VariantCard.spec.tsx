@@ -15,21 +15,21 @@ const variant: GetAdminVideoVariant =
   useAdminVideoMock?.['result']?.['data']['adminVideo']['variants'][0]
 
 describe('VariantCard', () => {
-  it('should display language and slug of variant', () => {
+  it('should display language and languageId of variant', () => {
     render(
       <NextIntlClientProvider locale="en">
-        <VariantCard variant={variant} />
+        <VariantCard key={1} variant={variant} />
       </NextIntlClientProvider>
     )
 
     expect(screen.getByText('Munukutuba')).toBeInTheDocument()
-    expect(screen.getByText('jesus/munukutuba')).toBeInTheDocument()
+    expect(screen.getByText('4334')).toBeInTheDocument()
   })
 
   it('should open variant dialog on click', () => {
     render(
       <NextIntlClientProvider locale="en">
-        <VariantCard variant={variant} />
+        <VariantCard key={1} variant={variant} />
       </NextIntlClientProvider>
     )
 
