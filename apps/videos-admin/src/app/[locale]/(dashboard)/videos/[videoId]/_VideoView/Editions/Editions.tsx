@@ -59,11 +59,9 @@ export function Editions({ editions }: EditionsProps): ReactElement {
                   .find((edition) => edition.name === selectedEdition)
                   ?.videoSubtitles.map((subtitle) => (
                     <Card sx={{ minHeight: 140 }}>
-                      <Typography>{subtitle.id}</Typography>
-                      <Typography>{subtitle.language.name[0].value}</Typography>
-                      <Typography>{subtitle.language.slug}</Typography>
+                      <Typography>{`id: ${subtitle.id}`}</Typography>
+                      <Typography>{`${subtitle.languageId} - ${subtitle.language.slug}`}</Typography>
                       <Typography>{subtitle.srtSrc}</Typography>
-                      <Typography>{subtitle.vttSrc}</Typography>
                     </Card>
                   ))}
             </Stack>
