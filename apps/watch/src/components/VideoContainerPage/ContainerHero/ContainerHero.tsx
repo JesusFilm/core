@@ -10,6 +10,7 @@ import { ReactElement } from 'react'
 import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'
 import { useVideo } from '../../../libs/videoContext'
 import { HeroOverlay } from '../../HeroOverlay'
+import { AudioLanguageButton } from '../../VideoContentPage/AudioLanguageButton'
 
 interface ContainerHeroProps {
   openDialog: () => void
@@ -63,13 +64,14 @@ export function ContainerHero({
                 zIndex: 2
               }}
             >
-              {label}
+              {`${label} \u2022 ${childCountLabel.toLowerCase()}`}
             </Typography>
             <Typography
               variant="h1"
               color="secondary.contrastText"
               sx={{
-                zIndex: 2
+                zIndex: 2,
+                fontSize: { xs: 28, sm: 36, md: 48, xl: 64 }
               }}
             >
               {title[0].value}
@@ -82,29 +84,22 @@ export function ContainerHero({
               alignSelf: { sm: 'flex-end' },
               alignItems: 'center',
               ml: { sm: 'auto' },
-              maxWidth: '100%'
+              maxWidth: '100%',
+              zIndex: 1
             }}
           >
-            <Typography
-              variant="overline1"
-              align="center"
-              color="secondary.contrastText"
-              sx={{
-                zIndex: 2,
-                opacity: 0.7
-              }}
-            >
-              {childCountLabel.toLowerCase()}
-            </Typography>
+            <Box sx={{ mb: 1 }}>
+              <AudioLanguageButton componentVariant="button" />
+            </Box>
             <IconButton
               sx={{
                 display: { xs: 'flex', sm: 'none' },
                 ml: 'auto'
               }}
               onClick={() => openDialog()}
+              aria-label="share"
             >
               <ShareOutlinedIcon
-                color="primary"
                 sx={{
                   zIndex: 2
                 }}
