@@ -70,7 +70,6 @@ export function VideoSnippet({
               minRows={6}
               maxRows={6}
             />
-
             <Stack direction="row" justifyContent="flex-end">
               <SaveButton disabled={!isValid || isSubmitting || !dirty} />
             </Stack>
