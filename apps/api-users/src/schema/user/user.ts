@@ -35,7 +35,7 @@ builder.queryFields((t) => ({
       )
     }
   }),
-  user: t.withAuth({ isValidInterOp: true }).prismaField({
+  user: t.withAuth({ isValidInterop: true }).prismaField({
     type: 'User',
     nullable: true,
     args: {
@@ -47,7 +47,7 @@ builder.queryFields((t) => ({
         where: { userId: id }
       })
   }),
-  userByEmail: t.withAuth({ isValidInterOp: true }).prismaField({
+  userByEmail: t.withAuth({ isValidInterop: true }).prismaField({
     type: 'User',
     nullable: true,
     args: {

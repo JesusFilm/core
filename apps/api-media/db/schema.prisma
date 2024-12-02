@@ -406,3 +406,39 @@ model UserMediaRole {
   userId String      @unique
   roles  MediaRole[]
 }
+
+model ShortLinkDomain {
+  id         String      @id @default(uuid())
+  /// the hostname including subdomain, domain, and TLD, but excluding port
+  hostname   String      @unique
+  /// the name of the apex domain (e.g. "example.com" for "www.example.com")
+  apexName   String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  /// which services are able to use this domain in their short links
+  services   Service[]
+  shortLinks ShortLink[]
+}
+
+model ShortLink {
+  id        String          @id @default(uuid())
+  /// should not include the leading slash
+  pathname  String
+  /// the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  to        String
+  domainId  String
+  /// the user created this short link (if empty, it was created by a subgraph)
+  userId    String?
+  /// the service that created this short link
+  service   Service
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  domain    ShortLinkDomain @relation(fields: [domainId], references: [id], onDelete: Restrict)
+
+  @@unique([pathname, domainId])
+}
+
+model ShortLinkBlocklistDomain {
+  /// the hostname including subdomain, domain, and TLD, but excluding port
+  hostname String @id
+}
