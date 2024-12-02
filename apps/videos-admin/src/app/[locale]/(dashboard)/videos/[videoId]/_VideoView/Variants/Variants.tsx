@@ -5,6 +5,7 @@ import { FixedSizeList } from 'react-window'
 import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
 import { Section } from '../Section'
 
+import { CreateVariantDialog } from './CreateVariantDialog'
 import { VariantCard } from './VariantCard'
 
 const ITEM_SIZE = 80
@@ -22,6 +23,7 @@ export function Variants({
     height: 0,
     width: 0
   })
+  const [open, setOpen] = useState(false)
 
   function getVariantSectionDimensions(): void {
     const section = document.getElementById('Variants-section')
@@ -38,6 +40,10 @@ export function Variants({
     }
   }, [])
 
+  function handleOpenCreateVariantDialog(): void {
+    setOpen(!open)
+  }
+
   return (
     <>
       {variants != null && (
@@ -48,7 +54,7 @@ export function Variants({
           title={t('Variants')}
           action={{
             label: t('Create Variant'),
-            onClick: () => alert('Create variant')
+            onClick: handleOpenCreateVariantDialog
           }}
         >
           <FixedSizeList
@@ -63,6 +69,10 @@ export function Variants({
               <VariantCard key={index} variant={items[index]} style={style} />
             )}
           </FixedSizeList>
+          <CreateVariantDialog
+            open={open}
+            handleClose={handleOpenCreateVariantDialog}
+          />
         </Section>
       )}
     </>
