@@ -82,14 +82,6 @@ export function Children({ childVideos }: ChildrenProps): ReactElement {
   return (
     <Section
       title={t('Children')}
-      action={
-        isEdit
-          ? {
-              label: t('Create Child'),
-              onClick: () => alert('Create child')
-            }
-          : undefined
-      }
       boxProps={{
         sx: { p: 0, height: 'calc(100vh - 400px)', overflowY: 'scroll' }
       }}
@@ -116,21 +108,6 @@ export function Children({ childVideos }: ChildrenProps): ReactElement {
                     onClick: () => edit(id)
                   },
                   name: 'Edit'
-                },
-                {
-                  Icon: Trash2,
-                  events: {
-                    onClick: () => alert('Delete child')
-                  },
-                  name: 'Delete',
-                  slotProps: {
-                    button: {
-                      color: 'error'
-                    },
-                    icon: {
-                      color: 'error'
-                    }
-                  }
                 }
               ]}
               img={{
