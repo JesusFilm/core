@@ -4,7 +4,6 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider } from '../../../_EditProvider'
 
 import { UPDATE_VIDEO_INFORMATION, VideoInformation } from './VideoInfomation'
 
@@ -50,53 +49,11 @@ describe('VideoInformation', () => {
     jest.clearAllMocks()
   })
 
-  it('should disable all fields if not in edit mode', () => {
+  it('should show disabled save button if values not changed', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: false }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
-        </NextIntlClientProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByRole('textbox', { name: 'Title' })).toBeDisabled()
-    expect(screen.getByRole('textbox', { name: 'Slug' })).toBeDisabled()
-    expect(screen.getByRole('combobox', { name: 'Status' })).toHaveAttribute(
-      'aria-disabled',
-      'true'
-    )
-    expect(screen.getByRole('combobox', { name: 'Label' })).toHaveAttribute(
-      'aria-disabled',
-      'true'
-    )
-    expect(screen.getByRole('checkbox', { name: 'No Index' })).toBeDisabled()
-  })
-
-  it('should not show save button when not in edit mode', () => {
-    render(
-      <MockedProvider>
-        <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: false }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
-        </NextIntlClientProvider>
-      </MockedProvider>
-    )
-
-    expect(
-      screen.queryByRole('button', { name: 'Save' })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should show disabled save button in edit mode by default', () => {
-    render(
-      <MockedProvider>
-        <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
+          <VideoInformation video={mockVideo} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -108,9 +65,7 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
+          <VideoInformation video={mockVideo} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -128,9 +83,7 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
+          <VideoInformation video={mockVideo} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -148,9 +101,7 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
+          <VideoInformation video={mockVideo} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -168,9 +119,7 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
+          <VideoInformation video={mockVideo} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -186,9 +135,7 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider mocks={[mockUpdateVideoInformation]}>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
+          <VideoInformation video={mockVideo} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -212,9 +159,7 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
+          <VideoInformation video={mockVideo} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
