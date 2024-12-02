@@ -19,6 +19,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CancelIcon from '@mui/icons-material/Cancel'
 import HelpIcon from '@mui/icons-material/Help'
+import { VideoPlayerProps } from './VideoPlayer' // Import the new component
 
 // import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
 // import { SearchBar } from '@core/journeys/ui/SearchBar'
@@ -27,7 +28,6 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
-import { HeaderSection } from './HeaderSection'
 
 interface SharedVideoCardProps {
     avatarSrc: string;
@@ -114,7 +114,150 @@ const SectionHeader = ({ primaryText, secondaryText, disableTopSpacing }: Sectio
     </>
 )
 
-export function WatchLanding(): ReactElement {
+// New VideoPlayer component
+const VideoPlayer = ({ videoSrc, poster, isPlaying, toggleMute, isMuted, handlePlayPause }: VideoPlayerProps) => (
+    <Box
+        sx={{
+            width: '100%',
+            maxWidth: '400px',
+            aspectRatio: '9/16',
+            backgroundColor: '#000',
+            borderRadius: '16px',
+            overflow: 'hidden',
+            mb: 6,
+            position: 'relative',
+            boxShadow: '2px 8px 8px rgba(0, 0, 0, 0.2)',
+            '&::before': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                borderRadius: 'inherit',
+                backdropFilter: 'blur(10px)', // Apply blur effect
+                backgroundColor: 'rgb(0 0 0 / 70%)', // Semi-transparent overlay
+                zIndex: 1,
+                pointerEvents: 'none',
+                mask: 'radial-gradient(circle at left -60%, transparent 60%, rgba(0,0,0,0.5) 80%, black 90%), radial-gradient(circle at left 80%, transparent 60%, rgba(0,0,0,0.5) 80%, black 90%) ', // Mask to leave center clear
+                boxShadow: 'inset 0 0 60px black'
+            },
+            '&::after': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                borderRadius: 'inherit',
+                zIndex: 1,
+                pointerEvents: 'none',
+                boxShadow: 'inset 0 0 1px rgba(255, 255, 255, 0.3)'
+            }
+        }}
+    >
+        <Box
+            component="video"
+            sx={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                display: isPlaying ? 'none' : 'block'
+            }}
+            poster={poster}
+            controls
+            muted
+            autoPlay
+            playsInline
+        >
+            <source src={videoSrc} type="video/mp4" />
+            Your browser does not support the video tag.
+        </Box>
+        <Box
+            sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                zIndex: 2,
+                width: '80px',
+                height: '80px',
+                backgroundColor: 'rgba(0,0,0,0.6)',
+                borderRadius: '50%',
+                display: isPlaying ? 'none' : 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'opacity 0.2s',
+                opacity: 1,
+                '&:hover': {
+                    opacity: 0.8
+                }
+            }}
+            onClick={handlePlayPause}
+        >
+            <Box
+                sx={{
+                    width: 0,
+                    height: 0,
+                    borderTop: '20px solid transparent',
+                    borderBottom: '20px solid transparent',
+                    borderLeft: '30px solid white',
+                    marginLeft: '5px'
+                }}
+            />
+        </Box>
+        <Chip
+            label="SHORT VIDEO"
+            sx={{
+                position: 'absolute',
+                top: 16,
+                left: 16,
+                zIndex: 3,
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                color: 'white'
+            }}
+        />
+        <Box
+            sx={{
+                position: 'absolute',
+                top: 16,
+                right: 16,
+                zIndex: 3,
+                cursor: 'pointer'
+            }}
+            onClick={toggleMute}
+        >
+            {isMuted ? <VolumeOffIcon sx={{ color: 'white' }} /> : <VolumeUpIcon sx={{ color: 'white' }} />}
+        </Box>
+        <Box
+            sx={{
+                position: 'absolute',
+                bottom: 36,
+                left: 26,
+                right: 26,
+                zIndex: 3,
+                color: 'white'
+            }}
+        >
+            <Typography variant="overline1" sx={{ opacity: 0.7 }}>Jesus cried these words before the cross</Typography>
+            <Typography variant="h5" variantMapping={{ h5: 'h3' }} mb={2}>Let this cup <em>of sorrow</em> pass from me&hellip;</Typography>
+            <Typography variant="body1">Discover how faith and spirituality can provide comfort and strength during challenging times of depression.</Typography>
+        </Box>
+    </Box>
+);
+
+// Define props for the VideoPlayer component
+interface VideoPlayerProps {
+    videoSrc: string;
+    poster: string;
+    isPlaying: boolean;
+    toggleMute: () => void;
+    isMuted: boolean;
+    handlePlayPause: () => void;
+}
+
+export function BibleVerses(): ReactElement {
     const { t } = useTranslation('apps-watch')
 
     const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
@@ -234,7 +377,7 @@ export function WatchLanding(): ReactElement {
                         transition={{ delay: 1.2, duration: 0.75 }}
                         variants={topDownVariants}
                     >
-                        <HeaderSection />
+
                     </motion.div>
 
                     <motion.div
@@ -250,122 +393,6 @@ export function WatchLanding(): ReactElement {
                         />
                     </motion.div>
 
-                    <Box
-                        sx={{
-                            width: '100%',
-                            maxWidth: '400px',
-                            aspectRatio: '9/16',
-                            backgroundColor: '#000',
-                            borderRadius: '16px',
-                            overflow: 'hidden',
-                            mb: 6,
-                            position: 'relative',
-                            boxShadow: '2px 8px 8px rgba(0, 0, 0, 0.2)',
-                            '&::after': {
-                                content: '""',
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                borderRadius: 'inherit',
-                                boxShadow: 'inset 0 0 1px rgba(255, 255, 255, 0.4)', // Inner glow effect
-                                zIndex: 1,
-                                pointerEvents: 'none'
-                            },
-                        }}
-                    >
-                        <Box
-                            component="video"
-                            ref={(el) => el && videoRefs.current.push(el)}
-                            sx={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                                display: isPlaying ? 'none' : 'block'
-                            }}
-                            poster="https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                            controls
-                            id="video-player"
-                            muted
-                            autoPlay
-                            playsInline
-                        >
-                            <source src="https://cdn-std.droplr.net/files/acc_760170/krfSQB" type="video/mp4" />
-                            Your browser does not support the video tag.
-                        </Box>
-                        <Box
-                            sx={{
-                                position: 'absolute',
-                                top: '50%',
-                                left: '50%',
-                                transform: 'translate(-50%, -50%)',
-                                zIndex: 2,
-                                width: '80px',
-                                height: '80px',
-                                backgroundColor: 'rgba(0,0,0,0.6)',
-                                borderRadius: '50%',
-                                display: isPlaying ? 'none' : 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                cursor: 'pointer',
-                                transition: 'opacity 0.2s',
-                                opacity: 1,
-                                '&:hover': {
-                                    opacity: 0.8
-                                }
-                            }}
-                            onClick={handlePlayPause}
-                        >
-                            <Box
-                                sx={{
-                                    width: 0,
-                                    height: 0,
-                                    borderTop: '20px solid transparent',
-                                    borderBottom: '20px solid transparent',
-                                    borderLeft: '30px solid white',
-                                    marginLeft: '5px'
-                                }}
-                            />
-                        </Box>
-                        <Chip
-                            label="NEW SHOW"
-                            sx={{
-                                position: 'absolute',
-                                top: 16,
-                                left: 16,
-                                zIndex: 3,
-                                backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                                color: 'white'
-                            }}
-                        />
-                        <Box
-                            sx={{
-                                position: 'absolute',
-                                top: 16,
-                                right: 16,
-                                zIndex: 3,
-                                cursor: 'pointer'
-                            }}
-                            onClick={toggleMute}
-                        >
-                            {isMuted ? <VolumeOffIcon sx={{ color: 'white' }} /> : <VolumeUpIcon sx={{ color: 'white' }} />}
-                        </Box>
-                        <Box
-                            sx={{
-                                position: 'absolute',
-                                bottom: 36,
-                                left: 26,
-                                right: 26,
-                                zIndex: 3,
-                                color: 'white'
-                            }}
-                        >
-                            <Typography variant="overline1" sx={{ opacity: 0.7 }}>Video Overline</Typography>
-                            <Typography variant="h4" mb={2}>Finding Hope in Times of Darkness</Typography>
-                            <Typography variant="body1">Discover how faith and spirituality can provide comfort and strength during challenging times of depression.</Typography>
-                        </Box>
-                    </Box>
 
                     <SectionHeader
                         primaryText="Your Next Watch"
@@ -376,104 +403,47 @@ export function WatchLanding(): ReactElement {
                         <Box
                             sx={{
                                 flex: 1,
-                                backgroundColor: bgColors[0], // Use the extracted color for the first block
-                                borderRadius: 2,
                                 p: 1,
-                                position: 'relative',
-                                minHeight: 260
                             }}
                         >
-                            <Box
-                                sx={{
-                                    height: '80%',
-                                    borderRadius: 2,
-                                    backgroundImage: `
-                    linear-gradient(to bottom, rgba(0, 0, 0, 0) 70%, ${bgColors[0]} 100%),
-                    url(https://images.unsplash.com/photo-1619187282125-3e446e5f21fc?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTI2fHxqZXN1c3xlbnwwfHwwfHx8MA%3D%3D)
-                  `,
-                                    backgroundSize: 'cover',
-                                    backgroundPosition: 'center'
-                                }}
-                            >
-                                <Typography
-                                    variant="overline"
-                                    sx={{
-                                        position: 'absolute',
-                                        color: 'text.primary',
-                                        backgroundColor: bgColors[0], // Match the parent block's color
-                                        borderTopLeftRadius: '10px',
-                                        borderBottomRightRadius: '10px',
-                                        top: 0,
-                                        fontWeight: 600,
-                                        letterSpacing: 1,
-                                        padding: '0px 8px'
-                                    }}
-                                >
-                                    Short Video
-                                </Typography>
-                                <Typography
-                                    variant="subtitle1"
-                                    sx={{
-                                        position: 'absolute',
-                                        bottom: 2,
-                                        p: 2,
-                                        color: 'text.primary'
-                                    }}
-                                >
-                                    Finding Light: A Journey Through Depression
-                                </Typography>
-                            </Box>
+                            <VideoPlayer
+                                videoSrc="https://cdn-std.droplr.net/files/acc_760170/BIVSDq"
+                                poster="https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+                                isPlaying={isPlaying}
+                                toggleMute={toggleMute}
+                                isMuted={isMuted}
+                                handlePlayPause={handlePlayPause}
+                            />
                         </Box>
                         <Box
                             sx={{
                                 flex: 1,
-                                backgroundColor: bgColors[1], // Use the extracted color for the second block
-                                borderRadius: 2,
                                 p: 1,
-                                position: 'relative',
-                                minHeight: 260
                             }}
                         >
-                            <Box
-                                sx={{
-                                    height: '80%',
-                                    borderRadius: 2,
-                                    backgroundImage: `
-                    linear-gradient(to bottom, rgba(48, 48, 48, 0) 70%, ${bgColors[1]} 100%),
-                    url(https://images.unsplash.com/photo-1689290018351-a0507a3036cb?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjI0fHxqZXN1c3xlbnwwfHwwfHx8MA%3D%3D)
-                  `,
-                                    backgroundSize: 'cover',
-                                    backgroundPosition: 'center'
-                                }}
-                            >
-                                <Typography
-                                    variant="overline"
-                                    sx={{
-                                        position: 'absolute',
-                                        color: 'text.primary',
-                                        backgroundColor: bgColors[1], // Match the parent block's color
-                                        borderTopLeftRadius: '10px',
-                                        borderBottomRightRadius: '10px',
-                                        top: 0,
-                                        fontWeight: 600,
-                                        letterSpacing: 1,
-                                        padding: '0px 8px'
-                                    }}
-                                >
-                                    Short Video
-                                </Typography>
-                                <Typography
-                                    variant="subtitle1"
-                                    sx={{
-                                        position: 'absolute',
-                                        bottom: 2,
-                                        p: 2,
-                                        color: 'text.primary'
-                                    }}
-                                >
-                                    Hope Restored: Stories of Healing and Recovery
-                                </Typography>
-                            </Box>
+                            <VideoPlayer
+                                videoSrc="https://cdn-std.droplr.net/files/acc_760170/BIVSDq"
+                                poster="https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+                                isPlaying={isPlaying}
+                                toggleMute={toggleMute}
+                                isMuted={isMuted}
+                                handlePlayPause={handlePlayPause}
+                            />
+                        </Box>
+                        <Box
+                            sx={{
+                                flex: 1,
+                                p: 1,
+                            }}
+                        >
+                            <VideoPlayer
+                                videoSrc="https://cdn-std.droplr.net/files/acc_760170/BIVSDq"
+                                poster="https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+                                isPlaying={isPlaying}
+                                toggleMute={toggleMute}
+                                isMuted={isMuted}
+                                handlePlayPause={handlePlayPause}
+                            />
                         </Box>
                     </Box>
 
