@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
@@ -23,18 +23,16 @@ describe('VariantCard', () => {
     )
 
     expect(screen.getByText('Munukutuba')).toBeInTheDocument()
-    expect(screen.getByText('4334')).toBeInTheDocument()
   })
 
-  it('should open variant dialog on click', () => {
+  it('should open variant dialog on click', async () => {
     render(
       <NextIntlClientProvider locale="en">
         <VariantCard variant={variant} />
       </NextIntlClientProvider>
     )
 
-    fireEvent.click(screen.getByText('Munukutuba'))
-    expect(screen.getByText('Variant')).toBeInTheDocument()
-    expect(screen.getByText('Slug')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Munukutuba 4334' }))
+    await waitFor(() => expect(screen.getByText('Slug')).toBeInTheDocument())
   })
 })

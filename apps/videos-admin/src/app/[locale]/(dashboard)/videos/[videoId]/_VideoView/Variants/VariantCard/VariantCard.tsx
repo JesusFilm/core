@@ -1,11 +1,19 @@
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
+import dynamic from 'next/dynamic'
 import { CSSProperties, ReactElement, useState } from 'react'
 
 import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
 
-import { VariantDialog } from './VariantDialog'
+const VariantDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "VariantDialog" */
+      './VariantDialog'
+    ).then((mod) => mod.VariantDialog),
+  { ssr: false }
+)
 
 export interface VariantCardProps {
   variant: GetAdminVideoVariant
