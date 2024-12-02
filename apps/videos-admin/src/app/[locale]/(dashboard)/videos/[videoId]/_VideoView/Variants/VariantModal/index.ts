@@ -1,1 +1,0 @@
-export { VariantModal } from './VariantModal'
