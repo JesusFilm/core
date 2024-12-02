@@ -30,9 +30,6 @@ describe('StudyQuestions', () => {
     )
 
     expect(screen.getByText('Study Questions')).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Add Question' })
-    ).toBeInTheDocument()
 
     const question1 = screen.getByTestId('OrderedItem-0')
     const question2 = screen.getByTestId('OrderedItem-1')

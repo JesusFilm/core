@@ -4,7 +4,6 @@ import { useParams } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider } from '../_EditProvider'
 import VideoViewPage from '../page'
 
 jest.mock('next/navigation', () => ({
@@ -22,9 +21,7 @@ describe('VideoViewPage', () => {
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <EditProvider>
-            <VideoViewPage />
-          </EditProvider>
+          <VideoViewPage />
         </NextIntlClientProvider>
       </MockedProvider>
     )
