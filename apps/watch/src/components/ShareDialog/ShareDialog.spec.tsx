@@ -25,6 +25,7 @@ const video: VideoContentFields = {
     __typename: 'VideoVariant',
     id: 'videoVariantId',
     duration: videos[0].variant?.duration ?? 0,
+    downloadable: true,
     downloads: [],
     language: {
       __typename: 'Language',

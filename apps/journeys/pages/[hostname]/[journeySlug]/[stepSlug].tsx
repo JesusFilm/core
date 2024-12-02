@@ -109,7 +109,10 @@ export const getStaticProps: GetStaticProps<StepPageProps> = async (
       query: GET_JOURNEY,
       variables: {
         id: context.params?.journeySlug?.toString() ?? '',
-        idType: IdType.slug
+        idType: IdType.slug,
+        options: {
+          hostname: context.params?.hostname?.toString() ?? ''
+        }
       }
     })
     const { rtl, locale } = getJourneyRTL(data.journey)

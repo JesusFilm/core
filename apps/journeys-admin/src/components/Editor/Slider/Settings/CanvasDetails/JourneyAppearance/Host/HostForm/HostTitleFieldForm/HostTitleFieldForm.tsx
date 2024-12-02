@@ -1,62 +1,25 @@
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback, useEffect } from 'react'
+import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-
-import { useHostCreateMutation } from '../../../../../../../../../libs/useHostCreateMutation/useHostCreateMutation'
-import { useHostUpdateMutation } from '../../../../../../../../../libs/useHostUpdateMutation/useHostUpdateMutation'
-import { useUpdateJourneyHostMutation } from '../../../../../../../../../libs/useUpdateJourneyHostMutation'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 
 interface HostTitleFieldFormProps {
-  defaultTitle?: string
+  value: string
+  onChange: (value: string) => void
   label?: string
+  disabled?: boolean
   hostTitleRequiredErrorMessage?: string
 }
 
 export function HostTitleFieldForm({
-  defaultTitle,
+  value,
+  onChange,
   label,
+  disabled,
   hostTitleRequiredErrorMessage
 }: HostTitleFieldFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [hostCreate] = useHostCreateMutation()
-  const [journeyHostUpdate] = useUpdateJourneyHostMutation()
-  const { updateHost } = useHostUpdateMutation()
-  const { journey } = useJourney()
-
-  const createHost = useCallback(
-    async (value: string): Promise<void> => {
-      if (journey?.team != null) {
-        const { data } = await hostCreate({
-          variables: { teamId: journey.team.id, input: { title: value } }
-        })
-        if (data?.hostCreate.id != null) {
-          await journeyHostUpdate({
-            variables: {
-              id: journey?.id,
-              input: { hostId: data.hostCreate.id }
-            }
-          })
-        }
-      }
-    },
-    [hostCreate, journey, journeyHostUpdate]
-  )
-
-  useEffect(() => {
-    async function createHostIfDefault(): Promise<void> {
-      if (
-        journey?.host == null &&
-        journey?.team != null &&
-        defaultTitle != null
-      ) {
-        await createHost(defaultTitle)
-      }
-    }
-    void createHostIfDefault()
-  }, [defaultTitle, createHost, journey])
 
   const titleSchema = object({
     hostTitle: string().required(
@@ -64,22 +27,18 @@ export function HostTitleFieldForm({
     )
   })
 
-  async function handleSubmit(value: string): Promise<void> {
-    if (journey?.host != null) {
-      const { id, teamId } = journey.host
-      await updateHost({ id, teamId, input: { title: value } })
-    } else {
-      await createHost(value)
-    }
+  const handleSubmit = async (value: string): Promise<void> => {
+    onChange(value)
   }
 
   return (
     <TextFieldForm
       id="hostTitle"
       label={label ?? t('Host Name')}
-      initialValue={journey?.host == null ? defaultTitle : journey.host.title}
+      initialValue={value}
       validationSchema={titleSchema}
       onSubmit={handleSubmit}
+      disabled={disabled}
       data-testid="HostTitleFieldForm"
     />
   )

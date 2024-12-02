@@ -7,8 +7,8 @@ export const UnsplashUserImage =
 
 UnsplashUserImage.implement({
   fields: (t) => ({
-    small: t.exposeString('small'),
-    medium: t.exposeString('medium'),
-    large: t.exposeString('large')
+    small: t.exposeString('small', { nullable: false }),
+    medium: t.exposeString('medium', { nullable: false }),
+    large: t.exposeString('large', { nullable: false })
   })
 })

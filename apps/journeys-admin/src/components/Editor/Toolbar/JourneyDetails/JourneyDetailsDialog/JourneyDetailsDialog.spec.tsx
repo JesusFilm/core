@@ -14,6 +14,8 @@ import { JourneyDetailsDialog } from '.'
 
 const onClose = jest.fn()
 
+jest.mock('@mui/material/useMediaQuery')
+
 describe('JourneyDetailsDialog', () => {
   it('should not set journey title on close', async () => {
     const mock = getJourneySettingsUpdateMock({

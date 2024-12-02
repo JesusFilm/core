@@ -18,7 +18,7 @@ import { CardBlockResolver } from './card.resolver'
 
 describe('CardBlockResolver', () => {
   let resolver: CardBlockResolver,
-    service: BlockService,
+    service: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
     ability: AppAbility
 
@@ -34,7 +34,8 @@ describe('CardBlockResolver', () => {
     backgroundColor: '#FFF',
     fullscreen: true,
     themeMode: ThemeMode.light,
-    themeName: ThemeName.base
+    themeName: ThemeName.base,
+    updatedAt: '2024-10-21T04:32:25.858Z'
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -57,19 +58,15 @@ describe('CardBlockResolver', () => {
     fullscreen: true,
     coverBlockId: 'coverBlockId'
   }
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      getSiblings: jest.fn(() => [block, block]),
-      update: jest.fn((input) => input)
-    })
-  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        blockService,
+        {
+          provide: BlockService,
+          useValue: mockDeep<BlockService>()
+        },
         CardBlockResolver,
         {
           provide: PrismaService,
@@ -78,11 +75,17 @@ describe('CardBlockResolver', () => {
       ]
     }).compile()
     resolver = module.get<CardBlockResolver>(CardBlockResolver)
-    service = await module.resolve(BlockService)
+    service = module.get<BlockService>(
+      BlockService
+    ) as DeepMockProxy<BlockService>
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
+    service.getSiblings.mockResolvedValue([
+      { ...block, action: null },
+      { ...block, action: null }
+    ])
   })
 
   describe('cardBlockCreate', () => {
@@ -122,6 +125,17 @@ describe('CardBlockResolver', () => {
       expect(service.getSiblings).toHaveBeenCalledWith(
         blockCreateInput.journeyId,
         blockCreateInput.parentBlockId
+      )
+    })
+
+    it('should set journey updatedAt when card is created', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(await resolver.cardBlockCreate(ability, blockCreateInput)).toEqual(
+        blockWithUserTeam
+      )
+      expect(service.setJourneyUpdatedAt).toHaveBeenCalledWith(
+        prismaService,
+        blockWithUserTeam
       )
     })
 

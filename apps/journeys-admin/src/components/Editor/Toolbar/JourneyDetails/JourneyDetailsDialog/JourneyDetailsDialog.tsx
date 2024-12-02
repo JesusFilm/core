@@ -1,6 +1,8 @@
 import { ApolloError } from '@apollo/client'
 import Stack from '@mui/material/Stack'
+import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { Form, Formik, FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -30,6 +32,7 @@ export function JourneyDetailsDialog({
   onClose
 }: JourneyDetailsDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [journeyUpdate] = useJourneyUpdateMutation()
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
@@ -150,6 +153,7 @@ export function JourneyDetailsDialog({
                 closeLabel: t('Cancel')
               }}
               testId="JourneyDetailsDialog"
+              fullscreen={!smUp}
             >
               <Form>
                 <Stack spacing={6}>
@@ -193,12 +197,7 @@ export function JourneyDetailsDialog({
                       />
                     )}
                     popper={{
-                      modifiers: [
-                        {
-                          name: 'flip',
-                          enabled: false
-                        }
-                      ]
+                      placement: !smUp ? 'top' : 'bottom'
                     }}
                   />
                 </Stack>

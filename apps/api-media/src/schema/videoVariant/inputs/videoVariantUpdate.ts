@@ -12,7 +12,8 @@ export const VideoVariantUpdateInput = builder.inputType(
       share: t.string({ required: false }),
       duration: t.int({ required: false }),
       languageId: t.string({ required: false }),
-      slug: t.string({ required: false })
+      slug: t.string({ required: false }),
+      downloadable: t.boolean({ required: false })
     })
   }
 )

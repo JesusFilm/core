@@ -45,6 +45,7 @@ describe('VideoHeroOverlay', () => {
           }
         ]
       },
+      downloadable: true,
       downloads: [
         {
           __typename: 'VideoVariantDownload',

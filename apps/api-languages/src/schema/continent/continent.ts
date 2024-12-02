@@ -5,9 +5,10 @@ import { builder } from '../builder'
 
 builder.prismaObject('Continent', {
   fields: (t) => ({
-    id: t.exposeID('id'),
+    id: t.exposeID('id', { nullable: false }),
     name: t.prismaField({
       type: [ContinentName],
+      nullable: false,
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
@@ -27,14 +28,14 @@ builder.prismaObject('Continent', {
         })
       }
     }),
-    countries: t.relation('countries')
+    countries: t.relation('countries', { nullable: false })
   })
 })
 
 const ContinentName = builder.prismaObject('ContinentName', {
   fields: (t) => ({
-    value: t.exposeString('value'),
-    primary: t.exposeBoolean('primary'),
-    language: t.relation('language')
+    value: t.exposeString('value', { nullable: false }),
+    primary: t.exposeBoolean('primary', { nullable: false }),
+    language: t.relation('language', { nullable: false })
   })
 })

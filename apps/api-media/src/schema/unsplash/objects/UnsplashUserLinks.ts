@@ -7,12 +7,12 @@ export const UnsplashUserLinks =
 
 UnsplashUserLinks.implement({
   fields: (t) => ({
-    followers: t.exposeString('followers'),
-    following: t.exposeString('following'),
-    html: t.exposeString('html'),
-    likes: t.exposeString('likes'),
-    photos: t.exposeString('photos'),
-    portfolio: t.exposeString('portfolio'),
-    self: t.exposeString('self')
+    followers: t.exposeString('followers', { nullable: false }),
+    following: t.exposeString('following', { nullable: false }),
+    html: t.exposeString('html', { nullable: false }),
+    likes: t.exposeString('likes', { nullable: false }),
+    photos: t.exposeString('photos', { nullable: false }),
+    portfolio: t.exposeString('portfolio', { nullable: false }),
+    self: t.exposeString('self', { nullable: false })
   })
 })

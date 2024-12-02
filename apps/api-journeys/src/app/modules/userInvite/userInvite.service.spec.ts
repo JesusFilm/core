@@ -1,7 +1,7 @@
 import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
 
-import { JourneyWithTeamAndUserJourney } from '../email/email.consumer'
+import { JourneyWithTeamAndUserJourney } from '../../lib/prisma.types'
 import { UserInviteModule } from '../userInvite/userInvite.module'
 
 import { UserInviteService } from './userInvite.service'

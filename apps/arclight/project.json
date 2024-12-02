@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/arclight",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
@@ -137,7 +138,12 @@
       "options": {
         "command": "gql.tada generate output --tsconfig apps/arclight/tsconfig.json"
       }
+    },
+    "extract-translations": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": []
+      }
     }
-  },
-  "tags": []
+  }
 }

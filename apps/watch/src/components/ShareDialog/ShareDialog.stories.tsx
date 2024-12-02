@@ -26,6 +26,7 @@ const video: VideoContentFields = {
     __typename: 'VideoVariant',
     duration: videos[0].variant?.duration ?? 0,
     hls: 'https://arc.gt/4jz75',
+    downloadable: true,
     downloads: [],
     language: {
       __typename: 'Language',

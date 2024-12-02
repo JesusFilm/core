@@ -63,6 +63,7 @@ export interface VideoContentFields_variant {
   id: string;
   duration: number;
   hls: string | null;
+  downloadable: boolean;
   downloads: VideoContentFields_variant_downloads[];
   language: VideoContentFields_variant_language;
   /**

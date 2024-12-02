@@ -1,5 +1,6 @@
 import { Prisma } from '.prisma/api-languages-client'
 
+import { parseFullTextSearch } from '../../lib/parseFullTextSearch'
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
@@ -14,36 +15,43 @@ const LanguagesFilter = builder.inputType('LanguagesFilter', {
   fields: (t) => ({
     ids: t.field({
       type: ['ID']
+    }),
+    bcp47: t.field({
+      type: ['String']
+    }),
+    iso3: t.field({
+      type: ['String']
     })
   })
 })
 
 builder.prismaObject('AudioPreview', {
   fields: (t) => ({
-    language: t.relation('language'),
-    value: t.exposeString('value'),
-    duration: t.exposeInt('duration'),
-    size: t.exposeInt('size'),
-    bitrate: t.exposeInt('bitrate'),
-    codec: t.exposeString('codec')
+    language: t.relation('language', { nullable: false }),
+    value: t.exposeString('value', { nullable: false }),
+    duration: t.exposeInt('duration', { nullable: false }),
+    size: t.exposeInt('size', { nullable: false }),
+    bitrate: t.exposeInt('bitrate', { nullable: false }),
+    codec: t.exposeString('codec', { nullable: false })
   })
 })
 
 builder.prismaObject('LanguageName', {
   fields: (t) => ({
-    value: t.exposeString('value'),
-    primary: t.exposeBoolean('primary'),
-    language: t.relation('language')
+    value: t.exposeString('value', { nullable: false }),
+    primary: t.exposeBoolean('primary', { nullable: false }),
+    language: t.relation('language', { nullable: false })
   })
 })
 
 export const Language = builder.prismaObject('Language', {
   fields: (t) => ({
-    id: t.exposeID('id'),
-    bcp47: t.exposeString('bcp47', { nullable: true }),
-    iso3: t.exposeString('iso3', { nullable: true }),
-    slug: t.exposeString('slug', { nullable: true }),
+    id: t.exposeID('id', { nullable: false }),
+    bcp47: t.exposeString('bcp47'),
+    iso3: t.exposeString('iso3'),
+    slug: t.exposeString('slug'),
     name: t.relation('name', {
+      nullable: false,
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
@@ -63,10 +71,9 @@ export const Language = builder.prismaObject('Language', {
         }
       }
     }),
-    countryLanguages: t.relation('countryLanguages'),
-    audioPreview: t.relation('audioPreview', { nullable: true }),
+    countryLanguages: t.relation('countryLanguages', { nullable: false }),
+    audioPreview: t.relation('audioPreview'),
     primaryCountryId: t.string({
-      nullable: true,
       resolve: async (parent) => {
         const primaryCountryLanguage = await prisma.countryLanguage.findFirst({
           where: {
@@ -80,16 +87,18 @@ export const Language = builder.prismaObject('Language', {
         return primaryCountryLanguage?.countryId ?? null
       }
     }),
-    speakerCount: t.int({
+    speakerCount: t.string({
+      nullable: false,
       resolve: async (parent) => {
         const result = await prisma.countryLanguage.aggregate({
           where: { languageId: parent.id },
           _sum: { speakers: true }
         })
-        return result._sum.speakers ?? 0
+        return result._sum.speakers?.toString() ?? '0'
       }
     }),
     countriesCount: t.int({
+      nullable: false,
       resolve: async (parent) => {
         return await prisma.countryLanguage.count({
           where: { languageId: parent.id }
@@ -133,13 +142,27 @@ builder.queryFields((t) => ({
     args: {
       offset: t.arg.int({ required: false }),
       limit: t.arg.int({ required: false }),
-      where: t.arg({ type: LanguagesFilter, required: false })
+      where: t.arg({ type: LanguagesFilter, required: false }),
+      term: t.arg.string({ required: false })
     },
-    resolve: async (query, _parent, { offset, limit, where }) => {
+    resolve: async (query, _parent, { offset, limit, where, term }) => {
       const filter: Prisma.LanguageWhereInput = {
         hasVideos: true
       }
-      if (where?.ids != null) filter.id = { in: where?.ids }
+      if (where?.ids != null) filter.id = { in: where.ids }
+      if (where?.bcp47 != null) filter.bcp47 = { in: where.bcp47 }
+      if (where?.iso3 != null) filter.iso3 = { in: where.iso3 }
+      if (term != null) {
+        const searchQuery = parseFullTextSearch(term)
+        filter.name = {
+          some: {
+            value: {
+              contains: searchQuery,
+              mode: 'insensitive'
+            }
+          }
+        }
+      }
       return await prisma.language.findMany({
         ...query,
         where: filter,
@@ -150,12 +173,29 @@ builder.queryFields((t) => ({
   }),
 
   languagesCount: t.int({
-    args: { where: t.arg({ type: LanguagesFilter, required: false }) },
-    resolve: async (_parent, { where }) => {
+    nullable: false,
+    args: {
+      where: t.arg({ type: LanguagesFilter, required: false }),
+      term: t.arg.string({ required: false })
+    },
+    resolve: async (_parent, { where, term }) => {
       const filter: Prisma.LanguageWhereInput = {
         hasVideos: true
       }
       if (where?.ids != null) filter.id = { in: where.ids }
+      if (where?.bcp47 != null) filter.bcp47 = { in: where.bcp47 }
+      if (where?.iso3 != null) filter.iso3 = { in: where.iso3 }
+      if (term != null) {
+        const searchQuery = parseFullTextSearch(term)
+        filter.name = {
+          some: {
+            value: {
+              contains: searchQuery,
+              mode: 'insensitive'
+            }
+          }
+        }
+      }
       return await prisma.language.count({
         where: filter
       })

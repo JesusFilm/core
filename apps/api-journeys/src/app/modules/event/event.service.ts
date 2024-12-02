@@ -10,10 +10,10 @@ import {
   Visitor
 } from '.prisma/api-journeys-client'
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
+import { EventsNotificationJob } from '@core/yoga/emailEvents/types'
 
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
-import { EventsNotificationJob } from '../email/emailEvents/emailEvents.consumer'
 import { VisitorService } from '../visitor/visitor.service'
 
 const TWO_MINUTES = 2 * 60 * 1000 // in milliseconds

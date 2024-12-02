@@ -9,7 +9,7 @@ import { UserJourneyRole } from '../../__generated__/graphql'
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 
-import { UserJourneyResolver } from './userJourney.resolver'
+import { JourneyResolver, UserJourneyResolver } from './userJourney.resolver'
 import { UserJourneyService } from './userJourney.service'
 
 describe('UserJourneyResolver', () => {
@@ -65,23 +65,6 @@ describe('UserJourneyResolver', () => {
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
-  })
-
-  describe('userJourneys', () => {
-    it('fetches accessible userJourneys', async () => {
-      prismaService.userJourney.findMany.mockResolvedValueOnce([
-        { id: 'userInviteId' } as unknown as UserJourney
-      ])
-      const userJourneys = await resolver.userJourneys({ OR: [] }, {
-        id: 'journeyId'
-      } as unknown as Journey)
-      expect(prismaService.userJourney.findMany).toHaveBeenCalledWith({
-        where: {
-          AND: [{ OR: [] }, { journeyId: 'journeyId' }]
-        }
-      })
-      expect(userJourneys).toEqual([{ id: 'userInviteId' }])
-    })
   })
 
   describe('userJourneyRequest', () => {
@@ -313,6 +296,44 @@ describe('UserJourneyResolver', () => {
         userTeamId: null,
         visitorInteractionEmail: false
       })
+    })
+  })
+})
+
+describe('JourneyResolver', () => {
+  let resolver: JourneyResolver, prismaService: DeepMockProxy<PrismaService>
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [CaslAuthModule.register(AppCaslFactory)],
+      providers: [
+        JourneyResolver,
+        {
+          provide: PrismaService,
+          useValue: mockDeep<PrismaService>()
+        }
+      ]
+    }).compile()
+    resolver = module.get<JourneyResolver>(JourneyResolver)
+    prismaService = module.get<PrismaService>(
+      PrismaService
+    ) as DeepMockProxy<PrismaService>
+  })
+
+  describe('userJourneys', () => {
+    it('fetches accessible userJourneys', async () => {
+      prismaService.userJourney.findMany.mockResolvedValueOnce([
+        { id: 'userInviteId' } as unknown as UserJourney
+      ])
+      const userJourneys = await resolver.userJourneys({ OR: [] }, {
+        id: 'journeyId'
+      } as unknown as Journey)
+      expect(prismaService.userJourney.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [{ OR: [] }, { journeyId: 'journeyId' }]
+        }
+      })
+      expect(userJourneys).toEqual([{ id: 'userInviteId' }])
     })
   })
 })

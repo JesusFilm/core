@@ -32,7 +32,6 @@ interface ValidationSchema {
 
 export function TextFieldForm({
   id,
-  label = 'Label',
   initialValue,
   validationSchema,
   onSubmit,
@@ -72,7 +71,6 @@ export function TextFieldForm({
             name={id}
             variant="filled"
             fullWidth
-            label={label}
             value={values[id]}
             error={Boolean(errors[id])}
             helperText={errors[id] != null ? errors[id] : helperText}
