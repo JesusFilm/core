@@ -38,7 +38,7 @@
   "URL": "URL",
   "Variant": "Variante",
   "Variants": "Variantes",
-  "Editing": "Edición de",
+  "titleEdit": "Edición: {value}",
   "Loading...": "Cargando...",
   "Email": "Envía un correo electrónico a",
   "Password": "Contraseña",
