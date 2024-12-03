@@ -925,7 +925,6 @@ describe('video', () => {
       })
       expect(data).toHaveProperty('data.videos', result)
       expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
-        orderBy: { languageId: 'asc' },
         where: { videoId: 'videoId' }
       })
     })

@@ -239,12 +239,14 @@ const Video = builder.prismaObject('Video', {
     variants: t.prismaField({
       type: ['VideoVariant'],
       nullable: false,
-      resolve: async (query, parent) =>
-        await prisma.videoVariant.findMany({
+      resolve: async (query, parent) => {
+        const res = await prisma.videoVariant.findMany({
           ...query,
-          where: { videoId: parent.id },
-          orderBy: { languageId: 'asc' }
+          where: { videoId: parent.id }
         })
+        // languageId is a string, so we need to convert it to a number to sort it correctly
+        return orderBy(res, (variant) => +variant.languageId, 'asc')
+      }
     }),
     subtitles: t.relation('subtitles', {
       nullable: false,
