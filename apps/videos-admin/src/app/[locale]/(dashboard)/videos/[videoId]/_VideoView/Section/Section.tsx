@@ -25,6 +25,7 @@ interface SectionProps {
   children: ReactNode
   sx?: SxProps
   boxProps?: BoxProps
+  variant?: 'contained' | 'outlined'
 }
 
 export function Section({
@@ -32,8 +33,10 @@ export function Section({
   action,
   children,
   sx,
-  boxProps
+  boxProps,
+  variant = 'contained'
 }: SectionProps): ReactElement {
+  const contained = variant === 'contained'
   return (
     <Stack
       sx={{
@@ -49,9 +52,9 @@ export function Section({
     >
       <Stack
         sx={{
-          borderBottom: '1px solid',
-          borderColor: 'divider',
-          backgroundColor: 'background.paper',
+          borderBottom: contained ? '1px solid' : '0px',
+          borderColor: contained ? 'divider' : 'transparent',
+          backgroundColor: contained ? 'background.paper' : 'none',
           px: 2,
           py: 1
         }}

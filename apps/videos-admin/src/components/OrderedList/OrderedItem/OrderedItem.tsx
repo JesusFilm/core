@@ -108,6 +108,7 @@ export function OrderedItem({
         disableRipple
         data-testid={`OrderedItemDragHandle-${idx}`}
         sx={{
+          backgroundColor: 'transparent',
           cursor: 'move',
           border: '0px',
           '&:active': { backgroundColor: 'transparent' },

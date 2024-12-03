@@ -10,6 +10,8 @@ import Edit2 from '@core/shared/ui/icons/Edit2'
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 import { VideoImageUpload } from './VideoImageUpload'
+import Tooltip from '@mui/material/Tooltip'
+import { Typography } from '@mui/material'
 
 function getImageFields(video: AdminVideo): {
   src: string | null | undefined
@@ -65,13 +67,15 @@ export function VideoImage({ video }: VideoImageProps): ReactElement {
           objectFit="cover"
           priority
         />
-        <IconButton
-          onClick={handleOpen}
-          size="small"
-          sx={{ position: 'absolute', top: 4, right: 4 }}
-        >
-          <Edit2 />
-        </IconButton>
+        <Tooltip title={t('Change image')}>
+          <IconButton
+            onClick={handleOpen}
+            size="small"
+            sx={{ position: 'absolute', top: 4, right: 4 }}
+          >
+            <Edit2 />
+          </IconButton>
+        </Tooltip>
       </Box>
       <Dialog
         testId="VideoImageUploadDialog"
@@ -83,6 +87,9 @@ export function VideoImage({ video }: VideoImageProps): ReactElement {
           '& .MuiPaper-root': { maxWidth: 400 }
         }}
       >
+        <Typography color="error">
+          {t('Warning: this change will apply immediately')}
+        </Typography>
         <VideoImageUpload video={video} onUploadComplete={handleClose} />
       </Dialog>
     </>

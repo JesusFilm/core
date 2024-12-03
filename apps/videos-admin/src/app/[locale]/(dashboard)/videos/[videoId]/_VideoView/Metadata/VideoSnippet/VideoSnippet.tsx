@@ -10,6 +10,7 @@ import { object, string } from 'yup'
 import { ResizableTextField } from '../../../../../../../../components/ResizableTextField'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import Divider from '@mui/material/Divider'
 
 export const UPDATE_VIDEO_SNIPPET = graphql(`
   mutation UpdateVideoSnippet($input: VideoTranslationUpdateInput!) {
@@ -70,6 +71,7 @@ export function VideoSnippet({
               minRows={6}
               maxRows={6}
             />
+            <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end">
               <SaveButton disabled={!isValid || isSubmitting || !dirty} />
             </Stack>

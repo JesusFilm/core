@@ -46,6 +46,7 @@ export function Variants({
             sx: { p: 0, height: 'calc(100vh - 400px)' }
           }}
           title={t('Variants')}
+          variant="contained"
         >
           <FixedSizeList
             width={size.width}
