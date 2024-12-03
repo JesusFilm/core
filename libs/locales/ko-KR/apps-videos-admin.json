@@ -38,7 +38,7 @@
   "URL": "URL",
   "Variant": "변형",
   "Variants": "변형",
-  "Editing": "편집",
+  "titleEdit": "편집: {value}",
   "Loading...": "로드 중...",
   "Email": "이메일",
   "Password": "비밀번호",
