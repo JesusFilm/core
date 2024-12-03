@@ -14,7 +14,6 @@ import { PublishedChip } from '../../../../../../components/PublishedChip'
 import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
 
 import { Children } from './Children'
-import { Editions } from './Editions'
 import { Metadata } from './Metadata'
 import { TabContainer } from './Tabs/TabContainer'
 import { TabLabel } from './Tabs/TabLabel'
@@ -77,7 +76,6 @@ export function VideoView(): ReactElement {
                     />
                   }
                 />
-                <Tab label={<TabLabel label="Editions" />} />
               </Tabs>
               <Divider sx={{ mb: 4 }} />
               <TabContainer value={tabValue} index={0}>
@@ -88,9 +86,6 @@ export function VideoView(): ReactElement {
               </TabContainer>
               <TabContainer value={tabValue} index={2}>
                 <Variants variants={video?.variants} />
-              </TabContainer>
-              <TabContainer value={tabValue} index={3}>
-                <Editions editions={[]} />
               </TabContainer>
             </>
           )}
