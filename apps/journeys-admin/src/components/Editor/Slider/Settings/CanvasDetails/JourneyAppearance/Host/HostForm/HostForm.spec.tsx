@@ -219,8 +219,7 @@ describe('HostForm', () => {
     expect(handleSelection).toHaveBeenCalledWith('selection')
   })
 
-  // should call updatehost mutation on title change
-  it('should call updatehost mutation on title change', async () => {
+  describe('handletitlechange and handlelocationchange tests', () => {
     const defaultHost: Host = {
       id: 'hostId',
       __typename: 'Host',
@@ -239,316 +238,259 @@ describe('HostForm', () => {
       team: { id: 'team.id' }
     } as unknown as Journey
 
-    const updateHostMock: MockedResponse<UpdateHost, UpdateHostVariables> = {
-      request: {
-        query: UPDATE_HOST,
-        variables: {
-          id: 'hostId',
-          teamId: 'team.id',
-          input: {
-            title: 'Someone'
-          }
-        }
-      },
-      result: {
-        data: {
-          hostUpdate: {
+    it('should call updatehost mutation on title change', async () => {
+      const updateHostMock: MockedResponse<UpdateHost, UpdateHostVariables> = {
+        request: {
+          query: UPDATE_HOST,
+          variables: {
             id: 'hostId',
-            __typename: 'Host',
-            title: 'Title',
-            location: 'USA',
-            src1: 'imageSrc1',
-            src2: 'imageSrc2'
+            teamId: 'team.id',
+            input: {
+              title: 'Someone'
+            }
           }
-        }
-      }
-    }
-
-    const mockHostUpdateResult = jest
-      .fn()
-      .mockReturnValue(updateHostMock.result)
-
-    const handleSelection = jest.fn()
-    const mockGetAllTeamHostsQuery = jest.fn()
-    render(
-      <MockedProvider
-        mocks={[{ ...updateHostMock, result: mockHostUpdateResult }]}
-      >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <HostForm
-            handleSelection={handleSelection}
-            getAllTeamHostsQuery={mockGetAllTeamHostsQuery}
-          />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    const input = screen.getByRole('textbox', { name: 'Host Name' })
-    fireEvent.change(input, { target: { value: 'Someone' } })
-    fireEvent.submit(input)
-    await waitFor(() => {
-      expect(mockHostUpdateResult).toHaveBeenCalled()
-    })
-  })
-
-  // should call createhost mutation on title change if host does not exist
-
-  it('should call createhost mutation on title change if host does not exist', async () => {
-    const defaultHost: Host = {
-      id: 'hostId',
-      __typename: 'Host',
-      teamId: 'team.id',
-      title: 'Cru International',
-      location: 'Florida, USA',
-      src1: 'imageSrc1',
-      src2: 'imageSrc2'
-    }
-
-    const journey = {
-      __typename: 'Journey',
-      id: 'journeyId',
-      seoTitle: 'My awesome journey',
-      host: defaultHost,
-      team: { id: 'team.id' }
-    } as unknown as Journey
-
-    const hostCreateMock: MockedResponse<CreateHost, CreateHostVariables> = {
-      request: {
-        query: CREATE_HOST,
-        variables: {
-          teamId: 'team.id',
-          input: { title: 'value', location: '' }
-        }
-      },
-      result: {
-        data: {
-          hostCreate: {
-            __typename: 'Host',
-            id: 'host.id',
-            title: 'value'
-          }
-        }
-      }
-    }
-
-    const updateJourneyHostMock: MockedResponse<
-      UpdateJourneyHost,
-      UpdateJourneyHostVariables
-    > = {
-      request: {
-        query: UPDATE_JOURNEY_HOST,
-        variables: { id: 'journeyId', input: { hostId: 'host.id' } }
-      },
-      result: {
-        data: {
-          journeyUpdate: {
-            __typename: 'Journey',
-            id: 'journeyId',
-            host: {
+        },
+        result: {
+          data: {
+            hostUpdate: {
+              id: 'hostId',
               __typename: 'Host',
-              id: 'host.id'
+              title: 'Title',
+              location: 'USA',
+              src1: 'imageSrc1',
+              src2: 'imageSrc2'
             }
           }
         }
       }
-    }
 
-    const mockCreateResult = jest.fn().mockReturnValue(hostCreateMock.result)
-    const mockJourneyUpdateResult = jest
-      .fn()
-      .mockReturnValue(updateJourneyHostMock.result)
-    const handleSelection = jest.fn()
-    const mockGetAllTeamHostsQuery = jest.fn()
+      const mockHostUpdateResult = jest
+        .fn()
+        .mockReturnValue(updateHostMock.result)
 
-    render(
-      <MockedProvider
-        mocks={[
-          { ...hostCreateMock, result: mockCreateResult },
-          { ...updateJourneyHostMock, result: mockJourneyUpdateResult }
-        ]}
-      >
-        <JourneyProvider
-          value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+      const handleSelection = jest.fn()
+      const mockGetAllTeamHostsQuery = jest.fn()
+      render(
+        <MockedProvider
+          mocks={[{ ...updateHostMock, result: mockHostUpdateResult }]}
         >
-          <HostForm
-            handleSelection={handleSelection}
-            getAllTeamHostsQuery={mockGetAllTeamHostsQuery}
-          />
-        </JourneyProvider>
-      </MockedProvider>
-    )
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <HostForm
+              handleSelection={handleSelection}
+              getAllTeamHostsQuery={mockGetAllTeamHostsQuery}
+            />
+          </JourneyProvider>
+        </MockedProvider>
+      )
 
-    const input = screen.getByRole('textbox', { name: 'Host Name' })
-    fireEvent.change(input, { target: { value: 'value' } })
-    fireEvent.submit(input)
-    await waitFor(() => {
-      expect(mockCreateResult).toHaveBeenCalled()
+      const input = screen.getByRole('textbox', { name: 'Host Name' })
+      fireEvent.change(input, { target: { value: 'Someone' } })
+      fireEvent.submit(input)
+      await waitFor(() => {
+        expect(mockHostUpdateResult).toHaveBeenCalled()
+      })
     })
-  })
 
-  // should call updatehost mutation on location change
-
-  it('should call updatehost mutation on location change', async () => {
-    const defaultHost: Host = {
-      id: 'hostId',
-      __typename: 'Host',
-      teamId: 'team.id',
-      title: 'Cru International',
-      location: 'Florida, USA',
-      src1: 'imageSrc1',
-      src2: 'imageSrc2'
-    }
-
-    const journey = {
-      __typename: 'Journey',
-      id: 'journeyId',
-      seoTitle: 'My awesome journey',
-      host: defaultHost,
-      team: { id: 'team.id' }
-    } as unknown as Journey
-
-    const updateHostMock: MockedResponse<UpdateHost, UpdateHostVariables> = {
-      request: {
-        query: UPDATE_HOST,
-        variables: {
-          id: 'hostId',
-          teamId: 'team.id',
-          input: {
-            location: 'California, USA'
+    it('should call createhost mutation on title change if host does not exist', async () => {
+      const hostCreateMock: MockedResponse<CreateHost, CreateHostVariables> = {
+        request: {
+          query: CREATE_HOST,
+          variables: {
+            teamId: 'team.id',
+            input: { title: 'value', location: '' }
           }
-        }
-      },
-      result: {
-        data: {
-          hostUpdate: {
-            id: 'hostId',
-            __typename: 'Host',
-            title: 'Cru International',
-            location: 'California, USA',
-            src1: 'imageSrc1',
-            src2: 'imageSrc2'
-          }
-        }
-      }
-    }
-
-    const mockHostUpdateResult = jest
-      .fn()
-      .mockReturnValue(updateHostMock.result)
-
-    const handleSelection = jest.fn()
-    const mockGetAllTeamHostsQuery = jest.fn()
-    render(
-      <MockedProvider
-        mocks={[{ ...updateHostMock, result: mockHostUpdateResult }]}
-      >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <HostForm
-            handleSelection={handleSelection}
-            getAllTeamHostsQuery={mockGetAllTeamHostsQuery}
-          />
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    const input = screen.getByRole('textbox', { name: 'Location' })
-    fireEvent.change(input, { target: { value: 'California, USA' } })
-    fireEvent.submit(input)
-    await waitFor(() => {
-      expect(mockHostUpdateResult).toHaveBeenCalled()
-    })
-  })
-
-  // should call createhost mutation on location change if host does not exist
-  it('should call createhost mutation on location change if host does not exist', async () => {
-    const defaultHost: Host = {
-      id: 'hostId',
-      __typename: 'Host',
-      teamId: 'team.id',
-      title: 'Cru International',
-      location: 'Florida, USA',
-      src1: 'imageSrc1',
-      src2: 'imageSrc2'
-    }
-
-    const journey = {
-      __typename: 'Journey',
-      id: 'journeyId',
-      seoTitle: 'My awesome journey',
-      host: defaultHost,
-      team: { id: 'team.id' }
-    } as unknown as Journey
-
-    const hostCreateMock: MockedResponse<CreateHost, CreateHostVariables> = {
-      request: {
-        query: CREATE_HOST,
-        variables: {
-          teamId: 'team.id',
-          input: { title: '', location: 'California, USA' }
-        }
-      },
-      result: {
-        data: {
-          hostCreate: {
-            __typename: 'Host',
-            id: 'host.id',
-            title: 'value'
-          }
-        }
-      }
-    }
-    const updateJourneyHostMock: MockedResponse<
-      UpdateJourneyHost,
-      UpdateJourneyHostVariables
-    > = {
-      request: {
-        query: UPDATE_JOURNEY_HOST,
-        variables: { id: 'journeyId', input: { hostId: 'host.id' } }
-      },
-      result: {
-        data: {
-          journeyUpdate: {
-            __typename: 'Journey',
-            id: 'journeyId',
-            host: {
+        },
+        result: {
+          data: {
+            hostCreate: {
               __typename: 'Host',
-              id: 'host.id'
+              id: 'host.id',
+              title: 'value'
             }
           }
         }
       }
-    }
 
-    const mockCreateResult = jest.fn().mockReturnValue(hostCreateMock.result)
-    const mockJourneyUpdateResult = jest
-      .fn()
-      .mockReturnValue(updateJourneyHostMock.result)
-    const handleSelection = jest.fn()
-    const mockGetAllTeamHostsQuery = jest.fn()
+      const updateJourneyHostMock: MockedResponse<
+        UpdateJourneyHost,
+        UpdateJourneyHostVariables
+      > = {
+        request: {
+          query: UPDATE_JOURNEY_HOST,
+          variables: { id: 'journeyId', input: { hostId: 'host.id' } }
+        },
+        result: {
+          data: {
+            journeyUpdate: {
+              __typename: 'Journey',
+              id: 'journeyId',
+              host: {
+                __typename: 'Host',
+                id: 'host.id'
+              }
+            }
+          }
+        }
+      }
 
-    render(
-      <MockedProvider
-        mocks={[
-          { ...hostCreateMock, result: mockCreateResult },
-          { ...updateJourneyHostMock, result: mockJourneyUpdateResult }
-        ]}
-      >
-        <JourneyProvider
-          value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+      const mockCreateResult = jest.fn().mockReturnValue(hostCreateMock.result)
+      const mockJourneyUpdateResult = jest
+        .fn()
+        .mockReturnValue(updateJourneyHostMock.result)
+      const handleSelection = jest.fn()
+      const mockGetAllTeamHostsQuery = jest.fn()
+
+      render(
+        <MockedProvider
+          mocks={[
+            { ...hostCreateMock, result: mockCreateResult },
+            { ...updateJourneyHostMock, result: mockJourneyUpdateResult }
+          ]}
         >
-          <HostForm
-            handleSelection={handleSelection}
-            getAllTeamHostsQuery={mockGetAllTeamHostsQuery}
-          />
-        </JourneyProvider>
-      </MockedProvider>
-    )
+          <JourneyProvider
+            value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+          >
+            <HostForm
+              handleSelection={handleSelection}
+              getAllTeamHostsQuery={mockGetAllTeamHostsQuery}
+            />
+          </JourneyProvider>
+        </MockedProvider>
+      )
 
-    const input = screen.getByRole('textbox', { name: 'Location' })
-    fireEvent.change(input, { target: { value: 'California, USA' } })
-    fireEvent.submit(input)
-    await waitFor(() => {
-      expect(mockCreateResult).toHaveBeenCalled()
+      const input = screen.getByRole('textbox', { name: 'Host Name' })
+      fireEvent.change(input, { target: { value: 'value' } })
+      fireEvent.submit(input)
+      await waitFor(() => {
+        expect(mockCreateResult).toHaveBeenCalled()
+      })
+    })
+
+    it('should call updatehost mutation on location change', async () => {
+      const updateHostMock: MockedResponse<UpdateHost, UpdateHostVariables> = {
+        request: {
+          query: UPDATE_HOST,
+          variables: {
+            id: 'hostId',
+            teamId: 'team.id',
+            input: {
+              location: 'California, USA'
+            }
+          }
+        },
+        result: {
+          data: {
+            hostUpdate: {
+              id: 'hostId',
+              __typename: 'Host',
+              title: 'Cru International',
+              location: 'California, USA',
+              src1: 'imageSrc1',
+              src2: 'imageSrc2'
+            }
+          }
+        }
+      }
+
+      const mockHostUpdateResult = jest
+        .fn()
+        .mockReturnValue(updateHostMock.result)
+
+      const handleSelection = jest.fn()
+      const mockGetAllTeamHostsQuery = jest.fn()
+      render(
+        <MockedProvider
+          mocks={[{ ...updateHostMock, result: mockHostUpdateResult }]}
+        >
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <HostForm
+              handleSelection={handleSelection}
+              getAllTeamHostsQuery={mockGetAllTeamHostsQuery}
+            />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      const input = screen.getByRole('textbox', { name: 'Location' })
+      fireEvent.change(input, { target: { value: 'California, USA' } })
+      fireEvent.submit(input)
+      await waitFor(() => {
+        expect(mockHostUpdateResult).toHaveBeenCalled()
+      })
+    })
+
+    it('should call createhost mutation on location change if host does not exist', async () => {
+      const hostCreateMock: MockedResponse<CreateHost, CreateHostVariables> = {
+        request: {
+          query: CREATE_HOST,
+          variables: {
+            teamId: 'team.id',
+            input: { title: '', location: 'California, USA' }
+          }
+        },
+        result: {
+          data: {
+            hostCreate: {
+              __typename: 'Host',
+              id: 'host.id',
+              title: 'value'
+            }
+          }
+        }
+      }
+      const updateJourneyHostMock: MockedResponse<
+        UpdateJourneyHost,
+        UpdateJourneyHostVariables
+      > = {
+        request: {
+          query: UPDATE_JOURNEY_HOST,
+          variables: { id: 'journeyId', input: { hostId: 'host.id' } }
+        },
+        result: {
+          data: {
+            journeyUpdate: {
+              __typename: 'Journey',
+              id: 'journeyId',
+              host: {
+                __typename: 'Host',
+                id: 'host.id'
+              }
+            }
+          }
+        }
+      }
+
+      const mockCreateResult = jest.fn().mockReturnValue(hostCreateMock.result)
+      const mockJourneyUpdateResult = jest
+        .fn()
+        .mockReturnValue(updateJourneyHostMock.result)
+      const handleSelection = jest.fn()
+      const mockGetAllTeamHostsQuery = jest.fn()
+
+      render(
+        <MockedProvider
+          mocks={[
+            { ...hostCreateMock, result: mockCreateResult },
+            { ...updateJourneyHostMock, result: mockJourneyUpdateResult }
+          ]}
+        >
+          <JourneyProvider
+            value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+          >
+            <HostForm
+              handleSelection={handleSelection}
+              getAllTeamHostsQuery={mockGetAllTeamHostsQuery}
+            />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      const input = screen.getByRole('textbox', { name: 'Location' })
+      fireEvent.change(input, { target: { value: 'California, USA' } })
+      fireEvent.submit(input)
+      await waitFor(() => {
+        expect(mockCreateResult).toHaveBeenCalled()
+      })
     })
   })
 })
