@@ -40,14 +40,26 @@ export function VideoView(): ReactElement {
       data-testid="VideoView"
     >
       <Stack
-        gap={2}
-        direction="row"
-        flexWrap="wrap"
-        sx={{ mb: 2, alignItems: 'center' }}
+        gap={1}
+        sx={{
+          mb: 2,
+          alignItems: { xs: 'start', sm: 'center' },
+          flexDirection: { xs: 'col', sm: 'row' }
+        }}
       >
-        <Typography variant="h4">{t('Editing')} :</Typography>
-        <Typography variant="h4">{data?.adminVideo.title[0].value}</Typography>
-        <PublishedChip published={data?.adminVideo.published ?? false} />
+        <Typography variant="h4">{t('Editing')}:</Typography>
+        <Stack
+          gap={2}
+          sx={{
+            flexDirection: { xs: 'col', sm: 'row' },
+            alignItems: { xs: 'start', sm: 'center' }
+          }}
+        >
+          <Typography variant="h4">
+            {data?.adminVideo.title[0].value}
+          </Typography>
+          <PublishedChip published={data?.adminVideo.published ?? false} />
+        </Stack>
       </Stack>
       <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
         <Box width="100%">
