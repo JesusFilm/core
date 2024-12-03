@@ -9,8 +9,6 @@ import { CSSProperties, MouseEvent, ReactElement, useMemo } from 'react'
 
 import Drag from '@core/shared/ui/icons/Drag'
 
-import { useEdit } from '../../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
-
 import { OrderedItemIcons } from './OrderedItemIcons'
 import { OrderedItemMenu } from './OrderedItemMenu'
 
@@ -59,9 +57,6 @@ export function OrderedItem({
       index: idx
     }
   })
-  const {
-    state: { isEdit }
-  } = useEdit()
   const style =
     transform != null
       ? { transform: `translate3d(0px, ${transform.y}px, 0)`, transition }
@@ -104,7 +99,6 @@ export function OrderedItem({
       }}
     >
       <IconButton
-        disabled={!isEdit}
         data-testid={`OrderedItemDragHandle-${idx}`}
         sx={{ cursor: 'move' }}
         aria-label="ordered-item-drag-handle"
@@ -135,12 +129,12 @@ export function OrderedItem({
       )}
       <Typography variant="subtitle2">{`${idx + 1}. ${label}`}</Typography>
       <Stack sx={{ ml: 'auto' }} flexDirection="row">
-        {iconMemoButtons != null && iconMemoButtons.length > 0 && isEdit && (
+        {iconMemoButtons != null && iconMemoButtons.length > 0 && (
           <OrderedItemIcons iconButtons={iconMemoButtons} />
         )}
-        {menuActionButtons != null &&
-          menuActionButtons.length > 0 &&
-          isEdit && <OrderedItemMenu actions={menuActionButtons} id={id} />}
+        {menuActionButtons != null && menuActionButtons.length > 0 && (
+          <OrderedItemMenu actions={menuActionButtons} id={id} />
+        )}
       </Stack>
     </Stack>
   )

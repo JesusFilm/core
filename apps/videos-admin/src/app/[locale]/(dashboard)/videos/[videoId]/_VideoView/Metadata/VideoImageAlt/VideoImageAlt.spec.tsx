@@ -4,7 +4,6 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider } from '../../../_EditProvider'
 
 import { UPDATE_VIDEO_IMAGE_ALT, VideoImageAlt } from './VideoImageAlt'
 
@@ -36,43 +35,11 @@ describe('VideoImageAlt', () => {
     jest.clearAllMocks()
   })
 
-  it('should disable field if not in edit mode', () => {
+  it('should show disabled save button if values have not been changed', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: false }}>
-            <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
-          </EditProvider>
-        </NextIntlClientProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByRole('textbox')).toBeDisabled()
-  })
-
-  it('should not show save button when not in edit mode', () => {
-    render(
-      <MockedProvider>
-        <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: false }}>
-            <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
-          </EditProvider>
-        </NextIntlClientProvider>
-      </MockedProvider>
-    )
-
-    expect(
-      screen.queryByRole('button', { name: 'Save' })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should show disabled save button in edit mode by default', () => {
-    render(
-      <MockedProvider>
-        <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
-          </EditProvider>
+          <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -84,9 +51,7 @@ describe('VideoImageAlt', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
-          </EditProvider>
+          <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -104,9 +69,7 @@ describe('VideoImageAlt', () => {
     render(
       <MockedProvider mocks={[mockUpdateVideoImageAlt]}>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
-          </EditProvider>
+          <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -128,9 +91,7 @@ describe('VideoImageAlt', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
-          </EditProvider>
+          <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
         </NextIntlClientProvider>
       </MockedProvider>
     )

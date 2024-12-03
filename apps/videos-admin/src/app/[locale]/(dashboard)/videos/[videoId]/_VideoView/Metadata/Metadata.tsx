@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useEdit } from '../../_EditProvider'
 import { Section } from '../Section'
 
 import { StudyQuestionsList } from './StudyQuestionsList'
@@ -22,9 +21,6 @@ interface MetadataProps {
 
 export function Metadata({ video, loading }: MetadataProps): ReactElement {
   const t = useTranslations()
-  const {
-    state: { isEdit }
-  } = useEdit()
 
   return (
     <Stack gap={2} data-testid="VideoMetadata">
@@ -40,7 +36,7 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
           <Section title={t('Image')}>
             <Stack gap={2}>
               <VideoImageAlt videoImageAlts={video.imageAlt} />
-              <VideoImage video={video} isEdit={isEdit} />
+              <VideoImage video={video} />
             </Stack>
           </Section>
           <Section title={t('Snippet')}>

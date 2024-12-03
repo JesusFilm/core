@@ -4,7 +4,6 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideoVariant as VideoVariants } from '../../../../../../../libs/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider } from '../../_EditProvider'
 
 import { Variants } from './Variants'
 
@@ -21,9 +20,7 @@ describe('Variants', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider>
-            <Variants variants={mockVideoVariants} />
-          </EditProvider>
+          <Variants variants={mockVideoVariants} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -37,9 +34,7 @@ describe('Variants', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider>
-            <Variants variants={mockVideoVariants} />
-          </EditProvider>
+          <Variants variants={mockVideoVariants} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -54,9 +49,7 @@ describe('Variants', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider>
-            <Variants variants={mockVideoVariants} />
-          </EditProvider>
+          <Variants variants={mockVideoVariants} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
