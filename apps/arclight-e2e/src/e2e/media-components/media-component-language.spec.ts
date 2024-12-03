@@ -1,18 +1,19 @@
 import { expect, test } from '@playwright/test'
 
+import { getBaseUrl } from '../../framework/helpers'
 import { getObjectDiff } from '../../utils/media-component-utils'
+import testData from '../../utils/testData.json'
 
 test('compare specific media component languages between environments', async ({
   request
 }) => {
-  const baseUrl = 'http://localhost:4600'
+  const baseUrl = await getBaseUrl()
   const compareUrl = 'https://api.arclight.org'
-  const apiKey = process.env.API_KEY
-  const mediaComponentId = '2_0-ConsideringChristmas'
-  const languageId = '529'
+  const mediaComponentId = testData.mediaComponentId
+  const languageId = testData.languageId
 
   const queryParams = new URLSearchParams({
-    apiKey: apiKey || '3a21a65d4gf98hZ7',
+    apiKey: testData.apiKey,
     mediaComponentId,
     languageId
   })
