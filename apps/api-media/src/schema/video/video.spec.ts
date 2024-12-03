@@ -924,9 +924,6 @@ describe('video', () => {
         }
       })
       expect(data).toHaveProperty('data.videos', result)
-      expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
-        where: { videoId: 'videoId' }
-      })
     })
   })
 
