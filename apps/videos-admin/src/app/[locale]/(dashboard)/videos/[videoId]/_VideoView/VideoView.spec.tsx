@@ -30,7 +30,7 @@ describe('VideoView', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(
-      screen.getByRole('heading', { level: 4, name: 'titleEdit' })
+      screen.getByRole('heading', { level: 4, name: 'videoTitle' })
     ).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('JESUS')
     expect(screen.getByRole('textbox', { name: 'Image Alt' })).toHaveValue(

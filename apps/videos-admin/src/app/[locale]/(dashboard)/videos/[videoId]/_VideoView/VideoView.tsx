@@ -48,7 +48,7 @@ export function VideoView(): ReactElement {
         }}
       >
         <Typography variant="h4">
-          {t('titleEdit', { value: videoTitle })}
+          {t('videoTitle', { value: videoTitle })}
         </Typography>
         <PublishedChip published={data?.adminVideo.published ?? false} />
       </Stack>
