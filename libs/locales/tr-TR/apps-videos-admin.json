@@ -38,7 +38,7 @@
   "URL": "URL",
   "Variant": "Varyant",
   "Variants": "Varyantlar",
-  "Editing": "Düzenleme",
+  "titleEdit": "Düzenleme: {value}",
   "Loading...": "Yükleniyor...",
   "Email": "E-posta",
   "Password": "Şifre",
