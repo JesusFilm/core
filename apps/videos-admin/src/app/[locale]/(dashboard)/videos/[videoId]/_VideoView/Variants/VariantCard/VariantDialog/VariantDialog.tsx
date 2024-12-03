@@ -15,9 +15,9 @@ import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { GetAdminVideoVariant } from '../../../../../../../../../libs/useAdminVideo'
-import { Downloads } from '../../Downloads'
 
 import 'video.js/dist/video-js.css'
+import { Downloads } from './Downloads'
 
 interface VariantDialogProps {
   variant: GetAdminVideoVariant
