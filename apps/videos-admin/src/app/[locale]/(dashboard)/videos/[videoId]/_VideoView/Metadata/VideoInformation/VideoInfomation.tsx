@@ -1,4 +1,5 @@
 import { useMutation } from '@apollo/client'
+import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -105,7 +106,7 @@ export function VideoInformation({
       {({ values, errors, handleChange, isValid, isSubmitting, dirty }) => (
         <Form>
           <Stack gap={2}>
-            <Stack direction="row" gap={2}>
+            <Stack gap={2} sx={{ flexDirection: { xs: 'col', sm: 'row' } }}>
               <TextField
                 id="title"
                 name="title"
@@ -130,7 +131,13 @@ export function VideoInformation({
                 disabled
               />
             </Stack>
-            <Stack direction="row" gap={2}>
+            <Stack
+              gap={2}
+              sx={{
+                flexDirection: { xs: 'col', sm: 'row' },
+                alignItems: { xs: 'start', sm: 'end' }
+              }}
+            >
               <FormControl variant="standard">
                 <InputLabel id="status-select-label">{t('Status')}</InputLabel>
                 <Select
