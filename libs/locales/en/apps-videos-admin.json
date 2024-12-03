@@ -39,7 +39,7 @@
   "Variant": "Variant",
   "Variants": "Variants",
   "Create Variant": "Create Variant",
-  "Editing": "Editing",
+  "titleEdit": "Editing: {value}",
   "Loading...": "Loading...",
   "Email": "Email",
   "Password": "Password",
