@@ -23,9 +23,8 @@ You do not have to wait for Design's approval before pushing in UI changes. If t
 If there are areas they are not happy with, they will create another ticket for it or ask for the change to be reverted.
 However, if:
 
-- Your code changes touch other feature/s
-- You haven't been with us for very long and don't feel comfortable
-- Or you are a Junior Product Engineer
+- Your code changes affect other features
+- You're still familiarizing yourself with our codebase and workflows
 
 Submit it for QA approval before pushing in the change.
 Some UX changes would also fit in this category (of no design review), especially smaller, isolated changes. But all UX changes will need to be QA approved.
