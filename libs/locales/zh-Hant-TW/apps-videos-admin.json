@@ -38,7 +38,7 @@
   "URL": "URL",
   "Variant": "變體",
   "Variants": "Variants",
-  "Editing": "Editing",
+  "titleEdit": "Editing: {value}",
   "Loading...": "載入中...",
   "Email": "電子郵件",
   "Password": "密碼",
