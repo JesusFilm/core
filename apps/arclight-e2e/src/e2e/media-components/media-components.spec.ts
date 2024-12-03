@@ -1,20 +1,19 @@
 import { expect, test } from '@playwright/test'
 
+import { getBaseUrl } from '../../framework/helpers'
 import {
   ApiResponse,
   convertArrayToObject,
   getObjectDiff
-} from '../../../utils/media-component-utils'
+} from '../../utils/media-component-utils'
+import testData from '../../utils/testData.json'
 
 test('compare media components between environments', async ({ request }) => {
-  // Use the properly typed options
-  const baseUrl = 'http://localhost:4600'
+  const baseUrl = await getBaseUrl()
   const compareUrl = 'https://api.arclight.org'
-  const apiKey = process.env.API_KEY
 
-  // Construct query parameters
   const queryParams = new URLSearchParams({
-    apiKey: apiKey || '3a21a65d4gf98hZ7'
+    apiKey: testData.apiKey
   })
 
   const [baseResponse, compareResponse] = await Promise.all([

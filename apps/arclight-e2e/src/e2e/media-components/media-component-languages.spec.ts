@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 import {
   convertArrayToObject,
   getObjectDiff
-} from '../../../utils/media-component-utils'
+} from '../../utils/media-component-utils'
 
 test('compare media component languages between environments', async ({
   request
