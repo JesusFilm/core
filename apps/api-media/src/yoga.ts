@@ -14,6 +14,7 @@ import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import get from 'lodash/get'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
+import { getInteropContext } from '@core/yoga/interop'
 
 import { prisma } from './lib/prisma'
 import { logger } from './logger'
@@ -22,24 +23,42 @@ import { Context } from './schema/builder'
 
 export const cache = createInMemoryCache()
 
-export const yoga = createYoga<Record<string, unknown>, Context>({
+export const yoga = createYoga<
+  Record<string, unknown>,
+  Context & ReturnType<typeof initContextCache>
+>({
   schema,
   logging: logger,
-  context: async ({ params }) => {
+  context: async ({ request, params }) => {
     const payload = get(params, 'extensions.jwt.payload')
     const user = getUserFromPayload(payload, logger)
 
+    if (user != null)
+      return {
+        ...initContextCache(),
+        type: 'authenticated',
+        user,
+        currentRoles:
+          (
+            await prisma.userMediaRole.findUnique({
+              where: { userId: user.id }
+            })
+          )?.roles ?? []
+      }
+
+    const interopToken = request.headers.get('interop-token')
+    const ipAddress = request.headers.get('x-forwarded-for')
+    const interopContext = getInteropContext({ interopToken, ipAddress })
+    if (interopContext != null)
+      return {
+        ...initContextCache(),
+        type: 'interop',
+        ...interopContext
+      }
+
     return {
       ...initContextCache(),
-      user,
-      currentRoles:
-        user?.id != null
-          ? ((
-              await prisma.userMediaRole.findUnique({
-                where: { userId: user.id }
-              })
-            )?.roles ?? [])
-          : []
+      type: 'public'
     }
   },
   plugins: [
@@ -58,7 +77,13 @@ export const yoga = createYoga<Record<string, unknown>, Context>({
     }),
     process.env.NODE_ENV !== 'test'
       ? useResponseCache({
-          session: () => null,
+          session: (request) =>
+            get(request, '_json.extensions.jwt.payload.user_id') ??
+            request.headers.get('interop-token') ??
+            null,
+          enabled: (request) =>
+            get(request, '_json.extensions.jwt.payload.user_id') == null &&
+            request.headers.get('interop-token') == null,
           cache,
           ttlPerSchemaCoordinate: {
             'Query.getMyCloudflareVideo': 0

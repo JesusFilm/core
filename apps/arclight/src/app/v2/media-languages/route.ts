@@ -2,30 +2,47 @@ import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../lib/apolloClient'
+import { getLanguageIdsFromTags } from '../../../lib/getLanguageIdsFromTags'
 import { paramsToRecord } from '../../../lib/paramsToRecord'
 
-/* TODO: 
-querystring:
-  apiKey
-  term
-    iso3
-    bcp47
-    ids
-    countryIds
-type
-    subTypes
-    contentTypes
-    expand
-    filter
-*/
 const GET_LANGUAGES = graphql(`
-  query GetLanguagesWithTags {
-    languages {
+  query GetLanguagesWithTags(
+    $limit: Int!
+    $offset: Int!
+    $ids: [ID!]
+    $bcp47: [String!]
+    $iso3: [String!]
+    $metadataLanguageId: ID
+    $fallbackLanguageId: ID
+    $term: String
+  ) {
+    languagesCount(
+      where: { ids: $ids, bcp47: $bcp47, iso3: $iso3 }
+      term: $term
+    )
+    languages(
+      limit: $limit
+      offset: $offset
+      where: { ids: $ids, bcp47: $bcp47, iso3: $iso3 }
+      term: $term
+    ) {
       id
       iso3
       bcp47
-      name {
+      name(languageId: $metadataLanguageId) {
         value
+        primary
+        language {
+          bcp47
+        }
+      }
+      fallbackName: name(languageId: $fallbackLanguageId) {
+        value
+        primary
+      }
+      nameNative: name {
+        value
+        primary
       }
       audioPreview {
         size
@@ -41,7 +58,6 @@ const GET_LANGUAGES = graphql(`
       featureFilmCount
       shortFilmCount
     }
-    languagesCount
   }
 `)
 
@@ -51,6 +67,19 @@ export async function GET(request: NextRequest): Promise<Response> {
   const page = Number(query.get('page') ?? 1)
   const limit = Number(query.get('limit') ?? 10)
   const offset = (page - 1) * limit
+  const bcp47 = query.get('bcp47')?.split(',')
+  const ids = query.get('ids')?.split(',')
+  const iso3 = query.get('iso3')?.split(',')
+  const metadataLanguageTags =
+    query.get('metadataLanguageTags')?.split(',') ?? []
+  const term = query.get('term')
+
+  const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
+  if (languageResult instanceof Response) {
+    return languageResult
+  }
+
+  const { metadataLanguageId, fallbackLanguageId } = languageResult
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_LANGUAGES>
@@ -58,9 +87,16 @@ export async function GET(request: NextRequest): Promise<Response> {
     query: GET_LANGUAGES,
     variables: {
       limit,
-      offset
+      offset,
+      ids,
+      bcp47,
+      iso3,
+      metadataLanguageId,
+      fallbackLanguageId,
+      term
     }
   })
+  const languages = data.languages
 
   const queryObject: Record<string, string> = {
     ...paramsToRecord(query.entries()),
@@ -68,74 +104,83 @@ export async function GET(request: NextRequest): Promise<Response> {
     limit: limit.toString()
   }
 
+  const totalPages = Math.ceil(Number(data.languagesCount) / limit)
   const queryString = new URLSearchParams(queryObject).toString()
   const firstQueryString = new URLSearchParams({
     ...queryObject,
     page: '1'
   }).toString()
-  // TODO: Needs new query in gql
   const lastQueryString = new URLSearchParams({
     ...queryObject,
-    page: '1192'
+    page: totalPages.toString()
   }).toString()
   const nextQueryString = new URLSearchParams({
     ...queryObject,
     page: (page + 1).toString()
   }).toString()
+  const previousQueryString = new URLSearchParams({
+    ...queryObject,
+    page: (page - 1).toString()
+  }).toString()
 
-  const mediaLanguages = data.languages.map((language) => ({
-    languageId: Number(language.id),
-    iso3: language.iso3,
-    bcp47: language.bcp47,
-    counts: {
-      speakerCount: {
-        value: language.speakerCount,
-        description: 'Number of speakers'
+  const mediaLanguages = languages
+    .filter(
+      (language) =>
+        language.name[0]?.value != null ||
+        language.fallbackName[0]?.value != null
+    )
+    .map((language) => ({
+      languageId: Number(language.id),
+      iso3: language.iso3,
+      bcp47: language.bcp47,
+      counts: {
+        speakerCount: {
+          value: language.speakerCount,
+          description: 'Number of speakers'
+        },
+        countriesCount: {
+          value: language.countriesCount,
+          description: 'Number of countries'
+        },
+        series: {
+          value: language.seriesCount,
+          description: 'Series'
+        },
+        featureFilm: {
+          value: language.featureFilmCount,
+          description: 'Feature Film'
+        },
+        shortFilm: {
+          value: language.shortFilmCount,
+          description: 'Short Film'
+        }
       },
-      countriesCount: {
-        value: language.countriesCount,
-        description: 'Number of countries'
-      },
-      series: {
-        value: language.seriesCount,
-        description: 'Series'
-      },
-      featureFilm: {
-        value: language.featureFilmCount,
-        description: 'Feature Film'
-      },
-      shortFilm: {
-        value: language.shortFilmCount,
-        description: 'Short Film'
+      audioPreview:
+        language.audioPreview != null
+          ? {
+              url: language.audioPreview.value,
+              audioBitrate: language.audioPreview.bitrate,
+              audioContainer: language.audioPreview.codec,
+              sizeInBytes: language.audioPreview.size
+            }
+          : null,
+      primaryCountryId: language.primaryCountryId ?? '',
+      name: language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
+      nameNative: language.nameNative.find(({ primary }) => primary)?.value,
+      alternateLanguageName: '',
+      alternateLanguageNameNative: '',
+      metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
+      _links: {
+        self: {
+          href: `/v2/media-languages/${language.id}`
+        }
       }
-    },
-    audioPreview:
-      language.audioPreview != null
-        ? {
-            url: language.audioPreview.value,
-            audioBitrate: language.audioPreview.bitrate,
-            audioContainer: language.audioPreview.codec,
-            sizeInBytes: language.audioPreview.size
-          }
-        : null,
-    primaryCountryId: language.primaryCountryId ?? '',
-    name: language.name[0]?.value,
-    nameNative: language.name[1]?.value,
-    alternateLanguageName: '',
-    alternateLanguageNameNative: '',
-    metadataLanguageTag: 'en', // TODO: Get from parameters
-    _links: {
-      self: {
-        // TODO queerystring
-        href: `/v2/media-languages/${language.id}`
-      }
-    }
-  }))
+    }))
 
   const response = {
     page,
     limit,
-    pages: Math.ceil(Number(data.languagesCount) / limit),
+    pages: totalPages,
     total: data.languagesCount,
     _links: {
       self: {
@@ -147,9 +192,20 @@ export async function GET(request: NextRequest): Promise<Response> {
       last: {
         href: `http://api.arclight.org/v2/media-languages?${lastQueryString}`
       },
-      next: {
-        href: `http://api.arclight.org/v2/media-languages?${nextQueryString}`
-      }
+      ...(page < totalPages
+        ? {
+            next: {
+              href: `http://api.arclight.org/v2/media-languages?${nextQueryString}`
+            }
+          }
+        : {}),
+      ...(page > 1
+        ? {
+            previous: {
+              href: `http://api.arclight.org/v2/media-languages?${previousQueryString}`
+            }
+          }
+        : {})
     },
     _embedded: {
       mediaLanguages
