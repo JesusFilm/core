@@ -38,7 +38,7 @@
   "URL": "URL",
   "Variant": "バリアント",
   "Variants": "バリエーション",
-  "Editing": "編集",
+  "titleEdit": "編集： {value}",
   "Loading...": "読み込み中...",
   "Email": "電子メール",
   "Password": "パスワード",
