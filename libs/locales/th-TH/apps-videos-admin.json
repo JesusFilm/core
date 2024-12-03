@@ -38,7 +38,7 @@
   "URL": "URL",
   "Variant": "ตัวแปร",
   "Variants": "Variants",
-  "Editing": "Editing",
+  "titleEdit": "Editing: {value}",
   "Loading...": "กำลังโหลด...",
   "Email": "อีเมล",
   "Password": "รหัสผ่าน",
