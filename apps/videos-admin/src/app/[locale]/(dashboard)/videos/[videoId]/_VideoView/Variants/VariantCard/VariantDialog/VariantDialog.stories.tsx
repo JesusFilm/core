@@ -11,7 +11,7 @@ import { VariantDialog } from './VariantDialog'
 const meta: Meta<typeof VariantDialog> = {
   ...videosAdminConfig,
   component: VariantDialog,
-  title: 'Videos-Admin/VariantDialog',
+  title: 'Videos-Admin/Variants/VariantCard/VariantDialog',
   parameters: {
     tags: ['!autodocs']
   }
