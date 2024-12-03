@@ -26,7 +26,7 @@ describe('Variants', () => {
     )
 
     expect(
-      screen.getByRole('button', { name: 'Munukutuba jesus/munukutuba' })
+      screen.getByRole('button', { name: 'Munukutuba 4334' })
     ).toBeInTheDocument()
   })
 
@@ -39,9 +39,7 @@ describe('Variants', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Munukutuba jesus/munukutuba' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Munukutuba 4334' }))
     expect(
       screen.getByRole('heading', { level: 4, name: 'Downloads' })
     ).toBeInTheDocument()
@@ -56,9 +54,7 @@ describe('Variants', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Munukutuba jesus/munukutuba' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Munukutuba 4334' }))
     expect(
       screen.getByRole('heading', { level: 4, name: 'Downloads' })
     ).toBeInTheDocument()
