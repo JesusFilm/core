@@ -38,7 +38,7 @@
   "URL": "URL",
   "Variant": "Varian",
   "Variants": "Varian",
-  "Editing": "Pengeditan",
+  "titleEdit": "Penyuntingan: {value}",
   "Loading...": "Memuat...",
   "Email": "Email",
   "Password": "Kata sandi",
