@@ -71,6 +71,7 @@ export function Children({ childVideos }: ChildrenProps): ReactElement {
       boxProps={{
         sx: { p: 0, height: 'calc(100vh - 400px)', overflowY: 'scroll' }
       }}
+      variant="contained"
     >
       {videos.length > 0 ? (
         <OrderedList onOrderUpdate={updateOrderOnDrag} items={videos}>
