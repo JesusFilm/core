@@ -29,7 +29,7 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
   ({ onMenuClick, showDivider = false, ...props }, ref) => {
     return (
       <AppBar
-        position="absolute"
+        position="fixed"
         {...props}
         sx={{
           p: 4,
