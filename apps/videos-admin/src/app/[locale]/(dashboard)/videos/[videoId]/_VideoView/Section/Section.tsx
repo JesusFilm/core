@@ -51,6 +51,7 @@ export function Section({
       data-testid={`${title}-section`}
     >
       <Stack
+        data-testid={`${title}-title-section`}
         sx={{
           borderBottom: contained ? '1px solid' : '0px',
           borderColor: contained ? 'divider' : 'transparent',
