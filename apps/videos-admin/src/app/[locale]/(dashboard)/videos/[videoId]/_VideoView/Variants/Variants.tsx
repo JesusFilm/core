@@ -46,10 +46,6 @@ export function Variants({
             sx: { p: 0, height: 'calc(100vh - 400px)' }
           }}
           title={t('Variants')}
-          action={{
-            label: t('Create Variant'),
-            onClick: () => alert('Create variant')
-          }}
         >
           <FixedSizeList
             width={size.width}
@@ -60,7 +56,7 @@ export function Variants({
             overscanCount={10}
           >
             {({ index, style, data: items }) => (
-              <VariantCard key={index} variant={items[index]} style={style} />
+              <VariantCard variant={items[index]} style={style} />
             )}
           </FixedSizeList>
         </Section>

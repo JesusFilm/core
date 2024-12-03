@@ -55,14 +55,4 @@ export const Default: Story = {
   }
 }
 
-export const Editable: Story = {
-  ...Template,
-  args: {
-    items: [
-      { id: 'OrderedItem.1', value: 'Ordered row 1' } as BaseItem,
-      { id: 'OrderedItem.2', value: 'Ordered row 2' } as BaseItem
-    ]
-  }
-}
-
 export default meta

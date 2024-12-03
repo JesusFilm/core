@@ -8,7 +8,7 @@ import {
   useSensors
 } from '@dnd-kit/core'
 import { SortableContext, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
-import Stack from '@mui/material/Stack'
+import List from '@mui/material/List'
 import { ReactElement, ReactNode } from 'react'
 
 export interface BaseItem {
@@ -41,7 +41,7 @@ export function OrderedList<T extends BaseItem>({
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <SortableContext items={items}>
-        <Stack gap={1}>{children}</Stack>
+        <List sx={{ gap: 1 }}>{children}</List>
       </SortableContext>
     </DndContext>
   )
