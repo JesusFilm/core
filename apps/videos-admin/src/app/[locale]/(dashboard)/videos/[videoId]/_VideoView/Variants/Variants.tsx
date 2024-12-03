@@ -46,10 +46,7 @@ export function Variants({
             sx: { p: 0, height: 'calc(100vh - 400px)' }
           }}
           title={t('Variants')}
-          action={{
-            label: t('Create Variant'),
-            onClick: () => alert('Create variant')
-          }}
+          variant="contained"
         >
           <FixedSizeList
             width={size.width}

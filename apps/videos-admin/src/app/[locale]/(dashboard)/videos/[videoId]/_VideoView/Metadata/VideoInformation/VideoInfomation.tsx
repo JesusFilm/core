@@ -1,5 +1,6 @@
 import { useMutation } from '@apollo/client'
 import Checkbox from '@mui/material/Checkbox'
+import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import InputLabel from '@mui/material/InputLabel'
@@ -182,6 +183,7 @@ export function VideoInformation({
                 }
               />
             </Stack>
+            <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end">
               <SaveButton disabled={!isValid || isSubmitting || !dirty} />
             </Stack>

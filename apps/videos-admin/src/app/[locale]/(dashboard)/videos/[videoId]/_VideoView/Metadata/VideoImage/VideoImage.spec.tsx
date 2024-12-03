@@ -23,7 +23,7 @@ describe('VideoImage', () => {
     expect(screen.getByAltText('JESUS')).toBeInTheDocument()
   })
 
-  it('should show edit button when editable', () => {
+  it('should show edit button', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
@@ -33,6 +33,21 @@ describe('VideoImage', () => {
     )
 
     expect(screen.getByRole('button')).toBeInTheDocument()
+  })
+
+  it('should show tooltip when hovering over edit button', async () => {
+    render(
+      <NextIntlClientProvider locale="en">
+        <MockedProvider>
+          <VideoImage video={video} />
+        </MockedProvider>
+      </NextIntlClientProvider>
+    )
+
+    fireEvent.mouseOver(screen.getByRole('button'))
+    await waitFor(() =>
+      expect(screen.getByText('Change image')).toBeInTheDocument()
+    )
   })
 
   it('should open file upload dialog on edit button click', async () => {
@@ -48,6 +63,9 @@ describe('VideoImage', () => {
     await waitFor(() =>
       expect(screen.getByTestId('VideoImageUploadDialog')).toBeInTheDocument()
     )
+    expect(
+      screen.getByText('Warning: this change will apply immediately')
+    ).toBeInTheDocument()
   })
 
   it('should close file upload dialog on close button click', async () => {
