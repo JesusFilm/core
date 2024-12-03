@@ -76,7 +76,6 @@ export function VideoView(): ReactElement {
                     />
                   }
                 />
-                <Tab label={<TabLabel label="Editions" />} />
               </Tabs>
               <Divider sx={{ mb: 4 }} />
               <TabContainer value={tabValue} index={0}>
