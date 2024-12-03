@@ -129,7 +129,7 @@ export function CreateVariantDialog({
                 id="duration"
                 name="duration"
                 label={t('Duration')}
-                // type="number"
+                type="number"
                 variant="outlined"
                 fullWidth
                 value={values.duration}
