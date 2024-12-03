@@ -1,4 +1,5 @@
 import { useMutation } from '@apollo/client'
+import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
@@ -10,7 +11,6 @@ import { object, string } from 'yup'
 import { ResizableTextField } from '../../../../../../../../components/ResizableTextField'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo_VideoDescriptions as VideoDescriptions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import Divider from '@mui/material/Divider'
 
 export const UPDATE_VIDEO_DESCRIPTION = graphql(`
   mutation UpdateVideoDescription($input: VideoTranslationUpdateInput!) {

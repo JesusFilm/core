@@ -1,5 +1,7 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
@@ -10,8 +12,6 @@ import Edit2 from '@core/shared/ui/icons/Edit2'
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 import { VideoImageUpload } from './VideoImageUpload'
-import Tooltip from '@mui/material/Tooltip'
-import { Typography } from '@mui/material'
 
 function getImageFields(video: AdminVideo): {
   src: string | null | undefined
