@@ -104,21 +104,6 @@ export function Children({ childVideos }: ChildrenProps): ReactElement {
                     onClick: () => edit(id)
                   },
                   name: 'Edit'
-                },
-                {
-                  Icon: Trash2,
-                  events: {
-                    onClick: () => alert('Delete child')
-                  },
-                  name: 'Delete',
-                  slotProps: {
-                    button: {
-                      color: 'error'
-                    },
-                    icon: {
-                      color: 'error'
-                    }
-                  }
                 }
               ]}
               img={{
