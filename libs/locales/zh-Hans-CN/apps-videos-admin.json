@@ -38,7 +38,7 @@
   "URL": "网址",
   "Variant": "变体",
   "Variants": "变体",
-  "Editing": "编辑",
+  "titleEdit": "编辑： {value}",
   "Loading...": "正在加载...",
   "Email": "电子邮件",
   "Password": "密码",
