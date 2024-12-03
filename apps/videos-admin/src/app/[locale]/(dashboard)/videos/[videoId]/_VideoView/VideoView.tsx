@@ -27,6 +27,7 @@ export function VideoView(): ReactElement {
     variables: { videoId: params?.videoId as string }
   })
   const video = data?.adminVideo
+  const videoTitle = data?.adminVideo.title[0].value
 
   function handleTabChange(_e: SyntheticEvent, newValue: number): void {
     setTabValue(newValue)
@@ -40,12 +41,15 @@ export function VideoView(): ReactElement {
     >
       <Stack
         gap={2}
-        direction="row"
-        flexWrap="wrap"
-        sx={{ mb: 2, alignItems: 'center' }}
+        sx={{
+          mb: 2,
+          alignItems: { xs: 'start', sm: 'center' },
+          flexDirection: { xs: 'col', sm: 'row' }
+        }}
       >
-        <Typography variant="h4">{t('Editing')} :</Typography>
-        <Typography variant="h4">{data?.adminVideo.title[0].value}</Typography>
+        <Typography variant="h4">
+          {t('titleEdit', { value: videoTitle })}
+        </Typography>
         <PublishedChip published={data?.adminVideo.published ?? false} />
       </Stack>
       <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
