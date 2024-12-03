@@ -6,7 +6,6 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo_Children as VideoChildren } from '../../../../../../../libs/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider } from '../../_EditProvider'
 
 import { Children } from './Children'
 
@@ -26,9 +25,7 @@ describe('Children', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <EditProvider>
-            <Children childVideos={childVideos} />
-          </EditProvider>
+          <Children childVideos={childVideos} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -46,9 +43,7 @@ describe('Children', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <EditProvider initialState={{ isEdit: true }}>
-            <Children childVideos={oneChildVideo} />
-          </EditProvider>
+          <Children childVideos={oneChildVideo} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -68,9 +63,7 @@ describe('Children', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <EditProvider initialState={{ isEdit: true }}>
-            <Children childVideos={oneChildVideo} />
-          </EditProvider>
+          <Children childVideos={oneChildVideo} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -86,9 +79,7 @@ describe('Children', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <EditProvider>
-            <Children childVideos={[]} />
-          </EditProvider>
+          <Children childVideos={[]} />
         </MockedProvider>
       </NextIntlClientProvider>
     )

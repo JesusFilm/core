@@ -14,7 +14,6 @@ import Trash2 from '@core/shared/ui/icons/Trash2'
 import { OrderedList } from '../../../../../../../components/OrderedList'
 import { OrderedItem } from '../../../../../../../components/OrderedList/OrderedItem'
 import { GetAdminVideo_AdminVideo_Children as VideoChildren } from '../../../../../../../libs/useAdminVideo'
-import { useEdit } from '../../_EditProvider'
 import { Section } from '../Section'
 
 interface ChildrenProps {
@@ -36,9 +35,6 @@ export function Children({ childVideos }: ChildrenProps): ReactElement {
   const pathname = usePathname()
   const router = useRouter()
   const t = useTranslations()
-  const {
-    state: { isEdit }
-  } = useEdit()
 
   const [videos, setVideos] = useState(childVideos)
 
