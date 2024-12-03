@@ -10,6 +10,7 @@ import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import DragIcon from '@core/shared/ui/icons/Drag'
 
+import { BlockFields } from '../../../../../../../__generated__/BlockFields'
 import { QuickControls } from '../QuickControls'
 
 export function SelectableWrapper({
@@ -20,6 +21,9 @@ export function SelectableWrapper({
   const [isHovering, setIsHovering] = useState(false)
   const selectableRef = useRef<HTMLDivElement>(null)
   const [dragId, setDragId] = useState<string | null>(null)
+  const [activeDragBlock, setActiveDragBlock] = useState<
+    TreeBlock<BlockFields> | undefined
+  >(undefined)
   const [isAbove, setIsAbove] = useState(false)
   const {
     state: { selectedBlock, selectedStep },
@@ -45,6 +49,11 @@ export function SelectableWrapper({
   useDndMonitor({
     onDragOver(e: DragOverEvent): void {
       const { active, over } = e
+      setActiveDragBlock(
+        selectedStep?.children[0].children.find(
+          (block) => block.id === (active.id as string)
+        )
+      )
       if (over != null && active.id !== over.id) {
         setDragId(over.id as string)
         const overIndex = blockIds.indexOf(over.id as string)
@@ -55,6 +64,7 @@ export function SelectableWrapper({
       }
     },
     onDragEnd() {
+      setActiveDragBlock(undefined)
       setDragId(null)
     }
   })
@@ -209,7 +219,8 @@ export function SelectableWrapper({
               mt: '6px',
               mb: '6px',
               backgroundColor: '#C52D3A',
-              zIndex: 0
+              zIndex: 0,
+              borderRadius: '1px'
             }}
           />
         </Popper>
@@ -241,8 +252,7 @@ export function SelectableWrapper({
               right: isRadioOptionBlock ? '0px' : undefined,
               top: '-18px',
               cursor: isDragging ? 'grabbing' : 'grab',
-              transform: 'rotate(90deg)',
-              opacity: dragId != null || !isHovering || isDragging ? 0 : 1,
+              opacity: activeDragBlock == null && isHovering ? 1 : 0,
               color: isRadioOptionBlock ? '#000000' : 'secondary.dark'
             }}
           />
