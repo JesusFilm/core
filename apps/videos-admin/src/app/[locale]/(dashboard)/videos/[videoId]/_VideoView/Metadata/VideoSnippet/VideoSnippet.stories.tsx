@@ -6,7 +6,6 @@ import { ComponentProps } from 'react'
 import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
 import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider, EditState } from '../../../_EditProvider'
 
 import { VideoSnippet } from './VideoSnippet'
 
@@ -29,18 +28,12 @@ const meta: Meta<typeof VideoSnippet> = {
 const mockVideoSnippets: VideoSnippets =
   useAdminVideoMock['result']?.['data']?.['adminVideo']?.['snippet']
 
-type Story = StoryObj<
-  ComponentProps<typeof VideoSnippet> & {
-    state: Partial<EditState>
-  }
->
+type Story = StoryObj<ComponentProps<typeof VideoSnippet>>
 
 const Template: Story = {
-  render: ({ state, videoSnippets }) => (
+  render: ({ videoSnippets }) => (
     <NextIntlClientProvider locale="en">
-      <EditProvider initialState={state}>
-        <VideoSnippet videoSnippets={videoSnippets} />
-      </EditProvider>
+      <VideoSnippet videoSnippets={videoSnippets} />
     </NextIntlClientProvider>
   )
 }
@@ -48,17 +41,6 @@ const Template: Story = {
 export const Default = {
   ...Template,
   args: {
-    state: { isEdit: false },
-    videoSnippets: mockVideoSnippets
-  }
-}
-
-export const Editable = {
-  ...Template,
-  args: {
-    state: {
-      isEdit: true
-    },
     videoSnippets: mockVideoSnippets
   }
 }
@@ -66,9 +48,6 @@ export const Editable = {
 export const Required = {
   ...Template,
   args: {
-    state: {
-      isEdit: true
-    },
     videoSnippets: mockVideoSnippets
   },
   play: async () => {

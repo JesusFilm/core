@@ -5,7 +5,6 @@ import type { ComponentProps } from 'react'
 import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
 import { GetAdminVideoVariant_Downloads as VariantDownloads } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider } from '../../../_EditProvider'
 
 import { Downloads } from './Downloads'
 
@@ -29,9 +28,7 @@ type Story = StoryObj<ComponentProps<typeof Downloads>>
 const Template: Story = {
   render: ({ downloads }) => (
     <NextIntlClientProvider locale="en">
-      <EditProvider>
-        <Downloads downloads={downloads} />
-      </EditProvider>
+      <Downloads downloads={downloads} />
     </NextIntlClientProvider>
   )
 }

@@ -9,7 +9,6 @@ import { object, string } from 'yup'
 
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useEdit } from '../../../_EditProvider'
 
 export const UPDATE_VIDEO_IMAGE_ALT = graphql(`
   mutation UpdateVideoImageAlt($input: VideoTranslationUpdateInput!) {
@@ -28,9 +27,6 @@ export function VideoImageAlt({
   videoImageAlts
 }: VideoImageAltProps): ReactElement {
   const t = useTranslations()
-  const {
-    state: { isEdit }
-  } = useEdit()
   const [updateVideoImageAlt] = useMutation(UPDATE_VIDEO_IMAGE_ALT)
 
   const validationSchema = object().shape({
@@ -73,14 +69,11 @@ export function VideoImageAlt({
                 error={Boolean(errors.imageAlt)}
                 onChange={handleChange}
                 helperText={errors.imageAlt as string}
-                disabled={!isEdit}
               />
             </Stack>
-            {isEdit && (
-              <Stack direction="row" justifyContent="flex-end">
-                <SaveButton disabled={!isValid || isSubmitting || !dirty} />
-              </Stack>
-            )}
+            <Stack direction="row" justifyContent="flex-end">
+              <SaveButton disabled={!isValid || isSubmitting || !dirty} />
+            </Stack>
           </Stack>
         </Form>
       )}

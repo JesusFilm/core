@@ -46,7 +46,7 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
               sx={{
                 display: 'grid',
                 alignItems: 'center',
-                gridTemplateColumns: '1fr auto auto',
+                gridTemplateColumns: 'auto 1fr auto',
                 columnGap: 2
               }}
             >
@@ -78,26 +78,15 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
               <Grid
                 item
                 sx={{
-                  gridRow: { xs: 2, md: 1, lg: 2, xl: 1 },
-                  gridColumn: { xs: '1 / 3', md: 2, lg: '1 / 3', xl: 2 },
-                  position: 'relative'
+                  gridRow: { xs: 1, lg: 2, xl: 1 },
+                  gridColumn: { xs: 2, lg: '1 / 4', xl: 2 },
+                  justifySelf: { md: 'end', lg: 'stretch', xl: 'end ' }
                 }}
               >
                 <HeaderTabButtons />
               </Grid>
-              <Grid item sx={{ gridRow: 1 }}>
-                <Box
-                  data-testid="MenuBox"
-                  sx={{
-                    marginRight: {
-                      xs: '-18px',
-                      md: '-14px',
-                      lg: '-22px',
-                      xl: '-14px',
-                      xxl: '2px'
-                    }
-                  }}
-                >
+              <Grid item sx={{ gridRow: 1, gridColumn: 3 }}>
+                <Box data-testid="MenuBox">
                   <IconButton
                     color="inherit"
                     aria-label="open header menu"

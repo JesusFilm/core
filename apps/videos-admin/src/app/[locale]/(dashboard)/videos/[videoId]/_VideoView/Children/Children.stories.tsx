@@ -4,7 +4,6 @@ import { ComponentProps } from 'react'
 import { videosAdminConfig } from '../../../../../../../libs/storybookConfig'
 import { GetAdminVideo_AdminVideo_Children as VideoChildren } from '../../../../../../../libs/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider } from '../../_EditProvider'
 
 import { Children } from './Children'
 
@@ -25,14 +24,10 @@ const meta: Meta = {
   }
 }
 
-type Story = StoryObj<ComponentProps<typeof Children> & { isEdit: boolean }>
+type Story = StoryObj<ComponentProps<typeof Children>>
 
 const Template: Story = {
-  render: ({ isEdit, ...args }) => (
-    <EditProvider initialState={{ isEdit: isEdit }}>
-      <Children {...args} />
-    </EditProvider>
-  )
+  render: ({ ...args }) => <Children {...args} />
 }
 
 export const Default: Story = {
@@ -46,14 +41,6 @@ export const Empty: Story = {
   ...Template,
   args: {
     childVideos: []
-  }
-}
-
-export const Editable: Story = {
-  ...Template,
-  args: {
-    childVideos: childVideos,
-    isEdit: true
   }
 }
 

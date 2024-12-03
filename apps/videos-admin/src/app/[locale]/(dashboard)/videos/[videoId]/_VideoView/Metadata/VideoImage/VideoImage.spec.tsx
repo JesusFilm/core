@@ -15,7 +15,7 @@ describe('VideoImage', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <VideoImage video={video} isEdit={false} />
+          <VideoImage video={video} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -27,7 +27,7 @@ describe('VideoImage', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <VideoImage video={video} isEdit />
+          <VideoImage video={video} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -39,7 +39,7 @@ describe('VideoImage', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <VideoImage video={video} isEdit />
+          <VideoImage video={video} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -54,7 +54,7 @@ describe('VideoImage', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <VideoImage video={video} isEdit />
+          <VideoImage video={video} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -75,7 +75,7 @@ describe('VideoImage', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <VideoImage video={video} isEdit />
+          <VideoImage video={video} />
         </MockedProvider>
       </NextIntlClientProvider>
     )

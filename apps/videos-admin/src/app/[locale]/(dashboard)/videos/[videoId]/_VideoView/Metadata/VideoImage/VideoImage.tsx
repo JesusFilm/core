@@ -30,10 +30,9 @@ function getImageFields(video: AdminVideo): {
 
 interface VideoImageProps {
   video: AdminVideo
-  isEdit: boolean
 }
 
-export function VideoImage({ video, isEdit }: VideoImageProps): ReactElement {
+export function VideoImage({ video }: VideoImageProps): ReactElement {
   const t = useTranslations()
   const [show, setShow] = useState(false)
 
@@ -66,15 +65,13 @@ export function VideoImage({ video, isEdit }: VideoImageProps): ReactElement {
           objectFit="cover"
           priority
         />
-        {isEdit ? (
-          <IconButton
-            onClick={handleOpen}
-            size="small"
-            sx={{ position: 'absolute', top: 4, right: 4 }}
-          >
-            <Edit2 />
-          </IconButton>
-        ) : null}
+        <IconButton
+          onClick={handleOpen}
+          size="small"
+          sx={{ position: 'absolute', top: 4, right: 4 }}
+        >
+          <Edit2 />
+        </IconButton>
       </Box>
       <Dialog
         testId="VideoImageUploadDialog"

@@ -10,7 +10,7 @@ interface TabLabelProps {
 
 export function TabLabel({ label, count }: TabLabelProps): ReactElement {
   return (
-    <Stack direction="row" gap={1}>
+    <Stack direction="row" gap={1} alignItems="center">
       <Typography>{label}</Typography>
       {count != null && (
         <Box

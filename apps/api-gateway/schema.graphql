@@ -948,7 +948,7 @@ type TypographyBlock implements Block @join__type(graph: API_JOURNEYS)  @join__i
   align: TypographyAlign
 }
 
-type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId")  @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
+type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
   id: ID!
   primaryLanguageId: ID!
   bibleCitations: [BibleCitation!]! @join__field(graph: API_MEDIA) 
@@ -1185,7 +1185,7 @@ type ChatOpenEvent implements Event @join__type(graph: API_JOURNEYS)  @join__imp
   messagePlatform: MessagePlatform
 }
 
-type Language @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_LANGUAGES, key: "id")  @join__type(graph: API_MEDIA, key: "id", extension: true)  {
+type Language @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id")  @join__type(graph: API_MEDIA, key: "id", extension: true)  {
   id: ID!
   bcp47: String @join__field(graph: API_LANGUAGES) 
   iso3: String @join__field(graph: API_LANGUAGES) 
@@ -1576,7 +1576,7 @@ type IntegrationGrowthSpacesRoute @join__type(graph: API_JOURNEYS)  {
   name: String!
 }
 
-type Tag @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_MEDIA, key: "id")  {
+type Tag @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id")  {
   id: ID!
   parentId: ID @join__field(graph: API_MEDIA) 
   name(languageId: ID, primary: Boolean) : [TagName!]! @join__field(graph: API_MEDIA) 
@@ -1872,7 +1872,7 @@ type UserInvite @join__type(graph: API_JOURNEYS, key: "id")  {
   removedAt: DateTime
 }
 
-type User @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
+type User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
   id: ID!
   mediaUserRoles: [MediaRole!]! @join__field(graph: API_MEDIA) 
   firstName: String! @join__field(graph: API_USERS) 

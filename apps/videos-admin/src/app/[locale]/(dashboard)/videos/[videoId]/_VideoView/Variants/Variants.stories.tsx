@@ -6,7 +6,6 @@ import { ComponentProps } from 'react'
 import { videosAdminConfig } from '../../../../../../../libs/storybookConfig'
 import { GetAdminVideoVariant as VideoVariants } from '../../../../../../../libs/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider, EditState } from '../../_EditProvider'
 
 import { Variants } from './Variants'
 
@@ -23,16 +22,12 @@ const meta: Meta<typeof Variants> = {
 const mockVideoVariants: VideoVariants[] =
   useAdminVideoMock['result']?.['data']?.['adminVideo']?.['variants']
 
-type Story = StoryObj<
-  ComponentProps<typeof Variants> & { state: Partial<EditState> }
->
+type Story = StoryObj<ComponentProps<typeof Variants>>
 
 const Template: Story = {
-  render: ({ state, variants }) => (
+  render: ({ variants }) => (
     <NextIntlClientProvider locale="en">
-      <EditProvider initialState={state}>
-        <Variants variants={variants} />
-      </EditProvider>
+      <Variants variants={variants} />
     </NextIntlClientProvider>
   )
 }
@@ -40,9 +35,6 @@ const Template: Story = {
 export const Default = {
   ...Template,
   args: {
-    state: {
-      isEdit: false
-    },
     variants: mockVideoVariants
   }
 }
@@ -50,9 +42,6 @@ export const Default = {
 export const ModalOpened = {
   ...Template,
   args: {
-    state: {
-      isEdit: false
-    },
     variants: mockVideoVariants
   },
   play: async () => {

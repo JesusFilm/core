@@ -167,7 +167,7 @@ type VisitorEdge {
 """
 Information about pagination in a connection.
 """
-type PageInfo {
+type PageInfo @shareable {
   """
   When paginating forwards, are there more items?
   """
