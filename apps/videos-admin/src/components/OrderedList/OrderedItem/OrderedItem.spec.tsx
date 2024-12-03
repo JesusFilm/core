@@ -4,17 +4,13 @@ import { NextIntlClientProvider } from 'next-intl'
 import Edit2 from '@core/shared/ui/icons/Edit2'
 import EyeOpen from '@core/shared/ui/icons/EyeOpen'
 
-import { EditProvider } from '../../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
-
 import { OrderedItem } from './OrderedItem'
 
 describe('OrderedItem', () => {
   it('should render', () => {
     render(
       <NextIntlClientProvider locale="en">
-        <EditProvider initialState={{ isEdit: true }}>
-          <OrderedItem id="item.id" label="Ordered item" idx={0} />
-        </EditProvider>
+        <OrderedItem id="item.id" label="Ordered item" idx={0} />
       </NextIntlClientProvider>
     )
 
@@ -31,14 +27,12 @@ describe('OrderedItem', () => {
 
     render(
       <NextIntlClientProvider locale="en">
-        <EditProvider initialState={{ isEdit: true }}>
-          <OrderedItem
-            id="item.id"
-            label="Ordered item"
-            idx={0}
-            menuActions={[{ label: 'View', handler: viewHandlerMock }]}
-          />
-        </EditProvider>
+        <OrderedItem
+          id="item.id"
+          label="Ordered item"
+          idx={0}
+          menuActions={[{ label: 'View', handler: viewHandlerMock }]}
+        />
       </NextIntlClientProvider>
     )
 
@@ -68,29 +62,27 @@ describe('OrderedItem', () => {
 
     render(
       <NextIntlClientProvider locale="en">
-        <EditProvider initialState={{ isEdit: true }}>
-          <OrderedItem
-            id="item.id"
-            label="Ordered item"
-            idx={0}
-            iconButtons={[
-              {
-                Icon: EyeOpen,
-                events: {
-                  onClick: viewOnClick
-                },
-                name: 'View'
+        <OrderedItem
+          id="item.id"
+          label="Ordered item"
+          idx={0}
+          iconButtons={[
+            {
+              Icon: EyeOpen,
+              events: {
+                onClick: viewOnClick
               },
-              {
-                Icon: Edit2,
-                events: {
-                  onClick: editOnClick
-                },
-                name: 'Edit'
-              }
-            ]}
-          />
-        </EditProvider>
+              name: 'View'
+            },
+            {
+              Icon: Edit2,
+              events: {
+                onClick: editOnClick
+              },
+              name: 'Edit'
+            }
+          ]}
+        />
       </NextIntlClientProvider>
     )
 
@@ -106,17 +98,15 @@ describe('OrderedItem', () => {
   it('should render image', async () => {
     render(
       <NextIntlClientProvider locale="en">
-        <EditProvider initialState={{ isEdit: true }}>
-          <OrderedItem
-            id="item.id"
-            label="Ordered item"
-            idx={0}
-            img={{
-              src: 'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
-              alt: 'JESUS'
-            }}
-          />
-        </EditProvider>
+        <OrderedItem
+          id="item.id"
+          label="Ordered item"
+          idx={0}
+          img={{
+            src: 'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
+            alt: 'JESUS'
+          }}
+        />
       </NextIntlClientProvider>
     )
 

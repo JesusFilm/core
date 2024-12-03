@@ -5,7 +5,6 @@ import { ComponentProps } from 'react'
 import Edit2 from '@core/shared/ui/icons/Edit2'
 import EyeOpen from '@core/shared/ui/icons/EyeOpen'
 
-import { EditProvider } from '../../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
 import { videosAdminConfig } from '../../../libs/storybookConfig'
 
 import { OrderedItem } from './OrderedItem'
@@ -26,14 +25,10 @@ const meta: Meta = {
 
 export default meta
 
-type Story = StoryObj<ComponentProps<typeof OrderedItem> & { isEdit: boolean }>
+type Story = StoryObj<ComponentProps<typeof OrderedItem>>
 
 const Template: Story = {
-  render: ({ isEdit, ...args }) => (
-    <EditProvider initialState={{ isEdit: isEdit }}>
-      <OrderedItem {...args} />
-    </EditProvider>
-  )
+  render: ({ ...args }) => <OrderedItem {...args} />
 }
 
 export const Default: Story = {
@@ -42,19 +37,7 @@ export const Default: Story = {
     id: 'orderedItem.1',
     label: 'Ordered item',
     idx: 0,
-    onClick: fn(),
-    isEdit: false
-  }
-}
-
-export const Editable: Story = {
-  ...Template,
-  args: {
-    id: 'orderedItem.1',
-    label: 'Ordered item',
-    idx: 0,
-    onClick: fn(),
-    isEdit: true
+    onClick: fn()
   }
 }
 
@@ -65,8 +48,7 @@ export const WithMenuItem: Story = {
     label: 'Ordered item',
     idx: 0,
     onClick: fn(),
-    menuActions: [{ label: 'View', handler: fn() }],
-    isEdit: true
+    menuActions: [{ label: 'View', handler: fn() }]
   }
 }
 
@@ -92,8 +74,7 @@ export const WithIconButtons: Story = {
         },
         name: 'Edit'
       }
-    ],
-    isEdit: true
+    ]
   }
 }
 
@@ -107,15 +88,13 @@ export const WithImage: Story = {
     img: {
       src: 'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
       alt: 'JESUS'
-    },
-    isEdit: true
+    }
   }
 }
 
 export const Complete: Story = {
   ...Template,
   args: {
-    ...Editable.args,
     ...WithImage.args,
     ...WithMenuItem.args,
     ...WithIconButtons.args
