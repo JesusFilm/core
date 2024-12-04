@@ -871,6 +871,7 @@ type VideoVariant {
   downloadable: Boolean!
   downloads: [VideoVariantDownload!]!
   duration: Int!
+  lengthInMilliseconds: Int!
   language: Language!
   videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!

@@ -24,7 +24,8 @@ const videoVariantSchema = z.object({
   edition: z
     .string()
     .nullable()
-    .transform((value) => value ?? 'base')
+    .transform((value) => value ?? 'base'),
+  lengthInMilliseconds: z.number().nullable()
 })
 
 type VideoVariant = z.infer<typeof videoVariantSchema>
@@ -82,7 +83,8 @@ function transform(
     languageId: videoVariant.languageId,
     videoId: videoVariant.videoId,
     edition: videoVariant.edition,
-    slug: `${videoSlug}/${languageSlug}`
+    slug: `${videoSlug}/${languageSlug}`,
+    lengthInMilliseconds: videoVariant.lengthInMilliseconds
   }
 }
 
