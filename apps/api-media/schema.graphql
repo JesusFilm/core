@@ -27,7 +27,7 @@ type BibleCitation {
   bibleBook: BibleBook!
   chapterStart: Int!
   chapterEnd: Int
-  verseStart: Int!
+  verseStart: Int
   verseEnd: Int
   video: Video!
 }

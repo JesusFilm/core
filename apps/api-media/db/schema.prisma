@@ -281,7 +281,7 @@ model BibleCitation {
   osisId       String
   chapterStart Int
   chapterEnd   Int?
-  verseStart   Int
+  verseStart   Int?
   verseEnd     Int?
   videoId      String
   order        Int
