@@ -147,7 +147,8 @@ export function VideoInformation({
                         disablePointerEvents
                         sx={{
                           backgroundColor: theme.palette.background.paper,
-                          padding: '24px 12px',
+                          px: 2,
+                          py: 3,
                           borderRight: `1px solid ${theme.palette.divider}`,
                           borderTopLeftRadius: theme.shape.borderRadius,
                           borderBottomLeftRadius: theme.shape.borderRadius
@@ -161,7 +162,7 @@ export function VideoInformation({
                 sx={{
                   flexGrow: 1,
                   '& .MuiOutlinedInput-root': {
-                    paddingLeft: 0
+                    pl: 0
                   }
                 }}
               />
