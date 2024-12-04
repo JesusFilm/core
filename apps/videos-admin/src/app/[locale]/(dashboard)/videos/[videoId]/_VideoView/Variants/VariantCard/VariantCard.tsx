@@ -43,6 +43,11 @@ export function VariantCard({
           backgroundColor: 'background.default',
           borderRadius: 1,
           p: 1,
+          '&:hover': {
+            cursor: 'pointer',
+            backgroundColor: 'action.hover'
+          },
+          transition: 'background-color 0.3s ease',
           ...style,
           // css below the spread styles will override react-window styles, use with caution
           height: 66,
