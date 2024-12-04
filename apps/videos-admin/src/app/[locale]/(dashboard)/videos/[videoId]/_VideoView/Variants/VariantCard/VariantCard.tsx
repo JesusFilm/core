@@ -1,5 +1,4 @@
 import ListItem from '@mui/material/ListItem'
-import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import dynamic from 'next/dynamic'
 import { CSSProperties, ReactElement, useState } from 'react'
@@ -36,13 +35,29 @@ export function VariantCard({
 
   return (
     <>
-      <ListItem style={style} component="div">
-        <ListItemButton onClick={handleOpen} sx={{ height: '100%' }}>
-          <ListItemText
-            primary={variant.language.name[0].value}
-            secondary={variant.language.id}
-          />
-        </ListItemButton>
+      <ListItem
+        onClick={handleOpen}
+        sx={{
+          border: '1px solid',
+          borderColor: 'divider',
+          backgroundColor: 'background.default',
+          borderRadius: 1,
+          p: 1,
+          '&:hover': {
+            cursor: 'pointer',
+            backgroundColor: 'action.hover'
+          },
+          transition: 'background-color 0.3s ease',
+          ...style,
+          // css below the spread styles will override react-window styles, use with caution
+          height: 66,
+          width: 'calc(100% - 20px)'
+        }}
+      >
+        <ListItemText
+          primary={variant.language.name[0].value}
+          secondary={variant.language.id}
+        />
       </ListItem>
       {open != null && (
         <VariantDialog
