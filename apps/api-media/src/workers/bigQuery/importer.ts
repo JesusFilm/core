@@ -138,7 +138,7 @@ export function parseMany<T extends ZodSchema>(
 export async function processTable(
   bigQueryTableName: string,
   importOne: (row: unknown) => Promise<void>,
-  importMany: (rows: unknown[]) => Promise<void>,
+  importMany: (rows: unknown[], logger?: Logger) => Promise<void>,
   hasUpdatedAt: boolean,
   parentLogger?: Logger
 ): Promise<void> {
@@ -184,7 +184,7 @@ export async function processTable(
       try {
         page++
         logger?.info({ page, rows: rows.length }, 'importing page')
-        await importMany(rows as unknown[])
+        await importMany(rows as unknown[], logger)
       } catch (error) {
         logger?.error(error)
       }
