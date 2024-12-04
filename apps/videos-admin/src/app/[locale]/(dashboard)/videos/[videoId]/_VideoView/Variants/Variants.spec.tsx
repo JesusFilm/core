@@ -30,7 +30,7 @@ describe('Variants', () => {
     ).toBeInTheDocument()
   })
 
-  it('should open variant modal when variant is clicked', () => {
+  it('should open variant modal when variant is clicked', async () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
@@ -40,9 +40,11 @@ describe('Variants', () => {
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Munukutuba 4334' }))
-    expect(
-      screen.getByRole('heading', { level: 4, name: 'Downloads' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        screen.getByRole('heading', { level: 4, name: 'Downloads' })
+      ).toBeInTheDocument()
+    )
   })
 
   it('should close variant modal', async () => {
