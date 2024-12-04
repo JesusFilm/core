@@ -3,10 +3,12 @@ import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import InputAdornment from '@mui/material/InputAdornment'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
@@ -61,10 +63,12 @@ export function VideoInformation({
 }: VideoInformationProps): ReactElement {
   const t = useTranslations()
   const [updateVideoInformation] = useMutation(UPDATE_VIDEO_INFORMATION)
+  const theme = useTheme()
+  const jesusFilmUrl = 'jesusfilm.org/watch/'
 
   const validationSchema = object().shape({
     title: string().trim().required(t('Title is required')),
-    slug: string().trim().required(t('Slug is required')),
+    url: string().trim().required(t('Url is required')),
     published: string().required(t('Published is required')),
     label: string().required(t('Label is required')),
     noIndex: boolean()
@@ -77,7 +81,7 @@ export function VideoInformation({
       variables: {
         infoInput: {
           id: video.id,
-          slug: values.slug,
+          slug: values.url,
           published: values.published === 'published',
           label: values.label,
           noIndex: values.noIndex
@@ -94,7 +98,7 @@ export function VideoInformation({
     <Formik
       initialValues={{
         title: video.title[0].value,
-        slug: video.slug,
+        url: video.slug,
         published: video.published === true ? 'published' : 'unpublished',
         label: video.label,
         noIndex: video.noIndex
@@ -106,7 +110,12 @@ export function VideoInformation({
       {({ values, errors, handleChange, isValid, isSubmitting, dirty }) => (
         <Form>
           <Stack gap={2}>
-            <Stack gap={2} sx={{ flexDirection: { xs: 'col', sm: 'row' } }}>
+            <Stack
+              gap={2}
+              sx={{
+                flexDirection: { xs: 'col', sm: 'row' }
+              }}
+            >
               <TextField
                 id="title"
                 name="title"
@@ -117,18 +126,45 @@ export function VideoInformation({
                 error={Boolean(errors.title)}
                 onChange={handleChange}
                 helperText={errors.title as string}
+                sx={{ flexGrow: 1 }}
               />
               <TextField
-                id="slug"
-                name="Slug"
-                label={t('Slug')}
+                id="url"
+                name="url"
+                label={t('Video URL')}
                 fullWidth
-                value={values.slug}
+                value={values.url}
                 variant="outlined"
-                error={Boolean(errors.slug)}
+                error={Boolean(errors.url)}
                 onChange={handleChange}
-                helperText={errors.slug as string}
+                helperText={errors.url as string}
                 disabled
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment
+                        position="start"
+                        disablePointerEvents
+                        sx={{
+                          backgroundColor: theme.palette.background.paper,
+                          px: 2,
+                          py: 3,
+                          borderRight: `1px solid ${theme.palette.divider}`,
+                          borderTopLeftRadius: theme.shape.borderRadius,
+                          borderBottomLeftRadius: theme.shape.borderRadius
+                        }}
+                      >
+                        {jesusFilmUrl}
+                      </InputAdornment>
+                    )
+                  }
+                }}
+                sx={{
+                  flexGrow: 1,
+                  '& .MuiOutlinedInput-root': {
+                    pl: 0
+                  }
+                }}
               />
             </Stack>
             <Stack
