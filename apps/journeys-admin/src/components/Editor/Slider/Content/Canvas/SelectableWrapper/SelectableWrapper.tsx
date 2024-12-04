@@ -1,9 +1,14 @@
+import { DragOverEvent, useDndMonitor } from '@dnd-kit/core'
+import { useSortable } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
+import Divider from '@mui/material/Divider'
+import Popper from '@mui/material/Popper'
 import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import DragIcon from '@core/shared/ui/icons/Drag'
 
 import { QuickControls } from '../QuickControls'
 
@@ -12,11 +17,47 @@ export function SelectableWrapper({
   children
 }: WrapperProps): ReactElement {
   const [open, setOpen] = useState(false)
+  const [isHovering, setIsHovering] = useState(false)
   const selectableRef = useRef<HTMLDivElement>(null)
+  const [dragId, setDragId] = useState<string | null>(null)
+  const [isAbove, setIsAbove] = useState(false)
   const {
-    state: { selectedBlock },
+    state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
+
+  const { listeners, setNodeRef, isDragging, setActivatorNodeRef } =
+    useSortable({
+      id: block.id
+    })
+
+  const blockIds = (
+    selectedStep?.children[0].children.filter(
+      (block) =>
+        block != null &&
+        block.__typename !== 'StepBlock' &&
+        block.__typename !== 'CardBlock' &&
+        block.__typename !== 'IconBlock' &&
+        block.parentOrder !== null
+    ) ?? []
+  ).map((block) => block.id)
+
+  useDndMonitor({
+    onDragOver(e: DragOverEvent): void {
+      const { active, over } = e
+      if (over != null && active.id !== over.id) {
+        setDragId(over.id as string)
+        const overIndex = blockIds.indexOf(over.id as string)
+        const activeIndex = blockIds.indexOf(active.id as string)
+        setIsAbove(activeIndex < overIndex)
+      } else {
+        setDragId(null)
+      }
+    },
+    onDragEnd() {
+      setDragId(null)
+    }
+  })
 
   const isSelectable =
     selectedBlock != null &&
@@ -83,7 +124,6 @@ export function SelectableWrapper({
           top: 0,
           left: 0,
           outlineOffset: '-3px',
-          borderRadius: '20px',
           my: '0px !important',
           '&:first-child': {
             '& > *': { zIndex: -1 }
@@ -114,45 +154,101 @@ export function SelectableWrapper({
     setOpen(selectedBlock?.id === block.id)
   }, [selectedBlock, block])
 
+  const isVideoBlock = block?.__typename === 'VideoBlock'
+  const isRadioOptionBlock = block?.__typename === 'RadioOptionBlock'
+
   return isSelectable ? (
-    <>
+    <Box
+      className={
+        isRadioOptionBlock
+          ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
+          : ''
+      }
+      ref={!isRadioOptionBlock ? setNodeRef : undefined}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+      sx={{
+        '&:first-child': {
+          '& > *': { mt: '0px' }
+        },
+        '&:last-child': {
+          '& > *': { mb: '0px' }
+        },
+        opacity: isDragging ? 0.4 : 1,
+        outline: '2px solid',
+        outlineColor:
+          selectedBlock?.id === block.id ? '#C52D3A' : 'transparent',
+        transition: (theme) => theme.transitions.create('outline-color'),
+        outlineOffset: '5px',
+        zIndex: selectedBlock?.id === block.id ? 1 : 0,
+        borderRadius: isVideoBlock ? '20px !important' : borderRadius,
+        ...videoOutlineStyles
+      }}
+    >
       <Box
         ref={selectableRef}
         data-testid={`SelectableWrapper-${block.id}`}
-        className={
-          block.__typename === 'RadioOptionBlock'
-            ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
-            : ''
-        }
         sx={{
-          '&:first-child': {
-            '& > *': { mt: '0px' }
-          },
-          '&:last-child': {
-            '& > *': { mb: '0px' }
-          },
-          borderRadius,
-          outline: '2px solid ',
-          outlineColor:
-            selectedBlock?.id === block.id ? '#C52D3A' : 'transparent',
-          transition: (theme) => theme.transitions.create('outline-color'),
-          outlineOffset: '5px',
-          zIndex: selectedBlock?.id === block.id ? 1 : 0,
-          ...videoOutlineStyles
+          borderRadius
         }}
         // if changing the event handlers or their functions, please check RadioOptionBlock events are being propogated properly i.e - can be re-ordered
         onClickCapture={handleSelectBlock}
         onClick={blockNonSelectionEvents}
         onMouseDown={blockNonSelectionEvents}
       >
+        <Popper
+          open={block.id === dragId}
+          anchorEl={selectableRef.current}
+          placement={isAbove ? 'bottom' : 'top'}
+        >
+          <Divider
+            orientation="horizontal"
+            sx={{
+              width: '315px',
+              height: '2px',
+              mt: '6px',
+              mb: '6px',
+              backgroundColor: '#C52D3A',
+              zIndex: 0
+            }}
+          />
+        </Popper>
         {children}
       </Box>
       <QuickControls
         open={open}
         anchorEl={selectableRef.current}
-        block={block}
+        isVideoBlock={isVideoBlock}
       />
-    </>
+      {!isVideoBlock && (
+        <Popper
+          open={
+            selectedBlock.__typename === 'StepBlock' ||
+            selectedBlock.__typename === 'CardBlock'
+          }
+          anchorEl={selectableRef.current}
+          placement={isRadioOptionBlock ? 'right' : 'left'}
+          {...listeners}
+          ref={setActivatorNodeRef}
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
+        >
+          <DragIcon
+            fontSize="large"
+            style={{
+              position: 'absolute',
+              left: isRadioOptionBlock ? undefined : '-30px',
+              right: isRadioOptionBlock ? '0px' : undefined,
+              top: '-18px',
+              cursor: isDragging ? 'grabbing' : 'grab',
+              transform: 'rotate(90deg)',
+              opacity: dragId != null || !isHovering || isDragging ? 0 : 1,
+              color: isRadioOptionBlock ? '#000000' : 'secondary.dark'
+            }}
+          />
+        </Popper>
+      )}
+    </Box>
   ) : (
     children
   )
