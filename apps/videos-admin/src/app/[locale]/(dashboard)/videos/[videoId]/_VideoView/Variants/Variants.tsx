@@ -49,13 +49,10 @@ export function Variants({
       {variants != null && (
         <Section
           boxProps={{
-            sx: { p: 0, height: 'calc(100vh - 400px)' }
+            sx: { p: 2, height: 'calc(100vh - 400px)' }
           }}
           title={t('Variants')}
-          action={{
-            label: t('Create Variant'),
-            onClick: handleOpenCreateVariantDialog
-          }}
+          variant="outlined"
         >
           <FixedSizeList
             width={size.width}
@@ -66,7 +63,7 @@ export function Variants({
             overscanCount={10}
           >
             {({ index, style, data: items }) => (
-              <VariantCard key={index} variant={items[index]} style={style} />
+              <VariantCard variant={items[index]} style={style} />
             )}
           </FixedSizeList>
           <CreateVariantDialog

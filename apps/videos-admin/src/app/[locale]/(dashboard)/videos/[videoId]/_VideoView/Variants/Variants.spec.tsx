@@ -26,11 +26,11 @@ describe('Variants', () => {
     )
 
     expect(
-      screen.getByRole('button', { name: 'Munukutuba jesus/munukutuba' })
+      screen.getByRole('button', { name: 'Munukutuba 4334' })
     ).toBeInTheDocument()
   })
 
-  it('should open variant modal when variant is clicked', () => {
+  it('should open variant modal when variant is clicked', async () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
@@ -39,12 +39,12 @@ describe('Variants', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Munukutuba jesus/munukutuba' })
+    fireEvent.click(screen.getByRole('button', { name: 'Munukutuba 4334' }))
+    await waitFor(() =>
+      expect(
+        screen.getByRole('heading', { level: 4, name: 'Downloads' })
+      ).toBeInTheDocument()
     )
-    expect(
-      screen.getByRole('heading', { level: 4, name: 'Downloads' })
-    ).toBeInTheDocument()
   })
 
   it('should close variant modal', async () => {
@@ -56,9 +56,7 @@ describe('Variants', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Munukutuba jesus/munukutuba' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Munukutuba 4334' }))
     expect(
       screen.getByRole('heading', { level: 4, name: 'Downloads' })
     ).toBeInTheDocument()

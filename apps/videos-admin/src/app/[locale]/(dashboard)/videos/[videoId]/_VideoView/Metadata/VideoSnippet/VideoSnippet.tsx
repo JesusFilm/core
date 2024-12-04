@@ -1,4 +1,5 @@
 import { useMutation } from '@apollo/client'
+import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
@@ -70,6 +71,7 @@ export function VideoSnippet({
               minRows={6}
               maxRows={6}
             />
+            <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end">
               <SaveButton disabled={!isValid || isSubmitting || !dirty} />
             </Stack>

@@ -35,7 +35,7 @@ describe('Children', () => {
     expect(screen.getByTestId('OrderedItem-2')).toBeInTheDocument()
   })
 
-  it('should handle view click', async () => {
+  it('should direct to video view of the child video on click', async () => {
     const push = jest.fn()
     mockRouter.mockReturnValue({ push } as unknown as AppRouterInstance)
     mockUsePathname.mockReturnValue('/en/videos/1_jf6101-0-0')
@@ -49,29 +49,9 @@ describe('Children', () => {
     )
 
     expect(screen.getByTestId('OrderedItem-0')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'View' }))
+    fireEvent.click(screen.getByTestId('OrderedItem-0'))
     await waitFor(() =>
       expect(push).toHaveBeenCalledWith('/en/videos/1_jf6101-0-0')
-    )
-  })
-
-  it('should handle edit click', async () => {
-    const push = jest.fn()
-    mockRouter.mockReturnValue({ push } as unknown as AppRouterInstance)
-    mockUsePathname.mockReturnValue('/en/videos/1_jf6101-0-0')
-    const oneChildVideo = [childVideos[0]]
-    render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider>
-          <Children childVideos={oneChildVideo} />
-        </MockedProvider>
-      </NextIntlClientProvider>
-    )
-
-    expect(screen.getByTestId('OrderedItem-0')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
-    await waitFor(() =>
-      expect(push).toHaveBeenCalledWith('/en/videos/1_jf6101-0-0?isEdit=true')
     )
   })
 

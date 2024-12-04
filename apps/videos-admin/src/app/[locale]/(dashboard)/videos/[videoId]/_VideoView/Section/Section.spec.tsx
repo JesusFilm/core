@@ -17,6 +17,40 @@ describe('Section', () => {
     expect(screen.getByText('Section content')).toBeInTheDocument()
   })
 
+  it('should render contained variant by default', () => {
+    render(
+      <Section title="Section title">
+        <Typography>Section content</Typography>
+      </Section>
+    )
+
+    expect(
+      screen.getByTestId('Section title-title-section')
+    ).toBeInTheDocument()
+    expect(screen.getByTestId('Section title-title-section')).toHaveStyle({
+      'border-bottom': '1px solid',
+      'border-color': 'rgba(0, 0, 0, 0.12)',
+      'background-color': 'rgb(255, 255, 255)'
+    })
+  })
+
+  it('should render outlined variant by default', () => {
+    render(
+      <Section title="Section title" variant="outlined">
+        <Typography>Section content</Typography>
+      </Section>
+    )
+
+    expect(
+      screen.getByTestId('Section title-title-section')
+    ).toBeInTheDocument()
+    expect(screen.getByTestId('Section title-title-section')).toHaveStyle({
+      'border-bottom': '0px',
+      'border-color': 'transparent',
+      'background-color': 'none'
+    })
+  })
+
   it('should render with action', () => {
     const handleClick = jest.fn()
 

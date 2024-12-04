@@ -61,7 +61,7 @@ export function StudyQuestionsList({
   const totalQuestions = studyQuestionItems?.length ?? 0
 
   return (
-    <Section title={t('Study Questions')}>
+    <Section title={t('Study Questions')} variant="outlined">
       {totalQuestions > 0 ? (
         <OrderedList
           onOrderUpdate={updateOrderOnDrag}
