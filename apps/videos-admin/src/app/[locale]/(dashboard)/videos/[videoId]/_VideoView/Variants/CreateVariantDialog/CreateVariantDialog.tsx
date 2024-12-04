@@ -56,7 +56,7 @@ export function CreateVariantDialog({
           share: '',
           duration: null,
           languageId: '',
-          slug: '',
+          url: '',
           downloadable: false
         }}
         onSubmit={() => {
@@ -149,15 +149,15 @@ export function CreateVariantDialog({
                 helperText={errors.languageId as string}
               />
               <TextField
-                id="slug"
-                name="slug"
-                label={t('Slug')}
+                id="url"
+                name="url"
+                label={t('URL')}
                 variant="outlined"
                 fullWidth
-                value={values.slug}
+                value={values.url}
                 onChange={handleChange}
-                error={Boolean(errors.slug)}
-                helperText={errors.slug as string}
+                error={Boolean(errors.url)}
+                helperText={errors.url as string}
               />
               <FormControl error={Boolean(errors.downloadable)}>
                 <FormControlLabel

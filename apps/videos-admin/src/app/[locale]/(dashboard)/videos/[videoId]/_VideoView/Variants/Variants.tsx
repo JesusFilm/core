@@ -44,6 +44,8 @@ export function Variants({
     setOpen(!open)
   }
 
+  console.log('variants', variants)
+
   return (
     <>
       {variants != null && (
@@ -53,6 +55,10 @@ export function Variants({
           }}
           title={t('Variants')}
           variant="outlined"
+          action={{
+            label: t('Create Variant'),
+            onClick: handleOpenCreateVariantDialog
+          }}
         >
           <FixedSizeList
             width={size.width}
@@ -69,6 +75,7 @@ export function Variants({
           <CreateVariantDialog
             open={open}
             handleClose={handleOpenCreateVariantDialog}
+            // variant={variants[0].videoId}
           />
         </Section>
       )}
