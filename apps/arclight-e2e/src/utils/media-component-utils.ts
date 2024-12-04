@@ -30,11 +30,31 @@ export function getObjectDiff(
   const keys = new Set([...Object.keys(obj1), ...Object.keys(obj2)])
 
   keys.forEach((key) => {
+    if (key === 'imageUrls') return
+    if (key === 'isDownloadable' && !obj1[key] && !obj2[key]) return
     if (
-      !obj1[key] ||
-      !obj2[key] ||
-      JSON.stringify(obj1[key]) !== JSON.stringify(obj2[key])
-    ) {
+      key === 'downloadSizes' &&
+      (!obj1[key] || Object.keys(obj1[key]).length === 0) &&
+      (!obj2[key] || Object.keys(obj2[key]).length === 0)
+    )
+      return
+
+    const val1 = obj1[key] === '' ? null : obj1[key]
+    const val2 = obj2[key] === '' ? null : obj2[key]
+
+    if (val1 === undefined && val2 === undefined) return
+    if (val1 === null && val2 === null) return
+    if (
+      typeof val1 === 'object' &&
+      typeof val2 === 'object' &&
+      val1 !== null &&
+      val2 !== null &&
+      Object.keys(val1).length === 0 &&
+      Object.keys(val2).length === 0
+    )
+      return
+
+    if (val1 !== val2 && JSON.stringify(val1) !== JSON.stringify(val2)) {
       diff.push(key)
     }
   })
