@@ -238,6 +238,28 @@ describe('HostForm', () => {
       team: { id: 'team.id' }
     } as unknown as Journey
 
+    const updateJourneyHostMock: MockedResponse<
+      UpdateJourneyHost,
+      UpdateJourneyHostVariables
+    > = {
+      request: {
+        query: UPDATE_JOURNEY_HOST,
+        variables: { id: 'journeyId', input: { hostId: 'host.id' } }
+      },
+      result: {
+        data: {
+          journeyUpdate: {
+            __typename: 'Journey',
+            id: 'journeyId',
+            host: {
+              __typename: 'Host',
+              id: 'host.id'
+            }
+          }
+        }
+      }
+    }
+
     it('should call updatehost mutation on title change', async () => {
       const updateHostMock: MockedResponse<UpdateHost, UpdateHostVariables> = {
         request: {
@@ -306,28 +328,6 @@ describe('HostForm', () => {
               __typename: 'Host',
               id: 'host.id',
               title: 'value'
-            }
-          }
-        }
-      }
-
-      const updateJourneyHostMock: MockedResponse<
-        UpdateJourneyHost,
-        UpdateJourneyHostVariables
-      > = {
-        request: {
-          query: UPDATE_JOURNEY_HOST,
-          variables: { id: 'journeyId', input: { hostId: 'host.id' } }
-        },
-        result: {
-          data: {
-            journeyUpdate: {
-              __typename: 'Journey',
-              id: 'journeyId',
-              host: {
-                __typename: 'Host',
-                id: 'host.id'
-              }
             }
           }
         }
@@ -434,27 +434,6 @@ describe('HostForm', () => {
               __typename: 'Host',
               id: 'host.id',
               title: 'value'
-            }
-          }
-        }
-      }
-      const updateJourneyHostMock: MockedResponse<
-        UpdateJourneyHost,
-        UpdateJourneyHostVariables
-      > = {
-        request: {
-          query: UPDATE_JOURNEY_HOST,
-          variables: { id: 'journeyId', input: { hostId: 'host.id' } }
-        },
-        result: {
-          data: {
-            journeyUpdate: {
-              __typename: 'Journey',
-              id: 'journeyId',
-              host: {
-                __typename: 'Host',
-                id: 'host.id'
-              }
             }
           }
         }
