@@ -48,9 +48,7 @@ describe('JourneyQuickSettingsChat', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-
-    expect(screen.getByRole('textbox', { name: 'Your Name' })).toHaveAttribute(
-      'value',
+    expect(screen.getByRole('textbox', { name: 'Your Name' })).toHaveValue(
       'Cru International'
     )
     expect(screen.getByTestId('HostAvatarsButton')).toBeInTheDocument()
@@ -68,8 +66,7 @@ describe('JourneyQuickSettingsChat', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByRole('textbox', { name: 'Your Name' })).toHaveAttribute(
-      'value',
+    expect(screen.getByRole('textbox', { name: 'Your Name' })).toHaveValue(
       'New Host Name'
     )
   })
@@ -85,10 +82,7 @@ describe('JourneyQuickSettingsChat', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByRole('textbox', { name: 'Your Name' })).toHaveAttribute(
-      'value',
-      ''
-    )
+    expect(screen.getByRole('textbox', { name: 'Your Name' })).toHaveValue('')
   })
 
   it('should call update host mutation on name change', async () => {
