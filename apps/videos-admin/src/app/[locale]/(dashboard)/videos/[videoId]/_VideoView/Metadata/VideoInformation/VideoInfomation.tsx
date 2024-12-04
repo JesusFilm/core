@@ -131,7 +131,7 @@ export function VideoInformation({
               <TextField
                 id="url"
                 name="url"
-                label={t('URL')}
+                label={t('Video URL')}
                 fullWidth
                 value={values.url}
                 variant="outlined"
