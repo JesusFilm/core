@@ -1,13 +1,13 @@
+import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
-import { EditProvider } from './_EditProvider'
-
-interface VideoViewPageLayoutProps {
-  children: ReactElement
-}
-
-export default function VideoViewPageLayout({
-  children
-}: VideoViewPageLayoutProps): ReactElement {
-  return <EditProvider>{children}</EditProvider>
+export default function VideoViewLayout({ children }): ReactElement {
+  return (
+    <Box
+      sx={{ width: '100%', maxWidth: { sm: '100%', md: '1300px' } }}
+      data-testid="VideoViewContainer"
+    >
+      {children}
+    </Box>
+  )
 }

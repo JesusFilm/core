@@ -4,8 +4,6 @@ import { useParams } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider } from '../_EditProvider'
-import { TestEditProvider } from '../_EditProvider/TestEditProvider'
 
 import { VideoView } from './VideoView'
 
@@ -25,16 +23,14 @@ describe('VideoView', () => {
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <EditProvider>
-            <VideoView />
-          </EditProvider>
+          <VideoView />
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(
-      screen.getByRole('heading', { level: 4, name: 'JESUS' })
+      screen.getByRole('heading', { level: 4, name: 'titleEdit' })
     ).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('JESUS')
     expect(screen.getByRole('textbox', { name: 'Image Alt' })).toHaveValue(
@@ -55,22 +51,6 @@ describe('VideoView', () => {
     ).toBeInTheDocument()
   })
 
-  it('should toggle edit mode', () => {
-    render(
-      <MockedProvider>
-        <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: false }}>
-            <TestEditProvider />
-            <VideoView />
-          </EditProvider>
-        </NextIntlClientProvider>
-      </MockedProvider>
-    )
-
-    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
-    expect(screen.getByText('isEdit: true')).toBeInTheDocument()
-  })
-
   it('should change tabs', async () => {
     mockUseParams.mockReturnValue({ videoId: 'someId' })
     const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
@@ -78,10 +58,7 @@ describe('VideoView', () => {
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: false }}>
-            <TestEditProvider />
-            <VideoView />
-          </EditProvider>
+          <VideoView />
         </NextIntlClientProvider>
       </MockedProvider>
     )

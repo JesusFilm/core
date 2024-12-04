@@ -1,5 +1,6 @@
 import { useMutation } from '@apollo/client'
 import Checkbox from '@mui/material/Checkbox'
+import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import InputLabel from '@mui/material/InputLabel'
@@ -15,7 +16,6 @@ import { boolean, object, string } from 'yup'
 
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useEdit } from '../../../_EditProvider'
 
 const videoStatuses = [
   { label: 'Published', value: 'published' },
@@ -60,9 +60,6 @@ export function VideoInformation({
   video
 }: VideoInformationProps): ReactElement {
   const t = useTranslations()
-  const {
-    state: { isEdit }
-  } = useEdit()
   const [updateVideoInformation] = useMutation(UPDATE_VIDEO_INFORMATION)
 
   const validationSchema = object().shape({
@@ -109,7 +106,7 @@ export function VideoInformation({
       {({ values, errors, handleChange, isValid, isSubmitting, dirty }) => (
         <Form>
           <Stack gap={2}>
-            <Stack direction="row" gap={2}>
+            <Stack gap={2} sx={{ flexDirection: { xs: 'col', sm: 'row' } }}>
               <TextField
                 id="title"
                 name="title"
@@ -120,7 +117,6 @@ export function VideoInformation({
                 error={Boolean(errors.title)}
                 onChange={handleChange}
                 helperText={errors.title as string}
-                disabled={!isEdit}
               />
               <TextField
                 id="slug"
@@ -135,7 +131,13 @@ export function VideoInformation({
                 disabled
               />
             </Stack>
-            <Stack direction="row" gap={2}>
+            <Stack
+              gap={2}
+              sx={{
+                flexDirection: { xs: 'col', sm: 'row' },
+                alignItems: { xs: 'start', sm: 'end' }
+              }}
+            >
               <FormControl variant="standard">
                 <InputLabel id="status-select-label">{t('Status')}</InputLabel>
                 <Select
@@ -145,7 +147,6 @@ export function VideoInformation({
                   label={t('Status')}
                   value={values.published}
                   onChange={handleChange}
-                  disabled={!isEdit}
                 >
                   {videoStatuses.map(({ label, value }) => (
                     <MenuItem key={value} value={value}>
@@ -163,7 +164,6 @@ export function VideoInformation({
                   label={t('Label')}
                   value={values.label}
                   onChange={handleChange}
-                  disabled={!isEdit}
                 >
                   {videoLabels.map(({ label, value }) => (
                     <MenuItem key={value} value={value}>
@@ -179,16 +179,14 @@ export function VideoInformation({
                     name="noIndex"
                     checked={values.noIndex}
                     onChange={handleChange}
-                    disabled={!isEdit}
                   />
                 }
               />
             </Stack>
-            {isEdit && (
-              <Stack direction="row" justifyContent="flex-end">
-                <SaveButton disabled={!isValid || isSubmitting || !dirty} />
-              </Stack>
-            )}
+            <Divider sx={{ mx: -4 }} />
+            <Stack direction="row" justifyContent="flex-end">
+              <SaveButton disabled={!isValid || isSubmitting || !dirty} />
+            </Stack>
           </Stack>
         </Form>
       )}

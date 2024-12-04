@@ -6,8 +6,6 @@ import { MouseEvent, ReactElement, memo, useMemo, useState } from 'react'
 
 import More from '@core/shared/ui/icons/More'
 
-import { useEdit } from '../../../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
-
 interface OrderedItemMenuProps {
   id: string
   actions: Array<{ label: string; handler: (id: string) => void }>
@@ -17,9 +15,6 @@ export const OrderedItemMenu = memo(function OrderedItemMenu({
   id,
   actions
 }: OrderedItemMenuProps): ReactElement {
-  const {
-    state: { isEdit }
-  } = useEdit()
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
 
@@ -37,7 +32,6 @@ export const OrderedItemMenu = memo(function OrderedItemMenu({
   return (
     <Box>
       <IconButton
-        disabled={!isEdit}
         aria-label="ordered-item-actions"
         size="small"
         onClick={handleClick}

@@ -1,9 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { GetAdminVideoVariant_Downloads as VariantDownloads } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider } from '../../../_EditProvider'
+import { GetAdminVideoVariant_Downloads as VariantDownloads } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 import { Downloads } from './Downloads'
 
@@ -16,9 +15,7 @@ describe('Downloads', () => {
   it('should show downloads', () => {
     render(
       <NextIntlClientProvider locale="en">
-        <EditProvider>
-          <Downloads downloads={mockVariantDownloads} />
-        </EditProvider>
+        <Downloads downloads={mockVariantDownloads} />
       </NextIntlClientProvider>
     )
 
@@ -33,9 +30,7 @@ describe('Downloads', () => {
   it('should show message if no downloads available', () => {
     render(
       <NextIntlClientProvider locale="en">
-        <EditProvider>
-          <Downloads downloads={[]} />
-        </EditProvider>
+        <Downloads downloads={[]} />
       </NextIntlClientProvider>
     )
 

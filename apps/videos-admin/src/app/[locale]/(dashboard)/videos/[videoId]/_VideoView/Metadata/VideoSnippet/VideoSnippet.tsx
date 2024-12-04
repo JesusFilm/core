@@ -1,4 +1,5 @@
 import { useMutation } from '@apollo/client'
+import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
@@ -10,7 +11,6 @@ import { object, string } from 'yup'
 import { ResizableTextField } from '../../../../../../../../components/ResizableTextField'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useEdit } from '../../../_EditProvider'
 
 export const UPDATE_VIDEO_SNIPPET = graphql(`
   mutation UpdateVideoSnippet($input: VideoTranslationUpdateInput!) {
@@ -29,9 +29,6 @@ export function VideoSnippet({
   videoSnippets
 }: VideoSnippetProps): ReactElement {
   const t = useTranslations()
-  const {
-    state: { isEdit }
-  } = useEdit()
   const [updateVideoSnippet] = useMutation(UPDATE_VIDEO_SNIPPET)
 
   const validationSchema = object().shape({
@@ -71,15 +68,13 @@ export function VideoSnippet({
               onChange={handleChange}
               error={Boolean(errors.snippet)}
               helperText={errors.snippet as string}
-              disabled={!isEdit}
               minRows={6}
               maxRows={6}
             />
-            {isEdit && (
-              <Stack direction="row" justifyContent="flex-end">
-                <SaveButton disabled={!isValid || isSubmitting || !dirty} />
-              </Stack>
-            )}
+            <Divider sx={{ mx: -4 }} />
+            <Stack direction="row" justifyContent="flex-end">
+              <SaveButton disabled={!isValid || isSubmitting || !dirty} />
+            </Stack>
           </Stack>
         </Form>
       )}
