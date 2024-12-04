@@ -144,6 +144,7 @@ export const useAdminVideoMock: MockedResponse<
         variants: [
           {
             id: '1_4334-jf-0-0',
+            videoId: '1_jf-0-0',
             slug: 'jesus/munukutuba',
             downloads: [
               {
@@ -175,6 +176,7 @@ export const useAdminVideoMock: MockedResponse<
           },
           {
             id: '1_19558-jf-0-0',
+            videoId: '1_jf-0-0',
             slug: 'jesus/kom',
             downloads: [
               {

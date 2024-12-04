@@ -4503,6 +4503,7 @@ export type VideoVariant = {
   subtitle: Array<VideoSubtitle>;
   subtitleCount: Scalars['Int']['output'];
   videoEdition: VideoEdition;
+  videoId?: Maybe<Scalars['ID']['output']>;
 };
 
 

@@ -2552,6 +2552,7 @@ type VideoTitle @join__type(graph: API_MEDIA)  {
 
 type VideoVariant @join__type(graph: API_MEDIA)  {
   id: ID!
+  videoId: ID
   hls: String
   dash: String
   share: String
