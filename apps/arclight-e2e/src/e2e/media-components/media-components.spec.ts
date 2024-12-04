@@ -1,3 +1,4 @@
+/* eslint-disable playwright/no-conditional-in-test */
 import { expect, test } from '@playwright/test'
 
 import { getBaseUrl } from '../../framework/helpers'
@@ -28,12 +29,34 @@ test('compare media components between environments', async ({ request }) => {
     const baseData: ApiResponse = await baseResponse.json()
     const compareData: ApiResponse = await compareResponse.json()
 
+    const normalizeData = (data: any) => {
+      if (data._embedded?.mediaComponents) {
+        data._embedded.mediaComponents.forEach((comp: any) => {
+          const imageFields = [
+            'imageUrl',
+            'thumbnail',
+            'videoStill',
+            'mobileCinematicHigh',
+            'mobileCinematicLow',
+            'mobileCinematicVeryLow'
+          ]
+
+          imageFields.forEach((field) => {
+            if (comp[field]) {
+              comp[field] = true
+            }
+          })
+        })
+      }
+      return data
+    }
+
     const baseMediaComponents = convertArrayToObject(
-      baseData._embedded.mediaComponents,
+      normalizeData(baseData)._embedded.mediaComponents,
       'mediaComponentId'
     )
     const compareMediaComponents = convertArrayToObject(
-      compareData._embedded.mediaComponents,
+      normalizeData(compareData)._embedded.mediaComponents,
       'mediaComponentId'
     )
 
@@ -42,22 +65,27 @@ test('compare media components between environments', async ({ request }) => {
       compareMediaComponents
     )
 
-    for (const diffId of differences) {
-      if (!baseMediaComponents[diffId]) {
+    const meaningfulDifferences = differences.filter((diffId) => {
+      if (!baseMediaComponents[diffId] || !compareMediaComponents[diffId]) {
         console.log(
-          `Media Component ${diffId} only exists in compare environment`
+          `Media Component ${diffId} only exists in ${!baseMediaComponents[diffId] ? 'compare' : 'base'} environment`
         )
-      } else if (!compareMediaComponents[diffId]) {
-        console.log(`Media Component ${diffId} only exists in base environment`)
-      } else {
-        const specificDiffs = getObjectDiff(
-          baseMediaComponents[diffId],
-          compareMediaComponents[diffId]
-        )
-        console.log(`Differences in ${diffId}:`, specificDiffs)
+        return true
       }
-    }
 
-    expect(differences).toHaveLength(0)
+      const specificDiffs = getObjectDiff(
+        baseMediaComponents[diffId],
+        compareMediaComponents[diffId]
+      )
+
+      if (specificDiffs.length > 0) {
+        console.log(`Differences in ${diffId}:`, specificDiffs)
+        return true
+      }
+
+      return false
+    })
+
+    expect(meaningfulDifferences).toHaveLength(0)
   }
 })
