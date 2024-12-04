@@ -64,6 +64,7 @@ export function Video({
   video,
   source,
   videoId,
+  playbackId,
   image,
   title,
   autoplay,
@@ -146,7 +147,8 @@ export function Video({
   const showVideoImage =
     (variant === 'admin' && source === VideoBlockSource.youTube) ||
     source === VideoBlockSource.internal ||
-    source === VideoBlockSource.cloudflare
+    source === VideoBlockSource.cloudflare ||
+    source === VideoBlockSource.mux
 
   useEffect(() => {
     setActiveStep(isActiveBlockOrDescendant(blockId))
@@ -275,6 +277,12 @@ export function Video({
                     startAt ?? 0
                   }&end=${endAt ?? 0}`}
                   type="video/youtube"
+                />
+              )}
+              {source === VideoBlockSource.mux && (
+                <source
+                  src={`https://stream.mux.com/${playbackId}.m3u8`}
+                  type="application/x-mpegURL"
                 />
               )}
             </StyledVideo>

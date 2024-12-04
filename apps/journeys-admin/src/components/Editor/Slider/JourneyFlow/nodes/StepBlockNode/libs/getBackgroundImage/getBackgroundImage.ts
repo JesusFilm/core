@@ -22,7 +22,8 @@ export function getBackgroundImage(
   if (coverBlock?.__typename === 'VideoBlock') {
     bgImage =
       (coverBlock.source !== VideoBlockSource.youTube &&
-      coverBlock.source !== VideoBlockSource.cloudflare
+      coverBlock.source !== VideoBlockSource.cloudflare &&
+      coverBlock.source !== VideoBlockSource.mux
         ? // Use posterBlockId image or default poster image on video
           coverBlock?.posterBlockId != null
           ? (

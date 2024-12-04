@@ -324,6 +324,8 @@ export interface CardFormRestore_image_VideoBlock {
    * For other sources only videoId needs to be set.
    */
   videoId: string | null;
+  assetId: string | null;
+  playbackId: string | null;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.
@@ -728,6 +730,8 @@ export interface CardFormRestore_subtitle_VideoBlock {
    * For other sources only videoId needs to be set.
    */
   videoId: string | null;
+  assetId: string | null;
+  playbackId: string | null;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.
@@ -1132,6 +1136,8 @@ export interface CardFormRestore_title_VideoBlock {
    * For other sources only videoId needs to be set.
    */
   videoId: string | null;
+  assetId: string | null;
+  playbackId: string | null;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.
@@ -1536,6 +1542,8 @@ export interface CardFormRestore_textResponse_VideoBlock {
    * For other sources only videoId needs to be set.
    */
   videoId: string | null;
+  assetId: string | null;
+  playbackId: string | null;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.
@@ -1940,6 +1948,8 @@ export interface CardFormRestore_body_VideoBlock {
    * For other sources only videoId needs to be set.
    */
   videoId: string | null;
+  assetId: string | null;
+  playbackId: string | null;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.
