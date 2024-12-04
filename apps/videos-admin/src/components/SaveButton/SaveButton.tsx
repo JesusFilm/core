@@ -14,13 +14,10 @@ export function SaveButton({
   return (
     <Button
       variant="contained"
-      size="medium"
+      size="small"
       color={disabled ? 'info' : 'secondary'}
       type="submit"
       disabled={disabled}
-      sx={{
-        width: 80
-      }}
     >
       {t('Save')}
     </Button>
