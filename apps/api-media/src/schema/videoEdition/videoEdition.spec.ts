@@ -30,8 +30,7 @@ describe('videoEdition', () => {
         prismaMock.videoEdition.findMany.mockResolvedValueOnce([
           {
             id: 'id',
-            name: 'name',
-            videoId: null
+            name: 'name'
           }
         ])
         const data = await client({
@@ -60,8 +59,7 @@ describe('videoEdition', () => {
       it('should get videoEdition', async () => {
         prismaMock.videoEdition.findUnique.mockResolvedValue({
           id: 'id',
-          name: 'name',
-          videoId: null
+          name: 'name'
         })
         const data = await client({
           document: VIDEO_EDITION_QUERY,
@@ -100,8 +98,7 @@ describe('videoEdition', () => {
         })
         prismaMock.videoEdition.create.mockResolvedValue({
           id: 'id',
-          name: 'name',
-          videoId: null
+          name: 'name'
         })
         const result = await authClient({
           document: CREATE_VIDEO_EDITION_MUTATION,
@@ -154,8 +151,7 @@ describe('videoEdition', () => {
         })
         prismaMock.videoEdition.update.mockResolvedValue({
           id: 'id',
-          name: 'name',
-          videoId: null
+          name: 'name'
         })
         const result = await authClient({
           document: UPDATE_VIDEO_EDITION_MUTATION,
@@ -208,8 +204,7 @@ describe('videoEdition', () => {
         })
         prismaMock.videoEdition.delete.mockResolvedValue({
           id: 'id',
-          name: 'name',
-          videoId: null
+          name: 'name'
         })
         const result = await authClient({
           document: DELETE_VIDEO_EDITION_MUTATION,
