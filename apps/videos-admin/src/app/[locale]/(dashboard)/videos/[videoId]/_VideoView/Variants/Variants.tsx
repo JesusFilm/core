@@ -43,7 +43,7 @@ export function Variants({
       {variants != null && (
         <Section
           boxProps={{
-            sx: { p: 0, height: 'calc(100vh - 400px)' }
+            sx: { p: 2, height: 'calc(100vh - 400px)' }
           }}
           title={t('Variants')}
           variant="outlined"
