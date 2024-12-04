@@ -47,9 +47,7 @@ export function VideoView(): ReactElement {
           flexDirection: { xs: 'col', sm: 'row' }
         }}
       >
-        <Typography variant="h4">
-          {t('videoTitle', { value: videoTitle })}
-        </Typography>
+        <Typography variant="h4">{videoTitle}</Typography>
         <PublishedChip published={data?.adminVideo.published ?? false} />
       </Stack>
       <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
