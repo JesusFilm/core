@@ -41,7 +41,7 @@ export function OrderedList<T extends BaseItem>({
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <SortableContext items={items}>
-        <List sx={{ gap: 1 }}>{children}</List>
+        <List sx={{ gap: 1, px: 0 }}>{children}</List>
       </SortableContext>
     </DndContext>
   )

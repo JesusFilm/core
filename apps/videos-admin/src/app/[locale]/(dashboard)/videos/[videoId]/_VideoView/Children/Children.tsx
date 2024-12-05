@@ -69,7 +69,7 @@ export function Children({ childVideos }: ChildrenProps): ReactElement {
     <Section
       title={t('Children')}
       boxProps={{
-        sx: { p: 0, height: 'calc(100vh - 400px)', overflowY: 'scroll' }
+        sx: { p: 2, height: 'calc(100vh - 400px)', overflowY: 'scroll' }
       }}
       variant="outlined"
     >

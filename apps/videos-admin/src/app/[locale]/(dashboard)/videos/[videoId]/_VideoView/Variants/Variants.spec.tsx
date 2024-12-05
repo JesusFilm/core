@@ -25,12 +25,10 @@ describe('Variants', () => {
       </MockedProvider>
     )
 
-    expect(
-      screen.getByRole('button', { name: 'Munukutuba 4334' })
-    ).toBeInTheDocument()
+    expect(screen.getAllByRole('listitem')).toHaveLength(2)
   })
 
-  it('should open variant modal when variant is clicked', () => {
+  it('should open variant modal when variant is clicked', async () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
@@ -39,10 +37,12 @@ describe('Variants', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Munukutuba 4334' }))
-    expect(
-      screen.getByRole('heading', { level: 4, name: 'Downloads' })
-    ).toBeInTheDocument()
+    fireEvent.click(screen.getAllByRole('listitem')[0])
+    await waitFor(() =>
+      expect(
+        screen.getByRole('heading', { level: 4, name: 'Downloads' })
+      ).toBeInTheDocument()
+    )
   })
 
   it('should close variant modal', async () => {
@@ -54,10 +54,12 @@ describe('Variants', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Munukutuba 4334' }))
-    expect(
-      screen.getByRole('heading', { level: 4, name: 'Downloads' })
-    ).toBeInTheDocument()
+    fireEvent.click(screen.getAllByRole('listitem')[0])
+    await waitFor(() =>
+      expect(
+        screen.getByRole('heading', { level: 4, name: 'Downloads' })
+      ).toBeInTheDocument()
+    )
     const backdrop = document.querySelector('.MuiBackdrop-root')
     if (backdrop) {
       fireEvent.click(backdrop)
