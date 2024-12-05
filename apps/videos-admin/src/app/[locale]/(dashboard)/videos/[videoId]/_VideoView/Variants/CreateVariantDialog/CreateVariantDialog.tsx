@@ -56,7 +56,7 @@ export function CreateVariantDialog({
       <Box sx={{ p: 2 }}>
         <Formik
           initialValues={{
-            edition: variants,
+            edition: '',
             videoId: videoId ?? '',
             hls: null,
             dash: '',
