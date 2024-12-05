@@ -2186,7 +2186,7 @@ type CloudflareR2 @join__type(graph: API_MEDIA)  {
   updatedAt: Date!
 }
 
-type CloudflareVideo @join__type(graph: API_MEDIA)  {
+type CloudflareVideo @join__type(graph: API_MEDIA, key: "id")  {
   id: ID!
   uploadUrl: String
   userId: ID!
@@ -2248,7 +2248,7 @@ type MutationShortLinkUpdateSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLink!
 }
 
-type MuxVideo @join__type(graph: API_MEDIA)  {
+type MuxVideo @join__type(graph: API_MEDIA, key: "id")  {
   id: ID!
   uploadUrl: String
   userId: ID!
@@ -2576,6 +2576,10 @@ type VideoVariantDownload @join__type(graph: API_MEDIA)  {
   height: Int!
   width: Int!
   url: String!
+}
+
+type Youtube @join__type(graph: API_MEDIA)  {
+  id: ID!
 }
 
 type ZodError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {

@@ -10,7 +10,7 @@ import {
   getVideo
 } from './service'
 
-builder.prismaObject('CloudflareVideo', {
+const CloudflareVideo = builder.prismaObject('CloudflareVideo', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     uploadUrl: t.exposeString('uploadUrl'),
@@ -141,3 +141,9 @@ builder.mutationFields((t) => ({
     }
   })
 }))
+
+builder.asEntity(CloudflareVideo, {
+  key: builder.selection<{ id: string }>('id'),
+  resolveReference: async ({ id }) =>
+    await prisma.cloudflareVideo.findUniqueOrThrow({ where: { id } })
+})
