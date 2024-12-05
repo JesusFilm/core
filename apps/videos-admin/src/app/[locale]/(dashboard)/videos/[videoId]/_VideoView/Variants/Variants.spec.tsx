@@ -4,7 +4,6 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideoVariant as VideoVariants } from '../../../../../../../libs/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider } from '../../_EditProvider'
 
 import { Variants } from './Variants'
 
@@ -21,54 +20,46 @@ describe('Variants', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider>
-            <Variants variants={mockVideoVariants} />
-          </EditProvider>
+          <Variants variants={mockVideoVariants} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
-    expect(
-      screen.getByRole('button', { name: 'Munukutuba jesus/munukutuba' })
-    ).toBeInTheDocument()
+    expect(screen.getAllByRole('listitem')).toHaveLength(2)
   })
 
-  it('should open variant modal when variant is clicked', () => {
+  it('should open variant modal when variant is clicked', async () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider>
-            <Variants variants={mockVideoVariants} />
-          </EditProvider>
+          <Variants variants={mockVideoVariants} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Munukutuba jesus/munukutuba' })
+    fireEvent.click(screen.getAllByRole('listitem')[0])
+    await waitFor(() =>
+      expect(
+        screen.getByRole('heading', { level: 4, name: 'Downloads' })
+      ).toBeInTheDocument()
     )
-    expect(
-      screen.getByRole('heading', { level: 4, name: 'Downloads' })
-    ).toBeInTheDocument()
   })
 
   it('should close variant modal', async () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider>
-            <Variants variants={mockVideoVariants} />
-          </EditProvider>
+          <Variants variants={mockVideoVariants} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Munukutuba jesus/munukutuba' })
+    fireEvent.click(screen.getAllByRole('listitem')[0])
+    await waitFor(() =>
+      expect(
+        screen.getByRole('heading', { level: 4, name: 'Downloads' })
+      ).toBeInTheDocument()
     )
-    expect(
-      screen.getByRole('heading', { level: 4, name: 'Downloads' })
-    ).toBeInTheDocument()
     const backdrop = document.querySelector('.MuiBackdrop-root')
     if (backdrop) {
       fireEvent.click(backdrop)
