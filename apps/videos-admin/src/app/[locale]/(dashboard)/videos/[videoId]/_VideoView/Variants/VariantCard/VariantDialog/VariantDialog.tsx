@@ -49,8 +49,12 @@ export function VariantDialog({
       onClose={handleClose}
       fullscreen={!smUp}
       dialogTitle={{ title: t('Audio Language'), closeButton: true }}
-      slotProps={{ titleButton: { size: 'small' } }}
       divider
+      sx={{
+        '& .MuiIconButton-root': {
+          border: 'none'
+        }
+      }}
     >
       <Stack gap={4}>
         <Box
