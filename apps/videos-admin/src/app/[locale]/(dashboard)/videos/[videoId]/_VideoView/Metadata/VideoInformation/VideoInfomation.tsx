@@ -19,7 +19,7 @@ import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../
 
 const videoStatuses = [
   { label: 'Published', value: 'published' },
-  { label: 'Unpublished', value: 'unpublished' }
+  { label: 'Draft', value: 'unpublished' }
 ]
 
 const videoLabels = [
