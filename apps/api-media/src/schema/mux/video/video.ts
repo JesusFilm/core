@@ -19,6 +19,11 @@ const MuxVideo = builder.prismaObject('MuxVideo', {
       shareable: true,
       resolve: () => VideoSourceShape.mux
     }),
+    primaryLanguageId: t.id({
+      nullable: true,
+      shareable: true,
+      resolve: () => null
+    }),
     uploadUrl: t.exposeString('uploadUrl'),
     userId: t.exposeID('userId', { nullable: false }),
     createdAt: t.expose('createdAt', {

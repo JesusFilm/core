@@ -97,7 +97,7 @@ const Video = builder.externalRef(
 Video.implement({
   externalFields: (t) => ({
     id: t.id({ nullable: false }),
-    primaryLanguageId: t.id()
+    primaryLanguageId: t.id({ nullable: false })
   }),
   fields: (t) => ({
     source: t.expose('source', {

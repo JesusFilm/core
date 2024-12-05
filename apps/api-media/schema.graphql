@@ -68,9 +68,11 @@ input CloudflareR2UpdateInput {
 }
 
 type CloudflareVideo
-  @key(fields: "id")
+  @key(fields: "id primaryLanguageId")
 {
   id: ID!
+  source: VideoBlockSource @shareable
+  primaryLanguageId: ID @shareable
   uploadUrl: String
   userId: ID!
   createdAt: Date!
@@ -300,10 +302,11 @@ type MutationShortLinkUpdateSuccess {
 }
 
 type MuxVideo
-  @key(fields: "id")
+  @key(fields: "id primaryLanguageId")
 {
   id: ID!
   source: VideoBlockSource @shareable
+  primaryLanguageId: ID @shareable
   uploadUrl: String
   userId: ID!
   createdAt: Date!
@@ -682,6 +685,7 @@ type Video
   @shareable
 {
   bibleCitations: [BibleCitation!]!
+  source: VideoBlockSource @shareable
   keywords(languageId: ID): [Keyword!]!
   id: ID!
   label: VideoLabel!

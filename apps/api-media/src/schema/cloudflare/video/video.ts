@@ -2,6 +2,7 @@ import { Prisma } from '.prisma/api-media-client'
 
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
+import { VideoSource, VideoSourceShape } from '../../videoSource/videoSource'
 
 import {
   createVideoByDirectUpload,
@@ -13,6 +14,16 @@ import {
 const CloudflareVideo = builder.prismaObject('CloudflareVideo', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    source: t.field({
+      type: VideoSource,
+      shareable: true,
+      resolve: () => VideoSourceShape.cloudflare
+    }),
+    primaryLanguageId: t.id({
+      nullable: true,
+      shareable: true,
+      resolve: () => null
+    }),
     uploadUrl: t.exposeString('uploadUrl'),
     userId: t.exposeID('userId', { nullable: false }),
     createdAt: t.expose('createdAt', {
@@ -143,7 +154,9 @@ builder.mutationFields((t) => ({
 }))
 
 builder.asEntity(CloudflareVideo, {
-  key: builder.selection<{ id: string }>('id'),
+  key: builder.selection<{ id: string; primaryLanguageId: string }>(
+    'id primaryLanguageId'
+  ),
   resolveReference: async ({ id }) =>
     await prisma.cloudflareVideo.findUniqueOrThrow({ where: { id } })
 })
