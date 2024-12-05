@@ -16,7 +16,8 @@ import {
   VideoStudyQuestion,
   VideoSubtitle,
   VideoTitle,
-  VideoVariant
+  VideoVariant,
+  Services
 } from '.prisma/api-media-client'
 
 import { getClient } from '../../../test/client'
@@ -67,7 +68,8 @@ describe('video', () => {
       slug: null,
       noIndex: null,
       published: true,
-      childIds: []
+      childIds: [],
+      services: [Services.watch]
     },
     {
       id: 'videoId1',
@@ -82,7 +84,8 @@ describe('video', () => {
       slug: null,
       noIndex: null,
       published: true,
-      childIds: []
+      childIds: [],
+      services: [Services.watch]
     }
   ]
 
@@ -100,7 +103,8 @@ describe('video', () => {
       slug: null,
       noIndex: null,
       published: true,
-      childIds: []
+      childIds: [],
+      services: [Services.watch]
     },
     {
       id: 'videoId4',
@@ -115,7 +119,8 @@ describe('video', () => {
       slug: null,
       noIndex: null,
       published: true,
-      childIds: []
+      childIds: [],
+      services: [Services.watch]
     }
   ]
 
@@ -134,6 +139,12 @@ describe('video', () => {
       noIndex: null,
       published: true,
       childIds: ['videoId1', 'videoId2'],
+      services: [
+        Services.watch,
+        Services.nextSteps,
+        Services.app,
+        Services.partners
+      ],
       bibleCitation: [
         {
           id: 'bibleCitationId',
@@ -298,7 +309,13 @@ describe('video', () => {
     image: null,
     slug: null,
     noIndex: null,
-    childIds: []
+    childIds: [],
+    services: [
+      Services.watch,
+      Services.nextSteps,
+      Services.app,
+      Services.partners
+    ]
   }
 
   describe('videos', () => {
@@ -420,6 +437,7 @@ describe('video', () => {
           cloudflareAssets {
             id
           }
+          services
         }
       }
     `)
@@ -543,6 +561,12 @@ describe('video', () => {
             primary: true,
             value: 'value'
           }
+        ],
+        services: [
+          Services.watch,
+          Services.nextSteps,
+          Services.app,
+          Services.partners
         ],
         variant: { id: 'variantId' },
         variants: [
@@ -1641,7 +1665,13 @@ describe('video', () => {
       image: null,
       slug: null,
       noIndex: null,
-      childIds: []
+      childIds: [],
+      services: [
+        Services.watch,
+        Services.nextSteps,
+        Services.app,
+        Services.partners
+      ]
     }
 
     it('should query video', async () => {
@@ -1912,7 +1942,8 @@ describe('video', () => {
               published: true,
               slug: 'slug',
               noIndex: true,
-              childIds: []
+              childIds: [],
+              services: undefined
             }
           }
         })
@@ -1925,7 +1956,8 @@ describe('video', () => {
             published: true,
             slug: 'slug',
             noIndex: true,
-            childIds: []
+            childIds: [],
+            services: undefined
           }
         })
         expect(result).toHaveProperty('data.videoUpdate', {
