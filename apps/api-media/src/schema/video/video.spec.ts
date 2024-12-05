@@ -1930,7 +1930,8 @@ describe('video', () => {
           published: true,
           slug: 'slug',
           noIndex: true,
-          childIds: []
+          childIds: [],
+          services: []
         } as unknown as Video)
         const result = await authClient({
           document: VIDEO_UPDATE_MUTATION,
@@ -1943,7 +1944,7 @@ describe('video', () => {
               slug: 'slug',
               noIndex: true,
               childIds: [],
-              services: undefined
+              services: [Services.watch, Services.app]
             }
           }
         })
@@ -1957,7 +1958,7 @@ describe('video', () => {
             slug: 'slug',
             noIndex: true,
             childIds: [],
-            services: undefined
+            services: [Services.watch, Services.app]
           }
         })
         expect(result).toHaveProperty('data.videoUpdate', {
