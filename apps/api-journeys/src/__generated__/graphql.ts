@@ -343,7 +343,9 @@ export type CloudflareVideo = {
   __typename?: 'CloudflareVideo';
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
+  primaryLanguageId?: Maybe<Scalars['ID']['output']>;
   readyToStream: Scalars['Boolean']['output'];
+  source?: Maybe<VideoBlockSource>;
   uploadUrl?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
 };
@@ -1188,6 +1190,8 @@ export type MeInput = {
 export enum MediaRole {
   Publisher = 'publisher'
 }
+
+export type MediaVideo = CloudflareVideo | MuxVideo | Video | YouTube;
 
 export enum MessagePlatform {
   CheckBroken = 'checkBroken',
@@ -2290,7 +2294,9 @@ export type MuxVideo = {
   __typename?: 'MuxVideo';
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
+  primaryLanguageId?: Maybe<Scalars['ID']['output']>;
   readyToStream: Scalars['Boolean']['output'];
+  source?: Maybe<VideoBlockSource>;
   uploadUrl?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
 };
@@ -3845,6 +3851,7 @@ export type Video = {
   /** slug is a permanent link to the video. */
   slug: Scalars['String']['output'];
   snippet: Array<VideoSnippet>;
+  source?: Maybe<VideoBlockSource>;
   studyQuestions: Array<VideoStudyQuestion>;
   subtitles: Array<VideoSubtitle>;
   /** @deprecated use images.thumbnail */
@@ -3940,6 +3947,7 @@ export type VideoBlock = Block & {
    */
   image?: Maybe<Scalars['String']['output']>;
   journeyId: Scalars['ID']['output'];
+  mediaVideo?: Maybe<MediaVideo>;
   muted?: Maybe<Scalars['Boolean']['output']>;
   /** how the video should display within the VideoBlock */
   objectFit?: Maybe<VideoBlockObjectFit>;
@@ -4742,6 +4750,18 @@ export type VisitorsConnection = {
   edges: Array<VisitorEdge>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
+};
+
+export type YouTube = {
+  __typename?: 'YouTube';
+  id: Scalars['ID']['output'];
+  primaryLanguageId?: Maybe<Scalars['ID']['output']>;
+  source: VideoBlockSource;
+};
+
+export type Youtube = {
+  __typename?: 'Youtube';
+  id: Scalars['ID']['output'];
 };
 
 export type ZodError = BaseError & {
