@@ -88,9 +88,9 @@ describe('VideoInformation', () => {
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Status' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Unpublished' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Draft' }))
     expect(screen.getByRole('combobox', { name: 'Status' })).toHaveTextContent(
-      'Unpublished'
+      'Draft'
     )
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
   })
