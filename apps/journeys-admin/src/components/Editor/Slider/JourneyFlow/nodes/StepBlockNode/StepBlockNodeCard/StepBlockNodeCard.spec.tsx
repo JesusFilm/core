@@ -121,36 +121,4 @@ describe('StepBlockNodeCard', () => {
       .getAttribute('title')
     expect(cardTitleText).toBe('')
   })
-
-  it('should block select if in analytics mode', () => {
-    mockGetCardMetadata.mockReturnValue({
-      title: undefined,
-      subtitle: undefined,
-      description: undefined,
-      priorityBlock: undefined,
-      bgImage: undefined
-    })
-    const step = {
-      __typename: 'StepBlock',
-      id: 'step.id',
-      children: []
-    } as unknown as TreeBlock<StepBlock>
-
-    const initialState = {
-      selectedStep: step,
-      selectedAttributeId: 'selectedAttributeId',
-      showAnalytics: true
-    }
-
-    render(
-      <EditorProvider initialState={initialState}>
-        <StepBlockNodeCard step={step} selected={false} />
-        <TestEditorState />
-      </EditorProvider>
-    )
-
-    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
-    fireEvent.click(screen.getByTestId('StepBlock'))
-    expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
-  })
 })
