@@ -34,7 +34,8 @@ describe('seed/edition', () => {
   it('should skip editions seed if editions exist', async () => {
     prismaMock.videoEdition.findFirst.mockResolvedValue({
       id: 'base',
-      name: null
+      name: null,
+      videoId: null
     })
     await seedEditions()
     expect(prismaMock.videoEdition.createMany).not.toHaveBeenCalled()

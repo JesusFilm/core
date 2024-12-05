@@ -32,7 +32,7 @@ describe('VariantCard', () => {
       </NextIntlClientProvider>
     )
 
-    fireEvent.click(screen.getByRole('button', { name: 'Munukutuba 4334' }))
+    fireEvent.click(screen.getByRole('listitem'))
     await waitFor(() => expect(screen.getByText('Slug')).toBeInTheDocument())
   })
 })
