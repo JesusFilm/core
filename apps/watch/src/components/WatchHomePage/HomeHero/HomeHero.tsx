@@ -16,7 +16,7 @@ export function HomeHero(): ReactElement {
   return (
     <Box
       sx={{
-        height: { xs: 502, lg: 777 },
+        height: '50svh',
         position: 'relative',
         backgroundColor: 'background.default'
       }}
@@ -44,9 +44,9 @@ export function HomeHero(): ReactElement {
         sx={{ display: 'flex', zIndex: 2, height: '100%' }}
       >
         <Stack
-          direction={{ xs: 'column', lg: 'row' }}
-          alignItems={{ lg: 'center' }}
-          justifyContent="center"
+          direction={{ xs: 'column', xl: 'row' }}
+          alignItems={{ xl: 'flex-end' }}
+          justifyContent={{ xs: 'flex-end', xl: 'center' }}
           spacing={4}
           sx={{ zIndex: 2 }}
         >
