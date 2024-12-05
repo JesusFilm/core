@@ -274,7 +274,6 @@ export function JourneyFlow(): ReactElement {
       let yPos = (event as unknown as MouseEvent).clientY
 
       if (!(event instanceof MouseEvent)) {
-        console.log('touch event  ')
         const touchEvent = event.changedTouches[0]
 
         eventTarget = document.elementFromPoint(
@@ -347,7 +346,7 @@ export function JourneyFlow(): ReactElement {
     return endDragTimeStamp - dragTimeStampRef.current < 150
   }
 
-  const onNodeDragStop: NodeDragHandler = (_event, node): void => {
+  const onNodeDragStop: NodeDragHandler = (event, node): void => {
     if (node.type !== 'StepBlock') return
 
     const step = data?.blocks.find(
@@ -358,7 +357,7 @@ export function JourneyFlow(): ReactElement {
     // if click or tap, go through block selection logic
     // else go through standard positioning logic below
 
-    if (isClickOrTouch(_event.timeStamp)) {
+    if (isClickOrTouch(event.timeStamp)) {
       handleStepSelection(step.id)
     } else {
       const x = Math.trunc(node.position.x)
@@ -506,8 +505,8 @@ export function JourneyFlow(): ReactElement {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
-        onNodeDragStart={(_event) => {
-          dragTimeStampRef.current = _event.timeStamp
+        onNodeDragStart={(event) => {
+          dragTimeStampRef.current = event.timeStamp
         }}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
