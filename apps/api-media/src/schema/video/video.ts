@@ -10,6 +10,7 @@ import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
 import { IdType, IdTypeShape } from '../enums/idType'
 import { Language, LanguageWithSlug } from '../language'
+import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
 
 import { VideoLabel } from './enums/videoLabel'
 import { VideoCreateInput } from './inputs/videoCreate'
@@ -53,6 +54,11 @@ const Video = builder.prismaObject('Video', {
   shareable: true,
   fields: (t) => ({
     bibleCitations: t.relation('bibleCitation', { nullable: false }),
+    source: t.field({
+      type: VideoSource,
+      shareable: true,
+      resolve: () => VideoSourceShape.internal
+    }),
     keywords: t.relation('keywords', {
       nullable: false,
       args: { languageId: t.arg.id({ required: false }) },

@@ -1,6 +1,8 @@
 // Developers must add an import for every resolver
 // and object type in the schema
 
+import './mediaVideo'
+
 import { builder } from './builder'
 
 export const schema = builder.toSubGraphSchema({
