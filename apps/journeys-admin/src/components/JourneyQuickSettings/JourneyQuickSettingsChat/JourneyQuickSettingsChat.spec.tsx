@@ -2,10 +2,6 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import {
-  JourneyFields_host as Host,
-  JourneyFields as Journey
-} from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import {
   UpdateHost,
@@ -15,6 +11,7 @@ import {
   UpdateJourneyHost,
   UpdateJourneyHostVariables
 } from '../../../../__generated__/UpdateJourneyHost'
+import { journey } from '../../../libs/useHostCreate/useHostCreate.mocks'
 import { hostCreateMock } from '../../../libs/useHostCreateMutation/useHostCreateMutation.mock'
 import { UPDATE_HOST } from '../../../libs/useHostUpdateMutation'
 import { UPDATE_JOURNEY_HOST } from '../../../libs/useUpdateJourneyHostMutation/useUpdateJourneyHostMutation'
@@ -22,24 +19,6 @@ import { UPDATE_JOURNEY_HOST } from '../../../libs/useUpdateJourneyHostMutation/
 import { JourneyQuickSettingsChat } from './JourneyQuickSettingsChat'
 
 describe('JourneyQuickSettingsChat', () => {
-  const defaultHost: Host = {
-    id: 'hostId',
-    __typename: 'Host',
-    teamId: 'team.id',
-    title: 'Cru International',
-    location: 'Florida, USA',
-    src1: 'imageSrc1',
-    src2: 'imageSrc2'
-  }
-
-  const journey = {
-    __typename: 'Journey',
-    id: 'journeyId',
-    seoTitle: 'My awesome journey',
-    host: defaultHost,
-    team: { id: 'team.id' }
-  } as unknown as Journey
-
   it('should render elements', () => {
     render(
       <MockedProvider>
