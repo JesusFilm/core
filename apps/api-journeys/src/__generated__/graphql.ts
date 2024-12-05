@@ -3115,6 +3115,13 @@ export enum Service {
   ApiVideos = 'apiVideos'
 }
 
+export enum Services {
+  App = 'app',
+  NextSteps = 'nextSteps',
+  Partners = 'partners',
+  Watch = 'watch'
+}
+
 /** A short link that redirects to a full URL */
 export type ShortLink = {
   __typename?: 'ShortLink';
@@ -3842,6 +3849,7 @@ export type Video = {
   parents: Array<Video>;
   primaryLanguageId: Scalars['ID']['output'];
   published: Scalars['Boolean']['output'];
+  services: Array<Scalars['String']['output']>;
   /** slug is a permanent link to the video. */
   slug: Scalars['String']['output'];
   snippet: Array<VideoSnippet>;
@@ -4485,6 +4493,7 @@ export type VideoUpdateInput = {
   noIndex?: InputMaybe<Scalars['Boolean']['input']>;
   primaryLanguageId?: InputMaybe<Scalars['String']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
+  services?: InputMaybe<Array<Services>>;
   slug?: InputMaybe<Scalars['String']['input']>;
 };
 

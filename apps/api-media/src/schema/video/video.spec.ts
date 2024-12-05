@@ -8,6 +8,7 @@ import {
   ImageAspectRatio,
   Keyword,
   Prisma,
+  Services,
   Video,
   VideoDescription,
   VideoImageAlt,
@@ -16,8 +17,7 @@ import {
   VideoStudyQuestion,
   VideoSubtitle,
   VideoTitle,
-  VideoVariant,
-  Services
+  VideoVariant
 } from '.prisma/api-media-client'
 
 import { getClient } from '../../../test/client'
