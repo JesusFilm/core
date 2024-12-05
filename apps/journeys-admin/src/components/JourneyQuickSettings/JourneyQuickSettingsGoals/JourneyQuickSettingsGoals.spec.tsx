@@ -160,8 +160,6 @@ describe('JourneyQuickSettingsGoals', () => {
     expect(screen.getByText('Visit a Website')).toBeInTheDocument()
   })
 
-  // should set selected goal url on first render
-
   it('should setSelectedGoalUrl on first render', async () => {
     ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
 
