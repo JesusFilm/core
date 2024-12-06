@@ -1,10 +1,6 @@
 import Box from '@mui/material/Box'
-import FormControl from '@mui/material/FormControl'
-import FormLabel from '@mui/material/FormLabel'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useCallback, useRef } from 'react'
@@ -52,23 +48,18 @@ export function VariantDialog({
       open={open}
       onClose={handleClose}
       fullscreen={!smUp}
-      dialogTitle={{ title: t('Variant'), closeButton: true }}
-      slotProps={{ titleButton: { size: 'small' } }}
+      dialogTitle={{ title: t('Audio Language'), closeButton: true }}
       divider
+      sx={{
+        '& .MuiIconButton-root': {
+          border: 'none'
+        }
+      }}
     >
       <Stack gap={4}>
-        <Typography variant="h2">{variant.language.name[0].value}</Typography>
-        <FormControl>
-          <Stack direction="row">
-            <Stack direction="column">
-              <FormLabel>{t('Slug')}</FormLabel>
-              <TextField disabled defaultValue={variant.slug} />
-            </Stack>
-          </Stack>
-        </FormControl>
         <Box
           sx={{
-            borderRadius: 3,
+            borderRadius: 2,
             position: 'relative',
             overflow: 'hidden'
           }}
