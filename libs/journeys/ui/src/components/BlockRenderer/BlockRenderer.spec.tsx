@@ -582,7 +582,6 @@ describe('BlockRenderer', () => {
     const block: TreeBlock = {
       __typename: 'VideoBlock',
       id: 'main',
-      videoId: '2_0-FallingPlates',
       videoVariantLanguageId: '529',
       source: VideoBlockSource.internal,
       title: null,
@@ -590,7 +589,7 @@ describe('BlockRenderer', () => {
       duration: null,
       image: null,
       objectFit: null,
-      video: {
+      mediaVideo: {
         __typename: 'Video',
         id: '2_0-FallingPlates',
         title: [
@@ -638,7 +637,6 @@ describe('BlockRenderer', () => {
     const block: TreeBlock = {
       __typename: 'VideoBlock',
       id: 'main',
-      videoId: '2_0-FallingPlates',
       videoVariantLanguageId: '529',
       source: VideoBlockSource.internal,
       title: null,
@@ -646,7 +644,7 @@ describe('BlockRenderer', () => {
       duration: null,
       image: null,
       objectFit: null,
-      video: {
+      mediaVideo: {
         __typename: 'Video',
         id: '2_0-FallingPlates',
         title: [

@@ -196,12 +196,11 @@ describe('VideoLibrary', () => {
             autoplay: true,
             startAt: 0,
             title: 'What is the Bible?',
-            videoId: 'ak06MSETeo4',
             videoVariantLanguageId: null,
             parentOrder: 0,
             action: null,
             source: VideoBlockSource.youTube,
-            video: null,
+            mediaVideo: null,
             objectFit: null,
             posterBlockId: 'poster1.id',
             children: []

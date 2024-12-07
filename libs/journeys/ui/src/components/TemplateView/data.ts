@@ -286,7 +286,6 @@ export const blocks: Block[] = [
     parentOrder: 0,
     autoplay: true,
     muted: true,
-    videoId: '2_0-FallingPlates',
     videoVariantLanguageId: '529',
     source: VideoBlockSource.internal,
     title: null,
@@ -294,7 +293,7 @@ export const blocks: Block[] = [
     duration: null,
     image: null,
     objectFit: null,
-    video: {
+    mediaVideo: {
       __typename: 'Video',
       id: '2_0-FallingPlates',
       title: [
@@ -620,7 +619,6 @@ export const blocks: Block[] = [
     parentOrder: 0,
     autoplay: false,
     muted: true,
-    videoId: '2_0-FallingPlates',
     videoVariantLanguageId: '529',
     source: VideoBlockSource.internal,
     title: null,
@@ -628,7 +626,7 @@ export const blocks: Block[] = [
     duration: null,
     image: null,
     objectFit: null,
-    video: {
+    mediaVideo: {
       __typename: 'Video',
       id: '2_0-FallingPlates',
       title: [

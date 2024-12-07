@@ -14,7 +14,6 @@ export const VIDEO_FIELDS = gql`
     endAt
     posterBlockId
     fullsize
-    videoId
     videoVariantLanguageId
     source
     title
@@ -49,7 +48,7 @@ export const VIDEO_FIELDS = gql`
       ... on CloudflareVideo {
         id
       }
-      ... on YouTubeVideo {
+      ... on YouTube {
         id
       }
     }

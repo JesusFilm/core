@@ -3,7 +3,10 @@ import { render, waitFor } from '@testing-library/react'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../../libs/block'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
-import { VideoFields } from '../../Video/__generated__/VideoFields'
+import {
+  VideoFields,
+  VideoFields_mediaVideo_Video
+} from '../../Video/__generated__/VideoFields'
 
 import { ContainedCover } from '.'
 
@@ -41,7 +44,6 @@ describe('ContainedCover', () => {
     posterBlockId: null,
     fullsize: null,
     action: null,
-    videoId: '2_0-FallingPlates',
     videoVariantLanguageId: '529',
     source: VideoBlockSource.internal,
     title: null,
@@ -49,7 +51,7 @@ describe('ContainedCover', () => {
     duration: null,
     image: null,
     objectFit: null,
-    video: {
+    mediaVideo: {
       __typename: 'Video',
       id: '2_0-FallingPlates',
       title: [
@@ -181,7 +183,8 @@ describe('ContainedCover', () => {
     expect(posterImage).toHaveAccessibleName('card video image')
     expect(posterImage).toHaveAttribute(
       'aria-details',
-      videoBlock.video?.images[0]?.mobileCinematicHigh
+      (videoBlock.mediaVideo as VideoFields_mediaVideo_Video)?.images[0]
+        ?.mobileCinematicHigh
     )
   })
 
@@ -192,7 +195,10 @@ describe('ContainedCover', () => {
         backgroundBlur={blurUrl}
         videoBlock={{
           ...videoBlock,
-          source: VideoBlockSource.cloudflare,
+          mediaVideo: {
+            id: '2_0-FallingPlates',
+            __typename: 'CloudflareVideo'
+          },
           image:
             'https://customer-.cloudflarestream.com/2_0-FallingPlates/manifest/video.m3u8'
         }}
@@ -226,7 +232,7 @@ describe('ContainedCover', () => {
         backgroundBlur={blurUrl}
         videoBlock={{
           ...videoBlock,
-          source: VideoBlockSource.youTube,
+          mediaVideo: { id: '2_0-FallingPlates', __typename: 'YouTube' },
           image: 'http://youtube.thumbnail.image'
         }}
       >

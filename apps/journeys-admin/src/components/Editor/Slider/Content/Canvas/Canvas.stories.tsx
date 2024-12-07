@@ -435,7 +435,6 @@ const steps: Array<TreeBlock<StepBlock>> = [
             autoplay: false,
             parentOrder: 0,
             muted: true,
-            videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529',
             source: VideoBlockSource.internal,
             title: null,
@@ -443,7 +442,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             duration: null,
             image: null,
             objectFit: null,
-            video: {
+            mediaVideo: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
               title: [

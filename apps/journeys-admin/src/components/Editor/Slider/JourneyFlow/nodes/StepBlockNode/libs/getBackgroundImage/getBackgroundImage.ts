@@ -21,8 +21,9 @@ export function getBackgroundImage(
 
   if (coverBlock?.__typename === 'VideoBlock') {
     bgImage =
-      (coverBlock.source !== VideoBlockSource.youTube &&
-      coverBlock.source !== VideoBlockSource.cloudflare
+      (coverBlock.mediaVideo?.__typename !== 'YouTube' &&
+      coverBlock.mediaVideo?.__typename !== 'CloudflareVideo' &&
+      coverBlock.mediaVideo?.__typename !== 'MuxVideo'
         ? // Use posterBlockId image or default poster image on video
           coverBlock?.posterBlockId != null
           ? (
@@ -32,7 +33,7 @@ export function getBackgroundImage(
                   block.__typename === 'ImageBlock'
               ) as TreeBlock<ImageBlock>
             )?.src
-          : coverBlock?.video?.images[0]?.mobileCinematicHigh
+          : coverBlock?.mediaVideo?.images[0]?.mobileCinematicHigh
         : // Use Youtube or Cloudflare set poster image
           coverBlock?.image) ?? undefined
   } else if (coverBlock?.__typename === 'ImageBlock') {

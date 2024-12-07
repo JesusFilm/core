@@ -250,42 +250,59 @@ export interface GetAdminJourney_journey_blocks_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface GetAdminJourney_journey_blocks_VideoBlock_video_title {
+export interface GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface GetAdminJourney_journey_blocks_VideoBlock_video_images {
+export interface GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface GetAdminJourney_journey_blocks_VideoBlock_video_variant {
+export interface GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface GetAdminJourney_journey_blocks_VideoBlock_video_variantLanguages_name {
+export interface GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface GetAdminJourney_journey_blocks_VideoBlock_video_variantLanguages {
+export interface GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: GetAdminJourney_journey_blocks_VideoBlock_video_variantLanguages_name[];
+  name: GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface GetAdminJourney_journey_blocks_VideoBlock_video {
+export interface GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: GetAdminJourney_journey_blocks_VideoBlock_video_title[];
-  images: GetAdminJourney_journey_blocks_VideoBlock_video_images[];
-  variant: GetAdminJourney_journey_blocks_VideoBlock_video_variant | null;
-  variantLanguages: GetAdminJourney_journey_blocks_VideoBlock_video_variantLanguages[];
+  title: GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_title[];
+  images: GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_images[];
+  variant: GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
+
+export interface GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+}
+
+export interface GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+  id: string;
+}
+
+export interface GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type GetAdminJourney_journey_blocks_VideoBlock_mediaVideo = GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video | GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_MuxVideo | GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_CloudflareVideo | GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_YouTube;
 
 export interface GetAdminJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -337,12 +354,6 @@ export interface GetAdminJourney_journey_blocks_VideoBlock {
    * to select a video.
    * For other sources only videoId needs to be set.
    */
-  videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
@@ -378,11 +389,7 @@ export interface GetAdminJourney_journey_blocks_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: GetAdminJourney_journey_blocks_VideoBlock_video | null;
+  mediaVideo: GetAdminJourney_journey_blocks_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */

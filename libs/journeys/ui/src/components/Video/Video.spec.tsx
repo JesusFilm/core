@@ -27,7 +27,6 @@ const block: TreeBlock<VideoFields> = {
   posterBlockId: 'posterBlockId',
   fullsize: null,
   action: null,
-  videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
   source: VideoBlockSource.internal,
   title: null,
@@ -35,7 +34,7 @@ const block: TreeBlock<VideoFields> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -104,7 +103,7 @@ describe('Video', () => {
           {...{
             ...block,
             source: VideoBlockSource.youTube,
-            videoId: 'videoId'
+            mediaVideo: { id: 'videoId', __typename: 'YouTube' }
           }}
         />
       </MockedProvider>
@@ -125,7 +124,7 @@ describe('Video', () => {
           {...{
             ...block,
             source: VideoBlockSource.cloudflare,
-            videoId: 'videoId'
+            mediaVideo: { id: 'videoId', __typename: 'CloudflareVideo' }
           }}
         />
       </MockedProvider>
@@ -163,10 +162,10 @@ describe('Video', () => {
     expect(videoImage).toHaveAttribute('alt', 'video image')
   })
 
-  it('should not render an image if videoId is null', () => {
+  it('should not render an image if mediaVideo is null', () => {
     render(
       <MockedProvider>
-        <Video {...block} videoId={null} />
+        <Video {...block} mediaVideo={null} />
       </MockedProvider>
     )
     expect(screen.getByTestId('VideocamRoundedIcon')).toHaveClass(

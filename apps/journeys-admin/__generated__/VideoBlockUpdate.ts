@@ -9,42 +9,59 @@ import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit } from "./
 // GraphQL mutation operation: VideoBlockUpdate
 // ====================================================
 
-export interface VideoBlockUpdate_videoBlockUpdate_video_title {
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface VideoBlockUpdate_videoBlockUpdate_video_images {
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface VideoBlockUpdate_videoBlockUpdate_video_variant {
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface VideoBlockUpdate_videoBlockUpdate_video_variantLanguages_name {
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface VideoBlockUpdate_videoBlockUpdate_video_variantLanguages {
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: VideoBlockUpdate_videoBlockUpdate_video_variantLanguages_name[];
+  name: VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface VideoBlockUpdate_videoBlockUpdate_video {
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: VideoBlockUpdate_videoBlockUpdate_video_title[];
-  images: VideoBlockUpdate_videoBlockUpdate_video_images[];
-  variant: VideoBlockUpdate_videoBlockUpdate_video_variant | null;
-  variantLanguages: VideoBlockUpdate_videoBlockUpdate_video_variantLanguages[];
+  title: VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_title[];
+  images: VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_images[];
+  variant: VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variant | null;
+  variantLanguages: VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages[];
 }
+
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+}
+
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+  id: string;
+}
+
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type VideoBlockUpdate_videoBlockUpdate_mediaVideo = VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video | VideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo | VideoBlockUpdate_videoBlockUpdate_mediaVideo_CloudflareVideo | VideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube;
 
 export interface VideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -96,12 +113,6 @@ export interface VideoBlockUpdate_videoBlockUpdate {
    * to select a video.
    * For other sources only videoId needs to be set.
    */
-  videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
@@ -137,11 +148,7 @@ export interface VideoBlockUpdate_videoBlockUpdate {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: VideoBlockUpdate_videoBlockUpdate_video | null;
+  mediaVideo: VideoBlockUpdate_videoBlockUpdate_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */

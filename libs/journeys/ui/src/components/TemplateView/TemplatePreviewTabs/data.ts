@@ -24,7 +24,6 @@ export const journeyVideoBlocks: Blocks[] = [
     endAt: 118,
     posterBlockId: null,
     fullsize: true,
-    videoId: '1_0-TrainV_1Install',
     videoVariantLanguageId: '529',
     source: VideoBlockSource.internal,
     title: null,
@@ -32,7 +31,7 @@ export const journeyVideoBlocks: Blocks[] = [
     image: null,
     duration: 118,
     objectFit: null,
-    video: {
+    mediaVideo: {
       __typename: 'Video',
       id: '1_0-TrainV_1Install',
       title: [
@@ -68,7 +67,6 @@ export const journeyVideoBlocks: Blocks[] = [
     endAt: 129,
     posterBlockId: '49af6ebd-8e6e-43b4-8440-c7dbe2408be0',
     fullsize: true,
-    videoId: '1_0-TrainV_5Ministry',
     videoVariantLanguageId: '529',
     source: VideoBlockSource.internal,
     title: null,
@@ -76,7 +74,7 @@ export const journeyVideoBlocks: Blocks[] = [
     image: null,
     duration: null,
     objectFit: null,
-    video: {
+    mediaVideo: {
       __typename: 'Video',
       id: '1_0-TrainV_5Ministry',
       title: [
@@ -112,7 +110,6 @@ export const journeyVideoBlocks: Blocks[] = [
     endAt: 44,
     posterBlockId: 'fa44a638-2a44-466f-8254-2f5d35ee6d3b',
     fullsize: true,
-    videoId: '1_cl1302-0-0',
     videoVariantLanguageId: '529',
     source: VideoBlockSource.internal,
     title: null,
@@ -120,7 +117,7 @@ export const journeyVideoBlocks: Blocks[] = [
     image: null,
     duration: null,
     objectFit: null,
-    video: {
+    mediaVideo: {
       __typename: 'Video',
       id: '1_cl1302-0-0',
       title: [
@@ -156,7 +153,6 @@ export const journeyVideoBlocks: Blocks[] = [
     endAt: 120,
     posterBlockId: null,
     fullsize: true,
-    videoId: 'TDBSCCrem-Q',
     videoVariantLanguageId: null,
     source: VideoBlockSource.youTube,
     title: 'Medley',
@@ -165,7 +161,7 @@ export const journeyVideoBlocks: Blocks[] = [
     image: 'https://i.ytimg.com/vi/TDBSCCrem-Q/hqdefault.jpg',
     duration: 120,
     objectFit: null,
-    video: null,
+    mediaVideo: null,
     action: null
   },
   {
@@ -200,7 +196,6 @@ export const journeyVideoBlocks: Blocks[] = [
     endAt: 147,
     posterBlockId: null,
     fullsize: true,
-    videoId: '1_cl1305-0-0',
     videoVariantLanguageId: '529',
     source: VideoBlockSource.internal,
     title: null,
@@ -208,7 +203,7 @@ export const journeyVideoBlocks: Blocks[] = [
     image: null,
     duration: 147,
     objectFit: null,
-    video: {
+    mediaVideo: {
       __typename: 'Video',
       id: '1_cl1305-0-0',
       title: [
@@ -315,7 +310,6 @@ export const videoBlocksFiltered = [
     endAt: 218,
     posterBlockId: null,
     fullsize: true,
-    videoId: 'ghTiJv0oVck',
     videoVariantLanguageId: null,
     source: 'youTube',
     title: 'Invisible',
@@ -324,7 +318,7 @@ export const videoBlocksFiltered = [
     image: 'https://i.ytimg.com/vi/ghTiJv0oVck/hqdefault.jpg',
     duration: 218,
     objectFit: null,
-    video: null,
+    mediaVideo: { __typename: 'YouTube', id: 'ghTiJv0oVck' },
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: '27c87b6a-8be5-4fb3-b2e0-a99d96df9c54',
@@ -342,7 +336,6 @@ export const videoBlocksFiltered = [
     endAt: 69,
     posterBlockId: null,
     fullsize: true,
-    videoId: '1_cl1301-0-0',
     videoVariantLanguageId: '529',
     source: 'internal',
     title: null,
@@ -350,7 +343,7 @@ export const videoBlocksFiltered = [
     image: null,
     duration: null,
     objectFit: 'fill',
-    video: {
+    mediaVideo: {
       __typename: 'Video',
       id: '1_cl1301-0-0',
       title: [

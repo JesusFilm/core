@@ -59,7 +59,6 @@ const videoInternal: TreeBlock<VideoBlock> = {
   autoplay: true,
   fullsize: true,
   action: null,
-  videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
   source: VideoBlockSource.internal,
   title: null,
@@ -67,7 +66,7 @@ const videoInternal: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -124,12 +123,11 @@ const videoYouTube: TreeBlock<VideoBlock> = {
   autoplay: true,
   startAt: 0,
   title: 'What is the Bible?',
-  videoId: 'ak06MSETeo4',
   videoVariantLanguageId: null,
   parentOrder: 0,
   action: null,
   source: VideoBlockSource.youTube,
-  video: null,
+  mediaVideo: null,
   objectFit: null,
   posterBlockId: 'poster1.id',
   children: []

@@ -232,7 +232,6 @@ describe('CardIntro', () => {
           endAt: 2058,
           posterBlockId: null,
           fullsize: null,
-          videoId: '1_jf-0-0',
           videoVariantLanguageId: '529',
           source: VideoBlockSource.internal,
           title: null,
@@ -240,7 +239,7 @@ describe('CardIntro', () => {
           image: null,
           duration: null,
           objectFit: null,
-          video: {
+          mediaVideo: {
             id: '1_jf-0-0',
             title: [
               {
