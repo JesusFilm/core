@@ -34,7 +34,7 @@ type ValueOf<T> = T[keyof T]
 const pxToRem = (pixel: number, fontSize: number): number => pixel / fontSize
 
 export const typography = {
-  fontFamily: ['"Apercu", "Arial", sans-serif'].join(','),
+  fontFamily: ['"Montserrat", "Arial", sans-serif'].join(','),
   h1: {
     fontWeight: 700,
     fontSize: 36,
@@ -57,30 +57,30 @@ export const typography = {
     }
   },
   h3: {
-    fontWeight: 700,
-    fontSize: 27,
-    lineHeight: pxToRem(33, 36),
+    fontSize: 36,
+    fontWeight: 800,
+    lineHeight: 1.05,
     [baseBreakpoints.breakpoints.up('md')]: {
-      lineHeight: pxToRem(48, 48),
+      lineHeight: 1.05,
       fontSize: 48
     }
   },
   h4: {
-    fontWeight: 700,
-    fontSize: 21,
-    lineHeight: pxToRem(29, 21),
+    fontSize: 27,
+    fontWeight: 800,
+    lineHeight: 1.2,
     [baseBreakpoints.breakpoints.up('md')]: {
-      lineHeight: pxToRem(40, 36),
-      fontSize: 36
+      lineHeight: 1.1,
+      fontSize: 33
     }
   },
   h5: {
-    fontWeight: 700,
-    fontSize: 18,
-    lineHeight: pxToRem(21, 18),
+    fontSize: 24,
+    fontWeight: 800,
+    lineHeight: 1.2,
+    marginBottom: '122px',
     [baseBreakpoints.breakpoints.up('md')]: {
-      lineHeight: pxToRem(33, 27),
-      fontSize: 33
+      fontSize: 27
     }
   },
   // TODO: H6 on Figma?
@@ -111,7 +111,7 @@ export const typography = {
   body1: {
     fontSize: 16,
     fontWeight: 500,
-    lineHeight: pxToRem(21, 16)
+    lineHeight: 1.5
   },
   body2: {
     fontSize: 14,
@@ -121,13 +121,15 @@ export const typography = {
   // TODO: use same mobile overline styles for both
   overline1: {
     fontSize: 14,
-    fontWeight: 700,
-    lineHeight: pxToRem(14, 14),
+    fontWeight: 500,
+    lineHeight: 1.2,
     letterSpacing: '0.12em',
     textTransform: 'uppercase',
+    textWrap: 'balance',
+    marginBottom: '12px',
     [baseBreakpoints.breakpoints.up('md')]: {
-      lineHeight: pxToRem(28, 18),
-      fontSize: 18
+      lineHeight: 1.2,
+      fontSize: 16,
     }
   },
   overline2: {
@@ -158,8 +160,8 @@ export const websiteTypography: Pick<
           subtitle2: 'h6',
           body1: 'p',
           body2: 'p',
-          overline1: 'span',
-          overline2: 'span'
+          overline1: 'p',
+          overline2: 'p'
         }
       }
     }
