@@ -85,7 +85,7 @@ export function VideoView(): ReactElement {
                   value={2}
                   label={
                     <TabLabel
-                      label="Variants"
+                      label={t('Audio Languages')}
                       count={video?.variants?.length}
                     />
                   }
