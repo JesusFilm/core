@@ -64,9 +64,197 @@ describe('VideoView', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(screen.getAllByRole('tab')).toHaveLength(3)
     fireEvent.click(screen.getByRole('tab', { name: 'Clips 3' }))
     expect(
       screen.getByRole('heading', { level: 6, name: '1. The Beginning' })
     ).toBeInTheDocument()
+  })
+
+  it('should not show video children if a video label is episodes', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          label: 'episodes'
+        }
+      }
+    })
+
+    render(
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+        <NextIntlClientProvider locale="en">
+          <VideoView />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(screen.getAllByRole('tab')).toHaveLength(2)
+  })
+
+  it('should  show video children if a video label is series', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          label: 'series'
+        }
+      }
+    })
+
+    render(
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+        <NextIntlClientProvider locale="en">
+          <VideoView />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(screen.getAllByRole('tab')).toHaveLength(3)
+    expect(screen.getByRole('tab', { name: 'Episodes 3' })).toBeInTheDocument()
+  })
+
+  it('should  show video children if a video label is featureFilm', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          label: 'featureFilm'
+        }
+      }
+    })
+
+    render(
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+        <NextIntlClientProvider locale="en">
+          <VideoView />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(screen.getAllByRole('tab')).toHaveLength(3)
+    expect(screen.getByRole('tab', { name: 'Clips 3' })).toBeInTheDocument()
+  })
+
+  it('should  show video children if a video label is collection', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          label: 'collection'
+        }
+      }
+    })
+
+    render(
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+        <NextIntlClientProvider locale="en">
+          <VideoView />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(screen.getAllByRole('tab')).toHaveLength(3)
+    expect(screen.getByRole('tab', { name: 'Items 3' })).toBeInTheDocument()
+  })
+
+  it('should not show video children if a video label is segment', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          label: 'segment'
+        }
+      }
+    })
+
+    render(
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+        <NextIntlClientProvider locale="en">
+          <VideoView />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(screen.getAllByRole('tab')).toHaveLength(2)
+  })
+
+  it('should not show video children if a video label is segment', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          label: 'shortFilm'
+        }
+      }
+    })
+
+    render(
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+        <NextIntlClientProvider locale="en">
+          <VideoView />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(screen.getAllByRole('tab')).toHaveLength(2)
+  })
+
+  it('should not show video children if a video label is segment', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          label: 'trailer'
+        }
+      }
+    })
+
+    render(
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+        <NextIntlClientProvider locale="en">
+          <VideoView />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(screen.getAllByRole('tab')).toHaveLength(2)
+  })
+
+  it('should not show video children if a video label is segment', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          label: 'behindTheScenes'
+        }
+      }
+    })
+
+    render(
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+        <NextIntlClientProvider locale="en">
+          <VideoView />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(screen.getAllByRole('tab')).toHaveLength(2)
   })
 })
