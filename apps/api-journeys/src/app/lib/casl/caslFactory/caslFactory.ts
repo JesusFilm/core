@@ -12,6 +12,7 @@ import { journeyAcl } from '../../../modules/journey/journey.acl'
 import { JourneyCollectionAcl } from '../../../modules/journeyCollection/journeyCollection.acl'
 import { journeyNotificationAcl } from '../../../modules/journeyNotification/journeyNotification.acl'
 import { journeyVisitorAcl } from '../../../modules/journeyVisitor/journeyVisitor.acl'
+import { qrCodeAcl } from '../../../modules/qrCode/qrCode.acl'
 import { teamAcl } from '../../../modules/team/team.acl'
 import { userInviteAcl } from '../../../modules/userInvite/userInvite.acl'
 import { userJourneyAcl } from '../../../modules/userJourney/userJourney.acl'
@@ -56,6 +57,7 @@ export class AppCaslFactory extends CaslFactory<Role> {
       customDomainAcl,
       hostAcl,
       integrationAcl,
+      qrCodeAcl,
       journeyAcl,
       JourneyCollectionAcl,
       journeyNotificationAcl,
