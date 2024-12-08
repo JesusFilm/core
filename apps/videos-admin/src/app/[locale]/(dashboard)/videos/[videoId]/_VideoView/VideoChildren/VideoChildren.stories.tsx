@@ -30,17 +30,35 @@ const Template: Story = {
   render: ({ ...args }) => <VideoChildren {...args} />
 }
 
-export const Default: Story = {
+export const Clips: Story = {
   ...Template,
   args: {
-    childVideos: childVideos
+    childVideos: childVideos,
+    label: 'Clips'
+  }
+}
+
+export const Episodes: Story = {
+  ...Template,
+  args: {
+    childVideos: childVideos,
+    label: 'Episodes'
+  }
+}
+
+export const Items: Story = {
+  ...Template,
+  args: {
+    childVideos: childVideos,
+    label: 'Items'
   }
 }
 
 export const Empty: Story = {
   ...Template,
   args: {
-    childVideos: []
+    childVideos: [],
+    label: 'Items'
   }
 }
 
