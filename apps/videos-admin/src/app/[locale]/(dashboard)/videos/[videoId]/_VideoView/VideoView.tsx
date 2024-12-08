@@ -31,7 +31,6 @@ export function VideoView(): ReactElement {
   const videoTitle = data?.adminVideo.title[0].value
 
   function handleTabChange(_e: SyntheticEvent, newValue: number): void {
-    console.log(newValue)
     setTabValue(newValue)
   }
 
