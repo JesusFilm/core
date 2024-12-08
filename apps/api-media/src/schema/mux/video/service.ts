@@ -1,15 +1,15 @@
 import Mux from '@mux/mux-node'
 
 function getClient(): Mux {
-  if (process.env.MUX_ACCESS_TOKEN_ID == null)
-    throw new Error('Missing MUX_ACCESS_TOKEN_ID')
+  if (process.env.MUX_UGC_ACCESS_TOKEN_ID == null)
+    throw new Error('Missing MUX_UGC_ACCESS_TOKEN_ID')
 
-  if (process.env.MUX_SECRET_KEY == null)
-    throw new Error('Missing MUX_SECRET_KEY')
+  if (process.env.MUX_UGC_SECRET_KEY == null)
+    throw new Error('Missing MUX_UGC_SECRET_KEY')
 
   return new Mux({
-    tokenId: process.env.MUX_ACCESS_TOKEN_ID,
-    tokenSecret: process.env.MUX_SECRET_KEY
+    tokenId: process.env.MUX_UGC_ACCESS_TOKEN_ID,
+    tokenSecret: process.env.MUX_UGC_SECRET_KEY
   })
 }
 
@@ -24,6 +24,7 @@ export async function createVideoByDirectUpload(
   const response = await getClient().video.uploads.create({
     cors_origin: process.env.CORS_ORIGIN,
     new_asset_settings: {
+      encoding_tier: 'smart',
       playback_policy: ['public'],
       max_resolution_tier: maxResolution,
       mp4_support: downloadable ? 'capped-1080p' : 'none'
@@ -56,6 +57,7 @@ export async function createVideoFromUrl(
         url
       }
     ],
+    encoding_tier: 'smart',
     playback_policy: ['public'],
     max_resolution_tier: maxResolution,
     mp4_support: downloadable ? 'capped-1080p' : 'none'
@@ -64,6 +66,10 @@ export async function createVideoFromUrl(
 
 export async function getVideo(videoId: string): Promise<Mux.Video.Asset> {
   return await getClient().video.assets.retrieve(videoId)
+}
+
+export async function getUpload(uploadId: string): Promise<Mux.Video.Upload> {
+  return await getClient().video.uploads.retrieve(uploadId)
 }
 
 export async function deleteVideo(videoId: string): Promise<void> {
