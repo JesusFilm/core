@@ -64,7 +64,7 @@ describe('VideoView', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    fireEvent.click(screen.getByRole('tab', { name: 'Children 3' }))
+    fireEvent.click(screen.getByRole('tab', { name: 'Clips 3' }))
     expect(
       screen.getByRole('heading', { level: 6, name: '1. The Beginning' })
     ).toBeInTheDocument()
