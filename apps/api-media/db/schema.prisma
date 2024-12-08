@@ -100,6 +100,13 @@ enum VideoLabel {
   behindTheScenes
 }
 
+enum Services {
+  nextSteps
+  watch
+  app
+  partners
+}
+
 model Video {
   id                     String               @id @default(uuid())
   label                  VideoLabel
@@ -128,6 +135,7 @@ model Video {
   images                 CloudflareImage[]
   cloudflareAssets       CloudflareR2[]
   VideoEdition           VideoEdition[]
+  services               Services[]           @default([nextSteps, watch, app, partners])
 
   @@index(label)
   @@index(childIds)
