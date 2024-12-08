@@ -19,14 +19,14 @@ import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../
 
 const videoStatuses = [
   { label: 'Published', value: 'published' },
-  { label: 'Unpublished', value: 'unpublished' }
+  { label: 'Draft', value: 'unpublished' }
 ]
 
 const videoLabels = [
   { label: 'Collection', value: 'collection' },
   { label: 'Episode', value: 'episode' },
   { label: 'Feature Film', value: 'featureFilm' },
-  { label: 'Segment', value: 'segment' },
+  { label: 'Clip', value: 'segment' },
   { label: 'Series', value: 'series' },
   { label: 'Short Film', value: 'shortFilm' },
   { label: 'Trailer', value: 'trailer' },
