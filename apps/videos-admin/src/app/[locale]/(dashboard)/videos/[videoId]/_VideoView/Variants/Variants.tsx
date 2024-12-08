@@ -45,7 +45,7 @@ export function Variants({
           boxProps={{
             sx: { p: 2, height: 'calc(100vh - 400px)' }
           }}
-          title={t('Variants')}
+          title={t('Audio Languages')}
           variant="outlined"
         >
           <FixedSizeList
