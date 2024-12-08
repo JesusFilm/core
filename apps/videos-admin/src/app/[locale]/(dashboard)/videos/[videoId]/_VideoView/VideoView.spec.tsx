@@ -189,7 +189,7 @@ describe('VideoView', () => {
     expect(screen.getAllByRole('tab')).toHaveLength(2)
   })
 
-  it('should not show video children if a video label is segment', async () => {
+  it('should not show video children if a video label is shortFilm', async () => {
     mockUseParams.mockReturnValue({ videoId: 'someId' })
     const result = jest.fn().mockReturnValue({
       data: {
@@ -212,7 +212,7 @@ describe('VideoView', () => {
     expect(screen.getAllByRole('tab')).toHaveLength(2)
   })
 
-  it('should not show video children if a video label is segment', async () => {
+  it('should not show video children if a video label is trailer', async () => {
     mockUseParams.mockReturnValue({ videoId: 'someId' })
     const result = jest.fn().mockReturnValue({
       data: {
@@ -235,7 +235,7 @@ describe('VideoView', () => {
     expect(screen.getAllByRole('tab')).toHaveLength(2)
   })
 
-  it('should not show video children if a video label is segment', async () => {
+  it('should not show video children if a video label is behindTheScenes', async () => {
     mockUseParams.mockReturnValue({ videoId: 'someId' })
     const result = jest.fn().mockReturnValue({
       data: {

@@ -13,11 +13,11 @@ import { ReactElement, SyntheticEvent, useState } from 'react'
 import { PublishedChip } from '../../../../../../components/PublishedChip'
 import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
 
-import { VideoChildren } from './VideoChildren'
 import { Metadata } from './Metadata'
 import { TabContainer } from './Tabs/TabContainer'
 import { TabLabel } from './Tabs/TabLabel'
 import { Variants } from './Variants'
+import { VideoChildren } from './VideoChildren'
 import { getVideoChildrenLabel } from './VideoChildren/getVideoChildrenLabel'
 
 export function VideoView(): ReactElement {
