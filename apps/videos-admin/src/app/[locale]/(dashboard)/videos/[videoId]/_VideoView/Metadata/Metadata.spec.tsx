@@ -34,7 +34,7 @@ describe('Metadata', () => {
 
     expect(screen.getByText('Information')).toBeInTheDocument()
     expect(screen.getByText('Image')).toBeInTheDocument()
-    expect(screen.getByText('Snippet')).toBeInTheDocument()
+    expect(screen.getByText('Short Description')).toBeInTheDocument()
     expect(screen.getByText('Description')).toBeInTheDocument()
     expect(screen.getByText('Study Questions')).toBeInTheDocument()
   })
