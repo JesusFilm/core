@@ -8,6 +8,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 // Used to resolve dynamic viewport height on Safari
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
+import { FeedbackBanner } from '../FeedbackBanner'
 import { Footer } from '../Footer'
 import { Header } from '../Header'
 
@@ -45,6 +46,7 @@ export function PageWrapper({
             themeMode={ThemeMode.dark}
           >
             {hero}
+            <FeedbackBanner />
           </ThemeProvider>
         </Container>
         <Box sx={{ flexGrow: 1 }}>{children}</Box>
