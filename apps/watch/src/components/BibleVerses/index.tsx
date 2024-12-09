@@ -22,7 +22,7 @@ import HelpIcon from '@mui/icons-material/Help'
 import { VideoPlayerProps } from './VideoPlayer' // Import the new component
 import Grid from '@mui/material/Grid'
 import { useTheme } from '@mui/material/styles'
-import { VideoModal } from './VideoModal'
+import { VideoSingle } from '../VideoSingle'
 
 // import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
 // import { SearchBar } from '@core/journeys/ui/SearchBar'
@@ -395,7 +395,8 @@ export function BibleVerses(): ReactElement {
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null)
   const [selectedVideoSrc, setSelectedVideoSrc] = useState<string>('')
   const [selectedVideoPlayer, setSelectedVideoPlayer] =
-    useState<React.ReactElement | null>(null)
+    useState<ReactElement | null>(null)
+  const [sourceRect, setSourceRect] = useState<DOMRect | null>(null)
 
   const handleAnswerClick = () => {
     setAnswerClicked(true)
@@ -404,6 +405,30 @@ export function BibleVerses(): ReactElement {
   const handleModalClose = () => {
     setModalOpen(false)
     setSelectedVideoId(null)
+  }
+
+  const handleMuteToggle = () => {
+    if (selectedVideoId) {
+      const videoElement = document.getElementById(
+        `video-${selectedVideoId}-modal`
+      ) as HTMLVideoElement
+      if (videoElement) {
+        videoElement.muted = !videoElement.muted
+        setIsMuted(videoElement.muted)
+      }
+    }
+  }
+
+  const handleVideoClick = (
+    video: VideoContent,
+    rect: DOMRect,
+    videoElement: ReactElement
+  ) => {
+    setSourceRect(rect)
+    setModalOpen(true)
+    setSelectedVideoId(video.id)
+    setSelectedVideoSrc(video.src)
+    setSelectedVideoPlayer(videoElement)
   }
 
   useEffect(() => {
@@ -493,17 +518,6 @@ export function BibleVerses(): ReactElement {
   }
 
   const theme = useTheme()
-
-  const handleVideoClick = (
-    videoId: string,
-    videoSrc: string,
-    videoElement: React.ReactElement
-  ) => {
-    setModalOpen(true)
-    setSelectedVideoId(videoId)
-    setSelectedVideoSrc(videoSrc)
-    setSelectedVideoPlayer(videoElement)
-  }
 
   return (
     <ThemeProvider
@@ -1007,65 +1021,6 @@ export function BibleVerses(): ReactElement {
                   Discover how faith and spirituality can provide comfort and
                   strength during challenging times of depression.
                 </Typography>
-
-                {/* <Typography variant="h5" sx={{ opacity: 0.8, mt: 6 }}>Did God answer to Jesus?</Typography>
-                            <Box sx={{ mt: 3, maxHeight: 120, overflowY: 'auto' }}>
-                                <motion.div
-                                    initial={{ opacity: 1 }}
-                                    animate={{ opacity: answerClicked ? 0 : 1 }}
-                                    transition={{ duration: 2 }}
-                                    style={{ display: answerClicked ? 'none' : 'block' }}
-                                >
-                                    <Stack spacing={2} direction="row" sx={{ pb: 1 }}>
-                                        <Chip
-                                            icon={<CheckCircleIcon />}
-                                            label="Yes"
-                                            variant="outlined"
-                                            clickable
-                                            onClick={handleAnswerClick}
-                                        />
-                                        <Chip
-                                            icon={<CancelIcon />}
-                                            label="No"
-                                            variant="outlined"
-                                            clickable
-                                            onClick={handleAnswerClick}
-                                        />
-                                        <Chip
-                                            icon={<HelpIcon />}
-                                            label="Not sure"
-                                            variant="outlined"
-                                            clickable
-                                            onClick={handleAnswerClick}
-                                        />
-                                    </Stack>
-                                </motion.div>
-
-                                {answerClicked && (
-                                    <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ duration: 2.5 }}
-                                    >
-                                        <Typography variant="subtitle1" sx={{ mt: 2, mb: 3 }}>
-                                            <strong>🤔 Not really.</strong> <br />Find out how it related to your expectations from God and what to expect
-                                        </Typography>
-
-                                        <motion.div
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            transition={{ duration: 3.5 }}
-                                        >
-                                            <Chip
-                                                icon={<PlayArrowIcon />}
-                                                label="Watch Now"
-                                                variant="outlined"
-                                                clickable
-                                            />
-                                        </motion.div>
-                                    </motion.div>
-                                )}
-                            </Box> */}
               </Box>
             </Box>
 
@@ -1563,14 +1518,17 @@ export function BibleVerses(): ReactElement {
             </Box>
           </Container>
         </Box>
-        <VideoModal
+        <VideoSingle
           open={modalOpen}
           onClose={handleModalClose}
           videoId={selectedVideoId}
           videoSrc={selectedVideoSrc}
+          sourceRect={sourceRect}
+          onMuteClick={handleMuteToggle}
+          isMuted={isMuted}
         >
           {selectedVideoPlayer}
-        </VideoModal>
+        </VideoSingle>
       </VideoProvider>
     </ThemeProvider>
   )

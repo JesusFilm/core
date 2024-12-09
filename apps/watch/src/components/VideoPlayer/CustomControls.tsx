@@ -84,7 +84,10 @@ export function CustomControls({
   }, [handleTimeUpdate, handlePlay, handlePause])
 
   // Handle play/pause toggle
-  const handlePlayPause = useCallback(() => {
+  const handlePlayPause = useCallback((event: React.MouseEvent) => {
+    // Stop event propagation to prevent the video click handler from firing
+    event.stopPropagation()
+
     if (videoRef.current) {
       if (videoRef.current.paused) {
         videoRef.current.play()
@@ -139,43 +142,46 @@ export function CustomControls({
         flexDirection: 'column',
         gap: 2,
         pointerEvents: 'auto',
-        opacity: isHorizontal ? (showControls ? 1 : 0) : 1, // Always show for non-horizontal
+        opacity: isHorizontal ? (showControls ? 1 : 0) : 1,
         transition: 'opacity 0.3s ease'
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <IconButton
-          onClick={handlePlayPause}
-          sx={{
-            color: 'white',
-            padding: '12px',
-            marginTop: '-4px',
-            marginLeft: '-8px',
-            '& svg': {
-              fontSize: '32px'
-            }
-          }}
-        >
-          {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
-        </IconButton>
-        <Box sx={{ flex: 1, mr: 2 }}>
-          <Slider
-            value={progress}
-            onChange={handleSeek}
+        <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+          <IconButton
+            onClick={handlePlayPause}
             sx={{
               color: 'white',
-              height: 2,
-              padding: '15px 0',
-              '& .MuiSlider-thumb': {
-                width: 12,
-                height: 12,
-                transition: '0.3s cubic-bezier(.47,1.64,.41,.8)',
-                '&:hover': {
-                  boxShadow: '0 0 0 8px rgba(255,255,255,0.16)'
-                }
+              padding: '12px',
+              marginLeft: '-8px',
+              '& svg': {
+                fontSize: '32px'
               }
             }}
-          />
+          >
+            {isPlaying ? <PauseIcon /> : <PlayArrowIcon />}
+          </IconButton>
+          {!isPlaying && (
+            <Box sx={{ flex: 1, marginBottom: '-6px', px: 2 }}>
+              <Slider
+                value={progress}
+                onChange={handleSeek}
+                sx={{
+                  color: 'white',
+                  height: 2,
+                  padding: '15px 0',
+                  '& .MuiSlider-thumb': {
+                    width: 12,
+                    height: 12,
+                    transition: '0.3s cubic-bezier(.47,1.64,.41,.8)',
+                    '&:hover': {
+                      boxShadow: '0 0 0 8px rgba(255,255,255,0.16)'
+                    }
+                  }
+                }}
+              />
+            </Box>
+          )}
         </Box>
       </Box>
     </Box>

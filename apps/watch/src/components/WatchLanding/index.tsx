@@ -19,10 +19,11 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CancelIcon from '@mui/icons-material/Cancel'
 import HelpIcon from '@mui/icons-material/Help'
-import { VideoModal } from '../VideoModal'
+import { VideoSingle } from '../VideoSingle'
 import { VideoProvider, useVideo } from '../VideoContext'
 import { VideoType, type VideoContent } from '../VideoTypes'
 import { VideoPlayer } from '../VideoPlayer'
+import { VideoBox } from '../VideoBox'
 
 // import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
 // import { SearchBar } from '@core/journeys/ui/SearchBar'
@@ -166,7 +167,7 @@ const sampleVideos: VideoContent[] = [
   {
     id: 'main-video',
     type: VideoType.VERTICAL_CLIP,
-    src: 'https://cdn-std.droplr.net/files/acc_760170/g6nWJD',
+    src: 'https://cdn-std.droplr.net/files/acc_760170/2WvBUX', //'https://cdn-std.droplr.net/files/acc_760170/g6nWJD',
     poster:
       'https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg',
     title: 'Why Does Daniel Dream About Monsters?',
@@ -210,6 +211,7 @@ export function WatchLanding(): ReactElement {
 
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(true)
+  const [modalMuted, setModalMuted] = useState(false)
   const [bgColors, setBgColors] = useState<string[]>(['#303030', '#303030']) // Default colors
 
   const videoRefs = useRef<Map<string, HTMLVideoElement>>(new Map())
@@ -284,6 +286,8 @@ export function WatchLanding(): ReactElement {
     setSelectedVideoPlayer(videoElement)
   }
 
+  const [playingVideos, setPlayingVideos] = useState<Set<string>>(new Set())
+
   const handlePlayPause = (video: VideoContent) => {
     const videoElement = videoRefs.current.get(video.id)
     if (videoElement) {
@@ -298,13 +302,26 @@ export function WatchLanding(): ReactElement {
           onMuteToggle={handleMuteToggle}
         />
       )
+      setModalMuted(false)
     }
   }
 
   const toggleMute = () => {
-    const video = document.getElementById('video-player') as HTMLVideoElement
-    video.muted = !video.muted
-    setIsMuted(video.muted)
+    const videoElement = videoRefs.current.get(sampleVideos[0].id)
+    if (videoElement) {
+      handleVideoClick(
+        sampleVideos[0],
+        videoElement.getBoundingClientRect(),
+        <VideoPlayer
+          video={sampleVideos[0]}
+          autoPlay
+          muted={false}
+          isModal={true}
+          onMuteToggle={handleMuteToggle}
+        />
+      )
+      setModalMuted(false)
+    }
   }
 
   const animationVariants = {
@@ -326,6 +343,7 @@ export function WatchLanding(): ReactElement {
   const handleModalClose = () => {
     setModalOpen(false)
     setSelectedVideoId(null)
+    setModalMuted(false)
   }
 
   const handleMuteToggle = () => {
@@ -335,16 +353,45 @@ export function WatchLanding(): ReactElement {
       ) as HTMLVideoElement
       if (videoElement) {
         videoElement.muted = !videoElement.muted
-        setIsMuted(videoElement.muted)
+        setModalMuted(videoElement.muted)
       }
     }
   }
+
+  // Replace the previous useEffect with this one
+  useEffect(() => {
+    const videoElements = Array.from(videoRefs.current.entries())
+
+    const handlePlay = (videoId: string) => () => {
+      setPlayingVideos((prev) => new Set(prev).add(videoId))
+    }
+
+    const handlePause = (videoId: string) => () => {
+      setPlayingVideos((prev) => {
+        const newSet = new Set(prev)
+        newSet.delete(videoId)
+        return newSet
+      })
+    }
+
+    videoElements.forEach(([videoId, video]) => {
+      video.addEventListener('play', handlePlay(videoId))
+      video.addEventListener('pause', handlePause(videoId))
+    })
+
+    return () => {
+      videoElements.forEach(([videoId, video]) => {
+        video.removeEventListener('play', handlePlay(videoId))
+        video.removeEventListener('pause', handlePause(videoId))
+      })
+    }
+  }, [])
 
   return (
     <ThemeProvider
       themeName={ThemeName.website}
       themeMode={ThemeMode.dark}
-      nested
+      //   nested
     >
       <VideoProvider>
         <Box
@@ -388,143 +435,22 @@ export function WatchLanding(): ReactElement {
                 />
               </motion.div>
 
-              <Box
-                sx={{
-                  width: '100%',
-                  maxWidth: '400px',
-                  aspectRatio: '9/16',
-                  backgroundColor: '#000',
-                  borderRadius: '16px',
-                  overflow: 'hidden',
-                  mb: 6,
-                  position: 'relative',
-                  boxShadow: '2px 8px 8px rgba(0, 0, 0, 0.2)',
-                  '&::after': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    borderRadius: 'inherit',
-                    boxShadow: 'inset 0 0 1px rgba(255, 255, 255, 0.4)', // Inner glow effect
-                    zIndex: 1,
-                    pointerEvents: 'none'
+              <VideoBox
+                video={sampleVideos[0]}
+                onPlayPause={handlePlayPause}
+                onMuteToggle={toggleMute}
+                isMuted={isMuted}
+                isPlaying={playingVideos.has(sampleVideos[0].id)}
+                videoRef={(el) => {
+                  if (el) {
+                    videoRefs.current.set(sampleVideos[0].id, el)
                   }
                 }}
-              >
-                <Box
-                  component="video"
-                  ref={(el) => {
-                    if (el) {
-                      videoRefs.current.set(sampleVideos[0].id, el)
-                    }
-                  }}
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: isPlaying ? 'none' : 'block',
-                    '&::-webkit-media-controls': {
-                      display: 'none !important'
-                    },
-                    '&::-webkit-media-controls-enclosure': {
-                      display: 'none !important'
-                    }
-                  }}
-                  playsInline
-                  webkit-playsinline="true"
-                  x-webkit-airplay="deny"
-                  disablePictureInPicture
-                  controlsList="nodownload nofullscreen noremoteplayback"
-                  muted
-                  autoPlay
-                >
-                  <source src={sampleVideos[0].src} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </Box>
-                <Box
-                  onClick={() => handlePlayPause(sampleVideos[0])}
-                  sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    zIndex: 2,
-                    width: '80px',
-                    height: '80px',
-                    backgroundColor: 'rgba(0,0,0,0.6)',
-                    borderRadius: '50%',
-                    display: isPlaying ? 'none' : 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    transition: 'opacity 0.2s',
-                    opacity: 1,
-                    '&:hover': {
-                      opacity: 0.8
-                    }
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 0,
-                      height: 0,
-                      borderTop: '20px solid transparent',
-                      borderBottom: '20px solid transparent',
-                      borderLeft: '30px solid white',
-                      marginLeft: '5px'
-                    }}
-                  />
-                </Box>
-                <Chip
-                  label="NEW SHOW"
-                  sx={{
-                    position: 'absolute',
-                    top: 16,
-                    left: 16,
-                    zIndex: 3,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    color: 'white'
-                  }}
-                />
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: 16,
-                    right: 16,
-                    zIndex: 3,
-                    cursor: 'pointer'
-                  }}
-                  onClick={toggleMute}
-                >
-                  {isMuted ? (
-                    <VolumeOffIcon sx={{ color: 'white' }} />
-                  ) : (
-                    <VolumeUpIcon sx={{ color: 'white' }} />
-                  )}
-                </Box>
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    bottom: 36,
-                    left: 26,
-                    right: 26,
-                    zIndex: 3,
-                    color: 'white'
-                  }}
-                >
-                  <Typography variant="overline1" sx={{ opacity: 0.7 }}>
-                    Dragons in the Bible
-                  </Typography>
-                  <Typography variant="h4" mb={2}>
-                    {sampleVideos[0].title}
-                  </Typography>
-                  <Typography variant="body1">
-                    {sampleVideos[0].description}
-                  </Typography>
-                </Box>
-              </Box>
+                title={sampleVideos[0].title ?? ''}
+                subtitle="Dragons in the Bible"
+                description={sampleVideos[0].description ?? ''}
+                chipLabel="NEW SHOW"
+              />
 
               <SectionHeader
                 primaryText="Your Next Watch"
@@ -649,383 +575,44 @@ export function WatchLanding(): ReactElement {
                 Identifying the Roots of Depression
               </Typography>
 
-              <Box
-                sx={{
-                  width: '100%',
-                  maxWidth: '400px',
-                  aspectRatio: '9/16',
-                  backgroundColor: '#000',
-                  borderRadius: '16px',
-                  overflow: 'hidden',
-                  mb: 6,
-                  position: 'relative',
-                  boxShadow: '2px 8px 8px rgba(0, 0, 0, 0.2)',
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    borderRadius: 'inherit',
-                    backdropFilter: 'blur(10px)', // Apply blur effect
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)', // Semi-transparent overlay
-                    zIndex: 1,
-                    pointerEvents: 'none',
-                    mask: 'radial-gradient(transparent 60%, rgba(0,0,0,0.5) 80%, black 90%)' // Mask to leave center clear
-                  },
-                  '&::after': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    borderRadius: 'inherit',
-                    zIndex: 1,
-                    pointerEvents: 'none',
-                    mask: 'radial-gradient(circle, transparent 40%, black 60%)' // Mask to leave center clear
+              <VideoBox
+                video={sampleVideos[1]}
+                onPlayPause={handlePlayPause}
+                onMuteToggle={toggleMute}
+                isMuted={isMuted}
+                isPlaying={playingVideos.has(sampleVideos[1].id)}
+                videoRef={(el) => {
+                  if (el) {
+                    videoRefs.current.set(sampleVideos[1].id, el)
                   }
                 }}
-              >
-                <Box
-                  component="video"
-                  ref={(el) => {
-                    if (el) {
-                      videoRefs.current.set(sampleVideos[1].id, el)
-                    }
-                  }}
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: isPlaying ? 'none' : 'block',
-                    '&::-webkit-media-controls': {
-                      display: 'none !important'
-                    },
-                    '&::-webkit-media-controls-enclosure': {
-                      display: 'none !important'
-                    }
-                  }}
-                  playsInline
-                  webkit-playsinline="true"
-                  x-webkit-airplay="deny"
-                  disablePictureInPicture
-                  controlsList="nodownload nofullscreen noremoteplayback"
-                  muted
-                  autoPlay
-                >
-                  <source
-                    src="https://cdn-std.droplr.net/files/acc_760170/dzSp48"
-                    type="video/mp4"
-                  />
-                  Your browser does not support the video tag.
-                </Box>
-                <Box
-                  onClick={() => handlePlayPause(sampleVideos[1])}
-                  sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    zIndex: 2,
-                    width: '80px',
-                    height: '80px',
-                    backgroundColor: 'rgba(0,0,0,0.6)',
-                    borderRadius: '50%',
-                    display: isPlaying ? 'none' : 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    transition: 'opacity 0.2s',
-                    opacity: 1,
-                    '&:hover': {
-                      opacity: 0.8
-                    }
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 0,
-                      height: 0,
-                      borderTop: '20px solid transparent',
-                      borderBottom: '20px solid transparent',
-                      borderLeft: '30px solid white',
-                      marginLeft: '5px'
-                    }}
-                  />
-                </Box>
-                <Chip
-                  label="TESTIMONY"
-                  sx={{
-                    position: 'absolute',
-                    top: 16,
-                    left: 16,
-                    zIndex: 3,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    color: 'white',
-                    letterSpacing: 1
-                  }}
-                />
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: 16,
-                    right: 16,
-                    zIndex: 3,
-                    cursor: 'pointer'
-                  }}
-                  onClick={toggleMute}
-                >
-                  {isMuted ? (
-                    <VolumeOffIcon sx={{ color: 'white' }} />
-                  ) : (
-                    <VolumeUpIcon sx={{ color: 'white' }} />
-                  )}
-                </Box>
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    bottom: 36,
-                    left: 26,
-                    right: 26,
-                    zIndex: 3,
-                    color: 'white'
-                  }}
-                >
-                  <Typography variant="overline1" sx={{ opacity: 0.5 }}>
-                    Trusting God with Your Pain:
-                  </Typography>
-                  <Typography variant="h4" mb={2}>
-                    Healing Emotional Scars Through Faith
-                  </Typography>
-                  <Typography variant="body1">
-                    Discover how faith and spirituality can provide comfort and
-                    strength during challenging times of depression.
-                  </Typography>
-                </Box>
-              </Box>
+                title="Healing Emotional Scars Through Faith"
+                subtitle="Trusting God with Your Pain:"
+                description="Discover how faith and spirituality can provide comfort and strength during challenging times of depression."
+                chipLabel="TESTIMONY"
+              />
 
               <SectionHeader
                 primaryText="Real Story, Real Emotions"
                 secondaryText="Bible is shockingly honest about our condition"
               />
 
-              <Box
-                sx={{
-                  width: '100%',
-                  maxWidth: '400px',
-                  aspectRatio: '9/16',
-                  backgroundColor: '#000',
-                  borderRadius: '16px',
-                  overflow: 'hidden',
-                  mb: 6,
-                  position: 'relative',
-                  boxShadow: '2px 8px 8px rgba(0, 0, 0, 0.2)',
-                  '&::before': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    borderRadius: 'inherit',
-                    backdropFilter: 'blur(10px)', // Apply blur effect
-                    backgroundColor: 'rgb(0 0 0 / 70%)', // Semi-transparent overlay
-                    zIndex: 1,
-                    pointerEvents: 'none',
-                    mask: 'radial-gradient(circle at left -60%, transparent 60%, rgba(0,0,0,0.5) 80%, black 90%), radial-gradient(circle at left 80%, transparent 60%, rgba(0,0,0,0.5) 80%, black 90%) ', // Mask to leave center clear
-                    boxShadow: 'inset 0 0 60px black'
-                  },
-                  '&::after': {
-                    content: '""',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    borderRadius: 'inherit',
-                    zIndex: 1,
-                    pointerEvents: 'none',
-                    boxShadow: 'inset 0 0 1px rgba(255, 255, 255, 0.3)'
+              <VideoBox
+                video={sampleVideos[2]}
+                onPlayPause={handlePlayPause}
+                onMuteToggle={toggleMute}
+                isMuted={isMuted}
+                isPlaying={playingVideos.has(sampleVideos[2].id)}
+                videoRef={(el) => {
+                  if (el) {
+                    videoRefs.current.set(sampleVideos[2].id, el)
                   }
                 }}
-              >
-                <Box
-                  component="video"
-                  ref={(el) => {
-                    if (el) {
-                      videoRefs.current.set(sampleVideos[2].id, el)
-                    }
-                  }}
-                  sx={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: isPlaying ? 'none' : 'block',
-                    '&::-webkit-media-controls': {
-                      display: 'none !important'
-                    },
-                    '&::-webkit-media-controls-enclosure': {
-                      display: 'none !important'
-                    }
-                  }}
-                  playsInline
-                  webkit-playsinline="true"
-                  x-webkit-airplay="deny"
-                  disablePictureInPicture
-                  controlsList="nodownload nofullscreen noremoteplayback"
-                  muted
-                  autoPlay
-                >
-                  <source
-                    src="https://cdn-std.droplr.net/files/acc_760170/BIVSDq"
-                    type="video/mp4"
-                  />
-                  Your browser does not support the video tag.
-                </Box>
-                <Box
-                  onClick={() => handlePlayPause(sampleVideos[2])}
-                  sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    zIndex: 2,
-                    width: '80px',
-                    height: '80px',
-                    backgroundColor: 'rgba(0,0,0,0.6)',
-                    borderRadius: '50%',
-                    display: isPlaying ? 'none' : 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    cursor: 'pointer',
-                    transition: 'opacity 0.2s',
-                    opacity: 1,
-                    '&:hover': {
-                      opacity: 0.8
-                    }
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 0,
-                      height: 0,
-                      borderTop: '20px solid transparent',
-                      borderBottom: '20px solid transparent',
-                      borderLeft: '30px solid white',
-                      marginLeft: '5px'
-                    }}
-                  />
-                </Box>
-                <Chip
-                  label="SHORT VIDEO"
-                  sx={{
-                    position: 'absolute',
-                    top: 16,
-                    left: 16,
-                    zIndex: 3,
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    color: 'white'
-                  }}
-                />
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: 16,
-                    right: 16,
-                    zIndex: 3,
-                    cursor: 'pointer'
-                  }}
-                  onClick={toggleMute}
-                >
-                  {isMuted ? (
-                    <VolumeOffIcon sx={{ color: 'white' }} />
-                  ) : (
-                    <VolumeUpIcon sx={{ color: 'white' }} />
-                  )}
-                </Box>
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    bottom: 36,
-                    left: 26,
-                    right: 26,
-                    zIndex: 3,
-                    color: 'white'
-                  }}
-                >
-                  <Typography variant="overline1" sx={{ opacity: 0.7 }}>
-                    Jesus cried these words before the cross
-                  </Typography>
-                  <Typography variant="h5" variantMapping={{ h5: 'h3' }} mb={2}>
-                    Let this cup <em>of sorrow</em> pass from me&hellip;
-                  </Typography>
-                  <Typography variant="body1">
-                    Discover how faith and spirituality can provide comfort and
-                    strength during challenging times of depression.
-                  </Typography>
-
-                  {/* <Typography variant="h5" sx={{ opacity: 0.8, mt: 6 }}>Did God answer to Jesus?</Typography>
-                                <Box sx={{ mt: 3, maxHeight: 120, overflowY: 'auto' }}>
-                                    <motion.div
-                                        initial={{ opacity: 1 }}
-                                        animate={{ opacity: answerClicked ? 0 : 1 }}
-                                        transition={{ duration: 2 }}
-                                        style={{ display: answerClicked ? 'none' : 'block' }}
-                                    >
-                                        <Stack spacing={2} direction="row" sx={{ pb: 1 }}>
-                                            <Chip
-                                                icon={<CheckCircleIcon />}
-                                                label="Yes"
-                                                variant="outlined"
-                                                clickable
-                                                onClick={handleAnswerClick}
-                                            />
-                                            <Chip
-                                                icon={<CancelIcon />}
-                                                label="No"
-                                                variant="outlined"
-                                                clickable
-                                                onClick={handleAnswerClick}
-                                            />
-                                            <Chip
-                                                icon={<HelpIcon />}
-                                                label="Not sure"
-                                                variant="outlined"
-                                                clickable
-                                                onClick={handleAnswerClick}
-                                            />
-                                        </Stack>
-                                    </motion.div>
-
-                                    {answerClicked && (
-                                        <motion.div
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            transition={{ duration: 2.5 }}
-                                        >
-                                            <Typography variant="subtitle1" sx={{ mt: 2, mb: 3 }}>
-                                                <strong>🤔 Not really.</strong> <br />Find out how it related to your expectations from God and what to expect
-                                            </Typography>
-
-                                            <motion.div
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                transition={{ duration: 3.5 }}
-                                            >
-                                                <Chip
-                                                    icon={<PlayArrowIcon />}
-                                                    label="Watch Now"
-                                                    variant="outlined"
-                                                    clickable
-                                                />
-                                            </motion.div>
-                                        </motion.div>
-                                    )}
-                                </Box> */}
-                </Box>
-              </Box>
+                title="Let this cup of sorrow pass from me…"
+                subtitle="Jesus cried these words before the cross"
+                description="Discover how faith and spirituality can provide comfort and strength during challenging times of depression."
+                chipLabel="SHORT VIDEO"
+              />
 
               <SectionHeader
                 primaryText="Movies for you"
@@ -1265,7 +852,7 @@ export function WatchLanding(): ReactElement {
                     sx={{ mt: 0, mb: 0, opacity: 0.8, color: '#fff' }}
                   >
                     Fresh Perspective Series — 15-minute episodes tackling
-                    faith, science, suffering, and Jesus’ story. Start your
+                    faith, science, suffering, and Jesus' story. Start your
                     journey with NUA!
                   </Typography>
                 </Box>
@@ -1521,17 +1108,18 @@ export function WatchLanding(): ReactElement {
               </Box>
             </Container>
           </Box>
-          <VideoModal
+          <VideoSingle
             open={modalOpen}
             onClose={handleModalClose}
             videoId={selectedVideoId}
             videoSrc={selectedVideoSrc}
             sourceRect={sourceRect}
             onMuteClick={handleMuteToggle}
-            isMuted={isMuted}
+            isMuted={modalMuted}
+            disableDrag
           >
             {selectedVideoPlayer}
-          </VideoModal>
+          </VideoSingle>
         </Box>
       </VideoProvider>
     </ThemeProvider>

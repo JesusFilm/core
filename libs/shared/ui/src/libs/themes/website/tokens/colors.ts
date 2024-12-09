@@ -5,7 +5,7 @@ import {
 
 // TODO: clarify palette with UX
 const palette = {
-  0: '#FFFFFF'
+  0: '#9898A3'
 }
 
 export const websiteColorsLight: Required<Pick<ThemeOptions, 'palette'>> = {
@@ -41,17 +41,22 @@ export const websiteColorsDark: Required<Pick<ThemeOptions, 'palette'>> = {
   palette: {
     mode: 'dark',
     background: { default: '#131111', paper: '#303030' },
-    primary: websiteColorsLight.palette.primary,
+    primary: {
+      main: '#EF3340',
+      light: '#F8485E',
+      dark: '#A4343A',
+      contrastText: '#9898A3'
+    },
     secondary: {
       main: '#BBBCBC',
       light: '#EDEDED',
       dark: '#939494',
-      contrastText: palette[0]
+      contrastText: '#9898A3'
     },
     error: websiteColorsLight.palette.error,
     // TODO: Check this
     text: {
-      primary: palette[0],
+      primary: '#fff',
       secondary: '#4D4D4D',
       disabled: '#4D4D4D'
     }

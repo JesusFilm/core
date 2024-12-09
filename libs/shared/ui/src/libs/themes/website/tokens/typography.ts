@@ -129,7 +129,7 @@ export const typography = {
     marginBottom: '12px',
     [baseBreakpoints.breakpoints.up('md')]: {
       lineHeight: 1.2,
-      fontSize: 16,
+      fontSize: 16
     }
   },
   overline2: {

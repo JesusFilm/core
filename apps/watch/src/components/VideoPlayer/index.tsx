@@ -26,7 +26,8 @@ export function VideoPlayer({
   autoPlay = false,
   muted = true,
   controls = false,
-  isModal = false
+  isModal = false,
+  onMuteToggle
 }: VideoPlayerProps): ReactElement {
   const isVertical =
     video.type === VideoType.VERTICAL_CLIP ||
@@ -63,7 +64,22 @@ export function VideoPlayer({
     }
   }, [])
 
-  // Effect to handle unmuting in modal
+  // Add volume change listener
+  useEffect(() => {
+    const videoElement = videoRef.current
+    if (videoElement) {
+      const handleVolumeChange = () => {
+        setIsMuted(videoElement.muted)
+      }
+
+      videoElement.addEventListener('volumechange', handleVolumeChange)
+      return () => {
+        videoElement.removeEventListener('volumechange', handleVolumeChange)
+      }
+    }
+  }, [])
+
+  // Update mute state when modal opens
   useEffect(() => {
     if (isModal && videoRef.current) {
       videoRef.current.muted = false
@@ -88,6 +104,13 @@ export function VideoPlayer({
       }
       const rect = containerRef.current.getBoundingClientRect()
       onVideoClick(video, rect)
+    } else if (isModal && videoRef.current) {
+      // Toggle play/pause when clicking video in modal
+      if (videoRef.current.paused) {
+        videoRef.current.play()
+      } else {
+        videoRef.current.pause()
+      }
     }
   }
 
@@ -95,8 +118,9 @@ export function VideoPlayer({
     if (videoRef.current) {
       videoRef.current.muted = !videoRef.current.muted
       setIsMuted(videoRef.current.muted)
+      onMuteToggle?.() // Call parent handler if provided
     }
-  }, [])
+  }, [onMuteToggle])
 
   return (
     <Box sx={{ position: 'relative' }}>
