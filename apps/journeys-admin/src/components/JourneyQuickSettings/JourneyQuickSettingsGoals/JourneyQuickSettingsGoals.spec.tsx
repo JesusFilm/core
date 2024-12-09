@@ -1,6 +1,5 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import {
   ActiveCanvasDetailsDrawer,
@@ -9,19 +8,19 @@ import {
   EditorProvider,
   EditorState
 } from '@core/journeys/ui/EditorProvider'
-
-import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields as Blocks } from '../../../../__generated__/BlockFields'
 import { GetAllTeamHosts_hosts as Host } from '../../../../__generated__/GetAllTeamHosts'
-import { JourneyQuickSettingsGoals } from './JourneyQuickSettingsGoals'
 import {
-  ButtonVariant,
   ButtonColor,
-  ButtonSize
-} from 'libs/journeys/ui/__generated__/globalTypes'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+  ButtonSize,
+  ButtonVariant
+} from '../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../libs/TestEditorState'
+
+import { JourneyQuickSettingsGoals } from './JourneyQuickSettingsGoals'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
