@@ -135,8 +135,7 @@ const sampleVideos: VideoContent[] = [
     id: 'main-video',
     type: VideoType.VERTICAL_CLIP,
     src: 'https://cdn-std.droplr.net/files/acc_760170/KSluj5',
-    poster:
-      'https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg',
+    poster: 'https://cdn-std.droplr.net/files/acc_760170/MKEjsL',
     title: 'Why Does Daniel Dream About Monsters?',
     description:
       "The four monstrous beasts in Daniel's dream represent four violent kingdoms. Daniel's dream continues with the arrival of the Son of Man, who shows up to destroy the beasts."
@@ -357,7 +356,9 @@ export function WatchLanding(): ReactElement {
   return (
     <>
       <Head>
-        <title>What's Behind Daniel's Monster-Filled Dream?</title>
+        <title>
+          What's Behind Daniel's Monster-Filled Dream? → Click to Explore!
+        </title>
         <meta
           name="description"
           content="Four monstrous beasts, four violent kingdoms. But then, the Son of Man arrives to conquer them all. 🔥 Dive into Daniel's dream and its epic meaning! 📖👑"
@@ -373,7 +374,7 @@ export function WatchLanding(): ReactElement {
         />
         <meta
           property="og:image"
-          content="https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg"
+          content="https://cdn-std.droplr.net/files/acc_760170/MKEjsL"
         />
         <meta
           property="og:video:url"

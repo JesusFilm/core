@@ -130,7 +130,7 @@ export function VideoPlayer({
           ...(isModal && (isVertical || video.type === VideoType.VIDEO_VERSE)
             ? {
                 height: '80vh',
-                width: '100vw',
+                width: '100%',
                 maxWidth: '100vw',
                 aspectRatio: '9/16',
                 borderRadius: 0,
@@ -142,8 +142,9 @@ export function VideoPlayer({
                 aspectRatio: isVertical ? '9/16' : '16/9',
                 borderRadius: '16px'
               }),
-          position: 'relative',
+
           backgroundColor: '#000',
+          position: 'relative',
           overflow: 'visible',
           cursor: isModal ? 'default' : 'pointer',
           margin: isModal ? 0 : '0 auto'
@@ -236,7 +237,7 @@ export function VideoPlayer({
           sx={{
             width: '100%',
             padding: 6,
-            background: '#000',
+            backgroundColor: isModal ? 'transparent' : '#000',
             color: 'white'
           }}
         >
