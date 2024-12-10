@@ -9,11 +9,12 @@ import { ReactElement, useState } from 'react'
 
 import { OrderedList } from '../../../../../../../components/OrderedList'
 import { OrderedItem } from '../../../../../../../components/OrderedList/OrderedItem'
-import { GetAdminVideo_AdminVideo_Children as VideoChildren } from '../../../../../../../libs/useAdminVideo'
+import { GetAdminVideo_AdminVideo_Children as AdminVideoChildren } from '../../../../../../../libs/useAdminVideo'
 import { Section } from '../Section'
 
 interface ChildrenProps {
-  childVideos: VideoChildren
+  childVideos: AdminVideoChildren
+  label: 'Items' | 'Clips' | 'Episodes'
 }
 
 export const VIDEO_CHILDREN_ORDER_UPDATE = graphql(`
@@ -27,7 +28,10 @@ export const VIDEO_CHILDREN_ORDER_UPDATE = graphql(`
   }
 `)
 
-export function Children({ childVideos }: ChildrenProps): ReactElement {
+export function VideoChildren({
+  childVideos,
+  label
+}: ChildrenProps): ReactElement {
   const pathname = usePathname()
   const router = useRouter()
   const t = useTranslations()
@@ -67,7 +71,7 @@ export function Children({ childVideos }: ChildrenProps): ReactElement {
 
   return (
     <Section
-      title={t('Children')}
+      title={label}
       boxProps={{
         sx: { p: 2, height: 'calc(100vh - 400px)', overflowY: 'scroll' }
       }}

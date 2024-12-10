@@ -33,6 +33,8 @@ describe('VariantCard', () => {
     )
 
     fireEvent.click(screen.getByRole('listitem'))
-    await waitFor(() => expect(screen.getByText('Slug')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByText('Downloads')).toBeInTheDocument()
+    )
   })
 })

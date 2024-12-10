@@ -4,12 +4,12 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
 import { usePathname, useRouter } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { GetAdminVideo_AdminVideo_Children as VideoChildren } from '../../../../../../../libs/useAdminVideo'
+import { GetAdminVideo_AdminVideo_Children as AdminVideoChildren } from '../../../../../../../libs/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
-import { Children } from './Children'
+import { VideoChildren } from './VideoChildren'
 
-const childVideos: VideoChildren =
+const childVideos: AdminVideoChildren =
   useAdminVideoMock['result']?.['data']?.['adminVideo']?.['children']
 
 jest.mock('next/navigation', () => ({
@@ -20,12 +20,12 @@ jest.mock('next/navigation', () => ({
 const mockRouter = useRouter as jest.MockedFunction<typeof useRouter>
 const mockUsePathname = usePathname as jest.MockedFunction<typeof usePathname>
 
-describe('Children', () => {
+describe('VideoChildren', () => {
   it('should render', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <Children childVideos={childVideos} />
+          <VideoChildren childVideos={childVideos} label="Clips" />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -43,7 +43,7 @@ describe('Children', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <Children childVideos={oneChildVideo} />
+          <VideoChildren childVideos={oneChildVideo} label="Clips" />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -55,11 +55,11 @@ describe('Children', () => {
     )
   })
 
-  it('should show fall back if no children', () => {
+  it('should show fall back if no video children', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <Children childVideos={[]} />
+          <VideoChildren childVideos={[]} label="Clips" />
         </MockedProvider>
       </NextIntlClientProvider>
     )

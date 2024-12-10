@@ -39,7 +39,7 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
               <VideoImageAlt videoImageAlts={video.imageAlt} />
             </Stack>
           </Section>
-          <Section title={t('Snippet')} variant="outlined">
+          <Section title={t('Short Description')} variant="outlined">
             <VideoSnippet videoSnippets={video.snippet} />
           </Section>
           <Section title={t('Description')} variant="outlined">

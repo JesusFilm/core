@@ -20,8 +20,7 @@ describe('VideoInformation', () => {
           id: '1_jf-0-0',
           slug: 'jesus',
           published: true,
-          label: 'featureFilm',
-          noIndex: false
+          label: 'featureFilm'
         }
       }
     },
@@ -35,8 +34,7 @@ describe('VideoInformation', () => {
           id: '1_jf-0-0',
           slug: 'jesus',
           published: true,
-          label: 'featureFilm',
-          noIndex: false
+          label: 'featureFilm'
         }
       }
     }))
@@ -90,9 +88,9 @@ describe('VideoInformation', () => {
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Status' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Unpublished' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Draft' }))
     expect(screen.getByRole('combobox', { name: 'Status' })).toHaveTextContent(
-      'Unpublished'
+      'Draft'
     )
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
   })
@@ -112,22 +110,6 @@ describe('VideoInformation', () => {
     expect(screen.getByRole('combobox', { name: 'Label' })).toHaveTextContent(
       'Short Film'
     )
-    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
-  })
-
-  it('should enable save button if no index has been changed', async () => {
-    render(
-      <MockedProvider>
-        <NextIntlClientProvider locale="en">
-          <VideoInformation video={mockVideo} />
-        </NextIntlClientProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByRole('checkbox', { name: 'No Index' })).not.toBeChecked()
-    fireEvent.click(screen.getByRole('checkbox', { name: 'No Index' }))
-    expect(screen.getByRole('checkbox', { name: 'No Index' })).toBeChecked()
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
   })
 
