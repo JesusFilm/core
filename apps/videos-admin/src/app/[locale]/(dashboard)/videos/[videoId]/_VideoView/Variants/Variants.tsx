@@ -26,7 +26,7 @@ export function Variants({
   const [variantToOpen, setVariantToOpen] = useState<string | null>(null)
 
   function getVariantSectionDimensions(): void {
-    const section = document.getElementById('Variants-section')
+    const section = document.getElementById('Audio Languages-section')
     if (section == null) return
     const { width, height } = section.getBoundingClientRect()
     setSize({ width, height })
@@ -51,6 +51,7 @@ export function Variants({
           boxProps={{
             sx: { p: 2, height: 'calc(100vh - 400px)' }
           }}
+          // if you change the title, change the element selected in the getVariantSectionDimensions function above
           title={t('Audio Languages')}
           variant="outlined"
         >

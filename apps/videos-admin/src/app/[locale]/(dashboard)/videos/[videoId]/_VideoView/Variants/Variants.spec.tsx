@@ -70,4 +70,17 @@ describe('Variants', () => {
       ).not.toBeInTheDocument()
     )
   })
+
+  it('should have correct id for the Section element so correct virtualization dimensions can be calculated', async () => {
+    render(
+      <MockedProvider>
+        <NextIntlClientProvider locale="en">
+          <Variants variants={mockVideoVariants} />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    const section = document.getElementById('Audio Languages-section')
+    expect(section).toBeInTheDocument()
+  })
 })
