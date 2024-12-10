@@ -24,7 +24,7 @@ import { VideoProvider, useVideo } from '../VideoContext'
 import { VideoType, type VideoContent } from '../VideoTypes'
 import { VideoPlayer } from '../VideoPlayer'
 import { VideoBox } from '../VideoBox'
-import { SectionHeader } from './SectionHeader'
+import { SectionHeader } from '../SectionHeader'
 import Head from 'next/head'
 
 // import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'

@@ -17,7 +17,7 @@ import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import IosShareIcon from '@mui/icons-material/IosShare'
 import { styled } from '@mui/material/styles'
 import { VideoSlide } from './WatchLanding/VideoSlide'
-import { SectionHeader } from './WatchLanding/SectionHeader'
+import { SectionHeader } from './SectionHeader'
 
 interface VideoSingleProps {
   open: boolean
@@ -183,7 +183,8 @@ export function VideoSingle({
         onTouchEnd: handleTouchEnd,
         onScroll: handleScroll,
         sx: {
-          backgroundColor: 'background.default',
+          //   backgroundColor: 'background.default',
+
           backgroundImage: 'none',
           WebkitOverflowScrolling: 'touch',
           position: 'relative',
