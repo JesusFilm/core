@@ -61,6 +61,22 @@ export const GET_JOURNEY_ANALYTICS = gql`
         date: $date
         limit: $limit
         page: $page
+        filters: "visit:utm_source!=ns-qr-code"
+      }
+    ) {
+      property
+      visitors
+    }
+    journeyUtmCampaign: journeysPlausibleStatsBreakdown(
+      id: $id
+      idType: databaseId
+      where: {
+        property: "visit:utm_campaign"
+        period: $period
+        date: $date
+        limit: $limit
+        page: $page
+        filters: "visit:utm_source==ns-qr-code"
       }
     ) {
       property
