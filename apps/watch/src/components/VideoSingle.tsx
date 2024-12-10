@@ -1,4 +1,5 @@
 import React, { ReactElement, useEffect, useState, TouchEvent } from 'react'
+
 import IconButton from '@mui/material/IconButton'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { motion, AnimatePresence, PanInfo } from 'framer-motion'
@@ -15,6 +16,8 @@ import { ButtonBase } from '@mui/material'
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined'
 import IosShareIcon from '@mui/icons-material/IosShare'
 import { styled } from '@mui/material/styles'
+import { VideoSlide } from './WatchLanding/VideoSlide'
+import { SectionHeader } from './WatchLanding/SectionHeader'
 
 interface VideoSingleProps {
   open: boolean
@@ -221,11 +224,50 @@ export function VideoSingle({
           position: 'relative'
         }}
       >
+        <SectionHeader
+          primaryText="Your Next Watch"
+          secondaryText="Related videos and stories"
+          //   disableTopSpacing
+          sx={{
+            px: 6
+          }}
+        />
+
+        <Swiper
+          spaceBetween={20}
+          slidesPerView={1.8}
+          initialSlide={0}
+          slidesOffsetBefore={24}
+          slidesOffsetAfter={24}
+        >
+          <SwiperSlide>
+            <VideoSlide
+              imageUrl="https://images.unsplash.com/photo-1619187282125-3e446e5f21fc?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTI2fHxqZXN1c3xlbnwwfHwwfHx8MA%3D%3D"
+              title="Finding Light: A Journey Through Depression"
+              bgColor="#005B92"
+              type="Short Video"
+            />
+          </SwiperSlide>
+          <SwiperSlide>
+            <VideoSlide
+              imageUrl="https://images.unsplash.com/photo-1689290018351-a0507a3036cb?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjI0fHxqZXN1c3xlbnwwfHwwfHx8MA%3D%3D"
+              title="Hope Restored Stories of Healing and Recovery"
+              bgColor="#C26B61"
+              type="Short Video"
+            />
+          </SwiperSlide>
+        </Swiper>
+
         {/* Questions Section */}
         <Box sx={{ py: 8 }}>
-          <Typography variant="h5" sx={{ mb: 4, color: 'white', px: 8 }}>
-            Other People Ask
-          </Typography>
+          <SectionHeader
+            primaryText="Other People Ask"
+            secondaryText="Questions about faith"
+            //   disableTopSpacing
+            sx={{
+              px: 6
+            }}
+          />
 
           {/* Questions List */}
           <Box sx={{ mb: 6 }}>
