@@ -50,6 +50,7 @@ describe('video', () => {
     subtitles: VideoSubtitle[]
     images: CloudflareImage[]
     cloudflareAssets: CloudflareR2[]
+    variants: VideoVariant[]
   }
 
   const children: Video[] = [
@@ -254,6 +255,34 @@ describe('video', () => {
           createdAt: new Date(),
           updatedAt: new Date()
         }
+      ],
+      variants: [
+        {
+          id: 'variantId2',
+          hls: 'hlsUrl',
+          languageId: 'languageId2',
+          slug: 'slug2',
+          videoId: 'videoId',
+          edition: 'edition',
+          dash: null,
+          downloadable: true,
+          duration: null,
+          lengthInMilliseconds: null,
+          share: null
+        },
+        {
+          id: 'variantId1',
+          hls: 'hlsUrl',
+          languageId: 'languageId1',
+          slug: 'slug1',
+          videoId: 'videoId',
+          edition: 'edition',
+          dash: null,
+          downloadable: true,
+          duration: null,
+          lengthInMilliseconds: null,
+          share: null
+        }
       ]
     }
   ]
@@ -378,6 +407,12 @@ describe('video', () => {
           }
           variant(languageId: $languageId) {
             id
+          }
+          variants {
+            id
+            language {
+              id
+            }
           }
           images(aspectRatio: $aspectRatio) {
             id
@@ -512,6 +547,20 @@ describe('video', () => {
           }
         ],
         variant: { id: 'variantId' },
+        variants: [
+          {
+            id: 'variantId1',
+            language: {
+              id: 'languageId1'
+            }
+          },
+          {
+            id: 'variantId2',
+            language: {
+              id: 'languageId2'
+            }
+          }
+        ],
         variantLanguages: [{ id: 'languageId' }],
         variantLanguagesCount: 1,
         variantLanguagesWithSlug: [
@@ -557,6 +606,18 @@ describe('video', () => {
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'variantId'
       } as unknown as VideoVariant)
+
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        {
+          id: 'variantId1',
+          languageId: 'languageId1'
+        } as unknown as VideoVariant,
+        {
+          id: 'variantId2',
+          languageId: 'languageId2'
+        } as unknown as VideoVariant
+      ])
+
       const data = await client({
         document: VIDEOS_QUERY
       })
@@ -672,6 +733,17 @@ describe('video', () => {
       // variant
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce(null)
 
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        {
+          id: 'variantId1',
+          languageId: 'languageId1'
+        } as unknown as VideoVariant,
+        {
+          id: 'variantId2',
+          languageId: 'languageId2'
+        } as unknown as VideoVariant
+      ])
+
       const data = await client({
         document: VIDEOS_QUERY,
         variables: {
@@ -705,6 +777,18 @@ describe('video', () => {
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'variantId'
       } as unknown as VideoVariant)
+
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        {
+          id: 'variantId1',
+          languageId: 'languageId1'
+        } as unknown as VideoVariant,
+        {
+          id: 'variantId2',
+          languageId: 'languageId2'
+        } as unknown as VideoVariant
+      ])
+
       const data = await client({
         document: VIDEOS_QUERY,
         variables: {

@@ -13,11 +13,12 @@ import { ReactElement, SyntheticEvent, useState } from 'react'
 import { PublishedChip } from '../../../../../../components/PublishedChip'
 import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
 
-import { Children } from './Children'
 import { Metadata } from './Metadata'
 import { TabContainer } from './Tabs/TabContainer'
 import { TabLabel } from './Tabs/TabLabel'
 import { Variants } from './Variants'
+import { VideoChildren } from './VideoChildren'
+import { getVideoChildrenLabel } from './VideoChildren/getVideoChildrenLabel'
 
 export function VideoView(): ReactElement {
   const t = useTranslations()
@@ -33,6 +34,13 @@ export function VideoView(): ReactElement {
     setTabValue(newValue)
   }
 
+  const showVideoChildren: boolean =
+    video?.label === 'collection' ||
+    video?.label === 'featureFilm' ||
+    video?.label === 'series'
+
+  const videoLabel = getVideoChildrenLabel(video?.label)
+
   return (
     <Stack
       gap={2}
@@ -47,9 +55,7 @@ export function VideoView(): ReactElement {
           flexDirection: { xs: 'col', sm: 'row' }
         }}
       >
-        <Typography variant="h4">
-          {t('titleEdit', { value: videoTitle })}
-        </Typography>
+        <Typography variant="h4">{videoTitle}</Typography>
         <PublishedChip published={data?.adminVideo.published ?? false} />
       </Stack>
       <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
@@ -63,19 +69,23 @@ export function VideoView(): ReactElement {
                 onChange={handleTabChange}
                 aria-label="video-edit-tabs"
               >
-                <Tab label={<TabLabel label="Metadata" />} />
+                <Tab value={0} label={<TabLabel label="Metadata" />} />
+                {showVideoChildren && videoLabel != null && (
+                  <Tab
+                    value={1}
+                    label={
+                      <TabLabel
+                        label={videoLabel}
+                        count={video?.children?.length}
+                      />
+                    }
+                  />
+                )}
                 <Tab
+                  value={2}
                   label={
                     <TabLabel
-                      label="Children"
-                      count={video?.children?.length}
-                    />
-                  }
-                />
-                <Tab
-                  label={
-                    <TabLabel
-                      label="Variants"
+                      label={t('Audio Languages')}
                       count={video?.variants?.length}
                     />
                   }
@@ -86,7 +96,12 @@ export function VideoView(): ReactElement {
                 {video != null && <Metadata video={video} loading={loading} />}
               </TabContainer>
               <TabContainer value={tabValue} index={1}>
-                <Children childVideos={video?.children ?? []} />
+                {showVideoChildren && videoLabel != null && (
+                  <VideoChildren
+                    childVideos={video?.children ?? []}
+                    label={videoLabel}
+                  />
+                )}
               </TabContainer>
               <TabContainer value={tabValue} index={2}>
                 <Variants variants={video?.variants} />

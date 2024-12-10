@@ -21,6 +21,6 @@ describe('PublishedChip', () => {
       </NextIntlClientProvider>
     )
 
-    expect(screen.getByText('Unpublished')).toBeInTheDocument()
+    expect(screen.getByText('Draft')).toBeInTheDocument()
   })
 })

@@ -7,7 +7,7 @@ import { Section } from '../Section'
 
 import { VariantCard } from './VariantCard'
 
-const ITEM_SIZE = 80
+const ITEM_SIZE = 75
 
 export function Variants({
   variants
@@ -24,7 +24,7 @@ export function Variants({
   })
 
   function getVariantSectionDimensions(): void {
-    const section = document.getElementById('Variants-section')
+    const section = document.getElementById('Audio Languages-section')
     if (section == null) return
     const { width, height } = section.getBoundingClientRect()
     setSize({ width, height })
@@ -43,18 +43,22 @@ export function Variants({
       {variants != null && (
         <Section
           boxProps={{
-            sx: { p: 0, height: 'calc(100vh - 400px)' }
+            sx: { p: 2, height: 'calc(100vh - 400px)' }
           }}
-          title={t('Variants')}
-          variant="contained"
+          // if you change the title, change the element selected in the getVariantSectionDimensions function above
+          title={t('Audio Languages')}
+          variant="outlined"
         >
           <FixedSizeList
-            width={size.width}
-            height={size.height}
+            width={size.width - 20}
+            height={size.height - 90}
             itemData={variants}
             itemCount={variants.length}
             itemSize={ITEM_SIZE}
             overscanCount={10}
+            style={{
+              marginTop: 8
+            }}
           >
             {({ index, style, data: items }) => (
               <VariantCard variant={items[index]} style={style} />
