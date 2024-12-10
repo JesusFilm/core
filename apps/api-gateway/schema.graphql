@@ -952,6 +952,7 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   id: ID!
   primaryLanguageId: ID!
   bibleCitations: [BibleCitation!]! @join__field(graph: API_MEDIA) 
+  source: VideoBlockSource @join__field(graph: API_MEDIA) 
   keywords(languageId: ID) : [Keyword!]! @join__field(graph: API_MEDIA) 
   label: VideoLabel! @join__field(graph: API_MEDIA) 
   published: Boolean! @join__field(graph: API_MEDIA) 
@@ -2186,8 +2187,10 @@ type CloudflareR2 @join__type(graph: API_MEDIA)  {
   updatedAt: Date!
 }
 
-type CloudflareVideo @join__type(graph: API_MEDIA)  {
+type CloudflareVideo @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
   id: ID!
+  primaryLanguageId: ID
+  source: VideoBlockSource
   uploadUrl: String
   userId: ID!
   createdAt: Date!
@@ -2248,8 +2251,10 @@ type MutationShortLinkUpdateSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLink!
 }
 
-type MuxVideo @join__type(graph: API_MEDIA)  {
+type MuxVideo @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
   id: ID!
+  primaryLanguageId: ID
+  source: VideoBlockSource
   uploadUrl: String
   userId: ID!
   createdAt: Date!
@@ -2578,6 +2583,12 @@ type VideoVariantDownload @join__type(graph: API_MEDIA)  {
   url: String!
 }
 
+type Youtube @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
+  id: ID!
+  primaryLanguageId: ID
+  source: VideoBlockSource
+}
+
 type ZodError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
   message: String
   fieldErrors: [ZodFieldError!]!
@@ -2798,11 +2809,11 @@ enum TypographyAlign @join__type(graph: API_JOURNEYS)  {
   right @join__enumValue(graph: API_JOURNEYS) 
 }
 
-enum VideoBlockSource @join__type(graph: API_JOURNEYS)  {
-  internal @join__enumValue(graph: API_JOURNEYS) 
-  youTube @join__enumValue(graph: API_JOURNEYS) 
-  cloudflare @join__enumValue(graph: API_JOURNEYS) 
-  mux @join__enumValue(graph: API_JOURNEYS) 
+enum VideoBlockSource @join__type(graph: API_JOURNEYS)  @join__type(graph: API_MEDIA)  {
+  internal @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_MEDIA) 
+  youTube @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_MEDIA) 
+  cloudflare @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_MEDIA) 
+  mux @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_MEDIA) 
 }
 
 enum VideoBlockObjectFit @join__type(graph: API_JOURNEYS)  {
