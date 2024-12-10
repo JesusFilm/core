@@ -865,6 +865,7 @@ input VideoUpdateInput {
 
 type VideoVariant {
   id: ID!
+  videoId: ID
   hls: String
   dash: String
   share: String

@@ -1,8 +1,6 @@
 import { useMutation } from '@apollo/client'
-import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import InputAdornment from '@mui/material/InputAdornment'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
@@ -14,21 +12,21 @@ import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
-import { boolean, object, string } from 'yup'
+import { object, string } from 'yup'
 
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 const videoStatuses = [
   { label: 'Published', value: 'published' },
-  { label: 'Unpublished', value: 'unpublished' }
+  { label: 'Draft', value: 'unpublished' }
 ]
 
 const videoLabels = [
   { label: 'Collection', value: 'collection' },
   { label: 'Episode', value: 'episode' },
   { label: 'Feature Film', value: 'featureFilm' },
-  { label: 'Segment', value: 'segment' },
+  { label: 'Clip', value: 'segment' },
   { label: 'Series', value: 'series' },
   { label: 'Short Film', value: 'shortFilm' },
   { label: 'Trailer', value: 'trailer' },
@@ -49,7 +47,6 @@ export const UPDATE_VIDEO_INFORMATION = graphql(`
       label
       slug
       published
-      noIndex
     }
   }
 `)
@@ -70,8 +67,7 @@ export function VideoInformation({
     title: string().trim().required(t('Title is required')),
     url: string().trim().required(t('Url is required')),
     published: string().required(t('Published is required')),
-    label: string().required(t('Label is required')),
-    noIndex: boolean()
+    label: string().required(t('Label is required'))
   })
 
   async function handleUpdateVideoInformation(
@@ -83,8 +79,7 @@ export function VideoInformation({
           id: video.id,
           slug: values.url,
           published: values.published === 'published',
-          label: values.label,
-          noIndex: values.noIndex
+          label: values.label
         },
         titleInput: {
           id: video.title[0].id,
@@ -100,8 +95,7 @@ export function VideoInformation({
         title: video.title[0].value,
         url: video.slug,
         published: video.published === true ? 'published' : 'unpublished',
-        label: video.label,
-        noIndex: video.noIndex
+        label: video.label
       }}
       onSubmit={handleUpdateVideoInformation}
       validationSchema={validationSchema}
@@ -208,16 +202,6 @@ export function VideoInformation({
                   ))}
                 </Select>
               </FormControl>
-              <FormControlLabel
-                label={t('No Index')}
-                control={
-                  <Checkbox
-                    name="noIndex"
-                    checked={values.noIndex}
-                    onChange={handleChange}
-                  />
-                }
-              />
             </Stack>
             <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end">
