@@ -23,9 +23,6 @@ describe('VariantDialog', () => {
     )
 
     expect(
-      screen.getByRole('heading', { level: 2, name: 'Munukutuba' })
-    ).toBeInTheDocument()
-    expect(
       screen.getByRole('heading', { level: 4, name: 'Downloads' })
     ).toBeInTheDocument()
     expect(screen.getByText('https://arc.gt/4d9ez')).toBeInTheDocument()

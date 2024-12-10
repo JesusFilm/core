@@ -67,8 +67,12 @@ input CloudflareR2UpdateInput {
   fileName: String!
 }
 
-type CloudflareVideo {
+type CloudflareVideo
+  @key(fields: "id primaryLanguageId")
+{
   id: ID!
+  source: VideoBlockSource @shareable
+  primaryLanguageId: ID @shareable
   uploadUrl: String
   userId: ID!
   createdAt: Date!
@@ -297,8 +301,12 @@ type MutationShortLinkUpdateSuccess {
   data: ShortLink!
 }
 
-type MuxVideo {
+type MuxVideo
+  @key(fields: "id primaryLanguageId")
+{
   id: ID!
+  source: VideoBlockSource @shareable
+  primaryLanguageId: ID @shareable
   assetId: String
   duration: Int
   uploadId: String
@@ -682,6 +690,7 @@ type Video
   @shareable
 {
   bibleCitations: [BibleCitation!]!
+  source: VideoBlockSource @shareable
   keywords(languageId: ID): [Keyword!]!
   id: ID!
   label: VideoLabel!
@@ -717,20 +726,10 @@ type Video
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
 }
 
-type VideoBlock
-  @key(fields: "videoId source")
-  @extends
-{
-  source: VideoBlockSource! @external
-  videoId: ID! @external
-  playbackId: ID
-  assetId: ID
-}
-
 enum VideoBlockSource {
+  cloudflare
   internal
   youTube
-  cloudflare
   mux
 }
 
@@ -887,6 +886,7 @@ input VideoUpdateInput {
 
 type VideoVariant {
   id: ID!
+  videoId: ID
   hls: String
   dash: String
   share: String
@@ -968,6 +968,14 @@ input VideosFilter {
   labels: [VideoLabel!]
   ids: [ID!]
   subtitleLanguageIds: [ID!]
+}
+
+type Youtube
+  @key(fields: "id primaryLanguageId")
+{
+  id: ID!
+  source: VideoBlockSource @shareable
+  primaryLanguageId: ID @shareable
 }
 
 type ZodError implements BaseError

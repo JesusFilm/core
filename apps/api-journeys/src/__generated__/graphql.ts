@@ -343,7 +343,9 @@ export type CloudflareVideo = {
   __typename?: 'CloudflareVideo';
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
+  primaryLanguageId?: Maybe<Scalars['ID']['output']>;
   readyToStream: Scalars['Boolean']['output'];
+  source?: Maybe<VideoBlockSource>;
   uploadUrl?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
 };
@@ -1188,6 +1190,8 @@ export type MeInput = {
 export enum MediaRole {
   Publisher = 'publisher'
 }
+
+export type MediaVideo = CloudflareVideo | MuxVideo | Video | YouTube;
 
 export enum MessagePlatform {
   CheckBroken = 'checkBroken',
@@ -2293,7 +2297,9 @@ export type MuxVideo = {
   duration?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   playbackId?: Maybe<Scalars['String']['output']>;
+  primaryLanguageId?: Maybe<Scalars['ID']['output']>;
   readyToStream: Scalars['Boolean']['output'];
+  source?: Maybe<VideoBlockSource>;
   uploadId?: Maybe<Scalars['String']['output']>;
   uploadUrl?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
@@ -3855,6 +3861,7 @@ export type Video = {
   /** slug is a permanent link to the video. */
   slug: Scalars['String']['output'];
   snippet: Array<VideoSnippet>;
+  source?: Maybe<VideoBlockSource>;
   studyQuestions: Array<VideoStudyQuestion>;
   subtitles: Array<VideoSubtitle>;
   /** @deprecated use images.thumbnail */
@@ -3925,7 +3932,6 @@ export type VideoBlock = Block & {
   __typename?: 'VideoBlock';
   /** action that should be performed when the video ends */
   action?: Maybe<Action>;
-  assetId?: Maybe<Scalars['ID']['output']>;
   autoplay?: Maybe<Scalars['Boolean']['output']>;
   /**
    * internal source videos: this field is not populated and instead only present
@@ -3951,12 +3957,12 @@ export type VideoBlock = Block & {
    */
   image?: Maybe<Scalars['String']['output']>;
   journeyId: Scalars['ID']['output'];
+  mediaVideo?: Maybe<MediaVideo>;
   muted?: Maybe<Scalars['Boolean']['output']>;
   /** how the video should display within the VideoBlock */
   objectFit?: Maybe<VideoBlockObjectFit>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
-  playbackId?: Maybe<Scalars['ID']['output']>;
   /**
    * posterBlockId is present if a child block should be used as a poster.
    * This child block should not be rendered normally, instead it should be used
@@ -4515,6 +4521,7 @@ export type VideoVariant = {
   subtitle: Array<VideoSubtitle>;
   subtitleCount: Scalars['Int']['output'];
   videoEdition: VideoEdition;
+  videoId?: Maybe<Scalars['ID']['output']>;
 };
 
 
@@ -4753,6 +4760,20 @@ export type VisitorsConnection = {
   edges: Array<VisitorEdge>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
+};
+
+export type YouTube = {
+  __typename?: 'YouTube';
+  id: Scalars['ID']['output'];
+  primaryLanguageId?: Maybe<Scalars['ID']['output']>;
+  source: VideoBlockSource;
+};
+
+export type Youtube = {
+  __typename?: 'Youtube';
+  id: Scalars['ID']['output'];
+  primaryLanguageId?: Maybe<Scalars['ID']['output']>;
+  source?: Maybe<VideoBlockSource>;
 };
 
 export type ZodError = BaseError & {

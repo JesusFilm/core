@@ -30,19 +30,19 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
         </Box>
       ) : (
         <>
-          <Section title={t('Information')}>
+          <Section title={t('Information')} variant="outlined">
             <VideoInformation video={video} />
           </Section>
-          <Section title={t('Image')}>
-            <Stack gap={2}>
-              <VideoImageAlt videoImageAlts={video.imageAlt} />
+          <Section title={t('Image')} variant="outlined">
+            <Stack gap={4}>
               <VideoImage video={video} />
+              <VideoImageAlt videoImageAlts={video.imageAlt} />
             </Stack>
           </Section>
-          <Section title={t('Snippet')}>
+          <Section title={t('Short Description')} variant="outlined">
             <VideoSnippet videoSnippets={video.snippet} />
           </Section>
-          <Section title={t('Description')}>
+          <Section title={t('Description')} variant="outlined">
             <VideoDescription videoDescriptions={video.description} />
           </Section>
           <StudyQuestionsList studyQuestions={video.studyQuestions} />

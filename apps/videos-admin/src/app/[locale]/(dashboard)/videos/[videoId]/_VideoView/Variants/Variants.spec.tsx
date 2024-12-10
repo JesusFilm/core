@@ -25,12 +25,10 @@ describe('Variants', () => {
       </MockedProvider>
     )
 
-    expect(
-      screen.getByRole('button', { name: 'Munukutuba jesus/munukutuba' })
-    ).toBeInTheDocument()
+    expect(screen.getAllByRole('listitem')).toHaveLength(2)
   })
 
-  it('should open variant modal when variant is clicked', () => {
+  it('should open variant modal when variant is clicked', async () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
@@ -39,12 +37,12 @@ describe('Variants', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Munukutuba jesus/munukutuba' })
+    fireEvent.click(screen.getAllByRole('listitem')[0])
+    await waitFor(() =>
+      expect(
+        screen.getByRole('heading', { level: 4, name: 'Downloads' })
+      ).toBeInTheDocument()
     )
-    expect(
-      screen.getByRole('heading', { level: 4, name: 'Downloads' })
-    ).toBeInTheDocument()
   })
 
   it('should close variant modal', async () => {
@@ -56,12 +54,12 @@ describe('Variants', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Munukutuba jesus/munukutuba' })
+    fireEvent.click(screen.getAllByRole('listitem')[0])
+    await waitFor(() =>
+      expect(
+        screen.getByRole('heading', { level: 4, name: 'Downloads' })
+      ).toBeInTheDocument()
     )
-    expect(
-      screen.getByRole('heading', { level: 4, name: 'Downloads' })
-    ).toBeInTheDocument()
     const backdrop = document.querySelector('.MuiBackdrop-root')
     if (backdrop) {
       fireEvent.click(backdrop)
@@ -71,5 +69,18 @@ describe('Variants', () => {
         screen.queryByRole('heading', { level: 4, name: 'Downloads' })
       ).not.toBeInTheDocument()
     )
+  })
+
+  it('should have correct id for the Section element so correct virtualization dimensions can be calculated', async () => {
+    render(
+      <MockedProvider>
+        <NextIntlClientProvider locale="en">
+          <Variants variants={mockVideoVariants} />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    const section = document.getElementById('Audio Languages-section')
+    expect(section).toBeInTheDocument()
   })
 })

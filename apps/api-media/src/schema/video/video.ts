@@ -10,6 +10,7 @@ import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
 import { IdType, IdTypeShape } from '../enums/idType'
 import { Language, LanguageWithSlug } from '../language'
+import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
 
 import { VideoLabel } from './enums/videoLabel'
 import { VideoCreateInput } from './inputs/videoCreate'
@@ -53,6 +54,11 @@ const Video = builder.prismaObject('Video', {
   shareable: true,
   fields: (t) => ({
     bibleCitations: t.relation('bibleCitation', { nullable: false }),
+    source: t.field({
+      type: VideoSource,
+      shareable: true,
+      resolve: () => VideoSourceShape.internal
+    }),
     keywords: t.relation('keywords', {
       nullable: false,
       args: { languageId: t.arg.id({ required: false }) },
@@ -239,11 +245,14 @@ const Video = builder.prismaObject('Video', {
     variants: t.prismaField({
       type: ['VideoVariant'],
       nullable: false,
-      resolve: async (query, parent) =>
-        await prisma.videoVariant.findMany({
+      resolve: async (query, parent) => {
+        const res = await prisma.videoVariant.findMany({
           ...query,
           where: { videoId: parent.id }
         })
+        // languageId is a string, so we need to convert it to a number to sort it correctly
+        return orderBy(res, (variant) => +variant.languageId, 'asc')
+      }
     }),
     subtitles: t.relation('subtitles', {
       nullable: false,

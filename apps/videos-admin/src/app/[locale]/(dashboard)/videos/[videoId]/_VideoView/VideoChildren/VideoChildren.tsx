@@ -7,17 +7,14 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
-import Edit2 from '@core/shared/ui/icons/Edit2'
-import EyeOpen from '@core/shared/ui/icons/EyeOpen'
-import Trash2 from '@core/shared/ui/icons/Trash2'
-
 import { OrderedList } from '../../../../../../../components/OrderedList'
 import { OrderedItem } from '../../../../../../../components/OrderedList/OrderedItem'
-import { GetAdminVideo_AdminVideo_Children as VideoChildren } from '../../../../../../../libs/useAdminVideo'
+import { GetAdminVideo_AdminVideo_Children as AdminVideoChildren } from '../../../../../../../libs/useAdminVideo'
 import { Section } from '../Section'
 
 interface ChildrenProps {
-  childVideos: VideoChildren
+  childVideos: AdminVideoChildren
+  label: 'Items' | 'Clips' | 'Episodes'
 }
 
 export const VIDEO_CHILDREN_ORDER_UPDATE = graphql(`
@@ -31,7 +28,10 @@ export const VIDEO_CHILDREN_ORDER_UPDATE = graphql(`
   }
 `)
 
-export function Children({ childVideos }: ChildrenProps): ReactElement {
+export function VideoChildren({
+  childVideos,
+  label
+}: ChildrenProps): ReactElement {
   const pathname = usePathname()
   const router = useRouter()
   const t = useTranslations()
@@ -44,16 +44,10 @@ export function Children({ childVideos }: ChildrenProps): ReactElement {
     return <Typography>{t('No children to show')}</Typography>
   }
 
-  function view(id: string): void {
+  function handleClick(id: string): void {
     if (pathname == null) return
     const [, locale, entity] = pathname.split('/')
     router.push(`/${locale}/${entity}/${id}`)
-  }
-
-  function edit(id: string): void {
-    if (pathname == null) return
-    const [, locale, entity] = pathname.split('/')
-    router.push(`/${locale}/${entity}/${id}?isEdit=true`)
   }
 
   async function updateOrderOnDrag(e: DragEndEvent): Promise<void> {
@@ -77,10 +71,11 @@ export function Children({ childVideos }: ChildrenProps): ReactElement {
 
   return (
     <Section
-      title={t('Children')}
+      title={label}
       boxProps={{
-        sx: { p: 0, height: 'calc(100vh - 400px)', overflowY: 'scroll' }
+        sx: { p: 2, height: 'calc(100vh - 400px)', overflowY: 'scroll' }
       }}
+      variant="outlined"
     >
       {videos.length > 0 ? (
         <OrderedList onOrderUpdate={updateOrderOnDrag} items={videos}>
@@ -89,42 +84,16 @@ export function Children({ childVideos }: ChildrenProps): ReactElement {
               key={id}
               id={id}
               label={title[0].value}
+              subtitle={id}
               idx={i}
-              iconButtons={[
-                {
-                  Icon: EyeOpen,
-                  events: {
-                    onClick: () => view(id)
-                  },
-                  name: 'View'
-                },
-                {
-                  Icon: Edit2,
-                  events: {
-                    onClick: () => edit(id)
-                  },
-                  name: 'Edit'
-                },
-                {
-                  Icon: Trash2,
-                  events: {
-                    onClick: () => alert('Delete child')
-                  },
-                  name: 'Delete',
-                  slotProps: {
-                    button: {
-                      color: 'error'
-                    },
-                    icon: {
-                      color: 'error'
-                    }
-                  }
-                }
-              ]}
               img={{
                 src: images?.[0]?.mobileCinematicHigh as string,
                 alt: imageAlt[0].value
               }}
+              sx={{
+                cursor: 'pointer'
+              }}
+              onClick={handleClick}
             />
           ))}
         </OrderedList>

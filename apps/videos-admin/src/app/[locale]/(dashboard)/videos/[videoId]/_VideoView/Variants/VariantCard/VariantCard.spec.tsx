@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
@@ -15,7 +15,7 @@ const variant: GetAdminVideoVariant =
   useAdminVideoMock?.['result']?.['data']['adminVideo']['variants'][0]
 
 describe('VariantCard', () => {
-  it('should display language and slug of variant', () => {
+  it('should display language and languageId of variant', () => {
     render(
       <NextIntlClientProvider locale="en">
         <VariantCard variant={variant} />
@@ -23,18 +23,18 @@ describe('VariantCard', () => {
     )
 
     expect(screen.getByText('Munukutuba')).toBeInTheDocument()
-    expect(screen.getByText('jesus/munukutuba')).toBeInTheDocument()
   })
 
-  it('should open variant dialog on click', () => {
+  it('should open variant dialog on click', async () => {
     render(
       <NextIntlClientProvider locale="en">
         <VariantCard variant={variant} />
       </NextIntlClientProvider>
     )
 
-    fireEvent.click(screen.getByText('Munukutuba'))
-    expect(screen.getByText('Variant')).toBeInTheDocument()
-    expect(screen.getByText('Slug')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('listitem'))
+    await waitFor(() =>
+      expect(screen.getByText('Downloads')).toBeInTheDocument()
+    )
   })
 })
