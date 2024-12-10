@@ -335,6 +335,9 @@ const Video = builder.prismaObject('Video', {
         },
         orderBy: { aspectRatio: 'desc' }
       })
+    }),
+    services: t.exposeStringList('services', {
+      nullable: false
     })
   })
 })
@@ -492,7 +495,8 @@ builder.mutationFields((t) => ({
           published: input.published ?? undefined,
           slug: input.slug ?? undefined,
           noIndex: input.noIndex ?? undefined,
-          childIds: input.childIds ?? undefined
+          childIds: input.childIds ?? undefined,
+          services: input.services ?? undefined
         },
         include: {
           ...query.include,

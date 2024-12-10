@@ -464,6 +464,13 @@ enum Service {
   apiVideos
 }
 
+enum Services {
+  nextSteps
+  watch
+  app
+  partners
+}
+
 """A short link that redirects to a full URL"""
 type ShortLink
   @key(fields: "id")
@@ -710,6 +717,7 @@ type Video
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
   variant(languageId: ID): VideoVariant
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
+  services: [String!]!
 }
 
 input VideoCreateInput {
@@ -861,6 +869,7 @@ input VideoUpdateInput {
   slug: String
   noIndex: Boolean
   childIds: [String!]
+  services: [Services!]
 }
 
 type VideoVariant {
