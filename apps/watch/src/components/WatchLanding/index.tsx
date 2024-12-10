@@ -357,14 +357,19 @@ export function WatchLanding(): ReactElement {
   return (
     <>
       <Head>
+        <title>What's Behind Daniel's Monster-Filled Dream?</title>
+        <meta
+          name="description"
+          content="Four monstrous beasts, four violent kingdoms. But then, the Son of Man arrives to conquer them all. 🔥 Dive into Daniel's dream and its epic meaning! 📖👑"
+        />
         <meta property="og:type" content="video.other" />
         <meta
           property="og:title"
-          content="Why Does Daniel Dream About Monsters?"
+          content="What's Behind Daniel's Monster-Filled Dream?"
         />
         <meta
           property="og:description"
-          content="Four monstrous beasts, four violent kingdoms. But then, the Son of Man arrives to conquer them all. 🔥 Dive into Daniel’s dream and its epic meaning! 📖👑"
+          content="Four monstrous beasts, four violent kingdoms. But then, the Son of Man arrives to conquer them all. 🔥 Dive into Daniel's dream and its epic meaning! 📖👑"
         />
         <meta
           property="og:image"
