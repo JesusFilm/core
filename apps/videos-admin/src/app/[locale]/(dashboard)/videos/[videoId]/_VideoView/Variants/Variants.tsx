@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { FixedSizeList } from 'react-window'
 
 import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
@@ -22,6 +22,8 @@ export function Variants({
     height: 0,
     width: 0
   })
+  // TODO: use to open up a different dialog with link
+  const [variantToOpen, setVariantToOpen] = useState<string | null>(null)
 
   function getVariantSectionDimensions(): void {
     const section = document.getElementById('Variants-section')
@@ -37,6 +39,10 @@ export function Variants({
       window.removeEventListener('resize', getVariantSectionDimensions)
     }
   }, [])
+
+  const variantsMap: Map<string, GetAdminVideoVariant> = useMemo(() => {
+    return new Map(variants?.map((variant) => [variant.language.id, variant]))
+  }, [variants])
 
   return (
     <>
@@ -60,7 +66,11 @@ export function Variants({
             }}
           >
             {({ index, style, data: items }) => (
-              <VariantCard variant={items[index]} style={style} />
+              <VariantCard
+                variant={items[index]}
+                style={style}
+                variantsMap={variantsMap}
+              />
             )}
           </FixedSizeList>
         </Section>

@@ -16,12 +16,14 @@ const VariantDialog = dynamic(
 
 export interface VariantCardProps {
   variant: GetAdminVideoVariant
+  variantsMap: Map<string, GetAdminVideoVariant>
   style?: CSSProperties
 }
 
 export function VariantCard({
   variant,
-  style
+  style,
+  variantsMap
 }: VariantCardProps): ReactElement {
   const [open, setOpen] = useState<boolean | null>(null)
 
@@ -64,6 +66,7 @@ export function VariantCard({
           open={open}
           handleClose={handleClose}
           variant={variant}
+          variantsMap={variantsMap}
         />
       )}
     </>
