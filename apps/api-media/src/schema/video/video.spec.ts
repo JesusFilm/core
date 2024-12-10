@@ -267,6 +267,7 @@ describe('video', () => {
           dash: null,
           downloadable: true,
           duration: null,
+          lengthInMilliseconds: null,
           share: null
         },
         {
@@ -279,6 +280,7 @@ describe('video', () => {
           dash: null,
           downloadable: true,
           duration: null,
+          lengthInMilliseconds: null,
           share: null
         }
       ]
