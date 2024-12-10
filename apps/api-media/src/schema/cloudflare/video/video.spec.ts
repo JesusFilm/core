@@ -403,4 +403,47 @@ describe('cloudflareVideo', () => {
       })
     })
   })
+
+  describe('entity', () => {
+    const CLOUDFLARE_VIDEO = graphql(`
+      query CloudflareVideo {
+        _entities(
+          representations: [
+            {
+              __typename: "CloudflareVideo"
+              id: "testId"
+              primaryLanguageId: null
+            }
+          ]
+        ) {
+          ... on CloudflareVideo {
+            id
+          }
+        }
+      }
+    `)
+
+    it('should return cloudflare video', async () => {
+      prismaMock.cloudflareVideo.findUniqueOrThrow.mockResolvedValue({
+        id: 'testId',
+        userId: 'testUserId',
+        uploadUrl: 'testUrl',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        name: 'testName',
+        readyToStream: true
+      })
+      const data = await client({
+        document: CLOUDFLARE_VIDEO
+      })
+      expect(prismaMock.cloudflareVideo.findUniqueOrThrow).toHaveBeenCalledWith(
+        {
+          where: { id: 'testId' }
+        }
+      )
+      expect(data).toHaveProperty('data._entities[0]', {
+        id: 'testId'
+      })
+    })
+  })
 })
