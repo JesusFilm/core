@@ -42,7 +42,7 @@ export function JourneyQuickSettingsChat({
   }
 
   return (
-    <Stack data-testId="JourneyQuickSettingsChat">
+    <Stack data-testid="JourneyQuickSettingsChat">
       <HostTitleFieldForm
         value={name}
         label={t('Your Name')}

@@ -22,7 +22,7 @@ export function JourneyQuickSettingsTabs({
   }
 
   return (
-    <Stack data-testId="JourneyQuickSettingsTabs">
+    <Stack data-testid="JourneyQuickSettingsTabs">
       <Tabs
         value={tabValue}
         onChange={handleTabChange}
