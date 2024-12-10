@@ -4762,6 +4762,8 @@ export type YouTube = {
 export type Youtube = {
   __typename?: 'Youtube';
   id: Scalars['ID']['output'];
+  primaryLanguageId?: Maybe<Scalars['ID']['output']>;
+  source?: Maybe<VideoBlockSource>;
 };
 
 export type ZodError = BaseError & {

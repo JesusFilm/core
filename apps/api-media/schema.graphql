@@ -965,8 +965,12 @@ input VideosFilter {
   subtitleLanguageIds: [ID!]
 }
 
-type Youtube {
+type Youtube
+  @key(fields: "id primaryLanguageId")
+{
   id: ID!
+  source: VideoBlockSource @shareable
+  primaryLanguageId: ID @shareable
 }
 
 type ZodError implements BaseError
