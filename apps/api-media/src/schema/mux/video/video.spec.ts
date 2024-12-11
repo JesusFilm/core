@@ -430,13 +430,17 @@ describe('mux/video', () => {
     it('should return mux video', async () => {
       prismaMock.muxVideo.findUniqueOrThrow.mockResolvedValue({
         id: 'testId',
+        assetId: 'testAssetId',
+        playbackId: 'testPlaybackId',
+        uploadId: 'testUploadId',
         userId: 'testUserId',
         uploadUrl: 'testUrl',
         createdAt: new Date(),
         updatedAt: new Date(),
         name: 'testName',
         readyToStream: true,
-        downloadable: false
+        downloadable: false,
+        duration: 10
       })
       const data = await client({
         document: MUX_VIDEO
