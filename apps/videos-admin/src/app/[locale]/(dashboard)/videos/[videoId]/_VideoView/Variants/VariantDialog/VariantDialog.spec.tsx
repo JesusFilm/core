@@ -116,7 +116,6 @@ describe('VariantDialog', () => {
       .mockReturnValue(getLanguagesMock.result)
 
     render(
-      // <SnackbarProvider>
       <NextIntlClientProvider locale="en">
         <MockedProvider
           mocks={[{ ...getLanguagesMock, result: getLanguagesMockResult }]}
@@ -129,7 +128,6 @@ describe('VariantDialog', () => {
           />
         </MockedProvider>
       </NextIntlClientProvider>
-      // </SnackbarProvider>
     )
 
     await waitFor(() => expect(getLanguagesMockResult).toHaveBeenCalled())
