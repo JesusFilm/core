@@ -1191,6 +1191,8 @@ export enum MediaRole {
   Publisher = 'publisher'
 }
 
+export type MediaVideo = CloudflareVideo | MuxVideo | Video | YouTube;
+
 export enum MessagePlatform {
   CheckBroken = 'checkBroken',
   CheckContained = 'checkContained',
@@ -3945,6 +3947,7 @@ export type VideoBlock = Block & {
    */
   image?: Maybe<Scalars['String']['output']>;
   journeyId: Scalars['ID']['output'];
+  mediaVideo?: Maybe<MediaVideo>;
   muted?: Maybe<Scalars['Boolean']['output']>;
   /** how the video should display within the VideoBlock */
   objectFit?: Maybe<VideoBlockObjectFit>;
@@ -4747,6 +4750,13 @@ export type VisitorsConnection = {
   edges: Array<VisitorEdge>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
+};
+
+export type YouTube = {
+  __typename?: 'YouTube';
+  id: Scalars['ID']['output'];
+  primaryLanguageId?: Maybe<Scalars['ID']['output']>;
+  source: VideoBlockSource;
 };
 
 export type Youtube = {
