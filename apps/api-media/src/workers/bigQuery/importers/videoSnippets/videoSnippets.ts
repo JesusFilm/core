@@ -5,12 +5,31 @@ import { prisma } from '../../../../lib/prisma'
 import { parse, parseMany, processTable } from '../../importer'
 import { getVideoIds } from '../videos'
 
-const videoSnippetSchema = z.object({
-  value: z.string(),
-  videoId: z.string(),
-  languageId: z.number().transform(String),
-  primary: z.number().transform(Boolean)
-})
+function convertToHtmlEntities(text: string): string {
+  const result = text.replace(/&(quot|#13|#10|lt|gt|amp|apos);/g, (match) => {
+    const entities: Record<string, string> = {
+      '&#13;': '\n'
+    }
+    return entities[match] || match
+  })
+
+  return result
+}
+
+const videoSnippetSchema = z
+  .object({
+    value: z.string(),
+    videoId: z.string(),
+    languageId: z.number().transform(String),
+    primary: z.number().transform(Boolean)
+  })
+  .transform(({ value, ...rest }) => {
+    const transformed = {
+      ...rest,
+      value: convertToHtmlEntities(value)
+    }
+    return transformed
+  })
 
 export async function importVideoSnippets(logger?: Logger): Promise<void> {
   await processTable(
