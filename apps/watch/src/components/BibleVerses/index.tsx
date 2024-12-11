@@ -23,6 +23,7 @@ import { VideoPlayerProps } from './VideoPlayer' // Import the new component
 import Grid from '@mui/material/Grid'
 import { useTheme } from '@mui/material/styles'
 import { VideoSingle } from '../VideoSingle'
+import { BlockComponent } from './BlockComponent'
 
 // import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
 // import { SearchBar } from '@core/journeys/ui/SearchBar'
@@ -32,6 +33,8 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 import { VideoContext, VideoProvider, useVideo } from './VideoContext'
+import { VideoType } from '../VideoTypes'
+import VideoVerse from '../VideoVerse'
 
 interface SharedVideoCardProps {
   avatarSrc: string
@@ -398,6 +401,80 @@ export function BibleVerses(): ReactElement {
     useState<ReactElement | null>(null)
   const [sourceRect, setSourceRect] = useState<DOMRect | null>(null)
 
+  type TimedText = {
+    text: string
+    duration: number
+  }
+
+  type VideoVerse = {
+    id: string
+    type: VideoType
+    src: string
+    poster: string
+    verse: TimedText[]
+  }
+
+  const anxietyVerses: VideoVerse[] = [
+    {
+      id: 'main-video',
+      type: VideoType.VIDEO_VERSE,
+      src: 'https://cdn-std.droplr.net/files/acc_760170/BIVSDq',
+      poster: 'https://cdn-std.droplr.net/files/acc_760170/MKEjsL',
+      verse: [
+        { text: 'Be strong and courageous.', duration: 3 },
+        {
+          text: 'Do not be afraid',
+          duration: 2
+        },
+        {
+          text: 'or terrified because of them,',
+          duration: 2
+        },
+
+        { text: 'for the LORD your God goes with you;', duration: 3 },
+        { text: 'he will never leave you nor forsake you.', duration: 4 },
+        { text: 'Psalm 34:4', duration: 2 }
+      ]
+    },
+    {
+      id: 'anxiety-video',
+      type: VideoType.VIDEO_VERSE,
+      src: 'https://cdn-std.droplr.net/files/acc_760170/XOf5fA',
+      poster:
+        'https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg',
+      verse: [
+        { text: 'The Lord your God is with you,', duration: 3 },
+        { text: 'the Mighty Warrior who saves.', duration: 3 },
+        { text: 'He will take great delight in you;', duration: 3 },
+        { text: 'in his love he will no longer rebuke you,', duration: 3 },
+        { text: 'but will rejoice over you with singing.', duration: 3 },
+        { text: 'Zephaniah 3:17', duration: 2 }
+      ]
+    },
+    {
+      id: 'recovery-video',
+      type: VideoType.VIDEO_VERSE,
+      src: 'https://cdn-std.droplr.net/files/acc_760170/BIVSDq',
+      poster:
+        'https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg',
+      verse: [
+        { text: 'Be strong and courageous.', duration: 3 },
+        {
+          text: 'Do not be afraid',
+          duration: 2
+        },
+        {
+          text: 'or terrified because of them,',
+          duration: 2
+        },
+
+        { text: 'for the LORD your God goes with you;', duration: 3 },
+        { text: 'he will never leave you nor forsake you.', duration: 4 },
+        { text: 'Psalm 34:4', duration: 2 }
+      ]
+    }
+  ]
+
   const handleAnswerClick = () => {
     setAnswerClicked(true)
   }
@@ -556,6 +633,31 @@ export function BibleVerses(): ReactElement {
               secondaryText="Video verses from the Bible"
               disableTopSpacing
             />
+
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '20px',
+                width: '100%',
+                height: 'auto',
+                padding: '20px',
+                boxSizing: 'border-box'
+              }}
+            >
+              {anxietyVerses.map((verse, index) => (
+                <Box
+                  sx={{
+                    // aspectRatio: '9/16',
+                    backgroundColor: 'rgba(255,255,255,0.05)',
+                    borderRadius: 4
+                  }}
+                >
+                  <VideoVerse videoSrc={verse.src} verse={verse.verse} />
+                </Box>
+              ))}
+            </Box>
+
             <Box
               sx={{
                 minHeight: 'calc(100vw * 0.75)',
