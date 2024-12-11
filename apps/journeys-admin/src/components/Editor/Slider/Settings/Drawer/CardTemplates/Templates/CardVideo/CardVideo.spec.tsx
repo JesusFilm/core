@@ -92,7 +92,6 @@ describe('CardVideo', () => {
             endAt: 2058,
             posterBlockId: null,
             fullsize: true,
-            videoId: '1_jf-0-0',
             videoVariantLanguageId: '529',
             source: VideoBlockSource.internal,
             title: null,
@@ -100,7 +99,7 @@ describe('CardVideo', () => {
             image: null,
             duration: null,
             objectFit: null,
-            video: null,
+            mediaVideo: null,
             action: null
           }
         ]
@@ -142,7 +141,6 @@ describe('CardVideo', () => {
           endAt: 2058,
           posterBlockId: null,
           fullsize: true,
-          videoId: '1_jf-0-0',
           videoVariantLanguageId: '529',
           source: VideoBlockSource.internal,
           title: null,
@@ -150,7 +148,7 @@ describe('CardVideo', () => {
           image: null,
           duration: null,
           objectFit: null,
-          video: null,
+          mediaVideo: null,
           action: null
         }
       }
@@ -181,7 +179,6 @@ describe('CardVideo', () => {
             endAt: 2058,
             posterBlockId: null,
             fullsize: true,
-            videoId: '1_jf-0-0',
             videoVariantLanguageId: '529',
             source: VideoBlockSource.internal,
             title: null,
@@ -189,7 +186,7 @@ describe('CardVideo', () => {
             image: null,
             duration: null,
             objectFit: null,
-            video: null,
+            mediaVideo: null,
             action: null
           }
         ]

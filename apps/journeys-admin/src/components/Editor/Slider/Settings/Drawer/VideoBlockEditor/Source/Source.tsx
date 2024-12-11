@@ -70,7 +70,7 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
 
   switch (selectedBlock?.source) {
     case VideoBlockSource.internal:
-      if (selectedBlock.videoId != null) {
+      if (selectedBlock.mediaVideo?.id != null) {
         SourceContent = SourceFromLocal
       } else {
         SourceContent = SourceEmpty

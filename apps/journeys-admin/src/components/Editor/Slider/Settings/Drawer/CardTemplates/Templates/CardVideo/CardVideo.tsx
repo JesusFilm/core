@@ -90,7 +90,6 @@ export function CardVideo(): ReactElement {
       endAt: 2058,
       posterBlockId: null,
       fullsize: null,
-      videoId: '1_jf-0-0',
       videoVariantLanguageId: '529',
       source: VideoBlockSource.internal,
       title: null,
@@ -98,7 +97,7 @@ export function CardVideo(): ReactElement {
       image: null,
       duration: null,
       objectFit: null,
-      video: {
+      mediaVideo: {
         id: '1_jf-0-0',
         title: [
           {
@@ -134,7 +133,7 @@ export function CardVideo(): ReactElement {
               id: videoBlock.id,
               journeyId: journey.id,
               parentBlockId: videoBlock.parentBlockId,
-              videoId: videoBlock.videoId,
+              videoId: videoBlock.mediaVideo?.id,
               videoVariantLanguageId: videoBlock.videoVariantLanguageId,
               startAt: videoBlock.startAt,
               endAt: videoBlock.endAt,

@@ -15,7 +15,6 @@ import {
 const MuxVideo = builder.prismaObject('MuxVideo', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
-
     source: t.field({
       type: VideoSource,
       shareable: true,

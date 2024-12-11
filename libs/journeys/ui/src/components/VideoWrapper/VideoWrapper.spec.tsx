@@ -3,6 +3,7 @@ import { render } from '@testing-library/react'
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { Video } from '../Video'
+import { VideoFields_mediaVideo } from '../Video/__generated__/VideoFields'
 
 import { VideoWrapper } from '.'
 
@@ -12,7 +13,7 @@ jest.mock('@core/journeys/ui/Video', () => ({
 }))
 
 describe('VideoWrapper', () => {
-  it('should set videoId to null', () => {
+  it('should set mediaVideo to null', () => {
     const block: TreeBlock = {
       id: 'video5.id',
       __typename: 'VideoBlock',
@@ -20,20 +21,19 @@ describe('VideoWrapper', () => {
       parentOrder: 0,
       autoplay: false,
       muted: true,
-      videoId: '2_0-FallingPlates',
       videoVariantLanguageId: '529',
       source: VideoBlockSource.internal,
       title: null,
       description: null,
       duration: null,
       image: null,
-      video: null,
       startAt: null,
       endAt: null,
       posterBlockId: 'image5.id',
       fullsize: null,
       action: null,
       objectFit: null,
+      mediaVideo: null,
       children: [
         {
           id: 'image5.id',
@@ -93,15 +93,14 @@ describe('VideoWrapper', () => {
         duration: null,
         image: null,
         objectFit: null,
-        video: null,
-        videoId: null,
+        mediaVideo: null,
         videoVariantLanguageId: '529'
       },
       {}
     )
   })
 
-  it('should handle where videoId is not set', () => {
+  it('should handle where mediaVideo is not set', () => {
     const block: TreeBlock = {
       id: 'video5.id',
       __typename: 'VideoBlock',
@@ -109,14 +108,13 @@ describe('VideoWrapper', () => {
       parentOrder: 0,
       autoplay: false,
       muted: true,
-      videoId: null,
       videoVariantLanguageId: '529',
       source: VideoBlockSource.internal,
       title: null,
       description: null,
       duration: null,
       image: null,
-      video: null,
+      mediaVideo: null,
       startAt: null,
       endAt: null,
       posterBlockId: 'image5.id',
@@ -182,8 +180,7 @@ describe('VideoWrapper', () => {
         duration: null,
         image: null,
         objectFit: null,
-        video: null,
-        videoId: null,
+        mediaVideo: null,
         videoVariantLanguageId: '529'
       },
       {}

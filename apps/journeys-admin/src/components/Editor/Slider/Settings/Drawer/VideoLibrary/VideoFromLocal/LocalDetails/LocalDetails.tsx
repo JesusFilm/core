@@ -83,7 +83,7 @@ export function LocalDetails({
 
   const videoBlock = selectedBlock as VideoBlock
   const languageId =
-    videoBlock?.videoId === id
+    videoBlock?.mediaVideo?.id === id
       ? (videoBlock?.videoVariantLanguageId ?? DEFAULT_LANGUAGE_ID)
       : DEFAULT_LANGUAGE_ID
 
@@ -101,8 +101,8 @@ export function LocalDetails({
       videoVariantLanguageId: selectedLanguage?.id,
       duration: time,
       source: VideoBlockSource.internal,
-      startAt: videoBlock?.videoId === id ? videoBlock?.startAt : 0,
-      endAt: videoBlock?.videoId === id ? videoBlock?.endAt : time
+      startAt: videoBlock?.mediaVideo?.id === id ? videoBlock?.startAt : 0,
+      endAt: videoBlock?.mediaVideo?.id === id ? videoBlock?.endAt : time
     })
   }
 
@@ -130,7 +130,7 @@ export function LocalDetails({
 
   useEffect(() => {
     const newSelectedLanguage =
-      videoBlock?.videoId === id &&
+      videoBlock?.mediaVideo?.id === id &&
       videoBlock?.videoVariantLanguageId !== selectedLanguage?.id
         ? (getVideoVariantLanguage() ?? DEFAULT_LANGUAGE)
         : DEFAULT_LANGUAGE

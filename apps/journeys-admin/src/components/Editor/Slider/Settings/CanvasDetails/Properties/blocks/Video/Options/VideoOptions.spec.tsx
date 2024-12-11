@@ -44,7 +44,6 @@ const video: TreeBlock<VideoBlock> = {
   autoplay: true,
   fullsize: true,
   action: null,
-  videoId: '2_0-FallingPlates',
   videoVariantLanguageId: '529',
   source: VideoBlockSource.internal,
   title: null,
@@ -52,7 +51,7 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -197,7 +196,7 @@ describe('VideoOptions', () => {
       >
         <EditorProvider
           initialState={{
-            selectedBlock: { ...video, videoId: null },
+            selectedBlock: { ...video, mediaVideo: null },
             selectedAttributeId: video.id
           }}
         >
@@ -275,7 +274,7 @@ describe('VideoOptions', () => {
       >
         <EditorProvider
           initialState={{
-            selectedBlock: { ...video, videoId: null },
+            selectedBlock: { ...video, mediaVideo: null },
             selectedAttributeId: video.id
           }}
         >

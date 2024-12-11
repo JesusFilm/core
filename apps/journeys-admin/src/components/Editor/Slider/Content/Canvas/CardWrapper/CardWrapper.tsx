@@ -42,12 +42,12 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
         child.id === block.coverBlockId &&
         child.__typename === 'VideoBlock'
       ) {
-        if (child?.videoId == null) {
+        if (child?.mediaVideo?.id == null) {
           return child
         }
         return {
           ...child,
-          videoId: null
+          mediaVideo: null
         }
       }
       return child
