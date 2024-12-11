@@ -219,7 +219,7 @@ export async function GET(
     linkedMediaComponentIds,
     _links: {
       self: {
-        href: `https://api.arclight.org/v2/media-component-links/${mediaComponentId}?${queryString}`
+        href: `http://api.arclight.org/v2/media-component-links/${mediaComponentId}?${queryString}`
       },
       mediaComponent: [
         {

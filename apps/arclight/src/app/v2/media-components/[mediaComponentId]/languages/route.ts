@@ -206,13 +206,13 @@ export async function GET(
               openGraphVideoPlayer: 'https://jesusfilm.org/',
               _links: {
                 self: {
-                  href: `https://api.arclight.org/v2/media-components/${mediaComponentId}/languages/${variant.language?.id}?platform=${platform}&apiKey=${apiKey}`
+                  href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/${variant.language?.id}?platform=${platform}&apiKey=${apiKey}`
                 },
                 mediaComponent: {
-                  href: `https://api.arclight.org/v2/media-components/${mediaComponentId}?apiKey=${apiKey}`
+                  href: `http://api.arclight.org/v2/media-components/${mediaComponentId}?apiKey=${apiKey}`
                 },
                 mediaLanguage: {
-                  href: `https://api.arclight.org/v2/media-languages/${variant.language?.id}/?apiKey=${apiKey}`
+                  href: `http://api.arclight.org/v2/media-languages/${variant.language?.id}/?apiKey=${apiKey}`
                 }
               }
             }
