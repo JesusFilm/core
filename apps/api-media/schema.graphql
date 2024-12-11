@@ -307,6 +307,10 @@ type MuxVideo
   id: ID!
   source: VideoBlockSource @shareable
   primaryLanguageId: ID @shareable
+  assetId: String
+  duration: Int
+  uploadId: String
+  playbackId: String
   uploadUrl: String
   userId: ID!
   createdAt: Date!
@@ -368,6 +372,7 @@ type Query {
   keywords: [Keyword!]!
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!): MuxVideo!
+  getMuxVideo(id: ID!): MuxVideo
 
   """List of short link domains that can be used for short links"""
   shortLinkDomains(
