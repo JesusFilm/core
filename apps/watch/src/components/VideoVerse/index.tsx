@@ -3,7 +3,7 @@ import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 import VolumeOffIcon from '@mui/icons-material/VolumeOff'
 import { type VideoContent } from '../VideoTypes'
 import { keyframes } from '@mui/system'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 type TimedText = {
   text: string
@@ -27,6 +27,8 @@ export default function VideoVerse({
   )
   const [isHovered, setIsHovered] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const textFade = keyframes`
     0% {
@@ -61,7 +63,7 @@ export default function VideoVerse({
   }, [verse])
 
   useEffect(() => {
-    if (!isHovered || verse.length === 0) return
+    if (!isVisible || verse.length === 0) return
 
     const interval = setInterval(
       () => {
@@ -71,7 +73,7 @@ export default function VideoVerse({
     )
 
     return () => clearInterval(interval)
-  }, [verse.length, isHovered, currentTextIndex, verse])
+  }, [verse.length, isVisible, currentTextIndex, verse])
 
   useEffect(() => {
     if (videoElement && videoSrc) {
@@ -97,14 +99,68 @@ export default function VideoVerse({
     }
   }, [videoElement, videoSrc])
 
+  // Add intersection observer effect
+  useEffect(() => {
+    const options = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.5
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        console.log('Intersection Observer:', {
+          isIntersecting: entry.isIntersecting,
+          videoElement: !!videoElement,
+          isPlaying
+        })
+
+        setIsVisible(entry.isIntersecting)
+
+        // Handle video playback based on visibility only
+        if (videoElement) {
+          if (entry.isIntersecting) {
+            console.log('Attempting to play video')
+            videoElement.play().catch((error) => {
+              console.error('Failed to play video:', error)
+            })
+            setIsPlaying(true)
+          } else {
+            console.log('Pausing video')
+            videoElement.pause()
+            setIsPlaying(false)
+          }
+        }
+      })
+    }, options)
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current)
+      console.log('Started observing element')
+    }
+
+    return () => {
+      if (containerRef.current) {
+        observer.unobserve(containerRef.current)
+        console.log('Stopped observing element')
+      }
+    }
+  }, [videoElement])
+
   const handleMouseEnter = async () => {
+    console.log('Mouse Enter:', {
+      videoElement: !!videoElement,
+      isVisible,
+      isPlaying
+    })
     setIsHovered(true)
-    if (videoElement) {
+    if (videoElement && isVisible) {
       try {
         setIsPlaying(true)
         const playPromise = videoElement.play()
         if (playPromise !== undefined) {
           await playPromise
+          console.log('Video started playing on hover')
         }
       } catch (error) {
         console.error('Error playing video:', error)
@@ -133,6 +189,7 @@ export default function VideoVerse({
 
   return (
     <Box
+      ref={containerRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       sx={{
@@ -218,12 +275,12 @@ export default function VideoVerse({
           key={currentTextIndex}
           variant="h6"
           sx={{
-            fontSize: '1.1rem',
+            fontSize: '1rem',
             fontWeight: 800,
             letterSpacing: '-.5px',
             textTransform: 'uppercase',
             animation:
-              isHovered && currentTextIndex !== -1
+              isVisible && currentTextIndex !== -1
                 ? `${textFade} ${verse[currentTextIndex]?.duration ?? 3}s ease-out forwards,
                    ${textGrow} 4s linear infinite`
                 : 'none',
