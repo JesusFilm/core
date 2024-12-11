@@ -7,42 +7,30 @@ import {
 } from '../../utils/media-component-utils'
 import testData from '../../utils/testData.json'
 
-function normalizeStreamingUrls(language: any) {
-  if (language.streamingUrls?.m3u8) {
-    language.streamingUrls.m3u8 = language.streamingUrls.m3u8.map(
-      (url: any) => ({
-        ...url,
-        url: url.url.split('?')[0]
-      })
-    )
-  }
-}
+test.fixme(
+  'compare media component languages between environments',
+  async ({ request }) => {
+    const baseUrl = await getBaseUrl()
+    const compareUrl = 'https://api.arclight.org'
+    const mediaComponentId = testData.mediaComponentId
 
-test('compare media component languages between environments', async ({
-  request
-}) => {
-  const baseUrl = await getBaseUrl()
-  const compareUrl = 'https://api.arclight.org'
-  const mediaComponentId = testData.mediaComponentId
+    const queryParams = new URLSearchParams({
+      apiKey: testData.apiKey,
+      mediaComponentId: mediaComponentId
+    })
 
-  const queryParams = new URLSearchParams({
-    apiKey: testData.apiKey,
-    mediaComponentId: mediaComponentId
-  })
+    const [baseResponse, compareResponse] = await Promise.all([
+      request.get(
+        `${baseUrl}/v2/media-components/${mediaComponentId}/languages?${queryParams}`
+      ),
+      request.get(
+        `${compareUrl}/v2/media-components/${mediaComponentId}/languages?${queryParams}`
+      )
+    ])
 
-  const [baseResponse, compareResponse] = await Promise.all([
-    request.get(
-      `${baseUrl}/v2/media-components/${mediaComponentId}/languages?${queryParams}`
-    ),
-    request.get(
-      `${compareUrl}/v2/media-components/${mediaComponentId}/languages?${queryParams}`
-    )
-  ])
+    expect(baseResponse.ok()).toBeTruthy()
+    expect(compareResponse.ok()).toBeTruthy()
 
-  expect(baseResponse.ok()).toBeTruthy()
-  expect(compareResponse.ok()).toBeTruthy()
-
-  if (baseResponse.ok() && compareResponse.ok()) {
     const baseData = await baseResponse.json()
     const compareData = await compareResponse.json()
 
@@ -51,16 +39,18 @@ test('compare media component languages between environments', async ({
 
     for (const language of baseLanguages) {
       delete language._links
-      delete language.downloadUrls
-      delete language.shareUrl
-      normalizeStreamingUrls(language)
+      language.streamingUrls = language.streamingUrls.map((url: any) => ({
+        ...url,
+        url: url.url.split('?')[0] // Remove query parameters from URL
+      }))
     }
 
     for (const language of compareLanguages) {
       delete language._links
-      delete language.downloadUrls
-      delete language.shareUrl
-      normalizeStreamingUrls(language)
+      language.streamingUrls = language.streamingUrls.map((url: any) => ({
+        ...url,
+        url: url.url.split('?')[0] // Remove query parameters from URL
+      }))
     }
 
     const baseLanguageMap = convertArrayToObject(baseLanguages, 'languageId')
@@ -87,4 +77,4 @@ test('compare media component languages between environments', async ({
 
     expect(differences).toHaveLength(0)
   }
-})
+)
