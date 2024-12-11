@@ -28,12 +28,18 @@ export default function VideoVerse({
   const [isHovered, setIsHovered] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
 
-  const textAppear = keyframes`
+  const textFade = keyframes`
     0% {
       opacity: 0;
     }
-    100% {
+    15% {
       opacity: 0.7;
+    }
+    85% {
+      opacity: 0.7;
+    }
+    100% {
+      opacity: 0;
     }
   `
 
@@ -136,7 +142,6 @@ export default function VideoVerse({
         backgroundColor: '#000',
         borderRadius: '16px',
         overflow: 'hidden',
-        // mb: 6,
         position: 'relative',
         cursor: 'pointer',
         boxShadow:
@@ -213,15 +218,14 @@ export default function VideoVerse({
           key={currentTextIndex}
           variant="h6"
           sx={{
-            fontSize: '1.4rem',
+            fontSize: '1.1rem',
             fontWeight: 800,
             letterSpacing: '-.5px',
             textTransform: 'uppercase',
-            // opacity: currentTextIndex === -1 ? 0 : 0.7,
             animation:
               isHovered && currentTextIndex !== -1
-                ? `${textAppear} 0.8s ease-out forwards,
-                 ${textGrow} 4s linear infinite`
+                ? `${textFade} ${verse[currentTextIndex]?.duration ?? 3}s ease-out forwards,
+                   ${textGrow} 4s linear infinite`
                 : 'none',
             textAlign: 'center',
             minHeight: '1.5em',

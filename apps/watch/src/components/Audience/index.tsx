@@ -37,6 +37,7 @@ import { PersonaSlide } from './PersonaSlide'
 import CreateIcon from '@mui/icons-material/Create'
 import { SectionHeader } from '../SectionHeader'
 import { MessageBubble } from '../MessageBubble'
+import VideoVerse from '../VideoVerse'
 
 interface Persona {
   id: string
@@ -75,6 +76,206 @@ const sampleAudience: Persona[] = [
     type: 'channel',
     avatarSrc: '💬',
     unread: false
+  }
+]
+
+type TimedText = {
+  text: string
+  duration: number
+}
+
+type VideoVerse = {
+  id: string
+  type: VideoType
+  src: string
+  poster: string
+  verse: TimedText[]
+}
+
+const anxietyVerses: VideoVerse[] = [
+  {
+    id: 'main-video',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/BIVSDq',
+    poster: 'https://cdn-std.droplr.net/files/acc_760170/MKEjsL',
+    verse: [
+      { text: 'Be strong and courageous.', duration: 3 },
+      { text: 'Do not be afraid', duration: 2 },
+      { text: 'or terrified because of them,', duration: 2 },
+      { text: 'for the LORD your God goes with you;', duration: 3 },
+      { text: 'he will never leave you nor forsake you.', duration: 4 },
+      { text: 'Psalm 34:4', duration: 2 }
+    ]
+  },
+  {
+    id: 'anxiety-video',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/XOf5fA',
+    poster:
+      'https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg',
+    verse: [
+      { text: 'The Lord your God is with you,', duration: 3 },
+      { text: 'the Mighty Warrior who saves.', duration: 3 },
+      { text: 'He will take great delight in you;', duration: 3 },
+      { text: 'in his love he will no longer rebuke you,', duration: 3 },
+      { text: 'but will rejoice over you with singing.', duration: 3 },
+      { text: 'Zephaniah 3:17', duration: 2 }
+    ]
+  },
+  {
+    id: 'future-plans-video',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/jz9NYS',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      {
+        text: 'For I know the plans I have for you,” declares the Lord,',
+        duration: 5
+      },
+      { text: '“plans to prosper you and not to harm you,', duration: 4 },
+      { text: 'plans to give you hope and a future.', duration: 4 },
+      { text: 'Jeremiah 29:11', duration: 3 }
+    ]
+  },
+  {
+    id: 'do-not-be-anxious',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/ja1eOZ',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      { text: 'Do not be anxious about anything,', duration: 4 },
+      {
+        text: 'but in every situation, by prayer and petition,',
+        duration: 4
+      },
+      {
+        text: 'with thanksgiving, present your requests to God.',
+        duration: 4
+      },
+      {
+        text: 'And the peace of God, which transcends all understanding,',
+        duration: 4
+      },
+      {
+        text: 'will guard your hearts and your minds in Christ Jesus.',
+        duration: 4
+      },
+      { text: 'Philippians 4:6-7', duration: 3 }
+    ]
+  },
+  {
+    id: 'come-to-me',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/4KaB4T',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      {
+        text: 'Come to me, all you who are weary and burdened,',
+        duration: 4
+      },
+      { text: 'and I will give you rest.', duration: 3 },
+      { text: 'Matthew 11:28', duration: 2 }
+    ]
+  },
+  {
+    id: 'perfect-peace',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/kXgcec',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      { text: 'You will keep in perfect peace', duration: 3 },
+      { text: 'those whose minds are steadfast,', duration: 3 },
+      { text: 'because they trust in you.', duration: 3 },
+      { text: 'Isaiah 26:2', duration: 2 }
+    ]
+  },
+  {
+    id: 'stilling-the-storm',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/GXHXKO',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      { text: 'He stilled the storm to a whisper;', duration: 3 },
+      { text: 'the waves of the sea.', duration: 3 },
+      { text: 'Psalm 107:29', duration: 2 }
+    ]
+  },
+  {
+    id: 'good-news',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/mXiLge',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      { text: 'The Spirit of the Lord is on me,', duration: 3 },
+      {
+        text: 'because he has anointed me to proclaim good news to the poor.',
+        duration: 5
+      },
+      {
+        text: 'He has sent me to proclaim freedom for the prisoners',
+        duration: 4
+      },
+      {
+        text: 'and recovery of sight for the blind, to set the oppressed free.',
+        duration: 5
+      },
+      { text: 'Luke 4:18', duration: 2 }
+    ]
+  },
+  {
+    id: 'strength-for-the-weary',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/J58rjm',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      { text: 'He gives strength to the weary', duration: 3 },
+      { text: 'and increases the power of the weak.', duration: 3 },
+      { text: 'Isaiah 40:29', duration: 2 }
+    ]
+  },
+  {
+    id: 'close-to-the-brokenhearted',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/RZv4HH',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      { text: 'The Lord is close to the brokenhearted', duration: 3 },
+      { text: 'and saves those who are crushed in spirit.', duration: 3 },
+      { text: 'Psalm 34:18', duration: 2 }
+    ]
+  },
+  {
+    id: 'heals-brokenhearted',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/V9Pr4Z',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      { text: 'He heals the brokenhearted', duration: 3 },
+      { text: 'and binds up their wounds.', duration: 3 },
+      { text: 'Psalm 147:3', duration: 2 }
+    ]
+  },
+  {
+    id: 'recovery-video',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/BIVSDq',
+    poster:
+      'https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg',
+    verse: [
+      { text: 'Be strong and courageous.', duration: 3 },
+      {
+        text: 'Do not be afraid',
+        duration: 2
+      },
+      {
+        text: 'or terrified because of them,',
+        duration: 2
+      },
+
+      { text: 'for the LORD your God goes with you;', duration: 3 },
+      { text: 'he will never leave you nor forsake you.', duration: 4 },
+      { text: 'Psalm 34:4', duration: 2 }
+    ]
   }
 ]
 
@@ -368,7 +569,6 @@ export function Audience(): ReactElement {
             sx={{ backgroundColor: 'background.default' }}
             data-testid="AudiencePage"
           >
-            {/* Copy the same JSX structure from WatchLanding */}
             {/* Desktop Message */}
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
               <DesktopMessage />
@@ -535,6 +735,34 @@ export function Audience(): ReactElement {
                     />
                   </SwiperSlide>
                 </Swiper>
+
+                <SectionHeader
+                  primaryText="Video Verses"
+                  secondaryText="Bible Quotes Ready to Share"
+                />
+
+                <Box
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gap: '20px',
+                    width: '100%',
+                    height: 'auto',
+                    boxSizing: 'border-box'
+                  }}
+                >
+                  {anxietyVerses.map((verse, index) => (
+                    <Box
+                      sx={{
+                        // aspectRatio: '9/16',
+                        backgroundColor: 'rgba(255,255,255,0.05)',
+                        borderRadius: 4
+                      }}
+                    >
+                      <VideoVerse videoSrc={verse.src} verse={verse.verse} />
+                    </Box>
+                  ))}
+                </Box>
 
                 <Typography
                   variant="h4"
