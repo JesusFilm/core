@@ -18,7 +18,6 @@ test('compare specific media component languages between environments', async ({
     languageId
   })
 
-  // Fetch responses from both environments
   const [baseResponse, compareResponse] = await Promise.all([
     request.get(
       `${baseUrl}/v2/media-components/${mediaComponentId}/languages/${languageId}?${queryParams}`
@@ -31,40 +30,26 @@ test('compare specific media component languages between environments', async ({
   expect(baseResponse.ok()).toBeTruthy()
   expect(compareResponse.ok()).toBeTruthy()
 
-  if (baseResponse.ok() && compareResponse.ok()) {
-    const baseData = await baseResponse.json()
-    const compareData = await compareResponse.json()
+  const baseData = await baseResponse.json()
+  const compareData = await compareResponse.json()
 
-    // Remove fields that will always be different
-    delete baseData.downloadUrls
-    delete baseData._links
-    delete baseData.shareUrl
-    delete baseData.apiSessionId
+  delete baseData.apiSessionId
+  baseData.shareUrl = baseData.shareUrl.split('?')[0]
+  baseData.downloadUrls.low.url = baseData.downloadUrls.low.url.split('?')[0]
+  baseData.downloadUrls.high.url = baseData.downloadUrls.high.url.split('?')[0]
+  baseData.streamingUrls.m3u8[0].url =
+    baseData.streamingUrls.m3u8[0].url.split('?')[0]
 
-    delete compareData.downloadUrls
-    delete compareData._links
-    delete compareData.shareUrl
-    delete compareData.apiSessionId
+  delete compareData.apiSessionId
+  compareData.shareUrl = compareData.shareUrl.split('?')[0]
+  compareData.downloadUrls.low.url =
+    compareData.downloadUrls.low.url.split('?')[0]
+  compareData.downloadUrls.high.url =
+    compareData.downloadUrls.high.url.split('?')[0]
+  compareData.streamingUrls.m3u8[0].url =
+    compareData.streamingUrls.m3u8[0].url.split('?')[0]
 
-    // Compare the media component languages
-    if (!baseData.mediaComponentId) {
-      console.log(
-        `Media Component Languages for ${mediaComponentId} only exist in compare environment`
-      )
-      expect(false).toBeTruthy()
-    } else if (!compareData.mediaComponentId) {
-      console.log(
-        `Media Component Languages for ${mediaComponentId} only exist in base environment`
-      )
-      expect(false).toBeTruthy()
-    } else {
-      const differences = getObjectDiff(baseData, compareData)
+  const differences = getObjectDiff(baseData, compareData)
 
-      if (differences.length > 0) {
-        console.log('Differences found:', differences)
-      }
-
-      expect(differences).toHaveLength(0)
-    }
-  }
+  expect(differences).toHaveLength(0)
 })
