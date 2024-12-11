@@ -8,7 +8,7 @@ builder.prismaObject('BibleCitation', {
     bibleBook: t.relation('bibleBook', { nullable: false }),
     chapterStart: t.exposeInt('chapterStart', { nullable: false }),
     chapterEnd: t.exposeInt('chapterEnd'),
-    verseStart: t.exposeInt('verseStart', { nullable: false }),
+    verseStart: t.exposeInt('verseStart'),
     verseEnd: t.exposeInt('verseEnd'),
     video: t.relation('video', { nullable: false })
   })

@@ -15,10 +15,7 @@ const bibleCitationSchema = z
     position: z.number(),
     chapterStart: z.number(),
     chapterEnd: z.number().nullable(),
-    verseStart: z
-      .number()
-      .nullable()
-      .transform((value) => value ?? 1),
+    verseStart: z.number().nullable(),
     verseEnd: z.number().nullable(),
     datastream_metadata: z.object({
       uuid: z.string()
