@@ -9,9 +9,9 @@ import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/us
 
 import {
   UPDATE_VARIANT_LANGUAGE,
-  VariantDialog,
-  VideoVariantUpdate,
-  VideoVariantUpdateVariables
+  UpdateVariantLanguage,
+  UpdateVariantLanguageVariables,
+  VariantDialog
 } from './VariantDialog'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -32,8 +32,8 @@ const mockVariantLanguages = new Map([
 ])
 
 const mockVideoVariantUpdate: MockedResponse<
-  VideoVariantUpdate,
-  VideoVariantUpdateVariables
+  UpdateVariantLanguage,
+  UpdateVariantLanguageVariables
 > = {
   request: {
     query: UPDATE_VARIANT_LANGUAGE,

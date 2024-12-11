@@ -29,7 +29,7 @@ interface VariantDialogProps {
 }
 
 export const UPDATE_VARIANT_LANGUAGE = graphql(`
-  mutation VideoVariantUpdate($input: VideoVariantUpdateInput!) {
+  mutation UpdateVariantLanguage($input: VideoVariantUpdateInput!) {
     videoVariantUpdate(input: $input) {
       id
       videoId
@@ -45,10 +45,10 @@ export const UPDATE_VARIANT_LANGUAGE = graphql(`
   }
 `)
 
-export type VideoVariantUpdateVariables = VariablesOf<
+export type UpdateVariantLanguageVariables = VariablesOf<
   typeof UPDATE_VARIANT_LANGUAGE
 >
-export type VideoVariantUpdate = ResultOf<typeof UPDATE_VARIANT_LANGUAGE>
+export type UpdateVariantLanguage = ResultOf<typeof UPDATE_VARIANT_LANGUAGE>
 
 export function VariantDialog({
   variant,
