@@ -14,7 +14,7 @@ const GET_VIDEO_LANGUAGES = graphql(`
       id
       variants {
         id
-        duration
+        lengthInMilliseconds
         hls
         dash
         share
@@ -196,7 +196,7 @@ export async function GET(
               mediaComponentId,
               languageId: Number(variant.language?.id),
               refId: variant.id,
-              lengthInMilliseconds: variant.duration,
+              lengthInMilliseconds: variant?.lengthInMilliseconds ?? 0,
               subtitleUrls,
               downloadUrls,
               streamingUrls,

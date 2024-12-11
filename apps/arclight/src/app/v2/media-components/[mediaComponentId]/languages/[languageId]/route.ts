@@ -17,7 +17,7 @@ const GET_VIDEO_VARIANT = graphql(`
       id
       variant(languageId: $languageId) {
         id
-        duration
+        lengthInMilliseconds
         hls
         dash
         share
@@ -46,7 +46,7 @@ const GET_VIDEO_VARIANT = graphql(`
         primaryLanguageId
         variant {
           hls
-          duration
+          lengthInMilliseconds
           downloadable
           downloads {
             height
@@ -223,7 +223,7 @@ export async function GET(
     refId: video.variant?.id,
     apiSessionId,
     platform,
-    lengthInMilliseconds: video.variant?.duration ?? 0,
+    lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
     subtitleUrls,
     downloadUrls,
     streamingUrls,
@@ -253,7 +253,7 @@ export async function GET(
             languageId: Number(languageId),
             refId: `${child.id}_${languageId}-${child.label}`,
             apiSessionId,
-            lengthInMilliseconds: child.variant?.duration ?? 0,
+            lengthInMilliseconds: child.variant?.lengthInMilliseconds ?? 0,
             subtitleUrls: {
               vtt:
                 child.variant?.subtitle?.map((subtitle) => ({

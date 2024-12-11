@@ -95,6 +95,7 @@ const GET_VIDEOS_WITH_FALLBACK = graphql(`
       variant {
         hls
         duration
+        lengthInMilliseconds
         language {
           bcp47
         }
@@ -118,7 +119,6 @@ export async function GET(request: NextRequest): Promise<Response> {
     Number(query.get('limit')) === 0 ? 10000 : Number(query.get('limit'))
   const offset = (page - 1) * limit
   const expand = query.get('expand') ?? ''
-  console.log('expand', expand)
   const subTypes =
     query.get('subTypes')?.split(',').filter(Boolean).length === 0
       ? undefined
@@ -202,7 +202,7 @@ export async function GET(request: NextRequest): Promise<Response> {
           video.images.find((image) => image.mobileCinematicVeryLow != null)
             ?.mobileCinematicVeryLow ?? ''
       },
-      lengthInMilliseconds: video.variant?.duration ?? 0,
+      lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
       containsCount: video.childrenCount,
       isDownloadable,
       downloadSizes: isDownloadable
