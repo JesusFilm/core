@@ -69,7 +69,7 @@ export async function GET(request: NextRequest): Promise<Response> {
   const response = {
     _links: {
       self: {
-        href: `https://api.arclight.com/v2/media-country-links?${queryString}`
+        href: `https://api.arclight.org/v2/media-country-links?${queryString}`
       }
     },
     _embedded: {

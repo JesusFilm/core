@@ -66,6 +66,7 @@ const GET_VIDEO = graphql(`
         id
       }
       variant {
+        hls
         lengthInMilliseconds
         language {
           bcp47
@@ -169,7 +170,7 @@ export async function GET(
     }
     const response = {
       mediaComponentId,
-      componentType: video.childrenCount === 0 ? 'content' : 'collection',
+      componentType: video.variant?.hls != null ? 'content' : 'container',
       subType: video.label,
       contentType: 'video',
       imageUrls: {

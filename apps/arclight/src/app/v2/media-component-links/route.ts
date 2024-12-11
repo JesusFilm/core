@@ -80,7 +80,7 @@ export async function GET(request: NextRequest): Promise<Response> {
   const response = {
     _links: {
       self: {
-        href: `https://api.arclight.com/v2/mediaComponents?${queryString}`
+        href: `https://api.arclight.org/v2/mediaComponents?${queryString}`
       }
     },
     _embedded: {

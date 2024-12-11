@@ -265,25 +265,25 @@ export async function GET(request: NextRequest): Promise<Response> {
     apiSessionId: '',
     _links: {
       self: {
-        href: `https://api.arclight.com/v2/mediaComponents?${queryString}`
+        href: `https://api.arclight.org/v2/mediaComponents?${queryString}`
       },
       first: {
-        href: `https://api.arclight.com/v2/mediaComponents?${firstQueryString}`
+        href: `https://api.arclight.org/v2/mediaComponents?${firstQueryString}`
       },
       last: {
-        href: `https://api.arclight.com/v2/mediaComponents?${lastQueryString}`
+        href: `https://api.arclight.org/v2/mediaComponents?${lastQueryString}`
       },
       ...(page < lastPage
         ? {
             next: {
-              href: `https://api.arclight.com/v2/mediaComponents?${nextQueryString}`
+              href: `https://api.arclight.org/v2/mediaComponents?${nextQueryString}`
             }
           }
         : {}),
       ...(page > 1
         ? {
             previous: {
-              href: `https://api.arclight.com/v2/mediaComponents?${previousQueryString}`
+              href: `https://api.arclight.org/v2/mediaComponents?${previousQueryString}`
             }
           }
         : {})

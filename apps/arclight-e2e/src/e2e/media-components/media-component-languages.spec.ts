@@ -7,6 +7,17 @@ import {
 } from '../../utils/media-component-utils'
 import testData from '../../utils/testData.json'
 
+function normalizeStreamingUrls(language: any) {
+  if (language.streamingUrls?.m3u8) {
+    language.streamingUrls.m3u8 = language.streamingUrls.m3u8.map(
+      (url: any) => ({
+        ...url,
+        url: url.url.split('?')[0]
+      })
+    )
+  }
+}
+
 test('compare media component languages between environments', async ({
   request
 }) => {
@@ -42,12 +53,14 @@ test('compare media component languages between environments', async ({
       delete language._links
       delete language.downloadUrls
       delete language.shareUrl
+      normalizeStreamingUrls(language)
     }
 
     for (const language of compareLanguages) {
       delete language._links
       delete language.downloadUrls
       delete language.shareUrl
+      normalizeStreamingUrls(language)
     }
 
     const baseLanguageMap = convertArrayToObject(baseLanguages, 'languageId')
