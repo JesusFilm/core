@@ -14,10 +14,12 @@ import './mux'
 import './shortLink'
 import './user'
 import './video'
+import './videoSource'
 import './videoEdition'
 import './videoVariant'
 import './tag'
 import './taxonomy'
+import './youtube'
 
 import { builder } from './builder'
 
