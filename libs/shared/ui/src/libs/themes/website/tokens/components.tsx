@@ -109,6 +109,18 @@ export const websiteComponents: Required<Pick<ThemeOptions, 'components'>> = {
           }
         }
       }
+    },
+    MuiChip: {
+      styleOverrides: {
+        icon: {
+          fontSize: '1rem',
+          marginLeft: '8px'
+        },
+        label: {
+          paddingLeft: '12px',
+          paddingRight: '12px'
+        }
+      }
     }
   }
 }
