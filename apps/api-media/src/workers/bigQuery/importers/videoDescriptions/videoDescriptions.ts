@@ -5,17 +5,6 @@ import { prisma } from '../../../../lib/prisma'
 import { parse, parseMany, processTable } from '../../importer'
 import { getVideoIds } from '../videos'
 
-function convertToHtmlEntities(text: string): string {
-  const result = text.replace(/&(quot|#13|#10|lt|gt|amp|apos);/g, (match) => {
-    const entities: Record<string, string> = {
-      '&#13;': '\n'
-    }
-    return entities[match] || match
-  })
-
-  return result
-}
-
 const videoDescriptionSchema = z
   .object({
     value: z.string(),
@@ -26,7 +15,7 @@ const videoDescriptionSchema = z
   .transform(({ value, ...rest }) => {
     const transformed = {
       ...rest,
-      value: convertToHtmlEntities(value)
+      value: value.replace(/&#13;/g, '\n')
     }
     return transformed
   })
