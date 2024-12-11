@@ -45,6 +45,7 @@ export function transformJourneyAnalytics(
     journeyReferrer,
     journeyAggregateVisitors,
     journeyActionsSums
+    // journeyUtmCampaign
   } = data
 
   const journeyEvents = getJourneyEvents(journeyStepsActions)
