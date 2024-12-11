@@ -5,15 +5,11 @@ import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { graphql } from 'gql.tada'
+import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
-import { useSnackbar } from 'notistack'
-import { ReactElement, useCallback, useRef, useState } from 'react'
-import videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
+import { ReactElement, useState } from 'react'
 
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
-import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { Dialog } from '@core/shared/ui/Dialog'
 import {
   LanguageAutocomplete,
@@ -21,8 +17,8 @@ import {
 } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
+import { VariantVideo } from '../VariantVideo'
 
-import 'video.js/dist/video-js.css'
 import { Downloads } from './Downloads'
 
 interface VariantDialogProps {
@@ -32,7 +28,7 @@ interface VariantDialogProps {
   variantLanguagesMap: Map<string, GetAdminVideoVariant>
 }
 
-const UPDATE_VARIANT_LANGUAGE = graphql(`
+export const UPDATE_VARIANT_LANGUAGE = graphql(`
   mutation VideoVariantUpdate($input: VideoVariantUpdateInput!) {
     videoVariantUpdate(input: $input) {
       id
@@ -48,6 +44,11 @@ const UPDATE_VARIANT_LANGUAGE = graphql(`
     }
   }
 `)
+
+export type VideoVariantUpdateVariables = VariablesOf<
+  typeof UPDATE_VARIANT_LANGUAGE
+>
+export type VideoVariantUpdate = ResultOf<typeof UPDATE_VARIANT_LANGUAGE>
 
 export function VariantDialog({
   variant,
@@ -69,19 +70,7 @@ export function VariantDialog({
     useMutation(UPDATE_VARIANT_LANGUAGE)
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const { enqueueSnackbar } = useSnackbar()
   const { data, loading } = useLanguagesQuery({ languageId: '529' })
-
-  const playerRef = useRef<Player>()
-
-  const videoRef = useCallback((node: HTMLVideoElement | null) => {
-    if (node == null) return
-    playerRef.current = videojs(node, {
-      ...defaultVideoJsOptions,
-      fluid: true,
-      controls: true
-    })
-  }, [])
 
   const videoSrc = variant?.downloads.find(
     (download) => download.quality === 'low'
@@ -93,13 +82,7 @@ export function VariantDialog({
 
   async function handleSubmit(): Promise<void> {
     const existingVariant = variantLanguagesMap.get(selectedLanguage.id)
-    if (existingVariant != null) {
-      enqueueSnackbar(t('variant already exists'), {
-        variant: 'error',
-        preventDuplicate: false
-      })
-      return
-    }
+    if (existingVariant != null) return
     await updateVariantLanguage({
       variables: {
         input: {
@@ -113,6 +96,7 @@ export function VariantDialog({
 
   return (
     <Dialog
+      data-testid="VariantDialog"
       open={open}
       onClose={handleClose}
       fullscreen={!smUp}
@@ -132,6 +116,7 @@ export function VariantDialog({
         >
           <Box sx={{ width: '90%' }}>
             <LanguageAutocomplete
+              data-testid="VariantLanguageAutocomplete"
               onChange={handleChange}
               languages={data?.languages}
               loading={loading || updateVariantLoading}
@@ -165,13 +150,7 @@ export function VariantDialog({
             overflow: 'hidden'
           }}
         >
-          <video
-            ref={videoRef}
-            className="video-js vjs-big-play-centered"
-            playsInline
-          >
-            <source src={videoSrc} type="video/mp4" />
-          </video>
+          <VariantVideo videoSrc={videoSrc} />
         </Box>
         <Downloads downloads={variant.downloads} />
       </Stack>
