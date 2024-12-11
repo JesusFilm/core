@@ -1,4 +1,3 @@
-import React, { type ReactElement, useState, useEffect, useRef } from 'react'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
@@ -8,6 +7,7 @@ import Button from '@mui/material/Button'
 import SearchIcon from '@mui/icons-material/Search'
 import IconButton from '@mui/material/IconButton'
 import { useTranslation } from 'next-i18next'
+import { type ReactElement, useState, useEffect, useRef } from 'react'
 import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 import VolumeOffIcon from '@mui/icons-material/VolumeOff'
 import Chip from '@mui/material/Chip'
@@ -19,34 +19,231 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CancelIcon from '@mui/icons-material/Cancel'
 import HelpIcon from '@mui/icons-material/Help'
-import { VideoPlayerProps } from './VideoPlayer' // Import the new component
-import Grid from '@mui/material/Grid'
-import { useTheme } from '@mui/material/styles'
 import { VideoSingle } from '../VideoSingle'
-import { BlockComponent } from './BlockComponent'
+import { VideoProvider, useVideo } from '../VideoContext'
+import { VideoType, type VideoContent } from '../VideoTypes'
+import { VideoPlayer } from '../VideoPlayer'
+import { VideoBox } from '../VideoBox'
+import Head from 'next/head'
 
-// import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
-// import { SearchBar } from '@core/journeys/ui/SearchBar'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { HomeHero } from './HomeHero'
-import { SeeAllVideos } from './SeeAllVideos'
-import { VideoContext, VideoProvider, useVideo } from './VideoContext'
-import { VideoType } from '../VideoTypes'
+import { VideoSlide } from '../WatchLanding/VideoSlide'
+import { HeaderSection } from './HeaderSection'
+import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord'
+import AddIcon from '@mui/icons-material/Add'
+import CreateIcon from '@mui/icons-material/Create'
+import { SectionHeader } from '../SectionHeader'
+import { MessageBubble } from '../MessageBubble'
 import VideoVerse from '../VideoVerse'
 
+type TimedText = {
+  text: string
+  duration: number
+}
+
+type VideoVerse = {
+  id: string
+  type: VideoType
+  src: string
+  poster: string
+  verse: TimedText[]
+}
+
+const anxietyVerses: VideoVerse[] = [
+  {
+    id: 'main-video',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/BIVSDq',
+    poster: 'https://cdn-std.droplr.net/files/acc_760170/MKEjsL',
+    verse: [
+      { text: 'Be strong and courageous.', duration: 3 },
+      { text: 'Do not be afraid', duration: 2 },
+      { text: 'or terrified because of them,', duration: 2 },
+      { text: 'for the LORD your God goes with you;', duration: 3 },
+      { text: 'he will never leave you nor forsake you.', duration: 4 },
+      { text: 'Psalm 34:4', duration: 2 }
+    ]
+  },
+  {
+    id: 'anxiety-video',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/XOf5fA',
+    poster:
+      'https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg',
+    verse: [
+      { text: 'The Lord your God is with you,', duration: 3 },
+      { text: 'the Mighty Warrior who saves.', duration: 3 },
+      { text: 'He will take great delight in you;', duration: 3 },
+      { text: 'in his love he will no longer rebuke you,', duration: 3 },
+      { text: 'but will rejoice over you with singing.', duration: 3 },
+      { text: 'Zephaniah 3:17', duration: 2 }
+    ]
+  },
+  {
+    id: 'future-plans-video',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/jz9NYS',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      {
+        text: 'For I know the plans I have for you,” declares the Lord,',
+        duration: 5
+      },
+      { text: '“plans to prosper you and not to harm you,', duration: 4 },
+      { text: 'plans to give you hope and a future.', duration: 4 },
+      { text: 'Jeremiah 29:11', duration: 3 }
+    ]
+  },
+  {
+    id: 'do-not-be-anxious',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/ja1eOZ',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      { text: 'Do not be anxious about anything,', duration: 4 },
+      {
+        text: 'but in every situation, by prayer and petition,',
+        duration: 4
+      },
+      {
+        text: 'with thanksgiving, present your requests to God.',
+        duration: 4
+      },
+      {
+        text: 'And the peace of God, which transcends all understanding,',
+        duration: 4
+      },
+      {
+        text: 'will guard your hearts and your minds in Christ Jesus.',
+        duration: 4
+      },
+      { text: 'Philippians 4:6-7', duration: 3 }
+    ]
+  },
+  {
+    id: 'come-to-me',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/4KaB4T',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      {
+        text: 'Come to me, all you who are weary and burdened,',
+        duration: 4
+      },
+      { text: 'and I will give you rest.', duration: 3 },
+      { text: 'Matthew 11:28', duration: 2 }
+    ]
+  },
+  {
+    id: 'perfect-peace',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/kXgcec',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      { text: 'You will keep in perfect peace', duration: 3 },
+      { text: 'those whose minds are steadfast,', duration: 3 },
+      { text: 'because they trust in you.', duration: 3 },
+      { text: 'Isaiah 26:2', duration: 2 }
+    ]
+  },
+  {
+    id: 'stilling-the-storm',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/GXHXKO',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      { text: 'He stilled the storm to a whisper;', duration: 3 },
+      { text: 'the waves of the sea.', duration: 3 },
+      { text: 'Psalm 107:29', duration: 2 }
+    ]
+  },
+  {
+    id: 'good-news',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/mXiLge',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      { text: 'The Spirit of the Lord is on me,', duration: 3 },
+      {
+        text: 'because he has anointed me to proclaim good news to the poor.',
+        duration: 5
+      },
+      {
+        text: 'He has sent me to proclaim freedom for the prisoners',
+        duration: 4
+      },
+      {
+        text: 'and recovery of sight for the blind, to set the oppressed free.',
+        duration: 5
+      },
+      { text: 'Luke 4:18', duration: 2 }
+    ]
+  },
+  {
+    id: 'strength-for-the-weary',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/J58rjm',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      { text: 'He gives strength to the weary', duration: 3 },
+      { text: 'and increases the power of the weak.', duration: 3 },
+      { text: 'Isaiah 40:29', duration: 2 }
+    ]
+  },
+  {
+    id: 'close-to-the-brokenhearted',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/RZv4HH',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      { text: 'The Lord is close to the brokenhearted', duration: 3 },
+      { text: 'and saves those who are crushed in spirit.', duration: 3 },
+      { text: 'Psalm 34:18', duration: 2 }
+    ]
+  },
+  {
+    id: 'heals-brokenhearted',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/V9Pr4Z',
+    poster: '', // Add appropriate poster URL if available
+    verse: [
+      { text: 'He heals the brokenhearted', duration: 3 },
+      { text: 'and binds up their wounds.', duration: 3 },
+      { text: 'Psalm 147:3', duration: 2 }
+    ]
+  },
+  {
+    id: 'recovery-video',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/BIVSDq',
+    poster:
+      'https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg',
+    verse: [
+      { text: 'Be strong and courageous.', duration: 3 },
+      {
+        text: 'Do not be afraid',
+        duration: 2
+      },
+      {
+        text: 'or terrified because of them,',
+        duration: 2
+      },
+
+      { text: 'for the LORD your God goes with you;', duration: 3 },
+      { text: 'he will never leave you nor forsake you.', duration: 4 },
+      { text: 'Psalm 34:4', duration: 2 }
+    ]
+  }
+]
+
 interface SharedVideoCardProps {
-  avatarSrc: string
   name: string
   message: string
 }
 
-const SharedVideoCard = ({
-  avatarSrc,
-  name,
-  message
-}: SharedVideoCardProps) => (
+const SharedVideoCard = ({ name, message }: SharedVideoCardProps) => (
   <Box
     sx={{
       display: 'flex',
@@ -61,7 +258,8 @@ const SharedVideoCard = ({
         content: '""',
         position: 'absolute',
         bottom: '-10px',
-        left: '35px',
+        left: '50%',
+        ml: '-10px',
         width: 0,
         height: 0,
         borderLeft: '10px solid transparent',
@@ -70,431 +268,132 @@ const SharedVideoCard = ({
       }
     }}
   >
-    <Avatar
-      src={avatarSrc}
-      sx={{
-        width: 60,
-        height: 60,
-        mr: 2,
-        border: '2px solid',
-        borderColor: 'rgba(255, 255, 255, 0.2)'
-      }}
+    <Typography
+      variant="h1"
+      color="text.primary"
+      sx={{ fontSize: '2rem', px: 4, mr: 2 }}
     >
-      V
-    </Avatar>
+      👍
+    </Typography>
     <Stack direction="column" spacing={0.5}>
       <Typography variant="subtitle1" color="text.primary">
-        {name}
-      </Typography>
-      <Typography variant="body1" color="text.primary" sx={{ opacity: 0.5 }}>
-        {message}
+        {name} <span style={{ opacity: 0.5 }}>{message}</span>
       </Typography>
     </Stack>
   </Box>
 )
 
-interface SectionHeaderProps {
-  primaryText: string
-  secondaryText: string
-  disableTopSpacing?: boolean
-}
+const MOBILE_MAX_WIDTH = 440
 
-const SectionHeader = ({
-  primaryText,
-  secondaryText,
-  disableTopSpacing
-}: SectionHeaderProps) => (
-  <>
-    <Typography
-      variant="h4"
+const DesktopMessage = () => (
+  <Box
+    sx={{
+      height: '100vh',
+      width: '100vw',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'background.default',
+      padding: { xs: 4, sm: 6, md: 8 },
+      textAlign: 'center'
+    }}
+  >
+    <Box
       sx={{
-        mt: disableTopSpacing ? 0 : 16,
-        mb: 0,
-        color: 'text.primary'
+        maxWidth: 600,
+        padding: { xs: 4, sm: 6, md: 8 },
+        borderRadius: 4,
+        backgroundColor: 'rgba(255,255,255,0.03)',
+        backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(255,255,255,0.1)'
       }}
     >
-      {primaryText}
-    </Typography>
-    <Typography
-      variant="subtitle1"
-      sx={{
-        mt: 0,
-        mb: 6,
-        opacity: 0.5,
-        color: 'text.primary'
-      }}
-    >
-      {secondaryText}
-    </Typography>
-  </>
+      <Typography variant="h5" color="text.primary" sx={{ mb: 3 }}>
+        This is a prototype for a mobile device.
+      </Typography>
+      <Typography variant="body1" sx={{ opacity: 0.7, color: '#fff' }}>
+        Current screen size is not supported.
+      </Typography>
+    </Box>
+  </Box>
 )
 
-// New VideoPlayer component
-const VideoPlayer = React.forwardRef<HTMLVideoElement, VideoPlayerProps>(
-  (
-    {
-      videoSrc,
-      poster,
-      isPlaying,
-      toggleMute,
-      isMuted,
-      handlePlayPause,
-      autoPlay = false,
-      id,
-      onVideoClick,
-      sx = {}
-    },
-    ref
-  ) => {
-    const [isHovered, setIsHovered] = useState(false)
-    const [hasAutoPlayed, setHasAutoPlayed] = useState(false)
-    const videoRef = useRef<HTMLVideoElement>(null)
-    const { activeVideoId, setActiveVideoId } = useVideo()
-
-    // Initial setup and autoplay
-    useEffect(() => {
-      if (videoRef.current) {
-        if (autoPlay) {
-          const playVideo = async () => {
-            try {
-              videoRef.current!.currentTime = 0
-              await videoRef.current!.play()
-            } catch (error) {
-              console.log('Error auto-playing video:', error)
-            }
-          }
-          playVideo()
-        } else {
-          videoRef.current.currentTime = 0.1
-          videoRef.current.load()
-        }
-      }
-    }, [autoPlay])
-
-    // Handle video state changes
-    useEffect(() => {
-      if (videoRef.current && autoPlay && !hasAutoPlayed) {
-        const handleCanPlay = () => {
-          if (!hasAutoPlayed) {
-            videoRef.current?.play()
-            setActiveVideoId(id)
-            setHasAutoPlayed(true)
-          }
-        }
-
-        videoRef.current.addEventListener('canplay', handleCanPlay)
-        return () => {
-          videoRef.current?.removeEventListener('canplay', handleCanPlay)
-        }
-      }
-    }, [autoPlay, hasAutoPlayed, id, setActiveVideoId])
-
-    // Only pause when another video becomes active
-    useEffect(() => {
-      if (activeVideoId && activeVideoId !== id && videoRef.current) {
-        videoRef.current.pause()
-        videoRef.current.currentTime = 0.1
-        setIsHovered(false)
-      }
-    }, [activeVideoId, id])
-
-    const startPlaying = () => {
-      if (activeVideoId !== id) {
-        // Only start if not already playing
-        setIsHovered(true)
-        if (videoRef.current) {
-          videoRef.current.currentTime = 0
-          videoRef.current.play()
-          setActiveVideoId(id)
-        }
-      }
+// Add sample video data
+const sampleVideos: VideoContent[] = [
+  {
+    id: 'main-video',
+    type: VideoType.VERTICAL_CLIP,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/KSluj5',
+    poster: 'https://cdn-std.droplr.net/files/acc_760170/MKEjsL',
+    title: 'Why Does Daniel Dream About Monsters?',
+    description:
+      "The four monstrous beasts in Daniel's dream represent four violent kingdoms. Daniel's dream continues with the arrival of the Son of Man, who shows up to destroy the beasts."
+  },
+  {
+    id: 'anxiety-video',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/dzSp48',
+    poster:
+      'https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg',
+    title: 'Healing Emotional Scars Through Faith',
+    description:
+      'Discover how faith and spirituality can provide comfort and strength during challenging times of depression.',
+    verse: {
+      text: 'Cast all your anxiety on him because he cares for you',
+      reference: '1 Peter 5:7'
     }
-
-    // Modified touch handler to play immediately on touch
-    const handleTouchStart = (e: React.TouchEvent) => {
-      const touch = e.touches[0]
-      const startY = touch.clientY
-      let hasMoved = false
-
-      const handleTouchMove = (moveEvent: TouchEvent) => {
-        const currentY = moveEvent.touches[0].clientY
-        const deltaY = Math.abs(currentY - startY)
-
-        // If user has moved finger more than 10px, they're trying to scroll
-        if (deltaY > 10) {
-          hasMoved = true
-          document.removeEventListener('touchmove', handleTouchMove)
-          document.removeEventListener('touchend', handleTouchEnd)
-        }
-      }
-
-      const handleTouchEnd = () => {
-        document.removeEventListener('touchmove', handleTouchMove)
-        document.removeEventListener('touchend', handleTouchEnd)
-
-        // Only stop playing if the user was scrolling
-        if (hasMoved && activeVideoId === id) {
-          if (videoRef.current) {
-            videoRef.current.pause()
-            videoRef.current.currentTime = 0.1
-            setActiveVideoId(null)
-          }
-        }
-      }
-
-      // Start playing immediately if it's not already playing
-      if (!hasMoved && activeVideoId !== id) {
-        startPlaying()
-      }
-
-      document.addEventListener('touchmove', handleTouchMove)
-      document.addEventListener('touchend', handleTouchEnd)
+  },
+  {
+    id: 'recovery-video',
+    type: VideoType.VIDEO_VERSE,
+    src: 'https://cdn-std.droplr.net/files/acc_760170/BIVSDq',
+    poster:
+      'https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg',
+    title: 'Let this cup of sorrow pass from me',
+    description:
+      'Discover how faith and spirituality can provide comfort and strength during challenging times of depression.',
+    verse: {
+      text: 'Let this cup of sorrow pass from me',
+      reference: 'Matthew 26:39'
     }
-
-    const handleVideoClick = (e: React.MouseEvent | React.TouchEvent) => {
-      e.preventDefault()
-      e.stopPropagation()
-      if (onVideoClick) {
-        onVideoClick(id, videoSrc)
-      }
-    }
-
-    const [captionIndex, setCaptionIndex] = useState(0)
-    const captions = [
-      'When life feels overwhelming...',
-      'In moments of doubt...',
-      'Finding strength in weakness...',
-      'Walking through darkness...'
-    ]
-
-    useEffect(() => {
-      const timer = setInterval(() => {
-        setCaptionIndex((prev) => (prev + 1) % captions.length)
-      }, 3000) // Change caption every 3 seconds
-
-      return () => clearInterval(timer)
-    }, [])
-
-    return (
-      <Box
-        sx={{
-          width: '100%',
-          maxWidth: '400px',
-          aspectRatio: '9/16',
-          backgroundColor: '#000',
-          borderRadius: '16px',
-          overflow: 'hidden',
-          mb: 6,
-          position: 'relative',
-          ...sx // Spread additional styles
-        }}
-        onMouseEnter={startPlaying}
-        onTouchStart={handleTouchStart}
-        onClick={handleVideoClick}
-      >
-        <Box
-          component="video"
-          ref={ref || videoRef} // Use passed ref or local ref
-          sx={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            display: 'block'
-          }}
-          preload="auto"
-          muted={isMuted}
-          playsInline
-          loop
-          autoPlay={autoPlay}
-        >
-          <source src={videoSrc} type="video/mp4" />
-          Your browser does not support the video tag.
-        </Box>
-        <Chip
-          label="SHORT VIDEO"
-          sx={{
-            position: 'absolute',
-            top: 16,
-            left: 16,
-            zIndex: 3,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            color: 'white'
-          }}
-        />
-        <Box
-          sx={{
-            position: 'absolute',
-            bottom: 36,
-            left: 26,
-            right: 26,
-            zIndex: 3,
-            color: 'white',
-            pointerEvents: 'none'
-          }}
-        >
-          <motion.div
-            key={captionIndex}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Typography
-              variant="h3"
-              variantMapping={{ h5: 'h3' }}
-              mb={2}
-              sx={{
-                userSelect: 'none',
-                WebkitUserSelect: 'none',
-                minHeight: '3em'
-              }}
-            >
-              {captions[captionIndex]}
-            </Typography>
-          </motion.div>
-          <Typography
-            variant="body1"
-            sx={{
-              userSelect: 'none',
-              WebkitUserSelect: 'none'
-            }}
-          >
-            Discover how faith and spirituality can provide comfort and strength
-            during challenging times of depression.
-          </Typography>
-        </Box>
-      </Box>
-    )
   }
-)
-
-// Define props for the VideoPlayer component
-interface VideoPlayerProps {
-  videoSrc: string
-  poster: string
-  isPlaying: boolean
-  toggleMute: () => void
-  isMuted: boolean
-  handlePlayPause: () => void
-  autoPlay?: boolean
-  id: string
-  onVideoClick: (videoId: string, videoSrc: string) => void
-  sx?: Record<string, any> // Add sx prop type
-}
+]
 
 export function BibleVerses(): ReactElement {
+  // Copy all the same hooks and state from WatchLanding
   const { t } = useTranslation('apps-watch')
-
-  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(true)
-  const [bgColors, setBgColors] = useState<string[]>(['#303030', '#303030']) // Default colors
-
-  const videoRefs = useRef<HTMLVideoElement[]>([])
-
+  const [modalMuted, setModalMuted] = useState(false)
+  const [bgColors, setBgColors] = useState<string[]>(['#303030', '#303030'])
+  const videoRefs = useRef<Map<string, HTMLVideoElement>>(new Map())
   const [answerClicked, setAnswerClicked] = useState(false)
+  // ... (copy all the same state and hooks from WatchLanding)
+
+  // Copy all the same handler functions from WatchLanding
+  const handleAnswerClick = () => {
+    setAnswerClicked(true)
+  }
+
+  const animationVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  }
+
+  const topDownVariants = {
+    hidden: { opacity: 0, y: -20 }, // Start from above
+    visible: { opacity: 1, y: 0 } // Move to original position
+  }
+
+  // ... (copy all the same handler functions from WatchLanding)
+
+  const [sourceRect, setSourceRect] = useState<DOMRect | null>(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [selectedVideoId, setSelectedVideoId] = useState<string | null>(null)
   const [selectedVideoSrc, setSelectedVideoSrc] = useState<string>('')
   const [selectedVideoPlayer, setSelectedVideoPlayer] =
     useState<ReactElement | null>(null)
-  const [sourceRect, setSourceRect] = useState<DOMRect | null>(null)
-
-  type TimedText = {
-    text: string
-    duration: number
-  }
-
-  type VideoVerse = {
-    id: string
-    type: VideoType
-    src: string
-    poster: string
-    verse: TimedText[]
-  }
-
-  const anxietyVerses: VideoVerse[] = [
-    {
-      id: 'main-video',
-      type: VideoType.VIDEO_VERSE,
-      src: 'https://cdn-std.droplr.net/files/acc_760170/BIVSDq',
-      poster: 'https://cdn-std.droplr.net/files/acc_760170/MKEjsL',
-      verse: [
-        { text: 'Be strong and courageous.', duration: 3 },
-        {
-          text: 'Do not be afraid',
-          duration: 2
-        },
-        {
-          text: 'or terrified because of them,',
-          duration: 2
-        },
-
-        { text: 'for the LORD your God goes with you;', duration: 3 },
-        { text: 'he will never leave you nor forsake you.', duration: 4 },
-        { text: 'Psalm 34:4', duration: 2 }
-      ]
-    },
-    {
-      id: 'anxiety-video',
-      type: VideoType.VIDEO_VERSE,
-      src: 'https://cdn-std.droplr.net/files/acc_760170/XOf5fA',
-      poster:
-        'https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg',
-      verse: [
-        { text: 'The Lord your God is with you,', duration: 3 },
-        { text: 'the Mighty Warrior who saves.', duration: 3 },
-        { text: 'He will take great delight in you;', duration: 3 },
-        { text: 'in his love he will no longer rebuke you,', duration: 3 },
-        { text: 'but will rejoice over you with singing.', duration: 3 },
-        { text: 'Zephaniah 3:17', duration: 2 }
-      ]
-    },
-    {
-      id: 'recovery-video',
-      type: VideoType.VIDEO_VERSE,
-      src: 'https://cdn-std.droplr.net/files/acc_760170/BIVSDq',
-      poster:
-        'https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg',
-      verse: [
-        { text: 'Be strong and courageous.', duration: 3 },
-        {
-          text: 'Do not be afraid',
-          duration: 2
-        },
-        {
-          text: 'or terrified because of them,',
-          duration: 2
-        },
-
-        { text: 'for the LORD your God goes with you;', duration: 3 },
-        { text: 'he will never leave you nor forsake you.', duration: 4 },
-        { text: 'Psalm 34:4', duration: 2 }
-      ]
-    }
-  ]
-
-  const handleAnswerClick = () => {
-    setAnswerClicked(true)
-  }
-
-  const handleModalClose = () => {
-    setModalOpen(false)
-    setSelectedVideoId(null)
-  }
-
-  const handleMuteToggle = () => {
-    if (selectedVideoId) {
-      const videoElement = document.getElementById(
-        `video-${selectedVideoId}-modal`
-      ) as HTMLVideoElement
-      if (videoElement) {
-        videoElement.muted = !videoElement.muted
-        setIsMuted(videoElement.muted)
-      }
-    }
-  }
+  const [playingVideos, setPlayingVideos] = useState<Set<string>>(new Set())
 
   const handleVideoClick = (
     video: VideoContent,
@@ -506,6 +405,60 @@ export function BibleVerses(): ReactElement {
     setSelectedVideoId(video.id)
     setSelectedVideoSrc(video.src)
     setSelectedVideoPlayer(videoElement)
+  }
+
+  const handlePlayPause = (video: VideoContent) => {
+    const videoElement = videoRefs.current.get(video.id)
+    if (videoElement) {
+      handleVideoClick(
+        video,
+        videoElement.getBoundingClientRect(),
+        <VideoPlayer
+          video={video}
+          autoPlay
+          muted={false}
+          isModal={true}
+          onMuteToggle={handleMuteToggle}
+        />
+      )
+      setModalMuted(false)
+    }
+  }
+
+  const toggleMute = () => {
+    const videoElement = videoRefs.current.get(sampleVideos[0].id)
+    if (videoElement) {
+      handleVideoClick(
+        sampleVideos[0],
+        videoElement.getBoundingClientRect(),
+        <VideoPlayer
+          video={sampleVideos[0]}
+          autoPlay
+          muted={false}
+          isModal={true}
+          onMuteToggle={handleMuteToggle}
+        />
+      )
+      setModalMuted(false)
+    }
+  }
+
+  const handleModalClose = () => {
+    setModalOpen(false)
+    setSelectedVideoId(null)
+    setModalMuted(false)
+  }
+
+  const handleMuteToggle = () => {
+    if (selectedVideoId) {
+      const videoElement = document.getElementById(
+        `video-${selectedVideoId}-modal`
+      ) as HTMLVideoElement
+      if (videoElement) {
+        videoElement.muted = !videoElement.muted
+        setModalMuted(videoElement.muted)
+      }
+    }
   }
 
   useEffect(() => {
@@ -533,1105 +486,640 @@ export function BibleVerses(): ReactElement {
   }, [])
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const video = entry.target as HTMLVideoElement
-          if (entry.isIntersecting) {
-            video.play()
-          } else {
-            video.pause()
-          }
-        })
-      },
-      { threshold: 0.5 } // Adjust threshold as needed
-    )
+    const videoElements = Array.from(videoRefs.current.entries())
 
-    videoRefs.current.forEach((video) => {
-      observer.observe(video)
+    const handlePlay = (videoId: string) => () => {
+      setPlayingVideos((prev) => new Set(prev).add(videoId))
+    }
+
+    const handlePause = (videoId: string) => () => {
+      setPlayingVideos((prev) => {
+        const newSet = new Set(prev)
+        newSet.delete(videoId)
+        return newSet
+      })
+    }
+
+    videoElements.forEach(([videoId, video]) => {
+      video.addEventListener('play', handlePlay(videoId))
+      video.addEventListener('pause', handlePause(videoId))
     })
 
     return () => {
-      videoRefs.current.forEach((video) => {
-        observer.unobserve(video)
+      videoElements.forEach(([videoId, video]) => {
+        video.removeEventListener('play', handlePlay(videoId))
+        video.removeEventListener('pause', handlePause(videoId))
       })
     }
   }, [])
 
-  const handlePlayPause = () => {
-    const video = document.getElementById('video-player') as HTMLVideoElement
-    if (video.paused) {
-      video.play()
-      setIsPlaying(true)
-      video.muted = false
-      setIsMuted(false)
-      if (video.requestFullscreen) {
-        video.requestFullscreen()
-      } else if (video.webkitRequestFullscreen) {
-        video.webkitRequestFullscreen()
-      } else if (video.msRequestFullscreen) {
-        video.msRequestFullscreen()
-      }
-    } else {
-      video.pause()
-      setIsPlaying(false)
-    }
-  }
-
-  const toggleMute = () => {
-    const video = document.getElementById('video-player') as HTMLVideoElement
-    video.muted = !video.muted
-    setIsMuted(video.muted)
-  }
-
-  const animationVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
-  }
-
-  const topDownVariants = {
-    hidden: { opacity: 0, y: -20 }, // Start from above
-    visible: { opacity: 1, y: 0 } // Move to original position
-  }
-
-  const theme = useTheme()
-
   return (
-    <ThemeProvider
-      themeName={ThemeName.website}
-      themeMode={ThemeMode.dark}
-      nested
-    >
-      <VideoProvider>
-        <Box
-          sx={{ backgroundColor: 'background.default' }}
-          data-testid="WatchHomePage"
-        >
-          <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 1.2, duration: 0.75 }}
-              variants={topDownVariants}
-            ></motion.div>
+    <>
+      <Head>
+        <title>Share this video with your friends and family</title>
+        <meta
+          name="description"
+          content="Four monstrous beasts, four violent kingdoms. But then, the Son of Man arrives to conquer them all. ���� Dive into Daniel's dream and its epic meaning! 📖👑"
+        />
+        {/* ... (copy all the same meta tags from WatchLanding) ... */}
+      </Head>
+      <ThemeProvider themeName={ThemeName.website} themeMode={ThemeMode.dark}>
+        <VideoProvider>
+          <Box
+            sx={{ backgroundColor: 'background.default' }}
+            data-testid="BibleVersesPage"
+          >
+            {/* Desktop Message */}
+            <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+              <DesktopMessage />
+            </Box>
 
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.1, duration: 0.5 }}
-              variants={animationVariants}
-            >
-              <SharedVideoCard
-                avatarSrc="https://i.pravatar.cc/250?img=12"
-                name="Jacob"
-                message="shared this video with you"
-              />
-            </motion.div>
-
-            <SectionHeader
-              primaryText="Anxiety"
-              secondaryText="Video verses from the Bible"
-              disableTopSpacing
-            />
-
+            {/* Mobile Content */}
             <Box
               sx={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, 1fr)',
-                gap: '20px',
-                width: '100%',
-                height: 'auto',
-                padding: '20px',
-                boxSizing: 'border-box'
+                display: { xs: 'block', sm: 'none' },
+                maxWidth: MOBILE_MAX_WIDTH,
+                margin: '0 auto',
+                overflow: 'hidden'
               }}
             >
-              {anxietyVerses.map((verse, index) => (
-                <Box
-                  sx={{
-                    // aspectRatio: '9/16',
-                    backgroundColor: 'rgba(255,255,255,0.05)',
-                    borderRadius: 4
-                  }}
+              <Container sx={{ paddingY: '4rem' }}>
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ delay: 1.2, duration: 0.75 }}
+                  variants={topDownVariants}
                 >
-                  <VideoVerse videoSrc={verse.src} verse={verse.verse} />
-                </Box>
-              ))}
-            </Box>
+                  <HeaderSection />
+                </motion.div>
 
-            <Box
-              sx={{
-                minHeight: 'calc(100vw * 0.75)',
-                position: 'relative'
-              }}
-            >
-              <Box
-                sx={{
-                  position: 'absolute',
-                  transform: 'scale(0.48)',
-                  transformOrigin: 'top left',
-                  [theme.breakpoints.up('sm')]: { transform: 'scale(0.6)' },
-                  [theme.breakpoints.up('md')]: { transform: 'scale(0.67)' },
-                  [theme.breakpoints.up('lg')]: { transform: 'scale(1)' }
-                }}
-              >
-                <VideoPlayer
-                  id="video1"
-                  videoSrc="https://cdn-std.droplr.net/files/acc_760170/BIVSDq"
-                  poster="https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                  isPlaying={isPlaying}
-                  toggleMute={toggleMute}
-                  isMuted={isMuted}
-                  handlePlayPause={handlePlayPause}
-                  autoPlay={true}
-                  onVideoClick={(id, src) =>
-                    handleVideoClick(
-                      id,
-                      src,
-                      <VideoPlayer
-                        id={id}
-                        videoSrc={src}
-                        poster="https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                        isPlaying={isPlaying}
-                        toggleMute={toggleMute}
-                        isMuted={isMuted}
-                        handlePlayPause={handlePlayPause}
-                      />
-                    )
-                  }
-                />
-              </Box>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  transform: 'scale(0.48)',
-                  transformOrigin: 'top right',
-                  right: 0,
-                  [theme.breakpoints.up('sm')]: { transform: 'scale(0.6)' },
-                  [theme.breakpoints.up('md')]: { transform: 'scale(0.67)' },
-                  [theme.breakpoints.up('lg')]: { transform: 'scale(1)' }
-                }}
-              >
-                <VideoPlayer
-                  id="video2"
-                  videoSrc="https://cdn-std.droplr.net/files/acc_760170/BIVSDq"
-                  poster="https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                  isPlaying={isPlaying}
-                  toggleMute={toggleMute}
-                  isMuted={isMuted}
-                  handlePlayPause={handlePlayPause}
-                  onVideoClick={(id, src) =>
-                    handleVideoClick(
-                      id,
-                      src,
-                      <VideoPlayer
-                        id={id}
-                        videoSrc={src}
-                        poster="https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                        isPlaying={isPlaying}
-                        toggleMute={toggleMute}
-                        isMuted={isMuted}
-                        handlePlayPause={handlePlayPause}
-                      />
-                    )
-                  }
-                />
-              </Box>
-            </Box>
-            <Box
-              sx={{
-                minHeight: 'calc(100vw * 0.75)',
-                position: 'relative'
-              }}
-            >
-              <Box
-                sx={{
-                  position: 'absolute',
-                  transform: 'scale(0.48)',
-                  transformOrigin: 'top left',
-                  [theme.breakpoints.up('sm')]: { transform: 'scale(0.6)' },
-                  [theme.breakpoints.up('md')]: { transform: 'scale(0.67)' },
-                  [theme.breakpoints.up('lg')]: { transform: 'scale(1)' }
-                }}
-              >
-                <VideoPlayer
-                  id="video3"
-                  videoSrc="https://cdn-std.droplr.net/files/acc_760170/BIVSDq"
-                  poster="https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                  isPlaying={isPlaying}
-                  toggleMute={toggleMute}
-                  isMuted={isMuted}
-                  handlePlayPause={handlePlayPause}
-                  onVideoClick={(id, src) =>
-                    handleVideoClick(
-                      id,
-                      src,
-                      <VideoPlayer
-                        id={id}
-                        videoSrc={src}
-                        poster="https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                        isPlaying={isPlaying}
-                        toggleMute={toggleMute}
-                        isMuted={isMuted}
-                        handlePlayPause={handlePlayPause}
-                      />
-                    )
-                  }
-                />
-              </Box>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  transform: 'scale(0.48)',
-                  transformOrigin: 'top right',
-                  right: 0,
-                  [theme.breakpoints.up('sm')]: { transform: 'scale(0.6)' },
-                  [theme.breakpoints.up('md')]: { transform: 'scale(0.67)' },
-                  [theme.breakpoints.up('lg')]: { transform: 'scale(1)' }
-                }}
-              >
-                <VideoPlayer
-                  id="video4"
-                  videoSrc="https://cdn-std.droplr.net/files/acc_760170/BIVSDq"
-                  poster="https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                  isPlaying={isPlaying}
-                  toggleMute={toggleMute}
-                  isMuted={isMuted}
-                  handlePlayPause={handlePlayPause}
-                  onVideoClick={(id, src) =>
-                    handleVideoClick(
-                      id,
-                      src,
-                      <VideoPlayer
-                        id={id}
-                        videoSrc={src}
-                        poster="https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                        isPlaying={isPlaying}
-                        toggleMute={toggleMute}
-                        isMuted={isMuted}
-                        handlePlayPause={handlePlayPause}
-                      />
-                    )
-                  }
-                />
-              </Box>
-            </Box>
-
-            <Typography
-              variant="h4"
-              sx={{ mt: 16, mb: 0, color: 'text.primary' }}
-            >
-              Emotional wounds
-            </Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ mt: 0, mb: 6, opacity: 0.5, color: 'text.primary' }}
-            >
-              Identifying the Roots of Depression
-            </Typography>
-
-            <Box
-              sx={{
-                width: '100%',
-                maxWidth: '400px',
-                aspectRatio: '9/16',
-                backgroundColor: '#000',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                mb: 6,
-                position: 'relative',
-                boxShadow: '2px 8px 8px rgba(0, 0, 0, 0.2)',
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  borderRadius: 'inherit',
-                  backdropFilter: 'blur(10px)', // Apply blur effect
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)', // Semi-transparent overlay
-                  zIndex: 1,
-                  pointerEvents: 'none',
-                  mask: 'radial-gradient(transparent 60%, rgba(0,0,0,0.5) 80%, black 90%)' // Mask to leave center clear
-                },
-                '&::after': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  borderRadius: 'inherit',
-                  zIndex: 1,
-                  pointerEvents: 'none',
-                  mask: 'radial-gradient(circle, transparent 40%, black 60%)' // Mask to leave center clear
-                }
-              }}
-            >
-              <Box
-                component="video"
-                ref={(el) => el && videoRefs.current.push(el)}
-                sx={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: isPlaying ? 'none' : 'block'
-                }}
-                poster="https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                controls
-                id="video-player-anxiety"
-                muted
-                autoPlay
-                playsInline
-              >
-                <source
-                  src="https://cdn-std.droplr.net/files/acc_760170/dzSp48"
-                  type="video/mp4"
-                />
-                Your browser does not support the video tag.
-              </Box>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  zIndex: 2,
-                  width: '80px',
-                  height: '80px',
-                  backgroundColor: 'rgba(0,0,0,0.6)',
-                  borderRadius: '50%',
-                  display: isPlaying ? 'none' : 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transition: 'opacity 0.2s',
-                  opacity: 1,
-                  '&:hover': {
-                    opacity: 0.8
-                  }
-                }}
-                onClick={handlePlayPause}
-              >
                 <Box
                   sx={{
-                    width: 0,
-                    height: 0,
-                    borderTop: '20px solid transparent',
-                    borderBottom: '20px solid transparent',
-                    borderLeft: '30px solid white',
-                    marginLeft: '5px'
-                  }}
-                />
-              </Box>
-              <Chip
-                label="TESTIMONY"
-                sx={{
-                  position: 'absolute',
-                  top: 16,
-                  left: 16,
-                  zIndex: 3,
-                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                  color: 'white',
-                  letterSpacing: 1
-                }}
-              />
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 16,
-                  right: 16,
-                  zIndex: 3,
-                  cursor: 'pointer'
-                }}
-                onClick={toggleMute}
-              >
-                {isMuted ? (
-                  <VolumeOffIcon sx={{ color: 'white' }} />
-                ) : (
-                  <VolumeUpIcon sx={{ color: 'white' }} />
-                )}
-              </Box>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  bottom: 36,
-                  left: 26,
-                  right: 26,
-                  zIndex: 3,
-                  color: 'white'
-                }}
-              >
-                <Typography variant="overline1" sx={{ opacity: 0.5 }}>
-                  Trusting God with Your Pain:
-                </Typography>
-                <Typography variant="h4" mb={2}>
-                  Healing Emotional Scars Through Faith
-                </Typography>
-                <Typography variant="body1">
-                  Discover how faith and spirituality can provide comfort and
-                  strength during challenging times of depression.
-                </Typography>
-              </Box>
-            </Box>
-
-            <SectionHeader
-              primaryText="Real Story, Real Emotions"
-              secondaryText="Bible is shockingly honest about our condition"
-            />
-
-            <Box
-              sx={{
-                width: '100%',
-                maxWidth: '400px',
-                aspectRatio: '9/16',
-                backgroundColor: '#000',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                mb: 6,
-                position: 'relative',
-                boxShadow: '2px 8px 8px rgba(0, 0, 0, 0.2)',
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  borderRadius: 'inherit',
-                  backdropFilter: 'blur(10px)', // Apply blur effect
-                  backgroundColor: 'rgb(0 0 0 / 70%)', // Semi-transparent overlay
-                  zIndex: 1,
-                  pointerEvents: 'none',
-                  mask: 'radial-gradient(circle at left -60%, transparent 60%, rgba(0,0,0,0.5) 80%, black 90%), radial-gradient(circle at left 80%, transparent 60%, rgba(0,0,0,0.5) 80%, black 90%) ', // Mask to leave center clear
-                  boxShadow: 'inset 0 0 60px black'
-                },
-                '&::after': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  borderRadius: 'inherit',
-                  zIndex: 1,
-                  pointerEvents: 'none',
-                  boxShadow: 'inset 0 0 1px rgba(255, 255, 255, 0.3)'
-                }
-              }}
-            >
-              <Box
-                component="video"
-                ref={(el) => el && videoRefs.current.push(el)}
-                sx={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  display: isPlaying ? 'none' : 'block'
-                }}
-                poster="https://images.pexels.com/videos/9588274/pexels-photo-9588274.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                controls
-                id="video-player-recovery"
-                muted
-                autoPlay
-                playsInline
-              >
-                <source
-                  src="https://cdn-std.droplr.net/files/acc_760170/BIVSDq"
-                  type="video/mp4"
-                />
-                Your browser does not support the video tag.
-              </Box>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  zIndex: 2,
-                  width: '80px',
-                  height: '80px',
-                  backgroundColor: 'rgba(0,0,0,0.6)',
-                  borderRadius: '50%',
-                  display: isPlaying ? 'none' : 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  transition: 'opacity 0.2s',
-                  opacity: 1,
-                  '&:hover': {
-                    opacity: 0.8
-                  }
-                }}
-                onClick={handlePlayPause}
-              >
-                <Box
-                  sx={{
-                    width: 0,
-                    height: 0,
-                    borderTop: '20px solid transparent',
-                    borderBottom: '20px solid transparent',
-                    borderLeft: '30px solid white',
-                    marginLeft: '5px'
-                  }}
-                />
-              </Box>
-              <Chip
-                label="SHORT VIDEO"
-                sx={{
-                  position: 'absolute',
-                  top: 16,
-                  left: 16,
-                  zIndex: 3,
-                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                  color: 'white'
-                }}
-              />
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 16,
-                  right: 16,
-                  zIndex: 3,
-                  cursor: 'pointer'
-                }}
-                onClick={toggleMute}
-              >
-                {isMuted ? (
-                  <VolumeOffIcon sx={{ color: 'white' }} />
-                ) : (
-                  <VolumeUpIcon sx={{ color: 'white' }} />
-                )}
-              </Box>
-              <Box
-                sx={{
-                  position: 'absolute',
-                  bottom: 36,
-                  left: 26,
-                  right: 26,
-                  zIndex: 3,
-                  color: 'white'
-                }}
-              >
-                <Typography variant="overline1" sx={{ opacity: 0.7 }}>
-                  Jesus cried these words before the cross
-                </Typography>
-                <Typography variant="h5" variantMapping={{ h5: 'h3' }} mb={2}>
-                  Let this cup <em>of sorrow</em> pass from me&hellip;
-                </Typography>
-                <Typography variant="body1">
-                  Discover how faith and spirituality can provide comfort and
-                  strength during challenging times of depression.
-                </Typography>
-              </Box>
-            </Box>
-
-            <SectionHeader
-              primaryText="Movies for you"
-              secondaryText="Watch free with no subscription or ads"
-            />
-
-            <Swiper
-              spaceBetween={20}
-              slidesPerView={1.3}
-              // centeredSlides={true}
-              // navigation
-              pagination={{ clickable: true }}
-              // scrollbar={{ draggable: true }}
-            >
-              <SwiperSlide>
-                <Box
-                  sx={{
-                    flex: 1,
-                    backgroundColor: 'rgba(255,255,255,0.05)',
-                    borderRadius: 2,
-                    position: 'relative',
-                    // aspectRatio: '2/3',
-                    overflow: 'hidden',
-                    '&::after': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      borderRadius: 'inherit',
-                      boxShadow: 'inset 0 0 1px rgba(255, 255, 255, 0.4)', // Inner glow effect
-                      zIndex: 1,
-                      pointerEvents: 'none'
+                    display: 'flex',
+                    py: 4,
+                    overflowX: 'auto',
+                    whiteSpace: 'nowrap',
+                    '&::-webkit-scrollbar': {
+                      display: 'none'
                     }
                   }}
                 >
-                  <img
-                    src="https://cdn-std.droplr.net/files/acc_760170/TxsUi3"
-                    alt="Slide Image"
-                    style={{
-                      aspectRatio: '2/3',
-                      width: '100%',
-                      // height: '100%',
-                      objectFit: 'cover'
-                    }}
+                  <Chip
+                    key="video-verses"
+                    label="Video Verses"
+                    variant="filled"
+                    sx={{ marginRight: '0.5rem' }}
                   />
-                  <Button
-                    variant="text"
-                    size="small"
-                    startIcon={<PlayArrowIcon />}
-                    sx={{
-                      // position: 'absolute',
-                      // bottom: 8,
-                      // left: 8,
-                      m: 1,
-
-                      color: 'text.primary'
-                    }}
-                  >
-                    Watch Movie
-                  </Button>
+                  {['Gospel Videos', 'Series', 'Films'].map((value) => (
+                    <Chip
+                      key={value}
+                      label={value}
+                      variant="outlined"
+                      //   onDelete={() => handleDelete(value)}
+                      sx={{ marginRight: '0.5rem' }}
+                    />
+                  ))}
                 </Box>
-              </SwiperSlide>
-              <SwiperSlide>
+
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ delay: 0.1, duration: 0.5 }}
+                  variants={animationVariants}
+                >
+                  <SharedVideoCard
+                    name="Bring Bible verses to life"
+                    message="— click on any quote to share it’s URL"
+                  />
+                </motion.div>
+
                 <Box
                   sx={{
-                    flex: 1,
-                    backgroundColor: 'rgba(255,255,255,0.05)',
-                    borderRadius: 2,
-                    position: 'relative',
-                    // aspectRatio: '2/3',
-                    overflow: 'hidden',
-                    '&::after': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      borderRadius: 'inherit',
-                      boxShadow: 'inset 0 0 1px rgba(255, 255, 255, 0.4)', // Inner glow effect
-                      zIndex: 1,
-                      pointerEvents: 'none'
-                    }
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gap: '20px',
+                    width: '100%',
+                    height: 'auto',
+                    boxSizing: 'border-box',
+                    pt: 2
                   }}
                 >
-                  <img
-                    src="https://cdn-std.droplr.net/files/acc_760170/cfER11"
-                    alt="Slide Image"
-                    style={{
-                      aspectRatio: '2/3',
-                      width: '100%',
-                      // height: '100%',
-                      objectFit: 'cover'
-                    }}
-                  />
-                  <Button
-                    variant="text"
-                    size="small"
-                    startIcon={<PlayArrowIcon />}
-                    sx={{
-                      // position: 'absolute',
-                      // bottom: 8,
-                      // left: 8,
-                      m: 1,
-
-                      color: 'text.primary'
-                    }}
-                  >
-                    Watch Movie
-                  </Button>
+                  {anxietyVerses.map((verse, index) => (
+                    <Box
+                      sx={{
+                        // aspectRatio: '9/16',
+                        backgroundColor: 'rgba(255,255,255,0.05)',
+                        borderRadius: 4
+                      }}
+                    >
+                      <VideoVerse videoSrc={verse.src} verse={verse.verse} />
+                    </Box>
+                  ))}
                 </Box>
-              </SwiperSlide>
-              <SwiperSlide>
-                <Box
-                  sx={{
-                    flex: 1,
-                    backgroundColor: 'rgba(255,255,255,0.05)',
-                    borderRadius: 2,
-                    position: 'relative',
-                    // aspectRatio: '2/3',
-                    overflow: 'hidden',
-                    '&::after': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      borderRadius: 'inherit',
-                      boxShadow: 'inset 0 0 1px rgba(255, 255, 255, 0.4)', // Inner glow effect
-                      zIndex: 1,
-                      pointerEvents: 'none'
+
+                <SectionHeader
+                  primaryText="Related Videos"
+                  secondaryText="Ready to Share Video Clips"
+                />
+
+                <VideoBox
+                  video={sampleVideos[0]}
+                  onPlayPause={handlePlayPause}
+                  onMuteToggle={toggleMute}
+                  isMuted={isMuted}
+                  isPlaying={playingVideos.has(sampleVideos[0].id)}
+                  videoRef={(el) => {
+                    if (el) {
+                      videoRefs.current.set(sampleVideos[0].id, el)
                     }
                   }}
+                  title={sampleVideos[0].title ?? ''}
+                  subtitle="Dragons in the Bible"
+                  description={sampleVideos[0].description ?? ''}
+                  chipLabel="NEW SHOW"
+                />
+
+                <MessageBubble
+                  message={[
+                    'I know the Bible isn’t your thing, but this video about four monstrous beasts and a ‘Son of Man’ might surprise you. It’s different!',
+                    'This video about ancient visions and crazy beasts in the Bible really caught my attention. I’d love to hear your thoughts on it.',
+                    'Hey, I saw this video about Daniel dreaming of monsters—it’s wild but super interesting. Thought you’d find it cool too.',
+                    'There’s this video about Daniel’s dream—it’s got wild imagery, almost like mythology. I think you’d enjoy how they explain it.',
+                    'You’ve got to check this out—Daniel’s dream of beasts and kingdoms is like a fantasy story, but with deeper meaning.',
+                    'This video about Daniel’s dream has some epic imagery. Even if you don’t believe in it, it’s pretty fascinating to watch.',
+                    'I just watched this video about four beasts in the Bible—it’s packed with symbolism and meaning. Wanted to share it with you!',
+                    'This video on Daniel’s dream really makes you think about how ancient stories connect to today. I think you’ll find it interesting.',
+                    'The Bible talks about beasts and someone conquering them—it’s like something out of a movie. This video breaks it down really well.',
+                    'I saw this video about crazy visions in the Bible—it’s surprisingly gripping and thought-provoking. Let me know what you think!'
+                  ]}
+                />
+
+                <SectionHeader
+                  primaryText="Your Next Watch"
+                  secondaryText="Related videos and stories"
+                  disableTopSpacing
+                />
+                <Swiper
+                  spaceBetween={20}
+                  slidesPerView={1.8}
+                  // centeredSlides={true}
+                  // navigation
+                  pagination={{ clickable: true }}
+                  // scrollbar={{ draggable: true }}
                 >
-                  <img
-                    src="https://cdn-std.droplr.net/files/acc_760170/9wGrB0"
-                    alt="Slide Image"
-                    style={{
-                      aspectRatio: '2/3',
-                      width: '100%',
-                      // height: '100%',
-                      objectFit: 'cover'
-                    }}
-                  />
-                  <Button
-                    variant="text"
-                    size="small"
-                    startIcon={<PlayArrowIcon />}
-                    sx={{
-                      // position: 'absolute',
-                      // bottom: 8,
-                      // left: 8,
-                      m: 1,
+                  <SwiperSlide>
+                    <VideoSlide
+                      imageUrl="https://images.unsplash.com/photo-1619187282125-3e446e5f21fc?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTI2fHxqZXN1c3xlbnwwfHwwfHx8MA%3D%3D"
+                      title="Finding Light: A Journey Through Depression"
+                      bgColor="#005B92"
+                      type="Short Video"
+                    />
+                  </SwiperSlide>
+                  <SwiperSlide>
+                    <VideoSlide
+                      imageUrl="https://images.unsplash.com/photo-1689290018351-a0507a3036cb?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjI0fHxqZXN1c3xlbnwwfHwwfHx8MA%3D%3D"
+                      title="Hope Restored Stories of Healing and Recovery"
+                      bgColor="#C26B61"
+                      type="Short Video"
+                    />
+                  </SwiperSlide>
+                </Swiper>
 
-                      color: 'text.primary'
-                    }}
-                  >
-                    Watch Movie
-                  </Button>
-                </Box>
-              </SwiperSlide>
-            </Swiper>
-
-            <Box
-              sx={{
-                overflow: 'hidden',
-                position: 'relative',
-                pb: 10,
-                mt: 16,
-                height: '100vh',
-                width: '100vw', // Set full width
-                ml: '-50vw', // Center the box by offsetting half of the viewport width
-                left: '50%', // Center the box horizontally
-
-                backgroundImage:
-                  'url(https://cdn-std.droplr.net/files/acc_760170/kvJNRP)',
-                backgroundColor: 'rgba(255,255,255,0.05)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  backdropFilter: 'blur(10px)', // Apply blur effect
-                  backgroundColor: 'rgba(0,0,0, 0.5)', // Semi-transparent overlay
-                  zIndex: 0,
-                  pointerEvents: 'none'
-                  // mask: 'radial-gradient(transparent 60%, rgba(0,0,0,0.5) 80%, black 90%)', // Mask to leave center clear
-                }
-              }}
-            >
-              <img
-                src="https://cdn-std.droplr.net/files/acc_760170/kvJNRP"
-                alt="Slide Image"
-                style={{
-                  position: 'absolute',
-                  zIndex: 0,
-                  // aspectRatio: '2/3',
-                  width: '100%',
-                  height: '60vh',
-                  objectFit: 'cover',
-                  mask: 'linear-gradient(to bottom, black 70%, transparent 98%)' // Mask to leave center clear
-                }}
-              />
-              <Box
-                sx={{
-                  p: 10,
-                  mt: 10,
-                  minHeight: '65vh',
-                  zIndex: 2,
-                  position: 'relative',
-                  display: 'flex', // Add flex display
-                  flexDirection: 'column', // Ensure children are stacked vertically
-                  justifyContent: 'flex-end' // Align children to the bottom
-                }}
-              >
                 <Typography
-                  variant="overline"
-                  sx={{ letterSpacing: 2, color: '#fff', opacity: 0.75 }}
+                  variant="h4"
+                  sx={{ mt: 16, mb: 0, color: 'text.primary' }}
                 >
-                  Video Series
-                </Typography>
-                <Typography
-                  variant="h2"
-                  sx={{ mb: 3, color: '#fff', fontWeight: 800 }}
-                >
-                  NUA: Fresh Perspective
+                  Emotional wounds
                 </Typography>
                 <Typography
                   variant="subtitle1"
-                  sx={{ mt: 0, mb: 0, opacity: 0.8, color: '#fff' }}
+                  sx={{ mt: 0, mb: 6, opacity: 0.5, color: 'text.primary' }}
                 >
-                  Fresh Perspective Series — 15-minute episodes tackling faith,
-                  science, suffering, and Jesus’ story. Start your journey with
-                  NUA!
+                  Identifying the Roots of Depression
                 </Typography>
-              </Box>
 
-              <Swiper
-                spaceBetween={20}
-                slidesPerView={1.3}
-                centeredSlides={true}
-                // navigation
-                pagination={{ clickable: true }}
-                // scrollbar={{ draggable: true }}
-              >
-                <SwiperSlide>
-                  <Box
-                    sx={{
-                      flex: 1,
-                      borderRadius: 2,
-                      position: 'relative',
-                      // aspectRatio: '2/3',
-                      overflow: 'hidden',
-                      height: '100%', // Ensure the Box takes full height
-                      lineHeight: 0,
-                      '&::after': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        borderRadius: 'inherit',
-                        boxShadow: 'inset 0 0 1px rgba(255, 255, 255, 0.4)', // Inner glow effect
-                        zIndex: 1,
-                        pointerEvents: 'none'
-                      }
-                    }}
-                  >
-                    <img
-                      src="https://www.jesusfilm.org/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FtMY86qEHFACTO8_0kAeRFA%2F7_0-nur01.mobileCinematicHigh.jpg%2Ff%3Djpg%2Cw%3D1280%2Ch%3D600%2Cq%3D95&w=2048&q=75"
-                      alt="Slide Image"
-                      style={{
-                        // aspectRatio: '3/2',
-                        width: '100%',
-                        height: '200px', // Ensure the image takes full height
-                        objectFit: 'cover'
+                <VideoBox
+                  video={sampleVideos[1]}
+                  onPlayPause={handlePlayPause}
+                  onMuteToggle={toggleMute}
+                  isMuted={isMuted}
+                  isPlaying={playingVideos.has(sampleVideos[1].id)}
+                  videoRef={(el) => {
+                    if (el) {
+                      videoRefs.current.set(sampleVideos[1].id, el)
+                    }
+                  }}
+                  title="Healing Emotional Scars Through Faith"
+                  subtitle="Trusting God with Your Pain:"
+                  description="Discover how faith and spirituality can provide comfort and strength during challenging times of depression."
+                  chipLabel="TESTIMONY"
+                />
+
+                <MessageBubble
+                  message={[
+                    'Hey, I just watched this video about how faith can help heal emotional scars—it really hit home. Thought you might like it too.',
+                    'I know life can get heavy sometimes. This video about trusting God with pain really made me think—maybe it’ll resonate with you too.',
+                    'This video talks about finding comfort and strength through faith during tough times. I think it’s worth watching.',
+                    'I’ve been thinking about how we deal with pain, and this video about healing through faith made a lot of sense to me. Check it out.',
+                    'This video on trusting God with emotional scars really spoke to me. I thought of you—it might give you a fresh perspective.',
+                    'Hey, I saw this video on how faith can bring healing during tough times. It’s powerful—I think you might like it.',
+                    'Sometimes trusting God feels hard, but this video explained it in a way that really clicked for me. You might find it helpful too.',
+                    'You know how life throws curveballs? This video about healing through faith was a good reminder for me—I wanted to share it with you.',
+                    'This video on finding peace through faith during tough times really stuck with me. It’s simple but powerful—give it a watch.',
+                    'I watched this video about healing emotional scars through faith, and it really made me think about how we handle struggles. Wanted to share it with you.'
+                  ]}
+                />
+
+                <SectionHeader
+                  primaryText="Real Story, Real Emotions"
+                  secondaryText="Bible is shockingly honest about our condition"
+                />
+
+                <VideoBox
+                  video={sampleVideos[2]}
+                  onPlayPause={handlePlayPause}
+                  onMuteToggle={toggleMute}
+                  isMuted={isMuted}
+                  isPlaying={playingVideos.has(sampleVideos[2].id)}
+                  videoRef={(el) => {
+                    if (el) {
+                      videoRefs.current.set(sampleVideos[2].id, el)
+                    }
+                  }}
+                  title="Let this cup of sorrow pass from me…"
+                  subtitle="Jesus cried these words before the cross"
+                  description="Discover how faith and spirituality can provide comfort and strength during challenging times of depression."
+                  chipLabel="SHORT VIDEO"
+                />
+
+                <MessageBubble
+                  message={[
+                    "Hey, I just watched this video about Jesus' prayer before the cross—it really hit me. It’s about finding strength during tough times. Thought you’d find it interesting.",
+                    'This video talks about Jesus asking for the ‘cup of sorrow’ to pass from Him. It’s powerful and really made me think about dealing with struggles.',
+                    'I saw this video about Jesus’ last prayer before the cross. It’s about faith and finding comfort in hard times—it’s worth a watch.',
+                    'This video explains how Jesus faced sorrow before the cross. It’s pretty deep, and it made me think about how we handle tough moments.',
+                    'Jesus’ words before the cross were so raw and human. This video dives into it and shows how faith can help in hard times. Check it out!',
+                    "There’s this video about Jesus' prayer to let the ‘cup of sorrow’ pass from Him. It’s moving and has a lot to say about faith in hard times.",
+                    "I watched this video about Jesus crying out before the cross—it’s about finding strength when life feels overwhelming. I think you'd like it.",
+                    "This video on Jesus' prayer before the cross shows how faith can provide comfort even in the worst moments. It’s really moving—give it a watch.",
+                    'If you’ve ever felt overwhelmed, this video about Jesus’ struggle before the cross might really resonate with you. It’s powerful stuff.',
+                    'Jesus’ words before the cross were so honest and raw. This video explains how faith helps in times of depression and pain. Thought of you!'
+                  ]}
+                />
+
+                <SectionHeader
+                  primaryText="Movies for you"
+                  secondaryText="Watch free with no subscription or ads"
+                />
+
+                <Swiper
+                  spaceBetween={20}
+                  slidesPerView={1.3}
+                  // centeredSlides={true}
+                  // navigation
+                  pagination={{ clickable: true }}
+                  // scrollbar={{ draggable: true }}
+                >
+                  <SwiperSlide>
+                    <Box
+                      sx={{
+                        flex: 1,
+                        backgroundColor: 'rgba(255,255,255,0.05)',
+                        borderRadius: 2,
+                        position: 'relative',
+                        // aspectRatio: '2/3',
+                        overflow: 'hidden',
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          borderRadius: 'inherit',
+                          boxShadow: 'inset 0 0 1px rgba(255, 255, 255, 0.4)', // Inner glow effect
+                          zIndex: 1,
+                          pointerEvents: 'none'
+                        }
                       }}
-                    />
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 3 }}>
-                    <Typography
-                      variant="h3"
-                      sx={{ color: '#fff', mr: 3, opacity: 0.5 }}
                     >
-                      1
-                    </Typography>
-                    <Typography variant="subtitle1" sx={{ color: '#fff' }}>
-                      Does history prove the truth of Jesus Christ?
-                    </Typography>
-                  </Box>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <Box
-                    sx={{
-                      flex: 1,
-                      borderRadius: 2,
-                      position: 'relative',
-                      // aspectRatio: '2/3',
-                      overflow: 'hidden',
-                      height: '100%', // Ensure the Box takes full height
-                      lineHeight: 0,
-                      '&::after': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        borderRadius: 'inherit',
-                        boxShadow: 'inset 0 0 1px rgba(255, 255, 255, 0.4)', // Inner glow effect
-                        zIndex: 1,
-                        pointerEvents: 'none'
-                      }
-                    }}
-                  >
-                    <img
-                      src="https://www.jesusfilm.org/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FtMY86qEHFACTO8_0kAeRFA%2F7_0-nur02.mobileCinematicHigh.jpg%2Ff%3Djpg%2Cw%3D1280%2Ch%3D600%2Cq%3D95&w=2048&q=75"
-                      alt="Slide Image"
-                      style={{
-                        // aspectRatio: '3/2',
-                        width: '100%',
-                        height: '200px', // Ensure the image takes full height
-                        objectFit: 'cover'
+                      <img
+                        src="https://cdn-std.droplr.net/files/acc_760170/TxsUi3"
+                        alt="Slide Image"
+                        style={{
+                          aspectRatio: '2/3',
+                          width: '100%',
+                          // height: '100%',
+                          objectFit: 'cover'
+                        }}
+                      />
+                      <Button
+                        variant="text"
+                        size="small"
+                        startIcon={<PlayArrowIcon />}
+                        sx={{
+                          // position: 'absolute',
+                          // bottom: 8,
+                          // left: 8,
+                          m: 1,
+
+                          color: 'text.primary'
+                        }}
+                      >
+                        Watch Movie
+                      </Button>
+                    </Box>
+                  </SwiperSlide>
+                  <SwiperSlide>
+                    <Box
+                      sx={{
+                        flex: 1,
+                        backgroundColor: 'rgba(255,255,255,0.05)',
+                        borderRadius: 2,
+                        position: 'relative',
+                        // aspectRatio: '2/3',
+                        overflow: 'hidden',
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          borderRadius: 'inherit',
+                          boxShadow: 'inset 0 0 1px rgba(255, 255, 255, 0.4)', // Inner glow effect
+                          zIndex: 1,
+                          pointerEvents: 'none'
+                        }
                       }}
-                    />
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 3 }}>
-                    <Typography
-                      variant="h3"
-                      sx={{ color: '#fff', mr: 3, opacity: 0.5 }}
                     >
-                      2
-                    </Typography>
-                    <Typography variant="subtitle1" sx={{ color: '#fff' }}>
-                      How Can I Trust What the Bible Says?
-                    </Typography>
-                  </Box>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <Box
-                    sx={{
-                      flex: 1,
-                      borderRadius: 2,
-                      position: 'relative',
-                      // aspectRatio: '2/3',
-                      overflow: 'hidden',
-                      height: '100%', // Ensure the Box takes full height
-                      lineHeight: 0,
-                      '&::after': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        borderRadius: 'inherit',
-                        boxShadow: 'inset 0 0 1px rgba(255, 255, 255, 0.4)', // Inner glow effect
-                        zIndex: 1,
-                        pointerEvents: 'none'
-                      }
-                    }}
-                  >
-                    <img
-                      src="https://www.jesusfilm.org/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FtMY86qEHFACTO8_0kAeRFA%2F7_0-nur03.mobileCinematicHigh.jpg%2Ff%3Djpg%2Cw%3D1280%2Ch%3D600%2Cq%3D95&w=2048&q=75"
-                      alt="Slide Image"
-                      style={{
-                        // aspectRatio: '3/2',
-                        width: '100%',
-                        height: '200px', // Ensure the image takes full height
-                        objectFit: 'cover'
+                      <img
+                        src="https://cdn-std.droplr.net/files/acc_760170/cfER11"
+                        alt="Slide Image"
+                        style={{
+                          aspectRatio: '2/3',
+                          width: '100%',
+                          // height: '100%',
+                          objectFit: 'cover'
+                        }}
+                      />
+                      <Button
+                        variant="text"
+                        size="small"
+                        startIcon={<PlayArrowIcon />}
+                        sx={{
+                          // position: 'absolute',
+                          // bottom: 8,
+                          // left: 8,
+                          m: 1,
+
+                          color: 'text.primary'
+                        }}
+                      >
+                        Watch Movie
+                      </Button>
+                    </Box>
+                  </SwiperSlide>
+                  <SwiperSlide>
+                    <Box
+                      sx={{
+                        flex: 1,
+                        backgroundColor: 'rgba(255,255,255,0.05)',
+                        borderRadius: 2,
+                        position: 'relative',
+                        // aspectRatio: '2/3',
+                        overflow: 'hidden',
+                        '&::after': {
+                          content: '""',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          borderRadius: 'inherit',
+                          boxShadow: 'inset 0 0 1px rgba(255, 255, 255, 0.4)', // Inner glow effect
+                          zIndex: 1,
+                          pointerEvents: 'none'
+                        }
                       }}
-                    />
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 3 }}>
-                    <Typography
-                      variant="h3"
-                      sx={{ color: '#fff', mr: 3, opacity: 0.5 }}
                     >
-                      3
-                    </Typography>
-                    <Typography variant="subtitle1" sx={{ color: '#fff' }}>
-                      Why Should I Believe the Bible?
-                    </Typography>
-                  </Box>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <Box
-                    sx={{
-                      flex: 1,
-                      borderRadius: 2,
-                      position: 'relative',
+                      <img
+                        src="https://cdn-std.droplr.net/files/acc_760170/9wGrB0"
+                        alt="Slide Image"
+                        style={{
+                          aspectRatio: '2/3',
+                          width: '100%',
+                          // height: '100%',
+                          objectFit: 'cover'
+                        }}
+                      />
+                      <Button
+                        variant="text"
+                        size="small"
+                        startIcon={<PlayArrowIcon />}
+                        sx={{
+                          // position: 'absolute',
+                          // bottom: 8,
+                          // left: 8,
+                          m: 1,
+
+                          color: 'text.primary'
+                        }}
+                      >
+                        Watch Movie
+                      </Button>
+                    </Box>
+                  </SwiperSlide>
+                </Swiper>
+
+                <Box
+                  sx={{
+                    overflow: 'hidden',
+                    position: 'relative',
+                    pb: 10,
+                    mt: 16,
+                    minHeight: '100vh',
+                    width: '100vw', // Set full width
+                    ml: '-50vw', // Center the box by offsetting half of the viewport width
+                    left: '50%', // Center the box horizontally
+
+                    backgroundImage:
+                      'url(https://cdn-std.droplr.net/files/acc_760170/kvJNRP)',
+                    backgroundColor: 'rgba(255,255,255,0.05)',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backdropFilter: 'blur(10px)', // Apply blur effect
+                      backgroundColor: 'rgba(0,0,0, 0.5)', // Semi-transparent overlay
+                      zIndex: 0,
+                      pointerEvents: 'none'
+                      // mask: 'radial-gradient(transparent 60%, rgba(0,0,0,0.5) 80%, black 90%)', // Mask to leave center clear
+                    }
+                  }}
+                >
+                  <img
+                    src="https://cdn-std.droplr.net/files/acc_760170/kvJNRP"
+                    alt="Slide Image"
+                    style={{
+                      position: 'absolute',
+                      zIndex: 0,
                       // aspectRatio: '2/3',
-                      overflow: 'hidden',
-                      height: '100%', // Ensure the Box takes full height
-                      lineHeight: 0,
-                      '&::after': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        borderRadius: 'inherit',
-                        boxShadow: 'inset 0 0 1px rgba(255, 255, 255, 0.4)', // Inner glow effect
-                        zIndex: 1,
-                        pointerEvents: 'none'
-                      }
-                    }}
-                  >
-                    <img
-                      src="https://www.jesusfilm.org/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FtMY86qEHFACTO8_0kAeRFA%2F7_0-nur04.mobileCinematicHigh.jpg%2Ff%3Djpg%2Cw%3D1280%2Ch%3D600%2Cq%3D95&w=2048&q=75"
-                      alt="Slide Image"
-                      style={{
-                        // aspectRatio: '3/2',
-                        width: '100%',
-                        height: '200px', // Ensure the image takes full height
-                        objectFit: 'cover'
-                      }}
-                    />
-                  </Box>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 3 }}>
-                    <Typography
-                      variant="h3"
-                      sx={{ color: '#fff', mr: 3, opacity: 0.5 }}
-                    >
-                      4
-                    </Typography>
-                    <Typography variant="subtitle1" sx={{ color: '#fff' }}>
-                      How Did Jesus Die?
-                    </Typography>
-                  </Box>
-                </SwiperSlide>
-              </Swiper>
-            </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                width: '100%',
-                alignItems: 'center',
-                position: 'relative',
-                py: { xs: 10, lg: 20 }
-              }}
-            >
-              <Stack spacing={10}>
-                <Typography variant="h3" component="h2" color="text.primary">
-                  {t('About Our Project')}
-                </Typography>
-                <Stack direction="row" spacing={4}>
-                  <Box
-                    sx={{
-                      backgroundColor: 'primary.main',
-                      height: 'inherit',
-                      width: { xs: 38, lg: 14 }
+                      width: '100%',
+                      height: '60vh',
+                      objectFit: 'cover',
+                      mask: 'linear-gradient(to bottom, black 70%, transparent 98%)' // Mask to leave center clear
                     }}
                   />
-                  <Typography
-                    variant="subtitle2"
-                    component="h3"
-                    sx={{ opacity: 0.85 }}
-                    color="text.primary"
+                  <Box
+                    sx={{
+                      p: 10,
+                      mt: 10,
+                      minHeight: '65vh',
+                      zIndex: 2,
+                      position: 'relative',
+                      display: 'flex', // Add flex display
+                      flexDirection: 'column', // Ensure children are stacked vertically
+                      justifyContent: 'flex-end' // Align children to the bottom
+                    }}
                   >
-                    {t(
-                      'With 70% of the world not being able to speak English, there ' +
-                        'is a huge opportunity for the gospel to spread to unreached ' +
-                        'places. We have a vision to make it easier to watch, ' +
-                        'download and share Christian videos with people in their ' +
-                        'native heart language.'
-                    )}
-                  </Typography>
-                </Stack>
-                <Typography
-                  variant="subtitle1"
-                  component="h3"
-                  sx={{ opacity: 0.8 }}
-                  color="text.primary"
+                    <Typography
+                      variant="overline"
+                      sx={{ letterSpacing: 2, color: '#fff', opacity: 0.75 }}
+                    >
+                      Video Series
+                    </Typography>
+                    <Typography
+                      variant="h2"
+                      sx={{ mb: 3, color: '#fff', fontWeight: 800 }}
+                    >
+                      NUA: Fresh Perspective
+                    </Typography>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ mt: 0, mb: 0, opacity: 0.8, color: '#fff' }}
+                    >
+                      Fresh Perspective Series — 15-minute episodes tackling
+                      faith, science, suffering, and Jesus' story. Start your
+                      journey with NUA!
+                    </Typography>
+                  </Box>
+
+                  <Swiper
+                    spaceBetween={20}
+                    slidesPerView={1.3}
+                    centeredSlides={true}
+                    // navigation
+                    pagination={{ clickable: true }}
+                    // scrollbar={{ draggable: true }}
+                  >
+                    <SwiperSlide>
+                      <VideoSlide
+                        imageUrl="https://www.jesusfilm.org/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FtMY86qEHFACTO8_0kAeRFA%2F7_0-nur01.mobileCinematicHigh.jpg%2Ff%3Djpg%2Cw%3D1280%2Ch%3D600%2Cq%3D95&w=2048&q=75"
+                        episodeNumber={1}
+                        title="Does history prove the truth of Jesus Christ?"
+                      />
+                    </SwiperSlide>
+                    <SwiperSlide>
+                      <VideoSlide
+                        imageUrl="https://www.jesusfilm.org/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FtMY86qEHFACTO8_0kAeRFA%2F7_0-nur02.mobileCinematicHigh.jpg%2Ff%3Djpg%2Cw%3D1280%2Ch%3D600%2Cq%3D95&w=2048&q=75"
+                        episodeNumber={2}
+                        title="How Can I Trust What the Bible Says?"
+                      />
+                    </SwiperSlide>
+                    <SwiperSlide>
+                      <VideoSlide
+                        imageUrl="https://www.jesusfilm.org/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FtMY86qEHFACTO8_0kAeRFA%2F7_0-nur03.mobileCinematicHigh.jpg%2Ff%3Djpg%2Cw%3D1280%2Ch%3D600%2Cq%3D95&w=2048&q=75"
+                        episodeNumber={3}
+                        title="Why Should I Believe the Bible?"
+                      />
+                    </SwiperSlide>
+                    <SwiperSlide>
+                      <VideoSlide
+                        imageUrl="https://www.jesusfilm.org/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FtMY86qEHFACTO8_0kAeRFA%2F7_0-nur04.mobileCinematicHigh.jpg%2Ff%3Djpg%2Cw%3D1280%2Ch%3D600%2Cq%3D95&w=2048&q=75"
+                        episodeNumber={4}
+                        title="How Did Jesus Die?"
+                      />
+                    </SwiperSlide>
+                  </Swiper>
+                </Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    width: '100%',
+                    alignItems: 'center',
+                    position: 'relative',
+                    py: { xs: 10, lg: 20 }
+                  }}
                 >
-                  {t(
-                    'Jesus Film Project is a Christian ministry with a vision to ' +
-                      'reach the world with the gospel of Jesus Christ through ' +
-                      'evangelistic videos. Watch from over 2000 languages on any ' +
-                      'device and share it with others.'
-                  )}
-                </Typography>
-              </Stack>
+                  <Stack spacing={10}>
+                    <Typography
+                      variant="h3"
+                      component="h2"
+                      color="text.primary"
+                    >
+                      {t('About Our Project')}
+                    </Typography>
+                    <Stack direction="row" spacing={4}>
+                      <Box
+                        sx={{
+                          backgroundColor: 'primary.main',
+                          height: 'inherit',
+                          width: { xs: 38, lg: 14 }
+                        }}
+                      />
+                      <Typography
+                        variant="subtitle2"
+                        component="h3"
+                        sx={{ opacity: 0.85 }}
+                        color="text.primary"
+                      >
+                        {t(
+                          'With 70% of the world not being able to speak English, there ' +
+                            'is a huge opportunity for the gospel to spread to unreached ' +
+                            'places. We have a vision to make it easier to watch, ' +
+                            'download and share Christian videos with people in their ' +
+                            'native heart language.'
+                        )}
+                      </Typography>
+                    </Stack>
+                    <Typography
+                      variant="subtitle1"
+                      component="h3"
+                      sx={{ opacity: 0.8 }}
+                      color="text.primary"
+                    >
+                      {t(
+                        'Jesus Film Project is a Christian ministry with a vision to ' +
+                          'reach the world with the gospel of Jesus Christ through ' +
+                          'evangelistic videos. Watch from over 2000 languages on any ' +
+                          'device and share it with others.'
+                      )}
+                    </Typography>
+                  </Stack>
+                </Box>
+              </Container>
             </Box>
-          </Container>
-        </Box>
-        <VideoSingle
-          open={modalOpen}
-          onClose={handleModalClose}
-          videoId={selectedVideoId}
-          videoSrc={selectedVideoSrc}
-          sourceRect={sourceRect}
-          onMuteClick={handleMuteToggle}
-          isMuted={isMuted}
-        >
-          {selectedVideoPlayer}
-        </VideoSingle>
-      </VideoProvider>
-    </ThemeProvider>
+            <VideoSingle
+              open={modalOpen}
+              onClose={handleModalClose}
+              videoId={selectedVideoId}
+              videoSrc={selectedVideoSrc}
+              sourceRect={sourceRect}
+              onMuteClick={handleMuteToggle}
+              isMuted={modalMuted}
+              disableDrag
+            >
+              {selectedVideoPlayer}
+            </VideoSingle>
+          </Box>
+        </VideoProvider>
+      </ThemeProvider>
+    </>
   )
 }

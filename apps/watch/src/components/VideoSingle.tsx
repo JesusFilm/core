@@ -183,7 +183,7 @@ export function VideoSingle({
         onTouchEnd: handleTouchEnd,
         onScroll: handleScroll,
         sx: {
-          //   backgroundColor: 'background.default',
+          backgroundColor: 'background.default',
 
           backgroundImage: 'none',
           WebkitOverflowScrolling: 'touch',
