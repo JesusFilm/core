@@ -39,13 +39,15 @@ interface PersonaSlideProps {
   isActive?: boolean
   isAddPersona?: boolean
   unread?: boolean
+  onClick?: () => void
 }
 
 export function PersonaSlide({
   persona,
   isActive = false,
   isAddPersona = false,
-  unread = false
+  unread = false,
+  onClick
 }: PersonaSlideProps) {
   const avatarContent = isAddPersona ? (
     <AddIcon />
@@ -68,8 +70,10 @@ export function PersonaSlide({
   }
 
   return (
-    <ButtonBase
+    <Box
+      onClick={!isAddPersona ? onClick : undefined}
       sx={{
+        cursor: !isAddPersona ? 'pointer' : 'default',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -77,7 +81,8 @@ export function PersonaSlide({
         pt: 3,
         px: 2,
         pb: 1,
-        width: '100%',
+        mx: 1,
+        // width: '100%',
         minHeight: '160px',
         borderRadius: 3,
         backgroundColor: isActive ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
@@ -111,6 +116,6 @@ export function PersonaSlide({
       <Typography variant="overline" sx={{ opacity: 0.5 }}>
         {isAddPersona ? 'New' : persona?.type}
       </Typography>
-    </ButtonBase>
+    </Box>
   )
 }

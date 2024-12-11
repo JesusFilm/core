@@ -457,6 +457,19 @@ export function Audience(): ReactElement {
     }
   }, [])
 
+  // Add new state for active persona
+  const [activePersonaId, setActivePersonaId] = useState('pearl')
+
+  // Add handler for persona selection
+  const handlePersonaSelect = (personaId: string) => {
+    setActivePersonaId(personaId)
+  }
+
+  const handleDelete = (value: string) => {
+    console.log(`Deleted ${value}`)
+    // Add your delete logic here
+  }
+
   return (
     <>
       <Head>
@@ -517,7 +530,7 @@ export function Audience(): ReactElement {
                   //   style={{ marginBottom: '2rem' }}
                 >
                   <Swiper
-                    spaceBetween={4}
+                    // spaceBetween={6}
                     slidesPerView={3.5}
                     onSlideChange={() => console.log('slide change')}
                     onSwiper={(swiper) => console.log(swiper)}
@@ -529,8 +542,9 @@ export function Audience(): ReactElement {
                       >
                         <PersonaSlide
                           persona={persona}
-                          isActive={persona.id === 'pearl'}
+                          isActive={persona.id === activePersonaId}
                           unread={persona.unread}
+                          onClick={() => handlePersonaSelect(persona.id)}
                         />
                       </SwiperSlide>
                     ))}
