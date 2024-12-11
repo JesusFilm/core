@@ -4,9 +4,11 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
+import Tooltip from '@mui/material/Tooltip'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
@@ -57,6 +59,7 @@ export function VariantDialog({
   variantLanguagesMap
 }: VariantDialogProps): ReactElement | null {
   const t = useTranslations()
+  const { enqueueSnackbar } = useSnackbar()
   const defaultLanguage = {
     id: variant.language.id,
     localName: variant.language.name.find(({ primary }) => !primary)?.value,
@@ -90,9 +93,17 @@ export function VariantDialog({
           languageId: selectedLanguage.id,
           slug: `${variant.slug.split('/')[0]}/${selectedLanguage.slug}`
         }
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t('Language updated'), {
+          preventDuplicate: false,
+          variant: 'success'
+        })
       }
     })
   }
+
+  const existingVariant = variantLanguagesMap.get(selectedLanguage.id) != null
 
   return (
     <Dialog
@@ -131,16 +142,20 @@ export function VariantDialog({
             />
           </Box>
           <Box>
-            <Button
-              onClick={handleSubmit}
-              disabled={
-                loading ||
-                updateVariantLoading ||
-                variantLanguagesMap.get(selectedLanguage.id) != null
-              }
+            <Tooltip
+              data-testid="ExistingVariantTooltip"
+              disableHoverListener={!existingVariant}
+              title={t('A variant for this language already exists')}
             >
-              {t('Save')}
-            </Button>
+              <Box>
+                <Button
+                  onClick={handleSubmit}
+                  disabled={loading || updateVariantLoading || existingVariant}
+                >
+                  {t('Save')}
+                </Button>
+              </Box>
+            </Tooltip>
           </Box>
         </Stack>
         <Box

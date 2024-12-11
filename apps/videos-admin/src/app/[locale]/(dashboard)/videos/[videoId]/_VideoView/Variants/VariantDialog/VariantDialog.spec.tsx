@@ -1,6 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
+import { SnackbarProvider } from 'notistack'
 
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
 
@@ -140,7 +141,10 @@ describe('VariantDialog', () => {
     )
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     await waitFor(() =>
-      fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+      fireEvent.mouseOver(screen.getByRole('button', { name: 'Save' }))
+    )
+    expect(screen.getByTestId('ExistingVariantTooltip')).toHaveAccessibleName(
+      'A variant for this language already exists'
     )
   })
 
@@ -157,26 +161,27 @@ describe('VariantDialog', () => {
 
     render(
       <NextIntlClientProvider locale="en">
-        <MockedProvider
-          mocks={[
-            { ...getLanguagesMock, result: getLanguagesMockResult },
-            { ...mockVideoVariantUpdate, result: updateVariantLanguageResult }
-          ]}
-        >
-          <VariantDialog
-            variant={variant}
-            open
-            handleClose={handleClose}
-            variantLanguagesMap={mockVariantLanguages}
-          />
-        </MockedProvider>
+        <SnackbarProvider>
+          <MockedProvider
+            mocks={[
+              { ...getLanguagesMock, result: getLanguagesMockResult },
+              { ...mockVideoVariantUpdate, result: updateVariantLanguageResult }
+            ]}
+          >
+            <VariantDialog
+              variant={variant}
+              open
+              handleClose={handleClose}
+              variantLanguagesMap={mockVariantLanguages}
+            />
+          </MockedProvider>
+        </SnackbarProvider>
       </NextIntlClientProvider>
     )
 
     await waitFor(() => expect(getLanguagesMockResult).toHaveBeenCalled())
     fireEvent.focus(screen.getByRole('combobox'))
     fireEvent.keyDown(screen.getByRole('combobox'), { key: 'ArrowDown' })
-
     await waitFor(() =>
       fireEvent.click(screen.getByRole('option', { name: 'French Français' }))
     )
@@ -184,5 +189,6 @@ describe('VariantDialog', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Save' }))
     )
     await waitFor(() => expect(updateVariantLanguageResult).toHaveBeenCalled())
+    expect(screen.getByText('Language updated')).toBeInTheDocument()
   })
 })
