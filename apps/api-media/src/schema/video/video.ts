@@ -53,7 +53,12 @@ export function getLanguageIdFromInfo(
 const Video = builder.prismaObject('Video', {
   shareable: true,
   fields: (t) => ({
-    bibleCitations: t.relation('bibleCitation', { nullable: false }),
+    bibleCitations: t.relation('bibleCitation', {
+      nullable: false,
+      query: () => ({
+        orderBy: { order: 'asc' }
+      })
+    }),
     source: t.field({
       type: VideoSource,
       shareable: true,
