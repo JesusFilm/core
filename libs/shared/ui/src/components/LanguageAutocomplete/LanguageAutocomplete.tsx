@@ -22,6 +22,7 @@ import { OuterElement, OuterElementContext } from './OuterElement'
 export interface Language {
   id: string
   name: Translation[]
+  slug: string | null
 }
 
 export interface Translation {
@@ -33,6 +34,7 @@ export interface LanguageOption {
   id: string
   localName?: string
   nativeName?: string
+  slug?: string | null
 }
 
 export interface LanguageAutocompleteProps {
@@ -58,14 +60,15 @@ export function LanguageAutocomplete({
 }: LanguageAutocompleteProps): ReactElement {
   const options = useMemo(() => {
     return (
-      languages?.map(({ id, name }) => {
+      languages?.map(({ id, name, slug }) => {
         const localLanguageName = name.find(({ primary }) => !primary)?.value
         const nativeLanguageName = name.find(({ primary }) => primary)?.value
 
         return {
           id,
           localName: localLanguageName,
-          nativeName: nativeLanguageName
+          nativeName: nativeLanguageName,
+          slug
         }
       }) ?? []
     )
@@ -155,7 +158,8 @@ export function LanguageAutocomplete({
       getOptionLabel={({ localName, nativeName }) =>
         localName ?? nativeName ?? ''
       }
-      onChange={(_event, option) => {
+      onChange={(e, option) => {
+        e.stopPropagation()
         handleChange(option)
       }}
       options={sortedOptions}
