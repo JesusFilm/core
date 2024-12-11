@@ -180,7 +180,6 @@ describe('VariantDialog', () => {
     await waitFor(() =>
       fireEvent.click(screen.getByRole('option', { name: 'French Français' }))
     )
-    // expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     await waitFor(() =>
       fireEvent.click(screen.getByRole('button', { name: 'Save' }))
     )
