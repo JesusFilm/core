@@ -1,4 +1,6 @@
+import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
@@ -18,7 +20,7 @@ import {
   LanguageOption
 } from '@core/shared/ui/LanguageAutocomplete'
 
-import { GetAdminVideoVariant } from '../../../../../../../../../libs/useAdminVideo'
+import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
 
 import 'video.js/dist/video-js.css'
 import { Downloads } from './Downloads'
@@ -27,7 +29,7 @@ interface VariantDialogProps {
   variant: GetAdminVideoVariant
   handleClose?: () => void
   open?: boolean
-  variantsMap: Map<string, GetAdminVideoVariant>
+  variantLanguagesMap: Map<string, GetAdminVideoVariant>
 }
 
 const UPDATE_VARIANT_LANGUAGE = graphql(`
@@ -37,6 +39,7 @@ const UPDATE_VARIANT_LANGUAGE = graphql(`
       videoId
       slug
       language {
+        id
         name {
           value
           primary
@@ -50,16 +53,20 @@ export function VariantDialog({
   variant,
   open,
   handleClose,
-  variantsMap
+  variantLanguagesMap
 }: VariantDialogProps): ReactElement | null {
   const t = useTranslations()
   const defaultLanguage = {
     id: variant.language.id,
     localName: variant.language.name.find(({ primary }) => !primary)?.value,
-    nativeName: variant.language.name.find(({ primary }) => primary)?.value
+    nativeName: variant.language.name.find(({ primary }) => primary)?.value,
+    slug: variant.language.slug
   }
   const [selectedLanguage, setSelectedLanguage] =
     useState<LanguageOption>(defaultLanguage)
+
+  const [updateVariantLanguage, { loading: updateVariantLoading }] =
+    useMutation(UPDATE_VARIANT_LANGUAGE)
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { enqueueSnackbar } = useSnackbar()
@@ -81,16 +88,27 @@ export function VariantDialog({
   )?.url
 
   async function handleChange(value: LanguageOption): Promise<void> {
-    const existingVariant = variantsMap.get(value.id)
+    setSelectedLanguage(value)
+  }
+
+  async function handleSubmit(): Promise<void> {
+    const existingVariant = variantLanguagesMap.get(selectedLanguage.id)
     if (existingVariant != null) {
-      setSelectedLanguage(defaultLanguage)
       enqueueSnackbar(t('variant already exists'), {
         variant: 'error',
         preventDuplicate: false
       })
       return
     }
-    console.log('gql call to change variant language')
+    await updateVariantLanguage({
+      variables: {
+        input: {
+          id: variant.id,
+          languageId: selectedLanguage.id,
+          slug: `${variant.slug.split('/')[0]}/${selectedLanguage.slug}`
+        }
+      }
+    })
   }
 
   return (
@@ -107,15 +125,39 @@ export function VariantDialog({
       }}
     >
       <Stack gap={4}>
-        <LanguageAutocomplete
-          onChange={handleChange}
-          languages={data?.languages}
-          loading={loading}
-          value={selectedLanguage}
-          renderInput={(params) => (
-            <TextField {...params} label={t('Language')} variant="outlined" />
-          )}
-        />
+        <Stack
+          gap={2}
+          direction="row"
+          sx={{ width: '100%', alignItems: 'center' }}
+        >
+          <Box sx={{ width: '90%' }}>
+            <LanguageAutocomplete
+              onChange={handleChange}
+              languages={data?.languages}
+              loading={loading || updateVariantLoading}
+              value={selectedLanguage}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label={t('Language')}
+                  variant="outlined"
+                />
+              )}
+            />
+          </Box>
+          <Box>
+            <Button
+              onClick={handleSubmit}
+              disabled={
+                loading ||
+                updateVariantLoading ||
+                variantLanguagesMap.get(selectedLanguage.id) != null
+              }
+            >
+              {t('Save')}
+            </Button>
+          </Box>
+        </Stack>
         <Box
           sx={{
             borderRadius: 2,
