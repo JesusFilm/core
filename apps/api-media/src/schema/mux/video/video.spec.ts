@@ -5,18 +5,18 @@ import { prismaMock } from '../../../../test/prismaMock'
 
 jest.mock('./service', () => ({
   createVideoByDirectUpload: jest.fn().mockResolvedValue({
-    id: 'videoId',
+    id: 'uploadId',
     uploadUrl: 'https://example.com/video.mp4'
   }),
   createVideoFromUrl: jest.fn().mockResolvedValue({
-    id: 'videoId'
+    id: 'assetId'
   }),
   getVideo: jest.fn().mockResolvedValue({
-    id: 'videoId',
+    id: 'assetId',
     status: 'ready'
   }),
   deleteVideo: jest.fn().mockResolvedValue({
-    id: 'videoId'
+    id: 'assetId'
   })
 }))
 
@@ -39,6 +39,7 @@ describe('mux/video', () => {
         query GetMyMuxVideos {
           getMyMuxVideos {
             id
+            playbackId
             uploadUrl
             userId
             readyToStream
@@ -55,6 +56,10 @@ describe('mux/video', () => {
         prismaMock.muxVideo.findMany.mockResolvedValue([
           {
             id: 'videoId',
+            playbackId: 'playbackId',
+            uploadId: 'uploadId',
+            assetId: 'assetId',
+            duration: 10,
             name: 'videoName',
             uploadUrl: 'https://example.com/video.mp4',
             userId: 'userId',
@@ -70,6 +75,7 @@ describe('mux/video', () => {
         expect(data).toHaveProperty('data.getMyMuxVideos', [
           {
             id: 'videoId',
+            playbackId: 'playbackId',
             uploadUrl: 'https://example.com/video.mp4',
             userId: 'userId',
             readyToStream: true
@@ -90,6 +96,7 @@ describe('mux/video', () => {
         query GetMyMuxVideo($id: ID!) {
           getMyMuxVideo(id: $id) {
             id
+            playbackId
             uploadUrl
             userId
             readyToStream
@@ -105,6 +112,10 @@ describe('mux/video', () => {
         })
         prismaMock.muxVideo.findFirstOrThrow.mockResolvedValue({
           id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
           name: 'videoName',
           uploadUrl: 'https://example.com/video.mp4',
           userId: 'userId',
@@ -121,6 +132,7 @@ describe('mux/video', () => {
         })
         expect(data).toHaveProperty('data.getMyMuxVideo', {
           id: 'videoId',
+          playbackId: 'playbackId',
           uploadUrl: 'https://example.com/video.mp4',
           userId: 'userId',
           readyToStream: true
@@ -137,6 +149,55 @@ describe('mux/video', () => {
         expect(data).toHaveProperty('data', null)
       })
     })
+
+    describe('getMuxVideo', () => {
+      const GET_MUX_VIDEO = graphql(`
+        query GetMuxVideo($id: ID!) {
+          getMuxVideo(id: $id) {
+            id
+            playbackId
+            uploadUrl
+            userId
+            readyToStream
+          }
+        }
+      `)
+
+      it('should return video', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.muxVideo.findFirstOrThrow.mockResolvedValue({
+          id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: 'https://example.com/video.mp4',
+          userId: 'userId',
+          createdAt: new Date(),
+          readyToStream: true,
+          downloadable: false,
+          updatedAt: new Date()
+        })
+        const data = await client({
+          document: GET_MUX_VIDEO,
+          variables: {
+            id: 'videoId'
+          }
+        })
+        expect(data).toHaveProperty('data.getMuxVideo', {
+          id: 'videoId',
+          playbackId: 'playbackId',
+          uploadUrl: 'https://example.com/video.mp4',
+          userId: 'userId',
+          readyToStream: true
+        })
+      })
+    })
   })
 
   describe('mutations', () => {
@@ -145,6 +206,7 @@ describe('mux/video', () => {
         mutation CreateMuxVideoUploadByFile($name: String!) {
           createMuxVideoUploadByFile(name: $name) {
             id
+            playbackId
             uploadUrl
             userId
             readyToStream
@@ -160,6 +222,10 @@ describe('mux/video', () => {
         })
         prismaMock.muxVideo.create.mockResolvedValue({
           id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
           name: 'videoName',
           uploadUrl: 'https://example.com/video.mp4',
           userId: 'testUserId',
@@ -176,14 +242,15 @@ describe('mux/video', () => {
         })
         expect(prismaMock.muxVideo.create).toHaveBeenCalledWith({
           data: {
-            id: 'videoId',
             name: 'videoName',
             uploadUrl: 'https://example.com/video.mp4',
+            uploadId: 'uploadId',
             userId: 'testUserId'
           }
         })
         expect(result).toHaveProperty('data.createMuxVideoUploadByFile', {
           id: 'videoId',
+          playbackId: 'playbackId',
           uploadUrl: 'https://example.com/video.mp4',
           userId: 'testUserId',
           readyToStream: true
@@ -206,6 +273,7 @@ describe('mux/video', () => {
         mutation CreateMuxVideoUploadByUrl($url: String!) {
           createMuxVideoUploadByUrl(url: $url) {
             id
+            playbackId
             uploadUrl
             userId
             readyToStream
@@ -221,6 +289,10 @@ describe('mux/video', () => {
         })
         prismaMock.muxVideo.create.mockResolvedValue({
           id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
           name: 'videoName',
           uploadUrl: null,
           userId: 'testUserId',
@@ -237,12 +309,13 @@ describe('mux/video', () => {
         })
         expect(prismaMock.muxVideo.create).toHaveBeenCalledWith({
           data: {
-            id: 'videoId',
+            assetId: 'assetId',
             userId: 'testUserId'
           }
         })
         expect(result).toHaveProperty('data.createMuxVideoUploadByUrl', {
           id: 'videoId',
+          playbackId: 'playbackId',
           uploadUrl: null,
           userId: 'testUserId',
           readyToStream: true
@@ -267,7 +340,7 @@ describe('mux/video', () => {
         }
       `)
 
-      it('should return true', async () => {
+      it('should return true IF publisher', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
           userId: 'userId',
@@ -275,6 +348,10 @@ describe('mux/video', () => {
         })
         prismaMock.muxVideo.delete.mockResolvedValue({
           id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
           name: 'videoName',
           uploadUrl: null,
           userId: 'testUserId',
@@ -289,10 +366,90 @@ describe('mux/video', () => {
             id: 'videoId'
           }
         })
+        expect(prismaMock.muxVideo.findUniqueOrThrow).toHaveBeenCalledWith({
+          where: { id: 'videoId' }
+        })
         expect(prismaMock.muxVideo.delete).toHaveBeenCalledWith({
           where: { id: 'videoId' }
         })
         expect(result).toHaveProperty('data.deleteMuxVideo', true)
+      })
+
+      it('should return true if not publisher', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'testUserId',
+          userId: 'userId',
+          roles: []
+        })
+        prismaMock.muxVideo.delete.mockResolvedValue({
+          id: 'videoId',
+          name: 'videoName',
+          uploadUrl: null,
+          uploadId: 'uploadId',
+          playbackId: 'playbackId',
+          assetId: 'assetId',
+          duration: 10,
+          userId: 'testUserId',
+          createdAt: new Date(),
+          readyToStream: true,
+          downloadable: false,
+          updatedAt: new Date()
+        })
+        const result = await authClient({
+          document: DELETE_MUX_VIDEO,
+          variables: {
+            id: 'videoId'
+          }
+        })
+        expect(prismaMock.muxVideo.findUniqueOrThrow).toHaveBeenCalledWith({
+          where: { id: 'videoId', userId: 'testUserId' }
+        })
+        expect(prismaMock.muxVideo.delete).toHaveBeenCalledWith({
+          where: { id: 'videoId' }
+        })
+        expect(result).toHaveProperty('data.deleteMuxVideo', true)
+      })
+    })
+  })
+
+  describe('entity', () => {
+    const MUX_VIDEO = graphql(`
+      query MuxVideo {
+        _entities(
+          representations: [
+            { __typename: "MuxVideo", id: "testId", primaryLanguageId: null }
+          ]
+        ) {
+          ... on MuxVideo {
+            id
+          }
+        }
+      }
+    `)
+
+    it('should return mux video', async () => {
+      prismaMock.muxVideo.findUniqueOrThrow.mockResolvedValue({
+        id: 'testId',
+        assetId: 'testAssetId',
+        playbackId: 'testPlaybackId',
+        uploadId: 'testUploadId',
+        userId: 'testUserId',
+        uploadUrl: 'testUrl',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        name: 'testName',
+        readyToStream: true,
+        downloadable: false,
+        duration: 10
+      })
+      const data = await client({
+        document: MUX_VIDEO
+      })
+      expect(prismaMock.muxVideo.findUniqueOrThrow).toHaveBeenCalledWith({
+        where: { id: 'testId' }
+      })
+      expect(data).toHaveProperty('data._entities[0]', {
+        id: 'testId'
       })
     })
   })

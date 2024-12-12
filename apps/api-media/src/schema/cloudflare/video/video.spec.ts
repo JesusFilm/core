@@ -1,5 +1,7 @@
 import { Video } from 'cloudflare/resources/stream/stream'
 
+import { CloudflareVideo } from '.prisma/api-media-client'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
@@ -33,6 +35,16 @@ jest.mock('./service', () => ({
 
 describe('cloudflareVideo', () => {
   const client = getClient()
+  const authClient = getClient({
+    headers: {
+      authorization: 'token'
+    },
+    context: {
+      currentUser: {
+        id: 'userId'
+      }
+    }
+  })
 
   describe('queries', () => {
     describe('getMyCloudflareVideos', () => {
@@ -329,8 +341,46 @@ describe('cloudflareVideo', () => {
         }
       `)
 
-      it('should return true', async () => {
-        const result = await client({
+      it('should return true if publisher', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'testUserId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.cloudflareVideo.findUniqueOrThrow.mockResolvedValue({
+          userId: 'notUser'
+        } as unknown as CloudflareVideo)
+        const result = await authClient({
+          document: DELETE_CLOUDFLARE_VIDEO_MUTATION
+        })
+        expect(mockDeleteVideo).not.toHaveBeenCalled()
+        expect(result).toEqual({
+          data: {
+            deleteCloudflareVideo: true
+          }
+        })
+        expect(
+          prismaMock.cloudflareVideo.findUniqueOrThrow
+        ).toHaveBeenCalledWith({
+          where: {
+            id: 'testId'
+          }
+        })
+        expect(prismaMock.cloudflareVideo.delete).toHaveBeenCalledWith({
+          where: { id: 'testId' }
+        })
+      })
+
+      it('should return true if not publisher', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'testUserId',
+          userId: 'userId',
+          roles: []
+        })
+        prismaMock.cloudflareVideo.findUniqueOrThrow.mockResolvedValue({
+          userId: 'testUserId'
+        } as unknown as CloudflareVideo)
+        const result = await authClient({
           document: DELETE_CLOUDFLARE_VIDEO_MUTATION
         })
         expect(mockDeleteVideo).toHaveBeenCalledWith('testId')
@@ -339,9 +389,60 @@ describe('cloudflareVideo', () => {
             deleteCloudflareVideo: true
           }
         })
+        expect(
+          prismaMock.cloudflareVideo.findUniqueOrThrow
+        ).toHaveBeenCalledWith({
+          where: {
+            id: 'testId',
+            userId: 'testUserId'
+          }
+        })
         expect(prismaMock.cloudflareVideo.delete).toHaveBeenCalledWith({
           where: { id: 'testId' }
         })
+      })
+    })
+  })
+
+  describe('entity', () => {
+    const CLOUDFLARE_VIDEO = graphql(`
+      query CloudflareVideo {
+        _entities(
+          representations: [
+            {
+              __typename: "CloudflareVideo"
+              id: "testId"
+              primaryLanguageId: null
+            }
+          ]
+        ) {
+          ... on CloudflareVideo {
+            id
+          }
+        }
+      }
+    `)
+
+    it('should return cloudflare video', async () => {
+      prismaMock.cloudflareVideo.findUniqueOrThrow.mockResolvedValue({
+        id: 'testId',
+        userId: 'testUserId',
+        uploadUrl: 'testUrl',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        name: 'testName',
+        readyToStream: true
+      })
+      const data = await client({
+        document: CLOUDFLARE_VIDEO
+      })
+      expect(prismaMock.cloudflareVideo.findUniqueOrThrow).toHaveBeenCalledWith(
+        {
+          where: { id: 'testId' }
+        }
+      )
+      expect(data).toHaveProperty('data._entities[0]', {
+        id: 'testId'
       })
     })
   })

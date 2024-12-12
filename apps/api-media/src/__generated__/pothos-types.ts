@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, CloudflareVideo, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole } from ".prisma/api-media-client";
+import type { Prisma, CloudflareImage, CloudflareVideo, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain } from ".prisma/api-media-client";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
@@ -79,8 +79,8 @@ export default interface PrismaTypes {
         Where: Prisma.VideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets";
-        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets";
+        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "VideoEdition";
+        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "VideoEdition";
         Relations: {
             title: {
                 Shape: VideoTitle[];
@@ -145,6 +145,11 @@ export default interface PrismaTypes {
             cloudflareAssets: {
                 Shape: CloudflareR2[];
                 Name: "CloudflareR2";
+                Nullable: false;
+            };
+            VideoEdition: {
+                Shape: VideoEdition[];
+                Name: "VideoEdition";
                 Nullable: false;
             };
         };
@@ -229,9 +234,14 @@ export default interface PrismaTypes {
         Where: Prisma.VideoEditionWhereInput;
         Create: {};
         Update: {};
-        RelationName: "videoVariants" | "videoSubtitles";
+        RelationName: "video" | "videoVariants" | "videoSubtitles";
         ListRelations: "videoVariants" | "videoSubtitles";
         Relations: {
+            video: {
+                Shape: Video | null;
+                Name: "Video";
+                Nullable: true;
+            };
             videoVariants: {
                 Shape: VideoVariant[];
                 Name: "VideoVariant";
@@ -254,10 +264,10 @@ export default interface PrismaTypes {
         Where: Prisma.VideoSubtitleWhereInput;
         Create: {};
         Update: {};
-        RelationName: "Video" | "videoEdition";
+        RelationName: "video" | "videoEdition";
         ListRelations: never;
         Relations: {
-            Video: {
+            video: {
                 Shape: Video;
                 Name: "Video";
                 Nullable: false;
@@ -576,6 +586,60 @@ export default interface PrismaTypes {
         OrderBy: Prisma.UserMediaRoleOrderByWithRelationInput;
         WhereUnique: Prisma.UserMediaRoleWhereUniqueInput;
         Where: Prisma.UserMediaRoleWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: never;
+        ListRelations: never;
+        Relations: {};
+    };
+    ShortLinkDomain: {
+        Name: "ShortLinkDomain";
+        Shape: ShortLinkDomain;
+        Include: Prisma.ShortLinkDomainInclude;
+        Select: Prisma.ShortLinkDomainSelect;
+        OrderBy: Prisma.ShortLinkDomainOrderByWithRelationInput;
+        WhereUnique: Prisma.ShortLinkDomainWhereUniqueInput;
+        Where: Prisma.ShortLinkDomainWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "shortLinks";
+        ListRelations: "shortLinks";
+        Relations: {
+            shortLinks: {
+                Shape: ShortLink[];
+                Name: "ShortLink";
+                Nullable: false;
+            };
+        };
+    };
+    ShortLink: {
+        Name: "ShortLink";
+        Shape: ShortLink;
+        Include: Prisma.ShortLinkInclude;
+        Select: Prisma.ShortLinkSelect;
+        OrderBy: Prisma.ShortLinkOrderByWithRelationInput;
+        WhereUnique: Prisma.ShortLinkWhereUniqueInput;
+        Where: Prisma.ShortLinkWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "domain";
+        ListRelations: never;
+        Relations: {
+            domain: {
+                Shape: ShortLinkDomain;
+                Name: "ShortLinkDomain";
+                Nullable: false;
+            };
+        };
+    };
+    ShortLinkBlocklistDomain: {
+        Name: "ShortLinkBlocklistDomain";
+        Shape: ShortLinkBlocklistDomain;
+        Include: never;
+        Select: Prisma.ShortLinkBlocklistDomainSelect;
+        OrderBy: Prisma.ShortLinkBlocklistDomainOrderByWithRelationInput;
+        WhereUnique: Prisma.ShortLinkBlocklistDomainWhereUniqueInput;
+        Where: Prisma.ShortLinkBlocklistDomainWhereInput;
         Create: {};
         Update: {};
         RelationName: never;

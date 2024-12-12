@@ -58,15 +58,20 @@ model CloudflareVideo {
 
 model MuxVideo {
   id            String   @id @default(uuid())
+  playbackId    String?  @unique
   uploadUrl     String?
+  uploadId      String?  @unique
+  assetId       String?  @unique
   userId        String
   name          String?
+  duration      Int      @default(0)
   downloadable  Boolean  @default(false)
   createdAt     DateTime @default(now())
   readyToStream Boolean  @default(false)
   updatedAt     DateTime @default(now()) @updatedAt
 
   @@index(userId(type: Hash))
+  @@index(assetId(type: Hash))
 }
 
 model CloudflareR2 {
@@ -127,6 +132,7 @@ model Video {
   keywords               Keyword[]            @relation("VideoToKeyword")
   images                 CloudflareImage[]
   cloudflareAssets       CloudflareR2[]
+  VideoEdition           VideoEdition[]
 
   @@index(label)
   @@index(childIds)
@@ -189,6 +195,8 @@ model VideoVariant {
 model VideoEdition {
   id             String          @id
   name           String?
+  videoId        String?
+  video          Video?          @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoVariants  VideoVariant[]
   videoSubtitles VideoSubtitle[]
 }
@@ -201,7 +209,7 @@ model VideoSubtitle {
   srtSrc       String?
   primary      Boolean
   languageId   String
-  Video        Video        @relation(fields: [videoId], references: [id])
+  video        Video        @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoEdition VideoEdition @relation(fields: [edition], references: [id])
 
   @@unique([videoId, edition, languageId])
@@ -405,4 +413,40 @@ model UserMediaRole {
   id     String      @id @default(uuid())
   userId String      @unique
   roles  MediaRole[]
+}
+
+model ShortLinkDomain {
+  id         String      @id @default(uuid())
+  /// the hostname including subdomain, domain, and TLD, but excluding port
+  hostname   String      @unique
+  /// the name of the apex domain (e.g. "example.com" for "www.example.com")
+  apexName   String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  /// which services are able to use this domain in their short links
+  services   Service[]
+  shortLinks ShortLink[]
+}
+
+model ShortLink {
+  id        String          @id @default(uuid())
+  /// should not include the leading slash
+  pathname  String
+  /// the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  to        String
+  domainId  String
+  /// the user created this short link (if empty, it was created by a subgraph)
+  userId    String?
+  /// the service that created this short link
+  service   Service
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  domain    ShortLinkDomain @relation(fields: [domainId], references: [id], onDelete: Restrict)
+
+  @@unique([pathname, domainId])
+}
+
+model ShortLinkBlocklistDomain {
+  /// the hostname including subdomain, domain, and TLD, but excluding port
+  hostname String @id
 }
