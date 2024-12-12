@@ -126,10 +126,8 @@ describe('Video', () => {
         <Video
           {...{
             ...block,
-            mediaVideo: {
-              __typename: 'YouTube',
-              id: 'videoId'
-            }
+            source: VideoBlockSource.youTube,
+            videoId: 'videoId'
           }}
         />
       </MockedProvider>
@@ -149,10 +147,8 @@ describe('Video', () => {
         <Video
           {...{
             ...block,
-            mediaVideo: {
-              __typename: 'CloudflareVideo',
-              id: 'videoId'
-            }
+            source: VideoBlockSource.cloudflare,
+            videoId: 'videoId'
           }}
         />
       </MockedProvider>
@@ -190,10 +186,10 @@ describe('Video', () => {
     expect(videoImage).toHaveAttribute('alt', 'video image')
   })
 
-  it('should not render an image if mediaVideo is null', () => {
+  it('should not render an image if videoId is null', () => {
     render(
       <MockedProvider>
-        <Video {...block} mediaVideo={null} />
+        <Video {...block} videoId={null} />
       </MockedProvider>
     )
     expect(screen.getByTestId('VideocamRoundedIcon')).toHaveClass(

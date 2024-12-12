@@ -61,8 +61,9 @@ const StyledVideoGradient = styled(Box)`
 
 export function Video({
   id: blockId,
-  mediaVideo,
+  video,
   source,
+  videoId,
   image,
   title,
   autoplay,
@@ -72,8 +73,7 @@ export function Video({
   posterBlockId,
   children,
   action,
-  objectFit,
-  __typename
+  objectFit
 }: TreeBlock<VideoFields>): ReactElement {
   const theme = useTheme()
   const hundredVh = use100vh()
@@ -90,9 +90,8 @@ export function Video({
     state: { selectedBlock }
   } = useEditor()
 
-  const eventVideoTitle =
-    mediaVideo?.__typename == 'Video' ? mediaVideo?.title[0].value : title
-  const eventVideoId = mediaVideo?.id
+  const eventVideoTitle = video?.title[0].value ?? title
+  const eventVideoId = video?.id ?? videoId
 
   // Setup poster image
   const posterBlock = children.find(
@@ -100,8 +99,8 @@ export function Video({
   ) as TreeBlock<ImageFields> | undefined
 
   const videoImage =
-    mediaVideo?.__typename == 'Video'
-      ? mediaVideo?.images[0]?.mobileCinematicHigh
+    source === VideoBlockSource.internal
+      ? video?.images[0]?.mobileCinematicHigh
       : image
 
   const blurBackground = useMemo(() => {
@@ -214,7 +213,7 @@ export function Video({
           />
         )}
 
-      {mediaVideo?.id != null ? (
+      {videoId != null ? (
         <>
           <StyledVideoGradient />
           <Box
@@ -252,28 +251,27 @@ export function Video({
                 }
               }}
             >
-              {mediaVideo?.__typename == 'CloudflareVideo' &&
-                mediaVideo?.id != null && (
-                  <source
-                    src={`https://customer-${
-                      process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
-                      ''
-                    }.cloudflarestream.com/${
-                      mediaVideo.id ?? ''
-                    }/manifest/video.m3u8?clientBandwidthHint=10`}
-                    type="application/x-mpegURL"
-                  />
-                )}
-              {mediaVideo?.__typename == 'Video' &&
-                mediaVideo?.variant?.hls != null && (
-                  <source
-                    src={mediaVideo.variant.hls}
-                    type="application/x-mpegURL"
-                  />
-                )}
-              {mediaVideo?.__typename == 'YouTube' && (
+              {source === VideoBlockSource.cloudflare && videoId != null && (
                 <source
-                  src={`https://www.youtube.com/embed/${mediaVideo.id}?start=${
+                  src={`https://customer-${
+                    process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
+                    ''
+                  }.cloudflarestream.com/${
+                    videoId ?? ''
+                  }/manifest/video.m3u8?clientBandwidthHint=10`}
+                  type="application/x-mpegURL"
+                />
+              )}
+              {source === VideoBlockSource.internal &&
+                video?.variant?.hls != null && (
+                  <source
+                    src={video.variant.hls}
+                    type="application/x-mpegURL"
+                  />
+                )}
+              {source === VideoBlockSource.youTube && (
+                <source
+                  src={`https://www.youtube.com/embed/${videoId}?start=${
                     startAt ?? 0
                   }&end=${endAt ?? 0}`}
                   type="video/youtube"

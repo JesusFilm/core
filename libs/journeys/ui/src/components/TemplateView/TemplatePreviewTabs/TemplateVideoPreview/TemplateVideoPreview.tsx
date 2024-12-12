@@ -63,16 +63,11 @@ function TemplateVideoPreviewItem({
       />
       {hasPlayed ? (
         <DynamicTemplateVideoPlayer
-          id={
-            block?.mediaVideo?.__typename == 'Video'
-              ? block?.mediaVideo?.variant?.hls
-              : block?.mediaVideo?.id
-          }
+          id={block?.video?.variant?.hls ?? block?.videoId}
           source={block?.source}
           poster={
-            block?.mediaVideo?.__typename != 'Video'
-              ? (block?.image as string)
-              : (block?.mediaVideo?.images[0]?.mobileCinematicHigh as string)
+            (block?.image as string) ??
+            block?.video?.images[0]?.mobileCinematicHigh
           }
           startAt={block?.startAt ?? 0}
           endAt={block?.endAt ?? 10000}
@@ -80,15 +75,10 @@ function TemplateVideoPreviewItem({
       ) : (
         <Image
           src={
-            block?.mediaVideo?.__typename != 'Video'
-              ? (block?.image as string)
-              : (block?.mediaVideo?.images[0]?.mobileCinematicHigh as string)
+            (block?.image as string) ??
+            block?.video?.images[0]?.mobileCinematicHigh
           }
-          alt={
-            block?.mediaVideo?.__typename == 'Video'
-              ? block?.mediaVideo?.title[0]?.value
-              : 'video image'
-          }
+          alt={block?.video?.title[0]?.value ?? 'video' + ' image'}
           fill
           sizes="100vw"
           onLoad={() => setOpacity(0)}
