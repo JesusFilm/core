@@ -26,6 +26,7 @@ import {
 } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { useEditor } from '../../libs/EditorProvider'
+import { useJourney } from '../../libs/JourneyProvider'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { VideoEvents } from '../VideoEvents'
 import { VideoTrigger } from '../VideoTrigger'
@@ -34,6 +35,7 @@ import { VideoTriggerFields } from '../VideoTrigger/__generated__/VideoTriggerFi
 import { VideoFields } from './__generated__/VideoFields'
 import { InitAndPlay } from './InitAndPlay'
 import { VideoControls } from './VideoControls'
+
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
 
@@ -73,18 +75,17 @@ export function Video({
   action,
   objectFit
 }: TreeBlock<VideoFields>): ReactElement {
-  const { blockHistory } = useBlocks()
-  const [loading, setLoading] = useState(true)
-  const [showPoster, setShowPoster] = useState(true)
   const theme = useTheme()
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const [player, setPlayer] = useState<Player>()
   const hundredVh = use100vh()
-  const [activeStep, setActiveStep] = useState(false)
-  useEffect(() => {
-    setActiveStep(isActiveBlockOrDescendant(blockId))
-  }, [blockId, blockHistory])
 
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [loading, setLoading] = useState(true)
+  const [player, setPlayer] = useState<Player>()
+  const [showPoster, setShowPoster] = useState(true)
+  const [activeStep, setActiveStep] = useState(false)
+
+  const { blockHistory } = useBlocks()
+  const { variant } = useJourney()
   const {
     state: { selectedBlock }
   } = useEditor()
@@ -141,6 +142,15 @@ export function Video({
 
   const isFillAndNotYoutube = (): boolean =>
     videoFit === 'cover' && source !== VideoBlockSource.youTube
+
+  const showVideoImage =
+    (variant === 'admin' && source === VideoBlockSource.youTube) ||
+    source === VideoBlockSource.internal ||
+    source === VideoBlockSource.cloudflare
+
+  useEffect(() => {
+    setActiveStep(isActiveBlockOrDescendant(blockId))
+  }, [blockId, blockHistory])
 
   return (
     <Box
@@ -323,21 +333,24 @@ export function Video({
         </>
       )}
       {/* Video Image  */}
-      {videoImage != null && posterBlock?.src == null && showPoster && (
-        <NextImage
-          src={videoImage}
-          alt="video image"
-          layout="fill"
-          objectFit={videoFit}
-          unoptimized
-          style={{
-            transform:
-              objectFit === VideoBlockObjectFit.zoomed
-                ? 'scale(1.33)'
-                : undefined
-          }}
-        />
-      )}
+      {videoImage != null &&
+        showVideoImage &&
+        posterBlock?.src == null &&
+        showPoster && (
+          <NextImage
+            src={videoImage}
+            alt="video image"
+            layout="fill"
+            objectFit={videoFit}
+            unoptimized
+            style={{
+              transform:
+                objectFit === VideoBlockObjectFit.zoomed
+                  ? 'scale(1.33)'
+                  : undefined
+            }}
+          />
+        )}
       {/* Lazy load higher res poster */}
       {posterBlock?.src != null && showPoster && (
         <NextImage

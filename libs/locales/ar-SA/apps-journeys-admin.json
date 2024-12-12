@@ -231,6 +231,7 @@
   "Medium": "متوسط",
   "Large": "كبير",
   "Contained": "محتوى",
+  "Invalid {{ HEX }} color code": "Invalid {{ HEX }} color code",
   "Palette": "لوحة الألوان",
   "None": "لا يوجد",
   "Background": "الخلفية",

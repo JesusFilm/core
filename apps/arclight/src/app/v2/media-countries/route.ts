@@ -2,21 +2,11 @@ import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../lib/apolloClient'
+import { getLanguageIdsFromTags } from '../../../lib/getLanguageIdsFromTags'
 import { paramsToRecord } from '../../../lib/paramsToRecord'
 
-/* TODO: 
-  querystring:
-    apiKey
-    term
-    ids
-    languageIds
-    expand
-    filter
-    metadataLanguageTags
-*/
-
 const GET_COUNTRIES = graphql(`
-  query Country {
+  query Country($metadataLanguageId: ID!, $fallbackLanguageId: ID!) {
     countries {
       id
       population
@@ -24,12 +14,23 @@ const GET_COUNTRIES = graphql(`
       longitude
       flagPngSrc
       flagWebpSrc
-      name(languageId: "529") {
+      name(languageId: $metadataLanguageId) {
+        value
+      }
+      fallbackName: name(languageId: $fallbackLanguageId) {
         value
       }
       continent {
-        name {
+        name(languageId: $metadataLanguageId) {
           value
+        }
+        fallbackName: name(languageId: $fallbackLanguageId) {
+          value
+        }
+      }
+      countryLanguages {
+        language {
+          id
         }
       }
       languageCount
@@ -43,12 +44,26 @@ export async function GET(request: NextRequest): Promise<Response> {
 
   const page = Number(query.get('page') ?? 1)
   const limit = Number(query.get('limit') ?? 10)
+  const expand = query.get('expand')
   const offset = (page - 1) * limit
+  const metadataLanguageTags =
+    query.get('metadataLanguageTags')?.split(',') ?? []
+
+  const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
+  if (languageResult instanceof Response) {
+    return languageResult
+  }
+
+  const { metadataLanguageId, fallbackLanguageId } = languageResult
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_COUNTRIES>
   >({
-    query: GET_COUNTRIES
+    query: GET_COUNTRIES,
+    variables: {
+      metadataLanguageId,
+      fallbackLanguageId
+    }
   })
 
   const queryObject: Record<string, string> = {
@@ -73,10 +88,17 @@ export async function GET(request: NextRequest): Promise<Response> {
 
   const mediaCountries = data.countries
     .slice(offset, offset + limit)
+    .filter(
+      (country) =>
+        country.name[0]?.value != null || country.fallbackName[0]?.value != null
+    )
     .map((country) => ({
       countryId: country.id,
-      name: country.name?.[0]?.value ?? '',
-      continentName: country.continent?.name?.[0]?.value ?? '',
+      name: country.name[0]?.value ?? country.fallbackName?.[0]?.value ?? '',
+      continentName:
+        country.continent?.name[0]?.value ??
+        country.continent?.fallbackName[0]?.value ??
+        '',
       longitude: country.longitude,
       latitude: country.latitude,
       counts: {
@@ -99,6 +121,13 @@ export async function GET(request: NextRequest): Promise<Response> {
           webpLossy50: country.flagWebpSrc
         }
       },
+      ...(expand === 'languageIds'
+        ? {
+            languageIds: country.countryLanguages.map((countryLanguage) =>
+              Number(countryLanguage.language.id)
+            )
+          }
+        : {}),
       _links: {
         self: {
           href: `http://api.arclight.org/v2/media-countries/${country.id}?apiKey=3a21a65d4gf98hZ7`

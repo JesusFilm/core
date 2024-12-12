@@ -11,7 +11,7 @@ export function PublishedChip({ published }: PublishedChipProps): ReactElement {
 
   return (
     <Chip
-      label={published ? t('Published') : t('Unpublished')}
+      label={published ? t('Published') : t('Draft')}
       color={published ? 'success' : 'warning'}
     />
   )

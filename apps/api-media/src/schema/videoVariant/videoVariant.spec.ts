@@ -25,6 +25,7 @@ describe('videoVariant', () => {
       query videoVariants($languageId: ID, $primary: Boolean) {
         videoVariants {
           id
+          videoId
           hls
           downloadable
           downloads {
@@ -66,12 +67,12 @@ describe('videoVariant', () => {
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         {
           id: 'videoVariantId',
+          videoId: 'videoId',
           hls: null,
           duration: null,
           languageId: 'languageId',
           edition: 'base',
           slug: 'videoSlug',
-          videoId: 'videoId',
           downloadable: true,
           downloads: [
             {
@@ -123,6 +124,7 @@ describe('videoVariant', () => {
       expect(data).toHaveProperty('data.videoVariants', [
         {
           id: 'videoVariantId',
+          videoId: 'videoId',
           hls: null,
           downloadable: true,
           downloads: [
@@ -161,12 +163,12 @@ describe('videoVariant', () => {
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         {
           id: 'videoVariantId',
+          videoId: 'videoId',
           hls: null,
           duration: 768,
           languageId: 'languageId',
           edition: 'base',
           slug: 'videoSlug',
-          videoId: 'videoId',
           downloadable: true,
           downloads: [
             {
@@ -220,6 +222,7 @@ describe('videoVariant', () => {
       expect(data).toHaveProperty('data.videoVariants', [
         {
           id: 'videoVariantId',
+          videoId: 'videoId',
           hls: null,
           downloadable: true,
           downloads: [
@@ -307,6 +310,7 @@ describe('videoVariant', () => {
       expect(data).toHaveProperty('data.videoVariants', [
         {
           id: 'videoVariantId',
+          videoId: 'videoId',
           hls: null,
           downloadable: true,
           downloads: [

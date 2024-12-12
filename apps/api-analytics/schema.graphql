@@ -1,8 +1,14 @@
 extend schema
-  @link(url: "https://specs.apollo.dev/federation/v2.6", import: [])
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@shareable"])
 
-type Error {
-  message: String!
+interface BaseError {
+  message: String
+}
+
+type Error implements BaseError
+  @shareable
+{
+  message: String
 }
 
 type Mutation {

@@ -94,6 +94,7 @@ enum VideoBlockSource {
   cloudflare
   internal
   youTube
+  mux
 }
 
 enum IntegrationType {
