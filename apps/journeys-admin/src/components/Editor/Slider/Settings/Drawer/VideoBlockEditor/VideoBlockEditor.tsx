@@ -40,7 +40,7 @@ export function VideoBlockEditor({
       <Box sx={{ p: 4, pt: 0 }} data-testid="VideoBlockEditor">
         <Source selectedBlock={selectedBlock} onChange={onChange} />
       </Box>
-      {videoBlock?.videoId != null && (
+      {videoBlock?.mediaVideo?.id != null && (
         <Box pb={4}>
           <VideoBlockEditorSettings
             selectedBlock={selectedBlock}
