@@ -35,7 +35,11 @@
   "Size": "サイズ",
   "Dimensions": "寸法",
   "URL": "URL",
+  "Language updated": "Language updated",
   "Audio Language": "Audio Language",
+  "Language": "言語",
+  "A variant for this language already exists": "A variant for this language already exists",
+  "Save": "セーブ",
   "Audio Languages": "Audio Languages",
   "No children to show": "見せるべき子供はいない",
   "Loading...": "読み込み中...",
@@ -58,6 +62,5 @@
   "Home": "ホーム",
   "Video Library": "ビデオライブラリー",
   "Sign Out": "サインアウト",
-  "Draft": "Draft",
-  "Save": "セーブ"
+  "Draft": "Draft"
 }
