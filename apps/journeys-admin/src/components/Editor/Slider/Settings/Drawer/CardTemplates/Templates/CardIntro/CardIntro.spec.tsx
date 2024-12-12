@@ -263,6 +263,29 @@ describe('CardIntro', () => {
             variantLanguages: [],
             __typename: 'Video'
           },
+          mediaVideo: {
+            id: '1_jf-0-0',
+            title: [
+              {
+                value: 'JESUS',
+                __typename: 'VideoTitle'
+              }
+            ],
+            images: [
+              {
+                __typename: 'CloudflareImage',
+                mobileCinematicHigh:
+                  'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+              }
+            ],
+            variant: {
+              id: '1_529-jf-0-0',
+              hls: 'https://arc.gt/j67rz',
+              __typename: 'VideoVariant'
+            },
+            variantLanguages: [],
+            __typename: 'Video'
+          },
           action: null,
           __typename: 'VideoBlock'
         }

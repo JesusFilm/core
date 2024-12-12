@@ -55,6 +55,29 @@ export const journeyVideoBlocks: Blocks[] = [
       },
       variantLanguages: []
     },
+    mediaVideo: {
+      __typename: 'Video',
+      id: '1_0-TrainV_1Install',
+      title: [
+        {
+          __typename: 'VideoTitle',
+          value: 'Installing the Jesus Film Media App'
+        }
+      ],
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/lrg_cine_install.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
+      variant: {
+        __typename: 'VideoVariant',
+        id: '1_529-0-TrainV_1Install',
+        hls: 'https://arc.gt/zxqrt'
+      },
+      variantLanguages: []
+    },
     action: null
   },
   {
@@ -77,6 +100,29 @@ export const journeyVideoBlocks: Blocks[] = [
     duration: null,
     objectFit: null,
     video: {
+      __typename: 'Video',
+      id: '1_0-TrainV_5Ministry',
+      title: [
+        {
+          __typename: 'VideoTitle',
+          value: 'Use this App in Ministry'
+        }
+      ],
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/lrg_cine_ministry.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
+      variant: {
+        __typename: 'VideoVariant',
+        id: '1_529-0-TrainV_5Ministry',
+        hls: 'https://arc.gt/rnfsp'
+      },
+      variantLanguages: []
+    },
+    mediaVideo: {
       __typename: 'Video',
       id: '1_0-TrainV_5Ministry',
       title: [
@@ -143,6 +189,29 @@ export const journeyVideoBlocks: Blocks[] = [
       },
       variantLanguages: []
     },
+    mediaVideo: {
+      __typename: 'Video',
+      id: '1_cl1302-0-0',
+      title: [
+        {
+          __typename: 'VideoTitle',
+          value: 'StoryClubs: Childhood of Jesus'
+        }
+      ],
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1302-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
+      variant: {
+        __typename: 'VideoVariant',
+        id: '1_529-cl1302-0-0',
+        hls: 'https://arc.gt/7unjy'
+      },
+      variantLanguages: []
+    },
     action: null
   },
   {
@@ -166,6 +235,7 @@ export const journeyVideoBlocks: Blocks[] = [
     duration: 120,
     objectFit: null,
     video: null,
+    mediaVideo: null,
     action: null
   },
   {
@@ -209,6 +279,29 @@ export const journeyVideoBlocks: Blocks[] = [
     duration: 147,
     objectFit: null,
     video: {
+      __typename: 'Video',
+      id: '1_cl1305-0-0',
+      title: [
+        {
+          __typename: 'VideoTitle',
+          value: 'StoryClubs: Sinful Woman Forgiven'
+        }
+      ],
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1305-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
+      variant: {
+        __typename: 'VideoVariant',
+        id: '1_529-cl1305-0-0',
+        hls: 'https://arc.gt/hmkwc'
+      },
+      variantLanguages: []
+    },
+    mediaVideo: {
       __typename: 'Video',
       id: '1_cl1305-0-0',
       title: [
@@ -325,6 +418,10 @@ export const videoBlocksFiltered = [
     duration: 218,
     objectFit: null,
     video: null,
+    mediaVideo: {
+      __typename: 'YouTube',
+      id: 'ghTiJv0oVck'
+    },
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: '27c87b6a-8be5-4fb3-b2e0-a99d96df9c54',
@@ -351,6 +448,28 @@ export const videoBlocksFiltered = [
     duration: null,
     objectFit: 'fill',
     video: {
+      __typename: 'Video',
+      id: '1_cl1301-0-0',
+      title: [
+        {
+          __typename: 'VideoTitle',
+          value: 'StoryClubs: Birth of Jesus'
+        }
+      ],
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1301-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
+      variant: {
+        __typename: 'VideoVariant',
+        id: '1_529-cl1301-0-0',
+        hls: 'https://arc.gt/c8bne'
+      }
+    },
+    mediaVideo: {
       __typename: 'Video',
       id: '1_cl1301-0-0',
       title: [
@@ -399,6 +518,10 @@ export const videoBlocksFiltered = [
     duration: 188,
     objectFit: null,
     video: null,
+    mediaVideo: {
+      __typename: 'YouTube',
+      id: '90XbaaQerz8'
+    },
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: '5b095694-6048-412e-96d4-729678fb7857',
@@ -425,6 +548,28 @@ export const videoBlocksFiltered = [
     duration: null,
     objectFit: null,
     video: {
+      __typename: 'Video',
+      id: '1_jf-0-0',
+      title: [
+        {
+          __typename: 'VideoTitle',
+          value: 'JESUS'
+        }
+      ],
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg?version=2/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
+      variant: {
+        __typename: 'VideoVariant',
+        id: '1_529-jf-0-0',
+        hls: 'https://arc.gt/j67rz'
+      }
+    },
+    mediaVideo: {
       __typename: 'Video',
       id: '1_jf-0-0',
       title: [
@@ -493,6 +638,28 @@ export const videoBlocksFiltered = [
         hls: 'https://arc.gt/lq6z2'
       }
     },
+    mediaVideo: {
+      __typename: 'Video',
+      id: '1_cl1303-0-0',
+      title: [
+        {
+          __typename: 'VideoTitle',
+          value: 'StoryClubs: Miraculous Catch of Fish'
+        }
+      ],
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1303-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
+      variant: {
+        __typename: 'VideoVariant',
+        id: '1_529-cl1303-0-0',
+        hls: 'https://arc.gt/lq6z2'
+      }
+    },
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'af552762-8e5e-4fe8-82e1-a133e83343b3',
@@ -519,6 +686,28 @@ export const videoBlocksFiltered = [
     duration: 0,
     objectFit: null,
     video: {
+      __typename: 'Video',
+      id: '1_jf6125-0-0',
+      title: [
+        {
+          __typename: 'VideoTitle',
+          value: "The Lord's Prayer"
+        }
+      ],
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6125-0-0.mobileCinematicHigh.jpg?version=2/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
+      variant: {
+        __typename: 'VideoVariant',
+        id: '1_529-jf6125-0-0',
+        hls: 'https://arc.gt/wdq42'
+      }
+    },
+    mediaVideo: {
       __typename: 'Video',
       id: '1_jf6125-0-0',
       title: [
