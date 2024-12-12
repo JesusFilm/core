@@ -168,7 +168,8 @@ export const useAdminVideoMock: MockedResponse<
               id: '4334',
               name: [
                 {
-                  value: 'Munukutuba'
+                  value: 'Munukutuba',
+                  primary: true
                 }
               ],
               slug: 'munukutuba'
@@ -200,10 +201,44 @@ export const useAdminVideoMock: MockedResponse<
               id: '19558',
               name: [
                 {
-                  value: 'Kom'
+                  value: 'Kom',
+                  primary: true
                 }
               ],
               slug: 'kom'
+            }
+          },
+          {
+            id: '1_529-jf-0-0',
+            videoId: '1_jf-0-0',
+            slug: 'jesus/english',
+            downloads: [
+              {
+                id: '5f6dae80-87eb-4db1-9af1-07ddf8d9ca63',
+                quality: 'high',
+                size: 2358523707,
+                height: 720,
+                width: 1280,
+                url: 'https://arc.gt/7geui'
+              },
+              {
+                id: '94c28c5c-21ec-4393-84a2-864fcb328a23',
+                quality: 'low',
+                size: 207141494,
+                height: 240,
+                width: 426,
+                url: 'https://arc.gt/y1s23'
+              }
+            ],
+            language: {
+              id: '529',
+              name: [
+                {
+                  value: 'English',
+                  primary: true
+                }
+              ],
+              slug: 'english'
             }
           }
         ],
