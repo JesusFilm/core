@@ -47,20 +47,34 @@ export function EmailDemo() {
       </GmailHeader>
 
       <EmailContainer>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            pb: 3,
+            mb: 3,
+            borderBottom: '1px solid #e0e0e0'
+          }}
+        >
           <Avatar
             src="https://www.jesusfilm.org/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fminimal-logo.e2160bae.png&w=384&q=75"
-            sx={{ width: 56, height: 56, mr: 2 }}
+            sx={{ width: 42, height: 42, mr: 2 }}
           />
           <Box>
-            <Typography variant="h6" sx={{ mb: 0.5 }}>
+            <Typography variant="h6" sx={{ mb: 0.5, fontSize: '16px' }}>
               Jesus Film Videos
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              to Pearl &lt;pearl.m@cru.org&gt;
+              to Pearl
             </Typography>
           </Box>
-          <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
+          <Box
+            sx={{
+              ml: 'auto',
+              display: 'flex',
+              gap: 1
+            }}
+          >
             <IconButton size="small" sx={{ color: 'grey.500' }}>
               <EmailIcon />
             </IconButton>
@@ -78,7 +92,11 @@ export function EmailDemo() {
 
         <Typography
           variant="subtitle1"
-          sx={{ mb: 6, mx: 12, fontWeight: 'bold' }}
+          sx={{
+            mb: 6,
+            mx: 12,
+            fontWeight: 'bold'
+          }}
         >
           Your video has been viewed: Why Does Daniel Dream About Monsters? - 13
           December 2024
@@ -132,11 +150,11 @@ export function EmailDemo() {
           >
             <Typography variant="h6">Now it's your turn:</Typography>
             <Stack spacing={1} sx={{ my: 3 }}>
-              <Typography component="li">
+              <Typography sx={{ fontSize: '14px' }}>
                 <span style={{ fontSize: '140%' }}>🙏️</span> Take time to pray
                 for Vlad
               </Typography>
-              <Typography component="li">
+              <Typography sx={{ fontSize: '14px' }}>
                 <span style={{ fontSize: '140%' }}>👇</span> Share the next
                 relevant video
               </Typography>
@@ -146,8 +164,10 @@ export function EmailDemo() {
               href="https://watch-4534-jesusfilm.vercel.app/watch/share"
               target="_blank"
               variant="contained"
+              fullWidth
               sx={{
                 backgroundColor: '#F13141',
+                fontSize: '16px',
                 color: '#fff',
                 '&:hover': {
                   backgroundColor: 'black'
