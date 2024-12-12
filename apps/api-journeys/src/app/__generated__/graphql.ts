@@ -1918,4 +1918,10 @@ export class User {
 
 export type DateTime = String;
 export type Json = any;
+
+export class ISchema {
+    Query: IQuery;
+    Mutation: IMutation;
+}
+
 type Nullable<T> = T | null;
