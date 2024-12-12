@@ -42,37 +42,6 @@ export const VIDEO_FIELDS = gql`
         }
       }
     }
-    mediaVideo {
-      ... on Video {
-        id
-        title(primary: true) {
-          value
-        }
-        images(aspectRatio: banner) {
-          mobileCinematicHigh
-        }
-        variant {
-          id
-          hls
-        }
-        variantLanguages {
-          id
-          name {
-            value
-            primary
-          }
-        }
-      }
-      ... on MuxVideo {
-        id
-      }
-      ... on CloudflareVideo {
-        id
-      }
-      ... on YouTube {
-        id
-      }
-    }
     action {
       ...ActionFields
     }
