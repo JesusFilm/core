@@ -46,6 +46,60 @@ export interface CoverVideoBlockUpdate_videoBlockUpdate_video {
   variantLanguages: CoverVideoBlockUpdate_videoBlockUpdate_video_variantLanguages[];
 }
 
+export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_title {
+  __typename: "VideoTitle";
+  value: string;
+}
+
+export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  hls: string | null;
+}
+
+export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages_name {
+  __typename: "LanguageName";
+  value: string;
+  primary: boolean;
+}
+
+export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages_name[];
+}
+
+export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video {
+  __typename: "Video";
+  id: string;
+  title: CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_title[];
+  images: CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_images[];
+  variant: CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variant | null;
+  variantLanguages: CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages[];
+}
+
+export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+}
+
+export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+  id: string;
+}
+
+export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo = CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video | CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo | CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_CloudflareVideo | CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube;
+
 export interface CoverVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -142,6 +196,7 @@ export interface CoverVideoBlockUpdate_videoBlockUpdate {
    * videoVariantLanguageId are present
    */
   video: CoverVideoBlockUpdate_videoBlockUpdate_video | null;
+  mediaVideo: CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
