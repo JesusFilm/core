@@ -418,6 +418,10 @@ export const videoBlocksFiltered = [
     duration: 218,
     objectFit: null,
     video: null,
+    mediaVideo: {
+      __typename: 'YouTube',
+      id: 'ghTiJv0oVck'
+    },
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: '27c87b6a-8be5-4fb3-b2e0-a99d96df9c54',
@@ -444,6 +448,28 @@ export const videoBlocksFiltered = [
     duration: null,
     objectFit: 'fill',
     video: {
+      __typename: 'Video',
+      id: '1_cl1301-0-0',
+      title: [
+        {
+          __typename: 'VideoTitle',
+          value: 'StoryClubs: Birth of Jesus'
+        }
+      ],
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1301-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
+      variant: {
+        __typename: 'VideoVariant',
+        id: '1_529-cl1301-0-0',
+        hls: 'https://arc.gt/c8bne'
+      }
+    },
+    mediaVideo: {
       __typename: 'Video',
       id: '1_cl1301-0-0',
       title: [
@@ -492,6 +518,10 @@ export const videoBlocksFiltered = [
     duration: 188,
     objectFit: null,
     video: null,
+    mediaVideo: {
+      __typename: 'YouTube',
+      id: '90XbaaQerz8'
+    },
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: '5b095694-6048-412e-96d4-729678fb7857',
@@ -518,6 +548,28 @@ export const videoBlocksFiltered = [
     duration: null,
     objectFit: null,
     video: {
+      __typename: 'Video',
+      id: '1_jf-0-0',
+      title: [
+        {
+          __typename: 'VideoTitle',
+          value: 'JESUS'
+        }
+      ],
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg?version=2/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
+      variant: {
+        __typename: 'VideoVariant',
+        id: '1_529-jf-0-0',
+        hls: 'https://arc.gt/j67rz'
+      }
+    },
+    mediaVideo: {
       __typename: 'Video',
       id: '1_jf-0-0',
       title: [
@@ -586,6 +638,28 @@ export const videoBlocksFiltered = [
         hls: 'https://arc.gt/lq6z2'
       }
     },
+    mediaVideo: {
+      __typename: 'Video',
+      id: '1_cl1303-0-0',
+      title: [
+        {
+          __typename: 'VideoTitle',
+          value: 'StoryClubs: Miraculous Catch of Fish'
+        }
+      ],
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1303-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
+      variant: {
+        __typename: 'VideoVariant',
+        id: '1_529-cl1303-0-0',
+        hls: 'https://arc.gt/lq6z2'
+      }
+    },
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: 'af552762-8e5e-4fe8-82e1-a133e83343b3',
@@ -612,6 +686,28 @@ export const videoBlocksFiltered = [
     duration: 0,
     objectFit: null,
     video: {
+      __typename: 'Video',
+      id: '1_jf6125-0-0',
+      title: [
+        {
+          __typename: 'VideoTitle',
+          value: "The Lord's Prayer"
+        }
+      ],
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6125-0-0.mobileCinematicHigh.jpg?version=2/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
+      variant: {
+        __typename: 'VideoVariant',
+        id: '1_529-jf6125-0-0',
+        hls: 'https://arc.gt/wdq42'
+      }
+    },
+    mediaVideo: {
       __typename: 'Video',
       id: '1_jf6125-0-0',
       title: [

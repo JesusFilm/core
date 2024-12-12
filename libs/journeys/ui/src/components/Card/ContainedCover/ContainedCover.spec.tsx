@@ -215,7 +215,10 @@ describe('ContainedCover', () => {
         backgroundBlur={blurUrl}
         videoBlock={{
           ...videoBlock,
-          source: VideoBlockSource.cloudflare,
+          mediaVideo: {
+            __typename: 'CloudflareVideo',
+            id: '2_0-FallingPlates'
+          },
           image:
             'https://customer-.cloudflarestream.com/2_0-FallingPlates/manifest/video.m3u8'
         }}
@@ -249,7 +252,10 @@ describe('ContainedCover', () => {
         backgroundBlur={blurUrl}
         videoBlock={{
           ...videoBlock,
-          source: VideoBlockSource.youTube,
+          mediaVideo: {
+            __typename: 'YouTube',
+            id: '2_0-FallingPlates'
+          },
           image: 'http://youtube.thumbnail.image'
         }}
       >
