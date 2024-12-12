@@ -35,7 +35,11 @@
   "Size": "Размер",
   "Dimensions": "Размеры",
   "URL": "URL",
+  "Language updated": "Language updated",
   "Audio Language": "Audio Language",
+  "Language": "Язык",
+  "A variant for this language already exists": "A variant for this language already exists",
+  "Save": "Сохранить",
   "Audio Languages": "Audio Languages",
   "No children to show": "Нет детей, которых можно показать",
   "Loading...": "Загрузка...",
@@ -58,6 +62,5 @@
   "Home": "Дом",
   "Video Library": "Видеотека",
   "Sign Out": "Выйти из игры",
-  "Draft": "Draft",
-  "Save": "Сохранить"
+  "Draft": "Draft"
 }
