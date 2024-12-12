@@ -1,5 +1,17 @@
-export interface MediaComponent {
+interface ImageUrls {
+  thumbnail?: string
+  videoStill?: string
+  mobileCinematicHigh?: string
+  mobileCinematicLow?: string
+  mobileCinematicVeryLow?: string
+}
+
+interface MediaComponent {
   mediaComponentId: string
+  componentType: string
+  subType: string
+  contentType: string
+  imageUrls: ImageUrls
   [key: string]: any
 }
 
@@ -30,14 +42,8 @@ export function getObjectDiff(
   const keys = new Set([...Object.keys(obj1), ...Object.keys(obj2)])
 
   keys.forEach((key) => {
+    // imageUrls are tested in a different test because they are not always present in base arclight and all urls are different
     if (key === 'imageUrls') return
-    if (key === 'isDownloadable' && !obj1[key] && !obj2[key]) return
-    if (
-      key === 'downloadSizes' &&
-      (!obj1[key] || Object.keys(obj1[key]).length === 0) &&
-      (!obj2[key] || Object.keys(obj2[key]).length === 0)
-    )
-      return
 
     const val1 = obj1[key] === '' ? null : obj1[key]
     const val2 = obj2[key] === '' ? null : obj2[key]
@@ -47,8 +53,6 @@ export function getObjectDiff(
     if (
       typeof val1 === 'object' &&
       typeof val2 === 'object' &&
-      val1 !== null &&
-      val2 !== null &&
       Object.keys(val1).length === 0 &&
       Object.keys(val2).length === 0
     )
