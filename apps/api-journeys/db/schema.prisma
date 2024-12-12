@@ -410,7 +410,7 @@ model Journey {
   menuStepBlockId           String?                     @unique
   menuStepBlock             Block?                      @relation("MenuStepBlock", fields: [menuStepBlockId], references: [id], onDelete: SetNull)
   menuButtonIcon            JourneyMenuButtonIcon?
-  QrCode                    QrCode[]
+  qrCode                    QrCode[]
 
   @@index(title)
 }

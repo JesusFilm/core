@@ -1867,7 +1867,7 @@ type PlausibleStatsResponse @join__type(graph: API_JOURNEYS)  {
 """
 A short link that redirects to a full URL
 """
-type ShortLink @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_MEDIA, key: "id")  {
+type ShortLink @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id")  {
   id: ID!
   """
   short link path not including the leading slash
