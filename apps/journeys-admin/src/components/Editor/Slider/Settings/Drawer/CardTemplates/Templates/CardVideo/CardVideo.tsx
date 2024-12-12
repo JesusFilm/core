@@ -157,7 +157,7 @@ export function CardVideo(): ReactElement {
               id: videoBlock.id,
               journeyId: journey.id,
               parentBlockId: videoBlock.parentBlockId,
-              videoId: videoBlock.videoId,
+              videoId: videoBlock.mediaVideo?.id,
               videoVariantLanguageId: videoBlock.videoVariantLanguageId,
               startAt: videoBlock.startAt,
               endAt: videoBlock.endAt,

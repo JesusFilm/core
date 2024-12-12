@@ -388,12 +388,12 @@ export function CardIntro(): ReactElement {
               ...pick(videoBlock, [
                 'id',
                 'parentBlockId',
-                'videoId',
                 'videoVariantLanguageId',
                 'startAt',
                 'endAt',
                 'source'
               ]),
+              videoId: videoBlock.mediaVideo?.id,
               journeyId: journey.id,
               isCover: true
             }

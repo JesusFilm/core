@@ -15,7 +15,8 @@ import { getAction } from '../../controls/Action/utils/actions'
 import { VideoOptions } from './Options/VideoOptions'
 
 export function Video(block: TreeBlock<VideoBlock>): ReactElement {
-  const { id, videoId } = block
+  const { id, mediaVideo } = block
+  const videoId = mediaVideo?.id
   const { t } = useTranslation('apps-journeys-admin')
 
   const { dispatch } = useEditor()
@@ -43,7 +44,11 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
         id={`${id}-video-options`}
         icon={<Play1Icon />}
         name={t('Video Source')}
-        value={block.video?.title?.[0]?.value ?? block.title ?? ''}
+        value={
+          block.mediaVideo?.__typename === 'Video'
+            ? block.mediaVideo?.title?.[0]?.value
+            : (block.title ?? '')
+        }
       >
         <VideoOptions />
       </Accordion>
