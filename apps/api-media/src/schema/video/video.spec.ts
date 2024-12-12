@@ -1985,4 +1985,47 @@ describe('video', () => {
       })
     })
   })
+
+  describe('entity', () => {
+    const VIDEO = graphql(`
+      query CoreVideo {
+        _entities(
+          representations: [
+            { __typename: "Video", id: "testId", primaryLanguageId: null }
+          ]
+        ) {
+          ... on Video {
+            id
+          }
+        }
+      }
+    `)
+
+    it('should return video', async () => {
+      prismaMock.video.findUniqueOrThrow.mockResolvedValue({
+        id: 'testId',
+        label: 'behindTheScenes',
+        primaryLanguageId: 'primaryLanguageId',
+        thumbnail: null,
+        videoStill: null,
+        mobileCinematicHigh: null,
+        mobileCinematicLow: null,
+        mobileCinematicVeryLow: null,
+        image: null,
+        slug: null,
+        noIndex: null,
+        published: true,
+        childIds: []
+      })
+      const data = await client({
+        document: VIDEO
+      })
+      expect(prismaMock.video.findUniqueOrThrow).toHaveBeenCalledWith({
+        where: { id: 'testId' }
+      })
+      expect(data).toHaveProperty('data._entities[0]', {
+        id: 'testId'
+      })
+    })
+  })
 })
