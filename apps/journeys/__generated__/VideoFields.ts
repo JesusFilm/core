@@ -46,60 +46,6 @@ export interface VideoFields_video {
   variantLanguages: VideoFields_video_variantLanguages[];
 }
 
-export interface VideoFields_mediaVideo_Video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface VideoFields_mediaVideo_Video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface VideoFields_mediaVideo_Video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface VideoFields_mediaVideo_Video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface VideoFields_mediaVideo_Video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: VideoFields_mediaVideo_Video_variantLanguages_name[];
-}
-
-export interface VideoFields_mediaVideo_Video {
-  __typename: "Video";
-  id: string;
-  title: VideoFields_mediaVideo_Video_title[];
-  images: VideoFields_mediaVideo_Video_images[];
-  variant: VideoFields_mediaVideo_Video_variant | null;
-  variantLanguages: VideoFields_mediaVideo_Video_variantLanguages[];
-}
-
-export interface VideoFields_mediaVideo_MuxVideo {
-  __typename: "MuxVideo";
-  id: string;
-}
-
-export interface VideoFields_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
-export interface VideoFields_mediaVideo_YouTube {
-  __typename: "YouTube";
-  id: string;
-}
-
-export type VideoFields_mediaVideo = VideoFields_mediaVideo_Video | VideoFields_mediaVideo_MuxVideo | VideoFields_mediaVideo_CloudflareVideo | VideoFields_mediaVideo_YouTube;
-
 export interface VideoFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -196,7 +142,6 @@ export interface VideoFields {
    * videoVariantLanguageId are present
    */
   video: VideoFields_video | null;
-  mediaVideo: VideoFields_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */

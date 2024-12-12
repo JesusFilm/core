@@ -55,29 +55,6 @@ export const journeyVideoBlocks: Blocks[] = [
       },
       variantLanguages: []
     },
-    mediaVideo: {
-      __typename: 'Video',
-      id: '1_0-TrainV_1Install',
-      title: [
-        {
-          __typename: 'VideoTitle',
-          value: 'Installing the Jesus Film Media App'
-        }
-      ],
-      images: [
-        {
-          __typename: 'CloudflareImage',
-          mobileCinematicHigh:
-            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/lrg_cine_install.jpg/f=jpg,w=1280,h=600,q=95'
-        }
-      ],
-      variant: {
-        __typename: 'VideoVariant',
-        id: '1_529-0-TrainV_1Install',
-        hls: 'https://arc.gt/zxqrt'
-      },
-      variantLanguages: []
-    },
     action: null
   },
   {
@@ -100,29 +77,6 @@ export const journeyVideoBlocks: Blocks[] = [
     duration: null,
     objectFit: null,
     video: {
-      __typename: 'Video',
-      id: '1_0-TrainV_5Ministry',
-      title: [
-        {
-          __typename: 'VideoTitle',
-          value: 'Use this App in Ministry'
-        }
-      ],
-      images: [
-        {
-          __typename: 'CloudflareImage',
-          mobileCinematicHigh:
-            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/lrg_cine_ministry.jpg/f=jpg,w=1280,h=600,q=95'
-        }
-      ],
-      variant: {
-        __typename: 'VideoVariant',
-        id: '1_529-0-TrainV_5Ministry',
-        hls: 'https://arc.gt/rnfsp'
-      },
-      variantLanguages: []
-    },
-    mediaVideo: {
       __typename: 'Video',
       id: '1_0-TrainV_5Ministry',
       title: [
@@ -189,29 +143,6 @@ export const journeyVideoBlocks: Blocks[] = [
       },
       variantLanguages: []
     },
-    mediaVideo: {
-      __typename: 'Video',
-      id: '1_cl1302-0-0',
-      title: [
-        {
-          __typename: 'VideoTitle',
-          value: 'StoryClubs: Childhood of Jesus'
-        }
-      ],
-      images: [
-        {
-          __typename: 'CloudflareImage',
-          mobileCinematicHigh:
-            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1302-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-        }
-      ],
-      variant: {
-        __typename: 'VideoVariant',
-        id: '1_529-cl1302-0-0',
-        hls: 'https://arc.gt/7unjy'
-      },
-      variantLanguages: []
-    },
     action: null
   },
   {
@@ -235,7 +166,6 @@ export const journeyVideoBlocks: Blocks[] = [
     duration: 120,
     objectFit: null,
     video: null,
-    mediaVideo: null,
     action: null
   },
   {
@@ -279,29 +209,6 @@ export const journeyVideoBlocks: Blocks[] = [
     duration: 147,
     objectFit: null,
     video: {
-      __typename: 'Video',
-      id: '1_cl1305-0-0',
-      title: [
-        {
-          __typename: 'VideoTitle',
-          value: 'StoryClubs: Sinful Woman Forgiven'
-        }
-      ],
-      images: [
-        {
-          __typename: 'CloudflareImage',
-          mobileCinematicHigh:
-            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1305-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-        }
-      ],
-      variant: {
-        __typename: 'VideoVariant',
-        id: '1_529-cl1305-0-0',
-        hls: 'https://arc.gt/hmkwc'
-      },
-      variantLanguages: []
-    },
-    mediaVideo: {
       __typename: 'Video',
       id: '1_cl1305-0-0',
       title: [

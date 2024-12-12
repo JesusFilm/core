@@ -283,60 +283,6 @@ export interface MenuBlockRestore_stepRestore_VideoBlock_video {
   variantLanguages: MenuBlockRestore_stepRestore_VideoBlock_video_variantLanguages[];
 }
 
-export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_variantLanguages_name[];
-}
-
-export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video {
-  __typename: "Video";
-  id: string;
-  title: MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_title[];
-  images: MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_images[];
-  variant: MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_variant | null;
-  variantLanguages: MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_variantLanguages[];
-}
-
-export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_MuxVideo {
-  __typename: "MuxVideo";
-  id: string;
-}
-
-export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
-export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_YouTube {
-  __typename: "YouTube";
-  id: string;
-}
-
-export type MenuBlockRestore_stepRestore_VideoBlock_mediaVideo = MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video | MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_MuxVideo | MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_CloudflareVideo | MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_YouTube;
-
 export interface MenuBlockRestore_stepRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -433,7 +379,6 @@ export interface MenuBlockRestore_stepRestore_VideoBlock {
    * videoVariantLanguageId are present
    */
   video: MenuBlockRestore_stepRestore_VideoBlock_video | null;
-  mediaVideo: MenuBlockRestore_stepRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
