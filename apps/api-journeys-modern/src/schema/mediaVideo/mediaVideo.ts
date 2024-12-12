@@ -120,6 +120,8 @@ const MediaVideo = builder.unionType('MediaVideo', {
         return Video
       case PrismaVideoBlockSource.youTube:
         return YouTube
+      default:
+        return null
     }
   }
 })
