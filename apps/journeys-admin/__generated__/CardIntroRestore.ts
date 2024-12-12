@@ -273,60 +273,6 @@ export interface CardIntroRestore_subtitle_VideoBlock_video {
   variantLanguages: CardIntroRestore_subtitle_VideoBlock_video_variantLanguages[];
 }
 
-export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video_variantLanguages_name[];
-}
-
-export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video {
-  __typename: "Video";
-  id: string;
-  title: CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video_title[];
-  images: CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video_images[];
-  variant: CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video_variant | null;
-  variantLanguages: CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video_variantLanguages[];
-}
-
-export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_MuxVideo {
-  __typename: "MuxVideo";
-  id: string;
-}
-
-export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
-export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_YouTube {
-  __typename: "YouTube";
-  id: string;
-}
-
-export type CardIntroRestore_subtitle_VideoBlock_mediaVideo = CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video | CardIntroRestore_subtitle_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_subtitle_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_subtitle_VideoBlock_mediaVideo_YouTube;
-
 export interface CardIntroRestore_subtitle_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -423,7 +369,6 @@ export interface CardIntroRestore_subtitle_VideoBlock {
    * videoVariantLanguageId are present
    */
   video: CardIntroRestore_subtitle_VideoBlock_video | null;
-  mediaVideo: CardIntroRestore_subtitle_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
@@ -732,60 +677,6 @@ export interface CardIntroRestore_title_VideoBlock_video {
   variantLanguages: CardIntroRestore_title_VideoBlock_video_variantLanguages[];
 }
 
-export interface CardIntroRestore_title_VideoBlock_mediaVideo_Video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface CardIntroRestore_title_VideoBlock_mediaVideo_Video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface CardIntroRestore_title_VideoBlock_mediaVideo_Video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface CardIntroRestore_title_VideoBlock_mediaVideo_Video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface CardIntroRestore_title_VideoBlock_mediaVideo_Video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: CardIntroRestore_title_VideoBlock_mediaVideo_Video_variantLanguages_name[];
-}
-
-export interface CardIntroRestore_title_VideoBlock_mediaVideo_Video {
-  __typename: "Video";
-  id: string;
-  title: CardIntroRestore_title_VideoBlock_mediaVideo_Video_title[];
-  images: CardIntroRestore_title_VideoBlock_mediaVideo_Video_images[];
-  variant: CardIntroRestore_title_VideoBlock_mediaVideo_Video_variant | null;
-  variantLanguages: CardIntroRestore_title_VideoBlock_mediaVideo_Video_variantLanguages[];
-}
-
-export interface CardIntroRestore_title_VideoBlock_mediaVideo_MuxVideo {
-  __typename: "MuxVideo";
-  id: string;
-}
-
-export interface CardIntroRestore_title_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
-export interface CardIntroRestore_title_VideoBlock_mediaVideo_YouTube {
-  __typename: "YouTube";
-  id: string;
-}
-
-export type CardIntroRestore_title_VideoBlock_mediaVideo = CardIntroRestore_title_VideoBlock_mediaVideo_Video | CardIntroRestore_title_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_title_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_title_VideoBlock_mediaVideo_YouTube;
-
 export interface CardIntroRestore_title_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -882,7 +773,6 @@ export interface CardIntroRestore_title_VideoBlock {
    * videoVariantLanguageId are present
    */
   video: CardIntroRestore_title_VideoBlock_video | null;
-  mediaVideo: CardIntroRestore_title_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
@@ -1191,60 +1081,6 @@ export interface CardIntroRestore_body_VideoBlock_video {
   variantLanguages: CardIntroRestore_body_VideoBlock_video_variantLanguages[];
 }
 
-export interface CardIntroRestore_body_VideoBlock_mediaVideo_Video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface CardIntroRestore_body_VideoBlock_mediaVideo_Video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface CardIntroRestore_body_VideoBlock_mediaVideo_Video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface CardIntroRestore_body_VideoBlock_mediaVideo_Video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface CardIntroRestore_body_VideoBlock_mediaVideo_Video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: CardIntroRestore_body_VideoBlock_mediaVideo_Video_variantLanguages_name[];
-}
-
-export interface CardIntroRestore_body_VideoBlock_mediaVideo_Video {
-  __typename: "Video";
-  id: string;
-  title: CardIntroRestore_body_VideoBlock_mediaVideo_Video_title[];
-  images: CardIntroRestore_body_VideoBlock_mediaVideo_Video_images[];
-  variant: CardIntroRestore_body_VideoBlock_mediaVideo_Video_variant | null;
-  variantLanguages: CardIntroRestore_body_VideoBlock_mediaVideo_Video_variantLanguages[];
-}
-
-export interface CardIntroRestore_body_VideoBlock_mediaVideo_MuxVideo {
-  __typename: "MuxVideo";
-  id: string;
-}
-
-export interface CardIntroRestore_body_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
-export interface CardIntroRestore_body_VideoBlock_mediaVideo_YouTube {
-  __typename: "YouTube";
-  id: string;
-}
-
-export type CardIntroRestore_body_VideoBlock_mediaVideo = CardIntroRestore_body_VideoBlock_mediaVideo_Video | CardIntroRestore_body_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_body_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_body_VideoBlock_mediaVideo_YouTube;
-
 export interface CardIntroRestore_body_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1341,7 +1177,6 @@ export interface CardIntroRestore_body_VideoBlock {
    * videoVariantLanguageId are present
    */
   video: CardIntroRestore_body_VideoBlock_video | null;
-  mediaVideo: CardIntroRestore_body_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
@@ -1650,60 +1485,6 @@ export interface CardIntroRestore_button_VideoBlock_video {
   variantLanguages: CardIntroRestore_button_VideoBlock_video_variantLanguages[];
 }
 
-export interface CardIntroRestore_button_VideoBlock_mediaVideo_Video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface CardIntroRestore_button_VideoBlock_mediaVideo_Video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface CardIntroRestore_button_VideoBlock_mediaVideo_Video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface CardIntroRestore_button_VideoBlock_mediaVideo_Video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface CardIntroRestore_button_VideoBlock_mediaVideo_Video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: CardIntroRestore_button_VideoBlock_mediaVideo_Video_variantLanguages_name[];
-}
-
-export interface CardIntroRestore_button_VideoBlock_mediaVideo_Video {
-  __typename: "Video";
-  id: string;
-  title: CardIntroRestore_button_VideoBlock_mediaVideo_Video_title[];
-  images: CardIntroRestore_button_VideoBlock_mediaVideo_Video_images[];
-  variant: CardIntroRestore_button_VideoBlock_mediaVideo_Video_variant | null;
-  variantLanguages: CardIntroRestore_button_VideoBlock_mediaVideo_Video_variantLanguages[];
-}
-
-export interface CardIntroRestore_button_VideoBlock_mediaVideo_MuxVideo {
-  __typename: "MuxVideo";
-  id: string;
-}
-
-export interface CardIntroRestore_button_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
-export interface CardIntroRestore_button_VideoBlock_mediaVideo_YouTube {
-  __typename: "YouTube";
-  id: string;
-}
-
-export type CardIntroRestore_button_VideoBlock_mediaVideo = CardIntroRestore_button_VideoBlock_mediaVideo_Video | CardIntroRestore_button_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_button_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_button_VideoBlock_mediaVideo_YouTube;
-
 export interface CardIntroRestore_button_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1800,7 +1581,6 @@ export interface CardIntroRestore_button_VideoBlock {
    * videoVariantLanguageId are present
    */
   video: CardIntroRestore_button_VideoBlock_video | null;
-  mediaVideo: CardIntroRestore_button_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
@@ -2109,60 +1889,6 @@ export interface CardIntroRestore_startIcon_VideoBlock_video {
   variantLanguages: CardIntroRestore_startIcon_VideoBlock_video_variantLanguages[];
 }
 
-export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video_variantLanguages_name[];
-}
-
-export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video {
-  __typename: "Video";
-  id: string;
-  title: CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video_title[];
-  images: CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video_images[];
-  variant: CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video_variant | null;
-  variantLanguages: CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video_variantLanguages[];
-}
-
-export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_MuxVideo {
-  __typename: "MuxVideo";
-  id: string;
-}
-
-export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
-export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_YouTube {
-  __typename: "YouTube";
-  id: string;
-}
-
-export type CardIntroRestore_startIcon_VideoBlock_mediaVideo = CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video | CardIntroRestore_startIcon_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_startIcon_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_startIcon_VideoBlock_mediaVideo_YouTube;
-
 export interface CardIntroRestore_startIcon_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -2259,7 +1985,6 @@ export interface CardIntroRestore_startIcon_VideoBlock {
    * videoVariantLanguageId are present
    */
   video: CardIntroRestore_startIcon_VideoBlock_video | null;
-  mediaVideo: CardIntroRestore_startIcon_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
@@ -2568,60 +2293,6 @@ export interface CardIntroRestore_endIcon_VideoBlock_video {
   variantLanguages: CardIntroRestore_endIcon_VideoBlock_video_variantLanguages[];
 }
 
-export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video_variantLanguages_name[];
-}
-
-export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video {
-  __typename: "Video";
-  id: string;
-  title: CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video_title[];
-  images: CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video_images[];
-  variant: CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video_variant | null;
-  variantLanguages: CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video_variantLanguages[];
-}
-
-export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_MuxVideo {
-  __typename: "MuxVideo";
-  id: string;
-}
-
-export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
-export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_YouTube {
-  __typename: "YouTube";
-  id: string;
-}
-
-export type CardIntroRestore_endIcon_VideoBlock_mediaVideo = CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video | CardIntroRestore_endIcon_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_endIcon_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_endIcon_VideoBlock_mediaVideo_YouTube;
-
 export interface CardIntroRestore_endIcon_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -2718,7 +2389,6 @@ export interface CardIntroRestore_endIcon_VideoBlock {
    * videoVariantLanguageId are present
    */
   video: CardIntroRestore_endIcon_VideoBlock_video | null;
-  mediaVideo: CardIntroRestore_endIcon_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
@@ -3027,60 +2697,6 @@ export interface CardIntroRestore_video_VideoBlock_video {
   variantLanguages: CardIntroRestore_video_VideoBlock_video_variantLanguages[];
 }
 
-export interface CardIntroRestore_video_VideoBlock_mediaVideo_Video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface CardIntroRestore_video_VideoBlock_mediaVideo_Video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface CardIntroRestore_video_VideoBlock_mediaVideo_Video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface CardIntroRestore_video_VideoBlock_mediaVideo_Video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface CardIntroRestore_video_VideoBlock_mediaVideo_Video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: CardIntroRestore_video_VideoBlock_mediaVideo_Video_variantLanguages_name[];
-}
-
-export interface CardIntroRestore_video_VideoBlock_mediaVideo_Video {
-  __typename: "Video";
-  id: string;
-  title: CardIntroRestore_video_VideoBlock_mediaVideo_Video_title[];
-  images: CardIntroRestore_video_VideoBlock_mediaVideo_Video_images[];
-  variant: CardIntroRestore_video_VideoBlock_mediaVideo_Video_variant | null;
-  variantLanguages: CardIntroRestore_video_VideoBlock_mediaVideo_Video_variantLanguages[];
-}
-
-export interface CardIntroRestore_video_VideoBlock_mediaVideo_MuxVideo {
-  __typename: "MuxVideo";
-  id: string;
-}
-
-export interface CardIntroRestore_video_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
-export interface CardIntroRestore_video_VideoBlock_mediaVideo_YouTube {
-  __typename: "YouTube";
-  id: string;
-}
-
-export type CardIntroRestore_video_VideoBlock_mediaVideo = CardIntroRestore_video_VideoBlock_mediaVideo_Video | CardIntroRestore_video_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_video_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_video_VideoBlock_mediaVideo_YouTube;
-
 export interface CardIntroRestore_video_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -3177,7 +2793,6 @@ export interface CardIntroRestore_video_VideoBlock {
    * videoVariantLanguageId are present
    */
   video: CardIntroRestore_video_VideoBlock_video | null;
-  mediaVideo: CardIntroRestore_video_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
