@@ -16,6 +16,7 @@ export interface GetLanguagesSlug_video_variantLanguagesWithSlug_language_name {
 export interface GetLanguagesSlug_video_variantLanguagesWithSlug_language {
   __typename: "Language";
   id: string;
+  slug: string | null;
   name: GetLanguagesSlug_video_variantLanguagesWithSlug_language_name[];
 }
 
