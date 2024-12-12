@@ -143,6 +143,8 @@ export function EmailDemo() {
             </Stack>
 
             <Button
+              href="https://watch-4534-jesusfilm.vercel.app/watch/share"
+              target="_blank"
               variant="contained"
               sx={{
                 backgroundColor: '#F13141',
