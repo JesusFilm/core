@@ -406,7 +406,7 @@ export function VideoSingle({
                 }}
               >
                 <img
-                  src="https://cdn-std.droplr.net/files/acc_760170/NZoMvj"
+                  src="https://www.jesusfilm.org/_next/image?url=https%3A%2F%2Fimagedelivery.net%2FtMY86qEHFACTO8_0kAeRFA%2F7_0-nur01.mobileCinematicHigh.jpg%2Ff%3Djpg%2Cw%3D1280%2Ch%3D600%2Cq%3D95&w=2048&q=75"
                   alt="Related Video"
                   style={{
                     width: '100%',
@@ -453,7 +453,7 @@ export function VideoSingle({
                 }}
               >
                 <img
-                  src="https://cdn-std.droplr.net/files/acc_760170/7O1eB4"
+                  src="https://www.jesusfilm.org/_next/image?url=https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/4_Injury2AskingWhy.mobileCinematicHigh.jpg/f%3Djpg,w%3D1280,h%3D600,q%3D95&w=3840&q=75"
                   alt="Related Video"
                   style={{
                     width: '100%',
@@ -500,7 +500,7 @@ export function VideoSingle({
                 }}
               >
                 <img
-                  src="https://cdn-std.droplr.net/files/acc_760170/YqTg0G"
+                  src="https://www.jesusfilm.org/_next/image?url=https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/8_NBC10.mobileCinematicHigh.jpg/f%3Djpg,w%3D1280,h%3D600,q%3D95&w=3840&q=75"
                   alt="Related Video"
                   style={{
                     width: '100%',
