@@ -96,7 +96,8 @@ describe('VideoLanguage', () => {
     expect(handleChange).toHaveBeenCalledWith({
       id: '496',
       localName: 'French',
-      nativeName: 'Français'
+      nativeName: 'Français',
+      slug: 'french'
     })
   })
 
