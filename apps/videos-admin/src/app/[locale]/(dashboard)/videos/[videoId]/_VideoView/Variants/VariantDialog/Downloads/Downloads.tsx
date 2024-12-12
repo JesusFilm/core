@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
-import { GetAdminVideoVariant_Downloads as VariantDownloads } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { GetAdminVideoVariant_Downloads as VariantDownloads } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 import { bytesToSize } from './utils/bytesToSize'
 
