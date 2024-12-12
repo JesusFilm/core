@@ -22,16 +22,8 @@ const ComponentsDemo: Meta<typeof LanguageAutocomplete> = {
 
 const languages: Language[] = [
   {
-    id: '529',
-    name: [
-      {
-        value: 'English',
-        primary: true
-      }
-    ]
-  },
-  {
     id: '496',
+    slug: 'french',
     name: [
       {
         value: 'Français',
@@ -44,7 +36,18 @@ const languages: Language[] = [
     ]
   },
   {
+    id: '529',
+    slug: 'english',
+    name: [
+      {
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
+  {
     id: '1106',
+    slug: 'german-standard',
     name: [
       {
         value: 'Deutsch',

@@ -53,6 +53,7 @@ export const GET_ADMIN_VIDEO = graphql(`
           id
           name {
             value
+            primary
           }
           slug
         }
