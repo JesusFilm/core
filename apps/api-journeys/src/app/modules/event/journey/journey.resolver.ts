@@ -3,7 +3,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
-// import pick from 'lodash/pick'
 
 import { CurrentUserAgent } from '@core/nest/decorators/CurrentUserAgent'
 import { CurrentUserId } from '@core/nest/decorators/CurrentUserId'
