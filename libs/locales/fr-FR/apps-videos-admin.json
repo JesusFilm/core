@@ -35,7 +35,11 @@
   "Size": "Taille",
   "Dimensions": "Dimensions",
   "URL": "URL",
+  "Language updated": "Language updated",
   "Audio Language": "Audio Language",
+  "Language": "Langue",
+  "A variant for this language already exists": "A variant for this language already exists",
+  "Save": "Sauvegarde",
   "Audio Languages": "Audio Languages",
   "No children to show": "Pas d'enfants à montrer",
   "Loading...": "Chargement...",
@@ -58,6 +62,5 @@
   "Home": "Accueil",
   "Video Library": "Bibliothèque vidéo",
   "Sign Out": "S'inscrire",
-  "Draft": "Draft",
-  "Save": "Sauvegarde"
+  "Draft": "Draft"
 }
