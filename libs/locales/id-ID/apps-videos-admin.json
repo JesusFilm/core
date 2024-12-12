@@ -35,7 +35,11 @@
   "Size": "Ukuran",
   "Dimensions": "Dimensi",
   "URL": "URL",
+  "Language updated": "Language updated",
   "Audio Language": "Audio Language",
+  "Language": "Bahasa",
+  "A variant for this language already exists": "A variant for this language already exists",
+  "Save": "Simpan",
   "Audio Languages": "Audio Languages",
   "No children to show": "Tidak ada anak-anak yang boleh diperlihatkan",
   "Loading...": "Memuat...",
@@ -58,6 +62,5 @@
   "Home": "Beranda",
   "Video Library": "Perpustakaan Video",
   "Sign Out": "Keluar",
-  "Draft": "Draft",
-  "Save": "Simpan"
+  "Draft": "Draft"
 }
