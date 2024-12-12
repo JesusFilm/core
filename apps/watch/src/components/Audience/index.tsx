@@ -38,6 +38,23 @@ import CreateIcon from '@mui/icons-material/Create'
 import { SectionHeader } from '../SectionHeader'
 import { MessageBubble } from '../MessageBubble'
 import VideoVerse from '../VideoVerse'
+import Drawer from '@mui/material/Drawer'
+import CloseIcon from '@mui/icons-material/Close'
+import TextField from '@mui/material/TextField'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import CheckIcon from '@mui/icons-material/Check'
+import InputAdornment from '@mui/material/InputAdornment'
+import Stepper from '@mui/material/Stepper'
+import Step from '@mui/material/Step'
+import StepLabel from '@mui/material/StepLabel'
+import StepContent from '@mui/material/StepContent'
+import Paper from '@mui/material/Paper'
+import NotificationsIcon from '@mui/icons-material/Notifications'
+import PersonIcon from '@mui/icons-material/Person'
+import LinkIcon from '@mui/icons-material/Link'
+import { ShareDrawer } from '../ShareDrawer'
 
 interface Persona {
   id: string
@@ -470,13 +487,21 @@ export function Audience(): ReactElement {
     // Add your delete logic here
   }
 
+  const [isShareDrawerOpen, setIsShareDrawerOpen] = useState(false)
+  const [shareMessage, setShareMessage] = useState<string>()
+
+  const handleShareClick = (message?: string) => {
+    setShareMessage(message)
+    setIsShareDrawerOpen(true)
+  }
+
   return (
     <>
       <Head>
         <title>Share this video with your friends and family</title>
         <meta
           name="description"
-          content="Four monstrous beasts, four violent kingdoms. But then, the Son of Man arrives to conquer them all. ���� Dive into Daniel's dream and its epic meaning! 📖👑"
+          content="Four monstrous beasts, four violent kingdoms. But then, the Son of Man arrives to conquer them all.  Dive into Daniel's dream and its epic meaning! 📖👑"
         />
         {/* ... (copy all the same meta tags from WatchLanding) ... */}
       </Head>
@@ -610,17 +635,18 @@ export function Audience(): ReactElement {
 
                 <MessageBubble
                   message={[
-                    'I know the Bible isn’t your thing, but this video about four monstrous beasts and a ‘Son of Man’ might surprise you. It’s different!',
-                    'This video about ancient visions and crazy beasts in the Bible really caught my attention. I’d love to hear your thoughts on it.',
-                    'Hey, I saw this video about Daniel dreaming of monsters—it’s wild but super interesting. Thought you’d find it cool too.',
-                    'There’s this video about Daniel’s dream—it’s got wild imagery, almost like mythology. I think you’d enjoy how they explain it.',
-                    'You’ve got to check this out—Daniel’s dream of beasts and kingdoms is like a fantasy story, but with deeper meaning.',
-                    'This video about Daniel’s dream has some epic imagery. Even if you don’t believe in it, it’s pretty fascinating to watch.',
-                    'I just watched this video about four beasts in the Bible—it’s packed with symbolism and meaning. Wanted to share it with you!',
-                    'This video on Daniel’s dream really makes you think about how ancient stories connect to today. I think you’ll find it interesting.',
-                    'The Bible talks about beasts and someone conquering them—it’s like something out of a movie. This video breaks it down really well.',
-                    'I saw this video about crazy visions in the Bible—it’s surprisingly gripping and thought-provoking. Let me know what you think!'
+                    "I know the Bible isn't your thing, but this video about four monstrous beasts and a 'Son of Man' might surprise you. It's different!",
+                    "This video about ancient visions and crazy beasts in the Bible really caught my attention. I'd love to hear your thoughts on it.",
+                    "Hey, I saw this video about Daniel dreaming of monsters—it's wild but super interesting. Thought you'd find it cool too.",
+                    "There's this video about Daniel's dream—it's got wild imagery, almost like mythology. I think you'd enjoy how they explain it.",
+                    "You've got to check this out—Daniel's dream of beasts and kingdoms is like a fantasy story, but with deeper meaning.",
+                    "This video about Daniel's dream has some epic imagery. Even if you don't believe in it, it's pretty fascinating to watch.",
+                    "I just watched this video about four beasts in the Bible—it's packed with symbolism and meaning. Wanted to share it with you!",
+                    "This video on Daniel's dream really makes you think about how ancient stories connect to today. I think you'll find it interesting.",
+                    "The Bible talks about beasts and someone conquering them—it's like something out of a movie. This video breaks it down really well.",
+                    "I saw this video about crazy visions in the Bible—it's surprisingly gripping and thought-provoking. Let me know what you think!"
                   ]}
+                  onClick={handleShareClick}
                 />
 
                 <SectionHeader
@@ -684,7 +710,11 @@ export function Audience(): ReactElement {
                         borderRadius: 4
                       }}
                     >
-                      <VideoVerse videoSrc={verse.src} verse={verse.verse} />
+                      <VideoVerse
+                        videoSrc={verse.src}
+                        verse={verse.verse}
+                        onClick={handleShareClick}
+                      />
                     </Box>
                   ))}
                 </Box>
@@ -722,16 +752,17 @@ export function Audience(): ReactElement {
                 <MessageBubble
                   message={[
                     'Hey, I just watched this video about how faith can help heal emotional scars—it really hit home. Thought you might like it too.',
-                    'I know life can get heavy sometimes. This video about trusting God with pain really made me think—maybe it’ll resonate with you too.',
-                    'This video talks about finding comfort and strength through faith during tough times. I think it’s worth watching.',
-                    'I’ve been thinking about how we deal with pain, and this video about healing through faith made a lot of sense to me. Check it out.',
+                    "I know life can get heavy sometimes. This video about trusting God with pain really made me think—maybe it'll resonate with you too.",
+                    "This video talks about finding comfort and strength through faith during tough times. I think it's worth watching.",
+                    "I've been thinking about how we deal with pain, and this video about healing through faith made a lot of sense to me. Check it out.",
                     'This video on trusting God with emotional scars really spoke to me. I thought of you—it might give you a fresh perspective.',
-                    'Hey, I saw this video on how faith can bring healing during tough times. It’s powerful—I think you might like it.',
+                    "Hey, I saw this video on how faith can bring healing during tough times. It's powerful—I think you might like it.",
                     'Sometimes trusting God feels hard, but this video explained it in a way that really clicked for me. You might find it helpful too.',
                     'You know how life throws curveballs? This video about healing through faith was a good reminder for me—I wanted to share it with you.',
-                    'This video on finding peace through faith during tough times really stuck with me. It’s simple but powerful—give it a watch.',
+                    "This video on finding peace through faith during tough times really stuck with me. It's simple but powerful—give it a watch.",
                     'I watched this video about healing emotional scars through faith, and it really made me think about how we handle struggles. Wanted to share it with you.'
                   ]}
+                  onClick={handleShareClick}
                 />
 
                 <SectionHeader
@@ -758,17 +789,18 @@ export function Audience(): ReactElement {
 
                 <MessageBubble
                   message={[
-                    "Hey, I just watched this video about Jesus' prayer before the cross—it really hit me. It’s about finding strength during tough times. Thought you’d find it interesting.",
-                    'This video talks about Jesus asking for the ‘cup of sorrow’ to pass from Him. It’s powerful and really made me think about dealing with struggles.',
-                    'I saw this video about Jesus’ last prayer before the cross. It’s about faith and finding comfort in hard times—it’s worth a watch.',
-                    'This video explains how Jesus faced sorrow before the cross. It’s pretty deep, and it made me think about how we handle tough moments.',
-                    'Jesus’ words before the cross were so raw and human. This video dives into it and shows how faith can help in hard times. Check it out!',
-                    "There’s this video about Jesus' prayer to let the ‘cup of sorrow’ pass from Him. It’s moving and has a lot to say about faith in hard times.",
-                    "I watched this video about Jesus crying out before the cross—it’s about finding strength when life feels overwhelming. I think you'd like it.",
-                    "This video on Jesus' prayer before the cross shows how faith can provide comfort even in the worst moments. It’s really moving—give it a watch.",
-                    'If you’ve ever felt overwhelmed, this video about Jesus’ struggle before the cross might really resonate with you. It’s powerful stuff.',
-                    'Jesus’ words before the cross were so honest and raw. This video explains how faith helps in times of depression and pain. Thought of you!'
+                    "Hey, I just watched this video about Jesus' prayer before the cross—it really hit me. It's about finding strength during tough times. Thought you'd find it interesting.",
+                    "This video talks about Jesus asking for the 'cup of sorrow' to pass from Him. It's powerful and really made me think about dealing with struggles.",
+                    "I saw this video about Jesus' last prayer before the cross. It's about faith and finding comfort in hard times—it's worth a watch.",
+                    "This video explains how Jesus faced sorrow before the cross. It's pretty deep, and it made me think about how we handle tough moments.",
+                    "Jesus' words before the cross were so raw and human. This video dives into it and shows how faith can help in hard times. Check it out!",
+                    "There's this video about Jesus' prayer to let the 'cup of sorrow' pass from Him. It's moving and has a lot to say about faith in hard times.",
+                    "I watched this video about Jesus crying out before the cross—it's about finding strength when life feels overwhelming. I think you'd like it.",
+                    "This video on Jesus' prayer before the cross shows how faith can provide comfort even in the worst moments. It's really moving—give it a watch.",
+                    "If you've ever felt overwhelmed, this video about Jesus' struggle before the cross might really resonate with you. It's powerful stuff.",
+                    "Jesus' words before the cross were so honest and raw. This video explains how faith helps in times of depression and pain. Thought of you!"
                   ]}
+                  onClick={handleShareClick}
                 />
 
                 <SectionHeader
@@ -1124,6 +1156,12 @@ export function Audience(): ReactElement {
           </Box>
         </VideoProvider>
       </ThemeProvider>
+      <ShareDrawer
+        open={isShareDrawerOpen}
+        onClose={() => setIsShareDrawerOpen(false)}
+        activePersona={sampleAudience.find((p) => p.id === activePersonaId)}
+        initialMessage={shareMessage}
+      />
     </>
   )
 }

@@ -11,9 +11,13 @@ import { LikeAnimation } from '../LikeAnimation'
 
 interface MessageBubbleProps {
   message: string[]
+  onClick?: (message: string) => void
 }
 
-export function MessageBubble({ message }: MessageBubbleProps): ReactElement {
+export function MessageBubble({
+  message,
+  onClick
+}: MessageBubbleProps): ReactElement {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showLikeAnimation, setShowLikeAnimation] = useState(false)
 
@@ -26,6 +30,12 @@ export function MessageBubble({ message }: MessageBubbleProps): ReactElement {
     setTimeout(() => {
       setShowLikeAnimation(false)
     }, 1000)
+  }
+
+  const handleClick = () => {
+    if (onClick) {
+      onClick(message[currentIndex])
+    }
   }
 
   return (
@@ -127,6 +137,7 @@ export function MessageBubble({ message }: MessageBubbleProps): ReactElement {
           label="Copy"
           variant="filled"
           clickable
+          onClick={handleClick}
           sx={{
             '& .MuiChip-label': { px: 3 },
             '& .MuiChip-icon': { ml: 2.5, color: 'black' },

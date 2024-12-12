@@ -68,15 +68,18 @@ export const websiteComponents: Required<Pick<ThemeOptions, 'components'>> = {
     MuiOutlinedInput: {
       styleOverrides: {
         notchedOutline: {
-          top: 0,
-          borderWidth: '2px',
-          '> legend': {
-            display: 'none'
-          }
+          // top: 0,
+          borderWidth: '2px'
+          // '> legend': {
+          //   display: 'none'
+          // }
+        },
+        root: {
+          borderRadius: '12px'
         },
         input: {
           ':not([readonly])': {
-            transform: `translate(0px, 9px) scale(1)`,
+            // transform: `translate(0px, 9px) scale(1)`,
             transition: `color 200ms cubic-bezier(0.0,0,0.2,1) 0ms,transform 200ms cubic-bezier(0.0,0,0.2,1) 0ms,max-width 200ms cubic-bezier(0.0,0,0.2,1) 0ms`
           }
         }
@@ -86,7 +89,7 @@ export const websiteComponents: Required<Pick<ThemeOptions, 'components'>> = {
       styleOverrides: {
         outlined: {
           '&.MuiInputLabel-shrink': {
-            transform: `translate(14px, 9px) scale(0.75)`
+            // transform: `translate(14px, 9px) scale(0.75)`
           }
         }
       }

@@ -37,6 +37,7 @@ import CreateIcon from '@mui/icons-material/Create'
 import { SectionHeader } from '../SectionHeader'
 import { MessageBubble } from '../MessageBubble'
 import VideoVerse from '../VideoVerse'
+import { ShareDrawer } from '../ShareDrawer'
 
 type TimedText = {
   text: string
@@ -513,6 +514,16 @@ export function BibleVerses(): ReactElement {
     }
   }, [])
 
+  // Add new state for share drawer
+  const [isShareDrawerOpen, setIsShareDrawerOpen] = useState(false)
+  const [shareMessage, setShareMessage] = useState<string>()
+
+  // Add share click handler
+  const handleShareClick = (message?: string) => {
+    setShareMessage(message)
+    setIsShareDrawerOpen(true)
+  }
+
   return (
     <>
       <Head>
@@ -641,17 +652,13 @@ export function BibleVerses(): ReactElement {
 
                 <MessageBubble
                   message={[
-                    'I know the Bible isn’t your thing, but this video about four monstrous beasts and a ‘Son of Man’ might surprise you. It’s different!',
-                    'This video about ancient visions and crazy beasts in the Bible really caught my attention. I’d love to hear your thoughts on it.',
-                    'Hey, I saw this video about Daniel dreaming of monsters—it’s wild but super interesting. Thought you’d find it cool too.',
-                    'There’s this video about Daniel’s dream—it’s got wild imagery, almost like mythology. I think you’d enjoy how they explain it.',
-                    'You’ve got to check this out—Daniel’s dream of beasts and kingdoms is like a fantasy story, but with deeper meaning.',
-                    'This video about Daniel’s dream has some epic imagery. Even if you don’t believe in it, it’s pretty fascinating to watch.',
-                    'I just watched this video about four beasts in the Bible—it’s packed with symbolism and meaning. Wanted to share it with you!',
-                    'This video on Daniel’s dream really makes you think about how ancient stories connect to today. I think you’ll find it interesting.',
-                    'The Bible talks about beasts and someone conquering them—it’s like something out of a movie. This video breaks it down really well.',
-                    'I saw this video about crazy visions in the Bible—it’s surprisingly gripping and thought-provoking. Let me know what you think!'
+                    'This verse really spoke to me today. What do you think?',
+                    'Found this powerful verse about hope and wanted to share it with you.',
+                    'This reminds me of what we talked about. Check it out!',
+                    'Such a beautiful verse about peace. Thought you might appreciate it.',
+                    'This verse has been helping me lately. Maybe it will encourage you too.'
                   ]}
+                  onClick={handleShareClick}
                 />
 
                 <SectionHeader
@@ -728,6 +735,7 @@ export function BibleVerses(): ReactElement {
                     'This video on finding peace through faith during tough times really stuck with me. It’s simple but powerful—give it a watch.',
                     'I watched this video about healing emotional scars through faith, and it really made me think about how we handle struggles. Wanted to share it with you.'
                   ]}
+                  onClick={handleShareClick}
                 />
 
                 <SectionHeader
@@ -755,7 +763,7 @@ export function BibleVerses(): ReactElement {
                 <MessageBubble
                   message={[
                     "Hey, I just watched this video about Jesus' prayer before the cross—it really hit me. It’s about finding strength during tough times. Thought you’d find it interesting.",
-                    'This video talks about Jesus asking for the ‘cup of sorrow’ to pass from Him. It’s powerful and really made me think about dealing with struggles.',
+                    'This video talks about Jesus asking for the ��cup of sorrow’ to pass from Him. It’s powerful and really made me think about dealing with struggles.',
                     'I saw this video about Jesus’ last prayer before the cross. It’s about faith and finding comfort in hard times—it’s worth a watch.',
                     'This video explains how Jesus faced sorrow before the cross. It’s pretty deep, and it made me think about how we handle tough moments.',
                     'Jesus’ words before the cross were so raw and human. This video dives into it and shows how faith can help in hard times. Check it out!',
@@ -765,6 +773,7 @@ export function BibleVerses(): ReactElement {
                     'If you’ve ever felt overwhelmed, this video about Jesus’ struggle before the cross might really resonate with you. It’s powerful stuff.',
                     'Jesus’ words before the cross were so honest and raw. This video explains how faith helps in times of depression and pain. Thought of you!'
                   ]}
+                  onClick={handleShareClick}
                 />
 
                 <SectionHeader
@@ -1120,6 +1129,11 @@ export function BibleVerses(): ReactElement {
           </Box>
         </VideoProvider>
       </ThemeProvider>
+      <ShareDrawer
+        open={isShareDrawerOpen}
+        onClose={() => setIsShareDrawerOpen(false)}
+        initialMessage={shareMessage}
+      />
     </>
   )
 }

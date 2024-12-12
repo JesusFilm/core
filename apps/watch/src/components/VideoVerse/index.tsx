@@ -13,11 +13,13 @@ type TimedText = {
 interface VideoVerseProps {
   videoSrc: string
   verse: TimedText[]
+  onClick?: () => void
 }
 
 export default function VideoVerse({
   videoSrc,
-  verse
+  verse,
+  onClick
 }: VideoVerseProps): JSX.Element {
   const [currentTextIndex, setCurrentTextIndex] = useState(() =>
     verse.length > 0 ? 0 : -1
