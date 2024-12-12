@@ -273,6 +273,60 @@ export interface BlockDuplicate_blockDuplicate_VideoBlock_video {
   variantLanguages: BlockDuplicate_blockDuplicate_VideoBlock_video_variantLanguages[];
 }
 
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_title {
+  __typename: "VideoTitle";
+  value: string;
+}
+
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  hls: string | null;
+}
+
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variantLanguages_name {
+  __typename: "LanguageName";
+  value: string;
+  primary: boolean;
+}
+
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variantLanguages_name[];
+}
+
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video {
+  __typename: "Video";
+  id: string;
+  title: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_title[];
+  images: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_images[];
+  variant: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variantLanguages[];
+}
+
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+}
+
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+  id: string;
+}
+
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo = BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video | BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_MuxVideo | BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_CloudflareVideo | BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_YouTube;
+
 export interface BlockDuplicate_blockDuplicate_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -369,6 +423,7 @@ export interface BlockDuplicate_blockDuplicate_VideoBlock {
    * videoVariantLanguageId are present
    */
   video: BlockDuplicate_blockDuplicate_VideoBlock_video | null;
+  mediaVideo: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */

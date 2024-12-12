@@ -185,6 +185,7 @@ describe('Source', () => {
             action: null,
             source: VideoBlockSource.youTube,
             video: null,
+            mediaVideo: null,
             objectFit: null,
             posterBlockId: 'poster1.id',
             children: []
@@ -232,6 +233,7 @@ describe('Source', () => {
             action: null,
             source: VideoBlockSource.cloudflare,
             video: null,
+            mediaVideo: null,
             objectFit: null,
             posterBlockId: 'poster1.id',
             children: []
@@ -291,6 +293,7 @@ describe('Source', () => {
             action: null,
             source: VideoBlockSource.youTube,
             video: null,
+            mediaVideo: null,
             objectFit: null,
             posterBlockId: 'poster1.id',
             children: []
