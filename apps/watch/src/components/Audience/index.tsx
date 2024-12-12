@@ -284,11 +284,11 @@ const sampleVideos: VideoContent[] = [
   {
     id: 'main-video',
     type: VideoType.VERTICAL_CLIP,
-    src: 'https://cdn-std.droplr.net/files/acc_760170/KSluj5',
-    poster: 'https://cdn-std.droplr.net/files/acc_760170/MKEjsL',
-    title: 'Why Does Daniel Dream About Monsters?',
+    src: 'https://cdn-std.droplr.net/files/acc_760170/0kgSiM',
+    poster: 'https://cdn-std.droplr.net/files/acc_760170/9rrLL1',
+    title: 'Unraveling Psalm 6: A Cry for Help in the Depths of Despair',
     description:
-      "The four monstrous beasts in Daniel's dream represent four violent kingdoms. Daniel's dream continues with the arrival of the Son of Man, who shows up to destroy the beasts."
+      'Psalm 6 captures David’s raw plea for mercy and healing during his darkest moments. Explore the heartfelt cry of a soul overwhelmed, and discover the hope and restoration found in God’s unfailing love.'
   },
   {
     id: 'anxiety-video',
@@ -628,7 +628,7 @@ export function Audience(): ReactElement {
                     }
                   }}
                   title={sampleVideos[0].title ?? ''}
-                  subtitle="Dragons in the Bible"
+                  subtitle="Praying in Despair"
                   description={sampleVideos[0].description ?? ''}
                   chipLabel="NEW SHOW"
                 />
