@@ -35,7 +35,11 @@
   "Size": "尺寸",
   "Dimensions": "Dimensions",
   "URL": "URL",
+  "Language updated": "Language updated",
   "Audio Language": "Audio Language",
+  "Language": "語言",
+  "A variant for this language already exists": "A variant for this language already exists",
+  "Save": "節省",
   "Audio Languages": "Audio Languages",
   "No children to show": "No children to show",
   "Loading...": "載入中...",
@@ -58,6 +62,5 @@
   "Home": "首頁",
   "Video Library": "影片庫",
   "Sign Out": "登出",
-  "Draft": "Draft",
-  "Save": "節省"
+  "Draft": "Draft"
 }
