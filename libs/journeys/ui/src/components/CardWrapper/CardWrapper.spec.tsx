@@ -13,7 +13,7 @@ jest.mock('@core/journeys/ui/Card', () => ({
 }))
 
 describe('CardWrapper', () => {
-  it('should set mediaVideo to null', () => {
+  it('should set videoId to null', () => {
     const Container = (_props: {
       wrappers: Record<string, never>
     }): ReactElement => <></>
@@ -117,7 +117,7 @@ describe('CardWrapper', () => {
             image: null,
             video: null,
             mediaVideo: null,
-            videoId: '2_0-FallingPlates',
+            videoId: null,
             videoVariantLanguageId: '529'
           }
         ],
