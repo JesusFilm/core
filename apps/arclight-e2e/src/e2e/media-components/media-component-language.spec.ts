@@ -9,11 +9,10 @@ test('compare specific media component languages between environments', async ({
 }) => {
   const baseUrl = await getBaseUrl()
   const compareUrl = 'https://api.arclight.org'
-  const mediaComponentId = testData.mediaComponentId
-  const languageId = testData.languageId
+  const { mediaComponentId, languageId, apiKey } = testData
 
   const queryParams = new URLSearchParams({
-    apiKey: testData.apiKey,
+    apiKey,
     mediaComponentId,
     languageId
   })
@@ -31,24 +30,21 @@ test('compare specific media component languages between environments', async ({
       .then((res) => res.json())
   ])
 
-  delete baseData.apiSessionId
-  baseData.shareUrl = baseData.shareUrl.split('?')[0]
-  baseData.downloadUrls.low.url = baseData.downloadUrls?.low?.url?.split('?')[0]
-  baseData.downloadUrls.high.url =
-    baseData.downloadUrls?.high?.url?.split('?')[0]
-  baseData.streamingUrls.m3u8[0].url =
-    baseData.streamingUrls?.m3u8[0]?.url?.split('?')[0]
+  // Clean up dynamic data from both responses
+  const cleanResponse = (data: any) => {
+    delete data.apiSessionId
+    data.shareUrl = data.shareUrl?.split('?')[0]
+    data.downloadUrls.low.url = data.downloadUrls?.low?.url?.split('?')[0]
+    data.downloadUrls.high.url = data.downloadUrls?.high?.url?.split('?')[0]
+    data.streamingUrls.m3u8[0].url =
+      data.streamingUrls?.m3u8[0]?.url?.split('?')[0]
+    return data
+  }
 
-  delete compareData.apiSessionId
-  compareData.shareUrl = compareData.shareUrl.split('?')[0]
-  compareData.downloadUrls.low.url =
-    compareData.downloadUrls?.low?.url?.split('?')[0]
-  compareData.downloadUrls.high.url =
-    compareData.downloadUrls?.high?.url?.split('?')[0]
-  compareData.streamingUrls.m3u8[0].url =
-    compareData.streamingUrls?.m3u8[0]?.url?.split('?')[0]
+  const cleanedBaseData = cleanResponse(baseData)
+  const cleanedCompareData = cleanResponse(compareData)
 
-  const differences = getObjectDiff(baseData, compareData)
+  const differences = getObjectDiff(cleanedBaseData, cleanedCompareData)
 
   expect(differences).toHaveLength(0)
 })
