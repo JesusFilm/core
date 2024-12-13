@@ -171,6 +171,7 @@ const getVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
         variantLanguages: [
           {
             __typename: 'Language',
+            slug: 'english',
             id: '529',
             name: [
               {
