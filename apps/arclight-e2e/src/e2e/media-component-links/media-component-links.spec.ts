@@ -29,21 +29,21 @@ test('compare media component links between environments', async ({
   expect(compareData._embedded.mediaComponentsLinks).toBeDefined()
 
   // Sort because the order does not matter
-  const sortContainedBy = (data: any) => {
-    data._embedded.mediaComponentsLinks.forEach((link: any) => {
+  const sortContainedBy = (mediaComponentLinks: any) => {
+    mediaComponentLinks.forEach((link: any) => {
       if (link.linkedMediaComponentIds?.containedBy) {
         link.linkedMediaComponentIds.containedBy.sort()
       }
     })
-    return data
+    return mediaComponentLinks
   }
 
   const baseMediaComponentLinks = convertArrayToObject(
-    sortContainedBy(baseData),
+    sortContainedBy(baseData._embedded.mediaComponentsLinks),
     'mediaComponentId'
   )
   const compareMediaComponentLinks = convertArrayToObject(
-    sortContainedBy(compareData),
+    sortContainedBy(compareData._embedded.mediaComponentsLinks),
     'mediaComponentId'
   )
 
