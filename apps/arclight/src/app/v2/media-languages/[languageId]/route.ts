@@ -115,25 +115,31 @@ export async function GET(
     bcp47: language.bcp47,
     counts: {
       speakerCount: {
-        value: language.speakerCount,
+        value: Number(language.speakerCount),
         description: 'Number of speakers'
       },
       countriesCount: {
         value: language.countriesCount,
         description: 'Number of countries'
       },
-      series: {
-        value: language.seriesCount,
-        description: 'Series'
-      },
-      featureFilm: {
-        value: language.featureFilmCount,
-        description: 'Feature Film'
-      },
-      shortFilm: {
-        value: language.shortFilmCount,
-        description: 'Short Film'
-      }
+      ...(language.seriesCount > 0 && {
+        series: {
+          value: language.seriesCount,
+          description: 'Series'
+        }
+      }),
+      ...(language.featureFilmCount > 0 && {
+        featureFilm: {
+          value: language.featureFilmCount,
+          description: 'Feature Film'
+        }
+      }),
+      ...(language.shortFilmCount > 0 && {
+        shortFilm: {
+          value: language.shortFilmCount,
+          description: 'Short Film'
+        }
+      })
     },
     audioPreview:
       language.audioPreview != null
