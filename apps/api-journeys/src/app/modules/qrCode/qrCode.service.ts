@@ -4,14 +4,15 @@ import { graphql } from 'gql.tada'
 import { GraphQLError } from 'graphql'
 
 import { QrCode } from '.prisma/api-journeys-client'
-import { ShortLink } from '.prisma/api-media-client'
+// import { ShortLink } from '.prisma/api-media-client'
 
 import {
   MutationShortLinkCreateInput,
   MutationShortLinkCreateSuccess,
   MutationShortLinkDeleteSuccess,
   MutationShortLinkUpdateInput,
-  MutationShortLinkUpdateSuccess
+  MutationShortLinkUpdateSuccess,
+  ShortLink
 } from '../../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
