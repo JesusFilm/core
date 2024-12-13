@@ -10,12 +10,12 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
         child.id === block.coverBlockId &&
         child.__typename === 'VideoBlock'
       ) {
-        if (child?.mediaVideo?.id == null) {
+        if (child?.videoId == null) {
           return child
         }
         return {
           ...child,
-          mediaVideo: null
+          videoId: null
         }
       }
       return child

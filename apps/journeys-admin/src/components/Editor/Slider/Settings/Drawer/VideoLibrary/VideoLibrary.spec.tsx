@@ -202,7 +202,6 @@ describe('VideoLibrary', () => {
             action: null,
             source: VideoBlockSource.youTube,
             video: null,
-            mediaVideo: null,
             objectFit: null,
             posterBlockId: 'poster1.id',
             children: []

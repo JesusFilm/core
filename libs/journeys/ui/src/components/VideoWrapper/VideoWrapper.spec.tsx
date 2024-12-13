@@ -12,7 +12,7 @@ jest.mock('@core/journeys/ui/Video', () => ({
 }))
 
 describe('VideoWrapper', () => {
-  it('should set mediaVideo null', () => {
+  it('should set videoId to null', () => {
     const block: TreeBlock = {
       id: 'video5.id',
       __typename: 'VideoBlock',
@@ -28,7 +28,6 @@ describe('VideoWrapper', () => {
       duration: null,
       image: null,
       video: null,
-      mediaVideo: null,
       startAt: null,
       endAt: null,
       posterBlockId: 'image5.id',
@@ -95,8 +94,7 @@ describe('VideoWrapper', () => {
         image: null,
         objectFit: null,
         video: null,
-        mediaVideo: null,
-        videoId: '2_0-FallingPlates',
+        videoId: null,
         videoVariantLanguageId: '529'
       },
       {}
@@ -119,7 +117,6 @@ describe('VideoWrapper', () => {
       duration: null,
       image: null,
       video: null,
-      mediaVideo: null,
       startAt: null,
       endAt: null,
       posterBlockId: 'image5.id',
@@ -186,7 +183,6 @@ describe('VideoWrapper', () => {
         image: null,
         objectFit: null,
         video: null,
-        mediaVideo: null,
         videoId: null,
         videoVariantLanguageId: '529'
       },

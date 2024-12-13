@@ -35,7 +35,7 @@ type VideoBlock
   @extends
 {
   id: ID! @external
-  videoId: ID! @external
+  videoId: ID @external
   source: VideoBlockSource! @external
   videoVariantLanguageId: ID @external
   mediaVideo: MediaVideo

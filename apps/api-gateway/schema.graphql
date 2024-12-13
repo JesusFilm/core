@@ -1025,7 +1025,7 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(
   to select a video.
   For other sources only videoId needs to be set.
   """
-  videoId: ID @join__field(graph: API_JOURNEYS, type: "ID")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID!") 
+  videoId: ID
   """
   internal source videos: videoId and videoVariantLanguageId both need to be set
   to select a video.
