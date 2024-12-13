@@ -120,6 +120,8 @@ const MediaVideo = builder.unionType('MediaVideo', {
         return Video
       case PrismaVideoBlockSource.youTube:
         return YouTube
+      default:
+        return null
     }
   }
 })
@@ -129,7 +131,7 @@ const VideoBlock = builder.externalRef(
   builder.selection<{
     id: string
     source: PrismaVideoBlockSource
-    videoId: string
+    videoId: string | null
     videoVariantLanguageId: string | null
   }>('id source videoId videoVariantLanguageId')
 )
@@ -138,7 +140,7 @@ VideoBlock.implement({
   externalFields: (t) => ({
     id: t.id({ nullable: false }),
     videoId: t.id({
-      nullable: false
+      nullable: true
     }),
     source: t.field({
       type: VideoBlockSource,
@@ -149,11 +151,14 @@ VideoBlock.implement({
   fields: (t) => ({
     mediaVideo: t.field({
       type: MediaVideo,
-      resolve: (video) => ({
-        id: video.videoId,
-        source: video.source,
-        primaryLanguageId: video.videoVariantLanguageId
-      })
+      resolve: (video) =>
+        video.videoId != null
+          ? {
+              id: video.videoId,
+              source: video.source,
+              primaryLanguageId: video.videoVariantLanguageId
+            }
+          : null
     })
   })
 })
