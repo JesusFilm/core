@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 
+// just to run the tests daily
 /* 
 Test a journey by following the journey's selection buttons
 */
