@@ -173,19 +173,20 @@ model VideoVariantDownload {
 }
 
 model VideoVariant {
-  id           String                 @id
-  hls          String?
-  dash         String?
-  share        String?
-  downloadable Boolean                @default(true)
-  downloads    VideoVariantDownload[]
-  duration     Int?
-  languageId   String
-  edition      String                 @default("base")
-  videoEdition VideoEdition           @relation(fields: [edition], references: [id])
-  slug         String                 @unique
-  video        Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
-  videoId      String?
+  id                   String                 @id
+  hls                  String?
+  dash                 String?
+  share                String?
+  downloadable         Boolean                @default(true)
+  downloads            VideoVariantDownload[]
+  duration             Int?
+  lengthInMilliseconds Int?
+  languageId           String
+  edition              String                 @default("base")
+  videoEdition         VideoEdition           @relation(fields: [edition], references: [id])
+  slug                 String                 @unique
+  video                Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoId              String?
 
   @@unique([languageId, videoId])
   @@index(languageId(type: Hash))
@@ -289,7 +290,7 @@ model BibleCitation {
   osisId       String
   chapterStart Int
   chapterEnd   Int?
-  verseStart   Int
+  verseStart   Int?
   verseEnd     Int?
   videoId      String
   order        Int
