@@ -201,9 +201,9 @@ export async function GET(
               socialMediaUrls: {},
               ...(platform === 'web' && {
                 webEmbedPlayer,
-                webEmbedSharePlayer
+                webEmbedSharePlayer,
+                openGraphVideoPlayer: 'https://jesusfilm.org/'
               }),
-              openGraphVideoPlayer: 'https://jesusfilm.org/',
               _links: {
                 self: {
                   href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/${variant.language?.id}?platform=${platform}&apiKey=${apiKey}`
@@ -230,10 +230,10 @@ export async function GET(
     apiSessionId,
     _links: {
       self: {
-        href: `/v2/media-components/${mediaComponentId}/languages?${queryString}`
+        href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages?${queryString}`
       },
       mediaComponent: {
-        href: `/v2/media-components/${mediaComponentId}` // TODO: mediacomponent querystring
+        href: `http://api.arclight.org/v2/media-components/${mediaComponentId}`
       }
     },
     _embedded: {
