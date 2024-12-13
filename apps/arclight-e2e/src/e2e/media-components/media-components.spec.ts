@@ -59,6 +59,8 @@ test('verify required image fields exist', async ({ request }) => {
     .get(`${baseUrl}/v2/media-components?${queryParams}`)
     .then((res) => res.json())) as ApiResponse
 
+  expect(response._embedded.mediaComponents).toBeDefined()
+
   const requiredImageFields = [
     'thumbnail',
     'videoStill',
@@ -67,7 +69,7 @@ test('verify required image fields exist', async ({ request }) => {
     'mobileCinematicVeryLow'
   ]
 
-  response._embedded.mediaComponents.forEach((comp) => {
+  response._embedded.mediaComponents?.forEach((comp) => {
     requiredImageFields.forEach((field) => {
       expect(
         comp.imageUrls?.[field],
