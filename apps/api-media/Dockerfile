@@ -1,4 +1,4 @@
-FROM node:22-alpine
+FROM node@3.20:22-alpine
 
 EXPOSE 4005
 
