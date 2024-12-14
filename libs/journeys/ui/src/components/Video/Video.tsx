@@ -63,6 +63,7 @@ export function Video({
   id: blockId,
   mediaVideo,
   source,
+  videoId,
   image,
   title,
   autoplay,
@@ -91,7 +92,7 @@ export function Video({
 
   const eventVideoTitle =
     mediaVideo?.__typename == 'Video' ? mediaVideo?.title[0].value : title
-  const eventVideoId = mediaVideo?.id
+  const eventVideoId = mediaVideo?.id ?? videoId
 
   // Setup poster image
   const posterBlock = children.find(
@@ -213,7 +214,7 @@ export function Video({
           />
         )}
 
-      {mediaVideo?.id != null ? (
+      {videoId != null ? (
         <>
           <StyledVideoGradient />
           <Box
@@ -251,18 +252,17 @@ export function Video({
                 }
               }}
             >
-              {mediaVideo?.__typename == 'CloudflareVideo' &&
-                mediaVideo?.id != null && (
-                  <source
-                    src={`https://customer-${
-                      process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
-                      ''
-                    }.cloudflarestream.com/${
-                      mediaVideo.id ?? ''
-                    }/manifest/video.m3u8?clientBandwidthHint=10`}
-                    type="application/x-mpegURL"
-                  />
-                )}
+              {source === VideoBlockSource.cloudflare && videoId != null && (
+                <source
+                  src={`https://customer-${
+                    process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
+                    ''
+                  }.cloudflarestream.com/${
+                    videoId ?? ''
+                  }/manifest/video.m3u8?clientBandwidthHint=10`}
+                  type="application/x-mpegURL"
+                />
+              )}
               {mediaVideo?.__typename == 'Video' &&
                 mediaVideo?.variant?.hls != null && (
                   <source
@@ -270,9 +270,9 @@ export function Video({
                     type="application/x-mpegURL"
                   />
                 )}
-              {mediaVideo?.__typename == 'YouTube' && (
+              {source === VideoBlockSource.youTube && (
                 <source
-                  src={`https://www.youtube.com/embed/${mediaVideo.id}?start=${
+                  src={`https://www.youtube.com/embed/${videoId}?start=${
                     startAt ?? 0
                   }&end=${endAt ?? 0}`}
                   type="video/youtube"

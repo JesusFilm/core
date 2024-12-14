@@ -57,14 +57,14 @@ export function VideoLibrary({
 }: VideoLibraryProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [openVideoDetails, setOpenVideoDetails] = useState(
-    selectedBlock?.mediaVideo?.id != null && open
+    selectedBlock?.videoId != null && open
   )
   const [activeTab, setActiveTab] = useState(0)
   const router = useRouter()
 
   useEffect(() => {
-    setOpenVideoDetails(selectedBlock?.mediaVideo?.id != null && open)
-  }, [open, selectedBlock?.mediaVideo?.id])
+    setOpenVideoDetails(selectedBlock?.videoId != null && open)
+  }, [open, selectedBlock?.videoId])
 
   const TabParams = {
     0: 'video-library',
@@ -179,9 +179,9 @@ export function VideoLibrary({
           </TabPanel>
         </Box>
       </Drawer>
-      {selectedBlock?.mediaVideo?.id != null && (
+      {selectedBlock?.videoId != null && (
         <VideoDetails
-          id={selectedBlock.mediaVideo.id}
+          id={selectedBlock.videoId}
           open={openVideoDetails}
           source={selectedBlock.source}
           onClose={handleVideoDetailsClose}

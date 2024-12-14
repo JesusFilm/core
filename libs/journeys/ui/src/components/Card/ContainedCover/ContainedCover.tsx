@@ -114,7 +114,7 @@ export function ContainedCover({
           borderRadius: 'inherit'
         }}
       >
-        {videoBlock?.mediaVideo?.id != null && (
+        {videoBlock?.videoId != null && (
           <BackgroundVideo
             {...videoBlock}
             setLoading={setLoading}

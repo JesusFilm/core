@@ -197,7 +197,7 @@ describe('VideoOptions', () => {
       >
         <EditorProvider
           initialState={{
-            selectedBlock: { ...video, mediaVideo: null },
+            selectedBlock: { ...video, videoId: null },
             selectedAttributeId: video.id
           }}
         >
@@ -275,7 +275,7 @@ describe('VideoOptions', () => {
       >
         <EditorProvider
           initialState={{
-            selectedBlock: { ...video, mediaVideo: null },
+            selectedBlock: { ...video, videoId: null },
             selectedAttributeId: video.id
           }}
         >
