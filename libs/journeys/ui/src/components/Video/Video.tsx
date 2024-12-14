@@ -72,8 +72,7 @@ export function Video({
   posterBlockId,
   children,
   action,
-  objectFit,
-  __typename
+  objectFit
 }: TreeBlock<VideoFields>): ReactElement {
   const theme = useTheme()
   const hundredVh = use100vh()

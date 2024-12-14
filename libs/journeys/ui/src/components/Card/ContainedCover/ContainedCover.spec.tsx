@@ -2,6 +2,7 @@ import { render, waitFor } from '@testing-library/react'
 
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../../libs/block'
+import { BlockFields_VideoBlock_mediaVideo_Video } from '../../../libs/block/__generated__/BlockFields'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 
@@ -49,29 +50,6 @@ describe('ContainedCover', () => {
     duration: null,
     image: null,
     objectFit: null,
-    video: {
-      __typename: 'Video',
-      id: '2_0-FallingPlates',
-      title: [
-        {
-          __typename: 'VideoTitle',
-          value: 'FallingPlates'
-        }
-      ],
-      images: [
-        {
-          __typename: 'CloudflareImage',
-          mobileCinematicHigh:
-            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-        }
-      ],
-      variant: {
-        __typename: 'VideoVariant',
-        id: '2_0-FallingPlates-529',
-        hls: 'https://arc.gt/hls/2_0-FallingPlates/529'
-      },
-      variantLanguages: []
-    },
     mediaVideo: {
       __typename: 'Video',
       id: '2_0-FallingPlates',
@@ -204,7 +182,8 @@ describe('ContainedCover', () => {
     expect(posterImage).toHaveAccessibleName('card video image')
     expect(posterImage).toHaveAttribute(
       'aria-details',
-      videoBlock.video?.images[0]?.mobileCinematicHigh
+      (videoBlock.mediaVideo as BlockFields_VideoBlock_mediaVideo_Video)
+        ?.images[0]?.mobileCinematicHigh
     )
   })
 

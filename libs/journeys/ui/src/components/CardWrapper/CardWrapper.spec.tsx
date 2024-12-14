@@ -42,7 +42,6 @@ describe('CardWrapper', () => {
           description: null,
           duration: null,
           image: null,
-          video: null,
           mediaVideo: null,
           startAt: null,
           endAt: null,
@@ -115,7 +114,6 @@ describe('CardWrapper', () => {
             duration: null,
             objectFit: null,
             image: null,
-            video: null,
             mediaVideo: null,
             videoId: '2_0-FallingPlates',
             videoVariantLanguageId: '529'
@@ -163,7 +161,6 @@ describe('CardWrapper', () => {
           description: null,
           duration: null,
           image: null,
-          video: null,
           mediaVideo: null,
           startAt: null,
           endAt: null,
@@ -236,7 +233,6 @@ describe('CardWrapper', () => {
             objectFit: null,
             duration: null,
             image: null,
-            video: null,
             mediaVideo: null,
             videoId: null,
             videoVariantLanguageId: '529'

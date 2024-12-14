@@ -250,43 +250,6 @@ export interface JourneyFields_blocks_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface JourneyFields_blocks_VideoBlock_video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface JourneyFields_blocks_VideoBlock_video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface JourneyFields_blocks_VideoBlock_video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface JourneyFields_blocks_VideoBlock_video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface JourneyFields_blocks_VideoBlock_video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: JourneyFields_blocks_VideoBlock_video_variantLanguages_name[];
-}
-
-export interface JourneyFields_blocks_VideoBlock_video {
-  __typename: "Video";
-  id: string;
-  title: JourneyFields_blocks_VideoBlock_video_title[];
-  images: JourneyFields_blocks_VideoBlock_video_images[];
-  variant: JourneyFields_blocks_VideoBlock_video_variant | null;
-  variantLanguages: JourneyFields_blocks_VideoBlock_video_variantLanguages[];
-}
-
 export interface JourneyFields_blocks_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -432,11 +395,6 @@ export interface JourneyFields_blocks_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: JourneyFields_blocks_VideoBlock_video | null;
   mediaVideo: JourneyFields_blocks_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
