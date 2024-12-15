@@ -1,5 +1,7 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
@@ -30,10 +32,9 @@ function getImageFields(video: AdminVideo): {
 
 interface VideoImageProps {
   video: AdminVideo
-  isEdit: boolean
 }
 
-export function VideoImage({ video, isEdit }: VideoImageProps): ReactElement {
+export function VideoImage({ video }: VideoImageProps): ReactElement {
   const t = useTranslations()
   const [show, setShow] = useState(false)
 
@@ -66,7 +67,7 @@ export function VideoImage({ video, isEdit }: VideoImageProps): ReactElement {
           objectFit="cover"
           priority
         />
-        {isEdit ? (
+        <Tooltip title={t('Change image')}>
           <IconButton
             onClick={handleOpen}
             size="small"
@@ -74,7 +75,7 @@ export function VideoImage({ video, isEdit }: VideoImageProps): ReactElement {
           >
             <Edit2 />
           </IconButton>
-        ) : null}
+        </Tooltip>
       </Box>
       <Dialog
         testId="VideoImageUploadDialog"
@@ -86,6 +87,9 @@ export function VideoImage({ video, isEdit }: VideoImageProps): ReactElement {
           '& .MuiPaper-root': { maxWidth: 400 }
         }}
       >
+        <Typography color="error">
+          {t('Warning: this change will apply immediately')}
+        </Typography>
         <VideoImageUpload video={video} onUploadComplete={handleClose} />
       </Dialog>
     </>

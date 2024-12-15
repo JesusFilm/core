@@ -290,7 +290,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   customDomainCheck(id: ID!) : CustomDomainCheck! @join__field(graph: API_JOURNEYS) 
   buttonClickEventCreate(input: ButtonClickEventCreateInput!) : ButtonClickEvent! @join__field(graph: API_JOURNEYS) 
   chatOpenEventCreate(input: ChatOpenEventCreateInput!) : ChatOpenEvent! @join__field(graph: API_JOURNEYS) 
-  journeyViewEventCreate(input: JourneyViewEventCreateInput!) : JourneyViewEvent! @join__field(graph: API_JOURNEYS) 
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!) : JourneyViewEvent @join__field(graph: API_JOURNEYS) 
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!) : RadioQuestionSubmissionEvent! @join__field(graph: API_JOURNEYS) 
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!) : SignUpSubmissionEvent! @join__field(graph: API_JOURNEYS) 
   stepViewEventCreate(input: StepViewEventCreateInput!) : StepViewEvent! @join__field(graph: API_JOURNEYS) 
@@ -703,6 +703,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   keywords: [Keyword!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideo(id: ID!) : MuxVideo! @join__field(graph: API_MEDIA) 
+  getMuxVideo(id: ID!) : MuxVideo @join__field(graph: API_MEDIA) 
   """
   List of short link domains that can be used for short links
   """
@@ -948,9 +949,10 @@ type TypographyBlock implements Block @join__type(graph: API_JOURNEYS)  @join__i
   align: TypographyAlign
 }
 
-type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId")  @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
+type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
   id: ID!
   primaryLanguageId: ID!
+  source: VideoBlockSource @join__field(graph: API_JOURNEYS_MODERN, type: "VideoBlockSource!")  @join__field(graph: API_MEDIA, type: "VideoBlockSource") 
   bibleCitations: [BibleCitation!]! @join__field(graph: API_MEDIA) 
   keywords(languageId: ID) : [Keyword!]! @join__field(graph: API_MEDIA) 
   label: VideoLabel! @join__field(graph: API_MEDIA) 
@@ -987,33 +989,37 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId")  @join_
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
 }
 
-type VideoBlock implements Block @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Block")  {
+type VideoBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(
+  graph: API_JOURNEYS_MODERN
+  key: "id source videoId videoVariantLanguageId"
+  extension: true
+) @join__implements(graph: API_JOURNEYS, interface: "Block")  {
   id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
+  journeyId: ID! @join__field(graph: API_JOURNEYS) 
+  parentBlockId: ID @join__field(graph: API_JOURNEYS) 
+  parentOrder: Int @join__field(graph: API_JOURNEYS) 
   """
   startAt dictates at which point of time the video should start playing
   """
-  startAt: Int
+  startAt: Int @join__field(graph: API_JOURNEYS) 
   """
   endAt dictates at which point of time the video should end
   """
-  endAt: Int
-  muted: Boolean
-  autoplay: Boolean
+  endAt: Int @join__field(graph: API_JOURNEYS) 
+  muted: Boolean @join__field(graph: API_JOURNEYS) 
+  autoplay: Boolean @join__field(graph: API_JOURNEYS) 
   """
   posterBlockId is present if a child block should be used as a poster.
   This child block should not be rendered normally, instead it should be used
   as the video poster. PosterBlock should be of type ImageBlock.
   """
-  posterBlockId: ID
-  fullsize: Boolean
+  posterBlockId: ID @join__field(graph: API_JOURNEYS) 
+  fullsize: Boolean @join__field(graph: API_JOURNEYS) 
   """
   internal source videos: video is only populated when videoID and
   videoVariantLanguageId are present
   """
-  video: Video
+  video: Video @join__field(graph: API_JOURNEYS) 
   """
   internal source videos: videoId and videoVariantLanguageId both need to be set
   to select a video.
@@ -1036,34 +1042,35 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS)  @join__implem
   in the video field.
   For other sources this is automatically populated.
   """
-  title: String
+  title: String @join__field(graph: API_JOURNEYS) 
   """
   internal source videos: this field is not populated and instead only present
   in the video field
   For other sources this is automatically populated.
   """
-  description: String
+  description: String @join__field(graph: API_JOURNEYS) 
   """
   internal source videos: this field is not populated and instead only present
   in the video field
   For other sources this is automatically populated.
   """
-  image: String
+  image: String @join__field(graph: API_JOURNEYS) 
   """
   internal source videos: this field is not populated and instead only present
   in the video field
   For other sources this is automatically populated.
   duration in seconds.
   """
-  duration: Int
+  duration: Int @join__field(graph: API_JOURNEYS) 
   """
   action that should be performed when the video ends
   """
-  action: Action
+  action: Action @join__field(graph: API_JOURNEYS) 
   """
   how the video should display within the VideoBlock
   """
-  objectFit: VideoBlockObjectFit
+  objectFit: VideoBlockObjectFit @join__field(graph: API_JOURNEYS) 
+  mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
 """
@@ -1185,7 +1192,7 @@ type ChatOpenEvent implements Event @join__type(graph: API_JOURNEYS)  @join__imp
   messagePlatform: MessagePlatform
 }
 
-type Language @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_LANGUAGES, key: "id")  @join__type(graph: API_MEDIA, key: "id", extension: true)  {
+type Language @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id")  @join__type(graph: API_MEDIA, key: "id", extension: true)  {
   id: ID!
   bcp47: String @join__field(graph: API_LANGUAGES) 
   iso3: String @join__field(graph: API_LANGUAGES) 
@@ -1576,7 +1583,7 @@ type IntegrationGrowthSpacesRoute @join__type(graph: API_JOURNEYS)  {
   name: String!
 }
 
-type Tag @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_MEDIA, key: "id")  {
+type Tag @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id")  {
   id: ID!
   parentId: ID @join__field(graph: API_MEDIA) 
   name(languageId: ID, primary: Boolean) : [TagName!]! @join__field(graph: API_MEDIA) 
@@ -1872,7 +1879,7 @@ type UserInvite @join__type(graph: API_JOURNEYS, key: "id")  {
   removedAt: DateTime
 }
 
-type User @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
+type User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
   id: ID!
   mediaUserRoles: [MediaRole!]! @join__field(graph: API_MEDIA) 
   firstName: String! @join__field(graph: API_USERS) 
@@ -2076,6 +2083,36 @@ type Translation @join__type(graph: API_JOURNEYS)  {
   primary: Boolean!
 }
 
+type CloudflareVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
+  id: ID!
+  primaryLanguageId: ID
+  source: VideoBlockSource @join__field(graph: API_JOURNEYS_MODERN, type: "VideoBlockSource!")  @join__field(graph: API_MEDIA, type: "VideoBlockSource") 
+  uploadUrl: String @join__field(graph: API_MEDIA) 
+  userId: ID! @join__field(graph: API_MEDIA) 
+  createdAt: Date! @join__field(graph: API_MEDIA) 
+  readyToStream: Boolean! @join__field(graph: API_MEDIA) 
+}
+
+type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
+  id: ID!
+  primaryLanguageId: ID
+  source: VideoBlockSource @join__field(graph: API_JOURNEYS_MODERN, type: "VideoBlockSource!")  @join__field(graph: API_MEDIA, type: "VideoBlockSource") 
+  assetId: String @join__field(graph: API_MEDIA) 
+  duration: Int @join__field(graph: API_MEDIA) 
+  uploadId: String @join__field(graph: API_MEDIA) 
+  playbackId: String @join__field(graph: API_MEDIA) 
+  uploadUrl: String @join__field(graph: API_MEDIA) 
+  userId: ID! @join__field(graph: API_MEDIA) 
+  createdAt: Date! @join__field(graph: API_MEDIA) 
+  readyToStream: Boolean! @join__field(graph: API_MEDIA) 
+}
+
+type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {
+  id: ID!
+  primaryLanguageId: ID
+  source: VideoBlockSource!
+}
+
 type AudioPreview @join__type(graph: API_LANGUAGES)  {
   language: Language!
   value: String!
@@ -2157,7 +2194,7 @@ type BibleCitation @join__type(graph: API_MEDIA)  {
   bibleBook: BibleBook!
   chapterStart: Int!
   chapterEnd: Int
-  verseStart: Int!
+  verseStart: Int
   verseEnd: Int
   video: Video!
 }
@@ -2184,14 +2221,6 @@ type CloudflareR2 @join__type(graph: API_MEDIA)  {
   publicUrl: String
   createdAt: Date!
   updatedAt: Date!
-}
-
-type CloudflareVideo @join__type(graph: API_MEDIA)  {
-  id: ID!
-  uploadUrl: String
-  userId: ID!
-  createdAt: Date!
-  readyToStream: Boolean!
 }
 
 type ForeignKeyConstraintError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
@@ -2246,14 +2275,6 @@ type MutationShortLinkDomainUpdateSuccess @join__type(graph: API_MEDIA)  {
 
 type MutationShortLinkUpdateSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLink!
-}
-
-type MuxVideo @join__type(graph: API_MEDIA)  {
-  id: ID!
-  uploadUrl: String
-  userId: ID!
-  createdAt: Date!
-  readyToStream: Boolean!
 }
 
 type NotFoundError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
@@ -2552,12 +2573,14 @@ type VideoTitle @join__type(graph: API_MEDIA)  {
 
 type VideoVariant @join__type(graph: API_MEDIA)  {
   id: ID!
+  videoId: ID
   hls: String
   dash: String
   share: String
   downloadable: Boolean!
   downloads: [VideoVariantDownload!]!
   duration: Int!
+  lengthInMilliseconds: Int!
   language: Language!
   videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean) : [VideoSubtitle!]!
@@ -2575,6 +2598,12 @@ type VideoVariantDownload @join__type(graph: API_MEDIA)  {
   height: Int!
   width: Int!
   url: String!
+}
+
+type Youtube @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
+  id: ID!
+  primaryLanguageId: ID
+  source: VideoBlockSource
 }
 
 type ZodError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
@@ -2619,6 +2648,8 @@ interface Integration @join__type(graph: API_JOURNEYS)  {
 }
 
 union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMember(graph: API_ANALYTICS, member: "Error")  @join__unionMember(graph: API_ANALYTICS, member: "MutationSiteCreateSuccess")  = Error | MutationSiteCreateSuccess
+
+union MediaVideo @join__type(graph: API_JOURNEYS_MODERN)  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "CloudflareVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "MuxVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "Video")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "YouTube")  = CloudflareVideo | MuxVideo | Video | YouTube
 
 union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
 
@@ -2797,11 +2828,11 @@ enum TypographyAlign @join__type(graph: API_JOURNEYS)  {
   right @join__enumValue(graph: API_JOURNEYS) 
 }
 
-enum VideoBlockSource @join__type(graph: API_JOURNEYS)  {
-  internal @join__enumValue(graph: API_JOURNEYS) 
-  youTube @join__enumValue(graph: API_JOURNEYS) 
-  cloudflare @join__enumValue(graph: API_JOURNEYS) 
-  mux @join__enumValue(graph: API_JOURNEYS) 
+enum VideoBlockSource @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA)  {
+  internal @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
+  youTube @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
+  cloudflare @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
+  mux @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN)  @join__enumValue(graph: API_MEDIA) 
 }
 
 enum VideoBlockObjectFit @join__type(graph: API_JOURNEYS)  {
@@ -4190,6 +4221,7 @@ input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {
   dash: String
   share: String
   duration: Int
+  lengthInMilliseconds: Int
   languageId: String!
   slug: String!
   downloadable: Boolean!
@@ -4223,6 +4255,7 @@ input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
   dash: String
   share: String
   duration: Int
+  lengthInMilliseconds: Int
   languageId: String
   slug: String
   downloadable: Boolean

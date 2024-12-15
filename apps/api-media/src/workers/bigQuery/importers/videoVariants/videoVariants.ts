@@ -17,6 +17,7 @@ const videoVariantSchema = z.object({
     .custom()
     .transform(String)
     .transform<number>((value: string) => Math.round(Number(value))),
+  lengthInMilliseconds: z.number().nullable(),
   languageId: z.number().transform(String),
   videoId: z.string(),
   slug: z.string(),
@@ -79,6 +80,7 @@ function transform(
     dash: videoVariant.dash,
     share: videoVariant.share,
     duration: videoVariant.duration,
+    lengthInMilliseconds: videoVariant.lengthInMilliseconds,
     languageId: videoVariant.languageId,
     videoId: videoVariant.videoId,
     edition: videoVariant.edition,

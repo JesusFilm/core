@@ -1,15 +1,15 @@
 import { useSortable } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
 import IconButton, { IconButtonProps } from '@mui/material/IconButton'
+import ListItem from '@mui/material/ListItem'
 import Stack from '@mui/material/Stack'
+import { SxProps } from '@mui/material/styles'
 import SvgIcon, { SvgIconProps } from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-import { CSSProperties, MouseEvent, ReactElement, useMemo } from 'react'
+import { MouseEvent, ReactElement, useMemo } from 'react'
 
 import Drag from '@core/shared/ui/icons/Drag'
-
-import { useEdit } from '../../../app/[locale]/(dashboard)/videos/[videoId]/_EditProvider'
 
 import { OrderedItemIcons } from './OrderedItemIcons'
 import { OrderedItemMenu } from './OrderedItemMenu'
@@ -17,6 +17,7 @@ import { OrderedItemMenu } from './OrderedItemMenu'
 interface OrderedItemProps {
   id: string
   label: string
+  subtitle?: string
   idx: number
   img?: { src: string; alt: string }
   onClick?: (id: string) => void
@@ -33,18 +34,19 @@ interface OrderedItemProps {
       icon?: SvgIconProps
     }
   }>
-  virtualStyles?: CSSProperties
+  sx?: SxProps
 }
 
 export function OrderedItem({
   id,
   label,
+  subtitle,
   idx,
   img,
   onClick,
   menuActions,
   iconButtons,
-  virtualStyles
+  sx
 }: OrderedItemProps): ReactElement {
   const {
     attributes,
@@ -59,15 +61,12 @@ export function OrderedItem({
       index: idx
     }
   })
-  const {
-    state: { isEdit }
-  } = useEdit()
   const style =
     transform != null
       ? { transform: `translate3d(0px, ${transform.y}px, 0)`, transition }
       : undefined
 
-  function handleClick(e: MouseEvent<HTMLDivElement>): void {
+  function handleClick(e: MouseEvent<HTMLLIElement>): void {
     if (e.currentTarget !== e.target) return
     onClick?.(id)
   }
@@ -83,16 +82,17 @@ export function OrderedItem({
   )
 
   return (
-    <Stack
+    <ListItem
       onClick={handleClick}
       data-testid={`OrderedItem-${idx}`}
       id={id}
       ref={setNodeRef}
       {...attributes}
-      direction="row"
-      gap={2}
       sx={{
         ...style,
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 2,
         alignItems: 'center',
         border: '1px solid',
         borderColor: 'divider',
@@ -100,19 +100,35 @@ export function OrderedItem({
         p: 1,
         borderRadius: 1,
         width: '100%',
-        ...virtualStyles
+        ...sx
       }}
     >
       <IconButton
-        disabled={!isEdit}
+        size="large"
+        disableRipple
         data-testid={`OrderedItemDragHandle-${idx}`}
-        sx={{ cursor: 'move' }}
+        sx={{
+          backgroundColor: 'transparent',
+          cursor: 'move',
+          border: '0px',
+          '&:active': { backgroundColor: 'transparent' },
+          '&:hover': { backgroundColor: 'transparent' }
+        }}
         aria-label="ordered-item-drag-handle"
         ref={setActivatorNodeRef}
         {...listeners}
       >
-        <Drag fontSize="large" />
+        <Drag
+          fontSize="large"
+          sx={{
+            '&.MuiSvgIcon-root': {
+              width: '30px !important',
+              height: '30px !important'
+            }
+          }}
+        />
       </IconButton>
+
       {img != null && (
         <Box
           sx={{
@@ -133,15 +149,23 @@ export function OrderedItem({
           />
         </Box>
       )}
-      <Typography variant="subtitle2">{`${idx + 1}. ${label}`}</Typography>
+      <Box>
+        <Typography variant="subtitle2">{`${idx + 1}. ${label}`}</Typography>
+        {subtitle != null && (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+          >{`${subtitle}`}</Typography>
+        )}
+      </Box>
       <Stack sx={{ ml: 'auto' }} flexDirection="row">
-        {iconMemoButtons != null && iconMemoButtons.length > 0 && isEdit && (
+        {iconMemoButtons != null && iconMemoButtons.length > 0 && (
           <OrderedItemIcons iconButtons={iconMemoButtons} />
         )}
-        {menuActionButtons != null &&
-          menuActionButtons.length > 0 &&
-          isEdit && <OrderedItemMenu actions={menuActionButtons} id={id} />}
+        {menuActionButtons != null && menuActionButtons.length > 0 && (
+          <OrderedItemMenu actions={menuActionButtons} id={id} />
+        )}
       </Stack>
-    </Stack>
+    </ListItem>
   )
 }

@@ -1,7 +1,6 @@
 'use client'
 
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
@@ -13,20 +12,15 @@ import { ReactElement, SyntheticEvent, useState } from 'react'
 
 import { PublishedChip } from '../../../../../../components/PublishedChip'
 import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
-import { useEdit } from '../_EditProvider'
 
-import { Children } from './Children'
-import { Editions } from './Editions'
 import { Metadata } from './Metadata'
 import { TabContainer } from './Tabs/TabContainer'
 import { TabLabel } from './Tabs/TabLabel'
 import { Variants } from './Variants'
+import { VideoChildren } from './VideoChildren'
+import { getVideoChildrenLabel } from './VideoChildren/getVideoChildrenLabel'
 
 export function VideoView(): ReactElement {
-  const {
-    state: { isEdit },
-    dispatch
-  } = useEdit()
   const t = useTranslations()
   const params = useParams<{ videoId: string; locale: string }>()
   const [tabValue, setTabValue] = useState(0)
@@ -34,14 +28,18 @@ export function VideoView(): ReactElement {
     variables: { videoId: params?.videoId as string }
   })
   const video = data?.adminVideo
-
-  function handleEdit(): void {
-    dispatch({ type: 'SetEditStateAction', isEdit: !isEdit })
-  }
+  const videoTitle = data?.adminVideo.title[0].value
 
   function handleTabChange(_e: SyntheticEvent, newValue: number): void {
     setTabValue(newValue)
   }
+
+  const showVideoChildren: boolean =
+    video?.label === 'collection' ||
+    video?.label === 'featureFilm' ||
+    video?.label === 'series'
+
+  const videoLabel = getVideoChildrenLabel(video?.label)
 
   return (
     <Stack
@@ -51,21 +49,14 @@ export function VideoView(): ReactElement {
     >
       <Stack
         gap={2}
-        direction="row"
-        flexWrap="wrap"
-        sx={{ mb: 2, alignItems: 'center' }}
+        sx={{
+          mb: 2,
+          alignItems: { xs: 'start', sm: 'center' },
+          flexDirection: { xs: 'col', sm: 'row' }
+        }}
       >
-        {isEdit && <Typography variant="h4">{t('Editing')} :</Typography>}
-        <Typography variant="h4">{data?.adminVideo.title[0].value}</Typography>
+        <Typography variant="h4">{videoTitle}</Typography>
         <PublishedChip published={data?.adminVideo.published ?? false} />
-        <Button
-          onClick={handleEdit}
-          variant="outlined"
-          size="small"
-          sx={{ ml: 'auto', width: 'min-width' }}
-        >
-          {!isEdit ? t('Edit') : t('Cancel')}
-        </Button>
       </Stack>
       <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
         <Box width="100%">
@@ -78,37 +69,42 @@ export function VideoView(): ReactElement {
                 onChange={handleTabChange}
                 aria-label="video-edit-tabs"
               >
-                <Tab label={<TabLabel label="Metadata" />} />
+                <Tab value={0} label={<TabLabel label="Metadata" />} />
+                {showVideoChildren && videoLabel != null && (
+                  <Tab
+                    value={1}
+                    label={
+                      <TabLabel
+                        label={videoLabel}
+                        count={video?.children?.length}
+                      />
+                    }
+                  />
+                )}
                 <Tab
+                  value={2}
                   label={
                     <TabLabel
-                      label="Children"
-                      count={video?.children?.length}
-                    />
-                  }
-                />
-                <Tab
-                  label={
-                    <TabLabel
-                      label="Variants"
+                      label={t('Audio Languages')}
                       count={video?.variants?.length}
                     />
                   }
                 />
-                <Tab label={<TabLabel label="Editions" />} />
               </Tabs>
               <Divider sx={{ mb: 4 }} />
               <TabContainer value={tabValue} index={0}>
                 {video != null && <Metadata video={video} loading={loading} />}
               </TabContainer>
               <TabContainer value={tabValue} index={1}>
-                <Children childVideos={video?.children ?? []} />
+                {showVideoChildren && videoLabel != null && (
+                  <VideoChildren
+                    childVideos={video?.children ?? []}
+                    label={videoLabel}
+                  />
+                )}
               </TabContainer>
               <TabContainer value={tabValue} index={2}>
                 <Variants variants={video?.variants} />
-              </TabContainer>
-              <TabContainer value={tabValue} index={3}>
-                <Editions editions={[]} />
               </TabContainer>
             </>
           )}

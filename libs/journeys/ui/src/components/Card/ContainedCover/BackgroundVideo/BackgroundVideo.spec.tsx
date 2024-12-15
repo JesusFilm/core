@@ -51,6 +51,29 @@ const video: TreeBlock<VideoFields> = {
     },
     variantLanguages: []
   },
+  mediaVideo: {
+    __typename: 'Video',
+    id: '5_0-NUA0201-0-0',
+    title: [
+      {
+        __typename: 'VideoTitle',
+        value: 'FallingPlates'
+      }
+    ],
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
+    variant: {
+      __typename: 'VideoVariant',
+      id: '5_0-NUA0201-0-0-529',
+      hls: 'https://arc.gt/hls/5_0-NUA0201-0-0/529'
+    },
+    variantLanguages: []
+  },
   posterBlockId: null,
   children: []
 }

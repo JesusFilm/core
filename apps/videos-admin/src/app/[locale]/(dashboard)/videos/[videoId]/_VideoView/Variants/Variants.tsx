@@ -1,5 +1,6 @@
+import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { FixedSizeList } from 'react-window'
 
 import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
@@ -7,7 +8,16 @@ import { Section } from '../Section'
 
 import { VariantCard } from './VariantCard'
 
-const ITEM_SIZE = 80
+const VariantDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "VariantDialog" */
+      './VariantDialog'
+    ).then((mod) => mod.VariantDialog),
+  { ssr: false }
+)
+
+const ITEM_SIZE = 75
 
 export function Variants({
   variants
@@ -15,6 +25,19 @@ export function Variants({
   variants?: GetAdminVideoVariant[]
 }): ReactElement {
   const t = useTranslations()
+  const [selectedVariant, setSelectedVariant] =
+    useState<GetAdminVideoVariant | null>(null)
+  const [open, setOpen] = useState<boolean | null>(null)
+
+  function handleCardClick(variant: GetAdminVideoVariant): void {
+    setSelectedVariant(variant)
+    setOpen(true)
+  }
+
+  function handleClose(): void {
+    setOpen(null)
+  }
+
   const [size, setSize] = useState<{
     height: number
     width: number
@@ -22,9 +45,8 @@ export function Variants({
     height: 0,
     width: 0
   })
-
   function getVariantSectionDimensions(): void {
-    const section = document.getElementById('Variants-section')
+    const section = document.getElementById('Audio Languages-section')
     if (section == null) return
     const { width, height } = section.getBoundingClientRect()
     setSize({ width, height })
@@ -38,32 +60,49 @@ export function Variants({
     }
   }, [])
 
+  const variantLanguagesMap: Map<string, GetAdminVideoVariant> = useMemo(() => {
+    return new Map(variants?.map((variant) => [variant.language.id, variant]))
+  }, [variants])
+
   return (
     <>
       {variants != null && (
         <Section
           boxProps={{
-            sx: { p: 0, height: 'calc(100vh - 400px)' }
+            sx: { p: 2, height: 'calc(100vh - 400px)' }
           }}
-          title={t('Variants')}
-          action={{
-            label: t('Create Variant'),
-            onClick: () => alert('Create variant')
-          }}
+          // if you change the title, change the element selected in the getVariantSectionDimensions function above
+          title={t('Audio Languages')}
+          variant="outlined"
         >
           <FixedSizeList
-            width={size.width}
-            height={size.height}
+            width={size.width - 20}
+            height={size.height - 90}
             itemData={variants}
             itemCount={variants.length}
             itemSize={ITEM_SIZE}
             overscanCount={10}
+            style={{
+              marginTop: 8
+            }}
           >
             {({ index, style, data: items }) => (
-              <VariantCard key={index} variant={items[index]} style={style} />
+              <VariantCard
+                variant={items[index]}
+                style={style}
+                onClick={handleCardClick}
+              />
             )}
           </FixedSizeList>
         </Section>
+      )}
+      {open != null && selectedVariant != null && (
+        <VariantDialog
+          open={open}
+          handleClose={handleClose}
+          variant={selectedVariant}
+          variantLanguagesMap={variantLanguagesMap}
+        />
       )}
     </>
   )

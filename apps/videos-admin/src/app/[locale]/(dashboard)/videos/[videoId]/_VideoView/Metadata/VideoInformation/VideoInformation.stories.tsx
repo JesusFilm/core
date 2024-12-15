@@ -6,7 +6,6 @@ import { ComponentProps } from 'react'
 import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider, EditState } from '../../../_EditProvider'
 
 import { VideoInformation } from './VideoInfomation'
 
@@ -23,16 +22,12 @@ const meta: Meta<typeof VideoInformation> = {
 const mockVideo: AdminVideo =
   useAdminVideoMock['result']?.['data']?.['adminVideo']
 
-type Story = StoryObj<
-  ComponentProps<typeof VideoInformation> & { state: Partial<EditState> }
->
+type Story = StoryObj<ComponentProps<typeof VideoInformation>>
 
 const Template: Story = {
-  render: ({ state, video }) => (
+  render: ({ video }) => (
     <NextIntlClientProvider locale="en">
-      <EditProvider initialState={state}>
-        <VideoInformation video={video} />
-      </EditProvider>
+      <VideoInformation video={video} />
     </NextIntlClientProvider>
   )
 }
@@ -40,19 +35,6 @@ const Template: Story = {
 export const Default = {
   ...Template,
   args: {
-    state: {
-      isEdit: false
-    },
-    video: mockVideo
-  }
-}
-
-export const Editable = {
-  ...Template,
-  args: {
-    state: {
-      isEdit: true
-    },
     video: mockVideo
   }
 }
@@ -60,9 +42,6 @@ export const Editable = {
 export const Required = {
   ...Template,
   args: {
-    state: {
-      isEdit: true
-    },
     video: mockVideo
   },
   play: async () => {

@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useEdit } from '../../_EditProvider'
 import { Section } from '../Section'
 
 import { StudyQuestionsList } from './StudyQuestionsList'
@@ -22,9 +21,6 @@ interface MetadataProps {
 
 export function Metadata({ video, loading }: MetadataProps): ReactElement {
   const t = useTranslations()
-  const {
-    state: { isEdit }
-  } = useEdit()
 
   return (
     <Stack gap={2} data-testid="VideoMetadata">
@@ -34,19 +30,19 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
         </Box>
       ) : (
         <>
-          <Section title={t('Information')}>
+          <Section title={t('Information')} variant="outlined">
             <VideoInformation video={video} />
           </Section>
-          <Section title={t('Image')}>
-            <Stack gap={2}>
+          <Section title={t('Image')} variant="outlined">
+            <Stack gap={4}>
+              <VideoImage video={video} />
               <VideoImageAlt videoImageAlts={video.imageAlt} />
-              <VideoImage video={video} isEdit={isEdit} />
             </Stack>
           </Section>
-          <Section title={t('Snippet')}>
+          <Section title={t('Short Description')} variant="outlined">
             <VideoSnippet videoSnippets={video.snippet} />
           </Section>
-          <Section title={t('Description')}>
+          <Section title={t('Description')} variant="outlined">
             <VideoDescription videoDescriptions={video.description} />
           </Section>
           <StudyQuestionsList studyQuestions={video.studyQuestions} />

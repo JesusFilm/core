@@ -4,7 +4,6 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider } from '../../../_EditProvider'
 
 import { UPDATE_VIDEO_INFORMATION, VideoInformation } from './VideoInfomation'
 
@@ -21,8 +20,7 @@ describe('VideoInformation', () => {
           id: '1_jf-0-0',
           slug: 'jesus',
           published: true,
-          label: 'featureFilm',
-          noIndex: false
+          label: 'featureFilm'
         }
       }
     },
@@ -36,8 +34,7 @@ describe('VideoInformation', () => {
           id: '1_jf-0-0',
           slug: 'jesus',
           published: true,
-          label: 'featureFilm',
-          noIndex: false
+          label: 'featureFilm'
         }
       }
     }))
@@ -50,53 +47,11 @@ describe('VideoInformation', () => {
     jest.clearAllMocks()
   })
 
-  it('should disable all fields if not in edit mode', () => {
+  it('should show disabled save button if values not changed', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: false }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
-        </NextIntlClientProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByRole('textbox', { name: 'Title' })).toBeDisabled()
-    expect(screen.getByRole('textbox', { name: 'Slug' })).toBeDisabled()
-    expect(screen.getByRole('combobox', { name: 'Status' })).toHaveAttribute(
-      'aria-disabled',
-      'true'
-    )
-    expect(screen.getByRole('combobox', { name: 'Label' })).toHaveAttribute(
-      'aria-disabled',
-      'true'
-    )
-    expect(screen.getByRole('checkbox', { name: 'No Index' })).toBeDisabled()
-  })
-
-  it('should not show save button when not in edit mode', () => {
-    render(
-      <MockedProvider>
-        <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: false }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
-        </NextIntlClientProvider>
-      </MockedProvider>
-    )
-
-    expect(
-      screen.queryByRole('button', { name: 'Save' })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should show disabled save button in edit mode by default', () => {
-    render(
-      <MockedProvider>
-        <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
+          <VideoInformation video={mockVideo} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -108,9 +63,7 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
+          <VideoInformation video={mockVideo} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -128,18 +81,16 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
+          <VideoInformation video={mockVideo} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Status' }))
-    fireEvent.click(screen.getByRole('option', { name: 'Unpublished' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Draft' }))
     expect(screen.getByRole('combobox', { name: 'Status' })).toHaveTextContent(
-      'Unpublished'
+      'Draft'
     )
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
   })
@@ -148,9 +99,7 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
+          <VideoInformation video={mockVideo} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -164,31 +113,11 @@ describe('VideoInformation', () => {
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
   })
 
-  it('should enable save button if no index has been changed', async () => {
-    render(
-      <MockedProvider>
-        <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
-        </NextIntlClientProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
-    expect(screen.getByRole('checkbox', { name: 'No Index' })).not.toBeChecked()
-    fireEvent.click(screen.getByRole('checkbox', { name: 'No Index' }))
-    expect(screen.getByRole('checkbox', { name: 'No Index' })).toBeChecked()
-    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
-  })
-
   it('should update video information on submit', async () => {
     render(
       <MockedProvider mocks={[mockUpdateVideoInformation]}>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
+          <VideoInformation video={mockVideo} />
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -212,9 +141,7 @@ describe('VideoInformation', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <EditProvider initialState={{ isEdit: true }}>
-            <VideoInformation video={mockVideo} />
-          </EditProvider>
+          <VideoInformation video={mockVideo} />
         </NextIntlClientProvider>
       </MockedProvider>
     )

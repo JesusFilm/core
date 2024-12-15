@@ -4,7 +4,6 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider } from '../../_EditProvider'
 
 import { Metadata } from './Metadata'
 
@@ -16,9 +15,7 @@ describe('Metadata', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <EditProvider>
-            <Metadata loading video={mockAdminVideo} />
-          </EditProvider>
+          <Metadata loading video={mockAdminVideo} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -30,16 +27,14 @@ describe('Metadata', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <EditProvider>
-            <Metadata loading={false} video={mockAdminVideo} />
-          </EditProvider>
+          <Metadata loading={false} video={mockAdminVideo} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
 
     expect(screen.getByText('Information')).toBeInTheDocument()
     expect(screen.getByText('Image')).toBeInTheDocument()
-    expect(screen.getByText('Snippet')).toBeInTheDocument()
+    expect(screen.getByText('Short Description')).toBeInTheDocument()
     expect(screen.getByText('Description')).toBeInTheDocument()
     expect(screen.getByText('Study Questions')).toBeInTheDocument()
   })

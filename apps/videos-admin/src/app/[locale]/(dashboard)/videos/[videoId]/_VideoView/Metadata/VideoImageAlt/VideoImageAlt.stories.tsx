@@ -6,7 +6,6 @@ import { ComponentProps } from 'react'
 import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
 import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { EditProvider, EditState } from '../../../_EditProvider'
 
 import { VideoImageAlt } from './VideoImageAlt'
 
@@ -23,16 +22,12 @@ const meta: Meta<typeof VideoImageAlt> = {
 const mockVideoImageAlt: VideoImageAlts =
   useAdminVideoMock['result']?.['data']?.['adminVideo']?.['imageAlt']
 
-type Story = StoryObj<
-  ComponentProps<typeof VideoImageAlt> & { state: Partial<EditState> }
->
+type Story = StoryObj<ComponentProps<typeof VideoImageAlt>>
 
 const Template: Story = {
-  render: ({ state, videoImageAlts }) => (
+  render: ({ videoImageAlts }) => (
     <NextIntlClientProvider locale="en">
-      <EditProvider initialState={state}>
-        <VideoImageAlt videoImageAlts={videoImageAlts} />
-      </EditProvider>
+      <VideoImageAlt videoImageAlts={videoImageAlts} />
     </NextIntlClientProvider>
   )
 }
@@ -40,19 +35,6 @@ const Template: Story = {
 export const Default = {
   ...Template,
   args: {
-    state: {
-      isEdit: false
-    },
-    videoImageAlts: mockVideoImageAlt
-  }
-}
-
-export const Editable = {
-  ...Template,
-  args: {
-    state: {
-      isEdit: true
-    },
     videoImageAlts: mockVideoImageAlt
   }
 }
@@ -60,9 +42,6 @@ export const Editable = {
 export const Required = {
   ...Template,
   args: {
-    state: {
-      isEdit: true
-    },
     videoImageAlts: mockVideoImageAlt
   },
   play: async () => {
