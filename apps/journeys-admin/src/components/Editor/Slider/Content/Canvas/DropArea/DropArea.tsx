@@ -111,8 +111,8 @@ export function DropArea({ children, blocks }: DropAreaProps): ReactElement {
       <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
         {children}
       </SortableContext>
-      <DragOverlay dropAnimation={null}>
-        {activeItem != null ? (
+      {activeItem != null && (
+        <DragOverlay dropAnimation={null}>
           <Box
             sx={{
               ml: -8,
@@ -128,8 +128,8 @@ export function DropArea({ children, blocks }: DropAreaProps): ReactElement {
           >
             <BlockRenderer block={activeItem} />
           </Box>
-        ) : null}
-      </DragOverlay>
+        </DragOverlay>
+      )}
     </DndContext>
   )
 }
