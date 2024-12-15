@@ -10,7 +10,7 @@ import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import DragIcon from '@core/shared/ui/icons/Drag'
 
-import { BlockFields } from '../../../../../../../__generated__/BlockFields'
+import { DropArea } from '../DropArea'
 import { QuickControls } from '../QuickControls'
 
 export function SelectableWrapper({
@@ -21,9 +21,7 @@ export function SelectableWrapper({
   const [isHovering, setIsHovering] = useState(false)
   const selectableRef = useRef<HTMLDivElement>(null)
   const [dragId, setDragId] = useState<string | null>(null)
-  const [activeDragBlock, setActiveDragBlock] = useState<
-    TreeBlock<BlockFields> | undefined
-  >(undefined)
+  const [isDuringDrag, setIsDuringDrag] = useState(false)
   const [isAbove, setIsAbove] = useState(false)
   const {
     state: { selectedBlock, selectedStep },
@@ -35,26 +33,31 @@ export function SelectableWrapper({
       id: block.id
     })
 
-  const blockIds = (
-    selectedStep?.children[0].children.filter(
-      (block) =>
-        block != null &&
-        block.__typename !== 'StepBlock' &&
-        block.__typename !== 'CardBlock' &&
-        block.__typename !== 'IconBlock' &&
-        block.parentOrder !== null
-    ) ?? []
-  ).map((block) => block.id)
+  const isVideoBlock = block?.__typename === 'VideoBlock'
+  const isRadioOptionBlock = block?.__typename === 'RadioOptionBlock'
+
+  const blockIds = isRadioOptionBlock
+    ? selectedStep?.children[0].children
+        .find((parentBlock) => parentBlock.id === block.parentBlockId)
+        ?.children.map((block) => block.id)
+    : (
+        selectedStep?.children[0].children.filter(
+          (block) =>
+            block != null &&
+            block.__typename !== 'StepBlock' &&
+            block.__typename !== 'CardBlock' &&
+            block.__typename !== 'IconBlock' &&
+            block.parentOrder !== null
+        ) ?? []
+      ).map((block) => block.id)
 
   useDndMonitor({
     onDragOver(e: DragOverEvent): void {
+      if (!isDuringDrag) {
+        setIsDuringDrag(true)
+      }
       const { active, over } = e
-      setActiveDragBlock(
-        selectedStep?.children[0].children.find(
-          (block) => block.id === (active.id as string)
-        )
-      )
-      if (over != null && active.id !== over.id) {
+      if (over != null && active.id !== over.id && blockIds != null) {
         setDragId(over.id as string)
         const overIndex = blockIds.indexOf(over.id as string)
         const activeIndex = blockIds.indexOf(active.id as string)
@@ -64,10 +67,12 @@ export function SelectableWrapper({
       }
     },
     onDragEnd() {
-      setActiveDragBlock(undefined)
+      setIsDuringDrag(false)
       setDragId(null)
     }
   })
+
+  console.log(isDuringDrag)
 
   const isSelectable =
     selectedBlock != null &&
@@ -164,9 +169,6 @@ export function SelectableWrapper({
     setOpen(selectedBlock?.id === block.id)
   }, [selectedBlock, block])
 
-  const isVideoBlock = block?.__typename === 'VideoBlock'
-  const isRadioOptionBlock = block?.__typename === 'RadioOptionBlock'
-
   return isSelectable ? (
     <Box
       className={
@@ -174,7 +176,7 @@ export function SelectableWrapper({
           ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
           : ''
       }
-      ref={!isRadioOptionBlock ? setNodeRef : undefined}
+      ref={setNodeRef}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       sx={{
@@ -216,48 +218,47 @@ export function SelectableWrapper({
             sx={{
               width: '315px',
               height: '2px',
-              mt: '6px',
-              mb: '6px',
+              mt: isRadioOptionBlock ? '0px' : '6px',
+              mb: isRadioOptionBlock ? '0px' : '6px',
               backgroundColor: '#C52D3A',
               zIndex: 0,
               borderRadius: '1px'
             }}
           />
         </Popper>
-        {children}
+        {block.__typename === 'RadioQuestionBlock' ? (
+          <DropArea blocks={block.children}>{children}</DropArea>
+        ) : (
+          children
+        )}
       </Box>
       <QuickControls
         open={open}
         anchorEl={selectableRef.current}
         isVideoBlock={isVideoBlock}
       />
-      {!isVideoBlock && (
-        <Popper
-          open={
-            selectedBlock.__typename === 'StepBlock' ||
-            selectedBlock.__typename === 'CardBlock'
-          }
-          anchorEl={selectableRef.current}
-          placement={isRadioOptionBlock ? 'right' : 'left'}
-          {...listeners}
-          ref={setActivatorNodeRef}
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
-        >
-          <DragIcon
-            fontSize="large"
-            style={{
-              position: 'absolute',
-              left: isRadioOptionBlock ? undefined : '-30px',
-              right: isRadioOptionBlock ? '0px' : undefined,
-              top: '-18px',
-              cursor: isDragging ? 'grabbing' : 'grab',
-              opacity: activeDragBlock == null && isHovering ? 1 : 0,
-              color: isRadioOptionBlock ? '#000000' : 'secondary.dark'
-            }}
-          />
-        </Popper>
-      )}
+      <Popper
+        open
+        anchorEl={selectableRef.current}
+        placement={isRadioOptionBlock ? 'right' : 'left'}
+        {...listeners}
+        ref={setActivatorNodeRef}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+      >
+        <DragIcon
+          fontSize="large"
+          style={{
+            position: 'absolute',
+            left: isRadioOptionBlock ? undefined : '-30px',
+            right: isRadioOptionBlock ? '0px' : undefined,
+            top: '-18px',
+            cursor: 'grab',
+            opacity: isHovering && !isDuringDrag ? 1 : 0,
+            color: isRadioOptionBlock ? '#000000' : 'secondary.dark'
+          }}
+        />
+      </Popper>
     </Box>
   ) : (
     children

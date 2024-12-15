@@ -3,17 +3,20 @@ import {
   DndContext,
   DragOverEvent,
   DragOverlay,
-  DragStartEvent
+  DragStartEvent,
+  closestCorners
 } from '@dnd-kit/core'
 import { SortableContext } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
 import { ReactElement, ReactNode, useMemo, useState } from 'react'
 
+import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
+import { BlockFields } from '../../../../../../../__generated__/BlockFields'
 import {
   getNewParentOrder,
   useBlockOrderUpdateMutation
@@ -21,9 +24,10 @@ import {
 
 interface DropAreaProps {
   children: ReactNode
+  blocks: TreeBlock<BlockFields>[]
 }
 
-export function DropArea({ children }: DropAreaProps): ReactElement {
+export function DropArea({ children, blocks }: DropAreaProps): ReactElement {
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
   const [active, setActive] = useState<Active | null>(null)
 
@@ -33,13 +37,12 @@ export function DropArea({ children }: DropAreaProps): ReactElement {
   const { add } = useCommand()
 
   const activeItem = useMemo(
-    () =>
-      selectedStep?.children[0].children.find((item) => item.id === active?.id),
-    [active?.id, selectedStep?.children]
+    () => blocks.find((item) => item.id === active?.id),
+    [active?.id, blocks]
   )
 
   const items =
-    selectedStep?.children[0].children.filter(
+    blocks.filter(
       (block) =>
         block != null &&
         block.__typename !== 'StepBlock' &&
@@ -100,16 +103,25 @@ export function DropArea({ children }: DropAreaProps): ReactElement {
   }
 
   return (
-    <DndContext onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
+    <DndContext
+      onDragEnd={handleDragEnd}
+      onDragStart={handleDragStart}
+      collisionDetection={closestCorners}
+    >
       <SortableContext items={itemIds}>{children}</SortableContext>
       <DragOverlay dropAnimation={null}>
         {activeItem != null ? (
           <Box
             sx={{
+              ml: -8,
+              pl: 8,
               transform:
                 activeItem.__typename === 'ButtonBlock'
                   ? 'translateY(-20px)'
-                  : 'auto'
+                  : activeItem.__typename === 'RadioOptionBlock'
+                    ? 'translateY(-4px) translateX(-4px)'
+                    : 'auto',
+              cursor: 'grabbing'
             }}
           >
             <BlockRenderer block={activeItem} />
