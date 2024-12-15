@@ -72,8 +72,6 @@ export function SelectableWrapper({
     }
   })
 
-  console.log(isDuringDrag)
-
   const isSelectable =
     selectedBlock != null &&
     block.__typename !== 'StepBlock' &&

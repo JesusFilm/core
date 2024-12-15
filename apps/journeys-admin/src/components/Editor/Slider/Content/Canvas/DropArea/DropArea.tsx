@@ -6,7 +6,7 @@ import {
   DragStartEvent,
   closestCorners
 } from '@dnd-kit/core'
-import { SortableContext } from '@dnd-kit/sortable'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
 import { ReactElement, ReactNode, useMemo, useState } from 'react'
 
@@ -108,7 +108,9 @@ export function DropArea({ children, blocks }: DropAreaProps): ReactElement {
       onDragStart={handleDragStart}
       collisionDetection={closestCorners}
     >
-      <SortableContext items={itemIds}>{children}</SortableContext>
+      <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
+        {children}
+      </SortableContext>
       <DragOverlay dropAnimation={null}>
         {activeItem != null ? (
           <Box
