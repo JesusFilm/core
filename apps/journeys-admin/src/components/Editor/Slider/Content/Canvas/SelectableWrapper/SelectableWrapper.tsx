@@ -208,7 +208,7 @@ export function SelectableWrapper({
       >
         <Popper
           open={block.id === dragId}
-          anchorEl={selectableRef.current}
+          anchorEl={selectableRef.current as HTMLDivElement}
           placement={isAbove ? 'bottom' : 'top'}
         >
           <Divider
@@ -237,7 +237,7 @@ export function SelectableWrapper({
       />
       <Popper
         open
-        anchorEl={selectableRef.current}
+        anchorEl={selectableRef.current as HTMLDivElement}
         placement={isRadioOptionBlock ? 'right' : 'left'}
         {...listeners}
         ref={setActivatorNodeRef}
