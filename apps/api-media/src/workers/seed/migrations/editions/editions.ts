@@ -60,12 +60,12 @@ async function* get1000Subtitles(): AsyncGenerator<VideoSubtitle[]> {
 }
 
 async function handleVariantsMigration(): Promise<void> {
-  const bar = new cliProgress.SingleBar(
+  const bar1 = new cliProgress.SingleBar(
     { format: ' {bar} | videoVariants | {value}/{total}' },
     cliProgress.Presets.shades_classic
   )
   const count = await prisma.videoVariant.count()
-  bar.start(count, 0)
+  bar1.start(count, 0)
 
   const variantsGenerator = get1000Variants()
   let variants = await variantsGenerator.next()
@@ -83,20 +83,20 @@ async function handleVariantsMigration(): Promise<void> {
           }
         })
       }
-      bar.increment()
+      bar1.increment()
     }
     variants = await variantsGenerator.next()
   }
-  bar.stop()
+  bar1.increment()
 }
 
 async function handleSubtitlesMigration(): Promise<void> {
-  const bar = new cliProgress.SingleBar(
+  const bar2 = new cliProgress.SingleBar(
     { format: ' {bar} | videoSubtitles | {value}/{total}' },
     cliProgress.Presets.shades_classic
   )
   const count = await prisma.videoSubtitle.count()
-  bar.start(count, 0)
+  bar2.start(count, 0)
 
   const subtitlesGenerator = get1000Subtitles()
   let subtitles = await subtitlesGenerator.next()
@@ -114,11 +114,11 @@ async function handleSubtitlesMigration(): Promise<void> {
           }
         })
       }
-      bar.increment()
+      bar2.increment()
     }
     subtitles = await subtitlesGenerator.next()
   }
-  bar.stop()
+  bar2.increment()
 }
 
 async function populateNullableEditionsFields(): Promise<void> {
