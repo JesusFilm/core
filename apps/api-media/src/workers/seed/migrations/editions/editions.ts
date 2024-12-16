@@ -108,7 +108,7 @@ async function handleSubtitlesMigration(): Promise<void> {
       }
     }
     fetched += subtitles.value.length
-    console.log(`processed ${fetched} variants out of ${count}`)
+    console.log(`processed ${fetched} subtitles out of ${count}`)
     subtitles = await subtitlesGenerator.next()
   }
 }
