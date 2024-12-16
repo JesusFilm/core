@@ -1,4 +1,3 @@
-import cliProgress from 'cli-progress'
 import { v4 as uuid } from 'uuid'
 
 import { VideoSubtitle, VideoVariant } from '.prisma/api-media-client'
@@ -9,7 +8,7 @@ async function* get1000Variants(): AsyncGenerator<VideoVariant[]> {
   let page = 0
   const take = 10000
   let skip = 0
-  let res = []
+  let res: VideoVariant[] = []
 
   console.log(`getting variants page: ${page}`)
   res = await prisma.videoVariant.findMany({
@@ -36,7 +35,7 @@ async function* get1000Subtitles(): AsyncGenerator<VideoSubtitle[]> {
   let page = 0
   const take = 10000
   let skip = 0
-  let res = []
+  let res: VideoSubtitle[] = []
 
   console.log(`getting subtitles page: ${page}`)
   res = await prisma.videoSubtitle.findMany({
@@ -60,12 +59,8 @@ async function* get1000Subtitles(): AsyncGenerator<VideoSubtitle[]> {
 }
 
 async function handleVariantsMigration(): Promise<void> {
-  const bar1 = new cliProgress.SingleBar(
-    { format: ' {bar} | videoVariants | {value}/{total}' },
-    cliProgress.Presets.shades_classic
-  )
+  let fetched: number = 0
   const count = await prisma.videoVariant.count()
-  bar1.start(count, 0)
 
   const variantsGenerator = get1000Variants()
   let variants = await variantsGenerator.next()
@@ -83,20 +78,17 @@ async function handleVariantsMigration(): Promise<void> {
           }
         })
       }
-      bar1.increment()
     }
+    fetched += variants.value.length
+    console.log(`processed ${fetched} variants out of ${count}`)
     variants = await variantsGenerator.next()
   }
-  bar1.increment()
 }
 
 async function handleSubtitlesMigration(): Promise<void> {
-  const bar2 = new cliProgress.SingleBar(
-    { format: ' {bar} | videoSubtitles | {value}/{total}' },
-    cliProgress.Presets.shades_classic
-  )
+  let fetched: number = 0
+
   const count = await prisma.videoSubtitle.count()
-  bar2.start(count, 0)
 
   const subtitlesGenerator = get1000Subtitles()
   let subtitles = await subtitlesGenerator.next()
@@ -114,11 +106,11 @@ async function handleSubtitlesMigration(): Promise<void> {
           }
         })
       }
-      bar2.increment()
     }
+    fetched += subtitles.value.length
+    console.log(`processed ${fetched} variants out of ${count}`)
     subtitles = await subtitlesGenerator.next()
   }
-  bar2.increment()
 }
 
 async function populateNullableEditionsFields(): Promise<void> {
