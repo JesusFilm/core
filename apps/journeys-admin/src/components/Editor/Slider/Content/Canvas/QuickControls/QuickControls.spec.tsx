@@ -19,7 +19,7 @@ describe('QuickControls', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <QuickControls open anchorEl={null} block={videoBlock} />
+          <QuickControls open anchorEl={null} isVideoBlock />
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -35,7 +35,7 @@ describe('QuickControls', () => {
       <SnackbarProvider>
         <MockedProvider>
           <EditorProvider initialState={{ selectedBlock: videoBlock }}>
-            <QuickControls open anchorEl={null} block={videoBlock} />
+            <QuickControls open anchorEl={null} isVideoBlock />
           </EditorProvider>
         </MockedProvider>
       </SnackbarProvider>
