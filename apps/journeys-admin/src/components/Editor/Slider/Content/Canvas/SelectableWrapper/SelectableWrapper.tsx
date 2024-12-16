@@ -174,6 +174,7 @@ export function SelectableWrapper({
           ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
           : ''
       }
+      data-testid={`SelectableWrapper-${block.id}`}
       ref={setNodeRef}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
@@ -197,7 +198,6 @@ export function SelectableWrapper({
     >
       <Box
         ref={selectableRef}
-        data-testid={`SelectableWrapper-${block.id}`}
         sx={{
           borderRadius
         }}
