@@ -59,9 +59,7 @@ async function* get1000Subtitles(): AsyncGenerator<VideoSubtitle[]> {
   }
 }
 
-async function handleVariantsMigration(): Promise<
-  { id: string; videoId: string; name: string }[]
-> {
+async function handleVariantsMigration(): Promise<void> {
   let fetched: number = 0
   const count = await prisma.videoVariant.count()
 
@@ -95,47 +93,40 @@ async function handleVariantsMigration(): Promise<
   console.log(
     `running create successful for variants, subtitles will do a look against the new entries`
   )
-  return filteredCreateMany
 }
 
-async function handleSubtitlesMigration(
-  createdEditions: { id: string; videoId: string; name: string }[]
-): Promise<void> {
+async function handleSubtitlesMigration(): Promise<void> {
   let fetched: number = 0
 
   const count = await prisma.videoSubtitle.count()
 
   const subtitlesGenerator = get1000Subtitles()
   let subtitles = await subtitlesGenerator.next()
-
   while (!subtitles.done) {
     for (const subtitle of subtitles.value) {
-      if (subtitle.videoId != null && subtitle.edition != null)
-        createdEditions.push({
-          id: uuid(),
-          videoId: subtitle.videoId,
-          name: subtitle.edition
+      const res = await prisma.videoEdition.findMany({
+        where: { videoId: subtitle.videoId, name: subtitle.edition }
+      })
+      if (res.length === 0) {
+        await prisma.videoEdition.create({
+          data: {
+            id: uuid(),
+            videoId: subtitle.videoId,
+            name: subtitle.edition
+          }
         })
+      }
     }
     fetched += subtitles.value.length
     console.log(`processed ${fetched} subtitles out of ${count}`)
     subtitles = await subtitlesGenerator.next()
   }
-  const filteredCreateMany = uniqWith(
-    createdEditions,
-    (dataA, dataB) =>
-      dataA.name === dataB.name && dataA.videoId === dataB.videoId
-  )
-  await prisma.videoEdition.createMany({
-    data: filteredCreateMany,
-    skipDuplicates: true
-  })
 }
 
 async function populateNullableEditionsFields(): Promise<void> {
   console.log('Starting the population of nullable fields...')
-  const createdEditions = await handleVariantsMigration()
-  await handleSubtitlesMigration(createdEditions)
+  await handleVariantsMigration()
+  await handleSubtitlesMigration()
   console.log('COMPLETE!!!')
 }
 
