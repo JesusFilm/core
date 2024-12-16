@@ -1,3 +1,4 @@
+import uniqWith from 'lodash/uniqWith'
 import { v4 as uuid } from 'uuid'
 
 import { VideoSubtitle, VideoVariant } from '.prisma/api-media-client'
@@ -58,65 +59,83 @@ async function* get1000Subtitles(): AsyncGenerator<VideoSubtitle[]> {
   }
 }
 
-async function handleVariantsMigration(): Promise<void> {
+async function handleVariantsMigration(): Promise<
+  { id: string; videoId: string; name: string }[]
+> {
   let fetched: number = 0
   const count = await prisma.videoVariant.count()
 
   const variantsGenerator = get1000Variants()
   let variants = await variantsGenerator.next()
+  const createManyData: { id: string; videoId: string; name: string }[] = []
   while (!variants.done) {
     for (const variant of variants.value) {
-      const res = await prisma.videoEdition.findMany({
-        where: { videoId: variant.videoId, name: variant.edition }
-      })
-      if (res.length === 0) {
-        await prisma.videoEdition.create({
-          data: {
-            id: uuid(),
-            videoId: variant.videoId,
-            name: variant.edition
-          }
+      if (variant.videoId != null && variant.edition != null)
+        createManyData.push({
+          id: uuid(),
+          videoId: variant.videoId,
+          name: variant.edition
         })
-      }
     }
+
     fetched += variants.value.length
     console.log(`processed ${fetched} variants out of ${count}`)
     variants = await variantsGenerator.next()
   }
+  const filteredCreateMany = uniqWith(
+    createManyData,
+    (dataA, dataB) =>
+      dataA.name === dataB.name && dataA.videoId === dataB.videoId
+  )
+  console.log(`running create many for variants`)
+  await prisma.videoEdition.createMany({
+    data: filteredCreateMany,
+    skipDuplicates: true
+  })
+  console.log(
+    `running create successful for variants, subtitles will do a look against the new entries`
+  )
+  return filteredCreateMany
 }
 
-async function handleSubtitlesMigration(): Promise<void> {
+async function handleSubtitlesMigration(
+  createdEditions: { id: string; videoId: string; name: string }[]
+): Promise<void> {
   let fetched: number = 0
 
   const count = await prisma.videoSubtitle.count()
 
   const subtitlesGenerator = get1000Subtitles()
   let subtitles = await subtitlesGenerator.next()
+
   while (!subtitles.done) {
     for (const subtitle of subtitles.value) {
-      const res = await prisma.videoEdition.findMany({
-        where: { videoId: subtitle.videoId, name: subtitle.edition }
-      })
-      if (res.length === 0) {
-        await prisma.videoEdition.create({
-          data: {
-            id: uuid(),
-            videoId: subtitle.videoId,
-            name: subtitle.edition
-          }
+      if (subtitle.videoId != null && subtitle.edition != null)
+        createdEditions.push({
+          id: uuid(),
+          videoId: subtitle.videoId,
+          name: subtitle.edition
         })
-      }
     }
     fetched += subtitles.value.length
     console.log(`processed ${fetched} subtitles out of ${count}`)
     subtitles = await subtitlesGenerator.next()
   }
+  const filteredCreateMany = uniqWith(
+    createdEditions,
+    (dataA, dataB) =>
+      dataA.name === dataB.name && dataA.videoId === dataB.videoId
+  )
+  await prisma.videoEdition.createMany({
+    data: filteredCreateMany,
+    skipDuplicates: true
+  })
 }
 
 async function populateNullableEditionsFields(): Promise<void> {
   console.log('Starting the population of nullable fields...')
-  await handleVariantsMigration()
-  await handleSubtitlesMigration()
+  const createdEditions = await handleVariantsMigration()
+  await handleSubtitlesMigration(createdEditions)
   console.log('COMPLETE!!!')
 }
 
