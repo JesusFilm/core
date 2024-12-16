@@ -1,5 +1,3 @@
-//
-
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 
@@ -34,7 +32,7 @@ describe('JourneyQuickSettings', () => {
     expect(screen.getByRole('button', { name: 'Share' })).toBeInTheDocument()
   })
 
-  it('should render journeyquicksettingsgoals on goals tab click', () => {
+  it('should render journeyQuickSettingsGoals on goals tab click', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
