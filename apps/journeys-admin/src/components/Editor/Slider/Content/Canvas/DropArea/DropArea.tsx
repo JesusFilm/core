@@ -123,7 +123,9 @@ export function DropArea({ children, blocks }: DropAreaProps): ReactElement {
                   : activeItem.__typename === 'RadioOptionBlock'
                     ? 'translateY(-4px) translateX(-4px)'
                     : 'auto',
-              cursor: 'grabbing'
+              cursor: 'grabbing',
+              borderRadius:
+                activeItem.__typename === 'RadioOptionBlock' ? '10px' : 'auto'
             }}
           >
             <BlockRenderer block={activeItem} />
