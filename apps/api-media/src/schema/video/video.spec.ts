@@ -267,6 +267,7 @@ describe('video', () => {
           dash: null,
           downloadable: true,
           duration: null,
+          lengthInMilliseconds: null,
           share: null
         },
         {
@@ -279,6 +280,7 @@ describe('video', () => {
           dash: null,
           downloadable: true,
           duration: null,
+          lengthInMilliseconds: null,
           share: null
         }
       ]
@@ -624,7 +626,11 @@ describe('video', () => {
         take: 100,
         where: { published: true },
         include: {
-          bibleCitation: true,
+          bibleCitation: {
+            orderBy: {
+              order: 'asc'
+            }
+          },
           cloudflareAssets: true,
           description: {
             orderBy: {
@@ -815,7 +821,11 @@ describe('video', () => {
           }
         },
         include: {
-          bibleCitation: true,
+          bibleCitation: {
+            orderBy: {
+              order: 'asc'
+            }
+          },
           cloudflareAssets: true,
           description: {
             orderBy: {
@@ -1320,7 +1330,11 @@ describe('video', () => {
         take: 100,
         where: {},
         include: {
-          bibleCitation: true,
+          bibleCitation: {
+            orderBy: {
+              order: 'asc'
+            }
+          },
           description: {
             orderBy: {
               primary: 'desc'
@@ -1496,7 +1510,11 @@ describe('video', () => {
           }
         },
         include: {
-          bibleCitation: true,
+          bibleCitation: {
+            orderBy: {
+              order: 'asc'
+            }
+          },
           description: {
             orderBy: {
               primary: 'desc'

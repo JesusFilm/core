@@ -25,7 +25,7 @@ describe('Variants', () => {
       </MockedProvider>
     )
 
-    expect(screen.getAllByRole('listitem')).toHaveLength(2)
+    expect(screen.getAllByRole('listitem')).toHaveLength(3)
   })
 
   it('should open variant modal when variant is clicked', async () => {
