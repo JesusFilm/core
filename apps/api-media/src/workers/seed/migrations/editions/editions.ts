@@ -125,6 +125,7 @@ async function populateNullableEditionsFields(): Promise<void> {
   console.log('Starting the population of nullable fields...')
   await handleVariantsMigration()
   await handleSubtitlesMigration()
+  console.log('COMPLETE!!!')
 }
 
 async function main(): Promise<void> {
