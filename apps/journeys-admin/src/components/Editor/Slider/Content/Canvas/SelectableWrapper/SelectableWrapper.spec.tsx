@@ -151,25 +151,27 @@ describe('SelectableWrapper', () => {
               ]
             }}
           >
-            <SelectableWrapper block={imageBlock}>
-              <Image {...imageBlock} alt="imageAlt" />
-            </SelectableWrapper>
-            {/* Video */}
-            <SelectableWrapper block={typographyBlock}>
-              <Typography {...typographyBlock} />
-            </SelectableWrapper>
-            <SelectableWrapper block={buttonBlock}>
-              <Button {...buttonBlock} />
-            </SelectableWrapper>
-            <SelectableWrapper block={signUpBlock}>
-              <SignUp {...signUpBlock} />
-            </SelectableWrapper>
-            <SelectableWrapper block={radioQuestionBlock}>
-              <RadioQuestion
-                {...radioQuestionBlock}
-                wrappers={{ Wrapper: SelectableWrapper }}
-              />
-            </SelectableWrapper>
+            <DndContext>
+              <SelectableWrapper block={imageBlock}>
+                <Image {...imageBlock} alt="imageAlt" />
+              </SelectableWrapper>
+              {/* Video */}
+              <SelectableWrapper block={typographyBlock}>
+                <Typography {...typographyBlock} />
+              </SelectableWrapper>
+              <SelectableWrapper block={buttonBlock}>
+                <Button {...buttonBlock} />
+              </SelectableWrapper>
+              <SelectableWrapper block={signUpBlock}>
+                <SignUp {...signUpBlock} />
+              </SelectableWrapper>
+              <SelectableWrapper block={radioQuestionBlock}>
+                <RadioQuestion
+                  {...radioQuestionBlock}
+                  wrappers={{ Wrapper: SelectableWrapper }}
+                />
+              </SelectableWrapper>
+            </DndContext>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -261,12 +263,14 @@ describe('SelectableWrapper', () => {
               steps: [step([radioQuestionBlock])]
             }}
           >
-            <SelectableWrapper block={radioQuestionBlock}>
-              <RadioQuestion
-                {...radioQuestionBlock}
-                wrappers={{ Wrapper: SelectableWrapper }}
-              />
-            </SelectableWrapper>
+            <DndContext>
+              <SelectableWrapper block={radioQuestionBlock}>
+                <RadioQuestion
+                  {...radioQuestionBlock}
+                  wrappers={{ Wrapper: SelectableWrapper }}
+                />
+              </SelectableWrapper>
+            </DndContext>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -294,12 +298,14 @@ describe('SelectableWrapper', () => {
               steps: [step([radioQuestionBlock])]
             }}
           >
-            <SelectableWrapper block={radioQuestionBlock}>
-              <RadioQuestion
-                {...radioQuestionBlock}
-                wrappers={{ Wrapper: SelectableWrapper }}
-              />
-            </SelectableWrapper>
+            <DndContext>
+              <SelectableWrapper block={radioQuestionBlock}>
+                <RadioQuestion
+                  {...radioQuestionBlock}
+                  wrappers={{ Wrapper: SelectableWrapper }}
+                />
+              </SelectableWrapper>
+            </DndContext>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
