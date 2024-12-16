@@ -46,6 +46,60 @@ export interface VideoBlockUpdate_videoBlockUpdate_video {
   variantLanguages: VideoBlockUpdate_videoBlockUpdate_video_variantLanguages[];
 }
 
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_title {
+  __typename: "VideoTitle";
+  value: string;
+}
+
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  hls: string | null;
+}
+
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages_name {
+  __typename: "LanguageName";
+  value: string;
+  primary: boolean;
+}
+
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages {
+  __typename: "Language";
+  id: string;
+  name: VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages_name[];
+}
+
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video {
+  __typename: "Video";
+  id: string;
+  title: VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_title[];
+  images: VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_images[];
+  variant: VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variant | null;
+  variantLanguages: VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages[];
+}
+
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+}
+
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+  id: string;
+}
+
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type VideoBlockUpdate_videoBlockUpdate_mediaVideo = VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video | VideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo | VideoBlockUpdate_videoBlockUpdate_mediaVideo_CloudflareVideo | VideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube;
+
 export interface VideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -142,6 +196,7 @@ export interface VideoBlockUpdate_videoBlockUpdate {
    * videoVariantLanguageId are present
    */
   video: VideoBlockUpdate_videoBlockUpdate_video | null;
+  mediaVideo: VideoBlockUpdate_videoBlockUpdate_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
