@@ -15,8 +15,6 @@ export const VIDEO_FIELDS = gql`
     posterBlockId
     fullsize
     videoId
-    assetId
-    playbackId
     videoVariantLanguageId
     source
     title
@@ -47,6 +45,8 @@ export const VIDEO_FIELDS = gql`
       }
       ... on MuxVideo {
         id
+        assetId
+        playbackId
       }
       ... on CloudflareVideo {
         id

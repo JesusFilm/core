@@ -276,6 +276,8 @@ export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video {
 export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_CloudflareVideo {
@@ -341,8 +343,6 @@ export interface BlockDuplicate_blockDuplicate_VideoBlock {
    * For other sources only videoId needs to be set.
    */
   videoId: string | null;
-  assetId: string | null;
-  playbackId: string | null;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.
