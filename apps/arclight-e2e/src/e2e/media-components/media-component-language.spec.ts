@@ -4,48 +4,49 @@ import { getBaseUrl } from '../../framework/helpers'
 import { getObjectDiff } from '../../utils/media-component-utils'
 import testData from '../../utils/testData.json'
 
-test.fixme(
-  'compare specific media component languages between environments',
-  async ({ request }) => {
-    const baseUrl = await getBaseUrl()
-    const compareUrl = 'https://api.arclight.org'
-    const { mediaComponentId, languageId, apiKey } = testData
+test('compare specific media component languages between environments', async ({
+  request
+}) => {
+  const baseUrl = await getBaseUrl()
+  const compareUrl = 'https://api.arclight.org'
+  const { mediaComponentId, languageId, apiKey } = testData
 
-    const queryParams = new URLSearchParams({
-      apiKey,
-      mediaComponentId,
-      languageId
-    })
+  const queryParams = new URLSearchParams({
+    apiKey,
+    mediaComponentId,
+    languageId
+  })
 
-    const [baseData, compareData] = await Promise.all([
-      request
-        .get(
-          `${baseUrl}/v2/media-components/${mediaComponentId}/languages/${languageId}?${queryParams}`
-        )
-        .then((res) => res.json()),
-      request
-        .get(
-          `${compareUrl}/v2/media-components/${mediaComponentId}/languages/${languageId}?${queryParams}`
-        )
-        .then((res) => res.json())
-    ])
+  const [baseResponse, compareResponse] = await Promise.all([
+    request.get(
+      `${baseUrl}/v2/media-components/${mediaComponentId}/languages/${languageId}?${queryParams}`
+    ),
+    request.get(
+      `${compareUrl}/v2/media-components/${mediaComponentId}/languages/${languageId}?${queryParams}`
+    )
+  ])
 
-    // Clean up dynamic data from both responses
-    const cleanResponse = (data: any) => {
-      delete data.apiSessionId
-      data.shareUrl = data.shareUrl?.split('?')[0]
-      data.downloadUrls.low.url = data.downloadUrls?.low?.url?.split('?')[0]
-      data.downloadUrls.high.url = data.downloadUrls?.high?.url?.split('?')[0]
-      data.streamingUrls.m3u8[0].url =
-        data.streamingUrls?.m3u8[0]?.url?.split('?')[0]
-      return data
-    }
+  expect(await baseResponse.ok()).toBe(true)
+  expect(await compareResponse.ok()).toBe(true)
 
-    const cleanedBaseData = cleanResponse(baseData)
-    const cleanedCompareData = cleanResponse(compareData)
+  const baseData = await baseResponse.json()
+  const compareData = await compareResponse.json()
 
-    const differences = getObjectDiff(cleanedBaseData, cleanedCompareData)
-
-    expect(differences).toHaveLength(0)
+  // Clean up dynamic data from both responses
+  const cleanResponse = (data: any) => {
+    delete data.apiSessionId
+    data.shareUrl = data.shareUrl?.split('?')[0]
+    data.downloadUrls.low.url = data.downloadUrls?.low?.url?.split('?')[0]
+    data.downloadUrls.high.url = data.downloadUrls?.high?.url?.split('?')[0]
+    data.streamingUrls.m3u8[0].url =
+      data.streamingUrls?.m3u8[0]?.url?.split('?')[0]
+    return data
   }
-)
+
+  const cleanedBaseData = cleanResponse(baseData)
+  const cleanedCompareData = cleanResponse(compareData)
+
+  const differences = getObjectDiff(cleanedBaseData, cleanedCompareData)
+
+  expect(differences).toHaveLength(0)
+})
