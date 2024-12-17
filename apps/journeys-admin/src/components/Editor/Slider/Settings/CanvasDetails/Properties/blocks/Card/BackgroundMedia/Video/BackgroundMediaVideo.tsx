@@ -102,6 +102,7 @@ export function BackgroundMediaVideo({
       description: null,
       image: null,
       video: null,
+      mediaVideo: null,
       action: null,
       startAt: input.startAt ?? null,
       endAt: input.endAt ?? null,

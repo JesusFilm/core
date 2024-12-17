@@ -74,7 +74,7 @@ export type BibleCitation = {
   id: Scalars['ID']['output'];
   osisId: Scalars['String']['output'];
   verseEnd?: Maybe<Scalars['Int']['output']>;
-  verseStart: Scalars['Int']['output'];
+  verseStart?: Maybe<Scalars['Int']['output']>;
   video: Video;
 };
 
@@ -4580,6 +4580,7 @@ export type VideoVariant = {
   hls?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
+  lengthInMilliseconds: Scalars['Int']['output'];
   share?: Maybe<Scalars['String']['output']>;
   /** slug is a permanent link to the video variant. */
   slug: Scalars['String']['output'];
@@ -4603,6 +4604,7 @@ export type VideoVariantCreateInput = {
   hls?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
   languageId: Scalars['String']['input'];
+  lengthInMilliseconds?: InputMaybe<Scalars['Int']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;
   slug: Scalars['String']['input'];
   videoId: Scalars['String']['input'];
@@ -4651,6 +4653,7 @@ export type VideoVariantUpdateInput = {
   hls?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
   languageId?: InputMaybe<Scalars['String']['input']>;
+  lengthInMilliseconds?: InputMaybe<Scalars['Int']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['String']['input']>;

@@ -2238,7 +2238,7 @@ type BibleCitation @join__type(graph: API_MEDIA)  {
   bibleBook: BibleBook!
   chapterStart: Int!
   chapterEnd: Int
-  verseStart: Int!
+  verseStart: Int
   verseEnd: Int
   video: Video!
 }
@@ -2604,6 +2604,7 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   downloadable: Boolean!
   downloads: [VideoVariantDownload!]!
   duration: Int!
+  lengthInMilliseconds: Int!
   language: Language!
   videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean) : [VideoSubtitle!]!
@@ -4264,6 +4265,7 @@ input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {
   dash: String
   share: String
   duration: Int
+  lengthInMilliseconds: Int
   languageId: String!
   slug: String!
   downloadable: Boolean!
@@ -4297,6 +4299,7 @@ input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
   dash: String
   share: String
   duration: Int
+  lengthInMilliseconds: Int
   languageId: String
   slug: String
   downloadable: Boolean
