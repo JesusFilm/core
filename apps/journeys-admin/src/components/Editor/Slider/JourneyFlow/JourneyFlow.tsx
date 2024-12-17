@@ -354,6 +354,8 @@ export function JourneyFlow(): ReactElement {
     )
     if (step == null || step.__typename !== 'StepBlock') return
 
+    console.log('node drag stop')
+
     // if click or tap, go through block selection logic
     // else go through standard positioning logic below
 

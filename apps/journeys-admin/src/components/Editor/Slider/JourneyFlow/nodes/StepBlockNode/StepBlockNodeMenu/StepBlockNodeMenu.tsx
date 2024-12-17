@@ -31,6 +31,7 @@ export function StepBlockNodeMenu({
   const open = Boolean(anchorEl)
 
   function handleClick(event: MouseEvent<HTMLElement>): void {
+    console.log('menu click')
     setAnchorEl(event.currentTarget)
   }
   //
