@@ -88,7 +88,6 @@ export function StepFooter({
             mt: '0px !important'
           }}
           gap={4}
-          m={0}
         >
           {!isWebsite && combinedFooter && (
             <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
