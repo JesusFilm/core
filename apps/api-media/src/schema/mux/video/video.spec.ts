@@ -411,4 +411,46 @@ describe('mux/video', () => {
       })
     })
   })
+
+  describe('entity', () => {
+    const MUX_VIDEO = graphql(`
+      query MuxVideo {
+        _entities(
+          representations: [
+            { __typename: "MuxVideo", id: "testId", primaryLanguageId: null }
+          ]
+        ) {
+          ... on MuxVideo {
+            id
+          }
+        }
+      }
+    `)
+
+    it('should return mux video', async () => {
+      prismaMock.muxVideo.findUniqueOrThrow.mockResolvedValue({
+        id: 'testId',
+        assetId: 'testAssetId',
+        playbackId: 'testPlaybackId',
+        uploadId: 'testUploadId',
+        userId: 'testUserId',
+        uploadUrl: 'testUrl',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        name: 'testName',
+        readyToStream: true,
+        downloadable: false,
+        duration: 10
+      })
+      const data = await client({
+        document: MUX_VIDEO
+      })
+      expect(prismaMock.muxVideo.findUniqueOrThrow).toHaveBeenCalledWith({
+        where: { id: 'testId' }
+      })
+      expect(data).toHaveProperty('data._entities[0]', {
+        id: 'testId'
+      })
+    })
+  })
 })

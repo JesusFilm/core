@@ -26,7 +26,7 @@ const StyledVideo = styled('video')(() => ({}))
 export function BackgroundVideo({
   source,
   children,
-  video,
+  mediaVideo,
   videoId,
   playbackId,
   startAt,
@@ -95,7 +95,7 @@ export function BackgroundVideo({
         }
       })
     }
-  }, [playerRef, startAt, endAt, source, video, videoId, setLoading])
+  }, [playerRef, startAt, endAt, source, mediaVideo, videoId, setLoading])
 
   useEffect(() => {
     if (videoRef.current != null) videoRef.current.pause()
@@ -167,9 +167,9 @@ export function BackgroundVideo({
             type="application/x-mpegURL"
           />
         )}
-        {source === VideoBlockSource.internal &&
-          video?.variant?.hls != null && (
-            <source src={video.variant.hls} type="application/x-mpegURL" />
+        {mediaVideo?.__typename === 'Video' &&
+          mediaVideo?.variant?.hls != null && (
+            <source src={mediaVideo.variant.hls} type="application/x-mpegURL" />
           )}
         {source === VideoBlockSource.youTube && videoId != null && (
           <source

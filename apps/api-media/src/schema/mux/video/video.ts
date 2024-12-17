@@ -2,6 +2,7 @@ import { Prisma } from '.prisma/api-media-client'
 
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
+import { VideoSource, VideoSourceShape } from '../../videoSource/videoSource'
 
 import {
   createVideoByDirectUpload,
@@ -11,9 +12,19 @@ import {
   getVideo
 } from './service'
 
-builder.prismaObject('MuxVideo', {
+const MuxVideo = builder.prismaObject('MuxVideo', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    source: t.field({
+      type: VideoSource,
+      shareable: true,
+      resolve: () => VideoSourceShape.mux
+    }),
+    primaryLanguageId: t.id({
+      nullable: true,
+      shareable: true,
+      resolve: () => null
+    }),
     assetId: t.exposeString('assetId'),
     duration: t.exposeInt('duration'),
     uploadId: t.withAuth({ isAuthenticated: true }).exposeString('uploadId'),
@@ -219,49 +230,10 @@ builder.mutationFields((t) => ({
   })
 }))
 
-enum VideoBlockSource {
-  internal = 'internal',
-  youTube = 'youTube',
-  cloudflare = 'cloudflare',
-  mux = 'mux'
-}
-
-builder.enumType(VideoBlockSource, { name: 'VideoBlockSource' })
-
-builder
-  .externalRef(
-    'VideoBlock',
-    builder.selection<{
-      videoId: string
-      source: VideoBlockSource
-    }>('videoId source'),
-    async (entity) => {
-      if (entity.source === VideoBlockSource.mux) {
-        const video = await prisma.muxVideo.findUnique({
-          where: { id: entity.videoId },
-          select: { assetId: true, playbackId: true }
-        })
-        return {
-          ...entity,
-          assetId: video?.assetId,
-          playbackId: video?.playbackId
-        }
-      }
-
-      return {
-        ...entity,
-        assetId: null,
-        playbackId: null
-      }
-    }
-  )
-  .implement({
-    externalFields: (t) => ({
-      source: t.field({ type: VideoBlockSource, nullable: false }),
-      videoId: t.id({ nullable: false })
-    }),
-    fields: (t) => ({
-      playbackId: t.exposeID('playbackId', { nullable: true }),
-      assetId: t.exposeID('assetId', { nullable: true })
-    })
-  })
+builder.asEntity(MuxVideo, {
+  key: builder.selection<{ id: string; primaryLanguageId: string }>(
+    'id primaryLanguageId'
+  ),
+  resolveReference: async ({ id }) =>
+    await prisma.muxVideo.findUniqueOrThrow({ where: { id } })
+})

@@ -1,4 +1,5 @@
 import { TreeBlock } from '@core/journeys/ui/block'
+import { VideoFields_mediaVideo_Video } from '@core/journeys/ui/Video/__generated__/VideoFields'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -33,7 +34,8 @@ export function getBackgroundImage(
                   block.__typename === 'ImageBlock'
               ) as TreeBlock<ImageBlock>
             )?.src
-          : coverBlock?.video?.images[0]?.mobileCinematicHigh
+          : (coverBlock?.mediaVideo as VideoFields_mediaVideo_Video)?.images[0]
+              ?.mobileCinematicHigh
         : // Use Youtube or Cloudflare set poster image
           coverBlock?.image) ?? undefined
   } else if (coverBlock?.__typename === 'ImageBlock') {

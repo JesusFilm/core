@@ -9,42 +9,59 @@ import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit } from "./
 // GraphQL mutation operation: CoverVideoBlockCreate
 // ====================================================
 
-export interface CoverVideoBlockCreate_videoBlockCreate_video_title {
+export interface CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface CoverVideoBlockCreate_videoBlockCreate_video_images {
+export interface CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface CoverVideoBlockCreate_videoBlockCreate_video_variant {
+export interface CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface CoverVideoBlockCreate_videoBlockCreate_video_variantLanguages_name {
+export interface CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface CoverVideoBlockCreate_videoBlockCreate_video_variantLanguages {
+export interface CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: CoverVideoBlockCreate_videoBlockCreate_video_variantLanguages_name[];
+  name: CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface CoverVideoBlockCreate_videoBlockCreate_video {
+export interface CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: CoverVideoBlockCreate_videoBlockCreate_video_title[];
-  images: CoverVideoBlockCreate_videoBlockCreate_video_images[];
-  variant: CoverVideoBlockCreate_videoBlockCreate_video_variant | null;
-  variantLanguages: CoverVideoBlockCreate_videoBlockCreate_video_variantLanguages[];
+  title: CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_title[];
+  images: CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_images[];
+  variant: CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_variant | null;
+  variantLanguages: CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_variantLanguages[];
 }
+
+export interface CoverVideoBlockCreate_videoBlockCreate_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+}
+
+export interface CoverVideoBlockCreate_videoBlockCreate_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+  id: string;
+}
+
+export interface CoverVideoBlockCreate_videoBlockCreate_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type CoverVideoBlockCreate_videoBlockCreate_mediaVideo = CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video | CoverVideoBlockCreate_videoBlockCreate_mediaVideo_MuxVideo | CoverVideoBlockCreate_videoBlockCreate_mediaVideo_CloudflareVideo | CoverVideoBlockCreate_videoBlockCreate_mediaVideo_YouTube;
 
 export interface CoverVideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -139,11 +156,7 @@ export interface CoverVideoBlockCreate_videoBlockCreate {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: CoverVideoBlockCreate_videoBlockCreate_video | null;
+  mediaVideo: CoverVideoBlockCreate_videoBlockCreate_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */

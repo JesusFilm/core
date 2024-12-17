@@ -74,9 +74,9 @@ export function ContainedCover({
   const contentRef = useRef() as RefObject<HTMLDivElement>
 
   const posterImage =
-    videoBlock?.source !== VideoBlockSource.youTube &&
-    videoBlock?.source !== VideoBlockSource.cloudflare &&
-    videoBlock?.source !== VideoBlockSource.mux
+    videoBlock?.mediaVideo?.__typename !== 'YouTube' &&
+    videoBlock?.mediaVideo?.__typename !== 'CloudflareVideo' &&
+    videoBlock?.mediaVideo?.__typename !== 'MuxVideo'
       ? // Use posterBlockId image or default poster image on video
         videoBlock?.posterBlockId != null
         ? (
@@ -86,7 +86,7 @@ export function ContainedCover({
                 block.__typename === 'ImageBlock'
             ) as TreeBlock<ImageFields>
           ).src
-        : videoBlock?.video?.images[0]?.mobileCinematicHigh
+        : videoBlock?.mediaVideo?.images[0]?.mobileCinematicHigh
       : // Use Youtube or Cloudflare set poster image
         videoBlock?.image
 

@@ -5,12 +5,20 @@ import { prisma } from '../../../../lib/prisma'
 import { parse, parseMany, processTable } from '../../importer'
 import { getVideoIds } from '../videos'
 
-const videoSnippetSchema = z.object({
-  value: z.string(),
-  videoId: z.string(),
-  languageId: z.number().transform(String),
-  primary: z.number().transform(Boolean)
-})
+const videoSnippetSchema = z
+  .object({
+    value: z.string(),
+    videoId: z.string(),
+    languageId: z.number().transform(String),
+    primary: z.number().transform(Boolean)
+  })
+  .transform(({ value, ...rest }) => {
+    const transformed = {
+      ...rest,
+      value: value.replace(/&#13;/g, '\n')
+    }
+    return transformed
+  })
 
 export async function importVideoSnippets(logger?: Logger): Promise<void> {
   await processTable(
