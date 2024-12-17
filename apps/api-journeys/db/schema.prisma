@@ -87,6 +87,7 @@ enum VideoBlockSource {
   cloudflare
   internal
   youTube
+  mux
 }
 
 enum IntegrationType {
@@ -142,6 +143,7 @@ model Event {
   @@index(visitorId)
   @@index(blockId)
   @@index(userId)
+  @@index([journeyId, visitorId, typename, createdAt(sort: Desc)])
 }
 
 model Visitor {

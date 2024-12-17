@@ -4,6 +4,7 @@ import {
   useColorScheme
 } from '@mui/material/styles'
 import { Decorator, StoryContext } from '@storybook/react'
+import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -28,13 +29,18 @@ export const videosAdminConfig = {
   ...sharedUiConfig,
   decorators: [
     (Story: Parameters<Decorator>[0], context: StoryContext) => {
+      const {
+        parameters: { locale = 'en' }
+      } = context
       return (
-        <SnackbarProvider>
-          <MuiThemeProvider theme={theme}>
-            <CssBaseline enableColorScheme />
-            <StorySlot storyComponent={<Story />} storyContext={context} />
-          </MuiThemeProvider>
-        </SnackbarProvider>
+        <NextIntlClientProvider locale={locale}>
+          <SnackbarProvider>
+            <MuiThemeProvider theme={theme}>
+              <CssBaseline enableColorScheme />
+              <StorySlot storyComponent={<Story />} storyContext={context} />
+            </MuiThemeProvider>
+          </SnackbarProvider>
+        </NextIntlClientProvider>
       )
     }
   ],

@@ -13,6 +13,7 @@ builder.mutationFields((t) => ({
     .prismaField({
       deprecationReason: 'use createCloudflareImageFromPrompt',
       type: 'CloudflareImage',
+      nullable: false,
       args: {
         prompt: t.arg.string({ required: true }),
         model: t.arg({ type: SegmindModel, required: true })

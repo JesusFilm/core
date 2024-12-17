@@ -7,10 +7,10 @@ export const UnsplashPhotoUrls =
 
 UnsplashPhotoUrls.implement({
   fields: (t) => ({
-    full: t.exposeString('full'),
-    raw: t.exposeString('raw'),
-    regular: t.exposeString('regular'),
-    small: t.exposeString('small'),
-    thumb: t.exposeString('thumb')
+    full: t.exposeString('full', { nullable: false }),
+    raw: t.exposeString('raw', { nullable: false }),
+    regular: t.exposeString('regular', { nullable: false }),
+    small: t.exposeString('small', { nullable: false }),
+    thumb: t.exposeString('thumb', { nullable: false })
   })
 })

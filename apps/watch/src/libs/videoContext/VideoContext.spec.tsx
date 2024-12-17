@@ -43,6 +43,7 @@ const chapter1: VideoContentFields = {
     id: '1_529-jf6101-0-0',
     duration: 488,
     hls: 'https://arc.gt/pm6g1',
+    downloadable: true,
     downloads: [
       {
         __typename: 'VideoVariantDownload',

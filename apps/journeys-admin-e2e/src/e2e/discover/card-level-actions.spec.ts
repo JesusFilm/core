@@ -17,7 +17,7 @@ test.describe('verify card level actions', () => {
     await landingPage.goToAdminUrl()
     await register.registerNewAccount()
     userEmail = await register.getUserEmailId() // storing the registered user email id
-    console.log('userEamil : ' + userEmail)
+    console.log(`userEamil : ${userEmail}`)
     await page.close()
   })
 
@@ -32,8 +32,8 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.waitUntilJourneyCardLoaded() // waiting for custom journey page loaded
     await cardLevelActionPage.clickOnJourneyCard() // clicking on the journey card
     await journeyPage.clickThreeDotBtnOfCustomJourney() // clicking on the three dot at top of right corner of the custom journey page
-    await journeyPage.clickJourneyDetailsInThreeDotOptions() // clicking on the title option of the three dot options
-    await journeyPage.enterTitle() // entering title on the title field in the 'journey details' popup
+    await journeyPage.clickEditDetailsInThreeDotOptions() // clicking on the title option of the thre dot options
+    await journeyPage.enterTitle() // entering title on the title field in the 'edit title' popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
     await journeyPage.backIcon() // clicking back button at top of the left corner in the custom journey page
     await journeyPage.clickOnTheCreatedCustomJourney() // clicking on created journey in the journey list
@@ -41,19 +41,19 @@ test.describe('verify card level actions', () => {
   })
 
   // Text - create, update & delete
-  test.fixme('Text - create, update & delete', async ({ page }) => {
+  test('Text - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
-    await cardLevelActionPage.clickBtnInAddBlockDrawer('Text') // clicking on text button in add block drawer
+    await cardLevelActionPage.clickTextBtnInAddBlockDrawer() // clicking on text button in add block drawer
     await cardLevelActionPage.enterTextInJourneysTypographyField() // typing text on journeys typography field
-    await cardLevelActionPage.clickDoneBtn() // clicking on done button
+    await cardLevelActionPage.clickAddBlockBtn() // clicking on done button
     await cardLevelActionPage.verifyTextAddedInJourneyCard() // verifying added journeys typography text in the journey card
     await cardLevelActionPage.clickOnCreatedOrRenamedTextInJourneyCard(
       'created'
     ) // clicking on created typography text in the journey card
     await cardLevelActionPage.editTextInJourneyCard() // editing the created typography text in the journey card
     await cardLevelActionPage.changeFontStyleInJourneyCardText('Header 1') // choosing the font size for edited typography text in the journey card
-    await cardLevelActionPage.clickDoneBtn() // clicking on done button
+    await cardLevelActionPage.clickAddBlockBtn() // clicking on done button
     await cardLevelActionPage.verifyTextUpdatedInJourneyCard() // verifying the edited text is updated in the journey card
     await cardLevelActionPage.verifyTextStyleChangedInJourneyCard() // verifying the font size is changed to according to the choosen one.
     await cardLevelActionPage.clickOnCreatedOrRenamedTextInJourneyCard(
@@ -83,8 +83,6 @@ test.describe('verify card level actions', () => {
   })
 
   // Video - create, update & delete
-  // Issue 3 : In video properties drawer after uploaded a video in upload tab, unable to update that video
-  // Issue 4 : the 'video details' page shows again and again.
   test.fixme('Video - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.deleteAllAddedCardProperties() // deleting all the added properties in the card
@@ -109,7 +107,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Poll - create, update & delete
-  test.fixme('Poll - create, update & delete', async ({ page }) => {
+  test('Poll - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Poll') // clicking on poll button in add block drawer
@@ -124,32 +122,27 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifyPollOptionsDeletedFromCard() // verifying the poll section is deleted from the card
   })
 
-  // Feedback- create, update & delete
-  test.fixme('Feedback - create, update & delete', async ({ page }) => {
+  // Text Input- create, update & delete
+  test('Text Input - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
-    await cardLevelActionPage.clickBtnInAddBlockDrawer('Feedback') // clicking on Feedback button in add block drawer
+    await cardLevelActionPage.clickBtnInAddBlockDrawer('Text Input') // clicking on Feedback button in add block drawer
     await cardLevelActionPage.verifyFeedBackAddedToCard() // verifing the feedback is added to the card
-    await cardLevelActionPage.clickFeedBackPropertiesDropDown('Feedback') // clicking the feedback property dropdown in the feedback properties drawer
+    await cardLevelActionPage.clickFeedBackPropertiesDropDown('Text Input') // clicking the feedback property dropdown in the feedback properties drawer
     await cardLevelActionPage.enterLabelBelowFeedBcakProperty() // entering value in label field of feedback property dropdown
     await cardLevelActionPage.enterHintBelowFeedBcakProperty() // entering value in hint field of feedback property dropdown
     await cardLevelActionPage.clickOnJourneyCard() // clickng on the journey card
     await cardLevelActionPage.verifyLabelUpdatedIncard() // verifying the added label is updated in the card
     await cardLevelActionPage.verifyHintUpdatedInCard() // verifying the added hint is updated in the card
     await cardLevelActionPage.selectWholeFeedBackSection() // selecting the whole feedback section
-    await cardLevelActionPage.clickFeedBackPropertiesDropDown('Action') // clicking the action property dropdown in the feedback properties drawer
-    await cardLevelActionPage.clickActionOfFeedBackProperties() // selecting the email option in the 'navigate to' dropdown
-    await cardLevelActionPage.selectEmailOptionInPrepertiesOptions() // below the action property, entering email address in the email field
-    await cardLevelActionPage.clickFeedBackPropertiesDropDown('Button Icon') // /clicking the 'button icon' property dropdown in the feedback properties drawer
-    await cardLevelActionPage.selectIconForProperties() // seleting an icon for the feedback button section
-    await cardLevelActionPage.verifySelectedIconInCardBelowFeedBack() // veriying the Selected icon is updated in the feed back section of the card
+    await cardLevelActionPage.updateMinimumRowsOptionFortextInput() // Changing minimum rows value and verifying the style property is getting changed for text input field
     await cardLevelActionPage.selectWholeFeedBackSection() // selecting the whole feedback section
     await cardLevelActionPage.clickDeleteBtnInToolTipBar() // clicking delete button in the tooltip bar
     await cardLevelActionPage.verifyFeedBackDeletedFromCard() // verifying the feedback section is deleted from the card
   })
 
   // Subscribe - create, update & delete
-  test.fixme('Subscribe - create, update & delete', async ({ page }) => {
+  test('Subscribe - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Subscribe') // clicking on subscribe button in add block drawer
@@ -161,27 +154,25 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifySelecetdIconInCardBelowSubscribe() // veriying the Selected icon is updated in the subscribe section of the card
     await cardLevelActionPage.selectWholeSubscribeSectionInCard() // selecting the whole subscribe section
     await cardLevelActionPage.clickDeleteBtnInToolTipBar() // clicking delete button in the tooltip bar
+    await cardLevelActionPage.verifyToastMessage() // verifying the toast message
     await cardLevelActionPage.verifySubscribeDeletedFromCard() //  verifying the subscribe section is deleted from the card
   })
 
   // Footer properties - Hosted By & Chat Widget
-  // eslint-disable-next-line playwright/no-skipped-test
-  test.fixme(
-    'Footer properties - create, update & delete',
-    async ({ page }) => {
-      const cardLevelActionPage = new CardLevelActionPage(page)
-      await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Fotter section
-      await cardLevelActionPage.clicSelectHostBtn() // clicking the 'select a host' button below the 'Hosted by' tab in the footer properties drawer
-      await cardLevelActionPage.clickCreateNewBtn() // clicking the 'create new' button below the 'Hosted by' tab in the footer properties drawer
-      await cardLevelActionPage.enterHostName() // entering host name in the host field in the footer properties drawer
-      await cardLevelActionPage.enterLocation() // entering location in the location field in the footer properties drawer
-      await cardLevelActionPage.clickOnJourneyCard() // clickng on the journey card
-      await cardLevelActionPage.verifyHostNameAddedInCard() // verifying the added host name and location are updated in the footer section at bottom of the card
-      await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Fotter section
-      await cardLevelActionPage.clickTabInFooterProperties('Chat Widget') // clicking on the 'Chat Widget' tab from the tab list of footer properties drawer
-      await cardLevelActionPage.clickMessangerDropDown('WhatsApp') // clicking the whatsapp dropdown check box
-      await cardLevelActionPage.enterWhatsAppLink() // entering link value on the URL field
-      await cardLevelActionPage.verifyChatWidgetAddedToCard() // verifying the selected messager icon is updated in the footer section at bottom of the card
-    }
-  )
+  test('Footer properties - create, update & delete', async ({ page }) => {
+    const cardLevelActionPage = new CardLevelActionPage(page)
+    await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Fotter section
+    await cardLevelActionPage.expandJourneyAppearance('Hosted By') // clicking on the 'Chat Widget' tab from the tab list of footer properties drawer
+    await cardLevelActionPage.clicSelectHostBtn() // clicking the 'select a host' button below the 'Hosted by' tab in the footer properties drawer
+    await cardLevelActionPage.clickCreateNewBtn() // clicking the 'create new' button below the 'Hosted by' tab in the footer properties drawer
+    await cardLevelActionPage.enterHostName() // entering host name in the host field in the footer properties drawer
+    await cardLevelActionPage.enterLocation() // entering location in the location field in the footer properties drawer
+    await cardLevelActionPage.clickOnJourneyCard() // clickng on the journey card
+    await cardLevelActionPage.verifyHostNameAddedInCard() // verifying the added host name and location are updated in the footer section at bottom of the card
+    await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Fotter section
+    await cardLevelActionPage.expandJourneyAppearance('Chat Widget') // clicking on the 'Chat Widget' tab from the tab list of footer properties drawer
+    await cardLevelActionPage.clickMessangerDropDown('WhatsApp') // clicking the whatsapp dropdown check box
+    await cardLevelActionPage.enterWhatsAppLink() // entering link value on the URL field
+    await cardLevelActionPage.verifyChatWidgetAddedToCard() // verifying the selected messager icon is updated in the footer section at bottom of the card
+  })
 })

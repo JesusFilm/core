@@ -84,6 +84,56 @@ describe('Details', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
+  it('should update link with a protocol', async () => {
+    const props = {
+      ...defaultProps,
+      currentPlatform: MessagePlatform.telegram
+    }
+
+    const result = jest.fn(() => ({
+      data: {
+        chatButtonUpdate: {
+          __typename: 'ChatButton',
+          id: 'chat.id',
+          link: 'newlink.com',
+          platform: MessagePlatform.telegram
+        }
+      }
+    }))
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: JOURNEY_CHAT_BUTTON_UPDATE,
+              variables: {
+                chatButtonUpdateId: 'chat.id',
+                journeyId: 'journeyId',
+                input: {
+                  link: 'https://newlink.com',
+                  platform: MessagePlatform.telegram
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <Details {...props} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.change(getByRole('textbox'), {
+      target: { value: 'https://newlink.com' }
+    })
+    fireEvent.blur(getByRole('textbox'))
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
   it('should update platform', async () => {
     const props = {
       ...defaultProps,

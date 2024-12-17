@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:22-alpine3.20
 
 EXPOSE 4005
 
@@ -12,15 +12,16 @@ RUN apk upgrade --update-cache --available && \
 
 WORKDIR /app
 COPY ./dist/apps/api-media .
+COPY ./package-lock.json .
 
 # dependencies that nestjs needs
 RUN npm install --production
 
 WORKDIR /prisma
 COPY ./apps/api-media/db .
-RUN npx prisma@^5.2.0 generate --generator client
+RUN npx prisma generate --generator client
 
 WORKDIR /app
 
-RUN npm install prisma@^5.2.0 @prisma/client@^5.2.0
-CMD npx prisma@^5.2.0 migrate deploy --schema /prisma/schema.prisma; node ./main.js
+RUN npm install @prisma/client
+CMD npx prisma migrate deploy --schema /prisma/schema.prisma; node ./main.js

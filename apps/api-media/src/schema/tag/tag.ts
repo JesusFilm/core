@@ -2,14 +2,14 @@ import compact from 'lodash/compact'
 
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
-
-import { Service } from './enums/service'
+import { Service } from '../enums/service'
 
 const Tag = builder.prismaObject('Tag', {
   fields: (t) => ({
-    id: t.exposeID('id'),
-    parentId: t.exposeID('parentId', { nullable: true }),
+    id: t.exposeID('id', { nullable: false }),
+    parentId: t.exposeID('parentId'),
     name: t.relation('tagName', {
+      nullable: false,
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
@@ -24,7 +24,7 @@ const Tag = builder.prismaObject('Tag', {
         orderBy: { primary: 'desc' }
       })
     }),
-    service: t.expose('service', { type: Service, nullable: true })
+    service: t.expose('service', { type: Service })
   })
 })
 
@@ -37,6 +37,7 @@ builder.asEntity(Tag, {
 builder.queryFields((t) => ({
   tags: t.prismaField({
     type: ['Tag'],
+    nullable: false,
     resolve: async (query) =>
       await prisma.tag.findMany({
         ...query,

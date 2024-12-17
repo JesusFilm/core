@@ -63,6 +63,7 @@ export interface GetVideoContainerPart2_container_variant {
   id: string;
   duration: number;
   hls: string | null;
+  downloadable: boolean;
   downloads: GetVideoContainerPart2_container_variant_downloads[];
   language: GetVideoContainerPart2_container_variant_language;
   /**

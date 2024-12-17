@@ -38,6 +38,10 @@ export type AudioPreview = {
   value: Scalars['String']['output'];
 };
 
+export type BaseError = {
+  message?: Maybe<Scalars['String']['output']>;
+};
+
 export type BibleBook = {
   __typename?: 'BibleBook';
   alternateName?: Maybe<Scalars['String']['output']>;
@@ -70,7 +74,7 @@ export type BibleCitation = {
   id: Scalars['ID']['output'];
   osisId: Scalars['String']['output'];
   verseEnd?: Maybe<Scalars['Int']['output']>;
-  verseStart: Scalars['Int']['output'];
+  verseStart?: Maybe<Scalars['Int']['output']>;
   video: Video;
 };
 
@@ -313,11 +317,35 @@ export type CloudflareImage = {
   videoStill?: Maybe<Scalars['String']['output']>;
 };
 
+export type CloudflareR2 = {
+  __typename?: 'CloudflareR2';
+  createdAt: Scalars['Date']['output'];
+  fileName: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  publicUrl?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['Date']['output'];
+  uploadUrl?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['ID']['output'];
+};
+
+export type CloudflareR2CreateInput = {
+  fileName: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  videoId: Scalars['String']['input'];
+};
+
+export type CloudflareR2UpdateInput = {
+  fileName: Scalars['String']['input'];
+  id: Scalars['String']['input'];
+};
+
 export type CloudflareVideo = {
   __typename?: 'CloudflareVideo';
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
+  primaryLanguageId?: Maybe<Scalars['ID']['output']>;
   readyToStream: Scalars['Boolean']['output'];
+  source?: Maybe<VideoBlockSource>;
   uploadUrl?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
 };
@@ -471,9 +499,9 @@ export type EmailActionInput = {
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type Error = {
+export type Error = BaseError & {
   __typename?: 'Error';
-  message: Scalars['String']['output'];
+  message?: Maybe<Scalars['String']['output']>;
 };
 
 export type Event = {
@@ -481,6 +509,21 @@ export type Event = {
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   label?: Maybe<Scalars['String']['output']>;
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export type ForeignKeyConstraintError = BaseError & {
+  __typename?: 'ForeignKeyConstraintError';
+  /** The arguments that caused the foriegn key constraint violation */
+  location?: Maybe<Array<ForeignKeyConstraintErrorLocation>>;
+  message?: Maybe<Scalars['String']['output']>;
+};
+
+export type ForeignKeyConstraintErrorLocation = {
+  __typename?: 'ForeignKeyConstraintErrorLocation';
+  /** An array describing the path in the arguments that caused this error */
+  path?: Maybe<Array<Scalars['String']['output']>>;
+  /** The value that was provided at the path */
   value?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1092,7 +1135,7 @@ export type Language = {
   seriesCount: Scalars['Int']['output'];
   shortFilmCount: Scalars['Int']['output'];
   slug?: Maybe<Scalars['String']['output']>;
-  speakerCount: Scalars['Int']['output'];
+  speakerCount: Scalars['String']['output'];
 };
 
 
@@ -1120,7 +1163,9 @@ export type LanguageWithSlug = {
 };
 
 export type LanguagesFilter = {
+  bcp47?: InputMaybe<Array<Scalars['String']['input']>>;
   ids?: InputMaybe<Array<Scalars['ID']['input']>>;
+  iso3?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 export type LinkAction = Action & {
@@ -1145,6 +1190,8 @@ export type MeInput = {
 export enum MediaRole {
   Publisher = 'publisher'
 }
+
+export type MediaVideo = CloudflareVideo | MuxVideo | Video | YouTube;
 
 export enum MessagePlatform {
   CheckBroken = 'checkBroken',
@@ -1206,6 +1253,9 @@ export type Mutation = {
   chatButtonRemove: ChatButton;
   chatButtonUpdate: ChatButton;
   chatOpenEventCreate: ChatOpenEvent;
+  cloudflareR2Create: CloudflareR2;
+  cloudflareR2Delete: CloudflareR2;
+  cloudflareR2Update: CloudflareR2;
   cloudflareUploadComplete: Scalars['Boolean']['output'];
   createCloudflareImageFromPrompt: CloudflareImage;
   createCloudflareUploadByFile: CloudflareImage;
@@ -1214,6 +1264,8 @@ export type Mutation = {
   createCloudflareVideoUploadByUrl: CloudflareVideo;
   /** @deprecated use createCloudflareImageFromPrompt */
   createImageBySegmindPrompt: CloudflareImage;
+  createMuxVideoUploadByFile: MuxVideo;
+  createMuxVideoUploadByUrl: MuxVideo;
   createVerificationRequest?: Maybe<Scalars['Boolean']['output']>;
   customDomainCheck: CustomDomainCheck;
   customDomainCreate: CustomDomain;
@@ -1221,6 +1273,7 @@ export type Mutation = {
   customDomainUpdate: CustomDomain;
   deleteCloudflareImage: Scalars['Boolean']['output'];
   deleteCloudflareVideo: Scalars['Boolean']['output'];
+  deleteMuxVideo: Scalars['Boolean']['output'];
   hostCreate: Host;
   hostDelete: Host;
   hostUpdate: Host;
@@ -1246,7 +1299,7 @@ export type Mutation = {
   /** Updates template */
   journeyTemplate: Journey;
   journeyUpdate: Journey;
-  journeyViewEventCreate: JourneyViewEvent;
+  journeyViewEventCreate?: Maybe<JourneyViewEvent>;
   /** Sets journeys statuses to archived */
   journeysArchive?: Maybe<Array<Maybe<Journey>>>;
   /** Sets journeys statuses to deleted */
@@ -1260,6 +1313,18 @@ export type Mutation = {
   radioQuestionBlockCreate: RadioQuestionBlock;
   radioQuestionBlockUpdate: RadioQuestionBlock;
   radioQuestionSubmissionEventCreate: RadioQuestionSubmissionEvent;
+  /** create a new short link */
+  shortLinkCreate: MutationShortLinkCreateResult;
+  /** delete an existing short link */
+  shortLinkDelete: MutationShortLinkDeleteResult;
+  /** Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service) */
+  shortLinkDomainCreate: MutationShortLinkDomainCreateResult;
+  /** delete an existing short link domain (all related short links must be deleted first) */
+  shortLinkDomainDelete: MutationShortLinkDomainDeleteResult;
+  /** Update services that can use this short link domain */
+  shortLinkDomainUpdate: MutationShortLinkDomainUpdateResult;
+  /** update an existing short link */
+  shortLinkUpdate: MutationShortLinkUpdateResult;
   signUpBlockCreate: SignUpBlock;
   signUpBlockUpdate?: Maybe<SignUpBlock>;
   signUpSubmissionEventCreate: SignUpSubmissionEvent;
@@ -1304,6 +1369,9 @@ export type Mutation = {
   videoDescriptionCreate: VideoDescription;
   videoDescriptionDelete: VideoDescription;
   videoDescriptionUpdate: VideoDescription;
+  videoEditionCreate: VideoEdition;
+  videoEditionDelete: VideoEdition;
+  videoEditionUpdate: VideoEdition;
   videoExpandEventCreate: VideoExpandEvent;
   videoImageAltCreate: VideoImageAlt;
   videoImageAltDelete: VideoImageAlt;
@@ -1452,6 +1520,21 @@ export type MutationChatOpenEventCreateArgs = {
 };
 
 
+export type MutationCloudflareR2CreateArgs = {
+  input: CloudflareR2CreateInput;
+};
+
+
+export type MutationCloudflareR2DeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationCloudflareR2UpdateArgs = {
+  input: CloudflareR2UpdateInput;
+};
+
+
 export type MutationCloudflareUploadCompleteArgs = {
   id: Scalars['ID']['input'];
 };
@@ -1491,6 +1574,16 @@ export type MutationCreateImageBySegmindPromptArgs = {
 };
 
 
+export type MutationCreateMuxVideoUploadByFileArgs = {
+  name: Scalars['String']['input'];
+};
+
+
+export type MutationCreateMuxVideoUploadByUrlArgs = {
+  url: Scalars['String']['input'];
+};
+
+
 export type MutationCreateVerificationRequestArgs = {
   input?: InputMaybe<CreateVerificationRequestInput>;
 };
@@ -1523,6 +1616,11 @@ export type MutationDeleteCloudflareImageArgs = {
 
 
 export type MutationDeleteCloudflareVideoArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteMuxVideoArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -1698,6 +1796,36 @@ export type MutationRadioQuestionBlockUpdateArgs = {
 
 export type MutationRadioQuestionSubmissionEventCreateArgs = {
   input: RadioQuestionSubmissionEventCreateInput;
+};
+
+
+export type MutationShortLinkCreateArgs = {
+  input: MutationShortLinkCreateInput;
+};
+
+
+export type MutationShortLinkDeleteArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationShortLinkDomainCreateArgs = {
+  input: MutationShortLinkDomainCreateInput;
+};
+
+
+export type MutationShortLinkDomainDeleteArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationShortLinkDomainUpdateArgs = {
+  input: MutationShortLinkDomainUpdateInput;
+};
+
+
+export type MutationShortLinkUpdateArgs = {
+  input: MutationShortLinkUpdateInput;
 };
 
 
@@ -1923,6 +2051,21 @@ export type MutationVideoDescriptionUpdateArgs = {
 };
 
 
+export type MutationVideoEditionCreateArgs = {
+  input: VideoEditionCreateInput;
+};
+
+
+export type MutationVideoEditionDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationVideoEditionUpdateArgs = {
+  input: VideoEditionUpdateInput;
+};
+
+
 export type MutationVideoExpandEventCreateArgs = {
   input: VideoExpandEventCreateInput;
 };
@@ -2068,11 +2211,98 @@ export type MutationVisitorUpdateForCurrentUserArgs = {
   input: VisitorUpdateInput;
 };
 
+export type MutationShortLinkCreateInput = {
+  /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
+  hostname: Scalars['String']['input'];
+  /** short link path not including the leading slash (defaults to a random 11 character string that is URL friendly) */
+  pathname?: InputMaybe<Scalars['String']['input']>;
+  /** the service that created this short link */
+  service: Service;
+  /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
+  to: Scalars['String']['input'];
+};
+
+export type MutationShortLinkCreateResult = MutationShortLinkCreateSuccess | NotUniqueError | ZodError;
+
+export type MutationShortLinkCreateSuccess = {
+  __typename?: 'MutationShortLinkCreateSuccess';
+  data: ShortLink;
+};
+
+export type MutationShortLinkDeleteResult = MutationShortLinkDeleteSuccess | NotFoundError;
+
+export type MutationShortLinkDeleteSuccess = {
+  __typename?: 'MutationShortLinkDeleteSuccess';
+  data: ShortLink;
+};
+
+export type MutationShortLinkDomainCreateInput = {
+  /** the hostname including subdomain, domain, and TLD, but excluding port */
+  hostname: Scalars['String']['input'];
+  /** the services that are enabled for this domain, if empty then this domain can be used by all services */
+  services?: InputMaybe<Array<Service>>;
+};
+
+export type MutationShortLinkDomainCreateResult = MutationShortLinkDomainCreateSuccess | NotUniqueError | ZodError;
+
+export type MutationShortLinkDomainCreateSuccess = {
+  __typename?: 'MutationShortLinkDomainCreateSuccess';
+  data: ShortLinkDomain;
+};
+
+export type MutationShortLinkDomainDeleteResult = ForeignKeyConstraintError | MutationShortLinkDomainDeleteSuccess | NotFoundError;
+
+export type MutationShortLinkDomainDeleteSuccess = {
+  __typename?: 'MutationShortLinkDomainDeleteSuccess';
+  data: ShortLinkDomain;
+};
+
+export type MutationShortLinkDomainUpdateInput = {
+  id: Scalars['String']['input'];
+  /** the services that are enabled for this domain, if empty then this domain can be used by all services */
+  services: Array<Service>;
+};
+
+export type MutationShortLinkDomainUpdateResult = MutationShortLinkDomainUpdateSuccess | NotFoundError;
+
+export type MutationShortLinkDomainUpdateSuccess = {
+  __typename?: 'MutationShortLinkDomainUpdateSuccess';
+  data: ShortLinkDomain;
+};
+
+export type MutationShortLinkUpdateInput = {
+  id: Scalars['String']['input'];
+  /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
+  to: Scalars['String']['input'];
+};
+
+export type MutationShortLinkUpdateResult = MutationShortLinkUpdateSuccess | NotFoundError | ZodError;
+
+export type MutationShortLinkUpdateSuccess = {
+  __typename?: 'MutationShortLinkUpdateSuccess';
+  data: ShortLink;
+};
+
 export type MutationSiteCreateResult = Error | MutationSiteCreateSuccess;
 
 export type MutationSiteCreateSuccess = {
   __typename?: 'MutationSiteCreateSuccess';
   data: Site;
+};
+
+export type MuxVideo = {
+  __typename?: 'MuxVideo';
+  assetId?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['Date']['output'];
+  duration?: Maybe<Scalars['Int']['output']>;
+  id: Scalars['ID']['output'];
+  playbackId?: Maybe<Scalars['String']['output']>;
+  primaryLanguageId?: Maybe<Scalars['ID']['output']>;
+  readyToStream: Scalars['Boolean']['output'];
+  source?: Maybe<VideoBlockSource>;
+  uploadId?: Maybe<Scalars['String']['output']>;
+  uploadUrl?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['ID']['output'];
 };
 
 export type NavigateToBlockAction = Action & {
@@ -2088,6 +2318,36 @@ export type NavigateToBlockActionInput = {
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type NotFoundError = BaseError & {
+  __typename?: 'NotFoundError';
+  /** The arguments that caused the not found error */
+  location?: Maybe<Array<NotFoundErrorLocation>>;
+  message?: Maybe<Scalars['String']['output']>;
+};
+
+export type NotFoundErrorLocation = {
+  __typename?: 'NotFoundErrorLocation';
+  /** An array describing the path in the arguments that caused this error */
+  path?: Maybe<Array<Scalars['String']['output']>>;
+  /** The value that was provided at the path */
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export type NotUniqueError = BaseError & {
+  __typename?: 'NotUniqueError';
+  /** The arguments that caused the uniqueness violation */
+  location?: Maybe<Array<NotUniqueErrorLocation>>;
+  message?: Maybe<Scalars['String']['output']>;
+};
+
+export type NotUniqueErrorLocation = {
+  __typename?: 'NotUniqueErrorLocation';
+  /** An array describing the path in the arguments that caused this error */
+  path?: Maybe<Array<Scalars['String']['output']>>;
+  /** The value that was provided at the path */
+  value?: Maybe<Scalars['String']['output']>;
+};
+
 export type OperatingSystem = {
   __typename?: 'OperatingSystem';
   name?: Maybe<Scalars['String']['output']>;
@@ -2101,6 +2361,8 @@ export type PageInfo = {
   endCursor?: Maybe<Scalars['String']['output']>;
   /** When paginating forwards, are there more items? */
   hasNextPage: Scalars['Boolean']['output'];
+  /** When paginating backwards, are there more items? */
+  hasPreviousPage: Scalars['Boolean']['output'];
   /** When paginating backwards, the cursor to continue. */
   startCursor?: Maybe<Scalars['String']['output']>;
 };
@@ -2312,10 +2574,13 @@ export type Query = {
   customDomain: CustomDomain;
   customDomains: Array<CustomDomain>;
   getJourneyProfile?: Maybe<JourneyProfile>;
+  getMuxVideo?: Maybe<MuxVideo>;
   getMyCloudflareImage: CloudflareImage;
   getMyCloudflareImages: Array<CloudflareImage>;
   getMyCloudflareVideo: CloudflareVideo;
   getMyCloudflareVideos: Array<CloudflareVideo>;
+  getMyMuxVideo: MuxVideo;
+  getMyMuxVideos: Array<MuxVideo>;
   getUserRole?: Maybe<UserRole>;
   hosts: Array<Host>;
   integrations: Array<Integration>;
@@ -2362,7 +2627,18 @@ export type Query = {
   listUnsplashCollectionPhotos: Array<UnsplashPhoto>;
   me?: Maybe<User>;
   searchUnsplashPhotos: UnsplashQueryResponse;
+  /** find a short link by id */
+  shortLink: QueryShortLinkResult;
+  /** find a short link by path and hostname */
+  shortLinkByPath: QueryShortLinkByPathResult;
+  /** Find a short link domain by id */
+  shortLinkDomain: QueryShortLinkDomainResult;
+  /** List of short link domains that can be used for short links */
+  shortLinkDomains: QueryShortLinkDomainsConnection;
+  /** find all short links with optional hostname filter */
+  shortLinks: QueryShortLinksConnection;
   tags: Array<Tag>;
+  taxonomies: Array<Taxonomy>;
   team: Team;
   teams: Array<Team>;
   user?: Maybe<User>;
@@ -2372,6 +2648,8 @@ export type Query = {
   userTeamInvites: Array<UserTeamInvite>;
   userTeams: Array<UserTeam>;
   video: Video;
+  videoEdition?: Maybe<VideoEdition>;
+  videoEditions: Array<VideoEdition>;
   videoVariants: Array<VideoVariant>;
   videos: Array<Video>;
   videosCount: Scalars['Int']['output'];
@@ -2429,6 +2707,11 @@ export type QueryBlocksArgs = {
 };
 
 
+export type QueryCountriesArgs = {
+  term?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryCountryArgs = {
   id: Scalars['ID']['input'];
 };
@@ -2441,6 +2724,11 @@ export type QueryCustomDomainArgs = {
 
 export type QueryCustomDomainsArgs = {
   teamId: Scalars['ID']['input'];
+};
+
+
+export type QueryGetMuxVideoArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -2461,6 +2749,17 @@ export type QueryGetMyCloudflareVideoArgs = {
 
 
 export type QueryGetMyCloudflareVideosArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetMyMuxVideoArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetMyMuxVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -2553,11 +2852,13 @@ export type QueryLanguageArgs = {
 export type QueryLanguagesArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  term?: InputMaybe<Scalars['String']['input']>;
   where?: InputMaybe<LanguagesFilter>;
 };
 
 
 export type QueryLanguagesCountArgs = {
+  term?: InputMaybe<Scalars['String']['input']>;
   where?: InputMaybe<LanguagesFilter>;
 };
 
@@ -2584,6 +2885,46 @@ export type QuerySearchUnsplashPhotosArgs = {
   page?: InputMaybe<Scalars['Int']['input']>;
   perPage?: InputMaybe<Scalars['Int']['input']>;
   query: Scalars['String']['input'];
+};
+
+
+export type QueryShortLinkArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryShortLinkByPathArgs = {
+  hostname: Scalars['String']['input'];
+  pathname: Scalars['String']['input'];
+};
+
+
+export type QueryShortLinkDomainArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryShortLinkDomainsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  service?: InputMaybe<Service>;
+};
+
+
+export type QueryShortLinksArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  hostname?: InputMaybe<Scalars['String']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryTaxonomiesArgs = {
+  category?: InputMaybe<Scalars['String']['input']>;
+  languageCodes?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 
@@ -2629,6 +2970,11 @@ export type QueryVideoArgs = {
 };
 
 
+export type QueryVideoEditionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type QueryVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -2650,6 +2996,53 @@ export type QueryVisitorsConnectionArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
   teamId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type QueryShortLinkByPathResult = NotFoundError | QueryShortLinkByPathSuccess;
+
+export type QueryShortLinkByPathSuccess = {
+  __typename?: 'QueryShortLinkByPathSuccess';
+  data: ShortLink;
+};
+
+export type QueryShortLinkDomainResult = NotFoundError | QueryShortLinkDomainSuccess;
+
+export type QueryShortLinkDomainSuccess = {
+  __typename?: 'QueryShortLinkDomainSuccess';
+  data: ShortLinkDomain;
+};
+
+export type QueryShortLinkDomainsConnection = {
+  __typename?: 'QueryShortLinkDomainsConnection';
+  edges?: Maybe<Array<Maybe<QueryShortLinkDomainsConnectionEdge>>>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type QueryShortLinkDomainsConnectionEdge = {
+  __typename?: 'QueryShortLinkDomainsConnectionEdge';
+  cursor: Scalars['String']['output'];
+  node?: Maybe<ShortLinkDomain>;
+};
+
+export type QueryShortLinkResult = NotFoundError | QueryShortLinkSuccess;
+
+export type QueryShortLinkSuccess = {
+  __typename?: 'QueryShortLinkSuccess';
+  data: ShortLink;
+};
+
+export type QueryShortLinksConnection = {
+  __typename?: 'QueryShortLinksConnection';
+  edges?: Maybe<Array<Maybe<QueryShortLinksConnectionEdge>>>;
+  pageInfo: PageInfo;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type QueryShortLinksConnectionEdge = {
+  __typename?: 'QueryShortLinksConnectionEdge';
+  cursor: Scalars['String']['output'];
+  node?: Maybe<ShortLink>;
 };
 
 export type RadioOptionBlock = Block & {
@@ -2737,6 +3130,55 @@ export enum Service {
   ApiUsers = 'apiUsers',
   ApiVideos = 'apiVideos'
 }
+
+/** A short link that redirects to a full URL */
+export type ShortLink = {
+  __typename?: 'ShortLink';
+  domain: ShortLinkDomain;
+  id: Scalars['ID']['output'];
+  /** short link path not including the leading slash */
+  pathname: Scalars['String']['output'];
+  /** the service that created this short link */
+  service: Service;
+  /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
+  to: Scalars['String']['output'];
+};
+
+/** A domain that can be used for short links */
+export type ShortLinkDomain = {
+  __typename?: 'ShortLinkDomain';
+  apexName: Scalars['String']['output'];
+  /** check status of the domain */
+  check: ShortLinkDomainCheck;
+  createdAt: Scalars['Date']['output'];
+  hostname: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  /** The services that are enabled for this domain, if empty then this domain can be used by all services */
+  services: Array<Service>;
+  updatedAt: Scalars['Date']['output'];
+};
+
+export type ShortLinkDomainCheck = {
+  __typename?: 'ShortLinkDomainCheck';
+  /** Is the domain correctly configured in the DNS? If false, A Record and CNAME Record should be added by the user. */
+  configured: Scalars['Boolean']['output'];
+  /** Verification records to be added to the DNS to confirm ownership. */
+  verification: Array<ShortLinkDomainVerfication>;
+  /** Does the domain belong to the short link application? If false, verification will be populated. */
+  verified: Scalars['Boolean']['output'];
+};
+
+export type ShortLinkDomainVerfication = {
+  __typename?: 'ShortLinkDomainVerfication';
+  /** Domain name */
+  domain: Scalars['String']['output'];
+  /** Reason for the verification */
+  reason: Scalars['String']['output'];
+  /** Type of verification */
+  type: Scalars['String']['output'];
+  /** Value of the verification */
+  value: Scalars['String']['output'];
+};
 
 export type SignUpBlock = Block & {
   __typename?: 'SignUpBlock';
@@ -2997,6 +3439,29 @@ export type TagName = {
   language: Language;
   primary: Scalars['Boolean']['output'];
   value: Scalars['String']['output'];
+};
+
+export type Taxonomy = {
+  __typename?: 'Taxonomy';
+  category: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  name: Array<TaxonomyName>;
+  term: Scalars['String']['output'];
+};
+
+
+export type TaxonomyNameArgs = {
+  category?: InputMaybe<Scalars['String']['input']>;
+  languageCodes?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type TaxonomyName = {
+  __typename?: 'TaxonomyName';
+  id: Scalars['ID']['output'];
+  label: Scalars['String']['output'];
+  language: Language;
+  taxonomy: Taxonomy;
+  term: Scalars['String']['output'];
 };
 
 export type Team = {
@@ -3374,6 +3839,7 @@ export type Video = {
   children: Array<Video>;
   /** the number value of the amount of children on a video */
   childrenCount: Scalars['Int']['output'];
+  cloudflareAssets: Array<CloudflareR2>;
   description: Array<VideoDescription>;
   id: Scalars['ID']['output'];
   /** @deprecated use images.mobileCinematicHigh */
@@ -3395,6 +3861,7 @@ export type Video = {
   /** slug is a permanent link to the video. */
   slug: Scalars['String']['output'];
   snippet: Array<VideoSnippet>;
+  source?: Maybe<VideoBlockSource>;
   studyQuestions: Array<VideoStudyQuestion>;
   subtitles: Array<VideoSubtitle>;
   /** @deprecated use images.thumbnail */
@@ -3490,6 +3957,7 @@ export type VideoBlock = Block & {
    */
   image?: Maybe<Scalars['String']['output']>;
   journeyId: Scalars['ID']['output'];
+  mediaVideo?: Maybe<MediaVideo>;
   muted?: Maybe<Scalars['Boolean']['output']>;
   /** how the video should display within the VideoBlock */
   objectFit?: Maybe<VideoBlockObjectFit>;
@@ -3603,6 +4071,7 @@ export enum VideoBlockObjectFit {
 export enum VideoBlockSource {
   Cloudflare = 'cloudflare',
   Internal = 'internal',
+  Mux = 'mux',
   YouTube = 'youTube'
 }
 
@@ -3728,6 +4197,16 @@ export type VideoEdition = {
   name?: Maybe<Scalars['String']['output']>;
   videoSubtitles: Array<VideoSubtitle>;
   videoVariants: Array<VideoVariant>;
+};
+
+export type VideoEditionCreateInput = {
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type VideoEditionUpdateInput = {
+  id: Scalars['ID']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type VideoExpandEvent = Event & {
@@ -4030,17 +4509,20 @@ export type VideoUpdateInput = {
 export type VideoVariant = {
   __typename?: 'VideoVariant';
   dash?: Maybe<Scalars['String']['output']>;
+  downloadable: Scalars['Boolean']['output'];
   downloads: Array<VideoVariantDownload>;
   duration: Scalars['Int']['output'];
   hls?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
+  lengthInMilliseconds: Scalars['Int']['output'];
   share?: Maybe<Scalars['String']['output']>;
   /** slug is a permanent link to the video variant. */
   slug: Scalars['String']['output'];
   subtitle: Array<VideoSubtitle>;
   subtitleCount: Scalars['Int']['output'];
   videoEdition: VideoEdition;
+  videoId?: Maybe<Scalars['ID']['output']>;
 };
 
 
@@ -4051,11 +4533,13 @@ export type VideoVariantSubtitleArgs = {
 
 export type VideoVariantCreateInput = {
   dash?: InputMaybe<Scalars['String']['input']>;
+  downloadable: Scalars['Boolean']['input'];
   duration?: InputMaybe<Scalars['Int']['input']>;
   edition: Scalars['String']['input'];
   hls?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
   languageId: Scalars['String']['input'];
+  lengthInMilliseconds?: InputMaybe<Scalars['Int']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;
   slug: Scalars['String']['input'];
   videoId: Scalars['String']['input'];
@@ -4098,11 +4582,13 @@ export type VideoVariantDownloadUpdateInput = {
 
 export type VideoVariantUpdateInput = {
   dash?: InputMaybe<Scalars['String']['input']>;
+  downloadable?: InputMaybe<Scalars['Boolean']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   edition?: InputMaybe<Scalars['String']['input']>;
   hls?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
   languageId?: InputMaybe<Scalars['String']['input']>;
+  lengthInMilliseconds?: InputMaybe<Scalars['Int']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['String']['input']>;
@@ -4279,6 +4765,32 @@ export type VisitorsConnection = {
   pageInfo: PageInfo;
 };
 
+export type YouTube = {
+  __typename?: 'YouTube';
+  id: Scalars['ID']['output'];
+  primaryLanguageId?: Maybe<Scalars['ID']['output']>;
+  source: VideoBlockSource;
+};
+
+export type Youtube = {
+  __typename?: 'Youtube';
+  id: Scalars['ID']['output'];
+  primaryLanguageId?: Maybe<Scalars['ID']['output']>;
+  source?: Maybe<VideoBlockSource>;
+};
+
+export type ZodError = BaseError & {
+  __typename?: 'ZodError';
+  fieldErrors: Array<ZodFieldError>;
+  message?: Maybe<Scalars['String']['output']>;
+};
+
+export type ZodFieldError = {
+  __typename?: 'ZodFieldError';
+  message: Scalars['String']['output'];
+  path: Array<Scalars['String']['output']>;
+};
+
 export enum Join__Graph {
   ApiAnalytics = 'API_ANALYTICS',
   ApiJourneys = 'API_JOURNEYS',
@@ -4295,26 +4807,12 @@ export enum Link__Purpose {
   Security = 'SECURITY'
 }
 
-export type GetUserQueryVariables = Exact<{
-  userId: Scalars['ID']['input'];
+export type GetMuxVideoQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
 }>;
 
 
-export type GetUserQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: string, email: string, firstName: string, imageUrl?: string | null } | null };
-
-export type GetUserByEmailQueryVariables = Exact<{
-  email: Scalars['String']['input'];
-}>;
-
-
-export type GetUserByEmailQuery = { __typename?: 'Query', userByEmail?: { __typename?: 'User', id: string, email: string, firstName: string, imageUrl?: string | null } | null };
-
-export type UserQueryVariables = Exact<{
-  userId: Scalars['ID']['input'];
-}>;
-
-
-export type UserQuery = { __typename?: 'Query', user?: { __typename?: 'User', id: string, firstName: string, email: string, imageUrl?: string | null } | null };
+export type GetMuxVideoQuery = { __typename?: 'Query', getMuxVideo?: { __typename?: 'MuxVideo', id: string, playbackId?: string | null, duration?: number | null } | null };
 
 export type GetLanguagesQueryVariables = Exact<{
   languageId: Scalars['ID']['input'];
@@ -4328,11 +4826,9 @@ export type SiteCreateMutationVariables = Exact<{
 }>;
 
 
-export type SiteCreateMutation = { __typename?: 'Mutation', siteCreate: { __typename: 'Error', message: string } | { __typename?: 'MutationSiteCreateSuccess', data: { __typename: 'Site', id: string, domain: string, memberships: Array<{ __typename: 'SiteMembership', id: string, role: string }>, goals: Array<{ __typename: 'SiteGoal', id: string, eventName?: string | null }>, sharedLinks: Array<{ __typename: 'SiteSharedLink', id: string, slug: string }> } } };
+export type SiteCreateMutation = { __typename?: 'Mutation', siteCreate: { __typename: 'Error', message?: string | null } | { __typename?: 'MutationSiteCreateSuccess', data: { __typename: 'Site', id: string, domain: string, memberships: Array<{ __typename: 'SiteMembership', id: string, role: string }>, goals: Array<{ __typename: 'SiteGoal', id: string, eventName?: string | null }>, sharedLinks: Array<{ __typename: 'SiteSharedLink', id: string, slug: string }> } } };
 
 
-export const GetUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUser"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}}]} as unknown as DocumentNode<GetUserQuery, GetUserQueryVariables>;
-export const GetUserByEmailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetUserByEmail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"email"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"userByEmail"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"email"},"value":{"kind":"Variable","name":{"kind":"Name","value":"email"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}}]} as unknown as DocumentNode<GetUserByEmailQuery, GetUserByEmailQueryVariables>;
-export const UserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"User"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"userId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"user"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"userId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}}]}}]}}]} as unknown as DocumentNode<UserQuery, UserQueryVariables>;
+export const GetMuxVideoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetMuxVideo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getMuxVideo"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"playbackId"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}}]}}]}}]} as unknown as DocumentNode<GetMuxVideoQuery, GetMuxVideoQueryVariables>;
 export const GetLanguagesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetLanguages"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"language"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bcp47"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<GetLanguagesQuery, GetLanguagesQueryVariables>;
 export const SiteCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SiteCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Error"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationSiteCreateSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"domain"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"memberships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventName"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sharedLinks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SiteCreateMutation, SiteCreateMutationVariables>;

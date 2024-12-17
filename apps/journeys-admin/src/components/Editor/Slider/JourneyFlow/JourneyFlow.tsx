@@ -14,8 +14,6 @@ import {
 } from 'react'
 import {
   Background,
-  ControlButton,
-  Controls,
   type Edge,
   type Node,
   type NodeDragHandler,
@@ -28,6 +26,7 @@ import {
   ReactFlow,
   type ReactFlowInstance,
   type ReactFlowProps,
+  SelectionDragHandler,
   updateEdge as reactFlowUpdateEdge,
   useEdgesState,
   useNodesState
@@ -39,7 +38,6 @@ import { isActionBlock } from '@core/journeys/ui/isActionBlock'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
 import type {
   GetStepBlocksWithPosition,
@@ -49,6 +47,7 @@ import type {
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
+import { Controls } from './Controls'
 import { CustomEdge } from './edges/CustomEdge'
 import { ReferrerEdge } from './edges/ReferrerEdge'
 import { StartEdge } from './edges/StartEdge'
@@ -68,8 +67,8 @@ import { ReferrerNode } from './nodes/ReferrerNode'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
-
 import 'reactflow/dist/style.css'
+import { useStepAndBlockSelection } from './utils/useStepAndBlockSelection'
 
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
@@ -111,6 +110,7 @@ export function JourneyFlow(): ReactElement {
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [referrerNodes, setReferrerNodes] = useNodesState([])
   const [referrerEdges, setReferrerEdges] = useEdgesState([])
+  const dragTimeStampRef = useRef(0)
 
   const createStepFromStep = useCreateStepFromStep()
   const createStepFromAction = useCreateStepFromAction()
@@ -120,6 +120,7 @@ export function JourneyFlow(): ReactElement {
   const { onSelectionChange } = useDeleteOnKeyPress()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
   const { add } = useCommand()
+  const handleStepSelection = useStepAndBlockSelection()
 
   const { data, loading } = useQuery<
     GetStepBlocksWithPosition,
@@ -340,7 +341,12 @@ export function JourneyFlow(): ReactElement {
       createStepFromAction
     ]
   )
-  const onNodeDragStop: NodeDragHandler = (_event, node): void => {
+
+  const isClickOrTouch = (endDragTimeStamp: number): boolean => {
+    return endDragTimeStamp - dragTimeStampRef.current < 150
+  }
+
+  const onNodeDragStop: NodeDragHandler = (event, node): void => {
     if (node.type !== 'StepBlock') return
 
     const step = data?.blocks.find(
@@ -348,32 +354,69 @@ export function JourneyFlow(): ReactElement {
     )
     if (step == null || step.__typename !== 'StepBlock') return
 
-    const x = Math.trunc(node.position.x)
-    const y = Math.trunc(node.position.y)
+    // if click or tap, go through block selection logic
+    // else go through standard positioning logic below
+
+    if (isClickOrTouch(event.timeStamp)) {
+      handleStepSelection(step.id)
+    } else {
+      const x = Math.trunc(node.position.x)
+      const y = Math.trunc(node.position.y)
+      add({
+        parameters: {
+          execute: {
+            x,
+            y
+          },
+          undo: {
+            x: step.x,
+            y: step.y
+          },
+          redo: {
+            x,
+            y
+          }
+        },
+        execute({ x, y }) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            activeSlide: ActiveSlide.JourneyFlow
+          })
+          blockPositionUpdate([{ id: node.id, x, y }])
+        }
+      })
+    }
+  }
+
+  const onSelectionDragStop: SelectionDragHandler = (_event, nodes): void => {
+    if (steps == null || data == null) return
+    const stepNodes = nodes.filter((node) => node.type === 'StepBlock')
+
     add({
       parameters: {
         execute: {
-          x,
-          y
+          input: stepNodes.map((node) => ({
+            id: node.id,
+            x: Math.trunc(node.position.x),
+            y: Math.trunc(node.position.y)
+          }))
         },
         undo: {
-          x: step.x,
-          y: step.y
-        },
-        redo: {
-          x,
-          y
+          input: (
+            data.blocks as GetStepBlocksWithPosition_blocks_StepBlock[]
+          ).map((step) => ({
+            id: step.id,
+            x: step.x,
+            y: step.y
+          }))
         }
       },
-      execute({ x, y }) {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          activeSlide: ActiveSlide.JourneyFlow
-        })
-        blockPositionUpdate([{ id: node.id, x, y }])
+      execute({ input }) {
+        blockPositionUpdate(input)
       }
     })
   }
+
   const onEdgeUpdateStart = useCallback<
     NonNullable<ReactFlowProps['onEdgeUpdateStart']>
   >(() => {
@@ -462,14 +505,19 @@ export function JourneyFlow(): ReactElement {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
+        onNodeDragStart={(event) => {
+          dragTimeStampRef.current = event.timeStamp
+        }}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
+        onSelectionDragStop={onSelectionDragStop}
         onEdgeUpdate={showAnalytics === true ? undefined : onEdgeUpdate}
         onEdgeUpdateStart={onEdgeUpdateStart}
         onEdgeUpdateEnd={onEdgeUpdateEnd}
         onSelectionChange={onSelectionChange}
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
+        minZoom={0.1}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         proOptions={{ hideAttribution: true }}
@@ -500,13 +548,7 @@ export function JourneyFlow(): ReactElement {
                 </>
               </Panel>
             )}
-            <Controls showInteractive={false}>
-              <ControlButton
-                onClick={async () => await allBlockPositionUpdate()}
-              >
-                <ArrowRefresh6Icon />
-              </ControlButton>
-            </Controls>
+            <Controls handleReset={allBlockPositionUpdate} />
           </>
         )}
         <Background

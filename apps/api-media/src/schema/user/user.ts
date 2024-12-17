@@ -5,11 +5,12 @@ import { MediaRole } from './enums/mediaRole'
 
 builder.externalRef('User', builder.selection<{ id: string }>('id')).implement({
   externalFields: (t) => ({
-    id: t.id()
+    id: t.id({ nullable: false })
   }),
   fields: (t) => ({
     mediaUserRoles: t.field({
       type: [MediaRole],
+      nullable: false,
       resolve: async (data) => {
         return (
           (

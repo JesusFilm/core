@@ -25,7 +25,9 @@ describe('videoVariant', () => {
       query videoVariants($languageId: ID, $primary: Boolean) {
         videoVariants {
           id
+          videoId
           hls
+          downloadable
           downloads {
             id
             quality
@@ -65,12 +67,13 @@ describe('videoVariant', () => {
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         {
           id: 'videoVariantId',
+          videoId: 'videoId',
           hls: null,
           duration: null,
           languageId: 'languageId',
           edition: 'base',
           slug: 'videoSlug',
-          videoId: 'videoId',
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -121,7 +124,9 @@ describe('videoVariant', () => {
       expect(data).toHaveProperty('data.videoVariants', [
         {
           id: 'videoVariantId',
+          videoId: 'videoId',
           hls: null,
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -158,12 +163,13 @@ describe('videoVariant', () => {
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([
         {
           id: 'videoVariantId',
+          videoId: 'videoId',
           hls: null,
           duration: 768,
           languageId: 'languageId',
           edition: 'base',
           slug: 'videoSlug',
-          videoId: 'videoId',
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -216,7 +222,9 @@ describe('videoVariant', () => {
       expect(data).toHaveProperty('data.videoVariants', [
         {
           id: 'videoVariantId',
+          videoId: 'videoId',
           hls: null,
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -259,6 +267,7 @@ describe('videoVariant', () => {
           edition: 'base',
           slug: 'videoSlug',
           videoId: 'videoId',
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -301,7 +310,9 @@ describe('videoVariant', () => {
       expect(data).toHaveProperty('data.videoVariants', [
         {
           id: 'videoVariantId',
+          videoId: 'videoId',
           hls: null,
+          downloadable: true,
           downloads: [
             {
               id: 'downloadId',
@@ -355,12 +366,14 @@ describe('videoVariant', () => {
           id: 'id',
           hls: 'hls',
           duration: 1024,
+          lengthInMilliseconds: 123456,
           dash: 'dash',
           edition: 'base',
           slug: 'videoSlug',
           videoId: 'videoId',
           languageId: 'languageId',
-          share: 'share'
+          share: 'share',
+          downloadable: true
         })
         const result = await authClient({
           document: VIDEO_VARIANT_CREATE_MUTATION,
@@ -370,11 +383,13 @@ describe('videoVariant', () => {
               hls: 'hls',
               dash: 'dash',
               duration: 1024,
+              lengthInMilliseconds: 123456,
               languageId: 'languageId',
               edition: 'base',
               slug: 'videoSlug',
               videoId: 'videoId',
-              share: 'share'
+              share: 'share',
+              downloadable: true
             }
           }
         })
@@ -384,11 +399,13 @@ describe('videoVariant', () => {
             hls: 'hls',
             dash: 'dash',
             duration: 1024,
+            lengthInMilliseconds: 123456,
             languageId: 'languageId',
             edition: 'base',
             slug: 'videoSlug',
             videoId: 'videoId',
-            share: 'share'
+            share: 'share',
+            downloadable: true
           }
         })
         expect(result).toHaveProperty('data.videoVariantCreate', {
@@ -405,11 +422,13 @@ describe('videoVariant', () => {
               hls: 'hls',
               dash: 'dash',
               duration: 1024,
+              lengthInMilliseconds: 123456,
               languageId: 'languageId',
               edition: 'base',
               slug: 'videoSlug',
               videoId: 'videoId',
-              share: 'share'
+              share: 'share',
+              downloadable: true
             }
           }
         })
@@ -436,12 +455,14 @@ describe('videoVariant', () => {
           id: 'id',
           hls: 'hls',
           duration: 1024,
+          lengthInMilliseconds: 123456,
           dash: 'dash',
           edition: 'base',
           slug: 'videoSlug',
           videoId: 'videoId',
           languageId: 'languageId',
-          share: 'share'
+          share: 'share',
+          downloadable: false
         })
         const result = await authClient({
           document: VIDEO_VARIANT_UPDATE_MUTATION,
@@ -451,11 +472,13 @@ describe('videoVariant', () => {
               hls: 'hls',
               dash: 'dash',
               duration: 1024,
+              lengthInMilliseconds: 123456,
               languageId: 'languageId',
               edition: 'base',
               slug: 'videoSlug',
               videoId: 'videoId',
-              share: 'share'
+              share: 'share',
+              downloadable: false
             }
           }
         })
@@ -465,11 +488,13 @@ describe('videoVariant', () => {
             hls: 'hls',
             dash: 'dash',
             duration: 1024,
+            lengthInMilliseconds: 123456,
             languageId: 'languageId',
             edition: 'base',
             slug: 'videoSlug',
             videoId: 'videoId',
-            share: 'share'
+            share: 'share',
+            downloadable: false
           }
         })
         expect(result).toHaveProperty('data.videoVariantUpdate', {
@@ -486,11 +511,13 @@ describe('videoVariant', () => {
               hls: 'hls',
               dash: 'dash',
               duration: 1024,
+              lengthInMilliseconds: 123456,
               languageId: 'languageId',
               edition: 'base',
               slug: 'videoSlug',
               videoId: 'videoId',
-              share: 'share'
+              share: 'share',
+              downloadable: true
             }
           }
         })
@@ -517,12 +544,14 @@ describe('videoVariant', () => {
           id: 'id',
           hls: 'hls',
           duration: 1024,
+          lengthInMilliseconds: 123456,
           dash: 'dash',
           edition: 'base',
           slug: 'videoSlug',
           videoId: 'videoId',
           languageId: 'languageId',
-          share: 'share'
+          share: 'share',
+          downloadable: true
         })
         const result = await authClient({
           document: VIDEO_VARIANT_DELETE_MUTATION,

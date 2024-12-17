@@ -1,4 +1,11 @@
+import {
+  ApolloClient,
+  InMemoryCache,
+  createHttpLink,
+  gql
+} from '@apollo/client'
 import { subject } from '@casl/ability'
+import Mux from '@mux/mux-node'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
@@ -9,6 +16,10 @@ import { object, string } from 'yup'
 import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
+import {
+  GetMuxVideoQuery,
+  GetMuxVideoQueryVariables
+} from '../../../../__generated__/graphql'
 import {
   VideoBlock,
   VideoBlockCreateInput,
@@ -32,6 +43,9 @@ const videoBlockCloudflareSchema = object().shape({
 const videoBlockInternalSchema = object().shape({
   videoId: string().nullable(),
   videoVariantLanguageId: string().nullable()
+})
+const videoBlockMuxSchema = object().shape({
+  videoId: string().nullable()
 })
 
 export interface YoutubeVideosData {
@@ -75,6 +89,15 @@ interface CloudflareRetrieveVideoDetailsResponseResult {
   }
 }
 
+const GET_MUX_VIDEO_QUERY = gql`
+  query GetMuxVideo($id: ID!) {
+    getMuxVideo(id: $id) {
+      id
+      playbackId
+      duration
+    }
+  }
+`
 function parseISO8601Duration(duration: string): number {
   const match = duration.match(/P(\d+Y)?(\d+W)?(\d+D)?T(\d+H)?(\d+M)?(\d+S)?/)
 
@@ -91,6 +114,19 @@ function parseISO8601Duration(duration: string): number {
     (((years * 365 + weeks * 7 + days) * 24 + hours) * 60 + minutes) * 60 +
     seconds
   )
+}
+
+function getClient(): Mux {
+  if (process.env.MUX_ACCESS_TOKEN_ID == null)
+    throw new Error('Missing MUX_ACCESS_TOKEN_ID')
+
+  if (process.env.MUX_SECRET_KEY == null)
+    throw new Error('Missing MUX_SECRET_KEY')
+
+  return new Mux({
+    tokenId: process.env.MUX_ACCESS_TOKEN_ID,
+    tokenSecret: process.env.MUX_SECRET_KEY
+  })
 }
 
 @Resolver('VideoBlock')
@@ -126,6 +162,13 @@ export class VideoBlockResolver {
       case VideoBlockSource.internal:
         await videoBlockInternalSchema.validate(input)
         break
+      case VideoBlockSource.mux:
+        await videoBlockMuxSchema.validate(input)
+        input = {
+          ...input,
+          ...(await this.fetchFieldsFromMux(input.videoId as string)),
+          objectFit: null
+        }
     }
     return await this.prismaService.$transaction(async (tx) => {
       if (input.isCover === true) {
@@ -138,10 +181,7 @@ export class VideoBlockResolver {
             extensions: { code: 'NOT_FOUND' }
           })
         if (parentBlock.coverBlock != null)
-          await this.blockService.removeBlockAndChildren(
-            parentBlock.coverBlock,
-            tx
-          )
+          await this.blockService.removeBlockAndChildren(parentBlock.coverBlock)
       }
 
       const block = await tx.block.create({
@@ -180,6 +220,7 @@ export class VideoBlockResolver {
           ...INCLUDE_JOURNEY_ACL
         }
       })
+      await this.blockService.setJourneyUpdatedAt(tx, block)
       if (!ability.can(Action.Update, subject('Journey', block.journey)))
         throw new GraphQLError('user is not allowed to create block', {
           extensions: { code: 'FORBIDDEN' }
@@ -264,6 +305,18 @@ export class VideoBlockResolver {
           }
         }
         await videoBlockInternalSchema.validate({ ...block, ...input })
+        break
+      case VideoBlockSource.mux:
+        await videoBlockMuxSchema.validate({
+          ...block,
+          ...input
+        })
+        if (input.videoId != null) {
+          input = {
+            ...input,
+            ...(await this.fetchFieldsFromMux(input.videoId))
+          }
+        }
         break
     }
     return await this.blockService.update(id, input)
@@ -352,6 +405,48 @@ export class VideoBlockResolver {
       image: `${response.result.thumbnail}?time=2s&height=768`,
       duration: Math.round(response.result.duration),
       endAt: Math.round(response.result.duration)
+    }
+  }
+
+  private async fetchFieldsFromMux(
+    videoId: string
+  ): Promise<Pick<VideoBlock, 'title' | 'image' | 'duration' | 'endAt'>> {
+    const httpLink = createHttpLink({
+      uri: process.env.GATEWAY_URL,
+      headers: {
+        'x-graphql-client-name': 'api-journeys',
+        'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
+      }
+    })
+    const apollo = new ApolloClient({
+      link: httpLink,
+      cache: new InMemoryCache()
+    })
+
+    const { data } = await apollo.query<
+      GetMuxVideoQuery,
+      GetMuxVideoQueryVariables
+    >({
+      query: GET_MUX_VIDEO_QUERY,
+      variables: { id: videoId }
+    })
+
+    if (data.getMuxVideo == null) {
+      throw new GraphQLError('videoId cannot be found on Mux', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    }
+
+    if (data.getMuxVideo.playbackId == null) {
+      throw new GraphQLError('playbackId cannot be found on Mux', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    }
+    return {
+      title: data.getMuxVideo.id,
+      image: `https://image.mux.com/${data.getMuxVideo.playbackId}/thumbnail.png?time=1`,
+      duration: Math.round(data.getMuxVideo.duration ?? 0),
+      endAt: Math.round(data.getMuxVideo.duration ?? 0)
     }
   }
 }

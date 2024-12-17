@@ -1,5 +1,8 @@
+import { Prisma } from '.prisma/api-media-client'
+
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
+import { VideoSource, VideoSourceShape } from '../../videoSource/videoSource'
 
 import {
   createVideoByDirectUpload,
@@ -8,21 +11,33 @@ import {
   getVideo
 } from './service'
 
-builder.prismaObject('CloudflareVideo', {
+const CloudflareVideo = builder.prismaObject('CloudflareVideo', {
   fields: (t) => ({
-    id: t.exposeID('id'),
-    uploadUrl: t.exposeString('uploadUrl', { nullable: true }),
-    userId: t.exposeID('userId'),
-    createdAt: t.expose('createdAt', {
-      type: 'Date'
+    id: t.exposeID('id', { nullable: false }),
+    source: t.field({
+      type: VideoSource,
+      shareable: true,
+      resolve: () => VideoSourceShape.cloudflare
     }),
-    readyToStream: t.exposeBoolean('readyToStream')
+    primaryLanguageId: t.id({
+      nullable: true,
+      shareable: true,
+      resolve: () => null
+    }),
+    uploadUrl: t.exposeString('uploadUrl'),
+    userId: t.exposeID('userId', { nullable: false }),
+    createdAt: t.expose('createdAt', {
+      type: 'Date',
+      nullable: false
+    }),
+    readyToStream: t.exposeBoolean('readyToStream', { nullable: false })
   })
 })
 
 builder.queryFields((t) => ({
   getMyCloudflareVideos: t.withAuth({ isAuthenticated: true }).prismaField({
     type: ['CloudflareVideo'],
+    nullable: false,
     args: {
       offset: t.arg.int({ required: false }),
       limit: t.arg.int({ required: false })
@@ -38,6 +53,7 @@ builder.queryFields((t) => ({
   }),
   getMyCloudflareVideo: t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'CloudflareVideo',
+    nullable: false,
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
@@ -70,6 +86,7 @@ builder.mutationFields((t) => ({
     .withAuth({ isAuthenticated: true })
     .prismaField({
       type: 'CloudflareVideo',
+      nullable: false,
       args: {
         uploadLength: t.arg({ type: 'Int', required: true }),
         name: t.arg({ type: 'String', required: true })
@@ -96,6 +113,7 @@ builder.mutationFields((t) => ({
     .withAuth({ isAuthenticated: true })
     .prismaField({
       type: 'CloudflareVideo',
+      nullable: false,
       args: {
         url: t.arg({ type: 'String', required: true })
       },
@@ -112,15 +130,21 @@ builder.mutationFields((t) => ({
       }
     }),
   deleteCloudflareVideo: t.withAuth({ isAuthenticated: true }).boolean({
+    nullable: false,
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
-    resolve: async (_root, { id }, { user }) => {
-      await prisma.cloudflareVideo.findUniqueOrThrow({
-        where: { id, userId: user.id }
+    resolve: async (_root, { id }, { user, currentRoles }) => {
+      const where: Prisma.CloudflareVideoWhereUniqueInput = { id }
+      if (!currentRoles.includes('publisher')) {
+        where.userId = user.id
+      }
+      const video = await prisma.cloudflareVideo.findUniqueOrThrow({
+        where
       })
 
-      await deleteVideo(id)
+      // only delete cloudflare asset if original user
+      if (video.userId === user.id) await deleteVideo(id)
 
       await prisma.cloudflareVideo.delete({ where: { id } })
 
@@ -128,3 +152,11 @@ builder.mutationFields((t) => ({
     }
   })
 }))
+
+builder.asEntity(CloudflareVideo, {
+  key: builder.selection<{ id: string; primaryLanguageId: string }>(
+    'id primaryLanguageId'
+  ),
+  resolveReference: async ({ id }) =>
+    await prisma.cloudflareVideo.findUniqueOrThrow({ where: { id } })
+})

@@ -10,6 +10,7 @@ import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
 import { IdType, IdTypeShape } from '../enums/idType'
 import { Language, LanguageWithSlug } from '../language'
+import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
 
 import { VideoLabel } from './enums/videoLabel'
 import { VideoCreateInput } from './inputs/videoCreate'
@@ -52,18 +53,31 @@ export function getLanguageIdFromInfo(
 const Video = builder.prismaObject('Video', {
   shareable: true,
   fields: (t) => ({
-    bibleCitations: t.relation('bibleCitation'),
+    bibleCitations: t.relation('bibleCitation', {
+      nullable: false,
+      query: () => ({
+        orderBy: { order: 'asc' }
+      })
+    }),
+    source: t.field({
+      type: VideoSource,
+      shareable: true,
+      resolve: () => VideoSourceShape.internal
+    }),
     keywords: t.relation('keywords', {
+      nullable: false,
       args: { languageId: t.arg.id({ required: false }) },
       query: ({ languageId }) => ({
         where: { languageId: languageId ?? '529' }
       })
     }),
-    id: t.exposeID('id'),
-    label: t.expose('label', { type: VideoLabel }),
-    primaryLanguageId: t.exposeID('primaryLanguageId'),
-    published: t.exposeBoolean('published'),
+    id: t.exposeID('id', { nullable: false }),
+    label: t.expose('label', { type: VideoLabel, nullable: false }),
+    primaryLanguageId: t.exposeID('primaryLanguageId', { nullable: false }),
+    published: t.exposeBoolean('published', { nullable: false }),
+    cloudflareAssets: t.relation('cloudflareAssets', { nullable: false }),
     title: t.relation('title', {
+      nullable: false,
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
@@ -79,6 +93,7 @@ const Video = builder.prismaObject('Video', {
       })
     }),
     snippet: t.relation('snippet', {
+      nullable: false,
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
@@ -94,6 +109,7 @@ const Video = builder.prismaObject('Video', {
       })
     }),
     description: t.relation('description', {
+      nullable: false,
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
@@ -109,6 +125,7 @@ const Video = builder.prismaObject('Video', {
       })
     }),
     studyQuestions: t.relation('studyQuestions', {
+      nullable: false,
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
@@ -124,10 +141,10 @@ const Video = builder.prismaObject('Video', {
       })
     }),
     image: t.exposeString('image', {
-      nullable: true,
       deprecationReason: 'use images.mobileCinematicHigh'
     }),
     imageAlt: t.relation('imageAlt', {
+      nullable: false,
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false })
@@ -143,27 +160,23 @@ const Video = builder.prismaObject('Video', {
       })
     }),
     videoStill: t.exposeString('videoStill', {
-      nullable: true,
       deprecationReason: 'use images.videoStill'
     }),
     thumbnail: t.exposeString('thumbnail', {
-      nullable: true,
       deprecationReason: 'use images.thumbnail'
     }),
     mobileCinematicHigh: t.exposeString('mobileCinematicHigh', {
-      nullable: true,
       deprecationReason: 'use images.mobileCinematicHigh'
     }),
     mobileCinematicLow: t.exposeString('mobileCinematicLow', {
-      nullable: true,
       deprecationReason: 'use images.mobileCinematicLow'
     }),
     mobileCinematicVeryLow: t.exposeString('mobileCinematicVeryLow', {
-      nullable: true,
       deprecationReason: 'use images.mobileCinematicVeryLow'
     }),
     variantLanguages: t.field({
       type: [Language],
+      nullable: false,
       resolve: async ({ id: videoId }) =>
         (
           await prisma.videoVariant.findMany({
@@ -173,16 +186,19 @@ const Video = builder.prismaObject('Video', {
         ).map(({ languageId }) => ({ id: languageId }))
     }),
     variantLanguagesCount: t.int({
+      nullable: false,
       resolve: async ({ id: videoId }) =>
         await prisma.videoVariant.count({ where: { videoId } })
     }),
     slug: t.string({
+      nullable: false,
       resolve: ({ slug }) => slug ?? '',
       description: 'slug is a permanent link to the video.'
     }),
-    noIndex: t.exposeBoolean('noIndex', { nullable: true }),
+    noIndex: t.exposeBoolean('noIndex'),
     children: t.prismaField({
       type: ['Video'],
+      nullable: false,
       async resolve(query, parent) {
         if (parent.childIds.length === 0) return []
         return orderBy(
@@ -198,12 +214,14 @@ const Video = builder.prismaObject('Video', {
       }
     }),
     childrenCount: t.int({
+      nullable: false,
       resolve: async ({ id }) =>
         await prisma.video.count({ where: { parent: { some: { id } } } }),
       description: 'the number value of the amount of children on a video'
     }),
     parents: t.prismaField({
       type: ['Video'],
+      nullable: false,
       async resolve(query, child: { id: string }) {
         return await prisma.video.findMany({
           ...query,
@@ -217,6 +235,7 @@ const Video = builder.prismaObject('Video', {
     }),
     variantLanguagesWithSlug: t.field({
       type: [LanguageWithSlug],
+      nullable: false,
       resolve: async ({ id: videoId }) =>
         (
           await prisma.videoVariant.findMany({
@@ -230,13 +249,18 @@ const Video = builder.prismaObject('Video', {
     }),
     variants: t.prismaField({
       type: ['VideoVariant'],
-      resolve: async (query, parent) =>
-        await prisma.videoVariant.findMany({
+      nullable: false,
+      resolve: async (query, parent) => {
+        const res = await prisma.videoVariant.findMany({
           ...query,
           where: { videoId: parent.id }
         })
+        // languageId is a string, so we need to convert it to a number to sort it correctly
+        return orderBy(res, (variant) => +variant.languageId, 'asc')
+      }
     }),
     subtitles: t.relation('subtitles', {
+      nullable: false,
       args: {
         languageId: t.arg.id({ required: false }),
         primary: t.arg.boolean({ required: false }),
@@ -264,7 +288,6 @@ const Video = builder.prismaObject('Video', {
     }),
     variant: t.prismaField({
       type: 'VideoVariant',
-      nullable: true,
       args: { languageId: t.arg.id({ required: false }) },
       resolve: async (query, parent, { languageId }, _ctx, info) => {
         const variableValueId =
@@ -310,6 +333,7 @@ const Video = builder.prismaObject('Video', {
       }
     }),
     images: t.relation('images', {
+      nullable: false,
       args: {
         aspectRatio: t.arg({
           type: ImageAspectRatio,
@@ -337,6 +361,7 @@ builder.asEntity(Video, {
 builder.queryFields((t) => ({
   adminVideo: t.withAuth({ isPublisher: true }).prismaField({
     type: 'Video',
+    nullable: false,
     args: {
       id: t.arg.id({ required: true }),
       idType: t.arg({
@@ -358,6 +383,7 @@ builder.queryFields((t) => ({
   }),
   adminVideos: t.withAuth({ isPublisher: true }).prismaField({
     type: ['Video'],
+    nullable: false,
     args: {
       where: t.arg({ type: VideosFilter, required: false }),
       offset: t.arg.int({ required: false }),
@@ -375,6 +401,7 @@ builder.queryFields((t) => ({
   }),
   adminVideosCount: t.withAuth({ isPublisher: true }).int({
     args: { where: t.arg({ type: VideosFilter, required: false }) },
+    nullable: false,
     resolve: async (_parent, { where }) => {
       const filter = videosFilter(where ?? {})
       return await prisma.video.count({
@@ -384,6 +411,7 @@ builder.queryFields((t) => ({
   }),
   video: t.prismaField({
     type: 'Video',
+    nullable: false,
     args: {
       id: t.arg.id({ required: true }),
       idType: t.arg({
@@ -415,6 +443,7 @@ builder.queryFields((t) => ({
   }),
   videos: t.prismaField({
     type: ['Video'],
+    nullable: false,
     args: {
       where: t.arg({ type: VideosFilter, required: false }),
       offset: t.arg.int({ required: false }),
@@ -433,6 +462,7 @@ builder.queryFields((t) => ({
   }),
   videosCount: t.int({
     args: { where: t.arg({ type: VideosFilter, required: false }) },
+    nullable: false,
     resolve: async (_parent, { where }) => {
       const filter = videosFilter(where ?? {})
       filter.published = true
@@ -446,6 +476,7 @@ builder.queryFields((t) => ({
 builder.mutationFields((t) => ({
   videoCreate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'Video',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoCreateInput, required: true })
     },
@@ -458,6 +489,7 @@ builder.mutationFields((t) => ({
   }),
   videoUpdate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'Video',
+    nullable: false,
     args: {
       input: t.arg({ type: VideoUpdateInput, required: true })
     },

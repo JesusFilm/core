@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -113,7 +113,7 @@ describe('BackgroundColor', () => {
   }
 
   it('shows the selected card color', () => {
-    const { getByTestId, getByRole, getAllByTestId } = render(
+    render(
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider value={{ journey, variant: 'admin' }}>
@@ -125,16 +125,18 @@ describe('BackgroundColor', () => {
       </MockedProvider>
     )
 
-    expect(getByTestId('Swatch-bg-color-#FEFEFE')).toHaveStyle({
+    expect(screen.getByTestId('Swatch-bg-color-#FEFEFE')).toHaveStyle({
       backgroundColor: '#FEFEFE'
     })
-    expect(getByRole('textbox')).toHaveValue('#FEFEFE')
+    expect(screen.getByRole('textbox')).toHaveValue('#FEFEFE')
 
     // Palette picker
-    expect(getAllByTestId('Swatch-#FEFEFE')[0].parentElement).toHaveStyle({
+    expect(
+      screen.getAllByTestId('Swatch-#FEFEFE')[0].parentElement
+    ).toHaveStyle({
       outline: '2px solid #C52D3A'
     })
-    expect(getAllByTestId('Swatch-#FEFEFE')[0]).toHaveStyle({
+    expect(screen.getAllByTestId('Swatch-#FEFEFE')[0]).toHaveStyle({
       backgroundColor: '#FEFEFE'
     })
 
@@ -157,7 +159,7 @@ describe('BackgroundColor', () => {
       }
     }))
 
-    const { getAllByTestId } = render(
+    render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -182,7 +184,7 @@ describe('BackgroundColor', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    fireEvent.click(getAllByTestId('Swatch-#B0BEC5')[0])
+    fireEvent.click(screen.getAllByTestId('Swatch-#B0BEC5')[0])
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
@@ -222,7 +224,7 @@ describe('BackgroundColor', () => {
       ...cardBlockBackgroundColorUpdateUndoMock.result
     }))
 
-    const { getAllByTestId, getByRole, getByText } = render(
+    render(
       <MockedProvider
         cache={cache}
         mocks={[
@@ -247,15 +249,64 @@ describe('BackgroundColor', () => {
         </ThemeProvider>
       </MockedProvider>
     )
-    fireEvent.click(getAllByTestId('Swatch-#B0BEC5')[0])
+    fireEvent.click(screen.getAllByTestId('Swatch-#B0BEC5')[0])
     await waitFor(() =>
       expect(cardBlockBackgroundColorUpdateMockResult).toHaveBeenCalled()
     )
-    fireEvent.click(getByRole('button', { name: 'Undo' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() =>
       expect(cardBlockBackgroundColorUpdateUndoMockResult).toHaveBeenCalled()
     )
-    expect(getByText('activeContent: canvas')).toBeInTheDocument()
-    expect(getByText('activeSlide: 1')).toBeInTheDocument()
+    expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
+    expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
+  })
+
+  it('only accepts valid hex strings in textfield', async () => {
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Journey:journeyId': {
+        blocks: [{ __ref: 'CardBlock:card1.id' }],
+        id: 'journeyId',
+        __typename: 'Journey'
+      }
+    })
+    const result = jest.fn(() => ({
+      data: {
+        cardBlockUpdate: { id: 'card1.id', backgroundColor: '#EFEFEF' }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        cache={cache}
+        mocks={[
+          {
+            request: {
+              query: CARD_BLOCK_BACKGROUND_COLOR_UPDATE,
+              variables: {
+                id: 'card1.id',
+                input: { backgroundColor: '#B0BEC5' }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <ThemeProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <EditorProvider initialState={{ selectedBlock: card }}>
+              <BackgroundColor />
+            </EditorProvider>
+          </JourneyProvider>
+        </ThemeProvider>
+      </MockedProvider>
+    )
+    const textField = screen.getByRole('textbox')
+    fireEvent.change(textField, { target: { value: '#B0BEC' } })
+
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
+
+    fireEvent.change(textField, { target: { value: '#B0BEC5' } })
+    await waitFor(() => expect(result).toHaveBeenCalled())
   })
 })

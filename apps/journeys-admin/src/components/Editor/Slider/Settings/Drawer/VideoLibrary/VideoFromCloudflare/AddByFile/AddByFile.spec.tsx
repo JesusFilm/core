@@ -135,6 +135,7 @@ describe('AddByFile', () => {
     await waitFor(() =>
       expect(screen.queryByText('Processing...')).not.toBeInTheDocument()
     )
+    expect(screen.queryByText('Uploading...')).not.toBeInTheDocument()
   })
 
   it('should show error state', async () => {

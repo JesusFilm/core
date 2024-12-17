@@ -1,12 +1,11 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "jsx": "react-jsx",
     "esModuleInterop": true,
     "outDir": "../../../dist/out-tsc",
     "declaration": true,
     "types": []
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts"],
   "exclude": ["**/*.spec.ts", "jest.config.ts"]
 }

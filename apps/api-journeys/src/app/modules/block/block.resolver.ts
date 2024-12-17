@@ -49,7 +49,20 @@ export class BlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.blockService.reorderBlock(block, parentOrder)
+
+    return await this.prismaService.$transaction(async (tx) => {
+      const reorderedBlocks = await this.blockService.reorderBlock(
+        block,
+        parentOrder
+      )
+      await tx.journey.update({
+        where: {
+          id: block.journeyId
+        },
+        data: { updatedAt: new Date().toISOString() }
+      })
+      return reorderedBlocks
+    })
   }
 
   @Mutation()
@@ -78,13 +91,23 @@ export class BlockResolver {
       throw new GraphQLError('user is not allowed to update block', {
         extensions: { code: 'FORBIDDEN' }
       })
-    return await this.blockService.duplicateBlock(
-      block,
-      parentOrder,
-      idMap,
-      x,
-      y
-    )
+
+    return await this.prismaService.$transaction(async (tx) => {
+      const duplicatedBlocks = await this.blockService.duplicateBlock(
+        block,
+        parentOrder,
+        idMap,
+        x,
+        y
+      )
+      await tx.journey.update({
+        where: {
+          id: block.journeyId
+        },
+        data: { updatedAt: new Date().toISOString() }
+      })
+      return duplicatedBlocks
+    })
   }
 
   @Mutation()
@@ -219,6 +242,12 @@ export class BlockResolver {
         blocks
       )
 
+      await tx.journey.update({
+        where: {
+          id: updatedBlock.journeyId
+        },
+        data: { updatedAt: new Date().toISOString() }
+      })
       return [...siblings, ...children]
     })
   }

@@ -36,20 +36,6 @@ export class UserJourneyResolver {
     private readonly userJourneyService: UserJourneyService
   ) {}
 
-  @Query()
-  @UseGuards(AppCaslGuard)
-  async userJourneys(
-    @CaslAccessible('UserJourneys')
-    accessibleUserJourneys: Prisma.UserJourneyWhereInput,
-    @Parent() journey: Journey
-  ): Promise<UserJourney[]> {
-    return await this.prismaService.userJourney.findMany({
-      where: {
-        AND: [accessibleUserJourneys, { journeyId: journey.id }]
-      }
-    })
-  }
-
   @Mutation()
   @UseGuards(AppCaslGuard)
   async userJourneyRequest(
@@ -270,5 +256,24 @@ export class UserJourneyResolver {
       .journeyNotification()
 
     return res
+  }
+}
+
+@Resolver('Journey')
+export class JourneyResolver {
+  constructor(private readonly prismaService: PrismaService) {}
+
+  @Query()
+  @UseGuards(AppCaslGuard)
+  async userJourneys(
+    @CaslAccessible('UserJourneys')
+    accessibleUserJourneys: Prisma.UserJourneyWhereInput,
+    @Parent() journey: Journey
+  ): Promise<UserJourney[]> {
+    return await this.prismaService.userJourney.findMany({
+      where: {
+        AND: [accessibleUserJourneys, { journeyId: journey.id }]
+      }
+    })
   }
 }

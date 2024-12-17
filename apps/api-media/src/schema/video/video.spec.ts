@@ -4,6 +4,7 @@ import { GraphQLError } from 'graphql'
 import {
   BibleCitation,
   CloudflareImage,
+  CloudflareR2,
   ImageAspectRatio,
   Keyword,
   Prisma,
@@ -48,6 +49,8 @@ describe('video', () => {
     parents: Video[]
     subtitles: VideoSubtitle[]
     images: CloudflareImage[]
+    cloudflareAssets: CloudflareR2[]
+    variants: VideoVariant[]
   }
 
   const children: Video[] = [
@@ -240,6 +243,46 @@ describe('video', () => {
           updatedAt: new Date(),
           videoId: null
         }
+      ],
+      cloudflareAssets: [
+        {
+          id: 'assetId',
+          videoId: 'videoId',
+          fileName: 'assetFileName',
+          uploadUrl: 'assetUploadUrl',
+          userId: 'testUserId',
+          publicUrl: 'https://assets.jesusfilm.org/assetFileName',
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      ],
+      variants: [
+        {
+          id: 'variantId2',
+          hls: 'hlsUrl',
+          languageId: 'languageId2',
+          slug: 'slug2',
+          videoId: 'videoId',
+          edition: 'edition',
+          dash: null,
+          downloadable: true,
+          duration: null,
+          lengthInMilliseconds: null,
+          share: null
+        },
+        {
+          id: 'variantId1',
+          hls: 'hlsUrl',
+          languageId: 'languageId1',
+          slug: 'slug1',
+          videoId: 'videoId',
+          edition: 'edition',
+          dash: null,
+          downloadable: true,
+          duration: null,
+          lengthInMilliseconds: null,
+          share: null
+        }
       ]
     }
   ]
@@ -365,10 +408,19 @@ describe('video', () => {
           variant(languageId: $languageId) {
             id
           }
+          variants {
+            id
+            language {
+              id
+            }
+          }
           images(aspectRatio: $aspectRatio) {
             id
             aspectRatio
             url
+          }
+          cloudflareAssets {
+            id
           }
         }
       }
@@ -495,6 +547,20 @@ describe('video', () => {
           }
         ],
         variant: { id: 'variantId' },
+        variants: [
+          {
+            id: 'variantId1',
+            language: {
+              id: 'languageId1'
+            }
+          },
+          {
+            id: 'variantId2',
+            language: {
+              id: 'languageId2'
+            }
+          }
+        ],
         variantLanguages: [{ id: 'languageId' }],
         variantLanguagesCount: 1,
         variantLanguagesWithSlug: [
@@ -510,6 +576,11 @@ describe('video', () => {
             url: `https://imagedelivery.net/${
               process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
             }/imageId`
+          }
+        ],
+        cloudflareAssets: [
+          {
+            id: 'assetId'
           }
         ]
       }
@@ -535,6 +606,18 @@ describe('video', () => {
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'variantId'
       } as unknown as VideoVariant)
+
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        {
+          id: 'variantId1',
+          languageId: 'languageId1'
+        } as unknown as VideoVariant,
+        {
+          id: 'variantId2',
+          languageId: 'languageId2'
+        } as unknown as VideoVariant
+      ])
+
       const data = await client({
         document: VIDEOS_QUERY
       })
@@ -543,7 +626,12 @@ describe('video', () => {
         take: 100,
         where: { published: true },
         include: {
-          bibleCitation: true,
+          bibleCitation: {
+            orderBy: {
+              order: 'asc'
+            }
+          },
+          cloudflareAssets: true,
           description: {
             orderBy: {
               primary: 'desc'
@@ -649,6 +737,17 @@ describe('video', () => {
       // variant
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce(null)
 
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        {
+          id: 'variantId1',
+          languageId: 'languageId1'
+        } as unknown as VideoVariant,
+        {
+          id: 'variantId2',
+          languageId: 'languageId2'
+        } as unknown as VideoVariant
+      ])
+
       const data = await client({
         document: VIDEOS_QUERY,
         variables: {
@@ -682,6 +781,18 @@ describe('video', () => {
       prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
         id: 'variantId'
       } as unknown as VideoVariant)
+
+      prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+        {
+          id: 'variantId1',
+          languageId: 'languageId1'
+        } as unknown as VideoVariant,
+        {
+          id: 'variantId2',
+          languageId: 'languageId2'
+        } as unknown as VideoVariant
+      ])
+
       const data = await client({
         document: VIDEOS_QUERY,
         variables: {
@@ -710,7 +821,12 @@ describe('video', () => {
           }
         },
         include: {
-          bibleCitation: true,
+          bibleCitation: {
+            orderBy: {
+              order: 'asc'
+            }
+          },
+          cloudflareAssets: true,
           description: {
             orderBy: {
               primary: 'desc'
@@ -1214,7 +1330,11 @@ describe('video', () => {
         take: 100,
         where: {},
         include: {
-          bibleCitation: true,
+          bibleCitation: {
+            orderBy: {
+              order: 'asc'
+            }
+          },
           description: {
             orderBy: {
               primary: 'desc'
@@ -1390,7 +1510,11 @@ describe('video', () => {
           }
         },
         include: {
-          bibleCitation: true,
+          bibleCitation: {
+            orderBy: {
+              order: 'asc'
+            }
+          },
           description: {
             orderBy: {
               primary: 'desc'
@@ -1843,6 +1967,49 @@ describe('video', () => {
           }
         })
         expect(result).toHaveProperty('data', null)
+      })
+    })
+  })
+
+  describe('entity', () => {
+    const VIDEO = graphql(`
+      query CoreVideo {
+        _entities(
+          representations: [
+            { __typename: "Video", id: "testId", primaryLanguageId: null }
+          ]
+        ) {
+          ... on Video {
+            id
+          }
+        }
+      }
+    `)
+
+    it('should return video', async () => {
+      prismaMock.video.findUniqueOrThrow.mockResolvedValue({
+        id: 'testId',
+        label: 'behindTheScenes',
+        primaryLanguageId: 'primaryLanguageId',
+        thumbnail: null,
+        videoStill: null,
+        mobileCinematicHigh: null,
+        mobileCinematicLow: null,
+        mobileCinematicVeryLow: null,
+        image: null,
+        slug: null,
+        noIndex: null,
+        published: true,
+        childIds: []
+      })
+      const data = await client({
+        document: VIDEO
+      })
+      expect(prismaMock.video.findUniqueOrThrow).toHaveBeenCalledWith({
+        where: { id: 'testId' }
+      })
+      expect(data).toHaveProperty('data._entities[0]', {
+        id: 'testId'
       })
     })
   })

@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/api-journeys-modern/src",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/webpack:webpack",
@@ -121,7 +122,16 @@
       "options": {
         "command": "gql.tada generate output --tsconfig apps/api-journeys-modern/tsconfig.json"
       }
+    },
+    "email": {
+      "executor": "nx:run-commands",
+      "options": {
+        "parallel": false,
+        "commands": [
+          "if lsof -Pi :4601 -sTCP:LISTEN -t>/dev/null; then\nkill -9 $(lsof -Pi :4601 -sTCP:LISTEN -t)\nfi",
+          "email dev --dir apps/api-journeys-modern/src/emails/templates --port 4601"
+        ]
+      }
     }
-  },
-  "tags": []
+  }
 }

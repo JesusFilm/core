@@ -1,5 +1,3 @@
-import type { ReadStream } from 'fs'
-
 import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -21,6 +19,8 @@ import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
 import { CreateCloudflareVideoUploadByFileMutation } from '../../../../../../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
 import { GetMyCloudflareVideoQuery } from '../../../../../../../../../__generated__/GetMyCloudflareVideoQuery'
+
+import { fileToCloudflareUpload, getBuffer } from './utils/addByFileUtils'
 
 export const CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
   mutation CreateCloudflareVideoUploadByFileMutation(
@@ -56,6 +56,22 @@ export function AddByFile({
   httpStack
 }: AddByFileProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+
+  const [uploading, setUploading] = useState(false)
+  const [processing, setProcessing] = useState(false)
+  const [fileRejected, setfileRejected] = useState(false)
+  const [fileTooLarge, setfileTooLarge] = useState(false)
+  const [tooManyFiles, settooManyFiles] = useState(false)
+  const [fileInvalidType, setfileInvalidType] = useState(false)
+  const [error, setError] = useState<Error | DetailedError>()
+  const [progress, setProgress] = useState(0)
+
+  function resetUploadStatus(): void {
+    setUploading(false)
+    setProcessing(false)
+    setProgress(0)
+  }
+
   const [createCloudflareVideoUploadByFile, { data }] =
     useMutation<CreateCloudflareVideoUploadByFileMutation>(
       CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION
@@ -71,18 +87,10 @@ export function AddByFile({
         ) {
           stopPolling()
           onChange(data.getMyCloudflareVideo.id)
-          setProcessing(false)
+          resetUploadStatus()
         }
       }
     })
-  const [uploading, setUploading] = useState(false)
-  const [processing, setProcessing] = useState(false)
-  const [fileRejected, setfileRejected] = useState(false)
-  const [fileTooLarge, setfileTooLarge] = useState(false)
-  const [tooManyFiles, settooManyFiles] = useState(false)
-  const [fileInvalidType, setfileInvalidType] = useState(false)
-  const [error, setError] = useState<Error | DetailedError>()
-  const [progress, setProgress] = useState(0)
 
   useEffect(() => {
     if (processing && data?.createCloudflareVideoUploadByFile?.id != null) {
@@ -104,54 +112,42 @@ export function AddByFile({
     setError(undefined)
   }
 
+  function uploadVideo(
+    file: File,
+    data: CreateCloudflareVideoUploadByFileMutation
+  ): Upload {
+    setUploading(true)
+    const upload = new Upload(getBuffer(file), {
+      httpStack: httpStack ?? new DefaultHttpStack({}),
+      uploadUrl: data.createCloudflareVideoUploadByFile.uploadUrl,
+      chunkSize: 150 * 1024 * 1024,
+      onSuccess: (): void => {
+        setUploading(false)
+        setProcessing(true)
+      },
+      onError: (err): void => {
+        setError(err)
+        resetUploadStatus()
+      },
+      onProgress(bytesUploaded, bytesTotal): void {
+        setProgress((bytesUploaded / bytesTotal) * 100)
+      }
+    })
+    upload.start()
+    return upload
+  }
+
   const onDropAccepted = async (files: File[]): Promise<void> => {
     if (files.length > 0) {
-      const file = files[0]
-      const fileName = file.name.split('.')[0]
-      const { data } = await createCloudflareVideoUploadByFile({
-        variables: {
-          uploadLength: file.size,
-          name: fileName
-        }
-      })
+      const { data } = await createCloudflareVideoUploadByFile(
+        fileToCloudflareUpload(files[0])
+      )
 
       if (
         data?.createCloudflareVideoUploadByFile?.uploadUrl != null &&
         data?.createCloudflareVideoUploadByFile?.id != null
       ) {
-        setUploading(true)
-        // the following if statement is required for testing in jest
-        let buffer: ReadStream | File
-        if (process.env.NODE_ENV === 'test') {
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          buffer = require('fs').createReadStream(
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            require('path').join(
-              __dirname,
-              (file as unknown as { path: string }).path
-            )
-          )
-        } else {
-          buffer = file
-        }
-        const upload = new Upload(buffer, {
-          httpStack: httpStack ?? new DefaultHttpStack({}),
-          uploadUrl: data.createCloudflareVideoUploadByFile.uploadUrl,
-          chunkSize: 150 * 1024 * 1024,
-          onSuccess: (): void => {
-            setUploading(false)
-            setProcessing(true)
-          },
-          onError: (err): void => {
-            setError(err)
-            setUploading(false)
-            setProgress(0)
-          },
-          onProgress(bytesUploaded, bytesTotal): void {
-            setProgress((bytesUploaded / bytesTotal) * 100)
-          }
-        })
-        upload.start()
+        uploadVideo(files[0], data)
       }
     }
   }

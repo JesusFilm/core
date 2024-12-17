@@ -7,11 +7,10 @@ import {
   ApolloNextAppProvider,
   InMemoryCache
 } from '@apollo/experimental-nextjs-app-support'
-import { UserCredential, getAuth, signInAnonymously } from 'firebase/auth'
 import { PropsWithChildren, ReactNode } from 'react'
 
 import { cache } from '../../../libs/apollo/cache'
-import { firebaseClient } from '../../../libs/firebaseClient/firebaseClient'
+import { User } from '../../../libs/auth/authContext'
 
 const httpLink = createHttpLink({
   uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
@@ -22,34 +21,30 @@ const httpLink = createHttpLink({
   }
 })
 
-let signInPromise: Promise<UserCredential>
+export function ApolloProvider({
+  children,
+  user
+}: PropsWithChildren & { user?: User | null }): ReactNode {
+  const authLink = setContext(async (_, { headers }) => {
+    const token = await user?.token
 
-const authLink = setContext(async (_, { headers }) => {
-  const auth = getAuth(firebaseClient)
-  if (signInPromise == null) signInPromise = signInAnonymously(auth)
-  const userCredential = await signInPromise
-
-  const token = await userCredential.user.getIdToken()
-
-  return {
-    headers: {
-      ...headers,
-      Authorization: token != null ? `JWT ${token}` : undefined
+    return {
+      headers: {
+        ...headers,
+        Authorization: token != null ? `JWT ${token}` : undefined
+      }
     }
-  }
-})
-
-// have a function to create a client for you
-function makeClient(): ApolloClient<NormalizedCacheObject> {
-  return new ApolloClient({
-    cache: new InMemoryCache(cache),
-    link: typeof window === 'undefined' ? httpLink : authLink.concat(httpLink),
-    connectToDevTools: true
   })
-}
 
-// you need to create a component to wrap your app in
-export function ApolloProvider({ children }: PropsWithChildren): ReactNode {
+  function makeClient(): ApolloClient<NormalizedCacheObject> {
+    return new ApolloClient({
+      cache: new InMemoryCache(cache),
+      link:
+        typeof window === 'undefined' ? httpLink : authLink.concat(httpLink),
+      connectToDevTools: true
+    })
+  }
+
   return (
     <ApolloNextAppProvider makeClient={makeClient}>
       {children}

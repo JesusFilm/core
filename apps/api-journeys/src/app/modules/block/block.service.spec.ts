@@ -75,7 +75,8 @@ describe('BlockService', () => {
     themeMode: ThemeMode.light,
     themeName: ThemeName.base,
     fullscreen: true,
-    action: null
+    action: null,
+    updatedAt: '2024-10-21T04:32:25.858Z'
   } as unknown as BlockWithAction
 
   const blockWithAction = {
@@ -176,6 +177,20 @@ describe('BlockService', () => {
     })
   })
 
+  describe('setJourneyUpdatedAt', () => {
+    it('should set the journey of updatedAt of the block', async () => {
+      await service.setJourneyUpdatedAt(prismaService, block)
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: {
+          id: block.journeyId
+        },
+        data: {
+          updatedAt: block.updatedAt
+        }
+      })
+    })
+  })
+
   describe('save', () => {
     it('should return a saved block', async () => {
       prismaService.block.create.mockResolvedValue(block)
@@ -236,6 +251,32 @@ describe('BlockService', () => {
         },
         where: {
           id: '1'
+        }
+      })
+    })
+
+    it('should update journey updatedAt when block is updated', async () => {
+      prismaService.block.update.mockResolvedValueOnce(block)
+      expect(await service.update(block.id, { title: 'test' })).toEqual(
+        blockResponse
+      )
+      expect(prismaService.block.update).toHaveBeenCalledWith({
+        data: {
+          title: 'test'
+        },
+        include: {
+          action: true
+        },
+        where: {
+          id: '1'
+        }
+      })
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        data: {
+          updatedAt: block.updatedAt
+        },
+        where: {
+          id: block.journeyId
         }
       })
     })
@@ -665,9 +706,13 @@ describe('BlockService', () => {
       prismaService.block.findMany
         .mockResolvedValueOnce([block, block])
         .mockResolvedValueOnce([])
+
+      jest.useFakeTimers()
+      jest.setSystemTime(new Date('2024-10-22T03:39:39.268Z'))
     })
 
     it('should remove blocks and return siblings', async () => {
+      prismaService.block.update.mockResolvedValueOnce(block)
       service.getSiblingsInternal = jest.fn().mockResolvedValue([
         { id: block.id, parentOrder: 1 },
         { id: block.id, parentOrder: 2 }
@@ -676,7 +721,6 @@ describe('BlockService', () => {
         { id: block.id, parentOrder: 0 },
         { id: block.id, parentOrder: 1 }
       ])
-
       expect(await service.removeBlockAndChildren(block)).toEqual([
         { id: block.id, parentOrder: 0 },
         { id: block.id, parentOrder: 1 }
@@ -687,9 +731,40 @@ describe('BlockService', () => {
         prismaService
       )
       expect(prismaService.block.update).toHaveBeenCalledWith({
-        data: { deletedAt: expect.any(String) },
+        data: { deletedAt: '2024-10-22T03:39:39.268Z' },
         where: { id: '1' }
       })
+    })
+  })
+
+  it('should update journey updatedAt when block is deleted', async () => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date('2024-10-22T03:39:39.268Z'))
+
+    prismaService.block.update.mockResolvedValueOnce(block)
+    service.getSiblingsInternal = jest.fn().mockResolvedValue([
+      { id: block.id, parentOrder: 1 },
+      { id: block.id, parentOrder: 2 }
+    ])
+    service.reorderSiblings = jest.fn().mockResolvedValue([
+      { id: block.id, parentOrder: 0 },
+      { id: block.id, parentOrder: 1 }
+    ])
+    expect(await service.removeBlockAndChildren(block)).toEqual([
+      { id: block.id, parentOrder: 0 },
+      { id: block.id, parentOrder: 1 }
+    ])
+    expect(prismaService.journey.update).toHaveBeenCalledWith({
+      data: {
+        updatedAt: '2024-10-22T03:39:39.268Z'
+      },
+      where: {
+        id: '1'
+      }
+    })
+    expect(prismaService.block.update).toHaveBeenCalledWith({
+      data: { deletedAt: '2024-10-22T03:39:39.268Z' },
+      where: { id: '1' }
     })
   })
 

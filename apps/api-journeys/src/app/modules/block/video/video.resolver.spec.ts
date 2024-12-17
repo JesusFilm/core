@@ -1,3 +1,4 @@
+import { ApolloClient, ApolloQueryResult } from '@apollo/client'
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import fetch, { Response } from 'node-fetch'
@@ -31,7 +32,7 @@ const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
 describe('VideoBlockResolver', () => {
   let resolver: VideoBlockResolver,
-    service: BlockService,
+    service: DeepMockProxy<BlockService>,
     prismaService: DeepMockProxy<PrismaService>,
     ability: AppAbility
 
@@ -56,7 +57,8 @@ describe('VideoBlockResolver', () => {
       url: 'https://jesusfilm.org',
       target: 'target'
     },
-    objectFit: 'fill'
+    objectFit: 'fill',
+    updatedAt: '2024-10-21T04:32:25.858Z'
   } as unknown as Block
   const blockWithUserTeam = {
     ...block,
@@ -83,20 +85,27 @@ describe('VideoBlockResolver', () => {
     coverBlockId: 'coverBlockId',
     fullscreen: true
   } as unknown as Block
-  const blockService = {
-    provide: BlockService,
-    useFactory: () => ({
-      getSiblings: jest.fn(() => [block, block]),
-      removeBlockAndChildren: jest.fn((input) => input),
-      update: jest.fn((input) => input)
-    })
+
+  const muxBlock = {
+    ...blockWithUserTeam,
+    duration: 100,
+    endAt: 100,
+    image: 'https://mux.com/video.jpg'
   }
+
+  beforeAll(() => {
+    process.env.MUX_UGC_ACCESS_TOKEN_ID = 'accessTokenId'
+    process.env.MUX_UGC_SECRET_KEY = 'secretKey'
+  })
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
       providers: [
-        blockService,
+        {
+          provide: BlockService,
+          useValue: mockDeep<BlockService>()
+        },
         VideoBlockResolver,
         {
           provide: PrismaService,
@@ -105,12 +114,18 @@ describe('VideoBlockResolver', () => {
       ]
     }).compile()
     resolver = module.get<VideoBlockResolver>(VideoBlockResolver)
-    service = await module.resolve(BlockService)
+    service = module.get<BlockService>(
+      BlockService
+    ) as DeepMockProxy<BlockService>
     prismaService = module.get<PrismaService>(
       PrismaService
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({ id: 'userId' })
     prismaService.block.findFirst.mockResolvedValue(null)
+    service.getSiblings.mockResolvedValue([
+      { ...block, action: null },
+      { ...block, action: null }
+    ])
   })
 
   afterEach(() => {
@@ -154,6 +169,17 @@ describe('VideoBlockResolver', () => {
       expect(service.getSiblings).toHaveBeenCalledWith(
         blockCreateInput.journeyId,
         blockCreateInput.parentBlockId
+      )
+    })
+
+    it('should update journey updatedAt when video block is created', async () => {
+      prismaService.block.create.mockResolvedValueOnce(blockWithUserTeam)
+      expect(
+        await resolver.videoBlockCreate(ability, blockCreateInput)
+      ).toEqual(blockWithUserTeam)
+      expect(service.setJourneyUpdatedAt).toHaveBeenCalledWith(
+        prismaService,
+        blockWithUserTeam
       )
     })
 
@@ -249,10 +275,7 @@ describe('VideoBlockResolver', () => {
         ...blockCreateInput,
         isCover: true
       })
-      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(
-        block,
-        prismaService
-      )
+      expect(service.removeBlockAndChildren).toHaveBeenCalledWith(block)
     })
 
     describe('Internal Source', () => {
@@ -377,6 +400,66 @@ describe('VideoBlockResolver', () => {
             title: 'What is the Bible?',
             parentOrder: 2,
             objectFit: null,
+            typename: 'VideoBlock'
+          },
+          include: {
+            action: true,
+            journey: {
+              include: {
+                team: { include: { userTeams: true } },
+                userJourneys: true
+              }
+            }
+          }
+        })
+      })
+    })
+
+    describe('Mux Source', () => {
+      it('creates a VideoBlock', async () => {
+        prismaService.block.create.mockResolvedValueOnce(muxBlock)
+        jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+          async () =>
+            await Promise.resolve({
+              data: {
+                getMuxVideo: {
+                  id: 'videoId',
+                  assetId: 'assetId',
+                  playbackId: 'playbackId',
+                  readToStream: true,
+                  duration: 10
+                }
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+        )
+        expect(
+          await resolver.videoBlockCreate(ability, {
+            id: 'blockId',
+            journeyId: 'journeyId',
+            parentBlockId: 'parentBlockId',
+            videoId: 'videoId',
+            videoVariantLanguageId: 'videoVariantLanguageId',
+            source: VideoBlockSource.mux
+          })
+        ).toEqual(muxBlock)
+        expect(prismaService.block.create).toHaveBeenCalledWith({
+          data: {
+            id: 'blockId',
+            duration: 10,
+            endAt: 10,
+            image: 'https://image.mux.com/playbackId/thumbnail.png?time=1',
+            objectFit: null,
+            videoId: 'videoId',
+            title: 'videoId',
+            videoVariantLanguageId: 'videoVariantLanguageId',
+            source: VideoBlockSource.mux,
+            journey: { connect: { id: 'journeyId' } },
+            parentBlock: {
+              connect: {
+                id: 'parentBlockId'
+              }
+            },
+            parentOrder: 2,
             typename: 'VideoBlock'
           },
           include: {
@@ -566,7 +649,7 @@ describe('VideoBlockResolver', () => {
                   'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg',
                 uid: 'ea95132c15732412d22c1476fa83f27a',
                 meta: {
-                  name: 'video.mp4'
+                  name: 'video.jpg'
                 }
               },
               success: true
@@ -583,7 +666,7 @@ describe('VideoBlockResolver', () => {
           endAt: 100,
           image:
             'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg?time=2s&height=768',
-          title: 'video.mp4'
+          title: 'video.jpg'
         })
         expect(mockFetch).toHaveBeenCalledWith(
           expect.stringMatching(
@@ -646,6 +729,80 @@ describe('VideoBlockResolver', () => {
         expect(service.update).toHaveBeenCalledWith('blockId', {
           autoplay: true,
           source: VideoBlockSource.cloudflare
+        })
+      })
+    })
+
+    describe('Mux Source', () => {
+      it('updates videoId', async () => {
+        jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+          async () =>
+            await Promise.resolve({
+              data: {
+                getMuxVideo: {
+                  id: 'videoId',
+                  assetId: 'assetId',
+                  playbackId: 'playbackId',
+                  readToStream: true,
+                  duration: 10
+                }
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+        )
+        prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+        await resolver.videoBlockUpdate(ability, 'blockId', {
+          videoId: 'ea95132c15732412d22c1476fa83f27a',
+          source: VideoBlockSource.mux
+        })
+        expect(service.update).toHaveBeenCalledWith('blockId', {
+          videoId: 'ea95132c15732412d22c1476fa83f27a',
+          source: VideoBlockSource.mux,
+          duration: 10,
+          endAt: 10,
+          image: 'https://image.mux.com/playbackId/thumbnail.png?time=1',
+          title: 'videoId'
+        })
+      })
+
+      it('updates videoId title when meta name not present', async () => {
+        jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+          async () =>
+            await Promise.resolve({
+              data: {
+                getMuxVideo: {
+                  id: 'videoId',
+                  assetId: 'assetId',
+                  playbackId: 'playbackId',
+                  readToStream: true,
+                  duration: 10
+                }
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+        )
+        prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+        await resolver.videoBlockUpdate(ability, 'blockId', {
+          videoId: 'ea95132c15732412d22c1476fa83f27a',
+          source: VideoBlockSource.mux
+        })
+        expect(service.update).toHaveBeenCalledWith('blockId', {
+          videoId: 'ea95132c15732412d22c1476fa83f27a',
+          source: VideoBlockSource.mux,
+          duration: 10,
+          endAt: 10,
+          image: 'https://image.mux.com/playbackId/thumbnail.png?time=1',
+          title: 'videoId'
+        })
+      })
+
+      it('updates a VideoBlock', async () => {
+        prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+        await resolver.videoBlockUpdate(ability, 'blockId', {
+          autoplay: true,
+          source: VideoBlockSource.mux
+        })
+        expect(service.update).toHaveBeenCalledWith('blockId', {
+          autoplay: true,
+          source: VideoBlockSource.mux
         })
       })
     })

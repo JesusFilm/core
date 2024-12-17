@@ -26,6 +26,7 @@ export const VIDEO_CONTENT_FIELDS = gql`
       id
       duration
       hls
+      downloadable
       downloads {
         quality
         size

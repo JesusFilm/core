@@ -44,7 +44,7 @@ jobs:
           key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
           restore-keys: node-modules-${{ matrix.node-version }}-
       - name: Setup Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .cache
           key: lint-cache-${{ matrix.node-version }}-${{ hashFiles('**/.eslintrc.json', '**/tsconfig.json') }}

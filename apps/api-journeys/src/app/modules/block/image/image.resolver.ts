@@ -55,10 +55,7 @@ export class ImageBlockResolver {
           })
         // Delete old coverBlock
         if (parentBlock.coverBlock != null)
-          await this.blockService.removeBlockAndChildren(
-            parentBlock.coverBlock,
-            tx
-          )
+          await this.blockService.removeBlockAndChildren(parentBlock.coverBlock)
       }
 
       const block = await tx.block.create({
@@ -93,6 +90,7 @@ export class ImageBlockResolver {
           ...INCLUDE_JOURNEY_ACL
         }
       })
+      await this.blockService.setJourneyUpdatedAt(tx, block)
       if (!ability.can(Action.Update, subject('Journey', block.journey)))
         throw new GraphQLError('user is not allowed to create block', {
           extensions: { code: 'FORBIDDEN' }
