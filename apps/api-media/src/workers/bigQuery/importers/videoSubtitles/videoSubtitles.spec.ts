@@ -44,9 +44,9 @@ describe('bigQuery/importers/videoSubtitles', () => {
         edition: null
       })
       expect(prismaMock.videoEdition.upsert).toHaveBeenCalledWith({
-        where: { id: 'base' },
+        create: { name: 'base', videoId: 'mockVideoId' },
         update: {},
-        create: { id: 'base' }
+        where: { name_videoId: { name: 'base', videoId: 'mockVideoId' } }
       })
       expect(prismaMock.videoSubtitle.upsert).toHaveBeenCalledWith({
         where: {
