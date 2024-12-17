@@ -4432,7 +4432,7 @@ export type VideoSubtitle = {
   primary: Scalars['Boolean']['output'];
   srtSrc?: Maybe<Scalars['String']['output']>;
   value: Scalars['String']['output'];
-  videoEdition: VideoEdition;
+  videoEdition?: Maybe<VideoEdition>;
   vttSrc?: Maybe<Scalars['String']['output']>;
 };
 
@@ -4521,7 +4521,7 @@ export type VideoVariant = {
   slug: Scalars['String']['output'];
   subtitle: Array<VideoSubtitle>;
   subtitleCount: Scalars['Int']['output'];
-  videoEdition: VideoEdition;
+  videoEdition?: Maybe<VideoEdition>;
   videoId?: Maybe<Scalars['ID']['output']>;
 };
 
