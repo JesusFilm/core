@@ -4,13 +4,13 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
-import { VideoFromCloudflare } from '.'
+import { VideoFromMux } from '.'
 
-const VideoFromCloudflareStory: Meta<typeof VideoFromCloudflare> = {
+const VideoFromMuxStory: Meta<typeof VideoFromMux> = {
   ...simpleComponentConfig,
-  component: VideoFromCloudflare,
+  component: VideoFromMux,
   title:
-    'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromCloudflare',
+    'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux',
   argTypes: { onSelect: { action: 'clicked' } },
   parameters: {
     ...simpleComponentConfig.parameters,
@@ -18,11 +18,11 @@ const VideoFromCloudflareStory: Meta<typeof VideoFromCloudflare> = {
   }
 }
 
-const Template: StoryObj<typeof VideoFromCloudflare> = {
+const Template: StoryObj<typeof VideoFromMux> = {
   render: ({ onSelect }) => (
     <MockedProvider mocks={[]}>
       <Box sx={{ bgcolor: 'background.paper', pb: 5 }}>
-        <VideoFromCloudflare onSelect={onSelect} />
+        <VideoFromMux onSelect={onSelect} />
       </Box>
     </MockedProvider>
   )
@@ -30,4 +30,4 @@ const Template: StoryObj<typeof VideoFromCloudflare> = {
 
 export const Default = { ...Template }
 
-export default VideoFromCloudflareStory
+export default VideoFromMuxStory

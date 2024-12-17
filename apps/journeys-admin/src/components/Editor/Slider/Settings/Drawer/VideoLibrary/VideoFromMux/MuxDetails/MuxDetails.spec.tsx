@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react'
 
-import { CloudflareDetails } from './CloudflareDetails'
+import { MuxDetails } from './MuxDetails'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -10,7 +10,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 describe('CloudflareDetails', () => {
   it('should render details of a video', async () => {
     const { getByRole } = render(
-      <CloudflareDetails id="videoId" open onSelect={jest.fn()} />
+      <MuxDetails id="videoId" open onSelect={jest.fn()} />
     )
     const videoPlayer = getByRole('region', {
       name: 'Video Player'

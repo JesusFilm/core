@@ -4,14 +4,14 @@ import { CreateCloudflareVideoUploadByFileMutation } from '../../../../../../../
 import { GetMyCloudflareVideoQuery } from '../../../../../../../../../__generated__/GetMyCloudflareVideoQuery'
 
 import {
-  CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
-  GET_MY_CLOUDFLARE_VIDEO_QUERY
+  CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
+  GET_MY_MUX_VIDEO_QUERY
 } from './AddByFile'
 
-export const createCloudflareVideoMock: MockedResponse<CreateCloudflareVideoUploadByFileMutation> =
+export const createMuxVideoMock: MockedResponse<CreateCloudflareVideoUploadByFileMutation> =
   {
     request: {
-      query: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION,
+      query: CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
       variables: {
         uploadLength: 4,
         name: 'testFile'
@@ -28,21 +28,20 @@ export const createCloudflareVideoMock: MockedResponse<CreateCloudflareVideoUplo
     }
   }
 
-export const getCloudflareVideoMock: MockedResponse<GetMyCloudflareVideoQuery> =
-  {
-    request: {
-      query: GET_MY_CLOUDFLARE_VIDEO_QUERY,
-      variables: {
-        id: 'uploadId'
-      }
-    },
-    result: {
-      data: {
-        getMyCloudflareVideo: {
-          id: 'uploadId',
-          readyToStream: true,
-          __typename: 'CloudflareVideo'
-        }
+export const getMuxVideoMock: MockedResponse<GetMyCloudflareVideoQuery> = {
+  request: {
+    query: GET_MY_MUX_VIDEO_QUERY,
+    variables: {
+      id: 'uploadId'
+    }
+  },
+  result: {
+    data: {
+      getMyCloudflareVideo: {
+        id: 'uploadId',
+        readyToStream: true,
+        __typename: 'CloudflareVideo'
       }
     }
   }
+}

@@ -2,19 +2,19 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { CloudflareDetails } from '.'
+import { MuxDetails } from '.'
 
-const CloudflareDetailsStory: Meta<typeof CloudflareDetails> = {
+const MuxDetailsStory: Meta<typeof MuxDetails> = {
   ...journeysAdminConfig,
-  component: CloudflareDetails,
+  component: MuxDetails,
   title:
     'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromCloudflare/CloudflareDetails',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 
-const Template: StoryObj<typeof CloudflareDetails> = {
+const Template: StoryObj<typeof MuxDetails> = {
   render: ({ id, onSelect }) => {
-    return <CloudflareDetails id={id} open onSelect={onSelect} />
+    return <MuxDetails id={id} open onSelect={onSelect} />
   }
 }
 
@@ -25,4 +25,4 @@ export const Default = {
   }
 }
 
-export default CloudflareDetailsStory
+export default MuxDetailsStory

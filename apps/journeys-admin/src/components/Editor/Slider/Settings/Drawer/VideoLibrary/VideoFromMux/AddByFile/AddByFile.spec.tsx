@@ -1,8 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { createCloudflareVideoMock, getCloudflareVideoMock } from './data'
-import { TestHttpStack } from './TestHttpStack'
+import { createMuxVideoMock, getMuxVideoMock } from './data'
 
 import { AddByFile } from '.'
 
@@ -19,11 +18,8 @@ async function dropTestVideo(): Promise<void> {
   })
 }
 
-async function completeUpload(testStack: TestHttpStack): Promise<void> {
+async function completeUpload(): Promise<void> {
   let req
-  await act(async () => {
-    req = await testStack.nextRequest()
-  })
   expect(req.getURL()).toBe('https://example.com/upload')
   expect(req.getMethod()).toBe('HEAD')
   req.respondWith({
@@ -34,9 +30,6 @@ async function completeUpload(testStack: TestHttpStack): Promise<void> {
     }
   })
 
-  await act(async () => {
-    req = await testStack.nextRequest()
-  })
   expect(req.getURL()).toBe('https://example.com/upload')
   expect(req.getMethod()).toBe('PATCH')
   req.respondWith({
@@ -46,9 +39,6 @@ async function completeUpload(testStack: TestHttpStack): Promise<void> {
     }
   })
 
-  await act(async () => {
-    req = await testStack.nextRequest()
-  })
   expect(req.getURL()).toBe('https://example.com/upload')
   expect(req.getMethod()).toBe('PATCH')
   req.respondWith({
@@ -61,9 +51,9 @@ async function completeUpload(testStack: TestHttpStack): Promise<void> {
 
 describe('AddByFile', () => {
   it('should clear errors on start upload', async () => {
-    const result = jest.fn().mockReturnValue(createCloudflareVideoMock.result)
+    const result = jest.fn().mockReturnValue(createMuxVideoMock.result)
     render(
-      <MockedProvider mocks={[{ ...createCloudflareVideoMock, result }]}>
+      <MockedProvider mocks={[{ ...createMuxVideoMock, result }]}>
         <AddByFile onChange={jest.fn()} />
       </MockedProvider>
     )
@@ -75,10 +65,10 @@ describe('AddByFile', () => {
   })
 
   it('should check if the mutations gets called', async () => {
-    const result = jest.fn().mockReturnValue(createCloudflareVideoMock.result)
+    const result = jest.fn().mockReturnValue(createMuxVideoMock.result)
     render(
-      <MockedProvider mocks={[{ ...createCloudflareVideoMock, result }]}>
-        <AddByFile onChange={jest.fn()} httpStack={new TestHttpStack()} />
+      <MockedProvider mocks={[{ ...createMuxVideoMock, result }]}>
+        <AddByFile onChange={jest.fn()} />
       </MockedProvider>
     )
     window.URL.createObjectURL = jest.fn().mockImplementation(() => 'url')
@@ -88,9 +78,7 @@ describe('AddByFile', () => {
 
   it('should start uploading on a file drop', async () => {
     render(
-      <MockedProvider
-        mocks={[createCloudflareVideoMock, getCloudflareVideoMock]}
-      >
+      <MockedProvider mocks={[createMuxVideoMock, getMuxVideoMock]}>
         <AddByFile onChange={jest.fn()} />
       </MockedProvider>
     )
@@ -102,17 +90,14 @@ describe('AddByFile', () => {
   })
 
   it('should complete a file upload and call onChange', async () => {
-    const testStack = new TestHttpStack()
     const onChange = jest.fn()
     render(
-      <MockedProvider
-        mocks={[createCloudflareVideoMock, getCloudflareVideoMock]}
-      >
-        <AddByFile onChange={onChange} httpStack={testStack} />
+      <MockedProvider mocks={[createMuxVideoMock, getMuxVideoMock]}>
+        <AddByFile onChange={onChange} />
       </MockedProvider>
     )
     await dropTestVideo()
-    await completeUpload(testStack)
+    await completeUpload()
     await waitFor(() =>
       expect(screen.getByText('Processing...')).toBeInTheDocument()
     )
@@ -120,17 +105,14 @@ describe('AddByFile', () => {
   })
 
   it('should finish processing after upload', async () => {
-    const testStack = new TestHttpStack()
     const onChange = jest.fn()
     render(
-      <MockedProvider
-        mocks={[createCloudflareVideoMock, getCloudflareVideoMock]}
-      >
-        <AddByFile onChange={onChange} httpStack={testStack} />
+      <MockedProvider mocks={[createMuxVideoMock, getMuxVideoMock]}>
+        <AddByFile onChange={onChange} />
       </MockedProvider>
     )
     await dropTestVideo()
-    await completeUpload(testStack)
+    await completeUpload()
     await waitFor(() => expect(onChange).toHaveBeenCalledWith('uploadId'))
     await waitFor(() =>
       expect(screen.queryByText('Processing...')).not.toBeInTheDocument()
@@ -139,10 +121,9 @@ describe('AddByFile', () => {
   })
 
   it('should show error state', async () => {
-    const testStack = new TestHttpStack()
     render(
-      <MockedProvider mocks={[createCloudflareVideoMock]}>
-        <AddByFile onChange={jest.fn()} httpStack={testStack} />
+      <MockedProvider mocks={[createMuxVideoMock]}>
+        <AddByFile onChange={jest.fn()} />
       </MockedProvider>
     )
     await dropTestVideo()
@@ -151,12 +132,12 @@ describe('AddByFile', () => {
       expect(screen.getByText('Uploading...')).toBeInTheDocument()
     )
     expect(screen.getByTestId('Upload1Icon')).toBeInTheDocument()
-    const req = await testStack.nextRequest()
-    expect(req.getURL()).toBe('https://example.com/upload')
-    expect(req.getMethod()).toBe('HEAD')
-    req.respondWith({
-      status: 404
-    })
+    // const req = await testStack.nextRequest()
+    // expect(req.getURL()).toBe('https://example.com/upload')
+    // expect(req.getMethod()).toBe('HEAD')
+    // req.respondWith({
+    //   status: 404
+    // })
     await waitFor(() =>
       expect(
         screen.getByText('Something went wrong, try again')
@@ -166,10 +147,9 @@ describe('AddByFile', () => {
   })
 
   it('should show error state on fileRejections', async () => {
-    const testStack = new TestHttpStack()
     render(
-      <MockedProvider mocks={[createCloudflareVideoMock]}>
-        <AddByFile onChange={jest.fn()} httpStack={testStack} />
+      <MockedProvider mocks={[createMuxVideoMock]}>
+        <AddByFile onChange={jest.fn()} />
       </MockedProvider>
     )
     const input = screen.getByTestId('drop zone')

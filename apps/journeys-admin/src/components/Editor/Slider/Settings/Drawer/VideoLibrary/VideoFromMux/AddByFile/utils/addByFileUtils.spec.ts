@@ -1,17 +1,17 @@
 import { ReadStream, readFileSync } from 'fs'
 import { join } from 'path'
 
-import { fileToCloudflareUpload, getBuffer } from './addByFileUtils'
+import { fileToMuxUpload, getBuffer } from './addByFileUtils'
 
 describe('addByFileUtils', () => {
-  describe('fileToCloudflareUpload', () => {
-    it('should return correct variables for Cloudflare video upload', () => {
+  describe('fileToMuxUpload', () => {
+    it('should return correct variables for Mux video upload', () => {
       const mockFile = new File([''], 'video.mp4', {
         type: 'video/mp4',
         lastModified: new Date().getTime()
       })
 
-      const result = fileToCloudflareUpload(mockFile)
+      const result = fileToMuxUpload(mockFile)
 
       expect(result).toEqual({
         variables: {

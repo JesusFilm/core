@@ -64,7 +64,6 @@ export function Video({
   mediaVideo,
   source,
   videoId,
-  playbackId,
   image,
   title,
   autoplay,
@@ -280,9 +279,9 @@ export function Video({
                   type="video/youtube"
                 />
               )}
-              {source === VideoBlockSource.mux && (
+              {mediaVideo?.__typename === 'MuxVideo' && (
                 <source
-                  src={`https://stream.mux.com/${playbackId}.m3u8`}
+                  src={`https://stream.mux.com/${mediaVideo.playbackId}.m3u8`}
                   type="application/x-mpegURL"
                 />
               )}
