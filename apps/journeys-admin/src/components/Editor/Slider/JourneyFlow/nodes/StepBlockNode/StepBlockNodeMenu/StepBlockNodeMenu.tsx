@@ -33,6 +33,7 @@ export function StepBlockNodeMenu({
   function handleClick(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget)
   }
+  //
 
   function handleClose(): void {
     setAnchorEl(null)
