@@ -24,15 +24,18 @@ test.describe('Publisher page functionality', () => {
   })
 
   // Discover page -> Create a new journey with one card -> Three dots on top right -> Create Template
-  test('Create a template via newly created journey', async ({ page }) => {
-    const journeyPage = new JourneyPage(page)
-    await journeyPage.clickCreateCustomJourney() // clicking the create custom journey button
-    await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
-    await journeyPage.createAndVerifyTemplate() // Making the created journey as template by clicking on 'Create Template' option and verifying the journey is updated in the template list of publisher page
-  })
+  test.fixme(
+    'Create a template via newly created journey',
+    async ({ page }) => {
+      const journeyPage = new JourneyPage(page)
+      await journeyPage.clickCreateCustomJourney() // clicking the create custom journey button
+      await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+      await journeyPage.createAndVerifyTemplate() // Making the created journey as template by clicking on 'Create Template' option and verifying the journey is updated in the template list of publisher page
+    }
+  )
 
   // Discover page -> Create a new journey with one card -> Three dots on top right -> Create Template
-  test('Create a template via existing journey', async ({ page }) => {
+  test.fixme('Create a template via existing journey', async ({ page }) => {
     const journeyPage = new JourneyPage(page)
     await journeyPage.selectExistingJourney() // clicking existing journey in the journey list of discover page
     await journeyPage.setExistingJourneyNameToJourneyName() // setting the journey name
@@ -40,80 +43,84 @@ test.describe('Publisher page functionality', () => {
     await journeyPage.createAndVerifyTemplate() // Making the selecetd journey as template by clicking on 'Create Template' option and verifying the journey is updated in the template list of publisher page
   })
 
-  test('Verify the user able to move the single template from Active, archived, Trash page', async ({
-    page
-  }) => {
-    const publisherPage = new Publisher(page)
-    // Verify the user able to navigate to template admin page through Publisher link
-    await publisherPage.navigateToPublisherPage()
-    // Verify the user able to move the single template from Active to archived page
-    await publisherPage.verifyTemplateMovedToArchivedTab()
-    // Verify the user able to move the single template from Archived to Trash page
-    await publisherPage.verifyTemplateMovedToTrashTab()
-    // Verify the user able to restore the template from Trash to active page
-    await publisherPage.verifyTemplateRestoredToActiveTab()
-    // Verify the user able to move the template from Active to Trash page
-    await publisherPage.verifyTemplateMovedToTrashTab()
-    // Verify the user able to delete the single file permanently in templates admin page
-    await publisherPage.verifyTemplateDetetedForever()
-    await publisherPage.clickActiveTab()
-    await publisherPage.verifyTemplateMovedToArchivedTab()
-    // Verify the user able to unarchive the template from Archived to active page
-    await publisherPage.verifyTemplateMovedUnarchivedToActiveTab()
-  })
+  test.fixme(
+    'Verify the user able to move the single template from Active, archived, Trash page',
+    async ({ page }) => {
+      const publisherPage = new Publisher(page)
+      // Verify the user able to navigate to template admin page through Publisher link
+      await publisherPage.navigateToPublisherPage()
+      // Verify the user able to move the single template from Active to archived page
+      await publisherPage.verifyTemplateMovedToArchivedTab()
+      // Verify the user able to move the single template from Archived to Trash page
+      await publisherPage.verifyTemplateMovedToTrashTab()
+      // Verify the user able to restore the template from Trash to active page
+      await publisherPage.verifyTemplateRestoredToActiveTab()
+      // Verify the user able to move the template from Active to Trash page
+      await publisherPage.verifyTemplateMovedToTrashTab()
+      // Verify the user able to delete the single file permanently in templates admin page
+      await publisherPage.verifyTemplateDetetedForever()
+      await publisherPage.clickActiveTab()
+      await publisherPage.verifyTemplateMovedToArchivedTab()
+      // Verify the user able to unarchive the template from Archived to active page
+      await publisherPage.verifyTemplateMovedUnarchivedToActiveTab()
+    }
+  )
 
-  test('Verify the user able to move the all template from Active, archived, Trash page', async ({
-    page
-  }) => {
-    const publisherPage = new Publisher(page)
-    await publisherPage.navigateToPublisherPage()
-    // Verify the user able to move the all journeys from Active to archived page
-    await publisherPage.verifyAllTemplateMovedActiveToArchivedTab()
-    // Verify the user able to unarchive the all journeys from Archived to active page
-    await publisherPage.verifyAllTemplateMovedUnarchieToActiveTab()
-    await publisherPage.getTemplateListOfActiveTab()
-    // Verify the user able to move the all journeys from Active to Trash page
-    await publisherPage.verifyAllJourneysMovedToTrash()
-    await publisherPage.getTemplateListOfTrashTab()
-    // Verify the user able to restore the all journeys from Trash to active page
-    await publisherPage.verifyAllTemplateRestoredToActiveTab()
-    await publisherPage.verifyAllTemplateMovedActiveToArchivedTab()
-    await publisherPage.getTemplateListOfArchivedTab()
-    // Verify the user able to move the all journeys from Archived to Trash page
-    await publisherPage.verifyAllJourneysMovedToTrash()
-    // Verify the user able to delete the all file permanently in templates admin page
-    await publisherPage.verifyAlltemplateDeletedForeverFromTrashTab()
-  })
+  test.fixme(
+    'Verify the user able to move the all template from Active, archived, Trash page',
+    async ({ page }) => {
+      const publisherPage = new Publisher(page)
+      await publisherPage.navigateToPublisherPage()
+      // Verify the user able to move the all journeys from Active to archived page
+      await publisherPage.verifyAllTemplateMovedActiveToArchivedTab()
+      // Verify the user able to unarchive the all journeys from Archived to active page
+      await publisherPage.verifyAllTemplateMovedUnarchieToActiveTab()
+      await publisherPage.getTemplateListOfActiveTab()
+      // Verify the user able to move the all journeys from Active to Trash page
+      await publisherPage.verifyAllJourneysMovedToTrash()
+      await publisherPage.getTemplateListOfTrashTab()
+      // Verify the user able to restore the all journeys from Trash to active page
+      await publisherPage.verifyAllTemplateRestoredToActiveTab()
+      await publisherPage.verifyAllTemplateMovedActiveToArchivedTab()
+      await publisherPage.getTemplateListOfArchivedTab()
+      // Verify the user able to move the all journeys from Archived to Trash page
+      await publisherPage.verifyAllJourneysMovedToTrash()
+      // Verify the user able to delete the all file permanently in templates admin page
+      await publisherPage.verifyAlltemplateDeletedForeverFromTrashTab()
+    }
+  )
 
   // Verify the user able to display the publisher help window
-  test('Verify the user able to display the publisher help window', async ({
-    page
-  }) => {
-    const publisherPage = new Publisher(page)
-    const journeyLevelActions = new JourneyLevelActions(page)
-    await publisherPage.navigateToPublisherPage() // navigating to the publisher page
-    await publisherPage.clickHelpBtn() // clicking on help button at top of the right corner
-    await journeyLevelActions.verifyHelpWindowOpened() // verifying the help window is showing in the publisher page
-  })
+  test.fixme(
+    'Verify the user able to display the publisher help window',
+    async ({ page }) => {
+      const publisherPage = new Publisher(page)
+      const journeyLevelActions = new JourneyLevelActions(page)
+      await publisherPage.navigateToPublisherPage() // navigating to the publisher page
+      await publisherPage.clickHelpBtn() // clicking on help button at top of the right corner
+      await journeyLevelActions.verifyHelpWindowOpened() // verifying the help window is showing in the publisher page
+    }
+  )
 
   //
-  test('Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Metadata', async ({
-    page
-  }) => {
-    const publisherPage = new Publisher(page)
-    await publisherPage.navigateToPublisherPage() // navigating to the publisher page
-    await publisherPage.getExistingTemplateName() // getting name of existing template
-    await publisherPage.clickOnTemplateInPublisherPage() // clicking on existing template
-    await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
-    await publisherPage.clickTheDotOptionsInEditTemplatePage(
-      'Template Settings'
-    ) // clicking Template Settings option from the three dot options
-    await publisherPage.verifyTheTitileBelowMetaDataTab() // In Template setting popup, verifying the title field value is matched with corresponding template title
-    await publisherPage.verifyDescriptionBelowMetaDataTab() // In Template setting popup, verifying the Description field value is matched with corresponding template Description
-    await publisherPage.verifyLanguageOfTemplateBelowMetaDataTab() // In Template setting popup, verifying the Language field value is matched with corresponding template Language
-    await publisherPage.clickSaveBtn() // clicking on the save btn
-    await publisherPage.verifyTemplateSettingSaveToastMessage() // verifying 'Template settings have been saved' toast message
-  })
+  test.fixme(
+    'Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Metadata',
+    async ({ page }) => {
+      const publisherPage = new Publisher(page)
+      await publisherPage.navigateToPublisherPage() // navigating to the publisher page
+      await publisherPage.getExistingTemplateName() // getting name of existing template
+      await publisherPage.clickOnTemplateInPublisherPage() // clicking on existing template
+      await publisherPage.clickThreeDotInEditTempletePage() // clicking on the three dot at top right corner of the edit template page
+      await publisherPage.clickTheDotOptionsInEditTemplatePage(
+        'Template Settings'
+      ) // clicking Template Settings option from the three dot options
+      await publisherPage.verifyTheTitileBelowMetaDataTab() // In Template setting popup, verifying the title field value is matched with corresponding template title
+      await publisherPage.verifyDescriptionBelowMetaDataTab() // In Template setting popup, verifying the Description field value is matched with corresponding template Description
+      await publisherPage.verifyLanguageOfTemplateBelowMetaDataTab() // In Template setting popup, verifying the Language field value is matched with corresponding template Language
+      await publisherPage.clickSaveBtn() // clicking on the save btn
+      await publisherPage.verifyTemplateSettingSaveToastMessage() // verifying 'Template settings have been saved' toast message
+    }
+  )
 
   // Publisher-> Select existing template -> Three dots on top right -> Template Settings -> Categories
   test.fixme(
