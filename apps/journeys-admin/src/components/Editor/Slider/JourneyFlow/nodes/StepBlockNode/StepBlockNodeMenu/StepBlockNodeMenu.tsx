@@ -31,10 +31,8 @@ export function StepBlockNodeMenu({
   const open = Boolean(anchorEl)
 
   function handleClick(event: MouseEvent<HTMLElement>): void {
-    console.log('menu click')
     setAnchorEl(event.currentTarget)
   }
-  //
 
   function handleClose(): void {
     setAnchorEl(null)
@@ -67,7 +65,7 @@ export function StepBlockNodeMenu({
           }}
           data-testid="EditStepFab"
         >
-          <EllipsisIcon />
+          <EllipsisIcon id="StepBlockNodeMenu" />
         </Fab>
       </Zoom>
       <Menu

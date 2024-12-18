@@ -354,12 +354,14 @@ export function JourneyFlow(): ReactElement {
     )
     if (step == null || step.__typename !== 'StepBlock') return
 
-    console.log('node drag stop')
-
     // if click or tap, go through block selection logic
     // else go through standard positioning logic below
 
     if (isClickOrTouch(event.timeStamp)) {
+      const target = event.target as HTMLElement
+      // if the clicked/tapped element is the node menu, don't call handlestepselection hook https://github.com/JesusFilm/core/pull/4736
+      if (target.id === 'StepBlockNodeMenu' || target.id === 'edit-step') return
+
       handleStepSelection(step.id)
     } else {
       const x = Math.trunc(node.position.x)
