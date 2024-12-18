@@ -4,7 +4,11 @@ import {
   DragOverEvent,
   DragOverlay,
   DragStartEvent,
-  closestCorners
+  MouseSensor,
+  TouchSensor,
+  closestCorners,
+  useSensor,
+  useSensors
 } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
@@ -30,6 +34,11 @@ interface DropAreaProps {
 export function DropArea({ children, blocks }: DropAreaProps): ReactElement {
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
   const [active, setActive] = useState<Active | null>(null)
+
+  const mouseSensor = useSensor(MouseSensor)
+  const touchSensor = useSensor(TouchSensor)
+
+  const sensors = useSensors(mouseSensor, touchSensor)
 
   const {
     state: { selectedStep }
@@ -107,6 +116,7 @@ export function DropArea({ children, blocks }: DropAreaProps): ReactElement {
       onDragEnd={handleDragEnd}
       onDragStart={handleDragStart}
       collisionDetection={closestCorners}
+      sensors={sensors}
     >
       <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
         {children}
