@@ -19,7 +19,7 @@ RUN npm install --production
 
 WORKDIR /prisma
 COPY ./apps/api-analytics/db .
-RUN npx prisma generate --generator client
+RUN npx prisma@5 generate --generator client
 
 WORKDIR /app
 
