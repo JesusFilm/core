@@ -54,11 +54,11 @@ function WatchApp({
     <FlagsProvider flags={pageProps.flags}>
       <ApolloProvider client={client}>
         <CacheProvider value={emotionCache}>
-          <DefaultSeo
+          {/* <DefaultSeo
             titleTemplate="%s | Jesus Film Project"
             defaultTitle="Watch | Jesus Film Project"
             description="Free Gospel Video Streaming Library. Watch, learn and share the gospel in over 2000 languages."
-          />
+          /> */}
           <Head>
             <meta name="theme-color" content="#000" />
             <meta
