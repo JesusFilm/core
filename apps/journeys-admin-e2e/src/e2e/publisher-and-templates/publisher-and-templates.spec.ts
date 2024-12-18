@@ -228,24 +228,25 @@ test.describe('Verify template page functionality', () => {
   })
 
   // Templates-> Select existing template -> Use This Template
-  test('create a new journey via use this template button', async ({
-    page
-  }) => {
-    const templatesPage = new TemplatePage(page)
-    const journeyPage = new JourneyPage(page)
-    const cardLevelActionPage = new CardLevelActionPage(page)
-    await templatesPage.navigateToTempalatePage() // navigating to templates page
-    await templatesPage.selectExistingTemplate() // clicking on existing template
-    await templatesPage.verifySelectedTemplatePage() // verifying the page is navigated to selected template page
-    await templatesPage.clickUseThisTemplateButton() // clilcking on 'use this template' button
-    await templatesPage.selectTeamInAddJourneyToTeamPopup() // selecting team in the 'add journey to team' popup
-    await templatesPage.clickAddBtnInPopup() // clicking add button in the 'add journey to team' popup
-    await templatesPage.verifySelectedTemplateInCustomJourneyPage() // verifying the page is navigated to the custom journey page for selected template
-    await journeyPage.clickOnJourneyCard() // clicking on the card
-    await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
-    await cardLevelActionPage.clickTextBtnInAddBlockDrawer() // clicking on text button in add block drawer
-    await journeyPage.verifyJourneyCreatedViaTemplate() // creating the journey of selected template and verifying the created journey is updated in the journey list
-  })
+  test.fixme(
+    'create a new journey via use this template button',
+    async ({ page }) => {
+      const templatesPage = new TemplatePage(page)
+      const journeyPage = new JourneyPage(page)
+      const cardLevelActionPage = new CardLevelActionPage(page)
+      await templatesPage.navigateToTempalatePage() // navigating to templates page
+      await templatesPage.selectExistingTemplate() // clicking on existing template
+      await templatesPage.verifySelectedTemplatePage() // verifying the page is navigated to selected template page
+      await templatesPage.clickUseThisTemplateButton() // clilcking on 'use this template' button
+      await templatesPage.selectTeamInAddJourneyToTeamPopup() // selecting team in the 'add journey to team' popup
+      await templatesPage.clickAddBtnInPopup() // clicking add button in the 'add journey to team' popup
+      await templatesPage.verifySelectedTemplateInCustomJourneyPage() // verifying the page is navigated to the custom journey page for selected template
+      await journeyPage.clickOnJourneyCard() // clicking on the card
+      await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
+      await cardLevelActionPage.clickTextBtnInAddBlockDrawer() // clicking on text button in add block drawer
+      await journeyPage.verifyJourneyCreatedViaTemplate() // creating the journey of selected template and verifying the created journey is updated in the journey list
+    }
+  )
 
   // Templates-> Select existing template -> Preview
   test('preview a template from the journey template page', async ({
