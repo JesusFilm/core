@@ -19,9 +19,9 @@ RUN npm install --production
 
 WORKDIR /prisma
 COPY ./apps/api-media/db .
-RUN npx prisma generate --generator client
+RUN npx prisma@5 generate --generator client
 
 WORKDIR /app
 
-RUN npm install @prisma/client
-CMD npx prisma migrate deploy --schema /prisma/schema.prisma; node ./main.js
+RUN npm install @prisma/client@5
+CMD npx prisma@5 migrate deploy --schema /prisma/schema.prisma; node ./main.js
