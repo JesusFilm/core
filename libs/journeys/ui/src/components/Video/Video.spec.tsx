@@ -103,7 +103,10 @@ describe('Video', () => {
           {...{
             ...block,
             source: VideoBlockSource.youTube,
-            mediaVideo: { id: 'videoId', __typename: 'YouTube' }
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: 'videoId'
+            }
           }}
         />
       </MockedProvider>
@@ -124,7 +127,10 @@ describe('Video', () => {
           {...{
             ...block,
             source: VideoBlockSource.cloudflare,
-            mediaVideo: { id: 'videoId', __typename: 'CloudflareVideo' }
+            mediaVideo: {
+              __typename: 'CloudflareVideo',
+              id: 'videoId'
+            }
           }}
         />
       </MockedProvider>

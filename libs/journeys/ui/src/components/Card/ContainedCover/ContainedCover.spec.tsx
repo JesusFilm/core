@@ -2,6 +2,7 @@ import { render, waitFor } from '@testing-library/react'
 
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../../libs/block'
+import { BlockFields_VideoBlock_mediaVideo_Video } from '../../../libs/block/__generated__/BlockFields'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import {
   VideoFields,
@@ -195,9 +196,10 @@ describe('ContainedCover', () => {
         backgroundBlur={blurUrl}
         videoBlock={{
           ...videoBlock,
+          source: VideoBlockSource.cloudflare,
           mediaVideo: {
-            id: '2_0-FallingPlates',
-            __typename: 'CloudflareVideo'
+            __typename: 'CloudflareVideo',
+            id: '2_0-FallingPlates'
           },
           image:
             'https://customer-.cloudflarestream.com/2_0-FallingPlates/manifest/video.m3u8'
@@ -232,7 +234,11 @@ describe('ContainedCover', () => {
         backgroundBlur={blurUrl}
         videoBlock={{
           ...videoBlock,
-          mediaVideo: { id: '2_0-FallingPlates', __typename: 'YouTube' },
+          source: VideoBlockSource.youTube,
+          mediaVideo: {
+            __typename: 'YouTube',
+            id: '2_0-FallingPlates'
+          },
           image: 'http://youtube.thumbnail.image'
         }}
       >

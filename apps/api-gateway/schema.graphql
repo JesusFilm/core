@@ -290,7 +290,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   customDomainCheck(id: ID!) : CustomDomainCheck! @join__field(graph: API_JOURNEYS) 
   buttonClickEventCreate(input: ButtonClickEventCreateInput!) : ButtonClickEvent! @join__field(graph: API_JOURNEYS) 
   chatOpenEventCreate(input: ChatOpenEventCreateInput!) : ChatOpenEvent! @join__field(graph: API_JOURNEYS) 
-  journeyViewEventCreate(input: JourneyViewEventCreateInput!) : JourneyViewEvent! @join__field(graph: API_JOURNEYS) 
+  journeyViewEventCreate(input: JourneyViewEventCreateInput!) : JourneyViewEvent @join__field(graph: API_JOURNEYS) 
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!) : RadioQuestionSubmissionEvent! @join__field(graph: API_JOURNEYS) 
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!) : SignUpSubmissionEvent! @join__field(graph: API_JOURNEYS) 
   stepViewEventCreate(input: StepViewEventCreateInput!) : StepViewEvent! @join__field(graph: API_JOURNEYS) 
@@ -1025,7 +1025,7 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(
   to select a video.
   For other sources only videoId needs to be set.
   """
-  videoId: ID @join__field(graph: API_JOURNEYS, type: "ID")  @join__field(graph: API_JOURNEYS_MODERN, type: "ID!") 
+  videoId: ID
   """
   internal source videos: videoId and videoVariantLanguageId both need to be set
   to select a video.
@@ -2194,7 +2194,7 @@ type BibleCitation @join__type(graph: API_MEDIA)  {
   bibleBook: BibleBook!
   chapterStart: Int!
   chapterEnd: Int
-  verseStart: Int!
+  verseStart: Int
   verseEnd: Int
   video: Video!
 }
@@ -2580,6 +2580,7 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   downloadable: Boolean!
   downloads: [VideoVariantDownload!]!
   duration: Int!
+  lengthInMilliseconds: Int!
   language: Language!
   videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean) : [VideoSubtitle!]!
@@ -4220,6 +4221,7 @@ input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {
   dash: String
   share: String
   duration: Int
+  lengthInMilliseconds: Int
   languageId: String!
   slug: String!
   downloadable: Boolean!
@@ -4253,6 +4255,7 @@ input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
   dash: String
   share: String
   duration: Int
+  lengthInMilliseconds: Int
   languageId: String
   slug: String
   downloadable: Boolean

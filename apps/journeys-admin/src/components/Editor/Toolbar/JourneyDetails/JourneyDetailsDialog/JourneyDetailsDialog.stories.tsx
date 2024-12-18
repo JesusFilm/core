@@ -39,6 +39,7 @@ const getLanguagesMock: MockedResponse<GetLanguages, GetLanguagesVariables> = {
         {
           __typename: 'Language',
           id: '529',
+          slug: 'english',
           name: [
             {
               value: 'English',
@@ -50,6 +51,7 @@ const getLanguagesMock: MockedResponse<GetLanguages, GetLanguagesVariables> = {
         {
           id: '496',
           __typename: 'Language',
+          slug: 'french',
           name: [
             {
               value: 'Français',
@@ -66,6 +68,7 @@ const getLanguagesMock: MockedResponse<GetLanguages, GetLanguagesVariables> = {
         {
           id: '1106',
           __typename: 'Language',
+          slug: 'german-standard',
           name: [
             {
               value: 'Deutsch',

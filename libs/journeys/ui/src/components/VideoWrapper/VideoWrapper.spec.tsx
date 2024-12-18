@@ -3,7 +3,6 @@ import { render } from '@testing-library/react'
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { Video } from '../Video'
-import { VideoFields_mediaVideo } from '../Video/__generated__/VideoFields'
 
 import { VideoWrapper } from '.'
 

@@ -93,7 +93,7 @@ describe('VideoWrapper', () => {
         duration: null,
         image: null,
         objectFit: null,
-        video: null,
+        mediaVideo: null,
         videoId: null,
         videoVariantLanguageId: '529'
       },
@@ -181,7 +181,7 @@ describe('VideoWrapper', () => {
         duration: null,
         image: null,
         objectFit: null,
-        video: null,
+        mediaVideo: null,
         videoId: null,
         videoVariantLanguageId: '529'
       },

@@ -229,7 +229,10 @@ describe('Source', () => {
             parentOrder: 0,
             action: null,
             source: VideoBlockSource.cloudflare,
-            mediaVideo: null,
+            mediaVideo: {
+              __typename: 'CloudflareVideo',
+              id: 'videoId'
+            },
             objectFit: null,
             posterBlockId: 'poster1.id',
             children: []
@@ -287,7 +290,10 @@ describe('Source', () => {
             parentOrder: 0,
             action: null,
             source: VideoBlockSource.youTube,
-            mediaVideo: null,
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: 'ak06MSETeo4'
+            },
             objectFit: null,
             posterBlockId: 'poster1.id',
             children: []

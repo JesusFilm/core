@@ -155,14 +155,17 @@ export function BackgroundVideo({
           pointerEvents: 'none'
         }}
       >
-        {mediaVideo?.__typename === 'CloudflareVideo' &&
-          mediaVideo?.id != null && (
-            <source
-              src={`https://customer-${
-                process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-              }.cloudflarestream.com/${mediaVideo?.id ?? ''}/manifest/video.m3u8`}
-              type="application/x-mpegURL"
-            />
+        {source === VideoBlockSource.cloudflare && mediaVideo?.id != null && (
+          <source
+            src={`https://customer-${
+              process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
+            }.cloudflarestream.com/${mediaVideo.id ?? ''}/manifest/video.m3u8`}
+            type="application/x-mpegURL"
+          />
+        )}
+        {mediaVideo?.__typename === 'Video' &&
+          mediaVideo?.variant?.hls != null && (
+            <source src={mediaVideo.variant.hls} type="application/x-mpegURL" />
           )}
         {mediaVideo?.__typename === 'Video' &&
           mediaVideo?.variant?.hls != null && (

@@ -20,6 +20,10 @@ builder.prismaObject('VideoVariant', {
       nullable: false,
       resolve: ({ duration }) => duration ?? 0
     }),
+    lengthInMilliseconds: t.int({
+      nullable: false,
+      resolve: ({ lengthInMilliseconds }) => lengthInMilliseconds ?? 0
+    }),
     language: t.field({
       type: Language,
       nullable: false,
@@ -108,6 +112,7 @@ builder.mutationFields((t) => ({
           dash: input.dash ?? undefined,
           share: input.share ?? undefined,
           duration: input.duration ?? undefined,
+          lengthInMilliseconds: input.lengthInMilliseconds ?? undefined,
           languageId: input.languageId ?? undefined,
           slug: input.slug ?? undefined,
           videoId: input.videoId ?? undefined,
