@@ -888,8 +888,10 @@ export const videoBlocks: TreeBlock[] = [
             description: null,
             duration: null,
             image: null,
-            video: null,
-            mediaVideo: null,
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: '5I69DCxYbBg'
+            },
             endAt: null,
             startAt: 2738,
             posterBlockId: 'image1.id',
@@ -1049,8 +1051,10 @@ export const videoBlocks: TreeBlock[] = [
             description: null,
             duration: null,
             image: null,
-            video: null,
-            mediaVideo: null,
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: '5I69DCxYbBg'
+            },
             endAt: null,
             startAt: 2738,
             fullsize: true,
@@ -1113,8 +1117,10 @@ export const videoBlocks: TreeBlock[] = [
             description: null,
             duration: null,
             image: null,
-            video: null,
-            mediaVideo: null,
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: '5I69DCxYbBg'
+            },
             endAt: null,
             startAt: 2738,
             fullsize: true,
@@ -1163,8 +1169,10 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             description: null,
             duration: null,
             image: null,
-            video: null,
-            mediaVideo: null,
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: '5I69DCxYbBg'
+            },
             endAt: null,
             startAt: 2738,
             posterBlockId: null,
@@ -1309,8 +1317,10 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             description: null,
             duration: null,
             image: null,
-            video: null,
-            mediaVideo: null,
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: '5I69DCxYbBg'
+            },
             endAt: null,
             startAt: 2738,
             fullsize: true,
@@ -1373,8 +1383,10 @@ export const videoBlocksNoPoster: TreeBlock[] = [
             description: null,
             duration: null,
             image: null,
-            video: null,
-            mediaVideo: null,
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: '5I69DCxYbBg'
+            },
             endAt: null,
             startAt: 2738,
             fullsize: true,
@@ -1423,8 +1435,19 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             description: null,
             duration: null,
             image: null,
-            video: null,
-            mediaVideo: null,
+            mediaVideo: {
+              __typename: 'Video',
+              id: '2_0-FallingPlates',
+              title: [
+                {
+                  __typename: 'VideoTitle',
+                  value: 'FallingPlates'
+                }
+              ],
+              images: [],
+              variant: null,
+              variantLanguages: []
+            },
             endAt: null,
             startAt: 5,
             posterBlockId: null,
@@ -1569,8 +1592,10 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             description: null,
             duration: null,
             image: null,
-            video: null,
-            mediaVideo: null,
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: '5I69DCxYbBg'
+            },
             endAt: null,
             startAt: 2738,
             fullsize: true,
@@ -1633,8 +1658,10 @@ export const videoBlocksNoVideo: TreeBlock[] = [
             description: null,
             duration: null,
             image: null,
-            video: null,
-            mediaVideo: null,
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: '5I69DCxYbBg'
+            },
             endAt: null,
             startAt: 2738,
             fullsize: true,
@@ -1731,8 +1758,10 @@ export const videoLoop: TreeBlock[] = [
             description: null,
             duration: null,
             image: null,
-            video: null,
-            mediaVideo: null,
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: '5I69DCxYbBg'
+            },
             startAt: 2738,
             endAt: 2758,
             posterBlockId: 'image1.id',
@@ -1795,8 +1824,10 @@ export const videoLoop: TreeBlock[] = [
             description: null,
             duration: null,
             image: null,
-            video: null,
-            mediaVideo: null,
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: '5I69DCxYbBg'
+            },
             startAt: 2738,
             endAt: 2758,
             posterBlockId: 'image1.id',
@@ -1864,8 +1895,10 @@ export const videoLoop: TreeBlock[] = [
             description: null,
             duration: null,
             image: null,
-            video: null,
-            mediaVideo: null,
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: '5I69DCxYbBg'
+            },
             startAt: 2738,
             endAt: 2758,
             posterBlockId: 'image1.id',
