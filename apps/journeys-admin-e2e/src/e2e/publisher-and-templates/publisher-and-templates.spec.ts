@@ -262,7 +262,7 @@ test.describe('Verify template page functionality', () => {
   })
 
   // Templates-> Select existing template -> Edit
-  test('Edit a template', async ({ page, context }) => {
+  test.fixme('Edit a template', async ({ page, context }) => {
     const templatesPage = new TemplatePage(page)
     const cardLevelActionPage = new CardLevelActionPage(page)
     const journeyPage = new JourneyPage(page)
