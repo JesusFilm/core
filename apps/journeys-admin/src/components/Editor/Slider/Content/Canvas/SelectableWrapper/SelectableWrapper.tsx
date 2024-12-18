@@ -10,7 +10,6 @@ import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import DragIcon from '@core/shared/ui/icons/Drag'
 
-import { DropArea } from '../DropArea'
 import { QuickControls } from '../QuickControls'
 
 export function SelectableWrapper({
@@ -36,23 +35,20 @@ export function SelectableWrapper({
   const isVideoBlock = block?.__typename === 'VideoBlock'
   const isRadioOptionBlock = block?.__typename === 'RadioOptionBlock'
 
-  const blockIds = isRadioOptionBlock
-    ? selectedStep?.children[0].children
-        .find((parentBlock) => parentBlock.id === block.parentBlockId)
-        ?.children.map((block) => block.id)
-    : (
-        selectedStep?.children[0].children.filter(
-          (block) =>
-            block != null &&
-            block.__typename !== 'StepBlock' &&
-            block.__typename !== 'CardBlock' &&
-            block.__typename !== 'IconBlock' &&
-            block.parentOrder !== null
-        ) ?? []
-      ).map((block) => block.id)
+  const blockIds = (
+    selectedStep?.children[0].children.filter(
+      (block) =>
+        block != null &&
+        !isRadioOptionBlock &&
+        block.__typename !== 'StepBlock' &&
+        block.__typename !== 'CardBlock' &&
+        block.__typename !== 'IconBlock' &&
+        block.parentOrder !== null
+    ) ?? []
+  ).map((block) => block.id)
 
   useDndMonitor({
-    onDragOver(e: DragOverEvent): void {
+    onDragMove(e: DragOverEvent): void {
       if (!isDuringDrag) {
         setIsDuringDrag(true)
       }
@@ -100,7 +96,7 @@ export function SelectableWrapper({
     if (block.__typename === 'RadioQuestionBlock') {
       // Directly edit RadioQuestionBlock
       updateEditor(block)
-    } else if (block.__typename === 'RadioOptionBlock') {
+    } else if (isRadioOptionBlock) {
       // this stopPropagation prevents links from being opened in the editor when clicked radioOptions are selected
       e.stopPropagation()
       const parentSelected = selectedBlock?.id === block.parentBlockId
@@ -175,7 +171,7 @@ export function SelectableWrapper({
           : ''
       }
       data-testid={`SelectableWrapper-${block.id}`}
-      ref={setNodeRef}
+      ref={!isRadioOptionBlock ? setNodeRef : undefined}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       sx={{
@@ -208,7 +204,7 @@ export function SelectableWrapper({
       >
         <Popper
           open={block.id === dragId}
-          anchorEl={selectableRef.current as HTMLDivElement}
+          anchorEl={selectableRef.current}
           placement={isAbove ? 'bottom' : 'top'}
         >
           <Divider
@@ -216,29 +212,26 @@ export function SelectableWrapper({
             sx={{
               width: '315px',
               height: '2px',
-              mt: isRadioOptionBlock ? '0px' : '6px',
-              mb: isRadioOptionBlock ? '0px' : '6px',
+              mt: '6px',
+              mb: '6px',
               backgroundColor: '#C52D3A',
               zIndex: 0,
               borderRadius: '1px'
             }}
           />
         </Popper>
-        {block.__typename === 'RadioQuestionBlock' ? (
-          <DropArea blocks={block.children}>{children}</DropArea>
-        ) : (
-          children
-        )}
+        {children}
       </Box>
       <QuickControls
         open={open}
         anchorEl={selectableRef.current}
         isVideoBlock={isVideoBlock}
       />
+
       <Popper
-        open
-        anchorEl={selectableRef.current as HTMLDivElement}
-        placement={isRadioOptionBlock ? 'right' : 'left'}
+        open={!isRadioOptionBlock}
+        anchorEl={selectableRef.current}
+        placement="left"
         {...listeners}
         ref={setActivatorNodeRef}
         onMouseEnter={() => setIsHovering(true)}
@@ -248,12 +241,11 @@ export function SelectableWrapper({
           fontSize="large"
           style={{
             position: 'absolute',
-            left: isRadioOptionBlock ? undefined : '-30px',
-            right: isRadioOptionBlock ? '0px' : undefined,
+            left: '-30px',
             top: '-18px',
             cursor: 'grab',
             opacity: isHovering && !isDuringDrag ? 1 : 0,
-            color: isRadioOptionBlock ? '#000000' : 'secondary.dark'
+            color: 'secondary.dark'
           }}
         />
       </Popper>

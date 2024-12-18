@@ -57,6 +57,7 @@ export function DropArea({ children, blocks }: DropAreaProps): ReactElement {
         block.__typename !== 'StepBlock' &&
         block.__typename !== 'CardBlock' &&
         block.__typename !== 'IconBlock' &&
+        block.__typename !== 'RadioOptionBlock' &&
         block.parentOrder !== null
     ) ?? []
 
