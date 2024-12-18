@@ -227,7 +227,6 @@ export function SelectableWrapper({
         anchorEl={selectableRef.current}
         isVideoBlock={isVideoBlock}
       />
-
       <Popper
         open={!isRadioOptionBlock}
         anchorEl={selectableRef.current}
@@ -243,9 +242,10 @@ export function SelectableWrapper({
             position: 'absolute',
             left: '-30px',
             top: '-18px',
-            cursor: 'grab',
             opacity: isHovering && !isDuringDrag ? 1 : 0,
-            color: 'secondary.dark'
+            color: 'secondary.dark',
+            cursor: 'grab',
+            alignSelf: 'center'
           }}
         />
       </Popper>
