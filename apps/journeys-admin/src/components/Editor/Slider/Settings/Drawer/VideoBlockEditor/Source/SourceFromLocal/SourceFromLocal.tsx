@@ -6,6 +6,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { VideoFields_mediaVideo_Video } from '@core/journeys/ui/Video/__generated__/VideoFields'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
 
@@ -43,9 +44,9 @@ export function SourceFromLocal({
     GET_VIDEO_VARIANT_LANGUAGES,
     {
       variables: {
-        id: selectedBlock?.video?.id
+        id: selectedBlock?.mediaVideo?.id
       },
-      skip: selectedBlock?.video?.id == null
+      skip: selectedBlock?.mediaVideo?.id == null
     }
   )
   const [language, setLanguage] = useState<string | undefined>()
@@ -75,8 +76,12 @@ export function SourceFromLocal({
       <Box sx={{ ml: 2, mr: 4 }}>
         <ImageBlockThumbnail
           selectedBlock={{
-            src: selectedBlock?.video?.images[0]?.mobileCinematicHigh ?? '',
-            alt: selectedBlock?.video?.title?.[0]?.value ?? ''
+            src:
+              (selectedBlock?.mediaVideo as VideoFields_mediaVideo_Video)
+                ?.images[0]?.mobileCinematicHigh ?? '',
+            alt:
+              (selectedBlock?.mediaVideo as VideoFields_mediaVideo_Video)
+                ?.title?.[0]?.value ?? ''
           }}
           Icon={VideoOnIcon}
         />
@@ -91,7 +96,10 @@ export function SourceFromLocal({
           }}
           color="text.secondary"
         >
-          {selectedBlock?.video?.title?.[0]?.value}
+          {
+            (selectedBlock?.mediaVideo as VideoFields_mediaVideo_Video)
+              ?.title?.[0]?.value
+          }
         </Typography>
         <Typography
           variant="caption"
