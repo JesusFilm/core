@@ -17,7 +17,7 @@ import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
 
 const TWO_MINUTES = 2 * 60 * 1000 // in milliseconds
-const ONE_DAY = 24 * 60 * 60 // in seconds
+export const ONE_DAY = 24 * 60 * 60 // in seconds
 
 @Injectable()
 export class EventService {

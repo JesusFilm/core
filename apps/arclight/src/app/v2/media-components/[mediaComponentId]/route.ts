@@ -2,10 +2,11 @@ import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
+import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
 import { paramsToRecord } from '../../../../lib/paramsToRecord'
 
 const GET_VIDEO = graphql(`
-  query GetVideo($id: ID!, $languageId: ID, $fallbackLanguageId: ID) {
+  query GetVideo($id: ID!, $metadataLanguageId: ID, $fallbackLanguageId: ID) {
     video(id: $id) {
       id
       label
@@ -17,7 +18,7 @@ const GET_VIDEO = graphql(`
         mobileCinematicLow
         mobileCinematicVeryLow
       }
-      title(languageId: $languageId) {
+      title(languageId: $metadataLanguageId) {
         value
         language {
           bcp47
@@ -26,7 +27,7 @@ const GET_VIDEO = graphql(`
       fallbackTitle: title(languageId: $fallbackLanguageId) {
         value
       }
-      description(languageId: $languageId) {
+      description(languageId: $metadataLanguageId) {
         value
         language {
           bcp47
@@ -35,7 +36,7 @@ const GET_VIDEO = graphql(`
       fallbackDescription: description(languageId: $fallbackLanguageId) {
         value
       }
-      snippet(languageId: $languageId) {
+      snippet(languageId: $metadataLanguageId) {
         value
         language {
           bcp47
@@ -44,7 +45,7 @@ const GET_VIDEO = graphql(`
       fallbackSnippet: snippet(languageId: $fallbackLanguageId) {
         value
       }
-      studyQuestions(languageId: $languageId) {
+      studyQuestions(languageId: $metadataLanguageId) {
         value
         language {
           bcp47
@@ -81,14 +82,6 @@ const GET_VIDEO = graphql(`
   }
 `)
 
-const GET_LANGUAGE_ID_FROM_BCP47 = graphql(`
-  query GetLanguageIdFromBCP47($bcp47: ID!) {
-    language(id: $bcp47, idType: bcp47) {
-      id
-    }
-  }
-`)
-
 interface GetParams {
   params: { mediaComponentId: string }
 }
@@ -99,34 +92,20 @@ export async function GET(
   const query = req.nextUrl.searchParams
   const expand = query.get('expand') ?? ''
   const filter = query.get('filter') ?? ''
-
   const metadataLanguageTags =
     query.get('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
 
-  let languageId = '529'
-  let fallbackLanguageId
-  if (metadataLanguageTags.length > 0) {
-    const { data: languageIdData } = await getApolloClient().query<
-      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
-    >({
-      query: GET_LANGUAGE_ID_FROM_BCP47,
-      variables: { bcp47: metadataLanguageTags[0] }
-    })
-    languageId = languageIdData.language?.id ?? '529'
-  } else if (metadataLanguageTags.length > 1) {
-    const { data: languageIdData } = await getApolloClient().query<
-      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
-    >({
-      query: GET_LANGUAGE_ID_FROM_BCP47,
-      variables: { bcp47: metadataLanguageTags[1] }
-    })
-    fallbackLanguageId = languageIdData.language?.id ?? undefined
+  const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
+  if (languageResult instanceof Response) {
+    return languageResult
   }
+
+  const { metadataLanguageId, fallbackLanguageId } = languageResult
 
   const { data } = await getApolloClient().query<ResultOf<typeof GET_VIDEO>>({
     query: GET_VIDEO,
     variables: {
-      languageId,
+      metadataLanguageId,
       fallbackLanguageId,
       id: mediaComponentId
     }
@@ -136,11 +115,28 @@ export async function GET(
 
   const video = data.video
 
+  if (
+    metadataLanguageTags.length > 0 &&
+    video.title[0]?.value == null &&
+    video.fallbackTitle[0]?.value == null &&
+    video.snippet[0]?.value == null &&
+    video.description[0]?.value == null
+  ) {
+    return new Response(
+      JSON.stringify({
+        message: `Media component '${mediaComponentId}' resource not found!`,
+        logref: 404
+      }),
+      {
+        status: 404
+      }
+    )
+  }
+
   const queryObject: Record<string, string> = {
     ...paramsToRecord(query.entries())
   }
   const queryString = new URLSearchParams(queryObject).toString()
-  // TODO: Needs to be completed
   const mediaComponentLinksQuerystring = new URLSearchParams(
     queryObject
   ).toString()
@@ -164,6 +160,11 @@ export async function GET(
     }
   }
 
+  if (filter.includes('descriptorsonly')) {
+    return new Response(JSON.stringify(descriptorsonlyResponse), {
+      status: 200
+    })
+  }
   const response = {
     mediaComponentId,
     componentType: video.childrenCount === 0 ? 'content' : 'collection',
@@ -213,7 +214,7 @@ export async function GET(
     longDescription:
       video.description[0]?.value ?? video.fallbackDescription[0]?.value ?? '',
     studyQuestions: video.studyQuestions.map((question) => question.value),
-    metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
+    metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
     _links: {
       // TODO: Needs to be completed
       sampleMediaComponentLanguage: {
@@ -230,11 +231,6 @@ export async function GET(
       }
     }
   }
-  if (filter.includes('descriptorsonly')) {
-    return new Response(JSON.stringify(descriptorsonlyResponse), {
-      status: 200
-    })
-  } else {
-    return new Response(JSON.stringify(response), { status: 200 })
-  }
+
+  return new Response(JSON.stringify(response), { status: 200 })
 }

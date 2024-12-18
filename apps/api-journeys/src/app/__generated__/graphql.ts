@@ -979,7 +979,7 @@ export abstract class IMutation {
 
     abstract chatOpenEventCreate(input: ChatOpenEventCreateInput): ChatOpenEvent | Promise<ChatOpenEvent>;
 
-    abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): JourneyViewEvent | Promise<JourneyViewEvent>;
+    abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): Nullable<JourneyViewEvent> | Promise<Nullable<JourneyViewEvent>>;
 
     abstract radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput): RadioQuestionSubmissionEvent | Promise<RadioQuestionSubmissionEvent>;
 
@@ -1840,6 +1840,7 @@ export class VisitorEdge {
 export class PageInfo {
     __typename?: 'PageInfo';
     hasNextPage: boolean;
+    hasPreviousPage: boolean;
     startCursor?: Nullable<string>;
     endCursor?: Nullable<string>;
 }
@@ -1876,4 +1877,10 @@ export class User {
 
 export type DateTime = String;
 export type Json = any;
+
+export class ISchema {
+    Query: IQuery;
+    Mutation: IMutation;
+}
+
 type Nullable<T> = T | null;

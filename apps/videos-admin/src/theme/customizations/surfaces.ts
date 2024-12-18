@@ -53,6 +53,13 @@ export const surfacesCustomizations: Components<Theme> = {
   MuiPaper: {
     defaultProps: {
       elevation: 0
+    },
+    styleOverrides: {
+      root: () => {
+        return {
+          backgroundImage: 'none'
+        }
+      }
     }
   },
   MuiCard: {

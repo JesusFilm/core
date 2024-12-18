@@ -20,6 +20,7 @@ export const GET_LANGUAGES_SLUG = gql`
         slug
         language {
           id
+          slug
           name {
             value
             primary

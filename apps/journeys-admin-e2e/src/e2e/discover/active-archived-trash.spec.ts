@@ -11,6 +11,8 @@ import { TeamsPage } from '../../pages/teams-page'
 let userEmail = ''
 
 test.describe('Verify user able to Active, Archived, Trash the journeys', () => {
+  // Issue 1 : In Terms and Conditions page,The 'Next' button is not working properly
+  // Issue 2 : The error toast message is displaying after registration new account
   test.beforeAll('Register new account', async ({ browser }) => {
     const page = await browser.newPage()
     const landingPage = new LandingPage(page)
@@ -20,7 +22,7 @@ test.describe('Verify user able to Active, Archived, Trash the journeys', () => 
     await register.registerNewAccount() // registering new user account
     userEmail = await register.getUserEmailId() // storing the registered user email id
     await teamsPage.createNewTeamAndVerifyCreatedTeam() // create new team and verify the created team
-    console.log('userName : ' + userEmail)
+    console.log(`userName : ${userEmail}`)
     await page.close()
   })
 
@@ -34,31 +36,30 @@ test.describe('Verify user able to Active, Archived, Trash the journeys', () => 
     await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
   })
 
-  test.fixme(
-    'Verify the user able to move the single journeys from Active, archived, Trash page',
-    async ({ page }) => {
-      const journeyPage = new JourneyPage(page)
-      // Verify the user able to move the single journeys from Active to archived page
-      await journeyPage.verifyExistingJourneyMovedActiveToArchivedTab()
-      await journeyPage.clickArchivedTab()
-      // Verify the user able to move the single journeys from Archived to Trash page
-      await journeyPage.verifyCreatedJourneyMovedToTrash()
-      // Verify the user able to restore the single journeys from Trash to active page
-      await journeyPage.verifyCreatedNewJourneyRestored()
-      // Verify the user able to move the single journeys from Active to Trash page
-      await journeyPage.verifyCreatedJourneyMovedToTrash()
-      // Verify the user able to delete the single file permanently in Trash page
-      await journeyPage.verifyJourneyDeletedForeverFromTrashTab()
-      // Verify the user able to unarchive the single journeys from Archived to active page
-      await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
-      await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
-      await journeyPage.verifyExistingJourneyMovedActiveToArchivedTab() // moving the created journey to archived tab by archiving that journey
-      await journeyPage.clickArchivedTab() // clicking archived tab
-      await journeyPage.verifyJourneyMovedFromArchivedToActiveTab()
-    }
-  )
+  test('Verify the user able to move the single journeys from Active, archived, Trash page', async ({
+    page
+  }) => {
+    const journeyPage = new JourneyPage(page)
+    // Verify the user able to move the single journeys from Active to archived page
+    await journeyPage.verifyExistingJourneyMovedActiveToArchivedTab()
+    await journeyPage.clickArchivedTab()
+    // Verify the user able to move the single journeys from Archived to Trash page
+    await journeyPage.verifyCreatedJourneyMovedToTrash()
+    // Verify the user able to restore the single journeys from Trash to active page
+    await journeyPage.verifyCreatedNewJourneyRestored()
+    // Verify the user able to move the single journeys from Active to Trash page
+    await journeyPage.verifyCreatedJourneyMovedToTrash()
+    // Verify the user able to delete the single file permanently in Trash page
+    await journeyPage.verifyJourneyDeletedForeverFromTrashTab()
+    // Verify the user able to unarchive the single journeys from Archived to active page
+    await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
+    await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+    await journeyPage.verifyExistingJourneyMovedActiveToArchivedTab() // moving the created journey to archived tab by archiving that journey
+    await journeyPage.clickArchivedTab() // clicking archived tab
+    await journeyPage.verifyJourneyMovedFromArchivedToActiveTab()
+  })
 
-  test.skip('Verify the user able to move the all journeys from Active, archived, Trash page', async ({
+  test('Verify the user able to move the all journeys from Active, archived, Trash page', async ({
     page
   }) => {
     const journeyPage = new JourneyPage(page)

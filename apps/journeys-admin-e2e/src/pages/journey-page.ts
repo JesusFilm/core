@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 import testData from '../utils/testData.json'
 
@@ -30,7 +30,7 @@ export class JourneyPage {
     await this.enterJourneysTypography()
     await this.clickDoneBtn()
     await this.clickThreeDotBtnOfCustomJourney()
-    await this.clickJourneyDetailsInThreeDotOptions()
+    await this.clickEditDetailsInThreeDotOptions()
     await this.enterTitle()
     await this.clickSaveBtn()
     await this.backIcon()
@@ -183,7 +183,7 @@ export class JourneyPage {
     await this.enterJourneysTypographyForTemplate()
     await this.clickDoneBtn()
     await this.clickThreeDotBtnOfCustomJourney()
-    await this.clickJourneyDetailsInThreeDotOptions()
+    await this.clickEditDetailsInThreeDotOptions()
     await this.enterTitle()
     await this.clickSaveBtn()
     await this.backIcon()
@@ -213,12 +213,12 @@ export class JourneyPage {
       this.page.locator(
         'div[data-testid="JourneysAdminContainedIconButton"] button'
       )
-    ).toBeVisible({ timeout: sixtySecondsTimeout })
+    ).toBeVisible({ timeout: 150000 })
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
       )
-    ).toBeHidden({ timeout: sixtySecondsTimeout })
+    ).toBeHidden({ timeout: 18000 })
     await this.page
       .locator('div[data-testid="JourneysAdminContainedIconButton"] button')
       .click()
@@ -255,16 +255,15 @@ export class JourneyPage {
           .isVisible()
       ) {
         break
-      } else {
-        await this.page
-          .frameLocator(this.journeyCardFrame)
-          .first()
-          .locator(
-            'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
-          )
-          .first()
-          .click({ timeout: sixtySecondsTimeout, delay: 1000 })
       }
+      await this.page
+        .frameLocator(this.journeyCardFrame)
+        .first()
+        .locator(
+          'div[data-testid="CardWrapper"] div[data-testid*="SelectableWrapper"] h3[data-testid="JourneysTypography"]'
+        )
+        .first()
+        .click({ timeout: sixtySecondsTimeout, delay: 1000 })
     }
     await this.page
       .frameLocator(this.journeyCardFrame)
@@ -288,7 +287,7 @@ export class JourneyPage {
     await this.page.locator('button#edit-journey-actions').click()
   }
 
-  async clickJourneyDetailsInThreeDotOptions() {
+  async clickEditDetailsInThreeDotOptions() {
     await this.page
       .locator(
         'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
@@ -306,7 +305,7 @@ export class JourneyPage {
   async clickSaveBtn() {
     await this.page
       .locator('div[role="dialog"] button', { hasText: 'Save' })
-      .click()
+      .click({ delay: 3000 })
   }
 
   async backIcon() {
@@ -341,8 +340,24 @@ export class JourneyPage {
         'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
         { hasText: 'Create Template' }
       )
-      .click({ delay: 1000 })
-    await this.page.waitForURL('**/publisher/**')
+      .click({ delay: 3000 })
+    // verifying that the 'Create Template' option is disappeared, if not once again clicking on that option
+    try {
+      await expect(
+        this.page.locator(
+          'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
+          { hasText: 'Create Template' }
+        )
+      ).toBeHidden({ timeout: sixtySecondsTimeout })
+    } catch {
+      await this.page
+        .locator(
+          'ul[aria-labelledby="edit-journey-actions"] li[role="menuitem"]',
+          { hasText: 'Create Template' }
+        )
+        .click({ delay: 3000 })
+    }
+    await this.page.waitForURL('**/publisher/**', { timeout: 60000 })
   }
 
   async verifyCreatedJourneyInTemplateList() {
@@ -359,9 +374,7 @@ export class JourneyPage {
   async clickThreeDotOfCreatedNewTemple() {
     await this.page
       .locator(
-        "//h6[text()='" +
-          journeyName +
-          "']//ancestor::a/following-sibling::div//button[@id='journey-actions']"
+        `//h6[text()='${journeyName}']//ancestor::a/following-sibling::div//button[@id='journey-actions']`
       )
       .click()
   }
@@ -432,9 +445,7 @@ export class JourneyPage {
   async clickThreeDotOfCreatedNewJourney() {
     await this.page
       .locator(
-        "//div[text()='" +
-          journeyName +
-          "']//ancestor::a/following-sibling::div//button[@id='journey-actions']"
+        `//div[text()='${journeyName}']//ancestor::a/following-sibling::div//button[@id='journey-actions']`
       )
       .click()
   }
@@ -586,7 +597,7 @@ export class JourneyPage {
   }
 
   async getCurrentUrl() {
-    console.log('current Url is ' + this.page.url())
+    console.log(`current Url is ${this.page.url()}`)
   }
 
   async verifyAllJourneyMovedToArchivedTab() {
@@ -780,8 +791,9 @@ export class JourneyPage {
     list: string[],
     expectedSortedList: string[]
   ) {
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    list.map((str) => str.toLowerCase()).sort(Intl.Collator().compare)
+    list
+      .map((str) => str.toLowerCase())
+      .sort((a, b) => Intl.Collator().compare(a, b))
     expect(list.join().trim() === expectedSortedList.join().trim()).toBeTruthy()
   }
 
@@ -931,8 +943,7 @@ export class JourneyPage {
 
   async clickPreviewBtnInCustomJourneyPage() {
     await this.page
-      .getByTestId('PreviewItem')
-      .getByRole('link', { name: 'Preview' })
+      .locator('div[data-testid="PreviewItem"] a[aria-label="Preview"]')
       .click()
   }
 
@@ -960,7 +971,6 @@ export class JourneyPage {
     for (let slide = 1; slide < slidesCount; slide++) {
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')
-        // eslint-disable-next-line playwright/no-force-option
         .hover({ force: true })
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')
@@ -1066,14 +1076,13 @@ export class JourneyPage {
           .isVisible()
       ) {
         break
-      } else {
-        await this.page
-          .frameLocator(this.journeyCardFrame)
-          .first()
-          .locator(typographyPath)
-          .first()
-          .click({ timeout: sixtySecondsTimeout, delay: 1000 })
       }
+      await this.page
+        .frameLocator(this.journeyCardFrame)
+        .first()
+        .locator(typographyPath)
+        .first()
+        .click({ timeout: sixtySecondsTimeout, delay: 1000 })
     }
     await this.page
       .frameLocator(this.journeyCardFrame)

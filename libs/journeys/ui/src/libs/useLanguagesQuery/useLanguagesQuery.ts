@@ -9,6 +9,7 @@ export const GET_LANGUAGES = gql`
   query GetLanguages($languageId: ID, $where: LanguagesFilter) {
     languages(limit: 5000, where: $where) {
       id
+      slug
       name(languageId: $languageId, primary: true) {
         value
         primary

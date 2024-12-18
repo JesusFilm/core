@@ -1,0 +1,1 @@
+export { VariantCard } from './VariantCard'

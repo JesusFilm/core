@@ -94,8 +94,7 @@ export function HeaderTabButtons(): ReactElement {
           pr: { md: '20px' },
           display: { xs: 'flex', lg: 'none' },
           justifyContent: 'center',
-          width: '100%',
-          position: { xs: 'absolute', md: 'initial' }
+          width: '100%'
         }}
       >
         <Button

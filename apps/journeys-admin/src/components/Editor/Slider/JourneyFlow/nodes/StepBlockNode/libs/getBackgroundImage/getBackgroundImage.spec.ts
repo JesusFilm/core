@@ -57,7 +57,7 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -87,13 +87,21 @@ const video: TreeBlock<VideoBlock> = {
 const cloudFlareVideo: TreeBlock<VideoBlock> = {
   ...video,
   source: VideoBlockSource.cloudflare,
-  image: 'https://cloudflare-video-image.com'
+  image: 'https://cloudflare-video-image.com',
+  mediaVideo: {
+    id: video.id,
+    __typename: 'CloudflareVideo'
+  }
 }
 
 const youtubeVideo: TreeBlock<VideoBlock> = {
   ...video,
   source: VideoBlockSource.youTube,
-  image: 'https://youtube-image.com'
+  image: 'https://youtube-image.com',
+  mediaVideo: {
+    __typename: 'YouTube',
+    id: video.id
+  }
 }
 
 describe('getBackgroundImage', () => {

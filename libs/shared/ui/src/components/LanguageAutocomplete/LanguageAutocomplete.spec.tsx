@@ -10,6 +10,7 @@ describe('LanguageAutocomplete', () => {
   const languages: Language[] = [
     {
       id: '496',
+      slug: 'french',
       name: [
         {
           value: 'Français',
@@ -23,6 +24,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '529',
+      slug: 'english',
       name: [
         {
           value: 'English',
@@ -32,6 +34,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '1106',
+      slug: 'german-standard',
       name: [
         {
           value: 'Deutsch',
@@ -45,6 +48,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12693',
+      slug: 'kankanay-tagakaulu',
       name: [
         {
           value: 'Kalagan, Tagakaulu',
@@ -54,6 +58,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12696',
+      slug: 'kankanay-northern',
       name: [
         {
           value: 'Kankanay, Northern',
@@ -63,6 +68,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12714',
+      slug: 'isnag',
       name: [
         {
           value: 'Isnag',
@@ -72,6 +78,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12723',
+      slug: 'ilocano',
       name: [
         {
           value: 'Ilokano',
@@ -85,6 +92,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '127283',
+      slug: 'pogoro',
       name: [
         {
           value: 'Pogoro',
@@ -94,6 +102,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12729',
+      slug: 'ilongot',
       name: [
         {
           value: 'Ilongot',
@@ -103,6 +112,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '127397',
+      slug: 'innu',
       name: [
         {
           value: 'Innu',
@@ -112,6 +122,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12743',
+      slug: 'ifugao-amganad',
       name: [
         {
           value: 'Ifugao, Amganad',
@@ -121,6 +132,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12747',
+      slug: 'ibaloi',
       name: [
         {
           value: 'Ibaloi',
@@ -130,6 +142,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12750',
+      slug: 'ibanag',
       name: [
         {
           value: 'Ibanag',
@@ -139,6 +152,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '1276',
+      slug: 'kekchi',
       name: [
         {
           value: 'Kekchi',
@@ -148,6 +162,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '127670',
+      slug: 'mundari-south-sudan',
       name: [
         {
           value: 'Mundari (South Sudan)',
@@ -157,6 +172,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '1277',
+      slug: 'garifuna',
       name: [
         {
           value: 'Garifuna',
@@ -166,6 +182,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12773',
+      slug: 'cuyonon',
       name: [
         {
           value: 'Cuyonon',
@@ -175,6 +192,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '1278',
+      slug: 'plautdietsch',
       name: [
         {
           value: 'Plautdietsch',
@@ -188,6 +206,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12784',
+      slug: 'cebuano',
       name: [
         {
           value: 'Sinugboanon',
@@ -201,6 +220,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12791',
+      slug: 'chavacano',
       name: [
         {
           value: 'Chavacano',
@@ -210,6 +230,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '1280',
+      slug: 'aja-ggbe',
       name: [
         {
           value: 'Aja-Gbe',
@@ -219,6 +240,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12801',
+      slug: 'bantoanon',
       name: [
         {
           value: 'Bantoanon',
@@ -228,6 +250,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12808',
+      slug: 'balangao',
       name: [
         {
           value: 'Balangao',
@@ -237,6 +260,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12815',
+      slug: 'blaan-sarangani',
       name: [
         {
           value: 'Blaan, Sarangani',
@@ -246,6 +270,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12816',
+      slug: 'blaan-koronadal',
       name: [
         {
           value: 'Blaan, Koronadal',
@@ -255,6 +280,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12839',
+      slug: 'manobo-tagabawa',
       name: [
         {
           value: 'Manobo, Tagabawa',
@@ -264,6 +290,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12853',
+      slug: 'aklanon',
       name: [
         {
           value: 'Aklanon',
@@ -273,6 +300,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12854',
+      slug: 'binukid',
       name: [
         {
           value: 'Binukid',
@@ -282,6 +310,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12869',
+      slug: 'kashubian',
       name: [
         {
           value: 'Kaszëbsczi Jãzëk',
@@ -295,6 +324,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12876',
+      slug: 'ukrainian',
       name: [
         {
           value: 'Українська',
@@ -308,6 +338,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '12923',
+      slug: 'reunion-creole-french',
       name: [
         {
           value: 'Reunion Creole French',
@@ -317,6 +348,7 @@ describe('LanguageAutocomplete', () => {
     },
     {
       id: '1294',
+      slug: 'bariba',
       name: [
         {
           value: 'Bariba',
@@ -358,6 +390,7 @@ describe('LanguageAutocomplete', () => {
     fireEvent.click(getByRole('option', { name: 'Aja-Gbe' }))
     expect(handleChange).toHaveBeenCalledWith({
       id: '1280',
+      slug: 'aja-ggbe',
       localName: 'Aja-Gbe',
       nativeName: undefined
     })

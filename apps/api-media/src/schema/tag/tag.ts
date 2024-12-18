@@ -2,8 +2,7 @@ import compact from 'lodash/compact'
 
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
-
-import { Service } from './enums/service'
+import { Service } from '../enums/service'
 
 const Tag = builder.prismaObject('Tag', {
   fields: (t) => ({

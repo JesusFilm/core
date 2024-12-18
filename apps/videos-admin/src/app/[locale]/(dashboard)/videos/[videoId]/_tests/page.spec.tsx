@@ -16,7 +16,6 @@ const mockUseParams = useParams as jest.MockedFunction<typeof mockUseParams>
 describe('VideoViewPage', () => {
   it('should display video view component', async () => {
     mockUseParams.mockReturnValue({ videoId: 'someId' })
-
     const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
 
     render(

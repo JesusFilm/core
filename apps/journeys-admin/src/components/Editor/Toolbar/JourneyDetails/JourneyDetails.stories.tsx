@@ -37,6 +37,7 @@ const getLanguagesMock: MockedResponse<GetLanguages, GetLanguagesVariables> = {
       languages: [
         {
           __typename: 'Language',
+          slug: 'english',
           id: '529',
           name: [
             {

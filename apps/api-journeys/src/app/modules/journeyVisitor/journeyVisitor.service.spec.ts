@@ -55,6 +55,7 @@ describe('JourneyVisitorService', () => {
         edges: [],
         pageInfo: {
           hasNextPage: false,
+          hasPreviousPage: false,
           startCursor: null,
           endCursor: null
         }

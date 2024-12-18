@@ -48,6 +48,7 @@ export const GET_VIDEO = gql`
       }
       variantLanguages {
         id
+        slug
         name {
           value
           primary

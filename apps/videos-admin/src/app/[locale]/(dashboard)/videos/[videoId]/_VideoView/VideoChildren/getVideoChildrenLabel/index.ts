@@ -1,0 +1,1 @@
+export { getVideoChildrenLabel } from './getVideoChildrenLabel'

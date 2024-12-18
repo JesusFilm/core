@@ -23,6 +23,7 @@ export const getLanguagesMock: MockedResponse<
         {
           __typename: 'Language',
           id: '529',
+          slug: 'english',
           name: [
             {
               value: 'English',
@@ -33,6 +34,7 @@ export const getLanguagesMock: MockedResponse<
         },
         {
           id: '496',
+          slug: 'french',
           __typename: 'Language',
           name: [
             {
