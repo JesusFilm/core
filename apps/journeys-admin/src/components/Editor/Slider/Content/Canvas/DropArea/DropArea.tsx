@@ -110,6 +110,7 @@ export function DropArea({ children, blocks }: DropAreaProps): ReactElement {
         itemIds.indexOf(active.id as string)
       handleMoveBlock(moveIndex, active.id as string)
     }
+    setActive(null)
   }
 
   return (
