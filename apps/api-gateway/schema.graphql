@@ -2561,7 +2561,7 @@ type VideoSubtitle @join__type(graph: API_MEDIA)  {
   srtSrc: String
   value: String!
   language: Language!
-  videoEdition: VideoEdition!
+  videoEdition: VideoEdition
 }
 
 type VideoTitle @join__type(graph: API_MEDIA)  {
@@ -2582,7 +2582,7 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   duration: Int!
   lengthInMilliseconds: Int!
   language: Language!
-  videoEdition: VideoEdition!
+  videoEdition: VideoEdition
   subtitle(languageId: ID, primary: Boolean) : [VideoSubtitle!]!
   subtitleCount: Int!
   """
