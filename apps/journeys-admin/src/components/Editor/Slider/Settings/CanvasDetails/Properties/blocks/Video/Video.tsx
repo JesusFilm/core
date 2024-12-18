@@ -15,7 +15,8 @@ import { getAction } from '../../controls/Action/utils/actions'
 import { VideoOptions } from './Options/VideoOptions'
 
 export function Video(block: TreeBlock<VideoBlock>): ReactElement {
-  const { id, videoId } = block
+  const { id, mediaVideo } = block
+  const videoId = mediaVideo?.id
   const { t } = useTranslation('apps-journeys-admin')
 
   const { dispatch } = useEditor()

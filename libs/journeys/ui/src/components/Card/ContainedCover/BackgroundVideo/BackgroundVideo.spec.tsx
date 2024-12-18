@@ -20,7 +20,6 @@ const video: TreeBlock<VideoFields> = {
   autoplay: true,
   fullsize: true,
   action: null,
-  videoId: '5_0-NUA0201-0-0',
   videoVariantLanguageId: '529',
   source: VideoBlockSource.internal,
   title: null,

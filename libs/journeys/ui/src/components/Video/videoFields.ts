@@ -14,7 +14,6 @@ export const VIDEO_FIELDS = gql`
     endAt
     posterBlockId
     fullsize
-    videoId
     videoVariantLanguageId
     source
     title

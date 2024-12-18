@@ -196,7 +196,6 @@ describe('VideoLibrary', () => {
             autoplay: true,
             startAt: 0,
             title: 'What is the Bible?',
-            videoId: 'ak06MSETeo4',
             videoVariantLanguageId: null,
             parentOrder: 0,
             action: null,

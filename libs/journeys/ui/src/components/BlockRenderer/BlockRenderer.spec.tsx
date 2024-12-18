@@ -582,7 +582,6 @@ describe('BlockRenderer', () => {
     const block: TreeBlock = {
       __typename: 'VideoBlock',
       id: 'main',
-      videoId: '2_0-FallingPlates',
       videoVariantLanguageId: '529',
       source: VideoBlockSource.internal,
       title: null,
@@ -638,7 +637,6 @@ describe('BlockRenderer', () => {
     const block: TreeBlock = {
       __typename: 'VideoBlock',
       id: 'main',
-      videoId: '2_0-FallingPlates',
       videoVariantLanguageId: '529',
       source: VideoBlockSource.internal,
       title: null,

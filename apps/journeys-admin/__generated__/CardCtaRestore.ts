@@ -340,12 +340,6 @@ export interface CardCtaRestore_imageRestore_VideoBlock {
    * to select a video.
    * For other sources only videoId needs to be set.
    */
-  videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
@@ -752,12 +746,6 @@ export interface CardCtaRestore_subtitleRestore_VideoBlock {
    */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
-  videoId: string | null;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.
@@ -1174,12 +1162,6 @@ export interface CardCtaRestore_titleRestore_VideoBlock {
    * to select a video.
    * For other sources only videoId needs to be set.
    */
-  videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
@@ -1586,12 +1568,6 @@ export interface CardCtaRestore_button1Restore_VideoBlock {
    */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
-  videoId: string | null;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.
@@ -2008,12 +1984,6 @@ export interface CardCtaRestore_startIcon1Restore_VideoBlock {
    * to select a video.
    * For other sources only videoId needs to be set.
    */
-  videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
@@ -2420,12 +2390,6 @@ export interface CardCtaRestore_endIcon1Restore_VideoBlock {
    */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
-  videoId: string | null;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.
@@ -2842,12 +2806,6 @@ export interface CardCtaRestore_button2Restore_VideoBlock {
    * to select a video.
    * For other sources only videoId needs to be set.
    */
-  videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
@@ -3254,12 +3212,6 @@ export interface CardCtaRestore_startIcon2Restore_VideoBlock {
    */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
-  videoId: string | null;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.
@@ -3676,12 +3628,6 @@ export interface CardCtaRestore_endIcon2Restore_VideoBlock {
    * to select a video.
    * For other sources only videoId needs to be set.
    */
-  videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
@@ -4088,12 +4034,6 @@ export interface CardCtaRestore_button3Restore_VideoBlock {
    */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
-  videoId: string | null;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.
@@ -4510,12 +4450,6 @@ export interface CardCtaRestore_startIcon3Restore_VideoBlock {
    * to select a video.
    * For other sources only videoId needs to be set.
    */
-  videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
@@ -4922,12 +4856,6 @@ export interface CardCtaRestore_endIcon3Restore_VideoBlock {
    */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
-  videoId: string | null;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.

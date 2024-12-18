@@ -29,7 +29,7 @@ export function SourceFromCloudflare({
             src: `https://customer-${
               process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
             }.cloudflarestream.com/${
-              selectedBlock.videoId ?? ''
+              selectedBlock.mediaVideo?.id ?? ''
             }/thumbnails/thumbnail.jpg?time=2s&height=${IMG_HEIGHT}&width=${IMG_WIDTH}`,
             alt: selectedBlock.title ?? ''
           }}

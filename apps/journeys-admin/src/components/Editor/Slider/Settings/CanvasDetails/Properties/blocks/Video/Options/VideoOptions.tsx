@@ -49,7 +49,7 @@ export function VideoOptions(): ReactElement {
     if (input.duration !== undefined)
       inverseInput.duration = selectedBlock.duration
     if (input.videoId !== undefined)
-      inverseInput.videoId = selectedBlock.videoId
+      inverseInput.videoId = selectedBlock.mediaVideo?.id
     if (input.videoVariantLanguageId !== undefined)
       inverseInput.videoVariantLanguageId = selectedBlock.videoVariantLanguageId
     if (input.source !== undefined) inverseInput.source = selectedBlock.source

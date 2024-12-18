@@ -354,12 +354,6 @@ export interface GetJourney_journey_blocks_VideoBlock {
    * to select a video.
    * For other sources only videoId needs to be set.
    */
-  videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present

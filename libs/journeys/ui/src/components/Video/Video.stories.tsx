@@ -27,7 +27,6 @@ const emptyVideo: Omit<ComponentProps<typeof Video>, 'source'> = {
   parentOrder: 0,
   autoplay: false,
   muted: false,
-  videoId: null,
   videoVariantLanguageId: null,
   title: null,
   description: null,

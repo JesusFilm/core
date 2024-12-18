@@ -129,7 +129,6 @@ export function BackgroundMediaVideo({
       muted: input.muted ?? null,
       autoplay: input.autoplay ?? null,
       duration: input.duration ?? null,
-      videoId: input.videoId ?? null,
       videoVariantLanguageId: input.videoVariantLanguageId ?? null,
       source: input.source ?? VideoBlockSource.internal,
       posterBlockId: input.posterBlockId ?? null,

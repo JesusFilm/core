@@ -279,7 +279,6 @@ export function CardIntro(): ReactElement {
       endAt: 2058,
       posterBlockId: null,
       fullsize: null,
-      videoId: '1_jf-0-0',
       videoVariantLanguageId: '529',
       source: VideoBlockSource.internal,
       title: null,

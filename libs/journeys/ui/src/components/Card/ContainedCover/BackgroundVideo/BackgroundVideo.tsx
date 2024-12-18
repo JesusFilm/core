@@ -27,7 +27,6 @@ export function BackgroundVideo({
   source,
   children,
   mediaVideo,
-  videoId,
   startAt,
   endAt,
   objectFit,
@@ -94,7 +93,7 @@ export function BackgroundVideo({
         }
       })
     }
-  }, [playerRef, startAt, endAt, source, mediaVideo, videoId, setLoading])
+  }, [playerRef, startAt, endAt, source, mediaVideo, setLoading])
 
   useEffect(() => {
     if (videoRef.current != null) videoRef.current.pause()
@@ -156,11 +155,11 @@ export function BackgroundVideo({
           pointerEvents: 'none'
         }}
       >
-        {source === VideoBlockSource.cloudflare && videoId != null && (
+        {source === VideoBlockSource.cloudflare && mediaVideo?.id != null && (
           <source
             src={`https://customer-${
               process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-            }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`}
+            }.cloudflarestream.com/${mediaVideo.id ?? ''}/manifest/video.m3u8`}
             type="application/x-mpegURL"
           />
         )}
@@ -168,9 +167,13 @@ export function BackgroundVideo({
           mediaVideo?.variant?.hls != null && (
             <source src={mediaVideo.variant.hls} type="application/x-mpegURL" />
           )}
-        {source === VideoBlockSource.youTube && videoId != null && (
+        {mediaVideo?.__typename === 'Video' &&
+          mediaVideo?.variant?.hls != null && (
+            <source src={mediaVideo.variant.hls} type="application/x-mpegURL" />
+          )}
+        {mediaVideo?.__typename === 'YouTube' && mediaVideo?.id != null && (
           <source
-            src={`https://www.youtube.com/embed/${videoId}?start=${
+            src={`https://www.youtube.com/embed/${mediaVideo.id}?start=${
               startAt ?? 0
             }&end=${endAt ?? 0}`}
             type="video/youtube"

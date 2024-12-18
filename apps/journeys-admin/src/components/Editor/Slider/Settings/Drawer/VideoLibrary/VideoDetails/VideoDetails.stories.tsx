@@ -187,7 +187,6 @@ const videoBlock: TreeBlock<VideoBlock> = {
   autoplay: true,
   fullsize: true,
   action: null,
-  videoId: null,
   videoVariantLanguageId: null,
   source: VideoBlockSource.internal,
   title: null,

@@ -340,12 +340,6 @@ export interface CardIntroRestore_subtitle_VideoBlock {
    * to select a video.
    * For other sources only videoId needs to be set.
    */
-  videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
@@ -752,12 +746,6 @@ export interface CardIntroRestore_title_VideoBlock {
    */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
-  videoId: string | null;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.
@@ -1174,12 +1162,6 @@ export interface CardIntroRestore_body_VideoBlock {
    * to select a video.
    * For other sources only videoId needs to be set.
    */
-  videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
@@ -1586,12 +1568,6 @@ export interface CardIntroRestore_button_VideoBlock {
    */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
-  videoId: string | null;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.
@@ -2008,12 +1984,6 @@ export interface CardIntroRestore_startIcon_VideoBlock {
    * to select a video.
    * For other sources only videoId needs to be set.
    */
-  videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
@@ -2425,12 +2395,6 @@ export interface CardIntroRestore_endIcon_VideoBlock {
    * to select a video.
    * For other sources only videoId needs to be set.
    */
-  videoId: string | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
   videoVariantLanguageId: string | null;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
@@ -2837,12 +2801,6 @@ export interface CardIntroRestore_video_VideoBlock {
    */
   posterBlockId: string | null;
   fullsize: boolean | null;
-  /**
-   * internal source videos: videoId and videoVariantLanguageId both need to be set
-   * to select a video.
-   * For other sources only videoId needs to be set.
-   */
-  videoId: string | null;
   /**
    * internal source videos: videoId and videoVariantLanguageId both need to be set
    * to select a video.

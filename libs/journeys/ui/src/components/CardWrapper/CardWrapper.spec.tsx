@@ -35,7 +35,6 @@ describe('CardWrapper', () => {
           parentOrder: 0,
           autoplay: false,
           muted: true,
-          videoId: '2_0-FallingPlates',
           videoVariantLanguageId: '529',
           source: VideoBlockSource.internal,
           title: null,
@@ -115,7 +114,6 @@ describe('CardWrapper', () => {
             objectFit: null,
             image: null,
             mediaVideo: null,
-            videoId: null,
             videoVariantLanguageId: '529'
           }
         ],
@@ -154,7 +152,6 @@ describe('CardWrapper', () => {
           parentOrder: 0,
           autoplay: false,
           muted: true,
-          videoId: null,
           videoVariantLanguageId: '529',
           source: VideoBlockSource.internal,
           title: null,
@@ -234,7 +231,6 @@ describe('CardWrapper', () => {
             duration: null,
             image: null,
             mediaVideo: null,
-            videoId: null,
             videoVariantLanguageId: '529'
           }
         ],

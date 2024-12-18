@@ -12,7 +12,7 @@ jest.mock('@core/journeys/ui/Video', () => ({
 }))
 
 describe('VideoWrapper', () => {
-  it('should set videoId to null', () => {
+  it('should set mediaVideo to null', () => {
     const block: TreeBlock = {
       id: 'video5.id',
       __typename: 'VideoBlock',
@@ -20,20 +20,19 @@ describe('VideoWrapper', () => {
       parentOrder: 0,
       autoplay: false,
       muted: true,
-      videoId: '2_0-FallingPlates',
       videoVariantLanguageId: '529',
       source: VideoBlockSource.internal,
       title: null,
       description: null,
       duration: null,
       image: null,
-      mediaVideo: null,
       startAt: null,
       endAt: null,
       posterBlockId: 'image5.id',
       fullsize: null,
       action: null,
       objectFit: null,
+      mediaVideo: null,
       children: [
         {
           id: 'image5.id',
@@ -94,14 +93,13 @@ describe('VideoWrapper', () => {
         image: null,
         objectFit: null,
         mediaVideo: null,
-        videoId: null,
         videoVariantLanguageId: '529'
       },
       {}
     )
   })
 
-  it('should handle where videoId is not set', () => {
+  it('should handle where mediaVideo is not set', () => {
     const block: TreeBlock = {
       id: 'video5.id',
       __typename: 'VideoBlock',
@@ -109,7 +107,6 @@ describe('VideoWrapper', () => {
       parentOrder: 0,
       autoplay: false,
       muted: true,
-      videoId: null,
       videoVariantLanguageId: '529',
       source: VideoBlockSource.internal,
       title: null,
@@ -183,7 +180,6 @@ describe('VideoWrapper', () => {
         image: null,
         objectFit: null,
         mediaVideo: null,
-        videoId: null,
         videoVariantLanguageId: '529'
       },
       {}

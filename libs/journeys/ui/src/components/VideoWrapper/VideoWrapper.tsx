@@ -8,7 +8,7 @@ export function VideoWrapper({ block }: WrapperProps): ReactElement {
     <Video
       {...{
         ...block,
-        videoId: null
+        mediaVideo: null
       }}
     />
   ) : (

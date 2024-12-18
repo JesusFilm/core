@@ -61,7 +61,6 @@ export function NewVideoButton({
       endAt: null,
       posterBlockId: null,
       fullsize: true,
-      videoId: null,
       videoVariantLanguageId: null,
       source: VideoBlockSource.internal,
       title: null,
