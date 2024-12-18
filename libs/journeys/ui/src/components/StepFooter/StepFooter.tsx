@@ -66,6 +66,7 @@ export function StepFooter({
         sx={{
           px: { xs: 6, lg: 0 },
           py: { xs: 2, lg: 0 },
+          pt: { xs: 3, sm: 0 },
           flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
           justifyContent: 'space-between',
           alignItems: { xs: 'flex-start', lg: 'center' },
@@ -84,8 +85,7 @@ export function StepFooter({
             height: { xs: footerMobileHeight, sm: 52 },
             flexDirection: rtl ? 'row-reverse' : 'row',
             alignItems: 'center',
-            justifyContent: isWebsite ? 'space-between' : undefined,
-            mt: '0px !important'
+            justifyContent: isWebsite ? 'space-between' : undefined
           }}
           gap={4}
         >
