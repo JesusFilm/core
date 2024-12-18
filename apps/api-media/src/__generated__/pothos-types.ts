@@ -213,9 +213,9 @@ export default interface PrismaTypes {
                 Nullable: false;
             };
             videoEdition: {
-                Shape: VideoEdition;
+                Shape: VideoEdition | null;
                 Name: "VideoEdition";
-                Nullable: false;
+                Nullable: true;
             };
             video: {
                 Shape: Video | null;
@@ -273,9 +273,9 @@ export default interface PrismaTypes {
                 Nullable: false;
             };
             videoEdition: {
-                Shape: VideoEdition;
+                Shape: VideoEdition | null;
                 Name: "VideoEdition";
-                Nullable: false;
+                Nullable: true;
             };
         };
     };

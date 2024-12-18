@@ -9,43 +9,6 @@ import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit } from "./
 // GraphQL mutation operation: CoverVideoBlockCreate
 // ====================================================
 
-export interface CoverVideoBlockCreate_videoBlockCreate_video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface CoverVideoBlockCreate_videoBlockCreate_video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface CoverVideoBlockCreate_videoBlockCreate_video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface CoverVideoBlockCreate_videoBlockCreate_video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface CoverVideoBlockCreate_videoBlockCreate_video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: CoverVideoBlockCreate_videoBlockCreate_video_variantLanguages_name[];
-}
-
-export interface CoverVideoBlockCreate_videoBlockCreate_video {
-  __typename: "Video";
-  id: string;
-  title: CoverVideoBlockCreate_videoBlockCreate_video_title[];
-  images: CoverVideoBlockCreate_videoBlockCreate_video_images[];
-  variant: CoverVideoBlockCreate_videoBlockCreate_video_variant | null;
-  variantLanguages: CoverVideoBlockCreate_videoBlockCreate_video_variantLanguages[];
-}
-
 export interface CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -191,11 +154,6 @@ export interface CoverVideoBlockCreate_videoBlockCreate {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: CoverVideoBlockCreate_videoBlockCreate_video | null;
   mediaVideo: CoverVideoBlockCreate_videoBlockCreate_mediaVideo | null;
   /**
    * action that should be performed when the video ends

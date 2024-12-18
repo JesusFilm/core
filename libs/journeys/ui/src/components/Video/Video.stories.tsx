@@ -33,7 +33,6 @@ const emptyVideo: Omit<ComponentProps<typeof Video>, 'source'> = {
   description: null,
   duration: null,
   image: null,
-  video: null,
   mediaVideo: null,
   startAt: null,
   endAt: null,

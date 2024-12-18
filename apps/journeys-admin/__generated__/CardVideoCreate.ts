@@ -9,43 +9,6 @@ import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit } from "./
 // GraphQL mutation operation: CardVideoCreate
 // ====================================================
 
-export interface CardVideoCreate_video_video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface CardVideoCreate_video_video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface CardVideoCreate_video_video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface CardVideoCreate_video_video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface CardVideoCreate_video_video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: CardVideoCreate_video_video_variantLanguages_name[];
-}
-
-export interface CardVideoCreate_video_video {
-  __typename: "Video";
-  id: string;
-  title: CardVideoCreate_video_video_title[];
-  images: CardVideoCreate_video_video_images[];
-  variant: CardVideoCreate_video_video_variant | null;
-  variantLanguages: CardVideoCreate_video_video_variantLanguages[];
-}
-
 export interface CardVideoCreate_video_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -191,11 +154,6 @@ export interface CardVideoCreate_video {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: CardVideoCreate_video_video | null;
   mediaVideo: CardVideoCreate_video_mediaVideo | null;
   /**
    * action that should be performed when the video ends

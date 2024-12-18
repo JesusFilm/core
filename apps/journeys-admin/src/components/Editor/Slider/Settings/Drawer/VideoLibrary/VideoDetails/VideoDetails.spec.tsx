@@ -57,7 +57,6 @@ describe('VideoDetails', () => {
     description: null,
     duration: null,
     image: null,
-    video: null,
     mediaVideo: null,
     posterBlockId: 'imageBlockId',
     objectFit: null,

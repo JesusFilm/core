@@ -9,43 +9,6 @@ import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit } from "./
 // GraphQL mutation operation: VideoBlockCreate
 // ====================================================
 
-export interface VideoBlockCreate_videoBlockCreate_video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface VideoBlockCreate_videoBlockCreate_video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface VideoBlockCreate_videoBlockCreate_video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface VideoBlockCreate_videoBlockCreate_video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface VideoBlockCreate_videoBlockCreate_video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: VideoBlockCreate_videoBlockCreate_video_variantLanguages_name[];
-}
-
-export interface VideoBlockCreate_videoBlockCreate_video {
-  __typename: "Video";
-  id: string;
-  title: VideoBlockCreate_videoBlockCreate_video_title[];
-  images: VideoBlockCreate_videoBlockCreate_video_images[];
-  variant: VideoBlockCreate_videoBlockCreate_video_variant | null;
-  variantLanguages: VideoBlockCreate_videoBlockCreate_video_variantLanguages[];
-}
-
 export interface VideoBlockCreate_videoBlockCreate_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -191,11 +154,6 @@ export interface VideoBlockCreate_videoBlockCreate {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: VideoBlockCreate_videoBlockCreate_video | null;
   mediaVideo: VideoBlockCreate_videoBlockCreate_mediaVideo | null;
   /**
    * action that should be performed when the video ends

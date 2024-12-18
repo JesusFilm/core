@@ -287,29 +287,6 @@ export function CardIntro(): ReactElement {
       image: null,
       duration: null,
       objectFit: null,
-      video: {
-        id: '1_jf-0-0',
-        __typename: 'Video',
-        title: [
-          {
-            value: 'JESUS',
-            __typename: 'VideoTitle'
-          }
-        ],
-        images: [
-          {
-            __typename: 'CloudflareImage',
-            mobileCinematicHigh:
-              'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
-          }
-        ],
-        variant: {
-          id: '1_529-jf-0-0',
-          hls: 'https://arc.gt/j67rz',
-          __typename: 'VideoVariant'
-        },
-        variantLanguages: []
-      },
       mediaVideo: {
         id: '1_jf-0-0',
         __typename: 'Video',
@@ -388,12 +365,12 @@ export function CardIntro(): ReactElement {
               ...pick(videoBlock, [
                 'id',
                 'parentBlockId',
-                'videoId',
                 'videoVariantLanguageId',
                 'startAt',
                 'endAt',
                 'source'
               ]),
+              videoId: videoBlock.mediaVideo?.id,
               journeyId: journey.id,
               isCover: true
             }

@@ -236,43 +236,6 @@ export interface CardFormRestore_image_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface CardFormRestore_image_VideoBlock_video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface CardFormRestore_image_VideoBlock_video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface CardFormRestore_image_VideoBlock_video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface CardFormRestore_image_VideoBlock_video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface CardFormRestore_image_VideoBlock_video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: CardFormRestore_image_VideoBlock_video_variantLanguages_name[];
-}
-
-export interface CardFormRestore_image_VideoBlock_video {
-  __typename: "Video";
-  id: string;
-  title: CardFormRestore_image_VideoBlock_video_title[];
-  images: CardFormRestore_image_VideoBlock_video_images[];
-  variant: CardFormRestore_image_VideoBlock_video_variant | null;
-  variantLanguages: CardFormRestore_image_VideoBlock_video_variantLanguages[];
-}
-
 export interface CardFormRestore_image_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -418,11 +381,6 @@ export interface CardFormRestore_image_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: CardFormRestore_image_VideoBlock_video | null;
   mediaVideo: CardFormRestore_image_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -695,43 +653,6 @@ export interface CardFormRestore_subtitle_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface CardFormRestore_subtitle_VideoBlock_video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface CardFormRestore_subtitle_VideoBlock_video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface CardFormRestore_subtitle_VideoBlock_video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface CardFormRestore_subtitle_VideoBlock_video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface CardFormRestore_subtitle_VideoBlock_video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: CardFormRestore_subtitle_VideoBlock_video_variantLanguages_name[];
-}
-
-export interface CardFormRestore_subtitle_VideoBlock_video {
-  __typename: "Video";
-  id: string;
-  title: CardFormRestore_subtitle_VideoBlock_video_title[];
-  images: CardFormRestore_subtitle_VideoBlock_video_images[];
-  variant: CardFormRestore_subtitle_VideoBlock_video_variant | null;
-  variantLanguages: CardFormRestore_subtitle_VideoBlock_video_variantLanguages[];
-}
-
 export interface CardFormRestore_subtitle_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -877,11 +798,6 @@ export interface CardFormRestore_subtitle_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: CardFormRestore_subtitle_VideoBlock_video | null;
   mediaVideo: CardFormRestore_subtitle_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -1154,43 +1070,6 @@ export interface CardFormRestore_title_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface CardFormRestore_title_VideoBlock_video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface CardFormRestore_title_VideoBlock_video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface CardFormRestore_title_VideoBlock_video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface CardFormRestore_title_VideoBlock_video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface CardFormRestore_title_VideoBlock_video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: CardFormRestore_title_VideoBlock_video_variantLanguages_name[];
-}
-
-export interface CardFormRestore_title_VideoBlock_video {
-  __typename: "Video";
-  id: string;
-  title: CardFormRestore_title_VideoBlock_video_title[];
-  images: CardFormRestore_title_VideoBlock_video_images[];
-  variant: CardFormRestore_title_VideoBlock_video_variant | null;
-  variantLanguages: CardFormRestore_title_VideoBlock_video_variantLanguages[];
-}
-
 export interface CardFormRestore_title_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1336,11 +1215,6 @@ export interface CardFormRestore_title_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: CardFormRestore_title_VideoBlock_video | null;
   mediaVideo: CardFormRestore_title_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -1613,43 +1487,6 @@ export interface CardFormRestore_textResponse_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface CardFormRestore_textResponse_VideoBlock_video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface CardFormRestore_textResponse_VideoBlock_video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface CardFormRestore_textResponse_VideoBlock_video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface CardFormRestore_textResponse_VideoBlock_video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface CardFormRestore_textResponse_VideoBlock_video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: CardFormRestore_textResponse_VideoBlock_video_variantLanguages_name[];
-}
-
-export interface CardFormRestore_textResponse_VideoBlock_video {
-  __typename: "Video";
-  id: string;
-  title: CardFormRestore_textResponse_VideoBlock_video_title[];
-  images: CardFormRestore_textResponse_VideoBlock_video_images[];
-  variant: CardFormRestore_textResponse_VideoBlock_video_variant | null;
-  variantLanguages: CardFormRestore_textResponse_VideoBlock_video_variantLanguages[];
-}
-
 export interface CardFormRestore_textResponse_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1795,11 +1632,6 @@ export interface CardFormRestore_textResponse_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: CardFormRestore_textResponse_VideoBlock_video | null;
   mediaVideo: CardFormRestore_textResponse_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -2072,43 +1904,6 @@ export interface CardFormRestore_body_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface CardFormRestore_body_VideoBlock_video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface CardFormRestore_body_VideoBlock_video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface CardFormRestore_body_VideoBlock_video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface CardFormRestore_body_VideoBlock_video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface CardFormRestore_body_VideoBlock_video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: CardFormRestore_body_VideoBlock_video_variantLanguages_name[];
-}
-
-export interface CardFormRestore_body_VideoBlock_video {
-  __typename: "Video";
-  id: string;
-  title: CardFormRestore_body_VideoBlock_video_title[];
-  images: CardFormRestore_body_VideoBlock_video_images[];
-  variant: CardFormRestore_body_VideoBlock_video_variant | null;
-  variantLanguages: CardFormRestore_body_VideoBlock_video_variantLanguages[];
-}
-
 export interface CardFormRestore_body_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -2254,11 +2049,6 @@ export interface CardFormRestore_body_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: CardFormRestore_body_VideoBlock_video | null;
   mediaVideo: CardFormRestore_body_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

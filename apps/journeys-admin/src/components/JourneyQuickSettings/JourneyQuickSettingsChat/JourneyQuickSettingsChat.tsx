@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
@@ -41,7 +42,7 @@ export function JourneyQuickSettingsChat({
   }
 
   return (
-    <>
+    <Stack data-testid="JourneyQuickSettingsChat">
       <HostTitleFieldForm
         value={name}
         label={t('Your Name')}
@@ -52,6 +53,6 @@ export function JourneyQuickSettingsChat({
       <Box sx={{ mx: -8 }}>
         <Chat />
       </Box>
-    </>
+    </Stack>
   )
 }

@@ -183,10 +183,10 @@ model VideoVariant {
   lengthInMilliseconds Int?
   languageId           String
   edition              String                 @default("base")
-  videoEdition         VideoEdition           @relation(fields: [edition], references: [id])
+  videoEdition         VideoEdition?          @relation(fields: [edition, videoId], references: [name, videoId])
   slug                 String                 @unique
   video                Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
-  videoId              String?
+  videoId              String
 
   @@unique([languageId, videoId])
   @@index(languageId(type: Hash))
@@ -194,24 +194,26 @@ model VideoVariant {
 }
 
 model VideoEdition {
-  id             String          @id
+  id             String          @id @default(uuid())
   name           String?
   videoId        String?
   video          Video?          @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoVariants  VideoVariant[]
   videoSubtitles VideoSubtitle[]
+
+  @@unique([name, videoId])
 }
 
 model VideoSubtitle {
-  id           String       @id @default(uuid())
+  id           String        @id @default(uuid())
   videoId      String
-  edition      String       @default("base")
+  edition      String        @default("base")
   vttSrc       String?
   srtSrc       String?
   primary      Boolean
   languageId   String
-  video        Video        @relation(fields: [videoId], references: [id], onDelete: Cascade)
-  videoEdition VideoEdition @relation(fields: [edition], references: [id])
+  video        Video         @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoEdition VideoEdition? @relation(fields: [edition, videoId], references: [name, videoId])
 
   @@unique([videoId, edition, languageId])
   @@index(languageId(type: Hash))

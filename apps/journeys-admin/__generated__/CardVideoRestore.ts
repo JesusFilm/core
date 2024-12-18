@@ -13,43 +13,6 @@ export interface CardVideoRestore_video_ImageBlock {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
 }
 
-export interface CardVideoRestore_video_VideoBlock_video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface CardVideoRestore_video_VideoBlock_video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface CardVideoRestore_video_VideoBlock_video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface CardVideoRestore_video_VideoBlock_video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface CardVideoRestore_video_VideoBlock_video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: CardVideoRestore_video_VideoBlock_video_variantLanguages_name[];
-}
-
-export interface CardVideoRestore_video_VideoBlock_video {
-  __typename: "Video";
-  id: string;
-  title: CardVideoRestore_video_VideoBlock_video_title[];
-  images: CardVideoRestore_video_VideoBlock_video_images[];
-  variant: CardVideoRestore_video_VideoBlock_video_variant | null;
-  variantLanguages: CardVideoRestore_video_VideoBlock_video_variantLanguages[];
-}
-
 export interface CardVideoRestore_video_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -195,11 +158,6 @@ export interface CardVideoRestore_video_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: CardVideoRestore_video_VideoBlock_video | null;
   mediaVideo: CardVideoRestore_video_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

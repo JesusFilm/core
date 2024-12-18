@@ -246,43 +246,6 @@ export interface StepBlockRestoreFromAction_blockRestore_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: StepBlockRestoreFromAction_blockRestore_VideoBlock_video_variantLanguages_name[];
-}
-
-export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_video {
-  __typename: "Video";
-  id: string;
-  title: StepBlockRestoreFromAction_blockRestore_VideoBlock_video_title[];
-  images: StepBlockRestoreFromAction_blockRestore_VideoBlock_video_images[];
-  variant: StepBlockRestoreFromAction_blockRestore_VideoBlock_video_variant | null;
-  variantLanguages: StepBlockRestoreFromAction_blockRestore_VideoBlock_video_variantLanguages[];
-}
-
 export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -428,11 +391,6 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: StepBlockRestoreFromAction_blockRestore_VideoBlock_video | null;
   mediaVideo: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

@@ -175,7 +175,11 @@ describe('LocalDetails', () => {
               duration: 144,
               startAt: 0,
               endAt: 0,
-              videoVariantLanguageId: '525'
+              videoVariantLanguageId: '525',
+              mediaVideo: {
+                __typename: 'Video',
+                id: '2_Acts7302-0-0'
+              }
             } as unknown as TreeBlock<VideoBlock>
           }}
         >
@@ -222,7 +226,11 @@ describe('LocalDetails', () => {
               duration: 0,
               startAt: 5,
               endAt: 41,
-              videoVariantLanguageId: '529'
+              videoVariantLanguageId: '529',
+              mediaVideo: {
+                __typename: 'Video',
+                id: '2_Acts7302-0-0'
+              }
             } as unknown as TreeBlock<VideoBlock>
           }}
         >

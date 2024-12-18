@@ -161,7 +161,7 @@ describe('Icon', () => {
       </MockedProvider>
     )
     fireEvent.mouseDown(getByRole('combobox', { name: 'icon-name' }))
-    fireEvent.click(getByRole('option', { name: 'Select an icon...' }))
+    fireEvent.click(getByRole('option', { name: 'None' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })
 
