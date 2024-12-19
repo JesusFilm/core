@@ -360,7 +360,8 @@ export function JourneyFlow(): ReactElement {
     if (isClickOrTouch(event.timeStamp)) {
       const target = event.target as HTMLElement
       // if the clicked/tapped element is the node menu, don't call handleStepSelection hook https://github.com/JesusFilm/core/pull/4736
-      if (target.id === 'StepBlockNodeMenu' || target.id === 'edit-step') return
+      if (target.id === 'StepBlockNodeMenuIcon' || target.id === 'edit-step')
+        return
 
       handleStepSelection(step.id)
     } else {

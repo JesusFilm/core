@@ -68,7 +68,7 @@ export function StepBlockNodeMenu({
         >
           <EllipsisIcon
             // id should match target.id in onNodeDragStop function of apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/JourneyFlow.tsx
-            id="StepBlockNodeMenu"
+            id="StepBlockNodeMenuIcon"
             data-testid="EditStepFabIcon"
           />
         </Fab>

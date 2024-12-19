@@ -108,6 +108,6 @@ describe('StepBlockNodeMenu', () => {
       expect(screen.getByTestId('EditStepFabIcon')).toBeInTheDocument()
     })
     const fabIcon = screen.getByTestId('EditStepFabIcon')
-    expect(fabIcon).toHaveAttribute('id', 'StepBlockNodeMenu')
+    expect(fabIcon).toHaveAttribute('id', 'StepBlockNodeMenuIcon')
   })
 })
