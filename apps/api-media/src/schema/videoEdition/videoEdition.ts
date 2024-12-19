@@ -49,7 +49,9 @@ builder.mutationFields((t) => ({
         ...query,
         data: {
           ...input,
-          id: input.id ?? undefined
+          id: input.id ?? undefined,
+          name: input.name,
+          videoId: input.videoId
         }
       })
     }
