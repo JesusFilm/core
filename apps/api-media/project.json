@@ -55,12 +55,6 @@
         "jestConfig": "apps/api-media/jest.config.ts"
       }
     },
-    "editions": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node apps/api-media/src/workers/seed/migrations/editions/editions.ts"
-      }
-    },
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
