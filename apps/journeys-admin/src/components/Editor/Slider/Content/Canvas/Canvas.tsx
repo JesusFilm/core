@@ -293,7 +293,7 @@ export function Canvas(): ReactElement {
                               }
                             />
                           </ThemeProvider>
-                          <DropArea blocks={selectedStep.children[0].children}>
+                          <DropArea>
                             <BlockRenderer
                               block={selectedStep}
                               wrappers={{
