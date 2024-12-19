@@ -79,8 +79,8 @@ export default interface PrismaTypes {
         Where: Prisma.VideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets";
-        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets";
+        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "VideoEdition";
+        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "VideoEdition";
         Relations: {
             title: {
                 Shape: VideoTitle[];
@@ -147,6 +147,11 @@ export default interface PrismaTypes {
                 Name: "CloudflareR2";
                 Nullable: false;
             };
+            VideoEdition: {
+                Shape: VideoEdition[];
+                Name: "VideoEdition";
+                Nullable: false;
+            };
         };
     };
     VideoTitle: {
@@ -208,9 +213,9 @@ export default interface PrismaTypes {
                 Nullable: false;
             };
             videoEdition: {
-                Shape: VideoEdition;
+                Shape: VideoEdition | null;
                 Name: "VideoEdition";
-                Nullable: false;
+                Nullable: true;
             };
             video: {
                 Shape: Video | null;
@@ -229,9 +234,14 @@ export default interface PrismaTypes {
         Where: Prisma.VideoEditionWhereInput;
         Create: {};
         Update: {};
-        RelationName: "videoVariants" | "videoSubtitles";
+        RelationName: "video" | "videoVariants" | "videoSubtitles";
         ListRelations: "videoVariants" | "videoSubtitles";
         Relations: {
+            video: {
+                Shape: Video | null;
+                Name: "Video";
+                Nullable: true;
+            };
             videoVariants: {
                 Shape: VideoVariant[];
                 Name: "VideoVariant";
@@ -254,18 +264,18 @@ export default interface PrismaTypes {
         Where: Prisma.VideoSubtitleWhereInput;
         Create: {};
         Update: {};
-        RelationName: "Video" | "videoEdition";
+        RelationName: "video" | "videoEdition";
         ListRelations: never;
         Relations: {
-            Video: {
+            video: {
                 Shape: Video;
                 Name: "Video";
                 Nullable: false;
             };
             videoEdition: {
-                Shape: VideoEdition;
+                Shape: VideoEdition | null;
                 Name: "VideoEdition";
-                Nullable: false;
+                Nullable: true;
             };
         };
     };

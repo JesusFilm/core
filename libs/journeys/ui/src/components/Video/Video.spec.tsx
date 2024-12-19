@@ -35,7 +35,7 @@ const block: TreeBlock<VideoFields> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -104,7 +104,11 @@ describe('Video', () => {
           {...{
             ...block,
             source: VideoBlockSource.youTube,
-            videoId: 'videoId'
+            videoId: 'videoId',
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: 'videoId'
+            }
           }}
         />
       </MockedProvider>
@@ -125,7 +129,11 @@ describe('Video', () => {
           {...{
             ...block,
             source: VideoBlockSource.cloudflare,
-            videoId: 'videoId'
+            videoId: 'videoId',
+            mediaVideo: {
+              __typename: 'CloudflareVideo',
+              id: 'videoId'
+            }
           }}
         />
       </MockedProvider>

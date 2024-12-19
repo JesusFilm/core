@@ -62,6 +62,7 @@ describe('bigQuery/importers/videoVariants', () => {
         dash: 'www.example.com',
         share: 'www.example.com',
         duration: 123.123,
+        lengthInMilliseconds: 123456,
         languageId: 529,
         videoId: 'videoId',
         slug: 'variant-title',
@@ -71,14 +72,15 @@ describe('bigQuery/importers/videoVariants', () => {
         edition: 'mockEdition'
       })
       expect(prismaMock.videoEdition.upsert).toHaveBeenCalledWith({
-        where: { id: 'mockEdition' },
+        create: { name: 'mockEdition', videoId: 'videoId' },
         update: {},
-        create: { id: 'mockEdition' }
+        where: { name_videoId: { name: 'mockEdition', videoId: 'videoId' } }
       })
       expect(prismaMock.videoVariant.upsert).toHaveBeenCalledWith({
         where: { id: '1' },
         create: {
           duration: 123,
+          lengthInMilliseconds: 123456,
           hls: 'www.example.com',
           dash: 'www.example.com',
           share: 'www.example.com',
@@ -90,6 +92,7 @@ describe('bigQuery/importers/videoVariants', () => {
         },
         update: {
           duration: 123,
+          lengthInMilliseconds: 123456,
           hls: 'www.example.com',
           dash: 'www.example.com',
           share: 'www.example.com',
@@ -110,6 +113,7 @@ describe('bigQuery/importers/videoVariants', () => {
           dash: 'www.example.com',
           share: 'www.example.com',
           duration: 123.123,
+          lengthInMilliseconds: 123456,
           languageId: 529,
           videoId: 'unknownVideoId',
           slug: 'Variant-Title',
@@ -131,6 +135,7 @@ describe('bigQuery/importers/videoVariants', () => {
           dash: 'www.example.com',
           share: 'www.example.com',
           duration: 123.123,
+          lengthInMilliseconds: 123456,
           languageId: 529,
           videoId: 'videoId',
           slug: 'variant-title',
@@ -145,6 +150,7 @@ describe('bigQuery/importers/videoVariants', () => {
           dash: 'www.example.com',
           share: 'www.example.com',
           duration: 123.123,
+          lengthInMilliseconds: 123456,
           languageId: 3804,
           videoId: 'videoId1',
           slug: 'variant-title',
@@ -155,11 +161,11 @@ describe('bigQuery/importers/videoVariants', () => {
         }
       ])
       expect(prismaMock.videoEdition.upsert).toHaveBeenCalledWith({
-        where: { id: 'mockEdition' },
+        create: { name: 'mockEdition', videoId: 'videoId' },
         update: {},
-        create: { id: 'mockEdition' }
+        where: { name_videoId: { name: 'mockEdition', videoId: 'videoId' } }
       })
-      expect(prismaMock.videoEdition.upsert).toHaveBeenCalledTimes(1)
+      expect(prismaMock.videoEdition.upsert).toHaveBeenCalledTimes(2)
       expect(prismaMock.videoVariant.createMany).toHaveBeenCalledWith({
         data: [
           {
@@ -168,6 +174,7 @@ describe('bigQuery/importers/videoVariants', () => {
             dash: 'www.example.com',
             share: 'www.example.com',
             duration: 123,
+            lengthInMilliseconds: 123456,
             languageId: '529',
             slug: 'video-slug/english',
             videoId: 'videoId',
@@ -179,6 +186,7 @@ describe('bigQuery/importers/videoVariants', () => {
             dash: 'www.example.com',
             share: 'www.example.com',
             duration: 123,
+            lengthInMilliseconds: 123456,
             languageId: '3804',
             slug: 'video-slug-1/korean',
             videoId: 'videoId1',

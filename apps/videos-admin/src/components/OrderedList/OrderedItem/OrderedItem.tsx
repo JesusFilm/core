@@ -108,6 +108,7 @@ export function OrderedItem({
         disableRipple
         data-testid={`OrderedItemDragHandle-${idx}`}
         sx={{
+          backgroundColor: 'transparent',
           cursor: 'move',
           border: '0px',
           '&:active': { backgroundColor: 'transparent' },
@@ -117,7 +118,15 @@ export function OrderedItem({
         ref={setActivatorNodeRef}
         {...listeners}
       >
-        <Drag fontSize="large" />
+        <Drag
+          fontSize="large"
+          sx={{
+            '&.MuiSvgIcon-root': {
+              width: '30px !important',
+              height: '30px !important'
+            }
+          }}
+        />
       </IconButton>
 
       {img != null && (

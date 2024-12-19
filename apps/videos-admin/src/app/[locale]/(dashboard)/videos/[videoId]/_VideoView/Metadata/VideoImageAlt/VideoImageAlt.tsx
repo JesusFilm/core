@@ -1,4 +1,5 @@
 import { useMutation } from '@apollo/client'
+import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
@@ -71,6 +72,7 @@ export function VideoImageAlt({
                 helperText={errors.imageAlt as string}
               />
             </Stack>
+            <Divider sx={{ mx: -4 }} />
             <Stack direction="row" justifyContent="flex-end">
               <SaveButton disabled={!isValid || isSubmitting || !dirty} />
             </Stack>
