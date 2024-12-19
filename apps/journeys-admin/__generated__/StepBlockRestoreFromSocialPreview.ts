@@ -286,6 +286,8 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_media
 export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_CloudflareVideo {
