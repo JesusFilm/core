@@ -29,6 +29,7 @@ import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
+import { QrCodeService } from '../qrCode/qrCode.service'
 
 import { CustomDomainService } from './customDomain.service'
 
@@ -36,7 +37,8 @@ import { CustomDomainService } from './customDomain.service'
 export class CustomDomainResolver {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly customDomainService: CustomDomainService
+    private readonly customDomainService: CustomDomainService,
+    private readonly qrCodeService: QrCodeService
   ) {}
 
   @Query()
@@ -122,6 +124,9 @@ export class CustomDomainResolver {
             }
           )
         }
+
+        await this.qrCodeService.updateTeamShortLinks(customDomain.teamId)
+
         return customDomain
       })
     } catch (err) {
@@ -184,6 +189,8 @@ export class CustomDomainResolver {
       })
 
     await this.prismaService.$transaction(async (tx) => {
+      await this.qrCodeService.updateTeamShortLinks(customDomain.teamId)
+
       await tx.customDomain.delete({
         where: { id }
       })
