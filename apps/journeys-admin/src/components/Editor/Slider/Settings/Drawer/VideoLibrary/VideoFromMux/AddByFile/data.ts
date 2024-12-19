@@ -38,6 +38,8 @@ export const getMuxVideoMock: MockedResponse<GetMyMuxVideoQuery> = {
     data: {
       getMyMuxVideo: {
         id: 'uploadId',
+        assetId: null,
+        playbackId: null,
         readyToStream: true,
         __typename: 'MuxVideo'
       }
