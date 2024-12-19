@@ -26,6 +26,23 @@ export function SelectableWrapper({
     state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
+  const [blockIds, setBlockIds] = useState<string[]>([])
+
+  useEffect(() => {
+    setBlockIds(
+      (
+        selectedStep?.children[0].children.filter(
+          (block) =>
+            block != null &&
+            block.__typename !== 'RadioOptionBlock' &&
+            block.__typename !== 'StepBlock' &&
+            block.__typename !== 'CardBlock' &&
+            block.__typename !== 'IconBlock' &&
+            block.parentOrder !== null
+        ) ?? []
+      ).map((block) => block.id)
+    )
+  }, [selectedStep])
 
   const { listeners, setNodeRef, isDragging, setActivatorNodeRef } =
     useSortable({
@@ -35,17 +52,10 @@ export function SelectableWrapper({
   const isVideoBlock = block?.__typename === 'VideoBlock'
   const isRadioOptionBlock = block?.__typename === 'RadioOptionBlock'
 
-  const blockIds = (
-    selectedStep?.children[0].children.filter(
-      (block) =>
-        block != null &&
-        !isRadioOptionBlock &&
-        block.__typename !== 'StepBlock' &&
-        block.__typename !== 'CardBlock' &&
-        block.__typename !== 'IconBlock' &&
-        block.parentOrder !== null
-    ) ?? []
-  ).map((block) => block.id)
+  function endDrag() {
+    setIsDuringDrag(false)
+    setDragId(null)
+  }
 
   useDndMonitor({
     onDragMove(e: DragOverEvent): void {
@@ -63,8 +73,10 @@ export function SelectableWrapper({
       }
     },
     onDragEnd() {
-      setIsDuringDrag(false)
-      setDragId(null)
+      endDrag()
+    },
+    onDragCancel() {
+      endDrag()
     }
   })
 
@@ -163,6 +175,17 @@ export function SelectableWrapper({
     setOpen(selectedBlock?.id === block.id)
   }, [selectedBlock, block])
 
+  const modifiers = [
+    {
+      name: 'preventOverflow',
+      enabled: false
+    },
+    {
+      name: 'flip',
+      enabled: false
+    }
+  ]
+
   return isSelectable ? (
     <Box
       className={
@@ -206,6 +229,7 @@ export function SelectableWrapper({
           open={block.id === dragId}
           anchorEl={selectableRef.current}
           placement={isAbove ? 'bottom' : 'top'}
+          modifiers={modifiers}
         >
           <Divider
             orientation="horizontal"
@@ -235,6 +259,7 @@ export function SelectableWrapper({
         ref={setActivatorNodeRef}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
+        modifiers={modifiers}
       >
         <DragIcon
           fontSize="large"

@@ -6,7 +6,7 @@ import {
   DragStartEvent,
   MouseSensor,
   TouchSensor,
-  closestCorners,
+  closestCenter,
   useSensor,
   useSensors
 } from '@dnd-kit/core'
@@ -117,7 +117,7 @@ export function DropArea({ children, blocks }: DropAreaProps): ReactElement {
     <DndContext
       onDragEnd={handleDragEnd}
       onDragStart={handleDragStart}
-      collisionDetection={closestCorners}
+      collisionDetection={closestCenter}
       sensors={sensors}
     >
       <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
