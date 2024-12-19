@@ -10,9 +10,17 @@ import { DeleteBlock } from './DeleteBlock'
 import { DuplicateBlock } from './DuplicateBlock'
 import { MoveBlock } from './MoveBlock'
 
-export function QuickControls({ open, anchorEl, block }): ReactElement {
-  const isVideoBlock = block?.__typename === 'VideoBlock'
+interface QuickControlsProps {
+  open: boolean
+  anchorEl: HTMLDivElement | null
+  isVideoBlock: boolean
+}
 
+export function QuickControls({
+  open,
+  anchorEl,
+  isVideoBlock
+}: QuickControlsProps): ReactElement {
   function handleClick(e: MouseEvent<HTMLDivElement>): void {
     e.stopPropagation()
   }
