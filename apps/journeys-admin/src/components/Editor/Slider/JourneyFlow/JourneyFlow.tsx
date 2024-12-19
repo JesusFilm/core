@@ -359,9 +359,12 @@ export function JourneyFlow(): ReactElement {
 
     if (isClickOrTouch(event.timeStamp)) {
       const target = event.target as HTMLElement
-      // if the clicked/tapped element is the node menu, don't call handleStepSelection hook https://github.com/JesusFilm/core/pull/4736
-      if (target.id === 'StepBlockNodeMenuIcon' || target.id === 'edit-step')
-        return
+      // if the clicked/tapped element is the StepBlockNodeMenu, don't call handleStepSelection hook https://github.com/JesusFilm/core/pull/4736
+      const menuButtonClicked =
+        (target.parentNode as HTMLElement).id === 'StepBlockNodeMenuIcon' ||
+        target.id === 'StepBlockNodeMenuIcon' ||
+        target.id === 'edit-step'
+      if (menuButtonClicked) return
 
       handleStepSelection(step.id)
     } else {
