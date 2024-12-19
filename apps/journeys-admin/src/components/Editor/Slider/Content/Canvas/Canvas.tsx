@@ -26,6 +26,7 @@ import { Hotkeys } from '../../../Hotkeys'
 
 import { CanvasFooter } from './CanvasFooter'
 import { CardWrapper } from './CardWrapper'
+import { DropArea } from './DropArea'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import {
@@ -211,6 +212,7 @@ export function Canvas(): ReactElement {
                 dir={rtl ? 'rtl' : 'ltr'}
                 // frameRef assists to see if user is copying text from typog blocks
                 ref={frameRef}
+                scrolling="no"
               >
                 {({ document }) => (
                   <ThemeProvider {...theme} rtl={rtl} locale={locale}>
@@ -291,20 +293,22 @@ export function Canvas(): ReactElement {
                               }
                             />
                           </ThemeProvider>
-                          <BlockRenderer
-                            block={selectedStep}
-                            wrappers={{
-                              Wrapper: SelectableWrapper,
-                              TypographyWrapper: InlineEditWrapper,
-                              ButtonWrapper: InlineEditWrapper,
-                              RadioQuestionWrapper: InlineEditWrapper,
-                              RadioOptionWrapper: InlineEditWrapper,
-                              TextResponseWrapper: InlineEditWrapper,
-                              SignUpWrapper: InlineEditWrapper,
-                              VideoWrapper,
-                              CardWrapper
-                            }}
-                          />
+                          <DropArea blocks={selectedStep.children[0].children}>
+                            <BlockRenderer
+                              block={selectedStep}
+                              wrappers={{
+                                Wrapper: SelectableWrapper,
+                                TypographyWrapper: InlineEditWrapper,
+                                ButtonWrapper: InlineEditWrapper,
+                                RadioQuestionWrapper: InlineEditWrapper,
+                                RadioOptionWrapper: InlineEditWrapper,
+                                TextResponseWrapper: InlineEditWrapper,
+                                SignUpWrapper: InlineEditWrapper,
+                                VideoWrapper,
+                                CardWrapper
+                              }}
+                            />
+                          </DropArea>
                           <ThemeProvider
                             themeName={ThemeName.journeyUi}
                             themeMode={theme.themeMode}

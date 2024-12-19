@@ -1,4 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { DndContext } from '@dnd-kit/core'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -150,25 +151,27 @@ describe('SelectableWrapper', () => {
               ]
             }}
           >
-            <SelectableWrapper block={imageBlock}>
-              <Image {...imageBlock} alt="imageAlt" />
-            </SelectableWrapper>
-            {/* Video */}
-            <SelectableWrapper block={typographyBlock}>
-              <Typography {...typographyBlock} />
-            </SelectableWrapper>
-            <SelectableWrapper block={buttonBlock}>
-              <Button {...buttonBlock} />
-            </SelectableWrapper>
-            <SelectableWrapper block={signUpBlock}>
-              <SignUp {...signUpBlock} />
-            </SelectableWrapper>
-            <SelectableWrapper block={radioQuestionBlock}>
-              <RadioQuestion
-                {...radioQuestionBlock}
-                wrappers={{ Wrapper: SelectableWrapper }}
-              />
-            </SelectableWrapper>
+            <DndContext>
+              <SelectableWrapper block={imageBlock}>
+                <Image {...imageBlock} alt="imageAlt" />
+              </SelectableWrapper>
+              {/* Video */}
+              <SelectableWrapper block={typographyBlock}>
+                <Typography {...typographyBlock} />
+              </SelectableWrapper>
+              <SelectableWrapper block={buttonBlock}>
+                <Button {...buttonBlock} />
+              </SelectableWrapper>
+              <SelectableWrapper block={signUpBlock}>
+                <SignUp {...signUpBlock} />
+              </SelectableWrapper>
+              <SelectableWrapper block={radioQuestionBlock}>
+                <RadioQuestion
+                  {...radioQuestionBlock}
+                  wrappers={{ Wrapper: SelectableWrapper }}
+                />
+              </SelectableWrapper>
+            </DndContext>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -224,25 +227,29 @@ describe('SelectableWrapper', () => {
               steps: [step([radioQuestionBlock])]
             }}
           >
-            <SelectableWrapper block={radioQuestionBlock}>
-              <RadioQuestion
-                {...radioQuestionBlock}
-                wrappers={{ Wrapper: SelectableWrapper }}
-              />
-            </SelectableWrapper>
+            <DndContext>
+              <SelectableWrapper block={radioQuestionBlock}>
+                <RadioQuestion
+                  {...radioQuestionBlock}
+                  wrappers={{ Wrapper: SelectableWrapper }}
+                />
+              </SelectableWrapper>
+            </DndContext>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
 
     fireEvent.click(getByRole('button', { name: 'Option 1' }))
-    expect(
-      getByTestId(`SelectableWrapper-${radioQuestionBlock.id}`)
-    ).toHaveStyle({
-      outline: '2px solid',
-      zIndex: '1',
-      outlineColor: '#C52D3A'
-    })
+    await waitFor(() =>
+      expect(
+        getByTestId(`SelectableWrapper-${radioQuestionBlock.id}`)
+      ).toHaveStyle({
+        outline: '2px solid',
+        zIndex: '1',
+        outlineColor: '#C52D3A'
+      })
+    )
   })
 
   it('should select radio option on click when radio question selected', async () => {
@@ -256,12 +263,14 @@ describe('SelectableWrapper', () => {
               steps: [step([radioQuestionBlock])]
             }}
           >
-            <SelectableWrapper block={radioQuestionBlock}>
-              <RadioQuestion
-                {...radioQuestionBlock}
-                wrappers={{ Wrapper: SelectableWrapper }}
-              />
-            </SelectableWrapper>
+            <DndContext>
+              <SelectableWrapper block={radioQuestionBlock}>
+                <RadioQuestion
+                  {...radioQuestionBlock}
+                  wrappers={{ Wrapper: SelectableWrapper }}
+                />
+              </SelectableWrapper>
+            </DndContext>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -289,12 +298,14 @@ describe('SelectableWrapper', () => {
               steps: [step([radioQuestionBlock])]
             }}
           >
-            <SelectableWrapper block={radioQuestionBlock}>
-              <RadioQuestion
-                {...radioQuestionBlock}
-                wrappers={{ Wrapper: SelectableWrapper }}
-              />
-            </SelectableWrapper>
+            <DndContext>
+              <SelectableWrapper block={radioQuestionBlock}>
+                <RadioQuestion
+                  {...radioQuestionBlock}
+                  wrappers={{ Wrapper: SelectableWrapper }}
+                />
+              </SelectableWrapper>
+            </DndContext>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
