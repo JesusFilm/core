@@ -95,7 +95,7 @@ describe('StepBlockNodeMenu', () => {
     expect(fab).toHaveAttribute('id', 'edit-step')
   })
 
-  it('should have StepBlockNodeMenu id on fab icon', async () => {
+  it('should have StepBlockNodeMenuIcon id on fab icon', async () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
