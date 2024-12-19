@@ -146,7 +146,10 @@ export function MediaListItem({
                     variant="caption"
                     color="secondary.light"
                     className="overflow-text"
-                    sx={{ ...fadeOverflowText('caption') }}
+                    sx={{
+                      ...fadeOverflowText('caption'),
+                      display: 'block'
+                    }}
                   >
                     {loading === true ? <Skeleton width={128} /> : description}
                   </Typography>
