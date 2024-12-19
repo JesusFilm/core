@@ -3,6 +3,10 @@ import { Meta, StoryObj } from '@storybook/react'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { MuxDetails } from '.'
+import {
+  VideoBlockObjectFit,
+  VideoBlockSource
+} from 'libs/journeys/ui/__generated__/globalTypes'
 
 const MuxDetailsStory: Meta<typeof MuxDetails> = {
   ...journeysAdminConfig,
@@ -13,15 +17,48 @@ const MuxDetailsStory: Meta<typeof MuxDetails> = {
 }
 
 const Template: StoryObj<typeof MuxDetails> = {
-  render: ({ id, onSelect }) => {
-    return <MuxDetails id={id} open onSelect={onSelect} />
+  render: ({ activeVideoBlock, onSelect }) => {
+    return (
+      <MuxDetails
+        activeVideoBlock={activeVideoBlock}
+        open
+        onSelect={onSelect}
+      />
+    )
   }
 }
 
 export const Default = {
   ...Template,
   args: {
-    id: 'videoId'
+    activeVideoBlock: {
+      __typename: 'VideoBlock',
+      id: 'videoId',
+      parentBlockId: 'parentBlockId',
+      parentOrder: 0,
+      muted: false,
+      autoplay: false,
+      startAt: 0,
+      endAt: 10,
+      posterBlockId: null,
+      fullsize: true,
+      children: [],
+      videoId: 'videoId',
+      videoVariantLanguageId: null,
+      source: VideoBlockSource.mux,
+      title: 'title',
+      description: null,
+      image: null,
+      duration: 10,
+      objectFit: VideoBlockObjectFit.fill,
+      action: null,
+      mediaVideo: {
+        __typename: 'MuxVideo',
+        id: 'videoId',
+        assetId: 'assetId',
+        playbackId: 'playbackId'
+      }
+    }
   }
 }
 

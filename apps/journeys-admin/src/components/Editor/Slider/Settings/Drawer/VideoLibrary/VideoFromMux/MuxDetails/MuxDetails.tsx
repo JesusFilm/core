@@ -19,10 +19,8 @@ export function MuxDetails({
 >): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player>()
-  console.log(activeVideoBlock)
 
   useEffect(() => {
-    console.log(activeVideoBlock)
     if (
       open &&
       videoRef.current != null &&
@@ -35,12 +33,8 @@ export function MuxDetails({
         controls: true,
         poster: `https://image.mux.com/${activeVideoBlock.mediaVideo.playbackId}/thumbnail.png?time=1`
       })
-      playerRef.current.src({
-        type: 'application/x-mpegURL',
-        src: `https://stream.mux.com/${activeVideoBlock.mediaVideo.playbackId}.m3u8`
-      })
     }
-  }, [activeVideoBlock, open])
+  }, [activeVideoBlock, open, videoRef])
 
   return (
     <Stack spacing={4} sx={{ p: 6 }} data-testid="MuxDetails">
@@ -55,7 +49,15 @@ export function MuxDetails({
           ref={videoRef}
           className="video-js vjs-big-play-centered"
           playsInline
-        />
+        >
+          {activeVideoBlock?.mediaVideo?.__typename === 'MuxVideo' &&
+            activeVideoBlock?.mediaVideo?.playbackId != null && (
+              <source
+                src={`https://stream.mux.com/${activeVideoBlock?.mediaVideo?.playbackId}.m3u8`}
+                type="application/x-mpegURL"
+              />
+            )}
+        </video>
       </Box>
     </Stack>
   )
