@@ -2,11 +2,12 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { MuxDetails } from '.'
 import {
   VideoBlockObjectFit,
   VideoBlockSource
-} from 'libs/journeys/ui/__generated__/globalTypes'
+} from '../../../../../../../../../__generated__/globalTypes'
+
+import { MuxDetails } from '.'
 
 const MuxDetailsStory: Meta<typeof MuxDetails> = {
   ...journeysAdminConfig,

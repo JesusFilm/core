@@ -1,8 +1,11 @@
 import { render } from '@testing-library/react'
 
+import {
+  VideoBlockObjectFit,
+  VideoBlockSource
+} from '../../../../../../../../../__generated__/globalTypes'
+
 import { MuxDetails } from './MuxDetails'
-import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
-import { VideoBlockObjectFit } from 'libs/journeys/ui/__generated__/globalTypes'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
