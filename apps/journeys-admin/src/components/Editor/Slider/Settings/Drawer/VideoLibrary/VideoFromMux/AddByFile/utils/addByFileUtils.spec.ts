@@ -15,7 +15,6 @@ describe('addByFileUtils', () => {
 
       expect(result).toEqual({
         variables: {
-          uploadLength: mockFile.size,
           name: 'video'
         }
       })

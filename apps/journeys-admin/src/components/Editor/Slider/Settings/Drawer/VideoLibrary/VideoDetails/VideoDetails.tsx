@@ -64,7 +64,10 @@ export function VideoDetails({
   const { t } = useTranslation('apps-journeys-admin')
 
   let Details: (
-    props: Pick<VideoDetailsProps, 'id' | 'open' | 'onSelect'>
+    props: Pick<
+      VideoDetailsProps,
+      'id' | 'open' | 'onSelect' | 'activeVideoBlock'
+    >
   ) => ReactElement
 
   switch (source) {
@@ -146,7 +149,12 @@ export function VideoDetails({
             mt: activeVideoBlock != null ? -6 : 0
           }}
         >
-          <Details id={id} open={open} onSelect={handleSelect} />
+          <Details
+            id={id}
+            open={open}
+            onSelect={handleSelect}
+            activeVideoBlock={activeVideoBlock}
+          />
         </Box>
       </Stack>
     </Drawer>

@@ -26,6 +26,7 @@ const VideoDetails = dynamic(
     ).then((mod) => mod.VideoDetails),
   { ssr: false }
 )
+
 const VideoFromMux = dynamic(
   async () =>
     await import(
