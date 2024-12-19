@@ -52,7 +52,6 @@ describe('MuxDetails', () => {
       name: 'Video Player'
     })
     const sourceTag = videoPlayer.querySelector('.vjs-tech source')
-    console.log(sourceTag)
     expect(sourceTag?.getAttribute('src')).toBe(
       'https://stream.mux.com/playbackId.m3u8'
     )

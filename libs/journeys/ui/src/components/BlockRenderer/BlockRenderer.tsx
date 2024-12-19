@@ -127,7 +127,6 @@ export function BlockRenderer({
   block,
   wrappers
 }: BlockRenderProps): ReactElement {
-  // console.log('block', block)
   const Wrapper = wrappers?.Wrapper ?? DefaultWrapper
   const ButtonWrapper = wrappers?.ButtonWrapper ?? DefaultWrapper
   const CardWrapper = wrappers?.CardWrapper ?? DefaultWrapper
@@ -218,7 +217,6 @@ export function BlockRenderer({
         </Wrapper>
       )
     case 'VideoBlock':
-      console.log('VideoBlock', block)
       return (
         <Wrapper block={block}>
           <VideoWrapper block={block}>
