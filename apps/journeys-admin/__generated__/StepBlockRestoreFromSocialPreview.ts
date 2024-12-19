@@ -246,42 +246,61 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_TypographyBlock 
   variant: TypographyVariant | null;
 }
 
-export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_title {
+export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_images {
+export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_variant {
+export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_variantLanguages_name {
+export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_variantLanguages {
+export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_variantLanguages_name[];
+  name: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video {
+export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_title[];
-  images: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_images[];
-  variant: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_variant | null;
-  variantLanguages: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video_variantLanguages[];
+  title: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_Video_title[];
+  images: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_Video_images[];
+  variant: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
+
+export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  assetId: string | null;
+  playbackId: string | null;
+}
+
+export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+  id: string;
+}
+
+export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo = StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_Video | StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_MuxVideo | StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_CloudflareVideo | StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_YouTube;
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -374,11 +393,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_video | null;
+  mediaVideo: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */

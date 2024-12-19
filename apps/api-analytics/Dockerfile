@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:22-alpine3.20
 
 EXPOSE 4008
 
@@ -12,13 +12,14 @@ RUN apk upgrade --update-cache --available && \
 
 WORKDIR /app
 COPY ./dist/apps/api-analytics .
+COPY ./package-lock.json .
 
 # dependencies that nestjs needs
 RUN npm install --production
 
 WORKDIR /prisma
 COPY ./apps/api-analytics/db .
-RUN npx prisma@^5.2.0 generate --generator client
+RUN npx prisma@5 generate --generator client
 
 WORKDIR /app
 

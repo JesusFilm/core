@@ -1,6 +1,10 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
+interface BaseError {
+  message: String
+}
+
 type BibleBook {
   id: ID!
   name(languageId: ID, primary: Boolean): [BibleBookName!]!
@@ -23,7 +27,7 @@ type BibleCitation {
   bibleBook: BibleBook!
   chapterStart: Int!
   chapterEnd: Int
-  verseStart: Int!
+  verseStart: Int
   verseEnd: Int
   video: Video!
 }
@@ -63,8 +67,12 @@ input CloudflareR2UpdateInput {
   fileName: String!
 }
 
-type CloudflareVideo {
+type CloudflareVideo
+  @key(fields: "id primaryLanguageId")
+{
   id: ID!
+  source: VideoBlockSource @shareable
+  primaryLanguageId: ID @shareable
   uploadUrl: String
   userId: ID!
   createdAt: Date!
@@ -75,6 +83,29 @@ type CloudflareVideo {
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar Date
+
+type Error implements BaseError
+  @shareable
+{
+  message: String
+}
+
+type ForeignKeyConstraintError implements BaseError
+  @shareable
+{
+  message: String
+
+  """The arguments that caused the foriegn key constraint violation"""
+  location: [ForeignKeyConstraintErrorLocation!]
+}
+
+type ForeignKeyConstraintErrorLocation {
+  """An array describing the path in the arguments that caused this error"""
+  path: [String!]
+
+  """The value that was provided at the path"""
+  value: String
+}
 
 enum IdType {
   databaseId
@@ -133,6 +164,28 @@ type Mutation {
   createMuxVideoUploadByFile(name: String!): MuxVideo!
   createMuxVideoUploadByUrl(url: String!): MuxVideo!
   deleteMuxVideo(id: ID!): Boolean!
+
+  """
+  Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)
+  """
+  shortLinkDomainCreate(input: MutationShortLinkDomainCreateInput!): MutationShortLinkDomainCreateResult!
+
+  """Update services that can use this short link domain"""
+  shortLinkDomainUpdate(input: MutationShortLinkDomainUpdateInput!): MutationShortLinkDomainUpdateResult!
+
+  """
+  delete an existing short link domain (all related short links must be deleted first)
+  """
+  shortLinkDomainDelete(id: String!): MutationShortLinkDomainDeleteResult!
+
+  """create a new short link"""
+  shortLinkCreate(input: MutationShortLinkCreateInput!): MutationShortLinkCreateResult!
+
+  """update an existing short link"""
+  shortLinkUpdate(input: MutationShortLinkUpdateInput!): MutationShortLinkUpdateResult!
+
+  """delete an existing short link"""
+  shortLinkDelete(id: String!): MutationShortLinkDeleteResult!
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
@@ -164,12 +217,147 @@ type Mutation {
   videoVariantDownloadDelete(id: ID!): VideoVariantDownload!
 }
 
-type MuxVideo {
+input MutationShortLinkCreateInput {
+  """
+  short link path not including the leading slash (defaults to a random 11 character string that is URL friendly)
+  """
+  pathname: String
+
+  """
+  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  """
+  to: String!
+
+  """
+  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  """
+  hostname: String!
+
+  """the service that created this short link"""
+  service: Service!
+}
+
+union MutationShortLinkCreateResult = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
+
+type MutationShortLinkCreateSuccess {
+  data: ShortLink!
+}
+
+union MutationShortLinkDeleteResult = NotFoundError | MutationShortLinkDeleteSuccess
+
+type MutationShortLinkDeleteSuccess {
+  data: ShortLink!
+}
+
+input MutationShortLinkDomainCreateInput {
+  """the hostname including subdomain, domain, and TLD, but excluding port"""
+  hostname: String!
+
+  """
+  the services that are enabled for this domain, if empty then this domain can be used by all services
+  """
+  services: [Service!]
+}
+
+union MutationShortLinkDomainCreateResult = ZodError | NotUniqueError | MutationShortLinkDomainCreateSuccess
+
+type MutationShortLinkDomainCreateSuccess {
+  data: ShortLinkDomain!
+}
+
+union MutationShortLinkDomainDeleteResult = NotFoundError | ForeignKeyConstraintError | MutationShortLinkDomainDeleteSuccess
+
+type MutationShortLinkDomainDeleteSuccess {
+  data: ShortLinkDomain!
+}
+
+input MutationShortLinkDomainUpdateInput {
+  id: String!
+
+  """
+  the services that are enabled for this domain, if empty then this domain can be used by all services
+  """
+  services: [Service!]!
+}
+
+union MutationShortLinkDomainUpdateResult = NotFoundError | MutationShortLinkDomainUpdateSuccess
+
+type MutationShortLinkDomainUpdateSuccess {
+  data: ShortLinkDomain!
+}
+
+input MutationShortLinkUpdateInput {
+  id: String!
+
+  """
+  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  """
+  to: String!
+}
+
+union MutationShortLinkUpdateResult = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
+
+type MutationShortLinkUpdateSuccess {
+  data: ShortLink!
+}
+
+type MuxVideo
+  @key(fields: "id primaryLanguageId")
+{
   id: ID!
+  source: VideoBlockSource @shareable
+  primaryLanguageId: ID @shareable
+  assetId: String
+  duration: Int
+  uploadId: String
+  playbackId: String
   uploadUrl: String
   userId: ID!
   createdAt: Date!
   readyToStream: Boolean!
+}
+
+type NotFoundError implements BaseError
+  @shareable
+{
+  message: String
+
+  """The arguments that caused the not found error"""
+  location: [NotFoundErrorLocation!]
+}
+
+type NotFoundErrorLocation {
+  """An array describing the path in the arguments that caused this error"""
+  path: [String!]
+
+  """The value that was provided at the path"""
+  value: String
+}
+
+type NotUniqueError implements BaseError
+  @shareable
+{
+  message: String
+
+  """The arguments that caused the uniqueness violation"""
+  location: [NotUniqueErrorLocation!]
+}
+
+type NotUniqueErrorLocation {
+  """An array describing the path in the arguments that caused this error"""
+  path: [String!]
+
+  """The value that was provided at the path"""
+  value: String
+}
+
+type PageInfo
+  @shareable
+{
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
 }
 
 type Query {
@@ -184,6 +372,42 @@ type Query {
   keywords: [Keyword!]!
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!): MuxVideo!
+  getMuxVideo(id: ID!): MuxVideo
+
+  """List of short link domains that can be used for short links"""
+  shortLinkDomains(
+    """Filter by service (including domains with no services set)"""
+    service: Service
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): QueryShortLinkDomainsConnection!
+
+  """Find a short link domain by id"""
+  shortLinkDomain(id: String!): QueryShortLinkDomainResult!
+
+  """find a short link by path and hostname"""
+  shortLinkByPath(
+    """short link path not including the leading slash"""
+    pathname: String!
+
+    """the hostname including subdomain, domain, and TLD, but excluding port"""
+    hostname: String!
+  ): QueryShortLinkByPathResult!
+
+  """find a short link by id"""
+  shortLink(id: String!): QueryShortLinkResult!
+
+  """find all short links with optional hostname filter"""
+  shortLinks(
+    """the hostname including subdomain, domain, and TLD, but excluding port"""
+    hostname: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): QueryShortLinksConnection!
   adminVideo(id: ID!, idType: IdType = databaseId): Video!
   adminVideos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   adminVideosCount(where: VideosFilter): Int!
@@ -195,6 +419,46 @@ type Query {
   videoVariants: [VideoVariant!]!
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
+}
+
+union QueryShortLinkByPathResult = NotFoundError | QueryShortLinkByPathSuccess
+
+type QueryShortLinkByPathSuccess {
+  data: ShortLink!
+}
+
+union QueryShortLinkDomainResult = NotFoundError | QueryShortLinkDomainSuccess
+
+type QueryShortLinkDomainSuccess {
+  data: ShortLinkDomain!
+}
+
+type QueryShortLinkDomainsConnection {
+  pageInfo: PageInfo!
+  edges: [QueryShortLinkDomainsConnectionEdge]
+  totalCount: Int!
+}
+
+type QueryShortLinkDomainsConnectionEdge {
+  node: ShortLinkDomain
+  cursor: String!
+}
+
+union QueryShortLinkResult = NotFoundError | QueryShortLinkSuccess
+
+type QueryShortLinkSuccess {
+  data: ShortLink!
+}
+
+type QueryShortLinksConnection {
+  pageInfo: PageInfo!
+  edges: [QueryShortLinksConnectionEdge]
+  totalCount: Int!
+}
+
+type QueryShortLinksConnectionEdge {
+  node: ShortLink
+  cursor: String!
 }
 
 enum SegmindModel {
@@ -211,6 +475,71 @@ enum Service {
   apiTags
   apiUsers
   apiVideos
+}
+
+"""A short link that redirects to a full URL"""
+type ShortLink
+  @key(fields: "id")
+{
+  id: ID!
+
+  """short link path not including the leading slash"""
+  pathname: String!
+
+  """
+  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  """
+  to: String!
+  domain: ShortLinkDomain!
+
+  """the service that created this short link"""
+  service: Service!
+}
+
+"""A domain that can be used for short links"""
+type ShortLinkDomain {
+  id: ID!
+  hostname: String!
+  apexName: String!
+  createdAt: Date!
+  updatedAt: Date!
+
+  """
+  The services that are enabled for this domain, if empty then this domain can be used by all services
+  """
+  services: [Service!]!
+
+  """check status of the domain"""
+  check: ShortLinkDomainCheck!
+}
+
+type ShortLinkDomainCheck {
+  """
+  Is the domain correctly configured in the DNS? If false, A Record and CNAME Record should be added by the user.
+  """
+  configured: Boolean!
+
+  """
+  Does the domain belong to the short link application? If false, verification will be populated.
+  """
+  verified: Boolean!
+
+  """Verification records to be added to the DNS to confirm ownership."""
+  verification: [ShortLinkDomainVerfication!]!
+}
+
+type ShortLinkDomainVerfication {
+  """Type of verification"""
+  type: String!
+
+  """Domain name"""
+  domain: String!
+
+  """Value of the verification"""
+  value: String!
+
+  """Reason for the verification"""
+  reason: String!
 }
 
 type Tag
@@ -361,6 +690,7 @@ type Video
   @shareable
 {
   bibleCitations: [BibleCitation!]!
+  source: VideoBlockSource @shareable
   keywords(languageId: ID): [Keyword!]!
   id: ID!
   label: VideoLabel!
@@ -394,6 +724,13 @@ type Video
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
   variant(languageId: ID): VideoVariant
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
+}
+
+enum VideoBlockSource {
+  cloudflare
+  internal
+  youTube
+  mux
 }
 
 input VideoCreateInput {
@@ -493,7 +830,7 @@ type VideoSubtitle {
   srtSrc: String
   value: String!
   language: Language!
-  videoEdition: VideoEdition!
+  videoEdition: VideoEdition
 }
 
 input VideoSubtitleCreateInput {
@@ -549,14 +886,16 @@ input VideoUpdateInput {
 
 type VideoVariant {
   id: ID!
+  videoId: ID
   hls: String
   dash: String
   share: String
   downloadable: Boolean!
   downloads: [VideoVariantDownload!]!
   duration: Int!
+  lengthInMilliseconds: Int!
   language: Language!
-  videoEdition: VideoEdition!
+  videoEdition: VideoEdition
   subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
   subtitleCount: Int!
 
@@ -572,6 +911,7 @@ input VideoVariantCreateInput {
   dash: String
   share: String
   duration: Int
+  lengthInMilliseconds: Int
   languageId: String!
   slug: String!
   downloadable: Boolean!
@@ -619,6 +959,7 @@ input VideoVariantUpdateInput {
   dash: String
   share: String
   duration: Int
+  lengthInMilliseconds: Int
   languageId: String
   slug: String
   downloadable: Boolean
@@ -630,4 +971,24 @@ input VideosFilter {
   labels: [VideoLabel!]
   ids: [ID!]
   subtitleLanguageIds: [ID!]
+}
+
+type Youtube
+  @key(fields: "id primaryLanguageId")
+{
+  id: ID!
+  source: VideoBlockSource @shareable
+  primaryLanguageId: ID @shareable
+}
+
+type ZodError implements BaseError
+  @shareable
+{
+  message: String
+  fieldErrors: [ZodFieldError!]!
+}
+
+type ZodFieldError {
+  message: String!
+  path: [String!]!
 }

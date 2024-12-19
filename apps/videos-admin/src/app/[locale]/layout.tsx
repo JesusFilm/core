@@ -5,6 +5,7 @@ import { ReactNode } from 'react'
 
 import { AuthProvider } from '../../libs/auth/AuthProvider'
 import { getUser } from '../../libs/auth/getUser'
+import { SnackbarProvider } from '../../libs/SnackbarProvider'
 
 import { ApolloProvider } from './_ApolloProvider'
 
@@ -23,8 +24,15 @@ export default async function LocaleLayout({
       <body>
         <AuthProvider user={user}>
           <NextIntlClientProvider messages={messages}>
-            <ApolloProvider>
-              <AppRouterCacheProvider>{children}</AppRouterCacheProvider>
+            <ApolloProvider user={user}>
+              <SnackbarProvider
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right'
+                }}
+              >
+                <AppRouterCacheProvider>{children}</AppRouterCacheProvider>
+              </SnackbarProvider>
             </ApolloProvider>
           </NextIntlClientProvider>
         </AuthProvider>

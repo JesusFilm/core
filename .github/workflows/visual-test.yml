@@ -35,7 +35,7 @@ jobs:
           restore-keys: node-modules-${{ matrix.node-version }}-
       - name: NPM Install
         run: npm install --silent
-      - uses: nrwl/nx-set-shas@v3
+      - uses: nrwl/nx-set-shas@v4
       - name: nx Install
         run: npm install -g nx --silent
       - name: Build Stories
