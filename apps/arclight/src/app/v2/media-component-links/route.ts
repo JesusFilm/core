@@ -10,8 +10,9 @@ const GET_VIDEOS_CHILDREN = graphql(`
     $ids: [ID!]
     $metadataLanguageId: ID
     $fallbackLanguageId: ID
+    $limit: Int
   ) {
-    videos(where: { ids: $ids }) {
+    videos(where: { ids: $ids }, limit: $limit) {
       id
       children {
         id
@@ -52,7 +53,8 @@ export async function GET(request: NextRequest): Promise<Response> {
     variables: {
       ids,
       metadataLanguageId,
-      fallbackLanguageId
+      fallbackLanguageId,
+      limit: 10000
     }
   })
 
@@ -78,7 +80,7 @@ export async function GET(request: NextRequest): Promise<Response> {
   const response = {
     _links: {
       self: {
-        href: `https://api.arclight.com/v2/mediaComponents?${queryString}`
+        href: `http://api.arclight.org/v2/mediaComponents?${queryString}`
       }
     },
     _embedded: {
