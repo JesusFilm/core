@@ -1,34 +1,33 @@
 import { MockedResponse } from '@apollo/client/testing'
 
-import { CreateCloudflareVideoUploadByFileMutation } from '../../../../../../../../../__generated__/CreateCloudflareVideoUploadByFileMutation'
-import { GetMyCloudflareVideoQuery } from '../../../../../../../../../__generated__/GetMyCloudflareVideoQuery'
+import { CreateMuxVideoUploadByFileMutation } from '../../../../../../../../../__generated__/CreateMuxVideoUploadByFileMutation'
+import { GetMyMuxVideoQuery } from '../../../../../../../../../__generated__/GetMyMuxVideoQuery'
 
 import {
   CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
   GET_MY_MUX_VIDEO_QUERY
 } from './AddByFile'
 
-export const createMuxVideoMock: MockedResponse<CreateCloudflareVideoUploadByFileMutation> =
+export const createMuxVideoMock: MockedResponse<CreateMuxVideoUploadByFileMutation> =
   {
     request: {
       query: CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
       variables: {
-        uploadLength: 4,
         name: 'testFile'
       }
     },
     result: {
       data: {
-        createCloudflareVideoUploadByFile: {
+        createMuxVideoUploadByFile: {
           id: 'uploadId',
           uploadUrl: 'https://example.com/upload',
-          __typename: 'CloudflareVideo'
+          __typename: 'MuxVideo'
         }
       }
     }
   }
 
-export const getMuxVideoMock: MockedResponse<GetMyCloudflareVideoQuery> = {
+export const getMuxVideoMock: MockedResponse<GetMyMuxVideoQuery> = {
   request: {
     query: GET_MY_MUX_VIDEO_QUERY,
     variables: {
@@ -37,10 +36,10 @@ export const getMuxVideoMock: MockedResponse<GetMyCloudflareVideoQuery> = {
   },
   result: {
     data: {
-      getMyCloudflareVideo: {
+      getMyMuxVideo: {
         id: 'uploadId',
         readyToStream: true,
-        __typename: 'CloudflareVideo'
+        __typename: 'MuxVideo'
       }
     }
   }
