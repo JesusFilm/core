@@ -19,15 +19,13 @@ Used by UX to review our storybook components.
 
 # UI Change Requests
 
-For smaller UI/UX changes, designer approval is not always required before merging to production. These changes must still be reviewed, either by QA or, in urgent cases, by another developer if no QA members are available.
+For minor UI/UX changes, designer approval is not always required before merging to production. However, these changes must still be reviewed — preferably by QA, or, in urgent cases, by another developer if QA is unavailable.
 
-The changes must undergo QA testing and code review. However, small visual changes do not necessarily need to wait for designer approval.
+All changes should undergo code review and QA testing. While small visual adjustments do not require prior designer approval, it’s important to notify the designer once the changes are in production. If designers are not satisfied with the changes, they can either request a reversion or create a ticket for further updates.
 
-Once the changes are merged to production, notify the designers. If they are not satisfied with the changes, they can create a ticket or request the changes to be reverted.
+If you’re uncertain whether a change qualifies as “small,” it’s best to seek designer approval. Alternatively, send the changes to a QA member, who will determine whether a designer review is necessary.
 
-If you're unsure whether a change qualifies as "small," it's a good indication to seek designer approval. Alternatively, send the changes to a QA member, who will let you know whether a designer's review is necessary.
-
-This process stems from the limited availability of our designers. However, as the Design team grows, this will need to be rereviewed.
+This process stems from the current limited availability of our designers. As the Design team expands, this policy will need to be revisited and updated.
 
 ## UI Tests
 
