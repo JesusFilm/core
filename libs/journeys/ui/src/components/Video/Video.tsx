@@ -61,7 +61,7 @@ const StyledVideoGradient = styled(Box)`
 
 export function Video({
   id: blockId,
-  video,
+  mediaVideo,
   source,
   videoId,
   image,
@@ -90,8 +90,9 @@ export function Video({
     state: { selectedBlock }
   } = useEditor()
 
-  const eventVideoTitle = video?.title[0].value ?? title
-  const eventVideoId = video?.id ?? videoId
+  const eventVideoTitle =
+    mediaVideo?.__typename == 'Video' ? mediaVideo?.title[0].value : title
+  const eventVideoId = mediaVideo?.id ?? videoId
 
   // Setup poster image
   const posterBlock = children.find(
@@ -99,8 +100,8 @@ export function Video({
   ) as TreeBlock<ImageFields> | undefined
 
   const videoImage =
-    source === VideoBlockSource.internal
-      ? video?.images[0]?.mobileCinematicHigh
+    mediaVideo?.__typename == 'Video'
+      ? mediaVideo?.images[0]?.mobileCinematicHigh
       : image
 
   const blurBackground = useMemo(() => {
@@ -262,10 +263,10 @@ export function Video({
                   type="application/x-mpegURL"
                 />
               )}
-              {source === VideoBlockSource.internal &&
-                video?.variant?.hls != null && (
+              {mediaVideo?.__typename == 'Video' &&
+                mediaVideo?.variant?.hls != null && (
                   <source
-                    src={video.variant.hls}
+                    src={mediaVideo.variant.hls}
                     type="application/x-mpegURL"
                   />
                 )}

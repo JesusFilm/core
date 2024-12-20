@@ -27,7 +27,6 @@ describe('VideoWrapper', () => {
       description: null,
       duration: null,
       image: null,
-      video: null,
       mediaVideo: null,
       startAt: null,
       endAt: null,
@@ -94,7 +93,6 @@ describe('VideoWrapper', () => {
         duration: null,
         image: null,
         objectFit: null,
-        video: null,
         mediaVideo: null,
         videoId: null,
         videoVariantLanguageId: '529'
@@ -118,7 +116,6 @@ describe('VideoWrapper', () => {
       description: null,
       duration: null,
       image: null,
-      video: null,
       mediaVideo: null,
       startAt: null,
       endAt: null,
@@ -185,7 +182,6 @@ describe('VideoWrapper', () => {
         duration: null,
         image: null,
         objectFit: null,
-        video: null,
         mediaVideo: null,
         videoId: null,
         videoVariantLanguageId: '529'
