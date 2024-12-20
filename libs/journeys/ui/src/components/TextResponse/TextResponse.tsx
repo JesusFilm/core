@@ -143,7 +143,8 @@ export const TextResponse = ({
         sx={{
           mb: 4,
           height: height,
-          bgcolor: 'rgba(255,255,255,0.15)',
+          bgcolor:
+            variant === 'admin' ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0)',
           borderRadius: '6px',
           position: 'relative'
         }}
