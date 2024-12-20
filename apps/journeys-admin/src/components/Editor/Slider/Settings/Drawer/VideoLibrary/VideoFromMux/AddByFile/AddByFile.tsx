@@ -38,7 +38,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     })
     const uploadId = (await upload.next()).value
     void upload.next()
-    onChange(uploadId, upload)
+    onChange(uploadId)
   }
 
   const onDropRejected = async (

@@ -1,5 +1,3 @@
-import type { ReadStream } from 'fs'
-
 import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import { UpChunk } from '@mux/upchunk'
 import { produce } from 'immer'
@@ -7,7 +5,7 @@ import { ReactElement, ReactNode, useState } from 'react'
 
 import { CreateMuxVideoUploadByFileMutation } from '../../../../__generated__/CreateMuxVideoUploadByFileMutation'
 import { GetMyMuxVideoQuery } from '../../../../__generated__/GetMyMuxVideoQuery'
-import { RefreshVideoBlockImageQuery } from '../../../../__generated__/RefreshVideoBlockImageQuery'
+import { UpdateVideoBlockAfterMuxUpload } from '../../../../__generated__/UpdateVideoBlockAfterMuxUpload'
 
 import {
   BackgroundUploadContext,
@@ -36,22 +34,24 @@ export const GET_MY_MUX_VIDEO_QUERY = gql`
   query GetMyMuxVideoQuery($id: ID!) {
     getMyMuxVideo(id: $id) {
       id
+      playbackId
       readyToStream
     }
   }
 `
 
-export const REFRESH_VIDEO_BLOCK_IMAGE_QUERY = gql`
-  query RefreshVideoBlockImageQuery($id: ID!) {
-    block(id: $id) {
+export const UPDATE_VIDEO_BLOCK_AFTER_MUX_UPLOAD = gql`
+  mutation UpdateVideoBlockAfterMuxUpload(
+    $id: ID!
+    $input: VideoBlockUpdateInput!
+  ) {
+    videoBlockUpdate(id: $id, input: $input) {
       id
-      ... on VideoBlock {
-        image
-        mediaVideo {
-          ... on MuxVideo {
-            id
-            playbackId
-          }
+      image
+      mediaVideo {
+        ... on MuxVideo {
+          id
+          playbackId
         }
       }
     }
@@ -69,9 +69,10 @@ export function BackgroundUploadProvider({
       CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION
     )
 
-  const [refreshVideoBlockImage] = useLazyQuery<RefreshVideoBlockImageQuery>(
-    REFRESH_VIDEO_BLOCK_IMAGE_QUERY
-  )
+  const [updateVideoBlockAfterMuxUpload] =
+    useMutation<UpdateVideoBlockAfterMuxUpload>(
+      UPDATE_VIDEO_BLOCK_AFTER_MUX_UPLOAD
+    )
 
   const [getMyMuxVideo, { stopPolling }] = useLazyQuery<GetMyMuxVideoQuery>(
     GET_MY_MUX_VIDEO_QUERY,
@@ -81,6 +82,7 @@ export function BackgroundUploadProvider({
       onCompleted: (data) => {
         if (
           data.getMyMuxVideo?.readyToStream &&
+          data.getMyMuxVideo?.playbackId != null &&
           data.getMyMuxVideo.id != null
         ) {
           stopPolling()
@@ -95,9 +97,12 @@ export function BackgroundUploadProvider({
             )
             const upload = uploadQueue[data.getMyMuxVideo.id]
             if (upload?.videoBlockId == null) return
-            void refreshVideoBlockImage({
+            void updateVideoBlockAfterMuxUpload({
               variables: {
-                id: uploadQueue[data.getMyMuxVideo.id].videoBlockId
+                id: uploadQueue[data.getMyMuxVideo.id].videoBlockId,
+                input: {
+                  videoId: data.getMyMuxVideo.id
+                }
               }
             })
           }
@@ -125,20 +130,6 @@ export function BackgroundUploadProvider({
         data?.createMuxVideoUploadByFile?.id != null
       ) {
         const id = data.createMuxVideoUploadByFile.id
-        const uploadUrl = data.createMuxVideoUploadByFile.uploadUrl
-        let buffer: ReadStream | File
-        if (process.env.NODE_ENV === 'test') {
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          buffer = require('fs').createReadStream(
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            require('path').join(
-              __dirname,
-              (file as unknown as { path: string }).path
-            )
-          )
-        } else {
-          buffer = file
-        }
 
         setUploadQueue(
           produce((draft) => {
@@ -180,7 +171,7 @@ export function BackgroundUploadProvider({
           setUploadQueue(
             produce((draft) => {
               const upload = draft[id]
-              upload.progress = progress.detail * 100
+              upload.progress = progress.detail
             })
           )
         })

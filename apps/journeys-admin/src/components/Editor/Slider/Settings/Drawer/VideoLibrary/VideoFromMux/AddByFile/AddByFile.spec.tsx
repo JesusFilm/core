@@ -1,76 +1,49 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import {
+  BackgroundUploadProvider,
+  useBackgroundUpload
+} from '../../../../../../BackgroundUpload'
+
 import { createMuxVideoMock, getMuxVideoMock } from './data'
 
 import { AddByFile } from '.'
 
-jest.mock('@mux/upchunk', () => ({
-  UpChunk: {
-    createUpload: () => ({
-      on: () => jest.fn()
-    })
-  }
+jest.mock('../../../../../../BackgroundUpload/BackgroundUploadContext', () => ({
+  useBackgroundUpload: jest.fn().mockImplementation(() => ({
+    uploadMuxVideo: jest.fn(),
+    uploadQueue: {}
+  }))
 }))
 
-async function dropTestVideo(): Promise<void> {
-  const input = screen.getByTestId('drop zone')
-  const file = new File(['file'], 'testFile.mp4', {
-    type: 'video/mp4'
-  })
-  Object.defineProperty(input, 'files', {
-    value: [file]
-  })
-  await act(async () => {
-    fireEvent.drop(input)
-  })
-}
-
 describe('AddByFile', () => {
-  it('should clear errors on start upload', async () => {
-    const result = jest.fn().mockReturnValue(createMuxVideoMock.result)
-    render(
-      <MockedProvider mocks={[{ ...createMuxVideoMock, result }]}>
-        <AddByFile onChange={jest.fn()} />
-      </MockedProvider>
-    )
-    window.URL.createObjectURL = jest.fn().mockImplementation(() => 'url')
-    await dropTestVideo()
-    await waitFor(() =>
-      expect(screen.queryByText('Upload Failed!')).not.toBeInTheDocument()
-    )
-  })
-
-  it('should check if the mutations gets called', async () => {
-    const result = jest.fn().mockReturnValue(createMuxVideoMock.result)
-    render(
-      <MockedProvider mocks={[{ ...createMuxVideoMock, result }]}>
-        <AddByFile onChange={jest.fn()} />
-      </MockedProvider>
-    )
-    window.URL.createObjectURL = jest.fn().mockImplementation(() => 'url')
-    await dropTestVideo()
-    await waitFor(() => expect(result).toHaveBeenCalled())
-  })
-
   it('should start uploading on a file drop', async () => {
-    render(
-      <MockedProvider mocks={[createMuxVideoMock, getMuxVideoMock]}>
-        <AddByFile onChange={jest.fn()} />
-      </MockedProvider>
+    const onChange = jest.fn()
+    const { getByTestId } = render(
+      <BackgroundUploadProvider>
+        <AddByFile onChange={onChange} />
+      </BackgroundUploadProvider>
     )
-    await dropTestVideo()
+    window.URL.createObjectURL = jest.fn().mockImplementation(() => 'url')
+    const input = getByTestId('drop zone')
+    const file = new File(['file'], 'testFile.mp4', {
+      type: 'video/mp4'
+    })
+    Object.defineProperty(input, 'files', {
+      value: [file]
+    })
+    fireEvent.drop(input)
     await waitFor(() =>
-      expect(screen.getByText('Uploading...')).toBeInTheDocument()
+      expect(useBackgroundUpload().uploadMuxVideo).toHaveBeenCalled()
     )
-    expect(screen.getByTestId('Upload1Icon')).toBeInTheDocument()
   })
 
   it('should show error state on fileRejections', async () => {
     render(
-      <MockedProvider mocks={[createMuxVideoMock]}>
+      <BackgroundUploadProvider>
         <AddByFile onChange={jest.fn()} />
-      </MockedProvider>
+      </BackgroundUploadProvider>
     )
     const input = screen.getByTestId('drop zone')
     const file1 = new File(['file'], 'testFile.mp4', {
