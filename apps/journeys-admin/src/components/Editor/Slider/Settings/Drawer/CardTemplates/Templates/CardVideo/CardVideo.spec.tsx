@@ -100,7 +100,7 @@ describe('CardVideo', () => {
             image: null,
             duration: null,
             objectFit: null,
-            video: null,
+            mediaVideo: null,
             action: null
           }
         ]
@@ -150,7 +150,7 @@ describe('CardVideo', () => {
           image: null,
           duration: null,
           objectFit: null,
-          video: null,
+          mediaVideo: null,
           action: null
         }
       }
@@ -189,7 +189,7 @@ describe('CardVideo', () => {
             image: null,
             duration: null,
             objectFit: null,
-            video: null,
+            mediaVideo: null,
             action: null
           }
         ]

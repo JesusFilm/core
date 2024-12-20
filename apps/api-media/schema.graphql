@@ -27,7 +27,7 @@ type BibleCitation {
   bibleBook: BibleBook!
   chapterStart: Int!
   chapterEnd: Int
-  verseStart: Int!
+  verseStart: Int
   verseEnd: Int
   video: Video!
 }
@@ -67,8 +67,12 @@ input CloudflareR2UpdateInput {
   fileName: String!
 }
 
-type CloudflareVideo {
+type CloudflareVideo
+  @key(fields: "id primaryLanguageId")
+{
   id: ID!
+  source: VideoBlockSource @shareable
+  primaryLanguageId: ID @shareable
   uploadUrl: String
   userId: ID!
   createdAt: Date!
@@ -297,8 +301,16 @@ type MutationShortLinkUpdateSuccess {
   data: ShortLink!
 }
 
-type MuxVideo {
+type MuxVideo
+  @key(fields: "id primaryLanguageId")
+{
   id: ID!
+  source: VideoBlockSource @shareable
+  primaryLanguageId: ID @shareable
+  assetId: String
+  duration: Int
+  uploadId: String
+  playbackId: String
   uploadUrl: String
   userId: ID!
   createdAt: Date!
@@ -360,6 +372,7 @@ type Query {
   keywords: [Keyword!]!
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!): MuxVideo!
+  getMuxVideo(id: ID!): MuxVideo
 
   """List of short link domains that can be used for short links"""
   shortLinkDomains(
@@ -677,6 +690,7 @@ type Video
   @shareable
 {
   bibleCitations: [BibleCitation!]!
+  source: VideoBlockSource @shareable
   keywords(languageId: ID): [Keyword!]!
   id: ID!
   label: VideoLabel!
@@ -710,6 +724,13 @@ type Video
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
   variant(languageId: ID): VideoVariant
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
+}
+
+enum VideoBlockSource {
+  cloudflare
+  internal
+  youTube
+  mux
 }
 
 input VideoCreateInput {
@@ -809,7 +830,7 @@ type VideoSubtitle {
   srtSrc: String
   value: String!
   language: Language!
-  videoEdition: VideoEdition!
+  videoEdition: VideoEdition
 }
 
 input VideoSubtitleCreateInput {
@@ -865,14 +886,16 @@ input VideoUpdateInput {
 
 type VideoVariant {
   id: ID!
+  videoId: ID
   hls: String
   dash: String
   share: String
   downloadable: Boolean!
   downloads: [VideoVariantDownload!]!
   duration: Int!
+  lengthInMilliseconds: Int!
   language: Language!
-  videoEdition: VideoEdition!
+  videoEdition: VideoEdition
   subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
   subtitleCount: Int!
 
@@ -888,6 +911,7 @@ input VideoVariantCreateInput {
   dash: String
   share: String
   duration: Int
+  lengthInMilliseconds: Int
   languageId: String!
   slug: String!
   downloadable: Boolean!
@@ -935,6 +959,7 @@ input VideoVariantUpdateInput {
   dash: String
   share: String
   duration: Int
+  lengthInMilliseconds: Int
   languageId: String
   slug: String
   downloadable: Boolean
@@ -946,6 +971,14 @@ input VideosFilter {
   labels: [VideoLabel!]
   ids: [ID!]
   subtitleLanguageIds: [ID!]
+}
+
+type Youtube
+  @key(fields: "id primaryLanguageId")
+{
+  id: ID!
+  source: VideoBlockSource @shareable
+  primaryLanguageId: ID @shareable
 }
 
 type ZodError implements BaseError

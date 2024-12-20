@@ -10,6 +10,7 @@ import { VideoVariantUpdateInput } from './inputs/videoVariantUpdate'
 builder.prismaObject('VideoVariant', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    videoId: t.exposeID('videoId'),
     hls: t.exposeString('hls'),
     dash: t.exposeString('dash'),
     share: t.exposeString('share'),
@@ -19,12 +20,17 @@ builder.prismaObject('VideoVariant', {
       nullable: false,
       resolve: ({ duration }) => duration ?? 0
     }),
+    lengthInMilliseconds: t.int({
+      nullable: false,
+      resolve: ({ lengthInMilliseconds }) => lengthInMilliseconds ?? 0
+    }),
     language: t.field({
       type: Language,
       nullable: false,
       resolve: ({ languageId: id }) => ({ id })
     }),
-    videoEdition: t.relation('videoEdition', { nullable: false }),
+    // TODO: make non-nullable once integirity checked
+    videoEdition: t.relation('videoEdition', { nullable: true }),
     subtitle: t.prismaField({
       type: ['VideoSubtitle'],
       nullable: false,
@@ -107,6 +113,7 @@ builder.mutationFields((t) => ({
           dash: input.dash ?? undefined,
           share: input.share ?? undefined,
           duration: input.duration ?? undefined,
+          lengthInMilliseconds: input.lengthInMilliseconds ?? undefined,
           languageId: input.languageId ?? undefined,
           slug: input.slug ?? undefined,
           videoId: input.videoId ?? undefined,
