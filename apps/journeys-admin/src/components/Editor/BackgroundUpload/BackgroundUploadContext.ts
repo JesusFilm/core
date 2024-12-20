@@ -1,5 +1,4 @@
 import { createContext, useContext } from 'react'
-import { DetailedError, HttpStack } from 'tus-js-client'
 
 export enum UploadStatus {
   'uploading',
@@ -13,17 +12,16 @@ export interface UploadQueueItem {
   videoBlockId?: string
   fileName: string
   status: UploadStatus
-  error?: DetailedError | Error
+  error?: Error
   progress?: number
 }
 
-export interface uploadCloudflareVideoParams {
+export interface uploadMuxVideoParams {
   files: File[]
-  httpStack?: HttpStack
 }
 
 export interface Context {
-  uploadCloudflareVideo: (uploadCloudflareVideoParams) => AsyncGenerator<string>
+  uploadMuxVideo: (uploadMuxVideoParams) => AsyncGenerator<string>
   uploadQueue: Record<string, UploadQueueItem>
   activeUploads: () => number
   uploadMenuOpen: boolean

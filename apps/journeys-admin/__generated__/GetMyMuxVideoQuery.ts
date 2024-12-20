@@ -10,8 +10,6 @@
 export interface GetMyMuxVideoQuery_getMyMuxVideo {
   __typename: "MuxVideo";
   id: string;
-  assetId: string | null;
-  playbackId: string | null;
   readyToStream: boolean;
 }
 
