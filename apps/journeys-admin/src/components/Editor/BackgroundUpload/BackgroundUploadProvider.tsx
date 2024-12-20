@@ -1,9 +1,9 @@
 import type { ReadStream } from 'fs'
 
 import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { UpChunk } from '@mux/upchunk'
 import { produce } from 'immer'
 import { ReactElement, ReactNode, useState } from 'react'
-import { DefaultHttpStack, Upload } from 'tus-js-client'
 
 import { CreateMuxVideoUploadByFileMutation } from '../../../../__generated__/CreateMuxVideoUploadByFileMutation'
 import { GetMyMuxVideoQuery } from '../../../../__generated__/GetMyMuxVideoQuery'
@@ -47,6 +47,12 @@ export const REFRESH_VIDEO_BLOCK_IMAGE_QUERY = gql`
       id
       ... on VideoBlock {
         image
+        mediaVideo {
+          ... on MuxVideo {
+            id
+            playbackId
+          }
+        }
       }
     }
   }
@@ -144,42 +150,40 @@ export function BackgroundUploadProvider({
           })
         )
 
-        const upload = new Upload(buffer, {
-          httpStack: httpStack ?? new DefaultHttpStack({}),
-          uploadUrl,
-          chunkSize: 150 * 1024 * 1024,
-          onSuccess: (): void => {
-            setUploadQueue(
-              produce((draft) => {
-                const upload = draft[id]
-                upload.status = UploadStatus.processing
-              })
-            )
-            void getMyMuxVideo({
-              variables: { id }
-            })
-          },
-          onError: (err): void => {
-            setUploadQueue(
-              produce((draft) => {
-                const upload = draft[id]
-                upload.error = err
-                upload.status = UploadStatus.error
-                upload.progress = 0
-              })
-            )
-          },
-          onProgress(bytesUploaded, bytesTotal): void {
-            setUploadQueue(
-              produce((draft) => {
-                const upload = draft[id]
-                upload.progress = (bytesUploaded / bytesTotal) * 100
-              })
-            )
-          }
+        const upload = UpChunk.createUpload({
+          file,
+          endpoint: data.createMuxVideoUploadByFile.uploadUrl ?? '',
+          chunkSize: 5120
         })
-
-        upload.start()
+        upload.on('success', (): void => {
+          setUploadQueue(
+            produce((draft) => {
+              const upload = draft[id]
+              upload.status = UploadStatus.processing
+            })
+          )
+          void getMyMuxVideo({
+            variables: { id }
+          })
+        })
+        upload.on('error', (err): void => {
+          setUploadQueue(
+            produce((draft) => {
+              const upload = draft[id]
+              upload.error = err.detail
+              upload.status = UploadStatus.error
+              upload.progress = 0
+            })
+          )
+        })
+        upload.on('progress', (progress): void => {
+          setUploadQueue(
+            produce((draft) => {
+              const upload = draft[id]
+              upload.progress = progress.detail * 100
+            })
+          )
+        })
 
         return id
       }

@@ -12,6 +12,18 @@ export interface RefreshVideoBlockImageQuery_block_ImageBlock {
   id: string;
 }
 
+export interface RefreshVideoBlockImageQuery_block_VideoBlock_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo" | "Video" | "YouTube";
+}
+
+export interface RefreshVideoBlockImageQuery_block_VideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  playbackId: string | null;
+}
+
+export type RefreshVideoBlockImageQuery_block_VideoBlock_mediaVideo = RefreshVideoBlockImageQuery_block_VideoBlock_mediaVideo_CloudflareVideo | RefreshVideoBlockImageQuery_block_VideoBlock_mediaVideo_MuxVideo;
+
 export interface RefreshVideoBlockImageQuery_block_VideoBlock {
   __typename: "VideoBlock";
   id: string;
@@ -21,6 +33,7 @@ export interface RefreshVideoBlockImageQuery_block_VideoBlock {
    * For other sources this is automatically populated.
    */
   image: string | null;
+  mediaVideo: RefreshVideoBlockImageQuery_block_VideoBlock_mediaVideo | null;
 }
 
 export type RefreshVideoBlockImageQuery_block = RefreshVideoBlockImageQuery_block_ImageBlock | RefreshVideoBlockImageQuery_block_VideoBlock;
