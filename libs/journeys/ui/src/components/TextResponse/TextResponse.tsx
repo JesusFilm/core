@@ -1,13 +1,16 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
+import DragHandle from '@mui/icons-material/DragHandle'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { Form, Formik } from 'formik'
 import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement, SyntheticEvent, useRef, useState } from 'react'
+import { Resizable, ResizeCallbackData } from 'react-resizable'
 import { v4 as uuidv4 } from 'uuid'
 
 import { useBlocks } from '../../libs/block'
@@ -107,47 +110,88 @@ export const TextResponse = ({
     state: { selectedBlock }
   } = useEditor()
 
+  const [height, setHeight] = useState(100)
+  const handleRef = useRef(null)
+
+  function onResize(
+    _event: SyntheticEvent,
+    { size: { height } }: ResizeCallbackData
+  ) {
+    setHeight(height)
+  }
+
   return (
-    <Box sx={{ mb: 4 }} data-testid="JourneysTextResponse">
-      <Formik initialValues={initialValues} onSubmit={noop} enableReinitialize>
-        {({ values, handleChange, handleBlur }) => (
-          <Form data-testid={`textResponse-${blockId}`}>
-            <Stack>
-              <TextField
-                id="textResponse-field"
-                name="response"
-                label={label === '' ? 'Your answer here' : label}
-                value={values.response}
-                helperText={hint != null ? hint : ''}
-                multiline
-                disabled={loading}
-                minRows={minRows ?? 3}
-                onClick={(e) => e.stopPropagation()}
-                onChange={handleChange}
-                onBlurCapture={async (e) => {
-                  handleBlur(e)
-                  if (values.response !== value) {
-                    setValue(values.response)
-                    await onSubmitHandler(values)
-                  }
-                }}
-                inputProps={{
-                  maxLength: 1000,
-                  readOnly: selectedBlock !== undefined,
-                  sx: {
-                    pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
-                  }
-                }}
-                sx={{
-                  '&.MuiTextField-root': {
-                    mb: 0
-                  }
-                }}
-              />
-            </Stack>
-          </Form>
-        )}
-      </Formik>
-    </Box>
+    <Resizable
+      height={height}
+      axis="y"
+      onResize={onResize}
+      handle={
+        <DragHandle
+          ref={handleRef}
+          sx={{
+            color: 'white',
+            position: 'absolute',
+            bottom: 0,
+            left: '50%',
+            transform: 'translate(-50%, 0)',
+            cursor: 'ns-resize'
+          }}
+        />
+      }
+    >
+      <Box
+        sx={{
+          mb: 4,
+          height: height,
+          bgcolor: 'rgba(255,255,255,0.15)',
+          borderRadius: '6px',
+          position: 'relative'
+        }}
+        data-testid="JourneysTextResponse"
+      >
+        <Typography align="center">{`${height} pixels`}</Typography>
+      </Box>
+    </Resizable>
   )
+  // <Box sx={{ mb: 4 }} data-testid="JourneysTextResponse">
+  //   <Formik initialValues={initialValues} onSubmit={noop} enableReinitialize>
+  //     {({ values, handleChange, handleBlur }) => (
+  //       <Form data-testid={`textResponse-${blockId}`}>
+  //         <Stack>
+  //           <TextField
+  //             id="textResponse-field"
+  //             name="response"
+  //             label={label === '' ? 'Your answer here' : label}
+  //             value={values.response}
+  //             helperText={hint != null ? hint : ''}
+  //             multiline
+  //             disabled={loading}
+  //             minRows={minRows ?? 3}
+  //             onClick={(e) => e.stopPropagation()}
+  //             onChange={handleChange}
+  //             onBlurCapture={async (e) => {
+  //               handleBlur(e)
+  //               if (values.response !== value) {
+  //                 setValue(values.response)
+  //                 await onSubmitHandler(values)
+  //               }
+  //             }}
+  //             inputProps={{
+  //               maxLength: 1000,
+  //               readOnly: selectedBlock !== undefined,
+  //               sx: {
+  //                 pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+  //               }
+  //             }}
+  //             sx={{
+  //               '&.MuiTextField-root': {
+  //                 mb: 0
+  //               }
+  //             }}
+  //           />
+  //         </Stack>
+  //       </Form>
+  //     )}
+  //   </Formik>
+  // </Box>
 }
