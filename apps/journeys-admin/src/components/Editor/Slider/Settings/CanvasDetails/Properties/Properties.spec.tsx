@@ -19,6 +19,7 @@ import {
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
+import { BackgroundUploadProvider } from '../../../../BackgroundUpload'
 
 import { Properties } from '.'
 
@@ -41,11 +42,13 @@ describe('Properties', () => {
 
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={state}>
-            <Properties block={block} />
-          </EditorProvider>
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <EditorProvider initialState={state}>
+              <Properties block={block} />
+            </EditorProvider>
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
 
@@ -69,11 +72,13 @@ describe('Properties', () => {
 
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={state}>
-            <Properties />
-          </EditorProvider>
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <EditorProvider initialState={state}>
+              <Properties />
+            </EditorProvider>
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
 
@@ -92,9 +97,11 @@ describe('Properties', () => {
 
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <Properties block={block} />
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <Properties block={block} />
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
 
@@ -118,9 +125,11 @@ describe('Properties', () => {
 
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <Properties block={block} />
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <Properties block={block} />
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
 
@@ -138,9 +147,11 @@ describe('Properties', () => {
 
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <Properties block={block} />
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <Properties block={block} />
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
 
@@ -158,9 +169,11 @@ describe('Properties', () => {
 
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <Properties block={block} />
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <Properties block={block} />
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
 
@@ -178,9 +191,11 @@ describe('Properties', () => {
 
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <Properties block={block} />
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <Properties block={block} />
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
 
@@ -198,9 +213,11 @@ describe('Properties', () => {
 
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <Properties block={block} />
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <Properties block={block} />
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
 
@@ -218,9 +235,11 @@ describe('Properties', () => {
 
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <Properties block={block} />
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <Properties block={block} />
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
 
@@ -238,9 +257,11 @@ describe('Properties', () => {
 
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <Properties block={block} />
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <Properties block={block} />
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
 
@@ -258,9 +279,11 @@ describe('Properties', () => {
 
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <Properties block={block} />
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <Properties block={block} />
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
 
@@ -278,9 +301,11 @@ describe('Properties', () => {
 
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <Properties block={block} />
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <Properties block={block} />
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
 
@@ -298,9 +323,11 @@ describe('Properties', () => {
 
     const { container } = render(
       <MockedProvider>
-        <SnackbarProvider>
-          <Properties block={block} />
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <Properties block={block} />
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
 
@@ -324,12 +351,14 @@ describe('Properties', () => {
 
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={state}>
-            <TestEditorState />
-            <Properties />
-          </EditorProvider>
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <EditorProvider initialState={state}>
+              <TestEditorState />
+              <Properties />
+            </EditorProvider>
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
 
@@ -380,12 +409,14 @@ describe('Properties', () => {
 
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={state}>
-            <TestEditorState />
-            <Properties />
-          </EditorProvider>
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <EditorProvider initialState={state}>
+              <TestEditorState />
+              <Properties />
+            </EditorProvider>
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
 
