@@ -118,7 +118,6 @@ export function BackgroundUploadProvider({
       const fileName = file.name.split('.')[0]
       const { data } = await createMuxVideoUploadByFile({
         variables: {
-          uploadLength: file.size,
           name: fileName
         }
       })

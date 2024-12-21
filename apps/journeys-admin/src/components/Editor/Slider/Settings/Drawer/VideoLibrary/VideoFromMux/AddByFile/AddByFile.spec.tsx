@@ -1,12 +1,9 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import {
   BackgroundUploadProvider,
   useBackgroundUpload
 } from '../../../../../../BackgroundUpload'
-
-import { createMuxVideoMock, getMuxVideoMock } from './data'
 
 import { AddByFile } from '.'
 

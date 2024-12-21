@@ -12,6 +12,7 @@ import {
 } from 'react-instantsearch'
 
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
+import { BackgroundUploadProvider } from '../../../../BackgroundUpload'
 
 import { videoItems } from './data'
 
@@ -75,7 +76,9 @@ describe('VideoLibrary', () => {
     it('should render the Video Library on the right', () => {
       render(
         <MockedProvider>
-          <VideoLibrary open />
+          <BackgroundUploadProvider>
+            <VideoLibrary open />
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
       expect(screen.getByText('Video Library')).toBeInTheDocument()
@@ -88,7 +91,9 @@ describe('VideoLibrary', () => {
       const onClose = jest.fn()
       render(
         <MockedProvider>
-          <VideoLibrary open onClose={onClose} />
+          <BackgroundUploadProvider>
+            <VideoLibrary open onClose={onClose} />
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
       expect(screen.getAllByRole('button')[0]).toContainElement(
@@ -107,7 +112,9 @@ describe('VideoLibrary', () => {
     it('should render the VideoLibrary from the bottom', () => {
       render(
         <MockedProvider>
-          <VideoLibrary open />
+          <BackgroundUploadProvider>
+            <VideoLibrary open />
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
       expect(screen.getByText('Video Library')).toBeInTheDocument()
@@ -125,7 +132,9 @@ describe('VideoLibrary', () => {
     it('displays searched video', async () => {
       render(
         <MockedProvider>
-          <VideoLibrary open />
+          <BackgroundUploadProvider>
+            <VideoLibrary open />
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
       const searchBox = screen.getByRole('searchbox')
@@ -141,7 +150,9 @@ describe('VideoLibrary', () => {
   it('should render the Video Library on the right', () => {
     render(
       <MockedProvider>
-        <VideoLibrary open />
+        <BackgroundUploadProvider>
+          <VideoLibrary open />
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
     expect(screen.getByText('Video Library')).toBeInTheDocument()
@@ -155,7 +166,9 @@ describe('VideoLibrary', () => {
     const onClose = jest.fn()
     render(
       <MockedProvider>
-        <VideoLibrary open onSelect={onSelect} onClose={onClose} />
+        <BackgroundUploadProvider>
+          <VideoLibrary open onSelect={onSelect} onClose={onClose} />
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
     await waitFor(() => expect(screen.getByText('title1')).toBeInTheDocument())
@@ -180,38 +193,40 @@ describe('VideoLibrary', () => {
 
     render(
       <MockedProvider>
-        <VideoLibrary
-          open
-          selectedBlock={{
-            id: 'video1.id',
-            __typename: 'VideoBlock',
-            parentBlockId: 'card1.id',
-            description:
-              'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
-            duration: 348,
-            endAt: 348,
-            fullsize: true,
-            image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
-            muted: false,
-            autoplay: true,
-            startAt: 0,
-            title: 'What is the Bible?',
-            videoId: 'ak06MSETeo4',
-            videoVariantLanguageId: null,
-            parentOrder: 0,
-            action: null,
-            source: VideoBlockSource.youTube,
-            mediaVideo: {
-              __typename: 'YouTube',
-              id: 'videoId'
-            },
-            objectFit: null,
-            posterBlockId: 'poster1.id',
-            children: []
-          }}
-          onSelect={onSelect}
-          onClose={onClose}
-        />
+        <BackgroundUploadProvider>
+          <VideoLibrary
+            open
+            selectedBlock={{
+              id: 'video1.id',
+              __typename: 'VideoBlock',
+              parentBlockId: 'card1.id',
+              description:
+                'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+              duration: 348,
+              endAt: 348,
+              fullsize: true,
+              image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
+              muted: false,
+              autoplay: true,
+              startAt: 0,
+              title: 'What is the Bible?',
+              videoId: 'ak06MSETeo4',
+              videoVariantLanguageId: null,
+              parentOrder: 0,
+              action: null,
+              source: VideoBlockSource.youTube,
+              mediaVideo: {
+                __typename: 'YouTube',
+                id: 'videoId'
+              },
+              objectFit: null,
+              posterBlockId: 'poster1.id',
+              children: []
+            }}
+            onSelect={onSelect}
+            onClose={onClose}
+          />
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
 
@@ -229,7 +244,9 @@ describe('VideoLibrary', () => {
 
     render(
       <MockedProvider>
-        <VideoLibrary open />
+        <BackgroundUploadProvider>
+          <VideoLibrary open />
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getByRole('tab', { name: 'YouTube' }))
@@ -258,7 +275,9 @@ describe('VideoLibrary', () => {
 
     const { getByRole } = render(
       <MockedProvider>
-        <VideoLibrary open />
+        <BackgroundUploadProvider>
+          <VideoLibrary open />
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('tab', { name: 'Upload' }))
@@ -285,7 +304,9 @@ describe('VideoLibrary', () => {
 
     render(
       <MockedProvider>
-        <VideoLibrary open />
+        <BackgroundUploadProvider>
+          <VideoLibrary open />
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getByRole('tab', { name: 'Upload' }))

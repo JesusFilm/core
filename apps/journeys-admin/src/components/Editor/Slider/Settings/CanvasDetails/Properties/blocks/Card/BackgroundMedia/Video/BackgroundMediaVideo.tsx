@@ -191,15 +191,6 @@ export function BackgroundMediaVideo({
                         }
                       `
                     })
-                    // if (newData.source === VideoBlockSource.cloudflare)
-                    //   newData.image = null
-                    cache.modify({
-                      fields: {
-                        image() {
-                          return null
-                        }
-                      }
-                    })
                     return [...existingBlockRefs, newBlockRef]
                   }
                 }

@@ -46,6 +46,7 @@ import { VideoBlockSource } from '../../../../../../../../../../../__generated__
 import { COVER_BLOCK_DELETE } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
 import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
 import { ThemeProvider } from '../../../../../../../../../ThemeProvider'
+import { BackgroundUploadProvider } from '../../../../../../../../BackgroundUpload'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 import { videoItems } from '../../../../../../Drawer/VideoLibrary/data'
@@ -324,19 +325,23 @@ describe('BackgroundMediaVideo', () => {
           coverBlockRestoreMock
         ]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <ThemeProvider>
-            <SnackbarProvider>
-              <EditorProvider initialState={{ selectedAttributeId: video.id }}>
-                <CommandProvider>
-                  <BackgroundMediaVideo cardBlock={card} />
-                  <CommandUndoItem variant="button" />
-                  <CommandRedoItem variant="button" />
-                </CommandProvider>
-              </EditorProvider>
-            </SnackbarProvider>
-          </ThemeProvider>
-        </JourneyProvider>
+        <BackgroundUploadProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <ThemeProvider>
+              <SnackbarProvider>
+                <EditorProvider
+                  initialState={{ selectedAttributeId: video.id }}
+                >
+                  <CommandProvider>
+                    <BackgroundMediaVideo cardBlock={card} />
+                    <CommandUndoItem variant="button" />
+                    <CommandRedoItem variant="button" />
+                  </CommandProvider>
+                </EditorProvider>
+              </SnackbarProvider>
+            </ThemeProvider>
+          </JourneyProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -450,21 +455,23 @@ describe('BackgroundMediaVideo', () => {
             }
           ]}
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <ThemeProvider>
-              <SnackbarProvider>
-                <EditorProvider
-                  initialState={{ selectedAttributeId: video.id }}
-                >
-                  <CommandProvider>
-                    <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-                    <CommandUndoItem variant="button" />
-                    <CommandRedoItem variant="button" />
-                  </CommandProvider>
-                </EditorProvider>
-              </SnackbarProvider>
-            </ThemeProvider>
-          </JourneyProvider>
+          <BackgroundUploadProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <ThemeProvider>
+                <SnackbarProvider>
+                  <EditorProvider
+                    initialState={{ selectedAttributeId: video.id }}
+                  >
+                    <CommandProvider>
+                      <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+                      <CommandUndoItem variant="button" />
+                      <CommandRedoItem variant="button" />
+                    </CommandProvider>
+                  </EditorProvider>
+                </SnackbarProvider>
+              </ThemeProvider>
+            </JourneyProvider>
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
       await waitFor(() =>
@@ -506,21 +513,23 @@ describe('BackgroundMediaVideo', () => {
             coverBlockDeleteMock
           ]}
         >
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <ThemeProvider>
-              <SnackbarProvider>
-                <EditorProvider
-                  initialState={{ selectedAttributeId: video.id }}
-                >
-                  <CommandProvider>
-                    <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-                    <CommandUndoItem variant="button" />
-                    <CommandRedoItem variant="button" />
-                  </CommandProvider>
-                </EditorProvider>
-              </SnackbarProvider>
-            </ThemeProvider>
-          </JourneyProvider>
+          <BackgroundUploadProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <ThemeProvider>
+                <SnackbarProvider>
+                  <EditorProvider
+                    initialState={{ selectedAttributeId: video.id }}
+                  >
+                    <CommandProvider>
+                      <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+                      <CommandUndoItem variant="button" />
+                      <CommandRedoItem variant="button" />
+                    </CommandProvider>
+                  </EditorProvider>
+                </SnackbarProvider>
+              </ThemeProvider>
+            </JourneyProvider>
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
       await waitFor(() =>
