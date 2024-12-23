@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
+import LinearProgress from '@mui/material/LinearProgress'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -23,11 +23,7 @@ export function SourceFromMux({
 }: SourceFromMuxProps): ReactElement {
   const IMG_HEIGHT = 56
   const IMG_WIDTH = 56
-  const { uploadQueue, setUploadMenuOpen, uploadMenuOpen } =
-    useBackgroundUpload()
-  function handleClick(): void {
-    setUploadMenuOpen(!uploadMenuOpen)
-  }
+  const { uploadQueue } = useBackgroundUpload()
   const { t } = useTranslation('apps-journeys-admin')
   return (
     <>
@@ -74,9 +70,30 @@ export function SourceFromMux({
           </IconButton>
         </>
       ) : (
-        <Button variant="outlined" onClick={handleClick}>
-          {t('Show Upload')}
-        </Button>
+        <>
+          {[UploadStatus.uploading, UploadStatus.processing].includes(
+            uploadQueue[selectedBlock.videoId ?? ''].status
+          ) && (
+            <Box sx={{ width: '100%', mt: 4 }}>
+              <Typography variant="body1" sx={{ pb: 4 }} color="secondary.main">
+                {uploadQueue[selectedBlock.videoId ?? ''].status ===
+                UploadStatus.uploading
+                  ? t('Uploading...')
+                  : t('Processing...')}
+              </Typography>
+              <LinearProgress
+                variant={
+                  uploadQueue[selectedBlock.videoId ?? ''].status ===
+                  UploadStatus.processing
+                    ? 'indeterminate'
+                    : 'determinate'
+                }
+                value={uploadQueue[selectedBlock.videoId ?? ''].progress}
+                sx={{ height: 32, borderRadius: 2 }}
+              />
+            </Box>
+          )}
+        </>
       )}
     </>
   )
