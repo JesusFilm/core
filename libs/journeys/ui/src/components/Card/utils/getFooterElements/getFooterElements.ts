@@ -1,7 +1,7 @@
 import { JourneyFields } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
 
-export const FULL_HEIGHT = '90'
-export const HALF_HEIGHT = '60'
+export const FULL_HEIGHT = '90px'
+export const HALF_HEIGHT = '60px'
 export const MIN_HEIGHT = '8px'
 export const WEBSITE_HEIGHT = '0px'
 

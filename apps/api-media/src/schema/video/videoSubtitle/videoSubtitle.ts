@@ -22,7 +22,8 @@ builder.prismaObject('VideoSubtitle', {
       nullable: false,
       resolve: ({ languageId: id }) => ({ id })
     }),
-    videoEdition: t.relation('videoEdition', { nullable: false })
+    // TODO: make non-nullable once integirity checked
+    videoEdition: t.relation('videoEdition', { nullable: true })
   })
 })
 

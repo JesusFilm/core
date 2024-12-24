@@ -72,9 +72,9 @@ describe('bigQuery/importers/videoVariants', () => {
         edition: 'mockEdition'
       })
       expect(prismaMock.videoEdition.upsert).toHaveBeenCalledWith({
-        where: { id: 'mockEdition' },
+        create: { name: 'mockEdition', videoId: 'videoId' },
         update: {},
-        create: { id: 'mockEdition' }
+        where: { name_videoId: { name: 'mockEdition', videoId: 'videoId' } }
       })
       expect(prismaMock.videoVariant.upsert).toHaveBeenCalledWith({
         where: { id: '1' },
@@ -161,11 +161,11 @@ describe('bigQuery/importers/videoVariants', () => {
         }
       ])
       expect(prismaMock.videoEdition.upsert).toHaveBeenCalledWith({
-        where: { id: 'mockEdition' },
+        create: { name: 'mockEdition', videoId: 'videoId' },
         update: {},
-        create: { id: 'mockEdition' }
+        where: { name_videoId: { name: 'mockEdition', videoId: 'videoId' } }
       })
-      expect(prismaMock.videoEdition.upsert).toHaveBeenCalledTimes(1)
+      expect(prismaMock.videoEdition.upsert).toHaveBeenCalledTimes(2)
       expect(prismaMock.videoVariant.createMany).toHaveBeenCalledWith({
         data: [
           {
