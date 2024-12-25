@@ -7,6 +7,7 @@ import FederationPlugin from '@pothos/plugin-federation'
 import pluginName from '@pothos/plugin-prisma'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
+import { DateTimeResolver } from 'graphql-scalars'
 
 import { Prisma } from '.prisma/api-journeys-modern-client'
 
@@ -23,6 +24,7 @@ export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes
   Scalars: {
     ID: { Input: string; Output: number | string }
+    DateTime: { Input: Date; Output: Date }
   }
 }>({
   plugins: [TracingPlugin, PrismaPlugin, DirectivesPlugin, FederationPlugin],
@@ -38,3 +40,5 @@ export const builder = new SchemaBuilder<{
 })
 
 builder.queryType({})
+
+builder.addScalarType('DateTime', DateTimeResolver)
