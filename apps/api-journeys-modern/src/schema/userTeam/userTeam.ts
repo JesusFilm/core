@@ -1,6 +1,8 @@
 import { builder } from '../builder'
 import { User } from '../user/user'
 
+import { UserTeamRole } from './enums/userTeamRole'
+
 const UserTeam = builder.prismaObject('UserTeam', {
   fields: (t) => ({
     id: t.exposeID('id'),
@@ -9,16 +11,14 @@ const UserTeam = builder.prismaObject('UserTeam', {
       type: User,
       resolve: ({ userId }) => ({ id: userId })
     }),
-    role: t.expose('UserTeamRole', { nullable: false }),
+    role: t.expose('role', { type: UserTeamRole, nullable: false }),
     createdAt: t.expose('createdAt', {
       type: 'DateTime',
-      nullable: false,
-      resolve: ({ createdAt }) => createdAt
+      nullable: false
     }),
     updatedAt: t.expose('updatedAt', {
       type: 'DateTime',
-      nullable: false,
-      resolve: ({ updatedAt }) => updatedAt
+      nullable: false
     })
   })
 })

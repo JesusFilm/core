@@ -2,6 +2,9 @@
 // and object type in the schema
 
 import './mediaVideo'
+import './user'
+import './userRole'
+import './userTeam'
 
 import { builder } from './builder'
 
