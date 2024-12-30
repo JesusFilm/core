@@ -93,7 +93,9 @@ export function Card({
       break
     case 'VideoBlock':
       backgroundValue =
-        coverBlock.video?.title?.[0]?.value ?? coverBlock.title ?? ''
+        coverBlock.mediaVideo?.__typename === 'Video'
+          ? coverBlock.mediaVideo?.title?.[0]?.value
+          : (coverBlock.title ?? '')
       break
   }
 

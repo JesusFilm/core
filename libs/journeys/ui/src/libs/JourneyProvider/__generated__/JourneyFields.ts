@@ -250,42 +250,59 @@ export interface JourneyFields_blocks_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface JourneyFields_blocks_VideoBlock_video_title {
+export interface JourneyFields_blocks_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface JourneyFields_blocks_VideoBlock_video_images {
+export interface JourneyFields_blocks_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface JourneyFields_blocks_VideoBlock_video_variant {
+export interface JourneyFields_blocks_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface JourneyFields_blocks_VideoBlock_video_variantLanguages_name {
+export interface JourneyFields_blocks_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface JourneyFields_blocks_VideoBlock_video_variantLanguages {
+export interface JourneyFields_blocks_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: JourneyFields_blocks_VideoBlock_video_variantLanguages_name[];
+  name: JourneyFields_blocks_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface JourneyFields_blocks_VideoBlock_video {
+export interface JourneyFields_blocks_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: JourneyFields_blocks_VideoBlock_video_title[];
-  images: JourneyFields_blocks_VideoBlock_video_images[];
-  variant: JourneyFields_blocks_VideoBlock_video_variant | null;
-  variantLanguages: JourneyFields_blocks_VideoBlock_video_variantLanguages[];
+  title: JourneyFields_blocks_VideoBlock_mediaVideo_Video_title[];
+  images: JourneyFields_blocks_VideoBlock_mediaVideo_Video_images[];
+  variant: JourneyFields_blocks_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: JourneyFields_blocks_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
+
+export interface JourneyFields_blocks_VideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+}
+
+export interface JourneyFields_blocks_VideoBlock_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+  id: string;
+}
+
+export interface JourneyFields_blocks_VideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type JourneyFields_blocks_VideoBlock_mediaVideo = JourneyFields_blocks_VideoBlock_mediaVideo_Video | JourneyFields_blocks_VideoBlock_mediaVideo_MuxVideo | JourneyFields_blocks_VideoBlock_mediaVideo_CloudflareVideo | JourneyFields_blocks_VideoBlock_mediaVideo_YouTube;
 
 export interface JourneyFields_blocks_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -378,11 +395,7 @@ export interface JourneyFields_blocks_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: JourneyFields_blocks_VideoBlock_video | null;
+  mediaVideo: JourneyFields_blocks_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */

@@ -830,7 +830,7 @@ type VideoSubtitle {
   srtSrc: String
   value: String!
   language: Language!
-  videoEdition: VideoEdition!
+  videoEdition: VideoEdition
 }
 
 input VideoSubtitleCreateInput {
@@ -895,7 +895,7 @@ type VideoVariant {
   duration: Int!
   lengthInMilliseconds: Int!
   language: Language!
-  videoEdition: VideoEdition!
+  videoEdition: VideoEdition
   subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
   subtitleCount: Int!
 
