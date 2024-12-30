@@ -9,43 +9,6 @@ import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit } from "./
 // GraphQL mutation operation: VideoBlockUpdate
 // ====================================================
 
-export interface VideoBlockUpdate_videoBlockUpdate_video_title {
-  __typename: "VideoTitle";
-  value: string;
-}
-
-export interface VideoBlockUpdate_videoBlockUpdate_video_images {
-  __typename: "CloudflareImage";
-  mobileCinematicHigh: string | null;
-}
-
-export interface VideoBlockUpdate_videoBlockUpdate_video_variant {
-  __typename: "VideoVariant";
-  id: string;
-  hls: string | null;
-}
-
-export interface VideoBlockUpdate_videoBlockUpdate_video_variantLanguages_name {
-  __typename: "LanguageName";
-  value: string;
-  primary: boolean;
-}
-
-export interface VideoBlockUpdate_videoBlockUpdate_video_variantLanguages {
-  __typename: "Language";
-  id: string;
-  name: VideoBlockUpdate_videoBlockUpdate_video_variantLanguages_name[];
-}
-
-export interface VideoBlockUpdate_videoBlockUpdate_video {
-  __typename: "Video";
-  id: string;
-  title: VideoBlockUpdate_videoBlockUpdate_video_title[];
-  images: VideoBlockUpdate_videoBlockUpdate_video_images[];
-  variant: VideoBlockUpdate_videoBlockUpdate_video_variant | null;
-  variantLanguages: VideoBlockUpdate_videoBlockUpdate_video_variantLanguages[];
-}
-
 export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -191,11 +154,6 @@ export interface VideoBlockUpdate_videoBlockUpdate {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: VideoBlockUpdate_videoBlockUpdate_video | null;
   mediaVideo: VideoBlockUpdate_videoBlockUpdate_mediaVideo | null;
   /**
    * action that should be performed when the video ends
