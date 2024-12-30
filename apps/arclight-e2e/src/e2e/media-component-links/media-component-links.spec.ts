@@ -12,13 +12,19 @@ test('compare media component links between environments', async ({
 }) => {
   const baseUrl = await getBaseUrl()
   const compareUrl = 'https://api.arclight.org'
-  const { apiKey } = testData
+  const { apiKey, mediaComponentLinks } = testData
 
-  const queryParams = new URLSearchParams({ apiKey })
+  const queryParams = new URLSearchParams({
+    apiKey,
+    ids: mediaComponentLinks.join(',')
+  })
+
+  const baseRequestUrl = `${baseUrl}/v2/media-component-links?${queryParams}`
+  const compareRequestUrl = `${compareUrl}/v2/media-component-links?${queryParams}`
 
   const [baseResponse, compareResponse] = await Promise.all([
-    request.get(`${baseUrl}/v2/media-component-links?${queryParams}`),
-    request.get(`${compareUrl}/v2/media-component-links?${queryParams}`)
+    request.get(baseRequestUrl),
+    request.get(compareRequestUrl)
   ])
 
   expect(await baseResponse.ok()).toBe(true)

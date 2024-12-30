@@ -9,12 +9,17 @@
   ],
   "mediaComponents": [
     "CS1",
-    "Perfect",
     "1_jf-0-0",
     "1_wl-0-0",
     "1_cl-0-0",
     "1_mld-0-0",
     "1_fj_1-0-0",
     "2_0-ConsideringChristmas"
+  ],
+  "mediaComponentLinks": [
+    "2_0-WhatIsHome",
+    "JFM1",
+    "10_DarkroomFaith",
+    "11_Advent0104"
   ]
 }
