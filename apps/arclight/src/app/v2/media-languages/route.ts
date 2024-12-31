@@ -53,10 +53,10 @@ const GET_LANGUAGES = graphql(`
       }
       speakerCount
       countriesCount
-      primaryCountryId
       seriesCount
       featureFilmCount
       shortFilmCount
+      primaryCountryId
     }
   }
 `)
@@ -131,8 +131,8 @@ export async function GET(request: NextRequest): Promise<Response> {
     )
     .map((language) => ({
       languageId: Number(language.id),
-      iso3: language.iso3,
-      bcp47: language.bcp47,
+      iso3: language.iso3 ?? '',
+      bcp47: language.bcp47 ?? '',
       counts: {
         speakerCount: {
           value: Number(language.speakerCount),
@@ -142,39 +142,48 @@ export async function GET(request: NextRequest): Promise<Response> {
           value: language.countriesCount,
           description: 'Number of countries'
         },
-        ...(language.seriesCount > 0 && {
-          series: {
-            value: language.seriesCount,
-            description: 'Series'
-          }
-        }),
-        ...(language.featureFilmCount > 0 && {
-          featureFilm: {
-            value: language.featureFilmCount,
-            description: 'Feature Film'
-          }
-        }),
-        ...(language.shortFilmCount > 0 && {
-          shortFilm: {
-            value: language.shortFilmCount,
-            description: 'Short Film'
-          }
-        })
-      },
-      audioPreview:
-        language.audioPreview != null
+        ...(language.seriesCount != 0
           ? {
+              series: {
+                value: language.seriesCount,
+                description: 'Series'
+              }
+            }
+          : {}),
+        ...(language.featureFilmCount != 0
+          ? {
+              featureFilm: {
+                value: language.featureFilmCount,
+                description: 'Feature Film'
+              }
+            }
+          : {}),
+        ...(language.shortFilmCount != 0
+          ? {
+              shortFilm: {
+                value: language.shortFilmCount,
+                description: 'Short Film'
+              }
+            }
+          : {})
+      },
+      ...(language.audioPreview != null
+        ? {
+            audioPreview: {
               url: language.audioPreview.value,
               audioBitrate: language.audioPreview.bitrate,
               audioContainer: language.audioPreview.codec,
               sizeInBytes: language.audioPreview.size
             }
-          : null,
+          }
+        : {}),
       primaryCountryId: language.primaryCountryId ?? '',
       name: language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
-      nameNative: language.nameNative.find(({ primary }) => primary)?.value,
-      alternateLanguageName: '',
-      alternateLanguageNameNative: '',
+      nameNative:
+        language.nameNative.find(({ primary }) => primary)?.value ??
+        language.name[0]?.value ??
+        language.fallbackName[0]?.value ??
+        '',
       metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
       _links: {
         self: {
