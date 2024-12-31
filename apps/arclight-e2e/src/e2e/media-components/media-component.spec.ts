@@ -14,23 +14,25 @@ test('compare single media component between environments', async ({
     mediaComponentId: testData.mediaComponentId
   })
 
-  const [baseData, compareData] = await Promise.all([
-    request
-      .get(
-        `${baseUrl}/v2/media-components/${testData.mediaComponentId}?${queryParams}`
-      )
-      .then((res) => res.json()),
-    request
-      .get(
-        `${compareUrl}/v2/media-components/${testData.mediaComponentId}?${queryParams}`
-      )
-      .then((res) => res.json())
+  const [baseResponse, compareResponse] = await Promise.all([
+    request.get(
+      `${baseUrl}/v2/media-components/${testData.mediaComponentId}?${queryParams}`
+    ),
+    request.get(
+      `${compareUrl}/v2/media-components/${testData.mediaComponentId}?${queryParams}`
+    )
   ])
 
-  delete baseData._links
-  delete compareData._links
+  expect(await baseResponse.ok()).toBe(true)
+  expect(await compareResponse.ok()).toBe(true)
 
-  const diffs = getObjectDiff(baseData, compareData)
+  const baseDataJson = await baseResponse.json()
+  const compareDataJson = await compareResponse.json()
+
+  delete baseDataJson._links
+  delete compareDataJson._links
+
+  const diffs = getObjectDiff(baseDataJson, compareDataJson)
 
   expect(
     diffs,

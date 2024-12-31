@@ -19,18 +19,20 @@ test('compare media component languages between environments', async ({
     mediaComponentId
   })
 
-  const [baseData, compareData] = await Promise.all([
-    request
-      .get(
-        `${baseUrl}/v2/media-components/${mediaComponentId}/languages?${queryParams}`
-      )
-      .then((res) => res.json()),
-    request
-      .get(
-        `${compareUrl}/v2/media-components/${mediaComponentId}/languages?${queryParams}`
-      )
-      .then((res) => res.json())
+  const [baseResponse, compareResponse] = await Promise.all([
+    request.get(
+      `${baseUrl}/v2/media-components/${mediaComponentId}/languages?${queryParams}`
+    ),
+    request.get(
+      `${compareUrl}/v2/media-components/${mediaComponentId}/languages?${queryParams}`
+    )
   ])
+
+  expect(await baseResponse.ok()).toBe(true)
+  expect(await compareResponse.ok()).toBe(true)
+
+  const baseData = await baseResponse.json()
+  const compareData = await compareResponse.json()
 
   const cleanLanguages = (languages: any[]) => {
     return languages.map((language) => {

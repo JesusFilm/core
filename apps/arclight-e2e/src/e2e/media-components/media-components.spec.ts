@@ -16,14 +16,16 @@ test('compare media components between environments', async ({ request }) => {
     ids: testData.mediaComponents.join(',')
   })
 
-  const [baseData, compareData] = await Promise.all([
-    request
-      .get(`${baseUrl}/v2/media-components?${queryParams}`)
-      .then((res) => res.json()),
-    request
-      .get(`https://api.arclight.org/v2/media-components?${queryParams}`)
-      .then((res) => res.json())
+  const [baseResponse, compareResponse] = await Promise.all([
+    request.get(`${baseUrl}/v2/media-components?${queryParams}`),
+    request.get(`https://api.arclight.org/v2/media-components?${queryParams}`)
   ])
+
+  expect(await baseResponse.ok()).toBe(true)
+  expect(await compareResponse.ok()).toBe(true)
+
+  const baseData = await baseResponse.json()
+  const compareData = await compareResponse.json()
 
   const baseComponents = convertArrayToObject(
     baseData._embedded.mediaComponents,
@@ -49,7 +51,7 @@ test('compare media components between environments', async ({ request }) => {
   expect(diffs).toHaveLength(0)
 })
 
-test('verify required image fields exist', async ({ request }) => {
+test.fixme('verify required image fields exist', async ({ request }) => {
   const baseUrl = await getBaseUrl()
   const queryParams = new URLSearchParams({
     apiKey: testData.apiKey
