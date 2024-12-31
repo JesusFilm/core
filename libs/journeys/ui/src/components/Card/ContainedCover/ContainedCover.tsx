@@ -133,7 +133,7 @@ export function ContainedCover({
             objectFit="cover"
             sx={{
               transform:
-                videoBlock?.source === VideoBlockSource.youTube
+                videoBlock?.mediaVideo?.__typename === 'YouTube'
                   ? 'scale(1.35)'
                   : 'unset'
             }}

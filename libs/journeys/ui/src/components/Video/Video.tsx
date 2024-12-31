@@ -62,7 +62,6 @@ const StyledVideoGradient = styled(Box)`
 export function Video({
   id: blockId,
   mediaVideo,
-  source,
   videoId,
   image,
   title,
@@ -122,7 +121,7 @@ export function Video({
 
   // Set video layout
   let videoFit: CSSProperties['objectFit']
-  if (source === VideoBlockSource.youTube) {
+  if (mediaVideo?.__typename === 'YouTube') {
     videoFit = 'contain'
   } else {
     switch (objectFit) {
@@ -142,12 +141,12 @@ export function Video({
   }
 
   const isFillAndNotYoutube = (): boolean =>
-    videoFit === 'cover' && source !== VideoBlockSource.youTube
+    videoFit === 'cover' && mediaVideo?.__typename !== 'YouTube'
 
   const showVideoImage =
-    (variant === 'admin' && source === VideoBlockSource.youTube) ||
-    source === VideoBlockSource.internal ||
-    source === VideoBlockSource.cloudflare
+    (variant === 'admin' && mediaVideo?.__typename === 'YouTube') ||
+    mediaVideo?.__typename === 'Video' ||
+    mediaVideo?.__typename === 'CloudflareVideo'
 
   useEffect(() => {
     setActiveStep(isActiveBlockOrDescendant(blockId))
@@ -195,7 +194,7 @@ export function Video({
         setLoading={setLoading}
         setShowPoster={setShowPoster}
         setVideoEndTime={setVideoEndTime}
-        source={source}
+        mediaVideo={mediaVideo}
         activeStep={activeStep}
       />
       {activeStep &&
@@ -206,7 +205,7 @@ export function Video({
             player={player}
             blockId={blockId}
             videoTitle={eventVideoTitle}
-            source={source}
+            mediaVideo={mediaVideo}
             videoId={eventVideoId}
             startAt={startAt}
             endAt={videoEndTime}
@@ -252,17 +251,18 @@ export function Video({
                 }
               }}
             >
-              {source === VideoBlockSource.cloudflare && videoId != null && (
-                <source
-                  src={`https://customer-${
-                    process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
-                    ''
-                  }.cloudflarestream.com/${
-                    videoId ?? ''
-                  }/manifest/video.m3u8?clientBandwidthHint=10`}
-                  type="application/x-mpegURL"
-                />
-              )}
+              {mediaVideo?.__typename === 'CloudflareVideo' &&
+                videoId != null && (
+                  <source
+                    src={`https://customer-${
+                      process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
+                      ''
+                    }.cloudflarestream.com/${
+                      videoId ?? ''
+                    }/manifest/video.m3u8?clientBandwidthHint=10`}
+                    type="application/x-mpegURL"
+                  />
+                )}
               {mediaVideo?.__typename == 'Video' &&
                 mediaVideo?.variant?.hls != null && (
                   <source
@@ -270,7 +270,7 @@ export function Video({
                     type="application/x-mpegURL"
                   />
                 )}
-              {source === VideoBlockSource.youTube && (
+              {mediaVideo?.__typename === 'YouTube' && (
                 <source
                   src={`https://www.youtube.com/embed/${videoId}?start=${
                     startAt ?? 0
@@ -286,7 +286,7 @@ export function Video({
                 player={player}
                 startAt={startAt ?? 0}
                 endAt={videoEndTime}
-                isYoutube={source === VideoBlockSource.youTube}
+                isYoutube={mediaVideo?.__typename === 'YouTube'}
                 loading={loading}
                 autoplay={autoplay ?? false}
                 muted={muted ?? false}

@@ -99,13 +99,13 @@ export function BackgroundMediaVideo({
         typename = 'YouTube'
         break
       case VideoBlockSource.cloudflare:
-        typename = 'Cloudflare'
+        typename = 'CloudflareVideo'
         break
       case VideoBlockSource.mux:
-        typename = 'Mux'
+        typename = 'MuxVideo'
         break
       default:
-        typename = 'Internal'
+        typename = 'Video'
         break
     }
     const block: VideoBlock = {

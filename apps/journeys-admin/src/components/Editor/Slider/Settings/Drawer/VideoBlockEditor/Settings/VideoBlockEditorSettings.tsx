@@ -181,14 +181,14 @@ export function VideoBlockEditorSettings({
               variant="subtitle2"
               sx={{
                 color:
-                  selectedBlock?.source === VideoBlockSource.youTube
+                  selectedBlock?.mediaVideo?.__typename === 'YouTube'
                     ? 'action.disabled'
                     : undefined
               }}
             >
               {t('Aspect ratio')}
             </Typography>
-            {selectedBlock?.source === VideoBlockSource.youTube && (
+            {selectedBlock?.mediaVideo?.__typename === 'YouTube' && (
               <Typography variant="caption" color="action.disabled">
                 {t('This option is not available for YouTube videos')}
               </Typography>
@@ -196,7 +196,7 @@ export function VideoBlockEditorSettings({
           </Stack>
           <ToggleButtonGroup
             value={
-              selectedBlock?.source === VideoBlockSource.youTube
+              selectedBlock?.mediaVideo?.__typename === 'YouTube'
                 ? ObjectFit.fit
                 : values.objectFit
             }
@@ -206,7 +206,7 @@ export function VideoBlockEditorSettings({
               if (value != null) await setFieldValue('objectFit', value)
             }}
             aria-label="Object Fit"
-            disabled={selectedBlock?.source === VideoBlockSource.youTube}
+            disabled={selectedBlock?.mediaVideo?.__typename === 'YouTube'}
           >
             <ToggleButton
               sx={{

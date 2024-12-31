@@ -18,6 +18,7 @@ import {
 import { useBlocks } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
+import { VideoFields_mediaVideo } from '../Video/__generated__/VideoFields'
 import { VideoTriggerFields_triggerAction } from '../VideoTrigger/__generated__/VideoTriggerFields'
 
 import {
@@ -102,7 +103,7 @@ export interface VideoEventsProps {
   player: Player
   blockId: string
   videoTitle: string
-  source: VideoBlockSource
+  mediaVideo: VideoFields_mediaVideo | null
   videoId: string
   startAt: number | null
   endAt: number | null
@@ -113,7 +114,7 @@ export function VideoEvents({
   player,
   blockId,
   videoTitle,
-  source,
+  mediaVideo,
   videoId,
   startAt,
   endAt,
@@ -137,6 +138,22 @@ export function VideoEvents({
     VideoCollapseEventCreate,
     VideoCollapseEventCreateVariables
   >(VIDEO_COLLAPSE_EVENT_CREATE)
+
+  let source: VideoBlockSource | null = null
+  switch (mediaVideo?.__typename) {
+    case 'CloudflareVideo':
+      source = VideoBlockSource.cloudflare
+      break
+    case 'MuxVideo':
+      source = VideoBlockSource.mux
+      break
+    case 'YouTube':
+      source = VideoBlockSource.youTube
+      break
+    case 'Video':
+      source = VideoBlockSource.internal
+      break
+  }
 
   const plausible = usePlausible<JourneyPlausibleEvents>()
   const { blockHistory } = useBlocks()

@@ -68,7 +68,7 @@ function TemplateVideoPreviewItem({
               ? block?.mediaVideo?.variant?.hls
               : block?.mediaVideo?.id
           }
-          source={block?.source}
+          mediaVideo={block?.mediaVideo}
           poster={
             block?.mediaVideo?.__typename != 'Video'
               ? (block?.image as string)

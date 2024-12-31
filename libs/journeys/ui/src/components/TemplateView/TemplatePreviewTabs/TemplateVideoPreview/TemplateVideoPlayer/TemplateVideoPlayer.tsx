@@ -3,11 +3,11 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
-import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
+import { VideoFields_mediaVideo } from '../../../../Video/__generated__/VideoFields'
 
 export interface TemplateVideoPlayerProps {
   id?: string | null
-  source?: VideoBlockSource
+  mediaVideo?: VideoFields_mediaVideo | null
   poster?: string
   startAt: number
   endAt: number
@@ -15,7 +15,7 @@ export interface TemplateVideoPlayerProps {
 
 export function TemplateVideoPlayer({
   id,
-  source,
+  mediaVideo,
   poster,
   startAt = 0,
   endAt
@@ -96,7 +96,7 @@ export function TemplateVideoPlayer({
         playsInline
         style={{ height: '100%' }}
       >
-        {source === VideoBlockSource.cloudflare && id != null && (
+        {mediaVideo?.__typename === 'CloudflareVideo' && id != null && (
           <source
             src={`https://customer-${
               process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
@@ -104,10 +104,10 @@ export function TemplateVideoPlayer({
             type="application/x-mpegURL"
           />
         )}
-        {source === VideoBlockSource.internal && id != null && (
+        {mediaVideo?.__typename === 'Video' && id != null && (
           <source src={id} type="application/x-mpegURL" />
         )}
-        {source === VideoBlockSource.youTube && id != null && (
+        {mediaVideo?.__typename === 'YouTube' && id != null && (
           <source
             src={`https://www.youtube.com/embed/${id}?start=${startAt}&end=${endAt}`}
             type="video/youtube"

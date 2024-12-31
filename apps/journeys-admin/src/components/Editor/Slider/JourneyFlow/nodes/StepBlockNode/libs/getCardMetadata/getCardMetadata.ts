@@ -11,7 +11,6 @@ import {
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
-import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { getBackgroundImage } from '../getBackgroundImage'
 import { getCardHeadings } from '../getCardHeadings'
 import { getPriorityBlock } from '../getPriorityBlock'
@@ -48,14 +47,15 @@ function getVideoVariantLanguage(
 function getVideoDescription(videoBlock: VideoBlock): string {
   return (
     {
-      [VideoBlockSource.internal]: getVideoVariantLanguage(
+      ['Video']: getVideoVariantLanguage(
         videoBlock.videoVariantLanguageId,
         (videoBlock.mediaVideo as VideoFields_mediaVideo_Video)
           ?.variantLanguages
       ),
-      [VideoBlockSource.youTube]: 'YouTube Media',
-      [VideoBlockSource.cloudflare]: 'Uploaded Media'
-    }[videoBlock.source] ?? 'Internal Media'
+      ['YouTube']: 'YouTube Media',
+      ['CloudflareVideo']: 'Uploaded Media',
+      ['MuxVideo']: 'Uploaded Media'
+    }[videoBlock.mediaVideo?.__typename ?? ''] ?? 'Internal Media'
   )
 }
 

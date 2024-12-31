@@ -2,15 +2,12 @@ import { BaseHit, Hit } from 'instantsearch.js'
 import { SendEventForHits } from 'instantsearch.js/es/lib/utils'
 import { useInfiniteHits, useInstantSearch } from 'react-instantsearch'
 
-import { VideoBlockSource } from '../../../../__generated__/globalTypes'
-
 interface Video {
   id: string
   title?: string
   description?: string
   image?: string
   duration?: number
-  source: VideoBlockSource
 }
 
 export interface AlgoliaVideo extends Hit<BaseHit> {
@@ -34,8 +31,7 @@ export function transformItemsDefault(items: AlgoliaVideo[]): Video[] {
     title: videoVariant.titles[0],
     description: videoVariant.description[0],
     image: videoVariant.image,
-    duration: videoVariant.duration,
-    source: VideoBlockSource.internal
+    duration: videoVariant.duration
   }))
 }
 

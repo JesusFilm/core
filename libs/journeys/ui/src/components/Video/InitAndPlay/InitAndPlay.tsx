@@ -11,10 +11,10 @@ import Player from 'video.js/dist/types/player'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
-import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { TreeBlock, useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
+import { VideoFields_mediaVideo } from '../__generated__/VideoFields'
 
 interface InitAndPlayProps {
   videoRef: RefObject<HTMLVideoElement>
@@ -29,7 +29,7 @@ interface InitAndPlayProps {
   endAt: number | null
   autoplay: boolean | null
   posterBlock: TreeBlock<ImageFields> | undefined
-  source: VideoBlockSource
+  mediaVideo: VideoFields_mediaVideo | null
   setLoading: Dispatch<SetStateAction<boolean>>
   setShowPoster: Dispatch<SetStateAction<boolean>>
   setVideoEndTime: Dispatch<SetStateAction<number>>
@@ -49,7 +49,7 @@ export function InitAndPlay({
   endAt,
   autoplay,
   posterBlock,
-  source,
+  mediaVideo,
   setLoading,
   setShowPoster,
   setVideoEndTime,
@@ -81,7 +81,7 @@ export function InitAndPlay({
           autoplay:
             autoplay === true &&
             activeStep &&
-            source === VideoBlockSource.youTube
+            mediaVideo?.__typename === 'YouTube'
         })
       )
     }
@@ -94,7 +94,7 @@ export function InitAndPlay({
     videoRef,
     autoplay,
     activeStep,
-    source
+    mediaVideo
   ])
 
   // Initiate video player listeners

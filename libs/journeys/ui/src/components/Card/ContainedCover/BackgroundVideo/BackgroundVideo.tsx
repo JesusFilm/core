@@ -6,10 +6,7 @@ import Player from 'video.js/dist/types/player'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
-import {
-  VideoBlockObjectFit,
-  VideoBlockSource
-} from '../../../../../__generated__/globalTypes'
+import { VideoBlockObjectFit } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
 import { VideoFields } from '../../../Video/__generated__/VideoFields'
 
@@ -24,7 +21,6 @@ interface BackgroundVideoProps extends TreeBlock<VideoFields> {
 const StyledVideo = styled('video')(() => ({}))
 
 export function BackgroundVideo({
-  source,
   children,
   mediaVideo,
   videoId,
@@ -35,7 +31,7 @@ export function BackgroundVideo({
 }: BackgroundVideoProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player>()
-  const isYouTube = source === VideoBlockSource.youTube
+  const isYouTube = mediaVideo?.__typename === 'YouTube'
 
   // Initiate Video
   useEffect(() => {
@@ -94,14 +90,14 @@ export function BackgroundVideo({
         }
       })
     }
-  }, [playerRef, startAt, endAt, source, mediaVideo, videoId, setLoading])
+  }, [playerRef, startAt, endAt, mediaVideo, videoId, setLoading])
 
   useEffect(() => {
     if (videoRef.current != null) videoRef.current.pause()
   }, [])
 
   let videoFit: CSSProperties['objectFit']
-  if (source === VideoBlockSource.youTube) {
+  if (mediaVideo?.__typename === 'YouTube') {
     videoFit = 'contain'
   } else {
     switch (objectFit) {
@@ -156,7 +152,7 @@ export function BackgroundVideo({
           pointerEvents: 'none'
         }}
       >
-        {source === VideoBlockSource.cloudflare && videoId != null && (
+        {mediaVideo?.__typename === 'CloudflareVideo' && videoId != null && (
           <source
             src={`https://customer-${
               process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
@@ -168,7 +164,7 @@ export function BackgroundVideo({
           mediaVideo?.variant?.hls != null && (
             <source src={mediaVideo.variant.hls} type="application/x-mpegURL" />
           )}
-        {source === VideoBlockSource.youTube && videoId != null && (
+        {mediaVideo?.__typename === 'YouTube' && videoId != null && (
           <source
             src={`https://www.youtube.com/embed/${videoId}?start=${
               startAt ?? 0

@@ -68,18 +68,18 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
 
   let SourceContent
 
-  switch (selectedBlock?.source) {
-    case VideoBlockSource.internal:
+  switch (selectedBlock?.mediaVideo?.__typename) {
+    case 'Video':
       if (selectedBlock.videoId != null) {
         SourceContent = SourceFromLocal
       } else {
         SourceContent = SourceEmpty
       }
       break
-    case VideoBlockSource.youTube:
+    case 'YouTube':
       SourceContent = SourceFromYouTube
       break
-    case VideoBlockSource.cloudflare:
+    case 'CloudflareVideo':
       SourceContent = SourceFromCloudflare
       break
     default:

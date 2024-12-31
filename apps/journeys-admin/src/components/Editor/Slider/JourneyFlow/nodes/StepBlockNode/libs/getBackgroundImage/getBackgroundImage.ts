@@ -5,7 +5,6 @@ import {
   BlockFields_CardBlock as CardBlock,
   BlockFields_ImageBlock as ImageBlock
 } from '../../../../../../../../../__generated__/BlockFields'
-import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 
 export function getBackgroundImage(
   card?: TreeBlock<CardBlock>
@@ -22,9 +21,7 @@ export function getBackgroundImage(
 
   if (coverBlock?.__typename === 'VideoBlock') {
     bgImage =
-      (coverBlock.source !== VideoBlockSource.youTube &&
-      coverBlock.source !== VideoBlockSource.cloudflare &&
-      coverBlock.source !== VideoBlockSource.mux
+      (coverBlock.mediaVideo?.__typename === 'Video'
         ? // Use posterBlockId image or default poster image on video
           coverBlock?.posterBlockId != null
           ? (
