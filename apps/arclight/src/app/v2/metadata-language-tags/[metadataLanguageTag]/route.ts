@@ -86,10 +86,10 @@ export async function GET(
       nameNative: language?.name[0].value,
       _links: {
         self: {
-          href: `https://api.arclight.org/v2/metadata-language-tags/${language.bcp47}?apiKey=${apiKey}`
+          href: `http://api.arclight.org/v2/metadata-language-tags/${language.bcp47}?apiKey=${apiKey}`
         },
         metadataLanguageTags: {
-          href: `https://api.arclight.org/v2/metadata-language-tags?apiKey=${apiKey}`
+          href: `http://api.arclight.org/v2/metadata-language-tags?apiKey=${apiKey}`
         }
       }
     }

@@ -77,10 +77,10 @@ export async function GET(
         },
         _links: {
           self: {
-            href: `https://api.arclight.org/v2/taxonomies/${taxonomy.category}?${queryString}`
+            href: `http://api.arclight.org/v2/taxonomies/${taxonomy.category}?${queryString}`
           },
           taxonomies: {
-            href: `https://api.arclight.org/v2/taxonomies?${queryString}`
+            href: `http://api.arclight.org/v2/taxonomies?${queryString}`
           }
         }
       }
