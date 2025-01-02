@@ -2975,6 +2975,11 @@ export type QueryVideoEditionArgs = {
 };
 
 
+export type QueryVideoVariantsArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
+};
+
+
 export type QueryVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -3928,6 +3933,21 @@ export type VideoVariantArgs = {
   languageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
+
+export type VideoVariantLanguagesCountArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
+};
+
+
+export type VideoVariantLanguagesWithSlugArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
+};
+
+
+export type VideoVariantsArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
+};
+
 export type VideoBlock = Block & {
   __typename?: 'VideoBlock';
   /** action that should be performed when the video ends */
@@ -4516,6 +4536,7 @@ export type VideoVariant = {
   id: Scalars['ID']['output'];
   language: Language;
   lengthInMilliseconds: Scalars['Int']['output'];
+  published: Scalars['Boolean']['output'];
   share?: Maybe<Scalars['String']['output']>;
   /** slug is a permanent link to the video variant. */
   slug: Scalars['String']['output'];
@@ -4578,6 +4599,10 @@ export type VideoVariantDownloadUpdateInput = {
   url?: InputMaybe<Scalars['String']['input']>;
   videoVariantId?: InputMaybe<Scalars['String']['input']>;
   width?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type VideoVariantFilter = {
+  onlyPublished?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type VideoVariantUpdateInput = {

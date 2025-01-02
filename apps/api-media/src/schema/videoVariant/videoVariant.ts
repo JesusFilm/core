@@ -5,6 +5,7 @@ import { builder } from '../builder'
 import { Language } from '../language'
 
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
+import { VideoVariantFilter } from './inputs/videoVariantFilter'
 import { VideoVariantUpdateInput } from './inputs/videoVariantUpdate'
 
 builder.prismaObject('VideoVariant', {
@@ -75,22 +76,17 @@ builder.prismaObject('VideoVariant', {
 })
 
 builder.queryFields((t) => ({
-  adminVideoVariants: t.withAuth({ isPublisher: true }).prismaField({
-    type: ['VideoVariant'],
-    nullable: false,
-    resolve: async (query) =>
-      await prisma.videoVariant.findMany({
-        ...query
-      })
-  }),
   videoVariants: t.prismaField({
     type: ['VideoVariant'],
     nullable: false,
-    resolve: async (query) =>
+    args: {
+      input: t.arg({ type: VideoVariantFilter, required: false })
+    },
+    resolve: async (query, _parent, { input }) =>
       await prisma.videoVariant.findMany({
         ...query,
         where: {
-          published: true
+          published: input?.onlyPublished === false ? undefined : true
         }
       })
   })

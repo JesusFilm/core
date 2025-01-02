@@ -11,6 +11,7 @@ import { ImageAspectRatio } from '../cloudflare/image/enums'
 import { IdType, IdTypeShape } from '../enums/idType'
 import { Language, LanguageWithSlug } from '../language'
 import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
+import { VideoVariantFilter } from '../videoVariant/inputs/videoVariantFilter'
 
 import { VideoLabel } from './enums/videoLabel'
 import { VideoCreateInput } from './inputs/videoCreate'
@@ -188,8 +189,16 @@ const Video = builder.prismaObject('Video', {
     }),
     variantLanguagesCount: t.int({
       nullable: false,
-      resolve: async ({ id: videoId }) =>
-        await prisma.videoVariant.count({ where: { videoId } })
+      args: {
+        input: t.arg({ type: VideoVariantFilter, required: false })
+      },
+      resolve: async ({ id: videoId }, { input }) =>
+        await prisma.videoVariant.count({
+          where: {
+            videoId,
+            published: input?.onlyPublished === false ? undefined : true
+          }
+        })
     }),
     slug: t.string({
       nullable: false,
@@ -237,10 +246,16 @@ const Video = builder.prismaObject('Video', {
     variantLanguagesWithSlug: t.field({
       type: [LanguageWithSlug],
       nullable: false,
-      resolve: async ({ id: videoId }) =>
+      args: {
+        input: t.arg({ type: VideoVariantFilter, required: false })
+      },
+      resolve: async ({ id: videoId }, { input }) =>
         (
           await prisma.videoVariant.findMany({
-            where: { videoId },
+            where: {
+              videoId,
+              published: input?.onlyPublished === false ? undefined : true
+            },
             select: { languageId: true, slug: true }
           })
         ).map(({ slug, languageId: id }) => ({
@@ -251,10 +266,16 @@ const Video = builder.prismaObject('Video', {
     variants: t.prismaField({
       type: ['VideoVariant'],
       nullable: false,
-      resolve: async (query, parent) => {
+      args: {
+        input: t.arg({ type: VideoVariantFilter, required: false })
+      },
+      resolve: async (query, parent, { input }) => {
         const res = await prisma.videoVariant.findMany({
           ...query,
-          where: { videoId: parent.id }
+          where: {
+            videoId: parent.id,
+            published: input?.onlyPublished === false ? undefined : true
+          }
         })
         // languageId is a string, so we need to convert it to a number to sort it correctly
         return orderBy(res, (variant) => +variant.languageId, 'asc')
