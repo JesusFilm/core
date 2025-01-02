@@ -37,9 +37,14 @@ const GET_LANGUAGE = graphql(`
         bitrate
         codec
       }
-      speakerCount
-      countriesCount
-      primaryCountryId
+      countryLanguages {
+        country {
+          id
+        }
+        speakers
+        primary
+        suggested
+      }
       seriesCount
       featureFilmCount
       shortFilmCount
@@ -115,11 +120,14 @@ export async function GET(
     bcp47: language.bcp47,
     counts: {
       speakerCount: {
-        value: Number(language.speakerCount),
+        value: language.countryLanguages
+          .filter(({ suggested }) => !suggested)
+          .reduce((acc, { speakers }) => acc + speakers, 0),
         description: 'Number of speakers'
       },
       countriesCount: {
-        value: language.countriesCount,
+        value: language.countryLanguages.filter(({ suggested }) => !suggested)
+          .length,
         description: 'Number of countries'
       },
       ...(language.seriesCount > 0 && {
@@ -150,7 +158,9 @@ export async function GET(
             sizeInBytes: language.audioPreview.size
           }
         : null,
-    primaryCountryId: language.primaryCountryId ?? '',
+    primaryCountryId:
+      language.countryLanguages.find(({ primary }) => primary)?.country.id ??
+      '',
     name: language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
     nameNative: language.nameNative.find(({ primary }) => primary)?.value,
     alternateLanguageName: '',

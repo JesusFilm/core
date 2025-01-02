@@ -51,12 +51,17 @@ const GET_LANGUAGES = graphql(`
         bitrate
         codec
       }
-      speakerCount
-      countriesCount
+      countryLanguages {
+        country {
+          id
+        }
+        speakers
+        primary
+        suggested
+      }
       seriesCount
       featureFilmCount
       shortFilmCount
-      primaryCountryId
     }
   }
 `)
@@ -64,6 +69,7 @@ const GET_LANGUAGES = graphql(`
 export async function GET(request: NextRequest): Promise<Response> {
   const query = request.nextUrl.searchParams
 
+  const apiKey = query.get('apiKey')
   const page = Number(query.get('page') ?? 1)
   const limit = Number(query.get('limit') ?? 10)
   const offset = (page - 1) * limit
@@ -135,11 +141,14 @@ export async function GET(request: NextRequest): Promise<Response> {
       bcp47: language.bcp47 ?? '',
       counts: {
         speakerCount: {
-          value: Number(language.speakerCount),
+          value: language.countryLanguages
+            .filter(({ suggested }) => !suggested)
+            .reduce((acc, { speakers }) => acc + speakers, 0),
           description: 'Number of speakers'
         },
         countriesCount: {
-          value: language.countriesCount,
+          value: language.countryLanguages.filter(({ suggested }) => !suggested)
+            .length,
           description: 'Number of countries'
         },
         ...(language.seriesCount != 0
@@ -177,7 +186,9 @@ export async function GET(request: NextRequest): Promise<Response> {
             }
           }
         : {}),
-      primaryCountryId: language.primaryCountryId ?? '',
+      primaryCountryId:
+        language.countryLanguages.find(({ primary }) => primary)?.country.id ??
+        '',
       name: language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
       nameNative:
         language.nameNative.find(({ primary }) => primary)?.value ??
@@ -187,7 +198,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
       _links: {
         self: {
-          href: `/v2/media-languages/${language.id}`
+          href: `http://api.arclight.org/v2/media-languages/${language.id}?apiKey=${apiKey}`
         }
       }
     }))
