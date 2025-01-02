@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import { getBaseUrl } from '../../framework/helpers'
 import { getObjectDiff } from '../../utils/media-component-utils'
-import testData from '../../utils/testData.json'
+import { apiKey, languageId } from '../../utils/testData.json'
 
 test('compare single media language between environments', async ({
   request
@@ -10,17 +10,13 @@ test('compare single media language between environments', async ({
   const baseUrl = await getBaseUrl()
   const compareUrl = 'https://api.arclight.org'
   const queryParams = new URLSearchParams({
-    apiKey: testData.apiKey,
+    apiKey,
     metadataLanguageTags: 'en'
   })
 
   const [baseResponse, compareResponse] = await Promise.all([
-    request.get(
-      `${baseUrl}/v2/media-languages/${testData.languageId}?${queryParams}`
-    ),
-    request.get(
-      `${compareUrl}/v2/media-languages/${testData.languageId}?${queryParams}`
-    )
+    request.get(`${baseUrl}/v2/media-languages/${languageId}?${queryParams}`),
+    request.get(`${compareUrl}/v2/media-languages/${languageId}?${queryParams}`)
   ])
 
   expect(await baseResponse.ok()).toBe(true)
@@ -33,9 +29,8 @@ test('compare single media language between environments', async ({
   delete compareDataJson._links
 
   const diffs = getObjectDiff(baseDataJson, compareDataJson)
-
   expect(
     diffs,
-    `Differences found in media language ${testData.languageId}`
+    `Differences found in media language ${languageId}`
   ).toHaveLength(0)
 })
