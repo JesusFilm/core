@@ -18,7 +18,7 @@ const countryLanguageSchema = z
     order: z.number().nullable()
   })
   .transform((value) => ({
-    ...omit(value, ['countryCode', 'display_speakers', 'suggested']),
+    ...omit(value, ['countryCode', 'display_speakers']),
     speakers: value.speakers ?? 0,
     primary: value.primary === 1,
     countryId: value.countryCode,
@@ -46,9 +46,10 @@ export async function importOne(row: unknown): Promise<void> {
 
   await prisma.countryLanguage.upsert({
     where: {
-      languageId_countryId: {
+      languageId_countryId_suggested: {
         languageId: countryLanguage.languageId,
-        countryId: countryLanguage.countryId
+        countryId: countryLanguage.countryId,
+        suggested: countryLanguage.suggested
       }
     },
     update: countryLanguage,
