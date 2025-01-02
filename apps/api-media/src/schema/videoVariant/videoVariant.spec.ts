@@ -432,7 +432,8 @@ describe('videoVariant', () => {
             slug: 'videoSlug',
             videoId: 'videoId',
             share: 'share',
-            downloadable: true
+            downloadable: true,
+            published: true
           }
         })
         expect(result).toHaveProperty('data.videoVariantCreate', {

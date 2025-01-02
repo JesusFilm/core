@@ -916,6 +916,7 @@ input VideoVariantCreateInput {
   languageId: String!
   slug: String!
   downloadable: Boolean!
+  published: Boolean = true
 }
 
 type VideoVariantDownload {
@@ -968,6 +969,7 @@ input VideoVariantUpdateInput {
   languageId: String
   slug: String
   downloadable: Boolean
+  published: Boolean
 }
 
 input VideosFilter {

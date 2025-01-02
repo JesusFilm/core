@@ -102,7 +102,10 @@ builder.mutationFields((t) => ({
     resolve: async (query, _parent, { input }) => {
       return await prisma.videoVariant.create({
         ...query,
-        data: input
+        data: {
+          ...input,
+          published: input.published ?? true
+        }
       })
     }
   }),
@@ -126,7 +129,8 @@ builder.mutationFields((t) => ({
           slug: input.slug ?? undefined,
           videoId: input.videoId ?? undefined,
           edition: input.edition ?? undefined,
-          downloadable: input.downloadable ?? undefined
+          downloadable: input.downloadable ?? undefined,
+          published: input.published ?? undefined
         }
       })
     }
