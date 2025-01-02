@@ -72,39 +72,7 @@ export const Language = builder.prismaObject('Language', {
       }
     }),
     countryLanguages: t.relation('countryLanguages', { nullable: false }),
-    audioPreview: t.relation('audioPreview'),
-    primaryCountryId: t.string({
-      resolve: async (parent) => {
-        const primaryCountryLanguage = await prisma.countryLanguage.findFirst({
-          where: {
-            languageId: parent.id,
-            primary: true
-          },
-          orderBy: {
-            speakers: 'desc'
-          }
-        })
-        return primaryCountryLanguage?.countryId ?? null
-      }
-    }),
-    speakerCount: t.string({
-      nullable: false,
-      resolve: async (parent) => {
-        const result = await prisma.countryLanguage.aggregate({
-          where: { languageId: parent.id },
-          _sum: { speakers: true }
-        })
-        return result._sum.speakers?.toString() ?? '0'
-      }
-    }),
-    countriesCount: t.int({
-      nullable: false,
-      resolve: async (parent) => {
-        return await prisma.countryLanguage.count({
-          where: { languageId: parent.id }
-        })
-      }
-    })
+    audioPreview: t.relation('audioPreview')
   })
 })
 
