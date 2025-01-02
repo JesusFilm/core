@@ -177,6 +177,7 @@ const Video = builder.prismaObject('Video', {
     variantLanguages: t.field({
       type: [Language],
       nullable: false,
+      args: {},
       resolve: async ({ id: videoId }) =>
         (
           await prisma.videoVariant.findMany({

@@ -40,6 +40,7 @@ describe('videoVariant', () => {
           language {
             id
           }
+          published
           subtitle(languageId: $languageId, primary: $primary) {
             id
             value
@@ -83,6 +84,7 @@ describe('videoVariant', () => {
               videoVariantId: 'videoVariantId'
             }
           ],
+          published: true,
           videoEdition: {
             id: 'videoEditionId',
             name: 'videoEditionName'
@@ -372,6 +374,7 @@ describe('videoVariant', () => {
           slug: 'videoSlug',
           videoId: 'videoId',
           languageId: 'languageId',
+          published: true,
           share: 'share',
           downloadable: true
         })
@@ -461,6 +464,7 @@ describe('videoVariant', () => {
           slug: 'videoSlug',
           videoId: 'videoId',
           languageId: 'languageId',
+          published: true,
           share: 'share',
           downloadable: false
         })
@@ -550,6 +554,7 @@ describe('videoVariant', () => {
           slug: 'videoSlug',
           videoId: 'videoId',
           languageId: 'languageId',
+          published: true,
           share: 'share',
           downloadable: true
         })

@@ -29,6 +29,7 @@ builder.prismaObject('VideoVariant', {
       nullable: false,
       resolve: ({ languageId: id }) => ({ id })
     }),
+    published: t.exposeBoolean('published', { nullable: false }),
     // TODO: make non-nullable once integirity checked
     videoEdition: t.relation('videoEdition', { nullable: true }),
     subtitle: t.prismaField({
@@ -74,12 +75,23 @@ builder.prismaObject('VideoVariant', {
 })
 
 builder.queryFields((t) => ({
-  videoVariants: t.prismaField({
+  adminVideoVariants: t.withAuth({ isPublisher: true }).prismaField({
     type: ['VideoVariant'],
     nullable: false,
     resolve: async (query) =>
       await prisma.videoVariant.findMany({
         ...query
+      })
+  }),
+  videoVariants: t.prismaField({
+    type: ['VideoVariant'],
+    nullable: false,
+    resolve: async (query) =>
+      await prisma.videoVariant.findMany({
+        ...query,
+        where: {
+          published: true
+        }
       })
   })
 }))

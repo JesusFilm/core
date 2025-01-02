@@ -759,6 +759,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
   videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
+  adminVideoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
   videoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
@@ -2582,6 +2583,7 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   duration: Int!
   lengthInMilliseconds: Int!
   language: Language!
+  published: Boolean!
   videoEdition: VideoEdition
   subtitle(languageId: ID, primary: Boolean) : [VideoSubtitle!]!
   subtitleCount: Int!
