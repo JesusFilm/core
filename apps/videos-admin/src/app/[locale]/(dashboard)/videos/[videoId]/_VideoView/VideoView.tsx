@@ -98,6 +98,7 @@ export function VideoView(): ReactElement {
               <TabContainer value={tabValue} index={1}>
                 {showVideoChildren && videoLabel != null && (
                   <VideoChildren
+                    videoId={video?.id ?? ''}
                     childVideos={video?.children ?? []}
                     label={videoLabel}
                   />
