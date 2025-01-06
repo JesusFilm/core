@@ -967,13 +967,7 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   snippet(languageId: ID, primary: Boolean) : [VideoSnippet!]! @join__field(graph: API_MEDIA) 
   description(languageId: ID, primary: Boolean) : [VideoDescription!]! @join__field(graph: API_MEDIA) 
   studyQuestions(languageId: ID, primary: Boolean) : [VideoStudyQuestion!]! @join__field(graph: API_MEDIA) 
-  image: String @join__field(graph: API_MEDIA)  @deprecated(reason: "use images.mobileCinematicHigh") 
   imageAlt(languageId: ID, primary: Boolean) : [VideoImageAlt!]! @join__field(graph: API_MEDIA) 
-  videoStill: String @join__field(graph: API_MEDIA)  @deprecated(reason: "use images.videoStill") 
-  thumbnail: String @join__field(graph: API_MEDIA)  @deprecated(reason: "use images.thumbnail") 
-  mobileCinematicHigh: String @join__field(graph: API_MEDIA)  @deprecated(reason: "use images.mobileCinematicHigh") 
-  mobileCinematicLow: String @join__field(graph: API_MEDIA)  @deprecated(reason: "use images.mobileCinematicLow") 
-  mobileCinematicVeryLow: String @join__field(graph: API_MEDIA)  @deprecated(reason: "use images.mobileCinematicVeryLow") 
   variantLanguages: [Language!]! @join__field(graph: API_MEDIA) 
   variantLanguagesCount: Int! @join__field(graph: API_MEDIA) 
   """
