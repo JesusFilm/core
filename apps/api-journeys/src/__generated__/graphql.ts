@@ -1299,6 +1299,11 @@ export type Mutation = {
   /** Updates template */
   journeyTemplate: Journey;
   journeyUpdate: Journey;
+  /**
+   * Creates a JourneyViewEvent, returns null if attempting to create another
+   * JourneyViewEvent with the same userId, journeyId, and within the same 24hr
+   * period of the previous JourneyViewEvent
+   */
   journeyViewEventCreate?: Maybe<JourneyViewEvent>;
   /** Sets journeys statuses to archived */
   journeysArchive?: Maybe<Array<Maybe<Journey>>>;
@@ -3973,6 +3978,7 @@ export type VideoBlock = Block & {
   /**
    * internal source videos: video is only populated when videoID and
    * videoVariantLanguageId are present
+   * @deprecated use mediaVideo union instead
    */
   video?: Maybe<Video>;
   /**
