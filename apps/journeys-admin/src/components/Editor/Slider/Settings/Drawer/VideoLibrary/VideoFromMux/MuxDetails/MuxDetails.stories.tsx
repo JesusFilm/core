@@ -13,7 +13,7 @@ const MuxDetailsStory: Meta<typeof MuxDetails> = {
   ...journeysAdminConfig,
   component: MuxDetails,
   title:
-    'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromCloudflare/CloudflareDetails',
+    'Journeys-Admin/Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux/MuxDetails',
   argTypes: { onSelect: { action: 'clicked' } }
 }
 
