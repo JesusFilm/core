@@ -141,9 +141,6 @@ const Video = builder.prismaObject('Video', {
         orderBy: { order: 'asc' }
       })
     }),
-    image: t.exposeString('image', {
-      deprecationReason: 'use images.mobileCinematicHigh'
-    }),
     imageAlt: t.relation('imageAlt', {
       nullable: false,
       args: {
@@ -159,21 +156,6 @@ const Video = builder.prismaObject('Video', {
         },
         orderBy: { primary: 'desc' }
       })
-    }),
-    videoStill: t.exposeString('videoStill', {
-      deprecationReason: 'use images.videoStill'
-    }),
-    thumbnail: t.exposeString('thumbnail', {
-      deprecationReason: 'use images.thumbnail'
-    }),
-    mobileCinematicHigh: t.exposeString('mobileCinematicHigh', {
-      deprecationReason: 'use images.mobileCinematicHigh'
-    }),
-    mobileCinematicLow: t.exposeString('mobileCinematicLow', {
-      deprecationReason: 'use images.mobileCinematicLow'
-    }),
-    mobileCinematicVeryLow: t.exposeString('mobileCinematicVeryLow', {
-      deprecationReason: 'use images.mobileCinematicVeryLow'
     }),
     variantLanguages: t.field({
       type: [Language],
