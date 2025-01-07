@@ -3867,6 +3867,7 @@ export type Video = {
   variantLanguagesCount: Scalars['Int']['output'];
   variantLanguagesWithSlug: Array<LanguageWithSlug>;
   variants: Array<VideoVariant>;
+  videoEditions: Array<VideoEdition>;
 };
 
 
@@ -4194,8 +4195,9 @@ export type VideoEdition = {
 };
 
 export type VideoEditionCreateInput = {
-  id: Scalars['ID']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  name: Scalars['String']['input'];
+  videoId: Scalars['String']['input'];
 };
 
 export type VideoEditionUpdateInput = {
@@ -4426,7 +4428,7 @@ export type VideoSubtitle = {
   primary: Scalars['Boolean']['output'];
   srtSrc?: Maybe<Scalars['String']['output']>;
   value: Scalars['String']['output'];
-  videoEdition?: Maybe<VideoEdition>;
+  videoEdition: VideoEdition;
   vttSrc?: Maybe<Scalars['String']['output']>;
 };
 
@@ -4515,7 +4517,7 @@ export type VideoVariant = {
   slug: Scalars['String']['output'];
   subtitle: Array<VideoSubtitle>;
   subtitleCount: Scalars['Int']['output'];
-  videoEdition?: Maybe<VideoEdition>;
+  videoEdition: VideoEdition;
   videoId?: Maybe<Scalars['ID']['output']>;
 };
 

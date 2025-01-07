@@ -79,8 +79,8 @@ export default interface PrismaTypes {
         Where: Prisma.VideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "VideoEdition";
-        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "VideoEdition";
+        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions";
+        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions";
         Relations: {
             title: {
                 Shape: VideoTitle[];
@@ -147,7 +147,7 @@ export default interface PrismaTypes {
                 Name: "CloudflareR2";
                 Nullable: false;
             };
-            VideoEdition: {
+            videoEditions: {
                 Shape: VideoEdition[];
                 Name: "VideoEdition";
                 Nullable: false;
@@ -213,9 +213,9 @@ export default interface PrismaTypes {
                 Nullable: false;
             };
             videoEdition: {
-                Shape: VideoEdition | null;
+                Shape: VideoEdition;
                 Name: "VideoEdition";
-                Nullable: true;
+                Nullable: false;
             };
             video: {
                 Shape: Video | null;
@@ -238,9 +238,9 @@ export default interface PrismaTypes {
         ListRelations: "videoVariants" | "videoSubtitles";
         Relations: {
             video: {
-                Shape: Video | null;
+                Shape: Video;
                 Name: "Video";
-                Nullable: true;
+                Nullable: false;
             };
             videoVariants: {
                 Shape: VideoVariant[];
@@ -273,9 +273,9 @@ export default interface PrismaTypes {
                 Nullable: false;
             };
             videoEdition: {
-                Shape: VideoEdition | null;
+                Shape: VideoEdition;
                 Name: "VideoEdition";
-                Nullable: true;
+                Nullable: false;
             };
         };
     };

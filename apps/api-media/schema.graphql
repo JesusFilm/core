@@ -697,6 +697,7 @@ type Video
   primaryLanguageId: ID!
   published: Boolean!
   cloudflareAssets: [CloudflareR2!]!
+  videoEditions: [VideoEdition!]!
   title(languageId: ID, primary: Boolean): [VideoTitle!]!
   snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
   description(languageId: ID, primary: Boolean): [VideoDescription!]!
@@ -752,8 +753,9 @@ type VideoEdition {
 }
 
 input VideoEditionCreateInput {
-  id: ID!
-  name: String
+  id: ID
+  name: String!
+  videoId: String!
 }
 
 input VideoEditionUpdateInput {
@@ -824,7 +826,7 @@ type VideoSubtitle {
   srtSrc: String
   value: String!
   language: Language!
-  videoEdition: VideoEdition
+  videoEdition: VideoEdition!
 }
 
 input VideoSubtitleCreateInput {
@@ -889,7 +891,7 @@ type VideoVariant {
   duration: Int!
   lengthInMilliseconds: Int!
   language: Language!
-  videoEdition: VideoEdition
+  videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
   subtitleCount: Int!
 

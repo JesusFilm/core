@@ -10,6 +10,7 @@ import {
   Prisma,
   Video,
   VideoDescription,
+  VideoEdition,
   VideoImageAlt,
   VideoLabel,
   VideoSnippet,
@@ -51,6 +52,7 @@ describe('video', () => {
     images: CloudflareImage[]
     cloudflareAssets: CloudflareR2[]
     variants: VideoVariant[]
+    videoEditions: VideoEdition[]
   }
 
   const children: Video[] = [
@@ -256,6 +258,7 @@ describe('video', () => {
           updatedAt: new Date()
         }
       ],
+      videoEditions: [{ id: 'edition', name: 'base', videoId: 'videoId' }],
       variants: [
         {
           id: 'variantId2',
@@ -416,6 +419,9 @@ describe('video', () => {
           cloudflareAssets {
             id
           }
+          videoEditions {
+            id
+          }
         }
       }
     `)
@@ -486,6 +492,7 @@ describe('video', () => {
             value: 'value'
           }
         ],
+        videoEditions: [{ id: 'edition' }],
         subtitles: [
           {
             edition: 'edition',
@@ -614,6 +621,7 @@ describe('video', () => {
         take: 100,
         where: { published: true },
         include: {
+          videoEditions: true,
           bibleCitation: {
             orderBy: {
               order: 'asc'
@@ -809,6 +817,7 @@ describe('video', () => {
           }
         },
         include: {
+          videoEditions: true,
           bibleCitation: {
             orderBy: {
               order: 'asc'
