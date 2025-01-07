@@ -438,9 +438,9 @@ export class VideoBlockResolver {
     }
 
     if (data.getMuxVideo.playbackId == null) {
-      throw new GraphQLError('playbackId cannot be found on Mux', {
-        extensions: { code: 'NOT_FOUND' }
-      })
+      return {
+        title: data.getMuxVideo.id
+      }
     }
     return {
       title: data.getMuxVideo.id,
