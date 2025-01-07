@@ -356,12 +356,6 @@ describe('video', () => {
               id
             }
           }
-          thumbnail
-          videoStill
-          mobileCinematicHigh
-          mobileCinematicLow
-          mobileCinematicVeryLow
-          image
           imageAlt(languageId: $languageId, primary: $primary) {
             id
             value
@@ -459,12 +453,6 @@ describe('video', () => {
           }
         ],
         id: 'videoId',
-        thumbnail: null,
-        videoStill: null,
-        mobileCinematicHigh: null,
-        mobileCinematicLow: null,
-        mobileCinematicVeryLow: null,
-        image: null,
         imageAlt: [
           {
             id: 'imageAltId',
@@ -1099,12 +1087,6 @@ describe('video', () => {
               id
             }
           }
-          thumbnail
-          videoStill
-          mobileCinematicHigh
-          mobileCinematicLow
-          mobileCinematicVeryLow
-          image
           imageAlt(languageId: $languageId, primary: $primary) {
             id
             value
@@ -1192,12 +1174,6 @@ describe('video', () => {
           }
         ],
         id: 'videoId',
-        thumbnail: null,
-        videoStill: null,
-        mobileCinematicHigh: null,
-        mobileCinematicLow: null,
-        mobileCinematicVeryLow: null,
-        image: null,
         imageAlt: [
           {
             id: 'imageAltId',
