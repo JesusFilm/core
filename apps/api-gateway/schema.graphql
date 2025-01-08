@@ -764,7 +764,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
   videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
-  videoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
+  videoVariants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
   me(input: MeInput) : User @join__field(graph: API_USERS) 
@@ -970,7 +970,7 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   studyQuestions(languageId: ID, primary: Boolean) : [VideoStudyQuestion!]! @join__field(graph: API_MEDIA) 
   imageAlt(languageId: ID, primary: Boolean) : [VideoImageAlt!]! @join__field(graph: API_MEDIA) 
   variantLanguages: [Language!]! @join__field(graph: API_MEDIA) 
-  variantLanguagesCount: Int! @join__field(graph: API_MEDIA) 
+  variantLanguagesCount(input: VideoVariantFilter) : Int! @join__field(graph: API_MEDIA) 
   """
   slug is a permanent link to the video.
   """
@@ -982,8 +982,8 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   """
   childrenCount: Int! @join__field(graph: API_MEDIA) 
   parents: [Video!]! @join__field(graph: API_MEDIA) 
-  variantLanguagesWithSlug: [LanguageWithSlug!]! @join__field(graph: API_MEDIA) 
-  variants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
+  variantLanguagesWithSlug(input: VideoVariantFilter) : [LanguageWithSlug!]! @join__field(graph: API_MEDIA) 
+  variants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   subtitles(languageId: ID, primary: Boolean, edition: String) : [VideoSubtitle!]! @join__field(graph: API_MEDIA) 
   variant(languageId: ID) : VideoVariant @join__field(graph: API_MEDIA) 
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
@@ -2582,6 +2582,7 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   duration: Int!
   lengthInMilliseconds: Int!
   language: Language!
+  published: Boolean!
   videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean) : [VideoSubtitle!]!
   subtitleCount: Int!
@@ -4226,6 +4227,7 @@ input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {
   languageId: String!
   slug: String!
   downloadable: Boolean!
+  published: Boolean = true
 }
 
 input VideoVariantDownloadCreateInput @join__type(graph: API_MEDIA)  {
@@ -4248,6 +4250,10 @@ input VideoVariantDownloadUpdateInput @join__type(graph: API_MEDIA)  {
   url: String
 }
 
+input VideoVariantFilter @join__type(graph: API_MEDIA)  {
+  onlyPublished: Boolean = true
+}
+
 input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
   id: String!
   videoId: String
@@ -4260,6 +4266,7 @@ input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
   languageId: String
   slug: String
   downloadable: Boolean
+  published: Boolean
 }
 
 input VideosFilter @join__type(graph: API_MEDIA)  {

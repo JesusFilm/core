@@ -271,7 +271,8 @@ describe('video', () => {
           downloadable: true,
           duration: null,
           lengthInMilliseconds: null,
-          share: null
+          share: null,
+          published: true
         },
         {
           id: 'variantId1',
@@ -284,7 +285,8 @@ describe('video', () => {
           downloadable: true,
           duration: null,
           lengthInMilliseconds: null,
-          share: null
+          share: null,
+          published: false
         }
       ]
     }
@@ -316,6 +318,7 @@ describe('video', () => {
         $limit: Int
         $where: VideosFilter
         $aspectRatio: ImageAspectRatio
+        $input: VideoVariantFilter
       ) {
         videos(offset: $offset, limit: $limit, where: $where) {
           id
@@ -405,7 +408,7 @@ describe('video', () => {
           variant(languageId: $languageId) {
             id
           }
-          variants {
+          variants(input: $input) {
             id
             language {
               id

@@ -182,6 +182,7 @@ model VideoVariant {
   duration             Int?
   lengthInMilliseconds Int?
   languageId           String
+  published            Boolean                @default(true)
   edition              String                 @default("base")
   videoEdition         VideoEdition           @relation(fields: [edition, videoId], references: [name, videoId])
   slug                 String                 @unique
