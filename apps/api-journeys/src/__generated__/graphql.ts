@@ -1125,17 +1125,14 @@ export type Language = {
   __typename?: 'Language';
   audioPreview?: Maybe<AudioPreview>;
   bcp47?: Maybe<Scalars['String']['output']>;
-  countriesCount: Scalars['Int']['output'];
   countryLanguages: Array<CountryLanguage>;
   featureFilmCount: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
   name: Array<LanguageName>;
-  primaryCountryId?: Maybe<Scalars['String']['output']>;
   seriesCount: Scalars['Int']['output'];
   shortFilmCount: Scalars['Int']['output'];
   slug?: Maybe<Scalars['String']['output']>;
-  speakerCount: Scalars['String']['output'];
 };
 
 
@@ -2713,6 +2710,7 @@ export type QueryBlocksArgs = {
 
 
 export type QueryCountriesArgs = {
+  ids?: InputMaybe<Array<Scalars['ID']['input']>>;
   term?: InputMaybe<Scalars['String']['input']>;
 };
 
