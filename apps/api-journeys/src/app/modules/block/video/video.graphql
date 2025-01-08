@@ -60,7 +60,7 @@ type VideoBlock implements Block {
   internal source videos: video is only populated when videoID and
   videoVariantLanguageId are present
   """
-  video: Video
+  video: Video @deprecated(reason: "use mediaVideo union instead")
   """
   internal source videos: videoId and videoVariantLanguageId both need to be set
   to select a video.
