@@ -117,6 +117,7 @@ const config = [
       'import/no-named-default': 'error',
       'import/no-anonymous-default-export': 'error',
       'import/dynamic-import-chunkname': 'error',
+      'no-constant-binary-expression': 'off',
       'no-extra-semi': 'off',
       'no-empty': 'warn',
       'no-magic-numbers': 'off',
