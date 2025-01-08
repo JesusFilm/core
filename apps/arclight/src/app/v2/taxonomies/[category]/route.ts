@@ -55,30 +55,8 @@ export async function GET(
     )
   }
 
-  const terms: Record<string, { label: string; metadataLanguageTag: string }> =
-    {}
-
-  // Sort taxonomies by term before processing
-  const sortedTaxonomies = [...data.taxonomies].sort((a, b) =>
-    a.term.localeCompare(b.term)
-  )
-
-  sortedTaxonomies.forEach((taxonomy) => {
-    if (taxonomy.name.length === 0) return
-
-    const matchingName = findBestMatchingName(
-      taxonomy.name as Array<{ label: string; language: { bcp47: string } }>,
-      metadataLanguageTags
-    )
-
-    terms[taxonomy.term] = {
-      label: matchingName.label,
-      metadataLanguageTag: matchingName.language.bcp47
-    }
-  })
-
   const response = {
-    terms,
+    terms: {} as Record<string, { label: string; metadataLanguageTag: string }>,
     _links: {
       self: {
         href: `http://api.arclight.org/v2/taxonomies/${category}?apiKey=${apiKey}`
@@ -88,6 +66,20 @@ export async function GET(
       }
     }
   }
+
+  data.taxonomies.forEach((taxonomy) => {
+    if (taxonomy.name.length === 0) return
+
+    const matchingName = findBestMatchingName(
+      taxonomy.name as Array<{ label: string; language: { bcp47: string } }>,
+      metadataLanguageTags
+    )
+
+    response.terms[taxonomy.term] = {
+      label: matchingName.label,
+      metadataLanguageTag: matchingName.language.bcp47
+    }
+  })
 
   return new Response(JSON.stringify(response), { status: 200 })
 }
