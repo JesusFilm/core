@@ -1,26 +1,27 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import noop from 'lodash/noop'
 import { ComponentPropsWithoutRef } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
 
-import { SaveButton } from './SaveButton'
+import { CancelButton } from './CancelButton'
 
-type StoryArgs = ComponentPropsWithoutRef<typeof SaveButton>
+type StoryArgs = ComponentPropsWithoutRef<typeof CancelButton>
 
 const meta = {
   ...videosAdminConfig,
-  component: SaveButton,
-  title: 'Videos-Admin/SaveButton'
+  component: CancelButton,
+  title: 'Videos-Admin/CancelButton'
 } satisfies Meta<StoryArgs>
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
-  args: { disabled: false }
+export const Hidden: Story = {
+  args: { show: false, handleCancel: noop }
 }
 
 export const Disabled: Story = {
-  args: { disabled: true }
+  args: { show: true, handleCancel: noop }
 }
 
 export default meta
