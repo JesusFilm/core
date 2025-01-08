@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 import { getBaseUrl } from '../../framework/helpers'
-import { getObjectDiff } from '../../utils/media-component-utils'
+import { getObjectDiff } from '../../utils/comparison-utils'
 import { apiKey, mediaComponentId } from '../../utils/testData.json'
 
 test('compare single media component between environments', async ({

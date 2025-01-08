@@ -4,7 +4,7 @@ import { getBaseUrl } from '../../framework/helpers'
 import {
   convertArrayToObject,
   getObjectDiff
-} from '../../utils/media-component-utils'
+} from '../../utils/comparison-utils'
 import { apiKey, mediaComponentId } from '../../utils/testData.json'
 
 test('compare media component languages between environments', async ({

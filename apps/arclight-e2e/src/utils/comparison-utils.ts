@@ -65,3 +65,43 @@ export function getObjectDiff(
 
   return diff
 }
+
+export function getTaxonomyDiff(
+  taxonomy1: Record<string, any>,
+  taxonomy2: Record<string, any>
+): string[] {
+  const diff: string[] = []
+  const keys = new Set([...Object.keys(taxonomy1), ...Object.keys(taxonomy2)])
+
+  keys.forEach((key) => {
+    const val1 = taxonomy1[key]
+    const val2 = taxonomy2[key]
+
+    if (val1 === undefined && val2 === undefined) return
+    if (val1 === null && val2 === null) return
+
+    // For objects with terms, sort the keys before comparison
+    if (
+      key === 'terms' &&
+      typeof val1 === 'object' &&
+      typeof val2 === 'object'
+    ) {
+      const sortedVal1 = Object.fromEntries(
+        Object.entries(val1).sort(([a], [b]) => a.localeCompare(b))
+      )
+      const sortedVal2 = Object.fromEntries(
+        Object.entries(val2).sort(([a], [b]) => a.localeCompare(b))
+      )
+      if (JSON.stringify(sortedVal1) !== JSON.stringify(sortedVal2)) {
+        diff.push(key)
+      }
+      return
+    }
+
+    if (val1 !== val2 && JSON.stringify(val1) !== JSON.stringify(val2)) {
+      diff.push(key)
+    }
+  })
+
+  return diff
+}
