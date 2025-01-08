@@ -5,14 +5,14 @@ import {
   convertArrayToObject,
   getObjectDiff
 } from '../../utils/media-component-utils'
-import { apiKey } from '../../utils/testData.json'
+import { apiKey, countryIds } from '../../utils/testData.json'
 
 test('compare media countries between environments', async ({ request }) => {
   const baseUrl = await getBaseUrl()
   const compareUrl = 'https://api.arclight.org'
   const queryParams = new URLSearchParams({
     apiKey,
-    limit: '300'
+    ids: countryIds.join(',')
   })
 
   const [baseResponse, compareResponse] = await Promise.all([
