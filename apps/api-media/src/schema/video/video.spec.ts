@@ -10,6 +10,7 @@ import {
   Prisma,
   Video,
   VideoDescription,
+  VideoEdition,
   VideoImageAlt,
   VideoLabel,
   VideoSnippet,
@@ -51,6 +52,7 @@ describe('video', () => {
     images: CloudflareImage[]
     cloudflareAssets: CloudflareR2[]
     variants: VideoVariant[]
+    videoEditions: VideoEdition[]
   }
 
   const children: Video[] = [
@@ -256,6 +258,7 @@ describe('video', () => {
           updatedAt: new Date()
         }
       ],
+      videoEditions: [{ id: 'edition', name: 'base', videoId: 'videoId' }],
       variants: [
         {
           id: 'variantId2',
@@ -359,12 +362,6 @@ describe('video', () => {
               id
             }
           }
-          thumbnail
-          videoStill
-          mobileCinematicHigh
-          mobileCinematicLow
-          mobileCinematicVeryLow
-          image
           imageAlt(languageId: $languageId, primary: $primary) {
             id
             value
@@ -425,6 +422,9 @@ describe('video', () => {
           cloudflareAssets {
             id
           }
+          videoEditions {
+            id
+          }
         }
       }
     `)
@@ -462,12 +462,6 @@ describe('video', () => {
           }
         ],
         id: 'videoId',
-        thumbnail: null,
-        videoStill: null,
-        mobileCinematicHigh: null,
-        mobileCinematicLow: null,
-        mobileCinematicVeryLow: null,
-        image: null,
         imageAlt: [
           {
             id: 'imageAltId',
@@ -501,6 +495,7 @@ describe('video', () => {
             value: 'value'
           }
         ],
+        videoEditions: [{ id: 'edition' }],
         subtitles: [
           {
             edition: 'edition',
@@ -629,6 +624,7 @@ describe('video', () => {
         take: 100,
         where: { published: true },
         include: {
+          videoEditions: true,
           bibleCitation: {
             orderBy: {
               order: 'asc'
@@ -824,6 +820,7 @@ describe('video', () => {
           }
         },
         include: {
+          videoEditions: true,
           bibleCitation: {
             orderBy: {
               order: 'asc'
@@ -1102,12 +1099,6 @@ describe('video', () => {
               id
             }
           }
-          thumbnail
-          videoStill
-          mobileCinematicHigh
-          mobileCinematicLow
-          mobileCinematicVeryLow
-          image
           imageAlt(languageId: $languageId, primary: $primary) {
             id
             value
@@ -1195,12 +1186,6 @@ describe('video', () => {
           }
         ],
         id: 'videoId',
-        thumbnail: null,
-        videoStill: null,
-        mobileCinematicHigh: null,
-        mobileCinematicLow: null,
-        mobileCinematicVeryLow: null,
-        image: null,
         imageAlt: [
           {
             id: 'imageAltId',

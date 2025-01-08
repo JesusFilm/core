@@ -697,17 +697,12 @@ type Video
   primaryLanguageId: ID!
   published: Boolean!
   cloudflareAssets: [CloudflareR2!]!
+  videoEditions: [VideoEdition!]!
   title(languageId: ID, primary: Boolean): [VideoTitle!]!
   snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
   description(languageId: ID, primary: Boolean): [VideoDescription!]!
   studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]!
-  image: String @deprecated(reason: "use images.mobileCinematicHigh")
   imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]!
-  videoStill: String @deprecated(reason: "use images.videoStill")
-  thumbnail: String @deprecated(reason: "use images.thumbnail")
-  mobileCinematicHigh: String @deprecated(reason: "use images.mobileCinematicHigh")
-  mobileCinematicLow: String @deprecated(reason: "use images.mobileCinematicLow")
-  mobileCinematicVeryLow: String @deprecated(reason: "use images.mobileCinematicVeryLow")
   variantLanguages: [Language!]!
   variantLanguagesCount(input: VideoVariantFilter): Int!
 
@@ -758,8 +753,9 @@ type VideoEdition {
 }
 
 input VideoEditionCreateInput {
-  id: ID!
-  name: String
+  id: ID
+  name: String!
+  videoId: String!
 }
 
 input VideoEditionUpdateInput {
@@ -830,7 +826,7 @@ type VideoSubtitle {
   srtSrc: String
   value: String!
   language: Language!
-  videoEdition: VideoEdition
+  videoEdition: VideoEdition!
 }
 
 input VideoSubtitleCreateInput {
@@ -896,7 +892,7 @@ type VideoVariant {
   lengthInMilliseconds: Int!
   language: Language!
   published: Boolean!
-  videoEdition: VideoEdition
+  videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
   subtitleCount: Int!
 

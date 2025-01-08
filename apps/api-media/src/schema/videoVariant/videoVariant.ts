@@ -31,8 +31,7 @@ builder.prismaObject('VideoVariant', {
       resolve: ({ languageId: id }) => ({ id })
     }),
     published: t.exposeBoolean('published', { nullable: false }),
-    // TODO: make non-nullable once integirity checked
-    videoEdition: t.relation('videoEdition', { nullable: true }),
+    videoEdition: t.relation('videoEdition', { nullable: false }),
     subtitle: t.prismaField({
       type: ['VideoSubtitle'],
       nullable: false,
