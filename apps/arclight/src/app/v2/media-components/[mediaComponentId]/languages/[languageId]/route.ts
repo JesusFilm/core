@@ -8,7 +8,7 @@ import {
 } from '../../../../../../lib/stringsForArclight/webEmbedStrings'
 
 interface GetParams {
-  params: { mediaComponentId: string; languageId: string }
+  params: Promise<{ mediaComponentId: string; languageId: string }>
 }
 
 const GET_VIDEO_VARIANT = graphql(`
@@ -101,10 +101,8 @@ const GET_VIDEO_VARIANT = graphql(`
   }
 `)
 
-export async function GET(
-  req: NextRequest,
-  { params }: GetParams
-): Promise<Response> {
+export async function GET(req: NextRequest, props: GetParams): Promise<Response> {
+  const params = await props.params;
   const { mediaComponentId, languageId } = params
   const query = req.nextUrl.searchParams
   const expand = query.get('expand') ?? ''

@@ -88,13 +88,11 @@ const GET_COUNTRY = graphql(`
 `)
 
 interface GetParams {
-  params: { countryId: string }
+  params: Promise<{ countryId: string }>
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: GetParams
-): Promise<Response> {
+export async function GET(request: NextRequest, props: GetParams): Promise<Response> {
+  const params = await props.params;
   const query = request.nextUrl.searchParams
   const { countryId } = params
   const expand = query.get('expand')

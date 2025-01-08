@@ -27,15 +27,18 @@ const GET_TAXONOMY = graphql(`
 `)
 
 interface TaxonomyParams {
-  params: {
+  params: Promise<{
     category: string
-  }
+  }>
 }
 
-export async function GET(
-  req: NextRequest,
-  { params: { category } }: TaxonomyParams
-): Promise<Response> {
+export async function GET(req: NextRequest, props: TaxonomyParams): Promise<Response> {
+  const params = await props.params;
+
+  const {
+    category
+  } = params;
+
   const query = req.nextUrl.searchParams
   const metadataLanguageTags = query
     .get('metadataLanguageTags')

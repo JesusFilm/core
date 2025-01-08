@@ -46,13 +46,11 @@ const GET_VIDEO_LANGUAGES = graphql(`
 `)
 
 interface GetParams {
-  params: { mediaComponentId: string }
+  params: Promise<{ mediaComponentId: string }>
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: GetParams
-): Promise<Response> {
+export async function GET(request: NextRequest, props: GetParams): Promise<Response> {
+  const params = await props.params;
   const { mediaComponentId } = params
   const query = request.nextUrl.searchParams
 

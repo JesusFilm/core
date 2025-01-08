@@ -83,12 +83,15 @@ const GET_VIDEO = graphql(`
 `)
 
 interface GetParams {
-  params: { mediaComponentId: string }
+  params: Promise<{ mediaComponentId: string }>
 }
-export async function GET(
-  req: NextRequest,
-  { params: { mediaComponentId } }: GetParams
-): Promise<Response> {
+export async function GET(req: NextRequest, props: GetParams): Promise<Response> {
+  const params = await props.params;
+
+  const {
+    mediaComponentId
+  } = params;
+
   const query = req.nextUrl.searchParams
   const expand = query.get('expand') ?? ''
   const filter = query.get('filter') ?? ''

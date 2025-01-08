@@ -5,7 +5,7 @@ import { getApolloClient } from '../../../../lib/apolloClient'
 import { paramsToRecord } from '../../../../lib/paramsToRecord'
 
 interface GetParams {
-  params: { mediaComponentId: string }
+  params: Promise<{ mediaComponentId: string }>
 }
 
 const GET_VIDEO_CHILDREN = graphql(`
@@ -150,10 +150,8 @@ const GET_VIDEO_CHILDREN = graphql(`
   }
 `)
 
-export async function GET(
-  req: NextRequest,
-  { params }: GetParams
-): Promise<Response> {
+export async function GET(req: NextRequest, props: GetParams): Promise<Response> {
+  const params = await props.params;
   const { mediaComponentId } = params
   const query = req.nextUrl.searchParams
   const expand = query.get('expand') ?? ''

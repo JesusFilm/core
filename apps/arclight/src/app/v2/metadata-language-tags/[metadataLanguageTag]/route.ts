@@ -21,13 +21,11 @@ const GET_LANGUAGES = graphql(`
 `)
 
 interface GetParams {
-  params: { metadataLanguageTag: string }
+  params: Promise<{ metadataLanguageTag: string }>
 }
 
-export async function GET(
-  req: NextRequest,
-  { params }: GetParams
-): Promise<Response> {
+export async function GET(req: NextRequest, props: GetParams): Promise<Response> {
+  const params = await props.params;
   const query = req.nextUrl.searchParams
   const { metadataLanguageTag } = params
 
