@@ -2,9 +2,9 @@ import { expect, test } from '@playwright/test'
 
 import { getBaseUrl } from '../../framework/helpers'
 import { getObjectDiff } from '../../utils/media-component-utils'
-import { apiKey, languageId } from '../../utils/testData.json'
+import { apiKey, countryId } from '../../utils/testData.json'
 
-test('compare single media language between environments', async ({
+test('compare single media country between environments', async ({
   request
 }) => {
   const baseUrl = await getBaseUrl()
@@ -14,8 +14,8 @@ test('compare single media language between environments', async ({
   })
 
   const [baseResponse, compareResponse] = await Promise.all([
-    request.get(`${baseUrl}/v2/media-languages/${languageId}?${queryParams}`),
-    request.get(`${compareUrl}/v2/media-languages/${languageId}?${queryParams}`)
+    request.get(`${baseUrl}/v2/media-countries/${countryId}?${queryParams}`),
+    request.get(`${compareUrl}/v2/media-countries/${countryId}?${queryParams}`)
   ])
 
   expect(await baseResponse.ok()).toBe(true)
@@ -27,36 +27,23 @@ test('compare single media language between environments', async ({
   // Verify counts structure for base environment
   expect(baseDataJson.counts).toEqual(
     expect.objectContaining({
-      speakerCount: expect.objectContaining({
+      languageCount: expect.objectContaining({
         value: expect.any(Number),
         description: expect.any(String)
       }),
-      countriesCount: expect.objectContaining({
-        value: expect.any(Number),
-        description: expect.any(String)
-      }),
-      series: expect.objectContaining({
-        value: expect.any(Number),
-        description: expect.any(String)
-      }),
-      featureFilm: expect.objectContaining({
-        value: expect.any(Number),
-        description: expect.any(String)
-      }),
-      shortFilm: expect.objectContaining({
+      languageHavingMediaCount: expect.objectContaining({
         value: expect.any(Number),
         description: expect.any(String)
       })
     })
   )
 
-  // Remove counts and links before comparison
+  // Remove counts before comparison
   delete baseDataJson.counts
   delete compareDataJson.counts
 
   const diffs = getObjectDiff(baseDataJson, compareDataJson)
-  expect(
-    diffs,
-    `Differences found in media language ${languageId}`
-  ).toHaveLength(0)
+  expect(diffs, `Differences found in media country ${countryId}`).toHaveLength(
+    0
+  )
 })

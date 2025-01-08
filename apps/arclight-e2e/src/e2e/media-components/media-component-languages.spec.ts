@@ -5,14 +5,13 @@ import {
   convertArrayToObject,
   getObjectDiff
 } from '../../utils/media-component-utils'
-import testData from '../../utils/testData.json'
+import { apiKey, mediaComponentId } from '../../utils/testData.json'
 
 test('compare media component languages between environments', async ({
   request
 }) => {
   const baseUrl = await getBaseUrl()
   const compareUrl = 'https://api.arclight.org'
-  const { mediaComponentId, apiKey } = testData
 
   const queryParams = new URLSearchParams({
     apiKey,
