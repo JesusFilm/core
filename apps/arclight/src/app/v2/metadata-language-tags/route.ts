@@ -1,75 +1,28 @@
-import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
-import { getApolloClient } from '../../../lib/apolloClient'
 import { paramsToRecord } from '../../../lib/paramsToRecord'
 
-/* TODO: 
-  querystring:
-    apiKey
-*/
-
-const GET_LANGUAGES = graphql(`
-  query GetLanguages($languageIds: [ID!]) {
-    languages(where: { ids: $languageIds }) {
-      id
-      bcp47
-      name(languageId: 529, primary: true) {
-        value
-      }
-    }
-  }
-`)
+import languagesData from './languages.json'
 
 export async function GET(req: NextRequest): Promise<Response> {
   const query = req.nextUrl.searchParams
-
   const apiKey = query.get('apiKey') ?? ''
 
-  const { data } = await getApolloClient().query<
-    ResultOf<typeof GET_LANGUAGES>
-  >({
-    query: GET_LANGUAGES,
-    variables: {
-      languageIds: [
-        '407',
-        '496',
-        '529',
-        '584',
-        '1106',
-        '1942',
-        '3804',
-        '3887',
-        '3934',
-        '6464',
-        '6788',
-        '6930',
-        '7083',
-        '13169',
-        '16639',
-        '21028',
-        '21753',
-        '21754',
-        '22658'
-      ]
-    }
-  })
-
-  const languages = data.languages
+  const languages = languagesData.languages
     .map((language) => ({
-      tag: language.bcp47 ?? '',
-      name: language.name[1]?.value ?? language.name[0].value,
-      nativeName: language.name[0].value,
+      tag: language.tag,
+      name: language.name,
+      nameNative: language.nameNative,
       _links: {
         self: {
-          href: `http://api.arclight.org/v2/metadata-language-tags/${language.bcp47}?apiKey=${apiKey}`
+          href: `http://api.arclight.org/v2/metadata-language-tags/${language.tag}?apiKey=${apiKey}`
         },
         metadataLanguageTags: {
-          href: `http://api.arclight.org/v2/metadata-language-tags/?apiKey=${apiKey}`
+          href: `http://api.arclight.org/v2/metadata-language-tags?apiKey=${apiKey}`
         }
       }
     }))
-    .sort((a, b) => a.tag.localeCompare(b.tag)) // Sort alphabetically by tag
+    .sort((a, b) => a.tag.localeCompare(b.tag))
 
   const queryObject: Record<string, string> = {
     ...paramsToRecord(query.entries())
@@ -87,5 +40,8 @@ export async function GET(req: NextRequest): Promise<Response> {
     }
   }
 
-  return new Response(JSON.stringify(response), { status: 200 })
+  return new Response(JSON.stringify(response), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' }
+  })
 }
