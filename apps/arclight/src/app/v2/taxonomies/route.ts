@@ -32,6 +32,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     .get('metadataLanguageTags')
     ?.split(',') ?? ['en']
   const queryString = searchParams.toString()
+  const apiKey = searchParams.get('apiKey') ?? ''
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_TAXONOMIES>
@@ -73,10 +74,10 @@ export async function GET(request: NextRequest): Promise<Response> {
         },
         _links: {
           self: {
-            href: `http://api.arclight.org/v2/taxonomies/${taxonomy.category}?${queryString}`
+            href: `http://api.arclight.org/v2/taxonomies/${taxonomy.category}?apiKey=${apiKey}`
           },
           taxonomies: {
-            href: `http://api.arclight.org/v2/taxonomies?${queryString}`
+            href: `http://api.arclight.org/v2/taxonomies?apiKey=${apiKey}`
           }
         }
       }
