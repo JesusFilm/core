@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
@@ -47,7 +48,7 @@ describe('VideoSnippet', () => {
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
   })
 
-  it('should enable save button if snippet has been changed', async () => {
+  it('should enable form buttons if snippet has been changed', async () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
@@ -57,6 +58,9 @@ describe('VideoSnippet', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
+    expect(
+      screen.queryByRole('button', { name: 'Cancel' })
+    ).not.toBeInTheDocument()
     expect(screen.getByRole('textbox')).toHaveValue(
       'Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion.'
     )
@@ -65,6 +69,7 @@ describe('VideoSnippet', () => {
     })
     expect(screen.getByRole('textbox')).toHaveValue('Hello')
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
   })
 
   it('should update video snippet on submit', async () => {
@@ -111,5 +116,31 @@ describe('VideoSnippet', () => {
       expect(screen.getByText('Snippet is required')).toBeInTheDocument()
     )
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
+  })
+
+  it('should reset form when cancel is clicked', async () => {
+    render(
+      <MockedProvider>
+        <NextIntlClientProvider locale="en">
+          <VideoSnippet videoSnippets={mockVideoSnippets} />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+    const user = userEvent.setup()
+
+    const textbox = screen.getByRole('textbox')
+    expect(textbox).toHaveValue(
+      'Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion.'
+    )
+
+    await user.clear(textbox)
+    await user.type(textbox, 'Hello')
+    expect(screen.getByRole('textbox')).toHaveValue('Hello')
+
+    await user.click(screen.getByRole('button', { name: 'Cancel' }))
+
+    expect(textbox).toHaveValue(
+      'Jesus constantly surprises and confounds people, from His miraculous birth to His rise from the grave. Follow His life through excerpts from the Book of Luke, all the miracles, the teachings, and the passion.'
+    )
   })
 })
