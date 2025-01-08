@@ -25,7 +25,13 @@ const GET_LANGUAGES = graphql(`
         value
         primary
       }
-      primaryCountryId
+      countryLanguages {
+        id
+        country {
+          id
+        }
+        primary
+      }
     }
   }
 `)
@@ -222,10 +228,7 @@ export async function GET(request: NextRequest): Promise<Response> {
                     country.continent.name[0]?.value ??
                     country.continent.fallbackName[0]?.value ??
                     '',
-                  metadataLanguageTag:
-                    country.name[0]?.value != null
-                      ? metadataLanguageTags[0]
-                      : (metadataLanguageTags[1] ?? 'en'),
+                  metadataLanguageTag: 'en',
                   longitude: country.longitude,
                   latitude: country.latitude,
                   _links: {
@@ -238,7 +241,9 @@ export async function GET(request: NextRequest): Promise<Response> {
                   languageId: Number(language.id),
                   iso3: language.iso3,
                   bcp47: language.bcp47,
-                  primaryCountryId: language.primaryCountryId,
+                  primaryCountryId:
+                    language.countryLanguages.find(({ primary }) => primary)
+                      ?.country.id ?? '',
                   name:
                     language.name[0]?.value ??
                     language.fallbackName[0]?.value ??
@@ -248,10 +253,7 @@ export async function GET(request: NextRequest): Promise<Response> {
                       language.name.find(({ primary }) => primary) ??
                       language.fallbackName.find(({ primary }) => primary)
                     )?.value ?? '',
-                  metadataLanguageTag:
-                    language.name[0]?.value != null
-                      ? metadataLanguageTags[0]
-                      : (metadataLanguageTags[1] ?? 'en'),
+                  metadataLanguageTag: 'en',
                   _links: {
                     self: {
                       href: `http://api.arclight.org/v2/media-languages/${language.id}?apiKey=${apiKey}`
