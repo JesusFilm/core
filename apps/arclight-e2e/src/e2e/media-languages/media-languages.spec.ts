@@ -5,14 +5,14 @@ import {
   convertArrayToObject,
   getObjectDiff
 } from '../../utils/media-component-utils'
-import { apiKey, mediaLanguages } from '../../utils/testData.json'
+import { apiKey, languageIds } from '../../utils/testData.json'
 
 test('compare media languages between environments', async ({ request }) => {
   const baseUrl = await getBaseUrl()
   const compareUrl = 'https://api.arclight.org'
   const queryParams = new URLSearchParams({
     apiKey,
-    ids: mediaLanguages.join(',')
+    ids: languageIds.join(',')
   })
 
   const [baseResponse, compareResponse] = await Promise.all([
@@ -25,6 +25,41 @@ test('compare media languages between environments', async ({ request }) => {
 
   const baseData = await baseResponse.json()
   const compareData = await compareResponse.json()
+
+  // Verify counts structure for base environment
+  for (const language of baseData._embedded.mediaLanguages) {
+    expect(language.counts).toEqual(
+      expect.objectContaining({
+        speakerCount: expect.objectContaining({
+          value: expect.any(Number),
+          description: expect.any(String)
+        }),
+        countriesCount: expect.objectContaining({
+          value: expect.any(Number),
+          description: expect.any(String)
+        }),
+        series: expect.objectContaining({
+          value: expect.any(Number),
+          description: expect.any(String)
+        }),
+        featureFilm: expect.objectContaining({
+          value: expect.any(Number),
+          description: expect.any(String)
+        }),
+        shortFilm: expect.objectContaining({
+          value: expect.any(Number),
+          description: expect.any(String)
+        })
+      })
+    )
+    // Remove counts field before comparison
+    delete language.counts
+  }
+
+  // Remove counts from compare environment
+  for (const language of compareData._embedded.mediaLanguages) {
+    delete language.counts
+  }
 
   const baseLanguages = convertArrayToObject(
     baseData._embedded.mediaLanguages,

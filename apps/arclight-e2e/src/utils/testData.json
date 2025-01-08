@@ -2,11 +2,6 @@
   "apiKey": "3a21a65d4gf98hZ7",
   "mediaComponentId": "2_0-1Torch",
   "mediaComponentIds": [
-    "GOMattEnglishCollection",
-    "6_GOLukeFrench6038",
-    "MAG1"
-  ],
-  "mediaComponents": [
     "CS1",
     "1_jf-0-0",
     "1_wl-0-0",
@@ -21,7 +16,8 @@
     "10_DarkroomFaith",
     "11_Advent0104"
   ],
-  "languageId": "3934",
-  "languageIds": ["3934", "496", "21064"],
-  "countryId": "IM"
+  "languageId": "529",
+  "languageIds": ["529", "496", "21064"],
+  "countryId": "IM",
+  "countryIds": ["IM", "US", "GB"]
 }

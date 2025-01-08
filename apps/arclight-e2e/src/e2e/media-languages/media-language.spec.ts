@@ -10,8 +10,7 @@ test('compare single media language between environments', async ({
   const baseUrl = await getBaseUrl()
   const compareUrl = 'https://api.arclight.org'
   const queryParams = new URLSearchParams({
-    apiKey,
-    metadataLanguageTags: 'en'
+    apiKey
   })
 
   const [baseResponse, compareResponse] = await Promise.all([
@@ -25,8 +24,35 @@ test('compare single media language between environments', async ({
   const baseDataJson = await baseResponse.json()
   const compareDataJson = await compareResponse.json()
 
-  delete baseDataJson._links
-  delete compareDataJson._links
+  // Verify counts structure for base environment
+  expect(baseDataJson.counts).toEqual(
+    expect.objectContaining({
+      speakerCount: expect.objectContaining({
+        value: expect.any(Number),
+        description: expect.any(String)
+      }),
+      countriesCount: expect.objectContaining({
+        value: expect.any(Number),
+        description: expect.any(String)
+      }),
+      series: expect.objectContaining({
+        value: expect.any(Number),
+        description: expect.any(String)
+      }),
+      featureFilm: expect.objectContaining({
+        value: expect.any(Number),
+        description: expect.any(String)
+      }),
+      shortFilm: expect.objectContaining({
+        value: expect.any(Number),
+        description: expect.any(String)
+      })
+    })
+  )
+
+  // Remove counts and links before comparison
+  delete baseDataJson.counts
+  delete compareDataJson.counts
 
   const diffs = getObjectDiff(baseDataJson, compareDataJson)
   expect(

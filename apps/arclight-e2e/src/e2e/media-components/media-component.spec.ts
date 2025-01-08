@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import { getBaseUrl } from '../../framework/helpers'
 import { getObjectDiff } from '../../utils/media-component-utils'
-import testData from '../../utils/testData.json'
+import { apiKey, mediaComponentId } from '../../utils/testData.json'
 
 test('compare single media component between environments', async ({
   request
@@ -10,16 +10,16 @@ test('compare single media component between environments', async ({
   const baseUrl = await getBaseUrl()
   const compareUrl = 'https://api.arclight.org'
   const queryParams = new URLSearchParams({
-    apiKey: testData.apiKey,
-    mediaComponentId: testData.mediaComponentId
+    apiKey,
+    mediaComponentId
   })
 
   const [baseResponse, compareResponse] = await Promise.all([
     request.get(
-      `${baseUrl}/v2/media-components/${testData.mediaComponentId}?${queryParams}`
+      `${baseUrl}/v2/media-components/${mediaComponentId}?${queryParams}`
     ),
     request.get(
-      `${compareUrl}/v2/media-components/${testData.mediaComponentId}?${queryParams}`
+      `${compareUrl}/v2/media-components/${mediaComponentId}?${queryParams}`
     )
   ])
 
@@ -36,6 +36,6 @@ test('compare single media component between environments', async ({
 
   expect(
     diffs,
-    `Differences found in media component ${testData.mediaComponentId}`
+    `Differences found in media component ${mediaComponentId}`
   ).toHaveLength(0)
 })
