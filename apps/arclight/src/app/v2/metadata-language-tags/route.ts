@@ -2,13 +2,13 @@ import { NextRequest } from 'next/server'
 
 import { paramsToRecord } from '../../../lib/paramsToRecord'
 
-import languagesData from './languages.json'
+import { languages } from './languages'
 
 export async function GET(req: NextRequest): Promise<Response> {
   const query = req.nextUrl.searchParams
   const apiKey = query.get('apiKey') ?? ''
 
-  const languages = languagesData.languages
+  const languagesList = languages
     .map((language) => ({
       tag: language.tag,
       name: language.name,
@@ -36,7 +36,7 @@ export async function GET(req: NextRequest): Promise<Response> {
       }
     },
     _embedded: {
-      metadataLanguageTags: languages
+      metadataLanguageTags: languagesList
     }
   }
 

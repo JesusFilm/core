@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 
-import languagesData from '../languages.json'
+import { languages } from '../languages'
 
 interface GetParams {
   params: { metadataLanguageTag: string }
@@ -14,9 +14,7 @@ export async function GET(
   const { metadataLanguageTag } = params
   const apiKey = query.get('apiKey') ?? ''
 
-  const language = languagesData.languages.find(
-    (lang) => lang.tag === metadataLanguageTag
-  )
+  const language = languages.find((lang) => lang.tag === metadataLanguageTag)
 
   if (!language) {
     return new Response(
