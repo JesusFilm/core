@@ -974,6 +974,7 @@ input VideosFilter {
   labels: [VideoLabel!]
   ids: [ID!]
   subtitleLanguageIds: [ID!]
+  published: Boolean
 }
 
 type Youtube

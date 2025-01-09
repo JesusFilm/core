@@ -77,7 +77,8 @@ describe('videosFilter', () => {
         title: 'abc 123',
         availableVariantLanguageIds: ['en'],
         labels: ['collection'],
-        ids: ['videoId']
+        ids: ['videoId'],
+        published: true
       })
     ).toEqual({
       id: { in: ['videoId'] },
@@ -88,7 +89,8 @@ describe('videosFilter', () => {
           languageId: { in: ['en'] },
           subtitle: undefined
         }
-      }
+      },
+      published: true
     })
   })
 
@@ -107,6 +109,17 @@ describe('videosFilter', () => {
         }
       },
       variants: undefined
+    })
+  })
+
+  it('should filter with published status', () => {
+    expect(videosFilter({ published: true })).toEqual({
+      id: undefined,
+      label: undefined,
+      title: undefined,
+      subtitels: undefined,
+      variants: undefined,
+      published: true
     })
   })
 })
