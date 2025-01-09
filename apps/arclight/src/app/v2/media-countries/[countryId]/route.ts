@@ -25,7 +25,7 @@ interface MediaCountryResponse {
   }
   _embedded?: {
     mediaLanguages: Array<{
-      languageId: string
+      languageId: number
       iso3: string | null
       bcp47: string | null
       counts: {
@@ -75,6 +75,12 @@ const GET_COUNTRY = graphql(`
           id
           iso3
           bcp47
+          countryLanguages {
+            country {
+              id
+            }
+            primary
+          }
           name {
             value
             primary
@@ -165,8 +171,9 @@ export async function GET(
       country.continent?.fallbackName?.[0]?.value ??
       '',
     metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
-    longitude: country.longitude,
-    latitude: country.latitude,
+    // TODO: fix this in the import
+    longitude: country.longitude ? country.longitude : 0,
+    latitude: country.latitude ? country.latitude : 0,
     counts: {
       languageCount: {
         value: country.languageCount,
@@ -197,7 +204,7 @@ export async function GET(
   if (expand === 'mediaLanguages') {
     response._embedded = {
       mediaLanguages: country.countryLanguages.map((countryLanguage) => ({
-        languageId: countryLanguage.language.id,
+        languageId: Number(countryLanguage.language.id),
         iso3: countryLanguage.language.iso3,
         bcp47: countryLanguage.language.bcp47,
         counts: {
