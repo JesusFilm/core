@@ -70,16 +70,23 @@ const GET_COUNTRY = graphql(`
       }
       countryLanguages {
         displaySpeakers
+        primary
         language {
           id
           iso3
           bcp47
-          primaryCountryId
           name {
             value
             primary
           }
+          countryLanguages {
+            primary
+            country {
+              id
+            }
+          }
         }
+        primary
       }
       languageCount
       languageHavingMediaCount
@@ -199,7 +206,10 @@ export async function GET(
             description: 'Number of language speakers in country'
           }
         },
-        primaryCountryId: countryLanguage.language.primaryCountryId,
+        primaryCountryId:
+          countryLanguage.language.countryLanguages.find(
+            (countryLanguage) => countryLanguage.primary
+          )?.country.id ?? '',
         name: countryLanguage.language.name.find(({ primary }) => !primary)
           ?.value,
         nameNative: countryLanguage.language.name.find(({ primary }) => primary)
