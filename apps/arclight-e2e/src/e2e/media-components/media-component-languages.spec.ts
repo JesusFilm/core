@@ -1,44 +1,34 @@
 import { expect, test } from '@playwright/test'
 
-import { getBaseUrl } from '../../framework/helpers'
+import {
+  cleanStreamingUrls,
+  createQueryParams,
+  makeParallelRequests
+} from '../../framework/helpers'
 import {
   convertArrayToObject,
   getObjectDiff
 } from '../../utils/comparison-utils'
-import { apiKey, mediaComponentId } from '../../utils/testData.json'
+import { testData } from '../../utils/testData'
 
 test('compare media component languages between environments', async ({
   request
 }) => {
-  const baseUrl = await getBaseUrl()
-  const compareUrl = 'https://api.arclight.org'
-
-  const queryParams = new URLSearchParams({
-    apiKey,
-    mediaComponentId
+  const params = createQueryParams({
+    mediaComponentId: testData.mediaComponentId
   })
 
-  const [baseResponse, compareResponse] = await Promise.all([
-    request.get(
-      `${baseUrl}/v2/media-components/${mediaComponentId}/languages?${queryParams}`
-    ),
-    request.get(
-      `${compareUrl}/v2/media-components/${mediaComponentId}/languages?${queryParams}`
-    )
-  ])
-
-  expect(await baseResponse.ok()).toBe(true)
-  expect(await compareResponse.ok()).toBe(true)
-
-  const baseData = await baseResponse.json()
-  const compareData = await compareResponse.json()
+  const [baseData, compareData] = await makeParallelRequests(
+    request,
+    `/v2/media-components/${testData.mediaComponentId}/languages`,
+    params
+  )
 
   const cleanLanguages = (languages: any[]) => {
     return languages.map((language) => {
       const cleanedLanguage = { ...language }
       delete cleanedLanguage._links
-      cleanedLanguage.streamingUrls =
-        cleanedLanguage.streamingUrls.m3u8[0].url.split('?')[0]
+      cleanStreamingUrls(cleanedLanguage)
       return cleanedLanguage
     })
   }
@@ -57,6 +47,5 @@ test('compare media component languages between environments', async ({
   )
 
   const diffs = getObjectDiff(baseLanguageMap, compareLanguageMap)
-
   expect(diffs).toHaveLength(0)
 })

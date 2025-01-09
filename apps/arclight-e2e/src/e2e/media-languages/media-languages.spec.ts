@@ -1,75 +1,60 @@
 import { expect, test } from '@playwright/test'
 
-import { getBaseUrl } from '../../framework/helpers'
+import {
+  createQueryParams,
+  makeParallelRequests
+} from '../../framework/helpers'
+import type { MediaLanguage } from '../../types'
 import {
   convertArrayToObject,
   getObjectDiff
 } from '../../utils/comparison-utils'
-import { apiKey, languageIds } from '../../utils/testData.json'
+import { testData } from '../../utils/testData'
 
 test('compare media languages between environments', async ({ request }) => {
-  const baseUrl = await getBaseUrl()
-  const compareUrl = 'https://api.arclight.org'
-  const queryParams = new URLSearchParams({
-    apiKey,
-    ids: languageIds.join(',')
-  })
+  const params = createQueryParams({ ids: testData.languageIds })
 
-  const [baseResponse, compareResponse] = await Promise.all([
-    request.get(`${baseUrl}/v2/media-languages?${queryParams}`),
-    request.get(`${compareUrl}/v2/media-languages?${queryParams}`)
-  ])
-
-  expect(await baseResponse.ok()).toBe(true)
-  expect(await compareResponse.ok()).toBe(true)
-
-  const baseData = await baseResponse.json()
-  const compareData = await compareResponse.json()
+  const [baseData, compareData] = await makeParallelRequests(
+    request,
+    '/v2/media-languages',
+    params
+  )
 
   // Verify counts structure for base environment
+  const countFields = [
+    'speakerCount',
+    'countriesCount',
+    'series',
+    'featureFilm',
+    'shortFilm'
+  ]
+
   for (const language of baseData._embedded.mediaLanguages) {
-    expect(language.counts).toEqual(
-      expect.objectContaining({
-        speakerCount: expect.objectContaining({
-          value: expect.any(Number),
-          description: expect.any(String)
-        }),
-        countriesCount: expect.objectContaining({
-          value: expect.any(Number),
-          description: expect.any(String)
-        }),
-        series: expect.objectContaining({
-          value: expect.any(Number),
-          description: expect.any(String)
-        }),
-        featureFilm: expect.objectContaining({
-          value: expect.any(Number),
-          description: expect.any(String)
-        }),
-        shortFilm: expect.objectContaining({
+    expect(language.counts).toBeDefined()
+    countFields.forEach((field) => {
+      expect(language.counts[field]).toEqual(
+        expect.objectContaining({
           value: expect.any(Number),
           description: expect.any(String)
         })
-      })
-    )
-    // Remove counts field before comparison
-    delete language.counts
+      )
+    })
   }
 
-  // Remove counts from compare environment
-  for (const language of compareData._embedded.mediaLanguages) {
-    delete language.counts
+  // Clean data before comparison
+  const cleanLanguages = (languages: MediaLanguage[]) => {
+    return languages.map((language) => ({ ...language, counts: undefined }))
   }
 
-  const baseLanguages = convertArrayToObject(
-    baseData._embedded.mediaLanguages,
-    'languageId'
-  )
-  const compareLanguages = convertArrayToObject(
-    compareData._embedded.mediaLanguages,
+  const baseLanguages = cleanLanguages(baseData._embedded.mediaLanguages)
+  const compareLanguages = cleanLanguages(compareData._embedded.mediaLanguages)
+
+  const baseLanguageMap = convertArrayToObject(baseLanguages, 'languageId')
+  const compareLanguageMap = convertArrayToObject(
+    compareLanguages,
     'languageId'
   )
 
-  const diffs = getObjectDiff(baseLanguages, compareLanguages)
+  const diffs = getObjectDiff(baseLanguageMap, compareLanguageMap)
   expect(diffs, 'Differences found in media languages').toHaveLength(0)
 })

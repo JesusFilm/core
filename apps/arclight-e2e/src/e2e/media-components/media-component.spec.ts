@@ -1,41 +1,32 @@
 import { expect, test } from '@playwright/test'
 
-import { getBaseUrl } from '../../framework/helpers'
+import {
+  cleanResponse,
+  createQueryParams,
+  makeParallelRequests
+} from '../../framework/helpers'
 import { getObjectDiff } from '../../utils/comparison-utils'
-import { apiKey, mediaComponentId } from '../../utils/testData.json'
+import { testData } from '../../utils/testData'
 
 test('compare single media component between environments', async ({
   request
 }) => {
-  const baseUrl = await getBaseUrl()
-  const compareUrl = 'https://api.arclight.org'
-  const queryParams = new URLSearchParams({
-    apiKey,
-    mediaComponentId
+  const params = createQueryParams({
+    mediaComponentId: testData.mediaComponentId
   })
 
-  const [baseResponse, compareResponse] = await Promise.all([
-    request.get(
-      `${baseUrl}/v2/media-components/${mediaComponentId}?${queryParams}`
-    ),
-    request.get(
-      `${compareUrl}/v2/media-components/${mediaComponentId}?${queryParams}`
-    )
-  ])
+  const [baseData, compareData] = await makeParallelRequests(
+    request,
+    `/v2/media-components/${testData.mediaComponentId}`,
+    params
+  )
 
-  expect(await baseResponse.ok()).toBe(true)
-  expect(await compareResponse.ok()).toBe(true)
+  const baseDataCleaned = cleanResponse(baseData, ['_links'])
+  const compareDataCleaned = cleanResponse(compareData, ['_links'])
 
-  const baseDataJson = await baseResponse.json()
-  const compareDataJson = await compareResponse.json()
-
-  delete baseDataJson._links
-  delete compareDataJson._links
-
-  const diffs = getObjectDiff(baseDataJson, compareDataJson)
-
+  const diffs = getObjectDiff(baseDataCleaned, compareDataCleaned)
   expect(
     diffs,
-    `Differences found in media component ${mediaComponentId}`
+    `Differences found in media component ${testData.mediaComponentId}`
   ).toHaveLength(0)
 })

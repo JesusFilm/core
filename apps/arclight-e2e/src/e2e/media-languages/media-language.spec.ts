@@ -1,62 +1,49 @@
 import { expect, test } from '@playwright/test'
 
-import { getBaseUrl } from '../../framework/helpers'
+import {
+  createQueryParams,
+  makeParallelRequests
+} from '../../framework/helpers'
 import { getObjectDiff } from '../../utils/comparison-utils'
-import { apiKey, languageId } from '../../utils/testData.json'
+import { testData } from '../../utils/testData'
 
 test('compare single media language between environments', async ({
   request
 }) => {
-  const baseUrl = await getBaseUrl()
-  const compareUrl = 'https://api.arclight.org'
-  const queryParams = new URLSearchParams({
-    apiKey
-  })
+  const params = createQueryParams({})
 
-  const [baseResponse, compareResponse] = await Promise.all([
-    request.get(`${baseUrl}/v2/media-languages/${languageId}?${queryParams}`),
-    request.get(`${compareUrl}/v2/media-languages/${languageId}?${queryParams}`)
-  ])
-
-  expect(await baseResponse.ok()).toBe(true)
-  expect(await compareResponse.ok()).toBe(true)
-
-  const baseDataJson = await baseResponse.json()
-  const compareDataJson = await compareResponse.json()
+  const [baseData, compareData] = await makeParallelRequests(
+    request,
+    `/v2/media-languages/${testData.languageId}`,
+    params
+  )
 
   // Verify counts structure for base environment
-  expect(baseDataJson.counts).toEqual(
-    expect.objectContaining({
-      speakerCount: expect.objectContaining({
-        value: expect.any(Number),
-        description: expect.any(String)
-      }),
-      countriesCount: expect.objectContaining({
-        value: expect.any(Number),
-        description: expect.any(String)
-      }),
-      series: expect.objectContaining({
-        value: expect.any(Number),
-        description: expect.any(String)
-      }),
-      featureFilm: expect.objectContaining({
-        value: expect.any(Number),
-        description: expect.any(String)
-      }),
-      shortFilm: expect.objectContaining({
+  expect(baseData.counts).toBeDefined()
+  const countFields = [
+    'speakerCount',
+    'countriesCount',
+    'series',
+    'featureFilm',
+    'shortFilm'
+  ]
+
+  countFields.forEach((field) => {
+    expect(baseData.counts[field]).toEqual(
+      expect.objectContaining({
         value: expect.any(Number),
         description: expect.any(String)
       })
-    })
-  )
+    )
+  })
 
-  // Remove counts and links before comparison
-  delete baseDataJson.counts
-  delete compareDataJson.counts
+  // Remove counts before comparison
+  const cleanedBaseData = { ...baseData, counts: undefined }
+  const cleanedCompareData = { ...compareData, counts: undefined }
 
-  const diffs = getObjectDiff(baseDataJson, compareDataJson)
+  const diffs = getObjectDiff(cleanedBaseData, cleanedCompareData)
   expect(
     diffs,
-    `Differences found in media language ${languageId}`
+    `Differences found in media language ${testData.languageId}`
   ).toHaveLength(0)
 })

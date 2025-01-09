@@ -1,31 +1,26 @@
 /* eslint-disable playwright/no-conditional-in-test */
 import { expect, test } from '@playwright/test'
 
-import { getBaseUrl } from '../../framework/helpers'
 import {
-  ApiResponse,
+  createQueryParams,
+  getBaseUrl,
+  makeParallelRequests
+} from '../../framework/helpers'
+import type { ApiResponse, MediaComponent } from '../../types'
+import {
   convertArrayToObject,
   getObjectDiff
 } from '../../utils/comparison-utils'
-import { apiKey, mediaComponentIds } from '../../utils/testData.json'
+import { testData } from '../../utils/testData'
 
 test('compare media components between environments', async ({ request }) => {
-  const baseUrl = await getBaseUrl()
-  const queryParams = new URLSearchParams({
-    apiKey,
-    ids: mediaComponentIds.join(',')
-  })
+  const params = createQueryParams({ ids: testData.mediaComponentIds })
 
-  const [baseResponse, compareResponse] = await Promise.all([
-    request.get(`${baseUrl}/v2/media-components?${queryParams}`),
-    request.get(`https://api.arclight.org/v2/media-components?${queryParams}`)
-  ])
-
-  expect(await baseResponse.ok()).toBe(true)
-  expect(await compareResponse.ok()).toBe(true)
-
-  const baseData = await baseResponse.json()
-  const compareData = await compareResponse.json()
+  const [baseData, compareData] = await makeParallelRequests(
+    request,
+    '/v2/media-components',
+    params
+  )
 
   const baseComponents = convertArrayToObject(
     baseData._embedded.mediaComponents,
@@ -52,14 +47,11 @@ test('compare media components between environments', async ({ request }) => {
 })
 
 test('verify required image fields exist', async ({ request }) => {
-  const baseUrl = await getBaseUrl()
-  const queryParams = new URLSearchParams({
-    apiKey: apiKey
-  })
+  const params = createQueryParams({})
 
   const response = (await request
-    .get(`${baseUrl}/v2/media-components?${queryParams}`)
-    .then((res) => res.json())) as ApiResponse
+    .get(`${await getBaseUrl()}/v2/media-components?${params}`)
+    .then((res) => res.json())) as ApiResponse<MediaComponent>
 
   expect(response._embedded.mediaComponents).toBeDefined()
 

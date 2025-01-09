@@ -1,42 +1,30 @@
 import { expect, test } from '@playwright/test'
 
-import { getBaseUrl } from '../../framework/helpers'
+import {
+  createQueryParams,
+  makeParallelRequests
+} from '../../framework/helpers'
 import {
   convertArrayToObject,
   getObjectDiff
 } from '../../utils/comparison-utils'
-import { apiKey, mediaComponentLinks } from '../../utils/testData.json'
+import { testData } from '../../utils/testData'
 
 test('compare media component links between environments', async ({
   request
 }) => {
-  const baseUrl = await getBaseUrl()
-  const compareUrl = 'https://api.arclight.org'
-
-  const queryParams = new URLSearchParams({
-    apiKey,
-    ids: mediaComponentLinks.join(',')
-  })
-
-  const baseRequestUrl = `${baseUrl}/v2/media-component-links?${queryParams}`
-  const compareRequestUrl = `${compareUrl}/v2/media-component-links?${queryParams}`
-
-  const [baseResponse, compareResponse] = await Promise.all([
-    request.get(baseRequestUrl),
-    request.get(compareRequestUrl)
-  ])
-
-  expect(await baseResponse.ok()).toBe(true)
-  expect(await compareResponse.ok()).toBe(true)
-
-  const baseData = await baseResponse.json()
-  const compareData = await compareResponse.json()
+  const params = createQueryParams({ ids: testData.mediaComponentLinks })
+  const [baseData, compareData] = await makeParallelRequests(
+    request,
+    '/v2/media-component-links',
+    params
+  )
 
   expect(baseData._embedded.mediaComponentsLinks).toBeDefined()
   expect(compareData._embedded.mediaComponentsLinks).toBeDefined()
 
   // Sort because the order does not matter
-  const sortContainedBy = (mediaComponentLinks: any) => {
+  const sortContainedBy = (mediaComponentLinks: any[]) => {
     mediaComponentLinks.forEach((link: any) => {
       if (link.linkedMediaComponentIds?.containedBy) {
         link.linkedMediaComponentIds.containedBy.sort()
@@ -58,6 +46,5 @@ test('compare media component links between environments', async ({
     baseMediaComponentLinks,
     compareMediaComponentLinks
   )
-
   expect(diffs).toHaveLength(0)
 })

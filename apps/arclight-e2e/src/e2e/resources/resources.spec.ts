@@ -1,23 +1,22 @@
 import { expect, test } from '@playwright/test'
 
-import { getBaseUrl } from '../../framework/helpers'
-import { apiKey } from '../../utils/testData.json'
+import {
+  createQueryParams,
+  makeParallelRequests
+} from '../../framework/helpers'
 
 import { expectedCountry, expectedLanguage, expectedVideo } from './testData'
 
 test('verify country search returns United States', async ({ request }) => {
-  const baseUrl = await getBaseUrl()
-  const queryParams = new URLSearchParams({
-    apiKey,
-    term: 'United'
-  })
+  const params = createQueryParams({ term: 'United' })
 
-  const response = await request.get(`${baseUrl}/v2/resources?${queryParams}`)
-  expect(response.ok()).toBe(true)
+  const [baseData] = await makeParallelRequests(
+    request,
+    '/v2/resources',
+    params
+  )
 
-  const data = await response.json()
-  const countries = data._embedded.resources.mediaCountries
-
+  const countries = baseData._embedded.resources.mediaCountries
   const usCountry = countries.find((country) =>
     country.name.toLowerCase().includes('united states')
   )
@@ -27,18 +26,15 @@ test('verify country search returns United States', async ({ request }) => {
 })
 
 test('verify language search returns English', async ({ request }) => {
-  const baseUrl = await getBaseUrl()
-  const queryParams = new URLSearchParams({
-    apiKey,
-    term: 'English'
-  })
+  const params = createQueryParams({ term: 'English' })
 
-  const response = await request.get(`${baseUrl}/v2/resources?${queryParams}`)
-  expect(response.ok()).toBe(true)
+  const [baseData] = await makeParallelRequests(
+    request,
+    '/v2/resources',
+    params
+  )
 
-  const data = await response.json()
-  const languages = data._embedded.resources.mediaLanguages
-
+  const languages = baseData._embedded.resources.mediaLanguages
   const englishLanguage = languages.find(
     (language) => language.languageId === 529
   )
@@ -49,19 +45,18 @@ test('verify language search returns English', async ({ request }) => {
 
 // TODO: Add proper fields to Algolia to test this
 test.fixme('verify video search returns Paper Hats', async ({ request }) => {
-  const baseUrl = await getBaseUrl()
-  const queryParams = new URLSearchParams({
-    apiKey,
+  const params = createQueryParams({
     term: 'Paper Hats',
     metadataLanguageTags: 'en'
   })
 
-  const response = await request.get(`${baseUrl}/v2/resources?${queryParams}`)
-  expect(response.ok()).toBe(true)
+  const [baseData] = await makeParallelRequests(
+    request,
+    '/v2/resources',
+    params
+  )
 
-  const data = await response.json()
-  const videos = data._embedded.resources.mediaComponents
-
+  const videos = baseData._embedded.resources.mediaComponents
   const paperHatsVideo = videos.find((video) =>
     video.title.toLowerCase().includes('paper hats')
   )

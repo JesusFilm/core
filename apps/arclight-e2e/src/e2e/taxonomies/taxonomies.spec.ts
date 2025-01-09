@@ -1,28 +1,19 @@
 import { expect, test } from '@playwright/test'
 
-import { getBaseUrl } from '../../framework/helpers'
+import {
+  createQueryParams,
+  makeParallelRequests
+} from '../../framework/helpers'
 import { getTaxonomyDiff } from '../../utils/comparison-utils'
-import { apiKey } from '../../utils/testData.json'
 
 test('compare taxonomies between environments', async ({ request }) => {
-  const baseUrl = await getBaseUrl()
-  const compareUrl = 'https://api.arclight.org'
+  const params = createQueryParams({ metadataLanguageTags: 'en' })
 
-  const queryParams = new URLSearchParams({
-    apiKey,
-    metadataLanguageTags: 'en'
-  })
-
-  const [baseResponse, compareResponse] = await Promise.all([
-    request.get(`${baseUrl}/v2/taxonomies?${queryParams}`),
-    request.get(`${compareUrl}/v2/taxonomies?${queryParams}`)
-  ])
-
-  expect(await baseResponse.ok()).toBe(true)
-  expect(await compareResponse.ok()).toBe(true)
-
-  const baseData = await baseResponse.json()
-  const compareData = await compareResponse.json()
+  const [baseData, compareData] = await makeParallelRequests(
+    request,
+    '/v2/taxonomies',
+    params
+  )
 
   // Sort terms within each taxonomy before comparison
   Object.keys(baseData._embedded.taxonomies).forEach((key) => {
