@@ -10,6 +10,7 @@ import {
   Prisma,
   Video,
   VideoDescription,
+  VideoEdition,
   VideoImageAlt,
   VideoLabel,
   VideoSnippet,
@@ -51,6 +52,7 @@ describe('video', () => {
     images: CloudflareImage[]
     cloudflareAssets: CloudflareR2[]
     variants: VideoVariant[]
+    videoEditions: VideoEdition[]
   }
 
   const children: Video[] = [
@@ -256,6 +258,7 @@ describe('video', () => {
           updatedAt: new Date()
         }
       ],
+      videoEditions: [{ id: 'edition', name: 'base', videoId: 'videoId' }],
       variants: [
         {
           id: 'variantId2',
@@ -268,7 +271,8 @@ describe('video', () => {
           downloadable: true,
           duration: null,
           lengthInMilliseconds: null,
-          share: null
+          share: null,
+          published: true
         },
         {
           id: 'variantId1',
@@ -281,7 +285,8 @@ describe('video', () => {
           downloadable: true,
           duration: null,
           lengthInMilliseconds: null,
-          share: null
+          share: null,
+          published: false
         }
       ]
     }
@@ -313,6 +318,7 @@ describe('video', () => {
         $limit: Int
         $where: VideosFilter
         $aspectRatio: ImageAspectRatio
+        $input: VideoVariantFilter
       ) {
         videos(offset: $offset, limit: $limit, where: $where) {
           id
@@ -402,7 +408,7 @@ describe('video', () => {
           variant(languageId: $languageId) {
             id
           }
-          variants {
+          variants(input: $input) {
             id
             language {
               id
@@ -414,6 +420,9 @@ describe('video', () => {
             url
           }
           cloudflareAssets {
+            id
+          }
+          videoEditions {
             id
           }
         }
@@ -486,6 +495,7 @@ describe('video', () => {
             value: 'value'
           }
         ],
+        videoEditions: [{ id: 'edition' }],
         subtitles: [
           {
             edition: 'edition',
@@ -614,6 +624,7 @@ describe('video', () => {
         take: 100,
         where: { published: true },
         include: {
+          videoEditions: true,
           bibleCitation: {
             orderBy: {
               order: 'asc'
@@ -809,6 +820,7 @@ describe('video', () => {
           }
         },
         include: {
+          videoEditions: true,
           bibleCitation: {
             orderBy: {
               order: 'asc'

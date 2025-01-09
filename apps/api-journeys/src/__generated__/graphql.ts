@@ -1125,17 +1125,14 @@ export type Language = {
   __typename?: 'Language';
   audioPreview?: Maybe<AudioPreview>;
   bcp47?: Maybe<Scalars['String']['output']>;
-  countriesCount: Scalars['Int']['output'];
   countryLanguages: Array<CountryLanguage>;
   featureFilmCount: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
   name: Array<LanguageName>;
-  primaryCountryId?: Maybe<Scalars['String']['output']>;
   seriesCount: Scalars['Int']['output'];
   shortFilmCount: Scalars['Int']['output'];
   slug?: Maybe<Scalars['String']['output']>;
-  speakerCount: Scalars['String']['output'];
 };
 
 
@@ -2713,6 +2710,7 @@ export type QueryBlocksArgs = {
 
 
 export type QueryCountriesArgs = {
+  ids?: InputMaybe<Array<Scalars['ID']['input']>>;
   term?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -2977,6 +2975,11 @@ export type QueryVideoArgs = {
 
 export type QueryVideoEditionArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryVideoVariantsArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
 };
 
 
@@ -3867,6 +3870,7 @@ export type Video = {
   variantLanguagesCount: Scalars['Int']['output'];
   variantLanguagesWithSlug: Array<LanguageWithSlug>;
   variants: Array<VideoVariant>;
+  videoEditions: Array<VideoEdition>;
 };
 
 
@@ -3919,6 +3923,21 @@ export type VideoTitleArgs = {
 
 export type VideoVariantArgs = {
   languageId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type VideoVariantLanguagesCountArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
+};
+
+
+export type VideoVariantLanguagesWithSlugArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
+};
+
+
+export type VideoVariantsArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
 };
 
 export type VideoBlock = Block & {
@@ -4194,8 +4213,9 @@ export type VideoEdition = {
 };
 
 export type VideoEditionCreateInput = {
-  id: Scalars['ID']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  name: Scalars['String']['input'];
+  videoId: Scalars['String']['input'];
 };
 
 export type VideoEditionUpdateInput = {
@@ -4426,7 +4446,7 @@ export type VideoSubtitle = {
   primary: Scalars['Boolean']['output'];
   srtSrc?: Maybe<Scalars['String']['output']>;
   value: Scalars['String']['output'];
-  videoEdition?: Maybe<VideoEdition>;
+  videoEdition: VideoEdition;
   vttSrc?: Maybe<Scalars['String']['output']>;
 };
 
@@ -4510,12 +4530,13 @@ export type VideoVariant = {
   id: Scalars['ID']['output'];
   language: Language;
   lengthInMilliseconds: Scalars['Int']['output'];
+  published: Scalars['Boolean']['output'];
   share?: Maybe<Scalars['String']['output']>;
   /** slug is a permanent link to the video variant. */
   slug: Scalars['String']['output'];
   subtitle: Array<VideoSubtitle>;
   subtitleCount: Scalars['Int']['output'];
-  videoEdition?: Maybe<VideoEdition>;
+  videoEdition: VideoEdition;
   videoId?: Maybe<Scalars['ID']['output']>;
 };
 
@@ -4534,6 +4555,7 @@ export type VideoVariantCreateInput = {
   id: Scalars['String']['input'];
   languageId: Scalars['String']['input'];
   lengthInMilliseconds?: InputMaybe<Scalars['Int']['input']>;
+  published?: InputMaybe<Scalars['Boolean']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;
   slug: Scalars['String']['input'];
   videoId: Scalars['String']['input'];
@@ -4574,6 +4596,10 @@ export type VideoVariantDownloadUpdateInput = {
   width?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type VideoVariantFilter = {
+  onlyPublished?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type VideoVariantUpdateInput = {
   dash?: InputMaybe<Scalars['String']['input']>;
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
@@ -4583,6 +4609,7 @@ export type VideoVariantUpdateInput = {
   id: Scalars['String']['input'];
   languageId?: InputMaybe<Scalars['String']['input']>;
   lengthInMilliseconds?: InputMaybe<Scalars['Int']['input']>;
+  published?: InputMaybe<Scalars['Boolean']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['String']['input']>;
@@ -4592,6 +4619,7 @@ export type VideosFilter = {
   availableVariantLanguageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   ids?: InputMaybe<Array<Scalars['ID']['input']>>;
   labels?: InputMaybe<Array<VideoLabel>>;
+  published?: InputMaybe<Scalars['Boolean']['input']>;
   subtitleLanguageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
