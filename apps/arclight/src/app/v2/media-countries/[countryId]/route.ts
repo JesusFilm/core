@@ -70,6 +70,7 @@ const GET_COUNTRY = graphql(`
       }
       countryLanguages {
         displaySpeakers
+        primary
         language {
           id
           iso3
@@ -84,7 +85,14 @@ const GET_COUNTRY = graphql(`
             value
             primary
           }
+          countryLanguages {
+            primary
+            country {
+              id
+            }
+          }
         }
+        primary
       }
       languageCount
       languageHavingMediaCount
