@@ -117,7 +117,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
       resetUploadStatus()
     })
     upload.on('progress', (progress): void => {
-      setProgress(progress.detail * 100)
+      setProgress(progress.detail)
     })
   }
 
