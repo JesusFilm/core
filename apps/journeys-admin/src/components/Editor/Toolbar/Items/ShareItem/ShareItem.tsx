@@ -36,6 +36,15 @@ const SlugDialog = dynamic(
   { ssr: false }
 )
 
+const QrCodeDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/EditorToolbar/ShareButton/QrCodeDialog" */
+      './QrCodeDialog'
+    ).then((mod) => mod.QrCodeDialog),
+  { ssr: false }
+)
+
 interface ShareItemProps {
   variant: ComponentProps<typeof Item>['variant']
   closeMenu?: () => void
@@ -158,6 +167,12 @@ export function ShareItem({
         <EmbedJourneyDialog
           open={showEmbedDialog}
           onClose={() => setShowEmbedDialog(false)}
+        />
+      )}
+      {showQrCodeDialog != null && (
+        <QrCodeDialog
+          open={showQrCodeDialog}
+          onClose={() => setShowQrCodeDialog(false)}
         />
       )}
     </Box>
