@@ -33,6 +33,7 @@ const Template: Story = {
 export const Clips: Story = {
   ...Template,
   args: {
+    videoId: 'videoId',
     childVideos: childVideos,
     label: 'Clips'
   }
@@ -41,6 +42,7 @@ export const Clips: Story = {
 export const Episodes: Story = {
   ...Template,
   args: {
+    videoId: 'videoId',
     childVideos: childVideos,
     label: 'Episodes'
   }
@@ -49,6 +51,7 @@ export const Episodes: Story = {
 export const Items: Story = {
   ...Template,
   args: {
+    videoId: 'videoId',
     childVideos: childVideos,
     label: 'Items'
   }
@@ -57,6 +60,7 @@ export const Items: Story = {
 export const Empty: Story = {
   ...Template,
   args: {
+    videoId: 'videoId',
     childVideos: [],
     label: 'Items'
   }

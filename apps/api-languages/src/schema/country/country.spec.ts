@@ -1,7 +1,7 @@
 import { graphql } from 'gql.tada'
 import omit from 'lodash/omit'
 
-import { Country } from '.prisma/api-languages-client'
+import { Country, CountryLanguage } from '.prisma/api-languages-client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
@@ -60,19 +60,22 @@ describe('country', () => {
     prismaMock.country.findUnique.mockResolvedValue({
       ...country,
       languages: [language],
-      continent,
-      countryLanguages: [
-        {
-          id: '1',
-          language,
-          speakers: 100,
-          displaySpeakers: 100,
-          primary: true,
-          suggested: false,
-          order: 1
-        }
-      ]
+      continent
     } as unknown as Country)
+
+    prismaMock.countryLanguage.findMany.mockResolvedValue([
+      {
+        id: '1',
+        countryId: country.id,
+        languageId: language.id,
+        language,
+        speakers: 100,
+        displaySpeakers: 100,
+        primary: true,
+        suggested: false,
+        order: 1
+      }
+    ] as unknown as CountryLanguage[])
 
     prismaMock.countryLanguage.count.mockResolvedValue(2)
     prismaMock.language.count.mockResolvedValue(1)
@@ -88,12 +91,7 @@ describe('country', () => {
     })
     expect(prismaMock.country.findUnique).toHaveBeenCalledWith({
       include: {
-        continent: true,
-        countryLanguages: {
-          include: {
-            language: true
-          }
-        }
+        continent: true
       },
       where: {
         id: 'AD'

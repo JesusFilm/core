@@ -290,6 +290,11 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   customDomainCheck(id: ID!) : CustomDomainCheck! @join__field(graph: API_JOURNEYS) 
   buttonClickEventCreate(input: ButtonClickEventCreateInput!) : ButtonClickEvent! @join__field(graph: API_JOURNEYS) 
   chatOpenEventCreate(input: ChatOpenEventCreateInput!) : ChatOpenEvent! @join__field(graph: API_JOURNEYS) 
+  """
+  Creates a JourneyViewEvent, returns null if attempting to create another
+  JourneyViewEvent with the same userId, journeyId, and within the same 24hr
+  period of the previous JourneyViewEvent
+  """
   journeyViewEventCreate(input: JourneyViewEventCreateInput!) : JourneyViewEvent @join__field(graph: API_JOURNEYS) 
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!) : RadioQuestionSubmissionEvent! @join__field(graph: API_JOURNEYS) 
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!) : SignUpSubmissionEvent! @join__field(graph: API_JOURNEYS) 
@@ -677,7 +682,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
   country(id: ID!) : Country @join__field(graph: API_LANGUAGES) 
-  countries(term: String) : [Country!]! @join__field(graph: API_LANGUAGES) 
+  countries(term: String, ids: [ID!]) : [Country!]! @join__field(graph: API_LANGUAGES) 
   getMyCloudflareImages(offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   getMyCloudflareImage(id: ID!) : CloudflareImage! @join__field(graph: API_MEDIA) 
   getMyCloudflareVideos(offset: Int, limit: Int) : [CloudflareVideo!]! @join__field(graph: API_MEDIA) 
@@ -759,7 +764,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
   videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
-  videoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
+  videoVariants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
   me(input: MeInput) : User @join__field(graph: API_USERS) 
@@ -958,19 +963,14 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   label: VideoLabel! @join__field(graph: API_MEDIA) 
   published: Boolean! @join__field(graph: API_MEDIA) 
   cloudflareAssets: [CloudflareR2!]! @join__field(graph: API_MEDIA) 
+  videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
   title(languageId: ID, primary: Boolean) : [VideoTitle!]! @join__field(graph: API_MEDIA) 
   snippet(languageId: ID, primary: Boolean) : [VideoSnippet!]! @join__field(graph: API_MEDIA) 
   description(languageId: ID, primary: Boolean) : [VideoDescription!]! @join__field(graph: API_MEDIA) 
   studyQuestions(languageId: ID, primary: Boolean) : [VideoStudyQuestion!]! @join__field(graph: API_MEDIA) 
-  image: String @join__field(graph: API_MEDIA)  @deprecated(reason: "use images.mobileCinematicHigh") 
   imageAlt(languageId: ID, primary: Boolean) : [VideoImageAlt!]! @join__field(graph: API_MEDIA) 
-  videoStill: String @join__field(graph: API_MEDIA)  @deprecated(reason: "use images.videoStill") 
-  thumbnail: String @join__field(graph: API_MEDIA)  @deprecated(reason: "use images.thumbnail") 
-  mobileCinematicHigh: String @join__field(graph: API_MEDIA)  @deprecated(reason: "use images.mobileCinematicHigh") 
-  mobileCinematicLow: String @join__field(graph: API_MEDIA)  @deprecated(reason: "use images.mobileCinematicLow") 
-  mobileCinematicVeryLow: String @join__field(graph: API_MEDIA)  @deprecated(reason: "use images.mobileCinematicVeryLow") 
   variantLanguages: [Language!]! @join__field(graph: API_MEDIA) 
-  variantLanguagesCount: Int! @join__field(graph: API_MEDIA) 
+  variantLanguagesCount(input: VideoVariantFilter) : Int! @join__field(graph: API_MEDIA) 
   """
   slug is a permanent link to the video.
   """
@@ -982,8 +982,8 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   """
   childrenCount: Int! @join__field(graph: API_MEDIA) 
   parents: [Video!]! @join__field(graph: API_MEDIA) 
-  variantLanguagesWithSlug: [LanguageWithSlug!]! @join__field(graph: API_MEDIA) 
-  variants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
+  variantLanguagesWithSlug(input: VideoVariantFilter) : [LanguageWithSlug!]! @join__field(graph: API_MEDIA) 
+  variants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   subtitles(languageId: ID, primary: Boolean, edition: String) : [VideoSubtitle!]! @join__field(graph: API_MEDIA) 
   variant(languageId: ID) : VideoVariant @join__field(graph: API_MEDIA) 
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
@@ -1019,7 +1019,7 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(
   internal source videos: video is only populated when videoID and
   videoVariantLanguageId are present
   """
-  video: Video @join__field(graph: API_JOURNEYS) 
+  video: Video @join__field(graph: API_JOURNEYS)  @deprecated(reason: "use mediaVideo union instead") 
   """
   internal source videos: videoId and videoVariantLanguageId both need to be set
   to select a video.
@@ -1200,9 +1200,6 @@ type Language @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @joi
   name(languageId: ID, primary: Boolean) : [LanguageName!]! @join__field(graph: API_LANGUAGES) 
   countryLanguages: [CountryLanguage!]! @join__field(graph: API_LANGUAGES) 
   audioPreview: AudioPreview @join__field(graph: API_LANGUAGES) 
-  primaryCountryId: String @join__field(graph: API_LANGUAGES) 
-  speakerCount: String! @join__field(graph: API_LANGUAGES) 
-  countriesCount: Int! @join__field(graph: API_LANGUAGES) 
   seriesCount: Int! @join__field(graph: API_MEDIA) 
   featureFilmCount: Int! @join__field(graph: API_MEDIA) 
   shortFilmCount: Int! @join__field(graph: API_MEDIA) 
@@ -2561,7 +2558,7 @@ type VideoSubtitle @join__type(graph: API_MEDIA)  {
   srtSrc: String
   value: String!
   language: Language!
-  videoEdition: VideoEdition
+  videoEdition: VideoEdition!
 }
 
 type VideoTitle @join__type(graph: API_MEDIA)  {
@@ -2582,7 +2579,8 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   duration: Int!
   lengthInMilliseconds: Int!
   language: Language!
-  videoEdition: VideoEdition
+  published: Boolean!
+  videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean) : [VideoSubtitle!]!
   subtitleCount: Int!
   """
@@ -4136,8 +4134,9 @@ input VideoCreateInput @join__type(graph: API_MEDIA)  {
 }
 
 input VideoEditionCreateInput @join__type(graph: API_MEDIA)  {
-  id: ID!
-  name: String
+  id: ID
+  name: String!
+  videoId: String!
 }
 
 input VideoEditionUpdateInput @join__type(graph: API_MEDIA)  {
@@ -4225,6 +4224,7 @@ input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {
   languageId: String!
   slug: String!
   downloadable: Boolean!
+  published: Boolean = true
 }
 
 input VideoVariantDownloadCreateInput @join__type(graph: API_MEDIA)  {
@@ -4247,6 +4247,10 @@ input VideoVariantDownloadUpdateInput @join__type(graph: API_MEDIA)  {
   url: String
 }
 
+input VideoVariantFilter @join__type(graph: API_MEDIA)  {
+  onlyPublished: Boolean = true
+}
+
 input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
   id: String!
   videoId: String
@@ -4259,6 +4263,7 @@ input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
   languageId: String
   slug: String
   downloadable: Boolean
+  published: Boolean
 }
 
 input VideosFilter @join__type(graph: API_MEDIA)  {
@@ -4267,6 +4272,7 @@ input VideosFilter @join__type(graph: API_MEDIA)  {
   labels: [VideoLabel!]
   ids: [ID!]
   subtitleLanguageIds: [ID!]
+  published: Boolean
 }
 
 input CreateVerificationRequestInput @join__type(graph: API_USERS)  {
