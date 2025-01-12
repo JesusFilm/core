@@ -56,6 +56,15 @@ export function ShareItem({
   const [showEmbedDialog, setShowEmbedDialog] = useState<boolean | undefined>()
   const [showQrCodeDialog, setShowQrCodeDialog] = useState<boolean>(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const journeyUrl =
+    journey?.slug != null
+      ? `${
+          hostname != null
+            ? `https://${hostname}`
+            : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+              'https://your.nextstep.is')
+        }/${journey.slug}`
+      : undefined
 
   function handleShowMenu(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget)
@@ -89,18 +98,7 @@ export function ShareItem({
           <Typography variant="subtitle2" gutterBottom>
             {t('Share This Journey')}
           </Typography>
-          <CopyTextField
-            value={
-              journey?.slug != null
-                ? `${
-                    hostname != null
-                      ? `https://${hostname}`
-                      : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                        'https://your.nextstep.is')
-                  }/${journey.slug}`
-                : undefined
-            }
-          />
+          <CopyTextField value={journeyUrl} />
           <Stack direction="row" spacing={6}>
             <Button
               onClick={() => {
