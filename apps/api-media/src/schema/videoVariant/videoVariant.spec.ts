@@ -22,8 +22,12 @@ describe('videoVariant', () => {
 
   describe('videoVariants', () => {
     const VIDEO_VARIANTS_QUERY = graphql(`
-      query videoVariants($languageId: ID, $primary: Boolean) {
-        videoVariants {
+      query videoVariants(
+        $languageId: ID
+        $primary: Boolean
+        $input: VideoVariantFilter
+      ) {
+        videoVariants(input: $input) {
           id
           videoId
           hls
@@ -40,6 +44,7 @@ describe('videoVariant', () => {
           language {
             id
           }
+          published
           subtitle(languageId: $languageId, primary: $primary) {
             id
             value
@@ -83,6 +88,7 @@ describe('videoVariant', () => {
               videoVariantId: 'videoVariantId'
             }
           ],
+          published: true,
           videoEdition: {
             id: 'videoEditionId',
             name: 'videoEditionName'
@@ -105,6 +111,9 @@ describe('videoVariant', () => {
         document: VIDEO_VARIANTS_QUERY
       })
       expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
+        where: {
+          published: true
+        },
         include: {
           downloads: true,
           videoEdition: true
@@ -154,7 +163,8 @@ describe('videoVariant', () => {
             }
           ],
           subtitleCount: 123,
-          slug: 'videoSlug'
+          slug: 'videoSlug',
+          published: true
         }
       ])
     })
@@ -170,6 +180,7 @@ describe('videoVariant', () => {
           edition: 'base',
           slug: 'videoSlug',
           downloadable: true,
+          published: true,
           downloads: [
             {
               id: 'downloadId',
@@ -203,6 +214,9 @@ describe('videoVariant', () => {
         document: VIDEO_VARIANTS_QUERY
       })
       expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
+        where: {
+          published: true
+        },
         include: {
           downloads: true,
           videoEdition: true
@@ -252,7 +266,8 @@ describe('videoVariant', () => {
             }
           ],
           subtitleCount: 123,
-          slug: 'videoSlug'
+          slug: 'videoSlug',
+          published: true
         }
       ])
     })
@@ -279,6 +294,7 @@ describe('videoVariant', () => {
               width: 0
             }
           ],
+          published: false,
           videoEdition: {
             id: 'videoEditionId',
             name: 'videoEditionName'
@@ -299,9 +315,18 @@ describe('videoVariant', () => {
       prismaMock.videoSubtitle.count.mockResolvedValueOnce(123)
       const data = await client({
         document: VIDEO_VARIANTS_QUERY,
-        variables: { languageId: 'languageId', primary: false }
+        variables: {
+          languageId: 'languageId',
+          primary: false,
+          input: {
+            onlyPublished: false
+          }
+        }
       })
       expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
+        where: {
+          published: undefined
+        },
         include: {
           downloads: true,
           videoEdition: true
@@ -340,7 +365,8 @@ describe('videoVariant', () => {
             }
           ],
           subtitleCount: 123,
-          slug: 'videoSlug'
+          slug: 'videoSlug',
+          published: false
         }
       ])
     })
@@ -366,11 +392,13 @@ describe('videoVariant', () => {
           id: 'id',
           hls: 'hls',
           duration: 1024,
+          lengthInMilliseconds: 123456,
           dash: 'dash',
           edition: 'base',
           slug: 'videoSlug',
           videoId: 'videoId',
           languageId: 'languageId',
+          published: true,
           share: 'share',
           downloadable: true
         })
@@ -382,6 +410,7 @@ describe('videoVariant', () => {
               hls: 'hls',
               dash: 'dash',
               duration: 1024,
+              lengthInMilliseconds: 123456,
               languageId: 'languageId',
               edition: 'base',
               slug: 'videoSlug',
@@ -397,12 +426,14 @@ describe('videoVariant', () => {
             hls: 'hls',
             dash: 'dash',
             duration: 1024,
+            lengthInMilliseconds: 123456,
             languageId: 'languageId',
             edition: 'base',
             slug: 'videoSlug',
             videoId: 'videoId',
             share: 'share',
-            downloadable: true
+            downloadable: true,
+            published: true
           }
         })
         expect(result).toHaveProperty('data.videoVariantCreate', {
@@ -419,6 +450,7 @@ describe('videoVariant', () => {
               hls: 'hls',
               dash: 'dash',
               duration: 1024,
+              lengthInMilliseconds: 123456,
               languageId: 'languageId',
               edition: 'base',
               slug: 'videoSlug',
@@ -451,11 +483,13 @@ describe('videoVariant', () => {
           id: 'id',
           hls: 'hls',
           duration: 1024,
+          lengthInMilliseconds: 123456,
           dash: 'dash',
           edition: 'base',
           slug: 'videoSlug',
           videoId: 'videoId',
           languageId: 'languageId',
+          published: true,
           share: 'share',
           downloadable: false
         })
@@ -467,6 +501,7 @@ describe('videoVariant', () => {
               hls: 'hls',
               dash: 'dash',
               duration: 1024,
+              lengthInMilliseconds: 123456,
               languageId: 'languageId',
               edition: 'base',
               slug: 'videoSlug',
@@ -482,6 +517,7 @@ describe('videoVariant', () => {
             hls: 'hls',
             dash: 'dash',
             duration: 1024,
+            lengthInMilliseconds: 123456,
             languageId: 'languageId',
             edition: 'base',
             slug: 'videoSlug',
@@ -504,6 +540,7 @@ describe('videoVariant', () => {
               hls: 'hls',
               dash: 'dash',
               duration: 1024,
+              lengthInMilliseconds: 123456,
               languageId: 'languageId',
               edition: 'base',
               slug: 'videoSlug',
@@ -536,11 +573,13 @@ describe('videoVariant', () => {
           id: 'id',
           hls: 'hls',
           duration: 1024,
+          lengthInMilliseconds: 123456,
           dash: 'dash',
           edition: 'base',
           slug: 'videoSlug',
           videoId: 'videoId',
           languageId: 'languageId',
+          published: true,
           share: 'share',
           downloadable: true
         })

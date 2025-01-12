@@ -5,6 +5,7 @@ import { builder } from '../builder'
 import { Language } from '../language'
 
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
+import { VideoVariantFilter } from './inputs/videoVariantFilter'
 import { VideoVariantUpdateInput } from './inputs/videoVariantUpdate'
 
 builder.prismaObject('VideoVariant', {
@@ -20,11 +21,16 @@ builder.prismaObject('VideoVariant', {
       nullable: false,
       resolve: ({ duration }) => duration ?? 0
     }),
+    lengthInMilliseconds: t.int({
+      nullable: false,
+      resolve: ({ lengthInMilliseconds }) => lengthInMilliseconds ?? 0
+    }),
     language: t.field({
       type: Language,
       nullable: false,
       resolve: ({ languageId: id }) => ({ id })
     }),
+    published: t.exposeBoolean('published', { nullable: false }),
     videoEdition: t.relation('videoEdition', { nullable: false }),
     subtitle: t.prismaField({
       type: ['VideoSubtitle'],
@@ -72,9 +78,15 @@ builder.queryFields((t) => ({
   videoVariants: t.prismaField({
     type: ['VideoVariant'],
     nullable: false,
-    resolve: async (query) =>
+    args: {
+      input: t.arg({ type: VideoVariantFilter, required: false })
+    },
+    resolve: async (query, _parent, { input }) =>
       await prisma.videoVariant.findMany({
-        ...query
+        ...query,
+        where: {
+          published: input?.onlyPublished === false ? undefined : true
+        }
       })
   })
 }))
@@ -89,7 +101,10 @@ builder.mutationFields((t) => ({
     resolve: async (query, _parent, { input }) => {
       return await prisma.videoVariant.create({
         ...query,
-        data: input
+        data: {
+          ...input,
+          published: input.published ?? true
+        }
       })
     }
   }),
@@ -108,11 +123,13 @@ builder.mutationFields((t) => ({
           dash: input.dash ?? undefined,
           share: input.share ?? undefined,
           duration: input.duration ?? undefined,
+          lengthInMilliseconds: input.lengthInMilliseconds ?? undefined,
           languageId: input.languageId ?? undefined,
           slug: input.slug ?? undefined,
           videoId: input.videoId ?? undefined,
           edition: input.edition ?? undefined,
-          downloadable: input.downloadable ?? undefined
+          downloadable: input.downloadable ?? undefined,
+          published: input.published ?? undefined
         }
       })
     }

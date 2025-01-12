@@ -246,42 +246,59 @@ export interface BlockRestore_blockRestore_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface BlockRestore_blockRestore_VideoBlock_video_title {
+export interface BlockRestore_blockRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface BlockRestore_blockRestore_VideoBlock_video_images {
+export interface BlockRestore_blockRestore_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface BlockRestore_blockRestore_VideoBlock_video_variant {
+export interface BlockRestore_blockRestore_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface BlockRestore_blockRestore_VideoBlock_video_variantLanguages_name {
+export interface BlockRestore_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface BlockRestore_blockRestore_VideoBlock_video_variantLanguages {
+export interface BlockRestore_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: BlockRestore_blockRestore_VideoBlock_video_variantLanguages_name[];
+  name: BlockRestore_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface BlockRestore_blockRestore_VideoBlock_video {
+export interface BlockRestore_blockRestore_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: BlockRestore_blockRestore_VideoBlock_video_title[];
-  images: BlockRestore_blockRestore_VideoBlock_video_images[];
-  variant: BlockRestore_blockRestore_VideoBlock_video_variant | null;
-  variantLanguages: BlockRestore_blockRestore_VideoBlock_video_variantLanguages[];
+  title: BlockRestore_blockRestore_VideoBlock_mediaVideo_Video_title[];
+  images: BlockRestore_blockRestore_VideoBlock_mediaVideo_Video_images[];
+  variant: BlockRestore_blockRestore_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: BlockRestore_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
+
+export interface BlockRestore_blockRestore_VideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+}
+
+export interface BlockRestore_blockRestore_VideoBlock_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+  id: string;
+}
+
+export interface BlockRestore_blockRestore_VideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type BlockRestore_blockRestore_VideoBlock_mediaVideo = BlockRestore_blockRestore_VideoBlock_mediaVideo_Video | BlockRestore_blockRestore_VideoBlock_mediaVideo_MuxVideo | BlockRestore_blockRestore_VideoBlock_mediaVideo_CloudflareVideo | BlockRestore_blockRestore_VideoBlock_mediaVideo_YouTube;
 
 export interface BlockRestore_blockRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -374,11 +391,7 @@ export interface BlockRestore_blockRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: BlockRestore_blockRestore_VideoBlock_video | null;
+  mediaVideo: BlockRestore_blockRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */

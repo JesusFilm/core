@@ -27,7 +27,7 @@ type BibleCitation {
   bibleBook: BibleBook!
   chapterStart: Int!
   chapterEnd: Int
-  verseStart: Int!
+  verseStart: Int
   verseEnd: Int
   video: Video!
 }
@@ -416,7 +416,7 @@ type Query {
   videosCount(where: VideosFilter): Int!
   videoEditions: [VideoEdition!]!
   videoEdition(id: ID!): VideoEdition
-  videoVariants: [VideoVariant!]!
+  videoVariants(input: VideoVariantFilter): [VideoVariant!]!
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
 }
@@ -697,19 +697,14 @@ type Video
   primaryLanguageId: ID!
   published: Boolean!
   cloudflareAssets: [CloudflareR2!]!
+  videoEditions: [VideoEdition!]!
   title(languageId: ID, primary: Boolean): [VideoTitle!]!
   snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
   description(languageId: ID, primary: Boolean): [VideoDescription!]!
   studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]!
-  image: String @deprecated(reason: "use images.mobileCinematicHigh")
   imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]!
-  videoStill: String @deprecated(reason: "use images.videoStill")
-  thumbnail: String @deprecated(reason: "use images.thumbnail")
-  mobileCinematicHigh: String @deprecated(reason: "use images.mobileCinematicHigh")
-  mobileCinematicLow: String @deprecated(reason: "use images.mobileCinematicLow")
-  mobileCinematicVeryLow: String @deprecated(reason: "use images.mobileCinematicVeryLow")
   variantLanguages: [Language!]!
-  variantLanguagesCount: Int!
+  variantLanguagesCount(input: VideoVariantFilter): Int!
 
   """slug is a permanent link to the video."""
   slug: String!
@@ -719,8 +714,8 @@ type Video
   """the number value of the amount of children on a video"""
   childrenCount: Int!
   parents: [Video!]!
-  variantLanguagesWithSlug: [LanguageWithSlug!]!
-  variants: [VideoVariant!]!
+  variantLanguagesWithSlug(input: VideoVariantFilter): [LanguageWithSlug!]!
+  variants(input: VideoVariantFilter): [VideoVariant!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
   variant(languageId: ID): VideoVariant
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
@@ -758,8 +753,9 @@ type VideoEdition {
 }
 
 input VideoEditionCreateInput {
-  id: ID!
-  name: String
+  id: ID
+  name: String!
+  videoId: String!
 }
 
 input VideoEditionUpdateInput {
@@ -893,7 +889,9 @@ type VideoVariant {
   downloadable: Boolean!
   downloads: [VideoVariantDownload!]!
   duration: Int!
+  lengthInMilliseconds: Int!
   language: Language!
+  published: Boolean!
   videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
   subtitleCount: Int!
@@ -910,9 +908,11 @@ input VideoVariantCreateInput {
   dash: String
   share: String
   duration: Int
+  lengthInMilliseconds: Int
   languageId: String!
   slug: String!
   downloadable: Boolean!
+  published: Boolean = true
 }
 
 type VideoVariantDownload {
@@ -949,6 +949,10 @@ input VideoVariantDownloadUpdateInput {
   url: String
 }
 
+input VideoVariantFilter {
+  onlyPublished: Boolean = true
+}
+
 input VideoVariantUpdateInput {
   id: String!
   videoId: String
@@ -957,9 +961,11 @@ input VideoVariantUpdateInput {
   dash: String
   share: String
   duration: Int
+  lengthInMilliseconds: Int
   languageId: String
   slug: String
   downloadable: Boolean
+  published: Boolean
 }
 
 input VideosFilter {
@@ -968,6 +974,7 @@ input VideosFilter {
   labels: [VideoLabel!]
   ids: [ID!]
   subtitleLanguageIds: [ID!]
+  published: Boolean
 }
 
 type Youtube

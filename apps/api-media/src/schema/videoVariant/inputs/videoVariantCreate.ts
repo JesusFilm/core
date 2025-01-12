@@ -11,9 +11,11 @@ export const VideoVariantCreateInput = builder.inputType(
       dash: t.string({ required: false }),
       share: t.string({ required: false }),
       duration: t.int({ required: false }),
+      lengthInMilliseconds: t.int({ required: false }),
       languageId: t.string({ required: true }),
       slug: t.string({ required: true }),
-      downloadable: t.boolean({ required: true })
+      downloadable: t.boolean({ required: true }),
+      published: t.boolean({ required: false, defaultValue: true })
     })
   }
 )

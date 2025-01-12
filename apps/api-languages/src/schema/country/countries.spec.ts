@@ -1,7 +1,7 @@
 import { graphql } from 'gql.tada'
 import omit from 'lodash/omit'
 
-import { Country } from '.prisma/api-languages-client'
+import { Country, CountryLanguage } from '.prisma/api-languages-client'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
@@ -25,12 +25,16 @@ const COUNTRIES_QUERY = graphql(`
       id
       countryLanguages {
         speakers
+        displaySpeakers
         language {
           id
           iso3
           bcp47
           slug
         }
+        primary
+        suggested
+        order
       }
       latitude
       longitude
@@ -39,6 +43,8 @@ const COUNTRIES_QUERY = graphql(`
         primary
       }
       population
+      languageCount
+      languageHavingMediaCount
     }
   }
 `)
@@ -54,10 +60,28 @@ describe('countries', () => {
     prismaMock.country.findMany.mockResolvedValue([
       {
         ...country,
-        countryLanguages: [{ id: '1', language, speakers: 100 }],
+        languages: [language],
         continent
-      } as unknown as Country
-    ])
+      }
+    ] as unknown as Country[])
+
+    prismaMock.countryLanguage.findMany.mockResolvedValue([
+      {
+        id: '1',
+        countryId: country.id,
+        languageId: language.id,
+        language,
+        speakers: 100,
+        displaySpeakers: 100,
+        primary: true,
+        suggested: false,
+        order: 1
+      }
+    ] as unknown as CountryLanguage[])
+
+    prismaMock.countryLanguage.count.mockResolvedValue(2)
+    prismaMock.language.count.mockResolvedValue(1)
+
     prismaMock.countryName.findMany.mockResolvedValue([countryName])
     prismaMock.continentName.findMany.mockResolvedValue([continentName])
     const data = await client({
@@ -69,43 +93,32 @@ describe('countries', () => {
     })
     expect(prismaMock.country.findMany).toHaveBeenCalledWith({
       include: {
-        continent: true,
-        countryLanguages: {
-          include: {
-            language: true
-          }
-        }
+        continent: true
       },
       where: {}
-    })
-    expect(prismaMock.countryName.findMany).toHaveBeenCalledWith({
-      include: {
-        language: true
-      },
-      where: {
-        OR: [{ languageId: '529' }, { primary: true }],
-        countryId: 'US'
-      },
-      orderBy: {
-        primary: 'desc'
-      }
     })
     expect(data).toHaveProperty('data.countries', [
       {
         ...country,
-        countryLanguages: [
-          {
-            language: omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
-            speakers: 100
-          }
-        ],
         continent: {
           ...continent,
           name: [
             { ...omit(continentName, ['id', 'continentId', 'languageId']) }
           ]
         },
-        name: [{ ...omit(countryName, ['id', 'countryId', 'languageId']) }]
+        countryLanguages: [
+          {
+            language: omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
+            speakers: 100,
+            displaySpeakers: 100,
+            primary: true,
+            suggested: false,
+            order: 1
+          }
+        ],
+        name: [{ ...omit(countryName, ['id', 'countryId', 'languageId']) }],
+        languageCount: 2,
+        languageHavingMediaCount: 1
       }
     ])
   })
@@ -114,10 +127,28 @@ describe('countries', () => {
     prismaMock.country.findMany.mockResolvedValue([
       {
         ...country,
-        countryLanguages: [{ id: '1', language, speakers: 100 }],
+        languages: [language],
         continent
-      } as unknown as Country
-    ])
+      }
+    ] as unknown as Country[])
+
+    prismaMock.countryLanguage.findMany.mockResolvedValue([
+      {
+        id: '1',
+        countryId: country.id,
+        languageId: language.id,
+        language,
+        speakers: 100,
+        displaySpeakers: 100,
+        primary: true,
+        suggested: false,
+        order: 1
+      }
+    ] as unknown as CountryLanguage[])
+
+    prismaMock.countryLanguage.count.mockResolvedValue(2)
+    prismaMock.language.count.mockResolvedValue(1)
+
     prismaMock.countryName.findMany.mockResolvedValue([countryName])
     prismaMock.continentName.findMany.mockResolvedValue([continentName])
     const data = await client({
@@ -125,63 +156,47 @@ describe('countries', () => {
       variables: {
         languageId: '529',
         primary: true,
-        term: 'United States'
+        term: 'test'
       }
     })
     expect(prismaMock.country.findMany).toHaveBeenCalledWith({
       include: {
-        continent: true,
-        countryLanguages: {
-          include: {
-            language: true
-          }
-        }
+        continent: true
       },
       where: {
         name: {
           some: {
-            value: { contains: 'United & States', mode: 'insensitive' }
+            value: {
+              contains: 'test',
+              mode: 'insensitive'
+            }
           }
         }
-      }
-    })
-    expect(prismaMock.countryName.findMany).toHaveBeenCalledWith({
-      include: {
-        language: true
-      },
-      where: {
-        OR: [{ languageId: '529' }, { primary: true }],
-        countryId: 'US'
-      },
-      orderBy: {
-        primary: 'desc'
       }
     })
     expect(data).toHaveProperty('data.countries', [
       {
         ...country,
-        countryLanguages: [
-          {
-            language: omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
-            speakers: 100
-          }
-        ],
         continent: {
           ...continent,
           name: [
             { ...omit(continentName, ['id', 'continentId', 'languageId']) }
           ]
         },
-        name: [{ ...omit(countryName, ['id', 'countryId', 'languageId']) }]
+        countryLanguages: [
+          {
+            language: omit(language, ['createdAt', 'updatedAt', 'hasVideos']),
+            speakers: 100,
+            displaySpeakers: 100,
+            primary: true,
+            suggested: false,
+            order: 1
+          }
+        ],
+        name: [{ ...omit(countryName, ['id', 'countryId', 'languageId']) }],
+        languageCount: 2,
+        languageHavingMediaCount: 1
       }
     ])
-  })
-
-  it('should return empty when no country found', async () => {
-    prismaMock.country.findMany.mockResolvedValue([])
-    const data = await client({
-      document: COUNTRIES_QUERY
-    })
-    expect(data).toHaveProperty('data.countries', [])
   })
 })

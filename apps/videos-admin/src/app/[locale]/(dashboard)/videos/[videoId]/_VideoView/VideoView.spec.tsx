@@ -257,4 +257,17 @@ describe('VideoView', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getAllByRole('tab')).toHaveLength(2)
   })
+
+  it('should render loading ui', async () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <NextIntlClientProvider locale="en">
+          <VideoView />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Loading...')).toBeInTheDocument()
+    expect(screen.queryByTestId('PublishedChip')).not.toBeInTheDocument()
+  })
 })

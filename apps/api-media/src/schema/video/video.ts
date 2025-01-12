@@ -11,6 +11,7 @@ import { ImageAspectRatio } from '../cloudflare/image/enums'
 import { IdType, IdTypeShape } from '../enums/idType'
 import { Language, LanguageWithSlug } from '../language'
 import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
+import { VideoVariantFilter } from '../videoVariant/inputs/videoVariantFilter'
 
 import { VideoLabel } from './enums/videoLabel'
 import { VideoCreateInput } from './inputs/videoCreate'
@@ -53,7 +54,12 @@ export function getLanguageIdFromInfo(
 const Video = builder.prismaObject('Video', {
   shareable: true,
   fields: (t) => ({
-    bibleCitations: t.relation('bibleCitation', { nullable: false }),
+    bibleCitations: t.relation('bibleCitation', {
+      nullable: false,
+      query: () => ({
+        orderBy: { order: 'asc' }
+      })
+    }),
     source: t.field({
       type: VideoSource,
       shareable: true,
@@ -71,6 +77,7 @@ const Video = builder.prismaObject('Video', {
     primaryLanguageId: t.exposeID('primaryLanguageId', { nullable: false }),
     published: t.exposeBoolean('published', { nullable: false }),
     cloudflareAssets: t.relation('cloudflareAssets', { nullable: false }),
+    videoEditions: t.relation('videoEditions', { nullable: false }),
     title: t.relation('title', {
       nullable: false,
       args: {
@@ -135,9 +142,6 @@ const Video = builder.prismaObject('Video', {
         orderBy: { order: 'asc' }
       })
     }),
-    image: t.exposeString('image', {
-      deprecationReason: 'use images.mobileCinematicHigh'
-    }),
     imageAlt: t.relation('imageAlt', {
       nullable: false,
       args: {
@@ -154,24 +158,10 @@ const Video = builder.prismaObject('Video', {
         orderBy: { primary: 'desc' }
       })
     }),
-    videoStill: t.exposeString('videoStill', {
-      deprecationReason: 'use images.videoStill'
-    }),
-    thumbnail: t.exposeString('thumbnail', {
-      deprecationReason: 'use images.thumbnail'
-    }),
-    mobileCinematicHigh: t.exposeString('mobileCinematicHigh', {
-      deprecationReason: 'use images.mobileCinematicHigh'
-    }),
-    mobileCinematicLow: t.exposeString('mobileCinematicLow', {
-      deprecationReason: 'use images.mobileCinematicLow'
-    }),
-    mobileCinematicVeryLow: t.exposeString('mobileCinematicVeryLow', {
-      deprecationReason: 'use images.mobileCinematicVeryLow'
-    }),
     variantLanguages: t.field({
       type: [Language],
       nullable: false,
+      args: {},
       resolve: async ({ id: videoId }) =>
         (
           await prisma.videoVariant.findMany({
@@ -182,8 +172,16 @@ const Video = builder.prismaObject('Video', {
     }),
     variantLanguagesCount: t.int({
       nullable: false,
-      resolve: async ({ id: videoId }) =>
-        await prisma.videoVariant.count({ where: { videoId } })
+      args: {
+        input: t.arg({ type: VideoVariantFilter, required: false })
+      },
+      resolve: async ({ id: videoId }, { input }) =>
+        await prisma.videoVariant.count({
+          where: {
+            videoId,
+            published: input?.onlyPublished === false ? undefined : true
+          }
+        })
     }),
     slug: t.string({
       nullable: false,
@@ -231,10 +229,16 @@ const Video = builder.prismaObject('Video', {
     variantLanguagesWithSlug: t.field({
       type: [LanguageWithSlug],
       nullable: false,
-      resolve: async ({ id: videoId }) =>
+      args: {
+        input: t.arg({ type: VideoVariantFilter, required: false })
+      },
+      resolve: async ({ id: videoId }, { input }) =>
         (
           await prisma.videoVariant.findMany({
-            where: { videoId },
+            where: {
+              videoId,
+              published: input?.onlyPublished === false ? undefined : true
+            },
             select: { languageId: true, slug: true }
           })
         ).map(({ slug, languageId: id }) => ({
@@ -245,10 +249,16 @@ const Video = builder.prismaObject('Video', {
     variants: t.prismaField({
       type: ['VideoVariant'],
       nullable: false,
-      resolve: async (query, parent) => {
+      args: {
+        input: t.arg({ type: VideoVariantFilter, required: false })
+      },
+      resolve: async (query, parent, { input }) => {
         const res = await prisma.videoVariant.findMany({
           ...query,
-          where: { videoId: parent.id }
+          where: {
+            videoId: parent.id,
+            published: input?.onlyPublished === false ? undefined : true
+          }
         })
         // languageId is a string, so we need to convert it to a number to sort it correctly
         return orderBy(res, (variant) => +variant.languageId, 'asc')

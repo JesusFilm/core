@@ -111,7 +111,7 @@ const video: TreeBlock<VideoBlock> = {
   duration: 144,
   objectFit: null,
   image: null,
-  video: {
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
