@@ -14,6 +14,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import Code1Icon from '@core/shared/ui/icons/Code1'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import ShareIcon from '@core/shared/ui/icons/Share'
+import TransformIcon from '@core/shared/ui/icons/Transform'
 
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { Item } from '../Item/Item'
@@ -53,6 +54,7 @@ export function ShareItem({
   const router = useRouter()
   const [showSlugDialog, setShowSlugDialog] = useState<boolean | undefined>()
   const [showEmbedDialog, setShowEmbedDialog] = useState<boolean | undefined>()
+  const [showQrCodeDialog, setShowQrCodeDialog] = useState<boolean>(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
   function handleShowMenu(event: MouseEvent<HTMLElement>): void {
@@ -129,6 +131,20 @@ export function ShareItem({
               }}
             >
               {t('Embed Journey')}
+            </Button>
+            <Button
+              onClick={() => {
+                setShowQrCodeDialog(true)
+              }}
+              size="small"
+              startIcon={<TransformIcon />}
+              disabled={journey == null}
+              style={{
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis'
+              }}
+            >
+              {t('QR Code')}
             </Button>
           </Stack>
         </Stack>
