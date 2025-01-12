@@ -66,9 +66,6 @@ type Language
   name(languageId: ID, primary: Boolean): [LanguageName!]!
   countryLanguages: [CountryLanguage!]!
   audioPreview: AudioPreview
-  primaryCountryId: String
-  speakerCount: String!
-  countriesCount: Int!
 }
 
 enum LanguageIdType {
@@ -93,5 +90,5 @@ type Query {
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String): [Language!]!
   languagesCount(where: LanguagesFilter, term: String): Int!
   country(id: ID!): Country
-  countries(term: String): [Country!]!
+  countries(term: String, ids: [ID!]): [Country!]!
 }

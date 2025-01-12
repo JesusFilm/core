@@ -45,12 +45,26 @@ const Country = builder.prismaObject('Country', {
       }
     }),
     continent: t.relation('continent', { nullable: false, onNull: 'error' }),
-    countryLanguages: t.relation('countryLanguages', { nullable: false }),
+    countryLanguages: t.prismaField({
+      type: ['CountryLanguage'],
+      nullable: false,
+      resolve: async (query, country) => {
+        return await prisma.countryLanguage.findMany({
+          ...query,
+          where: {
+            countryId: country.id,
+            language: {
+              hasVideos: true
+            }
+          }
+        })
+      }
+    }),
     languageCount: t.int({
       nullable: false,
       resolve: async (country) => {
         return await prisma.countryLanguage.count({
-          where: { countryId: country.id }
+          where: { countryId: country.id, suggested: false }
         })
       }
     }),
@@ -90,9 +104,10 @@ builder.queryFields((t) => ({
     type: ['Country'],
     nullable: false,
     args: {
-      term: t.arg.string({ required: false })
+      term: t.arg.string({ required: false }),
+      ids: t.arg.idList({ required: false })
     },
-    resolve: async (query, _parent, { term }) => {
+    resolve: async (query, _parent, { term, ids }) => {
       const filter: Prisma.CountryWhereInput = {}
       if (term != null) {
         filter.name = {
@@ -103,6 +118,9 @@ builder.queryFields((t) => ({
             }
           }
         }
+      }
+      if (ids != null) {
+        filter.id = { in: ids }
       }
       return await prisma.country.findMany({
         ...query,

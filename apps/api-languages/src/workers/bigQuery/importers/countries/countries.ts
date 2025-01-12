@@ -1,5 +1,6 @@
 import compact from 'lodash/compact'
 import omit from 'lodash/omit'
+import round from 'lodash/round'
 import uniq from 'lodash/uniq'
 import { Logger } from 'pino'
 import { z } from 'zod'
@@ -21,7 +22,9 @@ const countrySchema = z
     ...omit(value, ['shortName', 'country_population', 'continentName']),
     id: value.shortName,
     population: value.country_population,
-    continentId: value.continentName
+    continentId: value.continentName,
+    longitude: value.longitude ? round(value.longitude, 2) : null,
+    latitude: value.latitude ? round(value.latitude, 2) : null
   }))
 
 let countryIds: string[] = []

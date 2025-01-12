@@ -48,7 +48,7 @@ describe('bigQuery/importers/countries', () => {
   describe('importCountries', () => {
     it('should import countries', async () => {
       prismaMock.country.findMany.mockResolvedValue([
-        { id: 'countryId' } as unknown as Country
+        { id: 'countryId', countryLanguages: [] } as unknown as Country
       ])
       prismaMock.continent.findMany.mockResolvedValue([
         { id: 'continentId' } as unknown as Continent
@@ -73,7 +73,9 @@ describe('bigQuery/importers/countries', () => {
 
   describe('importOne', () => {
     it('should import one language name', async () => {
-      prismaMock.country.upsert.mockResolvedValue({} as unknown as Country)
+      prismaMock.country.upsert.mockResolvedValue({
+        countryLanguages: []
+      } as unknown as Country)
       prismaMock.country.findMany.mockResolvedValue([])
       prismaMock.continent.findMany.mockResolvedValue([])
       await importCountries()
