@@ -16,6 +16,18 @@ export interface MediaComponent {
 }
 
 export interface ApiResponse<T = any> {
+  page?: number
+  limit?: number
+  pages?: number
+  total?: number
+  apiSessionId?: string
+  _links: {
+    self: { href: string }
+    first?: { href: string }
+    last?: { href: string }
+    next?: { href: string }
+    previous?: { href: string }
+  }
   _embedded: {
     [key: string]: T[]
   }
