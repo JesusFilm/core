@@ -224,6 +224,8 @@ export function CommandProvider({
     }
   }
 
+  // may need to add copy/paste here?
+
   function add<E = unknown, R = E, U = E>(command: Command<E, R, U>): void {
     command.execute(command.parameters.execute)
     dispatch({ type: 'AddCommandAction', command: command as Command })

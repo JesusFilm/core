@@ -20,5 +20,7 @@ export function Hotkeys({ document }: HotkeysProps): ReactElement {
     preventDefault: true
   })
 
+  // add command c / command v hotkeys for copy-pasting
+
   return <></>
 }

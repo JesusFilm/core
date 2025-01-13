@@ -93,6 +93,8 @@ export interface EditorState {
    */
   selectedStepId?: string
   steps?: Array<TreeBlock<StepBlock>>
+
+  // copy block ?
 }
 interface SetActiveContentAction {
   type: 'SetActiveContentAction'

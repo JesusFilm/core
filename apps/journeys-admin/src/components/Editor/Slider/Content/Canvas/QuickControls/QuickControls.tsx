@@ -6,9 +6,11 @@ import { MouseEvent, ReactElement } from 'react'
 
 import { ThemeProvider } from '../../../../../ThemeProvider'
 
+import { CopyBlock } from './CopyBlock'
 import { DeleteBlock } from './DeleteBlock'
 import { DuplicateBlock } from './DuplicateBlock'
 import { MoveBlock } from './MoveBlock'
+import { PasteBlock } from './PasteBlock'
 
 export function QuickControls({ open, anchorEl, block }): ReactElement {
   const isVideoBlock = block?.__typename === 'VideoBlock'
@@ -43,8 +45,12 @@ export function QuickControls({ open, anchorEl, block }): ReactElement {
             <Paper sx={{ mb: 2, p: 1 }}>
               <Stack spacing={2} direction="row">
                 <MoveBlock />
+                {/* add copy button?  */}
+                <CopyBlock />
                 <DuplicateBlock disabled={isVideoBlock} />
                 <DeleteBlock variant="button" />
+                {/* paste block button? */}
+                <PasteBlock />
               </Stack>
             </Paper>
           </Fade>
