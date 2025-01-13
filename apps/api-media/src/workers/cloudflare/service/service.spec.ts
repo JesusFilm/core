@@ -4,10 +4,9 @@ import { Video } from 'cloudflare/resources/stream/stream'
 import { mockDeep } from 'jest-mock-extended'
 import clone from 'lodash/clone'
 
-import {
-  service
-} from './service'
 import { prismaMock } from '../../../../test/prismaMock'
+
+import { service } from './service'
 
 const mockCloudflare = mockDeep<Cloudflare>()
 

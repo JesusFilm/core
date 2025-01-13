@@ -1,8 +1,8 @@
 import 'cloudflare/shims/node'
 
 import Cloudflare from 'cloudflare'
-import { Logger } from 'pino'
 import fetch from 'node-fetch'
+import { Logger } from 'pino'
 
 import { prisma } from '../../../lib/prisma'
 

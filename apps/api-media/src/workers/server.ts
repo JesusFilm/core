@@ -83,8 +83,8 @@ async function main(): Promise<void> {
   )
   run(
     await import(
-    /* webpackChunkName: "cloudflare" */
-    './cloudflare'
+      /* webpackChunkName: "cloudflare" */
+      './cloudflare'
     )
   )
 }
