@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, ChatButton, Event, Visitor, Host, JourneyVisitor, Team, Integration, UserTeam, UserTeamInvite, UserJourney, JourneyTag, Journey, UserRole, JourneyProfile, UserInvite, Block, Action, JourneysEmailPreference, JourneyNotification, CustomDomain, JourneyCollection, JourneyCollectionJourneys } from ".prisma/api-journeys-modern-client";
+import type { Prisma, ChatButton, Event, Visitor, Host, JourneyVisitor, Team, Integration, UserTeam, UserTeamInvite, UserJourney, JourneyTag, Journey, UserRole, JourneyProfile, UserInvite, Block, Action, JourneysEmailPreference, JourneyNotification, CustomDomain, JourneyCollection, JourneyCollectionJourneys, QrCode } from ".prisma/api-journeys-modern-client";
 export default interface PrismaTypes {
     ChatButton: {
         Name: "ChatButton";
@@ -141,8 +141,8 @@ export default interface PrismaTypes {
         Where: Prisma.TeamWhereInput;
         Create: {};
         Update: {};
-        RelationName: "visitors" | "userTeams" | "journeys" | "hosts" | "UserTeamInvites" | "journeyCollections" | "customDomains" | "integrations";
-        ListRelations: "visitors" | "userTeams" | "journeys" | "hosts" | "UserTeamInvites" | "journeyCollections" | "customDomains" | "integrations";
+        RelationName: "visitors" | "userTeams" | "journeys" | "hosts" | "UserTeamInvites" | "journeyCollections" | "customDomains" | "integrations" | "qrCodes";
+        ListRelations: "visitors" | "userTeams" | "journeys" | "hosts" | "UserTeamInvites" | "journeyCollections" | "customDomains" | "integrations" | "qrCodes";
         Relations: {
             visitors: {
                 Shape: Visitor[];
@@ -182,6 +182,11 @@ export default interface PrismaTypes {
             integrations: {
                 Shape: Integration[];
                 Name: "Integration";
+                Nullable: false;
+            };
+            qrCodes: {
+                Shape: QrCode[];
+                Name: "QrCode";
                 Nullable: false;
             };
         };
@@ -306,8 +311,8 @@ export default interface PrismaTypes {
         Where: Prisma.JourneyWhereInput;
         Create: {};
         Update: {};
-        RelationName: "userJourneys" | "team" | "userInvites" | "blocks" | "chatButtons" | "host" | "journeyTags" | "actions" | "primaryImageBlock" | "creatorImageBlock" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications" | "logoImageBlock" | "menuStepBlock";
-        ListRelations: "userJourneys" | "userInvites" | "blocks" | "chatButtons" | "journeyTags" | "actions" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications";
+        RelationName: "userJourneys" | "team" | "userInvites" | "blocks" | "chatButtons" | "host" | "journeyTags" | "actions" | "primaryImageBlock" | "creatorImageBlock" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications" | "logoImageBlock" | "menuStepBlock" | "qrCode";
+        ListRelations: "userJourneys" | "userInvites" | "blocks" | "chatButtons" | "journeyTags" | "actions" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications" | "qrCode";
         Relations: {
             userJourneys: {
                 Shape: UserJourney[];
@@ -383,6 +388,11 @@ export default interface PrismaTypes {
                 Shape: Block | null;
                 Name: "Block";
                 Nullable: true;
+            };
+            qrCode: {
+                Shape: QrCode[];
+                Name: "QrCode";
+                Nullable: false;
             };
         };
     };
@@ -669,6 +679,31 @@ export default interface PrismaTypes {
             journeyCollection: {
                 Shape: JourneyCollection;
                 Name: "JourneyCollection";
+                Nullable: false;
+            };
+            journey: {
+                Shape: Journey;
+                Name: "Journey";
+                Nullable: false;
+            };
+        };
+    };
+    QrCode: {
+        Name: "QrCode";
+        Shape: QrCode;
+        Include: Prisma.QrCodeInclude;
+        Select: Prisma.QrCodeSelect;
+        OrderBy: Prisma.QrCodeOrderByWithRelationInput;
+        WhereUnique: Prisma.QrCodeWhereUniqueInput;
+        Where: Prisma.QrCodeWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "team" | "journey";
+        ListRelations: never;
+        Relations: {
+            team: {
+                Shape: Team;
+                Name: "Team";
                 Nullable: false;
             };
             journey: {
