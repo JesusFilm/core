@@ -10,7 +10,7 @@ import { useJourney } from '../../../../libs/JourneyProvider'
 interface SocialImageProps {
   hasCreatorDescription?: boolean
 }
-
+//
 export function SocialImage({
   hasCreatorDescription = false
 }: SocialImageProps): ReactElement {
