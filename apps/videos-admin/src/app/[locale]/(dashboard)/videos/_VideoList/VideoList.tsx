@@ -7,7 +7,6 @@ import {
   DataGrid,
   GridCallbackDetails,
   GridColDef,
-  GridColumnVisibilityModel,
   GridFilterModel,
   GridPaginationModel,
   GridRenderCellParams,
@@ -21,13 +20,15 @@ import {
   gridClasses
 } from '@mui/x-data-grid'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
+import omitBy from 'lodash/omitBy'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import Lock1 from '@core/shared/ui/icons/Lock1'
 
 import { PublishedChip } from '../../../../../components/PublishedChip'
+import { useVideoFilter } from '../../../../../libs/useVideoFilter'
 
 import { VideoListHeader } from './VideoListHeader'
 
@@ -86,46 +87,25 @@ export const GET_ADMIN_VIDEOS_AND_COUNT = graphql(`
   }
 `)
 
-type VideosFilter = VariablesOf<typeof GET_ADMIN_VIDEOS_AND_COUNT>['where']
 export type GetAdminVideosAndCount = ResultOf<typeof GET_ADMIN_VIDEOS_AND_COUNT>
 export type GetAdminVideosAndCountVariables = VariablesOf<
   typeof GET_ADMIN_VIDEOS_AND_COUNT
 >
 
 export function VideoList(): ReactElement {
-  const videosLimit = 50
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    pageSize: videosLimit,
-    page: 0
-  })
-  const [columnVisibilityModel, setColumnVisibilityModel] =
-    useState<GridColumnVisibilityModel>({
-      id: true,
-      title: true,
-      description: true,
-      locked: true
-    })
-
-  const [filterModel, setFilterModel] = useState<GridFilterModel>({
-    items: []
-  })
-
-  const [getVideosWhereArgs, setGetVideosWhereArgs] = useState<VideosFilter>({})
-
   const t = useTranslations()
   const router = useRouter()
   const pathname = usePathname()
+
+  const { filters, tableFilterProps, updateQueryParams, dispatch } =
+    useVideoFilter()
 
   const { data, loading, fetchMore } = useQuery<
     GetAdminVideosAndCount,
     GetAdminVideosAndCountVariables
   >(GET_ADMIN_VIDEOS_AND_COUNT, {
     variables: {
-      limit: videosLimit,
-      offset: paginationModel.page * videosLimit,
-      showTitle: columnVisibilityModel.title ?? true,
-      showSnippet: columnVisibilityModel.description ?? true,
-      where: getVideosWhereArgs
+      ...filters
     }
   })
 
@@ -172,6 +152,9 @@ export function VideoList(): ReactElement {
       field: 'published',
       headerName: t('Published'),
       width: 112,
+      filterOperators: getGridBooleanOperators().filter(
+        (operator) => operator.value === 'is'
+      ),
       renderCell: (
         params: GridRenderCellParams<GridValidRowModel, boolean>
       ) => <PublishedChip published={params.value ?? false} />
@@ -200,42 +183,42 @@ export function VideoList(): ReactElement {
   ): Promise<void> {
     await fetchMore({
       variables: {
-        offset: model.page * videosLimit
+        offset: model.page * filters.limit
       }
     })
-    setPaginationModel(model)
+
+    dispatch({ type: 'PageChange', model })
+
+    updateQueryParams({ page: model.page })
   }
 
   function handleFilterModelChange(model: GridFilterModel): void {
-    const where: VideosFilter = {}
-    model.items.forEach((item) => {
-      if (
-        item.field === 'id' &&
-        item.operator === 'equals' &&
-        item.value != null
-      )
-        where.ids = item.value === '' ? null : [item.value]
+    const params = model.items.reduce((acc, item) => {
+      acc[item.field] = {
+        [item.operator]: item.value === '' ? null : item.value
+      }
+      return acc
+    }, {})
 
-      if (
-        item.field === 'title' &&
-        item.operator === 'equals' &&
-        item.value != null
-      )
-        where.title = item.value === '' ? null : item.value
+    dispatch({
+      type: 'PageChange',
+      model: { pageSize: filters.limit, page: 0 }
+    })
+    dispatch({
+      type: 'FilterChange',
+      model
+    })
 
-      if (
-        item.field === 'locked' &&
-        item.operator === 'is' &&
-        item.value != null
-      )
-        where.locked = item.value === '' ? null : item.value
-    })
-    setFilterModel(model)
-    setPaginationModel({
-      pageSize: videosLimit,
-      page: 0
-    })
-    setGetVideosWhereArgs(where)
+    updateQueryParams({ filters: params })
+  }
+
+  const handleColumnVisibilityModelChange = (model) => {
+    dispatch({ type: 'ColumnChange', model })
+
+    const columns = omitBy(model)
+    delete columns.undefined
+
+    updateQueryParams({ columns })
   }
 
   return (
@@ -248,11 +231,10 @@ export function VideoList(): ReactElement {
         density="compact"
         data-testid="VideoListDataGrid"
         loading={loading}
-        filterMode="server"
         rows={rows}
         columns={columns}
-        pageSizeOptions={[videosLimit]}
-        paginationModel={paginationModel}
+        {...tableFilterProps}
+        pageSizeOptions={[10]}
         paginationMode="server"
         onPaginationModelChange={handleChangePage}
         rowCount={data?.adminVideosCount ?? 0}
@@ -261,12 +243,9 @@ export function VideoList(): ReactElement {
           toolbar: GridToolbar
         }}
         disableDensitySelector
-        columnVisibilityModel={columnVisibilityModel}
-        onColumnVisibilityModelChange={(newModel) =>
-          setColumnVisibilityModel(newModel)
-        }
-        filterModel={filterModel}
+        onColumnVisibilityModelChange={handleColumnVisibilityModelChange}
         onFilterModelChange={handleFilterModelChange}
+        filterMode="server"
         sx={{
           [`& .${gridClasses.columnHeader}, & .${gridClasses.cell}`]: {
             outline: 'transparent'
