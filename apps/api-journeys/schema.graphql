@@ -281,6 +281,12 @@ type Mutation {
   customDomainCheck(id: ID!): CustomDomainCheck!
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
+
+  """
+  Creates a JourneyViewEvent, returns null if attempting to create another
+  JourneyViewEvent with the same userId, journeyId, and within the same 24hr
+  period of the previous JourneyViewEvent
+  """
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent!
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent!
@@ -1135,7 +1141,7 @@ type VideoBlock implements Block {
   internal source videos: video is only populated when videoID and
   videoVariantLanguageId are present
   """
-  video: Video
+  video: Video @deprecated(reason: "use mediaVideo union instead")
 
   """
   internal source videos: videoId and videoVariantLanguageId both need to be set

@@ -10,6 +10,7 @@ import {
   Prisma,
   Video,
   VideoDescription,
+  VideoEdition,
   VideoImageAlt,
   VideoLabel,
   VideoSnippet,
@@ -51,6 +52,7 @@ describe('video', () => {
     images: CloudflareImage[]
     cloudflareAssets: CloudflareR2[]
     variants: VideoVariant[]
+    videoEditions: VideoEdition[]
   }
 
   const children: Video[] = [
@@ -58,12 +60,6 @@ describe('video', () => {
       id: 'videoId2',
       label: 'collection',
       primaryLanguageId: 'primaryLanguageId',
-      thumbnail: null,
-      videoStill: null,
-      mobileCinematicHigh: null,
-      mobileCinematicLow: null,
-      mobileCinematicVeryLow: null,
-      image: null,
       slug: null,
       noIndex: null,
       published: true,
@@ -72,13 +68,7 @@ describe('video', () => {
     {
       id: 'videoId1',
       label: 'collection',
-      thumbnail: null,
-      videoStill: null,
-      mobileCinematicHigh: null,
-      mobileCinematicLow: null,
-      mobileCinematicVeryLow: null,
       primaryLanguageId: 'primaryLanguageId',
-      image: null,
       slug: null,
       noIndex: null,
       published: true,
@@ -91,12 +81,6 @@ describe('video', () => {
       id: 'videoId3',
       label: 'collection',
       primaryLanguageId: 'primaryLanguageId',
-      thumbnail: null,
-      videoStill: null,
-      mobileCinematicHigh: null,
-      mobileCinematicLow: null,
-      mobileCinematicVeryLow: null,
-      image: null,
       slug: null,
       noIndex: null,
       published: true,
@@ -106,12 +90,6 @@ describe('video', () => {
       id: 'videoId4',
       label: 'collection',
       primaryLanguageId: 'primaryLanguageId',
-      thumbnail: null,
-      videoStill: null,
-      mobileCinematicHigh: null,
-      mobileCinematicLow: null,
-      mobileCinematicVeryLow: null,
-      image: null,
       slug: null,
       noIndex: null,
       published: true,
@@ -124,12 +102,6 @@ describe('video', () => {
       id: 'videoId',
       label: 'behindTheScenes',
       primaryLanguageId: 'primaryLanguageId',
-      image: null,
-      thumbnail: null,
-      videoStill: null,
-      mobileCinematicHigh: null,
-      mobileCinematicLow: null,
-      mobileCinematicVeryLow: null,
       slug: null,
       noIndex: null,
       published: true,
@@ -256,6 +228,7 @@ describe('video', () => {
           updatedAt: new Date()
         }
       ],
+      videoEditions: [{ id: 'edition', name: 'base', videoId: 'videoId' }],
       variants: [
         {
           id: 'variantId2',
@@ -268,7 +241,8 @@ describe('video', () => {
           downloadable: true,
           duration: null,
           lengthInMilliseconds: null,
-          share: null
+          share: null,
+          published: true
         },
         {
           id: 'variantId1',
@@ -281,7 +255,8 @@ describe('video', () => {
           downloadable: true,
           duration: null,
           lengthInMilliseconds: null,
-          share: null
+          share: null,
+          published: false
         }
       ]
     }
@@ -291,13 +266,7 @@ describe('video', () => {
     id: 'videoId',
     label: 'behindTheScenes',
     primaryLanguageId: 'primaryLanguageId',
-    thumbnail: null,
-    videoStill: null,
     published: true,
-    mobileCinematicHigh: null,
-    mobileCinematicLow: null,
-    mobileCinematicVeryLow: null,
-    image: null,
     slug: null,
     noIndex: null,
     childIds: []
@@ -313,6 +282,7 @@ describe('video', () => {
         $limit: Int
         $where: VideosFilter
         $aspectRatio: ImageAspectRatio
+        $input: VideoVariantFilter
       ) {
         videos(offset: $offset, limit: $limit, where: $where) {
           id
@@ -356,12 +326,6 @@ describe('video', () => {
               id
             }
           }
-          thumbnail
-          videoStill
-          mobileCinematicHigh
-          mobileCinematicLow
-          mobileCinematicVeryLow
-          image
           imageAlt(languageId: $languageId, primary: $primary) {
             id
             value
@@ -408,7 +372,7 @@ describe('video', () => {
           variant(languageId: $languageId) {
             id
           }
-          variants {
+          variants(input: $input) {
             id
             language {
               id
@@ -420,6 +384,9 @@ describe('video', () => {
             url
           }
           cloudflareAssets {
+            id
+          }
+          videoEditions {
             id
           }
         }
@@ -459,12 +426,6 @@ describe('video', () => {
           }
         ],
         id: 'videoId',
-        thumbnail: null,
-        videoStill: null,
-        mobileCinematicHigh: null,
-        mobileCinematicLow: null,
-        mobileCinematicVeryLow: null,
-        image: null,
         imageAlt: [
           {
             id: 'imageAltId',
@@ -498,6 +459,7 @@ describe('video', () => {
             value: 'value'
           }
         ],
+        videoEditions: [{ id: 'edition' }],
         subtitles: [
           {
             edition: 'edition',
@@ -626,6 +588,7 @@ describe('video', () => {
         take: 100,
         where: { published: true },
         include: {
+          videoEditions: true,
           bibleCitation: {
             orderBy: {
               order: 'asc'
@@ -821,6 +784,7 @@ describe('video', () => {
           }
         },
         include: {
+          videoEditions: true,
           bibleCitation: {
             orderBy: {
               order: 'asc'
@@ -1099,12 +1063,6 @@ describe('video', () => {
               id
             }
           }
-          thumbnail
-          videoStill
-          mobileCinematicHigh
-          mobileCinematicLow
-          mobileCinematicVeryLow
-          image
           imageAlt(languageId: $languageId, primary: $primary) {
             id
             value
@@ -1192,12 +1150,6 @@ describe('video', () => {
           }
         ],
         id: 'videoId',
-        thumbnail: null,
-        videoStill: null,
-        mobileCinematicHigh: null,
-        mobileCinematicLow: null,
-        mobileCinematicVeryLow: null,
-        image: null,
         imageAlt: [
           {
             id: 'imageAltId',
@@ -1650,13 +1602,7 @@ describe('video', () => {
       id: 'videoId',
       label: 'behindTheScenes',
       primaryLanguageId: 'primaryLanguageId',
-      thumbnail: null,
-      videoStill: null,
       published: true,
-      mobileCinematicHigh: null,
-      mobileCinematicLow: null,
-      mobileCinematicVeryLow: null,
-      image: null,
       slug: null,
       noIndex: null,
       childIds: []
@@ -1991,12 +1937,6 @@ describe('video', () => {
         id: 'testId',
         label: 'behindTheScenes',
         primaryLanguageId: 'primaryLanguageId',
-        thumbnail: null,
-        videoStill: null,
-        mobileCinematicHigh: null,
-        mobileCinematicLow: null,
-        mobileCinematicVeryLow: null,
-        image: null,
         slug: null,
         noIndex: null,
         published: true,
