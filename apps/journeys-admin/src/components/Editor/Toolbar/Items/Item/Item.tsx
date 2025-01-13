@@ -16,6 +16,7 @@ interface ItemProps {
   onClick?: (event: MouseEvent<HTMLElement>) => void
   count?: number
   countLabel?: string
+  showCountLabel?: boolean
 }
 
 export function Item({
@@ -26,7 +27,8 @@ export function Item({
   ButtonProps,
   onClick,
   count,
-  countLabel
+  countLabel,
+  showCountLabel
 }: ItemProps): ReactElement {
   switch (variant) {
     case 'icon-button':
@@ -65,7 +67,7 @@ export function Item({
                 }}
                 {...ButtonProps}
               >
-                {count.toLocaleString()}
+                {!showCountLabel ? count.toLocaleString() : countLabel}
               </Button>
             ) : (
               <IconButton
