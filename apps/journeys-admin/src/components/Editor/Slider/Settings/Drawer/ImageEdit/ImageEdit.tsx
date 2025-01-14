@@ -1,3 +1,5 @@
+import { hostname } from 'os'
+
 import { gql, useMutation } from '@apollo/client'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
@@ -23,6 +25,7 @@ import {
   JourneyImageBlockUpdateVariables
 } from '../../../../../../../__generated__/JourneyImageBlockUpdate'
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
+import { revalidateJourney } from '../../../../../../libs/revalidateJourney'
 
 import { Large } from './Large'
 import { Small } from './Small'
@@ -166,6 +169,10 @@ export function ImageEdit({
         journeyId: journey.id,
         input
       }
+    })
+    await revalidateJourney({
+      slug: journey.slug,
+      hostname: journey.host?.title
     })
   }
 
