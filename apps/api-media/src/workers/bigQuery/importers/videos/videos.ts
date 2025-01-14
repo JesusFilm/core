@@ -31,13 +31,7 @@ const videoSchema = z.object({
     .transform((value) =>
       value == null ? [] : value.substring(1, value.length - 1).split(',')
     )
-    .transform((value) => value.filter((id) => id.length > 0)),
-  image: z.string().nullable(),
-  videoStill: z.string().nullable(),
-  thumbnail: z.string().nullable(),
-  mobileCinematicHigh: z.string().nullable().nullable(),
-  mobileCinematicLow: z.string().nullable().nullable(),
-  mobileCinematicVeryLow: z.string().nullable().nullable()
+    .transform((value) => value.filter((id) => id.length > 0))
 })
 
 type Video = z.infer<typeof videoSchema>
