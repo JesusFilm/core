@@ -38,17 +38,19 @@ test('media component returns expected data structure', async ({ request }) => {
   })
 })
 
-test('media component with metadata language returns localized content', async ({
-  request
-}) => {
-  const response = await request.get(
-    `${await getBaseUrl()}/v2/media-components/${mediaComponentId}?${createQueryParams({ metadataLanguageTags: 'es' })}`
-  )
+// TODO: Check if crowdin import is working on stage
+test.fixme(
+  'media component with metadata language returns localized content',
+  async ({ request }) => {
+    const response = await request.get(
+      `${await getBaseUrl()}/v2/media-components/${mediaComponentId}?${createQueryParams({ metadataLanguageTags: 'es' })}`
+    )
 
-  expect(response.ok()).toBeTruthy()
-  const data = await response.json()
-  expect(data.metadataLanguageTag).toBe('es')
-})
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+    expect(data.metadataLanguageTag).toBe('es')
+  }
+)
 
 test('media component with expand=languageIds includes language data', async ({
   request
