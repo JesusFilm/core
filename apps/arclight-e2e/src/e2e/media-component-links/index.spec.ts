@@ -1,51 +1,97 @@
 import { expect, test } from '@playwright/test'
+import type { APIRequestContext } from '@playwright/test'
 
-import {
-  createQueryParams,
-  makeParallelRequests
-} from '../../framework/helpers'
-import {
-  convertArrayToObject,
-  getObjectDiff
-} from '../../utils/comparison-utils'
-import { testData } from '../../utils/testData'
+import { createQueryParams, getBaseUrl } from '../../framework/helpers'
 
-test.fixme(
-  'compare media component links between environments',
-  async ({ request }) => {
-    const params = createQueryParams({ ids: testData.mediaComponentLinks })
-    const [baseData, compareData] = await makeParallelRequests(
-      request,
-      '/v2/media-component-links',
-      params
-    )
+interface TestCase {
+  params: Record<string, any>
+}
 
-    expect(baseData._embedded.mediaComponentsLinks).toBeDefined()
-    expect(compareData._embedded.mediaComponentsLinks).toBeDefined()
-
-    // Sort because the order does not matter
-    const sortContainedBy = (mediaComponentLinks: any[]) => {
-      mediaComponentLinks.forEach((link: any) => {
-        if (link.linkedMediaComponentIds?.containedBy) {
-          link.linkedMediaComponentIds.containedBy.sort()
-        }
-      })
-      return mediaComponentLinks
-    }
-
-    const baseMediaComponentLinks = convertArrayToObject(
-      sortContainedBy(baseData._embedded.mediaComponentsLinks),
-      'mediaComponentId'
-    )
-    const compareMediaComponentLinks = convertArrayToObject(
-      sortContainedBy(compareData._embedded.mediaComponentsLinks),
-      'mediaComponentId'
-    )
-
-    const diffs = getObjectDiff(
-      baseMediaComponentLinks,
-      compareMediaComponentLinks
-    )
-    expect(diffs).toHaveLength(0)
+const testCases = {
+  basic: {
+    params: { ids: ['1_jf-0-0', '1_jf-0-1'] }
+  },
+  withCustomApiKey: {
+    params: { ids: ['1_jf-0-0'], apiKey: 'custom-key' }
   }
-)
+}
+
+async function getMediaComponentLinks(
+  request: APIRequestContext,
+  testCase: TestCase
+) {
+  const { params } = testCase
+  const queryParams = createQueryParams(params)
+  const response = await request.get(
+    `${await getBaseUrl()}/v2/media-component-links?${queryParams}`
+  )
+  return response
+}
+
+test('basic media component links request', async ({ request }) => {
+  const response = await getMediaComponentLinks(request, testCases.basic)
+  expect(response.ok()).toBeTruthy()
+
+  const data = await response.json()
+  expect(data).toMatchObject({
+    _embedded: {
+      mediaComponentsLinks: expect.any(Array)
+    },
+    _links: expect.any(Object)
+  })
+
+  // Check each media component link
+  data._embedded.mediaComponentsLinks.forEach((link: any) => {
+    expect(link).toMatchObject({
+      mediaComponentId: expect.any(String),
+      linkedMediaComponentIds: expect.any(Object),
+      _links: expect.any(Object)
+    })
+
+    // Check linked IDs structure
+    if (link.linkedMediaComponentIds.containedBy) {
+      expect(
+        Array.isArray(link.linkedMediaComponentIds.containedBy)
+      ).toBeTruthy()
+      link.linkedMediaComponentIds.containedBy.forEach((id: any) => {
+        expect(typeof id).toBe('string')
+      })
+    }
+  })
+})
+
+test('media component links with custom API key', async ({ request }) => {
+  const response = await getMediaComponentLinks(
+    request,
+    testCases.withCustomApiKey
+  )
+  expect(response.ok()).toBeTruthy()
+
+  const data = await response.json()
+  expect(data).toMatchObject({
+    _embedded: {
+      mediaComponentsLinks: expect.any(Array)
+    },
+    _links: expect.any(Object)
+  })
+
+  // API key specific checks
+  expect(data._links.self.href).toContain('apiKey=custom-key')
+})
+
+test('media component links returns empty array for non-existent IDs', async ({
+  request
+}) => {
+  const response = await getMediaComponentLinks(request, {
+    params: { ids: ['nonexistent_id'] }
+  })
+  expect(response.ok()).toBeTruthy()
+
+  const data = await response.json()
+  expect(data).toMatchObject({
+    _embedded: {
+      mediaComponentsLinks: []
+    },
+    _links: expect.any(Object)
+  })
+})

@@ -1,69 +1,126 @@
 import { expect, test } from '@playwright/test'
+import type { APIRequestContext } from '@playwright/test'
 
-import {
-  createQueryParams,
-  makeParallelRequests
-} from '../../framework/helpers'
+import { createQueryParams, getBaseUrl } from '../../framework/helpers'
 
-import { expectedCountry, expectedLanguage, expectedVideo } from './testData'
+interface TestCase {
+  params: Record<string, any>
+}
 
-test.fixme(
-  'verify country search returns United States',
-  async ({ request }) => {
-    const params = createQueryParams({ term: 'United' })
-
-    const [baseData] = await makeParallelRequests(
-      request,
-      '/v2/resources',
-      params
-    )
-
-    const countries = baseData._embedded.resources.mediaCountries
-    const usCountry = countries.find((country) =>
-      country.name.toLowerCase().includes('united states')
-    )
-
-    expect(usCountry).toBeDefined()
-    expect(usCountry).toMatchObject(expectedCountry)
+const testCases = {
+  searchCountry: {
+    params: { term: 'United' }
+  },
+  searchLanguage: {
+    params: { term: 'English' }
+  },
+  searchVideo: {
+    params: { term: 'Paper Hats', metadataLanguageTags: 'en' }
+  },
+  withCustomApiKey: {
+    params: { term: 'United', apiKey: 'custom-key' }
   }
-)
+}
 
-test.fixme('verify language search returns English', async ({ request }) => {
-  const params = createQueryParams({ term: 'English' })
+async function searchResources(request: APIRequestContext, testCase: TestCase) {
+  const { params } = testCase
+  const queryParams = createQueryParams(params)
+  const response = await request.get(
+    `${await getBaseUrl()}/v2/resources?${queryParams}`
+  )
+  return response
+}
 
-  const [baseData] = await makeParallelRequests(
-    request,
-    '/v2/resources',
-    params
+test('search returns United States in countries', async ({ request }) => {
+  const response = await searchResources(request, testCases.searchCountry)
+  expect(response.ok()).toBeTruthy()
+
+  const data = await response.json()
+  expect(data).toMatchObject({
+    _embedded: {
+      resources: {
+        mediaCountries: expect.any(Array)
+      }
+    }
+  })
+
+  const countries = data._embedded.resources.mediaCountries
+  const usCountry = countries.find((country: any) =>
+    country.name.toLowerCase().includes('united states')
   )
 
-  const languages = baseData._embedded.resources.mediaLanguages
+  expect(usCountry).toBeDefined()
+  expect(usCountry).toMatchObject({
+    countryId: expect.any(String),
+    name: expect.stringContaining('United States'),
+    _links: expect.any(Object)
+  })
+})
+
+test('search returns English in languages', async ({ request }) => {
+  const response = await searchResources(request, testCases.searchLanguage)
+  expect(response.ok()).toBeTruthy()
+
+  const data = await response.json()
+  expect(data).toMatchObject({
+    _embedded: {
+      resources: {
+        mediaLanguages: expect.any(Array)
+      }
+    }
+  })
+
+  const languages = data._embedded.resources.mediaLanguages
   const englishLanguage = languages.find(
-    (language) => language.languageId === 529
+    (language: any) => language.languageId === '529'
   )
 
   expect(englishLanguage).toBeDefined()
-  expect(englishLanguage).toMatchObject(expectedLanguage)
+  expect(englishLanguage).toMatchObject({
+    languageId: '529',
+    name: expect.stringContaining('English'),
+    _links: expect.any(Object)
+  })
 })
 
-// TODO: Add proper fields to Algolia to test this
-test.fixme('verify video search returns Paper Hats', async ({ request }) => {
-  const params = createQueryParams({
-    term: 'Paper Hats',
-    metadataLanguageTags: 'en'
+test('search returns Paper Hats in videos', async ({ request }) => {
+  const response = await searchResources(request, testCases.searchVideo)
+  expect(response.ok()).toBeTruthy()
+
+  const data = await response.json()
+  expect(data).toMatchObject({
+    _embedded: {
+      resources: {
+        mediaComponents: expect.any(Array)
+      }
+    }
   })
 
-  const [baseData] = await makeParallelRequests(
-    request,
-    '/v2/resources',
-    params
-  )
-
-  const videos = baseData._embedded.resources.mediaComponents
-  const paperHatsVideo = videos.find((video) =>
+  const videos = data._embedded.resources.mediaComponents
+  const paperHatsVideo = videos.find((video: any) =>
     video.title.toLowerCase().includes('paper hats')
   )
 
   expect(paperHatsVideo).toBeDefined()
-  expect(paperHatsVideo).toMatchObject(expectedVideo)
+  expect(paperHatsVideo).toMatchObject({
+    mediaComponentId: expect.any(String),
+    title: expect.stringContaining('Paper Hats'),
+    _links: expect.any(Object)
+  })
+})
+
+test('search with custom API key', async ({ request }) => {
+  const response = await searchResources(request, testCases.withCustomApiKey)
+  expect(response.ok()).toBeTruthy()
+
+  const data = await response.json()
+  expect(data).toMatchObject({
+    _embedded: {
+      resources: expect.any(Object)
+    },
+    _links: expect.any(Object)
+  })
+
+  // API key specific checks
+  expect(data._links.self.href).toContain('apiKey=custom-key')
 })

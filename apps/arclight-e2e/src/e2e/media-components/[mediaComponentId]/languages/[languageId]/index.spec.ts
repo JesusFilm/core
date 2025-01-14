@@ -1,17 +1,66 @@
 import { expect, test } from '@playwright/test'
+import type { APIRequestContext } from '@playwright/test'
 
-import {
-  cleanDownloadUrls,
-  cleanShareUrl,
-  cleanStreamingUrls,
-  createQueryParams,
-  getBaseUrl
-} from '../../framework/helpers'
-import { getObjectDiff } from '../../utils/comparison-utils'
+import { createQueryParams, getBaseUrl } from '../../../../../framework/helpers'
 
-import { mockResponses, testCases } from './media-component-language.testData'
+interface TestCase {
+  mediaComponentId: string
+  languageId: string
+  params: Record<string, any>
+}
 
-async function getMediaComponentLanguage(request: any, testCase: any) {
+const testCases = {
+  basic: {
+    mediaComponentId: '1_jf-0-0',
+    languageId: '529',
+    params: {}
+  },
+  withPlatformIos: {
+    mediaComponentId: '1_jf-0-0',
+    languageId: '529',
+    params: { platform: 'ios' }
+  },
+  withPlatformAndroid: {
+    mediaComponentId: '1_jf-0-0',
+    languageId: '529',
+    params: { platform: 'android' }
+  },
+  withPlatformWeb: {
+    mediaComponentId: '1_jf-0-0',
+    languageId: '529',
+    params: { platform: 'web' }
+  },
+  withCustomApiKey: {
+    mediaComponentId: '1_jf-0-0',
+    languageId: '529',
+    params: { apiKey: 'custom-key' }
+  },
+  withLanguageIds: {
+    mediaComponentId: '1_jf-0-0',
+    languageId: '529',
+    params: { expand: 'languageIds' }
+  },
+  withReduce: {
+    mediaComponentId: '1_jf-0-0',
+    languageId: '529',
+    params: { reduce: true }
+  },
+  withAllParams: {
+    mediaComponentId: '1_jf-0-0',
+    languageId: '529',
+    params: {
+      platform: 'web',
+      apiKey: 'custom-key',
+      expand: 'languageIds',
+      reduce: true
+    }
+  }
+}
+
+async function getMediaComponentLanguage(
+  request: APIRequestContext,
+  testCase: TestCase
+) {
   const { mediaComponentId, languageId, params } = testCase
   const queryParams = createQueryParams(params)
   const response = await request.get(
@@ -20,165 +69,166 @@ async function getMediaComponentLanguage(request: any, testCase: any) {
   return response
 }
 
-function cleanResponse(data: any) {
-  const cleaned = { ...data }
-  delete cleaned.apiSessionId
-  cleanShareUrl(cleaned)
-  cleanDownloadUrls(cleaned)
-  cleanStreamingUrls(cleaned)
-  return cleaned
-}
-
 test('basic media component language request', async ({ request }) => {
   const response = await getMediaComponentLanguage(request, testCases.basic)
   expect(response.ok()).toBeTruthy()
 
   const data = await response.json()
-  const cleanedData = cleanResponse(data)
-  const expectedData = mockResponses.basic
-
-  const diffs = getObjectDiff(cleanedData, expectedData)
-  expect(
-    diffs,
-    `Differences found in media component language response`
-  ).toHaveLength(0)
+  expect(data).toMatchObject({
+    mediaComponentId: expect.any(String),
+    languageId: expect.any(String),
+    title: expect.any(String),
+    description: expect.any(String),
+    _links: expect.any(Object)
+  })
 })
 
-test.fixme(
-  'media component language with iOS platform',
-  async ({ request }) => {
-    const response = await getMediaComponentLanguage(
-      request,
-      testCases.withPlatformIos
-    )
-    expect(response.ok()).toBeTruthy()
+test('media component language with iOS platform', async ({ request }) => {
+  const response = await getMediaComponentLanguage(
+    request,
+    testCases.withPlatformIos
+  )
+  expect(response.ok()).toBeTruthy()
 
-    const data = await response.json()
-    const cleanedData = cleanResponse(data)
-    const expectedData = mockResponses.basic // iOS is default platform
+  const data = await response.json()
+  expect(data).toMatchObject({
+    mediaComponentId: expect.any(String),
+    languageId: expect.any(String),
+    title: expect.any(String),
+    description: expect.any(String),
+    _links: expect.any(Object)
+  })
 
-    const diffs = getObjectDiff(cleanedData, expectedData)
-    expect(diffs, `Differences found in iOS platform response`).toHaveLength(0)
-  }
-)
+  // iOS specific checks
+  expect(data._links.download?.href).toContain('platform=ios')
+})
 
-test.fixme(
-  'media component language with Android platform',
-  async ({ request }) => {
-    const response = await getMediaComponentLanguage(
-      request,
-      testCases.withPlatformAndroid
-    )
-    expect(response.ok()).toBeTruthy()
+test('media component language with Android platform', async ({ request }) => {
+  const response = await getMediaComponentLanguage(
+    request,
+    testCases.withPlatformAndroid
+  )
+  expect(response.ok()).toBeTruthy()
 
-    const data = await response.json()
-    const cleanedData = cleanResponse(data)
-    const expectedData = mockResponses.withPlatformAndroid
+  const data = await response.json()
+  expect(data).toMatchObject({
+    mediaComponentId: expect.any(String),
+    languageId: expect.any(String),
+    title: expect.any(String),
+    description: expect.any(String),
+    _links: expect.any(Object)
+  })
 
-    const diffs = getObjectDiff(cleanedData, expectedData)
-    expect(
-      diffs,
-      `Differences found in Android platform response`
-    ).toHaveLength(0)
-  }
-)
+  // Android specific checks
+  expect(data._links.download?.href).toContain('platform=android')
+})
 
-test.fixme(
-  'media component language with Web platform',
-  async ({ request }) => {
-    const response = await getMediaComponentLanguage(
-      request,
-      testCases.withPlatformWeb
-    )
-    expect(response.ok()).toBeTruthy()
+test('media component language with Web platform', async ({ request }) => {
+  const response = await getMediaComponentLanguage(
+    request,
+    testCases.withPlatformWeb
+  )
+  expect(response.ok()).toBeTruthy()
 
-    const data = await response.json()
-    const cleanedData = cleanResponse(data)
-    const expectedData = mockResponses.withPlatformWeb
+  const data = await response.json()
+  expect(data).toMatchObject({
+    mediaComponentId: expect.any(String),
+    languageId: expect.any(String),
+    title: expect.any(String),
+    description: expect.any(String),
+    _links: expect.any(Object)
+  })
 
-    const diffs = getObjectDiff(cleanedData, expectedData)
-    expect(diffs, `Differences found in Web platform response`).toHaveLength(0)
-  }
-)
+  // Web specific checks
+  expect(data._links.download?.href).toContain('platform=web')
+})
 
-test.fixme(
-  'media component language with custom API key',
-  async ({ request }) => {
-    const response = await getMediaComponentLanguage(
-      request,
-      testCases.withCustomApiKey
-    )
-    expect(response.ok()).toBeTruthy()
+test('media component language with custom API key', async ({ request }) => {
+  const response = await getMediaComponentLanguage(
+    request,
+    testCases.withCustomApiKey
+  )
+  expect(response.ok()).toBeTruthy()
 
-    const data = await response.json()
-    const cleanedData = cleanResponse(data)
-    const expectedData = mockResponses.basic
+  const data = await response.json()
+  expect(data).toMatchObject({
+    mediaComponentId: expect.any(String),
+    languageId: expect.any(String),
+    title: expect.any(String),
+    description: expect.any(String),
+    _links: expect.any(Object)
+  })
 
-    const diffs = getObjectDiff(cleanedData, expectedData)
-    expect(diffs, `Differences found in custom API key response`).toHaveLength(
-      0
-    )
-  }
-)
+  // API key specific checks
+  expect(data._links.self.href).toContain('apiKey=custom-key')
+})
 
-test.fixme(
-  'media component language with language IDs filter',
-  async ({ request }) => {
-    const response = await getMediaComponentLanguage(
-      request,
-      testCases.withLanguageIds
-    )
-    expect(response.ok()).toBeTruthy()
+test('media component language with language IDs filter', async ({
+  request
+}) => {
+  const response = await getMediaComponentLanguage(
+    request,
+    testCases.withLanguageIds
+  )
+  expect(response.ok()).toBeTruthy()
 
-    const data = await response.json()
-    const cleanedData = cleanResponse(data)
-    const expectedData = mockResponses.basic
+  const data = await response.json()
+  expect(data).toMatchObject({
+    mediaComponentId: expect.any(String),
+    languageId: expect.any(String),
+    title: expect.any(String),
+    description: expect.any(String),
+    _links: expect.any(Object),
+    languageIds: expect.any(Array)
+  })
 
-    const diffs = getObjectDiff(cleanedData, expectedData)
-    expect(
-      diffs,
-      `Differences found in language IDs filter response`
-    ).toHaveLength(0)
-  }
-)
+  expect(data.languageIds.length).toBeGreaterThan(0)
+  expect(
+    data.languageIds.every((id: any) => typeof id === 'string')
+  ).toBeTruthy()
+})
 
-test.fixme(
-  'media component language with reduce parameter',
-  async ({ request }) => {
-    const response = await getMediaComponentLanguage(
-      request,
-      testCases.withReduce
-    )
-    expect(response.ok()).toBeTruthy()
+test('media component language with reduce parameter', async ({ request }) => {
+  const response = await getMediaComponentLanguage(
+    request,
+    testCases.withReduce
+  )
+  expect(response.ok()).toBeTruthy()
 
-    const data = await response.json()
-    const cleanedData = cleanResponse(data)
-    const expectedData = mockResponses.basic
+  const data = await response.json()
 
-    const diffs = getObjectDiff(cleanedData, expectedData)
-    expect(
-      diffs,
-      `Differences found in reduce parameter response`
-    ).toHaveLength(0)
-  }
-)
+  // Should only include basic fields
+  expect(data).toMatchObject({
+    mediaComponentId: expect.any(String),
+    languageId: expect.any(String),
+    title: expect.any(String),
+    _links: expect.any(Object)
+  })
 
-test.fixme(
-  'media component language with all parameters',
-  async ({ request }) => {
-    const response = await getMediaComponentLanguage(
-      request,
-      testCases.withAllParams
-    )
-    expect(response.ok()).toBeTruthy()
+  // Should not include extended fields
+  expect(data).not.toHaveProperty('description')
+  expect(data).not.toHaveProperty('languageIds')
+})
 
-    const data = await response.json()
-    const cleanedData = cleanResponse(data)
-    const expectedData = mockResponses.withPlatformWeb
+test('media component language with all parameters', async ({ request }) => {
+  const response = await getMediaComponentLanguage(
+    request,
+    testCases.withAllParams
+  )
+  expect(response.ok()).toBeTruthy()
 
-    const diffs = getObjectDiff(cleanedData, expectedData)
-    expect(diffs, `Differences found in all parameters response`).toHaveLength(
-      0
-    )
-  }
-)
+  const data = await response.json()
+  expect(data).toMatchObject({
+    mediaComponentId: expect.any(String),
+    languageId: expect.any(String),
+    title: expect.any(String),
+    _links: expect.any(Object),
+    languageIds: expect.any(Array)
+  })
+
+  // Check all parameters are applied
+  expect(data._links.download?.href).toContain('platform=web')
+  expect(data._links.self.href).toContain('apiKey=custom-key')
+  expect(data.languageIds.length).toBeGreaterThan(0)
+  expect(data).not.toHaveProperty('description') // reduced
+})

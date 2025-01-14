@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-import { createQueryParams, getBaseUrl } from '../../framework/helpers'
+import { createQueryParams, getBaseUrl } from '../../../framework/helpers'
 
 const mediaComponentId = '1_jf-0-0'
 
