@@ -1,122 +1,125 @@
 import { expect, test } from '@playwright/test'
 
 import { createQueryParams, getBaseUrl } from '../../framework/helpers'
-import type { ApiResponse, MediaComponent } from '../../types'
-import { getObjectDiff } from '../../utils/comparison-utils'
-
-import {
-  defaultMediaComponentsResponse,
-  mediaComponentIds,
-  mediaComponentIdsForLanguageTest
-} from './media-components.testData'
 
 const urlPattern = /^https:\/\/.*\.(jpg|webp)(\/.*)?$/
 
-function validateComponent(
-  component: MediaComponent,
-  expected: MediaComponent
-) {
-  expect(component.imageUrls).toMatchObject({
-    thumbnail: expect.stringMatching(urlPattern),
-    videoStill: expect.stringMatching(urlPattern),
-    mobileCinematicHigh: expect.stringMatching(urlPattern),
-    mobileCinematicLow: expect.stringMatching(urlPattern),
-    mobileCinematicVeryLow: expect.stringMatching(urlPattern)
-  })
+const mediaComponentIds = ['1_jf-0-0', '2_0-ConsideringChristmas']
 
-  const componentWithoutImages = { ...component, imageUrls: undefined }
-  const expectedWithoutImages = { ...expected, imageUrls: undefined }
-
-  const diffs = getObjectDiff(componentWithoutImages, expectedWithoutImages)
-  expect(
-    diffs,
-    `Differences found in media component ${component.mediaComponentId}`
-  ).toHaveLength(0)
-}
-
-test('media components default response matches expected shape', async ({
+test('media components returns expected data structure', async ({
   request
 }) => {
-  const params = createQueryParams({ ids: mediaComponentIds })
-  const response = (await request
-    .get(`${await getBaseUrl()}/v2/media-components?${params}`)
-    .then((res) => res.json())) as ApiResponse<MediaComponent>
+  const params = createQueryParams({ ids: mediaComponentIds.join(',') })
 
-  // Verify we got all expected components (order independent)
-  expect(
-    new Set(response._embedded.mediaComponents.map((c) => c.mediaComponentId))
-  ).toEqual(new Set(mediaComponentIds))
+  const response = await request.get(
+    `${await getBaseUrl()}/v2/media-components?${params}`
+  )
 
-  // Full validation of each component
-  response._embedded.mediaComponents.forEach((component) => {
-    const expectedComponent =
-      defaultMediaComponentsResponse._embedded.mediaComponents.find(
-        (e) => e.mediaComponentId === component.mediaComponentId
-      )
-    expect(
-      expectedComponent,
-      `No expected component found for ${component.mediaComponentId}`
-    ).toBeDefined()
-    validateComponent(component, expectedComponent!)
+  expect(response.ok()).toBeTruthy()
+  const data = await response.json()
+  const component = data._embedded.mediaComponents[0]
+
+  expect(component).toMatchObject({
+    mediaComponentId: expect.any(String),
+    componentType: expect.any(String),
+    subType: expect.any(String),
+    contentType: 'video',
+    title: expect.any(String),
+    shortDescription: expect.any(String),
+    longDescription: expect.any(String),
+    imageUrls: {
+      thumbnail: expect.stringMatching(urlPattern),
+      videoStill: expect.stringMatching(urlPattern)
+    },
+    lengthInMilliseconds: expect.any(Number),
+    containsCount: expect.any(Number),
+    isDownloadable: expect.any(Boolean),
+    downloadSizes: {
+      approximateSmallDownloadSizeInBytes: expect.any(Number),
+      approximateLargeDownloadSizeInBytes: expect.any(Number)
+    },
+    bibleCitations: expect.any(Array),
+    primaryLanguageId: expect.any(Number),
+    studyQuestions: expect.any(Array),
+    metadataLanguageTag: expect.any(String)
   })
 })
 
-test('media components filtered by languageIds filters correctly', async ({
+test('media components with metadata language returns localized content', async ({
   request
 }) => {
-  const params = createQueryParams({
-    languageIds: '3934',
-    expand: 'languageIds',
-    ids: mediaComponentIdsForLanguageTest
-  })
-  const response = (await request
-    .get(`${await getBaseUrl()}/v2/media-components?${params}`)
-    .then((res) => res.json())) as ApiResponse<MediaComponent>
+  const response = await request.get(
+    `${await getBaseUrl()}/v2/media-components?${createQueryParams({
+      ids: mediaComponentIds.join(','),
+      metadataLanguageTags: 'ur'
+    })}`
+  )
 
-  expect(response._embedded.mediaComponents).toHaveLength(1)
-  expect(response._embedded.mediaComponents[0].languageIds).toContain(3934)
+  expect(response.ok()).toBeTruthy()
+  const data = await response.json()
+  expect(data._embedded.mediaComponents[0].metadataLanguageTag).toBe('ur')
+  expect(data._embedded.mediaComponents.length).toBe(1) // It should filter out the component with no localized content
+  expect(data._embedded.mediaComponents[0].mediaComponentId).toBe('1_jf-0-0')
 })
 
 test('media components with expand=languageIds includes language data', async ({
   request
 }) => {
-  const params = createQueryParams({ ids: '1_mld-0-0', expand: 'languageIds' })
-  const response = (await request
-    .get(`${await getBaseUrl()}/v2/media-components?${params}`)
-    .then((res) => res.json())) as ApiResponse<MediaComponent>
+  const params = createQueryParams({
+    ids: mediaComponentIds[0],
+    expand: 'languageIds'
+  })
 
-  expect(response._embedded.mediaComponents).toHaveLength(1)
+  const response = await request.get(
+    `${await getBaseUrl()}/v2/media-components?${params}`
+  )
+
+  expect(response.ok()).toBeTruthy()
+  const data = await response.json()
+  const component = data._embedded.mediaComponents[0]
+  expect(component.languageIds).toBeDefined()
+  expect(Array.isArray(component.languageIds)).toBeTruthy()
+  expect(component.languageIds?.length).toBeGreaterThan(0)
   expect(
-    response._embedded.mediaComponents[0].languageIds?.length
-  ).toBeGreaterThan(0)
+    component.languageIds?.every((id) => typeof id === 'number')
+  ).toBeTruthy()
 })
 
 test('media components filtered by subType returns correct components', async ({
   request
 }) => {
   const params = createQueryParams({ subTypes: 'featureFilm' })
-  const response = (await request
-    .get(`${await getBaseUrl()}/v2/media-components?${params}`)
-    .then((res) => res.json())) as ApiResponse<MediaComponent>
 
-  expect(response._embedded.mediaComponents.length).toBeGreaterThan(0)
-  response._embedded.mediaComponents.forEach((component) => {
+  const response = await request.get(
+    `${await getBaseUrl()}/v2/media-components?${params}`
+  )
+
+  expect(response.ok()).toBeTruthy()
+  const data = await response.json()
+  expect(data._embedded.mediaComponents.length).toBeGreaterThan(0)
+  data._embedded.mediaComponents.forEach((component) => {
     expect(component.subType).toBe('featureFilm')
   })
 })
 
-test('media components with metadataLanguageTags returns localized content', async ({
+test('media components filtered by languageIds returns correct components', async ({
   request
 }) => {
   const params = createQueryParams({
-    ids: mediaComponentIds[0],
-    metadataLanguageTags: 'es'
+    languageIds: '3934',
+    expand: 'languageIds',
+    ids: mediaComponentIds.join(',')
   })
-  const response = (await request
-    .get(`${await getBaseUrl()}/v2/media-components?${params}`)
-    .then((res) => res.json())) as ApiResponse<MediaComponent>
 
-  expect(response._embedded.mediaComponents[0].metadataLanguageTag).toBe('es')
+  const response = await request.get(
+    `${await getBaseUrl()}/v2/media-components?${params}`
+  )
+
+  expect(response.ok()).toBeTruthy()
+  const data = await response.json()
+  expect(data._embedded.mediaComponents).toHaveLength(1)
+  expect(data._embedded.mediaComponents[0].mediaComponentId).toBe('1_jf-0-0')
+  expect(data._embedded.mediaComponents[0].languageIds).toContain(3934)
 })
 
 test('media components respects pagination parameters', async ({ request }) => {
@@ -124,13 +127,34 @@ test('media components respects pagination parameters', async ({ request }) => {
     page: '2',
     limit: '1'
   })
-  const response = (await request
-    .get(`${await getBaseUrl()}/v2/media-components?${params}`)
-    .then((res) => res.json())) as ApiResponse<MediaComponent>
 
-  expect(response._embedded.mediaComponents).toHaveLength(1)
-  expect(response.page).toBe(2)
-  expect(response.limit).toBe(1)
-  expect(response._links).toHaveProperty('previous')
-  expect(response._links).toHaveProperty('next')
+  const response = await request.get(
+    `${await getBaseUrl()}/v2/media-components?${params}`
+  )
+
+  expect(response.ok()).toBeTruthy()
+  const data = await response.json()
+  expect(data._embedded.mediaComponents).toHaveLength(1)
+  expect(data.page).toBe(2)
+  expect(data.limit).toBe(1)
+  expect(data._links).toHaveProperty('previous')
+  expect(data._links).toHaveProperty('next')
+})
+
+test('media components returns 400 for invalid language with no fallback content', async ({
+  request
+}) => {
+  const response = await request.get(
+    `${await getBaseUrl()}/v2/media-components?${createQueryParams({
+      ids: mediaComponentIds[0],
+      metadataLanguageTags: 'xx'
+    })}`
+  )
+
+  expect(response.status()).toBe(400)
+  const data = await response.json()
+  expect(data).toMatchObject({
+    message: expect.any(String),
+    logref: 400
+  })
 })

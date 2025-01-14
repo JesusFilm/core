@@ -1,35 +1,35 @@
-import { expect, test } from '@playwright/test'
+// import { expect, test } from '@playwright/test'
 
-import {
-  createQueryParams,
-  makeParallelRequests
-} from '../../framework/helpers'
-import {
-  convertArrayToObject,
-  getObjectDiff
-} from '../../utils/comparison-utils'
+// import {
+//   createQueryParams,
+//   makeParallelRequests
+// } from '../../framework/helpers'
+// import {
+//   convertArrayToObject,
+//   getObjectDiff
+// } from '../../utils/comparison-utils'
 
-test.fixme(
-  'compare metadata language tags between environments',
-  async ({ request }) => {
-    const params = createQueryParams({})
+// test.fixme(
+//   'compare metadata language tags between environments',
+//   async ({ request }) => {
+//     const params = createQueryParams({})
 
-    const [baseData, compareData] = await makeParallelRequests(
-      request,
-      '/v2/metadata-language-tags',
-      params
-    )
+//     const [baseData, compareData] = await makeParallelRequests(
+//       request,
+//       '/v2/metadata-language-tags',
+//       params
+//     )
 
-    const baseLanguageTags = convertArrayToObject(
-      baseData._embedded.metadataLanguageTags,
-      'tag'
-    )
-    const compareLanguageTags = convertArrayToObject(
-      compareData._embedded.metadataLanguageTags,
-      'tag'
-    )
+//     const baseLanguageTags = convertArrayToObject(
+//       baseData._embedded.metadataLanguageTags,
+//       'tag'
+//     )
+//     const compareLanguageTags = convertArrayToObject(
+//       compareData._embedded.metadataLanguageTags,
+//       'tag'
+//     )
 
-    const diffs = getObjectDiff(baseLanguageTags, compareLanguageTags)
-    expect(diffs, 'Differences found in metadata language tags').toHaveLength(0)
-  }
-)
+//     const diffs = getObjectDiff(baseLanguageTags, compareLanguageTags)
+//     expect(diffs, 'Differences found in metadata language tags').toHaveLength(0)
+//   }
+// )
