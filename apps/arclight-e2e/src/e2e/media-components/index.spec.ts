@@ -45,22 +45,24 @@ test('media components returns expected data structure', async ({
   })
 })
 
-test('media components with metadata language returns localized content', async ({
-  request
-}) => {
-  const response = await request.get(
-    `${await getBaseUrl()}/v2/media-components?${createQueryParams({
-      ids: mediaComponentIds.join(','),
-      metadataLanguageTags: 'ur'
-    })}`
-  )
+// TODO: No localized content on stage. Is crowdin working?
+test.fixme(
+  'media components with metadata language returns localized content',
+  async ({ request }) => {
+    const response = await request.get(
+      `${await getBaseUrl()}/v2/media-components?${createQueryParams({
+        ids: mediaComponentIds.join(','),
+        metadataLanguageTags: 'ur'
+      })}`
+    )
 
-  expect(response.ok()).toBeTruthy()
-  const data = await response.json()
-  expect(data._embedded.mediaComponents[0].metadataLanguageTag).toBe('ur')
-  expect(data._embedded.mediaComponents.length).toBe(1) // It should filter out the component with no localized content
-  expect(data._embedded.mediaComponents[0].mediaComponentId).toBe('1_jf-0-0')
-})
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+    expect(data._embedded.mediaComponents[0].metadataLanguageTag).toBe('ur')
+    expect(data._embedded.mediaComponents.length).toBe(1) // It should filter out the component with no localized content
+    expect(data._embedded.mediaComponents[0].mediaComponentId).toBe('1_jf-0-0')
+  }
+)
 
 test('media components with expand=languageIds includes language data', async ({
   request
