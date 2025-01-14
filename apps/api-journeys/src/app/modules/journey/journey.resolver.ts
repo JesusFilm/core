@@ -995,7 +995,6 @@ export class JourneyResolver {
       orderBy: { parentOrder: 'asc' },
       include: { action: true }
     })
-
     return await this.blockService.removeDescendantsOfDeletedBlocks(res)
   }
 

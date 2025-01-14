@@ -66,6 +66,8 @@ export function Canvas(): ReactElement {
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
 
+  console.log('journey', journey)
+
   const initialScale =
     typeof window !== 'undefined' && window.innerWidth <= 600 ? 0 : 1
   const [scale, setScale] = useState(initialScale)
@@ -136,6 +138,8 @@ export function Canvas(): ReactElement {
 
   const theme =
     selectedStep != null ? getStepTheme(selectedStep, journey) : null
+
+  console.log('canvas', selectedBlock)
 
   return (
     <Stack
