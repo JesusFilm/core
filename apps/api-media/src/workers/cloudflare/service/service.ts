@@ -1,9 +1,11 @@
 import 'cloudflare/shims/node'
 
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import Cloudflare from 'cloudflare'
 import Mux from '@mux/mux-node'
 import fetch from 'node-fetch'
 import { Logger } from 'pino'
+import { graphql } from '../../../lib/graphql/gatewayGraphql'
 
 import { prisma } from '../../../lib/prisma'
 
@@ -29,6 +31,27 @@ function getMuxClient(): Mux {
     tokenSecret: process.env.MUX_UGC_SECRET_KEY
   })
 }
+
+const httpLink = createHttpLink({
+  uri: process.env.GATEWAY_URL,
+  headers: {
+    'x-graphql-client-name': 'api-media',
+    'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
+  }
+})
+
+export const apollo = new ApolloClient({
+  link: httpLink,
+  cache: new InMemoryCache()
+})
+
+export const UPDATE_VIDEO_BLOCK = graphql(`
+  mutation UpdateVideoBlock($input: VideoUpdateInput!) {
+    videoUpdate(input: $input) {
+      id
+    }
+  }
+`)
 
 export async function service(logger?: Logger): Promise<void> {
   await createCloudflareDownloads(logger)
@@ -118,18 +141,32 @@ async function migrateCloudflareVideosToMux(logger?: Logger): Promise<void> {
         await new Promise(f => setTimeout(f, 10000)) // wait 10 seconds
         const asset = await mux.video.assets.retrieve(muxVideo.id)
         if (asset.status === 'ready' && asset.playback_ids?.[0].id != null) {
-          await prisma.muxVideo.update({
-            where: {
-              id: muxVideo.id
-            },
-            data: {
-              playbackId: asset.playback_ids[0].id,
-              readyToStream: true
-            }
-          })
-          await prisma.cloudflareVideo.delete({
-            where: { id: video.id }
-          })
+          try {
+            await prisma.muxVideo.update({
+              where: {
+                id: muxVideo.id
+              },
+              data: {
+                playbackId: asset.playback_ids[0].id,
+                readyToStream: true
+              }
+            })
+            await apollo.mutate({
+              mutation: UPDATE_VIDEO_BLOCK,
+              variables: {
+                input: {
+                  id: video.id,
+                  videoId: muxVideo.id,
+                  source: 'mux'
+                }
+              }
+            })
+            await prisma.cloudflareVideo.delete({
+              where: { id: video.id }
+            })
+          } catch (error) {
+            logger?.error(error, `unable to migrate cloudflare video ${video.id}`)
+          }
           processing = false
         }
       }
