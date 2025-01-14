@@ -1,6 +1,7 @@
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
+import Divider from '@mui/material/Divider'
 import Grow from '@mui/material/Grow'
 import MenuItem from '@mui/material/MenuItem'
 import MenuList from '@mui/material/MenuList'
@@ -80,103 +81,127 @@ export function QrCodeDialog({
         closeButton: true
       }}
     >
-      <Stack direction="row" spacing={7} sx={{ height: '130px' }}>
-        <Stack
-          sx={{
-            borderWidth: 2,
-            borderStyle: 'solid',
-            borderColor: 'divider',
-            borderRadius: 2,
-            p: 1
-          }}
-        >
-          <QRCodeCanvas
-            id="qr-code-download"
-            title="QR Code"
-            size={118}
-            level="L"
-            value={url}
-          />
-        </Stack>
-        <Stack spacing={3}>
-          <ScanCount />
-          <ButtonGroup
-            variant="contained"
-            ref={anchorRef}
-            sx={{ borderRadius: 2, width: 200, height: 42 }}
-          >
-            <Button
-              fullWidth
-              onClick={() => {
-                handleDownloadQrCode('png')
-                setShowDownloadMenu(false)
-              }}
+      <Stack spacing={7}>
+        <Stack direction="row" spacing={7}>
+          <Stack justifyContent="center">
+            <Stack
               sx={{
-                backgroundColor: 'secondary.main',
-                borderTopLeftRadius: 8,
-                borderBottomLeftRadius: 8
+                borderWidth: '2px',
+                borderStyle: 'solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                p: 1
               }}
             >
-              {t('Download PNG')}
-            </Button>
-            <Button
-              onClick={() => setShowDownloadMenu(!showDownloadMenu)}
-              sx={{
-                backgroundColor: 'secondary.main',
-                borderTopRightRadius: 8,
-                borderBottomRightRadius: 8
-              }}
-            >
-              <ChevronDownIcon />
-            </Button>
-          </ButtonGroup>
-          <Popper
-            sx={{ zIndex: 1 }}
-            open={showDownloadMenu}
-            anchorEl={anchorRef.current}
-            role={undefined}
-            transition
-            disablePortal
-          >
-            {({ TransitionProps, placement }) => (
-              <Grow
-                {...TransitionProps}
-                style={{
-                  transformOrigin:
-                    placement === 'bottom' ? 'center top' : 'center bottom'
+              <QRCodeCanvas
+                id="qr-code-download"
+                title="QR Code"
+                size={124}
+                level="L"
+                value={url}
+              />
+            </Stack>
+          </Stack>
+          <Stack spacing={1.5}>
+            <ScanCount />
+            <Stack spacing={3}>
+              <ButtonGroup
+                variant="contained"
+                ref={anchorRef}
+                sx={{
+                  borderRadius: 2,
+                  width: 200,
+                  height: 42,
+                  boxShadow: 'none',
+                  '.MuiButtonGroup-grouped': {
+                    borderColor: 'background.paper'
+                  }
                 }}
               >
-                <Paper>
-                  <ClickAwayListener
-                    onClickAway={() => setShowDownloadMenu(false)}
+                <Button
+                  fullWidth
+                  onClick={() => {
+                    handleDownloadQrCode('png')
+                    setShowDownloadMenu(false)
+                  }}
+                  sx={{
+                    backgroundColor: 'secondary.main',
+                    borderTopLeftRadius: 8,
+                    borderBottomLeftRadius: 8
+                  }}
+                >
+                  {t('Download PNG')}
+                </Button>
+                <Button
+                  onClick={() => setShowDownloadMenu(!showDownloadMenu)}
+                  sx={{
+                    backgroundColor: 'secondary.main',
+                    borderTopRightRadius: 8,
+                    borderBottomRightRadius: 8
+                  }}
+                >
+                  <ChevronDownIcon />
+                </Button>
+              </ButtonGroup>
+              <Popper
+                sx={{ zIndex: 1 }}
+                open={showDownloadMenu}
+                anchorEl={anchorRef.current}
+                role={undefined}
+                transition
+                disablePortal
+              >
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    style={{
+                      transformOrigin:
+                        placement === 'bottom' ? 'center top' : 'center bottom'
+                    }}
                   >
-                    <MenuList id="split-button-menu" autoFocusItem>
-                      <MenuItem
-                        onClick={() => {
-                          handleDownloadQrCode('svg')
-                          setShowDownloadMenu(false)
-                        }}
+                    <Paper>
+                      <ClickAwayListener
+                        onClickAway={() => setShowDownloadMenu(false)}
                       >
-                        {t('Download SVG')}
-                      </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          // void handleCopyClick()
-                          setShowDownloadMenu(false)
-                        }}
-                      >
-                        {t('Copy Short Link')}
-                      </MenuItem>
-                    </MenuList>
-                  </ClickAwayListener>
-                </Paper>
-              </Grow>
-            )}
-          </Popper>
-          <Typography variant="body2" color="secondary.main">
-            {t(
-              'Here is your unique QR code that will direct people to your journey when scanned.'
-            )}
+                        <MenuList id="split-button-menu" autoFocusItem>
+                          <MenuItem
+                            onClick={() => {
+                              handleDownloadQrCode('svg')
+                              setShowDownloadMenu(false)
+                            }}
+                          >
+                            {t('Download SVG')}
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() => {
+                              // void handleCopyClick()
+                              setShowDownloadMenu(false)
+                            }}
+                          >
+                            {t('Copy Short Link')}
+                          </MenuItem>
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
+              <Typography
+                variant="body2"
+                color="secondary.main"
+                sx={{ lineHeight: '20px' }}
+              >
+                {t(
+                  'Here is your unique QR code that will direct people to your journey when scanned.'
+                )}
+              </Typography>
+            </Stack>
+          </Stack>
+        </Stack>
+        <Divider />
+        <Stack>
+          <Typography variant="body2" color="textSecondary">
+            {t('Scan this QR code with your phone to preview the journey')}
           </Typography>
         </Stack>
       </Stack>
