@@ -155,6 +155,10 @@ export function ImageEdit({
                 }
         }
       })
+      await revalidateJourney({
+        slug: journey.slug,
+        hostname: journey.host?.title
+      })
     }
   }
 
@@ -204,6 +208,10 @@ export function ImageEdit({
                   creatorImageBlockId: null
                 }
         }
+      })
+      await revalidateJourney({
+        slug: journey.slug,
+        hostname: journey.host?.title
       })
     }
   }
