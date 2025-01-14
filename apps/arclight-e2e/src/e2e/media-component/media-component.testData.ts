@@ -1,9 +1,49 @@
-import type { ApiResponse, MediaComponent } from '../../types'
+import { Links } from '../../types'
+
+// Define specific types for this test data
+interface DownloadSizes {
+  approximateSmallDownloadSizeInBytes: number
+  approximateLargeDownloadSizeInBytes: number
+}
+
+interface ImageUrls {
+  thumbnail: string
+  videoStill: string
+  mobileCinematicHigh: string
+  mobileCinematicLow: string
+  mobileCinematicVeryLow: string
+}
+
+interface MediaComponentLinks extends Links {
+  sampleMediaComponentLanguage: { href: string }
+  osisBibleBooks: { href: string }
+  mediaComponentLinks: { href: string }
+}
+
+interface TestMediaComponent {
+  mediaComponentId: string
+  componentType: 'content'
+  subType: 'featureFilm'
+  contentType: 'video'
+  imageUrls: ImageUrls
+  lengthInMilliseconds: number
+  containsCount: number
+  isDownloadable: boolean
+  downloadSizes: DownloadSizes
+  bibleCitations: string[]
+  primaryLanguageId: number
+  title: string
+  shortDescription: string
+  longDescription: string
+  studyQuestions: string[]
+  metadataLanguageTag: string
+  _links: MediaComponentLinks
+}
 
 export const mediaComponentId = '1_jf-0-0'
 
 // Response from api.arclight.org for single media component
-export const mediaComponentTestData: MediaComponent = {
+export const mediaComponentTestData: TestMediaComponent = {
   mediaComponentId: '1_jf-0-0',
   componentType: 'content',
   subType: 'featureFilm',
@@ -40,5 +80,19 @@ export const mediaComponentTestData: MediaComponent = {
     'What are some of the miracles Jesus performed? How do they affect those people?',
     'How do you respond to the life of Jesus?'
   ],
-  metadataLanguageTag: 'en'
+  metadataLanguageTag: 'en',
+  _links: {
+    sampleMediaComponentLanguage: {
+      href: 'http://api.arclight.org/v2/media-components/1_jf-0-0/languages/529?platform=ios&apiKey=3a21a65d4gf98hZ7'
+    },
+    osisBibleBooks: {
+      href: 'http://api.arclight.org/v2/taxonomies/osisBibleBooks?apiKey=3a21a65d4gf98hZ7'
+    },
+    self: {
+      href: 'http://api.arclight.org/v2/media-components/1_jf-0-0?apiKey=3a21a65d4gf98hZ7'
+    },
+    mediaComponentLinks: {
+      href: 'http://api.arclight.org/v2/media-component-links/1_jf-0-0?apiKey=3a21a65d4gf98hZ7'
+    }
+  }
 }
