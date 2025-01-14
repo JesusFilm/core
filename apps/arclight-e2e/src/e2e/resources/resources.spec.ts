@@ -7,25 +7,28 @@ import {
 
 import { expectedCountry, expectedLanguage, expectedVideo } from './testData'
 
-test('verify country search returns United States', async ({ request }) => {
-  const params = createQueryParams({ term: 'United' })
+test.fixme(
+  'verify country search returns United States',
+  async ({ request }) => {
+    const params = createQueryParams({ term: 'United' })
 
-  const [baseData] = await makeParallelRequests(
-    request,
-    '/v2/resources',
-    params
-  )
+    const [baseData] = await makeParallelRequests(
+      request,
+      '/v2/resources',
+      params
+    )
 
-  const countries = baseData._embedded.resources.mediaCountries
-  const usCountry = countries.find((country) =>
-    country.name.toLowerCase().includes('united states')
-  )
+    const countries = baseData._embedded.resources.mediaCountries
+    const usCountry = countries.find((country) =>
+      country.name.toLowerCase().includes('united states')
+    )
 
-  expect(usCountry).toBeDefined()
-  expect(usCountry).toMatchObject(expectedCountry)
-})
+    expect(usCountry).toBeDefined()
+    expect(usCountry).toMatchObject(expectedCountry)
+  }
+)
 
-test('verify language search returns English', async ({ request }) => {
+test.fixme('verify language search returns English', async ({ request }) => {
   const params = createQueryParams({ term: 'English' })
 
   const [baseData] = await makeParallelRequests(

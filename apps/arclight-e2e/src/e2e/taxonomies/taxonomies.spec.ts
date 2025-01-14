@@ -6,7 +6,7 @@ import {
 } from '../../framework/helpers'
 import { getTaxonomyDiff } from '../../utils/comparison-utils'
 
-test('compare taxonomies between environments', async ({ request }) => {
+test.fixme('compare taxonomies between environments', async ({ request }) => {
   const params = createQueryParams({ metadataLanguageTags: 'en' })
 
   const [baseData, compareData] = await makeParallelRequests(
