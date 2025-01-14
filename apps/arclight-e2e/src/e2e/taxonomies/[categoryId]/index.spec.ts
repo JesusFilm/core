@@ -3,8 +3,8 @@ import { expect, test } from '@playwright/test'
 import {
   createQueryParams,
   makeParallelRequests
-} from '../../framework/helpers'
-import { getTaxonomyDiff } from '../../utils/comparison-utils'
+} from '../../../framework/helpers'
+import { getTaxonomyDiff } from '../../../utils/comparison-utils'
 
 test.fixme(
   'compare single taxonomy category between environments',

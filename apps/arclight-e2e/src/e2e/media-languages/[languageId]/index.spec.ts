@@ -3,9 +3,9 @@ import { expect, test } from '@playwright/test'
 import {
   createQueryParams,
   makeParallelRequests
-} from '../../framework/helpers'
-import { getObjectDiff } from '../../utils/comparison-utils'
-import { testData } from '../../utils/testData'
+} from '../../../framework/helpers'
+import { getObjectDiff } from '../../../utils/comparison-utils'
+import { testData } from '../../../utils/testData'
 
 test.fixme(
   'compare single media language between environments',
