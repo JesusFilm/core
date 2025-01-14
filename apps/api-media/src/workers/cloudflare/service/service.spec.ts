@@ -22,6 +22,9 @@ describe('workers/cloudflare/service', () => {
     process.env = originalEnv
     process.env.CLOUDFLARE_ACCOUNT_ID = 'cf_account_id'
     process.env.CLOUDFLARE_STREAM_TOKEN = 'cf_stream_token'
+    process.env.MUX_UGC_ACCESS_TOKEN_ID = 'mux_ugc_access_token_id'
+    process.env.MUX_UGC_SECRET_KEY = 'mux_ugc_secret_key'
+    process.env.CORS_ORIGIN = 'cors_origin'
   })
 
   afterEach(() => {
