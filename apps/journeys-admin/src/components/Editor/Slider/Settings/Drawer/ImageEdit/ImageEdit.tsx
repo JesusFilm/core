@@ -1,5 +1,3 @@
-import { hostname } from 'os'
-
 import { gql, useMutation } from '@apollo/client'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
