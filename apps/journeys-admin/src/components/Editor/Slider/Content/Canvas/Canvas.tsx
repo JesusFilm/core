@@ -223,24 +223,18 @@ export function Canvas(): ReactElement {
                         backgroundColor: 'background.default',
                         borderRadius: 5,
                         '& .card-enter': {
-                          zIndex: 1,
                           opacity: 0
                         },
                         '& .card-enter-active': {
-                          zIndex: 1,
-                          opacity: 1
-                        },
-                        '& .card-enter-done': {
-                          zIndex: 1,
-                          opacity: 1
+                          opacity: 1,
+                          transition: 'opacity 0.15s ease'
                         },
                         '& .card-exit': {
-                          zIndex: 0,
                           opacity: 1
                         },
                         '& .card-exit-active': {
-                          opacity: 1,
-                          zIndex: 0
+                          opacity: 0,
+                          transition: 'opacity 0.3s ease'
                         },
                         position: 'relative',
                         width: 'calc(100% - 8px)',

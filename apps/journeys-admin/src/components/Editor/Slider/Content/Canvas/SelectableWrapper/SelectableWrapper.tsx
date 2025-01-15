@@ -260,9 +260,6 @@ export function SelectableWrapper({
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
         modifiers={modifiers}
-        sx={{
-          zIndex: (theme) => theme.zIndex.modal + 1
-        }}
       >
         <DragIcon
           fontSize="large"
