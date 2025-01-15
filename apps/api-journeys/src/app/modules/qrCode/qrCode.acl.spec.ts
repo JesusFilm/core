@@ -32,16 +32,6 @@ describe('qrCodeAcl', () => {
       expect(ability.can(Action.Manage, qrCodeUserTeamManager)).toBe(true)
     })
 
-    it('allow when user is team member', () => {
-      const qrCodeUserTeamMember = subject('QrCode', {
-        id: 'qrCodeId',
-        team: {
-          userTeams: [{ userId: user.id, role: UserTeamRole.member }]
-        }
-      } as unknown as QrCode)
-      expect(ability.can(Action.Manage, qrCodeUserTeamMember)).toBe(true)
-    })
-
     describe('publisher', () => {
       beforeEach(async () => {
         ability = await factory.createAbility({ ...user, roles: ['publisher'] })
@@ -60,11 +50,11 @@ describe('qrCodeAcl', () => {
   })
 
   describe('read', () => {
-    it('allow when user is journey editor', () => {
+    it('allow when user is journey owner', () => {
       const qrCodeUserJourneyMember = subject('QrCode', {
         id: 'qrCodeId',
         journey: {
-          userJourneys: [{ userId: user.id, role: UserJourneyRole.editor }]
+          userJourneys: [{ userId: user.id, role: UserJourneyRole.owner }]
         }
       } as unknown as QrCode)
       expect(ability.can(Action.Read, qrCodeUserJourneyMember)).toBe(true)
@@ -72,11 +62,11 @@ describe('qrCodeAcl', () => {
   })
 
   describe('update', () => {
-    it('allow when user is journey editor', () => {
+    it('allow when user is journey owner', () => {
       const qrCodeUserJourneyMember = subject('QrCode', {
         id: 'qrCodeId',
         journey: {
-          userJourneys: [{ userId: user.id, role: UserJourneyRole.editor }]
+          userJourneys: [{ userId: user.id, role: UserJourneyRole.owner }]
         }
       } as unknown as QrCode)
       expect(ability.can(Action.Update, qrCodeUserJourneyMember)).toBe(true)

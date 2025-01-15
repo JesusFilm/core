@@ -17,28 +17,28 @@ export const INCLUDE_QR_CODE_ACL: Prisma.QrCodeInclude<DefaultArgs> = {
 }
 
 export const qrCodeAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
-  // manage QrCode as a team manager or member
+  // manage QrCode as a team manager
   can(Action.Manage, 'QrCode', {
     team: {
       is: {
         userTeams: {
           some: {
             userId: user.id,
-            role: { in: [UserTeamRole.manager, UserTeamRole.member] }
+            role: { in: [UserTeamRole.manager] }
           }
         }
       }
     }
   })
 
-  // read and update journey as a journey editor
+  // read and update journey as a journey owner
   can([Action.Read, Action.Update], 'QrCode', {
     journey: {
       is: {
         userJourneys: {
           some: {
             userId: user.id,
-            role: UserJourneyRole.editor
+            role: UserJourneyRole.owner
           }
         }
       }
