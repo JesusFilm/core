@@ -2,6 +2,7 @@ import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
 import Divider from '@mui/material/Divider'
+import FilledInput from '@mui/material/FilledInput'
 import Grow from '@mui/material/Grow'
 import MenuItem from '@mui/material/MenuItem'
 import MenuList from '@mui/material/MenuList'
@@ -12,11 +13,12 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { enqueueSnackbar } from 'notistack'
 import { QRCodeCanvas } from 'qrcode.react'
-import { ReactElement, useRef, useState } from 'react'
+import { MouseEvent, ReactElement, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
+import { CodeDestinationPopper } from './CodeDestinationPopper'
 import { ScanCount } from './ScanCount'
 
 interface QrCodeDialogProps {
@@ -33,8 +35,14 @@ export function QrCodeDialog({
   const { t } = useTranslation('apps-journeys-admin')
   const initialSlugUrl: string | undefined = undefined
   const [url, setUrl] = useState(initialSlugUrl ?? initialJourneyUrl ?? '')
+  const [to, setTo] = useState(url)
   const [showDownloadMenu, setShowDownloadMenu] = useState(false)
-  const anchorRef = useRef<HTMLDivElement>(null)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+
+  function handleMenuClick(event: MouseEvent<HTMLElement>): void {
+    setAnchorEl(event.currentTarget)
+    setShowDownloadMenu(!showDownloadMenu)
+  }
 
   function handleDownloadQrCode(type: 'png' | 'svg'): void {
     const canvas = document.getElementById(
@@ -107,7 +115,6 @@ export function QrCodeDialog({
             <Stack spacing={3}>
               <ButtonGroup
                 variant="contained"
-                ref={anchorRef}
                 sx={{
                   borderRadius: 2,
                   width: 200,
@@ -133,7 +140,9 @@ export function QrCodeDialog({
                   {t('Download PNG')}
                 </Button>
                 <Button
-                  onClick={() => setShowDownloadMenu(!showDownloadMenu)}
+                  onClick={(e) => {
+                    handleMenuClick(e)
+                  }}
                   sx={{
                     backgroundColor: 'secondary.main',
                     borderTopRightRadius: 8,
@@ -146,19 +155,12 @@ export function QrCodeDialog({
               <Popper
                 sx={{ zIndex: 1 }}
                 open={showDownloadMenu}
-                anchorEl={anchorRef.current}
-                role={undefined}
+                anchorEl={anchorEl}
                 transition
                 disablePortal
               >
-                {({ TransitionProps, placement }) => (
-                  <Grow
-                    {...TransitionProps}
-                    style={{
-                      transformOrigin:
-                        placement === 'bottom' ? 'center top' : 'center bottom'
-                    }}
-                  >
+                {({ TransitionProps }) => (
+                  <Grow {...TransitionProps}>
                     <Paper>
                       <ClickAwayListener
                         onClickAway={() => setShowDownloadMenu(false)}
@@ -199,10 +201,20 @@ export function QrCodeDialog({
           </Stack>
         </Stack>
         <Divider />
-        <Stack>
-          <Typography variant="body2" color="textSecondary">
-            {t('Scan this QR code with your phone to preview the journey')}
-          </Typography>
+        <Stack spacing={5}>
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Typography variant="subtitle1" color="secondary.dark">
+              {t('Code Destination')}
+            </Typography>
+            <CodeDestinationPopper />
+          </Stack>
+          <FilledInput
+            fullWidth
+            hiddenLabel
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+            disabled
+          />
         </Stack>
       </Stack>
     </Dialog>
