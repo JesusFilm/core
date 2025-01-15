@@ -1845,9 +1845,7 @@ describe('JourneyResolver', () => {
       )
       await expect(
         resolver.journeyUpdate(ability, 'journeyId', { hostId: 'hostId' })
-      ).rejects.toThrow(
-        'the team id of host does not not match team id of journey'
-      )
+      ).rejects.toThrow('the team id of host does not match team id of journey')
     })
 
     it('throws error if slug is not unique', async () => {

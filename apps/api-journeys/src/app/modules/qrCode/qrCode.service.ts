@@ -244,7 +244,7 @@ export class QrCodeService {
     toBlockId?: string | undefined | null
   ): Promise<string> {
     if (process.env.JOURNEYS_URL == null)
-      throw new GraphQLError('Journeys url not not added', {
+      throw new GraphQLError('Journeys url not added', {
         extensions: { code: 'INTERNAL_SERVER_ERROR' }
       })
 

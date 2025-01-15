@@ -762,7 +762,7 @@ export class JourneyResolver {
         })
       if (host.teamId !== journey.teamId)
         throw new GraphQLError(
-          'the team id of host does not not match team id of journey',
+          'the team id of host does not match team id of journey',
           {
             extensions: { code: 'BAD_USER_INPUT' }
           }

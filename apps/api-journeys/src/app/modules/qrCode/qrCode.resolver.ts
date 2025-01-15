@@ -68,7 +68,7 @@ export class QrCodeResolver {
 
     return await this.prismaService.$transaction(async (tx) => {
       if (process.env.JOURNEYS_SHORTLINK_DOMAIN == null)
-        throw new GraphQLError('Shortlink domain not not added', {
+        throw new GraphQLError('Shortlink domain not added', {
           extensions: { code: 'INTERNAL_SERVER_ERROR' }
         })
 
