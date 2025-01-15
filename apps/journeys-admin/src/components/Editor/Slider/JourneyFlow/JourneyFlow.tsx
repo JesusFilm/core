@@ -44,6 +44,7 @@ import type {
   GetStepBlocksWithPositionVariables,
   GetStepBlocksWithPosition_blocks_StepBlock
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
+import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
@@ -121,6 +122,7 @@ export function JourneyFlow(): ReactElement {
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
   const { add } = useCommand()
   const handleStepSelection = useStepAndBlockSelection()
+  const [journeyUpdate] = useJourneyUpdateMutation()
 
   const { data, loading } = useQuery<
     GetStepBlocksWithPosition,
@@ -138,19 +140,39 @@ export function JourneyFlow(): ReactElement {
 
   const blockPositionUpdate = useCallback(
     (input: Array<{ id: string; x: number; y: number }>): void => {
-      void stepBlockPositionUpdate({
-        variables: {
-          input
-        },
-        optimisticResponse: {
-          stepBlockPositionUpdate: input.map((step) => ({
-            ...step,
-            __typename: 'StepBlock'
-          }))
-        }
-      })
+      if (input[0].id === 'SocialPreview') {
+        if (journey == null) return
+        void journeyUpdate({
+          variables: {
+            id: journey.id,
+            input: {
+              socialNodeX: input[0].x,
+              socialNodeY: input[0].y
+            }
+          },
+          optimisticResponse: {
+            journeyUpdate: {
+              ...journey,
+              socialNodeX: input[0].x,
+              socialNodeY: input[0].y
+            }
+          }
+        })
+      } else {
+        void stepBlockPositionUpdate({
+          variables: {
+            input
+          },
+          optimisticResponse: {
+            stepBlockPositionUpdate: input.map((step) => ({
+              ...step,
+              __typename: 'StepBlock'
+            }))
+          }
+        })
+      }
     },
-    [stepBlockPositionUpdate]
+    [stepBlockPositionUpdate, journeyUpdate, journey]
   )
 
   const allBlockPositionUpdate = useCallback(
@@ -236,7 +258,11 @@ export function JourneyFlow(): ReactElement {
       )
     }
 
-    const { nodes, edges } = transformSteps(filteredSteps ?? [], positions)
+    const { nodes, edges } = transformSteps(
+      filteredSteps ?? [],
+      positions,
+      journey
+    )
 
     let filteredEdges = edges
 
@@ -347,53 +373,66 @@ export function JourneyFlow(): ReactElement {
   }
 
   const onNodeDragStop: NodeDragHandler = (event, node): void => {
-    if (node.type !== 'StepBlock') return
+    if (node.type !== 'StepBlock' && node.type !== 'SocialPreview') return
 
-    const step = data?.blocks.find(
-      (step) => step.__typename === 'StepBlock' && step.id === node.id
-    )
-    if (step == null || step.__typename !== 'StepBlock') return
+    // x and y position of node before onNodeDragStop was called
+    let prevX
+    let prevY
 
-    // if click or tap, go through block selection logic
-    // else go through standard positioning logic below
+    if (node.type === 'StepBlock') {
+      const step = data?.blocks.find(
+        (step) => step.__typename === 'StepBlock' && step.id === node.id
+      )
+      if (step == null || step.__typename !== 'StepBlock') return
 
-    if (isClickOrTouch(event.timeStamp)) {
-      const target = event.target as HTMLElement
-      // if the clicked/tapped element is the StepBlockNodeMenu, don't call handleStepSelection hook https://github.com/JesusFilm/core/pull/4736
-      const menuButtonClicked =
-        (target.parentNode as HTMLElement).id === 'StepBlockNodeMenuIcon' ||
-        target.id === 'StepBlockNodeMenuIcon' ||
-        target.id === 'edit-step'
-      if (menuButtonClicked) return
+      prevX = step.x
+      prevY = step.y
 
-      handleStepSelection(step.id)
+      // if click or tap, go through step selection logic
+      // else go through standard positioning logic below
+      if (isClickOrTouch(event.timeStamp)) {
+        console.log(step.x, step.y)
+        const target = event.target as HTMLElement
+        // if the clicked/tapped element is the StepBlockNodeMenu, don't call handleStepSelection hook https://github.com/JesusFilm/core/pull/4736
+        const menuButtonClicked =
+          (target.parentNode as HTMLElement).id === 'StepBlockNodeMenuIcon' ||
+          target.id === 'StepBlockNodeMenuIcon' ||
+          target.id === 'edit-step'
+        if (menuButtonClicked) return
+
+        handleStepSelection(step.id)
+        return
+      }
     } else {
-      const x = Math.trunc(node.position.x)
-      const y = Math.trunc(node.position.y)
-      add({
-        parameters: {
-          execute: {
-            x,
-            y
-          },
-          undo: {
-            x: step.x,
-            y: step.y
-          },
-          redo: {
-            x,
-            y
-          }
-        },
-        execute({ x, y }) {
-          dispatch({
-            type: 'SetEditorFocusAction',
-            activeSlide: ActiveSlide.JourneyFlow
-          })
-          blockPositionUpdate([{ id: node.id, x, y }])
-        }
-      })
+      prevX = journey?.socialNodeX
+      prevY = journey?.socialNodeY
     }
+
+    const x = Math.trunc(node.position.x)
+    const y = Math.trunc(node.position.y)
+    add({
+      parameters: {
+        execute: {
+          x,
+          y
+        },
+        undo: {
+          x: prevX,
+          y: prevY
+        },
+        redo: {
+          x,
+          y
+        }
+      },
+      execute({ x, y }) {
+        dispatch({
+          type: 'SetEditorFocusAction',
+          activeSlide: ActiveSlide.JourneyFlow
+        })
+        blockPositionUpdate([{ id: node.id, x, y }])
+      }
+    })
   }
 
   const onSelectionDragStop: SelectionDragHandler = (_event, nodes): void => {
