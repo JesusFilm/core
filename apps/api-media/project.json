@@ -158,6 +158,12 @@
         "command": "npm run ts-node apps/api-media/src/workers/cli.ts blocklist"
       }
     },
+    "queue-cloudflare": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apps/api-media/src/workers/cli.ts cloudflare"
+      }
+    },
     "queue-seed": {
       "executor": "nx:run-commands",
       "options": {
