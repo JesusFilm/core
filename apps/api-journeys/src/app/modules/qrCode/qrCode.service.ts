@@ -152,12 +152,9 @@ export class QrCodeService {
       shortLinkCreate.__typename === 'ZodError' ||
       shortLinkCreate.__typename === 'NotUniqueError'
     ) {
-      throw new GraphQLError(
-        `${shortLinkCreate.message} ------- Input: [hostname: ${input.hostname}, pathname: ${input.pathname}, to: ${input.to}, service: ${input.service}]`,
-        {
-          extensions: { code: 'BAD_USER_INPUT' }
-        }
-      )
+      throw new GraphQLError(shortLinkCreate.message, {
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
     } else if (
       shortLinkCreate.__typename === 'MutationShortLinkCreateSuccess'
     ) {
@@ -246,6 +243,11 @@ export class QrCodeService {
     toJourneyId: string,
     toBlockId?: string | undefined | null
   ): Promise<string> {
+    if (process.env.JOURNEYS_URL == null)
+      throw new GraphQLError('Journeys url not not added', {
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
+
     const journey = await this.prismaService.journey.findUniqueOrThrow({
       where: { id: toJourneyId }
     })
@@ -266,14 +268,6 @@ export class QrCodeService {
         ? `https://${customDomain.name}`
         : process.env.JOURNEYS_URL
 
-    if (base == null) {
-      throw new GraphQLError(
-        `Journeys URL not set, [customDomain: ${customDomain?.name ?? 'none'}, env: ${process.env.JOURNEYS_URL}]`,
-        {
-          extensions: { code: 'INTERNAL_SERVER_ERROR' }
-        }
-      )
-    }
     const path = `${journey.slug}${block != null ? `/${block.id}` : ''}`
     const utm = `?utm_source=ns-qr-code&utm_campaign=${qrCodeId}`
 
