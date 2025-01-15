@@ -29,6 +29,7 @@ export function CodeDestinationPopper(): ReactElement {
       <IconButton
         onMouseEnter={(e) => handleOpen(e)}
         onMouseLeave={() => handleClose()}
+        disableRipple
       >
         <InformationCircleContainedIcon />
       </IconButton>
@@ -50,7 +51,7 @@ export function CodeDestinationPopper(): ReactElement {
         ]}
       >
         {({ TransitionProps }) => (
-          <Grow {...TransitionProps} timeout={350}>
+          <Grow {...TransitionProps} timeout={500}>
             <Paper>
               <span
                 ref={setArrowRef}

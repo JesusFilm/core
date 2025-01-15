@@ -115,7 +115,7 @@ export function QrCodeDialog({
             />
           </Stack>
           <Stack // the blue
-            spacing={1.5}
+            spacing={3}
             sx={{
               alignItems: { xs: 'center', sm: 'start' }
             }}
@@ -205,7 +205,7 @@ export function QrCodeDialog({
               <Typography
                 variant="body2"
                 color="secondary.main"
-                sx={{ display: { xs: 'none', sm: 'flex' }, lineHeight: '20px' }}
+                sx={{ display: { xs: 'none', sm: 'flex' } }}
               >
                 {t(
                   'Here is your unique QR code that will direct people to your journey when scanned.'
