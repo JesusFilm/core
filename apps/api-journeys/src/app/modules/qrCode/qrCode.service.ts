@@ -152,9 +152,12 @@ export class QrCodeService {
       shortLinkCreate.__typename === 'ZodError' ||
       shortLinkCreate.__typename === 'NotUniqueError'
     ) {
-      throw new GraphQLError(shortLinkCreate.message, {
-        extensions: { code: 'BAD_USER_INPUT' }
-      })
+      throw new GraphQLError(
+        `${shortLinkCreate.message} ------- Input: [hostname: ${input.hostname}, pathname: ${input.pathname}, to: ${input.to}, service: ${input.service}]`,
+        {
+          extensions: { code: 'BAD_USER_INPUT' }
+        }
+      )
     } else if (
       shortLinkCreate.__typename === 'MutationShortLinkCreateSuccess'
     ) {
