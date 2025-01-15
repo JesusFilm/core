@@ -94,6 +94,8 @@ export function LanguagesFilterPopper({
                     borderRadius: 1,
                     boxShadow: 2,
                     minWidth: 200,
+                    height: 'calc(100% - 200px)',
+                    overflowY: 'scroll',
                     width: { xs: '100%', md: anchorEl?.clientWidth }
                   }}
                   placement="bottom-start"
