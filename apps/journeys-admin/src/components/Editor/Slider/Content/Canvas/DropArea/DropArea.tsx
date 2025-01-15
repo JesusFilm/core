@@ -37,6 +37,12 @@ export function DropArea({ children }: DropAreaProps): ReactElement {
   const {
     state: { selectedStep }
   } = useEditor()
+  const { add } = useCommand()
+  const activeItem = useMemo(
+    () =>
+      selectedStep?.children[0].children.find((item) => item.id === active?.id),
+    [active?.id, selectedStep?.children]
+  )
 
   useEffect(() => {
     setItems(
@@ -55,15 +61,7 @@ export function DropArea({ children }: DropAreaProps): ReactElement {
   const mouseSensor = useSensor(MouseSensor)
   const touchSensor = useSensor(TouchSensor)
 
-  const sensors = useSensors(mouseSensor, touchSensor)
-
-  const { add } = useCommand()
-
-  const activeItem = useMemo(
-    () =>
-      selectedStep?.children[0].children.find((item) => item.id === active?.id),
-    [active?.id, selectedStep?.children]
-  )
+  const activeSensors = useSensors(mouseSensor, touchSensor)
 
   const itemIds = items.map((block) => block.id)
 
@@ -122,7 +120,7 @@ export function DropArea({ children }: DropAreaProps): ReactElement {
       onDragEnd={handleDragEnd}
       onDragStart={handleDragStart}
       collisionDetection={closestCenter}
-      sensors={sensors}
+      sensors={activeSensors}
     >
       <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
         {children}

@@ -22,13 +22,14 @@ export function SelectableWrapper({
   const [isHovering, setIsHovering] = useState(false)
   const selectableRef = useRef<HTMLDivElement>(null)
   const [dragId, setDragId] = useState<string | null>(null)
-  const [isDuringDrag, setIsDuringDrag] = useState(false)
-  const [isAbove, setIsAbove] = useState(false)
+  const [isDuringDrag, setIsDuringDrag] = useState<boolean>(false)
+  const [isAbove, setIsAbove] = useState<boolean>(false)
   const {
     state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
   const [blockIds, setBlockIds] = useState<string[]>([])
+
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   useEffect(() => {
@@ -47,18 +48,9 @@ export function SelectableWrapper({
     )
   }, [selectedStep])
 
-  const { listeners, setNodeRef, isDragging, setActivatorNodeRef } =
-    useSortable({
-      id: block.id
-    })
-
-  const isVideoBlock = block?.__typename === 'VideoBlock'
-  const isRadioOptionBlock = block?.__typename === 'RadioOptionBlock'
-
-  function endDrag() {
-    setIsDuringDrag(false)
-    setDragId(null)
-  }
+  useEffect(() => {
+    setOpen(selectedBlock?.id === block.id)
+  }, [selectedBlock, block])
 
   useDndMonitor({
     onDragMove(e: DragOverEvent): void {
@@ -83,6 +75,11 @@ export function SelectableWrapper({
     }
   })
 
+  const { listeners, setNodeRef, isDragging, setActivatorNodeRef } =
+    useSortable({
+      id: block.id
+    })
+
   const isSelectable =
     selectedBlock != null &&
     block.__typename !== 'StepBlock' &&
@@ -96,48 +93,8 @@ export function SelectableWrapper({
     block.__typename !== 'GridContainerBlock' &&
     block.__typename !== 'GridItemBlock'
 
-  const updateEditor = (block: TreeBlock): void => {
-    dispatch({ type: 'SetSelectedBlockAction', selectedBlock: block })
-    dispatch({
-      type: 'SetSelectedAttributeIdAction',
-      selectedAttributeId: undefined
-    })
-  }
-
-  // TODO: Test dispatch via E2E
-  // please check RadioOptionBlock events are being propogated properly i.e - can be re-ordered
-  const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
-    // Allow RadioQuestion select event to be overridden by RadioOption select/edit events (no e.stopPropogation)
-    if (block.__typename === 'RadioQuestionBlock') {
-      // Directly edit RadioQuestionBlock
-      updateEditor(block)
-    } else if (isRadioOptionBlock) {
-      // this stopPropagation prevents links from being opened in the editor when clicked radioOptions are selected
-      e.stopPropagation()
-      const parentSelected = selectedBlock?.id === block.parentBlockId
-      const siblingSelected =
-        selectedBlock?.parentBlockId === block.parentBlockId
-
-      if (selectedBlock?.id === block.id) {
-        // Must override RadioQuestionBlock selected during event capture
-        dispatch({ type: 'SetSelectedBlockAction', selectedBlock: block })
-      } else if (parentSelected || siblingSelected) {
-        updateEditor(block)
-      }
-    } else {
-      e.stopPropagation()
-      // eslint-disable-next-line no-empty
-      if (selectedBlock?.id === block.id && isInlineEditable) {
-      } else {
-        updateEditor(block)
-      }
-    }
-  }
-
-  // Container Blocks (RadioQuestion, Grid) don't stop propogation on ClickCapture, stop onClick so child events still occur.
-  const blockNonSelectionEvents = (e: MouseEvent<HTMLElement>): void => {
-    e.stopPropagation()
-  }
+  const isVideoBlock = block?.__typename === 'VideoBlock'
+  const isRadioOptionBlock = block?.__typename === 'RadioOptionBlock'
 
   const videoOutlineStyles =
     block?.__typename === 'VideoBlock'
@@ -174,10 +131,6 @@ export function SelectableWrapper({
       }
   }
 
-  useEffect(() => {
-    setOpen(selectedBlock?.id === block.id)
-  }, [selectedBlock, block])
-
   const modifiers = [
     {
       name: 'preventOverflow',
@@ -188,6 +141,54 @@ export function SelectableWrapper({
       enabled: false
     }
   ]
+
+  function endDrag() {
+    setIsDuringDrag(false)
+    setDragId(null)
+  }
+
+  const updateEditor = (block: TreeBlock): void => {
+    dispatch({ type: 'SetSelectedBlockAction', selectedBlock: block })
+    dispatch({
+      type: 'SetSelectedAttributeIdAction',
+      selectedAttributeId: undefined
+    })
+  }
+
+  // TODO: Test dispatch via E2E
+  // please check RadioOptionBlock events are being propogated properly i.e - can be re-ordered
+  const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
+    // Allow RadioQuestion select event to be overridden by RadioOption select/edit events (no e.stopPropogation)
+    if (block.__typename === 'RadioQuestionBlock') {
+      // Directly edit RadioQuestionBlock
+      updateEditor(block)
+    } else if (block?.__typename === 'RadioOptionBlock') {
+      // this stopPropagation prevents links from being opened in the editor when clicked radioOptions are selected
+      e.stopPropagation()
+      const parentSelected = selectedBlock?.id === block.parentBlockId
+      const siblingSelected =
+        selectedBlock?.parentBlockId === block.parentBlockId
+
+      if (selectedBlock?.id === block.id) {
+        // Must override RadioQuestionBlock selected during event capture
+        dispatch({ type: 'SetSelectedBlockAction', selectedBlock: block })
+      } else if (parentSelected || siblingSelected) {
+        updateEditor(block)
+      }
+    } else {
+      e.stopPropagation()
+      // eslint-disable-next-line no-empty
+      if (selectedBlock?.id === block.id && isInlineEditable) {
+      } else {
+        updateEditor(block)
+      }
+    }
+  }
+
+  // Container Blocks (RadioQuestion, Grid) don't stop propogation on ClickCapture, stop onClick so child events still occur.
+  const blockNonSelectionEvents = (e: MouseEvent<HTMLElement>): void => {
+    e.stopPropagation()
+  }
 
   return isSelectable ? (
     <Box
