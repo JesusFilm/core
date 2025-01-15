@@ -268,7 +268,7 @@ export class QrCodeService {
 
     if (base == null) {
       throw new GraphQLError(
-        `Journeys URL not set, [customDomain: ${customDomain.name}, env: ${process.env.JOURNEYS_URL}]`,
+        `Journeys URL not set, [customDomain: ${customDomain?.name ?? 'none'}, env: ${process.env.JOURNEYS_URL}]`,
         {
           extensions: { code: 'INTERNAL_SERVER_ERROR' }
         }
