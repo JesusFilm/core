@@ -109,7 +109,7 @@ export function QrCodeDialog({
             <QRCodeCanvas
               id="qr-code-download"
               title="QR Code"
-              size={124}
+              size={122}
               level="L"
               value={url}
             />
