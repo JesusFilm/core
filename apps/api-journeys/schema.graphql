@@ -432,6 +432,8 @@ type Journey
   showMenu: Boolean
   showDisplayTitle: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
+  socialNodeX: Int
+  socialNodeY: Int
   userJourneys: [UserJourney!]
 }
 

@@ -1137,6 +1137,8 @@ export class Journey {
     showMenu?: Nullable<boolean>;
     showDisplayTitle?: Nullable<boolean>;
     menuButtonIcon?: Nullable<JourneyMenuButtonIcon>;
+    socialNodeX?: Nullable<number>;
+    socialNodeY?: Nullable<number>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 

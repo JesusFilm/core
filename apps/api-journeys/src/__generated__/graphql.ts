@@ -802,6 +802,8 @@ export type Journey = {
   showReactionButtons?: Maybe<Scalars['Boolean']['output']>;
   showShareButton?: Maybe<Scalars['Boolean']['output']>;
   slug: Scalars['String']['output'];
+  socialNodeX?: Maybe<Scalars['Int']['output']>;
+  socialNodeY?: Maybe<Scalars['Int']['output']>;
   status: JourneyStatus;
   strategySlug?: Maybe<Scalars['String']['output']>;
   tags: Array<Tag>;
