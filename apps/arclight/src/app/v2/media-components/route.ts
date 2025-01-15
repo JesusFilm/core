@@ -5,10 +5,6 @@ import { getApolloClient } from '../../../lib/apolloClient'
 import { getLanguageIdsFromTags } from '../../../lib/getLanguageIdsFromTags'
 import { paramsToRecord } from '../../../lib/paramsToRecord'
 
-/* TODO:
-  isDeprecated,
-*/
-
 const GET_VIDEOS_WITH_FALLBACK = graphql(`
   query GetVideosWithFallback(
     $limit: Int
@@ -157,6 +153,7 @@ export async function GET(request: NextRequest): Promise<Response> {
   })
 
   const videos = data.videos
+  const total = data.videosCount
   const queryObject: Record<string, string> = {
     ...paramsToRecord(query.entries()),
     page: page.toString(),
@@ -170,10 +167,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       video.snippet[0]?.value != null ||
       video.description[0]?.value != null
   )
-  const lastPage =
-    Math.ceil(filteredVideos.length / limit) === 0
-      ? 1
-      : Math.ceil(filteredVideos.length / limit)
+  const lastPage = Math.ceil(total / limit) === 0 ? 1 : Math.ceil(total / limit)
 
   const mediaComponents = filteredVideos.map((video) => {
     const isDownloadable =
@@ -261,29 +255,29 @@ export async function GET(request: NextRequest): Promise<Response> {
     page,
     limit,
     pages: lastPage,
-    total: filteredVideos.length,
+    total,
     apiSessionId: '',
     _links: {
       self: {
-        href: `http://api.arclight.org/v2/mediaComponents?${queryString}`
+        href: `http://api.arclight.org/v2/media-components?${queryString}`
       },
       first: {
-        href: `http://api.arclight.org/v2/mediaComponents?${firstQueryString}`
+        href: `http://api.arclight.org/v2/media-components?${firstQueryString}`
       },
       last: {
-        href: `http://api.arclight.org/v2/mediaComponents?${lastQueryString}`
+        href: `http://api.arclight.org/v2/media-components?${lastQueryString}`
       },
       ...(page < lastPage
         ? {
             next: {
-              href: `http://api.arclight.org/v2/mediaComponents?${nextQueryString}`
+              href: `http://api.arclight.org/v2/media-components?${nextQueryString}`
             }
           }
         : {}),
       ...(page > 1
         ? {
             previous: {
-              href: `http://api.arclight.org/v2/mediaComponents?${previousQueryString}`
+              href: `http://api.arclight.org/v2/media-components?${previousQueryString}`
             }
           }
         : {})

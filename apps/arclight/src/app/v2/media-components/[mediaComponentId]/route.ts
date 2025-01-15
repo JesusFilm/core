@@ -93,6 +93,8 @@ export async function GET(
   const query = req.nextUrl.searchParams
   const expand = query.get('expand') ?? ''
   const filter = query.get('filter') ?? ''
+  const platform = query.get('platform') ?? 'ios'
+  const apiKey = query.get('apiKey') ?? ''
   const metadataLanguageTags =
     query.get('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
 
@@ -222,18 +224,17 @@ export async function GET(
       studyQuestions: video.studyQuestions.map((question) => question.value),
       metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
       _links: {
-        // TODO: Needs to be completed
         sampleMediaComponentLanguage: {
-          href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/529?platform=web&apiKey=616db012e9a951.51499299`
+          href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/529?platform=${platform}&apiKey=${apiKey}`
         },
         osisBibleBooks: {
-          href: 'http://api.arclight.org/v2/taxonomies/osisBibleBooks?apiKey=616db012e9a951.51499299'
+          href: `http://api.arclight.org/v2/taxonomies/osisBibleBooks?apiKey=${apiKey}`
         },
         self: {
-          href: `http://api.arclight.org/v2/media-components/${mediaComponentId}?${queryString}`
+          href: `http://api.arclight.org/v2/media-components/${mediaComponentId}?apiKey=${apiKey}`
         },
         mediaComponentLinks: {
-          href: `http://api.arclight.org/v2/media-component-links/${mediaComponentId}?${mediaComponentLinksQuerystring}`
+          href: `http://api.arclight.org/v2/media-component-links/${mediaComponentId}?apiKey=${apiKey}`
         }
       }
     }
