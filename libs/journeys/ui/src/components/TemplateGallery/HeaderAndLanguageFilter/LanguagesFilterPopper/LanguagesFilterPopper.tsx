@@ -94,7 +94,7 @@ export function LanguagesFilterPopper({
                     borderRadius: 1,
                     boxShadow: 2,
                     minWidth: 200,
-                    height: 'calc(100% - 200px)',
+                    maxHeight: '85svh',
                     overflowY: 'scroll',
                     width: { xs: '100%', md: anchorEl?.clientWidth }
                   }}
