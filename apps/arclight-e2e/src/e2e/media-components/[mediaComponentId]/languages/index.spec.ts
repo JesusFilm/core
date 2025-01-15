@@ -1,234 +1,253 @@
-// import { expect, test } from '@playwright/test'
-// import type { APIRequestContext } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
-// import { createQueryParams, getBaseUrl } from '../../../../framework/helpers'
+import { createQueryParams, getBaseUrl } from '../../../../framework/helpers'
 
-// interface TestCase {
-//   mediaComponentId: string
-//   languageId: string
-//   params: Record<string, any>
-// }
+interface MediaComponentLanguage {
+  mediaComponentId: string
+  languageId: number
+  refId: string
+  lengthInMilliseconds: number
+  subtitleUrls?: {
+    vtt?: Array<{
+      languageId: number
+      languageName: string
+      languageTag: string
+      url: string
+    }>
+    srt?: Array<{
+      languageId: number
+      languageName: string
+      languageTag: string
+      url: string
+    }>
+    m3u8?: Array<{
+      languageId: number
+      languageName: string
+      languageTag: string
+      url: string
+    }>
+  }
+  downloadUrls?: {
+    low?: {
+      url: string
+      sizeInBytes: number
+    }
+    high?: {
+      url: string
+      sizeInBytes: number
+    }
+  }
+  streamingUrls: {
+    m3u8?: Array<{ videoBitrate: number; url: string }>
+    dash?: Array<{ videoBitrate: number; url: string }>
+    hls?: Array<{ videoBitrate: number; url: string }>
+    http?: Array<{ videoBitrate: number; url: string }>
+  }
+  shareUrl?: string
+  webEmbedPlayer?: string
+  webEmbedSharePlayer?: string
+  _links: {
+    self: { href: string }
+    mediaComponent: { href: string }
+    mediaLanguage: { href: string }
+  }
+}
 
-// const testCases = {
-//   basic: {
-//     mediaComponentId: '1_jf-0-0',
-//     languageId: '529',
-//     params: {}
-//   },
-//   withPlatformIos: {
-//     mediaComponentId: '1_jf-0-0',
-//     languageId: '529',
-//     params: { platform: 'ios' }
-//   },
-//   withPlatformAndroid: {
-//     mediaComponentId: '1_jf-0-0',
-//     languageId: '529',
-//     params: { platform: 'android' }
-//   },
-//   withPlatformWeb: {
-//     mediaComponentId: '1_jf-0-0',
-//     languageId: '529',
-//     params: { platform: 'web' }
-//   },
-//   withCustomApiKey: {
-//     mediaComponentId: '1_jf-0-0',
-//     languageId: '529',
-//     params: { apiKey: 'custom-key' }
-//   },
-//   withLanguageIds: {
-//     mediaComponentId: '1_jf-0-0',
-//     languageId: '529',
-//     params: { expand: 'languageIds' }
-//   },
-//   withReduce: {
-//     mediaComponentId: '1_jf-0-0',
-//     languageId: '529',
-//     params: { reduce: true }
-//   },
-//   withAllParams: {
-//     mediaComponentId: '1_jf-0-0',
-//     languageId: '529',
-//     params: {
-//       platform: 'web',
-//       apiKey: 'custom-key',
-//       expand: 'languageIds',
-//       reduce: true
-//     }
-//   }
-// }
+const mediaComponentId = '2_0-ConsideringChristmas'
+const defaultLanguageIds = [529, 7083]
 
-// async function getMediaComponentLanguage(
-//   request: APIRequestContext,
-//   testCase: TestCase
-// ) {
-//   const { mediaComponentId, languageId, params } = testCase
-//   const queryParams = createQueryParams(params)
-//   const response = await request.get(
-//     `${await getBaseUrl()}/v2/media-components/${mediaComponentId}/languages/${languageId}?${queryParams}`
-//   )
-//   return response
-// }
+test.describe('media component languages', () => {
+  test('default response matches expected shape', async ({ request }) => {
+    const response = await request.get(
+      `${await getBaseUrl()}/v2/media-components/${mediaComponentId}/languages?${createQueryParams({})}`
+    )
 
-// test('basic media component language request', async ({ request }) => {
-//   const response = await getMediaComponentLanguage(request, testCases.basic)
-//   expect(response.ok()).toBeTruthy()
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
 
-//   const data = await response.json()
-//   expect(data).toMatchObject({
-//     mediaComponentId: expect.any(String),
-//     languageId: expect.any(String),
-//     title: expect.any(String),
-//     description: expect.any(String),
-//     _links: expect.any(Object)
-//   })
-// })
+    expect(data).toMatchObject({
+      mediaComponentId,
+      platform: 'ios',
+      apiSessionId: expect.any(String),
+      _links: {
+        self: {
+          href: expect.any(String)
+        },
+        mediaComponent: {
+          href: expect.any(String)
+        }
+      },
+      _embedded: {
+        mediaComponentLanguage: expect.any(Array)
+      }
+    })
 
-// test('media component language with iOS platform', async ({ request }) => {
-//   const response = await getMediaComponentLanguage(
-//     request,
-//     testCases.withPlatformIos
-//   )
-//   expect(response.ok()).toBeTruthy()
+    data._embedded.mediaComponentLanguage.forEach(
+      (language: MediaComponentLanguage) => {
+        expect(language).toMatchObject({
+          mediaComponentId: expect.any(String),
+          languageId: expect.any(Number),
+          refId: expect.any(String),
+          lengthInMilliseconds: expect.any(Number),
+          _links: {
+            self: {
+              href: expect.stringMatching(
+                /^http:\/\/api\.arclight\.org\/v2\/media-components\/.*/
+              )
+            },
+            mediaComponent: {
+              href: expect.stringMatching(
+                /^http:\/\/api\.arclight\.org\/v2\/media-components\/.*/
+              )
+            },
+            mediaLanguage: {
+              href: expect.stringMatching(
+                /^http:\/\/api\.arclight\.org\/v2\/media-languages\/.*/
+              )
+            }
+          }
+        })
+      }
+    )
+  })
 
-//   const data = await response.json()
-//   expect(data).toMatchObject({
-//     mediaComponentId: expect.any(String),
-//     languageId: expect.any(String),
-//     title: expect.any(String),
-//     description: expect.any(String),
-//     _links: expect.any(Object)
-//   })
+  test('filtered by languageIds returns correct languages', async ({
+    request
+  }) => {
+    const params = createQueryParams({
+      languageIds: defaultLanguageIds[0].toString()
+    })
+    const response = await request.get(
+      `${await getBaseUrl()}/v2/media-components/${mediaComponentId}/languages?${params}`
+    )
 
-//   // iOS specific checks
-//   expect(data._links.download?.href).toContain('platform=ios')
-// })
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
 
-// test('media component language with Android platform', async ({ request }) => {
-//   const response = await getMediaComponentLanguage(
-//     request,
-//     testCases.withPlatformAndroid
-//   )
-//   expect(response.ok()).toBeTruthy()
+    expect(data._embedded.mediaComponentLanguage).toHaveLength(1)
+    expect(data._embedded.mediaComponentLanguage[0].languageId).toEqual(
+      defaultLanguageIds[0]
+    )
+  })
 
-//   const data = await response.json()
-//   expect(data).toMatchObject({
-//     mediaComponentId: expect.any(String),
-//     languageId: expect.any(String),
-//     title: expect.any(String),
-//     description: expect.any(String),
-//     _links: expect.any(Object)
-//   })
+  test('iOS platform returns expected formats', async ({ request }) => {
+    const response = await request.get(
+      `${await getBaseUrl()}/v2/media-components/${mediaComponentId}/languages?${createQueryParams({ platform: 'ios' })}`
+    )
 
-//   // Android specific checks
-//   expect(data._links.download?.href).toContain('platform=android')
-// })
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+    const language = data._embedded.mediaComponentLanguage[0]
 
-// test('media component language with Web platform', async ({ request }) => {
-//   const response = await getMediaComponentLanguage(
-//     request,
-//     testCases.withPlatformWeb
-//   )
-//   expect(response.ok()).toBeTruthy()
+    // Streaming URLs
+    expect(language.streamingUrls).toHaveProperty('m3u8')
+    expect(language.streamingUrls).not.toHaveProperty('dash')
 
-//   const data = await response.json()
-//   expect(data).toMatchObject({
-//     mediaComponentId: expect.any(String),
-//     languageId: expect.any(String),
-//     title: expect.any(String),
-//     description: expect.any(String),
-//     _links: expect.any(Object)
-//   })
+    // Subtitle formats
+    expect(language.subtitleUrls).toBeDefined()
+    expect(language.subtitleUrls?.vtt?.[0]).toMatchObject({
+      languageId: expect.any(Number),
+      languageName: expect.any(String),
+      languageTag: expect.any(String),
+      url: expect.any(String)
+    })
+    expect(language.subtitleUrls?.srt).toBeUndefined()
+    expect(language.subtitleUrls?.m3u8).toBeUndefined()
 
-//   // Web specific checks
-//   expect(data._links.download?.href).toContain('platform=web')
-// })
+    // No web-specific properties
+    expect(language).not.toHaveProperty('webEmbedPlayer')
+    expect(language).not.toHaveProperty('webEmbedSharePlayer')
+  })
 
-// test('media component language with custom API key', async ({ request }) => {
-//   const response = await getMediaComponentLanguage(
-//     request,
-//     testCases.withCustomApiKey
-//   )
-//   expect(response.ok()).toBeTruthy()
+  test('Android platform returns expected formats', async ({ request }) => {
+    const response = await request.get(
+      `${await getBaseUrl()}/v2/media-components/${mediaComponentId}/languages?${createQueryParams({ platform: 'android' })}`
+    )
 
-//   const data = await response.json()
-//   expect(data).toMatchObject({
-//     mediaComponentId: expect.any(String),
-//     languageId: expect.any(String),
-//     title: expect.any(String),
-//     description: expect.any(String),
-//     _links: expect.any(Object)
-//   })
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+    const language = data._embedded.mediaComponentLanguage[0]
 
-//   // API key specific checks
-//   expect(data._links.self.href).toContain('apiKey=custom-key')
-// })
+    // Streaming URLs
+    expect(language.streamingUrls).toHaveProperty('dash')
+    expect(language.streamingUrls).toHaveProperty('hls')
+    expect(language.streamingUrls).not.toHaveProperty('m3u8')
 
-// test('media component language with language IDs filter', async ({
-//   request
-// }) => {
-//   const response = await getMediaComponentLanguage(
-//     request,
-//     testCases.withLanguageIds
-//   )
-//   expect(response.ok()).toBeTruthy()
+    // Subtitle formats
+    expect(language.subtitleUrls).toBeDefined()
+    expect(language.subtitleUrls?.vtt?.[0]).toMatchObject({
+      languageId: expect.any(Number),
+      languageName: expect.any(String),
+      languageTag: expect.any(String),
+      url: expect.any(String)
+    })
+    expect(language.subtitleUrls?.srt?.[0]).toMatchObject({
+      languageId: expect.any(Number),
+      languageName: expect.any(String),
+      languageTag: expect.any(String),
+      url: expect.any(String)
+    })
+    expect(language.subtitleUrls?.m3u8).toBeUndefined()
 
-//   const data = await response.json()
-//   expect(data).toMatchObject({
-//     mediaComponentId: expect.any(String),
-//     languageId: expect.any(String),
-//     title: expect.any(String),
-//     description: expect.any(String),
-//     _links: expect.any(Object),
-//     languageIds: expect.any(Array)
-//   })
+    // No web-specific properties
+    expect(language).not.toHaveProperty('webEmbedPlayer')
+    expect(language).not.toHaveProperty('webEmbedSharePlayer')
+  })
 
-//   expect(data.languageIds.length).toBeGreaterThan(0)
-//   expect(
-//     data.languageIds.every((id: any) => typeof id === 'string')
-//   ).toBeTruthy()
-// })
+  test('Web platform returns expected formats', async ({ request }) => {
+    const response = await request.get(
+      `${await getBaseUrl()}/v2/media-components/${mediaComponentId}/languages?${createQueryParams({ platform: 'web' })}`
+    )
 
-// test('media component language with reduce parameter', async ({ request }) => {
-//   const response = await getMediaComponentLanguage(
-//     request,
-//     testCases.withReduce
-//   )
-//   expect(response.ok()).toBeTruthy()
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+    const language = data._embedded.mediaComponentLanguage[0]
 
-//   const data = await response.json()
+    // Streaming URLs
+    expect(language.streamingUrls).toEqual({})
 
-//   // Should only include basic fields
-//   expect(data).toMatchObject({
-//     mediaComponentId: expect.any(String),
-//     languageId: expect.any(String),
-//     title: expect.any(String),
-//     _links: expect.any(Object)
-//   })
+    // Web-specific properties
+    expect(language).toHaveProperty('webEmbedPlayer')
+    expect(language).toHaveProperty('webEmbedSharePlayer')
 
-//   // Should not include extended fields
-//   expect(data).not.toHaveProperty('description')
-//   expect(data).not.toHaveProperty('languageIds')
-// })
+    // Subtitle formats
+    expect(language.subtitleUrls).toBeDefined()
+    expect(language.subtitleUrls?.m3u8?.[0]).toMatchObject({
+      languageId: expect.any(Number),
+      languageName: expect.any(String),
+      languageTag: expect.any(String),
+      url: expect.any(String)
+    })
+    expect(language.subtitleUrls?.vtt).toBeUndefined()
+    expect(language.subtitleUrls?.srt).toBeUndefined()
+  })
 
-// test('media component language with all parameters', async ({ request }) => {
-//   const response = await getMediaComponentLanguage(
-//     request,
-//     testCases.withAllParams
-//   )
-//   expect(response.ok()).toBeTruthy()
+  test('download URL includes metadata', async ({ request }) => {
+    const response = await request.get(
+      `${await getBaseUrl()}/v2/media-components/${mediaComponentId}/languages?${createQueryParams({})}`
+    )
 
-//   const data = await response.json()
-//   expect(data).toMatchObject({
-//     mediaComponentId: expect.any(String),
-//     languageId: expect.any(String),
-//     title: expect.any(String),
-//     _links: expect.any(Object),
-//     languageIds: expect.any(Array)
-//   })
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+    const language = data._embedded.mediaComponentLanguage[0]
 
-//   // Check all parameters are applied
-//   expect(data._links.download?.href).toContain('platform=web')
-//   expect(data._links.self.href).toContain('apiKey=custom-key')
-//   expect(data.languageIds.length).toBeGreaterThan(0)
-//   expect(data).not.toHaveProperty('description') // reduced
-// })
+    expect(language.downloadUrls?.high).toBeDefined()
+    expect(language.downloadUrls?.high).toMatchObject({
+      url: expect.any(String),
+      sizeInBytes: expect.any(Number)
+    })
+  })
+
+  test('custom share URL follows expected format', async ({ request }) => {
+    const response = await request.get(
+      `${await getBaseUrl()}/v2/media-components/${mediaComponentId}/languages?${createQueryParams({})}`
+    )
+
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+    const language = data._embedded.mediaComponentLanguage[0]
+
+    expect(language.shareUrl).toBeDefined()
+    expect(language.shareUrl).toMatch(/^https:\/\/arc\.gt\/[a-z0-9]+$/)
+  })
+})
