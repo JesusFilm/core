@@ -26,11 +26,13 @@ import {
   useBlockOrderUpdateMutation
 } from '../../../../../../libs/useBlockOrderUpdateMutation'
 
-interface DropAreaProps {
+interface DragDropWrapperProps {
   children: ReactNode
 }
 
-export function DropArea({ children }: DropAreaProps): ReactElement {
+export function DragDropWrapper({
+  children
+}: DragDropWrapperProps): ReactElement {
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
   const [active, setActive] = useState<Active | null>(null)
   const [items, setItems] = useState<TreeBlock<BlockFields>[]>([])

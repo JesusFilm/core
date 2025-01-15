@@ -26,7 +26,7 @@ import { Hotkeys } from '../../../Hotkeys'
 
 import { CanvasFooter } from './CanvasFooter'
 import { CardWrapper } from './CardWrapper'
-import { DropArea } from './DropArea'
+import { DragDropWrapper } from './DragDropWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import {
@@ -287,7 +287,7 @@ export function Canvas(): ReactElement {
                               }
                             />
                           </ThemeProvider>
-                          <DropArea>
+                          <DragDropWrapper>
                             <BlockRenderer
                               block={selectedStep}
                               wrappers={{
@@ -302,7 +302,7 @@ export function Canvas(): ReactElement {
                                 CardWrapper
                               }}
                             />
-                          </DropArea>
+                          </DragDropWrapper>
                           <ThemeProvider
                             themeName={ThemeName.journeyUi}
                             themeMode={theme.themeMode}
