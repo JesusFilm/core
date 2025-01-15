@@ -10,6 +10,7 @@ import { BlockService } from '../block/block.service'
 import { ChatButtonResolver } from '../chatButton/chatButton.resolver'
 import { PlausibleConsumer } from '../plausible/plausible.consumer'
 import { PlausibleService } from '../plausible/plausible.service'
+import { QrCodeService } from '../qrCode/qrCode.service'
 
 import { JourneyResolver } from './journey.resolver'
 
@@ -25,7 +26,8 @@ import { JourneyResolver } from './journey.resolver'
     ChatButtonResolver,
     PrismaService,
     PlausibleService,
-    PlausibleConsumer
+    PlausibleConsumer,
+    QrCodeService
   ]
 })
 export class JourneyModule {}

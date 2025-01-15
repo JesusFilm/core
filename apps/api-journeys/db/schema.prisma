@@ -240,6 +240,7 @@ model Team {
   journeyCollections JourneyCollection[]
   customDomains      CustomDomain[]
   integrations       Integration[]
+  qrCodes            QrCode[]
 
   @@index(title)
 }
@@ -410,6 +411,7 @@ model Journey {
   menuStepBlockId           String?                     @unique
   menuStepBlock             Block?                      @relation("MenuStepBlock", fields: [menuStepBlockId], references: [id], onDelete: SetNull)
   menuButtonIcon            JourneyMenuButtonIcon?
+  qrCode                    QrCode[]
 
   @@index(title)
 }
@@ -615,4 +617,17 @@ model JourneyCollectionJourneys {
 
   @@unique([journeyCollectionId, journeyId])
   @@unique([journeyCollectionId, order])
+}
+
+model QrCode {
+  id              String  @id @default(uuid())
+  teamId          String
+  journeyId       String
+  toJourneyId     String
+  toBlockId       String?
+  shortLinkId     String
+  color           String? @default("#000000")
+  backgroundColor String? @default("#FFFFFF")
+  team            Team    @relation(fields: [teamId], references: [id])
+  journey         Journey @relation(fields: [journeyId], references: [id])
 }
