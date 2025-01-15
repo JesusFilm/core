@@ -210,6 +210,8 @@ input JourneyUpdateInput {
   menuButtonIcon: JourneyMenuButtonIcon
   menuStepBlockId: ID
   logoImageBlockId: ID
+  socialNodeX: Int
+  socialNodeY: Int
 }
 
 extend type UserJourney {

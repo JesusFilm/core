@@ -3850,6 +3850,8 @@ input JourneyUpdateInput @join__type(graph: API_JOURNEYS)  {
   menuButtonIcon: JourneyMenuButtonIcon
   menuStepBlockId: ID
   logoImageBlockId: ID
+  socialNodeX: Int
+  socialNodeY: Int
 }
 
 input JourneyTemplateInput @join__type(graph: API_JOURNEYS)  {
