@@ -432,6 +432,8 @@ type Journey
   showMenu: Boolean
   showDisplayTitle: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
+  socialNodeX: Int
+  socialNodeY: Int
   userJourneys: [UserJourney!]
 }
 
@@ -2257,6 +2259,8 @@ input JourneyUpdateInput {
   menuButtonIcon: JourneyMenuButtonIcon
   menuStepBlockId: ID
   logoImageBlockId: ID
+  socialNodeX: Int
+  socialNodeY: Int
 }
 
 type UserJourney
