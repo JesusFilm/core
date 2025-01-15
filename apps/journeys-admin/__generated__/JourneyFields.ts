@@ -627,4 +627,6 @@ export interface JourneyFields {
   logoImageBlock: JourneyFields_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: JourneyFields_menuStepBlock | null;
+  socialNodeX: number | null;
+  socialNodeY: number | null;
 }

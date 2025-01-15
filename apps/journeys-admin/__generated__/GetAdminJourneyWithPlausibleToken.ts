@@ -627,6 +627,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
   logoImageBlock: GetAdminJourneyWithPlausibleToken_journey_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetAdminJourneyWithPlausibleToken_journey_menuStepBlock | null;
+  socialNodeX: number | null;
+  socialNodeY: number | null;
   /**
    * used in a plausible share link to embed report
    */

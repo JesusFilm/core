@@ -627,6 +627,8 @@ export interface GetAdminJourney_journey {
   logoImageBlock: GetAdminJourney_journey_logoImageBlock | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: GetAdminJourney_journey_menuStepBlock | null;
+  socialNodeX: number | null;
+  socialNodeY: number | null;
 }
 
 export interface GetAdminJourney {
