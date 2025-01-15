@@ -1,13 +1,12 @@
 import 'cloudflare/shims/node'
 
-
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
-import Cloudflare from 'cloudflare'
 import Mux from '@mux/mux-node'
+import Cloudflare from 'cloudflare'
 import fetch from 'node-fetch'
 import { Logger } from 'pino'
-import { graphql } from '../../../lib/graphql/gatewayGraphql'
 
+import { graphql } from '../../../lib/graphql/gatewayGraphql'
 import { prisma } from '../../../lib/prisma'
 
 export function getClient(): Cloudflare {
@@ -139,7 +138,7 @@ async function migrateCloudflareVideosToMux(logger?: Logger): Promise<void> {
       })
       let processing = false
       while (processing) {
-        await new Promise(f => setTimeout(f, 10000)) // wait 10 seconds
+        await new Promise((f) => setTimeout(f, 10000)) // wait 10 seconds
         const asset = await mux.video.assets.retrieve(muxVideo.id)
         if (asset.status === 'ready' && asset.playback_ids?.[0].id != null) {
           try {
@@ -166,7 +165,10 @@ async function migrateCloudflareVideosToMux(logger?: Logger): Promise<void> {
               where: { id: video.id }
             })
           } catch (error) {
-            logger?.error(error, `unable to migrate cloudflare video ${video.id}`)
+            logger?.error(
+              error,
+              `unable to migrate cloudflare video ${video.id}`
+            )
           }
           processing = false
         }
