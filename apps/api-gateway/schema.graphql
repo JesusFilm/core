@@ -2094,6 +2094,7 @@ type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId
   id: ID!
   primaryLanguageId: ID
   source: VideoBlockSource @join__field(graph: API_JOURNEYS_MODERN, type: "VideoBlockSource!")  @join__field(graph: API_MEDIA, type: "VideoBlockSource") 
+  name: String @join__field(graph: API_MEDIA) 
   assetId: String @join__field(graph: API_MEDIA) 
   duration: Int @join__field(graph: API_MEDIA) 
   uploadId: String @join__field(graph: API_MEDIA) 
