@@ -1,4 +1,5 @@
 import fetch, { Response } from 'node-fetch'
+
 import { revalidateJourney } from './revaidateJourney'
 
 jest.mock('node-fetch', () => {
