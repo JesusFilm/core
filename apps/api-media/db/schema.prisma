@@ -52,6 +52,7 @@ model CloudflareVideo {
   createdAt     DateTime @default(now())
   readyToStream Boolean  @default(false)
   updatedAt     DateTime @default(now()) @updatedAt
+  downloadable  Boolean  @default(false)
 
   @@index([userId])
 }
