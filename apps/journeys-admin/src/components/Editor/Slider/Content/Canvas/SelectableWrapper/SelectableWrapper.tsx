@@ -3,6 +3,8 @@ import { useSortable } from '@dnd-kit/sortable'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Popper from '@mui/material/Popper'
+import { Theme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -27,6 +29,7 @@ export function SelectableWrapper({
     dispatch
   } = useEditor()
   const [blockIds, setBlockIds] = useState<string[]>([])
+  const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   useEffect(() => {
     setBlockIds(
@@ -252,7 +255,10 @@ export function SelectableWrapper({
         isVideoBlock={isVideoBlock}
       />
       <Popper
-        open={!isRadioOptionBlock}
+        open={
+          (!isRadioOptionBlock && smUp) ||
+          (!smUp && block.id === selectedBlock.id)
+        }
         anchorEl={selectableRef.current}
         placement="left"
         {...listeners}
