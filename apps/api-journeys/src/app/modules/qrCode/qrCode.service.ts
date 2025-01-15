@@ -265,6 +265,15 @@ export class QrCodeService {
       customDomain?.name != null
         ? `https://${customDomain.name}`
         : process.env.JOURNEYS_URL
+
+    if (base == null) {
+      throw new GraphQLError(
+        `Journeys URL not set, [customDomain: ${customDomain.name}, env: ${process.env.JOURNEYS_URL}]`,
+        {
+          extensions: { code: 'INTERNAL_SERVER_ERROR' }
+        }
+      )
+    }
     const path = `${journey.slug}${block != null ? `/${block.id}` : ''}`
     const utm = `?utm_source=ns-qr-code&utm_campaign=${qrCodeId}`
 
