@@ -90,29 +90,43 @@ export function QrCodeDialog({
       }}
     >
       <Stack spacing={7}>
-        <Stack direction="row" spacing={7}>
-          <Stack justifyContent="center">
+        <Stack
+          sx={{
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: { xs: 4, sm: 7 },
+            alignItems: 'center'
+          }}
+        >
+          <Stack //this is the QRcode
+            sx={{
+              borderWidth: '2px',
+              borderStyle: 'solid',
+              borderColor: 'divider',
+              borderRadius: 2,
+              p: 1
+            }}
+          >
+            <QRCodeCanvas
+              id="qr-code-download"
+              title="QR Code"
+              size={124}
+              level="L"
+              value={url}
+            />
+          </Stack>
+          <Stack // the blue
+            spacing={1.5}
+            sx={{
+              alignItems: { xs: 'center', sm: 'start' }
+            }}
+          >
+            <ScanCount />
             <Stack
+              spacing={3}
               sx={{
-                borderWidth: '2px',
-                borderStyle: 'solid',
-                borderColor: 'divider',
-                borderRadius: 2,
-                p: 1
+                alignItems: { xs: 'center', sm: 'start' }
               }}
             >
-              <QRCodeCanvas
-                id="qr-code-download"
-                title="QR Code"
-                size={124}
-                level="L"
-                value={url}
-              />
-            </Stack>
-          </Stack>
-          <Stack spacing={1.5}>
-            <ScanCount />
-            <Stack spacing={3}>
               <ButtonGroup
                 variant="contained"
                 sx={{
@@ -191,7 +205,7 @@ export function QrCodeDialog({
               <Typography
                 variant="body2"
                 color="secondary.main"
-                sx={{ lineHeight: '20px' }}
+                sx={{ display: { xs: 'none', sm: 'flex' }, lineHeight: '20px' }}
               >
                 {t(
                   'Here is your unique QR code that will direct people to your journey when scanned.'
@@ -202,7 +216,14 @@ export function QrCodeDialog({
         </Stack>
         <Divider />
         <Stack spacing={5}>
-          <Stack direction="row" alignItems="center" spacing={1}>
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{
+              alignItems: 'center',
+              justifyContent: { xs: 'space-between', sm: 'start' }
+            }}
+          >
             <Typography variant="subtitle1" color="secondary.dark">
               {t('Code Destination')}
             </Typography>

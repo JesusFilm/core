@@ -11,6 +11,7 @@ import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCir
 export function CodeDestinationPopper(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [arrowRef, setArrowRef] = useState<null | HTMLSpanElement>(null)
   const [showPopper, setShowPopper] = useState(false)
 
   function handleOpen(event: MouseEvent<HTMLElement>): void {
@@ -37,10 +38,33 @@ export function CodeDestinationPopper(): ReactElement {
         anchorEl={anchorEl}
         disablePortal
         transition
+        placement="top"
+        modifiers={[
+          {
+            name: 'arrow',
+            enabled: true,
+            options: {
+              element: arrowRef
+            }
+          }
+        ]}
       >
         {({ TransitionProps }) => (
           <Grow {...TransitionProps} timeout={350}>
             <Paper>
+              <span
+                ref={setArrowRef}
+                style={{
+                  position: 'absolute',
+                  width: 0,
+                  height: 0,
+                  borderLeft: '8px solid transparent',
+                  borderRight: '8px solid transparent',
+                  borderTop: '8px solid white',
+                  bottom: '-8px',
+                  left: 'calc(50% - 8px)'
+                }}
+              />
               <Typography sx={{ p: 4, width: 284 }}>
                 {t(
                   'You can edit your QR code scan destination. There’s no need to reprint after editing'
