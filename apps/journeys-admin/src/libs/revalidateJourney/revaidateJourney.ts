@@ -18,8 +18,13 @@ export async function revalidateJourney({
     ...(hostname != null && { hostname })
   }
 
-  const response = await fetch(
-    `${process.env.JOURNEYS_URL}/api/revalidate?${new URLSearchParams(params).toString()}`
-  )
-  if (response.ok) return response
+  try {
+    const response = await fetch(
+      `${process.env.JOURNEYS_URL}/api/revalidate?${new URLSearchParams(params).toString()}`
+    )
+    console.log(response)
+    if (response.ok) return response
+  } catch (e) {
+    console.log(e)
+  }
 }
