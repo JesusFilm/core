@@ -158,8 +158,8 @@ async function migrateCloudflareVideosToMux(logger?: Logger): Promise<void> {
             await apollo.mutate({
               mutation: UPDATE_VIDEO_BLOCK,
               variables: {
+                id: video.id,
                 input: {
-                  id: video.id,
                   videoId: muxVideo.id,
                   source: 'mux'
                 }

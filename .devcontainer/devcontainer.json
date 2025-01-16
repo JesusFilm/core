@@ -32,24 +32,24 @@
   // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
   "remoteUser": "node",
   "features": {
-    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
-    "ghcr.io/devcontainers/features/git:1": {},
-    "ghcr.io/devcontainers/features/aws-cli:1": {},
-    "ghcr.io/devcontainers/features/python:1": {},
-    "ghcr.io/devcontainers/features/terraform:1": {
-      "version": "latest",
-      "tflint": "0.46.1",
-      "terragrunt": "latest"
-    },
-    "ghcr.io/devcontainers/features/node:1": {
-      "nodeGypDependencies": true,
-      "version": "lts"
-    },
-    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
-      "version": "1.30",
-      "helm": "latest",
-      "minikube": "none"
-    },
-    "ghcr.io/casl0/devcontainer-features/eksctl:1": {}
+    // "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    // "ghcr.io/devcontainers/features/git:1": {},
+    // "ghcr.io/devcontainers/features/aws-cli:1": {},
+    // "ghcr.io/devcontainers/features/python:1": {},
+    // "ghcr.io/devcontainers/features/terraform:1": {
+    //   "version": "latest",
+    //   "tflint": "0.46.1",
+    //   "terragrunt": "latest"
+    // },
+    // "ghcr.io/devcontainers/features/node:1": {
+    //   "nodeGypDependencies": true,
+    //   "version": "lts"
+    // },
+    // "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+    //   "version": "1.30",
+    //   "helm": "latest",
+    //   "minikube": "none"
+    // },
+    // "ghcr.io/casl0/devcontainer-features/eksctl:1": {}
   }
 }

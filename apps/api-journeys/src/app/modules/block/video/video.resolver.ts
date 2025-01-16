@@ -117,19 +117,6 @@ function parseISO8601Duration(duration: string): number {
   )
 }
 
-function getClient(): Mux {
-  if (process.env.MUX_ACCESS_TOKEN_ID == null)
-    throw new Error('Missing MUX_ACCESS_TOKEN_ID')
-
-  if (process.env.MUX_SECRET_KEY == null)
-    throw new Error('Missing MUX_SECRET_KEY')
-
-  return new Mux({
-    tokenId: process.env.MUX_ACCESS_TOKEN_ID,
-    tokenSecret: process.env.MUX_SECRET_KEY
-  })
-}
-
 @Resolver('VideoBlock')
 export class VideoBlockResolver {
   constructor(
