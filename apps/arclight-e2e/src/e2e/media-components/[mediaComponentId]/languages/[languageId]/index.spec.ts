@@ -11,13 +11,13 @@ interface TestCase {
 
 const testCases = {
   basic: {
-    mediaComponentId: '1_jf-0-0',
+    mediaComponentId: '2_0-ConsideringChristmas',
     languageId: '529',
     params: {}
   },
   withPlatformIos: {
-    mediaComponentId: '1_jf-0-0',
-    languageId: '3934',
+    mediaComponentId: '2_0-ConsideringChristmas',
+    languageId: '7083',
     params: { platform: 'ios' }
   },
   withPlatformAndroid: {
@@ -26,12 +26,12 @@ const testCases = {
     params: { platform: 'android' }
   },
   withPlatformWeb: {
-    mediaComponentId: '1_jf-0-0',
+    mediaComponentId: '2_0-ConsideringChristmas',
     languageId: '529',
     params: { platform: 'web' }
   },
   withExpandContains: {
-    mediaComponentId: '1_jf-0-0',
+    mediaComponentId: '2_0-ConsideringChristmas',
     languageId: '529',
     params: { expand: 'contains' }
   }

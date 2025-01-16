@@ -90,7 +90,8 @@ test.describe('media component links', () => {
     )
   })
 
-  test('verify Urdu content filtering', async ({ request }) => {
+  // TODO: Waiting on crowdin translations in stage
+  test.fixme('verify Urdu content filtering', async ({ request }) => {
     const response = await getMediaComponentLinks(
       request,
       testCases.urduContent

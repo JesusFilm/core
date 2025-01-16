@@ -62,7 +62,7 @@ test.describe('GET /v2/media-countries/[countryId]', () => {
 
   test('expands media languages', async ({ request }) => {
     const response = await getMediaCountry(request, {
-      countryId: 'US',
+      countryId: 'AD',
       params: { expand: 'mediaLanguages' }
     })
 
@@ -95,7 +95,7 @@ test.describe('GET /v2/media-countries/[countryId]', () => {
 
   test('handles metadata language tags', async ({ request }) => {
     const response = await getMediaCountry(request, {
-      countryId: 'US',
+      countryId: 'AD',
       params: { metadataLanguageTags: 'es' }
     })
 
