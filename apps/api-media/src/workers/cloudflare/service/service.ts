@@ -112,31 +112,35 @@ async function migrateCloudflareVideosToMux(logger?: Logger): Promise<void> {
     page++
     done = videos.length < 100
     for (const video of videos) {
-      const cfVideo = await cloudflare.stream.downloads.get(video.id, {
+      const cfVideo = (await cloudflare.stream.downloads.get(video.id, {
         account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
-      })
+      })) as { default: { url: string } }
       if (cfVideo == null) continue
       logger?.info(`Processing cloudflare video ${video.id}`)
       const muxVideo = await mux.video.assets.create({
         input: [
           {
-            url: cfVideo as string
+            url: cfVideo.default.url
           }
         ],
         encoding_tier: 'smart',
         playback_policy: ['public'],
         max_resolution_tier: '1080p'
       })
-      await prisma.muxVideo.create({
-        data: {
-          id: muxVideo.id,
-          createdAt: video.createdAt,
-          updatedAt: new Date(),
-          readyToStream: false,
-          userId: video.userId
-        }
+      const data = {
+        id: video.id,
+        assetId: muxVideo.id,
+        createdAt: video.createdAt,
+        updatedAt: new Date(),
+        readyToStream: false,
+        userId: video.userId
+      }
+      await prisma.muxVideo.upsert({
+        where: { id: video.id },
+        create: data,
+        update: data
       })
-      let processing = false
+      let processing = true
       while (processing) {
         await new Promise((f) => setTimeout(f, 10000)) // wait 10 seconds
         const asset = await mux.video.assets.retrieve(muxVideo.id)
