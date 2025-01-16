@@ -89,7 +89,12 @@ export function QrCodeDialog({
         closeButton: true
       }}
     >
-      <Stack spacing={7}>
+      <Stack
+        spacing={7}
+        sx={{
+          overflowX: 'hidden'
+        }}
+      >
         <Stack
           sx={{
             flexDirection: { xs: 'column', sm: 'row' },
@@ -97,7 +102,7 @@ export function QrCodeDialog({
             alignItems: 'center'
           }}
         >
-          <Stack //this is the QRcode
+          <Stack
             sx={{
               borderWidth: '2px',
               borderStyle: 'solid',
@@ -114,7 +119,7 @@ export function QrCodeDialog({
               value={url}
             />
           </Stack>
-          <Stack // the blue
+          <Stack
             spacing={3}
             sx={{
               alignItems: { xs: 'center', sm: 'start' }

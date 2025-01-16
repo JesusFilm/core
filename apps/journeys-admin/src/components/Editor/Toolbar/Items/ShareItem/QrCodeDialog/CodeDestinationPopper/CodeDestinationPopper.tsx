@@ -1,17 +1,48 @@
-import Grow from '@mui/material/Grow'
+import Box from '@mui/material/Box'
+import Fade from '@mui/material/Fade'
 import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
-import Popper from '@mui/material/Popper'
+import MuiPopper from '@mui/material/Popper'
+import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
+const Popper = styled(MuiPopper)(({ theme }) => ({
+  zIndex: 1,
+  '&[data-popper-placement*="top"] .arrow': {
+    bottom: 0,
+    left: 0,
+    marginBottom: '-0.9em',
+    width: '3em',
+    height: '1em'
+  }
+}))
+
+const Arrow = styled('span')(({ theme }) => ({
+  position: 'absolute',
+  fontSize: 7,
+  width: '3em',
+  height: '3em',
+  '&::before': {
+    content: '""',
+    margin: 'auto',
+    display: 'block',
+    width: 0,
+    height: 0,
+    borderStyle: 'solid',
+    borderWidth: '1em 1em 0 1em',
+    borderColor: `${theme.palette.background.paper} transparent transparent transparent`,
+    filter: 'drop-shadow(0.5px 1px 0.3px rgba(0,0,0,0.3))'
+  }
+}))
+
 export function CodeDestinationPopper(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const [arrowRef, setArrowRef] = useState<null | HTMLSpanElement>(null)
+  const [arrowRef, setArrowRef] = useState<null | HTMLElement>(null)
   const [showPopper, setShowPopper] = useState(false)
 
   function handleOpen(event: MouseEvent<HTMLElement>): void {
@@ -34,11 +65,11 @@ export function CodeDestinationPopper(): ReactElement {
         <InformationCircleContainedIcon />
       </IconButton>
       <Popper
-        sx={{ zIndex: 1 }}
         open={showPopper}
         anchorEl={anchorEl}
         disablePortal
         transition
+        className="popper"
         placement="top"
         modifiers={[
           {
@@ -51,28 +82,18 @@ export function CodeDestinationPopper(): ReactElement {
         ]}
       >
         {({ TransitionProps }) => (
-          <Grow {...TransitionProps} timeout={500}>
-            <Paper>
-              <span
-                ref={setArrowRef}
-                style={{
-                  position: 'absolute',
-                  width: 0,
-                  height: 0,
-                  borderLeft: '8px solid transparent',
-                  borderRight: '8px solid transparent',
-                  borderTop: '8px solid white',
-                  bottom: '-8px',
-                  left: 'calc(50% - 8px)'
-                }}
-              />
-              <Typography sx={{ p: 4, width: 284 }}>
-                {t(
-                  'You can edit your QR code scan destination. There’s no need to reprint after editing'
-                )}
-              </Typography>
-            </Paper>
-          </Grow>
+          <Fade {...TransitionProps} timeout={350}>
+            <Box>
+              <Arrow className="arrow" ref={setArrowRef} />
+              <Paper>
+                <Typography sx={{ p: 4, maxWidth: { xs: 250, sm: 284 } }}>
+                  {t(
+                    'You can edit your QR code scan destination. There’s no need to reprint after editing.'
+                  )}
+                </Typography>
+              </Paper>
+            </Box>
+          </Fade>
         )}
       </Popper>
     </>
