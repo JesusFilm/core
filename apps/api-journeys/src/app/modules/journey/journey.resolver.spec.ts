@@ -33,6 +33,7 @@ import { PrismaService } from '../../lib/prisma.service'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockResolver } from '../block/block.resolver'
 import { BlockService, BlockWithAction } from '../block/block.service'
+import { QrCodeService } from '../qrCode/qrCode.service'
 import { UserRoleResolver } from '../userRole/userRole.resolver'
 import { UserRoleService } from '../userRole/userRole.service'
 
@@ -145,6 +146,10 @@ describe('JourneyResolver', () => {
         {
           provide: BlockService,
           useValue: mockDeep<BlockService>()
+        },
+        {
+          provide: QrCodeService,
+          useValue: mockDeep<QrCodeService>()
         },
         BlockResolver,
         UserRoleResolver,
@@ -1776,6 +1781,7 @@ describe('JourneyResolver', () => {
       prismaService.journey.findUnique.mockResolvedValueOnce(
         journeyWithUserTeam
       )
+      prismaService.journey.update.mockResolvedValueOnce(journey)
       await resolver.journeyUpdate(ability, 'journeyId', {
         title: 'new title',
         languageId: '529',
@@ -1839,9 +1845,7 @@ describe('JourneyResolver', () => {
       )
       await expect(
         resolver.journeyUpdate(ability, 'journeyId', { hostId: 'hostId' })
-      ).rejects.toThrow(
-        'the team id of host does not not match team id of journey'
-      )
+      ).rejects.toThrow('the team id of host does not match team id of journey')
     })
 
     it('throws error if slug is not unique', async () => {
