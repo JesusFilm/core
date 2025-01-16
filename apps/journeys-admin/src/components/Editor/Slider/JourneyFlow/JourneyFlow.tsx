@@ -177,6 +177,8 @@ export function JourneyFlow(): ReactElement {
 
   const allBlockPositionUpdate = useCallback(
     async (onload = false): Promise<void> => {
+      // TODO: set social preview node position
+
       if (steps == null || data == null) return
 
       const input = Object.entries(arrangeSteps(steps)).map(
