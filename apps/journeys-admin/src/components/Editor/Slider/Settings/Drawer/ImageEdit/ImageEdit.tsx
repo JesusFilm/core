@@ -186,6 +186,15 @@ export function ImageEdit({
         id: targetImageBlock.id,
         journeyId: journey.id
       },
+      optimisticResponse: {
+        blockDelete: [
+          {
+            __typename: 'ImageBlock',
+            id: targetImageBlock.id,
+            parentOrder: targetImageBlock.parentOrder
+          }
+        ]
+      },
       update(cache, { data }) {
         blockDeleteUpdate(
           targetImageBlock,
