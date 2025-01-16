@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import { createQueryParams, getBaseUrl } from '../../../framework/helpers'
 
-const mediaComponentId = '1_jf-0-0'
+const mediaComponentId = '2_0-ConsideringChristmas'
 
 test('media component returns expected data structure', async ({ request }) => {
   const response = await request.get(
