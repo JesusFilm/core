@@ -13,11 +13,11 @@ export async function revalidateJourney({
   ) {
     return null
   }
-  const params = {
+  const params: { accessToken: string; slug: string; hostname?: string } = {
     slug,
-    accessToken: process.env.NEXT_PUBLIC_JOURNEYS_REVALIDATE_ACCESS_TOKEN,
-    ...(hostname != null && { hostname })
+    accessToken: process.env.NEXT_PUBLIC_JOURNEYS_REVALIDATE_ACCESS_TOKEN
   }
+  if (hostname != null) params.hostname = hostname
 
   try {
     const response = await fetch(
