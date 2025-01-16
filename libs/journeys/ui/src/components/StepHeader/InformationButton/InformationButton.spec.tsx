@@ -82,7 +82,9 @@ describe('InformationButton', () => {
     displayTitle: null,
     logoImageBlock: null,
     menuButtonIcon: null,
-    menuStepBlock: null
+    menuStepBlock: null,
+    socialNodeX: null,
+    socialNodeY: null
   }
 
   it('should have report contact button', () => {
