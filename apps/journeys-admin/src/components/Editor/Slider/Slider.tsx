@@ -47,7 +47,7 @@ export const GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED = gql`
 `
 
 const StyledSwiper = styled(Swiper)(() => ({}))
-const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
+const StyledSwiperSlide = styled(SwiperSlide)(() => ({
   boxSizing: 'border-box'
 }))
 
@@ -155,7 +155,7 @@ export function Slider(): ReactElement {
       }}
       onTransitionEnd={resetCanvasFocus}
       sx={{
-        height: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px)`
+        height: '100svh'
       }}
     >
       {/* back (mobile top) button */}
@@ -246,7 +246,6 @@ export function Slider(): ReactElement {
       <StyledSwiperSlide
         className="swiper-no-swiping"
         sx={{
-          p: { xs: 0, md: 4 },
           width: { xs: '100%', md: 'calc(100% - 408px)' },
           height: {
             xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
@@ -256,13 +255,6 @@ export function Slider(): ReactElement {
       >
         <Box
           sx={{
-            borderRadius: 4,
-            borderTopLeftRadius: { xs: 0, md: 16 },
-            borderTopRightRadius: { xs: 0, md: 16 },
-            border: (theme) => ({ md: `1px solid ${theme.palette.divider}` }),
-            borderBottom: (theme) => ({
-              xs: `1px solid ${theme.palette.divider}`
-            }),
             backgroundSize: '20px 20px',
             backgroundColor: '#eff2f5',
             height: '100%',
