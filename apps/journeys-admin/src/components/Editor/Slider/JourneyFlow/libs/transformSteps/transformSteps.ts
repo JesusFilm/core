@@ -30,14 +30,6 @@ export const defaultEdgeProps = {
   }
 }
 
-export const socialNode = {
-  id: 'SocialPreview',
-  type: 'SocialPreview',
-  data: {},
-  position: { x: -240, y: -46 },
-  draggable: true
-}
-
 export const hiddenEdge = {
   id: 'SocialPreview->hidden',
   source: 'SocialPreview',
