@@ -54,6 +54,14 @@ const SourceFromLocal = dynamic(
   { ssr: false }
 )
 
+const SourceFromMux = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/VideoBlockEditor/Source/SourceFromCloudflare/SourceFromMux" */ './SourceFromMux'
+    ).then((mod) => mod.SourceFromMux),
+  { ssr: false }
+)
+
 interface SourceProps {
   selectedBlock: TreeBlock<VideoBlock> | null
   onChange: (block: VideoBlockUpdateInput) => Promise<void>
@@ -81,6 +89,9 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
       break
     case VideoBlockSource.cloudflare:
       SourceContent = SourceFromCloudflare
+      break
+    case VideoBlockSource.mux:
+      SourceContent = SourceFromMux
       break
     default:
       SourceContent = SourceEmpty
