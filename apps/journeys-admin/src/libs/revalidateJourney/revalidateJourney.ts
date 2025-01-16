@@ -23,6 +23,7 @@ export async function revalidateJourney({
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_JOURNEYS_URL}/api/revalidate?${new URLSearchParams(params).toString()}`
     )
+    console.log(response)
     if (response.ok) return response
   } catch (e) {
     console.log(e)
