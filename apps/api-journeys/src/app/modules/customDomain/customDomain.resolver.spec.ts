@@ -19,6 +19,7 @@ import {
 import { AppAbility, AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
+import { QrCodeService } from '../qrCode/qrCode.service'
 
 import { CustomDomainResolver } from './customDomain.resolver'
 import { CustomDomainService } from './customDomain.service'
@@ -54,6 +55,10 @@ describe('CustomDomainResolver', () => {
         {
           provide: PrismaService,
           useValue: mockDeep<PrismaService>()
+        },
+        {
+          provide: QrCodeService,
+          useValue: mockDeep<QrCodeService>()
         }
       ]
     }).compile()
