@@ -16,7 +16,9 @@ test.describe('media components', () => {
 
     expect(response.ok()).toBeTruthy()
     const data = await response.json()
-    const component = data._embedded.mediaComponents[0]
+    const component = data._embedded.mediaComponents.find(
+      (c) => c.mediaComponentId === '2_0-PaperHats'
+    )
 
     expect(component).toMatchObject({
       mediaComponentId: expect.any(String),
