@@ -26,8 +26,8 @@ describe('revalidateJourney', () => {
   })
 
   it('should revalidate a journey', async () => {
-    process.env.JOURNEYS_URL = 'www.journeys.com'
-    process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN = 'some-token'
+    process.env.NEXT_PUBLIC_JOURNEYS_URL = 'www.journeys.com'
+    process.env.NEXT_PUBLIC_JOURNEYS_REVALIDATE_ACCESS_TOKEN = 'some-token'
 
     mockFetch.mockResolvedValueOnce({
       ok: true,
