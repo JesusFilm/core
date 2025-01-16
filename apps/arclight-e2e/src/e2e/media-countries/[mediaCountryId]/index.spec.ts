@@ -1,102 +1,107 @@
-// import { expect, test } from '@playwright/test'
-// import type { APIRequestContext } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+import type { APIRequestContext } from '@playwright/test'
 
-// import { createQueryParams, getBaseUrl } from '../../../framework/helpers'
+import { createQueryParams, getBaseUrl } from '../../../framework/helpers'
 
-// interface TestCase {
-//   countryId: string
-//   params: Record<string, any>
-// }
+interface TestCase {
+  countryId: string
+  params: Record<string, any>
+}
 
-// const testCases = {
-//   basic: {
-//     countryId: 'US',
-//     params: {}
-//   },
-//   withLanguageIds: {
-//     countryId: 'US',
-//     params: { expand: 'languageIds' }
-//   },
-//   withCustomApiKey: {
-//     countryId: 'US',
-//     params: { apiKey: 'custom-key' }
-//   }
-// }
+async function getMediaCountry(request: APIRequestContext, testCase: TestCase) {
+  const { countryId, params } = testCase
+  const queryParams = createQueryParams(params)
+  const response = await request.get(
+    `${await getBaseUrl()}/v2/media-countries/${countryId}?${queryParams}`
+  )
+  return response
+}
 
-// async function getMediaCountry(request: APIRequestContext, testCase: TestCase) {
-//   const { countryId, params } = testCase
-//   const queryParams = createQueryParams(params)
-//   const response = await request.get(
-//     `${await getBaseUrl()}/v2/media-countries/${countryId}?${queryParams}`
-//   )
-//   return response
-// }
+test.describe('GET /v2/media-countries/[countryId]', () => {
+  test('returns basic media country', async ({ request }) => {
+    const response = await getMediaCountry(request, {
+      countryId: 'US',
+      params: {}
+    })
 
-// test('basic media country request', async ({ request }) => {
-//   const response = await getMediaCountry(request, testCases.basic)
-//   expect(response.ok()).toBeTruthy()
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
 
-//   const data = await response.json()
-//   expect(data).toMatchObject({
-//     countryId: expect.any(String),
-//     name: expect.any(String),
-//     counts: {
-//       languageCount: {
-//         value: expect.any(Number),
-//         description: expect.any(String)
-//       },
-//       languageHavingMediaCount: {
-//         value: expect.any(Number),
-//         description: expect.any(String)
-//       }
-//     },
-//     _links: expect.any(Object)
-//   })
-// })
+    expect(data).toMatchObject({
+      countryId: 'US',
+      name: expect.any(String),
+      continentName: expect.any(String),
+      metadataLanguageTag: expect.any(String),
+      longitude: expect.any(Number),
+      latitude: expect.any(Number),
+      counts: {
+        languageCount: {
+          value: expect.any(Number),
+          description: expect.any(String)
+        },
+        population: {
+          value: expect.any(Number),
+          description: expect.any(String)
+        },
+        languageHavingMediaCount: {
+          value: expect.any(Number),
+          description: expect.any(String)
+        }
+      },
+      assets: {
+        flagUrls: {
+          png8: expect.any(String),
+          webpLossy50: expect.any(String)
+        }
+      },
+      _links: {
+        self: { href: expect.any(String) }
+      }
+    })
+  })
 
-// test('media country with language IDs filter', async ({ request }) => {
-//   const response = await getMediaCountry(request, testCases.withLanguageIds)
-//   expect(response.ok()).toBeTruthy()
+  test('expands media languages', async ({ request }) => {
+    const response = await getMediaCountry(request, {
+      countryId: 'US',
+      params: { expand: 'mediaLanguages' }
+    })
 
-//   const data = await response.json()
-//   expect(data).toMatchObject({
-//     countryId: expect.any(String),
-//     name: expect.any(String),
-//     languageIds: expect.any(Array),
-//     _links: expect.any(Object)
-//   })
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
 
-//   expect(data.languageIds.length).toBeGreaterThan(0)
-//   expect(
-//     data.languageIds.every((id: any) => typeof id === 'string')
-//   ).toBeTruthy()
-// })
+    expect(data._embedded?.mediaLanguages).toBeDefined()
+    expect(Array.isArray(data._embedded.mediaLanguages)).toBeTruthy()
+    expect(data._embedded.mediaLanguages.length).toBeGreaterThan(0)
 
-// test('media country with custom API key', async ({ request }) => {
-//   const response = await getMediaCountry(request, testCases.withCustomApiKey)
-//   expect(response.ok()).toBeTruthy()
+    const firstLanguage = data._embedded.mediaLanguages[0]
+    expect(firstLanguage).toMatchObject({
+      languageId: expect.any(Number),
+      iso3: expect.any(String),
+      bcp47: expect.any(String),
+      counts: {
+        countrySpeakerCount: {
+          value: expect.any(Number),
+          description: expect.any(String)
+        }
+      },
+      primaryCountryId: expect.any(String),
+      name: expect.any(String),
+      nameNative: expect.any(String),
+      alternateLanguageName: expect.any(String),
+      alternateLanguageNameNative: expect.any(String),
+      metadataLanguageTag: expect.any(String)
+    })
+  })
 
-//   const data = await response.json()
-//   expect(data).toMatchObject({
-//     countryId: expect.any(String),
-//     name: expect.any(String),
-//     _links: expect.any(Object)
-//   })
+  test('handles metadata language tags', async ({ request }) => {
+    const response = await getMediaCountry(request, {
+      countryId: 'US',
+      params: { metadataLanguageTags: 'es' }
+    })
 
-//   // API key specific checks
-//   expect(data._links.self.href).toContain('apiKey=custom-key')
-// })
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
 
-// test('media country returns 404 for non-existent ID', async ({ request }) => {
-//   const response = await getMediaCountry(request, {
-//     countryId: 'NONEXISTENT',
-//     params: {}
-//   })
-
-//   expect(response.status()).toBe(404)
-//   const data = await response.json()
-//   expect(data).toMatchObject({
-//     message: expect.stringContaining('not found'),
-//     logref: 404
-//   })
-// })
+    expect(data.metadataLanguageTag).toBe('es')
+  })
+})

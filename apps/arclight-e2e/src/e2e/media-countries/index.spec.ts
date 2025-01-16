@@ -1,50 +1,106 @@
-// import { expect, test } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+import type { APIRequestContext } from '@playwright/test'
 
-// import {
-//   createQueryParams,
-//   makeParallelRequests
-// } from '../../framework/helpers'
-// import type { MediaCountry } from '../../types'
-// import {
-//   convertArrayToObject,
-//   getObjectDiff
-// } from '../../utils/comparison-utils'
-// import { testData } from '../../utils/testData'
+import { createQueryParams, getBaseUrl } from '../../framework/helpers'
 
-// test.fixme(
-//   'compare media countries between environments',
-//   async ({ request }) => {
-//     const params = createQueryParams({ ids: testData.countryIds })
+async function getMediaCountries(
+  request: APIRequestContext,
+  params: Record<string, any>
+) {
+  const queryParams = createQueryParams(params)
+  const response = await request.get(
+    `${await getBaseUrl()}/v2/media-countries?${queryParams}`
+  )
+  return response
+}
 
-//     const [baseData, compareData] = await makeParallelRequests(
-//       request,
-//       '/v2/media-countries',
-//       params
-//     )
+test.describe('GET /v2/media-countries', () => {
+  test('returns basic media countries list', async ({ request }) => {
+    const response = await getMediaCountries(request, {
+      ids: ['US']
+    })
 
-//     const baseCountries = convertArrayToObject<MediaCountry>(
-//       baseData._embedded.mediaCountries,
-//       'countryId'
-//     )
-//     const compareCountries = convertArrayToObject<MediaCountry>(
-//       compareData._embedded.mediaCountries,
-//       'countryId'
-//     )
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
 
-//     // Remove languageCount from all countries as it's known to be incorrect
-//     const cleanCountries = (countries: Record<string, MediaCountry>) => {
-//       return Object.fromEntries(
-//         Object.entries(countries).map(([key, country]) => [
-//           key,
-//           { ...country, counts: undefined }
-//         ])
-//       )
-//     }
+    const unitedStates = data._embedded.mediaCountries[0]
 
-//     const cleanedBaseCountries = cleanCountries(baseCountries)
-//     const cleanedCompareCountries = cleanCountries(compareCountries)
+    expect(unitedStates).toMatchObject({
+      countryId: 'US',
+      name: 'United States',
+      continentName: 'North America',
+      metadataLanguageTag: 'en',
+      longitude: -97,
+      latitude: 38,
+      counts: {
+        languageCount: {
+          value: expect.any(Number),
+          description: expect.any(String)
+        },
+        population: {
+          value: expect.any(Number),
+          description: expect.any(String)
+        },
+        languageHavingMediaCount: {
+          value: expect.any(Number),
+          description: expect.any(String)
+        }
+      },
+      assets: {
+        flagUrls: {
+          png8: expect.any(String),
+          webpLossy50: expect.any(String)
+        }
+      },
+      _links: {
+        self: { href: expect.any(String) }
+      }
+    })
+  })
 
-//     const diffs = getObjectDiff(cleanedBaseCountries, cleanedCompareCountries)
-//     expect(diffs, 'Differences found in media countries').toHaveLength(0)
-//   }
-// )
+  test('filters by country IDs', async ({ request }) => {
+    const response = await getMediaCountries(request, {
+      ids: ['US', 'GB']
+    })
+
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+
+    const countryIds = data._embedded.mediaCountries.map(
+      (country: { countryId: string }) => country.countryId
+    )
+    expect(countryIds).toContain('US')
+    expect(countryIds).toContain('GB')
+    expect(countryIds.length).toBe(2)
+  })
+
+  test('expands language IDs', async ({ request }) => {
+    const response = await getMediaCountries(request, {
+      ids: ['US'],
+      expand: 'languageIds'
+    })
+
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+
+    const unitedStates = data._embedded.mediaCountries[0]
+
+    expect(unitedStates.languageIds).toBeDefined()
+    expect(Array.isArray(unitedStates.languageIds)).toBeTruthy()
+    expect(unitedStates.languageIds.length).toBeGreaterThan(0)
+    expect(typeof unitedStates.languageIds[0]).toBe('number')
+  })
+
+  test('handles metadata language tags', async ({ request }) => {
+    const response = await getMediaCountries(request, {
+      ids: ['US'],
+      metadataLanguageTags: 'es'
+    })
+
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+
+    const unitedStates = data._embedded.mediaCountries[0]
+    expect(unitedStates.metadataLanguageTag).toBe('es')
+  })
+})
