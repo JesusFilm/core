@@ -311,9 +311,11 @@ export class QrCodeService {
       cache: new InMemoryCache()
     })
 
-    const qrCode = await this.prismaService.qrCode.findFirstOrThrow({
+    const qrCode = await this.prismaService.qrCode.findFirst({
       where: { toJourneyId }
     })
+
+    if (qrCode == null) return
 
     const to = await this.getTo(
       qrCode.id,
