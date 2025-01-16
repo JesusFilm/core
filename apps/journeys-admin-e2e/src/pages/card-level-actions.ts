@@ -840,10 +840,10 @@ export class CardLevelActionPage {
   async selectWholeFooterSectionInCard() {
     await this.page
       .frameLocator(this.journeyCardFrame)
-      .first()
       .locator(
         'div[data-testid="CardWrapper"] + div[data-testid="JourneysStepFooter"] > div'
       )
+      .first()
       .click({ delay: 3000 })
     // Verify whether the footer block is selected. If it is not, click the footer block again. in catch block
     /* eslint-disable playwright/missing-playwright-await */
@@ -856,10 +856,11 @@ export class CardLevelActionPage {
       .catch(async () => {
         await this.page
           .frameLocator(this.journeyCardFrame)
-          .first()
+
           .locator(
             'div[data-testid="CardWrapper"] + div[data-testid="JourneysStepFooter"] > div'
           )
+          .first()
           .dblclick({ force: true })
       })
   }
