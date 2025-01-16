@@ -4,7 +4,7 @@ import { createQueryParams, getBaseUrl } from '../../framework/helpers'
 
 const urlPattern = /^https:\/\/.*\.(jpg|webp)(\/.*)?$/
 
-const mediaComponentIds = ['2_0-ConsideringChristmas', '10_DarkroomFaith']
+const mediaComponentIds = ['2_0-PaperHats', '10_DarkroomFaith']
 
 test.describe('media components', () => {
   test('returns expected data structure', async ({ request }) => {
@@ -109,7 +109,7 @@ test.describe('media components', () => {
     request
   }) => {
     const params = createQueryParams({
-      languageIds: '3934',
+      languageIds: '569',
       expand: 'languageIds',
       ids: mediaComponentIds.join(',')
     })
@@ -121,8 +121,10 @@ test.describe('media components', () => {
     expect(response.ok()).toBeTruthy()
     const data = await response.json()
     expect(data._embedded.mediaComponents).toHaveLength(1)
-    expect(data._embedded.mediaComponents[0].mediaComponentId).toBe('1_jf-0-0')
-    expect(data._embedded.mediaComponents[0].languageIds).toContain(3934)
+    expect(data._embedded.mediaComponents[0].mediaComponentId).toBe(
+      '2_0-PaperHats'
+    )
+    expect(data._embedded.mediaComponents[0].languageIds).toContain(569)
   })
 
   test('respects pagination parameters', async ({ request }) => {

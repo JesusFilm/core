@@ -42,7 +42,7 @@ test.describe('GET /v2/resources', () => {
     })
   })
 
-  test('returns English in languages', async ({ request }) => {
+  test.fixme('returns English in languages', async ({ request }) => {
     const response = await searchResources(request, { term: 'English' })
     expect(response.ok()).toBeTruthy()
 

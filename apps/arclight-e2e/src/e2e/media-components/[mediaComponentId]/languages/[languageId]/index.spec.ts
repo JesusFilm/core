@@ -31,7 +31,7 @@ const testCases = {
     params: { platform: 'web' }
   },
   withExpandContains: {
-    mediaComponentId: '2_0-ConsideringChristmas',
+    mediaComponentId: '10_DarkroomFaith',
     languageId: '529',
     params: { expand: 'contains' }
   }
