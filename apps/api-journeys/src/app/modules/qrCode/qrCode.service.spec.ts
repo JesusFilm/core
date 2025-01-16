@@ -401,16 +401,6 @@ describe('QrCodeService', () => {
       await service.updateJourneyShortLink('qrCodeId')
       expect(ApolloClient.prototype.mutate).toHaveBeenCalledTimes(1)
     })
-
-    // it('throws qr code not found not found error', async () => {
-    //   prismaService.qrCode.findFirstOrThrow.mockRejectedValue(
-    //     new Error('QrCode not found')
-    //   )
-
-    //   await expect(service.updateJourneyShortLink('qrCodeId')).rejects.toThrow(
-    //     'QrCode not found'
-    //   )
-    // })
   })
 
   describe('parseAndVerifyTo', () => {
