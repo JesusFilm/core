@@ -338,6 +338,9 @@ type Mutation {
   journeyProfileCreate: JourneyProfile!
   journeyProfileUpdate(input: JourneyProfileUpdateInput!): JourneyProfile!
   updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!): JourneysEmailPreference
+  qrCodeCreate(input: QrCodeCreateInput!): QrCode!
+  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!): QrCode!
+  qrCodeDelete(id: ID!): QrCode!
   teamCreate(input: TeamCreateInput): Team!
   teamUpdate(id: ID!, input: TeamUpdateInput): Team!
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
@@ -529,6 +532,8 @@ extend type Query {
   corresponds to the main visitor graph.
   """
   journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType): [PlausibleStatsResponse!]!
+  qrCode(id: ID!): QrCode!
+  qrCodes(where: QrCodesFilter!): [QrCode!]!
   teams: [Team!]!
   team(id: ID!): Team!
   userInvites(journeyId: ID!): [UserInvite!]
@@ -2667,6 +2672,47 @@ input PlausibleStatsTimeseriesFilter {
   interval: String
 }
 
+extend type ShortLink
+  @key(fields: "id")
+{
+  id: ID! @external
+}
+
+type QrCode {
+  id: ID!
+
+  """Team where the Qr Code belongs to"""
+  team: Team
+
+  """Journey where the Qr Code was created from"""
+  journey: Journey
+
+  """ShortLink that handles the redirection"""
+  shortLink: ShortLink!
+  color: String
+  backgroundColor: String
+}
+
+input QrCodesFilter {
+  journeyId: ID
+  teamId: ID
+}
+
+input QrCodeCreateInput {
+  teamId: ID!
+  journeyId: ID!
+}
+
+input QrCodeUpdateInput {
+  """
+  journey url where the QR code redirects to, will be parsed and
+  stored as ids
+  """
+  to: String
+  color: String
+  backgroundColor: String
+}
+
 type Team
   @key(fields: "id")
 {
@@ -2678,6 +2724,7 @@ type Team
   userTeams: [UserTeam!]!
   customDomains: [CustomDomain!]!
   integrations: [Integration!]!
+  qrCodes: [QrCode!]!
 }
 
 input TeamCreateInput {
@@ -3030,4 +3077,4 @@ type _Service {
   sdl: String
 }
 
-union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | Visitor
+union _Entity = Journey | JourneyProfile | JourneyVisitor | Language | ShortLink | Tag | Team | User | UserInvite | UserJourney | UserRole | UserTeam | Video | Visitor
