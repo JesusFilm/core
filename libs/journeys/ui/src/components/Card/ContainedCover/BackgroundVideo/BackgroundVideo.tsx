@@ -176,6 +176,13 @@ export function BackgroundVideo({
             type="video/youtube"
           />
         )}
+        {mediaVideo?.__typename === 'MuxVideo' &&
+          mediaVideo?.playbackId != null && (
+            <source
+              src={`https://stream.mux.com/${mediaVideo.playbackId}.m3u8`}
+              type="application/x-mpegURL"
+            />
+          )}
       </StyledVideo>
     </Box>
   )
