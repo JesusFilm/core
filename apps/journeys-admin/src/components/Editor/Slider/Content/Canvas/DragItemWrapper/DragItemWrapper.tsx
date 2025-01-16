@@ -9,6 +9,8 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import DragIcon from '@core/shared/ui/icons/Drag'
 
 export function DragItemWrapper({
@@ -23,6 +25,8 @@ export function DragItemWrapper({
   const {
     state: { selectedBlock, selectedStep }
   } = useEditor()
+  const { journey } = useJourney()
+  const { rtl } = getJourneyRTL(journey)
   const [blockIds, setBlockIds] = useState<string[]>([])
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -121,7 +125,7 @@ export function DragItemWrapper({
       <Popper
         open={smUp || (!smUp && block.id === selectedBlock?.id)}
         anchorEl={selectableRef.current}
-        placement="left"
+        placement={rtl ? 'right' : 'left'}
         {...listeners}
         ref={setActivatorNodeRef}
         onMouseEnter={() => setIsHovering(true)}
@@ -132,7 +136,8 @@ export function DragItemWrapper({
           fontSize="large"
           style={{
             position: 'absolute',
-            left: '-30px',
+            left: rtl ? undefined : '-30px',
+            right: rtl ? '-30px' : undefined,
             top: '-18px',
             opacity: isHovering && !isDuringDrag ? 1 : 0,
             color: 'secondary.dark',
