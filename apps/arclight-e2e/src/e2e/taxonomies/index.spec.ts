@@ -1,40 +1,88 @@
-// import { expect, test } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+import type { APIRequestContext } from '@playwright/test'
 
-// import {
-//   createQueryParams,
-//   makeParallelRequests
-// } from '../../framework/helpers'
-// import { getTaxonomyDiff } from '../../utils/comparison-utils'
+import { createQueryParams, getBaseUrl } from '../../framework/helpers'
 
-// test.fixme('compare taxonomies between environments', async ({ request }) => {
-//   const params = createQueryParams({ metadataLanguageTags: 'en' })
+async function getTaxonomies(
+  request: APIRequestContext,
+  params: Record<string, any>
+) {
+  const queryParams = createQueryParams(params)
+  const response = await request.get(
+    `${await getBaseUrl()}/v2/taxonomies?${queryParams}`
+  )
+  return response
+}
 
-//   const [baseData, compareData] = await makeParallelRequests(
-//     request,
-//     '/v2/taxonomies',
-//     params
-//   )
+test.describe('GET /v2/taxonomies', () => {
+  test('returns all taxonomies in English', async ({ request }) => {
+    const response = await getTaxonomies(request, {})
+    expect(response.ok()).toBeTruthy()
 
-//   // Sort terms within each taxonomy before comparison
-//   Object.keys(baseData._embedded.taxonomies).forEach((key) => {
-//     const terms = baseData._embedded.taxonomies[key].terms
-//     const sortedTerms = Object.fromEntries(
-//       Object.entries(terms).sort(([a], [b]) => a.localeCompare(b))
-//     )
-//     baseData._embedded.taxonomies[key].terms = sortedTerms
-//   })
+    const data = await response.json()
+    expect(data).toMatchObject({
+      _links: {
+        self: {
+          href: expect.stringMatching(/\/v2\/taxonomies\?.+/)
+        }
+      },
+      _embedded: {
+        taxonomies: {
+          types: {
+            terms: {
+              container: {
+                label: 'Container',
+                metadataLanguageTag: 'en'
+              },
+              content: {
+                label: 'Content',
+                metadataLanguageTag: 'en'
+              }
+            },
+            _links: {
+              self: {
+                href: expect.stringMatching(
+                  /\/v2\/taxonomies\/types\?apiKey=.+/
+                )
+              },
+              taxonomies: {
+                href: expect.stringMatching(/\/v2\/taxonomies\?apiKey=.+/)
+              }
+            }
+          }
+        }
+      }
+    })
+  })
 
-//   Object.keys(compareData._embedded.taxonomies).forEach((key) => {
-//     const terms = compareData._embedded.taxonomies[key].terms
-//     const sortedTerms = Object.fromEntries(
-//       Object.entries(terms).sort(([a], [b]) => a.localeCompare(b))
-//     )
-//     compareData._embedded.taxonomies[key].terms = sortedTerms
-//   })
+  test('returns translations with fallback', async ({ request }) => {
+    const response = await getTaxonomies(request, {
+      metadataLanguageTags: 'es,en'
+    })
+    expect(response.ok()).toBeTruthy()
 
-//   const diffs = getTaxonomyDiff(
-//     baseData._embedded.taxonomies,
-//     compareData._embedded.taxonomies
-//   )
-//   expect(diffs, 'Differences found in taxonomies').toHaveLength(0)
-// })
+    const data = await response.json()
+    const typesTaxonomy = data._embedded.taxonomies.types
+
+    // Each term should have a label and metadataLanguageTag
+    Object.values(typesTaxonomy.terms).forEach((term: any) => {
+      expect(term).toMatchObject({
+        label: expect.any(String),
+        metadataLanguageTag: expect.stringMatching(/^(es|en)$/)
+      })
+    })
+  })
+
+  test('returns 406 for invalid metadata language tag', async ({ request }) => {
+    const response = await getTaxonomies(request, {
+      metadataLanguageTags: 'invalid'
+    })
+
+    expect(response.ok()).toBeFalsy()
+    expect(response.status()).toBe(406)
+    const data = await response.json()
+    expect(data).toEqual({
+      message: 'Not acceptable metadata language tag(s): invalid'
+    })
+  })
+})
