@@ -1,5 +1,4 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { DndContext } from '@dnd-kit/core'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -74,13 +73,11 @@ describe('InlineEditWrapper', () => {
               steps: [step(typographyBlock)]
             }}
           >
-            <DndContext>
-              <SelectableWrapper block={typographyBlock}>
-                <InlineEditWrapper block={typographyBlock}>
-                  <Typography {...typographyBlock} />
-                </InlineEditWrapper>
-              </SelectableWrapper>
-            </DndContext>
+            <SelectableWrapper block={typographyBlock}>
+              <InlineEditWrapper block={typographyBlock}>
+                <Typography {...typographyBlock} />
+              </InlineEditWrapper>
+            </SelectableWrapper>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -124,13 +121,11 @@ describe('InlineEditWrapper', () => {
               steps: [step(block)]
             }}
           >
-            <DndContext>
-              <SelectableWrapper block={block}>
-                <InlineEditWrapper block={block}>
-                  <Button {...block} />
-                </InlineEditWrapper>
-              </SelectableWrapper>
-            </DndContext>
+            <SelectableWrapper block={block}>
+              <InlineEditWrapper block={block}>
+                <Button {...block} />
+              </InlineEditWrapper>
+            </SelectableWrapper>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -168,13 +163,11 @@ describe('InlineEditWrapper', () => {
               steps: [step(block)]
             }}
           >
-            <DndContext>
-              <SelectableWrapper block={block}>
-                <InlineEditWrapper block={block}>
-                  <SignUp {...block} />
-                </InlineEditWrapper>
-              </SelectableWrapper>
-            </DndContext>
+            <SelectableWrapper block={block}>
+              <InlineEditWrapper block={block}>
+                <SignUp {...block} />
+              </InlineEditWrapper>
+            </SelectableWrapper>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -211,19 +204,17 @@ describe('InlineEditWrapper', () => {
     }
 
     const radioQuestion = (
-      <DndContext>
-        <SelectableWrapper block={block}>
-          <InlineEditWrapper block={block}>
-            <RadioQuestion
-              {...block}
-              wrappers={{
-                Wrapper: SelectableWrapper,
-                RadioOptionWrapper: InlineEditWrapper
-              }}
-            />
-          </InlineEditWrapper>
-        </SelectableWrapper>
-      </DndContext>
+      <SelectableWrapper block={block}>
+        <InlineEditWrapper block={block}>
+          <RadioQuestion
+            {...block}
+            wrappers={{
+              Wrapper: SelectableWrapper,
+              RadioOptionWrapper: InlineEditWrapper
+            }}
+          />
+        </InlineEditWrapper>
+      </SelectableWrapper>
     )
 
     it('should show add option when radio question selected', async () => {
@@ -236,13 +227,11 @@ describe('InlineEditWrapper', () => {
                 selectedBlock: step(block)
               }}
             >
-              <DndContext>
-                <SelectableWrapper block={block}>
-                  <InlineEditWrapper block={block}>
-                    {radioQuestion}
-                  </InlineEditWrapper>
-                </SelectableWrapper>
-              </DndContext>
+              <SelectableWrapper block={block}>
+                <InlineEditWrapper block={block}>
+                  {radioQuestion}
+                </InlineEditWrapper>
+              </SelectableWrapper>
             </EditorProvider>
           </SnackbarProvider>
         </MockedProvider>

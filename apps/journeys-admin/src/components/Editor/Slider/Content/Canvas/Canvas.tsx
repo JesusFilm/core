@@ -27,6 +27,7 @@ import { Hotkeys } from '../../../Hotkeys'
 import { CanvasFooter } from './CanvasFooter'
 import { CardWrapper } from './CardWrapper'
 import { DragDropWrapper } from './DragDropWrapper'
+import { DragItemWrapper } from './DragItemWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import {
@@ -299,7 +300,8 @@ export function Canvas(): ReactElement {
                                 TextResponseWrapper: InlineEditWrapper,
                                 SignUpWrapper: InlineEditWrapper,
                                 VideoWrapper,
-                                CardWrapper
+                                CardWrapper,
+                                DragItemWrapper
                               }}
                             />
                           </DragDropWrapper>
