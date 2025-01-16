@@ -2,57 +2,6 @@ import { expect, test } from '@playwright/test'
 
 import { createQueryParams, getBaseUrl } from '../../../../framework/helpers'
 
-interface MediaComponentLanguage {
-  mediaComponentId: string
-  languageId: number
-  refId: string
-  lengthInMilliseconds: number
-  subtitleUrls?: {
-    vtt?: Array<{
-      languageId: number
-      languageName: string
-      languageTag: string
-      url: string
-    }>
-    srt?: Array<{
-      languageId: number
-      languageName: string
-      languageTag: string
-      url: string
-    }>
-    m3u8?: Array<{
-      languageId: number
-      languageName: string
-      languageTag: string
-      url: string
-    }>
-  }
-  downloadUrls?: {
-    low?: {
-      url: string
-      sizeInBytes: number
-    }
-    high?: {
-      url: string
-      sizeInBytes: number
-    }
-  }
-  streamingUrls: {
-    m3u8?: Array<{ videoBitrate: number; url: string }>
-    dash?: Array<{ videoBitrate: number; url: string }>
-    hls?: Array<{ videoBitrate: number; url: string }>
-    http?: Array<{ videoBitrate: number; url: string }>
-  }
-  shareUrl?: string
-  webEmbedPlayer?: string
-  webEmbedSharePlayer?: string
-  _links: {
-    self: { href: string }
-    mediaComponent: { href: string }
-    mediaLanguage: { href: string }
-  }
-}
-
 const mediaComponentId = '2_0-ConsideringChristmas'
 const defaultLanguageIds = [529, 7083]
 
@@ -82,33 +31,31 @@ test.describe('media component languages', () => {
       }
     })
 
-    data._embedded.mediaComponentLanguage.forEach(
-      (language: MediaComponentLanguage) => {
-        expect(language).toMatchObject({
-          mediaComponentId: expect.any(String),
-          languageId: expect.any(Number),
-          refId: expect.any(String),
-          lengthInMilliseconds: expect.any(Number),
-          _links: {
-            self: {
-              href: expect.stringMatching(
-                /^http:\/\/api\.arclight\.org\/v2\/media-components\/.*/
-              )
-            },
-            mediaComponent: {
-              href: expect.stringMatching(
-                /^http:\/\/api\.arclight\.org\/v2\/media-components\/.*/
-              )
-            },
-            mediaLanguage: {
-              href: expect.stringMatching(
-                /^http:\/\/api\.arclight\.org\/v2\/media-languages\/.*/
-              )
-            }
+    data._embedded.mediaComponentLanguage.forEach((language) => {
+      expect(language).toMatchObject({
+        mediaComponentId: expect.any(String),
+        languageId: expect.any(Number),
+        refId: expect.any(String),
+        lengthInMilliseconds: expect.any(Number),
+        _links: {
+          self: {
+            href: expect.stringMatching(
+              /^http:\/\/api\.arclight\.org\/v2\/media-components\/.*/
+            )
+          },
+          mediaComponent: {
+            href: expect.stringMatching(
+              /^http:\/\/api\.arclight\.org\/v2\/media-components\/.*/
+            )
+          },
+          mediaLanguage: {
+            href: expect.stringMatching(
+              /^http:\/\/api\.arclight\.org\/v2\/media-languages\/.*/
+            )
           }
-        })
-      }
-    )
+        }
+      })
+    })
   })
 
   test('filtered by languageIds returns correct languages', async ({
