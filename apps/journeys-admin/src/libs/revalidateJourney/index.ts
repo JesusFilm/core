@@ -1,1 +1,1 @@
-export { revalidateJourney } from './revaidateJourney'
+export { revalidateJourney } from './revalidateJourney'

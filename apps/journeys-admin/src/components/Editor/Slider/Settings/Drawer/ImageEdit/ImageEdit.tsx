@@ -155,7 +155,7 @@ export function ImageEdit({
                 }
         }
       })
-      await revalidateJourney({
+      void revalidateJourney({
         slug: journey.slug,
         hostname: journey.host?.title
       })
@@ -218,7 +218,7 @@ export function ImageEdit({
                 }
         }
       })
-      await revalidateJourney({
+      void revalidateJourney({
         slug: journey.slug,
         hostname: journey.host?.title
       })

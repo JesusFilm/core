@@ -1,6 +1,6 @@
 import fetch, { Response } from 'node-fetch'
 
-import { revalidateJourney } from './revaidateJourney'
+import { revalidateJourney } from './revalidateJourney'
 
 jest.mock('node-fetch', () => {
   const originalModule = jest.requireActual('node-fetch')
