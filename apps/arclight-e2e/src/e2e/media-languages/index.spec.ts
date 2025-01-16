@@ -1,65 +1,162 @@
-// import { expect, test } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+import type { APIRequestContext } from '@playwright/test'
 
-// import {
-//   createQueryParams,
-//   makeParallelRequests
-// } from '../../framework/helpers'
-// import type { MediaLanguage } from '../../types'
-// import {
-//   convertArrayToObject,
-//   getObjectDiff
-// } from '../../utils/comparison-utils'
-// import { testData } from '../../utils/testData'
+import { createQueryParams, getBaseUrl } from '../../framework/helpers'
 
-// test.fixme(
-//   'compare media languages between environments',
-//   async ({ request }) => {
-//     const params = createQueryParams({ ids: testData.languageIds })
+async function getMediaLanguages(
+  request: APIRequestContext,
+  params: Record<string, any>
+) {
+  const queryParams = createQueryParams(params)
+  const response = await request.get(
+    `${await getBaseUrl()}/v2/media-languages?${queryParams}`
+  )
+  return response
+}
 
-//     const [baseData, compareData] = await makeParallelRequests(
-//       request,
-//       '/v2/media-languages',
-//       params
-//     )
+test.describe('GET /v2/media-languages', () => {
+  test('returns basic media languages list', async ({ request }) => {
+    const response = await getMediaLanguages(request, {
+      ids: ['529']
+    })
 
-//     // Verify counts structure for base environment
-//     const countFields = [
-//       'speakerCount',
-//       'countriesCount',
-//       'series',
-//       'featureFilm',
-//       'shortFilm'
-//     ]
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
 
-//     for (const language of baseData._embedded.mediaLanguages) {
-//       expect(language.counts).toBeDefined()
-//       countFields.forEach((field) => {
-//         expect(language.counts[field]).toEqual(
-//           expect.objectContaining({
-//             value: expect.any(Number),
-//             description: expect.any(String)
-//           })
-//         )
-//       })
-//     }
+    expect(data).toMatchObject({
+      page: 1,
+      limit: 10,
+      pages: 1,
+      total: 1,
+      _links: {
+        self: { href: expect.any(String) },
+        first: { href: expect.any(String) },
+        last: { href: expect.any(String) }
+      },
+      _embedded: {
+        mediaLanguages: [
+          {
+            languageId: 529,
+            iso3: 'eng',
+            bcp47: 'en',
+            counts: {
+              speakerCount: {
+                value: expect.any(Number),
+                description: 'Number of speakers'
+              },
+              countriesCount: {
+                value: expect.any(Number),
+                description: 'Number of countries'
+              },
+              series: {
+                value: expect.any(Number),
+                description: 'Series'
+              },
+              featureFilm: {
+                value: expect.any(Number),
+                description: 'Feature Film'
+              },
+              shortFilm: {
+                value: expect.any(Number),
+                description: 'Short Film'
+              }
+            },
+            audioPreview: {
+              url: expect.any(String),
+              audioBitrate: expect.any(Number),
+              audioContainer: expect.any(String),
+              sizeInBytes: expect.any(Number)
+            },
+            primaryCountryId: 'GB',
+            name: 'English',
+            nameNative: 'English',
+            metadataLanguageTag: 'en',
+            _links: {
+              self: { href: expect.any(String) }
+            }
+          }
+        ]
+      }
+    })
+  })
 
-//     // Clean data before comparison
-//     const cleanLanguages = (languages: MediaLanguage[]) => {
-//       return languages.map((language) => ({ ...language, counts: undefined }))
-//     }
+  test('filters by language IDs', async ({ request }) => {
+    const response = await getMediaLanguages(request, {
+      ids: ['529', '496']
+    })
 
-//     const baseLanguages = cleanLanguages(baseData._embedded.mediaLanguages)
-//     const compareLanguages = cleanLanguages(
-//       compareData._embedded.mediaLanguages
-//     )
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
 
-//     const baseLanguageMap = convertArrayToObject(baseLanguages, 'languageId')
-//     const compareLanguageMap = convertArrayToObject(
-//       compareLanguages,
-//       'languageId'
-//     )
+    const languageIds = data._embedded.mediaLanguages.map(
+      (language: { languageId: number }) => language.languageId
+    )
+    expect(languageIds).toContain(529)
+    expect(languageIds).toContain(496)
+    expect(languageIds.length).toBe(2)
+  })
 
-//     const diffs = getObjectDiff(baseLanguageMap, compareLanguageMap)
-//     expect(diffs, 'Differences found in media languages').toHaveLength(0)
-//   }
-// )
+  test('filters by BCP47 codes', async ({ request }) => {
+    const response = await getMediaLanguages(request, {
+      bcp47: ['en']
+    })
+
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+
+    const languages = data._embedded.mediaLanguages
+    expect(languages.length).toBeGreaterThan(0)
+    const english = languages.find(
+      (l: { languageId: number }) => l.languageId === 529
+    )
+    expect(english).toBeDefined()
+    expect(english?.bcp47).toBe('en')
+  })
+
+  test('filters by ISO3 codes', async ({ request }) => {
+    const response = await getMediaLanguages(request, {
+      iso3: ['eng']
+    })
+
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+
+    const languages = data._embedded.mediaLanguages
+    expect(languages.length).toBeGreaterThan(0)
+    const english = languages.find(
+      (l: { languageId: number }) => l.languageId === 529
+    )
+    expect(english).toBeDefined()
+    expect(english?.iso3).toBe('eng')
+  })
+
+  test('searches by term', async ({ request }) => {
+    const response = await getMediaLanguages(request, {
+      term: 'English'
+    })
+
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+
+    expect(data._embedded.mediaLanguages.length).toBeGreaterThan(0)
+    const english = data._embedded.mediaLanguages.find(
+      (l: { languageId: number }) => l.languageId === 529
+    )
+    expect(english).toBeDefined()
+    expect(english?.name).toBe('English')
+  })
+
+  test('handles metadata language tags', async ({ request }) => {
+    const response = await getMediaLanguages(request, {
+      ids: ['529'],
+      metadataLanguageTags: 'es'
+    })
+
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+
+    const english = data._embedded.mediaLanguages[0]
+    expect(english.languageId).toBe(529)
+    expect(english.metadataLanguageTag).toBe('es')
+  })
+})

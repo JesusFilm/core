@@ -1,117 +1,120 @@
-// import { expect, test } from '@playwright/test'
-// import type { APIRequestContext } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+import type { APIRequestContext } from '@playwright/test'
 
-// import { createQueryParams, getBaseUrl } from '../../../framework/helpers'
+import { createQueryParams, getBaseUrl } from '../../../framework/helpers'
 
-// interface TestCase {
-//   languageId: string
-//   params: Record<string, any>
-// }
+interface TestCase {
+  languageId: string
+  params: Record<string, any>
+}
 
-// const testCases = {
-//   basic: {
-//     languageId: '529',
-//     params: {}
-//   },
-//   withCountryIds: {
-//     languageId: '529',
-//     params: { expand: 'countryIds' }
-//   },
-//   withCustomApiKey: {
-//     languageId: '529',
-//     params: { apiKey: 'custom-key' }
-//   }
-// }
+async function getMediaLanguage(
+  request: APIRequestContext,
+  testCase: TestCase
+) {
+  const { languageId, params } = testCase
+  const queryParams = createQueryParams(params)
+  const response = await request.get(
+    `${await getBaseUrl()}/v2/media-languages/${languageId}?${queryParams}`
+  )
+  return response
+}
 
-// async function getMediaLanguage(
-//   request: APIRequestContext,
-//   testCase: TestCase
-// ) {
-//   const { languageId, params } = testCase
-//   const queryParams = createQueryParams(params)
-//   const response = await request.get(
-//     `${await getBaseUrl()}/v2/media-languages/${languageId}?${queryParams}`
-//   )
-//   return response
-// }
+test.describe('GET /v2/media-languages/[languageId]', () => {
+  test('returns basic media language', async ({ request }) => {
+    const response = await getMediaLanguage(request, {
+      languageId: '529',
+      params: {}
+    })
 
-// test('basic media language request', async ({ request }) => {
-//   const response = await getMediaLanguage(request, testCases.basic)
-//   expect(response.ok()).toBeTruthy()
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
 
-//   const data = await response.json()
-//   expect(data).toMatchObject({
-//     languageId: expect.any(String),
-//     name: expect.any(String),
-//     counts: {
-//       speakerCount: {
-//         value: expect.any(Number),
-//         description: expect.any(String)
-//       },
-//       countriesCount: {
-//         value: expect.any(Number),
-//         description: expect.any(String)
-//       },
-//       series: {
-//         value: expect.any(Number),
-//         description: expect.any(String)
-//       },
-//       featureFilm: {
-//         value: expect.any(Number),
-//         description: expect.any(String)
-//       },
-//       shortFilm: {
-//         value: expect.any(Number),
-//         description: expect.any(String)
-//       }
-//     },
-//     _links: expect.any(Object)
-//   })
-// })
+    expect(data).toMatchObject({
+      languageId: 529,
+      iso3: 'eng',
+      bcp47: 'en',
+      counts: {
+        speakerCount: {
+          value: expect.any(Number),
+          description: 'Number of speakers'
+        },
+        countriesCount: {
+          value: expect.any(Number),
+          description: 'Number of countries'
+        },
+        series: {
+          value: expect.any(Number),
+          description: 'Series'
+        },
+        featureFilm: {
+          value: expect.any(Number),
+          description: 'Feature Film'
+        },
+        shortFilm: {
+          value: expect.any(Number),
+          description: 'Short Film'
+        }
+      },
+      audioPreview: {
+        url: expect.any(String),
+        audioBitrate: expect.any(Number),
+        audioContainer: expect.any(String),
+        sizeInBytes: expect.any(Number)
+      },
+      primaryCountryId: 'GB',
+      name: 'English',
+      nameNative: 'English',
+      alternateLanguageName: '',
+      alternateLanguageNameNative: '',
+      metadataLanguageTag: 'en',
+      _links: {
+        self: { href: expect.any(String) }
+      }
+    })
+  })
 
-// test('media language with country IDs filter', async ({ request }) => {
-//   const response = await getMediaLanguage(request, testCases.withCountryIds)
-//   expect(response.ok()).toBeTruthy()
+  test('handles metadata language tags', async ({ request }) => {
+    const response = await getMediaLanguage(request, {
+      languageId: '529',
+      params: { metadataLanguageTags: 'es' }
+    })
 
-//   const data = await response.json()
-//   expect(data).toMatchObject({
-//     languageId: expect.any(String),
-//     name: expect.any(String),
-//     countryIds: expect.any(Array),
-//     _links: expect.any(Object)
-//   })
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
 
-//   expect(data.countryIds.length).toBeGreaterThan(0)
-//   expect(
-//     data.countryIds.every((id: any) => typeof id === 'string')
-//   ).toBeTruthy()
-// })
+    expect(data.metadataLanguageTag).toBe('es')
+  })
 
-// test('media language with custom API key', async ({ request }) => {
-//   const response = await getMediaLanguage(request, testCases.withCustomApiKey)
-//   expect(response.ok()).toBeTruthy()
+  test('returns 404 for non-existent language', async ({ request }) => {
+    const response = await getMediaLanguage(request, {
+      languageId: '999999',
+      params: {}
+    })
 
-//   const data = await response.json()
-//   expect(data).toMatchObject({
-//     languageId: expect.any(String),
-//     name: expect.any(String),
-//     _links: expect.any(Object)
-//   })
+    expect(response.ok()).toBeFalsy()
+    expect(response.status()).toBe(404)
+    const data = await response.json()
+    expect(data).toMatchObject({
+      message: expect.stringContaining('not found'),
+      logref: 404
+    })
+  })
 
-//   // API key specific checks
-//   expect(data._links.self.href).toContain('apiKey=custom-key')
-// })
+  test('returns 400 for invalid metadata language', async ({ request }) => {
+    const response = await getMediaLanguage(request, {
+      languageId: '529',
+      params: { metadataLanguageTags: 'invalid' }
+    })
 
-// test('media language returns 404 for non-existent ID', async ({ request }) => {
-//   const response = await getMediaLanguage(request, {
-//     languageId: '999999',
-//     params: {}
-//   })
-
-//   expect(response.status()).toBe(404)
-//   const data = await response.json()
-//   expect(data).toMatchObject({
-//     message: expect.stringContaining('not found'),
-//     logref: 404
-//   })
-// })
+    expect(response.ok()).toBeFalsy()
+    expect(response.status()).toBe(400)
+    const data = await response.json()
+    expect(data).toMatchObject({
+      message: expect.stringContaining(
+        'Not acceptable metadata language tag(s): invalid'
+      ),
+      logref: 400
+    })
+  })
+})
