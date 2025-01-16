@@ -69,7 +69,8 @@ describe('cloudflareVideo', () => {
             createdAt: new Date(),
             updatedAt: new Date(),
             name: 'testName',
-            readyToStream: true
+            readyToStream: true,
+            downloadable: false
           }
         ])
         const result = await client({
@@ -102,7 +103,8 @@ describe('cloudflareVideo', () => {
             createdAt: new Date(),
             updatedAt: new Date(),
             name: 'testName',
-            readyToStream: true
+            readyToStream: true,
+            downloadable: false
           }
         ])
         const result = await client({
@@ -154,7 +156,8 @@ describe('cloudflareVideo', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           name: 'testName',
-          readyToStream: true
+          readyToStream: true,
+          downloadable: false
         })
         const result = await client({
           document: GET_MY_CLOUDFLARE_VIDEO_QUERY
@@ -185,7 +188,8 @@ describe('cloudflareVideo', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           name: 'testName',
-          readyToStream: false
+          readyToStream: false,
+          downloadable: false
         })
         prismaMock.cloudflareVideo.update.mockResolvedValue({
           id: 'testId',
@@ -194,7 +198,8 @@ describe('cloudflareVideo', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           name: 'testName',
-          readyToStream: true
+          readyToStream: true,
+          downloadable: false
         })
         mockGetVideo.mockResolvedValue({
           id: 'testId',
@@ -257,7 +262,8 @@ describe('cloudflareVideo', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           name: 'testName',
-          readyToStream: true
+          readyToStream: true,
+          downloadable: false
         })
         const result = await client({
           document: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_FILE_MUTATION
@@ -306,7 +312,8 @@ describe('cloudflareVideo', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           name: 'testName',
-          readyToStream: true
+          readyToStream: true,
+          downloadable: false
         })
         const result = await client({
           document: CREATE_CLOUDFLARE_VIDEO_UPLOAD_BY_URL_MUTATION,
@@ -431,7 +438,8 @@ describe('cloudflareVideo', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         name: 'testName',
-        readyToStream: true
+        readyToStream: true,
+        downloadable: false
       })
       const data = await client({
         document: CLOUDFLARE_VIDEO
