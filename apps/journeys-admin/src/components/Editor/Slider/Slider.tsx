@@ -155,7 +155,7 @@ export function Slider(): ReactElement {
       }}
       onTransitionEnd={resetCanvasFocus}
       sx={{
-        height: '100vh'
+        height: '100svh'
       }}
     >
       {/* back (mobile top) button */}
@@ -248,7 +248,7 @@ export function Slider(): ReactElement {
         sx={{
           width: { xs: '100%', md: 'calc(100% - 408px)' },
           height: {
-            xs: `calc(100vh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
+            xs: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 50px)`,
             md: '100%'
           }
         }}
