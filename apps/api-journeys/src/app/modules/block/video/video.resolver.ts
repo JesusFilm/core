@@ -93,6 +93,7 @@ const GET_MUX_VIDEO_QUERY = gql`
   query GetMuxVideo($id: ID!) {
     getMuxVideo(id: $id) {
       id
+      name
       playbackId
       duration
     }
@@ -439,11 +440,11 @@ export class VideoBlockResolver {
 
     if (data.getMuxVideo.playbackId == null) {
       return {
-        title: data.getMuxVideo.id
+        title: data.getMuxVideo.name
       }
     }
     return {
-      title: data.getMuxVideo.id,
+      title: data.getMuxVideo.name,
       image: `https://image.mux.com/${data.getMuxVideo.playbackId}/thumbnail.png?time=1`,
       duration: Math.round(data.getMuxVideo.duration ?? 0),
       endAt: Math.round(data.getMuxVideo.duration ?? 0)

@@ -424,6 +424,7 @@ describe('VideoBlockResolver', () => {
               data: {
                 getMuxVideo: {
                   id: 'videoId',
+                  name: 'videoName',
                   assetId: 'assetId',
                   playbackId: 'playbackId',
                   readToStream: true,
@@ -450,7 +451,7 @@ describe('VideoBlockResolver', () => {
             image: 'https://image.mux.com/playbackId/thumbnail.png?time=1',
             objectFit: null,
             videoId: 'videoId',
-            title: 'videoId',
+            title: 'videoName',
             videoVariantLanguageId: 'videoVariantLanguageId',
             source: VideoBlockSource.mux,
             journey: { connect: { id: 'journeyId' } },
@@ -741,6 +742,7 @@ describe('VideoBlockResolver', () => {
               data: {
                 getMuxVideo: {
                   id: 'videoId',
+                  name: 'videoName',
                   assetId: 'assetId',
                   playbackId: 'playbackId',
                   readToStream: true,
@@ -760,7 +762,7 @@ describe('VideoBlockResolver', () => {
           duration: 10,
           endAt: 10,
           image: 'https://image.mux.com/playbackId/thumbnail.png?time=1',
-          title: 'videoId'
+          title: 'videoName'
         })
       })
 
@@ -771,6 +773,7 @@ describe('VideoBlockResolver', () => {
               data: {
                 getMuxVideo: {
                   id: 'videoId',
+                  name: 'videoName',
                   assetId: 'assetId',
                   playbackId: 'playbackId',
                   readToStream: true,
@@ -790,7 +793,7 @@ describe('VideoBlockResolver', () => {
           duration: 10,
           endAt: 10,
           image: 'https://image.mux.com/playbackId/thumbnail.png?time=1',
-          title: 'videoId'
+          title: 'videoName'
         })
       })
 
