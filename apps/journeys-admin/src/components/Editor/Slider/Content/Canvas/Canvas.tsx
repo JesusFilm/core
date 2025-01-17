@@ -26,6 +26,8 @@ import { Hotkeys } from '../../../Hotkeys'
 
 import { CanvasFooter } from './CanvasFooter'
 import { CardWrapper } from './CardWrapper'
+import { DragDropWrapper } from './DragDropWrapper'
+import { DragItemWrapper } from './DragItemWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
 import { SelectableWrapper } from './SelectableWrapper'
 import {
@@ -211,6 +213,7 @@ export function Canvas(): ReactElement {
                 dir={rtl ? 'rtl' : 'ltr'}
                 // frameRef assists to see if user is copying text from typog blocks
                 ref={frameRef}
+                scrolling="no"
               >
                 {({ document }) => (
                   <ThemeProvider {...theme} rtl={rtl} locale={locale}>
@@ -221,24 +224,18 @@ export function Canvas(): ReactElement {
                         backgroundColor: 'background.default',
                         borderRadius: 5,
                         '& .card-enter': {
-                          zIndex: 1,
                           opacity: 0
                         },
                         '& .card-enter-active': {
-                          zIndex: 1,
-                          opacity: 1
-                        },
-                        '& .card-enter-done': {
-                          zIndex: 1,
-                          opacity: 1
+                          opacity: 1,
+                          transition: 'opacity 0.15s ease'
                         },
                         '& .card-exit': {
-                          zIndex: 0,
                           opacity: 1
                         },
                         '& .card-exit-active': {
-                          opacity: 1,
-                          zIndex: 0
+                          opacity: 0,
+                          transition: 'opacity 0.3s ease'
                         },
                         position: 'relative',
                         width: 'calc(100% - 8px)',
@@ -291,20 +288,23 @@ export function Canvas(): ReactElement {
                               }
                             />
                           </ThemeProvider>
-                          <BlockRenderer
-                            block={selectedStep}
-                            wrappers={{
-                              Wrapper: SelectableWrapper,
-                              TypographyWrapper: InlineEditWrapper,
-                              ButtonWrapper: InlineEditWrapper,
-                              RadioQuestionWrapper: InlineEditWrapper,
-                              RadioOptionWrapper: InlineEditWrapper,
-                              TextResponseWrapper: InlineEditWrapper,
-                              SignUpWrapper: InlineEditWrapper,
-                              VideoWrapper,
-                              CardWrapper
-                            }}
-                          />
+                          <DragDropWrapper>
+                            <BlockRenderer
+                              block={selectedStep}
+                              wrappers={{
+                                Wrapper: SelectableWrapper,
+                                TypographyWrapper: InlineEditWrapper,
+                                ButtonWrapper: InlineEditWrapper,
+                                RadioQuestionWrapper: InlineEditWrapper,
+                                RadioOptionWrapper: InlineEditWrapper,
+                                TextResponseWrapper: InlineEditWrapper,
+                                SignUpWrapper: InlineEditWrapper,
+                                VideoWrapper,
+                                CardWrapper,
+                                DragItemWrapper
+                              }}
+                            />
+                          </DragDropWrapper>
                           <ThemeProvider
                             themeName={ThemeName.journeyUi}
                             themeMode={theme.themeMode}
