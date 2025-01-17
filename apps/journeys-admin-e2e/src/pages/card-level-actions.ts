@@ -842,7 +842,7 @@ export class CardLevelActionPage {
       .frameLocator(this.journeyCardFrame)
       .first()
       .locator(
-        'div[data-testid="CardWrapper"] + div[data-testid="JourneysStepFooter"] > div'
+        'div[data-testid="CardWrapper"] ~ div[data-testid="JourneysStepFooter"] > div'
       )
       .click({ delay: 3000 })
     // Verify whether the footer block is selected. If it is not, click the footer block again. in catch block
