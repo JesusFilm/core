@@ -45,6 +45,8 @@ export const VIDEO_FIELDS = gql`
       }
       ... on MuxVideo {
         id
+        assetId
+        playbackId
       }
       ... on CloudflareVideo {
         id
