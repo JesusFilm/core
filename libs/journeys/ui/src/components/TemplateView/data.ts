@@ -836,7 +836,7 @@ export const nodes: Node[] = [
     type: 'SocialPreview',
     data: {},
     position: { x: -365, y: -46 },
-    draggable: false
+    draggable: true
   },
   {
     id: 'hidden',
