@@ -858,7 +858,7 @@ export class CardLevelActionPage {
           .frameLocator(this.journeyCardFrame)
           .first()
           .locator(
-            'div[data-testid="CardWrapper"] + div[data-testid="JourneysStepFooter"] > div'
+            'div[data-testid="CardWrapper"] ~ div[data-testid="JourneysStepFooter"] > div'
           )
           .dblclick({ force: true })
       })
