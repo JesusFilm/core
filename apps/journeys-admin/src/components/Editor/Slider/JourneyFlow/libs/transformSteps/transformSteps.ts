@@ -9,6 +9,10 @@ import { adminLight } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import {
+  DEFAULT_SOCIAL_NODE_X,
+  DEFAULT_SOCIAL_NODE_Y
+} from '../../nodes/SocialPreviewNode/libs/positions'
+import {
   ACTION_BUTTON_HEIGHT,
   LINK_NODE_HEIGHT_GAP,
   LINK_NODE_WIDTH_GAP_LEFT,
@@ -67,8 +71,8 @@ export function transformSteps(
     type: 'SocialPreview',
     data: {},
     position: {
-      x: journey?.socialNodeX ?? -240,
-      y: journey?.socialNodeY ?? -46
+      x: journey?.socialNodeX ?? DEFAULT_SOCIAL_NODE_X,
+      y: journey?.socialNodeY ?? DEFAULT_SOCIAL_NODE_Y
     },
     draggable: true
   }
