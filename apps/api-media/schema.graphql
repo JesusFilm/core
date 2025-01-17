@@ -305,6 +305,7 @@ type MuxVideo
   @key(fields: "id primaryLanguageId")
 {
   id: ID!
+  name: String
   source: VideoBlockSource @shareable
   primaryLanguageId: ID @shareable
   assetId: String

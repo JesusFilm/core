@@ -38,6 +38,7 @@ export interface WrappersProps {
   TextResponseWrapper?: WrapperFn<TextResponseBlock>
   TypographyWrapper?: WrapperFn<TypographyBlock>
   VideoWrapper?: WrapperFn<VideoBlock>
+  DragItemWrapper?: WrapperFn
 }
 
 const DynamicButton = dynamic<TreeBlock<ButtonBlock>>(
@@ -149,6 +150,7 @@ export function BlockRenderer({
   const TextResponseWrapper = wrappers?.TextResponseWrapper ?? DefaultWrapper
   const TypographyWrapper = wrappers?.TypographyWrapper ?? DefaultWrapper
   const VideoWrapper = wrappers?.VideoWrapper ?? DefaultWrapper
+  const DragItemWrapper = wrappers?.DragItemWrapper ?? DefaultWrapper
 
   if (block == null || block?.parentOrder === null) {
     return <></>
@@ -157,11 +159,13 @@ export function BlockRenderer({
   switch (block.__typename) {
     case 'ButtonBlock':
       return (
-        <Wrapper block={block}>
-          <ButtonWrapper block={block}>
-            <DynamicButton {...block} />
-          </ButtonWrapper>
-        </Wrapper>
+        <DragItemWrapper block={block}>
+          <Wrapper block={block}>
+            <ButtonWrapper block={block}>
+              <DynamicButton {...block} />
+            </ButtonWrapper>
+          </Wrapper>
+        </DragItemWrapper>
       )
     case 'CardBlock':
       return (
@@ -173,11 +177,13 @@ export function BlockRenderer({
       )
     case 'ImageBlock':
       return (
-        <Wrapper block={block}>
-          <ImageWrapper block={block}>
-            <DynamicImage {...block} alt={block.alt} />
-          </ImageWrapper>
-        </Wrapper>
+        <DragItemWrapper block={block}>
+          <Wrapper block={block}>
+            <ImageWrapper block={block}>
+              <DynamicImage {...block} alt={block.alt} />
+            </ImageWrapper>
+          </Wrapper>
+        </DragItemWrapper>
       )
     case 'RadioOptionBlock':
       return (
@@ -189,19 +195,23 @@ export function BlockRenderer({
       )
     case 'RadioQuestionBlock':
       return (
-        <Wrapper block={block}>
-          <RadioQuestionWrapper block={block}>
-            <DynamicRadioQuestion {...block} wrappers={wrappers} />
-          </RadioQuestionWrapper>
-        </Wrapper>
+        <DragItemWrapper block={block}>
+          <Wrapper block={block}>
+            <RadioQuestionWrapper block={block}>
+              <DynamicRadioQuestion {...block} wrappers={wrappers} />
+            </RadioQuestionWrapper>
+          </Wrapper>
+        </DragItemWrapper>
       )
     case 'SignUpBlock':
       return (
-        <Wrapper block={block}>
-          <SignUpWrapper block={block}>
-            <DynamicSignUp {...block} />
-          </SignUpWrapper>
-        </Wrapper>
+        <DragItemWrapper block={block}>
+          <Wrapper block={block}>
+            <SignUpWrapper block={block}>
+              <DynamicSignUp {...block} />
+            </SignUpWrapper>
+          </Wrapper>
+        </DragItemWrapper>
       )
     case 'SpacerBlock':
       return (
@@ -221,19 +231,23 @@ export function BlockRenderer({
       )
     case 'TextResponseBlock':
       return (
-        <Wrapper block={block}>
-          <TextResponseWrapper block={block}>
-            <DynamicTextResponse {...block} />
-          </TextResponseWrapper>
-        </Wrapper>
+        <DragItemWrapper block={block}>
+          <Wrapper block={block}>
+            <TextResponseWrapper block={block}>
+              <DynamicTextResponse {...block} />
+            </TextResponseWrapper>
+          </Wrapper>
+        </DragItemWrapper>
       )
     case 'TypographyBlock':
       return (
-        <Wrapper block={block}>
-          <TypographyWrapper block={block}>
-            <DynamicTypography {...block} />
-          </TypographyWrapper>
-        </Wrapper>
+        <DragItemWrapper block={block}>
+          <Wrapper block={block}>
+            <TypographyWrapper block={block}>
+              <DynamicTypography {...block} />
+            </TypographyWrapper>
+          </Wrapper>
+        </DragItemWrapper>
       )
     case 'VideoBlock':
       return (

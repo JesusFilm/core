@@ -53,6 +53,8 @@ export interface CardVideoDelete_video_VideoBlock_mediaVideo_Video {
 export interface CardVideoDelete_video_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface CardVideoDelete_video_VideoBlock_mediaVideo_CloudflareVideo {

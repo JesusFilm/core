@@ -284,6 +284,8 @@ export interface CardCtaRestore_imageRestore_VideoBlock_mediaVideo_Video {
 export interface CardCtaRestore_imageRestore_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface CardCtaRestore_imageRestore_VideoBlock_mediaVideo_CloudflareVideo {
@@ -709,6 +711,8 @@ export interface CardCtaRestore_subtitleRestore_VideoBlock_mediaVideo_Video {
 export interface CardCtaRestore_subtitleRestore_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface CardCtaRestore_subtitleRestore_VideoBlock_mediaVideo_CloudflareVideo {
@@ -1134,6 +1138,8 @@ export interface CardCtaRestore_titleRestore_VideoBlock_mediaVideo_Video {
 export interface CardCtaRestore_titleRestore_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface CardCtaRestore_titleRestore_VideoBlock_mediaVideo_CloudflareVideo {
@@ -1559,6 +1565,8 @@ export interface CardCtaRestore_button1Restore_VideoBlock_mediaVideo_Video {
 export interface CardCtaRestore_button1Restore_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface CardCtaRestore_button1Restore_VideoBlock_mediaVideo_CloudflareVideo {
@@ -1984,6 +1992,8 @@ export interface CardCtaRestore_startIcon1Restore_VideoBlock_mediaVideo_Video {
 export interface CardCtaRestore_startIcon1Restore_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface CardCtaRestore_startIcon1Restore_VideoBlock_mediaVideo_CloudflareVideo {
@@ -2409,6 +2419,8 @@ export interface CardCtaRestore_endIcon1Restore_VideoBlock_mediaVideo_Video {
 export interface CardCtaRestore_endIcon1Restore_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface CardCtaRestore_endIcon1Restore_VideoBlock_mediaVideo_CloudflareVideo {
@@ -2834,6 +2846,8 @@ export interface CardCtaRestore_button2Restore_VideoBlock_mediaVideo_Video {
 export interface CardCtaRestore_button2Restore_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface CardCtaRestore_button2Restore_VideoBlock_mediaVideo_CloudflareVideo {
@@ -3259,6 +3273,8 @@ export interface CardCtaRestore_startIcon2Restore_VideoBlock_mediaVideo_Video {
 export interface CardCtaRestore_startIcon2Restore_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface CardCtaRestore_startIcon2Restore_VideoBlock_mediaVideo_CloudflareVideo {
@@ -3684,6 +3700,8 @@ export interface CardCtaRestore_endIcon2Restore_VideoBlock_mediaVideo_Video {
 export interface CardCtaRestore_endIcon2Restore_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface CardCtaRestore_endIcon2Restore_VideoBlock_mediaVideo_CloudflareVideo {
@@ -4109,6 +4127,8 @@ export interface CardCtaRestore_button3Restore_VideoBlock_mediaVideo_Video {
 export interface CardCtaRestore_button3Restore_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface CardCtaRestore_button3Restore_VideoBlock_mediaVideo_CloudflareVideo {
@@ -4534,6 +4554,8 @@ export interface CardCtaRestore_startIcon3Restore_VideoBlock_mediaVideo_Video {
 export interface CardCtaRestore_startIcon3Restore_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface CardCtaRestore_startIcon3Restore_VideoBlock_mediaVideo_CloudflareVideo {
@@ -4959,6 +4981,8 @@ export interface CardCtaRestore_endIcon3Restore_VideoBlock_mediaVideo_Video {
 export interface CardCtaRestore_endIcon3Restore_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface CardCtaRestore_endIcon3Restore_VideoBlock_mediaVideo_CloudflareVideo {

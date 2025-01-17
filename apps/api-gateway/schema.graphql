@@ -362,6 +362,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   journeyProfileCreate: JourneyProfile! @join__field(graph: API_JOURNEYS) 
   journeyProfileUpdate(input: JourneyProfileUpdateInput!) : JourneyProfile! @join__field(graph: API_JOURNEYS) 
   updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!) : JourneysEmailPreference @join__field(graph: API_JOURNEYS) 
+  qrCodeCreate(input: QrCodeCreateInput!) : QrCode! @join__field(graph: API_JOURNEYS) 
+  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!) : QrCode! @join__field(graph: API_JOURNEYS) 
+  qrCodeDelete(id: ID!) : QrCode! @join__field(graph: API_JOURNEYS) 
   teamCreate(input: TeamCreateInput) : Team! @join__field(graph: API_JOURNEYS) 
   teamUpdate(id: ID!, input: TeamUpdateInput) : Team! @join__field(graph: API_JOURNEYS) 
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput) : UserInvite @join__field(graph: API_JOURNEYS) 
@@ -659,6 +662,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   corresponds to the main visitor graph.
   """
   journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType) : [PlausibleStatsResponse!]! @join__field(graph: API_JOURNEYS) 
+  qrCode(id: ID!) : QrCode! @join__field(graph: API_JOURNEYS) 
+  qrCodes(where: QrCodesFilter!) : [QrCode!]! @join__field(graph: API_JOURNEYS) 
   teams: [Team!]! @join__field(graph: API_JOURNEYS) 
   team(id: ID!) : Team! @join__field(graph: API_JOURNEYS) 
   userInvites(journeyId: ID!) : [UserInvite!] @join__field(graph: API_JOURNEYS) 
@@ -1873,6 +1878,44 @@ type PlausibleStatsResponse @join__type(graph: API_JOURNEYS)  {
   timeOnPage: Float
 }
 
+"""
+A short link that redirects to a full URL
+"""
+type ShortLink @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id")  {
+  id: ID!
+  """
+  short link path not including the leading slash
+  """
+  pathname: String! @join__field(graph: API_MEDIA) 
+  """
+  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  """
+  to: String! @join__field(graph: API_MEDIA) 
+  domain: ShortLinkDomain! @join__field(graph: API_MEDIA) 
+  """
+  the service that created this short link
+  """
+  service: Service! @join__field(graph: API_MEDIA) 
+}
+
+type QrCode @join__type(graph: API_JOURNEYS)  {
+  id: ID!
+  """
+  Team where the Qr Code belongs to
+  """
+  team: Team
+  """
+  Journey where the Qr Code was created from
+  """
+  journey: Journey
+  """
+  ShortLink that handles the redirection
+  """
+  shortLink: ShortLink!
+  color: String
+  backgroundColor: String
+}
+
 type Team @join__type(graph: API_JOURNEYS, key: "id")  {
   id: ID!
   title: String!
@@ -1882,6 +1925,7 @@ type Team @join__type(graph: API_JOURNEYS, key: "id")  {
   userTeams: [UserTeam!]!
   customDomains: [CustomDomain!]!
   integrations: [Integration!]!
+  qrCodes: [QrCode!]!
 }
 
 type UserInvite @join__type(graph: API_JOURNEYS, key: "id")  {
@@ -2111,6 +2155,7 @@ type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId
   id: ID!
   primaryLanguageId: ID
   source: VideoBlockSource @join__field(graph: API_JOURNEYS_MODERN, type: "VideoBlockSource!")  @join__field(graph: API_MEDIA, type: "VideoBlockSource") 
+  name: String @join__field(graph: API_MEDIA) 
   assetId: String @join__field(graph: API_MEDIA) 
   duration: Int @join__field(graph: API_MEDIA) 
   uploadId: String @join__field(graph: API_MEDIA) 
@@ -2361,26 +2406,6 @@ type QueryShortLinksConnection @join__type(graph: API_MEDIA)  {
 type QueryShortLinksConnectionEdge @join__type(graph: API_MEDIA)  {
   node: ShortLink
   cursor: String!
-}
-
-"""
-A short link that redirects to a full URL
-"""
-type ShortLink @join__type(graph: API_MEDIA, key: "id")  {
-  id: ID!
-  """
-  short link path not including the leading slash
-  """
-  pathname: String!
-  """
-  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
-  """
-  to: String!
-  domain: ShortLinkDomain!
-  """
-  the service that created this short link
-  """
-  service: Service!
 }
 
 """
@@ -4012,6 +4037,26 @@ input PlausibleStatsTimeseriesFilter @join__type(graph: API_JOURNEYS)  {
   for 6mo and 12mo, otherwise falls back to date.
   """
   interval: String
+}
+
+input QrCodesFilter @join__type(graph: API_JOURNEYS)  {
+  journeyId: ID
+  teamId: ID
+}
+
+input QrCodeCreateInput @join__type(graph: API_JOURNEYS)  {
+  teamId: ID!
+  journeyId: ID!
+}
+
+input QrCodeUpdateInput @join__type(graph: API_JOURNEYS)  {
+  """
+  journey url where the QR code redirects to, will be parsed and
+  stored as ids
+  """
+  to: String
+  color: String
+  backgroundColor: String
 }
 
 input TeamCreateInput @join__type(graph: API_JOURNEYS)  {

@@ -53,6 +53,7 @@ import { PrismaService } from '../../lib/prisma.service'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockService } from '../block/block.service'
 import { PlausibleJob } from '../plausible/plausible.consumer'
+import { QrCodeService } from '../qrCode/qrCode.service'
 
 type BlockWithAction = Block & { action: BlockAction | null }
 
@@ -64,7 +65,8 @@ export class JourneyResolver {
     @InjectQueue('api-journeys-plausible')
     private readonly plausibleQueue: Queue<PlausibleJob>,
     private readonly blockService: BlockService,
-    private readonly prismaService: PrismaService
+    private readonly prismaService: PrismaService,
+    private readonly qrCodeService: QrCodeService
   ) {}
 
   @Query()
@@ -760,7 +762,7 @@ export class JourneyResolver {
         })
       if (host.teamId !== journey.teamId)
         throw new GraphQLError(
-          'the team id of host does not not match team id of journey',
+          'the team id of host does not match team id of journey',
           {
             extensions: { code: 'BAD_USER_INPUT' }
           }
@@ -790,6 +792,11 @@ export class JourneyResolver {
                 : undefined
           }
         })
+
+        if (input.slug != null) {
+          await this.qrCodeService.updateJourneyShortLink(updatedJourney.id)
+        }
+
         return updatedJourney
       })
     } catch (err) {

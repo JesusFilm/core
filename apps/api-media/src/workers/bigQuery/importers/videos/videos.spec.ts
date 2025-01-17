@@ -69,12 +69,6 @@ describe('bigQuery/importers/videos', () => {
           primaryLanguageId: '529',
           slug: 'some-title-2',
           childIds: [],
-          image: null,
-          thumbnail: null,
-          videoStill: null,
-          mobileCinematicHigh: null,
-          mobileCinematicLow: null,
-          mobileCinematicVeryLow: null,
           noIndex: false
         },
         update: {
@@ -83,12 +77,6 @@ describe('bigQuery/importers/videos', () => {
           primaryLanguageId: '529',
           slug: 'some-title-2',
           childIds: [],
-          image: null,
-          thumbnail: null,
-          videoStill: null,
-          mobileCinematicHigh: null,
-          mobileCinematicLow: null,
-          mobileCinematicVeryLow: null,
           noIndex: false
         }
       })
@@ -119,13 +107,7 @@ describe('bigQuery/importers/videos', () => {
           primaryLanguageId: 529,
           slug: 'Some Title',
           extraStuff: 'randomData',
-          childIds: null,
-          image: null,
-          thumbnail: null,
-          videoStill: null,
-          mobileCinematicHigh: null,
-          mobileCinematicLow: null,
-          mobileCinematicVeryLow: null
+          childIds: null
         }
       ])
       expect(prismaMock.video.createMany).toHaveBeenCalledWith({
@@ -136,12 +118,6 @@ describe('bigQuery/importers/videos', () => {
             primaryLanguageId: '529',
             slug: 'some-title',
             childIds: [],
-            image: null,
-            thumbnail: null,
-            videoStill: null,
-            mobileCinematicHigh: null,
-            mobileCinematicLow: null,
-            mobileCinematicVeryLow: null,
             noIndex: false
           },
           {
@@ -150,12 +126,6 @@ describe('bigQuery/importers/videos', () => {
             primaryLanguageId: '529',
             slug: 'some-title-2',
             childIds: [],
-            image: null,
-            thumbnail: null,
-            videoStill: null,
-            mobileCinematicHigh: null,
-            mobileCinematicLow: null,
-            mobileCinematicVeryLow: null,
             noIndex: false
           }
         ],
@@ -171,12 +141,6 @@ describe('bigQuery/importers/videos', () => {
             primaryLanguageId: '529',
             slug: 'some-title',
             childIds: [],
-            image: null,
-            thumbnail: null,
-            videoStill: null,
-            mobileCinematicHigh: null,
-            mobileCinematicLow: null,
-            mobileCinematicVeryLow: null,
             noIndex: false
           },
           {
