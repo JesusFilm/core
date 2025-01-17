@@ -57,7 +57,9 @@ export async function service(logger?: Logger): Promise<void> {
   await migrateCloudflareVideosToMux(logger)
 }
 
-async function createCloudflareDownloads(logger?: Logger): Promise<void> {
+export async function createCloudflareDownloads(
+  logger?: Logger
+): Promise<void> {
   let done = false
   let page = 0
   const cloudflare = getClient()

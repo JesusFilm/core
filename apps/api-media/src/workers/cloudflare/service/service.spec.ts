@@ -1,12 +1,11 @@
 import Cloudflare from 'cloudflare'
 import { APIPromise } from 'cloudflare/core'
-import { Video } from 'cloudflare/resources/stream/stream'
 import { mockDeep } from 'jest-mock-extended'
 import clone from 'lodash/clone'
 
 import { prismaMock } from '../../../../test/prismaMock'
 
-import { service } from './service'
+import { createCloudflareDownloads } from './service'
 
 const mockCloudflare = mockDeep<Cloudflare>()
 
@@ -60,7 +59,7 @@ describe('workers/cloudflare/service', () => {
           }
         })
       } as unknown as APIPromise<void>)
-      await service(undefined)
+      await createCloudflareDownloads(undefined)
       expect(mockCloudflare.stream.downloads.create).toHaveBeenCalledWith(
         'streamMediaId',
         {
