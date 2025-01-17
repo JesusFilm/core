@@ -236,15 +236,13 @@ describe('SelectableWrapper', () => {
     )
 
     fireEvent.click(getByRole('button', { name: 'Option 1' }))
-    await waitFor(() =>
-      expect(
-        getByTestId(`SelectableWrapper-${radioQuestionBlock.id}`)
-      ).toHaveStyle({
-        outline: '2px solid',
-        zIndex: '1',
-        outlineColor: '#C52D3A'
-      })
-    )
+    expect(
+      getByTestId(`SelectableWrapper-${radioQuestionBlock.id}`)
+    ).toHaveStyle({
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
+    })
   })
 
   it('should select radio option on click when radio question selected', async () => {
