@@ -48,7 +48,8 @@ export async function GET(request: NextRequest): Promise<Response> {
 
   const page = Number(query.get('page') ?? 1)
   const limit = Number(query.get('limit') ?? 10)
-  const ids = query.get('ids')?.split(',') ?? []
+  const idsParam = query.get('ids')
+  const ids = idsParam ? idsParam.split(',') : undefined
   const expand = query.get('expand')
   const offset = (page - 1) * limit
   const metadataLanguageTags =
