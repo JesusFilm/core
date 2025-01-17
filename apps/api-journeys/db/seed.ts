@@ -10,7 +10,6 @@ import { nua9 } from './seeds/nua9'
 import { onboarding } from './seeds/onboarding'
 import { onboardingTemplates } from './seeds/onboardingTemplates'
 import { playwrightUserAccess } from './seeds/playwrightUserAccess'
-import { shortLinkDomain } from './seeds/shortLinkDomain'
 
 async function main(): Promise<void> {
   // this should be removed when the UI can support team management
@@ -25,8 +24,6 @@ async function main(): Promise<void> {
   await playwrightUserAccess()
 
   await formBlocksDelete()
-
-  await shortLinkDomain()
 }
 main().catch((e) => {
   console.error(e)
