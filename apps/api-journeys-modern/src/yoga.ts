@@ -1,7 +1,10 @@
 // eslint-disable-next-line import/order -- Must be imported first
 import { tracingPlugin } from '@core/yoga/tracer'
 
-import { useHmacSignatureValidation } from '@graphql-hive/gateway'
+import {
+  useForwardedJWT,
+  useHmacSignatureValidation
+} from '@graphql-hive/gateway'
 import {
   createInMemoryCache,
   useResponseCache
@@ -59,6 +62,7 @@ export const yoga = createYoga<
   },
   plugins: [
     tracingPlugin,
+    useForwardedJWT({}),
     process.env.NODE_ENV !== 'test'
       ? useHmacSignatureValidation({
           secret: process.env.GATEWAY_HMAC_SECRET ?? ''

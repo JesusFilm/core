@@ -43,6 +43,17 @@ const createSpan = createOpenTelemetryWrapper(tracer, {
 })
 
 export const builder = new SchemaBuilder<{
+  Context: Context
+  AuthScopes: {
+    isAuthenticated: boolean
+    isPublisher: boolean
+    isValidInterop: boolean
+  }
+  AuthContexts: {
+    isAuthenticated: Extract<Context, { type: 'authenticated' }>
+    isPublisher: Extract<Context, { type: 'authenticated' }>
+    isValidInterop: Extract<Context, { type: 'interop' }>
+  }
   PrismaTypes: PrismaTypes
   Scalars: {
     ID: { Input: string; Output: number | string }
@@ -91,3 +102,5 @@ export const builder = new SchemaBuilder<{
 })
 
 builder.queryType({})
+
+builder.mutationType({})

@@ -35,6 +35,7 @@ function getMuxClient(): Mux {
 const httpLink = createHttpLink({
   uri: process.env.GATEWAY_URL,
   headers: {
+    'interop-token': process.env.INTEROP_TOKEN ?? '',
     'x-graphql-client-name': 'api-media',
     'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
   }
@@ -46,10 +47,8 @@ export const apollo = new ApolloClient({
 })
 
 export const UPDATE_VIDEO_BLOCK = graphql(`
-  mutation UpdateVideoBlock($input: VideoUpdateInput!) {
-    videoUpdate(input: $input) {
-      id
-    }
+  mutation VideoBlockCloudflareToMux($id: ID!) {
+    videoBlockCloudflareToMux(id: $id)
   }
 `)
 
@@ -148,7 +147,7 @@ async function migrateCloudflareVideosToMux(logger?: Logger): Promise<void> {
           try {
             await prisma.muxVideo.update({
               where: {
-                id: muxVideo.id
+                id: video.id
               },
               data: {
                 playbackId: asset.playback_ids[0].id,
@@ -158,11 +157,7 @@ async function migrateCloudflareVideosToMux(logger?: Logger): Promise<void> {
             await apollo.mutate({
               mutation: UPDATE_VIDEO_BLOCK,
               variables: {
-                id: video.id,
-                input: {
-                  videoId: muxVideo.id,
-                  source: 'mux'
-                }
+                id: video.id
               }
             })
             await prisma.cloudflareVideo.delete({
