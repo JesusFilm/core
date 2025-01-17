@@ -66,6 +66,10 @@ import { NewStepButton } from './NewStepButton'
 import { LinkNode } from './nodes/LinkNode'
 import { ReferrerNode } from './nodes/ReferrerNode'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
+import {
+  DEFAULT_SOCIAL_NODE_X,
+  DEFAULT_SOCIAL_NODE_Y
+} from './nodes/SocialPreviewNode/libs/positions'
 import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
 import 'reactflow/dist/style.css'
@@ -140,31 +144,39 @@ export function JourneyFlow(): ReactElement {
 
   const blockPositionUpdate = useCallback(
     (input: Array<{ id: string; x: number; y: number }>): void => {
-      if (input[0].id === 'SocialPreview') {
+      // check if first element is social preview node
+      const socialPreview = input[0]?.id === 'SocialPreview' ? input[0] : null
+
+      // Filter the remaining blocks as step blocks
+      const stepBlocks = socialPreview ? input.slice(1) : input
+
+      if (socialPreview) {
         if (journey == null) return
         void journeyUpdate({
           variables: {
             id: journey.id,
             input: {
-              socialNodeX: input[0].x,
-              socialNodeY: input[0].y
+              socialNodeX: socialPreview.x,
+              socialNodeY: socialPreview.y
             }
           },
           optimisticResponse: {
             journeyUpdate: {
               ...journey,
-              socialNodeX: input[0].x,
-              socialNodeY: input[0].y
+              socialNodeX: socialPreview.x,
+              socialNodeY: socialPreview.y
             }
           }
         })
-      } else {
+      }
+
+      if (stepBlocks) {
         void stepBlockPositionUpdate({
           variables: {
-            input
+            input: stepBlocks
           },
           optimisticResponse: {
-            stepBlockPositionUpdate: input.map((step) => ({
+            stepBlockPositionUpdate: stepBlocks.map((step) => ({
               ...step,
               __typename: 'StepBlock'
             }))
@@ -177,16 +189,21 @@ export function JourneyFlow(): ReactElement {
 
   const allBlockPositionUpdate = useCallback(
     async (onload = false): Promise<void> => {
-      // TODO: set social preview node position
-
       if (steps == null || data == null) return
 
-      const input = Object.entries(arrangeSteps(steps)).map(
+      if (journey?.socialNodeX == null || journey.socialNodeY == null) return
+      const socialPreviewNodeInput = {
+        id: 'SocialPreview',
+        x: DEFAULT_SOCIAL_NODE_X,
+        y: DEFAULT_SOCIAL_NODE_Y
+      }
+      const stepBlockInputs = Object.entries(arrangeSteps(steps)).map(
         ([id, position]) => ({
           id,
           ...position
         })
       )
+      const input = [socialPreviewNodeInput, ...stepBlockInputs]
 
       if (onload) {
         blockPositionUpdate(input)
@@ -197,13 +214,22 @@ export function JourneyFlow(): ReactElement {
               input
             },
             undo: {
-              input: (
-                data.blocks as GetStepBlocksWithPosition_blocks_StepBlock[]
-              ).map((step) => ({
-                id: step.id,
-                x: step.x,
-                y: step.y
-              }))
+              input: [
+                // social preview
+                {
+                  id: 'SocialPreview',
+                  x: journey.socialNodeX,
+                  y: journey.socialNodeY
+                },
+                // step blocks
+                ...(
+                  data.blocks as GetStepBlocksWithPosition_blocks_StepBlock[]
+                ).map((step) => ({
+                  id: step.id,
+                  x: step.x,
+                  y: step.y
+                }))
+              ]
             }
           },
           execute({ input }) {
@@ -216,7 +242,15 @@ export function JourneyFlow(): ReactElement {
         })
       }
     },
-    [data, dispatch, steps, add, blockPositionUpdate]
+    [
+      data,
+      dispatch,
+      steps,
+      add,
+      blockPositionUpdate,
+      journey?.socialNodeX,
+      journey?.socialNodeY
+    ]
   )
 
   useEffect(() => {
@@ -393,7 +427,6 @@ export function JourneyFlow(): ReactElement {
       // if click or tap, go through step selection logic
       // else go through standard positioning logic below
       if (isClickOrTouch(event.timeStamp)) {
-        console.log(step.x, step.y)
         const target = event.target as HTMLElement
         // if the clicked/tapped element is the StepBlockNodeMenu, don't call handleStepSelection hook https://github.com/JesusFilm/core/pull/4736
         const menuButtonClicked =
