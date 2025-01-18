@@ -18,7 +18,7 @@ import { MouseEvent, ReactElement, useState } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-import { CodeDestinationPopper } from './CodeDestinationPopper'
+import { CodeDestination } from './CodeDestination'
 import { ScanCount } from './ScanCount'
 
 interface QrCodeDialogProps {
@@ -33,8 +33,7 @@ export function QrCodeDialog({
   initialJourneyUrl
 }: QrCodeDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const initialSlugUrl: string | undefined = undefined
-  const [url, setUrl] = useState(initialSlugUrl ?? initialJourneyUrl ?? '')
+  const [url, setUrl] = useState(initialJourneyUrl ?? '')
   const [to, setTo] = useState(url)
   const [showDownloadMenu, setShowDownloadMenu] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -76,6 +75,18 @@ export function QrCodeDialog({
         }
       }
     }
+  }
+
+  async function handleCopyClick(): Promise<void> {
+    await navigator.clipboard.writeText(url)
+    enqueueSnackbar('Link copied', {
+      variant: 'success',
+      preventDuplicate: true
+    })
+  }
+
+  function handleChangeTo(url: string): void {
+    setTo(url)
   }
 
   return (
@@ -195,7 +206,7 @@ export function QrCodeDialog({
                           </MenuItem>
                           <MenuItem
                             onClick={() => {
-                              // void handleCopyClick()
+                              void handleCopyClick()
                               setShowDownloadMenu(false)
                             }}
                           >
@@ -220,28 +231,7 @@ export function QrCodeDialog({
           </Stack>
         </Stack>
         <Divider />
-        <Stack spacing={5}>
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{
-              alignItems: 'center',
-              justifyContent: { xs: 'space-between', sm: 'start' }
-            }}
-          >
-            <Typography variant="subtitle1" color="secondary.dark">
-              {t('Code Destination')}
-            </Typography>
-            <CodeDestinationPopper />
-          </Stack>
-          <FilledInput
-            fullWidth
-            hiddenLabel
-            value={to}
-            onChange={(e) => setTo(e.target.value)}
-            disabled
-          />
-        </Stack>
+        <CodeDestination to={to} handleChangeTo={handleChangeTo} />
       </Stack>
     </Dialog>
   )
