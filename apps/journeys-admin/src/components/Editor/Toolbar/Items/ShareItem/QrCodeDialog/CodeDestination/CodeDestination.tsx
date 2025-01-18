@@ -34,6 +34,12 @@ export function CodeDestination({
           alignItems="center"
           justifyContent="space-between"
           spacing={1}
+          sx={{
+            flexGrow: {
+              xs: 1,
+              sm: 0
+            }
+          }}
         >
           <Typography variant="subtitle1" color="secondary.dark">
             {t('Code Destination')}
