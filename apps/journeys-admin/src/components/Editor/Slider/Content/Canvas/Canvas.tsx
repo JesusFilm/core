@@ -141,8 +141,6 @@ export function Canvas(): ReactElement {
   const theme =
     selectedStep != null ? getStepTheme(selectedStep, journey) : null
 
-  console.log('canvas', selectedBlock)
-
   return (
     <Stack
       ref={containerRef}

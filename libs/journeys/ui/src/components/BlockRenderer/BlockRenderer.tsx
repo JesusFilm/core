@@ -215,11 +215,13 @@ export function BlockRenderer({
       )
     case 'SpacerBlock':
       return (
-        <Wrapper block={block}>
-          <SpacerWrapper block={block}>
-            <DynamicSpacer {...block} />
-          </SpacerWrapper>
-        </Wrapper>
+        <DragItemWrapper block={block}>
+          <Wrapper block={block}>
+            <SpacerWrapper block={block}>
+              <DynamicSpacer {...block} />
+            </SpacerWrapper>
+          </Wrapper>
+        </DragItemWrapper>
       )
     case 'StepBlock':
       return (
