@@ -2630,6 +2630,7 @@ export type Query = {
   bibleCitations: Array<BibleCitation>;
   block: Block;
   blocks: Array<Block>;
+  cloudflareVideoBlockIds: Array<Scalars['ID']['output']>;
   countries: Array<Country>;
   country?: Maybe<Country>;
   customDomain: CustomDomain;
