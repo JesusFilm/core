@@ -1366,7 +1366,6 @@ export type Mutation = {
   userTeamInviteRemove: UserTeamInvite;
   userTeamUpdate: UserTeam;
   validateEmail?: Maybe<User>;
-  videoBlockCloudflareToMux: Scalars['Boolean']['output'];
   videoBlockCreate: VideoBlock;
   videoBlockUpdate: VideoBlock;
   videoCollapseEventCreate: VideoCollapseEvent;
@@ -2028,11 +2027,6 @@ export type MutationUserTeamUpdateArgs = {
 export type MutationValidateEmailArgs = {
   email: Scalars['String']['input'];
   token: Scalars['String']['input'];
-};
-
-
-export type MutationVideoBlockCloudflareToMuxArgs = {
-  id: Scalars['ID']['input'];
 };
 
 
