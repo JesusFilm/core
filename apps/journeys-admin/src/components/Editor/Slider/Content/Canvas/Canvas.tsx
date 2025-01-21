@@ -154,6 +154,7 @@ export function Canvas(): ReactElement {
       sx={{
         height: '100%',
         alignItems: 'center',
+        alignSelf: 'center',
         justifyContent: 'center',
         flexGrow: { xs: 1, md: activeSlide === ActiveSlide.Content ? 1 : 0 },
         transition: (theme) =>
