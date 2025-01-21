@@ -12,13 +12,6 @@ type CloudflareVideo
 
 union MediaVideo = CloudflareVideo | MuxVideo | Video | YouTube
 
-type Mutation {
-  videoBlockCloudflareToMux(
-    """Cloudflare Video ID"""
-    id: ID!
-  ): Boolean!
-}
-
 type MuxVideo
   @key(fields: "id primaryLanguageId")
   @extends
