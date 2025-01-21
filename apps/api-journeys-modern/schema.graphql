@@ -28,6 +28,10 @@ type MuxVideo
   source: VideoBlockSource! @shareable
 }
 
+type Query {
+  cloudflareVideoBlockIds: [ID!]!
+}
+
 type Video
   @key(fields: "id primaryLanguageId")
   @extends

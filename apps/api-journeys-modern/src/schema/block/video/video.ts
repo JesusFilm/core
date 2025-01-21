@@ -1,6 +1,20 @@
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 
+builder.queryFields((t) => ({
+  cloudflareVideoBlockIds: t.withAuth({ isValidInterop: true }).field({
+    nullable: false,
+    type: ['ID'],
+    resolve: async () => {
+      const ids = await prisma.block.findMany({
+        select: { id: true },
+        where: { typename: 'VideoBlock', source: 'cloudflare' }
+      })
+      return ids.map(({ id }) => id)
+    }
+  })
+}))
+
 builder.mutationFields((t) => ({
   videoBlockCloudflareToMux: t.withAuth({ isValidInterop: true }).boolean({
     nullable: false,
@@ -12,16 +26,18 @@ builder.mutationFields((t) => ({
       })
     },
     resolve: async (_root, { id }) => {
-      const block = await prisma.block.findFirst({
+      const blocks = await prisma.block.findMany({
         where: { videoId: id, typename: 'VideoBlock', source: 'cloudflare' }
       })
-      if (block == null) return false
+      if (blocks.length == null) return false
 
-      const update = await prisma.block.update({
-        where: { id: block.id },
-        data: { source: 'mux' }
-      })
-      return update != null
+      for (const block of blocks) {
+        await prisma.block.update({
+          where: { id: block.id },
+          data: { source: 'mux' }
+        })
+      }
+      return true
     }
   })
 }))

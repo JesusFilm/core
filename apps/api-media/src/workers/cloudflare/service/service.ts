@@ -52,7 +52,14 @@ export const UPDATE_VIDEO_BLOCK = graphql(`
   }
 `)
 
+export const CLOUDFLARE_VIDEO_BLOCK_IDS = graphql(`
+  query VideoBlockCloudflareIds {
+    cloudflareVideoBlockIds
+  }
+`)
+
 export async function service(logger?: Logger): Promise<void> {
+  await fixMissingCloudflareVideos(logger)
   await createCloudflareDownloads(logger)
   await migrateCloudflareVideosToMux(logger)
 }
@@ -113,67 +120,110 @@ async function migrateCloudflareVideosToMux(logger?: Logger): Promise<void> {
     page++
     done = videos.length < 100
     for (const video of videos) {
-      const cfVideo = (await cloudflare.stream.downloads.get(video.id, {
-        account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
-      })) as { default: { url: string } }
-      if (cfVideo == null) continue
-      logger?.info(`Processing cloudflare video ${video.id}`)
-      const muxVideo = await mux.video.assets.create({
-        input: [
-          {
-            url: cfVideo.default.url
-          }
-        ],
-        encoding_tier: 'smart',
-        playback_policy: ['public'],
-        max_resolution_tier: '1080p'
-      })
-      const data = {
-        id: video.id,
-        assetId: muxVideo.id,
-        createdAt: video.createdAt,
-        updatedAt: new Date(),
-        readyToStream: false,
-        userId: video.userId
-      }
-      await prisma.muxVideo.upsert({
-        where: { id: video.id },
-        create: data,
-        update: data
-      })
-      let processing = true
-      while (processing) {
-        await new Promise((f) => setTimeout(f, 10000)) // wait 10 seconds
-        const asset = await mux.video.assets.retrieve(muxVideo.id)
-        if (asset.status === 'ready' && asset.playback_ids?.[0].id != null) {
-          try {
-            await prisma.muxVideo.update({
-              where: {
-                id: video.id
-              },
-              data: {
-                playbackId: asset.playback_ids[0].id,
-                readyToStream: true
-              }
-            })
-            await apollo.mutate({
-              mutation: UPDATE_VIDEO_BLOCK,
-              variables: {
-                id: video.id
-              }
-            })
-            await prisma.cloudflareVideo.delete({
-              where: { id: video.id }
-            })
-          } catch (error) {
-            logger?.error(
-              error,
-              `unable to migrate cloudflare video ${video.id}`
-            )
-          }
-          processing = false
+      const existing = await prisma.muxVideo.findUnique({
+        select: { id: true, assetId: true },
+        where: {
+          id: video.id
         }
+      })
+
+      let muxVideoAssetId = existing?.assetId
+
+      if (existing == null) {
+        const cfVideo = (await cloudflare.stream.downloads.get(video.id, {
+          account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
+        })) as { default: { url: string } }
+        if (cfVideo == null) continue
+        logger?.info(`Processing cloudflare video ${video.id}`)
+        const muxVideo = await mux.video.assets.create({
+          input: [
+            {
+              url: cfVideo.default.url
+            }
+          ],
+          encoding_tier: 'smart',
+          playback_policy: ['public'],
+          max_resolution_tier: '1080p'
+        })
+        muxVideoAssetId = muxVideo.id
+
+        const data = {
+          id: video.id,
+          assetId: muxVideo.id,
+          createdAt: video.createdAt,
+          updatedAt: new Date(),
+          readyToStream: false,
+          userId: video.userId
+        }
+        await prisma.muxVideo.upsert({
+          where: { id: video.id },
+          create: data,
+          update: data
+        })
+      }
+
+      if (muxVideoAssetId == null) continue
+
+      let processing = true
+      let count = 0
+      while (processing && count < 90)
+        // only try for 15 minutes {
+        count++
+      await new Promise((f) => setTimeout(f, 10000)) // wait 10 seconds
+      const asset = await mux.video.assets.retrieve(muxVideoAssetId)
+      if (asset.status === 'ready' && asset.playback_ids?.[0].id != null) {
+        try {
+          await prisma.muxVideo.update({
+            where: {
+              id: video.id
+            },
+            data: {
+              playbackId: asset.playback_ids[0].id,
+              readyToStream: true
+            }
+          })
+          await apollo.mutate({
+            mutation: UPDATE_VIDEO_BLOCK,
+            variables: {
+              id: video.id
+            }
+          })
+        } catch (error) {
+          logger?.error(error, `unable to migrate cloudflare video ${video.id}`)
+        }
+        processing = false
       }
     }
   }
+}
+
+async function fixMissingCloudflareVideos(logger?: Logger): Promise<void> {
+  logger?.info('Fixing missing cloudflare videos')
+  const data = await apollo.query({
+    query: CLOUDFLARE_VIDEO_BLOCK_IDS
+  })
+
+  const existingCfVideos = await prisma.cloudflareVideo.findMany({
+    select: { id: true }
+  })
+
+  const existingCfVideoIds = existingCfVideos.map(({ id }) => id)
+
+  const missingCfVideoIds = data.data.cloudflareVideoBlockIds.filter(
+    (id) => !existingCfVideoIds.includes(id)
+  )
+  logger?.info(`Found ${missingCfVideoIds.length} missing cloudflare videos`)
+
+  for (const id of missingCfVideoIds) {
+    await prisma.cloudflareVideo.create({
+      data: {
+        id,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        readyToStream: true,
+        userId: 'system'
+      }
+    })
+  }
+  logger?.info('Missing cloudflare videos fixed')
 }
