@@ -78,6 +78,7 @@ export interface GetAdminJourneys_journeys {
   seoTitle: string | null;
   seoDescription: string | null;
   template: boolean | null;
+  updatedAt: any;
   userJourneys: GetAdminJourneys_journeys_userJourneys[] | null;
   primaryImageBlock: GetAdminJourneys_journeys_primaryImageBlock | null;
 }
