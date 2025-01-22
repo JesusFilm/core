@@ -147,7 +147,8 @@ export function Video({
   const showVideoImage =
     (variant === 'admin' && source === VideoBlockSource.youTube) ||
     source === VideoBlockSource.internal ||
-    source === VideoBlockSource.cloudflare
+    source === VideoBlockSource.cloudflare ||
+    source === VideoBlockSource.mux
 
   useEffect(() => {
     setActiveStep(isActiveBlockOrDescendant(blockId))
@@ -278,6 +279,12 @@ export function Video({
                   type="video/youtube"
                 />
               )}
+              {mediaVideo?.__typename === 'MuxVideo' && (
+                <source
+                  src={`https://stream.mux.com/${mediaVideo.playbackId}.m3u8`}
+                  type="application/x-mpegURL"
+                />
+              )}
             </StyledVideo>
           </Box>
           {player != null && (
@@ -318,7 +325,8 @@ export function Video({
               zIndex: 1,
               outline:
                 selectedBlock?.id === blockId ? '2px solid #C52D3A' : 'none',
-              outlineOffset: '-3px'
+              outlineOffset: '-3px',
+              borderRadius: '20px'
             }}
             elevation={0}
             variant="outlined"
