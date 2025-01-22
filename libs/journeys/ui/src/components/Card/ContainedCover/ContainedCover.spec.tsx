@@ -201,8 +201,7 @@ describe('ContainedCover', () => {
             assetId: '2_0-FallingPlates',
             playbackId: '2_0-FallingPlates'
           },
-          image:
-            'https://customer-.cloudflarestream.com/2_0-FallingPlates/manifest/video.m3u8'
+          image: 'https://stream.mux.com/2_0-FallingPlates.m3u8'
         }}
       >
         {children}
@@ -214,7 +213,7 @@ describe('ContainedCover', () => {
     )
     expect(source).toHaveAttribute(
       'src',
-      'https://customer-.cloudflarestream.com/2_0-FallingPlates/manifest/video.m3u8'
+      'https://stream.mux.com/2_0-FallingPlates.m3u8'
     )
     expect(source).toHaveAttribute('type', 'application/x-mpegURL')
 
@@ -223,7 +222,7 @@ describe('ContainedCover', () => {
     expect(posterImage).toHaveAccessibleName('card video image')
     expect(posterImage).toHaveAttribute(
       'aria-details',
-      'https://customer-.cloudflarestream.com/2_0-FallingPlates/manifest/video.m3u8'
+      'https://stream.mux.com/2_0-FallingPlates.m3u8'
     )
   })
 
