@@ -74,7 +74,7 @@ export function JourneySort({
       <FormControl component="fieldset" fullWidth>
         <RadioGroup
           aria-label="sort-by-options"
-          defaultValue={sortOrder ?? SortOrder.CREATED_AT}
+          defaultValue={sortOrder ?? SortOrder.UPDATED_AT}
           name="sort-by-buttons-group"
           onChange={handleSubmit}
         >
