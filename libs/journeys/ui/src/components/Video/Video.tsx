@@ -147,7 +147,6 @@ export function Video({
   const showVideoImage =
     (variant === 'admin' && source === VideoBlockSource.youTube) ||
     source === VideoBlockSource.internal ||
-    source === VideoBlockSource.cloudflare ||
     source === VideoBlockSource.mux
 
   useEffect(() => {
@@ -253,17 +252,6 @@ export function Video({
                 }
               }}
             >
-              {source === VideoBlockSource.cloudflare && videoId != null && (
-                <source
-                  src={`https://customer-${
-                    process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
-                    ''
-                  }.cloudflarestream.com/${
-                    videoId ?? ''
-                  }/manifest/video.m3u8?clientBandwidthHint=10`}
-                  type="application/x-mpegURL"
-                />
-              )}
               {mediaVideo?.__typename == 'Video' &&
                 mediaVideo?.variant?.hls != null && (
                   <source
