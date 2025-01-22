@@ -62,6 +62,7 @@ export interface JourneySettingsUpdate_journeyUpdate {
   title: string;
   description: string | null;
   strategySlug: string | null;
+  updatedAt: any;
   language: JourneySettingsUpdate_journeyUpdate_language;
   tags: JourneySettingsUpdate_journeyUpdate_tags[];
   website: boolean | null;

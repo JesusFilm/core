@@ -20,6 +20,7 @@ export const JOURNEY_SETTINGS_UPDATE = gql`
       title
       description
       strategySlug
+      updatedAt
       language {
         id
         bcp47

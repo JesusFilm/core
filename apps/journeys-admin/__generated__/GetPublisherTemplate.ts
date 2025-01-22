@@ -600,6 +600,7 @@ export interface GetPublisherTemplate_publisherTemplate {
   createdAt: any;
   featuredAt: any | null;
   publishedAt: any | null;
+  updatedAt: any;
   themeName: ThemeName;
   themeMode: ThemeMode;
   strategySlug: string | null;

@@ -31,6 +31,7 @@ export const JOURNEY_FIELDS = gql`
     createdAt
     featuredAt
     publishedAt
+    updatedAt
     themeName
     themeMode
     strategySlug
