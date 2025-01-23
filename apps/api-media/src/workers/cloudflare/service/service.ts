@@ -114,8 +114,6 @@ export async function createCloudflareDownloads(
     page++
     done = videos.length < 100
     for (const video of videos) {
-      console.log('Processing cf video', video.id)
-
       const existing = await getCloudflareVideo(cloudflare, video.id)
       if (existing == null) continue
 
