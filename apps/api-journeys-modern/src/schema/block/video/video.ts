@@ -7,10 +7,10 @@ builder.queryFields((t) => ({
     type: ['ID'],
     resolve: async () => {
       const ids = await prisma.block.findMany({
-        select: { id: true },
+        select: { id: true, videoId: true },
         where: { typename: 'VideoBlock', source: 'cloudflare' }
       })
-      return ids.map(({ id }) => id)
+      return ids.map(({ videoId }) => videoId).filter((id) => id != null)
     }
   })
 }))

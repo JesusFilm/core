@@ -64,6 +64,34 @@ export async function service(logger?: Logger): Promise<void> {
   await migrateCloudflareVideosToMux(logger)
 }
 
+async function getCloudflareVideo(
+  cloudflare: Cloudflare,
+  videoId: string
+): Promise<any> {
+  try {
+    return await cloudflare.stream.get(videoId, {
+      account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
+    })
+  } catch {
+    return undefined
+  }
+}
+
+async function getCloudflareVideoDownloadUrl(
+  cloudflare: Cloudflare,
+  videoId: string
+): Promise<string | undefined> {
+  try {
+    const cfVideo = (await cloudflare.stream.downloads.get(videoId, {
+      account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
+    })) as { default?: { url: string } }
+
+    return cfVideo?.default?.url
+  } catch {
+    return undefined
+  }
+}
+
 export async function createCloudflareDownloads(
   logger?: Logger
 ): Promise<void> {
@@ -86,19 +114,32 @@ export async function createCloudflareDownloads(
     page++
     done = videos.length < 100
     for (const video of videos) {
-      await cloudflare.stream.downloads.create(video.id, {
-        account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string,
-        body: {}
-      })
+      console.log('Processing cf video', video.id)
+
+      const existing = await getCloudflareVideo(cloudflare, video.id)
+      if (existing == null) continue
+
+      const cfDownloadUrl = await getCloudflareVideoDownloadUrl(
+        cloudflare,
+        video.id
+      )
+
+      if (cfDownloadUrl == null || cfDownloadUrl == '') {
+        await cloudflare.stream.downloads.create(video.id, {
+          account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string,
+          body: {}
+        })
+      }
       let processing = true
       let count = 0
       while (processing && count < 90) {
         // only try for 15 minutes {
         count++
-        const cfVideo = (await cloudflare.stream.downloads.get(video.id, {
-          account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
-        })) as { default?: { url: string } }
-        if (cfVideo?.default?.url != null && cfVideo.default.url !== '') {
+        const cfDownloadUrl = await getCloudflareVideoDownloadUrl(
+          cloudflare,
+          video.id
+        )
+        if (cfDownloadUrl != null && cfDownloadUrl !== '') {
           await prisma.cloudflareVideo.update({
             where: {
               id: video.id
@@ -133,8 +174,9 @@ async function migrateCloudflareVideosToMux(logger?: Logger): Promise<void> {
     page++
     done = videos.length < 100
     for (const video of videos) {
+      logger?.info(`Processing cloudflare video ${video.id}`)
       const existing = await prisma.muxVideo.findUnique({
-        select: { id: true, assetId: true },
+        select: { id: true, assetId: true, readyToStream: true },
         where: {
           id: video.id
         }
@@ -143,15 +185,17 @@ async function migrateCloudflareVideosToMux(logger?: Logger): Promise<void> {
       let muxVideoAssetId = existing?.assetId
 
       if (existing == null) {
-        const cfVideo = (await cloudflare.stream.downloads.get(video.id, {
-          account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
-        })) as { default: { url: string } }
-        if (cfVideo == null) continue
-        logger?.info(`Processing cloudflare video ${video.id}`)
+        const cfDownloadUrl = await getCloudflareVideoDownloadUrl(
+          cloudflare,
+          video.id
+        )
+        console.log('cf download url', cfDownloadUrl)
+        if (cfDownloadUrl == null) continue
+
         const muxVideo = await mux.video.assets.create({
           input: [
             {
-              url: cfVideo.default.url
+              url: cfDownloadUrl
             }
           ],
           encoding_tier: 'smart',
@@ -175,7 +219,7 @@ async function migrateCloudflareVideosToMux(logger?: Logger): Promise<void> {
         })
       }
 
-      if (muxVideoAssetId == null) continue
+      if (muxVideoAssetId == null || existing?.readyToStream) continue
 
       let processing = true
       let count = 0
@@ -232,8 +276,10 @@ async function fixMissingCloudflareVideos(logger?: Logger): Promise<void> {
   logger?.info(`Found ${missingCfVideoIds.length} missing cloudflare videos`)
 
   for (const id of missingCfVideoIds) {
-    await prisma.cloudflareVideo.create({
-      data: {
+    await prisma.cloudflareVideo.upsert({
+      where: { id },
+      update: {},
+      create: {
         id,
         createdAt: new Date(),
         updatedAt: new Date(),
