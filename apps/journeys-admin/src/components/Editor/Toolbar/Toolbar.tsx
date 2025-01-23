@@ -22,6 +22,7 @@ import {
   setBeaconPageViewed,
   setBeaconRoute
 } from '@core/journeys/ui/beaconHooks'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 import {
   ActiveContent,
   ActiveSlide,
@@ -48,7 +49,6 @@ import { CommandUndoItem } from './Items/CommandUndoItem'
 import { PreviewItem } from './Items/PreviewItem'
 import { JourneyDetails } from './JourneyDetails'
 import { Menu } from './Menu'
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 
 const JourneyDetailsDialog = dynamic(
   async () =>
@@ -150,25 +150,25 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   }
 
   useEffect(() => {
+    function handleJourneyUpdate(): void {
+      if (journey != null) {
+        client.cache.modify({
+          id: client.cache.identify({ __typename: 'Journey', id: journey.id }),
+          fields: {
+            updatedAt() {
+              return new Date().toISOString()
+            }
+          }
+        })
+      }
+    }
+
     if (isFirstRender.current) {
       isFirstRender.current = false
     } else {
       handleJourneyUpdate()
     }
-  }, [undo])
-
-  function handleJourneyUpdate(): void {
-    if (journey != null) {
-      client.cache.modify({
-        id: client.cache.identify({ __typename: 'Journey', id: journey.id }),
-        fields: {
-          updatedAt() {
-            return new Date().toISOString()
-          }
-        }
-      })
-    }
-  }
+  }, [client.cache, journey, undo])
 
   function handleSocialImageClick(): void {
     dispatch({
