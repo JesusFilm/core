@@ -85,7 +85,10 @@ builder.queryFields((t) => ({
       await prisma.videoVariant.findMany({
         ...query,
         where: {
-          published: input?.onlyPublished === false ? undefined : true
+          AND: compact([
+            input?.onlyPublished === false ? undefined : { published: true },
+            input?.id != null ? { id: input.id } : undefined
+          ])
         }
       })
   })

@@ -952,6 +952,7 @@ input VideoVariantDownloadUpdateInput {
 
 input VideoVariantFilter {
   onlyPublished: Boolean = true
+  id: ID
 }
 
 input VideoVariantUpdateInput {
