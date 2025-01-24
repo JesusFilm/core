@@ -6,7 +6,7 @@ import { VideoPlayer } from './VideoPlayer'
 
 const GET_VIDEO_VARIANT = graphql(`
   query GetVideoVariant($id: ID!) {
-    videoVariants(input: { id: $id }) {
+    videoVariant(id: $id) {
       id
       hls
       videoId
@@ -43,13 +43,12 @@ export default async function Page({
     query: GET_VIDEO_VARIANT,
     variables: { id: searchParams.refId }
   })
-
   const { data: videoTitleData } = await getApolloClient().query({
     query: GET_VIDEO_TITLE,
-    variables: { id: data?.videoVariants?.[0]?.videoId ?? '' }
+    variables: { id: data?.videoVariant?.videoId ?? '' }
   })
 
-  const hlsUrl = data?.videoVariants?.[0]?.hls
+  const hlsUrl = data?.videoVariant?.hls
   const videoTitle = videoTitleData?.video?.title?.[0]?.value
   const thumbnail = videoTitleData?.video?.images?.[0]?.mobileCinematicHigh
   if (!hlsUrl) {
