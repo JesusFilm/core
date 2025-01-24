@@ -4,11 +4,19 @@ import { useEffect, useRef } from 'react'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
 
+import 'videojs-mux'
+
 interface VideoPlayerProps {
   hlsUrl: string
+  videoTitle: string
+  thumbnail?: string | null
 }
 
-export function VideoPlayer({ hlsUrl }: VideoPlayerProps): JSX.Element {
+export function VideoPlayer({
+  hlsUrl,
+  videoTitle,
+  thumbnail
+}: VideoPlayerProps): JSX.Element {
   const playerRef = useRef<HTMLVideoElement>(null)
 
   const initPlayer = (ref: typeof playerRef): void => {
@@ -28,6 +36,16 @@ export function VideoPlayer({ hlsUrl }: VideoPlayerProps): JSX.Element {
           useNetworkInformationApi: true,
           useDevicePixelRatio: true
         }
+      },
+      plugins: {
+        mux: {
+          debug: false,
+          data: {
+            env_key: 'e2thjm49ulacc6tgf56laoeak',
+            player_name: 'arclight',
+            video_title: videoTitle
+          }
+        }
       }
     })
   }
@@ -39,8 +57,22 @@ export function VideoPlayer({ hlsUrl }: VideoPlayerProps): JSX.Element {
   }, [])
 
   return (
-    <video className="video-js vjs-fluid" ref={playerRef} controls>
-      <source src={hlsUrl} type="application/x-mpegURL" />
-    </video>
+    <div className="relative w-full h-full">
+      {thumbnail && (
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${thumbnail})` }}
+        />
+      )}
+      <video
+        className="video-js vjs-fluid relative z-10"
+        id="arclight-player"
+        ref={playerRef}
+        poster={thumbnail ?? undefined}
+        controls
+      >
+        <source src={hlsUrl} type="application/x-mpegURL" />
+      </video>
+    </div>
   )
 }
