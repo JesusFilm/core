@@ -70,6 +70,7 @@ export function VideoHeroOverlay({
         >
           <Typography
             variant="h1"
+            component="span"
             color="text.primary"
             sx={{ width: { xs: '100%', lg: '70%' } }}
           >

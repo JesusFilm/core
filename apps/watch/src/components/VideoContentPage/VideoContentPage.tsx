@@ -1,8 +1,10 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
+import { useTranslation } from 'next-i18next'
 
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { useVideo } from '../../libs/videoContext'
@@ -32,8 +34,10 @@ export function VideoContentPage(): ReactElement {
     id,
     label,
     container,
-    childrenCount
+    childrenCount,
+    studyQuestions
   } = useVideo()
+  const { t } = useTranslation('apps-watch')
   const { loading, children } = useVideoChildren(
     container?.variant?.slug ?? variant?.slug
   )
@@ -126,7 +130,7 @@ export function VideoContentPage(): ReactElement {
       >
         <Container maxWidth="xxl" sx={{ mb: 24 }}>
           <Stack
-            direction="row"
+            direction={{ xs: 'column', lg: 'row' }}
             spacing="40px"
             sx={{
               mx: 0,
@@ -136,8 +140,11 @@ export function VideoContentPage(): ReactElement {
             }}
           >
             <VideoContent />
-            <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-              <Stack spacing={5} mb={8} direction={{ md: 'column', lg: 'row' }}>
+            <Stack
+              direction={{ xs: 'column-reverse', md: 'column' }}
+              spacing={{ xs: 6, md: 10 }}
+            >
+              <Stack spacing={4} mb={8} direction={{ xs: 'column', lg: 'row' }}>
                 {variant != null && variant.downloads.length > 0 && (
                   <DownloadButton
                     variant="button"
@@ -149,7 +156,52 @@ export function VideoContentPage(): ReactElement {
                   onClick={() => setOpenShare(true)}
                 />
               </Stack>
-            </Box>
+
+              {studyQuestions?.length > 0 && (
+                <Box sx={{ mt: 6 }}>
+                  <Typography
+                    variant="overline2"
+                    color="text.secondary"
+                    sx={{
+                      fontStyle: 'normal',
+                      textTransform: 'uppercase',
+                      display: 'block',
+                      opacity: 0.5,
+                      mb: 4
+                    }}
+                  >
+                    {t('Discussion Questions')}
+                  </Typography>
+                  <Stack direction="column" spacing={4}>
+                    {studyQuestions.map((question, index) => (
+                      <Stack
+                        direction="row"
+                        spacing={4}
+                        alignItems="center"
+                        key={index}
+                      >
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            minHeight: 38,
+                            minWidth: 38,
+                            backgroundColor: '#EDEDED',
+                            borderRadius: '50%',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                        >
+                          <Typography variant="h6">{index + 1}</Typography>
+                        </Box>
+                        <Typography variant="subtitle1" color="text.secondary">
+                          {question.value}
+                        </Typography>
+                      </Stack>
+                    ))}
+                  </Stack>
+                </Box>
+              )}
+            </Stack>
           </Stack>
           {variant != null &&
             variant.downloadable &&
