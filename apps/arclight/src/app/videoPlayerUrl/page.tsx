@@ -1,5 +1,3 @@
-/* eslint-disable i18next/no-literal-string */
-
 import { graphql } from 'gql.tada'
 
 import { getApolloClient } from '../../lib/apolloClient'
@@ -35,7 +33,10 @@ export default async function Page({
   searchParams: { refId?: string }
 }) {
   if (!searchParams.refId) {
-    return <div>Missing refId parameter</div>
+    return {
+      message: 'Missing refId parameter',
+      status: 404
+    }
   }
 
   const { data } = await getApolloClient().query({
@@ -52,7 +53,10 @@ export default async function Page({
   const videoTitle = videoTitleData?.video?.title?.[0]?.value
   const thumbnail = videoTitleData?.video?.images?.[0]?.mobileCinematicHigh
   if (!hlsUrl) {
-    return <div>No video URL found for ID: {searchParams.refId}</div>
+    return {
+      message: 'No video URL found for ID: ' + searchParams.refId,
+      status: 404
+    }
   }
 
   return (
