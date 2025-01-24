@@ -2,7 +2,6 @@ import { builder } from '../../builder'
 
 export const VideoVariantFilter = builder.inputType('VideoVariantFilter', {
   fields: (t) => ({
-    onlyPublished: t.boolean({ required: false, defaultValue: true }),
-    id: t.id({ required: false })
+    onlyPublished: t.boolean({ required: false, defaultValue: true })
   })
 })

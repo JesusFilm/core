@@ -417,6 +417,7 @@ type Query {
   videosCount(where: VideosFilter): Int!
   videoEditions: [VideoEdition!]!
   videoEdition(id: ID!): VideoEdition
+  videoVariant(id: ID!): VideoVariant!
   videoVariants(input: VideoVariantFilter): [VideoVariant!]!
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
@@ -952,7 +953,6 @@ input VideoVariantDownloadUpdateInput {
 
 input VideoVariantFilter {
   onlyPublished: Boolean = true
-  id: ID
 }
 
 input VideoVariantUpdateInput {
