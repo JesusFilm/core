@@ -78,6 +78,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'jesus/english',
@@ -142,6 +143,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'life-of-jesus-gospel-of-john/english',
@@ -215,6 +217,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'jesus-calms-the-storm/english',
@@ -298,6 +301,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'the-woman-with-the-issue-of-blood/english',
@@ -358,6 +362,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'magdalena/english',
@@ -405,6 +410,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'reflections-of-hope/english',
@@ -476,6 +482,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'day-6-jesus-died-for-me/english',
@@ -542,6 +549,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'book-of-acts/english',
@@ -611,6 +619,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'wedding-in-cana/english',
@@ -648,6 +657,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'lumo/english',
@@ -735,6 +745,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'peter-miraculous-escape-from-prison/english',
@@ -786,6 +797,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: '8-days-with-jesus-who-is-jesus/english',
@@ -866,6 +878,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'chosen-witness/english',
@@ -915,6 +928,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'lumo-the-gospel-of-luke/english',
@@ -1008,6 +1022,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'storyclubs-jesus-and-zacchaeus/english',
@@ -1081,6 +1096,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'birth-of-jesus/english',
@@ -1148,6 +1164,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'fallingplates/english',
@@ -1224,6 +1241,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'paul-and-silas-in-prison/english',
@@ -1298,6 +1316,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'my-last-day/english',
@@ -1358,6 +1377,7 @@ export const videos: VideoContentFields[] = [
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
       },
       slug: 'the-beginning/english',
