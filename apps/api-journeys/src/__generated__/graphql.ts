@@ -4663,6 +4663,7 @@ export type VideoVariantDownloadUpdateInput = {
 };
 
 export type VideoVariantFilter = {
+  id?: InputMaybe<Scalars['ID']['input']>;
   onlyPublished?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
