@@ -7,13 +7,6 @@ export async function revalidateJourney({
   slug: string
   hostname?: string
 }): Promise<Response | null | undefined> {
-  if (
-    process.env.NEXT_PUBLIC_JOURNEYS_REVALIDATE_ACCESS_TOKEN == null ||
-    process.env.NEXT_PUBLIC_JOURNEYS_URL == null
-  ) {
-    return null
-  }
-
   const journeyPath = `/api/revalidate?slug=${slug}`
   const customDomainParam = hostname != null ? `&hostname=${hostname}` : ''
   const href = journeyPath + customDomainParam

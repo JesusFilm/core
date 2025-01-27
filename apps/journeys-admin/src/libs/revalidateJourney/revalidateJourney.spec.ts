@@ -13,22 +13,7 @@ jest.mock('node-fetch', () => {
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
 
 describe('revalidateJourney', () => {
-  const OLD_ENV = process.env
-
-  beforeEach(() => {
-    jest.resetModules()
-    jest.clearAllMocks()
-    process.env = { ...OLD_ENV }
-  })
-
-  afterAll(() => {
-    process.env = OLD_ENV
-  })
-
   it('should revalidate a journey', async () => {
-    process.env.NEXT_PUBLIC_JOURNEYS_URL = 'www.journeys.com'
-    process.env.NEXT_PUBLIC_JOURNEYS_REVALIDATE_ACCESS_TOKEN = 'some-token'
-
     mockFetch.mockResolvedValueOnce({
       ok: true,
       status: 200,
@@ -40,42 +25,24 @@ describe('revalidateJourney', () => {
       hostname: 'www.domain.com'
     })
     expect(mockFetch).toHaveBeenCalledWith(
-      'www.journeys.com/api/revalidate?slug=my-cool-journey&accessToken=some-token&hostname=www.domain.com'
+      '/api/revalidate?slug=my-cool-journey&hostname=www.domain.com'
     )
     expect(res).not.toBeNull()
   })
 
-  it('should not revalidate on missing journey url', async () => {
-    process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN = 'some-token'
-
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      json: async () => await Promise.resolve()
-    } as unknown as Response)
-
-    const res = await revalidateJourney({
-      slug: 'my-cool-journey',
-      hostname: 'www.domain.com'
-    })
-    expect(mockFetch).not.toHaveBeenCalled()
-    expect(res).toBeNull()
-  })
-
-  it('should not revalidate on missing access token', async () => {
+  it('should throw error when in response is not ok', async () => {
     process.env.JOURNEYS_URL = 'www.journeys.com'
-
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      json: async () => await Promise.resolve()
+    mockFetch.mockRejectedValue({
+      ok: false,
+      status: 500,
+      json: async () => await Promise.reject(new Error('some error'))
     } as unknown as Response)
 
-    const res = await revalidateJourney({
-      slug: 'my-cool-journey',
-      hostname: 'www.domain.com'
-    })
-    expect(mockFetch).not.toHaveBeenCalled()
-    expect(res).toBeNull()
+    await expect(
+      revalidateJourney({
+        slug: 'my-cool-journey',
+        hostname: 'www.domain.com'
+      })
+    ).rejects.toThrow('failed to revalidate journey')
   })
 })
