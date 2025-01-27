@@ -2,6 +2,7 @@ import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import { ThemeProvider, styled, useTheme } from '@mui/material/styles'
+import { get } from 'lodash'
 import {
   CSSProperties,
   ReactElement,
@@ -92,7 +93,7 @@ export function Video({
 
   const eventVideoTitle =
     mediaVideo?.__typename == 'Video' ? mediaVideo?.title[0].value : title
-  const eventVideoId = mediaVideo?.id ?? videoId
+  const eventVideoId = get(mediaVideo, 'id') ?? videoId
 
   // Setup poster image
   const posterBlock = children.find(
