@@ -10,7 +10,7 @@ import { MouseEvent, ReactElement, useState } from 'react'
 
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
-const Popper = styled(MuiPopper)(({ theme }) => ({
+const Popper = styled(MuiPopper)(() => ({
   zIndex: 1,
   '&[data-popper-placement*="top"] .arrow': {
     bottom: 0,
