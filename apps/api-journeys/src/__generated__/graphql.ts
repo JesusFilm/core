@@ -1366,7 +1366,6 @@ export type Mutation = {
   userTeamInviteRemove: UserTeamInvite;
   userTeamUpdate: UserTeam;
   validateEmail?: Maybe<User>;
-  videoBlockCloudflareToMux: Scalars['Boolean']['output'];
   videoBlockCreate: VideoBlock;
   videoBlockUpdate: VideoBlock;
   videoCollapseEventCreate: VideoCollapseEvent;
@@ -2031,11 +2030,6 @@ export type MutationValidateEmailArgs = {
 };
 
 
-export type MutationVideoBlockCloudflareToMuxArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
 export type MutationVideoBlockCreateArgs = {
   input: VideoBlockCreateInput;
 };
@@ -2630,7 +2624,6 @@ export type Query = {
   bibleCitations: Array<BibleCitation>;
   block: Block;
   blocks: Array<Block>;
-  cloudflareVideoBlockIds: Array<Scalars['ID']['output']>;
   countries: Array<Country>;
   country?: Maybe<Country>;
   customDomain: CustomDomain;
