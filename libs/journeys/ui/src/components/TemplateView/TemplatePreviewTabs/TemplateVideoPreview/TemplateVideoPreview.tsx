@@ -76,6 +76,7 @@ function TemplateVideoPreviewItem({
           }
           startAt={block?.startAt ?? 0}
           endAt={block?.endAt ?? 10000}
+          mediaVideo={block?.mediaVideo}
         />
       ) : (
         <Image

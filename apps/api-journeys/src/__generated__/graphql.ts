@@ -1366,6 +1366,7 @@ export type Mutation = {
   userTeamInviteRemove: UserTeamInvite;
   userTeamUpdate: UserTeam;
   validateEmail?: Maybe<User>;
+  videoBlockCloudflareToMux: Scalars['Boolean']['output'];
   videoBlockCreate: VideoBlock;
   videoBlockUpdate: VideoBlock;
   videoCollapseEventCreate: VideoCollapseEvent;
@@ -2030,6 +2031,11 @@ export type MutationValidateEmailArgs = {
 };
 
 
+export type MutationVideoBlockCloudflareToMuxArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationVideoBlockCreateArgs = {
   input: VideoBlockCreateInput;
 };
@@ -2624,6 +2630,7 @@ export type Query = {
   bibleCitations: Array<BibleCitation>;
   block: Block;
   blocks: Array<Block>;
+  cloudflareVideoBlockIds: Array<Scalars['ID']['output']>;
   countries: Array<Country>;
   country?: Maybe<Country>;
   customDomain: CustomDomain;
@@ -2707,6 +2714,7 @@ export type Query = {
   video: Video;
   videoEdition?: Maybe<VideoEdition>;
   videoEditions: Array<VideoEdition>;
+  videoVariant: VideoVariant;
   videoVariants: Array<VideoVariant>;
   videos: Array<Video>;
   videosCount: Scalars['Int']['output'];
@@ -3039,6 +3047,11 @@ export type QueryVideoArgs = {
 
 
 export type QueryVideoEditionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryVideoVariantArgs = {
   id: Scalars['ID']['input'];
 };
 
