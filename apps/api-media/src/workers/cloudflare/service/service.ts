@@ -59,9 +59,9 @@ export const CLOUDFLARE_VIDEO_BLOCK_IDS = graphql(`
 `)
 
 export async function service(logger?: Logger): Promise<void> {
-  // await fixMissingCloudflareVideos(logger)
-  // await createCloudflareDownloads(logger)
-  // await migrateCloudflareVideosToMux(logger)
+  await fixMissingCloudflareVideos(logger)
+  await createCloudflareDownloads(logger)
+  await migrateCloudflareVideosToMux(logger)
 }
 
 async function getCloudflareVideo(
