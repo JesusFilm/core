@@ -175,167 +175,163 @@ export function Canvas(): ReactElement {
             justifyContent: 'center'
           }}
         >
-          <Stack
+          <Box
+            data-testId="CanvasContainer"
             sx={{
-              height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`
+              animation: (theme) =>
+                `${fadeIn} ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeInOut} 0.5s backwards`,
+              position: 'relative',
+              width: CARD_WIDTH,
+              height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`,
+              // minHeight prop is needed for Safari to properly calculate the height of this container
+              minHeight: 0,
+              transform: `scale(${scale})`,
+              margin: `calc(${calculateScaledMargin(CARD_HEIGHT, scale)} + ${
+                scale < 0.65 ? '20px' : '0px'
+              }) ${calculateScaledMargin(CARD_WIDTH, scale)}`,
+              borderRadius: 8,
+              pointerEvents: showAnalytics === true ? 'none' : 'auto',
+              transition: (theme) =>
+                theme.transitions.create('border-color', {
+                  duration: 200,
+                  delay: 100,
+                  easing: 'ease-out'
+                }),
+              outline: (theme) =>
+                selectedStep.id === selectedBlock?.id
+                  ? `2px solid ${theme.palette.primary.main}`
+                  : `2px solid ${theme.palette.background.default}`,
+              outlineOffset: 4,
+              padding: '6px',
+              bgcolor: 'secondary.dark'
             }}
           >
-            <Box
-              data-testId="CanvasContainer"
-              sx={{
-                animation: (theme) =>
-                  `${fadeIn} ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeInOut} 0.5s backwards`,
-                position: 'relative',
-                width: CARD_WIDTH,
-                height: CARD_HEIGHT,
-                // minHeight prop is needed for Safari to properly calculate the height of this container
-                minHeight: 0,
-                transform: `scale(${scale})`,
-                margin: `calc(${calculateScaledMargin(CARD_HEIGHT, scale)} + ${
-                  scale < 0.65 ? '20px' : '0px'
-                }) ${calculateScaledMargin(CARD_WIDTH, scale)}`,
-                borderRadius: 6,
-                pointerEvents: showAnalytics === true ? 'none' : 'auto',
-                transition: (theme) =>
-                  theme.transitions.create('border-color', {
-                    duration: 200,
-                    delay: 100,
-                    easing: 'ease-out'
-                  }),
-                border: (theme) =>
-                  selectedStep.id === selectedBlock?.id
-                    ? `2px solid ${theme.palette.primary.main}`
-                    : `2px solid ${theme.palette.background.default}`
-              }}
+            <FramePortal
+              width="100%"
+              height="100%"
+              dir={rtl ? 'rtl' : 'ltr'}
+              // frameRef assists to see if user is copying text from typog blocks
+              ref={frameRef}
+              scrolling="no"
             >
-              <FramePortal
-                width="100%"
-                height="100%"
-                dir={rtl ? 'rtl' : 'ltr'}
-                // frameRef assists to see if user is copying text from typog blocks
-                ref={frameRef}
-                scrolling="no"
-              >
-                {({ document }) => (
-                  <ThemeProvider {...theme} rtl={rtl} locale={locale}>
-                    <Hotkeys document={document} />
-                    <TransitionGroup
-                      component={Box}
-                      sx={{
-                        backgroundColor: 'background.default',
-                        borderRadius: 5,
-                        '& .card-enter': {
-                          opacity: 0
-                        },
-                        '& .card-enter-active': {
-                          opacity: 1,
-                          transition: 'opacity 0.15s ease'
-                        },
-                        '& .card-exit': {
-                          opacity: 1
-                        },
-                        '& .card-exit-active': {
-                          opacity: 0,
-                          transition: 'opacity 0.3s ease'
-                        },
-                        position: 'relative',
-                        width: 'calc(100% - 8px)',
-                        height: 'calc(100vh - 8px)',
-                        m: '4px'
-                      }}
+              {({ document }) => (
+                <ThemeProvider {...theme} rtl={rtl} locale={locale}>
+                  <Hotkeys document={document} />
+                  <TransitionGroup
+                    component={Box}
+                    sx={{
+                      backgroundColor: 'background.default',
+                      '& .card-enter': {
+                        opacity: 0
+                      },
+                      '& .card-enter-active': {
+                        opacity: 1,
+                        transition: 'opacity 0.15s ease'
+                      },
+                      '& .card-exit': {
+                        opacity: 1
+                      },
+                      '& .card-exit-active': {
+                        opacity: 0,
+                        transition: 'opacity 0.3s ease'
+                      },
+                      position: 'relative',
+                      width: 'calc(100% - 8px)',
+                      height: 'calc(100vh - 8px)',
+                      m: '4px'
+                    }}
+                  >
+                    <CSSTransition
+                      key={selectedStep.id}
+                      timeout={300}
+                      classNames="card"
                     >
-                      <CSSTransition
-                        key={selectedStep.id}
-                        timeout={300}
-                        classNames="card"
+                      <Stack
+                        justifyContent="center"
+                        sx={{
+                          position: 'absolute',
+                          top: 0,
+                          right: 0,
+                          bottom: 0,
+                          left: 0,
+                          transition: (theme) =>
+                            theme.transitions.create('opacity')
+                        }}
+                        data-testid={`step-${selectedStep.id}`}
                       >
-                        <Stack
-                          justifyContent="center"
-                          sx={{
-                            position: 'absolute',
-                            top: 0,
-                            right: 0,
-                            bottom: 0,
-                            left: 0,
-                            transition: (theme) =>
-                              theme.transitions.create('opacity')
-                          }}
-                          data-testid={`step-${selectedStep.id}`}
+                        <ThemeProvider
+                          themeName={ThemeName.journeyUi}
+                          themeMode={theme.themeMode}
+                          rtl={rtl}
+                          locale={locale}
+                          nested
                         >
-                          <ThemeProvider
-                            themeName={ThemeName.journeyUi}
-                            themeMode={theme.themeMode}
-                            rtl={rtl}
-                            locale={locale}
-                            nested
-                          >
-                            <StepHeader
-                              sx={{
-                                outline:
-                                  activeCanvasDetailsDrawer ===
-                                    ActiveCanvasDetailsDrawer.JourneyAppearance &&
-                                  journey?.website === true
-                                    ? '2px solid #C52D3A'
-                                    : 'none',
-                                outlineOffset: -4,
-                                borderRadius: 5,
-                                cursor: 'pointer',
-                                minHeight: '42px'
-                              }}
-                              onHeaderClick={
+                          <StepHeader
+                            sx={{
+                              outline:
+                                activeCanvasDetailsDrawer ===
+                                  ActiveCanvasDetailsDrawer.JourneyAppearance &&
                                 journey?.website === true
-                                  ? handleJourneyAppearanceClick
-                                  : undefined
-                              }
-                            />
-                          </ThemeProvider>
-                          <DragDropWrapper>
-                            <BlockRenderer
-                              block={selectedStep}
-                              wrappers={{
-                                Wrapper: SelectableWrapper,
-                                TypographyWrapper: InlineEditWrapper,
-                                ButtonWrapper: InlineEditWrapper,
-                                RadioQuestionWrapper: InlineEditWrapper,
-                                RadioOptionWrapper: InlineEditWrapper,
-                                TextResponseWrapper: InlineEditWrapper,
-                                SignUpWrapper: InlineEditWrapper,
-                                VideoWrapper,
-                                CardWrapper,
-                                DragItemWrapper
-                              }}
-                            />
-                          </DragDropWrapper>
-                          <ThemeProvider
-                            themeName={ThemeName.journeyUi}
-                            themeMode={theme.themeMode}
-                            rtl={rtl}
-                            locale={locale}
-                            nested
-                          >
-                            <StepFooter
-                              sx={{
-                                outline:
-                                  activeCanvasDetailsDrawer ===
-                                  ActiveCanvasDetailsDrawer.JourneyAppearance
-                                    ? '2px solid #C52D3A'
-                                    : 'none',
-                                outlineOffset: -4,
-                                borderRadius: 5,
-                                cursor: 'pointer'
-                              }}
-                              onFooterClick={handleJourneyAppearanceClick}
-                            />
-                          </ThemeProvider>
-                        </Stack>
-                      </CSSTransition>
-                    </TransitionGroup>
-                  </ThemeProvider>
-                )}
-              </FramePortal>
-            </Box>
-            <CanvasFooter scale={scale} />
-          </Stack>
+                                  ? '2px solid #C52D3A'
+                                  : 'none',
+                              outlineOffset: -4,
+                              borderRadius: 6,
+                              cursor: 'pointer',
+                              minHeight: '42px'
+                            }}
+                            onHeaderClick={
+                              journey?.website === true
+                                ? handleJourneyAppearanceClick
+                                : undefined
+                            }
+                          />
+                        </ThemeProvider>
+                        <DragDropWrapper>
+                          <BlockRenderer
+                            block={selectedStep}
+                            wrappers={{
+                              Wrapper: SelectableWrapper,
+                              TypographyWrapper: InlineEditWrapper,
+                              ButtonWrapper: InlineEditWrapper,
+                              RadioQuestionWrapper: InlineEditWrapper,
+                              RadioOptionWrapper: InlineEditWrapper,
+                              TextResponseWrapper: InlineEditWrapper,
+                              SignUpWrapper: InlineEditWrapper,
+                              VideoWrapper,
+                              CardWrapper,
+                              DragItemWrapper
+                            }}
+                          />
+                        </DragDropWrapper>
+                        <ThemeProvider
+                          themeName={ThemeName.journeyUi}
+                          themeMode={theme.themeMode}
+                          rtl={rtl}
+                          locale={locale}
+                          nested
+                        >
+                          <StepFooter
+                            sx={{
+                              outline:
+                                activeCanvasDetailsDrawer ===
+                                ActiveCanvasDetailsDrawer.JourneyAppearance
+                                  ? '2px solid #C52D3A'
+                                  : 'none',
+                              outlineOffset: -4,
+                              borderRadius: 6,
+                              cursor: 'pointer'
+                            }}
+                            onFooterClick={handleJourneyAppearanceClick}
+                          />
+                        </ThemeProvider>
+                      </Stack>
+                    </CSSTransition>
+                  </TransitionGroup>
+                </ThemeProvider>
+              )}
+            </FramePortal>
+          </Box>
+          <CanvasFooter scale={scale} />
         </Stack>
       )}
     </Stack>
