@@ -2707,6 +2707,7 @@ export type Query = {
   video: Video;
   videoEdition?: Maybe<VideoEdition>;
   videoEditions: Array<VideoEdition>;
+  videoVariant: VideoVariant;
   videoVariants: Array<VideoVariant>;
   videos: Array<Video>;
   videosCount: Scalars['Int']['output'];
@@ -3039,6 +3040,11 @@ export type QueryVideoArgs = {
 
 
 export type QueryVideoEditionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryVideoVariantArgs = {
   id: Scalars['ID']['input'];
 };
 
