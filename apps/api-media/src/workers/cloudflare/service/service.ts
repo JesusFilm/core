@@ -133,6 +133,7 @@ export async function createCloudflareDownloads(
       while (processing && count < 90) {
         // only try for 15 minutes {
         count++
+        await new Promise((f) => setTimeout(f, 10000)) // wait 10 seconds
         const cfDownloadUrl = await getCloudflareVideoDownloadUrl(
           cloudflare,
           video.id
@@ -187,7 +188,6 @@ async function migrateCloudflareVideosToMux(logger?: Logger): Promise<void> {
           cloudflare,
           video.id
         )
-        console.log('cf download url', cfDownloadUrl)
         if (cfDownloadUrl == null) continue
 
         const muxVideo = await mux.video.assets.create({
