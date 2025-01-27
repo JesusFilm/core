@@ -13,19 +13,14 @@ export async function revalidateJourney({
   ) {
     return null
   }
-  const params: { accessToken: string; slug: string; hostname?: string } = {
-    slug,
-    accessToken: process.env.NEXT_PUBLIC_JOURNEYS_REVALIDATE_ACCESS_TOKEN
-  }
-  if (hostname != null) params.hostname = hostname
 
+  const journeyPath = `/api/revalidate?slug=${slug}`
+  const customDomainParam = hostname != null ? `&hostname=${hostname}` : ''
+  const href = journeyPath + customDomainParam
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_JOURNEYS_URL}/api/revalidate?${new URLSearchParams(params).toString()}`
-    )
-    console.log(response)
+    const response = await fetch(href)
     if (response.ok) return response
   } catch (e) {
-    console.log(e)
+    throw new Error('failed to revalidate journey')
   }
 }
