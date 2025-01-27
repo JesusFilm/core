@@ -250,6 +250,10 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -294,17 +298,12 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaV
   playbackId: string | null;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo = GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_MuxVideo | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_CloudflareVideo | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_YouTube;
+export type GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo = GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_CloudflareVideo | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_MuxVideo | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_YouTube;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";

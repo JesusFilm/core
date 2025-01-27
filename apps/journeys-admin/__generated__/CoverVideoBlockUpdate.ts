@@ -9,6 +9,10 @@ import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit } from "./
 // GraphQL mutation operation: CoverVideoBlockUpdate
 // ====================================================
 
+export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+}
+
 export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -53,17 +57,12 @@ export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo {
   playbackId: string | null;
 }
 
-export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
 export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo = CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video | CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo | CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_CloudflareVideo | CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube;
+export type CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo = CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_CloudflareVideo | CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video | CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo | CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube;
 
 export interface CoverVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
