@@ -144,7 +144,7 @@ describe('Video', () => {
       .getByTestId('JourneysVideo-video0.id')
       .querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toBe(
-      'https://customer-.cloudflarestream.com/videoId/manifest/video.m3u8?clientBandwidthHint=10'
+      'https://stream.mux.com/videoId.m3u8'
     )
     expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
   })

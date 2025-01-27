@@ -37,6 +37,12 @@ describe('TemplateVideoPlayer', () => {
       <TemplateVideoPlayer
         id="someMuxId"
         source={VideoBlockSource.mux}
+        mediaVideo={{
+          __typename: 'MuxVideo',
+          id: 'someMuxId',
+          assetId: 'assetId',
+          playbackId: 'playbackId'
+        }}
         startAt={1000}
         endAt={4000}
       />
@@ -44,10 +50,7 @@ describe('TemplateVideoPlayer', () => {
 
     expect(
       getByTestId('TemplateVideoPlayer-someMuxId').querySelector('source')
-    ).toHaveAttribute(
-      'src',
-      'https://customer-mock-customer-code.cloudflarestream.com/someCloudflareId/manifest/video.m3u8'
-    )
+    ).toHaveAttribute('src', 'https://stream.mux.com/playbackId.m3u8')
   })
 
   it('should render youtube videos', async () => {
