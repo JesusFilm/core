@@ -1,7 +1,6 @@
 // Developers must add an import for every resolver
 // and object type in the schema
 
-import './block'
 import './mediaVideo'
 
 import { builder } from './builder'
