@@ -171,7 +171,7 @@ export function Canvas(): ReactElement {
             flexGrow: { xs: 1, md: 0 },
             height: { xs: '100%', md: 'auto' },
             pb: { xs: 5, md: 0 },
-            px: { xs: 3, md: 0 },
+            px: { xs: 3, md: 8 },
             justifyContent: 'center'
           }}
         >
