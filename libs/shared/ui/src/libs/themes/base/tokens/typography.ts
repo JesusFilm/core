@@ -9,9 +9,7 @@ declare module '@mui/material' {
 
 export const baseTypography: Pick<ThemeOptions, 'typography'> = {
   typography: {
-    fontFamily: ['"Montserrat","Open Sans","Tahoma","Verdana",sans-serif'].join(
-      ','
-    ),
+   
     h1: {
       fontSize: 36,
       fontWeight: 600,
