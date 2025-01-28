@@ -100,11 +100,6 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   const helpScoutRef = useRef(null)
   const menuRef = useRef(null)
   const client = useApolloClient()
-  const isFirstRender = useRef(true)
-
-  const {
-    state: { undo }
-  } = useCommand()
 
   const [updatePlausibleJourneyFlowViewed] = useMutation<
     UpdatePlausibleJourneyFlowViewed,
@@ -148,27 +143,6 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
       setBeaconPageViewed(param)
     })
   }
-
-  useEffect(() => {
-    function handleJourneyUpdate(): void {
-      if (journey != null) {
-        client.cache.modify({
-          id: client.cache.identify({ __typename: 'Journey', id: journey.id }),
-          fields: {
-            updatedAt() {
-              return new Date().toISOString()
-            }
-          }
-        })
-      }
-    }
-
-    if (isFirstRender.current) {
-      isFirstRender.current = false
-    } else {
-      handleJourneyUpdate()
-    }
-  }, [client.cache, journey, undo])
 
   function handleSocialImageClick(): void {
     dispatch({
