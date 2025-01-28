@@ -1,9 +1,10 @@
+import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { QRCodeCanvas } from 'qrcode.react'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -23,11 +24,16 @@ export function QrCodeDialog({
   initialJourneyUrl
 }: QrCodeDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [to, setTo] = useState(initialJourneyUrl ?? '')
+  const [to, setTo] = useState<string | undefined>(undefined)
+  const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    setTo(initialJourneyUrl ?? '')
-  }, [initialJourneyUrl])
+  function handleGenerateQrCode(): void {
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+      setTo(initialJourneyUrl)
+    }, 2000)
+  }
 
   function handleChangeTo(url: string): void {
     setTo(url)
@@ -57,23 +63,39 @@ export function QrCodeDialog({
             alignItems: 'center'
           }}
         >
-          <Stack
-            sx={{
-              borderWidth: '2px',
-              borderStyle: 'solid',
-              borderColor: 'divider',
-              borderRadius: 2,
-              p: 1
-            }}
-          >
-            <QRCodeCanvas
-              id="qr-code-download"
-              title="QR Code"
-              size={122}
-              level="L"
-              value={to}
-            />
-          </Stack>
+          {to != null ? (
+            <Stack
+              sx={{
+                borderWidth: '2px',
+                borderStyle: 'solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                p: 1
+              }}
+            >
+              <QRCodeCanvas
+                id="qr-code-download"
+                title="QR Code"
+                size={122}
+                level="L"
+                value={to}
+              />
+            </Stack>
+          ) : (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleGenerateQrCode}
+              disabled={loading}
+              sx={{
+                minHeight: 134,
+                minWidth: 134,
+                borderRadius: 2
+              }}
+            >
+              {!loading ? t('Generate') : t('Generating...')}
+            </Button>
+          )}
           <Stack
             spacing={3}
             sx={{
@@ -81,7 +103,7 @@ export function QrCodeDialog({
             }}
           >
             <ScanCount />
-            <DownloadQrCode to={to} />
+            <DownloadQrCode to={to} loading={loading} />
             <Typography
               variant="body2"
               color="secondary.main"

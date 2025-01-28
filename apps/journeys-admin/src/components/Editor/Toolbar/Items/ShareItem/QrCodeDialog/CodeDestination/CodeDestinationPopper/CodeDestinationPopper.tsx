@@ -86,7 +86,10 @@ export function CodeDestinationPopper(): ReactElement {
             <Box>
               <Arrow className="arrow" ref={setArrowRef} />
               <Paper>
-                <Typography sx={{ p: 4, maxWidth: { xs: 250, sm: 284 } }}>
+                <Typography
+                  variant="body2"
+                  sx={{ p: 4, maxWidth: { xs: 250, sm: 284 } }}
+                >
                   {t(
                     'You can edit your QR code scan destination. There’s no need to reprint after editing.'
                   )}

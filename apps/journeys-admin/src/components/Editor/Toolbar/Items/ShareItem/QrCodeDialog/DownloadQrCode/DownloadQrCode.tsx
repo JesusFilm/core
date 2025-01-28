@@ -14,10 +14,14 @@ import { MouseEvent, ReactElement, useState } from 'react'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 interface DownloadQrCodeProps {
-  to: string
+  to?: string
+  loading?: boolean
 }
 
-export function DownloadQrCode({ to }: DownloadQrCodeProps): ReactElement {
+export function DownloadQrCode({
+  to,
+  loading
+}: DownloadQrCodeProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [showDownloadMenu, setShowDownloadMenu] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -62,7 +66,7 @@ export function DownloadQrCode({ to }: DownloadQrCodeProps): ReactElement {
   }
 
   async function handleCopyClick(): Promise<void> {
-    await navigator.clipboard.writeText(to)
+    await navigator.clipboard.writeText(to ?? '')
     enqueueSnackbar('Link copied', {
       variant: 'success',
       preventDuplicate: true
@@ -78,6 +82,7 @@ export function DownloadQrCode({ to }: DownloadQrCodeProps): ReactElement {
     >
       <ButtonGroup
         variant="contained"
+        disabled={to == null || loading}
         sx={{
           borderRadius: 2,
           width: 200,
@@ -90,12 +95,12 @@ export function DownloadQrCode({ to }: DownloadQrCodeProps): ReactElement {
       >
         <Button
           fullWidth
+          color="secondary"
           onClick={() => {
             handleDownloadQrCode('png')
             setShowDownloadMenu(false)
           }}
           sx={{
-            backgroundColor: 'secondary.main',
             borderTopLeftRadius: 8,
             borderBottomLeftRadius: 8
           }}
@@ -103,11 +108,11 @@ export function DownloadQrCode({ to }: DownloadQrCodeProps): ReactElement {
           {t('Download PNG')}
         </Button>
         <Button
+          color="secondary"
           onClick={(e) => {
             handleMenuClick(e)
           }}
           sx={{
-            backgroundColor: 'secondary.main',
             borderTopRightRadius: 8,
             borderBottomRightRadius: 8
           }}
