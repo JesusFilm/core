@@ -98,9 +98,6 @@ export function BackgroundMediaVideo({
       case VideoBlockSource.youTube:
         typename = 'YouTube'
         break
-      case VideoBlockSource.cloudflare:
-        typename = 'Cloudflare'
-        break
       case VideoBlockSource.mux:
         typename = 'Mux'
         break
