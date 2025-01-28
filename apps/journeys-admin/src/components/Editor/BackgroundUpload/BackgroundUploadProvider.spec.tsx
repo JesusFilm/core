@@ -6,8 +6,7 @@ import { useBackgroundUpload } from './BackgroundUploadContext'
 import {
   BackgroundUploadProvider,
   CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
-  GET_MY_MUX_VIDEO_QUERY,
-  UPDATE_VIDEO_BLOCK_AFTER_MUX_UPLOAD
+  GET_MY_MUX_VIDEO_QUERY
 } from './BackgroundUploadProvider'
 
 function AddByFile({ files }: { files: File[] }): ReactElement {
