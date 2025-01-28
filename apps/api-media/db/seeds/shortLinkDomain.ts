@@ -17,7 +17,7 @@ export async function shortLinkDomain(): Promise<void> {
     create: {
       id,
       hostname,
-      services: [Service.apiMedia],
+      services: [Service.apiJourneys],
       apexName: (await addVercelDomain(hostname)).apexName
     }
   })
