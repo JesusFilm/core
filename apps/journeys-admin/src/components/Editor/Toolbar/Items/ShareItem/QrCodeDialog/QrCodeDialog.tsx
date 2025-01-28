@@ -24,17 +24,15 @@ export function QrCodeDialog({
   initialJourneyUrl
 }: QrCodeDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const someUrl = 'someUrl'
   const [to, setTo] = useState<string | undefined>(
     initialJourneyUrl ?? undefined
   )
   const [loading, setLoading] = useState(false)
 
   function handleGenerateQrCode(): void {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-      setTo(initialJourneyUrl)
-    }, 2000)
+    setLoading(false)
+    setTo(someUrl)
   }
 
   function handleChangeTo(url: string): void {
