@@ -25,7 +25,13 @@ export function CanvasFooter({ scale }: CanvasFooterProps): ReactElement {
         transform: `scale(${scale})`
       }}
     >
-      {showAnalytics === true ? <CardAnalytics /> : <Fab variant="canvas" />}
+      {showAnalytics === true ? (
+        <CardAnalytics />
+      ) : (
+        <Box display="flex" justifySelf="flex-end">
+          <Fab variant="canvas" />
+        </Box>
+      )}
     </Box>
   )
 }

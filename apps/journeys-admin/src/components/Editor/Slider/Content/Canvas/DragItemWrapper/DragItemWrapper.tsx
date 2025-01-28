@@ -136,11 +136,10 @@ export function DragItemWrapper({
           fontSize="large"
           style={{
             position: 'absolute',
-            left: rtl ? undefined : '-30px',
-            right: rtl ? '-30px' : undefined,
+            left: rtl ? undefined : '-29px',
+            right: rtl ? '-29px' : undefined,
             top: '-18px',
             opacity: isHovering && !isDuringDrag ? 1 : 0,
-            color: 'secondary.dark',
             cursor: 'grab',
             alignSelf: 'center'
           }}

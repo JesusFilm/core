@@ -20,7 +20,7 @@ import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeName } from '@core/shared/ui/themes'
+import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { Hotkeys } from '../../../Hotkeys'
 
@@ -34,7 +34,6 @@ import {
   CARD_HEIGHT,
   CARD_WIDTH,
   calculateScale,
-  calculateScaledHeight,
   calculateScaledMargin
 } from './utils/calculateDimensions'
 
@@ -181,10 +180,10 @@ export function Canvas(): ReactElement {
               animation: (theme) =>
                 `${fadeIn} ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeInOut} 0.5s backwards`,
               position: 'relative',
-              width: CARD_WIDTH,
-              height: `${calculateScaledHeight(CARD_HEIGHT, scale)}`,
               // minHeight prop is needed for Safari to properly calculate the height of this container
               minHeight: 0,
+              maxHeight: CARD_HEIGHT,
+              maxWidth: CARD_WIDTH,
               transform: `scale(${scale})`,
               margin: `calc(${calculateScaledMargin(CARD_HEIGHT, scale)} + ${
                 scale < 0.65 ? '20px' : '0px'
@@ -192,7 +191,7 @@ export function Canvas(): ReactElement {
               borderRadius: 8,
               pointerEvents: showAnalytics === true ? 'none' : 'auto',
               transition: (theme) =>
-                theme.transitions.create('border-color', {
+                theme.transitions.create('outline', {
                   duration: 200,
                   delay: 100,
                   easing: 'ease-out'
@@ -200,10 +199,14 @@ export function Canvas(): ReactElement {
               outline: (theme) =>
                 selectedStep.id === selectedBlock?.id
                   ? `2px solid ${theme.palette.primary.main}`
-                  : `2px solid ${theme.palette.background.default}`,
-              outlineOffset: 4,
+                  : 'none',
               padding: '6px',
-              bgcolor: 'secondary.dark'
+              outlineOffset: 4,
+              bgcolor:
+                theme.themeMode === ThemeMode.light
+                  ? 'secondary.main'
+                  : 'secondary.dark',
+              aspectRatio: 6 / 13
             }}
           >
             <FramePortal
@@ -220,7 +223,6 @@ export function Canvas(): ReactElement {
                   <TransitionGroup
                     component={Box}
                     sx={{
-                      backgroundColor: 'background.default',
                       '& .card-enter': {
                         opacity: 0
                       },
@@ -331,7 +333,13 @@ export function Canvas(): ReactElement {
               )}
             </FramePortal>
           </Box>
-          <CanvasFooter scale={scale} />
+          <Box
+            sx={{
+              width: '100%'
+            }}
+          >
+            <CanvasFooter scale={scale} />
+          </Box>
         </Stack>
       )}
     </Stack>
