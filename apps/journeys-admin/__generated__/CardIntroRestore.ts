@@ -236,6 +236,10 @@ export interface CardIntroRestore_subtitle_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
+export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+}
+
 export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -280,17 +284,12 @@ export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_MuxVideo {
   playbackId: string | null;
 }
 
-export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
 export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type CardIntroRestore_subtitle_VideoBlock_mediaVideo = CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video | CardIntroRestore_subtitle_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_subtitle_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_subtitle_VideoBlock_mediaVideo_YouTube;
+export type CardIntroRestore_subtitle_VideoBlock_mediaVideo = CardIntroRestore_subtitle_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video | CardIntroRestore_subtitle_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_subtitle_VideoBlock_mediaVideo_YouTube;
 
 export interface CardIntroRestore_subtitle_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -655,6 +654,10 @@ export interface CardIntroRestore_title_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
+export interface CardIntroRestore_title_VideoBlock_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+}
+
 export interface CardIntroRestore_title_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -699,17 +702,12 @@ export interface CardIntroRestore_title_VideoBlock_mediaVideo_MuxVideo {
   playbackId: string | null;
 }
 
-export interface CardIntroRestore_title_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
 export interface CardIntroRestore_title_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type CardIntroRestore_title_VideoBlock_mediaVideo = CardIntroRestore_title_VideoBlock_mediaVideo_Video | CardIntroRestore_title_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_title_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_title_VideoBlock_mediaVideo_YouTube;
+export type CardIntroRestore_title_VideoBlock_mediaVideo = CardIntroRestore_title_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_title_VideoBlock_mediaVideo_Video | CardIntroRestore_title_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_title_VideoBlock_mediaVideo_YouTube;
 
 export interface CardIntroRestore_title_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -1074,6 +1072,10 @@ export interface CardIntroRestore_body_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
+export interface CardIntroRestore_body_VideoBlock_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+}
+
 export interface CardIntroRestore_body_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1118,17 +1120,12 @@ export interface CardIntroRestore_body_VideoBlock_mediaVideo_MuxVideo {
   playbackId: string | null;
 }
 
-export interface CardIntroRestore_body_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
 export interface CardIntroRestore_body_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type CardIntroRestore_body_VideoBlock_mediaVideo = CardIntroRestore_body_VideoBlock_mediaVideo_Video | CardIntroRestore_body_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_body_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_body_VideoBlock_mediaVideo_YouTube;
+export type CardIntroRestore_body_VideoBlock_mediaVideo = CardIntroRestore_body_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_body_VideoBlock_mediaVideo_Video | CardIntroRestore_body_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_body_VideoBlock_mediaVideo_YouTube;
 
 export interface CardIntroRestore_body_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -1493,6 +1490,10 @@ export interface CardIntroRestore_button_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
+export interface CardIntroRestore_button_VideoBlock_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+}
+
 export interface CardIntroRestore_button_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1537,17 +1538,12 @@ export interface CardIntroRestore_button_VideoBlock_mediaVideo_MuxVideo {
   playbackId: string | null;
 }
 
-export interface CardIntroRestore_button_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
 export interface CardIntroRestore_button_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type CardIntroRestore_button_VideoBlock_mediaVideo = CardIntroRestore_button_VideoBlock_mediaVideo_Video | CardIntroRestore_button_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_button_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_button_VideoBlock_mediaVideo_YouTube;
+export type CardIntroRestore_button_VideoBlock_mediaVideo = CardIntroRestore_button_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_button_VideoBlock_mediaVideo_Video | CardIntroRestore_button_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_button_VideoBlock_mediaVideo_YouTube;
 
 export interface CardIntroRestore_button_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -1912,6 +1908,10 @@ export interface CardIntroRestore_startIcon_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
+export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+}
+
 export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1956,17 +1956,12 @@ export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_MuxVideo {
   playbackId: string | null;
 }
 
-export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
 export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type CardIntroRestore_startIcon_VideoBlock_mediaVideo = CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video | CardIntroRestore_startIcon_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_startIcon_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_startIcon_VideoBlock_mediaVideo_YouTube;
+export type CardIntroRestore_startIcon_VideoBlock_mediaVideo = CardIntroRestore_startIcon_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video | CardIntroRestore_startIcon_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_startIcon_VideoBlock_mediaVideo_YouTube;
 
 export interface CardIntroRestore_startIcon_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -2331,6 +2326,10 @@ export interface CardIntroRestore_endIcon_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
+export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+}
+
 export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -2375,17 +2374,12 @@ export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_MuxVideo {
   playbackId: string | null;
 }
 
-export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
 export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type CardIntroRestore_endIcon_VideoBlock_mediaVideo = CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video | CardIntroRestore_endIcon_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_endIcon_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_endIcon_VideoBlock_mediaVideo_YouTube;
+export type CardIntroRestore_endIcon_VideoBlock_mediaVideo = CardIntroRestore_endIcon_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video | CardIntroRestore_endIcon_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_endIcon_VideoBlock_mediaVideo_YouTube;
 
 export interface CardIntroRestore_endIcon_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -2750,6 +2744,10 @@ export interface CardIntroRestore_video_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
+export interface CardIntroRestore_video_VideoBlock_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+}
+
 export interface CardIntroRestore_video_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -2794,17 +2792,12 @@ export interface CardIntroRestore_video_VideoBlock_mediaVideo_MuxVideo {
   playbackId: string | null;
 }
 
-export interface CardIntroRestore_video_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
 export interface CardIntroRestore_video_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type CardIntroRestore_video_VideoBlock_mediaVideo = CardIntroRestore_video_VideoBlock_mediaVideo_Video | CardIntroRestore_video_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_video_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_video_VideoBlock_mediaVideo_YouTube;
+export type CardIntroRestore_video_VideoBlock_mediaVideo = CardIntroRestore_video_VideoBlock_mediaVideo_CloudflareVideo | CardIntroRestore_video_VideoBlock_mediaVideo_Video | CardIntroRestore_video_VideoBlock_mediaVideo_MuxVideo | CardIntroRestore_video_VideoBlock_mediaVideo_YouTube;
 
 export interface CardIntroRestore_video_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
