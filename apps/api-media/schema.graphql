@@ -305,6 +305,7 @@ type MuxVideo
   @key(fields: "id primaryLanguageId")
 {
   id: ID!
+  name: String
   source: VideoBlockSource @shareable
   primaryLanguageId: ID @shareable
   assetId: String
@@ -416,7 +417,8 @@ type Query {
   videosCount(where: VideosFilter): Int!
   videoEditions: [VideoEdition!]!
   videoEdition(id: ID!): VideoEdition
-  videoVariants: [VideoVariant!]!
+  videoVariant(id: ID!): VideoVariant!
+  videoVariants(input: VideoVariantFilter): [VideoVariant!]!
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
 }
@@ -697,13 +699,14 @@ type Video
   primaryLanguageId: ID!
   published: Boolean!
   cloudflareAssets: [CloudflareR2!]!
+  videoEditions: [VideoEdition!]!
   title(languageId: ID, primary: Boolean): [VideoTitle!]!
   snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
   description(languageId: ID, primary: Boolean): [VideoDescription!]!
   studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]!
   imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]!
   variantLanguages: [Language!]!
-  variantLanguagesCount: Int!
+  variantLanguagesCount(input: VideoVariantFilter): Int!
 
   """slug is a permanent link to the video."""
   slug: String!
@@ -713,8 +716,8 @@ type Video
   """the number value of the amount of children on a video"""
   childrenCount: Int!
   parents: [Video!]!
-  variantLanguagesWithSlug: [LanguageWithSlug!]!
-  variants: [VideoVariant!]!
+  variantLanguagesWithSlug(input: VideoVariantFilter): [LanguageWithSlug!]!
+  variants(input: VideoVariantFilter): [VideoVariant!]!
   subtitles(languageId: ID, primary: Boolean, edition: String): [VideoSubtitle!]!
   variant(languageId: ID): VideoVariant
   images(aspectRatio: ImageAspectRatio): [CloudflareImage!]!
@@ -752,8 +755,9 @@ type VideoEdition {
 }
 
 input VideoEditionCreateInput {
-  id: ID!
-  name: String
+  id: ID
+  name: String!
+  videoId: String!
 }
 
 input VideoEditionUpdateInput {
@@ -824,7 +828,7 @@ type VideoSubtitle {
   srtSrc: String
   value: String!
   language: Language!
-  videoEdition: VideoEdition
+  videoEdition: VideoEdition!
 }
 
 input VideoSubtitleCreateInput {
@@ -889,7 +893,8 @@ type VideoVariant {
   duration: Int!
   lengthInMilliseconds: Int!
   language: Language!
-  videoEdition: VideoEdition
+  published: Boolean!
+  videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
   subtitleCount: Int!
 
@@ -909,6 +914,7 @@ input VideoVariantCreateInput {
   languageId: String!
   slug: String!
   downloadable: Boolean!
+  published: Boolean = true
 }
 
 type VideoVariantDownload {
@@ -945,6 +951,10 @@ input VideoVariantDownloadUpdateInput {
   url: String
 }
 
+input VideoVariantFilter {
+  onlyPublished: Boolean = true
+}
+
 input VideoVariantUpdateInput {
   id: String!
   videoId: String
@@ -957,6 +967,7 @@ input VideoVariantUpdateInput {
   languageId: String
   slug: String
   downloadable: Boolean
+  published: Boolean
 }
 
 input VideosFilter {
@@ -965,6 +976,7 @@ input VideosFilter {
   labels: [VideoLabel!]
   ids: [ID!]
   subtitleLanguageIds: [ID!]
+  published: Boolean
 }
 
 type Youtube

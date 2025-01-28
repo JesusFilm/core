@@ -246,6 +246,10 @@ export interface StepBlockRestoreFromStep_blockRestore_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
+export interface StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+}
+
 export interface StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -290,17 +294,12 @@ export interface StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo_Mux
   playbackId: string | null;
 }
 
-export interface StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
 export interface StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo = StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo_Video | StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo_MuxVideo | StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo_CloudflareVideo | StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo_YouTube;
+export type StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo = StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo_CloudflareVideo | StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo_Video | StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo_MuxVideo | StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo_YouTube;
 
 export interface StepBlockRestoreFromStep_blockRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";

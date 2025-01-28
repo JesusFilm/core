@@ -6,8 +6,12 @@ import { getLanguageIdsFromTags } from '../../../lib/getLanguageIdsFromTags'
 import { paramsToRecord } from '../../../lib/paramsToRecord'
 
 const GET_COUNTRIES = graphql(`
-  query Country($metadataLanguageId: ID!, $fallbackLanguageId: ID!) {
-    countries {
+  query Country(
+    $metadataLanguageId: ID!
+    $fallbackLanguageId: ID!
+    $ids: [ID!]
+  ) {
+    countries(ids: $ids) {
       id
       population
       latitude
@@ -44,6 +48,8 @@ export async function GET(request: NextRequest): Promise<Response> {
 
   const page = Number(query.get('page') ?? 1)
   const limit = Number(query.get('limit') ?? 10)
+  const idsParam = query.get('ids')
+  const ids = idsParam ? idsParam.split(',') : undefined
   const expand = query.get('expand')
   const offset = (page - 1) * limit
   const metadataLanguageTags =
@@ -61,6 +67,7 @@ export async function GET(request: NextRequest): Promise<Response> {
   >({
     query: GET_COUNTRIES,
     variables: {
+      ids,
       metadataLanguageId,
       fallbackLanguageId
     }
@@ -99,8 +106,9 @@ export async function GET(request: NextRequest): Promise<Response> {
         country.continent?.name[0]?.value ??
         country.continent?.fallbackName[0]?.value ??
         '',
-      longitude: country.longitude,
-      latitude: country.latitude,
+      metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
+      longitude: country.longitude ? country.longitude : 0,
+      latitude: country.latitude ? country.latitude : 0,
       counts: {
         languageCount: {
           value: country.languageCount,

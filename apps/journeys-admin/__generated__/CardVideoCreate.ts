@@ -9,6 +9,10 @@ import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit } from "./
 // GraphQL mutation operation: CardVideoCreate
 // ====================================================
 
+export interface CardVideoCreate_video_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+}
+
 export interface CardVideoCreate_video_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -53,17 +57,12 @@ export interface CardVideoCreate_video_mediaVideo_MuxVideo {
   playbackId: string | null;
 }
 
-export interface CardVideoCreate_video_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
-}
-
 export interface CardVideoCreate_video_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type CardVideoCreate_video_mediaVideo = CardVideoCreate_video_mediaVideo_Video | CardVideoCreate_video_mediaVideo_MuxVideo | CardVideoCreate_video_mediaVideo_CloudflareVideo | CardVideoCreate_video_mediaVideo_YouTube;
+export type CardVideoCreate_video_mediaVideo = CardVideoCreate_video_mediaVideo_CloudflareVideo | CardVideoCreate_video_mediaVideo_Video | CardVideoCreate_video_mediaVideo_MuxVideo | CardVideoCreate_video_mediaVideo_YouTube;
 
 export interface CardVideoCreate_video_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";

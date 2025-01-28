@@ -5,6 +5,7 @@ import { builder } from '../builder'
 import { Language } from '../language'
 
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
+import { VideoVariantFilter } from './inputs/videoVariantFilter'
 import { VideoVariantUpdateInput } from './inputs/videoVariantUpdate'
 
 builder.prismaObject('VideoVariant', {
@@ -29,8 +30,8 @@ builder.prismaObject('VideoVariant', {
       nullable: false,
       resolve: ({ languageId: id }) => ({ id })
     }),
-    // TODO: make non-nullable once integirity checked
-    videoEdition: t.relation('videoEdition', { nullable: true }),
+    published: t.exposeBoolean('published', { nullable: false }),
+    videoEdition: t.relation('videoEdition', { nullable: false }),
     subtitle: t.prismaField({
       type: ['VideoSubtitle'],
       nullable: false,
@@ -74,12 +75,35 @@ builder.prismaObject('VideoVariant', {
 })
 
 builder.queryFields((t) => ({
+  videoVariant: t.prismaField({
+    type: 'VideoVariant',
+    nullable: false,
+    args: {
+      id: t.arg.id({ required: true })
+    },
+    resolve: async (query, _parent, { id }) => {
+      const videoVariant = await prisma.videoVariant.findUnique({
+        ...query,
+        where: { id }
+      })
+      if (videoVariant == null)
+        throw new Error(`VideoVariant with id ${id} not found`)
+      return videoVariant
+    }
+  }),
   videoVariants: t.prismaField({
     type: ['VideoVariant'],
     nullable: false,
-    resolve: async (query) =>
+    args: {
+      input: t.arg({ type: VideoVariantFilter, required: false })
+    },
+    resolve: async (query, _parent, { input }) =>
       await prisma.videoVariant.findMany({
-        ...query
+        ...query,
+
+        where: {
+          published: input?.onlyPublished === false ? undefined : true
+        }
       })
   })
 }))
@@ -94,7 +118,10 @@ builder.mutationFields((t) => ({
     resolve: async (query, _parent, { input }) => {
       return await prisma.videoVariant.create({
         ...query,
-        data: input
+        data: {
+          ...input,
+          published: input.published ?? true
+        }
       })
     }
   }),
@@ -118,7 +145,8 @@ builder.mutationFields((t) => ({
           slug: input.slug ?? undefined,
           videoId: input.videoId ?? undefined,
           edition: input.edition ?? undefined,
-          downloadable: input.downloadable ?? undefined
+          downloadable: input.downloadable ?? undefined,
+          published: input.published ?? undefined
         }
       })
     }

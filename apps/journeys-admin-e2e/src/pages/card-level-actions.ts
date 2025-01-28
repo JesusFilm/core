@@ -300,16 +300,16 @@ export class CardLevelActionPage {
 
   async uploadVideoInUploadTabOfVideoLibrary() {
     await this.page
-      .locator('div[data-testid="VideoFromCloudflare"] input')
+      .locator('div[data-testid="VideoFromMux"] input')
       .setInputFiles(testData.cardLevelAction.videoUploadPath)
     await expect(
       this.page.locator(
-        'div[data-testid="VideoFromCloudflare"] span[role="progressbar"]'
+        'div[data-testid="VideoFromMux"] span[role="progressbar"]'
       )
     ).toBeVisible({ timeout: sixtySecondsTimeout })
     await expect(
       this.page.locator(
-        'div[data-testid="VideoFromCloudflare"] span[role="progressbar"]'
+        'div[data-testid="VideoFromMux"] span[role="progressbar"]'
       )
     ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
@@ -842,7 +842,7 @@ export class CardLevelActionPage {
       .frameLocator(this.journeyCardFrame)
       .first()
       .locator(
-        'div[data-testid="CardWrapper"] + div[data-testid="JourneysStepFooter"] > div'
+        'div[data-testid="CardWrapper"] ~ div[data-testid="JourneysStepFooter"] > div'
       )
       .click({ delay: 3000 })
     // Verify whether the footer block is selected. If it is not, click the footer block again. in catch block
@@ -858,7 +858,7 @@ export class CardLevelActionPage {
           .frameLocator(this.journeyCardFrame)
           .first()
           .locator(
-            'div[data-testid="CardWrapper"] + div[data-testid="JourneysStepFooter"] > div'
+            'div[data-testid="CardWrapper"] ~ div[data-testid="JourneysStepFooter"] > div'
           )
           .dblclick({ force: true })
       })

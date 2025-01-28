@@ -86,7 +86,7 @@ model CountryLanguage {
   language        Language @relation(fields: [languageId], references: [id])
   country         Country  @relation(fields: [countryId], references: [id])
 
-  @@unique([languageId, countryId])
+  @@unique([languageId, countryId, suggested])
   @@index(languageId(type: Hash))
   @@index(countryId(type: Hash))
 }

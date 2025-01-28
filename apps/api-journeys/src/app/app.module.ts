@@ -26,6 +26,7 @@ import { JourneysEmailPreferenceModule } from './modules/journeysEmailPreference
 import { JourneyVisitorModule } from './modules/journeyVisitor/journeyVisitor.module'
 import { MailChimpModule } from './modules/mailChimp/mailChimp.module'
 import { PlausibleModule } from './modules/plausible/plausible.module'
+import { QrCodeModule } from './modules/qrCode/qrCode.module'
 import { TeamModule } from './modules/team/team.module'
 import { UserInviteModule } from './modules/userInvite/userInvite.module'
 import { UserJourneyModule } from './modules/userJourney/userJourney.module'
@@ -51,6 +52,7 @@ import { VisitorModule } from './modules/visitor/visitor.module'
     MailChimpModule,
     NestHealthModule,
     PlausibleModule,
+    QrCodeModule,
     TeamModule,
     UserJourneyModule,
     UserInviteModule,

@@ -85,7 +85,7 @@ export function ContainedCover({
             ) as TreeBlock<ImageFields>
           ).src
         : videoBlock?.mediaVideo?.images[0]?.mobileCinematicHigh
-      : // Use Youtube or Cloudflare set poster image
+      : // Use Youtube or mux set poster image
         videoBlock?.image
 
   useEffect(() => {

@@ -353,6 +353,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   journeyProfileCreate: JourneyProfile! @join__field(graph: API_JOURNEYS) 
   journeyProfileUpdate(input: JourneyProfileUpdateInput!) : JourneyProfile! @join__field(graph: API_JOURNEYS) 
   updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput!) : JourneysEmailPreference @join__field(graph: API_JOURNEYS) 
+  qrCodeCreate(input: QrCodeCreateInput!) : QrCode! @join__field(graph: API_JOURNEYS) 
+  qrCodeUpdate(id: ID!, input: QrCodeUpdateInput!) : QrCode! @join__field(graph: API_JOURNEYS) 
+  qrCodeDelete(id: ID!) : QrCode! @join__field(graph: API_JOURNEYS) 
   teamCreate(input: TeamCreateInput) : Team! @join__field(graph: API_JOURNEYS) 
   teamUpdate(id: ID!, input: TeamUpdateInput) : Team! @join__field(graph: API_JOURNEYS) 
   userInviteCreate(journeyId: ID!, input: UserInviteCreateInput) : UserInvite @join__field(graph: API_JOURNEYS) 
@@ -650,6 +653,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   corresponds to the main visitor graph.
   """
   journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType) : [PlausibleStatsResponse!]! @join__field(graph: API_JOURNEYS) 
+  qrCode(id: ID!) : QrCode! @join__field(graph: API_JOURNEYS) 
+  qrCodes(where: QrCodesFilter!) : [QrCode!]! @join__field(graph: API_JOURNEYS) 
   teams: [Team!]! @join__field(graph: API_JOURNEYS) 
   team(id: ID!) : Team! @join__field(graph: API_JOURNEYS) 
   userInvites(journeyId: ID!) : [UserInvite!] @join__field(graph: API_JOURNEYS) 
@@ -682,7 +687,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
   country(id: ID!) : Country @join__field(graph: API_LANGUAGES) 
-  countries(term: String) : [Country!]! @join__field(graph: API_LANGUAGES) 
+  countries(term: String, ids: [ID!]) : [Country!]! @join__field(graph: API_LANGUAGES) 
   getMyCloudflareImages(offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   getMyCloudflareImage(id: ID!) : CloudflareImage! @join__field(graph: API_MEDIA) 
   getMyCloudflareVideos(offset: Int, limit: Int) : [CloudflareVideo!]! @join__field(graph: API_MEDIA) 
@@ -764,7 +769,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
   videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
-  videoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
+  videoVariant(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
+  videoVariants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
   me(input: MeInput) : User @join__field(graph: API_USERS) 
@@ -963,13 +969,14 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   label: VideoLabel! @join__field(graph: API_MEDIA) 
   published: Boolean! @join__field(graph: API_MEDIA) 
   cloudflareAssets: [CloudflareR2!]! @join__field(graph: API_MEDIA) 
+  videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
   title(languageId: ID, primary: Boolean) : [VideoTitle!]! @join__field(graph: API_MEDIA) 
   snippet(languageId: ID, primary: Boolean) : [VideoSnippet!]! @join__field(graph: API_MEDIA) 
   description(languageId: ID, primary: Boolean) : [VideoDescription!]! @join__field(graph: API_MEDIA) 
   studyQuestions(languageId: ID, primary: Boolean) : [VideoStudyQuestion!]! @join__field(graph: API_MEDIA) 
   imageAlt(languageId: ID, primary: Boolean) : [VideoImageAlt!]! @join__field(graph: API_MEDIA) 
   variantLanguages: [Language!]! @join__field(graph: API_MEDIA) 
-  variantLanguagesCount: Int! @join__field(graph: API_MEDIA) 
+  variantLanguagesCount(input: VideoVariantFilter) : Int! @join__field(graph: API_MEDIA) 
   """
   slug is a permanent link to the video.
   """
@@ -981,8 +988,8 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   """
   childrenCount: Int! @join__field(graph: API_MEDIA) 
   parents: [Video!]! @join__field(graph: API_MEDIA) 
-  variantLanguagesWithSlug: [LanguageWithSlug!]! @join__field(graph: API_MEDIA) 
-  variants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
+  variantLanguagesWithSlug(input: VideoVariantFilter) : [LanguageWithSlug!]! @join__field(graph: API_MEDIA) 
+  variants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   subtitles(languageId: ID, primary: Boolean, edition: String) : [VideoSubtitle!]! @join__field(graph: API_MEDIA) 
   variant(languageId: ID) : VideoVariant @join__field(graph: API_MEDIA) 
   images(aspectRatio: ImageAspectRatio) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
@@ -1199,9 +1206,6 @@ type Language @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @joi
   name(languageId: ID, primary: Boolean) : [LanguageName!]! @join__field(graph: API_LANGUAGES) 
   countryLanguages: [CountryLanguage!]! @join__field(graph: API_LANGUAGES) 
   audioPreview: AudioPreview @join__field(graph: API_LANGUAGES) 
-  primaryCountryId: String @join__field(graph: API_LANGUAGES) 
-  speakerCount: String! @join__field(graph: API_LANGUAGES) 
-  countriesCount: Int! @join__field(graph: API_LANGUAGES) 
   seriesCount: Int! @join__field(graph: API_MEDIA) 
   featureFilmCount: Int! @join__field(graph: API_MEDIA) 
   shortFilmCount: Int! @join__field(graph: API_MEDIA) 
@@ -1858,6 +1862,44 @@ type PlausibleStatsResponse @join__type(graph: API_JOURNEYS)  {
   timeOnPage: Float
 }
 
+"""
+A short link that redirects to a full URL
+"""
+type ShortLink @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id")  {
+  id: ID!
+  """
+  short link path not including the leading slash
+  """
+  pathname: String! @join__field(graph: API_MEDIA) 
+  """
+  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  """
+  to: String! @join__field(graph: API_MEDIA) 
+  domain: ShortLinkDomain! @join__field(graph: API_MEDIA) 
+  """
+  the service that created this short link
+  """
+  service: Service! @join__field(graph: API_MEDIA) 
+}
+
+type QrCode @join__type(graph: API_JOURNEYS)  {
+  id: ID!
+  """
+  Team where the Qr Code belongs to
+  """
+  team: Team
+  """
+  Journey where the Qr Code was created from
+  """
+  journey: Journey
+  """
+  ShortLink that handles the redirection
+  """
+  shortLink: ShortLink!
+  color: String
+  backgroundColor: String
+}
+
 type Team @join__type(graph: API_JOURNEYS, key: "id")  {
   id: ID!
   title: String!
@@ -1867,6 +1909,7 @@ type Team @join__type(graph: API_JOURNEYS, key: "id")  {
   userTeams: [UserTeam!]!
   customDomains: [CustomDomain!]!
   integrations: [Integration!]!
+  qrCodes: [QrCode!]!
 }
 
 type UserInvite @join__type(graph: API_JOURNEYS, key: "id")  {
@@ -2096,6 +2139,7 @@ type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId
   id: ID!
   primaryLanguageId: ID
   source: VideoBlockSource @join__field(graph: API_JOURNEYS_MODERN, type: "VideoBlockSource!")  @join__field(graph: API_MEDIA, type: "VideoBlockSource") 
+  name: String @join__field(graph: API_MEDIA) 
   assetId: String @join__field(graph: API_MEDIA) 
   duration: Int @join__field(graph: API_MEDIA) 
   uploadId: String @join__field(graph: API_MEDIA) 
@@ -2349,26 +2393,6 @@ type QueryShortLinksConnectionEdge @join__type(graph: API_MEDIA)  {
 }
 
 """
-A short link that redirects to a full URL
-"""
-type ShortLink @join__type(graph: API_MEDIA, key: "id")  {
-  id: ID!
-  """
-  short link path not including the leading slash
-  """
-  pathname: String!
-  """
-  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
-  """
-  to: String!
-  domain: ShortLinkDomain!
-  """
-  the service that created this short link
-  """
-  service: Service!
-}
-
-"""
 A domain that can be used for short links
 """
 type ShortLinkDomain @join__type(graph: API_MEDIA)  {
@@ -2560,7 +2584,7 @@ type VideoSubtitle @join__type(graph: API_MEDIA)  {
   srtSrc: String
   value: String!
   language: Language!
-  videoEdition: VideoEdition
+  videoEdition: VideoEdition!
 }
 
 type VideoTitle @join__type(graph: API_MEDIA)  {
@@ -2581,7 +2605,8 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   duration: Int!
   lengthInMilliseconds: Int!
   language: Language!
-  videoEdition: VideoEdition
+  published: Boolean!
+  videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean) : [VideoSubtitle!]!
   subtitleCount: Int!
   """
@@ -3986,6 +4011,26 @@ input PlausibleStatsTimeseriesFilter @join__type(graph: API_JOURNEYS)  {
   interval: String
 }
 
+input QrCodesFilter @join__type(graph: API_JOURNEYS)  {
+  journeyId: ID
+  teamId: ID
+}
+
+input QrCodeCreateInput @join__type(graph: API_JOURNEYS)  {
+  teamId: ID!
+  journeyId: ID!
+}
+
+input QrCodeUpdateInput @join__type(graph: API_JOURNEYS)  {
+  """
+  journey url where the QR code redirects to, will be parsed and
+  stored as ids
+  """
+  to: String
+  color: String
+  backgroundColor: String
+}
+
 input TeamCreateInput @join__type(graph: API_JOURNEYS)  {
   title: String!
   publicTitle: String
@@ -4135,8 +4180,9 @@ input VideoCreateInput @join__type(graph: API_MEDIA)  {
 }
 
 input VideoEditionCreateInput @join__type(graph: API_MEDIA)  {
-  id: ID!
-  name: String
+  id: ID
+  name: String!
+  videoId: String!
 }
 
 input VideoEditionUpdateInput @join__type(graph: API_MEDIA)  {
@@ -4224,6 +4270,7 @@ input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {
   languageId: String!
   slug: String!
   downloadable: Boolean!
+  published: Boolean = true
 }
 
 input VideoVariantDownloadCreateInput @join__type(graph: API_MEDIA)  {
@@ -4246,6 +4293,10 @@ input VideoVariantDownloadUpdateInput @join__type(graph: API_MEDIA)  {
   url: String
 }
 
+input VideoVariantFilter @join__type(graph: API_MEDIA)  {
+  onlyPublished: Boolean = true
+}
+
 input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
   id: String!
   videoId: String
@@ -4258,6 +4309,7 @@ input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
   languageId: String
   slug: String
   downloadable: Boolean
+  published: Boolean
 }
 
 input VideosFilter @join__type(graph: API_MEDIA)  {
@@ -4266,6 +4318,7 @@ input VideosFilter @join__type(graph: API_MEDIA)  {
   labels: [VideoLabel!]
   ids: [ID!]
   subtitleLanguageIds: [ID!]
+  published: Boolean
 }
 
 input CreateVerificationRequestInput @join__type(graph: API_USERS)  {

@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
@@ -69,12 +70,16 @@ describe('VideoInformation', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
+    expect(
+      screen.queryByRole('button', { name: 'Cancel' })
+    ).not.toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('JESUS')
     fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
       target: { value: 'Hello' }
     })
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue('Hello')
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
   })
 
   it('should enable save button if status has been changed', async () => {
@@ -87,15 +92,19 @@ describe('VideoInformation', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
+    expect(
+      screen.queryByRole('button', { name: 'Cancel' })
+    ).not.toBeInTheDocument()
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Status' }))
     fireEvent.click(screen.getByRole('option', { name: 'Draft' }))
     expect(screen.getByRole('combobox', { name: 'Status' })).toHaveTextContent(
       'Draft'
     )
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
   })
 
-  it('should enable save button if label has been changed', async () => {
+  it('should enable form buttons if label has been changed', async () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
@@ -105,12 +114,16 @@ describe('VideoInformation', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
+    expect(
+      screen.queryByRole('button', { name: 'Cancel' })
+    ).not.toBeInTheDocument()
     fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Label' }))
     fireEvent.click(screen.getByRole('option', { name: 'Short Film' }))
     expect(screen.getByRole('combobox', { name: 'Label' })).toHaveTextContent(
       'Short Film'
     )
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
   })
 
   it('should update video information on submit', async () => {
@@ -155,5 +168,44 @@ describe('VideoInformation', () => {
       expect(screen.getByText('Title is required')).toBeInTheDocument()
     )
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
+  })
+
+  it('should reset form when cancel button is clicked', async () => {
+    render(
+      <MockedProvider>
+        <NextIntlClientProvider locale="en">
+          <VideoInformation video={mockVideo} />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    const user = userEvent.setup()
+
+    const title = screen.getByRole('textbox', { name: 'Title' })
+    const status = screen.getByRole('combobox', { name: 'Status' })
+    const label = screen.getByRole('combobox', { name: 'Label' })
+
+    expect(title).toHaveValue('JESUS')
+    expect(status).toHaveTextContent('Published')
+    expect(label).toHaveTextContent('Feature Film')
+
+    await user.clear(title)
+    await user.type(title, 'Title')
+
+    await user.click(status)
+    await user.click(screen.getByRole('option', { name: 'Draft' }))
+
+    await user.click(label)
+    await user.click(screen.getByRole('option', { name: 'Short Film' }))
+
+    expect(title).toHaveValue('Title')
+    expect(status).toHaveTextContent('Draft')
+    expect(label).toHaveTextContent('Short Film')
+
+    await user.click(screen.getByRole('button', { name: 'Cancel' }))
+
+    expect(title).toHaveValue('JESUS')
+    expect(status).toHaveTextContent('Published')
+    expect(label).toHaveTextContent('Feature Film')
   })
 })

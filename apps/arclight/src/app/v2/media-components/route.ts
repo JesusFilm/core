@@ -5,10 +5,6 @@ import { getApolloClient } from '../../../lib/apolloClient'
 import { getLanguageIdsFromTags } from '../../../lib/getLanguageIdsFromTags'
 import { paramsToRecord } from '../../../lib/paramsToRecord'
 
-/* TODO:
-  isDeprecated,
-*/
-
 const GET_VIDEOS_WITH_FALLBACK = graphql(`
   query GetVideosWithFallback(
     $limit: Int
@@ -95,6 +91,7 @@ const GET_VIDEOS_WITH_FALLBACK = graphql(`
       variant {
         hls
         duration
+        lengthInMilliseconds
         language {
           bcp47
         }
@@ -113,15 +110,23 @@ const GET_VIDEOS_WITH_FALLBACK = graphql(`
 export async function GET(request: NextRequest): Promise<Response> {
   const query = request.nextUrl.searchParams
 
-  const page = Number(query.get('page') ?? 1)
-  const limit = Number(query.get('limit') ?? 10000)
+  const page = Number(query.get('page')) === 0 ? 1 : Number(query.get('page'))
+  const limit =
+    Number(query.get('limit')) === 0 ? 10000 : Number(query.get('limit'))
   const offset = (page - 1) * limit
   const expand = query.get('expand') ?? ''
   const subTypes =
-    query.get('subTypes')?.split(',').filter(Boolean) ?? undefined
+    query.get('subTypes')?.split(',').filter(Boolean).length === 0
+      ? undefined
+      : query.get('subTypes')?.split(',').filter(Boolean)
   const languageIds =
-    query.get('languageIds')?.split(',').filter(Boolean) ?? undefined
-  const ids = query.get('ids')?.split(',').filter(Boolean) ?? undefined
+    query.get('languageIds')?.split(',').filter(Boolean).length === 0
+      ? undefined
+      : query.get('languageIds')?.split(',').filter(Boolean)
+  const ids =
+    query.get('ids')?.split(',').filter(Boolean).length === 0
+      ? undefined
+      : query.get('ids')?.split(',').filter(Boolean)
   const metadataLanguageTags =
     query.get('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
 
@@ -148,6 +153,7 @@ export async function GET(request: NextRequest): Promise<Response> {
   })
 
   const videos = data.videos
+  const total = data.videosCount
   const queryObject: Record<string, string> = {
     ...paramsToRecord(query.entries()),
     page: page.toString(),
@@ -161,62 +167,71 @@ export async function GET(request: NextRequest): Promise<Response> {
       video.snippet[0]?.value != null ||
       video.description[0]?.value != null
   )
-  const lastPage =
-    Math.ceil(filteredVideos.length / limit) === 0
-      ? 1
-      : Math.ceil(filteredVideos.length / limit)
+  const lastPage = Math.ceil(total / limit) === 0 ? 1 : Math.ceil(total / limit)
 
-  const mediaComponents = filteredVideos.map((video) => ({
-    mediaComponentId: video.id,
-    componentType: video.childrenCount === 0 ? 'content' : 'collection',
-    contentType: 'video',
-    subType: video.label,
-    imageUrls: {
-      thumbnail:
-        video.images.find((image) => image.thumbnail != null)?.thumbnail ?? '',
-      videoStill:
-        video.images.find((image) => image.videoStill != null)?.videoStill ??
+  const mediaComponents = filteredVideos.map((video) => {
+    const isDownloadable =
+      video.label === 'collection' || video.label === 'series'
+        ? false
+        : (video.variant?.downloadable ?? false)
+    return {
+      mediaComponentId: video.id,
+      componentType: video.variant?.hls != null ? 'content' : 'container',
+      subType: video.label,
+      contentType: video.variant?.hls != null ? 'video' : 'none',
+      imageUrls: {
+        thumbnail:
+          video.images.find((image) => image.thumbnail != null)?.thumbnail ??
+          '',
+        videoStill:
+          video.images.find((image) => image.videoStill != null)?.videoStill ??
+          '',
+        mobileCinematicHigh:
+          video.images.find((image) => image.mobileCinematicHigh != null)
+            ?.mobileCinematicHigh ?? '',
+        mobileCinematicLow:
+          video.images.find((image) => image.mobileCinematicLow != null)
+            ?.mobileCinematicLow ?? '',
+        mobileCinematicVeryLow:
+          video.images.find((image) => image.mobileCinematicVeryLow != null)
+            ?.mobileCinematicVeryLow ?? ''
+      },
+      lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
+      containsCount: video.childrenCount,
+      isDownloadable,
+      downloadSizes: isDownloadable
+        ? {
+            approximateSmallDownloadSizeInBytes:
+              video.variant?.downloads?.find(({ quality }) => quality === 'low')
+                ?.size ?? 0,
+            approximateLargeDownloadSizeInBytes:
+              video.variant?.downloads?.find(
+                ({ quality }) => quality === 'high'
+              )?.size ?? 0
+          }
+        : {},
+      bibleCitations: video.bibleCitations.map((citation) => ({
+        osisBibleBook: citation.osisId,
+        chapterStart: citation.chapterStart,
+        verseStart: citation.verseStart,
+        chapterEnd: citation.chapterEnd,
+        verseEnd: citation.verseEnd
+      })),
+      primaryLanguageId: Number(video.primaryLanguageId),
+      title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
+      shortDescription:
+        video.snippet[0]?.value ?? video.fallbackSnippet[0]?.value ?? '',
+      longDescription:
+        video.description[0]?.value ??
+        video.fallbackDescription[0]?.value ??
         '',
-      mobileCinematicHigh:
-        video.images.find((image) => image.mobileCinematicHigh != null)
-          ?.mobileCinematicHigh ?? '',
-      mobileCinematicLow:
-        video.images.find((image) => image.mobileCinematicLow != null)
-          ?.mobileCinematicLow ?? '',
-      mobileCinematicVeryLow:
-        video.images.find((image) => image.mobileCinematicVeryLow != null)
-          ?.mobileCinematicVeryLow ?? ''
-    },
-    lengthInMilliseconds: video.variant?.duration ?? 0,
-    containsCount: video.childrenCount,
-    isDownloadable: video.variant?.downloadable ?? false,
-    downloadSizes: {
-      approximateSmallDownloadSizeInBytes:
-        video.variant?.downloads?.find(({ quality }) => quality === 'low')
-          ?.size ?? 0,
-      approximateLargeDownloadSizeInBytes:
-        video.variant?.downloads?.find(({ quality }) => quality === 'high')
-          ?.size ?? 0
-    },
-    bibleCitations: video.bibleCitations.map((citation) => ({
-      osisBibleBook: citation.osisId,
-      chapterStart: citation.chapterStart,
-      verseStart: citation.verseStart,
-      chapterEnd: citation.chapterEnd,
-      verseEnd: citation.verseEnd
-    })),
-    primaryLanguageId: Number(video.primaryLanguageId),
-    title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
-    shortDescription:
-      video.snippet[0]?.value ?? video.fallbackSnippet[0]?.value ?? '',
-    longDescription:
-      video.description[0]?.value ?? video.fallbackDescription[0]?.value ?? '',
-    studyQuestions: video.studyQuestions.map((question) => question.value),
-    metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
-    ...(expand.includes('languageIds')
-      ? { languageIds: video.variantLanguages.map(({ id }) => Number(id)) }
-      : {})
-  }))
+      studyQuestions: video.studyQuestions.map((question) => question.value),
+      metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
+      ...(expand.includes('languageIds')
+        ? { languageIds: video.variantLanguages.map(({ id }) => Number(id)) }
+        : {})
+    }
+  })
 
   const queryString = new URLSearchParams(queryObject).toString()
   const firstQueryString = new URLSearchParams({
@@ -240,29 +255,29 @@ export async function GET(request: NextRequest): Promise<Response> {
     page,
     limit,
     pages: lastPage,
-    total: filteredVideos.length,
+    total,
     apiSessionId: '',
     _links: {
       self: {
-        href: `https://api.arclight.com/v2/mediaComponents?${queryString}`
+        href: `http://api.arclight.org/v2/media-components?${queryString}`
       },
       first: {
-        href: `https://api.arclight.com/v2/mediaComponents?${firstQueryString}`
+        href: `http://api.arclight.org/v2/media-components?${firstQueryString}`
       },
       last: {
-        href: `https://api.arclight.com/v2/mediaComponents?${lastQueryString}`
+        href: `http://api.arclight.org/v2/media-components?${lastQueryString}`
       },
       ...(page < lastPage
         ? {
             next: {
-              href: `https://api.arclight.com/v2/mediaComponents?${nextQueryString}`
+              href: `http://api.arclight.org/v2/media-components?${nextQueryString}`
             }
           }
         : {}),
       ...(page > 1
         ? {
             previous: {
-              href: `https://api.arclight.com/v2/mediaComponents?${previousQueryString}`
+              href: `http://api.arclight.org/v2/media-components?${previousQueryString}`
             }
           }
         : {})

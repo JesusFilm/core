@@ -60,9 +60,10 @@ describe('bigQuery/importers/countryLanguages', () => {
       await importOne(bigQueryCountryLanguage)
       expect(prismaMock.countryLanguage.upsert).toHaveBeenCalledWith({
         where: {
-          languageId_countryId: {
+          languageId_countryId_suggested: {
             languageId: '529',
-            countryId: 'AD'
+            countryId: 'AD',
+            suggested: false
           }
         },
         create: countryLanguage,
