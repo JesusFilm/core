@@ -53,6 +53,7 @@ export function SourceFromMux({
             >
               {selectedBlock.title}
             </Typography>
+
             <Typography
               variant="caption"
               color="text.secondary"

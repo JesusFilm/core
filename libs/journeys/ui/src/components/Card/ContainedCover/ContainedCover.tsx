@@ -74,7 +74,7 @@ export function ContainedCover({
   const contentRef = useRef() as RefObject<HTMLDivElement>
 
   const posterImage =
-    videoBlock?.mediaVideo?.__typename == 'Video'
+    videoBlock?.mediaVideo?.__typename === 'Video'
       ? // Use posterBlockId image or default poster image on video
         videoBlock?.posterBlockId != null
         ? (
