@@ -2,6 +2,7 @@ import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import { ThemeProvider, styled, useTheme } from '@mui/material/styles'
+import get from 'lodash/get'
 import {
   CSSProperties,
   ReactElement,
@@ -92,7 +93,7 @@ export function Video({
 
   const eventVideoTitle =
     mediaVideo?.__typename == 'Video' ? mediaVideo?.title[0].value : title
-  const eventVideoId = mediaVideo?.id ?? videoId
+  const eventVideoId = get(mediaVideo, 'id') ?? videoId
 
   // Setup poster image
   const posterBlock = children.find(
@@ -147,7 +148,7 @@ export function Video({
   const showVideoImage =
     (variant === 'admin' && source === VideoBlockSource.youTube) ||
     source === VideoBlockSource.internal ||
-    source === VideoBlockSource.cloudflare
+    source === VideoBlockSource.mux
 
   useEffect(() => {
     setActiveStep(isActiveBlockOrDescendant(blockId))
@@ -252,17 +253,6 @@ export function Video({
                 }
               }}
             >
-              {source === VideoBlockSource.cloudflare && videoId != null && (
-                <source
-                  src={`https://customer-${
-                    process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ??
-                    ''
-                  }.cloudflarestream.com/${
-                    videoId ?? ''
-                  }/manifest/video.m3u8?clientBandwidthHint=10`}
-                  type="application/x-mpegURL"
-                />
-              )}
               {mediaVideo?.__typename == 'Video' &&
                 mediaVideo?.variant?.hls != null && (
                   <source
@@ -276,6 +266,12 @@ export function Video({
                     startAt ?? 0
                   }&end=${endAt ?? 0}`}
                   type="video/youtube"
+                />
+              )}
+              {mediaVideo?.__typename === 'MuxVideo' && (
+                <source
+                  src={`https://stream.mux.com/${mediaVideo.playbackId}.m3u8`}
+                  type="application/x-mpegURL"
                 />
               )}
             </StyledVideo>
@@ -318,7 +314,8 @@ export function Video({
               zIndex: 1,
               outline:
                 selectedBlock?.id === blockId ? '2px solid #C52D3A' : 'none',
-              outlineOffset: '-3px'
+              outlineOffset: '-3px',
+              borderRadius: '20px'
             }}
             elevation={0}
             variant="outlined"

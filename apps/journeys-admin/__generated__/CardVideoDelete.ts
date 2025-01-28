@@ -13,6 +13,10 @@ export interface CardVideoDelete_video_ImageBlock {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
 }
 
+export interface CardVideoDelete_video_VideoBlock_mediaVideo_CloudflareVideo {
+  __typename: "CloudflareVideo";
+}
+
 export interface CardVideoDelete_video_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -53,11 +57,8 @@ export interface CardVideoDelete_video_VideoBlock_mediaVideo_Video {
 export interface CardVideoDelete_video_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
-}
-
-export interface CardVideoDelete_video_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface CardVideoDelete_video_VideoBlock_mediaVideo_YouTube {
@@ -65,7 +66,7 @@ export interface CardVideoDelete_video_VideoBlock_mediaVideo_YouTube {
   id: string;
 }
 
-export type CardVideoDelete_video_VideoBlock_mediaVideo = CardVideoDelete_video_VideoBlock_mediaVideo_Video | CardVideoDelete_video_VideoBlock_mediaVideo_MuxVideo | CardVideoDelete_video_VideoBlock_mediaVideo_CloudflareVideo | CardVideoDelete_video_VideoBlock_mediaVideo_YouTube;
+export type CardVideoDelete_video_VideoBlock_mediaVideo = CardVideoDelete_video_VideoBlock_mediaVideo_CloudflareVideo | CardVideoDelete_video_VideoBlock_mediaVideo_Video | CardVideoDelete_video_VideoBlock_mediaVideo_MuxVideo | CardVideoDelete_video_VideoBlock_mediaVideo_YouTube;
 
 export interface CardVideoDelete_video_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
