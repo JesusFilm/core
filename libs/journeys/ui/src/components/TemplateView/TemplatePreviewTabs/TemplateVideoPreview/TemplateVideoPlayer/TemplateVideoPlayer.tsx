@@ -99,14 +99,6 @@ export function TemplateVideoPlayer({
         playsInline
         style={{ height: '100%' }}
       >
-        {source === VideoBlockSource.cloudflare && id != null && (
-          <source
-            src={`https://customer-${
-              process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-            }.cloudflarestream.com/${id}/manifest/video.m3u8`}
-            type="application/x-mpegURL"
-          />
-        )}
         {source === VideoBlockSource.internal && id != null && (
           <source src={id} type="application/x-mpegURL" />
         )}
