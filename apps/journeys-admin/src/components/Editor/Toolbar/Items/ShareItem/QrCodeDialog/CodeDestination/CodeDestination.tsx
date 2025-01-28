@@ -1,4 +1,3 @@
-import Button from '@mui/material/Button'
 import FilledInput from '@mui/material/FilledInput'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -7,6 +6,7 @@ import { ReactElement, useState } from 'react'
 
 import AlertTriangle from '@core/shared/ui/icons/AlertTriangle'
 
+import { ChangeButton } from './ChangeButton'
 import { CodeDestinationPopper } from './CodeDestinationPopper'
 
 interface CodeDestinationProps {
@@ -21,6 +21,7 @@ export function CodeDestination({
   const { t } = useTranslation('apps-journeys-admin')
 
   const [showRedirectButton, setShowRedirectButton] = useState(false)
+  const [disabled, setDisabled] = useState(true)
 
   function handleClick(): void {
     setShowRedirectButton(!showRedirectButton)
@@ -53,23 +54,11 @@ export function CodeDestination({
             display: { xs: 'none', sm: 'flex' }
           }}
         >
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={handleClick}
-            sx={{ borderRadius: 2 }}
-          >
-            {showRedirectButton ? t('Cancel') : t('Change')}
-          </Button>
-          {showRedirectButton && (
-            <Button
-              variant="contained"
-              color="secondary"
-              sx={{ borderRadius: 2 }}
-            >
-              {t('Redirect')}
-            </Button>
-          )}
+          <ChangeButton
+            disabled={disabled}
+            showRedirectButton={showRedirectButton}
+            handleClick={handleClick}
+          />
         </Stack>
       </Stack>
       <FilledInput
@@ -85,23 +74,11 @@ export function CodeDestination({
         spacing={3}
         sx={{ display: { xs: 'flex', sm: 'none' } }}
       >
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={handleClick}
-          sx={{ borderRadius: 2 }}
-        >
-          {showRedirectButton ? t('Cancel') : t('Change')}
-        </Button>
-        {showRedirectButton && (
-          <Button
-            variant="contained"
-            color="secondary"
-            sx={{ borderRadius: 2 }}
-          >
-            {t('Redirect')}
-          </Button>
-        )}
+        <ChangeButton
+          disabled={disabled}
+          showRedirectButton={showRedirectButton}
+          handleClick={handleClick}
+        />
       </Stack>
       {showRedirectButton && (
         <Stack

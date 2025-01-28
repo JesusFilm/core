@@ -2,7 +2,6 @@ import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import ClickAwayListener from '@mui/material/ClickAwayListener'
 import Divider from '@mui/material/Divider'
-import FilledInput from '@mui/material/FilledInput'
 import Grow from '@mui/material/Grow'
 import MenuItem from '@mui/material/MenuItem'
 import MenuList from '@mui/material/MenuList'
@@ -13,7 +12,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { enqueueSnackbar } from 'notistack'
 import { QRCodeCanvas } from 'qrcode.react'
-import { MouseEvent, ReactElement, useState } from 'react'
+import { MouseEvent, ReactElement, useEffect, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
@@ -33,10 +32,13 @@ export function QrCodeDialog({
   initialJourneyUrl
 }: QrCodeDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [url, setUrl] = useState(initialJourneyUrl ?? '')
-  const [to, setTo] = useState(url)
+  const [to, setTo] = useState(initialJourneyUrl ?? '')
   const [showDownloadMenu, setShowDownloadMenu] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+
+  useEffect(() => {
+    setTo(initialJourneyUrl ?? '')
+  }, [initialJourneyUrl])
 
   function handleMenuClick(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget)
@@ -78,7 +80,7 @@ export function QrCodeDialog({
   }
 
   async function handleCopyClick(): Promise<void> {
-    await navigator.clipboard.writeText(url)
+    await navigator.clipboard.writeText(to)
     enqueueSnackbar('Link copied', {
       variant: 'success',
       preventDuplicate: true
@@ -127,7 +129,7 @@ export function QrCodeDialog({
               title="QR Code"
               size={122}
               level="L"
-              value={url}
+              value={to}
             />
           </Stack>
           <Stack
