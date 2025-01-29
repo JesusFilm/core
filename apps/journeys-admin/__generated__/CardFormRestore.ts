@@ -236,10 +236,6 @@ export interface CardFormRestore_image_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface CardFormRestore_image_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-}
-
 export interface CardFormRestore_image_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -289,7 +285,7 @@ export interface CardFormRestore_image_VideoBlock_mediaVideo_YouTube {
   id: string;
 }
 
-export type CardFormRestore_image_VideoBlock_mediaVideo = CardFormRestore_image_VideoBlock_mediaVideo_CloudflareVideo | CardFormRestore_image_VideoBlock_mediaVideo_Video | CardFormRestore_image_VideoBlock_mediaVideo_MuxVideo | CardFormRestore_image_VideoBlock_mediaVideo_YouTube;
+export type CardFormRestore_image_VideoBlock_mediaVideo = CardFormRestore_image_VideoBlock_mediaVideo_Video | CardFormRestore_image_VideoBlock_mediaVideo_MuxVideo | CardFormRestore_image_VideoBlock_mediaVideo_YouTube;
 
 export interface CardFormRestore_image_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -654,10 +650,6 @@ export interface CardFormRestore_subtitle_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface CardFormRestore_subtitle_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-}
-
 export interface CardFormRestore_subtitle_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -707,7 +699,7 @@ export interface CardFormRestore_subtitle_VideoBlock_mediaVideo_YouTube {
   id: string;
 }
 
-export type CardFormRestore_subtitle_VideoBlock_mediaVideo = CardFormRestore_subtitle_VideoBlock_mediaVideo_CloudflareVideo | CardFormRestore_subtitle_VideoBlock_mediaVideo_Video | CardFormRestore_subtitle_VideoBlock_mediaVideo_MuxVideo | CardFormRestore_subtitle_VideoBlock_mediaVideo_YouTube;
+export type CardFormRestore_subtitle_VideoBlock_mediaVideo = CardFormRestore_subtitle_VideoBlock_mediaVideo_Video | CardFormRestore_subtitle_VideoBlock_mediaVideo_MuxVideo | CardFormRestore_subtitle_VideoBlock_mediaVideo_YouTube;
 
 export interface CardFormRestore_subtitle_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -1072,10 +1064,6 @@ export interface CardFormRestore_title_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface CardFormRestore_title_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-}
-
 export interface CardFormRestore_title_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1125,7 +1113,7 @@ export interface CardFormRestore_title_VideoBlock_mediaVideo_YouTube {
   id: string;
 }
 
-export type CardFormRestore_title_VideoBlock_mediaVideo = CardFormRestore_title_VideoBlock_mediaVideo_CloudflareVideo | CardFormRestore_title_VideoBlock_mediaVideo_Video | CardFormRestore_title_VideoBlock_mediaVideo_MuxVideo | CardFormRestore_title_VideoBlock_mediaVideo_YouTube;
+export type CardFormRestore_title_VideoBlock_mediaVideo = CardFormRestore_title_VideoBlock_mediaVideo_Video | CardFormRestore_title_VideoBlock_mediaVideo_MuxVideo | CardFormRestore_title_VideoBlock_mediaVideo_YouTube;
 
 export interface CardFormRestore_title_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -1490,10 +1478,6 @@ export interface CardFormRestore_textResponse_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface CardFormRestore_textResponse_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-}
-
 export interface CardFormRestore_textResponse_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1543,7 +1527,7 @@ export interface CardFormRestore_textResponse_VideoBlock_mediaVideo_YouTube {
   id: string;
 }
 
-export type CardFormRestore_textResponse_VideoBlock_mediaVideo = CardFormRestore_textResponse_VideoBlock_mediaVideo_CloudflareVideo | CardFormRestore_textResponse_VideoBlock_mediaVideo_Video | CardFormRestore_textResponse_VideoBlock_mediaVideo_MuxVideo | CardFormRestore_textResponse_VideoBlock_mediaVideo_YouTube;
+export type CardFormRestore_textResponse_VideoBlock_mediaVideo = CardFormRestore_textResponse_VideoBlock_mediaVideo_Video | CardFormRestore_textResponse_VideoBlock_mediaVideo_MuxVideo | CardFormRestore_textResponse_VideoBlock_mediaVideo_YouTube;
 
 export interface CardFormRestore_textResponse_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -1908,10 +1892,6 @@ export interface CardFormRestore_body_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface CardFormRestore_body_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-}
-
 export interface CardFormRestore_body_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1961,7 +1941,7 @@ export interface CardFormRestore_body_VideoBlock_mediaVideo_YouTube {
   id: string;
 }
 
-export type CardFormRestore_body_VideoBlock_mediaVideo = CardFormRestore_body_VideoBlock_mediaVideo_CloudflareVideo | CardFormRestore_body_VideoBlock_mediaVideo_Video | CardFormRestore_body_VideoBlock_mediaVideo_MuxVideo | CardFormRestore_body_VideoBlock_mediaVideo_YouTube;
+export type CardFormRestore_body_VideoBlock_mediaVideo = CardFormRestore_body_VideoBlock_mediaVideo_Video | CardFormRestore_body_VideoBlock_mediaVideo_MuxVideo | CardFormRestore_body_VideoBlock_mediaVideo_YouTube;
 
 export interface CardFormRestore_body_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";

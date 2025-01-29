@@ -246,10 +246,6 @@ export interface StepDuplicate_blockDuplicate_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-}
-
 export interface StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -299,7 +295,7 @@ export interface StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_YouTube {
   id: string;
 }
 
-export type StepDuplicate_blockDuplicate_VideoBlock_mediaVideo = StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_CloudflareVideo | StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video | StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_MuxVideo | StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_YouTube;
+export type StepDuplicate_blockDuplicate_VideoBlock_mediaVideo = StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video | StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_MuxVideo | StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_YouTube;
 
 export interface StepDuplicate_blockDuplicate_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
