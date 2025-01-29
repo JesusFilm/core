@@ -129,6 +129,7 @@ import LockOpen1 from './LockOpen1'
 import Logout2 from './Logout2'
 import Mail1 from './Mail1'
 import Mail2 from './Mail2'
+import Map3 from './Map3'
 import Marker1 from './Marker1'
 import Marker2 from './Marker2'
 import Maximise1 from './Maximise1'
@@ -342,6 +343,7 @@ export type IconName =
   | 'Logout2'
   | 'Mail1'
   | 'Mail2'
+  | 'Map3'
   | 'Marker1'
   | 'Marker2'
   | 'Maximise1'
@@ -559,6 +561,7 @@ const iconComponents: IconComponents = {
   Logout2,
   Mail1,
   Mail2,
+  Map3,
   Marker1,
   Marker2,
   Maximise1,
