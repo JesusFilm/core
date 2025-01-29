@@ -3,8 +3,9 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { QrCodeDialog } from './QrCodeDialog'
 
 describe('QrCodeDialog', () => {
+  const handleClose = jest.fn()
+
   it('should render the dialog', () => {
-    const handleClose = jest.fn()
     render(<QrCodeDialog open onClose={handleClose} />)
 
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
@@ -13,7 +14,6 @@ describe('QrCodeDialog', () => {
   })
 
   it('should call onClose when close button is clicked', () => {
-    const handleClose = jest.fn()
     render(<QrCodeDialog open onClose={handleClose} />)
 
     fireEvent.click(screen.getByTestId('CloseRoundedIcon'))
@@ -21,14 +21,12 @@ describe('QrCodeDialog', () => {
   })
 
   it('should show QR code if to exists', () => {
-    const handleClose = jest.fn()
     render(<QrCodeDialog open onClose={handleClose} initialJourneyUrl="url" />)
 
     expect(screen.getByRole('img', { name: 'QR Code' })).toBeInTheDocument()
   })
 
   it('should show generate button if no to value', () => {
-    const handleClose = jest.fn()
     render(<QrCodeDialog open onClose={handleClose} />)
 
     expect(
@@ -38,7 +36,6 @@ describe('QrCodeDialog', () => {
   })
 
   it('should generate QR code when generate button is clicked', () => {
-    const handleClose = jest.fn()
     render(<QrCodeDialog open onClose={handleClose} />)
 
     expect(
