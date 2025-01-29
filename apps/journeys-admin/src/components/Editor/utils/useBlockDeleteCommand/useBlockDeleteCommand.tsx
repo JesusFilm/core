@@ -11,6 +11,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../libs/journeyUpdatedAtCacheUpdate'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
@@ -122,6 +123,7 @@ export function useBlockDeleteCommand(): {
               cache,
               journey.id
             )
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
 
@@ -138,6 +140,9 @@ export function useBlockDeleteCommand(): {
                 ...journey,
                 menuStepBlock: null
               }
+            },
+            update(cache) {
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
             }
           })
         }
@@ -162,7 +167,10 @@ export function useBlockDeleteCommand(): {
                     ...flattenedChildren,
                     ...canvasSiblingsBeforeDelete
                   ]
-                }
+                },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
+          }
         })
 
         if (isMenuBlock)
@@ -178,6 +186,9 @@ export function useBlockDeleteCommand(): {
                 ...journey,
                 menuStepBlock: currentBlock
               }
+            },
+            update(cache) {
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
             }
           })
       }

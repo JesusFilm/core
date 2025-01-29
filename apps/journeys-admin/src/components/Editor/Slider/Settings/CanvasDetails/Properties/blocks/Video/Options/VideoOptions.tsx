@@ -4,6 +4,7 @@ import { ReactElement } from 'react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../../__generated__/BlockFields'
@@ -12,6 +13,7 @@ import {
   VideoBlockUpdate,
   VideoBlockUpdateVariables
 } from '../../../../../../../../../../__generated__/VideoBlockUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { VideoBlockEditor } from '../../../../../Drawer/VideoBlockEditor'
 
 export const VIDEO_BLOCK_UPDATE = gql`
@@ -25,6 +27,7 @@ export const VIDEO_BLOCK_UPDATE = gql`
 
 export function VideoOptions(): ReactElement {
   const { add } = useCommand()
+  const { journey } = useJourney()
   const {
     state: { selectedStep, selectedBlock: stateSelectedBlock },
     dispatch
@@ -37,7 +40,7 @@ export function VideoOptions(): ReactElement {
   const selectedBlock = stateSelectedBlock as TreeBlock<VideoBlock> | undefined
 
   function handleChange(input: VideoBlockUpdateInput): void {
-    if (selectedBlock == null) return
+    if (selectedBlock == null || journey == null) return
 
     const inverseInput: VideoBlockUpdateInput = {}
     if (input.startAt !== undefined)
@@ -86,6 +89,9 @@ export function VideoOptions(): ReactElement {
               ...input,
               source: input.source ?? selectedBlock.source
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

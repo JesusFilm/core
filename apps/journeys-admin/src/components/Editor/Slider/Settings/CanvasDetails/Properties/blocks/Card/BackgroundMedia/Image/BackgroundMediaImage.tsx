@@ -29,6 +29,7 @@ import {
 } from '../../../../../../../../../../../__generated__/CoverImageBlockUpdate'
 import { ImageBlockUpdateInput } from '../../../../../../../../../../../__generated__/globalTypes'
 import { blockDeleteUpdate } from '../../../../../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { blockRestoreUpdate } from '../../../../../../../../../../libs/useBlockRestoreMutation'
 import { useCoverBlockDeleteMutation } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation'
 import { useCoverBlockRestoreMutation } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation'
@@ -159,6 +160,7 @@ export function BackgroundMediaImage({
                   }
                 }
               })
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
             }
           }
         })
@@ -185,6 +187,7 @@ export function BackgroundMediaImage({
           },
           update(cache, { data }) {
             blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -210,6 +213,7 @@ export function BackgroundMediaImage({
           },
           update(cache, { data }) {
             blockRestoreUpdate(block, data?.blockRestore, cache, journey.id)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }
@@ -254,6 +258,9 @@ export function BackgroundMediaImage({
           },
           optimisticResponse: {
             imageBlockUpdate: block
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }
@@ -296,6 +303,7 @@ export function BackgroundMediaImage({
           },
           update(cache, { data }) {
             blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journey.id)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -326,6 +334,7 @@ export function BackgroundMediaImage({
               cache,
               journey.id
             )
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

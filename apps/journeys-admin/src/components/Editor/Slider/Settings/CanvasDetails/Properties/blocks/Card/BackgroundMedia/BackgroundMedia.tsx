@@ -20,6 +20,7 @@ import {
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../../__generated__/BlockFields'
 import { blockDeleteUpdate } from '../../../../../../../../../libs/blockDeleteUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { blockRestoreUpdate } from '../../../../../../../../../libs/useBlockRestoreMutation'
 import { useCoverBlockDeleteMutation } from '../../../../../../../../../libs/useCoverBlockDeleteMutation'
 import { useCoverBlockRestoreMutation } from '../../../../../../../../../libs/useCoverBlockRestoreMutation'
@@ -126,6 +127,7 @@ export function BackgroundMedia(): ReactElement {
                 cache,
                 journey.id
               )
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
             }
           })
         },
@@ -150,6 +152,7 @@ export function BackgroundMedia(): ReactElement {
                 cache,
                 journey.id
               )
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
             }
           })
         }

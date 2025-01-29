@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { IconColor } from '../../../../../../../../../../__generated__/globalTypes'
 import {
@@ -12,6 +13,7 @@ import {
   IconBlockColorUpdateVariables
 } from '../../../../../../../../../../__generated__/IconBlockColorUpdate'
 import { IconFields } from '../../../../../../../../../../__generated__/IconFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { ColorDisplayIcon } from '../../ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../ToggleButtonGroup'
 
@@ -28,6 +30,7 @@ interface ColorProps extends Pick<TreeBlock<IconFields>, 'id' | 'iconColor'> {}
 
 export function Color({ id, iconColor }: ColorProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
   const [iconBlockColorUpdate] = useMutation<
     IconBlockColorUpdate,
     IconBlockColorUpdateVariables
@@ -39,7 +42,7 @@ export function Color({ id, iconColor }: ColorProps): ReactElement {
   const { add } = useCommand()
 
   function handleChange(color: IconColor): void {
-    if (color !== iconColor && color != null) {
+    if (color !== iconColor && color != null && journey != null) {
       add({
         parameters: {
           execute: {
@@ -66,6 +69,9 @@ export function Color({ id, iconColor }: ColorProps): ReactElement {
                 id,
                 color
               }
+            },
+            update(cache) {
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
             }
           })
         }

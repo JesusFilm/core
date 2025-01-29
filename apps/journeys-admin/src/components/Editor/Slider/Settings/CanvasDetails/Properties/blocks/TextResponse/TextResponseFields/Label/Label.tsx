@@ -9,12 +9,14 @@ import { v4 as uuidv4 } from 'uuid'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import {
   TextResponseLabelUpdate,
   TextResponseLabelUpdateVariables
 } from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 
 export const TEXT_RESPONSE_LABEL_UPDATE = gql`
   mutation TextResponseLabelUpdate($id: ID!, $label: String!) {
@@ -32,6 +34,7 @@ export function Label(): ReactElement {
     TextResponseLabelUpdateVariables
   >(TEXT_RESPONSE_LABEL_UPDATE)
   const { state, dispatch } = useEditor()
+  const { journey } = useJourney()
   const {
     add,
     state: { undo }
@@ -58,7 +61,7 @@ export function Label(): ReactElement {
   }
 
   function handleSubmit(value: string): void {
-    if (selectedBlock == null) return
+    if (selectedBlock == null || journey == null) return
     add({
       id: commandInput.id,
       parameters: {
@@ -102,6 +105,9 @@ export function Label(): ReactElement {
           context: {
             debounceKey: `TextResponseBlock:${selectedBlock.id}`,
             ...context
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

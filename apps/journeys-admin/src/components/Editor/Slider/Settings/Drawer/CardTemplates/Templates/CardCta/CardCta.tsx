@@ -45,6 +45,7 @@ import {
   ThemeName,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 
 import cardCtaImage from './cardCta.svg'
 
@@ -603,6 +604,7 @@ export function CardCta(): ReactElement {
                   }
                 }
               })
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
             }
           }
         })
@@ -663,6 +665,7 @@ export function CardCta(): ReactElement {
               })
               cache.gc()
             })
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -754,6 +757,7 @@ export function CardCta(): ReactElement {
                 })
               })
             })
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

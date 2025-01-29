@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
@@ -12,6 +13,7 @@ import {
   ButtonBlockUpdateVariantVariables
 } from '../../../../../../../../../../__generated__/ButtonBlockUpdateVariant'
 import { ButtonVariant } from '../../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const BUTTON_BLOCK_UPDATE = gql`
@@ -32,12 +34,13 @@ export function Variant(): ReactElement {
 
   const { state, dispatch } = useEditor()
   const { add } = useCommand()
+  const { journey } = useJourney()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined
 
   function handleChange(variant: ButtonVariant): void {
-    if (selectedBlock == null || variant == null) return
+    if (selectedBlock == null || variant == null || journey == null) return
     add({
       parameters: {
         execute: { variant },
@@ -60,6 +63,9 @@ export function Variant(): ReactElement {
               variant,
               __typename: 'ButtonBlock'
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

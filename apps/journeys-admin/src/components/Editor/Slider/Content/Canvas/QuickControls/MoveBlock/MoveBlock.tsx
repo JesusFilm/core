@@ -3,10 +3,12 @@ import { ReactElement } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import {
   getNewParentOrder,
   useBlockOrderUpdateMutation
@@ -19,6 +21,7 @@ export function MoveBlock(): ReactElement {
     state: { selectedBlock, selectedStep }
   } = useEditor()
   const { add } = useCommand()
+  const { journey } = useJourney()
 
   const parentBlock =
     selectedBlock?.parentBlockId != null && selectedStep != null
@@ -26,7 +29,12 @@ export function MoveBlock(): ReactElement {
       : selectedStep
 
   function handleMoveBlock(move: number): void {
-    if (selectedBlock?.parentOrder == null || parentBlock == null) return
+    if (
+      selectedBlock?.parentOrder == null ||
+      parentBlock == null ||
+      journey == null
+    )
+      return
 
     const parentOrder = selectedBlock.parentOrder + move
 
@@ -52,6 +60,9 @@ export function MoveBlock(): ReactElement {
               selectedBlock,
               parentOrder
             )
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

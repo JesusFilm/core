@@ -23,6 +23,7 @@ import {
   CardVideoRestoreVariables
 } from '../../../../../../../../../__generated__/CardVideoRestore'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 
 import cardVideoImage from './cardVideo.svg'
 
@@ -167,6 +168,7 @@ export function CardVideo(): ReactElement {
                   }
                 }
               })
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
             }
           }
         })
@@ -202,6 +204,7 @@ export function CardVideo(): ReactElement {
               })
             })
             cache.gc()
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -241,6 +244,7 @@ export function CardVideo(): ReactElement {
                 }
               }
             })
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

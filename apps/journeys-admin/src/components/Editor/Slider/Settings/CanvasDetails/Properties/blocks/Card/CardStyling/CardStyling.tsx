@@ -6,6 +6,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { CardBlockThemeModeUpdate } from '../../../../../../../../../../__generated__/CardBlockThemeModeUpdate'
@@ -13,6 +14,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { HorizontalSelect } from '../../../../../../../../HorizontalSelect'
 
 import cardStyleDark from './assets/card-style-dark.svg'
@@ -34,6 +36,7 @@ export function CardStyling(): ReactElement {
     dispatch
   } = useEditor()
   const { add } = useCommand()
+  const { journey } = useJourney()
 
   const cardBlock = (
     selectedBlock?.__typename === 'CardBlock'
@@ -48,7 +51,7 @@ export function CardStyling(): ReactElement {
   )
 
   function handleChange(themeMode: ThemeMode): void {
-    if (cardBlock == null) return
+    if (cardBlock == null || journey == null) return
 
     add({
       parameters: {
@@ -79,6 +82,9 @@ export function CardStyling(): ReactElement {
               themeMode,
               themeName: ThemeName.base
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

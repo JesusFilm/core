@@ -6,9 +6,11 @@ import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields } from '../../../../../__generated__/BlockFields'
 import { BlockRestore_blockRestore as BlockRestore } from '../../../../../__generated__/BlockRestore'
+import { journeyUpdatedAtCacheUpdate } from '../../../../libs/journeyUpdatedAtCacheUpdate'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
 
@@ -26,6 +28,7 @@ export function useBlockDuplicateCommand(): {
     dispatch,
     state: { selectedStep, selectedBlock, steps }
   } = useEditor()
+  const { journey } = useJourney()
   const [blockDelete] = useBlockDeleteMutation()
   const [blockRestore] = useBlockRestoreMutation()
 
@@ -41,7 +44,7 @@ export function useBlockDuplicateCommand(): {
     block,
     execute
   }: AddBlockDuplicateParams): void {
-    if (selectedStep == null || steps == null) return
+    if (selectedStep == null || steps == null || journey == null) return
 
     const card = selectedStep.children.find(
       (block) => block.__typename === 'CardBlock'
@@ -74,6 +77,9 @@ export function useBlockDuplicateCommand(): {
               block.__typename === 'StepBlock'
                 ? [...steps]
                 : [...flatten(card.children)]
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -101,6 +107,9 @@ export function useBlockDuplicateCommand(): {
               block.__typename === 'StepBlock'
                 ? [block as BlockRestore]
                 : [block as BlockRestore]
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

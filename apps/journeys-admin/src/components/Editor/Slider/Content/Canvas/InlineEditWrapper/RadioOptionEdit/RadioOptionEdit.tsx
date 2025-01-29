@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { RadioOption } from '@core/journeys/ui/RadioOption'
 
 import {
@@ -13,6 +14,7 @@ import {
   RadioOptionBlockUpdateContentVariables
 } from '../../../../../../../../__generated__/RadioOptionBlockUpdateContent'
 import { RadioOptionFields } from '../../../../../../../../__generated__/RadioOptionFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { InlineEditInput } from '../InlineEditInput'
 
 export const RADIO_OPTION_BLOCK_UPDATE_CONTENT = gql`
@@ -51,6 +53,7 @@ export function RadioOptionEdit({
     state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
+  const { journey } = useJourney()
 
   useEffect(() => {
     if (undo == null || undo.id === commandInput.id) return
@@ -68,51 +71,56 @@ export function RadioOptionEdit({
   }
 
   function handleSubmit(value: string): void {
-    add({
-      id: commandInput.id,
-      parameters: {
-        execute: {
-          label: value,
-          context: {},
-          runDispatch: false
-        },
-        undo: {
-          label: commandInput.value,
-          context: { debounceTimeout: 1 },
-          runDispatch: true
-        },
-        redo: {
-          label: value,
-          context: { debounceTimeout: 1 },
-          runDispatch: true
-        }
-      },
-      execute({ label, context, runDispatch }) {
-        if (runDispatch)
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedBlock,
-            selectedStep
-          })
-        void radioOptionBlockUpdate({
-          variables: {
-            id,
-            input: { label }
+    if (journey != null) {
+      add({
+        id: commandInput.id,
+        parameters: {
+          execute: {
+            label: value,
+            context: {},
+            runDispatch: false
           },
-          optimisticResponse: {
-            radioOptionBlockUpdate: {
-              id,
-              __typename: 'RadioOptionBlock',
-              label
-            }
+          undo: {
+            label: commandInput.value,
+            context: { debounceTimeout: 1 },
+            runDispatch: true
           },
-          context: {
-            debounceKey: `RadioOptionBlock:${id}`,
-            ...context
+          redo: {
+            label: value,
+            context: { debounceTimeout: 1 },
+            runDispatch: true
           }
-        })
-      }
-    })
+        },
+        execute({ label, context, runDispatch }) {
+          if (runDispatch)
+            dispatch({
+              type: 'SetEditorFocusAction',
+              selectedBlock,
+              selectedStep
+            })
+          void radioOptionBlockUpdate({
+            variables: {
+              id,
+              input: { label }
+            },
+            optimisticResponse: {
+              radioOptionBlockUpdate: {
+                id,
+                __typename: 'RadioOptionBlock',
+                label
+              }
+            },
+            context: {
+              debounceKey: `RadioOptionBlock:${id}`,
+              ...context
+            },
+            update(cache) {
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
+            }
+          })
+        }
+      })
+    }
   }
 
   return (

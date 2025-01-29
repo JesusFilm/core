@@ -18,6 +18,7 @@ import {
   TypographyVariant
 } from '../../../../../../../../../../__generated__/globalTypes'
 import { TypographyBlockUpdateVariant } from '../../../../../../../../../../__generated__/TypographyBlockUpdateVariant'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_VARIANT = gql`
@@ -61,7 +62,7 @@ export function Variant(): ReactElement {
   )
 
   function handleChange(variant: TypographyVariant): void {
-    if (selectedBlock == null || variant == null) return
+    if (selectedBlock == null || variant == null || journey == null) return
 
     add({
       parameters: {
@@ -87,6 +88,9 @@ export function Variant(): ReactElement {
               variant,
               __typename: 'TypographyBlock'
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

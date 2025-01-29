@@ -7,6 +7,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
@@ -14,6 +15,7 @@ import {
   ImageBlockUpdate,
   ImageBlockUpdateVariables
 } from '../../../../../../../../../../__generated__/ImageBlockUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { ImageSource } from '../../../../../Drawer/ImageSource'
 
 export const IMAGE_BLOCK_UPDATE = gql`
@@ -36,6 +38,7 @@ export function ImageOptions(): ReactElement {
     dispatch
   } = useEditor()
   const { add } = useCommand()
+  const { journey } = useJourney()
 
   const imageBlock = selectedBlock as TreeBlock<ImageBlock>
 
@@ -53,28 +56,33 @@ export function ImageOptions(): ReactElement {
       width: input.width ?? imageBlock.width
     }
 
-    add({
-      parameters: {
-        execute: block,
-        undo: imageBlock
-      },
-      execute(block) {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          selectedBlock,
-          selectedStep
-        })
-        void imageBlockUpdate({
-          variables: {
-            id: imageBlock.id,
-            input: pick(block, Object.keys(input))
-          },
-          optimisticResponse: {
-            imageBlockUpdate: block
-          }
-        })
-      }
-    })
+    if (journey != null) {
+      add({
+        parameters: {
+          execute: block,
+          undo: imageBlock
+        },
+        execute(block) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlock,
+            selectedStep
+          })
+          void imageBlockUpdate({
+            variables: {
+              id: imageBlock.id,
+              input: pick(block, Object.keys(input))
+            },
+            optimisticResponse: {
+              imageBlockUpdate: block
+            },
+            update(cache) {
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
+            }
+          })
+        }
+      })
+    }
   }
 
   return (

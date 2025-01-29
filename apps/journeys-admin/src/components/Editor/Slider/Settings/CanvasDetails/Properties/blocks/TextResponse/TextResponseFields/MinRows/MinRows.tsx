@@ -5,12 +5,14 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import {
   TextResponseMinRowsUpdate,
   TextResponseMinRowsUpdateVariables
 } from '../../../../../../../../../../../__generated__/TextResponseMinRowsUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { ToggleButtonGroup } from '../../../../controls/ToggleButtonGroup'
 
 export const TEXT_RESPONSE_MIN_ROWS_UPDATE = gql`
@@ -31,12 +33,13 @@ export function MinRows(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { state, dispatch } = useEditor()
   const { add } = useCommand()
+  const { journey } = useJourney()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
     | undefined
 
   async function handleChange(minRows: number): Promise<void> {
-    if (selectedBlock == null) return
+    if (selectedBlock == null || journey == null) return
     add({
       parameters: {
         execute: { minRows: minRows as number | null },
@@ -62,6 +65,9 @@ export function MinRows(): ReactElement {
               minRows,
               __typename: 'TextResponseBlock'
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { TypographyColor } from '../../../../../../../../../../__generated__/globalTypes'
@@ -12,6 +13,7 @@ import {
   TypographyBlockUpdateColor,
   TypographyBlockUpdateColorVariables
 } from '../../../../../../../../../../__generated__/TypographyBlockUpdateColor'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { ColorDisplayIcon } from '../../../controls/ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
@@ -26,6 +28,7 @@ export const TYPOGRAPHY_BLOCK_UPDATE_COLOR = gql`
 
 export function Color(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
   const [typographyBlockUpdate] = useMutation<
     TypographyBlockUpdateColor,
     TypographyBlockUpdateColorVariables
@@ -40,7 +43,7 @@ export function Color(): ReactElement {
     | undefined
 
   function handleChange(color: TypographyColor): void {
-    if (selectedBlock == null || color == null) return
+    if (selectedBlock == null || color == null || journey == null) return
 
     add({
       parameters: {
@@ -66,6 +69,9 @@ export function Color(): ReactElement {
               color,
               __typename: 'TypographyBlock'
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

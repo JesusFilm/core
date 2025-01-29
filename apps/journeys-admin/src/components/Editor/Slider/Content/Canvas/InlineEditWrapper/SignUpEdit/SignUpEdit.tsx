@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { SignUp } from '@core/journeys/ui/SignUp'
 
 import {
@@ -12,6 +13,7 @@ import {
   SignUpBlockUpdateSubmitLabelVariables
 } from '../../../../../../../../__generated__/SignUpBlockUpdateSubmitLabel'
 import { SignUpFields } from '../../../../../../../../__generated__/SignUpFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { InlineEditInput } from '../InlineEditInput'
 
 export const SIGN_UP_BLOCK_UPDATE_SUBMIT_LABEL = gql`
@@ -38,6 +40,7 @@ export function SignUpEdit({
     add,
     state: { undo }
   } = useCommand()
+  const { journey } = useJourney()
   const {
     state: { selectedBlock, selectedStep },
     dispatch
@@ -59,51 +62,56 @@ export function SignUpEdit({
   }
 
   function handleSubmit(value: string): void {
-    add({
-      id: commandInput.id,
-      parameters: {
-        execute: {
-          submitLabel: value,
-          context: {},
-          runDispatch: false
-        },
-        undo: {
-          submitLabel: commandInput.value,
-          context: { debounceTimeout: 1 },
-          runDispatch: true
-        },
-        redo: {
-          submitLabel: value,
-          context: { debounceTimeout: 1 },
-          runDispatch: true
-        }
-      },
-      execute({ submitLabel, context, runDispatch }) {
-        if (runDispatch)
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedBlock,
-            selectedStep
-          })
-        void signUpBlockUpdate({
-          variables: {
-            id,
-            submitLabel
+    if (journey != null) {
+      add({
+        id: commandInput.id,
+        parameters: {
+          execute: {
+            submitLabel: value,
+            context: {},
+            runDispatch: false
           },
-          optimisticResponse: {
-            signUpBlockUpdate: {
-              id,
-              __typename: 'SignUpBlock',
-              submitLabel
-            }
+          undo: {
+            submitLabel: commandInput.value,
+            context: { debounceTimeout: 1 },
+            runDispatch: true
           },
-          context: {
-            debounceKey: `SignUpBlock:${id}`,
-            ...context
+          redo: {
+            submitLabel: value,
+            context: { debounceTimeout: 1 },
+            runDispatch: true
           }
-        })
-      }
-    })
+        },
+        execute({ submitLabel, context, runDispatch }) {
+          if (runDispatch)
+            dispatch({
+              type: 'SetEditorFocusAction',
+              selectedBlock,
+              selectedStep
+            })
+          void signUpBlockUpdate({
+            variables: {
+              id,
+              submitLabel
+            },
+            optimisticResponse: {
+              signUpBlockUpdate: {
+                id,
+                __typename: 'SignUpBlock',
+                submitLabel
+              }
+            },
+            context: {
+              debounceKey: `SignUpBlock:${id}`,
+              ...context
+            },
+            update(cache) {
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
+            }
+          })
+        }
+      })
+    }
   }
 
   return (

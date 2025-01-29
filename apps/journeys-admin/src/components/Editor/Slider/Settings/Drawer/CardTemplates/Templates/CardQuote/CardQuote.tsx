@@ -37,6 +37,7 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 
 import cardQuoteImage from './cardQuote.svg'
 
@@ -283,6 +284,7 @@ export function CardQuote(): ReactElement {
                   }
                 }
               })
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
             }
           }
         })
@@ -327,6 +329,7 @@ export function CardQuote(): ReactElement {
               })
               cache.gc()
             })
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -384,6 +387,7 @@ export function CardQuote(): ReactElement {
                 })
               })
             })
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

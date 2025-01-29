@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
 import AlignLeftIcon from '@core/shared/ui/icons/AlignLeft'
 import AlignRightIcon from '@core/shared/ui/icons/AlignRight'
@@ -12,6 +13,7 @@ import AlignRightIcon from '@core/shared/ui/icons/AlignRight'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { TypographyAlign } from '../../../../../../../../../../__generated__/globalTypes'
 import { TypographyBlockUpdateAlign } from '../../../../../../../../../../__generated__/TypographyBlockUpdateAlign'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_ALIGN = gql`
@@ -28,6 +30,7 @@ export const TYPOGRAPHY_BLOCK_UPDATE_ALIGN = gql`
 
 export function Align(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateAlign>(
     TYPOGRAPHY_BLOCK_UPDATE_ALIGN
   )
@@ -41,7 +44,7 @@ export function Align(): ReactElement {
     | undefined
 
   async function handleChange(align: TypographyAlign): Promise<void> {
-    if (selectedBlock == null || align == null) return
+    if (selectedBlock == null || align == null || journey == null) return
 
     add({
       parameters: {
@@ -67,6 +70,9 @@ export function Align(): ReactElement {
               align,
               __typename: 'TypographyBlock'
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

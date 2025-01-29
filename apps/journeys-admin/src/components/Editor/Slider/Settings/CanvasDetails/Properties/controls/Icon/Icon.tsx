@@ -31,6 +31,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -42,6 +43,7 @@ import {
   IconBlockNameUpdateVariables
 } from '../../../../../../../../../__generated__/IconBlockNameUpdate'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 
 import { Color } from './Color'
 
@@ -164,6 +166,7 @@ export function Icon({ id }: IconProps): ReactElement {
     IconBlockNameUpdateVariables
   >(ICON_BLOCK_NAME_UPDATE)
   const { state, dispatch } = useEditor()
+  const { journey } = useJourney()
   const { add } = useCommand()
   const selectedBlock = state.selectedBlock as IconParentBlock
 
@@ -174,33 +177,38 @@ export function Icon({ id }: IconProps): ReactElement {
   const iconName = iconBlock?.iconName ?? ''
 
   function iconUpdate(name: IconName | null): void {
-    add({
-      parameters: {
-        execute: { name },
-        undo: { name: iconName === '' ? null : iconName }
-      },
-      execute({ name }) {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          selectedBlock,
-          selectedStep: state.selectedStep
-        })
+    if (journey != null) {
+      add({
+        parameters: {
+          execute: { name },
+          undo: { name: iconName === '' ? null : iconName }
+        },
+        execute({ name }) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlock,
+            selectedStep: state.selectedStep
+          })
 
-        void iconBlockNameUpdate({
-          variables: {
-            id,
-            name
-          },
-          optimisticResponse: {
-            iconBlockUpdate: {
-              __typename: 'IconBlock',
+          void iconBlockNameUpdate({
+            variables: {
               id,
               name
+            },
+            optimisticResponse: {
+              iconBlockUpdate: {
+                __typename: 'IconBlock',
+                id,
+                name
+              }
+            },
+            update(cache) {
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
             }
-          }
-        })
-      }
-    })
+          })
+        }
+      })
+    }
   }
 
   function handleChange(event: SelectChangeEvent): void {

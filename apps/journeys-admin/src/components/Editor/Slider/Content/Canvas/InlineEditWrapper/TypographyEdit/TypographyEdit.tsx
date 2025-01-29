@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Typography } from '@core/journeys/ui/Typography'
 
 import {
@@ -13,6 +14,7 @@ import {
   TypographyBlockUpdateContentVariables
 } from '../../../../../../../../__generated__/TypographyBlockUpdateContent'
 import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { InlineEditInput } from '../InlineEditInput'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
@@ -45,6 +47,7 @@ export function TypographyEdit({
     state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
+  const { journey } = useJourney()
 
   useEffect(() => {
     if (undo == null || undo.id === commandInput.id) return
@@ -62,51 +65,56 @@ export function TypographyEdit({
   }
 
   function handleSubmit(value: string): void {
-    add({
-      id: commandInput.id,
-      parameters: {
-        execute: {
-          content: value,
-          context: {},
-          runDispatch: false
-        },
-        undo: {
-          content: commandInput.value,
-          context: { debounceTimeout: 1 },
-          runDispatch: true
-        },
-        redo: {
-          content: value,
-          context: { debounceTimeout: 1 },
-          runDispatch: true
-        }
-      },
-      execute({ content, context, runDispatch }) {
-        if (runDispatch)
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedBlock,
-            selectedStep
-          })
-        void typographyBlockUpdate({
-          variables: {
-            id,
-            content
+    if (journey != null) {
+      add({
+        id: commandInput.id,
+        parameters: {
+          execute: {
+            content: value,
+            context: {},
+            runDispatch: false
           },
-          optimisticResponse: {
-            typographyBlockUpdate: {
-              id,
-              __typename: 'TypographyBlock',
-              content
-            }
+          undo: {
+            content: commandInput.value,
+            context: { debounceTimeout: 1 },
+            runDispatch: true
           },
-          context: {
-            debounceKey: `TypographyBlock:${id}`,
-            ...context
+          redo: {
+            content: value,
+            context: { debounceTimeout: 1 },
+            runDispatch: true
           }
-        })
-      }
-    })
+        },
+        execute({ content, context, runDispatch }) {
+          if (runDispatch)
+            dispatch({
+              type: 'SetEditorFocusAction',
+              selectedBlock,
+              selectedStep
+            })
+          void typographyBlockUpdate({
+            variables: {
+              id,
+              content
+            },
+            optimisticResponse: {
+              typographyBlockUpdate: {
+                id,
+                __typename: 'TypographyBlock',
+                content
+              }
+            },
+            context: {
+              debounceKey: `TypographyBlock:${id}`,
+              ...context
+            },
+            update(cache) {
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
+            }
+          })
+        }
+      })
+    }
   }
 
   return (

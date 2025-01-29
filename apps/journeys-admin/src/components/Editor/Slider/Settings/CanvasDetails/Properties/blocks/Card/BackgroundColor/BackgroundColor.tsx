@@ -25,6 +25,7 @@ import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { CardBlockBackgroundColorUpdate } from '../../../../../../../../../../__generated__/CardBlockBackgroundColorUpdate'
 import { CardFields } from '../../../../../../../../../../__generated__/CardFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 
 import { DebouncedHexColorPicker } from './DebouncedHexColorPicker'
@@ -97,8 +98,8 @@ export function BackgroundColor(): ReactElement {
   }
 
   async function handleColorChange(color: string): Promise<void> {
-    if (cardBlock != null) {
-      await add({
+    if (cardBlock != null && journey != null) {
+      add({
         parameters: {
           execute: {
             color: color.toUpperCase()
@@ -127,6 +128,9 @@ export function BackgroundColor(): ReactElement {
                 __typename: 'CardBlock',
                 backgroundColor: color === 'null' ? null : color
               }
+            },
+            update(cache) {
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
             }
           })
         }

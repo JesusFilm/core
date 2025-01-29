@@ -7,6 +7,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
 import Share from '@core/shared/ui/icons/Share'
 
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { useJourneyUpdateMutation } from '../../../../../../../libs/useJourneyUpdateMutation'
 import { Accordion } from '../../Properties/Accordion'
 
@@ -50,6 +51,9 @@ export function Reactions(): ReactElement {
               showDislikeButton:
                 input.showDislikeButton ?? journey.showDislikeButton
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

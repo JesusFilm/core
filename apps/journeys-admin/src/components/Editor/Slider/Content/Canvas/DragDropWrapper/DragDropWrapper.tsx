@@ -18,9 +18,11 @@ import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
 import { BlockFields } from '../../../../../../../__generated__/BlockFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import {
   getNewParentOrder,
   useBlockOrderUpdateMutation
@@ -40,6 +42,7 @@ export function DragDropWrapper({
     state: { selectedStep }
   } = useEditor()
   const { add } = useCommand()
+  const { journey } = useJourney()
   const activeItem = useMemo(
     () =>
       selectedStep?.children[0].children.find((item) => item.id === active?.id),
@@ -75,7 +78,8 @@ export function DragDropWrapper({
         ? searchBlocks(selectedStep.children, block.parentBlockId)
         : selectedStep
 
-    if (block?.parentOrder == null || parentBlock == null) return
+    if (block?.parentOrder == null || parentBlock == null || journey == null)
+      return
     const parentOrder = block.parentOrder + move
 
     add({
@@ -95,6 +99,9 @@ export function DragDropWrapper({
               block,
               parentOrder
             )
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

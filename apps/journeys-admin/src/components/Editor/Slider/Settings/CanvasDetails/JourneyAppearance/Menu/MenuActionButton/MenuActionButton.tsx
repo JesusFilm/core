@@ -27,6 +27,7 @@ import {
   TypographyAlign,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { useMenuBlockCreateMutation } from '../../../../../../../../libs/useMenuBlockCreateMutation/useMenuBlockCreateMutation'
 import {
   removeCachedBlocks,
@@ -232,6 +233,9 @@ export function MenuActionButton(): ReactElement {
                 ...journey,
                 menuStepBlock: step
               }
+            },
+            update(cache) {
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
             }
           })
         },
@@ -264,6 +268,7 @@ export function MenuActionButton(): ReactElement {
             update(cache, { data }) {
               if (data == null) return
               removeCachedBlocks(cache, createdBlocks, journey?.id)
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
             }
           })
         },
@@ -285,6 +290,9 @@ export function MenuActionButton(): ReactElement {
                 ...journey,
                 menuStepBlock: step
               }
+            },
+            update(cache) {
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
             }
           })
         }

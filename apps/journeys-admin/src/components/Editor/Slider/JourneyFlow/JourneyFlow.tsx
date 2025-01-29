@@ -44,6 +44,7 @@ import type {
   GetStepBlocksWithPositionVariables,
   GetStepBlocksWithPosition_blocks_StepBlock
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
+import { journeyUpdatedAtCacheUpdate } from '../../../../libs/journeyUpdatedAtCacheUpdate'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
@@ -138,19 +139,24 @@ export function JourneyFlow(): ReactElement {
 
   const blockPositionUpdate = useCallback(
     (input: Array<{ id: string; x: number; y: number }>): void => {
-      void stepBlockPositionUpdate({
-        variables: {
-          input
-        },
-        optimisticResponse: {
-          stepBlockPositionUpdate: input.map((step) => ({
-            ...step,
-            __typename: 'StepBlock'
-          }))
-        }
-      })
+      if (journey != null) {
+        void stepBlockPositionUpdate({
+          variables: {
+            input
+          },
+          optimisticResponse: {
+            stepBlockPositionUpdate: input.map((step) => ({
+              ...step,
+              __typename: 'StepBlock'
+            }))
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
+          }
+        })
+      }
     },
-    [stepBlockPositionUpdate]
+    [journey, stepBlockPositionUpdate]
   )
 
   const allBlockPositionUpdate = useCallback(

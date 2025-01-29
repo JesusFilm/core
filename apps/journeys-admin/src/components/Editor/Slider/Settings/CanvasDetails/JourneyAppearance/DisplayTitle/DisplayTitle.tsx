@@ -6,6 +6,7 @@ import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Type3 from '@core/shared/ui/icons/Type3'
 
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { useJourneyUpdateMutation } from '../../../../../../../libs/useJourneyUpdateMutation'
 import { TextFieldForm } from '../../../../../../TextFieldForm'
 import { Accordion } from '../../Properties/Accordion'
@@ -39,6 +40,9 @@ export function DisplayTitle(): ReactElement {
               tags: [],
               displayTitle
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

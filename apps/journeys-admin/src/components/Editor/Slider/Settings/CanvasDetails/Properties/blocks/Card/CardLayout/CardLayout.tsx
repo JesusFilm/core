@@ -6,12 +6,14 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
   CardBlockLayoutUpdate,
   CardBlockLayoutUpdateVariables
 } from '../../../../../../../../../../__generated__/CardBlockLayoutUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { HorizontalSelect } from '../../../../../../../../HorizontalSelect'
 
 import cardLayoutContained from './assets/card-layout-contained.svg'
@@ -32,6 +34,7 @@ export function CardLayout(): ReactElement {
     dispatch
   } = useEditor()
   const { add } = useCommand()
+  const { journey } = useJourney()
   const [cardBlockUpdate] = useMutation<
     CardBlockLayoutUpdate,
     CardBlockLayoutUpdateVariables
@@ -46,7 +49,7 @@ export function CardLayout(): ReactElement {
   ) as TreeBlock<CardBlock> | undefined
 
   function handleLayoutChange(fullscreen: boolean): void {
-    if (cardBlock == null) return
+    if (cardBlock == null || journey == null) return
 
     add({
       parameters: {
@@ -75,6 +78,9 @@ export function CardLayout(): ReactElement {
               __typename: 'CardBlock',
               fullscreen
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

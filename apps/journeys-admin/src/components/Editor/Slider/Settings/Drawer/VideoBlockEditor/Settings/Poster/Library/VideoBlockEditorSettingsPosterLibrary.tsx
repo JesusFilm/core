@@ -27,6 +27,7 @@ import {
   PosterImageBlockUpdateVariables
 } from '../../../../../../../../../../__generated__/PosterImageBlockUpdate'
 import { blockDeleteUpdate } from '../../../../../../../../../libs/blockDeleteUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { blockRestoreUpdate } from '../../../../../../../../../libs/useBlockRestoreMutation'
 import { ImageLibrary } from '../../../../ImageLibrary'
 
@@ -202,6 +203,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
                 }
               }
             })
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -221,6 +223,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
           },
           update(cache, { data }) {
             blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -240,6 +243,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
           },
           update(cache, { data }) {
             blockRestoreUpdate(block, data?.blockRestore, cache, journey.id)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }
@@ -271,6 +275,9 @@ export function VideoBlockEditorSettingsPosterLibrary({
           },
           optimisticResponse: {
             imageBlockUpdate: block
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }
@@ -307,6 +314,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
               cache,
               journeyId
             )
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -331,6 +339,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
               cache,
               journey.id
             )
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

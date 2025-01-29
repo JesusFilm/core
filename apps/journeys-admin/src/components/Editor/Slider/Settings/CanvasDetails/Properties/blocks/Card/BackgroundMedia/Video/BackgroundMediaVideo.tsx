@@ -31,6 +31,7 @@ import {
   VideoBlockUpdateInput
 } from '../../../../../../../../../../../__generated__/globalTypes'
 import { blockDeleteUpdate } from '../../../../../../../../../../libs/blockDeleteUpdate/blockDeleteUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { blockRestoreUpdate } from '../../../../../../../../../../libs/useBlockRestoreMutation'
 import { useCoverBlockDeleteMutation } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation'
 import { useCoverBlockRestoreMutation } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation'
@@ -187,6 +188,7 @@ export function BackgroundMediaVideo({
                   }
                 }
               })
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
             }
           }
         })
@@ -213,6 +215,7 @@ export function BackgroundMediaVideo({
           },
           update(cache, { data }) {
             blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -238,6 +241,7 @@ export function BackgroundMediaVideo({
           },
           update(cache, { data }) {
             blockRestoreUpdate(block, data?.blockRestore, cache, journey.id)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }
@@ -277,6 +281,9 @@ export function BackgroundMediaVideo({
           },
           optimisticResponse: {
             videoBlockUpdate: block
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }
@@ -319,6 +326,7 @@ export function BackgroundMediaVideo({
           },
           update(cache, { data }) {
             blockDeleteUpdate(coverBlock, data?.blockDelete, cache, journey.id)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -349,6 +357,7 @@ export function BackgroundMediaVideo({
               cache,
               journey.id
             )
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

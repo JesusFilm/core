@@ -41,6 +41,7 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 
 import cardPollImage from './cardPoll.svg'
 
@@ -428,6 +429,7 @@ export function CardPoll(): ReactElement {
                 }
               }
             })
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -476,6 +478,7 @@ export function CardPoll(): ReactElement {
               })
               cache.gc()
             })
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -536,6 +539,7 @@ export function CardPoll(): ReactElement {
                 })
               })
             })
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

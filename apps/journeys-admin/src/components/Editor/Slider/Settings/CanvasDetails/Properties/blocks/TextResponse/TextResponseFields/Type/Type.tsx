@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import {
@@ -15,6 +16,7 @@ import {
   TextResponseTypeUpdate,
   TextResponseTypeUpdateVariables
 } from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { ToggleButtonGroup } from '../../../../controls/ToggleButtonGroup'
 
 export const TEXT_RESPONSE_TYPE_UPDATE = gql`
@@ -35,6 +37,7 @@ export const TEXT_RESPONSE_TYPE_UPDATE = gql`
 export function Type(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { state, dispatch } = useEditor()
+  const { journey } = useJourney()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
     | undefined
@@ -47,7 +50,7 @@ export function Type(): ReactElement {
   >(TEXT_RESPONSE_TYPE_UPDATE)
 
   function handleChange(type: TextResponseType): void {
-    if (selectedBlock == null || type == null) return
+    if (selectedBlock == null || type == null || journey == null) return
 
     const input: TextResponseBlockUpdateInput = {
       type
@@ -108,6 +111,9 @@ export function Type(): ReactElement {
                   ? input.routeId
                   : selectedBlock.routeId
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

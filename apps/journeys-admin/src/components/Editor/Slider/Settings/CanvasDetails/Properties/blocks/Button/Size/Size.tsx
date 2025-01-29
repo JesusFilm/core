@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
@@ -12,6 +13,7 @@ import {
   ButtonBlockUpdateSizeVariables
 } from '../../../../../../../../../../__generated__/ButtonBlockUpdateSize'
 import { ButtonSize } from '../../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
 export const BUTTON_BLOCK_UPDATE = gql`
@@ -31,13 +33,14 @@ export function Size(): ReactElement {
   >(BUTTON_BLOCK_UPDATE)
 
   const { state, dispatch } = useEditor()
+  const { journey } = useJourney()
   const { add } = useCommand()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined
 
   function handleChange(size: ButtonSize): void {
-    if (selectedBlock == null || size == null) return
+    if (selectedBlock == null || size == null || journey == null) return
     add({
       parameters: {
         execute: { size },
@@ -60,6 +63,9 @@ export function Size(): ReactElement {
               size,
               __typename: 'ButtonBlock'
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

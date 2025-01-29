@@ -7,12 +7,14 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import {
   ButtonBlockUpdateContent,
   ButtonBlockUpdateContentVariables
 } from '../../../../../../../../__generated__/ButtonBlockUpdateContent'
 import { ButtonFields } from '../../../../../../../../__generated__/ButtonFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { InlineEditInput } from '../InlineEditInput'
 
 export const BUTTON_BLOCK_UPDATE_CONTENT = gql`
@@ -48,6 +50,7 @@ export function ButtonEdit({
     state: { selectedBlock, selectedStep },
     dispatch
   } = useEditor()
+  const { journey } = useJourney()
 
   useEffect(() => {
     if (undo == null || undo.id === commandInput.id) return
@@ -65,51 +68,56 @@ export function ButtonEdit({
   }
 
   function handleSubmit(value: string): void {
-    add({
-      id: commandInput.id,
-      parameters: {
-        execute: {
-          label: value,
-          context: {},
-          runDispatch: false
-        },
-        undo: {
-          label: commandInput.value,
-          context: { debounceTimeout: 1 },
-          runDispatch: true
-        },
-        redo: {
-          label: value,
-          context: { debounceTimeout: 1 },
-          runDispatch: true
-        }
-      },
-      execute({ label, context, runDispatch }) {
-        if (runDispatch)
-          dispatch({
-            type: 'SetEditorFocusAction',
-            selectedBlock,
-            selectedStep
-          })
-        void buttonBlockUpdate({
-          variables: {
-            id,
-            label
+    if (journey != null) {
+      add({
+        id: commandInput.id,
+        parameters: {
+          execute: {
+            label: value,
+            context: {},
+            runDispatch: false
           },
-          optimisticResponse: {
-            buttonBlockUpdate: {
-              id,
-              __typename: 'ButtonBlock',
-              label
-            }
+          undo: {
+            label: commandInput.value,
+            context: { debounceTimeout: 1 },
+            runDispatch: true
           },
-          context: {
-            debounceKey: `ButtonBlock:${id}`,
-            ...context
+          redo: {
+            label: value,
+            context: { debounceTimeout: 1 },
+            runDispatch: true
           }
-        })
-      }
-    })
+        },
+        execute({ label, context, runDispatch }) {
+          if (runDispatch)
+            dispatch({
+              type: 'SetEditorFocusAction',
+              selectedBlock,
+              selectedStep
+            })
+          void buttonBlockUpdate({
+            variables: {
+              id,
+              label
+            },
+            optimisticResponse: {
+              buttonBlockUpdate: {
+                id,
+                __typename: 'ButtonBlock',
+                label
+              }
+            },
+            context: {
+              debounceKey: `ButtonBlock:${id}`,
+              ...context
+            },
+            update(cache) {
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
+            }
+          })
+        }
+      })
+    }
   }
 
   return (

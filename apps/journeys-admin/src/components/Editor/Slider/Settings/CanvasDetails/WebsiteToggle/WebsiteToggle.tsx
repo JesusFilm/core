@@ -6,6 +6,7 @@ import { ReactElement } from 'react'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { useJourneyUpdateMutation } from '../../../../../../libs/useJourneyUpdateMutation'
 
 export function WebsiteToggle(): ReactElement {
@@ -35,6 +36,9 @@ export function WebsiteToggle(): ReactElement {
               ...journey,
               website: currentMode
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

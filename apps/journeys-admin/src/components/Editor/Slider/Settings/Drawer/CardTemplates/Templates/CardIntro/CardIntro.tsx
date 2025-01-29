@@ -40,6 +40,7 @@ import {
   TypographyVariant,
   VideoBlockSource
 } from '../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 
 import cardIntroImage from './cardIntro.svg'
 
@@ -420,6 +421,7 @@ export function CardIntro(): ReactElement {
                   coverBlockId: () => data.video.id
                 }
               })
+              journeyUpdatedAtCacheUpdate(cache, journey.id)
             }
           }
         })
@@ -465,6 +467,7 @@ export function CardIntro(): ReactElement {
               })
               cache.gc()
             })
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -530,6 +533,7 @@ export function CardIntro(): ReactElement {
                 coverBlockId: () => videoBlock.id
               }
             })
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

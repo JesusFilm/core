@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
@@ -12,6 +13,7 @@ import {
   ButtonBlockUpdateColorVariables
 } from '../../../../../../../../../../__generated__/ButtonBlockUpdateColor'
 import { ButtonColor } from '../../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { ColorDisplayIcon } from '../../../controls/ColorDisplayIcon'
 import { ToggleButtonGroup } from '../../../controls/ToggleButtonGroup'
 
@@ -33,12 +35,13 @@ export function Color(): ReactElement {
 
   const { state, dispatch } = useEditor()
   const { add } = useCommand()
+  const { journey } = useJourney()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<ButtonBlock>
     | undefined
 
   function handleChange(color: ButtonColor): void {
-    if (selectedBlock == null || color == null) return
+    if (selectedBlock == null || color == null || journey == null) return
     add({
       parameters: {
         execute: { color },
@@ -61,6 +64,9 @@ export function Color(): ReactElement {
               color,
               __typename: 'ButtonBlock'
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

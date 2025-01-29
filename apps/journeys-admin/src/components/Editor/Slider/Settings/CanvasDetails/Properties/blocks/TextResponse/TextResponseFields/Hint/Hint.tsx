@@ -8,12 +8,14 @@ import { v4 as uuidv4 } from 'uuid'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import {
   TextResponseHintUpdate,
   TextResponseHintUpdateVariables
 } from '../../../../../../../../../../../__generated__/TextResponseHintUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 
 export const TEXT_RESPONSE_HINT_UPDATE = gql`
   mutation TextResponseHintUpdate($id: ID!, $hint: String!) {
@@ -26,6 +28,7 @@ export const TEXT_RESPONSE_HINT_UPDATE = gql`
 
 export function Hint(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
   const [textResponseHintUpdate] = useMutation<
     TextResponseHintUpdate,
     TextResponseHintUpdateVariables
@@ -56,7 +59,7 @@ export function Hint(): ReactElement {
   }
 
   function handleSubmit(value: string): void {
-    if (selectedBlock == null) return
+    if (selectedBlock == null || journey == null) return
     add({
       id: commandInput.id,
       parameters: {
@@ -100,6 +103,9 @@ export function Hint(): ReactElement {
           context: {
             debounceKey: `TextResponseBlock:${selectedBlock.id}`,
             ...context
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

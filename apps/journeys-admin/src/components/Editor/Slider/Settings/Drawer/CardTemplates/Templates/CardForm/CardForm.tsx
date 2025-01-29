@@ -39,6 +39,7 @@ import {
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 
 import cardFormImage from './cardForm.svg'
 
@@ -325,6 +326,7 @@ export function CardForm(): ReactElement {
                 }
               })
             }
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -369,6 +371,7 @@ export function CardForm(): ReactElement {
               })
               cache.gc()
             })
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -427,6 +430,7 @@ export function CardForm(): ReactElement {
                 })
               })
             })
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

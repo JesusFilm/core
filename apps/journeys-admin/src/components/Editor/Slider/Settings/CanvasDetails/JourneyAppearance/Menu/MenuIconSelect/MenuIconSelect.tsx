@@ -20,6 +20,7 @@ import Menu1 from '@core/shared/ui/icons/Menu1'
 import More from '@core/shared/ui/icons/More'
 
 import { JourneyMenuButtonIcon } from '../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { useJourneyUpdateMutation } from '../../../../../../../../libs/useJourneyUpdateMutation'
 
 type IconOptions = Array<{
@@ -91,6 +92,9 @@ export function MenuIconSelect(): ReactElement {
               tags: [],
               menuButtonIcon: icon
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

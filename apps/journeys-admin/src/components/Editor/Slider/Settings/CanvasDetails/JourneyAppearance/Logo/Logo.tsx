@@ -26,6 +26,7 @@ import {
   LogoBlockCreate,
   LogoBlockCreateVariables
 } from '../../../../../../../../__generated__/LogoBlockCreate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { ImageSource } from '../../../Drawer/ImageSource'
 import { Accordion } from '../../Properties/Accordion'
@@ -123,6 +124,7 @@ export function Logo(): ReactElement {
           },
           update(cache, { data }) {
             blockCreateUpdate(cache, journey.id, data?.imageBlockCreate)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -133,6 +135,9 @@ export function Logo(): ReactElement {
             input: {
               src: null
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -143,6 +148,9 @@ export function Logo(): ReactElement {
             input: {
               src: block.src
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

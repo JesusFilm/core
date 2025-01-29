@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
@@ -12,6 +13,7 @@ import {
   TextResponseRouteUpdate,
   TextResponseRouteUpdateVariables
 } from '../../../../../../../../../../../../__generated__/TextResponseRouteUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { useIntegrationQuery } from '../../../../../../../../../../../libs/useIntegrationQuery'
 import { Select } from '../Select'
 
@@ -30,6 +32,7 @@ export const TEXT_RESPONSE_ROUTE_UPDATE = gql`
 export function Route(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
+  const { journey } = useJourney()
   const { state, dispatch } = useEditor()
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
@@ -57,7 +60,7 @@ export function Route(): ReactElement {
     })) ?? []
 
   function handleChange(routeId: string | null): void {
-    if (selectedBlock == null) return
+    if (selectedBlock == null || journey == null) return
 
     add({
       parameters: {
@@ -84,6 +87,9 @@ export function Route(): ReactElement {
               __typename: 'TextResponseBlock',
               routeId
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }
