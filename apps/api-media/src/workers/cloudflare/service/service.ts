@@ -28,9 +28,9 @@ export async function service(logger?: Logger): Promise<void> {
   const videosToRemove = videoIds.filter((id) => !dbVideoIds.includes(id))
   logger?.info(`${videosToRemove.length} cloudflare videos to remove`)
 
-  for (const videoId of videosToRemove) {
-    await deleteCloudflareVideo(cloudflare, videoId, logger)
-  }
+  // for (const videoId of videosToRemove) {
+  //   await deleteCloudflareVideo(cloudflare, videoId, logger)
+  // }
 
   const downloadsToRemove = videoIds.filter((id) => dbVideoIds.includes(id))
   logger?.info(`${downloadsToRemove.length} cloudflare downloads to remove`)
@@ -92,8 +92,8 @@ async function deleteCloudflareDownload(
     await cloudflare.stream.downloads.delete(videoId, {
       account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string
     })
-    logger?.info(`deleted cloudflare video ${videoId}`)
+    logger?.info(`deleted cloudflare download ${videoId}`)
   } catch {
-    logger?.error(`unable to delete cloudflare video ${videoId}`)
+    logger?.error(`unable to delete cloudflare download ${videoId}`)
   }
 }
