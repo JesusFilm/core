@@ -77,6 +77,12 @@ async function main(): Promise<void> {
   )
   run(
     await import(
+      /* webpackChunkName: "cloudflare" */
+      './cloudflare'
+    )
+  )
+  run(
+    await import(
       /* webpackChunkName: "seed" */
       './seed'
     )
