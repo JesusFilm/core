@@ -109,6 +109,7 @@ export function DownloadQrCode({
         </Button>
         <Button
           color="secondary"
+          data-testid="DownloadDropdown"
           onClick={(e) => {
             handleMenuClick(e)
           }}
