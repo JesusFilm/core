@@ -16,6 +16,16 @@ import { CommandProvider } from '../CommandProvider'
 import { searchBlocks } from '../searchBlocks'
 import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'
 
+export enum ActiveAction {
+  Idle = 'idle',
+  View = 'view',
+  Edit = 'edit'
+}
+interface SetActiveAction {
+  type: 'SetActiveAction'
+  activeAction: ActiveAction
+}
+
 export enum ActiveContent {
   Canvas = 'canvas',
   Social = 'social',
@@ -48,6 +58,10 @@ export interface EditorState {
    * Note that Settings should only be set as active when on a mobile device.
    * */
   activeSlide: ActiveSlide
+  /**
+   * activeAction indicates when to display the step card and properties drawer
+   * */
+  activeAction: ActiveAction
   /**
    * showAnalytics indicates if the analytics should be shown.
    * */
@@ -180,12 +194,18 @@ export type EditorAction =
   | SetAnalyticsAction
   | SetEditorFocusAction
   | SetSelectedStepByIdAction
+  | SetActiveAction
 
 export const reducer = (
   state: EditorState,
   action: EditorAction
 ): EditorState => {
   switch (action.type) {
+    case 'SetActiveAction':
+      return {
+        ...state,
+        activeAction: action.activeAction
+      }
     case 'SetActiveCanvasDetailsDrawerAction':
       return {
         ...state,
@@ -214,6 +234,7 @@ export const reducer = (
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas,
         activeSlide: ActiveSlide.Content
+        // activeAction: ActiveAction.Edit
       }
     case 'SetSelectedBlockOnlyAction':
       return {
@@ -244,7 +265,8 @@ export const reducer = (
         selectedBlockId: action.selectedStep?.id,
         selectedBlock: action.selectedStep,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-        activeContent: ActiveContent.Canvas
+        activeContent: ActiveContent.Canvas,
+        activeAction: ActiveAction.View
       }
     case 'SetSelectedStepByIdAction': {
       const selectedStep =
@@ -357,7 +379,8 @@ export const EditorContext = createContext<{
     steps: [],
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
     activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Canvas
+    activeContent: ActiveContent.Canvas,
+    activeAction: ActiveAction.Idle
   },
   dispatch: () => null
 })
@@ -383,8 +406,11 @@ export function EditorProvider({
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,
+    activeAction: ActiveAction.Idle,
     ...initialState
   })
+
+  useEffect(() => console.log({ state }), [state])
 
   useEffect(() => {
     if (initialState?.steps != null)
