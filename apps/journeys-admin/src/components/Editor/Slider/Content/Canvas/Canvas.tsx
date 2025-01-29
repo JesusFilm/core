@@ -200,7 +200,6 @@ export function Canvas(): ReactElement {
                 selectedStep.id === selectedBlock?.id
                   ? `2px solid ${theme.palette.primary.main}`
                   : 'none',
-              padding: '6px',
               outlineOffset: 4,
               bgcolor:
                 theme.themeMode === ThemeMode.light
@@ -238,9 +237,9 @@ export function Canvas(): ReactElement {
                         transition: 'opacity 0.3s ease'
                       },
                       position: 'relative',
-                      width: 'calc(100% - 8px)',
-                      height: 'calc(100vh - 8px)',
-                      m: '4px'
+                      width: 'calc(100% - 20px)',
+                      height: 'calc(100vh - 20px)',
+                      m: '10px'
                     }}
                   >
                     <CSSTransition
