@@ -1,4 +1,3 @@
-import { keyframes } from '@emotion/react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
@@ -12,6 +11,7 @@ import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { ActiveAction } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { FramePortal } from '@core/journeys/ui/FramePortal'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -29,6 +29,7 @@ import { CardWrapper } from './CardWrapper'
 import { DragDropWrapper } from './DragDropWrapper'
 import { DragItemWrapper } from './DragItemWrapper'
 import { InlineEditWrapper } from './InlineEditWrapper'
+import { MapButton } from './MapButton'
 import { SelectableWrapper } from './SelectableWrapper'
 import {
   CARD_HEIGHT,
@@ -37,17 +38,6 @@ import {
   calculateScaledHeight,
   calculateScaledMargin
 } from './utils/calculateDimensions'
-
-const fadeIn = keyframes`
-  from {
-    top: -10px;
-    opacity: 0;
-  }
-  to {
-    top: 0;
-    opacity: 1;
-  }
-`
 
 export function Canvas(): ReactElement {
   const frameRef = useRef<HTMLIFrameElement>(null)
@@ -92,6 +82,10 @@ export function Canvas(): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: undefined
     })
+    dispatch({
+      type: 'SetActiveAction',
+      activeAction: ActiveAction.Edit
+    })
     const param = 'step-footer'
     void router.push({ query: { ...router.query, param } }, undefined, {
       shallow: true
@@ -129,6 +123,10 @@ export function Canvas(): ReactElement {
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
     })
+    dispatch({
+      type: 'SetActiveAction',
+      activeAction: ActiveAction.Edit
+    })
     resetClickOrigin()
   }
 
@@ -143,11 +141,6 @@ export function Canvas(): ReactElement {
     <Stack
       ref={containerRef}
       className="EditorCanvas"
-      onClick={handleSelectCard}
-      onMouseDown={() => {
-        // click target was the card component and not it's children blocks
-        selectionRef.current = true
-      }}
       data-testid="EditorCanvas"
       direction="row"
       alignItems="flex-end"
@@ -171,7 +164,8 @@ export function Canvas(): ReactElement {
             height: { xs: '100%', md: 'auto' },
             pb: { xs: 5, md: 0 },
             px: { xs: 3, md: 0 },
-            justifyContent: 'center'
+            justifyContent: 'center',
+            position: 'relative'
           }}
         >
           <Stack
@@ -181,9 +175,12 @@ export function Canvas(): ReactElement {
           >
             <Box
               data-testId="CanvasContainer"
+              onClick={handleSelectCard}
+              onMouseDown={() => {
+                // click target was the card component and not it's children blocks
+                selectionRef.current = true
+              }}
               sx={{
-                animation: (theme) =>
-                  `${fadeIn} ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeInOut} 0.5s backwards`,
                 position: 'relative',
                 width: CARD_WIDTH,
                 height: CARD_HEIGHT,
@@ -335,6 +332,20 @@ export function Canvas(): ReactElement {
             </Box>
             <CanvasFooter scale={scale} />
           </Stack>
+          <MapButton
+            onClick={() =>
+              dispatch({
+                type: 'SetActiveAction',
+                activeAction: ActiveAction.Idle
+              })
+            }
+            sx={{
+              position: 'absolute',
+              top: 16,
+              right: 16,
+              display: { xs: 'inline-flex', md: 'none' }
+            }}
+          />
         </Stack>
       )}
     </Stack>
