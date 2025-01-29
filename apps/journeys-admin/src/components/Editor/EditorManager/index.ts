@@ -1,1 +1,1 @@
-export { Slider } from './Slider'
+export { EditorManager } from './EditorManager'
