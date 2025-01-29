@@ -44,7 +44,7 @@ export function StepBlockNodeMenu({
         <Fab
           variant="extended"
           className={className}
-          // id should match target.id in onNodeDragStop function of apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/JourneyFlow.tsx
+          // id should match target.id in onNodeDragStop function of apps/journeys-admin/src/components/Editor/EditorManager/JourneyFlow/JourneyFlow.tsx
           id="edit-step"
           size="small"
           aria-controls={open ? 'edit-step-menu' : undefined}
@@ -67,7 +67,7 @@ export function StepBlockNodeMenu({
           data-testid="EditStepFab"
         >
           <EllipsisIcon
-            // id should match target.id in onNodeDragStop function of apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/JourneyFlow.tsx
+            // id should match target.id in onNodeDragStop function of apps/journeys-admin/src/components/Editor/EditorManager/JourneyFlow/JourneyFlow.tsx
             id="StepBlockNodeMenuIcon"
             data-testid="EditStepFabIcon"
           />

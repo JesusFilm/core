@@ -7,9 +7,9 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { HostFormValues, useHostCreate } from '../../../libs/useHostCreate'
 import { useHostUpdateMutation } from '../../../libs/useHostUpdateMutation'
-import { Chat } from '../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat'
-import { HostAvatarsButton } from '../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Host/HostForm/HostAvatarsButton'
-import { HostTitleFieldForm } from '../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Host/HostForm/HostTitleFieldForm'
+import { Chat } from '../../Editor/EditorManager/Settings/CanvasDetails/JourneyAppearance/Chat'
+import { HostAvatarsButton } from '../../Editor/EditorManager/Settings/CanvasDetails/JourneyAppearance/Host/HostForm/HostAvatarsButton'
+import { HostTitleFieldForm } from '../../Editor/EditorManager/Settings/CanvasDetails/JourneyAppearance/Host/HostForm/HostTitleFieldForm'
 
 interface JourneyQuickSettingsChatProps {
   displayName?: string

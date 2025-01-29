@@ -15,11 +15,11 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import X2Icon from '@core/shared/ui/icons/X2'
 
-import { Goal } from '../../Editor/Slider/Content/Goals/Goals'
-import { GoalsList } from '../../Editor/Slider/Content/Goals/GoalsList'
-import { ActionCards } from '../../Editor/Slider/Settings/GoalDetails/ActionCards'
-import { ActionEditor } from '../../Editor/Slider/Settings/GoalDetails/ActionEditor'
-import { ActionInformation } from '../../Editor/Slider/Settings/GoalDetails/ActionInformation'
+import { Goal } from '../../Editor/EditorManager/Content/Goals/Goals'
+import { GoalsList } from '../../Editor/EditorManager/Content/Goals/GoalsList'
+import { ActionCards } from '../../Editor/EditorManager/Settings/GoalDetails/ActionCards'
+import { ActionEditor } from '../../Editor/EditorManager/Settings/GoalDetails/ActionEditor'
+import { ActionInformation } from '../../Editor/EditorManager/Settings/GoalDetails/ActionInformation'
 
 export function JourneyQuickSettingsGoals(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

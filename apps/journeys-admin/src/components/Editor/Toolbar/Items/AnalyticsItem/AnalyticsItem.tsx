@@ -12,7 +12,7 @@ import {
   GetJourneyPlausibleVisitors,
   GetJourneyPlausibleVisitorsVariables
 } from '../../../../../../__generated__/GetJourneyPlausibleVisitors'
-import { earliestStatsCollected } from '../../../Slider/JourneyFlow/AnalyticsOverlaySwitch'
+import { earliestStatsCollected } from '../../../EditorManager/JourneyFlow/AnalyticsOverlaySwitch'
 import { Item } from '../Item/Item'
 
 interface AnalyticsItemProps {
