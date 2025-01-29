@@ -12,16 +12,17 @@ import { CodeDestinationPopper } from './CodeDestinationPopper'
 interface CodeDestinationProps {
   to?: string
   handleChangeTo: (url: string) => void
+  disabled?: boolean
 }
 
 export function CodeDestination({
   to,
-  handleChangeTo
+  handleChangeTo,
+  disabled = true //this is here to disable the input field for now
 }: CodeDestinationProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   const [showRedirectButton, setShowRedirectButton] = useState(false)
-  const [disabled, setDisabled] = useState(true)
 
   function handleClick(): void {
     setShowRedirectButton(!showRedirectButton)
