@@ -4,6 +4,7 @@ import { z } from 'zod'
 
 import { prisma } from '../../../../lib/prisma'
 import { parse, parseMany, processTable } from '../../importer'
+import { getVideoVariantIds } from '../videoVariants'
 
 const s3Schema = z.object({
   videoVariantId: z.string(),
@@ -49,6 +50,8 @@ async function createMuxAsset(url: string, mux: Mux): Promise<string> {
 
 export async function importOne(row: unknown): Promise<void> {
   const video = parse(s3Schema, row)
+  if (!getVideoVariantIds().includes(video.videoVariantId))
+    throw new Error(`VideoVariant with id ${video.videoVariantId} not found`)
   const mux = getMuxClient()
   const muxVideoId = await createMuxAsset(video.s3Url, mux)
   const prismaMuxVideo = await prisma.muxVideo.create({
@@ -70,7 +73,11 @@ export async function importOne(row: unknown): Promise<void> {
 export async function importMany(rows: unknown[]): Promise<void> {
   const { data: videos, inValidRowIds } = parseMany(s3Schema, rows)
 
-  for (const video of videos) {
+  const videosWithVariants = videos.filter(({ videoVariantId }) =>
+    getVideoVariantIds().includes(videoVariantId)
+  )
+
+  for (const video of videosWithVariants) {
     const mux = getMuxClient()
     const muxVideoId = await createMuxAsset(video.s3Url, mux)
     const prismaMuxVideo = await prisma.muxVideo.create({
