@@ -7,7 +7,7 @@ import { ActiveAction } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
-import { Drawer } from '../../Drawer'
+import { DrawerContentWrapper } from '../../DrawerContentWrapper'
 import { WebsiteToggle } from '../WebsiteToggle'
 
 const Reactions = dynamic(
@@ -83,7 +83,7 @@ export function JourneyAppearance(): ReactElement {
   }, [dispatch])
 
   return (
-    <Drawer title={t('Journey Appearance')} onClose={onClose}>
+    <DrawerContentWrapper title={t('Journey Appearance')} onClose={onClose}>
       {websiteMode && <WebsiteToggle />}
       {journey?.website === true ? (
         <>
@@ -100,6 +100,6 @@ export function JourneyAppearance(): ReactElement {
           <Chat />
         </>
       )}
-    </Drawer>
+    </DrawerContentWrapper>
   )
 }
