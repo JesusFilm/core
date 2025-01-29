@@ -9,6 +9,7 @@ import type { MouseEvent, ReactElement } from 'react'
 import type { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { Card } from '@core/journeys/ui/Card'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveAction } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 export function CardWrapper({ block, children }: WrapperProps): ReactElement {
@@ -33,6 +34,10 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
     dispatch({
       type: 'SetActiveSlideAction',
       activeSlide: ActiveSlide.Drawer
+    })
+    dispatch({
+      type: 'SetActiveAction',
+      activeAction: ActiveAction.Edit
     })
   }
 

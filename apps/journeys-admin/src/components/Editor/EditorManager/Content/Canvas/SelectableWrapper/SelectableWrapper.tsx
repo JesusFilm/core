@@ -4,6 +4,7 @@ import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveAction } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { QuickControls } from '../QuickControls'
 
@@ -36,6 +37,10 @@ export function SelectableWrapper({
     dispatch({
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: undefined
+    })
+    dispatch({
+      type: 'SetActiveAction',
+      activeAction: ActiveAction.Edit
     })
   }
 

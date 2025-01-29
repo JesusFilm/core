@@ -8,6 +8,7 @@ import { ReactElement, ReactNode, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveAction } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { BlockFields as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import { DrawerTitle } from '../../Drawer'
@@ -161,6 +162,10 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
         type: 'SetActiveSlideAction',
         activeSlide: mdUp ? ActiveSlide.JourneyFlow : ActiveSlide.Content
       })
+    dispatch({
+      type: 'SetActiveAction',
+      activeAction: ActiveAction.View
+    })
   }
 
   if (component == null) return <></>

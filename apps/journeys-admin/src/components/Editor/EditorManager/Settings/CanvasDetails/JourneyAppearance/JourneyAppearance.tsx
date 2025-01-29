@@ -3,6 +3,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveAction } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
@@ -67,6 +68,10 @@ export function JourneyAppearance(): ReactElement {
     dispatch({
       type: 'SetActiveSlideAction',
       activeSlide: ActiveSlide.JourneyFlow
+    })
+    dispatch({
+      type: 'SetActiveAction',
+      activeAction: ActiveAction.View
     })
   }
 
