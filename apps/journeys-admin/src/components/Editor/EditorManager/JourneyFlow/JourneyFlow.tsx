@@ -1,7 +1,8 @@
 import { gql, useQuery } from '@apollo/client'
+import Backdrop from '@mui/material/Backdrop'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
-import { styled, useTheme } from '@mui/material/styles'
+import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/compat/router'
 import {
   type MouseEvent,
@@ -34,6 +35,7 @@ import {
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveAction } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import { isActionBlock } from '@core/journeys/ui/isActionBlock'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
@@ -114,7 +116,7 @@ export function JourneyFlow(): ReactElement {
   const { editorAnalytics } = useFlags()
   const theme = useTheme()
   const {
-    state: { steps, activeSlide, showAnalytics, analytics },
+    state: { steps, showAnalytics, analytics, activeAction },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
@@ -512,6 +514,22 @@ export function JourneyFlow(): ReactElement {
     setReferrerEdges((eds) => eds.map(hideReferrers(showAnalytics === false)))
   }, [setReferrerEdges, setReferrerNodes, showAnalytics])
 
+  const handleBackdropClick = () => {
+    if (activeAction === ActiveAction.Edit) {
+      dispatch({
+        type: 'SetActiveAction',
+        activeAction: ActiveAction.View
+      })
+    }
+
+    if (activeAction === ActiveAction.View) {
+      dispatch({
+        type: 'SetActiveAction',
+        activeAction: ActiveAction.Idle
+      })
+    }
+  }
+
   return (
     <Box
       sx={{
@@ -553,29 +571,31 @@ export function JourneyFlow(): ReactElement {
           strokeWidth: 2
         }}
         elevateEdgesOnSelect
+        onPaneClick={() =>
+          dispatch({
+            type: 'SetActiveAction',
+            activeAction: ActiveAction.Idle
+          })
+        }
       >
-        {activeSlide === ActiveSlide.JourneyFlow && (
-          <>
-            <Panel position="top-right">
-              {showAnalytics !== true && (
-                <NewStepButton disabled={steps == null || loading} />
-              )}
-            </Panel>
-            {editorAnalytics && (
-              <Panel position="top-left">
-                <>
-                  <AnalyticsOverlaySwitch />
-                  <Fade in={showAnalytics} unmountOnExit>
-                    <Box>
-                      <JourneyAnalyticsCard />
-                    </Box>
-                  </Fade>
-                </>
-              </Panel>
-            )}
-            <Controls handleReset={allBlockPositionUpdate} />
-          </>
+        <Panel position="top-right">
+          {showAnalytics !== true && (
+            <NewStepButton disabled={steps == null || loading} />
+          )}
+        </Panel>
+        {editorAnalytics && (
+          <Panel position="top-left">
+            <>
+              <AnalyticsOverlaySwitch />
+              <Fade in={showAnalytics} unmountOnExit>
+                <Box>
+                  <JourneyAnalyticsCard />
+                </Box>
+              </Fade>
+            </>
+          </Panel>
         )}
+        <Controls handleReset={allBlockPositionUpdate} />
         <Background
           color="#aaa"
           gap={16}
@@ -590,6 +610,14 @@ export function JourneyFlow(): ReactElement {
           }
         />
       </ReactFlow>
+
+      <Backdrop
+        open={activeAction === ActiveAction.Edit}
+        onClick={handleBackdropClick}
+        sx={{
+          backgroundColor: 'action.focus'
+        }}
+      />
     </Box>
   )
 }
