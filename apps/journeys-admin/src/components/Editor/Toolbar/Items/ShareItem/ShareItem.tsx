@@ -142,6 +142,7 @@ export function ShareItem({
             <Button
               onClick={() => {
                 setShowQrCodeDialog(true)
+                setRoute('qr-code')
               }}
               size="small"
               startIcon={<TransformIcon />}
