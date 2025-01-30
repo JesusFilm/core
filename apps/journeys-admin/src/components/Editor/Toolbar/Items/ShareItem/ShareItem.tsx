@@ -174,7 +174,7 @@ export function ShareItem({
         <QrCodeDialog
           open={showQrCodeDialog}
           onClose={() => setShowQrCodeDialog(false)}
-          initialJourneyUrl={journeyUrl}
+          initialJourneyUrl=""
         />
       )}
     </Box>
