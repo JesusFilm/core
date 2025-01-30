@@ -17,7 +17,7 @@ interface RedirectDialogProps {
 export function RedirectDialog({
   open,
   onClose,
-  to = 'someUrl' //remove this once backend is hooked up
+  to
 }: RedirectDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 

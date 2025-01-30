@@ -1,15 +1,23 @@
 import FilledInput from '@mui/material/FilledInput'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import AlertTriangle from '@core/shared/ui/icons/AlertTriangle'
 
-import { RedirectDialog } from '../RedirectDialog'
-
 import { ChangeButton } from './ChangeButton'
 import { CodeDestinationPopper } from './CodeDestinationPopper'
+
+const RedirectDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/EditorToolbar/ShareButton/QrCodeDialog/RedirectDialog" */
+      '../RedirectDialog'
+    ).then((mod) => mod.RedirectDialog),
+  { ssr: false }
+)
 
 interface CodeDestinationProps {
   to?: string
