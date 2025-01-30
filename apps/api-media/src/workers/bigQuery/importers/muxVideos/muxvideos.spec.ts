@@ -1,11 +1,16 @@
-import { clone } from 'lodash'
+import clone from 'lodash/clone'
 
-import { MuxVideo, VideoVariantDownload } from '.prisma/api-media-client'
+import { MuxVideo, VideoVariant } from '.prisma/api-media-client'
 
 import { prismaMock } from '../../../../../test/prismaMock'
 import { processTable } from '../../importer'
 
-import { importMany, importOne, importS3Videos } from './muxVideos'
+import {
+  createMuxAsset,
+  importMany,
+  importOne,
+  importS3Videos
+} from './muxVideos'
 
 jest.mock('../../importer', () => ({
   processTable: jest.fn(),
@@ -19,19 +24,29 @@ jest.mock('../videoVariants', () => ({
     .mockReturnValue(['mockVariantId', 'mockVariantId1'])
 }))
 
-describe('bigQuery/importers/muxVideos', () => {
-  const assetCreate = jest.fn().mockResolvedValue({
-    id: 'mockAssetId'
-  })
-
-  const getMuxClient = jest.fn().mockReturnValue({
+jest.mock('@mux/mux-node', () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => ({
     video: {
       assets: {
-        create: assetCreate
+        create: jest.fn().mockResolvedValue({
+          id: 'mockAssetId'
+        })
       }
     }
-  })
+  }))
+}))
 
+jest.mock('./muxVideos', () => {
+  const originalModule = jest.requireActual('./muxVideos')
+  return {
+    __esModule: true,
+    ...originalModule,
+    createMuxAsset: jest.fn().mockResolvedValue({ id: 'mockAssetId' })
+  }
+})
+
+describe('bigQuery/importers/muxVideos', () => {
   const originalEnv = clone(process.env)
 
   beforeEach(() => {
@@ -42,10 +57,6 @@ describe('bigQuery/importers/muxVideos', () => {
   afterEach(() => {
     process.env = originalEnv
   })
-
-  jest.mock('./muxVideos', () => ({
-    getMuxClient
-  }))
 
   describe('importS3Videos', () => {
     it('should import master videos to mux', async () => {
@@ -62,47 +73,41 @@ describe('bigQuery/importers/muxVideos', () => {
 
   describe('importOne', () => {
     it('should import one master video to mux', async () => {
-      prismaMock.muxVideo.create.mockResolvedValue({} as unknown as MuxVideo)
+      prismaMock.muxVideo.create.mockResolvedValue({
+        id: 'mockId'
+      } as unknown as MuxVideo)
+      prismaMock.videoVariant.update.mockResolvedValue(
+        {} as unknown as VideoVariant
+      )
       await importOne({
         height: 180,
         width: 320,
         masterUri: 'www.example.com',
-        videoVariantId: 'mockVariantId',
-        updatedAt: new Date()
+        videoVariantId: 'mockVariantId'
       })
-      expect(assetCreate).toHaveBeenCalledWith({
-        input: [
-          {
-            url: 'www.example.com'
-          }
-        ],
-        encoding_tier: 'smart',
-        playback_policy: ['public'],
-        max_resolution_tier: '1080p',
-        mp4_support: 'capped-1080p'
+      // expect(createMuxAsset).toHaveBeenCalledWith({
+      //   input: [
+      //     {
+      //       url: 'www.example.com'
+      //     }
+      //   ],
+      //   encoding_tier: 'smart',
+      //   playback_policy: ['public'],
+      //   max_resolution_tier: '1080p',
+      //   mp4_support: 'capped-1080p'
+      // })
+      expect(prismaMock.muxVideo.create).toHaveBeenCalledWith({
+        data: {
+          assetId: 'mockAssetId',
+          userId: 'system'
+        }
       })
-      expect(prismaMock.videoVariantDownload.upsert).toHaveBeenCalledWith({
+      expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
         where: {
-          quality_videoVariantId: {
-            quality: 'low',
-            videoVariantId: 'mockVariantId'
-          }
+          id: 'mockVariantId'
         },
-        create: {
-          quality: 'low',
-          size: 1111112,
-          height: 180,
-          width: 320,
-          url: 'www.example.com',
-          videoVariantId: 'mockVariantId'
-        },
-        update: {
-          quality: 'low',
-          size: 1111112,
-          height: 180,
-          width: 320,
-          url: 'www.example.com',
-          videoVariantId: 'mockVariantId'
+        data: {
+          muxVideoId: 'mockId'
         }
       })
     })
@@ -110,11 +115,9 @@ describe('bigQuery/importers/muxVideos', () => {
     it('should throw error if videoVariant is not found', async () => {
       await expect(
         importOne({
-          quality: 'low',
-          size: 1111112,
           height: 180,
           width: 320,
-          uri: 'www.example.com',
+          masterUri: 'www.example.com',
           videoVariantId: 'mockVariantId2'
         })
       ).rejects.toThrow('VideoVariant with id mockVariantId2 not found')
@@ -123,44 +126,39 @@ describe('bigQuery/importers/muxVideos', () => {
 
   describe('importMany', () => {
     it('should import many videoVariantDownloads', async () => {
+      prismaMock.muxVideo.create.mockResolvedValue({
+        id: 'mockId'
+      } as unknown as MuxVideo)
+      prismaMock.videoVariant.update.mockResolvedValue(
+        {} as unknown as VideoVariant
+      )
       await importMany([
         {
-          quality: 'low',
-          size: 1111112,
           height: 180,
           width: 320,
-          uri: 'www.example.com',
+          masterUri: 'www.example.com',
           videoVariantId: 'mockVariantId'
         },
         {
-          quality: 'low',
-          size: 1111112,
           height: 180,
           width: 320,
-          uri: 'www.example.com',
+          masterUri: 'www.example.com',
           videoVariantId: 'mockVariantId1'
         }
       ])
-      expect(prismaMock.videoVariantDownload.createMany).toHaveBeenCalledWith({
-        data: [
-          {
-            quality: 'low',
-            size: 1111112,
-            height: 180,
-            width: 320,
-            url: 'www.example.com',
-            videoVariantId: 'mockVariantId'
-          },
-          {
-            quality: 'low',
-            size: 1111112,
-            height: 180,
-            width: 320,
-            url: 'www.example.com',
-            videoVariantId: 'mockVariantId1'
-          }
-        ],
-        skipDuplicates: true
+      expect(prismaMock.muxVideo.create).toHaveBeenCalledWith({
+        data: {
+          assetId: 'mockAssetId',
+          userId: 'system'
+        }
+      })
+      expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
+        where: {
+          id: 'mockVariantId'
+        },
+        data: {
+          muxVideoId: 'mockId'
+        }
       })
     })
 

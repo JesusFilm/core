@@ -36,7 +36,7 @@ export async function importS3Videos(logger?: Logger): Promise<void> {
   )
 }
 
-async function createMuxAsset(url: string, mux: Mux): Promise<string> {
+export async function createMuxAsset(url: string, mux: Mux): Promise<string> {
   const muxVideo = await mux.video.assets.create({
     input: [
       {
@@ -52,6 +52,7 @@ async function createMuxAsset(url: string, mux: Mux): Promise<string> {
 }
 
 export async function importOne(row: unknown): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, 1000)) // wait 1 sec to avoid rate limit
   const video = parse(s3Schema, row)
   if (!getVideoVariantIds().includes(video.videoVariantId))
     throw new Error(`VideoVariant with id ${video.videoVariantId} not found`)
@@ -81,6 +82,7 @@ export async function importMany(rows: unknown[]): Promise<void> {
   )
 
   for (const video of videosWithVariants) {
+    await new Promise((resolve) => setTimeout(resolve, 1000)) // wait 1 sec to avoid rate limit
     const mux = getMuxClient()
     const muxVideoId = await createMuxAsset(video.masterUri, mux)
     const prismaMuxVideo = await prisma.muxVideo.create({
