@@ -1,7 +1,7 @@
 import Backdrop from '@mui/material/Backdrop'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
-import Slide from '@mui/material/Slide'
+import Fade from '@mui/material/Fade'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
@@ -18,6 +18,21 @@ import {
 
 import { Content } from './Content'
 import { Settings } from './Settings'
+
+function AnimatedContent({ show }: { show: boolean }): ReactElement {
+  return (
+    <Fade in={show} mountOnEnter>
+      <Box
+        sx={{
+          height: { xs: '100%', md: 'auto' },
+          width: { xs: '100%', md: 'auto' }
+        }}
+      >
+        <Content />
+      </Box>
+    </Fade>
+  )
+}
 
 export function EditorManager(): ReactElement {
   const mdUp = useMediaQuery((theme) => theme.breakpoints.up('md'))
@@ -54,15 +69,7 @@ export function EditorManager(): ReactElement {
             justifyContent: 'space-between'
           }}
         >
-          <Slide
-            in={state.activeAction != ActiveAction.Idle}
-            direction="left"
-            mountOnEnter
-          >
-            <div>
-              <Content />
-            </div>
-          </Slide>
+          <AnimatedContent show={state.activeAction !== ActiveAction.Idle} />
         </Box>
         <Settings />
       </Drawer>
@@ -84,20 +91,7 @@ export function EditorManager(): ReactElement {
           pt: `${TOTAL_EDIT_TOOLBAR_HEIGHT}px`
         }}
       >
-        <Slide
-          in={state.activeAction != ActiveAction.Idle}
-          direction="up"
-          mountOnEnter
-        >
-          <Box
-            sx={{
-              height: '100%',
-              width: '100%'
-            }}
-          >
-            <Content />
-          </Box>
-        </Slide>
+        <AnimatedContent show={state.activeAction !== ActiveAction.Idle} />
       </Backdrop>
       <SwipeableDrawer
         open={state.activeAction === ActiveAction.Edit}
