@@ -169,13 +169,13 @@ export function ShareItem({
           onClose={() => setShowEmbedDialog(false)}
         />
       )}
-      {/* {showQrCodeDialog != null && (
+      {showQrCodeDialog != null && (
         <QrCodeDialog
           open={showQrCodeDialog}
           onClose={() => setShowQrCodeDialog(false)}
           initialJourneyUrl={journeyUrl}
         />
-      )} */}
+      )}
     </Box>
   )
 }
