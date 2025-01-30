@@ -70,7 +70,7 @@ model MuxVideo {
   createdAt     DateTime       @default(now())
   readyToStream Boolean        @default(false)
   updatedAt     DateTime       @default(now()) @updatedAt
-  VideoVariant  VideoVariant[]
+  videoVariant  VideoVariant[]
 
   @@index(userId(type: Hash))
   @@index(assetId(type: Hash))

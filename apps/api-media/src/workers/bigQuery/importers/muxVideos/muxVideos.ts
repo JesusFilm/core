@@ -8,15 +8,17 @@ import { getVideoVariantIds } from '../videoVariants'
 
 const s3Schema = z.object({
   videoVariantId: z.string(),
-  s3Url: z.string()
+  masterUri: z.string(),
+  height: z.number(),
+  width: z.number()
 })
 
 function getMuxClient(): Mux {
   if (process.env.MUX_ACCESS_TOKEN_ID == null)
-    throw new Error('Missing MUX_UGC_ACCESS_TOKEN_ID')
+    throw new Error('Missing MUX_ACCESS_TOKEN_ID')
 
   if (process.env.MUX_SECRET_KEY == null)
-    throw new Error('Missing MUX_UGC_SECRET_KEY')
+    throw new Error('Missing MUX_SECRET_KEY')
 
   return new Mux({
     tokenId: process.env.MUX_ACCESS_TOKEN_ID,
@@ -26,7 +28,7 @@ function getMuxClient(): Mux {
 
 export async function importS3Videos(logger?: Logger): Promise<void> {
   await processTable(
-    'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data',
+    'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantMaster_arclight_data',
     importOne,
     importMany,
     true,
@@ -34,7 +36,7 @@ export async function importS3Videos(logger?: Logger): Promise<void> {
   )
 }
 
-async function createMuxAsset(url: string, mux: Mux): Promise<string> {
+export async function createMuxAsset(url: string, mux: Mux): Promise<string> {
   const muxVideo = await mux.video.assets.create({
     input: [
       {
@@ -43,17 +45,19 @@ async function createMuxAsset(url: string, mux: Mux): Promise<string> {
     ],
     encoding_tier: 'smart',
     playback_policy: ['public'],
-    max_resolution_tier: '1080p'
+    max_resolution_tier: '1080p',
+    mp4_support: 'capped-1080p'
   })
   return muxVideo.id
 }
 
 export async function importOne(row: unknown): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, 1000)) // wait 1 sec to avoid rate limit
   const video = parse(s3Schema, row)
   if (!getVideoVariantIds().includes(video.videoVariantId))
     throw new Error(`VideoVariant with id ${video.videoVariantId} not found`)
   const mux = getMuxClient()
-  const muxVideoId = await createMuxAsset(video.s3Url, mux)
+  const muxVideoId = await createMuxAsset(video.masterUri, mux)
   const prismaMuxVideo = await prisma.muxVideo.create({
     data: {
       assetId: muxVideoId,
@@ -78,8 +82,9 @@ export async function importMany(rows: unknown[]): Promise<void> {
   )
 
   for (const video of videosWithVariants) {
+    await new Promise((resolve) => setTimeout(resolve, 1000)) // wait 1 sec to avoid rate limit
     const mux = getMuxClient()
-    const muxVideoId = await createMuxAsset(video.s3Url, mux)
+    const muxVideoId = await createMuxAsset(video.masterUri, mux)
     const prismaMuxVideo = await prisma.muxVideo.create({
       data: {
         assetId: muxVideoId,
