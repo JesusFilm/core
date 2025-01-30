@@ -265,8 +265,7 @@ export const reducer = (
         selectedBlockId: action.selectedStep?.id,
         selectedBlock: action.selectedStep,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-        activeContent: ActiveContent.Canvas,
-        activeAction: ActiveAction.View
+        activeContent: ActiveContent.Canvas
       }
     case 'SetSelectedStepByIdAction': {
       const selectedStep =
@@ -409,8 +408,6 @@ export function EditorProvider({
     activeAction: ActiveAction.Idle,
     ...initialState
   })
-
-  useEffect(() => console.log({ state }), [state])
 
   useEffect(() => {
     if (initialState?.steps != null)

@@ -19,15 +19,15 @@ export function useStepAndBlockSelection(): (stepId: string) => void {
         type: 'SetSelectedAttributeIdAction',
         selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
       })
-
-      if (activeAction === ActiveAction.Idle) {
-        dispatch({
-          type: 'SetActiveAction',
-          activeAction: ActiveAction.View
-        })
-      }
     } else {
       dispatch({ type: 'SetSelectedStepAction', selectedStep: currentStep })
+    }
+
+    if (activeAction === ActiveAction.Idle) {
+      dispatch({
+        type: 'SetActiveAction',
+        activeAction: ActiveAction.View
+      })
     }
   }
 }
