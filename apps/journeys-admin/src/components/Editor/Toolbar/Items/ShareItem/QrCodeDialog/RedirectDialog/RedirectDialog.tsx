@@ -22,7 +22,7 @@ export function RedirectDialog({
   const { t } = useTranslation('apps-journeys-admin')
 
   function handleRedirectClick(): void {
-    window.open('to', '_blank')
+    window.open(to, '_blank')
   }
 
   return (
