@@ -22,7 +22,8 @@ export function CanvasFooter({ scale }: CanvasFooterProps): ReactElement {
       sx={{
         mt: 4,
         alignSelf: showAnalytics === true ? 'unset' : 'end',
-        transform: `scale(${scale})`
+        transform: `scale(${scale})`,
+        pointerEvents: 'auto'
       }}
     >
       {showAnalytics === true ? <CardAnalytics /> : <Fab variant="canvas" />}
