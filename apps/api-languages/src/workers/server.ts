@@ -53,6 +53,12 @@ function run({
 async function main(): Promise<void> {
   run(
     await import(
+      /* webpackChunkName: "algolia" */
+      './algolia'
+    )
+  )
+  run(
+    await import(
       /* webpackChunkName: "big-query" */
       './bigQuery'
     )
