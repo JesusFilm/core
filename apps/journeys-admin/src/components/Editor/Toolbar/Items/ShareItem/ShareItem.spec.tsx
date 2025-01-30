@@ -152,6 +152,50 @@ describe('ShareItem', () => {
     ).toBeInTheDocument()
   })
 
+  // it('should handle qr code', async () => {
+  //   mockedUseRouter.mockReturnValue({
+  //     query: { param: null },
+  //     push,
+  //     events: {
+  //       on
+  //     }
+  //   } as unknown as NextRouter)
+  //   render(
+  //     <SnackbarProvider>
+  //       <MockedProvider>
+  //         <JourneyProvider
+  //           value={{
+  //             journey: defaultJourney,
+  //             variant: 'admin'
+  //           }}
+  //         >
+  //           <ShareItem variant="button" />
+  //         </JourneyProvider>
+  //       </MockedProvider>
+  //     </SnackbarProvider>
+  //   )
+  //   fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+  //   expect(screen.getByRole('dialog')).toBeInTheDocument()
+  //   fireEvent.click(screen.getByRole('button', { name: 'QR Code' }))
+  //   await waitFor(() => {
+  //     expect(push).toHaveBeenCalledWith(
+  //       {
+  //         query: { param: 'qr-code' }
+  //       },
+  //       undefined,
+  //       { shallow: true }
+  //     )
+  //   })
+
+  //   expect(screen.getByRole('dialog', { name: 'QR Code' })).toBeInTheDocument()
+  //   fireEvent.click(screen.getByTestId('dialog-close-button'))
+  //   await waitFor(() =>
+  //     expect(
+  //       screen.getByRole('button', { name: 'QR Code' })
+  //     ).toBeInTheDocument()
+  //   )
+  // })
+
   it('should copy journey link', async () => {
     mockedUseRouter.mockReturnValue({
       query: { param: null },
