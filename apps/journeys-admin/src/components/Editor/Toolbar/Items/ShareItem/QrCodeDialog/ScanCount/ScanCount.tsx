@@ -2,7 +2,7 @@ import { gql, useLazyQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { formatISO } from 'date-fns'
-import { useTranslation } from 'next-i18next'
+import { Trans, useTranslation } from 'next-i18next'
 import { ReactElement, useEffect } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -59,6 +59,9 @@ export function ScanCount({ qrCodeId }: ScanCountProps): ReactElement {
     }
   }, [qrCodeId, journey, loadPlausibleVisitors])
 
+  const scans = data?.journeysPlausibleStatsAggregate?.visitors?.value ?? 0
+  const scanCount = scans === 1 ? t('1 scan') : t('{{scans}} scans', { scans })
+
   return (
     <Stack
       direction="row"
@@ -69,11 +72,9 @@ export function ScanCount({ qrCodeId }: ScanCountProps): ReactElement {
       }}
     >
       <BarChartSquare3Icon />
-      <Typography variant="subtitle3">
-        {t('{{count}} scans', {
-          count: data?.journeysPlausibleStatsAggregate?.visitors?.value ?? 0
-        })}
-      </Typography>
+      <Trans t={t} scanCount={scanCount}>
+        <Typography variant="subtitle3">{scanCount}</Typography>
+      </Trans>
     </Stack>
   )
 }
