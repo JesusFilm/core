@@ -31,8 +31,8 @@ export function ChangeButton({
           <Button
             variant="outlined"
             color="secondary"
+            size="medium"
             onClick={handleClick}
-            sx={{ borderRadius: 2 }}
             disabled={disabled}
           >
             {showRedirectButton ? t('Cancel') : t('Change')}
@@ -43,8 +43,8 @@ export function ChangeButton({
         <Button
           variant="contained"
           color="secondary"
+          size="medium"
           onClick={handleRedirectClick}
-          sx={{ borderRadius: 2 }}
         >
           {t('Redirect')}
         </Button>

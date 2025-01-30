@@ -95,7 +95,9 @@ export function DownloadQrCode({
       >
         <Button
           fullWidth
+          variant="contained"
           color="secondary"
+          size="medium"
           onClick={() => {
             handleDownloadQrCode('png')
             setShowDownloadMenu(false)
@@ -108,7 +110,9 @@ export function DownloadQrCode({
           {t('Download PNG')}
         </Button>
         <Button
+          variant="contained"
           color="secondary"
+          size="medium"
           data-testid="DownloadDropdown"
           onClick={(e) => {
             handleMenuClick(e)

@@ -20,7 +20,7 @@ interface CodeDestinationProps {
 export function CodeDestination({
   to,
   handleChangeTo,
-  disabled = false //this is here to disable the input field for now
+  disabled = false
 }: CodeDestinationProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 

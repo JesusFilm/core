@@ -75,18 +75,16 @@ export function RedirectDialog({
       </Stack>
       <Stack direction="row" justifyContent="flex-end" sx={{ pt: 6 }}>
         <Stack direction="row" spacing={3}>
-          <Button variant="outlined" color="secondary" sx={{ borderRadius: 2 }}>
-            <Typography variant="subtitle2">{t('Undo changes')}</Typography>
+          <Button variant="outlined" color="secondary" size="medium">
+            {t('Undo changes')}
           </Button>
           <Button
             variant="contained"
             color="secondary"
-            sx={{ borderRadius: 2 }}
+            size="medium"
             onClick={handleRedirectClick}
           >
-            <Typography variant="subtitle2">
-              {t('Go to this journey')}
-            </Typography>
+            {t('Go to this journey')}
           </Button>
         </Stack>
       </Stack>
