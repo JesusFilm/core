@@ -40,7 +40,12 @@ export function ChangeButton({
         </span>
       </Tooltip>
       {showRedirectButton && (
-        <Button variant="contained" color="secondary" size="medium">
+        <Button
+          variant="contained"
+          color="secondary"
+          size="medium"
+          onClick={handleRedirect}
+        >
           {t('Redirect')}
         </Button>
       )}
