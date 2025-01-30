@@ -21,6 +21,10 @@ export function RedirectDialog({
 }: RedirectDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
+  function handleRedirectClick(): void {
+    window.open('to', '_blank')
+  }
+
   return (
     <Dialog
       open={open}
@@ -78,6 +82,7 @@ export function RedirectDialog({
             variant="contained"
             color="secondary"
             sx={{ borderRadius: 2 }}
+            onClick={handleRedirectClick}
           >
             <Typography variant="subtitle2">
               {t('Go to this journey')}
