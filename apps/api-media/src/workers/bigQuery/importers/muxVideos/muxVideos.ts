@@ -8,7 +8,7 @@ import { getVideoVariantIds } from '../videoVariants'
 
 const s3Schema = z.object({
   videoVariantId: z.string(),
-  s3Url: z.string()
+  masterUri: z.string()
 })
 
 function getMuxClient(): Mux {
@@ -43,7 +43,8 @@ async function createMuxAsset(url: string, mux: Mux): Promise<string> {
     ],
     encoding_tier: 'smart',
     playback_policy: ['public'],
-    max_resolution_tier: '1080p'
+    max_resolution_tier: '1080p',
+    mp4_support: 'capped-1080p'
   })
   return muxVideo.id
 }
@@ -53,7 +54,7 @@ export async function importOne(row: unknown): Promise<void> {
   if (!getVideoVariantIds().includes(video.videoVariantId))
     throw new Error(`VideoVariant with id ${video.videoVariantId} not found`)
   const mux = getMuxClient()
-  const muxVideoId = await createMuxAsset(video.s3Url, mux)
+  const muxVideoId = await createMuxAsset(video.masterUri, mux)
   const prismaMuxVideo = await prisma.muxVideo.create({
     data: {
       assetId: muxVideoId,
@@ -79,7 +80,7 @@ export async function importMany(rows: unknown[]): Promise<void> {
 
   for (const video of videosWithVariants) {
     const mux = getMuxClient()
-    const muxVideoId = await createMuxAsset(video.s3Url, mux)
+    const muxVideoId = await createMuxAsset(video.masterUri, mux)
     const prismaMuxVideo = await prisma.muxVideo.create({
       data: {
         assetId: muxVideoId,
