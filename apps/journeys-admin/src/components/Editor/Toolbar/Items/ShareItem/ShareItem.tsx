@@ -139,7 +139,7 @@ export function ShareItem({
             >
               {t('Embed Journey')}
             </Button>
-            <Button
+            {/* <Button
               onClick={() => {
                 setShowQrCodeDialog(true)
                 setRoute('qr-code')
@@ -153,7 +153,7 @@ export function ShareItem({
               }}
             >
               {t('QR Code')}
-            </Button>
+            </Button> */}
           </Stack>
         </Stack>
       </Dialog>
@@ -170,13 +170,13 @@ export function ShareItem({
           onClose={() => setShowEmbedDialog(false)}
         />
       )}
-      {showQrCodeDialog != null && (
+      {/* {showQrCodeDialog != null && (
         <QrCodeDialog
           open={showQrCodeDialog}
           onClose={() => setShowQrCodeDialog(false)}
           initialJourneyUrl={journeyUrl}
         />
-      )}
+      )} */}
     </Box>
   )
 }
