@@ -64,7 +64,9 @@ export function Item({
                   ...ButtonProps?.sx
                 }}
                 {...ButtonProps}
-              />
+              >
+                {count.toLocaleString()}
+              </Button>
             ) : (
               <IconButton
                 component={href != null ? 'a' : 'button'}
