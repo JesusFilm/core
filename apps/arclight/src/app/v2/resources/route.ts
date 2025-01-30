@@ -3,32 +3,6 @@ import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../lib/apolloClient'
-import { getLanguageIdsFromTags } from '../../../lib/getLanguageIdsFromTags'
-
-const GET_LANGUAGES = graphql(`
-  query GetLanguagesWithTags(
-    $term: String
-    $limit: Int
-    $metadataLanguageId: ID
-    $fallbackLanguageId: ID
-  ) {
-    languagesCount(term: $term)
-    languages(limit: $limit, term: $term) {
-      id
-      iso3
-      bcp47
-      name(languageId: $metadataLanguageId) {
-        value
-        primary
-      }
-      fallbackName: name(languageId: $fallbackLanguageId) {
-        value
-        primary
-      }
-      primaryCountryId
-    }
-  }
-`)
 
 const GET_COUNTRIES = graphql(`
   query GetCountries(
@@ -73,6 +47,21 @@ type AlgoliaHit = {
   }
 }
 
+type AlgoliaLanguageHit = {
+  objectID: string
+  languageId: number
+  iso3: string
+  bcp47: string
+  primaryCountryId: string
+  nameNative: string
+  names: Array<{
+    value: string
+    languageId: string
+    bcp47: string
+  }>
+  speakersCount: number
+}
+
 async function searchAlgolia(term: string) {
   const appID = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID
   const apiKey = process.env.NEXT_PUBLIC_ALGOLIA_API_KEY
@@ -101,6 +90,65 @@ async function searchAlgolia(term: string) {
   return results[0].hits
 }
 
+async function searchAlgoliaLanguages(
+  term: string,
+  metadataLanguageTags: string[]
+) {
+  const appID = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID
+  const apiKey = process.env.NEXT_PUBLIC_ALGOLIA_API_KEY
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_LANGUAGES
+
+  if (!appID || !apiKey || !indexName) {
+    throw new Error('Algolia environment variables are not set')
+  }
+  const client = algoliasearch(appID, apiKey)
+  const index = client.initIndex(indexName)
+
+  const facets = []
+  for (const tag of metadataLanguageTags) {
+    facets.push(`names.bcp47:${tag}`)
+  }
+
+  const searchParams = {
+    hitsPerPage: 1000,
+    facets: metadataLanguageTags.length > 0 ? ['names.bcp47'] : [],
+    ...(metadataLanguageTags.length > 0 && {
+      facetFilters: facets
+    }),
+    maxValuesPerFacet: 100,
+    attributesToRetrieve: [
+      'objectID',
+      'languageId',
+      'iso3',
+      'bcp47',
+      'primaryCountryId',
+      'nameNative',
+      'names',
+      'speakersCount'
+    ]
+  }
+
+  const { hits } = await index.search<AlgoliaLanguageHit>(term, searchParams)
+
+  return hits.map((hit) => ({
+    id: hit.objectID,
+    iso3: hit.iso3,
+    bcp47: hit.bcp47,
+    nameNative:
+      hit.nameNative ?? hit.names.find((n) => n.bcp47 === 'en')?.value ?? '',
+    name: [
+      {
+        value:
+          hit.names.find((n) => n.bcp47 === metadataLanguageTags[0])?.value ??
+          hit.names.find((n) => n.bcp47 === 'en')?.value ??
+          '',
+        bcp47: hit.bcp47
+      }
+    ],
+    primaryCountryId: hit.primaryCountryId
+  }))
+}
+
 export async function GET(request: NextRequest): Promise<Response> {
   const query = request.nextUrl.searchParams
   const apiKey = query.get('apiKey') ?? ''
@@ -120,31 +168,18 @@ export async function GET(request: NextRequest): Promise<Response> {
     )
   }
 
-  const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
-  if (languageResult instanceof Response) {
-    return languageResult
-  }
-  const { metadataLanguageId, fallbackLanguageId } = languageResult
-
   try {
-    const [{ data: languagesData }, { data: countriesData }, algoliaHits] =
-      await Promise.all([
-        getApolloClient().query<ResultOf<typeof GET_LANGUAGES>>({
-          query: GET_LANGUAGES,
-          variables: { term, metadataLanguageId, fallbackLanguageId }
-        }),
+    const [algoliaHits, languages, { data: countriesData }] = await Promise.all(
+      [
+        searchAlgolia(term),
+        searchAlgoliaLanguages(term, metadataLanguageTags),
         getApolloClient().query<ResultOf<typeof GET_COUNTRIES>>({
           query: GET_COUNTRIES,
-          variables: { term, metadataLanguageId, fallbackLanguageId }
-        }),
-        searchAlgolia(term)
-      ])
-
-    const languages = languagesData.languages.filter(
-      (language) =>
-        language.name[0]?.value != null ||
-        language.fallbackName[0]?.value != null
+          variables: { term, metadataLanguageTags, fallbackLanguageId: 'en' }
+        })
+      ]
     )
+
     const countries = countriesData.countries.filter(
       (country) =>
         country.name[0]?.value != null || country.fallbackName[0]?.value != null
@@ -172,7 +207,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       shortDescription: hit.description?.[0] ?? '',
       longDescription: hit.description?.[0] ?? '',
       studyQuestions: [],
-      metadataLanguageTag: metadataLanguageTags[0] ?? 'en'
+      metadataLanguageTag: metadataLanguageTags[0]
     }))
 
     const transformedResponse =
@@ -240,18 +275,14 @@ export async function GET(request: NextRequest): Promise<Response> {
                   bcp47: language.bcp47,
                   primaryCountryId: language.primaryCountryId,
                   name:
+                    language.name.find(
+                      (n: { value: string | undefined; bcp47?: string }) =>
+                        n.bcp47 === metadataLanguageTags[0]
+                    )?.value ??
                     language.name[0]?.value ??
-                    language.fallbackName[0]?.value ??
-                    '',
-                  nameNative:
-                    (
-                      language.name.find(({ primary }) => primary) ??
-                      language.fallbackName.find(({ primary }) => primary)
-                    )?.value ?? '',
-                  metadataLanguageTag:
-                    language.name[0]?.value != null
-                      ? metadataLanguageTags[0]
-                      : (metadataLanguageTags[1] ?? 'en'),
+                    language.nameNative,
+                  nameNative: language.nameNative ?? '',
+                  metadataLanguageTag: metadataLanguageTags[0],
                   _links: {
                     self: {
                       href: `http://api.arclight.org/v2/media-languages/${language.id}?apiKey=${apiKey}`
@@ -266,9 +297,27 @@ export async function GET(request: NextRequest): Promise<Response> {
 
     return new Response(JSON.stringify(transformedResponse), { status: 200 })
   } catch (error) {
+    if (error && typeof error === 'object' && 'name' in error) {
+      if (error.name === 'ApiError') {
+        console.error('Algolia API Error:', error)
+        return new Response(
+          JSON.stringify({
+            message: `Algolia API Error: ${(error as { message?: string }).message ?? 'Unknown error'}`,
+            logref: 403
+          }),
+          { status: 403 }
+        )
+      }
+    }
+
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unexpected error occurred'
+
+    console.error('Resources API Error:', error)
+
     return new Response(
       JSON.stringify({
-        message: `Internal server error: ${String(error)}`,
+        message: `Internal server error: ${errorMessage}`,
         logref: 500
       }),
       { status: 500 }
