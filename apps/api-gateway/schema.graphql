@@ -397,9 +397,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   cloudflareR2Create(input: CloudflareR2CreateInput!) : CloudflareR2! @join__field(graph: API_MEDIA) 
   cloudflareR2Update(input: CloudflareR2UpdateInput!) : CloudflareR2! @join__field(graph: API_MEDIA) 
   cloudflareR2Delete(id: ID!) : CloudflareR2! @join__field(graph: API_MEDIA) 
-  createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!) : CloudflareVideo! @join__field(graph: API_MEDIA) 
-  createCloudflareVideoUploadByUrl(url: String!) : CloudflareVideo! @join__field(graph: API_MEDIA) 
-  deleteCloudflareVideo(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!) : CloudflareImage! @join__field(graph: API_MEDIA)  @deprecated(reason: "use createCloudflareImageFromPrompt") 
   triggerUnsplashDownload(url: String!) : Boolean! @join__field(graph: API_MEDIA) 
   createMuxVideoUploadByFile(name: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
@@ -690,8 +687,6 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   countries(term: String, ids: [ID!]) : [Country!]! @join__field(graph: API_LANGUAGES) 
   getMyCloudflareImages(offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   getMyCloudflareImage(id: ID!) : CloudflareImage! @join__field(graph: API_MEDIA) 
-  getMyCloudflareVideos(offset: Int, limit: Int) : [CloudflareVideo!]! @join__field(graph: API_MEDIA) 
-  getMyCloudflareVideo(id: ID!) : CloudflareVideo! @join__field(graph: API_MEDIA) 
   listUnsplashCollectionPhotos(
     collectionId: String!
     page: Int
@@ -769,6 +764,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   videosCount(where: VideosFilter) : Int! @join__field(graph: API_MEDIA) 
   videoEditions: [VideoEdition!]! @join__field(graph: API_MEDIA) 
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
+  videoVariant(id: ID!) : VideoVariant! @join__field(graph: API_MEDIA) 
   videoVariants(input: VideoVariantFilter) : [VideoVariant!]! @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
@@ -2124,16 +2120,6 @@ type Translation @join__type(graph: API_JOURNEYS)  {
   primary: Boolean!
 }
 
-type CloudflareVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
-  id: ID!
-  primaryLanguageId: ID
-  source: VideoBlockSource @join__field(graph: API_JOURNEYS_MODERN, type: "VideoBlockSource!")  @join__field(graph: API_MEDIA, type: "VideoBlockSource") 
-  uploadUrl: String @join__field(graph: API_MEDIA) 
-  userId: ID! @join__field(graph: API_MEDIA) 
-  createdAt: Date! @join__field(graph: API_MEDIA) 
-  readyToStream: Boolean! @join__field(graph: API_MEDIA) 
-}
-
 type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
   id: ID!
   primaryLanguageId: ID
@@ -2672,7 +2658,7 @@ interface Integration @join__type(graph: API_JOURNEYS)  {
 
 union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMember(graph: API_ANALYTICS, member: "Error")  @join__unionMember(graph: API_ANALYTICS, member: "MutationSiteCreateSuccess")  = Error | MutationSiteCreateSuccess
 
-union MediaVideo @join__type(graph: API_JOURNEYS_MODERN)  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "CloudflareVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "MuxVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "Video")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "YouTube")  = CloudflareVideo | MuxVideo | Video | YouTube
+union MediaVideo @join__type(graph: API_JOURNEYS_MODERN)  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "MuxVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "Video")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "YouTube")  = MuxVideo | Video | YouTube
 
 union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
 

@@ -67,18 +67,6 @@ input CloudflareR2UpdateInput {
   fileName: String!
 }
 
-type CloudflareVideo
-  @key(fields: "id primaryLanguageId")
-{
-  id: ID!
-  source: VideoBlockSource @shareable
-  primaryLanguageId: ID @shareable
-  uploadUrl: String
-  userId: ID!
-  createdAt: Date!
-  readyToStream: Boolean!
-}
-
 """
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -156,9 +144,6 @@ type Mutation {
   cloudflareR2Create(input: CloudflareR2CreateInput!): CloudflareR2!
   cloudflareR2Update(input: CloudflareR2UpdateInput!): CloudflareR2!
   cloudflareR2Delete(id: ID!): CloudflareR2!
-  createCloudflareVideoUploadByFile(uploadLength: Int!, name: String!): CloudflareVideo!
-  createCloudflareVideoUploadByUrl(url: String!): CloudflareVideo!
-  deleteCloudflareVideo(id: ID!): Boolean!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!
   createMuxVideoUploadByFile(name: String!): MuxVideo!
@@ -364,8 +349,6 @@ type PageInfo
 type Query {
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
-  getMyCloudflareVideos(offset: Int, limit: Int): [CloudflareVideo!]!
-  getMyCloudflareVideo(id: ID!): CloudflareVideo!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
   searchUnsplashPhotos(query: String!, page: Int, perPage: Int, orderBy: UnsplashOrderBy, collections: [String!], contentFilter: UnsplashContentFilter, color: UnsplashColor, orientation: UnsplashPhotoOrientation): UnsplashQueryResponse!
   bibleBooks: [BibleBook!]!
@@ -417,6 +400,7 @@ type Query {
   videosCount(where: VideosFilter): Int!
   videoEditions: [VideoEdition!]!
   videoEdition(id: ID!): VideoEdition
+  videoVariant(id: ID!): VideoVariant!
   videoVariants(input: VideoVariantFilter): [VideoVariant!]!
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
