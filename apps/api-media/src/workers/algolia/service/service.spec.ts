@@ -100,7 +100,10 @@ describe('algolia/service', () => {
             videoId: 'videoId',
             edition: 'edition',
             video: {
-              title: [{ value: 'title' }],
+              title: [
+                { value: 'title', languageId: '555' },
+                { value: 'title2', languageId: '529' }
+              ],
               description: [{ value: 'description' }],
               label: 'label',
               images: [
@@ -159,7 +162,7 @@ describe('algolia/service', () => {
           objectID: 'id',
           slug: 'slug',
           subtitles: ['21754'],
-          titles: ['title'],
+          titles: ['title2', 'title'],
           videoId: 'videoId',
           manualRanking: 1
         }
