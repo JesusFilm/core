@@ -1,5 +1,4 @@
 import omit from 'lodash/omit'
-import uniq from 'lodash/uniq'
 import { Logger } from 'pino'
 import { z } from 'zod'
 
@@ -41,11 +40,15 @@ export async function importOne(row: unknown): Promise<void> {
 
   await prisma.videoEdition.upsert({
     where: {
-      id: videoSubtitle.edition
+      name_videoId: {
+        videoId: videoSubtitle.videoId,
+        name: videoSubtitle.edition
+      }
     },
     update: {},
     create: {
-      id: videoSubtitle.edition
+      videoId: videoSubtitle.videoId,
+      name: videoSubtitle.edition
     }
   })
 
@@ -62,7 +65,10 @@ export async function importOne(row: unknown): Promise<void> {
   })
 }
 
-export async function importMany(rows: unknown[]): Promise<void> {
+export async function importMany(
+  rows: unknown[],
+  logger?: Logger
+): Promise<void> {
   const { data: videoSubtitles, inValidRowIds } = parseMany(
     videoSubtitleSchema,
     rows
@@ -71,17 +77,27 @@ export async function importMany(rows: unknown[]): Promise<void> {
   if (videoSubtitles.length !== rows.length)
     throw new Error(`some rows do not match schema: ${inValidRowIds.join(',')}`)
 
-  const editions = uniq(videoSubtitles.map(({ edition }) => edition))
-  for (const edition of editions) {
-    await prisma.videoEdition.upsert({
-      where: {
-        id: edition
-      },
-      update: {},
-      create: {
-        id: edition
-      }
-    })
+  for (const videoSubtitle of videoSubtitles) {
+    try {
+      await prisma.videoEdition.upsert({
+        where: {
+          name_videoId: {
+            videoId: videoSubtitle.videoId,
+            name: videoSubtitle.edition
+          }
+        },
+        update: {},
+        create: {
+          videoId: videoSubtitle.videoId,
+          name: videoSubtitle.edition
+        }
+      })
+    } catch (e: any) {
+      logger?.warn(
+        videoSubtitle,
+        `subtitle for ${videoSubtitle.videoId} failed to import with prisma error: ${e}`
+      )
+    }
   }
 
   await prisma.videoSubtitle.createMany({

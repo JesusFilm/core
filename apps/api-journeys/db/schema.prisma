@@ -143,6 +143,7 @@ model Event {
   @@index(visitorId)
   @@index(blockId)
   @@index(userId)
+  @@index([journeyId, visitorId, typename, createdAt(sort: Desc)])
 }
 
 model Visitor {
@@ -239,6 +240,7 @@ model Team {
   journeyCollections JourneyCollection[]
   customDomains      CustomDomain[]
   integrations       Integration[]
+  qrCodes            QrCode[]
 
   @@index(title)
 }
@@ -394,13 +396,13 @@ model Journey {
   journeyCollectionJourneys JourneyCollectionJourneys[]
   journeyNotifications      JourneyNotification[]
   website                   Boolean?                    @default(false)
-  showShareButton           Boolean?                    @default(true)
-  showLikeButton            Boolean?                    @default(true)
-  showDislikeButton         Boolean?                    @default(true)
+  showShareButton           Boolean?                    @default(false)
+  showLikeButton            Boolean?                    @default(false)
+  showDislikeButton         Boolean?                    @default(false)
   displayTitle              String?
   showHosts                 Boolean?                    @default(true)
   showChatButtons           Boolean?                    @default(true)
-  showReactionButtons       Boolean?                    @default(true)
+  showReactionButtons       Boolean?                    @default(false)
   showLogo                  Boolean?                    @default(false)
   showMenu                  Boolean?                    @default(false)
   showDisplayTitle          Boolean?                    @default(true)
@@ -409,6 +411,7 @@ model Journey {
   menuStepBlockId           String?                     @unique
   menuStepBlock             Block?                      @relation("MenuStepBlock", fields: [menuStepBlockId], references: [id], onDelete: SetNull)
   menuButtonIcon            JourneyMenuButtonIcon?
+  qrCode                    QrCode[]
 
   @@index(title)
 }
@@ -614,4 +617,17 @@ model JourneyCollectionJourneys {
 
   @@unique([journeyCollectionId, journeyId])
   @@unique([journeyCollectionId, order])
+}
+
+model QrCode {
+  id              String  @id @default(uuid())
+  teamId          String
+  journeyId       String
+  toJourneyId     String
+  toBlockId       String?
+  shortLinkId     String
+  color           String? @default("#000000")
+  backgroundColor String? @default("#FFFFFF")
+  team            Team    @relation(fields: [teamId], references: [id])
+  journey         Journey @relation(fields: [journeyId], references: [id])
 }

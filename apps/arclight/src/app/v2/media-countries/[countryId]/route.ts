@@ -2,6 +2,7 @@ import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
+import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
 import { paramsToRecord } from '../../../../lib/paramsToRecord'
 
 interface MediaCountryResponse {
@@ -24,7 +25,7 @@ interface MediaCountryResponse {
   }
   _embedded?: {
     mediaLanguages: Array<{
-      languageId: string
+      languageId: number
       iso3: string | null
       bcp47: string | null
       counts: {
@@ -40,16 +41,12 @@ interface MediaCountryResponse {
   }
 }
 
-const GET_LANGUAGE_ID_FROM_BCP47 = graphql(`
-  query GetLanguageIdFromBCP47($bcp47: ID!) {
-    language(id: $bcp47, idType: bcp47) {
-      id
-    }
-  }
-`)
-
 const GET_COUNTRY = graphql(`
-  query GetCountry($id: ID!, $languageId: ID!, $fallbackLanguageId: ID!) {
+  query GetCountry(
+    $id: ID!
+    $metadataLanguageId: ID!
+    $fallbackLanguageId: ID!
+  ) {
     country(id: $id) {
       id
       population
@@ -57,14 +54,14 @@ const GET_COUNTRY = graphql(`
       longitude
       flagPngSrc
       flagWebpSrc
-      name(languageId: $languageId) {
+      name(languageId: $metadataLanguageId) {
         value
       }
       fallbackName: name(languageId: $fallbackLanguageId) {
         value
       }
       continent {
-        name(languageId: $languageId) {
+        name(languageId: $metadataLanguageId) {
           value
         }
         fallbackName: name(languageId: $fallbackLanguageId) {
@@ -73,16 +70,29 @@ const GET_COUNTRY = graphql(`
       }
       countryLanguages {
         displaySpeakers
+        primary
         language {
           id
           iso3
           bcp47
-          primaryCountryId
+          countryLanguages {
+            country {
+              id
+            }
+            primary
+          }
           name {
             value
             primary
           }
+          countryLanguages {
+            primary
+            country {
+              id
+            }
+          }
         }
+        primary
       }
       languageCount
       languageHavingMediaCount
@@ -104,34 +114,18 @@ export async function GET(
   const metadataLanguageTags =
     query.get('metadataLanguageTags')?.split(',') ?? []
 
-  let languageId = '529'
-  let fallbackLanguageId = ''
-  if (metadataLanguageTags.length > 0 && metadataLanguageTags[0] !== 'en') {
-    const { data: languageIdsData } = await getApolloClient().query<
-      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
-    >({
-      query: GET_LANGUAGE_ID_FROM_BCP47,
-      variables: { bcp47: metadataLanguageTags[0] }
-    })
-
-    languageId = languageIdsData.language?.id ?? '529'
+  const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
+  if (languageResult instanceof Response) {
+    return languageResult
   }
-  if (metadataLanguageTags.length > 1) {
-    const { data: languageIdsData } = await getApolloClient().query<
-      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
-    >({
-      query: GET_LANGUAGE_ID_FROM_BCP47,
-      variables: { bcp47: metadataLanguageTags[1] }
-    })
 
-    fallbackLanguageId = languageIdsData.language?.id ?? '529'
-  }
+  const { metadataLanguageId, fallbackLanguageId } = languageResult
 
   const { data } = await getApolloClient().query<ResultOf<typeof GET_COUNTRY>>({
     query: GET_COUNTRY,
     variables: {
       id: countryId,
-      languageId,
+      metadataLanguageId,
       fallbackLanguageId
     }
   })
@@ -144,6 +138,22 @@ export async function GET(
         logref: 404
       }),
       { status: 404 }
+    )
+  }
+
+  if (
+    metadataLanguageTags.length > 0 &&
+    country.name[0]?.value == null &&
+    country.fallbackName[0]?.value == null
+  ) {
+    return new Response(
+      JSON.stringify({
+        message: `Unable to generate metadata for media country [${countryId}] acceptable according to metadata language(s) [${metadataLanguageTags.join(
+          ','
+        )}]`,
+        logref: 406
+      }),
+      { status: 400 }
     )
   }
 
@@ -161,8 +171,9 @@ export async function GET(
       country.continent?.fallbackName?.[0]?.value ??
       '',
     metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
-    longitude: country.longitude,
-    latitude: country.latitude,
+    // TODO: fix this in the import
+    longitude: country.longitude ? country.longitude : 0,
+    latitude: country.latitude ? country.latitude : 0,
     counts: {
       languageCount: {
         value: country.languageCount,
@@ -193,7 +204,7 @@ export async function GET(
   if (expand === 'mediaLanguages') {
     response._embedded = {
       mediaLanguages: country.countryLanguages.map((countryLanguage) => ({
-        languageId: countryLanguage.language.id,
+        languageId: Number(countryLanguage.language.id),
         iso3: countryLanguage.language.iso3,
         bcp47: countryLanguage.language.bcp47,
         counts: {
@@ -202,7 +213,10 @@ export async function GET(
             description: 'Number of language speakers in country'
           }
         },
-        primaryCountryId: countryLanguage.language.primaryCountryId,
+        primaryCountryId:
+          countryLanguage.language.countryLanguages.find(
+            (countryLanguage) => countryLanguage.primary
+          )?.country.id ?? '',
         name: countryLanguage.language.name.find(({ primary }) => !primary)
           ?.value,
         nameNative: countryLanguage.language.name.find(({ primary }) => primary)

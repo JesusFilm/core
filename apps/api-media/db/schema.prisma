@@ -52,21 +52,27 @@ model CloudflareVideo {
   createdAt     DateTime @default(now())
   readyToStream Boolean  @default(false)
   updatedAt     DateTime @default(now()) @updatedAt
+  downloadable  Boolean  @default(false)
 
   @@index([userId])
 }
 
 model MuxVideo {
   id            String   @id @default(uuid())
+  playbackId    String?  @unique
   uploadUrl     String?
+  uploadId      String?  @unique
+  assetId       String?  @unique
   userId        String
   name          String?
+  duration      Int      @default(0)
   downloadable  Boolean  @default(false)
   createdAt     DateTime @default(now())
   readyToStream Boolean  @default(false)
   updatedAt     DateTime @default(now()) @updatedAt
 
   @@index(userId(type: Hash))
+  @@index(assetId(type: Hash))
 }
 
 model CloudflareR2 {
@@ -101,32 +107,27 @@ enum VideoLabel {
 }
 
 model Video {
-  id                     String               @id @default(uuid())
-  label                  VideoLabel
-  primaryLanguageId      String
-  published              Boolean              @default(true)
-  title                  VideoTitle[]
-  snippet                VideoSnippet[]
-  description            VideoDescription[]
-  studyQuestions         VideoStudyQuestion[]
-  image                  String? /// @deprecated Use images aspectRatio banner
-  imageAlt               VideoImageAlt[]
-  thumbnail              String? /// @deprecated Use images aspectRatio hd
-  videoStill             String? /// @deprecated Use images aspectRatio hd
-  mobileCinematicHigh    String? /// @deprecated Use images aspectRatio banner
-  mobileCinematicLow     String? /// @deprecated Use images aspectRatio banner
-  mobileCinematicVeryLow String? /// @deprecated Use images aspectRatio banner
-  slug                   String?              @unique
-  noIndex                Boolean?
-  childIds               String[] // needed for child sort order
-  subtitles              VideoSubtitle[]
-  children               Video[]              @relation("ParentChild")
-  parent                 Video[]              @relation("ParentChild")
-  variants               VideoVariant[]
-  bibleCitation          BibleCitation[]
-  keywords               Keyword[]            @relation("VideoToKeyword")
-  images                 CloudflareImage[]
-  cloudflareAssets       CloudflareR2[]
+  id                String               @id @default(uuid())
+  label             VideoLabel
+  primaryLanguageId String
+  published         Boolean              @default(true)
+  title             VideoTitle[]
+  snippet           VideoSnippet[]
+  description       VideoDescription[]
+  studyQuestions    VideoStudyQuestion[]
+  imageAlt          VideoImageAlt[]
+  slug              String?              @unique
+  noIndex           Boolean?
+  childIds          String[] // needed for child sort order
+  subtitles         VideoSubtitle[]
+  children          Video[]              @relation("ParentChild")
+  parent            Video[]              @relation("ParentChild")
+  variants          VideoVariant[]
+  bibleCitation     BibleCitation[]
+  keywords          Keyword[]            @relation("VideoToKeyword")
+  images            CloudflareImage[]
+  cloudflareAssets  CloudflareR2[]
+  videoEditions     VideoEdition[]
 
   @@index(label)
   @@index(childIds)
@@ -167,19 +168,21 @@ model VideoVariantDownload {
 }
 
 model VideoVariant {
-  id           String                 @id
-  hls          String?
-  dash         String?
-  share        String?
-  downloadable Boolean                @default(true)
-  downloads    VideoVariantDownload[]
-  duration     Int?
-  languageId   String
-  edition      String                 @default("base")
-  videoEdition VideoEdition           @relation(fields: [edition], references: [id])
-  slug         String                 @unique
-  video        Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
-  videoId      String?
+  id                   String                 @id
+  hls                  String?
+  dash                 String?
+  share                String?
+  downloadable         Boolean                @default(true)
+  downloads            VideoVariantDownload[]
+  duration             Int?
+  lengthInMilliseconds Int?
+  languageId           String
+  published            Boolean                @default(true)
+  edition              String                 @default("base")
+  videoEdition         VideoEdition           @relation(fields: [edition, videoId], references: [name, videoId])
+  slug                 String                 @unique
+  video                Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoId              String
 
   @@unique([languageId, videoId])
   @@index(languageId(type: Hash))
@@ -187,10 +190,14 @@ model VideoVariant {
 }
 
 model VideoEdition {
-  id             String          @id
-  name           String?
+  id             String          @id @default(uuid())
+  name           String
+  videoId        String
+  video          Video           @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoVariants  VideoVariant[]
   videoSubtitles VideoSubtitle[]
+
+  @@unique([name, videoId])
 }
 
 model VideoSubtitle {
@@ -201,8 +208,8 @@ model VideoSubtitle {
   srtSrc       String?
   primary      Boolean
   languageId   String
-  Video        Video        @relation(fields: [videoId], references: [id])
-  videoEdition VideoEdition @relation(fields: [edition], references: [id])
+  video        Video        @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoEdition VideoEdition @relation(fields: [edition, videoId], references: [name, videoId])
 
   @@unique([videoId, edition, languageId])
   @@index(languageId(type: Hash))
@@ -281,7 +288,7 @@ model BibleCitation {
   osisId       String
   chapterStart Int
   chapterEnd   Int?
-  verseStart   Int
+  verseStart   Int?
   verseEnd     Int?
   videoId      String
   order        Int

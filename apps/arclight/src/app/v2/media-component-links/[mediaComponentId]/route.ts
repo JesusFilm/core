@@ -9,7 +9,7 @@ interface GetParams {
 }
 
 const GET_VIDEO_CHILDREN = graphql(`
-  query GetVideoChildren($id: ID!, $languageId: ID) {
+  query GetVideoChildren($id: ID!) {
     video(id: $id) {
       id
       children {
@@ -26,25 +26,25 @@ const GET_VIDEO_CHILDREN = graphql(`
           mobileCinematicLow
           mobileCinematicVeryLow
         }
-        title(languageId: $languageId) {
+        title(languageId: "529") {
           value
           language {
             bcp47
           }
         }
-        description(languageId: $languageId) {
+        description(languageId: "529") {
           value
           language {
             bcp47
           }
         }
-        snippet(languageId: $languageId) {
+        snippet(languageId: "529") {
           value
           language {
             bcp47
           }
         }
-        studyQuestions(languageId: $languageId) {
+        studyQuestions(languageId: "529") {
           value
           language {
             bcp47
@@ -93,25 +93,25 @@ const GET_VIDEO_CHILDREN = graphql(`
           mobileCinematicLow
           mobileCinematicVeryLow
         }
-        title(languageId: $languageId) {
+        title(languageId: "529") {
           value
           language {
             bcp47
           }
         }
-        description(languageId: $languageId) {
+        description(languageId: "529") {
           value
           language {
             bcp47
           }
         }
-        snippet(languageId: $languageId) {
+        snippet(languageId: "529") {
           value
           language {
             bcp47
           }
         }
-        studyQuestions(languageId: $languageId) {
+        studyQuestions(languageId: "529") {
           value
           language {
             bcp47
@@ -158,15 +158,14 @@ export async function GET(
   const query = req.nextUrl.searchParams
   const expand = query.get('expand') ?? ''
   const rel = query.get('rel') ?? ''
-  const languageIds = query.get('languageIds') ?? []
+  const languageIds = query.get('languageIds')?.split(',').filter(Boolean) ?? []
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_VIDEO_CHILDREN>
   >({
     query: GET_VIDEO_CHILDREN,
     variables: {
-      id: mediaComponentId,
-      languageId: languageIds
+      id: mediaComponentId
     }
   })
 
@@ -186,10 +185,11 @@ export async function GET(
       ? {
           contains: video.children
             .filter(
-              languageIds.length > 0
-                ? ({ variantLanguages }) =>
-                    variantLanguages.some(({ id }) => id === languageIds)
-                : () => true
+              ({ variantLanguages }) =>
+                languageIds.length === 0 ||
+                variantLanguages.some(({ id }) =>
+                  languageIds.includes(String(id))
+                )
             )
             .map(({ id }) => id)
         }
@@ -198,10 +198,11 @@ export async function GET(
       ? {
           containedBy: video.parents
             .filter(
-              languageIds.length > 0
-                ? ({ variantLanguages }) =>
-                    variantLanguages.some(({ id }) => id === languageIds)
-                : () => true
+              ({ variantLanguages }) =>
+                languageIds.length === 0 ||
+                variantLanguages.some(({ id }) =>
+                  languageIds.includes(String(id))
+                )
             )
             .map(({ id }) => id)
         }
@@ -219,7 +220,7 @@ export async function GET(
     linkedMediaComponentIds,
     _links: {
       self: {
-        href: `https://api.arclight.com/v2/media-component-links/${mediaComponentId}?${queryString}`
+        href: `http://api.arclight.org/v2/media-component-links/${mediaComponentId}?${queryString}`
       },
       mediaComponent: [
         {
@@ -236,10 +237,11 @@ export async function GET(
           __embedded: {
             contains: video.children
               .filter(
-                languageIds.length > 0
-                  ? ({ variantLanguages }) =>
-                      variantLanguages.some(({ id }) => id === languageIds)
-                  : () => true
+                ({ variantLanguages }) =>
+                  languageIds.length === 0 ||
+                  variantLanguages.some(({ id }) =>
+                    languageIds.includes(String(id))
+                  )
               )
               .map(
                 ({
@@ -311,12 +313,11 @@ export async function GET(
               ? {
                   containedBy: video.parents
                     .filter(
-                      languageIds.length > 0
-                        ? ({ variantLanguages }) =>
-                            variantLanguages.some(
-                              ({ id }) => id === languageIds
-                            )
-                        : () => true
+                      ({ variantLanguages }) =>
+                        languageIds.length === 0 ||
+                        variantLanguages.some(({ id }) =>
+                          languageIds.includes(String(id))
+                        )
                     )
                     .map(
                       ({

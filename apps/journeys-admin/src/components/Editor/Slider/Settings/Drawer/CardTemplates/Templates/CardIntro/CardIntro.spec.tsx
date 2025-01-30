@@ -240,7 +240,7 @@ describe('CardIntro', () => {
           image: null,
           duration: null,
           objectFit: null,
-          video: {
+          mediaVideo: {
             id: '1_jf-0-0',
             title: [
               {

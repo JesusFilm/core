@@ -122,7 +122,7 @@ module "arclight" {
   doppler_token    = data.aws_ssm_parameter.doppler_arclight_prod_token.value
   alb_listener_arn = module.prod.public_alb.alb_listener.arn
   alb_dns_name     = module.prod.public_alb.dns_name
-  host_name        = "core.arlight.org"
+  host_name        = "core.arclight.org"
 }
 
 module "bastion" {

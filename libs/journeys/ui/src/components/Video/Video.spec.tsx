@@ -35,7 +35,7 @@ const block: TreeBlock<VideoFields> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -104,7 +104,11 @@ describe('Video', () => {
           {...{
             ...block,
             source: VideoBlockSource.youTube,
-            videoId: 'videoId'
+            videoId: 'videoId',
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: 'videoId'
+            }
           }}
         />
       </MockedProvider>
@@ -118,14 +122,20 @@ describe('Video', () => {
     expect(sourceTag?.getAttribute('type')).toBe('video/youtube')
   })
 
-  it('should render cloudflare video', () => {
+  it('should render mux video', () => {
     render(
       <MockedProvider>
         <Video
           {...{
             ...block,
-            source: VideoBlockSource.cloudflare,
-            videoId: 'videoId'
+            source: VideoBlockSource.mux,
+            videoId: 'videoId',
+            mediaVideo: {
+              __typename: 'MuxVideo',
+              id: 'videoId',
+              assetId: 'videoId',
+              playbackId: 'videoId'
+            }
           }}
         />
       </MockedProvider>
@@ -134,7 +144,7 @@ describe('Video', () => {
       .getByTestId('JourneysVideo-video0.id')
       .querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toBe(
-      'https://customer-.cloudflarestream.com/videoId/manifest/video.m3u8?clientBandwidthHint=10'
+      'https://stream.mux.com/videoId.m3u8'
     )
     expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
   })

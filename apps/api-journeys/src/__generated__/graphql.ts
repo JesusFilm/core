@@ -74,7 +74,7 @@ export type BibleCitation = {
   id: Scalars['ID']['output'];
   osisId: Scalars['String']['output'];
   verseEnd?: Maybe<Scalars['Int']['output']>;
-  verseStart: Scalars['Int']['output'];
+  verseStart?: Maybe<Scalars['Int']['output']>;
   video: Video;
 };
 
@@ -337,15 +337,6 @@ export type CloudflareR2CreateInput = {
 export type CloudflareR2UpdateInput = {
   fileName: Scalars['String']['input'];
   id: Scalars['String']['input'];
-};
-
-export type CloudflareVideo = {
-  __typename?: 'CloudflareVideo';
-  createdAt: Scalars['Date']['output'];
-  id: Scalars['ID']['output'];
-  readyToStream: Scalars['Boolean']['output'];
-  uploadUrl?: Maybe<Scalars['String']['output']>;
-  userId: Scalars['ID']['output'];
 };
 
 export type Continent = {
@@ -1123,17 +1114,14 @@ export type Language = {
   __typename?: 'Language';
   audioPreview?: Maybe<AudioPreview>;
   bcp47?: Maybe<Scalars['String']['output']>;
-  countriesCount: Scalars['Int']['output'];
   countryLanguages: Array<CountryLanguage>;
   featureFilmCount: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
   name: Array<LanguageName>;
-  primaryCountryId?: Maybe<Scalars['String']['output']>;
   seriesCount: Scalars['Int']['output'];
   shortFilmCount: Scalars['Int']['output'];
   slug?: Maybe<Scalars['String']['output']>;
-  speakerCount: Scalars['String']['output'];
 };
 
 
@@ -1188,6 +1176,8 @@ export type MeInput = {
 export enum MediaRole {
   Publisher = 'publisher'
 }
+
+export type MediaVideo = MuxVideo | Video | YouTube;
 
 export enum MessagePlatform {
   CheckBroken = 'checkBroken',
@@ -1256,8 +1246,6 @@ export type Mutation = {
   createCloudflareImageFromPrompt: CloudflareImage;
   createCloudflareUploadByFile: CloudflareImage;
   createCloudflareUploadByUrl: CloudflareImage;
-  createCloudflareVideoUploadByFile: CloudflareVideo;
-  createCloudflareVideoUploadByUrl: CloudflareVideo;
   /** @deprecated use createCloudflareImageFromPrompt */
   createImageBySegmindPrompt: CloudflareImage;
   createMuxVideoUploadByFile: MuxVideo;
@@ -1268,7 +1256,6 @@ export type Mutation = {
   customDomainDelete: CustomDomain;
   customDomainUpdate: CustomDomain;
   deleteCloudflareImage: Scalars['Boolean']['output'];
-  deleteCloudflareVideo: Scalars['Boolean']['output'];
   deleteMuxVideo: Scalars['Boolean']['output'];
   hostCreate: Host;
   hostDelete: Host;
@@ -1295,7 +1282,12 @@ export type Mutation = {
   /** Updates template */
   journeyTemplate: Journey;
   journeyUpdate: Journey;
-  journeyViewEventCreate: JourneyViewEvent;
+  /**
+   * Creates a JourneyViewEvent, returns null if attempting to create another
+   * JourneyViewEvent with the same userId, journeyId, and within the same 24hr
+   * period of the previous JourneyViewEvent
+   */
+  journeyViewEventCreate?: Maybe<JourneyViewEvent>;
   /** Sets journeys statuses to archived */
   journeysArchive?: Maybe<Array<Maybe<Journey>>>;
   /** Sets journeys statuses to deleted */
@@ -1304,6 +1296,9 @@ export type Mutation = {
   journeysRestore?: Maybe<Array<Maybe<Journey>>>;
   /** Sets journeys statuses to trashed */
   journeysTrash?: Maybe<Array<Maybe<Journey>>>;
+  qrCodeCreate: QrCode;
+  qrCodeDelete: QrCode;
+  qrCodeUpdate: QrCode;
   radioOptionBlockCreate: RadioOptionBlock;
   radioOptionBlockUpdate: RadioOptionBlock;
   radioQuestionBlockCreate: RadioQuestionBlock;
@@ -1553,17 +1548,6 @@ export type MutationCreateCloudflareUploadByUrlArgs = {
 };
 
 
-export type MutationCreateCloudflareVideoUploadByFileArgs = {
-  name: Scalars['String']['input'];
-  uploadLength: Scalars['Int']['input'];
-};
-
-
-export type MutationCreateCloudflareVideoUploadByUrlArgs = {
-  url: Scalars['String']['input'];
-};
-
-
 export type MutationCreateImageBySegmindPromptArgs = {
   model: SegmindModel;
   prompt: Scalars['String']['input'];
@@ -1607,11 +1591,6 @@ export type MutationCustomDomainUpdateArgs = {
 
 
 export type MutationDeleteCloudflareImageArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type MutationDeleteCloudflareVideoArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -1763,6 +1742,22 @@ export type MutationJourneysRestoreArgs = {
 
 export type MutationJourneysTrashArgs = {
   ids: Array<Scalars['ID']['input']>;
+};
+
+
+export type MutationQrCodeCreateArgs = {
+  input: QrCodeCreateInput;
+};
+
+
+export type MutationQrCodeDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationQrCodeUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: QrCodeUpdateInput;
 };
 
 
@@ -2288,9 +2283,16 @@ export type MutationSiteCreateSuccess = {
 
 export type MuxVideo = {
   __typename?: 'MuxVideo';
+  assetId?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Date']['output'];
+  duration?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+  playbackId?: Maybe<Scalars['String']['output']>;
+  primaryLanguageId?: Maybe<Scalars['ID']['output']>;
   readyToStream: Scalars['Boolean']['output'];
+  source?: Maybe<VideoBlockSource>;
+  uploadId?: Maybe<Scalars['String']['output']>;
   uploadUrl?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
 };
@@ -2541,6 +2543,39 @@ export type PowerBiEmbed = {
   reportName: Scalars['String']['output'];
 };
 
+export type QrCode = {
+  __typename?: 'QrCode';
+  backgroundColor?: Maybe<Scalars['String']['output']>;
+  color?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  /** Journey where the Qr Code was created from */
+  journey?: Maybe<Journey>;
+  /** ShortLink that handles the redirection */
+  shortLink: ShortLink;
+  /** Team where the Qr Code belongs to */
+  team?: Maybe<Team>;
+};
+
+export type QrCodeCreateInput = {
+  journeyId: Scalars['ID']['input'];
+  teamId: Scalars['ID']['input'];
+};
+
+export type QrCodeUpdateInput = {
+  backgroundColor?: InputMaybe<Scalars['String']['input']>;
+  color?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * journey url where the QR code redirects to, will be parsed and
+   * stored as ids
+   */
+  to?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type QrCodesFilter = {
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
+  teamId?: InputMaybe<Scalars['ID']['input']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   adminJourney: Journey;
@@ -2564,10 +2599,9 @@ export type Query = {
   customDomain: CustomDomain;
   customDomains: Array<CustomDomain>;
   getJourneyProfile?: Maybe<JourneyProfile>;
+  getMuxVideo?: Maybe<MuxVideo>;
   getMyCloudflareImage: CloudflareImage;
   getMyCloudflareImages: Array<CloudflareImage>;
-  getMyCloudflareVideo: CloudflareVideo;
-  getMyCloudflareVideos: Array<CloudflareVideo>;
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
   getUserRole?: Maybe<UserRole>;
@@ -2615,6 +2649,8 @@ export type Query = {
   languagesCount: Scalars['Int']['output'];
   listUnsplashCollectionPhotos: Array<UnsplashPhoto>;
   me?: Maybe<User>;
+  qrCode: QrCode;
+  qrCodes: Array<QrCode>;
   searchUnsplashPhotos: UnsplashQueryResponse;
   /** find a short link by id */
   shortLink: QueryShortLinkResult;
@@ -2639,6 +2675,7 @@ export type Query = {
   video: Video;
   videoEdition?: Maybe<VideoEdition>;
   videoEditions: Array<VideoEdition>;
+  videoVariant: VideoVariant;
   videoVariants: Array<VideoVariant>;
   videos: Array<Video>;
   videosCount: Scalars['Int']['output'];
@@ -2697,6 +2734,7 @@ export type QueryBlocksArgs = {
 
 
 export type QueryCountriesArgs = {
+  ids?: InputMaybe<Array<Scalars['ID']['input']>>;
   term?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -2716,23 +2754,17 @@ export type QueryCustomDomainsArgs = {
 };
 
 
+export type QueryGetMuxVideoArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type QueryGetMyCloudflareImageArgs = {
   id: Scalars['ID']['input'];
 };
 
 
 export type QueryGetMyCloudflareImagesArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryGetMyCloudflareVideoArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type QueryGetMyCloudflareVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -2860,6 +2892,16 @@ export type QueryMeArgs = {
 };
 
 
+export type QueryQrCodeArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryQrCodesArgs = {
+  where: QrCodesFilter;
+};
+
+
 export type QuerySearchUnsplashPhotosArgs = {
   collections?: InputMaybe<Array<Scalars['String']['input']>>;
   color?: InputMaybe<UnsplashColor>;
@@ -2956,6 +2998,16 @@ export type QueryVideoArgs = {
 
 export type QueryVideoEditionArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryVideoVariantArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryVideoVariantsArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
 };
 
 
@@ -3455,6 +3507,7 @@ export type Team = {
   id: Scalars['ID']['output'];
   integrations: Array<Integration>;
   publicTitle?: Maybe<Scalars['String']['output']>;
+  qrCodes: Array<QrCode>;
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
   userTeams: Array<UserTeam>;
@@ -3826,18 +3879,10 @@ export type Video = {
   cloudflareAssets: Array<CloudflareR2>;
   description: Array<VideoDescription>;
   id: Scalars['ID']['output'];
-  /** @deprecated use images.mobileCinematicHigh */
-  image?: Maybe<Scalars['String']['output']>;
   imageAlt: Array<VideoImageAlt>;
   images: Array<CloudflareImage>;
   keywords: Array<Keyword>;
   label: VideoLabel;
-  /** @deprecated use images.mobileCinematicHigh */
-  mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
-  /** @deprecated use images.mobileCinematicLow */
-  mobileCinematicLow?: Maybe<Scalars['String']['output']>;
-  /** @deprecated use images.mobileCinematicVeryLow */
-  mobileCinematicVeryLow?: Maybe<Scalars['String']['output']>;
   noIndex?: Maybe<Scalars['Boolean']['output']>;
   parents: Array<Video>;
   primaryLanguageId: Scalars['ID']['output'];
@@ -3845,18 +3890,16 @@ export type Video = {
   /** slug is a permanent link to the video. */
   slug: Scalars['String']['output'];
   snippet: Array<VideoSnippet>;
+  source?: Maybe<VideoBlockSource>;
   studyQuestions: Array<VideoStudyQuestion>;
   subtitles: Array<VideoSubtitle>;
-  /** @deprecated use images.thumbnail */
-  thumbnail?: Maybe<Scalars['String']['output']>;
   title: Array<VideoTitle>;
   variant?: Maybe<VideoVariant>;
   variantLanguages: Array<Language>;
   variantLanguagesCount: Scalars['Int']['output'];
   variantLanguagesWithSlug: Array<LanguageWithSlug>;
   variants: Array<VideoVariant>;
-  /** @deprecated use images.videoStill */
-  videoStill?: Maybe<Scalars['String']['output']>;
+  videoEditions: Array<VideoEdition>;
 };
 
 
@@ -3911,6 +3954,21 @@ export type VideoVariantArgs = {
   languageId?: InputMaybe<Scalars['ID']['input']>;
 };
 
+
+export type VideoVariantLanguagesCountArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
+};
+
+
+export type VideoVariantLanguagesWithSlugArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
+};
+
+
+export type VideoVariantsArgs = {
+  input?: InputMaybe<VideoVariantFilter>;
+};
+
 export type VideoBlock = Block & {
   __typename?: 'VideoBlock';
   /** action that should be performed when the video ends */
@@ -3940,6 +3998,7 @@ export type VideoBlock = Block & {
    */
   image?: Maybe<Scalars['String']['output']>;
   journeyId: Scalars['ID']['output'];
+  mediaVideo?: Maybe<MediaVideo>;
   muted?: Maybe<Scalars['Boolean']['output']>;
   /** how the video should display within the VideoBlock */
   objectFit?: Maybe<VideoBlockObjectFit>;
@@ -3967,6 +4026,7 @@ export type VideoBlock = Block & {
   /**
    * internal source videos: video is only populated when videoID and
    * videoVariantLanguageId are present
+   * @deprecated use mediaVideo union instead
    */
   video?: Maybe<Video>;
   /**
@@ -4182,8 +4242,9 @@ export type VideoEdition = {
 };
 
 export type VideoEditionCreateInput = {
-  id: Scalars['ID']['input'];
-  name?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  name: Scalars['String']['input'];
+  videoId: Scalars['String']['input'];
 };
 
 export type VideoEditionUpdateInput = {
@@ -4497,12 +4558,15 @@ export type VideoVariant = {
   hls?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   language: Language;
+  lengthInMilliseconds: Scalars['Int']['output'];
+  published: Scalars['Boolean']['output'];
   share?: Maybe<Scalars['String']['output']>;
   /** slug is a permanent link to the video variant. */
   slug: Scalars['String']['output'];
   subtitle: Array<VideoSubtitle>;
   subtitleCount: Scalars['Int']['output'];
   videoEdition: VideoEdition;
+  videoId?: Maybe<Scalars['ID']['output']>;
 };
 
 
@@ -4519,6 +4583,8 @@ export type VideoVariantCreateInput = {
   hls?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
   languageId: Scalars['String']['input'];
+  lengthInMilliseconds?: InputMaybe<Scalars['Int']['input']>;
+  published?: InputMaybe<Scalars['Boolean']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;
   slug: Scalars['String']['input'];
   videoId: Scalars['String']['input'];
@@ -4559,6 +4625,10 @@ export type VideoVariantDownloadUpdateInput = {
   width?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type VideoVariantFilter = {
+  onlyPublished?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type VideoVariantUpdateInput = {
   dash?: InputMaybe<Scalars['String']['input']>;
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
@@ -4567,6 +4637,8 @@ export type VideoVariantUpdateInput = {
   hls?: InputMaybe<Scalars['String']['input']>;
   id: Scalars['String']['input'];
   languageId?: InputMaybe<Scalars['String']['input']>;
+  lengthInMilliseconds?: InputMaybe<Scalars['Int']['input']>;
+  published?: InputMaybe<Scalars['Boolean']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['String']['input']>;
@@ -4576,6 +4648,7 @@ export type VideosFilter = {
   availableVariantLanguageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   ids?: InputMaybe<Array<Scalars['ID']['input']>>;
   labels?: InputMaybe<Array<VideoLabel>>;
+  published?: InputMaybe<Scalars['Boolean']['input']>;
   subtitleLanguageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
@@ -4743,6 +4816,20 @@ export type VisitorsConnection = {
   pageInfo: PageInfo;
 };
 
+export type YouTube = {
+  __typename?: 'YouTube';
+  id: Scalars['ID']['output'];
+  primaryLanguageId?: Maybe<Scalars['ID']['output']>;
+  source: VideoBlockSource;
+};
+
+export type Youtube = {
+  __typename?: 'Youtube';
+  id: Scalars['ID']['output'];
+  primaryLanguageId?: Maybe<Scalars['ID']['output']>;
+  source?: Maybe<VideoBlockSource>;
+};
+
 export type ZodError = BaseError & {
   __typename?: 'ZodError';
   fieldErrors: Array<ZodFieldError>;
@@ -4771,6 +4858,13 @@ export enum Link__Purpose {
   Security = 'SECURITY'
 }
 
+export type GetMuxVideoQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetMuxVideoQuery = { __typename?: 'Query', getMuxVideo?: { __typename?: 'MuxVideo', id: string, name?: string | null, playbackId?: string | null, duration?: number | null } | null };
+
 export type GetLanguagesQueryVariables = Exact<{
   languageId: Scalars['ID']['input'];
 }>;
@@ -4785,6 +4879,39 @@ export type SiteCreateMutationVariables = Exact<{
 
 export type SiteCreateMutation = { __typename?: 'Mutation', siteCreate: { __typename: 'Error', message?: string | null } | { __typename?: 'MutationSiteCreateSuccess', data: { __typename: 'Site', id: string, domain: string, memberships: Array<{ __typename: 'SiteMembership', id: string, role: string }>, goals: Array<{ __typename: 'SiteGoal', id: string, eventName?: string | null }>, sharedLinks: Array<{ __typename: 'SiteSharedLink', id: string, slug: string }> } } };
 
+export type GetShortLinkQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
 
+
+export type GetShortLinkQuery = { __typename?: 'Query', shortLink: { __typename?: 'NotFoundError', message?: string | null } | { __typename?: 'QueryShortLinkSuccess', data: { __typename?: 'ShortLink', id: string, pathname: string, to: string, domain: { __typename?: 'ShortLinkDomain', hostname: string } } } };
+
+export type ShortLinkCreateMutationVariables = Exact<{
+  input: MutationShortLinkCreateInput;
+}>;
+
+
+export type ShortLinkCreateMutation = { __typename?: 'Mutation', shortLinkCreate: { __typename?: 'MutationShortLinkCreateSuccess', data: { __typename?: 'ShortLink', id: string, pathname: string, to: string, domain: { __typename?: 'ShortLinkDomain', hostname: string } } } | { __typename?: 'NotUniqueError', message?: string | null } | { __typename?: 'ZodError', message?: string | null } };
+
+export type ShortLinkUpdateMutationVariables = Exact<{
+  input: MutationShortLinkUpdateInput;
+}>;
+
+
+export type ShortLinkUpdateMutation = { __typename?: 'Mutation', shortLinkUpdate: { __typename?: 'MutationShortLinkUpdateSuccess', data: { __typename?: 'ShortLink', id: string, to: string } } | { __typename?: 'NotFoundError', message?: string | null } | { __typename?: 'ZodError', message?: string | null } };
+
+export type ShortLinkDeleteMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type ShortLinkDeleteMutation = { __typename?: 'Mutation', shortLinkDelete: { __typename?: 'MutationShortLinkDeleteSuccess', data: { __typename?: 'ShortLink', id: string } } | { __typename?: 'NotFoundError', message?: string | null } };
+
+
+export const GetMuxVideoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetMuxVideo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getMuxVideo"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"playbackId"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}}]}}]}}]} as unknown as DocumentNode<GetMuxVideoQuery, GetMuxVideoQueryVariables>;
 export const GetLanguagesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetLanguages"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"language"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"languageId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"bcp47"}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<GetLanguagesQuery, GetLanguagesQueryVariables>;
 export const SiteCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"SiteCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SiteCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"siteCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Error"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationSiteCreateSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"domain"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"memberships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"role"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"goals"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"eventName"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}},{"kind":"Field","name":{"kind":"Name","value":"sharedLinks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"__typename"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SiteCreateMutation, SiteCreateMutationVariables>;
+export const GetShortLinkDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetShortLink"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortLink"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotFoundError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"QueryShortLinkSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"pathname"}},{"kind":"Field","name":{"kind":"Name","value":"to"}},{"kind":"Field","name":{"kind":"Name","value":"domain"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hostname"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetShortLinkQuery, GetShortLinkQueryVariables>;
+export const ShortLinkCreateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"shortLinkCreate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"MutationShortLinkCreateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortLinkCreate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ZodError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotUniqueError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationShortLinkCreateSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"pathname"}},{"kind":"Field","name":{"kind":"Name","value":"to"}},{"kind":"Field","name":{"kind":"Name","value":"domain"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hostname"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<ShortLinkCreateMutation, ShortLinkCreateMutationVariables>;
+export const ShortLinkUpdateDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"shortLinkUpdate"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"MutationShortLinkUpdateInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortLinkUpdate"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ZodError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotFoundError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationShortLinkUpdateSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"to"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ShortLinkUpdateMutation, ShortLinkUpdateMutationVariables>;
+export const ShortLinkDeleteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"shortLinkDelete"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortLinkDelete"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"NotFoundError"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"message"}}]}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"MutationShortLinkDeleteSuccess"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]} as unknown as DocumentNode<ShortLinkDeleteMutation, ShortLinkDeleteMutationVariables>;

@@ -805,6 +805,22 @@ export class PlausibleStatsTimeseriesFilter {
     interval?: Nullable<string>;
 }
 
+export class QrCodesFilter {
+    journeyId?: Nullable<string>;
+    teamId?: Nullable<string>;
+}
+
+export class QrCodeCreateInput {
+    teamId: string;
+    journeyId: string;
+}
+
+export class QrCodeUpdateInput {
+    to?: Nullable<string>;
+    color?: Nullable<string>;
+    backgroundColor?: Nullable<string>;
+}
+
 export class TeamCreateInput {
     title: string;
     publicTitle?: Nullable<string>;
@@ -979,7 +995,7 @@ export abstract class IMutation {
 
     abstract chatOpenEventCreate(input: ChatOpenEventCreateInput): ChatOpenEvent | Promise<ChatOpenEvent>;
 
-    abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): JourneyViewEvent | Promise<JourneyViewEvent>;
+    abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): Nullable<JourneyViewEvent> | Promise<Nullable<JourneyViewEvent>>;
 
     abstract radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput): RadioQuestionSubmissionEvent | Promise<RadioQuestionSubmissionEvent>;
 
@@ -1052,6 +1068,12 @@ export abstract class IMutation {
     abstract journeyProfileUpdate(input: JourneyProfileUpdateInput): JourneyProfile | Promise<JourneyProfile>;
 
     abstract updateJourneysEmailPreference(input: JourneysEmailPreferenceUpdateInput): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
+
+    abstract qrCodeCreate(input: QrCodeCreateInput): QrCode | Promise<QrCode>;
+
+    abstract qrCodeUpdate(id: string, input: QrCodeUpdateInput): QrCode | Promise<QrCode>;
+
+    abstract qrCodeDelete(id: string): QrCode | Promise<QrCode>;
 
     abstract teamCreate(input?: Nullable<TeamCreateInput>): Team | Promise<Team>;
 
@@ -1182,6 +1204,10 @@ export abstract class IQuery {
     abstract journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
 
     abstract journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
+
+    abstract qrCode(id: string): QrCode | Promise<QrCode>;
+
+    abstract qrCodes(where: QrCodesFilter): QrCode[] | Promise<QrCode[]>;
 
     abstract teams(): Team[] | Promise<Team[]>;
 
@@ -1745,6 +1771,16 @@ export class PlausibleStatsResponse {
     timeOnPage?: Nullable<number>;
 }
 
+export class QrCode {
+    __typename?: 'QrCode';
+    id: string;
+    team?: Nullable<Team>;
+    journey?: Nullable<Journey>;
+    shortLink: ShortLink;
+    color?: Nullable<string>;
+    backgroundColor?: Nullable<string>;
+}
+
 export class Team {
     __typename?: 'Team';
     id: string;
@@ -1755,6 +1791,7 @@ export class Team {
     userTeams: UserTeam[];
     customDomains: CustomDomain[];
     integrations: Integration[];
+    qrCodes: QrCode[];
 }
 
 export class UserInvite {
@@ -1871,10 +1908,20 @@ export class Tag {
     id: string;
 }
 
+export class ShortLink {
+    id: string;
+}
+
 export class User {
     id: string;
 }
 
 export type DateTime = String;
 export type Json = any;
+
+export class ISchema {
+    Query: IQuery;
+    Mutation: IMutation;
+}
+
 type Nullable<T> = T | null;

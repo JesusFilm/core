@@ -2,33 +2,30 @@ import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../lib/apolloClient'
+import { getLanguageIdsFromTags } from '../../../lib/getLanguageIdsFromTags'
 import { paramsToRecord } from '../../../lib/paramsToRecord'
 
-const GET_LANGUAGE_ID_FROM_BCP47 = graphql(`
-  query GetLanguageIdFromBCP47($bcp47: ID!) {
-    language(id: $bcp47, idType: bcp47) {
-      id
-    }
-  }
-`)
-
 const GET_COUNTRIES = graphql(`
-  query Country($languageId: ID!, $fallbackLanguageId: ID!) {
-    countries {
+  query Country(
+    $metadataLanguageId: ID!
+    $fallbackLanguageId: ID!
+    $ids: [ID!]
+  ) {
+    countries(ids: $ids) {
       id
       population
       latitude
       longitude
       flagPngSrc
       flagWebpSrc
-      name(languageId: $languageId) {
+      name(languageId: $metadataLanguageId) {
         value
       }
       fallbackName: name(languageId: $fallbackLanguageId) {
         value
       }
       continent {
-        name(languageId: $languageId) {
+        name(languageId: $metadataLanguageId) {
           value
         }
         fallbackName: name(languageId: $fallbackLanguageId) {
@@ -51,40 +48,27 @@ export async function GET(request: NextRequest): Promise<Response> {
 
   const page = Number(query.get('page') ?? 1)
   const limit = Number(query.get('limit') ?? 10)
+  const idsParam = query.get('ids')
+  const ids = idsParam ? idsParam.split(',') : undefined
   const expand = query.get('expand')
   const offset = (page - 1) * limit
   const metadataLanguageTags =
     query.get('metadataLanguageTags')?.split(',') ?? []
 
-  let languageId = '529'
-  let fallbackLanguageId = ''
-  if (metadataLanguageTags.length > 0 && metadataLanguageTags[0] !== 'en') {
-    const { data: languageIdsData } = await getApolloClient().query<
-      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
-    >({
-      query: GET_LANGUAGE_ID_FROM_BCP47,
-      variables: { bcp47: metadataLanguageTags[0] }
-    })
-
-    languageId = languageIdsData.language?.id ?? '529'
+  const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
+  if (languageResult instanceof Response) {
+    return languageResult
   }
-  if (metadataLanguageTags.length > 1) {
-    const { data: languageIdsData } = await getApolloClient().query<
-      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
-    >({
-      query: GET_LANGUAGE_ID_FROM_BCP47,
-      variables: { bcp47: metadataLanguageTags[1] }
-    })
 
-    fallbackLanguageId = languageIdsData.language?.id ?? '529'
-  }
+  const { metadataLanguageId, fallbackLanguageId } = languageResult
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_COUNTRIES>
   >({
     query: GET_COUNTRIES,
     variables: {
-      languageId,
+      ids,
+      metadataLanguageId,
       fallbackLanguageId
     }
   })
@@ -111,6 +95,10 @@ export async function GET(request: NextRequest): Promise<Response> {
 
   const mediaCountries = data.countries
     .slice(offset, offset + limit)
+    .filter(
+      (country) =>
+        country.name[0]?.value != null || country.fallbackName[0]?.value != null
+    )
     .map((country) => ({
       countryId: country.id,
       name: country.name[0]?.value ?? country.fallbackName?.[0]?.value ?? '',
@@ -118,8 +106,9 @@ export async function GET(request: NextRequest): Promise<Response> {
         country.continent?.name[0]?.value ??
         country.continent?.fallbackName[0]?.value ??
         '',
-      longitude: country.longitude,
-      latitude: country.latitude,
+      metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
+      longitude: country.longitude ? country.longitude : 0,
+      latitude: country.latitude ? country.latitude : 0,
       counts: {
         languageCount: {
           value: country.languageCount,

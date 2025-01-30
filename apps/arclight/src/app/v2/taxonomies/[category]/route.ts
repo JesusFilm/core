@@ -2,14 +2,7 @@ import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
-import { paramsToRecord } from '../../../../lib/paramsToRecord'
 import { TaxonomyGroup, findBestMatchingName } from '../lib'
-
-/* TODO: 
-  querystring:
-    apiKey
-    metadataLanguageTags
-*/
 
 const GET_TAXONOMY = graphql(`
   query GetTaxonomy($category: String!, $languageCodes: [String!]) {
@@ -40,12 +33,7 @@ export async function GET(
   const metadataLanguageTags = query
     .get('metadataLanguageTags')
     ?.split(',') ?? ['en']
-
-  const queryObject: Record<string, string> = {
-    ...paramsToRecord(query.entries())
-  }
-
-  const queryString = new URLSearchParams(queryObject).toString()
+  const apiKey = query.get('apiKey') ?? ''
 
   const { data } = await getApolloClient().query<ResultOf<typeof GET_TAXONOMY>>(
     {
@@ -57,42 +45,7 @@ export async function GET(
     }
   )
 
-  const groupedTaxonomy: Record<string, TaxonomyGroup> = {}
-
-  data.taxonomies.forEach((taxonomy) => {
-    if (taxonomy.name.length === 0) {
-      return
-    }
-    const matchingName = findBestMatchingName(
-      taxonomy.name as Array<{ label: string; language: { bcp47: string } }>,
-      metadataLanguageTags
-    )
-    if (groupedTaxonomy[taxonomy.category] === undefined) {
-      groupedTaxonomy[taxonomy.category] = {
-        terms: {
-          [taxonomy.term]: {
-            label: matchingName.label,
-            metadataLanguageTag: matchingName.language.bcp47
-          }
-        },
-        _links: {
-          self: {
-            href: `https://api.arclight.org/v2/taxonomies/${taxonomy.category}?${queryString}`
-          },
-          taxonomies: {
-            href: `https://api.arclight.org/v2/taxonomies?${queryString}`
-          }
-        }
-      }
-    } else {
-      groupedTaxonomy[taxonomy.category].terms[taxonomy.term] = {
-        label: matchingName.label,
-        metadataLanguageTag: matchingName.language.bcp47
-      }
-    }
-  })
-
-  if (Object.keys(groupedTaxonomy).length === 0) {
+  if (data.taxonomies.length === 0) {
     return new Response(
       JSON.stringify({
         message: `Taxonomy '${category}' not found!`,
@@ -102,5 +55,31 @@ export async function GET(
     )
   }
 
-  return new Response(JSON.stringify(groupedTaxonomy), { status: 200 })
+  const response = {
+    terms: {} as Record<string, { label: string; metadataLanguageTag: string }>,
+    _links: {
+      self: {
+        href: `http://api.arclight.org/v2/taxonomies/${category}?apiKey=${apiKey}`
+      },
+      taxonomies: {
+        href: `http://api.arclight.org/v2/taxonomies?apiKey=${apiKey}`
+      }
+    }
+  }
+
+  data.taxonomies.forEach((taxonomy) => {
+    if (taxonomy.name.length === 0) return
+
+    const matchingName = findBestMatchingName(
+      taxonomy.name as Array<{ label: string; language: { bcp47: string } }>,
+      metadataLanguageTags
+    )
+
+    response.terms[taxonomy.term] = {
+      label: matchingName.label,
+      metadataLanguageTag: matchingName.language.bcp47
+    }
+  })
+
+  return new Response(JSON.stringify(response), { status: 200 })
 }

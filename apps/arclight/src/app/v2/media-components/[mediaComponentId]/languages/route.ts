@@ -14,14 +14,14 @@ const GET_VIDEO_LANGUAGES = graphql(`
       id
       variants {
         id
-        duration
+        lengthInMilliseconds
         hls
         dash
         share
         subtitle {
           language {
             id
-            name {
+            name(languageId: "529") {
               value
             }
             bcp47
@@ -49,6 +49,8 @@ interface GetParams {
   params: { mediaComponentId: string }
 }
 
+export const maxDuration = 60
+
 export async function GET(
   request: NextRequest,
   { params }: GetParams
@@ -59,6 +61,7 @@ export async function GET(
   const apiKey = query.get('apiKey') ?? '616db012e9a951.51499299'
   const platform = query.get('platform') ?? 'ios'
   const languageIds = query.get('languageIds')?.split(',') ?? []
+  const reduce = query.get('reduce') ?? ''
   const apiSessionId = '6622f10d2260a8.05128925'
 
   const { data } = await getApolloClient().query<
@@ -96,8 +99,6 @@ export async function GET(
                     ? undefined
                     : {
                         url: downloadLow.url,
-                        height: downloadLow.height,
-                        width: downloadLow.width,
                         sizeInBytes: downloadLow.size
                       },
                 high:
@@ -105,8 +106,6 @@ export async function GET(
                     ? undefined
                     : {
                         url: downloadHigh.url,
-                        height: downloadHigh.height,
-                        width: downloadHigh.width,
                         sizeInBytes: downloadHigh.size
                       }
               }
@@ -132,6 +131,15 @@ export async function GET(
                   }
                   break
                 case 'ios':
+                  subtitleUrls = {
+                    vtt: variant.subtitle?.map((subtitle) => ({
+                      languageId: Number(subtitle.language?.id),
+                      languageName: subtitle.language?.name[0].value,
+                      languageTag: subtitle.language?.bcp47,
+                      url: subtitle.vttSrc
+                    }))
+                  }
+                  break
                 case 'web':
                   subtitleUrls = {
                     m3u8: variant.subtitle?.map((subtitle) => ({
@@ -160,7 +168,12 @@ export async function GET(
                   break
                 case 'ios':
                   streamingUrls = {
-                    m3u8: [{ videoBitrate: 0, url: variant.hls }],
+                    m3u8: [
+                      {
+                        videoBitrate: 0,
+                        url: variant.hls
+                      }
+                    ],
                     http: []
                   }
                   break
@@ -182,7 +195,7 @@ export async function GET(
               mediaComponentId,
               languageId: Number(variant.language?.id),
               refId: variant.id,
-              lengthInMilliseconds: variant.duration,
+              lengthInMilliseconds: variant?.lengthInMilliseconds ?? 0,
               subtitleUrls,
               downloadUrls,
               streamingUrls,
@@ -190,18 +203,18 @@ export async function GET(
               socialMediaUrls: {},
               ...(platform === 'web' && {
                 webEmbedPlayer,
-                webEmbedSharePlayer
+                webEmbedSharePlayer,
+                openGraphVideoPlayer: 'https://jesusfilm.org/'
               }),
-              openGraphVideoPlayer: 'https://jesusfilm.org/',
               _links: {
                 self: {
-                  href: `https://api.arclight.com/v2/media-components/${mediaComponentId}/languages/${variant.language?.id}?platform=${platform}&apiKey=${apiKey}`
+                  href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/${variant.language?.id}?platform=${platform}&apiKey=${apiKey}`
                 },
                 mediaComponent: {
-                  href: `https://api.arclight.com/v2/media-components/${mediaComponentId}?apiKey=${apiKey}`
+                  href: `http://api.arclight.org/v2/media-components/${mediaComponentId}?apiKey=${apiKey}`
                 },
                 mediaLanguage: {
-                  href: `https://api.arclight.com/v2/media-languages/${variant.language?.id}/?apiKey=${apiKey}`
+                  href: `http://api.arclight.org/v2/media-languages/${variant.language?.id}/?apiKey=${apiKey}`
                 }
               }
             }
@@ -219,10 +232,10 @@ export async function GET(
     apiSessionId,
     _links: {
       self: {
-        href: `/v2/media-components/${mediaComponentId}/languages?${queryString}`
+        href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages?${queryString}`
       },
       mediaComponent: {
-        href: `/v2/media-components/${mediaComponentId}` // TODO: mediacomponent querystring
+        href: `http://api.arclight.org/v2/media-components/${mediaComponentId}`
       }
     },
     _embedded: {

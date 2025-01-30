@@ -1,3 +1,9 @@
+import {
+  ApolloClient,
+  InMemoryCache,
+  createHttpLink,
+  gql
+} from '@apollo/client'
 import { subject } from '@casl/ability'
 import Mux from '@mux/mux-node'
 import { UseGuards } from '@nestjs/common'
@@ -10,6 +16,10 @@ import { object, string } from 'yup'
 import { Block, VideoBlockSource } from '.prisma/api-journeys-client'
 import { CaslAbility } from '@core/nest/common/CaslAuthModule'
 
+import {
+  GetMuxVideoQuery,
+  GetMuxVideoQueryVariables
+} from '../../../../__generated__/graphql'
 import {
   VideoBlock,
   VideoBlockCreateInput,
@@ -79,6 +89,16 @@ interface CloudflareRetrieveVideoDetailsResponseResult {
   }
 }
 
+const GET_MUX_VIDEO_QUERY = gql`
+  query GetMuxVideo($id: ID!) {
+    getMuxVideo(id: $id) {
+      id
+      name
+      playbackId
+      duration
+    }
+  }
+`
 function parseISO8601Duration(duration: string): number {
   const match = duration.match(/P(\d+Y)?(\d+W)?(\d+D)?T(\d+H)?(\d+M)?(\d+S)?/)
 
@@ -95,19 +115,6 @@ function parseISO8601Duration(duration: string): number {
     (((years * 365 + weeks * 7 + days) * 24 + hours) * 60 + minutes) * 60 +
     seconds
   )
-}
-
-function getClient(): Mux {
-  if (process.env.MUX_ACCESS_TOKEN_ID == null)
-    throw new Error('Missing MUX_ACCESS_TOKEN_ID')
-
-  if (process.env.MUX_SECRET_KEY == null)
-    throw new Error('Missing MUX_SECRET_KEY')
-
-  return new Mux({
-    tokenId: process.env.MUX_ACCESS_TOKEN_ID,
-    tokenSecret: process.env.MUX_SECRET_KEY
-  })
 }
 
 @Resolver('VideoBlock')
@@ -294,8 +301,8 @@ export class VideoBlockResolver {
         })
         if (input.videoId != null) {
           input = {
-            ...(await this.fetchFieldsFromMux(input.videoId)),
-            ...input
+            ...input,
+            ...(await this.fetchFieldsFromMux(input.videoId))
           }
         }
         break
@@ -392,18 +399,42 @@ export class VideoBlockResolver {
   private async fetchFieldsFromMux(
     videoId: string
   ): Promise<Pick<VideoBlock, 'title' | 'image' | 'duration' | 'endAt'>> {
-    const response = await await getClient().video.assets.retrieve(videoId)
+    const httpLink = createHttpLink({
+      uri: process.env.GATEWAY_URL,
+      headers: {
+        'x-graphql-client-name': 'api-journeys',
+        'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
+      }
+    })
+    const apollo = new ApolloClient({
+      link: httpLink,
+      cache: new InMemoryCache()
+    })
 
-    if (response == null) {
+    const { data } = await apollo.query<
+      GetMuxVideoQuery,
+      GetMuxVideoQueryVariables
+    >({
+      query: GET_MUX_VIDEO_QUERY,
+      variables: { id: videoId }
+    })
+
+    if (data.getMuxVideo == null) {
       throw new GraphQLError('videoId cannot be found on Mux', {
         extensions: { code: 'NOT_FOUND' }
       })
     }
+
+    if (data.getMuxVideo.playbackId == null) {
+      return {
+        title: data.getMuxVideo.name
+      }
+    }
     return {
-      title: response.id,
-      image: `${response.static_renditions?.[0].url}`,
-      duration: Math.round(response.duration ?? 0),
-      endAt: Math.round(response.duration ?? 0)
+      title: data.getMuxVideo.name,
+      image: `https://image.mux.com/${data.getMuxVideo.playbackId}/thumbnail.png?time=1`,
+      duration: Math.round(data.getMuxVideo.duration ?? 0),
+      endAt: Math.round(data.getMuxVideo.duration ?? 0)
     }
   }
 }

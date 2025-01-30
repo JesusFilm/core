@@ -125,12 +125,6 @@ export function SelectableWrapper({
             : ''
         }
         sx={{
-          '&:first-child': {
-            '& > *': { mt: '0px' }
-          },
-          '&:last-child': {
-            '& > *': { mb: '0px' }
-          },
           borderRadius,
           outline: '2px solid ',
           outlineColor:

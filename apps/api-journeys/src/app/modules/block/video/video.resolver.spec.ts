@@ -1,3 +1,4 @@
+import { ApolloClient, ApolloQueryResult } from '@apollo/client'
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import fetch, { Response } from 'node-fetch'
@@ -28,24 +29,6 @@ jest.mock('node-fetch', () => {
   }
 })
 const mockFetch = fetch as jest.MockedFunction<typeof fetch>
-
-jest.mock('@mux/mux-node', () =>
-  jest.fn().mockImplementation(() => ({
-    video: {
-      assets: {
-        retrieve: jest.fn().mockResolvedValue({
-          id: 'videoId',
-          duration: 100,
-          static_renditions: [
-            {
-              url: 'https://mux.com/video.jpg'
-            }
-          ]
-        })
-      }
-    }
-  }))
-)
 
 describe('VideoBlockResolver', () => {
   let resolver: VideoBlockResolver,
@@ -111,8 +94,8 @@ describe('VideoBlockResolver', () => {
   }
 
   beforeAll(() => {
-    process.env.MUX_ACCESS_TOKEN_ID = 'accessTokenId'
-    process.env.MUX_SECRET_KEY = 'secretKey'
+    process.env.MUX_UGC_ACCESS_TOKEN_ID = 'accessTokenId'
+    process.env.MUX_UGC_SECRET_KEY = 'secretKey'
   })
 
   beforeEach(async () => {
@@ -435,6 +418,21 @@ describe('VideoBlockResolver', () => {
     describe('Mux Source', () => {
       it('creates a VideoBlock', async () => {
         prismaService.block.create.mockResolvedValueOnce(muxBlock)
+        jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+          async () =>
+            await Promise.resolve({
+              data: {
+                getMuxVideo: {
+                  id: 'videoId',
+                  name: 'videoName',
+                  assetId: 'assetId',
+                  playbackId: 'playbackId',
+                  readToStream: true,
+                  duration: 10
+                }
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+        )
         expect(
           await resolver.videoBlockCreate(ability, {
             id: 'blockId',
@@ -448,12 +446,12 @@ describe('VideoBlockResolver', () => {
         expect(prismaService.block.create).toHaveBeenCalledWith({
           data: {
             id: 'blockId',
-            duration: 100,
-            endAt: 100,
-            image: 'https://mux.com/video.jpg',
+            duration: 10,
+            endAt: 10,
+            image: 'https://image.mux.com/playbackId/thumbnail.png?time=1',
             objectFit: null,
             videoId: 'videoId',
-            title: 'videoId',
+            title: 'videoName',
             videoVariantLanguageId: 'videoVariantLanguageId',
             source: VideoBlockSource.mux,
             journey: { connect: { id: 'journeyId' } },
@@ -738,6 +736,21 @@ describe('VideoBlockResolver', () => {
 
     describe('Mux Source', () => {
       it('updates videoId', async () => {
+        jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+          async () =>
+            await Promise.resolve({
+              data: {
+                getMuxVideo: {
+                  id: 'videoId',
+                  name: 'videoName',
+                  assetId: 'assetId',
+                  playbackId: 'playbackId',
+                  readToStream: true,
+                  duration: 10
+                }
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+        )
         prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
         await resolver.videoBlockUpdate(ability, 'blockId', {
           videoId: 'ea95132c15732412d22c1476fa83f27a',
@@ -746,14 +759,29 @@ describe('VideoBlockResolver', () => {
         expect(service.update).toHaveBeenCalledWith('blockId', {
           videoId: 'ea95132c15732412d22c1476fa83f27a',
           source: VideoBlockSource.mux,
-          duration: 100,
-          endAt: 100,
-          image: 'https://mux.com/video.jpg',
-          title: 'videoId'
+          duration: 10,
+          endAt: 10,
+          image: 'https://image.mux.com/playbackId/thumbnail.png?time=1',
+          title: 'videoName'
         })
       })
 
       it('updates videoId title when meta name not present', async () => {
+        jest.spyOn(ApolloClient.prototype, 'query').mockImplementationOnce(
+          async () =>
+            await Promise.resolve({
+              data: {
+                getMuxVideo: {
+                  id: 'videoId',
+                  name: 'videoName',
+                  assetId: 'assetId',
+                  playbackId: 'playbackId',
+                  readToStream: true,
+                  duration: 10
+                }
+              }
+            } as unknown as ApolloQueryResult<unknown>)
+        )
         prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
         await resolver.videoBlockUpdate(ability, 'blockId', {
           videoId: 'ea95132c15732412d22c1476fa83f27a',
@@ -762,10 +790,10 @@ describe('VideoBlockResolver', () => {
         expect(service.update).toHaveBeenCalledWith('blockId', {
           videoId: 'ea95132c15732412d22c1476fa83f27a',
           source: VideoBlockSource.mux,
-          duration: 100,
-          endAt: 100,
-          image: 'https://mux.com/video.jpg',
-          title: 'videoId'
+          duration: 10,
+          endAt: 10,
+          image: 'https://image.mux.com/playbackId/thumbnail.png?time=1',
+          title: 'videoName'
         })
       })
 

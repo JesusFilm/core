@@ -2,20 +2,39 @@ import { Prisma } from '.prisma/api-media-client'
 
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
+import { VideoSource, VideoSourceShape } from '../../videoSource/videoSource'
 
 import {
   createVideoByDirectUpload,
   createVideoFromUrl,
   deleteVideo,
+  getUpload,
   getVideo
 } from './service'
 
-builder.prismaObject('MuxVideo', {
+const MuxVideo = builder.prismaObject('MuxVideo', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
-    uploadUrl: t.exposeString('uploadUrl'),
-    userId: t.exposeID('userId', { nullable: false }),
-    createdAt: t.expose('createdAt', {
+    name: t.exposeString('name'),
+    source: t.field({
+      type: VideoSource,
+      shareable: true,
+      resolve: () => VideoSourceShape.mux
+    }),
+    primaryLanguageId: t.id({
+      nullable: true,
+      shareable: true,
+      resolve: () => null
+    }),
+    assetId: t.exposeString('assetId'),
+    duration: t.exposeInt('duration'),
+    uploadId: t.withAuth({ isAuthenticated: true }).exposeString('uploadId'),
+    playbackId: t.exposeString('playbackId'),
+    uploadUrl: t.withAuth({ isAuthenticated: true }).exposeString('uploadUrl'),
+    userId: t
+      .withAuth({ isAuthenticated: true })
+      .exposeID('userId', { nullable: false }),
+    createdAt: t.withAuth({ isAuthenticated: true }).expose('createdAt', {
       type: 'Date',
       nullable: false
     }),
@@ -51,20 +70,88 @@ builder.queryFields((t) => ({
     resolve: async (query, _root, { id }, { user }) => {
       if (user == null) throw new Error('User not found')
 
-      const video = await prisma.muxVideo.findFirstOrThrow({
+      let video = await prisma.muxVideo.findFirstOrThrow({
         ...query,
         where: { id, userId: user.id }
       })
 
-      if (!video.readyToStream) {
-        const muxVideo = await getVideo(id)
-
-        if (muxVideo.status === 'ready') {
-          return await prisma.muxVideo.update({
+      if (video.assetId == null && video.uploadId != null) {
+        const muxUpload = await getUpload(video.uploadId)
+        if (muxUpload.asset_id != null) {
+          video = await prisma.muxVideo.update({
             ...query,
             where: { id },
             data: {
-              readyToStream: true
+              assetId: muxUpload.asset_id
+            }
+          })
+        }
+      }
+      if (
+        video.assetId != null &&
+        (!video.readyToStream || video.playbackId == null)
+      ) {
+        const muxVideo = await getVideo(video.assetId)
+
+        if (
+          muxVideo.status === 'ready' &&
+          muxVideo.playback_ids?.[0].id != null
+        ) {
+          video = await prisma.muxVideo.update({
+            ...query,
+            where: { id },
+            data: {
+              readyToStream: muxVideo.status === 'ready',
+              playbackId: muxVideo.playback_ids?.[0].id,
+              duration: Math.ceil(muxVideo.duration ?? 0)
+            }
+          })
+        }
+      }
+      return video
+    }
+  }),
+  getMuxVideo: t.prismaField({
+    type: 'MuxVideo',
+    nullable: true,
+    args: {
+      id: t.arg({ type: 'ID', required: true })
+    },
+    resolve: async (query, _parent, { id }) => {
+      let video = await prisma.muxVideo.findFirstOrThrow({
+        ...query,
+        where: { id }
+      })
+
+      if (video.assetId == null && video.uploadId != null) {
+        const muxUpload = await getUpload(video.uploadId)
+        if (muxUpload.asset_id != null) {
+          video = await prisma.muxVideo.update({
+            ...query,
+            where: { id },
+            data: {
+              assetId: muxUpload.asset_id
+            }
+          })
+        }
+      }
+      if (
+        video.assetId != null &&
+        (!video.readyToStream || video.playbackId == null)
+      ) {
+        const muxVideo = await getVideo(video.assetId)
+
+        if (
+          muxVideo.status === 'ready' &&
+          muxVideo.playback_ids?.[0].id != null
+        ) {
+          video = await prisma.muxVideo.update({
+            ...query,
+            where: { id },
+            data: {
+              readyToStream: muxVideo.status === 'ready',
+              playbackId: muxVideo.playback_ids?.[0].id,
+              duration: Math.ceil(muxVideo.duration ?? 0)
             }
           })
         }
@@ -91,7 +178,7 @@ builder.mutationFields((t) => ({
         return await prisma.muxVideo.create({
           ...query,
           data: {
-            id,
+            uploadId: id,
             uploadUrl,
             userId: user.id,
             name
@@ -113,7 +200,7 @@ builder.mutationFields((t) => ({
       return await prisma.muxVideo.create({
         ...query,
         data: {
-          id,
+          assetId: id,
           userId: user.id
         }
       })
@@ -143,3 +230,11 @@ builder.mutationFields((t) => ({
     }
   })
 }))
+
+builder.asEntity(MuxVideo, {
+  key: builder.selection<{ id: string; primaryLanguageId: string }>(
+    'id primaryLanguageId'
+  ),
+  resolveReference: async ({ id }) =>
+    await prisma.muxVideo.findUniqueOrThrow({ where: { id } })
+})
