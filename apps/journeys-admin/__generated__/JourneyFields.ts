@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, UserTeamRole, JourneyMenuButtonIcon } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: JourneyFields
@@ -515,11 +515,27 @@ export interface JourneyFields_host {
   src2: string | null;
 }
 
+export interface JourneyFields_team_userTeams_user {
+  __typename: "User";
+  id: string;
+  firstName: string;
+  lastName: string | null;
+  imageUrl: string | null;
+}
+
+export interface JourneyFields_team_userTeams {
+  __typename: "UserTeam";
+  id: string;
+  role: UserTeamRole;
+  user: JourneyFields_team_userTeams_user;
+}
+
 export interface JourneyFields_team {
   __typename: "Team";
   id: string;
   title: string;
   publicTitle: string | null;
+  userTeams: JourneyFields_team_userTeams[];
 }
 
 export interface JourneyFields_tags_name_language {

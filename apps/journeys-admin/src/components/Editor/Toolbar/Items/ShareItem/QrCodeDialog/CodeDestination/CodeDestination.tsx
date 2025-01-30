@@ -2,29 +2,86 @@ import FilledInput from '@mui/material/FilledInput'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlertTriangle from '@core/shared/ui/icons/AlertTriangle'
+
+import { useUserRoleSuspenseQuery } from '../../../../../../../libs/useUserRoleSuspenseQuery'
 
 import { ChangeButton } from './ChangeButton'
 import { CodeDestinationPopper } from './CodeDestinationPopper'
+import {
+  UserJourneyRole,
+  UserTeamRole
+} from 'libs/journeys/ui/__generated__/globalTypes'
+import { Role } from '../../../../../../../../__generated__/globalTypes'
+import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
 
 interface CodeDestinationProps {
   to?: string
-  handleChangeTo: (url: string) => void
+  handleUpdateTo: (url: string) => Promise<void>
 }
 
 export function CodeDestination({
   to,
-  handleChangeTo
+  handleUpdateTo
 }: CodeDestinationProps): ReactElement {
+  const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
-
+  const { loadUser, data: user } = useCurrentUserLazyQuery()
+  const { data } = useUserRoleSuspenseQuery()
   const [showRedirectButton, setShowRedirectButton] = useState(false)
   const [disabled, setDisabled] = useState(true)
+  const [value, setValue] = useState(to ?? '')
+
+  useEffect(() => {
+    setValue(to ?? '')
+  }, [to])
+
+  function canEdit(): boolean {
+    if (
+      user == null ||
+      data.getUserRole == null ||
+      data.getUserRole.id == null ||
+      journey?.userJourneys == null ||
+      journey?.team == null
+    )
+      return false
+
+    const isTemplatePublisher =
+      data.getUserRole.roles?.includes(Role.publisher) &&
+      journey.template === true
+    const isJourneyOwner =
+      journey.userJourneys.find(
+        (userJourney) => userJourney.user?.id === user.id
+      )?.role === UserJourneyRole.owner
+    const isTeamManager =
+      journey.team.userTeams.find((userTeam) => userTeam.user?.id === user.id)
+        ?.role === UserTeamRole.manager
+
+    if (isTemplatePublisher || isJourneyOwner || isTeamManager) {
+      return true
+    } else {
+      return false
+    }
+  }
+
+  useEffect(() => {
+    void loadUser()
+    setDisabled(!canEdit() || to == null)
+  }, [data, journey, user, to])
 
   function handleClick(): void {
     setShowRedirectButton(!showRedirectButton)
+  }
+
+  async function handleRedirect(): Promise<void> {
+    try {
+      await handleUpdateTo(value)
+    } catch (error) {
+      setValue(to ?? '')
+    }
   }
 
   return (
@@ -58,14 +115,15 @@ export function CodeDestination({
             disabled={disabled}
             showRedirectButton={showRedirectButton}
             handleClick={handleClick}
+            handleRedirect={handleRedirect}
           />
         </Stack>
       </Stack>
       <FilledInput
         fullWidth
         hiddenLabel
-        value={to}
-        onChange={(e) => handleChangeTo(e.target.value)}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
         disabled={!showRedirectButton}
       />
       <Stack
@@ -78,6 +136,7 @@ export function CodeDestination({
           disabled={disabled}
           showRedirectButton={showRedirectButton}
           handleClick={handleClick}
+          handleRedirect={handleRedirect}
         />
       </Stack>
       {showRedirectButton && (

@@ -14,12 +14,12 @@ import { MouseEvent, ReactElement, useState } from 'react'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 interface DownloadQrCodeProps {
-  to?: string
+  shortLink?: string
   loading?: boolean
 }
 
 export function DownloadQrCode({
-  to,
+  shortLink,
   loading
 }: DownloadQrCodeProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -66,7 +66,7 @@ export function DownloadQrCode({
   }
 
   async function handleCopyClick(): Promise<void> {
-    await navigator.clipboard.writeText(to ?? '')
+    await navigator.clipboard.writeText(shortLink ?? '')
     enqueueSnackbar('Link copied', {
       variant: 'success',
       preventDuplicate: true
@@ -82,7 +82,7 @@ export function DownloadQrCode({
     >
       <ButtonGroup
         variant="contained"
-        disabled={to == null || loading}
+        disabled={shortLink == null || loading}
         sx={{
           borderRadius: 2,
           width: 200,

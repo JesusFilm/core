@@ -1,42 +1,190 @@
+import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { QRCodeCanvas } from 'qrcode.react'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
+
+import {
+  GetJourneyQrCodes,
+  GetJourneyQrCodesVariables,
+  GetJourneyQrCodes_qrCodes as QrCode
+} from '../../../../../../../__generated__/GetJourneyQrCodes'
+import {
+  QrCodeCreate,
+  QrCodeCreateVariables
+} from '../../../../../../../__generated__/QrCodeCreate'
+import {
+  QrCodeUpdate,
+  QrCodeUpdateVariables
+} from '../../../../../../../__generated__/QrCodeUpdate'
 
 import { CodeDestination } from './CodeDestination'
 import { DownloadQrCode } from './DownloadQrCode'
 import { ScanCount } from './ScanCount'
 
+export const GET_JOURNEY_QR_CODES = gql`
+  query GetJourneyQrCodes($where: QrCodesFilter!) {
+    qrCodes(where: $where) {
+      id
+      shortLink {
+        domain {
+          hostname
+        }
+        pathname
+        to
+      }
+    }
+  }
+`
+
+export const QR_CODE_CREATE = gql`
+  mutation QrCodeCreate($input: QrCodeCreateInput!) {
+    qrCodeCreate(input: $input) {
+      id
+      shortLink {
+        domain {
+          hostname
+        }
+        pathname
+        to
+      }
+    }
+  }
+`
+
+export const QR_CODE_UPDATE = gql`
+  mutation QrCodeUpdate($id: ID!, $input: QrCodeUpdateInput!) {
+    qrCodeUpdate(id: $id, input: $input) {
+      id
+      shortLink {
+        domain {
+          hostname
+        }
+        pathname
+        to
+      }
+    }
+  }
+`
+
 interface QrCodeDialogProps {
   open: boolean
   onClose: () => void
-  initialJourneyUrl?: string
 }
 
 export function QrCodeDialog({
   open,
-  onClose,
-  initialJourneyUrl
+  onClose
 }: QrCodeDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const someUrl = 'someUrl'
-  const [to, setTo] = useState<string | undefined>(
-    initialJourneyUrl ?? undefined
-  )
+  const { journey } = useJourney()
+  const { enqueueSnackbar } = useSnackbar()
+  const [qrCodeCreate, { loading: createLoading }] = useMutation<
+    QrCodeCreate,
+    QrCodeCreateVariables
+  >(QR_CODE_CREATE)
+  const [qrCodeUpdate, { loading: updateLoading }] = useMutation<
+    QrCodeUpdate,
+    QrCodeUpdateVariables
+  >(QR_CODE_UPDATE)
+  const [qrCode, setQrCode] = useState<QrCode | undefined>(undefined)
+  const [shortLink, setShortLink] = useState<string | undefined>(undefined)
+  const [to, setTo] = useState<string | undefined>(undefined)
   const [loading, setLoading] = useState(false)
 
-  function handleGenerateQrCode(): void {
-    setLoading(false)
-    setTo(someUrl)
+  const { data: qrCodesData, loading: getLoading } = useQuery<
+    GetJourneyQrCodes,
+    GetJourneyQrCodesVariables
+  >(GET_JOURNEY_QR_CODES, {
+    variables: {
+      where: {
+        journeyId: journey?.id
+      }
+    },
+    onCompleted: (data) => {
+      setQrCode(data?.qrCodes[0])
+      setTo(getTo(data?.qrCodes[0]))
+      setShortLink(getShortLink(data?.qrCodes[0]))
+    }
+  })
+
+  useEffect(() => {
+    if (getLoading || createLoading || updateLoading) {
+      setLoading(true)
+    } else {
+      setLoading(false)
+    }
+  }, [getLoading, createLoading, updateLoading])
+
+  async function handleGenerateQrCode(): Promise<void> {
+    if (journey?.id == null || journey?.team?.id == null) return
+    await qrCodeCreate({
+      variables: {
+        input: {
+          journeyId: journey?.id,
+          teamId: journey?.team.id
+        }
+      },
+      onCompleted: (data) => {
+        setQrCode(data.qrCodeCreate)
+        setTo(getTo(data.qrCodeCreate))
+        setShortLink(getShortLink(data.qrCodeCreate))
+      },
+      onError: () => {
+        enqueueSnackbar(t('Failed to create QR Code'), {
+          variant: 'error',
+          preventDuplicate: true
+        })
+      }
+    })
   }
 
-  function handleChangeTo(url: string): void {
-    setTo(url)
+  async function handleUpdateTo(url: string): Promise<void> {
+    if (qrCode == null) return
+    await qrCodeUpdate({
+      variables: {
+        id: qrCode.id,
+        input: {
+          to: url
+        }
+      },
+      onCompleted: (data) => {
+        setTo(getTo(data.qrCodeUpdate))
+      },
+      onError: () => {
+        enqueueSnackbar(t('Failed to update QR Code'), {
+          variant: 'error',
+          preventDuplicate: true
+        })
+        throw new Error('Failed to update QR Code')
+      }
+    })
+  }
+
+  function getShortLink(qrCode?: QrCode): string | undefined {
+    if (qrCode == null) return undefined
+
+    const hostname = qrCode.shortLink.domain.hostname
+    const pathname = qrCode.shortLink.pathname
+    const isLocal = hostname === 'localhost'
+
+    const protocol = isLocal ? 'http:' : 'https:'
+    const port = isLocal ? ':4100' : ''
+
+    return `${protocol}//${hostname}${port}/${pathname}`
+  }
+
+  function getTo(qrCode?: QrCode): string | undefined {
+    if (qrCode == null) return undefined
+    const to = new URL(qrCode.shortLink.to)
+    return `${to.origin}${to.pathname}`
   }
 
   return (
@@ -63,7 +211,7 @@ export function QrCodeDialog({
             alignItems: 'center'
           }}
         >
-          {to != null ? (
+          {shortLink != null ? (
             <Stack
               sx={{
                 borderWidth: '2px',
@@ -78,7 +226,7 @@ export function QrCodeDialog({
                 title="QR Code"
                 size={122}
                 level="L"
-                value={to}
+                value={shortLink}
               />
             </Stack>
           ) : (
@@ -102,8 +250,8 @@ export function QrCodeDialog({
               alignItems: { xs: 'center', sm: 'start' }
             }}
           >
-            <ScanCount />
-            <DownloadQrCode to={to} loading={loading} />
+            <ScanCount qrCodeId={qrCode?.id} />
+            <DownloadQrCode shortLink={shortLink} loading={loading} />
             <Typography
               variant="body2"
               color="secondary.main"
@@ -116,7 +264,7 @@ export function QrCodeDialog({
           </Stack>
         </Stack>
         <Divider />
-        <CodeDestination to={to} handleChangeTo={handleChangeTo} />
+        <CodeDestination to={to} handleUpdateTo={handleUpdateTo} />
       </Stack>
     </Dialog>
   )

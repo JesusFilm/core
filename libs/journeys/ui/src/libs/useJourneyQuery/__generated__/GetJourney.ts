@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { IdType, JourneysQueryOptions, JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./../../../../__generated__/globalTypes";
+import { IdType, JourneysQueryOptions, JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, UserTeamRole, JourneyMenuButtonIcon } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
@@ -515,11 +515,27 @@ export interface GetJourney_journey_host {
   src2: string | null;
 }
 
+export interface GetJourney_journey_team_userTeams_user {
+  __typename: "User";
+  id: string;
+  firstName: string;
+  lastName: string | null;
+  imageUrl: string | null;
+}
+
+export interface GetJourney_journey_team_userTeams {
+  __typename: "UserTeam";
+  id: string;
+  role: UserTeamRole;
+  user: GetJourney_journey_team_userTeams_user;
+}
+
 export interface GetJourney_journey_team {
   __typename: "Team";
   id: string;
   title: string;
   publicTitle: string | null;
+  userTeams: GetJourney_journey_team_userTeams[];
 }
 
 export interface GetJourney_journey_tags_name_language {
