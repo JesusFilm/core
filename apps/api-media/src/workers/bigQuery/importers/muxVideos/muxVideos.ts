@@ -8,15 +8,17 @@ import { getVideoVariantIds } from '../videoVariants'
 
 const s3Schema = z.object({
   videoVariantId: z.string(),
-  masterUri: z.string()
+  masterUri: z.string(),
+  height: z.number(),
+  width: z.number()
 })
 
 function getMuxClient(): Mux {
   if (process.env.MUX_ACCESS_TOKEN_ID == null)
-    throw new Error('Missing MUX_UGC_ACCESS_TOKEN_ID')
+    throw new Error('Missing MUX_ACCESS_TOKEN_ID')
 
   if (process.env.MUX_SECRET_KEY == null)
-    throw new Error('Missing MUX_UGC_SECRET_KEY')
+    throw new Error('Missing MUX_SECRET_KEY')
 
   return new Mux({
     tokenId: process.env.MUX_ACCESS_TOKEN_ID,
@@ -26,7 +28,7 @@ function getMuxClient(): Mux {
 
 export async function importS3Videos(logger?: Logger): Promise<void> {
   await processTable(
-    'jfp-data-warehouse.jfp_mmdb_prod.core_video_arclight_data',
+    'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantMaster_arclight_data',
     importOne,
     importMany,
     true,
