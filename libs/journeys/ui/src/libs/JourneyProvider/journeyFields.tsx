@@ -75,16 +75,6 @@ export const JOURNEY_FIELDS = gql`
       id
       title
       publicTitle
-      userTeams {
-        id
-        role
-        user {
-          id
-          firstName
-          lastName
-          imageUrl
-        }
-      }
     }
     tags {
       id

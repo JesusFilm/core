@@ -20,15 +20,10 @@ export const GET_PLAUSIBLE_JOURNEY_QR_CODE_SCANS = gql`
     $filters: String!
     $date: String
   ) {
-    journeyAggregateVisitors: journeysPlausibleStatsAggregate(
+    journeysPlausibleStatsAggregate(
       id: $id
       idType: databaseId
-      where: {
-        period: "custom"
-        date: $date
-        filters: $filters
-        # filters: "visit:utm_source==ns-qr-code"
-      }
+      where: { period: "custom", date: $date, filters: $filters }
     ) {
       visitors {
         value
@@ -62,7 +57,7 @@ export function ScanCount({ qrCodeId }: ScanCountProps): ReactElement {
         }
       })
     }
-  }, [journey, loadPlausibleVisitors])
+  }, [qrCodeId, journey, loadPlausibleVisitors])
 
   return (
     <Stack
@@ -76,7 +71,7 @@ export function ScanCount({ qrCodeId }: ScanCountProps): ReactElement {
       <BarChartSquare3Icon />
       <Typography variant="subtitle3">
         {t('{{count}} scans', {
-          count: data?.journeyAggregateVisitors?.visitors?.value ?? 0
+          count: data?.journeysPlausibleStatsAggregate?.visitors?.value ?? 0
         })}
       </Typography>
     </Stack>

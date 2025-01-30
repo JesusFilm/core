@@ -99,7 +99,7 @@ export function QrCodeDialog({
   const [to, setTo] = useState<string | undefined>(undefined)
   const [loading, setLoading] = useState(false)
 
-  const { data: qrCodesData, loading: getLoading } = useQuery<
+  const { loading: getLoading } = useQuery<
     GetJourneyQrCodes,
     GetJourneyQrCodesVariables
   >(GET_JOURNEY_QR_CODES, {
@@ -264,7 +264,11 @@ export function QrCodeDialog({
           </Stack>
         </Stack>
         <Divider />
-        <CodeDestination to={to} handleUpdateTo={handleUpdateTo} />
+        <CodeDestination
+          journeyId={journey?.id}
+          to={to}
+          handleUpdateTo={handleUpdateTo}
+        />
       </Stack>
     </Dialog>
   )

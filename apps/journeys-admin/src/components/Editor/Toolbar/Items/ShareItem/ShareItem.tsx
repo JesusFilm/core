@@ -14,7 +14,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import Code1Icon from '@core/shared/ui/icons/Code1'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import ShareIcon from '@core/shared/ui/icons/Share'
-// import TransformIcon from '@core/shared/ui/icons/Transform'
+import TransformIcon from '@core/shared/ui/icons/Transform'
 
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { Item } from '../Item/Item'
@@ -141,7 +141,7 @@ export function ShareItem({
             >
               {t('Embed Journey')}
             </Button>
-            {/* <Button
+            <Button
               onClick={() => {
                 setShowQrCodeDialog(true)
                 setRoute('qr-code')
@@ -155,7 +155,7 @@ export function ShareItem({
               }}
             >
               {t('QR Code')}
-            </Button> */}
+            </Button>
           </Stack>
         </Stack>
       </Dialog>

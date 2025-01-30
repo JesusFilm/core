@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, UserTeamRole, JourneyMenuButtonIcon } from "./globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetPublisherTemplate
@@ -511,27 +511,11 @@ export interface GetPublisherTemplate_publisherTemplate_host {
   src2: string | null;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_team_userTeams_user {
-  __typename: "User";
-  id: string;
-  firstName: string;
-  lastName: string | null;
-  imageUrl: string | null;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_team_userTeams {
-  __typename: "UserTeam";
-  id: string;
-  role: UserTeamRole;
-  user: GetPublisherTemplate_publisherTemplate_team_userTeams_user;
-}
-
 export interface GetPublisherTemplate_publisherTemplate_team {
   __typename: "Team";
   id: string;
   title: string;
   publicTitle: string | null;
-  userTeams: GetPublisherTemplate_publisherTemplate_team_userTeams[];
 }
 
 export interface GetPublisherTemplate_publisherTemplate_tags_name_language {

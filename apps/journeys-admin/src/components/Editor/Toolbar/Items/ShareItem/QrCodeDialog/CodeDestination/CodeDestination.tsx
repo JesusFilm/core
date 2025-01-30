@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlertTriangle from '@core/shared/ui/icons/AlertTriangle'
 
 import { useUserRoleSuspenseQuery } from '../../../../../../../libs/useUserRoleSuspenseQuery'
@@ -18,6 +17,37 @@ import {
 } from 'libs/journeys/ui/__generated__/globalTypes'
 import { Role } from '../../../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
+import { gql, useLazyQuery, useQuery } from '@apollo/client'
+import {
+  GetUserPermissions,
+  GetUserPermissionsVariables
+} from '../../../../../../../../__generated__/GetUserPermissions'
+
+export const GET_USER_PERMISSIONS = gql`
+  query GetUserPermissions($id: ID!) {
+    adminJourney(id: $id, idType: databaseId) {
+      id
+      template
+      team {
+        id
+        userTeams {
+          id
+          role
+          user {
+            email
+          }
+        }
+      }
+      userJourneys {
+        id
+        role
+        user {
+          email
+        }
+      }
+    }
+  }
+`
 
 const RedirectDialog = dynamic(
   async () =>
@@ -29,21 +59,32 @@ const RedirectDialog = dynamic(
 )
 
 interface CodeDestinationProps {
+  journeyId?: string
   to?: string
   handleUpdateTo: (url: string) => Promise<void>
 }
 
 export function CodeDestination({
+  journeyId,
   to,
   handleUpdateTo
 }: CodeDestinationProps): ReactElement {
-  const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
   const { loadUser, data: user } = useCurrentUserLazyQuery()
   const { data } = useUserRoleSuspenseQuery()
   const [showRedirectButton, setShowRedirectButton] = useState(false)
   const [disabled, setDisabled] = useState(true)
   const [value, setValue] = useState(to ?? '')
+  const [loadUserPermissions, { data: journeyData }] = useLazyQuery<
+    GetUserPermissions,
+    GetUserPermissionsVariables
+  >(GET_USER_PERMISSIONS)
+
+  useEffect(() => {
+    if (journeyId != null) {
+      void loadUserPermissions({ variables: { id: journeyId } })
+    }
+  }, [journeyId])
 
   useEffect(() => {
     setValue(to ?? '')
@@ -54,21 +95,22 @@ export function CodeDestination({
       user == null ||
       data.getUserRole == null ||
       data.getUserRole.id == null ||
-      journey?.userJourneys == null ||
-      journey?.team == null
+      journeyData?.adminJourney?.userJourneys == null ||
+      journeyData?.adminJourney?.team == null
     )
       return false
 
     const isTemplatePublisher =
       data.getUserRole.roles?.includes(Role.publisher) &&
-      journey.template === true
+      journeyData.adminJourney.template === true
     const isJourneyOwner =
-      journey.userJourneys.find(
-        (userJourney) => userJourney.user?.id === user.id
+      journeyData?.adminJourney?.userJourneys.find(
+        (userJourney) => userJourney.user?.email === user.email
       )?.role === UserJourneyRole.owner
     const isTeamManager =
-      journey.team.userTeams.find((userTeam) => userTeam.user?.id === user.id)
-        ?.role === UserTeamRole.manager
+      journeyData?.adminJourney?.team.userTeams.find(
+        (userTeam) => userTeam.user?.email === user.email
+      )?.role === UserTeamRole.manager
 
     if (isTemplatePublisher || isJourneyOwner || isTeamManager) {
       return true
@@ -80,7 +122,7 @@ export function CodeDestination({
   useEffect(() => {
     void loadUser()
     setDisabled(!canEdit() || to == null)
-  }, [data, journey, user, to])
+  }, [data, journeyData, user, to])
 
   function handleClick(): void {
     setShowRedirectButton(!showRedirectButton)

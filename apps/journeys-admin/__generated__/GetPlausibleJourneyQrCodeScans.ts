@@ -7,21 +7,21 @@
 // GraphQL query operation: GetPlausibleJourneyQrCodeScans
 // ====================================================
 
-export interface GetPlausibleJourneyQrCodeScans_journeyAggregateVisitors_visitors {
+export interface GetPlausibleJourneyQrCodeScans_journeysPlausibleStatsAggregate_visitors {
   __typename: "PlausibleStatsAggregateValue";
   value: number;
 }
 
-export interface GetPlausibleJourneyQrCodeScans_journeyAggregateVisitors {
+export interface GetPlausibleJourneyQrCodeScans_journeysPlausibleStatsAggregate {
   __typename: "PlausibleStatsAggregateResponse";
   /**
    * The number of unique visitors.
    */
-  visitors: GetPlausibleJourneyQrCodeScans_journeyAggregateVisitors_visitors | null;
+  visitors: GetPlausibleJourneyQrCodeScans_journeysPlausibleStatsAggregate_visitors | null;
 }
 
 export interface GetPlausibleJourneyQrCodeScans {
-  journeyAggregateVisitors: GetPlausibleJourneyQrCodeScans_journeyAggregateVisitors;
+  journeysPlausibleStatsAggregate: GetPlausibleJourneyQrCodeScans_journeysPlausibleStatsAggregate;
 }
 
 export interface GetPlausibleJourneyQrCodeScansVariables {
