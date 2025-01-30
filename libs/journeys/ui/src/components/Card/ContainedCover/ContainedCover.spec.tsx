@@ -187,21 +187,20 @@ describe('ContainedCover', () => {
     )
   })
 
-  it('should render background video with default mux thumbnail image', () => {
+  it('should render background video with default cloudflare thumbnail image', () => {
     const { getByTestId, getByRole } = render(
       <ContainedCover
         backgroundColor="#DDD"
         backgroundBlur={blurUrl}
         videoBlock={{
           ...videoBlock,
-          source: VideoBlockSource.mux,
+          source: VideoBlockSource.cloudflare,
           mediaVideo: {
-            __typename: 'MuxVideo',
-            id: '2_0-FallingPlates',
-            assetId: '2_0-FallingPlates',
-            playbackId: '2_0-FallingPlates'
+            __typename: 'CloudflareVideo',
+            id: '2_0-FallingPlates'
           },
-          image: 'https://stream.mux.com/2_0-FallingPlates.m3u8'
+          image:
+            'https://customer-.cloudflarestream.com/2_0-FallingPlates/manifest/video.m3u8'
         }}
       >
         {children}
@@ -213,7 +212,7 @@ describe('ContainedCover', () => {
     )
     expect(source).toHaveAttribute(
       'src',
-      'https://stream.mux.com/2_0-FallingPlates.m3u8'
+      'https://customer-.cloudflarestream.com/2_0-FallingPlates/manifest/video.m3u8'
     )
     expect(source).toHaveAttribute('type', 'application/x-mpegURL')
 
@@ -222,7 +221,7 @@ describe('ContainedCover', () => {
     expect(posterImage).toHaveAccessibleName('card video image')
     expect(posterImage).toHaveAttribute(
       'aria-details',
-      'https://stream.mux.com/2_0-FallingPlates.m3u8'
+      'https://customer-.cloudflarestream.com/2_0-FallingPlates/manifest/video.m3u8'
     )
   })
 

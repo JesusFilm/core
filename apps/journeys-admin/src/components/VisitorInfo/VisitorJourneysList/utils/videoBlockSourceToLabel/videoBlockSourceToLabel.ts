@@ -9,7 +9,7 @@ export function videoBlockSourceToLabel(
   switch (source) {
     case VideoBlockSource.internal:
       return t('Jesus Film Library')
-    case VideoBlockSource.mux:
+    case VideoBlockSource.cloudflare:
       return t('Custom')
     case VideoBlockSource.youTube:
       return t('YouTube')

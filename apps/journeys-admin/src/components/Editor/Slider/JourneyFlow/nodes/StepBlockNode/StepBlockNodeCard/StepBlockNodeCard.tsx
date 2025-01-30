@@ -65,6 +65,8 @@ export function StepBlockNodeCard({
         width: STEP_NODE_CARD_WIDTH,
         m: 1.5,
         boxShadow: 3,
+        zIndex: selected ? 10 : 1,
+        // pointerEvents: 'auto',
         ...conditionalStyles
       }}
     >

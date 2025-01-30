@@ -4,6 +4,32 @@ import { builder } from '../builder'
 
 import { VideoBlockSource } from './enums/videoSource'
 
+const CloudflareVideo = builder.externalRef(
+  'CloudflareVideo',
+  builder.selection<{
+    id: string
+    primaryLanguageId: string | null
+  }>('id primaryLanguageId'),
+  (data) => ({
+    ...data,
+    source: PrismaVideoBlockSource.cloudflare
+  })
+)
+
+CloudflareVideo.implement({
+  externalFields: (t) => ({
+    id: t.id({ nullable: false }),
+    primaryLanguageId: t.id()
+  }),
+  fields: (t) => ({
+    source: t.expose('source', {
+      type: VideoBlockSource,
+      nullable: false,
+      shareable: true
+    })
+  })
+})
+
 const MuxVideo = builder.externalRef(
   'MuxVideo',
   builder.selection<{
@@ -83,9 +109,11 @@ Video.implement({
 })
 
 const MediaVideo = builder.unionType('MediaVideo', {
-  types: [MuxVideo, Video, YouTube],
+  types: [CloudflareVideo, MuxVideo, Video, YouTube],
   resolveType: (video) => {
     switch (video.source) {
+      case PrismaVideoBlockSource.cloudflare:
+        return CloudflareVideo
       case PrismaVideoBlockSource.mux:
         return MuxVideo
       case PrismaVideoBlockSource.internal:
@@ -124,7 +152,7 @@ VideoBlock.implement({
     mediaVideo: t.field({
       type: MediaVideo,
       resolve: (video) =>
-        video.videoId != null && video.source !== 'cloudflare'
+        video.videoId != null
           ? {
               id: video.videoId,
               source: video.source,

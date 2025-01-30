@@ -1,7 +1,16 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
-union MediaVideo = MuxVideo | Video | YouTube
+type CloudflareVideo
+  @key(fields: "id primaryLanguageId")
+  @extends
+{
+  id: ID! @external
+  primaryLanguageId: ID @external
+  source: VideoBlockSource! @shareable
+}
+
+union MediaVideo = CloudflareVideo | MuxVideo | Video | YouTube
 
 type MuxVideo
   @key(fields: "id primaryLanguageId")

@@ -56,7 +56,6 @@ export interface VideoContentFields_variant_language {
   __typename: "Language";
   id: string;
   name: VideoContentFields_variant_language_name[];
-  bcp47: string | null;
 }
 
 export interface VideoContentFields_variant {

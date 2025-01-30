@@ -12,6 +12,7 @@ import {
   ActiveSlide,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
+import { ActiveAction } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import type { BlockFields_CardBlock as CardBlock } from '../../../../__generated__/BlockFields'
@@ -34,15 +35,16 @@ export function Fab({ variant }: FabProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const mdUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('md'))
 
-  if (activeContent == null) {
-    dispatch({
-      type: 'SetActiveContentAction',
-      activeContent: ActiveContent.Canvas
-    })
-  }
+  // if (activeContent == null) {
+  //   dispatch({
+  //     type: 'SetActiveContentAction',
+  //     activeContent: ActiveContent.Canvas
+  //   })
+  // }
 
   function handleAddFab(event: MouseEvent): void {
     event.stopPropagation()
+    alert('handle fab')
     dispatch({
       type: 'SetSelectedBlockAction',
       selectedBlock: selectedStep
@@ -57,6 +59,10 @@ export function Fab({ variant }: FabProps): ReactElement {
         activeCanvasDetailsDrawer === ActiveCanvasDetailsDrawer.AddBlock
           ? ActiveCanvasDetailsDrawer.Properties
           : ActiveCanvasDetailsDrawer.AddBlock
+    })
+    dispatch({
+      type: 'SetActiveAction',
+      activeAction: ActiveAction.Edit
     })
   }
 
@@ -89,6 +95,7 @@ export function Fab({ variant }: FabProps): ReactElement {
           bottom: { xs: 16, md: 'auto' },
           right: { xs: 16, md: 'auto' },
           fontWeight: 'bold'
+          // zIndex: 15
         }}
         onClick={handleAddFab}
       >

@@ -21,6 +21,8 @@ describe('videoBlockSourceToLabel', () => {
   })
 
   it('returns Custom', () => {
-    expect(videoBlockSourceToLabel(VideoBlockSource.mux, t)).toBe('Custom')
+    expect(videoBlockSourceToLabel(VideoBlockSource.cloudflare, t)).toBe(
+      'Custom'
+    )
   })
 })

@@ -86,6 +86,7 @@ export const yoga = createYoga<
             request.headers.get('interop-token') == null,
           cache,
           ttlPerSchemaCoordinate: {
+            'Query.getMyCloudflareVideo': 0,
             'Query.getMyMuxVideo': 0,
             'Query.getMuxVideo': 0
           },

@@ -16,6 +16,16 @@ import { CommandProvider } from '../CommandProvider'
 import { searchBlocks } from '../searchBlocks'
 import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'
 
+export enum ActiveAction {
+  Idle = 'idle',
+  View = 'view',
+  Edit = 'edit'
+}
+interface SetActiveAction {
+  type: 'SetActiveAction'
+  activeAction: ActiveAction
+}
+
 export enum ActiveContent {
   Canvas = 'canvas',
   Social = 'social',
@@ -32,6 +42,7 @@ export enum ActiveCanvasDetailsDrawer {
   AddBlock = 2
 }
 export interface EditorState {
+  activeAction: ActiveAction
   /**
    * activeCanvasDetailsDrawer indicates which drawer is currently visible on
    * CanvasDetails.
@@ -180,12 +191,18 @@ export type EditorAction =
   | SetAnalyticsAction
   | SetEditorFocusAction
   | SetSelectedStepByIdAction
+  | SetActiveAction
 
 export const reducer = (
   state: EditorState,
   action: EditorAction
 ): EditorState => {
   switch (action.type) {
+    case 'SetActiveAction':
+      return {
+        ...state,
+        activeAction: action.activeAction
+      }
     case 'SetActiveCanvasDetailsDrawerAction':
       return {
         ...state,
@@ -214,6 +231,7 @@ export const reducer = (
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
         activeContent: ActiveContent.Canvas,
         activeSlide: ActiveSlide.Content
+        // activeAction: ActiveAction.Edit
       }
     case 'SetSelectedBlockOnlyAction':
       return {
@@ -244,7 +262,8 @@ export const reducer = (
         selectedBlockId: action.selectedStep?.id,
         selectedBlock: action.selectedStep,
         activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
-        activeContent: ActiveContent.Canvas
+        activeContent: ActiveContent.Canvas,
+        activeAction: ActiveAction.View
       }
     case 'SetSelectedStepByIdAction': {
       const selectedStep =
@@ -357,7 +376,8 @@ export const EditorContext = createContext<{
     steps: [],
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
     activeSlide: ActiveSlide.JourneyFlow,
-    activeContent: ActiveContent.Canvas
+    activeContent: ActiveContent.Canvas,
+    activeAction: ActiveAction.Idle
   },
   dispatch: () => null
 })
@@ -383,8 +403,11 @@ export function EditorProvider({
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties,
     activeSlide: ActiveSlide.JourneyFlow,
     activeContent: ActiveContent.Canvas,
+    activeAction: ActiveAction.Idle,
     ...initialState
   })
+
+  useEffect(() => console.log({ state }), [state])
 
   useEffect(() => {
     if (initialState?.steps != null)

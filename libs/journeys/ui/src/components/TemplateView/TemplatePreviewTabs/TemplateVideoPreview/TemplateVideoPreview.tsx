@@ -1,7 +1,6 @@
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import Box from '@mui/material/Box'
 import { styled, useTheme } from '@mui/material/styles'
-import get from 'lodash/get'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { ReactElement, useState } from 'react'
@@ -67,7 +66,7 @@ function TemplateVideoPreviewItem({
           id={
             block?.mediaVideo?.__typename == 'Video'
               ? block?.mediaVideo?.variant?.hls
-              : get(block, 'mediaVideo.id')
+              : block?.mediaVideo?.id
           }
           source={block?.source}
           poster={
@@ -77,7 +76,6 @@ function TemplateVideoPreviewItem({
           }
           startAt={block?.startAt ?? 0}
           endAt={block?.endAt ?? 10000}
-          mediaVideo={block?.mediaVideo}
         />
       ) : (
         <Image

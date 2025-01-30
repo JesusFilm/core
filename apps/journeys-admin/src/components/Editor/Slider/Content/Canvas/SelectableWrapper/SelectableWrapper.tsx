@@ -4,6 +4,7 @@ import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { WrapperProps } from '@core/journeys/ui/BlockRenderer'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveAction } from '@core/journeys/ui/EditorProvider/EditorProvider'
 
 import { QuickControls } from '../QuickControls'
 
@@ -56,6 +57,7 @@ export function SelectableWrapper({
       if (selectedBlock?.id === block.id) {
         // Must override RadioQuestionBlock selected during event capture
         dispatch({ type: 'SetSelectedBlockAction', selectedBlock: block })
+        dispatch({ type: 'SetActiveAction', activeAction: ActiveAction.Edit })
       } else if (parentSelected || siblingSelected) {
         updateEditor(block)
       }

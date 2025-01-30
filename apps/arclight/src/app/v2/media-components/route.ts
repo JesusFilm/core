@@ -107,8 +107,6 @@ const GET_VIDEOS_WITH_FALLBACK = graphql(`
   }
 `)
 
-export const maxDuration = 60
-
 export async function GET(request: NextRequest): Promise<Response> {
   const query = request.nextUrl.searchParams
 

@@ -100,7 +100,6 @@ export function Drawer({
       SlideProps={{ appear: true }}
       open={open}
       elevation={0}
-      hideBackdrop
       sx={{
         '& .MuiDrawer-paper': {
           border: '1px solid',

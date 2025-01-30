@@ -122,19 +122,17 @@ describe('Video', () => {
     expect(sourceTag?.getAttribute('type')).toBe('video/youtube')
   })
 
-  it('should render mux video', () => {
+  it('should render cloudflare video', () => {
     render(
       <MockedProvider>
         <Video
           {...{
             ...block,
-            source: VideoBlockSource.mux,
+            source: VideoBlockSource.cloudflare,
             videoId: 'videoId',
             mediaVideo: {
-              __typename: 'MuxVideo',
-              id: 'videoId',
-              assetId: 'videoId',
-              playbackId: 'videoId'
+              __typename: 'CloudflareVideo',
+              id: 'videoId'
             }
           }}
         />
@@ -144,7 +142,7 @@ describe('Video', () => {
       .getByTestId('JourneysVideo-video0.id')
       .querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toBe(
-      'https://stream.mux.com/videoId.m3u8'
+      'https://customer-.cloudflarestream.com/videoId/manifest/video.m3u8?clientBandwidthHint=10'
     )
     expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
   })

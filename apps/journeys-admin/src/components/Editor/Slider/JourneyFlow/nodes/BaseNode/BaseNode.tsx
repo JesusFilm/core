@@ -108,9 +108,10 @@ export function BaseNode({
 
   return (
     <Box
-      data-testid="BaseNode"
+      data-testid={`BaseNode-${selected}`}
       sx={{
         position: 'relative',
+        zIndex: selected ? 20 : 1,
         cursor: dragging === true ? 'grabbing' : 'pointer',
         '.arrow': {
           opacity: 0,

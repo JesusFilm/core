@@ -56,7 +56,6 @@ export interface GetVideoContainerPart2_container_variant_language {
   __typename: "Language";
   id: string;
   name: GetVideoContainerPart2_container_variant_language_name[];
-  bcp47: string | null;
 }
 
 export interface GetVideoContainerPart2_container_variant {
