@@ -6,6 +6,8 @@ import { ReactElement, useState } from 'react'
 
 import AlertTriangle from '@core/shared/ui/icons/AlertTriangle'
 
+import { RedirectDialog } from '../RedirectDialog'
+
 import { ChangeButton } from './ChangeButton'
 import { CodeDestinationPopper } from './CodeDestinationPopper'
 
@@ -18,11 +20,16 @@ interface CodeDestinationProps {
 export function CodeDestination({
   to,
   handleChangeTo,
-  disabled = true //this is here to disable the input field for now
+  disabled = false //this is here to disable the input field for now
 }: CodeDestinationProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   const [showRedirectButton, setShowRedirectButton] = useState(false)
+  const [showRedirectDialog, setShowRedirectDialog] = useState(false)
+
+  function handleRedirectClick(): void {
+    setShowRedirectDialog(true)
+  }
 
   function handleClick(): void {
     setShowRedirectButton(!showRedirectButton)
@@ -59,6 +66,7 @@ export function CodeDestination({
             disabled={disabled}
             showRedirectButton={showRedirectButton}
             handleClick={handleClick}
+            handleRedirectClick={handleRedirectClick}
           />
         </Stack>
       </Stack>
@@ -104,6 +112,13 @@ export function CodeDestination({
             )}
           </Typography>
         </Stack>
+      )}
+      {showRedirectDialog != null && (
+        <RedirectDialog
+          open={showRedirectDialog}
+          onClose={() => setShowRedirectDialog(false)}
+          to={to}
+        />
       )}
     </Stack>
   )

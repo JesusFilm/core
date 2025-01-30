@@ -7,12 +7,14 @@ interface ChangeButtonProps {
   disabled?: boolean
   showRedirectButton?: boolean
   handleClick?: () => void
+  handleRedirectClick?: () => void
 }
 
 export function ChangeButton({
   disabled = false,
   showRedirectButton = false,
-  handleClick
+  handleClick,
+  handleRedirectClick
 }: ChangeButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -38,7 +40,12 @@ export function ChangeButton({
         </span>
       </Tooltip>
       {showRedirectButton && (
-        <Button variant="contained" color="secondary" sx={{ borderRadius: 2 }}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleRedirectClick}
+          sx={{ borderRadius: 2 }}
+        >
           {t('Redirect')}
         </Button>
       )}
