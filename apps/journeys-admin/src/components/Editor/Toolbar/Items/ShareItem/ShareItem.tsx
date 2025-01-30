@@ -14,7 +14,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import Code1Icon from '@core/shared/ui/icons/Code1'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import ShareIcon from '@core/shared/ui/icons/Share'
-import TransformIcon from '@core/shared/ui/icons/Transform'
+// import TransformIcon from '@core/shared/ui/icons/Transform'
 
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { Item } from '../Item/Item'
@@ -65,15 +65,6 @@ export function ShareItem({
   const [showEmbedDialog, setShowEmbedDialog] = useState<boolean | undefined>()
   const [showQrCodeDialog, setShowQrCodeDialog] = useState<boolean>(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const journeyUrl =
-    journey?.slug != null
-      ? `${
-          hostname != null
-            ? `https://${hostname}`
-            : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-              'https://your.nextstep.is')
-        }/${journey.slug}`
-      : undefined
 
   function handleShowMenu(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget)
@@ -107,7 +98,18 @@ export function ShareItem({
           <Typography variant="subtitle2" gutterBottom>
             {t('Share This Journey')}
           </Typography>
-          <CopyTextField value={journeyUrl} />
+          <CopyTextField
+            value={
+              journey?.slug != null
+                ? `${
+                    hostname != null
+                      ? `https://${hostname}`
+                      : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                        'https://your.nextstep.is')
+                  }/${journey.slug}`
+                : undefined
+            }
+          />
           <Stack direction="row" spacing={6}>
             <Button
               onClick={() => {
@@ -139,9 +141,10 @@ export function ShareItem({
             >
               {t('Embed Journey')}
             </Button>
-            <Button
+            {/* <Button
               onClick={() => {
                 setShowQrCodeDialog(true)
+                setRoute('qr-code')
               }}
               size="small"
               startIcon={<TransformIcon />}
@@ -152,7 +155,7 @@ export function ShareItem({
               }}
             >
               {t('QR Code')}
-            </Button>
+            </Button> */}
           </Stack>
         </Stack>
       </Dialog>

@@ -1,6 +1,7 @@
 import FilledInput from '@mui/material/FilledInput'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
@@ -17,6 +18,15 @@ import {
 } from 'libs/journeys/ui/__generated__/globalTypes'
 import { Role } from '../../../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
+
+const RedirectDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/EditorToolbar/ShareButton/QrCodeDialog/RedirectDialog" */
+      '../RedirectDialog'
+    ).then((mod) => mod.RedirectDialog),
+  { ssr: false }
+)
 
 interface CodeDestinationProps {
   to?: string
@@ -163,6 +173,13 @@ export function CodeDestination({
           </Typography>
         </Stack>
       )}
+      {/* {showRedirectDialog != null && (
+        <RedirectDialog
+          open={showRedirectDialog}
+          onClose={() => setShowRedirectDialog(false)}
+          to={to}
+        />
+      )} */}
     </Stack>
   )
 }

@@ -84,7 +84,6 @@ export function DownloadQrCode({
         variant="contained"
         disabled={shortLink == null || loading}
         sx={{
-          borderRadius: 2,
           width: 200,
           height: 42,
           boxShadow: 'none',
@@ -95,26 +94,23 @@ export function DownloadQrCode({
       >
         <Button
           fullWidth
+          variant="contained"
           color="secondary"
+          size="medium"
           onClick={() => {
             handleDownloadQrCode('png')
             setShowDownloadMenu(false)
-          }}
-          sx={{
-            borderTopLeftRadius: 8,
-            borderBottomLeftRadius: 8
           }}
         >
           {t('Download PNG')}
         </Button>
         <Button
+          variant="contained"
           color="secondary"
+          size="medium"
+          data-testid="DownloadDropdown"
           onClick={(e) => {
             handleMenuClick(e)
-          }}
-          sx={{
-            borderTopRightRadius: 8,
-            borderBottomRightRadius: 8
           }}
         >
           <ChevronDownIcon />

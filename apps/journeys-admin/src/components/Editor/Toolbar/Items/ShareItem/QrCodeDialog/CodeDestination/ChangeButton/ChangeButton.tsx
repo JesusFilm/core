@@ -31,8 +31,8 @@ export function ChangeButton({
           <Button
             variant="outlined"
             color="secondary"
+            size="medium"
             onClick={handleClick}
-            sx={{ borderRadius: 2 }}
             disabled={disabled}
           >
             {showRedirectButton ? t('Cancel') : t('Change')}
@@ -40,12 +40,7 @@ export function ChangeButton({
         </span>
       </Tooltip>
       {showRedirectButton && (
-        <Button
-          variant="contained"
-          color="secondary"
-          sx={{ borderRadius: 2 }}
-          onClick={handleRedirect}
-        >
+        <Button variant="contained" color="secondary" size="medium">
           {t('Redirect')}
         </Button>
       )}

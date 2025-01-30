@@ -250,10 +250,6 @@ export interface JourneyFields_blocks_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface JourneyFields_blocks_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-}
-
 export interface JourneyFields_blocks_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -303,7 +299,7 @@ export interface JourneyFields_blocks_VideoBlock_mediaVideo_YouTube {
   id: string;
 }
 
-export type JourneyFields_blocks_VideoBlock_mediaVideo = JourneyFields_blocks_VideoBlock_mediaVideo_CloudflareVideo | JourneyFields_blocks_VideoBlock_mediaVideo_Video | JourneyFields_blocks_VideoBlock_mediaVideo_MuxVideo | JourneyFields_blocks_VideoBlock_mediaVideo_YouTube;
+export type JourneyFields_blocks_VideoBlock_mediaVideo = JourneyFields_blocks_VideoBlock_mediaVideo_Video | JourneyFields_blocks_VideoBlock_mediaVideo_MuxVideo | JourneyFields_blocks_VideoBlock_mediaVideo_YouTube;
 
 export interface JourneyFields_blocks_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
