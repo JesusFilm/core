@@ -18,6 +18,7 @@ type QrCode {
   shortLink: ShortLink!
   color: String
   backgroundColor: String
+  toJourneyId: String
 }
 
 input QrCodesFilter {
