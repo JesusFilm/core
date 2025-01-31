@@ -8,7 +8,7 @@ import { ReactElement } from 'react'
 import { StrategySection } from '@core/journeys/ui/StrategySection'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 
-import { ImageEdit } from '../../../../../Slider/Settings/Drawer/ImageEdit/ImageEdit'
+import { ImageEdit } from '../../../../../EditorManager/Settings/Drawer/ImageEdit/ImageEdit'
 import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
 export function AboutTabPanel(): ReactElement {

@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
@@ -10,9 +11,10 @@ import { transformer } from '@core/journeys/ui/transformer'
 import { BlockFields_StepBlock as StepBlock } from '../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 
+import { EditorManager } from './EditorManager'
+import { JourneyFlow } from './EditorManager/JourneyFlow'
 import { Fab } from './Fab'
 import { Hotkeys } from './Hotkeys'
-import { Slider } from './Slider'
 import { Toolbar } from './Toolbar'
 
 interface EditorProps {
@@ -58,7 +60,17 @@ export function Editor({
         <HotkeysProvider>
           <Hotkeys />
           <Toolbar user={user} />
-          <Slider />
+          <Box
+            sx={{
+              backgroundSize: '20px 20px',
+              backgroundColor: '#eff2f5',
+              height: '100svh',
+              overflow: 'hidden'
+            }}
+          >
+            <JourneyFlow />
+          </Box>
+          <EditorManager />
           <Fab variant="mobile" />
         </HotkeysProvider>
       </EditorProvider>
