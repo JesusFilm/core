@@ -1893,6 +1893,7 @@ type QrCode @join__type(graph: API_JOURNEYS)  {
   shortLink: ShortLink!
   color: String
   backgroundColor: String
+  toJourneyId: String
 }
 
 type Team @join__type(graph: API_JOURNEYS, key: "id")  {

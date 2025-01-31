@@ -2554,6 +2554,7 @@ export type QrCode = {
   shortLink: ShortLink;
   /** Team where the Qr Code belongs to */
   team?: Maybe<Team>;
+  toJourneyId?: Maybe<Scalars['String']['output']>;
 };
 
 export type QrCodeCreateInput = {
