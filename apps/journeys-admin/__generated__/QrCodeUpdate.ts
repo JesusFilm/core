@@ -30,6 +30,7 @@ export interface QrCodeUpdate_qrCodeUpdate_shortLink {
 export interface QrCodeUpdate_qrCodeUpdate {
   __typename: "QrCode";
   id: string;
+  toJourneyId: string | null;
   /**
    * ShortLink that handles the redirection
    */

@@ -30,6 +30,7 @@ export interface GetJourneyQrCodes_qrCodes_shortLink {
 export interface GetJourneyQrCodes_qrCodes {
   __typename: "QrCode";
   id: string;
+  toJourneyId: string | null;
   /**
    * ShortLink that handles the redirection
    */

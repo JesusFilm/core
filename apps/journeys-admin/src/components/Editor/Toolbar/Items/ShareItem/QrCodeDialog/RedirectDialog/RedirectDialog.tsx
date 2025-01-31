@@ -8,9 +8,12 @@ import { ReactElement } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Clock1 from '@core/shared/ui/icons/Clock1'
 
+import { QrCodeFields as QrCode } from '../../../../../../../../__generated__/QrCodeFields'
+
 interface RedirectDialogProps {
   open: boolean
   onClose: () => void
+  qrCode: QrCode
   to: string
   handleUndo: () => Promise<void>
 }
@@ -18,13 +21,14 @@ interface RedirectDialogProps {
 export function RedirectDialog({
   open,
   onClose,
+  qrCode,
   to,
   handleUndo
 }: RedirectDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   function handleRedirectClick(): void {
-    window.open(to, '_blank')
+    window.open(`${window.origin}/journeys/${qrCode.toJourneyId}`, '_blank')
   }
 
   return (
@@ -81,7 +85,10 @@ export function RedirectDialog({
             variant="outlined"
             color="secondary"
             size="medium"
-            onClick={handleUndo}
+            onClick={() => {
+              void handleUndo()
+              onClose()
+            }}
           >
             {t('Undo changes')}
           </Button>

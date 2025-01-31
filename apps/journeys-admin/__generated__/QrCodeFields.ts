@@ -3,20 +3,18 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { QrCodeCreateInput } from "./globalTypes";
-
 // ====================================================
-// GraphQL mutation operation: QrCodeCreate
+// GraphQL fragment: QrCodeFields
 // ====================================================
 
-export interface QrCodeCreate_qrCodeCreate_shortLink_domain {
+export interface QrCodeFields_shortLink_domain {
   __typename: "ShortLinkDomain";
   hostname: string;
 }
 
-export interface QrCodeCreate_qrCodeCreate_shortLink {
+export interface QrCodeFields_shortLink {
   __typename: "ShortLink";
-  domain: QrCodeCreate_qrCodeCreate_shortLink_domain;
+  domain: QrCodeFields_shortLink_domain;
   /**
    * short link path not including the leading slash
    */
@@ -27,20 +25,12 @@ export interface QrCodeCreate_qrCodeCreate_shortLink {
   to: string;
 }
 
-export interface QrCodeCreate_qrCodeCreate {
+export interface QrCodeFields {
   __typename: "QrCode";
   id: string;
   toJourneyId: string | null;
   /**
    * ShortLink that handles the redirection
    */
-  shortLink: QrCodeCreate_qrCodeCreate_shortLink;
-}
-
-export interface QrCodeCreate {
-  qrCodeCreate: QrCodeCreate_qrCodeCreate;
-}
-
-export interface QrCodeCreateVariables {
-  input: QrCodeCreateInput;
+  shortLink: QrCodeFields_shortLink;
 }

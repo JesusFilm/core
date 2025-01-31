@@ -22,6 +22,7 @@ import {
   GetUserPermissions,
   GetUserPermissionsVariables
 } from '../../../../../../../../__generated__/GetUserPermissions'
+import { QrCodeFields as QrCode } from '../../../../../../../../__generated__/QrCodeFields'
 
 export const GET_USER_PERMISSIONS = gql`
   query GetUserPermissions($id: ID!) {
@@ -60,14 +61,14 @@ const RedirectDialog = dynamic(
 
 interface CodeDestinationProps {
   journeyId?: string
-  qrCodeId?: string
+  qrCode?: QrCode
   to?: string
   handleUpdateTo: (url: string) => Promise<void>
 }
 
 export function CodeDestination({
   journeyId,
-  qrCodeId,
+  qrCode,
   to,
   handleUpdateTo
 }: CodeDestinationProps): ReactElement {
@@ -234,10 +235,11 @@ export function CodeDestination({
       {showRedirectDialog &&
         to != null &&
         originalToRef.current != null &&
-        qrCodeId != null && (
+        qrCode != null && (
           <RedirectDialog
             open={showRedirectDialog}
             onClose={() => setShowRedirectDialog(false)}
+            qrCode={qrCode}
             to={to}
             handleUndo={handleUndo}
           />

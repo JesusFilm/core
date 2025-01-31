@@ -1,4 +1,4 @@
-import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
@@ -13,13 +13,13 @@ import { Dialog } from '@core/shared/ui/Dialog'
 
 import {
   GetJourneyQrCodes,
-  GetJourneyQrCodesVariables,
-  GetJourneyQrCodes_qrCodes as QrCode
+  GetJourneyQrCodesVariables
 } from '../../../../../../../__generated__/GetJourneyQrCodes'
 import {
   QrCodeCreate,
   QrCodeCreateVariables
 } from '../../../../../../../__generated__/QrCodeCreate'
+import { QrCodeFields as QrCode } from '../../../../../../../__generated__/QrCodeFields'
 import {
   QrCodeUpdate,
   QrCodeUpdateVariables
@@ -27,49 +27,32 @@ import {
 
 import { CodeDestination } from './CodeDestination'
 import { DownloadQrCode } from './DownloadQrCode'
+import { QR_CODE_FIELDS } from './qrCodeFields'
 import { ScanCount } from './ScanCount'
 
 export const GET_JOURNEY_QR_CODES = gql`
+  ${QR_CODE_FIELDS}
   query GetJourneyQrCodes($where: QrCodesFilter!) {
     qrCodes(where: $where) {
-      id
-      shortLink {
-        domain {
-          hostname
-        }
-        pathname
-        to
-      }
+      ...QrCodeFields
     }
   }
 `
 
 export const QR_CODE_CREATE = gql`
+  ${QR_CODE_FIELDS}
   mutation QrCodeCreate($input: QrCodeCreateInput!) {
     qrCodeCreate(input: $input) {
-      id
-      shortLink {
-        domain {
-          hostname
-        }
-        pathname
-        to
-      }
+      ...QrCodeFields
     }
   }
 `
 
 export const QR_CODE_UPDATE = gql`
+  ${QR_CODE_FIELDS}
   mutation QrCodeUpdate($id: ID!, $input: QrCodeUpdateInput!) {
     qrCodeUpdate(id: $id, input: $input) {
-      id
-      shortLink {
-        domain {
-          hostname
-        }
-        pathname
-        to
-      }
+      ...QrCodeFields
     }
   }
 `
@@ -156,6 +139,7 @@ export function QrCodeDialog({
         }
       },
       onCompleted: (data) => {
+        setQrCode(data.qrCodeUpdate)
         setTo(getTo(data.qrCodeUpdate))
       },
       onError: () => {
@@ -266,7 +250,7 @@ export function QrCodeDialog({
         <Divider />
         <CodeDestination
           journeyId={journey?.id}
-          qrCodeId={qrCode?.id}
+          qrCode={qrCode}
           to={to}
           handleUpdateTo={handleUpdateTo}
         />
