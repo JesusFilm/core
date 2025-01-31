@@ -266,6 +266,7 @@ export function QrCodeDialog({
         <Divider />
         <CodeDestination
           journeyId={journey?.id}
+          qrCodeId={qrCode?.id}
           to={to}
           handleUpdateTo={handleUpdateTo}
         />

@@ -11,13 +11,15 @@ import Clock1 from '@core/shared/ui/icons/Clock1'
 interface RedirectDialogProps {
   open: boolean
   onClose: () => void
-  to?: string
+  to: string
+  handleUndo: () => Promise<void>
 }
 
 export function RedirectDialog({
   open,
   onClose,
-  to
+  to,
+  handleUndo
 }: RedirectDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -75,7 +77,12 @@ export function RedirectDialog({
       </Stack>
       <Stack direction="row" justifyContent="flex-end" sx={{ pt: 6 }}>
         <Stack direction="row" spacing={3}>
-          <Button variant="outlined" color="secondary" size="medium">
+          <Button
+            variant="outlined"
+            color="secondary"
+            size="medium"
+            onClick={handleUndo}
+          >
             {t('Undo changes')}
           </Button>
           <Button

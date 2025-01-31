@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import AlertTriangle from '@core/shared/ui/icons/AlertTriangle'
 
@@ -60,12 +60,14 @@ const RedirectDialog = dynamic(
 
 interface CodeDestinationProps {
   journeyId?: string
+  qrCodeId?: string
   to?: string
   handleUpdateTo: (url: string) => Promise<void>
 }
 
 export function CodeDestination({
   journeyId,
+  qrCodeId,
   to,
   handleUpdateTo
 }: CodeDestinationProps): ReactElement {
@@ -73,6 +75,7 @@ export function CodeDestination({
   const { loadUser, data: user } = useCurrentUserLazyQuery()
   const { data } = useUserRoleSuspenseQuery()
   const [showRedirectButton, setShowRedirectButton] = useState(false)
+  const [showRedirectDialog, setShowRedirectDialog] = useState(false)
   const [disabled, setDisabled] = useState(true)
   const [value, setValue] = useState(to ?? '')
   const [loadUserPermissions, { data: journeyData }] = useLazyQuery<
@@ -89,6 +92,8 @@ export function CodeDestination({
   useEffect(() => {
     setValue(to ?? '')
   }, [to])
+
+  const originalToRef = useRef(to)
 
   function canEdit(): boolean {
     if (
@@ -129,9 +134,20 @@ export function CodeDestination({
   }
 
   async function handleRedirect(): Promise<void> {
+    if (value === originalToRef.current) return
     try {
       await handleUpdateTo(value)
+      setShowRedirectDialog(true)
     } catch (error) {
+      setValue(to ?? '')
+    }
+  }
+
+  async function handleUndo(): Promise<void> {
+    if (originalToRef.current == null) return
+    try {
+      await handleUpdateTo(originalToRef.current)
+    } catch {
       setValue(to ?? '')
     }
   }
@@ -215,13 +231,17 @@ export function CodeDestination({
           </Typography>
         </Stack>
       )}
-      {/* {showRedirectDialog != null && (
-        <RedirectDialog
-          open={showRedirectDialog}
-          onClose={() => setShowRedirectDialog(false)}
-          to={to}
-        />
-      )} */}
+      {showRedirectDialog &&
+        to != null &&
+        originalToRef.current != null &&
+        qrCodeId != null && (
+          <RedirectDialog
+            open={showRedirectDialog}
+            onClose={() => setShowRedirectDialog(false)}
+            to={to}
+            handleUndo={handleUndo}
+          />
+        )}
     </Stack>
   )
 }
