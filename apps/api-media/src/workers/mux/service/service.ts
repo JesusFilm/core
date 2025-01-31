@@ -26,7 +26,7 @@ export async function service(logger?: Logger): Promise<void> {
     const skip = page * 100
     const prismaMuxVideos = await prisma.muxVideo.findMany({
       where: { playbackId: null, assetId: { not: null } },
-      include: { VideoVariant: { select: { id: true } } },
+      include: { videoVariant: { select: { id: true } } },
       take: 100,
       skip
     })
@@ -40,7 +40,7 @@ export async function service(logger?: Logger): Promise<void> {
           where: { id: prismaMuxVideo.id },
           data: { playbackId, readyToStream: true }
         })
-        for (const videoVariant of prismaMuxVideo.VideoVariant) {
+        for (const videoVariant of prismaMuxVideo.videoVariant) {
           await prisma.videoVariantDownload.upsert({
             where: {
               quality_videoVariantId: {

@@ -45,10 +45,10 @@ export default interface PrismaTypes {
         Where: Prisma.MuxVideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: "VideoVariant";
-        ListRelations: "VideoVariant";
+        RelationName: "videoVariant";
+        ListRelations: "videoVariant";
         Relations: {
-            VideoVariant: {
+            videoVariant: {
                 Shape: VideoVariant[];
                 Name: "VideoVariant";
                 Nullable: false;

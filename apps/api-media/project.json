@@ -170,6 +170,12 @@
         "command": "npm run ts-node apps/api-media/src/workers/cli.ts seed"
       }
     },
+    "queue-mux": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apps/api-media/src/workers/cli.ts mux"
+      }
+    },
     "export-language-slugs": {
       "executor": "nx:run-commands",
       "options": {

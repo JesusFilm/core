@@ -81,6 +81,12 @@ async function main(): Promise<void> {
       './seed'
     )
   )
+  run(
+    await import(
+      /* webpackChunkName: "mux" */
+      './mux'
+    )
+  )
 }
 
 // avoid running on test environment
