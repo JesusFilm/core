@@ -2558,6 +2558,7 @@ export type QrCode = {
 };
 
 export type QrCodeCreateInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
   journeyId: Scalars['ID']['input'];
   teamId: Scalars['ID']['input'];
 };
