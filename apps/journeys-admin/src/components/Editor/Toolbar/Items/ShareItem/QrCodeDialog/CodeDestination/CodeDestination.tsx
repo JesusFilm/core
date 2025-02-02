@@ -232,18 +232,15 @@ export function CodeDestination({
           </Typography>
         </Stack>
       )}
-      {showRedirectDialog &&
-        to != null &&
-        originalToRef.current != null &&
-        qrCode != null && (
-          <RedirectDialog
-            open={showRedirectDialog}
-            onClose={() => setShowRedirectDialog(false)}
-            qrCode={qrCode}
-            to={to}
-            handleUndo={handleUndo}
-          />
-        )}
+      {to != null && originalToRef.current != null && qrCode != null && (
+        <RedirectDialog
+          open={showRedirectDialog}
+          onClose={() => setShowRedirectDialog(false)}
+          qrCode={qrCode}
+          to={to}
+          handleUndo={handleUndo}
+        />
+      )}
     </Stack>
   )
 }

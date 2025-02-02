@@ -77,12 +77,9 @@ export function QrCodeDialog({
     QrCodeUpdate,
     QrCodeUpdateVariables
   >(QR_CODE_UPDATE)
-  const [qrCode, setQrCode] = useState<QrCode | undefined>(undefined)
-  const [shortLink, setShortLink] = useState<string | undefined>(undefined)
-  const [to, setTo] = useState<string | undefined>(undefined)
   const [loading, setLoading] = useState(false)
 
-  const { loading: getLoading } = useQuery<
+  const { data, loading: getLoading } = useQuery<
     GetJourneyQrCodes,
     GetJourneyQrCodesVariables
   >(GET_JOURNEY_QR_CODES, {
@@ -90,13 +87,12 @@ export function QrCodeDialog({
       where: {
         journeyId: journey?.id
       }
-    },
-    onCompleted: (data) => {
-      setQrCode(data?.qrCodes[0])
-      setTo(getTo(data?.qrCodes[0]))
-      setShortLink(getShortLink(data?.qrCodes[0]))
     }
   })
+
+  const to = getTo(data?.qrCodes[0])
+  const shortLink = getShortLink(data?.qrCodes[0])
+  const qrCode = data?.qrCodes[0]
 
   useEffect(() => {
     if (getLoading || createLoading || updateLoading) {
@@ -115,10 +111,24 @@ export function QrCodeDialog({
           teamId: journey?.team.id
         }
       },
-      onCompleted: (data) => {
-        setQrCode(data.qrCodeCreate)
-        setTo(getTo(data.qrCodeCreate))
-        setShortLink(getShortLink(data.qrCodeCreate))
+      update(cache, { data }) {
+        if (data?.qrCodeCreate != null) {
+          cache.modify({
+            fields: {
+              qrCodes(existingQrCodes = []) {
+                const newQrCodeRef = cache.writeFragment({
+                  data: data.qrCodeCreate,
+                  fragment: gql`
+                    fragment NewQrCode on QrCode {
+                      id
+                    }
+                  `
+                })
+                return [...existingQrCodes, newQrCodeRef]
+              }
+            }
+          })
+        }
       },
       onError: () => {
         enqueueSnackbar(t('Failed to create QR Code'), {
@@ -137,10 +147,6 @@ export function QrCodeDialog({
         input: {
           to: url
         }
-      },
-      onCompleted: (data) => {
-        setQrCode(data.qrCodeUpdate)
-        setTo(getTo(data.qrCodeUpdate))
       },
       onError: () => {
         enqueueSnackbar(t('Failed to update QR Code'), {
