@@ -18,7 +18,6 @@ import {
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
 import { Drawer } from '../../Drawer'
-import { CloudflareDetails } from '../VideoFromCloudflare/CloudflareDetails'
 import { LocalDetails } from '../VideoFromLocal/LocalDetails'
 import { MuxDetails } from '../VideoFromMux/MuxDetails'
 import { YouTubeDetails } from '../VideoFromYouTube/YouTubeDetails'
@@ -71,9 +70,6 @@ export function VideoDetails({
   ) => ReactElement
 
   switch (source) {
-    case VideoBlockSource.cloudflare:
-      Details = CloudflareDetails
-      break
     case VideoBlockSource.internal:
       Details = LocalDetails
       break

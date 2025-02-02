@@ -1783,6 +1783,7 @@ export class QrCode {
     shortLink: ShortLink;
     color?: Nullable<string>;
     backgroundColor?: Nullable<string>;
+    toJourneyId?: Nullable<string>;
 }
 
 export class Team {
