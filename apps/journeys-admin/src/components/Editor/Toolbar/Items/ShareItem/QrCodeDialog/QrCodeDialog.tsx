@@ -240,7 +240,7 @@ export function QrCodeDialog({
               alignItems: { xs: 'center', sm: 'start' }
             }}
           >
-            <ScanCount qrCodeId={qrCode?.id} />
+            <ScanCount shortLinkId={qrCode?.shortLink.id} />
             <DownloadQrCode shortLink={shortLink} loading={loading} />
             <Typography
               variant="body2"

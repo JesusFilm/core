@@ -5,6 +5,7 @@ export const QR_CODE_FIELDS = gql`
     id
     toJourneyId
     shortLink {
+      id
       domain {
         hostname
       }

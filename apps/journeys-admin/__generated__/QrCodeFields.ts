@@ -14,6 +14,7 @@ export interface QrCodeFields_shortLink_domain {
 
 export interface QrCodeFields_shortLink {
   __typename: "ShortLink";
+  id: string;
   domain: QrCodeFields_shortLink_domain;
   /**
    * short link path not including the leading slash

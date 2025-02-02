@@ -33,10 +33,10 @@ export const GET_PLAUSIBLE_JOURNEY_QR_CODE_SCANS = gql`
 `
 
 interface ScanCountProps {
-  qrCodeId?: string
+  shortLinkId?: string
 }
 
-export function ScanCount({ qrCodeId }: ScanCountProps): ReactElement {
+export function ScanCount({ shortLinkId }: ScanCountProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
@@ -46,18 +46,18 @@ export function ScanCount({ qrCodeId }: ScanCountProps): ReactElement {
   >(GET_PLAUSIBLE_JOURNEY_QR_CODE_SCANS)
 
   useEffect(() => {
-    if (journey != null && qrCodeId != null) {
+    if (journey != null && shortLinkId != null) {
       void loadPlausibleVisitors({
         variables: {
           id: journey.id,
-          filters: `visit:utm_campaign==${qrCodeId}`,
+          filters: `visit:utm_campaign==${shortLinkId}`,
           date: `${earliestStatsCollected},${formatISO(new Date(), {
             representation: 'date'
           })}`
         }
       })
     }
-  }, [qrCodeId, journey, loadPlausibleVisitors])
+  }, [shortLinkId, journey, loadPlausibleVisitors])
 
   const scans = data?.journeysPlausibleStatsAggregate?.visitors?.value ?? 0
   const scanCount = scans === 1 ? t('1 scan') : t('{{scans}} scans', { scans })

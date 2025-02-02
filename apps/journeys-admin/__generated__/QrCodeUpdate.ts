@@ -16,6 +16,7 @@ export interface QrCodeUpdate_qrCodeUpdate_shortLink_domain {
 
 export interface QrCodeUpdate_qrCodeUpdate_shortLink {
   __typename: "ShortLink";
+  id: string;
   domain: QrCodeUpdate_qrCodeUpdate_shortLink_domain;
   /**
    * short link path not including the leading slash

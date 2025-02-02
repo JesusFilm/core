@@ -16,6 +16,7 @@ export interface GetJourneyQrCodes_qrCodes_shortLink_domain {
 
 export interface GetJourneyQrCodes_qrCodes_shortLink {
   __typename: "ShortLink";
+  id: string;
   domain: GetJourneyQrCodes_qrCodes_shortLink_domain;
   /**
    * short link path not including the leading slash
