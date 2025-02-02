@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid'
+import { v4 as uuidv4 } from 'uuid'
 
 import { Prisma, ShortLink, ShortLinkDomain } from '.prisma/api-media-client'
 
@@ -7,8 +8,10 @@ import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 jest.mock('nanoid')
+jest.mock('uuid')
 
 const nanoidMock = nanoid as jest.MockedFunction<typeof nanoid>
+const uuidMock = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('shortLink', () => {
   const client = getClient()
@@ -443,6 +446,60 @@ describe('shortLink', () => {
         })
         expect(prismaMock.shortLink.create).toHaveBeenCalledWith({
           data: {
+            pathname: 'testPath',
+            to: 'https://example.com',
+            domain: { connect: { hostname: 'example.com' } },
+            service: 'apiJourneys',
+            userId: 'testUserId'
+          },
+          include: { domain: true }
+        })
+      })
+
+      it('should create a shortlink with a custom id', async () => {
+        prismaMock.shortLinkDomain.findFirst.mockResolvedValue({
+          id: 'domainId',
+          hostname: 'example.com',
+          apexName: 'example.com',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          services: ['apiJourneys']
+        })
+        prismaMock.shortLinkBlocklistDomain.findFirst.mockResolvedValue(null)
+        const shortLink: ShortLink & { domain: ShortLinkDomain } = {
+          id: 'customId',
+          pathname: 'testPath',
+          to: 'https://example.com',
+          service: 'apiJourneys',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          userId: 'testUserId',
+          domainId: 'domainId',
+          domain: {
+            id: 'domainId',
+            hostname: 'example.com',
+            apexName: 'example.com',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            services: []
+          }
+        }
+        prismaMock.shortLink.create.mockResolvedValue(shortLink)
+        await client({
+          document: SHORT_LINK_CREATE_MUTATION,
+          variables: {
+            input: {
+              id: 'customId',
+              pathname: 'testPath',
+              to: 'https://example.com',
+              hostname: 'example.com',
+              service: 'apiJourneys'
+            }
+          }
+        })
+        expect(prismaMock.shortLink.create).toHaveBeenCalledWith({
+          data: {
+            id: 'customId',
             pathname: 'testPath',
             to: 'https://example.com',
             domain: { connect: { hostname: 'example.com' } },

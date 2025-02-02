@@ -2205,6 +2205,8 @@ export type MutationVisitorUpdateForCurrentUserArgs = {
 export type MutationShortLinkCreateInput = {
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   hostname: Scalars['String']['input'];
+  /** the unique identifier for the short link (will generate if not given) */
+  id?: InputMaybe<Scalars['String']['input']>;
   /** short link path not including the leading slash (defaults to a random 11 character string that is URL friendly) */
   pathname?: InputMaybe<Scalars['String']['input']>;
   /** the service that created this short link */
