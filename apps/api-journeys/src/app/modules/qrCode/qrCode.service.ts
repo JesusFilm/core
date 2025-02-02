@@ -238,7 +238,7 @@ export class QrCodeService {
   }
 
   async getTo(
-    qrCodeId: string,
+    shortLinkId: string,
     teamId: string,
     toJourneyId: string,
     toBlockId?: string | undefined | null
@@ -269,7 +269,7 @@ export class QrCodeService {
         : process.env.JOURNEYS_URL
 
     const path = `${journey.slug}${block != null ? `/${block.id}` : ''}`
-    const utm = `?utm_source=ns-qr-code&utm_campaign=${qrCodeId}`
+    const utm = `?utm_source=ns-qr-code&utm_campaign=${shortLinkId}`
 
     return `${base}/${path}${utm}`
   }

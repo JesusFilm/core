@@ -203,6 +203,9 @@ type Mutation {
 }
 
 input MutationShortLinkCreateInput {
+  """the unique identifier for the short link (will generate if not given)"""
+  id: String
+
   """
   short link path not including the leading slash (defaults to a random 11 character string that is URL friendly)
   """

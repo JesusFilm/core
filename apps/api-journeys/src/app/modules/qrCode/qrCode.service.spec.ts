@@ -300,9 +300,9 @@ describe('QrCodeService', () => {
       prismaService.journey.findUniqueOrThrow.mockResolvedValueOnce(journey)
       prismaService.customDomain.findMany.mockResolvedValueOnce([])
 
-      const result = await service.getTo('qrCodeId', 'teamId', 'journeyId')
+      const result = await service.getTo('shortLinkId', 'teamId', 'journeyId')
       expect(result).toBe(
-        'https://your.nextstep.is/journeySlug?utm_source=ns-qr-code&utm_campaign=qrCodeId'
+        'https://your.nextstep.is/journeySlug?utm_source=ns-qr-code&utm_campaign=shortLinkId'
       )
     })
 
@@ -312,13 +312,13 @@ describe('QrCodeService', () => {
       prismaService.block.findUniqueOrThrow.mockResolvedValueOnce(toBlock)
 
       const result = await service.getTo(
-        'qrCodeId',
+        'shortLinkId',
         'teamId',
         'journeyId',
         'toBlockId'
       )
       expect(result).toBe(
-        'https://your.nextstep.is/journeySlug/toBlockId?utm_source=ns-qr-code&utm_campaign=qrCodeId'
+        'https://your.nextstep.is/journeySlug/toBlockId?utm_source=ns-qr-code&utm_campaign=shortLinkId'
       )
     })
 
@@ -326,9 +326,9 @@ describe('QrCodeService', () => {
       prismaService.journey.findUniqueOrThrow.mockResolvedValueOnce(journey)
       prismaService.customDomain.findMany.mockResolvedValueOnce([customDomain])
 
-      const result = await service.getTo('qrCodeId', 'teamId', 'journeyId')
+      const result = await service.getTo('shortLinkId', 'teamId', 'journeyId')
       expect(result).toBe(
-        'https://custom.domain/journeySlug?utm_source=ns-qr-code&utm_campaign=qrCodeId'
+        'https://custom.domain/journeySlug?utm_source=ns-qr-code&utm_campaign=shortLinkId'
       )
     })
 
@@ -338,7 +338,7 @@ describe('QrCodeService', () => {
       )
 
       await expect(
-        service.getTo('qrCodeId', 'teamId', 'journeyId')
+        service.getTo('shortLinkId', 'teamId', 'journeyId')
       ).rejects.toThrow('Journey not found')
     })
 
@@ -350,7 +350,7 @@ describe('QrCodeService', () => {
       )
 
       await expect(
-        service.getTo('qrCodeId', 'teamId', 'journeyId', 'blockId')
+        service.getTo('shortLinkId', 'teamId', 'journeyId', 'blockId')
       ).rejects.toThrow('Block not found')
     })
   })

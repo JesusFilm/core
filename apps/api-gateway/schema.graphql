@@ -4111,6 +4111,10 @@ input ImageInput @join__type(graph: API_MEDIA)  {
 
 input MutationShortLinkCreateInput @join__type(graph: API_MEDIA)  {
   """
+  the unique identifier for the short link (will generate if not given)
+  """
+  id: String
+  """
   short link path not including the leading slash (defaults to a random 11 character string that is URL friendly)
   """
   pathname: String
