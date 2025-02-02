@@ -4003,6 +4003,7 @@ input QrCodesFilter @join__type(graph: API_JOURNEYS)  {
 }
 
 input QrCodeCreateInput @join__type(graph: API_JOURNEYS)  {
+  id: ID
   teamId: ID!
   journeyId: ID!
 }

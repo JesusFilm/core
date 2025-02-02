@@ -63,7 +63,7 @@ export class QrCodeResolver {
     @Args('input') input: QrCodeCreateInput,
     @CaslAbility() ability: AppAbility
   ): Promise<QrCode> {
-    const id = uuidv4()
+    const id = input.id ?? uuidv4()
     const to = await this.qrCodeService.getTo(id, input.teamId, input.journeyId)
 
     return await this.prismaService.$transaction(async (tx) => {

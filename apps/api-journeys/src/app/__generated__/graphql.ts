@@ -811,6 +811,7 @@ export class QrCodesFilter {
 }
 
 export class QrCodeCreateInput {
+    id?: Nullable<string>;
     teamId: string;
     journeyId: string;
 }

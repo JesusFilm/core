@@ -155,6 +155,30 @@ describe('QrCode', () => {
       })
     })
 
+    it('should create qr code with custom id', async () => {
+      prismaService.qrCode.create.mockResolvedValue(qrCodeWithAuth)
+
+      const res = await resolver.qrCodeCreate(
+        { id: 'customId', journeyId: 'journeyId', teamId: 'teamId' },
+        ability
+      )
+      expect(res).toEqual(qrCodeWithAuth)
+      expect(qrCodeService.getTo).toHaveBeenCalledWith(
+        'customId',
+        'teamId',
+        'journeyId'
+      )
+      expect(prismaService.qrCode.create).toHaveBeenCalledWith({
+        data: {
+          ...qrCode,
+          id: 'customId'
+        },
+        include: {
+          ...INCLUDE_QR_CODE_ACL
+        }
+      })
+    })
+
     it('throws error if not authorized', async () => {
       prismaService.qrCode.create.mockResolvedValue(qrCodeUnauth)
 

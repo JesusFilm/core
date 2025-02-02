@@ -32,6 +32,7 @@ extend type Query {
 }
 
 input QrCodeCreateInput {
+  id: ID
   teamId: ID!
   journeyId: ID!
 }

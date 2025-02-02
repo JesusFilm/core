@@ -2696,6 +2696,7 @@ input QrCodesFilter {
 }
 
 input QrCodeCreateInput {
+  id: ID
   teamId: ID!
   journeyId: ID!
 }
