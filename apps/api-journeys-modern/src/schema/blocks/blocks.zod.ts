@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { CardBlockSchema } from './card/card.zod'
 import { IconBlockSchema } from './icon/icon.zod'
 import { ImageBlockSchema } from './image/image.zod'
+import { TextResponseBlockSchema } from './textResponse/textResponse.zod'
 import { TypographyBlockSchema } from './typography/typography.zod'
 
 const BlockSchema = z.object({
@@ -16,8 +17,6 @@ const BlockSchema = z.object({
 const ButtonVariantSchema = z.enum(['text', 'contained'])
 const ButtonColorSchema = z.enum(['primary', 'secondary', 'error', 'inherit'])
 const ButtonSizeSchema = z.enum(['small', 'medium', 'large'])
-
-const TextResponseTypeSchema = z.enum(['freeForm', 'name', 'email'])
 
 const VideoBlockSourceSchema = z.enum([
   'internal',
@@ -70,16 +69,6 @@ const StepBlockSchema = BlockSchema.extend({
   x: z.number().nullable(),
   y: z.number().nullable(),
   slug: z.string().nullable()
-})
-
-// TextResponseBlock schema
-const TextResponseBlockSchema = BlockSchema.extend({
-  label: z.string(),
-  hint: z.string().nullable(),
-  minRows: z.number().nullable(),
-  type: TextResponseTypeSchema.nullable(),
-  routeId: z.string().nullable(),
-  integrationId: z.string().nullable()
 })
 
 // VideoBlock schema
