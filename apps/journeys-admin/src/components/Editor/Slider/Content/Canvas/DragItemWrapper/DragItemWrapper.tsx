@@ -138,8 +138,9 @@ export function DragItemWrapper({
       >
         <DragIcon
           fontSize="large"
-          style={{
+          sx={{
             position: 'absolute',
+            color: 'background.paper',
             left: rtl ? undefined : '-30px',
             right: rtl ? '-30px' : undefined,
             top: '-18px',

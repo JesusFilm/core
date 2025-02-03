@@ -165,7 +165,7 @@ export function Canvas(): ReactElement {
           direction="column"
           className="CanvasStack"
           alignItems={{ xs: 'center', md: 'flex-end' }}
-          gap={1.5}
+          gap={{ xs: 0, sm: 1.5 }}
           sx={{
             flexGrow: { xs: 1, md: 0 },
             height: { xs: '100%', md: 'auto' },
@@ -180,8 +180,6 @@ export function Canvas(): ReactElement {
               animation: (theme) =>
                 `${fadeIn} ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeInOut} 0.5s backwards`,
               position: 'relative',
-              // minHeight prop is needed for Safari to properly calculate the height of this container
-              minHeight: 0,
               maxHeight: CARD_HEIGHT,
               maxWidth: CARD_WIDTH,
               transform: `scale(${scale})`,
