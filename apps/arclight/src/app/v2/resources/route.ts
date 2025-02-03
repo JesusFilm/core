@@ -1,4 +1,4 @@
-import algoliasearch from 'algoliasearch'
+import { algoliasearch } from 'algoliasearch'
 import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
@@ -71,17 +71,21 @@ async function searchAlgolia(term: string) {
   }
   const client = algoliasearch(appID, apiKey)
 
-  const { results } = await client.search<AlgoliaHit>([
+  const { results } = await client.searchSingleIndex<AlgoliaHit>(
     {
       indexName,
-      query: term,
-      params: {
-        filters: `languageId:529`,
+      searchParams: {
+        query: term,
+        filters: `languageId:529`
+      }
+    },
+    {
+      queryParameters: {
         highlightPreTag: '<>',
         highlightPostTag: '<>'
       }
     }
-  ])
+  )
 
   if (!results[0] || !('hits' in results[0])) {
     throw new Error('Unexpected Algolia response format')
@@ -230,7 +234,8 @@ export async function GET(request: NextRequest): Promise<Response> {
                 ),
                 alternateLanguages: [],
                 mediaComponents: transformedVideos.map(
-                  (video) => video.mediaComponentId
+                  (video: { mediaComponentId: string }) =>
+                    video.mediaComponentId
                 )
               }
             }
