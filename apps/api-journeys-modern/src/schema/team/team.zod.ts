@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const TeamSchema = z.object({
+export const TeamSchema = z.object({
   id: z.string(),
   title: z.string(),
   publicTitle: z.string(),
