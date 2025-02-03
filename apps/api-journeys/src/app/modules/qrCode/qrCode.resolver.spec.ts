@@ -62,7 +62,6 @@ describe('QrCode', () => {
   })
 
   const qrCode = {
-    id: 'qrCodeId',
     journeyId: 'journeyId',
     teamId: 'teamId',
     toJourneyId: 'journeyId',
@@ -123,7 +122,7 @@ describe('QrCode', () => {
 
   describe('qrCodeCreate', () => {
     beforeEach(() => {
-      mockUuidv4.mockReturnValue('qrCodeId')
+      mockUuidv4.mockReturnValue('shortLinkId')
       qrCodeService.getTo.mockResolvedValue('to')
       qrCodeService.createShortLink.mockResolvedValue({
         data: { id: 'shortLinkId' }
@@ -143,7 +142,7 @@ describe('QrCode', () => {
       )
       expect(res).toEqual(qrCodeWithAuth)
       expect(qrCodeService.getTo).toHaveBeenCalledWith(
-        'qrCodeId',
+        'shortLinkId',
         'teamId',
         'journeyId'
       )
