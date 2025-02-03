@@ -2,7 +2,23 @@ import { z } from 'zod'
 
 import { BlockSchema } from '../blocks/blocks.zod'
 
-const JourneyMenuButtonIcon = z.enum([
+const LanguageSchema = z.object({
+  id: z.string()
+})
+
+const ThemeModeSchema = z.enum(['dark', 'light'])
+
+const ThemeNameSchema = z.enum(['base'])
+
+const JourneyStatusSchema = z.enum([
+  'archived',
+  'deleted',
+  'draft',
+  'published',
+  'trashed'
+])
+
+const JourneyMenuButtonIconSchema = z.enum([
   'menu1',
   'equals',
   'home3',
@@ -13,23 +29,12 @@ const JourneyMenuButtonIcon = z.enum([
   'chevronDown'
 ])
 
-const JourneyStatus = z.enum([
-  'archived',
-  'deleted',
-  'draft',
-  'published',
-  'trashed'
-])
-
-const ThemeMode = z.enum(['dark', 'light'])
-const ThemeName = z.enum(['base'])
-
 const JourneySchema = z.object({
   id: z.string(),
   title: z.string(),
-  language: z.object({ id: z.string() }),
-  themeMode: ThemeMode,
-  themeName: ThemeName,
+  language: LanguageSchema,
+  themeMode: ThemeModeSchema,
+  themeName: ThemeNameSchema,
   description: z.string().nullable(),
   slug: z.string(),
   archivedAt: z.date().nullable(),
@@ -39,7 +44,7 @@ const JourneySchema = z.object({
   featuredAt: z.date().nullable(),
   updatedAt: z.date(),
   createdAt: z.date(),
-  status: JourneyStatus,
+  status: JourneyStatusSchema,
   seoTitle: z.string().nullable(),
   seoDescription: z.string().nullable(),
   template: z.boolean().nullable(),
@@ -56,7 +61,7 @@ const JourneySchema = z.object({
   showLogo: z.boolean().nullable(),
   showMenu: z.boolean().nullable(),
   showDisplayTitle: z.boolean().nullable(),
-  menuButtonIcon: JourneyMenuButtonIcon.nullable(),
+  menuButtonIcon: JourneyMenuButtonIconSchema.nullable(),
   blocks: z.array(BlockSchema)
 })
 
