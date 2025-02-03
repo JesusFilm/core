@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 import { CardBlockSchema } from './card/card.zod'
 import { IconBlockSchema } from './icon/icon.zod'
+import { TypographyBlockSchema } from './typography/typography.zod'
 
 const BlockSchema = z.object({
   id: z.string(),
@@ -15,39 +16,7 @@ const ButtonVariantSchema = z.enum(['text', 'contained'])
 const ButtonColorSchema = z.enum(['primary', 'secondary', 'error', 'inherit'])
 const ButtonSizeSchema = z.enum(['small', 'medium', 'large'])
 
-// const GridDirectionSchema = z.enum([
-//   'columnReverse',
-//   'column',
-//   'row',
-//   'rowReverse'
-// ])
-// const GridJustifyContentSchema = z.enum(['flexStart', 'flexEnd', 'center'])
-// const GridAlignItemsSchema = z.enum([
-//   'baseline',
-//   'flexStart',
-//   'flexEnd',
-//   'center'
-// ])
-
 const TextResponseTypeSchema = z.enum(['freeForm', 'name', 'email'])
-
-const TypographyVariantSchema = z.enum([
-  'h1',
-  'h2',
-  'h3',
-  'h4',
-  'h5',
-  'h6',
-  'subtitle1',
-  'subtitle2',
-  'body1',
-  'body2',
-  'caption',
-  'overline'
-])
-
-const TypographyColorSchema = z.enum(['primary', 'secondary', 'error'])
-const TypographyAlignSchema = z.enum(['left', 'center', 'right'])
 
 const VideoBlockSourceSchema = z.enum([
   'internal',
@@ -56,19 +25,6 @@ const VideoBlockSourceSchema = z.enum([
   'mux'
 ])
 const VideoBlockObjectFitSchema = z.enum(['fill', 'fit', 'zoomed'])
-
-// Export all enum schemas
-export {
-  ButtonVariantSchema,
-  ButtonColorSchema,
-  ButtonSizeSchema,
-  TextResponseTypeSchema,
-  TypographyVariantSchema,
-  TypographyColorSchema,
-  TypographyAlignSchema,
-  VideoBlockSourceSchema,
-  VideoBlockObjectFitSchema
-}
 
 // Action schema
 const ActionSchema = z.object({
@@ -89,21 +45,6 @@ const ButtonBlockSchema = BlockSchema.extend({
   endIconId: z.string().nullable(),
   action: ActionSchema.nullable()
 })
-
-// GridContainerBlock schema
-// const GridContainerBlockSchema = BlockSchema.extend({
-//   spacing: z.number(),
-//   direction: GridDirectionSchema,
-//   justifyContent: GridJustifyContentSchema,
-//   alignItems: GridAlignItemsSchema
-// })
-
-// GridItemBlock schema
-// const GridItemBlockSchema = BlockSchema.extend({
-//   xl: z.number(),
-//   lg: z.number(),
-//   sm: z.number()
-// })
 
 // ImageBlock schema
 const ImageBlockSchema = BlockSchema.extend({
@@ -152,14 +93,6 @@ const TextResponseBlockSchema = BlockSchema.extend({
   integrationId: z.string().nullable()
 })
 
-// TypographyBlock schema
-const TypographyBlockSchema = BlockSchema.extend({
-  content: z.string(),
-  variant: TypographyVariantSchema.nullable(),
-  color: TypographyColorSchema.nullable(),
-  align: TypographyAlignSchema.nullable()
-})
-
 // VideoBlock schema
 const VideoBlockSchema = BlockSchema.extend({
   startAt: z.number().nullable(),
@@ -200,20 +133,4 @@ const BlockUnionSchema = z.union([
   VideoTriggerBlockSchema
 ])
 
-export {
-  BlockSchema,
-  BlockUnionSchema,
-  ActionSchema,
-  ButtonBlockSchema,
-  CardBlockSchema,
-  IconBlockSchema,
-  ImageBlockSchema,
-  RadioOptionBlockSchema,
-  RadioQuestionBlockSchema,
-  SignUpBlockSchema,
-  StepBlockSchema,
-  TextResponseBlockSchema,
-  TypographyBlockSchema,
-  VideoBlockSchema,
-  VideoTriggerBlockSchema
-}
+export { BlockSchema, BlockUnionSchema }

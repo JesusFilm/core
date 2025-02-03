@@ -1,6 +1,8 @@
 import { z } from 'zod'
 
-const TypographyVariant = z.enum([
+import { BlockSchema } from '../blocks.zod'
+
+const TypographyVariantSchema = z.enum([
   'h1',
   'h2',
   'h3',
@@ -15,24 +17,19 @@ const TypographyVariant = z.enum([
   'overline'
 ])
 
-const TypographyColor = z.enum(['primary', 'secondary', 'error'])
+const TypographyColorSchema = z.enum(['primary', 'secondary', 'error'])
+const TypographyAlignSchema = z.enum(['left', 'center', 'right'])
 
-const TypographyAlign = z.enum(['left', 'center', 'right'])
-
-const TypographyBlockSchema = z.object({
-  id: z.string(),
-  journeyId: z.string(),
-  parentBlockId: z.string().nullable(),
-  parentOrder: z.number().nullable(),
+const TypographyBlockSchema = BlockSchema.extend({
   content: z.string(),
-  variant: TypographyVariant,
-  color: TypographyColor,
-  align: TypographyAlign
+  variant: TypographyVariantSchema.nullable(),
+  color: TypographyColorSchema.nullable(),
+  align: TypographyAlignSchema.nullable()
 })
 
 export {
-  TypographyVariant,
-  TypographyColor,
-  TypographyAlign,
+  TypographyVariantSchema,
+  TypographyColorSchema,
+  TypographyAlignSchema,
   TypographyBlockSchema
 }
