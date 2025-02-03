@@ -1,44 +1,67 @@
 import { z } from 'zod'
 
 import { BlockSchema } from '../blocks/blocks.zod'
-import { LanguageSchema } from '../language/language.zod'
-import { TeamSchema } from '../team/team.zod'
-import { UserJourneySchema } from '../userJourney/user.zod'
+
+const JourneyMenuButtonIcon = z.enum([
+  'menu1',
+  'equals',
+  'home3',
+  'home4',
+  'more',
+  'ellipsis',
+  'grid1',
+  'chevronDown'
+])
+
+const JourneyStatus = z.enum([
+  'archived',
+  'deleted',
+  'draft',
+  'published',
+  'trashed'
+])
+
+const ThemeMode = z.enum(['dark', 'light'])
+const ThemeName = z.enum(['base'])
 
 const JourneySchema = z.object({
   id: z.string(),
-  slug: z.string(),
   title: z.string(),
-  description: z.string(),
-  status: z.string(),
-  createdAt: z.string(),
-  featuredAt: z.nullable(z.string()),
-  publishedAt: z.string(),
-  themeName: z.string(),
-  themeMode: z.string(),
-  strategySlug: z.nullable(z.string()),
-  seoTitle: z.nullable(z.string()),
-  seoDescription: z.nullable(z.string()),
-  template: z.boolean(),
-  blocks: z.array(BlockSchema),
-  primaryImageBlock: z.nullable(z.string()),
-  creatorDescription: z.nullable(z.string()),
-  creatorImageBlock: z.nullable(z.string()),
-  chatButtons: z.array(z.unknown()),
-  host: z.nullable(z.string()),
-  team: TeamSchema,
-  tags: z.array(z.string()),
-  website: z.boolean(),
-  showShareButton: z.boolean(),
-  showLikeButton: z.boolean(),
-  showDislikeButton: z.boolean(),
-  displayTitle: z.nullable(z.string()),
-  logoImageBlock: z.nullable(z.string()),
-  menuButtonIcon: z.nullable(z.string()),
-  menuStepBlock: z.nullable(z.string()),
-  __typename: z.literal('Journey'),
-  language: LanguageSchema,
-  userJourneys: z.array(UserJourneySchema)
+  language: z.object({ id: z.string() }),
+  themeMode: ThemeMode,
+  themeName: ThemeName,
+  description: z.string().nullable(),
+  creatorDescription: z.string().nullable(),
+  slug: z.string(),
+  archivedAt: z.date().nullable(),
+  deletedAt: z.date().nullable(),
+  publishedAt: z.date().nullable(),
+  trashedAt: z.date().nullable(),
+  featuredAt: z.date().nullable(),
+  updatedAt: z.date(),
+  createdAt: z.date(),
+  status: JourneyStatus,
+  seoTitle: z.string().nullable(),
+  seoDescription: z.string().nullable(),
+  template: z.boolean().nullable(),
+  host: z.object({}).nullable(),
+  team: z.object({}).nullable(),
+  strategySlug: z.string().nullable(),
+  tags: z.array(z.object({ id: z.string() })),
+  plausibleToken: z.string().nullable(),
+  website: z.boolean().nullable(),
+  showShareButton: z.boolean().nullable(),
+  showLikeButton: z.boolean().nullable(),
+  showDislikeButton: z.boolean().nullable(),
+  displayTitle: z.string().nullable(),
+  showHosts: z.boolean().nullable(),
+  showChatButtons: z.boolean().nullable(),
+  showReactionButtons: z.boolean().nullable(),
+  showLogo: z.boolean().nullable(),
+  showMenu: z.boolean().nullable(),
+  showDisplayTitle: z.boolean().nullable(),
+  menuButtonIcon: JourneyMenuButtonIcon.nullable(),
+  blocks: z.array(BlockSchema)
 })
 
 export { JourneySchema }
