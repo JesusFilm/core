@@ -19,7 +19,7 @@ const TypographyColor = z.enum(['primary', 'secondary', 'error'])
 
 const TypographyAlign = z.enum(['left', 'center', 'right'])
 
-const TypographyBlock = z.object({
+const TypographyBlockSchema = z.object({
   id: z.string(),
   journeyId: z.string(),
   parentBlockId: z.string().nullable(),
@@ -30,4 +30,9 @@ const TypographyBlock = z.object({
   align: TypographyAlign
 })
 
-export { TypographyVariant, TypographyColor, TypographyAlign, TypographyBlock }
+export {
+  TypographyVariant,
+  TypographyColor,
+  TypographyAlign,
+  TypographyBlockSchema
+}
