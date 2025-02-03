@@ -1,5 +1,5 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
-import algoliasearch from 'algoliasearch'
+import { algoliasearch } from 'algoliasearch'
 import { Logger } from 'pino'
 
 import { graphql } from '../../../lib/graphql/gatewayGraphql'
@@ -158,9 +158,12 @@ export async function service(logger?: Logger): Promise<void> {
         }
       })
 
-      const index = client.initIndex(appIndex)
       try {
-        await index.saveObjects(transformedVideos).wait()
+        await client.saveObjects({
+          indexName: appIndex,
+          objects: transformedVideos,
+          waitForTasks: true
+        })
         logger?.info(`exported ${offset} videos to algolia`)
       } catch (error) {
         logger?.error(error, 'unable to export videos to algolia')
