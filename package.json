@@ -35,6 +35,7 @@
   "private": true,
   "dependencies": {
     "@adobe/apollo-link-mutation-queue": "^1.1.0",
+    "@ai-sdk/openai": "^1.1.9",
     "@algolia/client-search": "^4.14.3",
     "@apollo/client": "^3.8.3",
     "@apollo/experimental-nextjs-app-support": "^0.11.2",
@@ -111,6 +112,7 @@
     "@storybook/core-server": "^8.4.0",
     "@types/mailchimp__mailchimp_marketing": "^3.0.19",
     "adal-node": "^0.2.3",
+    "ai": "^4.1.17",
     "algoliasearch": "^4.22.0",
     "apollo-link-debounce": "^3.0.0",
     "aws-sdk": "^2.1557.0",

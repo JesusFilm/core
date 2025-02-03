@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { BlockSchema } from '../blocks/blocks.zod'
+import { BlockUnionSchema } from '../blocks/blocks.zod'
 
 const LanguageSchema = z.object({
   id: z.string()
@@ -116,7 +116,7 @@ const JourneySchema = z
     menuButtonIcon: JourneyMenuButtonIconSchema.nullable().describe(
       'Icon used for the menu button'
     ),
-    blocks: z.array(BlockSchema).describe('Blocks within the journey')
+    blocks: z.array(BlockUnionSchema).describe('Blocks within the journey')
   })
   .describe('Schema for defining a Journey')
 
