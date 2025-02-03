@@ -1,5 +1,5 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
-import algoliasearch from 'algoliasearch'
+import { algoliasearch } from 'algoliasearch'
 import { Logger } from 'pino'
 
 import { graphql } from '../../../lib/graphql/gatewayGraphql'
@@ -64,6 +64,16 @@ async function getLanguages(logger?: Logger): Promise<LanguageRecord> {
   }
 }
 
+type Translation = {
+  languageId: string
+  value: string
+}
+
+function sortByEnglishFirst(a: Translation, b: Translation): number {
+  if (a.languageId === '529') return -1
+  return 0
+}
+
 export async function service(logger?: Logger): Promise<void> {
   const apiKey = process.env.ALGOLIA_API_KEY ?? ''
   const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
@@ -124,10 +134,12 @@ export async function service(logger?: Logger): Promise<void> {
         return {
           objectID: videoVariant.id,
           videoId: videoVariant.videoId,
-          titles: videoVariant.video?.title.map((title) => title?.value),
-          description: videoVariant.video?.description?.map(
-            (description) => description?.value
-          ),
+          titles: videoVariant.video?.title
+            .sort(sortByEnglishFirst)
+            .map((title) => title?.value),
+          description: videoVariant.video?.description
+            ?.sort(sortByEnglishFirst)
+            .map((description) => description?.value),
           duration: videoVariant.duration,
           languageId: videoVariant.languageId,
           languageEnglishName: languages[videoVariant.languageId]?.english,
@@ -146,9 +158,12 @@ export async function service(logger?: Logger): Promise<void> {
         }
       })
 
-      const index = client.initIndex(appIndex)
       try {
-        await index.saveObjects(transformedVideos).wait()
+        await client.saveObjects({
+          indexName: appIndex,
+          objects: transformedVideos,
+          waitForTasks: true
+        })
         logger?.info(`exported ${offset} videos to algolia`)
       } catch (error) {
         logger?.error(error, 'unable to export videos to algolia')

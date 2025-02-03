@@ -1,0 +1,1 @@
+export { DownloadQrCode } from './DownloadQrCode'
