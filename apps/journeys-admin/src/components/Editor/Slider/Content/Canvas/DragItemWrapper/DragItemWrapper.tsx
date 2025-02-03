@@ -140,7 +140,7 @@ export function DragItemWrapper({
           fontSize="large"
           sx={{
             position: 'absolute',
-            color: 'background.paper',
+            color: '#FFFFFF',
             left: rtl ? undefined : '-30px',
             right: rtl ? '-30px' : undefined,
             top: '-18px',
@@ -149,8 +149,8 @@ export function DragItemWrapper({
             alignSelf: 'center',
             filter:
               theme?.themeMode === ThemeMode.light
-                ? 'drop-shadow(0px 0px 2px #FFF)'
-                : 'drop-shadow(0px 0px 2px #000)'
+                ? 'drop-shadow(0px 0px 2px #000000)'
+                : 'drop-shadow(0px 0px 2px #FFFFFF)'
           }}
         />
       </Popper>
