@@ -4,9 +4,9 @@ import { Logger } from 'pino'
 import { prisma } from '../../../lib/prisma'
 
 export async function service(logger?: Logger): Promise<void> {
-  const apiKey = process.env.ALGOLIA_API_KEY ?? ''
+  const apiKey = process.env.ALGOLIA_API_KEY_LANGUAGES ?? ''
   const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
-  const appIndex = process.env.ALGOLIA_INDEX ?? ''
+  const appIndex = process.env.ALGOLIA_INDEX_LANGUAGES ?? ''
 
   if (apiKey === '' || appId === '' || appIndex === '') {
     throw new Error('algolia environment variables not set')
