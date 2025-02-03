@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 import { CardBlockSchema } from './card/card.zod'
 import { IconBlockSchema } from './icon/icon.zod'
+import { ImageBlockSchema } from './image/image.zod'
 import { TypographyBlockSchema } from './typography/typography.zod'
 
 const BlockSchema = z.object({
@@ -44,18 +45,6 @@ const ButtonBlockSchema = BlockSchema.extend({
   startIconId: z.string().nullable(),
   endIconId: z.string().nullable(),
   action: ActionSchema.nullable()
-})
-
-// ImageBlock schema
-const ImageBlockSchema = BlockSchema.extend({
-  src: z.string().nullable(),
-  width: z.number(),
-  height: z.number(),
-  alt: z.string(),
-  blurhash: z.string(),
-  scale: z.number().nullable(),
-  focalTop: z.number().nullable(),
-  focalLeft: z.number().nullable()
 })
 
 // RadioOptionBlock schema

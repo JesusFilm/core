@@ -1,10 +1,8 @@
 import { z } from 'zod'
 
-const ImageBlockSchema = z.object({
-  id: z.string(),
-  journeyId: z.string(),
-  parentBlockId: z.string().nullable(),
-  parentOrder: z.number().nullable(),
+import { BlockSchema } from '../blocks.zod'
+
+const ImageBlockSchema = BlockSchema.extend({
   src: z.string().nullable(),
   width: z.number(),
   height: z.number(),
@@ -14,5 +12,4 @@ const ImageBlockSchema = z.object({
   focalTop: z.number().nullable(),
   focalLeft: z.number().nullable()
 })
-
 export { ImageBlockSchema }
