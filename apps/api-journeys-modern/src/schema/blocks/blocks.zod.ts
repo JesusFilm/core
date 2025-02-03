@@ -1,6 +1,8 @@
 import { z } from 'zod'
 
-// Base Block schema
+import { CardBlockSchema } from './card/card.zod'
+import { IconBlockSchema } from './icon/icon.zod'
+
 const BlockSchema = z.object({
   id: z.string(),
   journeyId: z.string(),
@@ -9,59 +11,23 @@ const BlockSchema = z.object({
 })
 
 // Zod schemas for enums
-
 const ButtonVariantSchema = z.enum(['text', 'contained'])
 const ButtonColorSchema = z.enum(['primary', 'secondary', 'error', 'inherit'])
 const ButtonSizeSchema = z.enum(['small', 'medium', 'large'])
 
-const ThemeModeSchema = z.enum(['dark', 'light'])
-const ThemeNameSchema = z.enum(['base'])
-
-const GridDirectionSchema = z.enum([
-  'columnReverse',
-  'column',
-  'row',
-  'rowReverse'
-])
-const GridJustifyContentSchema = z.enum(['flexStart', 'flexEnd', 'center'])
-const GridAlignItemsSchema = z.enum([
-  'baseline',
-  'flexStart',
-  'flexEnd',
-  'center'
-])
-
-const IconNameSchema = z.enum([
-  'PlayArrowRounded',
-  'TranslateRounded',
-  'CheckCircleRounded',
-  'RadioButtonUncheckedRounded',
-  'FormatQuoteRounded',
-  'LockOpenRounded',
-  'ArrowForwardRounded',
-  'ArrowBackRounded',
-  'ChatBubbleOutlineRounded',
-  'LiveTvRounded',
-  'MenuBookRounded',
-  'ChevronRightRounded',
-  'ChevronLeftRounded',
-  'BeenhereRounded',
-  'SendRounded',
-  'SubscriptionsRounded',
-  'ContactSupportRounded',
-  'Launch',
-  'MailOutline'
-])
-
-const IconColorSchema = z.enum([
-  'primary',
-  'secondary',
-  'action',
-  'error',
-  'disabled',
-  'inherit'
-])
-const IconSizeSchema = z.enum(['sm', 'md', 'lg', 'xl', 'inherit'])
+// const GridDirectionSchema = z.enum([
+//   'columnReverse',
+//   'column',
+//   'row',
+//   'rowReverse'
+// ])
+// const GridJustifyContentSchema = z.enum(['flexStart', 'flexEnd', 'center'])
+// const GridAlignItemsSchema = z.enum([
+//   'baseline',
+//   'flexStart',
+//   'flexEnd',
+//   'center'
+// ])
 
 const TextResponseTypeSchema = z.enum(['freeForm', 'name', 'email'])
 
@@ -96,14 +62,6 @@ export {
   ButtonVariantSchema,
   ButtonColorSchema,
   ButtonSizeSchema,
-  ThemeModeSchema,
-  ThemeNameSchema,
-  GridDirectionSchema,
-  GridJustifyContentSchema,
-  GridAlignItemsSchema,
-  IconNameSchema,
-  IconColorSchema,
-  IconSizeSchema,
   TextResponseTypeSchema,
   TypographyVariantSchema,
   TypographyColorSchema,
@@ -132,36 +90,20 @@ const ButtonBlockSchema = BlockSchema.extend({
   action: ActionSchema.nullable()
 })
 
-// CardBlock schema
-const CardBlockSchema = BlockSchema.extend({
-  backgroundColor: z.string().nullable(),
-  coverBlockId: z.string().nullable(),
-  fullscreen: z.boolean(),
-  themeMode: ThemeModeSchema.nullable(),
-  themeName: ThemeNameSchema.nullable()
-})
-
 // GridContainerBlock schema
-const GridContainerBlockSchema = BlockSchema.extend({
-  spacing: z.number(),
-  direction: GridDirectionSchema,
-  justifyContent: GridJustifyContentSchema,
-  alignItems: GridAlignItemsSchema
-})
+// const GridContainerBlockSchema = BlockSchema.extend({
+//   spacing: z.number(),
+//   direction: GridDirectionSchema,
+//   justifyContent: GridJustifyContentSchema,
+//   alignItems: GridAlignItemsSchema
+// })
 
 // GridItemBlock schema
-const GridItemBlockSchema = BlockSchema.extend({
-  xl: z.number(),
-  lg: z.number(),
-  sm: z.number()
-})
-
-// IconBlock schema
-const IconBlockSchema = BlockSchema.extend({
-  name: IconNameSchema.nullable(),
-  color: IconColorSchema.nullable(),
-  size: IconSizeSchema.nullable()
-})
+// const GridItemBlockSchema = BlockSchema.extend({
+//   xl: z.number(),
+//   lg: z.number(),
+//   sm: z.number()
+// })
 
 // ImageBlock schema
 const ImageBlockSchema = BlockSchema.extend({
@@ -246,8 +188,6 @@ const VideoTriggerBlockSchema = BlockSchema.extend({
 const BlockUnionSchema = z.union([
   ButtonBlockSchema,
   CardBlockSchema,
-  GridContainerBlockSchema,
-  GridItemBlockSchema,
   IconBlockSchema,
   ImageBlockSchema,
   RadioOptionBlockSchema,
@@ -262,11 +202,10 @@ const BlockUnionSchema = z.union([
 
 export {
   BlockSchema,
+  BlockUnionSchema,
   ActionSchema,
   ButtonBlockSchema,
   CardBlockSchema,
-  GridContainerBlockSchema,
-  GridItemBlockSchema,
   IconBlockSchema,
   ImageBlockSchema,
   RadioOptionBlockSchema,

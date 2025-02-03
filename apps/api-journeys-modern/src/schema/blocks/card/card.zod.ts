@@ -1,18 +1,14 @@
 import { z } from 'zod'
 
-const ThemeMode = z.enum(['light', 'dark'])
-const ThemeName = z.enum(['base'])
+import { ThemeModeSchema, ThemeNameSchema } from '../../../lib/theme/theme.zod'
+import { BlockSchema } from '../blocks.zod'
 
-const CardBlock = z.object({
-  id: z.string(),
-  journeyId: z.string(),
-  parentBlockId: z.string().nullable(),
-  parentOrder: z.number().nullable(),
+const CardBlockSchema = BlockSchema.extend({
   backgroundColor: z.string().nullable(),
   coverBlockId: z.string().nullable(),
   fullscreen: z.boolean(),
-  themeMode: ThemeMode.optional(),
-  themeName: ThemeName.optional()
+  themeMode: ThemeModeSchema.nullable(),
+  themeName: ThemeNameSchema.nullable()
 })
 
-export { CardBlock, ThemeMode, ThemeName }
+export { CardBlockSchema }
