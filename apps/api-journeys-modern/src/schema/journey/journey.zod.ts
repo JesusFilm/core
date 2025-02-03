@@ -2,22 +2,7 @@ import { z } from 'zod'
 
 import { BlockSchema } from '../blocks/blocks.zod'
 import { TeamSchema } from '../team/team.zod'
-
-const UserSchema = z.object({
-  id: z.string(),
-  firstName: z.string(),
-  lastName: z.string(),
-  imageUrl: z.string().url(),
-  __typename: z.literal('User')
-})
-
-const UserJourneySchema = z.object({
-  id: z.string(),
-  role: z.string(),
-  openedAt: z.string(),
-  __typename: z.literal('UserJourney'),
-  user: UserSchema
-})
+import { UserJourneySchema } from '../userJourney/user.zod'
 
 const LanguageSchema = z.object({
   id: z.string(),
