@@ -1,11 +1,15 @@
 import { z } from 'zod'
 
-export const StepBlockSchema = z.object({
+const StepBlock = z.object({
   id: z.string(),
-  parentBlockId: z.string().nullable(),
-  parentOrder: z.number(),
-  locked: z.boolean(),
+  journeyId: z.string(),
   nextBlockId: z.string().nullable(),
-  slug: z.string().nullable(),
-  __typename: z.literal('StepBlock')
+  locked: z.boolean(),
+  parentBlockId: z.string().nullable(),
+  parentOrder: z.number().nullable(),
+  x: z.number().nullable(),
+  y: z.number().nullable(),
+  slug: z.string().nullable()
 })
+
+export { StepBlock }
