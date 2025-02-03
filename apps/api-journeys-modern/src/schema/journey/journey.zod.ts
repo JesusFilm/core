@@ -44,8 +44,6 @@ const JourneySchema = z.object({
   seoTitle: z.string().nullable(),
   seoDescription: z.string().nullable(),
   template: z.boolean().nullable(),
-  host: z.object({}).nullable(),
-  team: z.object({}).nullable(),
   strategySlug: z.string().nullable(),
   tags: z.array(z.object({ id: z.string() })),
   plausibleToken: z.string().nullable(),
