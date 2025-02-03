@@ -59,6 +59,7 @@ export function CodeCanvas({
           variant="rectangular"
           width={134}
           height={134}
+          aria-label="Loading QR code"
           sx={{ borderRadius: 2, minHeight: 134, minWidth: 134 }}
         />
       )}

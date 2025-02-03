@@ -48,21 +48,11 @@ export function CodeActionButton({
         document.body.appendChild(downloadLink)
         downloadLink.click()
         document.body.removeChild(downloadLink)
-      } catch (error) {
-        if (
-          error.message ===
-          "Failed to execute 'toDataURL' on 'HTMLCanvasElement': Tainted canvases may not be exported."
-        ) {
-          enqueueSnackbar('Error downloading, check CORS setting', {
-            variant: 'error',
-            preventDuplicate: true
-          })
-        } else {
-          enqueueSnackbar('Error downloading', {
-            variant: 'error',
-            preventDuplicate: true
-          })
-        }
+      } catch (e) {
+        enqueueSnackbar(t('Error downloading'), {
+          variant: 'error',
+          preventDuplicate: true
+        })
       }
     }
   }
