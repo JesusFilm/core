@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { ActionSchema } from './action/action.zod'
+import { ButtonBlockSchema } from './button/button.zod'
 import { CardBlockSchema } from './card/card.zod'
 import { IconBlockSchema } from './icon/icon.zod'
 import { ImageBlockSchema } from './image/image.zod'
@@ -13,11 +15,6 @@ const BlockSchema = z.object({
   parentOrder: z.number().nullable()
 })
 
-// Zod schemas for enums
-const ButtonVariantSchema = z.enum(['text', 'contained'])
-const ButtonColorSchema = z.enum(['primary', 'secondary', 'error', 'inherit'])
-const ButtonSizeSchema = z.enum(['small', 'medium', 'large'])
-
 const VideoBlockSourceSchema = z.enum([
   'internal',
   'youTube',
@@ -25,26 +22,6 @@ const VideoBlockSourceSchema = z.enum([
   'mux'
 ])
 const VideoBlockObjectFitSchema = z.enum(['fill', 'fit', 'zoomed'])
-
-// Action schema
-const ActionSchema = z.object({
-  parentBlockId: z.string(),
-  parentBlock: BlockSchema,
-  gtmEventName: z.string().nullable()
-})
-
-// Concrete Block type schemas
-
-// ButtonBlock schema
-const ButtonBlockSchema = BlockSchema.extend({
-  label: z.string(),
-  variant: ButtonVariantSchema.nullable(),
-  color: ButtonColorSchema.nullable(),
-  size: ButtonSizeSchema.nullable(),
-  startIconId: z.string().nullable(),
-  endIconId: z.string().nullable(),
-  action: ActionSchema.nullable()
-})
 
 // RadioOptionBlock schema
 const RadioOptionBlockSchema = BlockSchema.extend({
