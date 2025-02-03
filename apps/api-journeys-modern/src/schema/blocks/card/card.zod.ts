@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 const ThemeMode = z.enum(['light', 'dark'])
-const ThemeName = z.enum(['default', 'custom'])
+const ThemeName = z.enum(['base'])
 
 const CardBlock = z.object({
   id: z.string(),
