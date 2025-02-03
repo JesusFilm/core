@@ -54,7 +54,7 @@ const RedirectDialog = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "Editor/EditorToolbar/ShareButton/QrCodeDialog/RedirectDialog" */
-      '../RedirectDialog'
+      './RedirectDialog'
     ).then((mod) => mod.RedirectDialog),
   { ssr: false }
 )

@@ -8,7 +8,7 @@ import { ReactElement } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Clock1 from '@core/shared/ui/icons/Clock1'
 
-import { QrCodeFields as QrCode } from '../../../../../../../../__generated__/QrCodeFields'
+import { QrCodeFields as QrCode } from '../../../../../../../../../__generated__/QrCodeFields'
 
 interface RedirectDialogProps {
   open: boolean

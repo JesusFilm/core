@@ -4,23 +4,23 @@ import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { DownloadQrCode } from './DownloadQrCode'
+import { CodeActionButton } from './CodeActionButton'
 
-const meta: Meta<typeof DownloadQrCode> = {
+const meta: Meta<typeof CodeActionButton> = {
   ...journeysAdminConfig,
-  component: DownloadQrCode,
+  component: CodeActionButton,
   title:
-    'Journeys-Admin/Editor/Toolbar/Items/ShareItem/QrCodeDialog/DownloadQrCode',
+    'Journeys-Admin/Editor/Toolbar/Items/ShareItem/QrCodeDialog/CodeActionButton',
   parameters: {
     ...journeysAdminConfig.parameters,
     layout: 'fullscreen'
   }
 }
 
-type Story = StoryObj<ComponentProps<typeof DownloadQrCode>>
+type Story = StoryObj<ComponentProps<typeof CodeActionButton>>
 
 const Template: Story = {
-  render: ({ to }) => <DownloadQrCode to={to} />
+  render: ({ to }) => <CodeActionButton to={to} />
 }
 
 export const Default = {

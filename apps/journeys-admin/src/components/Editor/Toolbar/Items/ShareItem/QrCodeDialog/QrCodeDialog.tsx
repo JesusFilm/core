@@ -1,11 +1,9 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
-import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { QRCodeCanvas } from 'qrcode.react'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -25,8 +23,9 @@ import {
   QrCodeUpdateVariables
 } from '../../../../../../../__generated__/QrCodeUpdate'
 
+import { CodeActionButton } from './CodeActionButton'
+import { CodeCanvas } from './CodeCanvas/CodeCanvas'
 import { CodeDestination } from './CodeDestination'
-import { DownloadQrCode } from './DownloadQrCode'
 import { QR_CODE_FIELDS } from './qrCodeFields'
 import { ScanCount } from './ScanCount'
 
@@ -201,39 +200,7 @@ export function QrCodeDialog({
             alignItems: 'center'
           }}
         >
-          {shortLink != null ? (
-            <Stack
-              sx={{
-                borderWidth: '2px',
-                borderStyle: 'solid',
-                borderColor: 'divider',
-                borderRadius: 2,
-                p: 1
-              }}
-            >
-              <QRCodeCanvas
-                id="qr-code-download"
-                title="QR Code"
-                size={122}
-                level="L"
-                value={shortLink}
-              />
-            </Stack>
-          ) : (
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={handleGenerateQrCode}
-              disabled={loading}
-              sx={{
-                minHeight: 134,
-                minWidth: 134,
-                borderRadius: 2
-              }}
-            >
-              {!loading ? t('Generate') : t('Generating...')}
-            </Button>
-          )}
+          <CodeCanvas shortLink={shortLink} loading={loading} />
           <Stack
             spacing={3}
             sx={{
@@ -241,7 +208,11 @@ export function QrCodeDialog({
             }}
           >
             <ScanCount shortLinkId={qrCode?.shortLink.id} />
-            <DownloadQrCode shortLink={shortLink} loading={loading} />
+            <CodeActionButton
+              shortLink={shortLink}
+              loading={loading}
+              handleGenerateQrCode={handleGenerateQrCode}
+            />
             <Typography
               variant="body2"
               color="secondary.main"

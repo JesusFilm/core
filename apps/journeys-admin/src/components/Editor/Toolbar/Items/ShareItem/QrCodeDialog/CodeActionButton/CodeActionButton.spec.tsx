@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { DownloadQrCode } from './DownloadQrCode'
+import { CodeActionButton } from './CodeActionButton'
 
 Object.assign(navigator, {
   clipboard: {
@@ -9,9 +9,9 @@ Object.assign(navigator, {
   }
 })
 
-describe('DownloadQrCode', () => {
+describe('CodeActionButton', () => {
   it('should render the download buttons', () => {
-    render(<DownloadQrCode to="url" />)
+    render(<CodeActionButton to="url" />)
 
     expect(
       screen.getByRole('button', { name: 'Download PNG' })
@@ -22,7 +22,7 @@ describe('DownloadQrCode', () => {
   it('should copy short link', async () => {
     render(
       <SnackbarProvider>
-        <DownloadQrCode to="url" />
+        <CodeActionButton to="url" />
       </SnackbarProvider>
     )
 

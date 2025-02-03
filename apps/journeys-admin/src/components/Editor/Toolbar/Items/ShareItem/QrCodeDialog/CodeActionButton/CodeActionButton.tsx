@@ -13,15 +13,17 @@ import { MouseEvent, ReactElement, useState } from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-interface DownloadQrCodeProps {
+interface CodeActionButtonProps {
   shortLink?: string
   loading?: boolean
+  handleGenerateQrCode: () => Promise<void>
 }
 
-export function DownloadQrCode({
+export function CodeActionButton({
   shortLink,
-  loading
-}: DownloadQrCodeProps): ReactElement {
+  loading,
+  handleGenerateQrCode
+}: CodeActionButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [showDownloadMenu, setShowDownloadMenu] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -31,7 +33,7 @@ export function DownloadQrCode({
     setShowDownloadMenu(!showDownloadMenu)
   }
 
-  function handleDownloadQrCode(type: 'png' | 'svg'): void {
+  function handleCodeActionButton(type: 'png' | 'svg'): void {
     const canvas = document.getElementById(
       'qr-code-download'
     ) as HTMLCanvasElement | null
@@ -80,42 +82,53 @@ export function DownloadQrCode({
         alignItems: { xs: 'center', sm: 'start' }
       }}
     >
-      <ButtonGroup
-        variant="contained"
-        disabled={shortLink == null || loading}
-        sx={{
-          width: 200,
-          height: 42,
-          boxShadow: 'none',
-          '.MuiButtonGroup-grouped': {
-            borderColor: 'background.paper'
-          }
-        }}
-      >
+      {!loading && shortLink == null ? (
         <Button
           fullWidth
           variant="contained"
           color="secondary"
           size="medium"
-          onClick={() => {
-            handleDownloadQrCode('png')
-            setShowDownloadMenu(false)
-          }}
+          onClick={handleGenerateQrCode}
         >
-          {t('Download PNG')}
+          {t('Generate Code')}
         </Button>
-        <Button
+      ) : (
+        <ButtonGroup
           variant="contained"
-          color="secondary"
-          size="medium"
-          data-testid="DownloadDropdown"
-          onClick={(e) => {
-            handleMenuClick(e)
+          disabled={shortLink == null || loading}
+          sx={{
+            boxShadow: 'none',
+            '.MuiButtonGroup-grouped': {
+              borderColor: 'background.paper'
+            }
           }}
         >
-          <ChevronDownIcon />
-        </Button>
-      </ButtonGroup>
+          <Button
+            fullWidth
+            variant="contained"
+            color="secondary"
+            size="medium"
+            onClick={() => {
+              handleCodeActionButton('png')
+              setShowDownloadMenu(false)
+            }}
+          >
+            {t('Download PNG')}
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="medium"
+            data-testid="DownloadDropdown"
+            onClick={(e) => {
+              handleMenuClick(e)
+            }}
+          >
+            <ChevronDownIcon />
+          </Button>
+        </ButtonGroup>
+      )}
+
       <Popper
         sx={{ zIndex: 1 }}
         open={showDownloadMenu}
@@ -130,7 +143,7 @@ export function DownloadQrCode({
                 <MenuList id="split-button-menu" autoFocusItem>
                   <MenuItem
                     onClick={() => {
-                      handleDownloadQrCode('svg')
+                      handleCodeActionButton('svg')
                       setShowDownloadMenu(false)
                     }}
                   >
