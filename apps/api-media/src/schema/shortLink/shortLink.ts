@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid'
+import { v4 as uuidv4 } from 'uuid'
 import { ZodError } from 'zod'
 
 import { Prisma } from '.prisma/api-media-client'
@@ -144,6 +145,11 @@ builder.mutationFields((t) => ({
       },
       nullable: false,
       input: {
+        id: t.input.string({
+          required: false,
+          description:
+            'the unique identifier for the short link (will generate if not given)'
+        }),
         pathname: t.input.string({
           required: false,
           description:
@@ -210,14 +216,18 @@ builder.mutationFields((t) => ({
       resolve: async (
         query,
         _,
-        { input: { pathname: inputPathname, to, hostname, service } },
+        {
+          input: { id: inputId, pathname: inputPathname, to, hostname, service }
+        },
         context
       ) => {
         const pathname = inputPathname ?? nanoid(11)
+        const id = inputId ?? uuidv4()
         try {
           return await prisma.shortLink.create({
             ...query,
             data: {
+              id,
               pathname,
               to,
               domain: { connect: { hostname } },
