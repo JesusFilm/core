@@ -7,6 +7,7 @@ import { IconBlockSchema } from './icon/icon.zod'
 import { ImageBlockSchema } from './image/image.zod'
 import { TextResponseBlockSchema } from './textResponse/textResponse.zod'
 import { TypographyBlockSchema } from './typography/typography.zod'
+import { VideoBlockSchema } from './video/video.zod'
 
 const BlockSchema = z.object({
   id: z.string(),
@@ -14,14 +15,6 @@ const BlockSchema = z.object({
   parentBlockId: z.string().nullable(),
   parentOrder: z.number().nullable()
 })
-
-const VideoBlockSourceSchema = z.enum([
-  'internal',
-  'youTube',
-  'cloudflare',
-  'mux'
-])
-const VideoBlockObjectFitSchema = z.enum(['fill', 'fit', 'zoomed'])
 
 // RadioOptionBlock schema
 const RadioOptionBlockSchema = BlockSchema.extend({
@@ -46,25 +39,6 @@ const StepBlockSchema = BlockSchema.extend({
   x: z.number().nullable(),
   y: z.number().nullable(),
   slug: z.string().nullable()
-})
-
-// VideoBlock schema
-const VideoBlockSchema = BlockSchema.extend({
-  startAt: z.number().nullable(),
-  endAt: z.number().nullable(),
-  muted: z.boolean().nullable(),
-  autoplay: z.boolean().nullable(),
-  posterBlockId: z.string().nullable(),
-  fullsize: z.boolean().nullable(),
-  videoId: z.string().nullable(),
-  videoVariantLanguageId: z.string().nullable(),
-  source: VideoBlockSourceSchema,
-  title: z.string().nullable(),
-  description: z.string().nullable(),
-  image: z.string().nullable(),
-  duration: z.number().nullable(),
-  action: ActionSchema.nullable(),
-  objectFit: VideoBlockObjectFitSchema.nullable()
 })
 
 // VideoTriggerBlock schema

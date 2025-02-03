@@ -1,0 +1,33 @@
+import { z } from 'zod'
+
+import { ActionSchema } from '../action/action.zod'
+import { BlockSchema } from '../blocks.zod'
+
+const VideoBlockSourceSchema = z.enum([
+  'internal',
+  'youTube',
+  'cloudflare',
+  'mux'
+])
+
+const VideoBlockObjectFitSchema = z.enum(['fill', 'fit', 'zoomed'])
+
+const VideoBlockSchema = BlockSchema.extend({
+  startAt: z.number().nullable(),
+  endAt: z.number().nullable(),
+  muted: z.boolean().nullable(),
+  autoplay: z.boolean().nullable(),
+  posterBlockId: z.string().nullable(),
+  fullsize: z.boolean().nullable(),
+  videoId: z.string().nullable(),
+  videoVariantLanguageId: z.string().nullable(),
+  source: VideoBlockSourceSchema,
+  title: z.string().nullable(),
+  description: z.string().nullable(),
+  image: z.string().nullable(),
+  duration: z.number().nullable(),
+  action: ActionSchema.nullable(),
+  objectFit: VideoBlockObjectFitSchema.nullable()
+})
+
+export { VideoBlockSchema, VideoBlockSourceSchema, VideoBlockObjectFitSchema }
