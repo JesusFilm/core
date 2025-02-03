@@ -1,19 +1,17 @@
-import algoliasearch from 'algoliasearch'
 import clone from 'lodash/clone'
+
+import { prisma } from '../../../lib/prisma'
 
 import { service } from '.'
 
-// Mock prisma
 const prismaFindManySpy = jest
   .fn()
-  // First call returns language IDs
   .mockResolvedValueOnce([
     {
       id: '185021',
       bcp47: 'eng'
     }
   ])
-  // Second call returns full language data
   .mockResolvedValueOnce([
     {
       id: '185021',
@@ -34,14 +32,6 @@ const prismaFindManySpy = jest
       ]
     }
   ])
-
-jest.mock('@prisma/client', () => ({
-  PrismaClient: jest.fn().mockImplementation(() => ({
-    language: {
-      findMany: prismaFindManySpy
-    }
-  }))
-}))
 
 const saveObjectsSpy = jest
   .fn()
@@ -68,6 +58,13 @@ describe('algolia/service', () => {
       ALGOLIA_INDEX: 'languages'
     }
     jest.clearAllMocks()
+    jest
+      .spyOn(prisma.language, 'findMany')
+      .mockImplementation(prismaFindManySpy)
+  })
+
+  afterEach(() => {
+    jest.restoreAllMocks()
   })
 
   afterAll(() => {
@@ -84,7 +81,6 @@ describe('algolia/service', () => {
   it('should index languages to Algolia', async () => {
     await service()
 
-    // Verify first call to get language IDs
     expect(prismaFindManySpy).toHaveBeenNthCalledWith(1, {
       select: {
         id: true,
@@ -92,7 +88,6 @@ describe('algolia/service', () => {
       }
     })
 
-    // Verify second call to get full language data
     expect(prismaFindManySpy).toHaveBeenNthCalledWith(2, {
       include: {
         name: true,
