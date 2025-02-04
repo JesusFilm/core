@@ -13,6 +13,10 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreview'
 
+import {
+  GetGeneratedJourney,
+  GetGeneratedJourneyVariables
+} from '../__generated__/GetGeneratedJourney'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../__generated__/GetJourney'
 import { initAndAuthApp } from '../src/libs/initAndAuthApp'
 
@@ -26,17 +30,22 @@ function AiPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [steps, setSteps] = useState<Array<TreeBlock<StepBlock>>>([])
 
-  const [getGenerateJourney, { loading, error, data }] = useLazyQuery(
-    GET_GENERATED_JOURNEY
-  )
+  const [getGenerateJourney, { loading, error, data }] = useLazyQuery<
+    GetGeneratedJourney,
+    GetGeneratedJourneyVariables
+  >(GET_GENERATED_JOURNEY)
 
   async function handleGenerateJourney(values: FormikValues) {
     const { data } = await getGenerateJourney({
       variables: { userInput: values.userInput },
       onCompleted: (data) => {
-        console.log('data:', data)
+        if (data.generateJourney == null) return
         const parsedData = JSON.parse(data.generateJourney)
-        console.log('parsedData.blocks: ', parsedData['blocks'])
+        const { parsedData2 } = JSON.parse(data.generateJourney)
+
+        console.log('parsedData.blocks: ', parsedData.blocks)
+        console.log('parsedData2', parsedData2)
+
         setSteps(parsedData['blocks'])
       }
     })
