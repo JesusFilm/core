@@ -13,6 +13,9 @@ const VideoBlockSourceSchema = z.enum([
 const VideoBlockObjectFitSchema = z.enum(['fill', 'fit', 'zoomed'])
 
 const VideoBlockSchema = BlockSchema.extend({
+  typename: z
+    .literal('VideoBlock')
+    .describe('This value must be "VideoBlock".'),
   startAt: z.number().nullable(),
   endAt: z.number().nullable(),
   muted: z.boolean().nullable(),
@@ -27,7 +30,12 @@ const VideoBlockSchema = BlockSchema.extend({
   image: z.string().nullable(),
   duration: z.number().nullable(),
   action: ActionSchema.nullable(),
-  objectFit: VideoBlockObjectFitSchema.nullable()
+  objectFit: VideoBlockObjectFitSchema.nullable(),
+  parentBlockId: z
+    .string()
+    .uuid()
+    .nullable()
+    .describe('This is the CardBlock id, which is the parent of this block.')
 })
 
 export { VideoBlockSchema, VideoBlockSourceSchema, VideoBlockObjectFitSchema }

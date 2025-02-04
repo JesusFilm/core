@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { BlockSchema } from '../blocks.zod'
 
 const StepBlockSchema = BlockSchema.extend({
-  typename: z.literal('StepBlock').describe('This value has to be "StepBlock"'),
+  typename: z.literal('StepBlock').describe('This value must be "StepBlock".'),
   nextBlockId: z
     .string()
     .uuid()

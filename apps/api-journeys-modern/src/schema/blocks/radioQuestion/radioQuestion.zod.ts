@@ -5,12 +5,12 @@ import { BlockSchema } from '../blocks.zod'
 const RadioQuestionBlockSchema = BlockSchema.extend({
   typename: z
     .literal('RadioQuestionBlock')
-    .describe('This value has to be "RadioQuestionBlock"'),
+    .describe('This value must be "RadioQuestionBlock".'),
   parentBlockId: z
     .string()
     .uuid()
     .nullable()
-    .describe('This block can only be a child of a step block')
+    .describe('This is the CardBlock id, which is the parent of this block.')
 })
 
 export { RadioQuestionBlockSchema }
