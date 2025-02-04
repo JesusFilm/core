@@ -113,7 +113,12 @@ const JourneySchema = z
     menuButtonIcon: JourneyMenuButtonIconSchema.nullable().describe(
       'Icon used for the menu button'
     ),
-    blocks: z.array(BlockUnionSchema).describe('Blocks within the journey')
+    blocks: z.array(BlockUnionSchema).describe('Blocks within the journey'),
+    languageId: z
+      .string()
+      .describe(
+        'a WESS code for the language the journey is in. Use "529" as the default'
+      )
   })
   .describe('Schema for defining a Journey')
 
