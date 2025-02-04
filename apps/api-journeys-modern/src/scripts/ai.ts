@@ -4,6 +4,7 @@ import { createOpenAI } from '@ai-sdk/openai'
 import { CoreMessage, streamObject, streamText, tool } from 'ai'
 
 import { IconBlockSchema } from '../schema/blocks/icon/icon.zod'
+import { JourneySchema } from '../schema/journey/journey.zod'
 
 const terminal = createInterface({
   input: process.stdin,
@@ -26,7 +27,7 @@ async function ai() {
     const result = streamObject({
       model: openai('gpt-4o'),
       messages,
-      schema: IconBlockSchema
+      schema: JourneySchema
     })
 
     let fullResponse = ''
