@@ -4,14 +4,13 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
-import noop from 'lodash/noop'
 import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, SetStateAction, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreview'
+import { transformer } from '@core/journeys/ui/transformer'
 
 import {
   GetGeneratedJourney,
@@ -40,11 +39,10 @@ function AiPage(): ReactElement {
       variables: { userInput: values.userInput },
       onCompleted: (data) => {
         if (data.generateJourney == null) return
-        const parsedData = JSON.parse(data.generateJourney)
-        const { parsedData2 } = JSON.parse(data.generateJourney)
+        const parsedResponse = JSON.parse(data.generateJourney)
+        const parsedData = JSON.parse(parsedResponse)
 
-        console.log('parsedData.blocks: ', parsedData.blocks)
-        console.log('parsedData2', parsedData2)
+        console.log('parsedData', parsedData)
 
         setSteps(parsedData['blocks'])
       }
@@ -80,7 +78,7 @@ function AiPage(): ReactElement {
       {loading && <Box>Loading...</Box>}
       {steps.length > 0 && (
         <TemplateCardPreview
-          steps={steps}
+          steps={transformer(steps) as TreeBlock<StepBlock>[]}
           openTeamDialog={false}
           setOpenTeamDialog={function (value: SetStateAction<boolean>): void {
             throw new Error('Function not implemented.')
