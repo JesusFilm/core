@@ -47,8 +47,8 @@ function AiPage(): ReactElement {
         setSteps(parsedData['blocks'])
       }
     })
-    console.log('steps: ', steps)
   }
+  console.log('steps: ', steps)
 
   return (
     <Stack>
