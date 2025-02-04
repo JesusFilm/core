@@ -154,7 +154,9 @@ async function indexCountries(
         objectID: country.id,
         countryId: country.id,
         names,
-        continentName: country.continent?.name,
+        continentName: country.continent?.name.find(
+          ({ languageId }) => languageId === '529'
+        )?.value,
         longitude: country.longitude,
         latitude: country.latitude
       }
