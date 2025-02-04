@@ -13,7 +13,14 @@ const CardBlockSchema = BlockSchema.extend({
   themeMode: ThemeModeSchema.nullable().describe(
     'Theme mode of the card block'
   ),
-  themeName: ThemeNameSchema.nullable().describe('Theme name of the card block')
+  themeName: ThemeNameSchema.nullable().describe(
+    'Theme name of the card block'
+  ),
+  parentBlockId: z
+    .string()
+    .uuid()
+    .nullable()
+    .describe('This block can only be a child of a step block')
 })
 
 export { CardBlockSchema }
