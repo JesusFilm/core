@@ -6,8 +6,12 @@ import DirectivesPlugin from '@pothos/plugin-directives'
 import FederationPlugin from '@pothos/plugin-federation'
 import pluginName from '@pothos/plugin-prisma'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
+import SmartSubscriptionsPlugin, {
+  subscribeOptionsFromIterator
+} from '@pothos/plugin-smart-subscriptions'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
+import { PubSub } from 'graphql-subscriptions'
 
 import { Prisma, Role } from '.prisma/api-journeys-modern-client'
 import { User } from '@core/yoga/firebaseClient'
@@ -18,6 +22,7 @@ import { prisma } from '../lib/prisma'
 
 interface BaseContext {
   type: string
+  pubsub: PubSub
 }
 
 interface PublicContext extends BaseContext {
@@ -64,7 +69,8 @@ export const builder = new SchemaBuilder<{
     ScopeAuthPlugin,
     PrismaPlugin,
     DirectivesPlugin,
-    FederationPlugin
+    FederationPlugin,
+    SmartSubscriptionsPlugin
   ],
   tracing: {
     default: (config) => isRootField(config),
@@ -98,7 +104,13 @@ export const builder = new SchemaBuilder<{
           }
       }
     }
+  },
+  smartSubscriptions: {
+    ...subscribeOptionsFromIterator((name, { pubsub }) => {
+      return pubsub.asyncIterableIterator(name)
+    })
   }
 })
 
 builder.queryType({})
+builder.subscriptionType()

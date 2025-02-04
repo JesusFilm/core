@@ -1,6 +1,5 @@
 // eslint-disable-next-line import/order -- Must be imported first
 import { tracingPlugin } from '@core/yoga/tracer'
-
 import {
   useForwardedJWT,
   useHmacSignatureValidation
@@ -10,6 +9,7 @@ import {
   useResponseCache
 } from '@graphql-yoga/plugin-response-cache'
 import { initContextCache } from '@pothos/core'
+import { PubSub } from 'graphql-subscriptions'
 import { createYoga, useReadinessCheck } from 'graphql-yoga'
 import get from 'lodash/get'
 
@@ -22,6 +22,8 @@ import { schema } from './schema'
 import { Context } from './schema/builder'
 
 export const cache = createInMemoryCache()
+
+export const pubsub = new PubSub()
 
 export const yoga = createYoga<
   Record<string, unknown>,
@@ -38,6 +40,7 @@ export const yoga = createYoga<
         ...initContextCache(),
         type: 'authenticated',
         user,
+        pubsub,
         currentRoles:
           (
             await prisma.userRole.findUnique({
@@ -52,12 +55,14 @@ export const yoga = createYoga<
       return {
         ...initContextCache(),
         type: 'interop',
+        pubsub,
         ...interopContext
       }
 
     return {
       ...initContextCache(),
-      type: 'public'
+      type: 'public',
+      pubsub
     }
   },
   plugins: [
