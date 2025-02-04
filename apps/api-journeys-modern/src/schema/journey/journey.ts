@@ -10,7 +10,7 @@ builder.queryField('generateJourney', (t) =>
       userInput: t.arg.string({ required: true })
     },
     resolve: async (_parent, { userInput }) => {
-      return await ai(userInput) // Ensure `ai` accepts input properly
+      return await ai(userInput)
     }
   })
 )
