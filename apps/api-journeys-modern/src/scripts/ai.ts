@@ -1,9 +1,8 @@
 import { createInterface } from 'node:readline/promises'
 
 import { createOpenAI } from '@ai-sdk/openai'
-import { CoreMessage, streamObject, streamText, tool } from 'ai'
+import { CoreMessage, streamObject } from 'ai'
 
-import { IconBlockSchema } from '../schema/blocks/icon/icon.zod'
 import { JourneySchema } from '../schema/journey/journey.zod'
 
 const terminal = createInterface({
@@ -28,8 +27,9 @@ async function ai() {
       system:
         'You help people build journeys.' +
         'For language use 529.' +
-        'Make sure an the parentId for a block is set to the same as a the parent step block.' +
-        'Make sure all ids are UUIDs.',
+        'Make sure all ids are UUIDs.' +
+        'Give each card a background image.' +
+        'Get background images from unsplash.com.',
       model: openai('gpt-4o'),
       messages,
       schema: JourneySchema

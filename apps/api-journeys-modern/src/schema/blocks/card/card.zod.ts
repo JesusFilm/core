@@ -4,6 +4,7 @@ import { ThemeModeSchema, ThemeNameSchema } from '../../../lib/theme/theme.zod'
 import { BlockSchema } from '../blocks.zod'
 
 const CardBlockSchema = BlockSchema.extend({
+  typename: z.literal('CardBlock').describe('This value must be "CardBlock".'),
   backgroundColor: z
     .string()
     .nullable()
@@ -20,7 +21,7 @@ const CardBlockSchema = BlockSchema.extend({
     .string()
     .uuid()
     .nullable()
-    .describe('This block can only be a child of a step block')
+    .describe('This is the CardBlock id, which is the parent of this block.')
 })
 
 export { CardBlockSchema }

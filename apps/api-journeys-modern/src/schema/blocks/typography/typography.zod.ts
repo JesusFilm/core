@@ -30,6 +30,9 @@ const TypographyAlignSchema = z
   .describe('Alignment of the typography such as left, center, or right.')
 
 const TypographyBlockSchema = BlockSchema.extend({
+  typename: z
+    .literal('TypographyBlock')
+    .describe('This value must be "TypographyBlock".'),
   content: z.string().describe('Content of the typography block as a string.'),
   variant: TypographyVariantSchema.nullable().describe(
     'Optional variant of the typography.'
@@ -39,7 +42,12 @@ const TypographyBlockSchema = BlockSchema.extend({
   ),
   align: TypographyAlignSchema.nullable().describe(
     'Optional text alignment of the typography.'
-  )
+  ),
+  parentBlockId: z
+    .string()
+    .uuid()
+    .nullable()
+    .describe('This is the CardBlock id, which is the parent of this block.')
 }).describe('Schema for a Typography block.')
 
 export {
