@@ -1,17 +1,21 @@
 import { createInterface } from 'node:readline/promises'
 
-import { openai } from '@ai-sdk/openai'
-import { CoreMessage, streamText } from 'ai'
-import dotenv from 'dotenv'
+import { createOpenAI } from '@ai-sdk/openai'
+import { CoreMessage, streamObject, streamText, tool } from 'ai'
+
+import { IconBlockSchema } from '../schema/blocks/icon/icon.zod'
 
 const terminal = createInterface({
   input: process.stdin,
   output: process.stdout
 })
 
-dotenv.config()
-
 const messages: CoreMessage[] = []
+
+const openai = createOpenAI({
+  compatibility: 'strict', // strict mode, enable when using the OpenAI API,
+  apiKey: process.env.OPEN_AI_API_KEY
+})
 
 async function ai() {
   while (true) {
@@ -19,9 +23,10 @@ async function ai() {
 
     messages.push({ role: 'user', content: userInput })
 
-    const result = streamText({
+    const result = streamObject({
       model: openai('gpt-4o'),
-      messages
+      messages,
+      schema: IconBlockSchema
     })
 
     let fullResponse = ''

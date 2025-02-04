@@ -1,14 +1,11 @@
 import { z } from 'zod'
 
-import { BlockUnionSchema } from '../blocks/blocks.zod'
+import { ThemeModeSchema, ThemeNameSchema } from '../../lib/theme/theme.zod'
+import { BlockUnionSchema } from '../blocks/blockUnion.zod'
 
 const LanguageSchema = z.object({
   id: z.string()
 })
-
-const ThemeModeSchema = z.enum(['dark', 'light'])
-
-const ThemeNameSchema = z.enum(['base'])
 
 const JourneyStatusSchema = z.enum([
   'archived',
