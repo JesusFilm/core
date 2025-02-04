@@ -12,6 +12,10 @@ type MuxVideo
   source: VideoBlockSource! @shareable
 }
 
+type Query {
+  generateJourney(userInput: String!): String
+}
+
 type Video
   @key(fields: "id primaryLanguageId")
   @extends

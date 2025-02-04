@@ -44,7 +44,7 @@ export async function ai(prompt?: string): Promise<string> {
     process.stdout.write('\n\n')
 
     messages.push({ role: 'assistant', content: fullResponse })
-    return fullResponse
+    return JSON.stringify(fullResponse)
   }
 }
 
