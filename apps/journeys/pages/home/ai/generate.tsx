@@ -10,7 +10,7 @@ import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement, useState } from 'react'
 
-import { TreeBlock, blockHistoryVar } from '@core/journeys/ui/block'
+import { TreeBlock } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
 
 import {

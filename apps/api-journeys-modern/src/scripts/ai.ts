@@ -34,8 +34,14 @@ export async function ai(prompt?: string): Promise<string> {
         'For language use 529.' +
         'Make sure all ids are UUIDs.' +
         'Give each card a background image. This must relate to the content of the card.' +
+        'the images must not repeat more than twice' +
         'Get background images from unsplash.com.' +
-        'Make sure the CardBlocks are children of StepBlocks.',
+        'Make sure the number of CardBlocks is equal to the number of StepBlocks.' +
+        'Make sure the CardBlocks are children of StepBlocks.' +
+        'Make sure that there is one child per StepBlock' +
+        'You can add other blocks into the CardBlock, please makre sure there is at least 3-6 blocks that are children of the CardBlock.' +
+        'Can you please make sure the content of the blocks that are children of the CardBlock are relevant to the journey the user wants to create' +
+        'if you dont do this I am fired',
       model: openai('gpt-4o'),
       messages,
       schema: JourneySchema

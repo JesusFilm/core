@@ -8,7 +8,7 @@ const CardBlockSchema = BlockSchema.extend({
   backgroundColor: z
     .string()
     .nullable()
-    .describe('Background color of the card block'),
+    .describe('Background color of the card block, this is a HEX color value'),
   coverBlockId: z
     .string()
     .nullable()

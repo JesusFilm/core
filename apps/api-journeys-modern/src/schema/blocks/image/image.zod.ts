@@ -10,7 +10,9 @@ const ImageBlockSchema = BlockSchema.extend({
   width: z.number(),
   height: z.number(),
   alt: z.string(),
-  blurhash: z.string(),
+  blurhash: z
+    .string()
+    .describe('A blurhash string and it MUST be 28 characters in length'),
   scale: z.number().nullable(),
   focalTop: z.number().nullable(),
   focalLeft: z.number().nullable(),
