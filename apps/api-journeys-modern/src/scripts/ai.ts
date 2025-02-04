@@ -17,9 +17,9 @@ const openai = createOpenAI({
   apiKey: process.env.OPEN_AI_API_KEY
 })
 
-async function ai() {
+export async function ai(prompt?: string): Promise<string> {
   while (true) {
-    const userInput = await terminal.question('You: ')
+    const userInput = prompt == null ? await terminal.question('You: ') : prompt
 
     messages.push({ role: 'user', content: userInput })
 
@@ -44,6 +44,8 @@ async function ai() {
     process.stdout.write('\n\n')
 
     messages.push({ role: 'assistant', content: fullResponse })
+    return fullResponse
+    // await prisma.journey.create({ data: JSON.parse(fullResponse) })
   }
 }
 
