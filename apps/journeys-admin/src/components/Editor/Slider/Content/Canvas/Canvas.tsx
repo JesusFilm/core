@@ -183,9 +183,8 @@ export function Canvas(): ReactElement {
               maxHeight: CARD_HEIGHT,
               maxWidth: CARD_WIDTH,
               transform: `scale(${scale})`,
-              margin: `calc(${calculateScaledMargin(CARD_HEIGHT, scale)} + ${
-                scale < 0.65 ? '20px' : '0px'
-              }) ${calculateScaledMargin(CARD_WIDTH, scale)}`,
+              my: `${calculateScaledMargin(CARD_HEIGHT, scale)}`,
+              mx: `${calculateScaledMargin(CARD_WIDTH, scale)}`,
               borderRadius: 8,
               pointerEvents: showAnalytics === true ? 'none' : 'auto',
               transition: (theme) =>
@@ -207,7 +206,6 @@ export function Canvas(): ReactElement {
             }}
           >
             <FramePortal
-              width="100%"
               height="100%"
               dir={rtl ? 'rtl' : 'ltr'}
               // frameRef assists to see if user is copying text from typog blocks
@@ -330,13 +328,7 @@ export function Canvas(): ReactElement {
               )}
             </FramePortal>
           </Box>
-          <Box
-            sx={{
-              width: '100%'
-            }}
-          >
-            <CanvasFooter scale={scale} />
-          </Box>
+          <CanvasFooter scale={scale} />
         </Stack>
       )}
     </Stack>
