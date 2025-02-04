@@ -21,7 +21,9 @@ const CardBlockSchema = BlockSchema.extend({
     .string()
     .uuid()
     .nullable()
-    .describe('This is the CardBlock id, which is the parent of this block.')
+    .describe(
+      'This is the CardBlock id, which is the only child of the StepBlock.'
+    )
 })
 
 export { CardBlockSchema }

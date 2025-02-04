@@ -9,7 +9,9 @@ const StepBlockSchema = BlockSchema.extend({
     .uuid()
     .describe('The ID of the next block in the journey.')
     .nullable()
-    .describe('Contains the ID of the preferred next block to navigate to.'),
+    .describe(
+      'Contains the ID of the next StepBlock to navigate to. This cannot be null unless it is the last step in the journey.'
+    ),
   locked: z
     .boolean()
     .describe(

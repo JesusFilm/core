@@ -33,9 +33,9 @@ export async function ai(prompt?: string): Promise<string> {
         'You help people build journeys.' +
         'For language use 529.' +
         'Make sure all ids are UUIDs.' +
-        'Give each card a background image.' +
+        'Give each card a background image. This must relate to the content of the card.' +
         'Get background images from unsplash.com.' +
-        'make sure the CardBlocks as children of StepBlocks.',
+        'Make sure the CardBlocks are children of StepBlocks.',
       model: openai('gpt-4o'),
       messages,
       schema: JourneySchema

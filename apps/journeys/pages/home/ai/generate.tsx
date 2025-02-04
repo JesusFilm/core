@@ -1,23 +1,25 @@
 import { gql, useLazyQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
-import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
+import { GetStaticProps } from 'next/types'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, SetStateAction, useState } from 'react'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { ReactElement, useState } from 'react'
 
-import { TreeBlock } from '@core/journeys/ui/block'
-import { TemplateCardPreview } from '@core/journeys/ui/TemplateView/TemplatePreviewTabs/TemplateCardPreview/TemplateCardPreview'
+import { TreeBlock, blockHistoryVar } from '@core/journeys/ui/block'
 import { transformer } from '@core/journeys/ui/transformer'
 
 import {
   GetGeneratedJourney,
   GetGeneratedJourneyVariables
-} from '../__generated__/GetGeneratedJourney'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../__generated__/GetJourney'
-import { initAndAuthApp } from '../src/libs/initAndAuthApp'
+} from '../../../__generated__/GetGeneratedJourney'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../__generated__/GetJourney'
+import i18nConfig from '../../../next-i18next.config'
+import { Conductor } from '../../../src/components/Conductor'
 
 export const GET_GENERATED_JOURNEY = gql`
   query GetGeneratedJourney($userInput: String!) {
@@ -27,7 +29,7 @@ export const GET_GENERATED_JOURNEY = gql`
 
 function AiPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [steps, setSteps] = useState<Array<TreeBlock<StepBlock>>>([])
+  const [steps, setSteps] = useState<Array<TreeBlock<StepBlock>> | null>(null)
 
   const [getGenerateJourney, { loading, error, data }] = useLazyQuery<
     GetGeneratedJourney,
@@ -44,7 +46,18 @@ function AiPage(): ReactElement {
 
         console.log('parsedData', parsedData)
 
-        setSteps(parsedData['blocks'])
+        const blocksWithTypename = parsedData['blocks'].map((block) => ({
+          ...block,
+          __typename: block.typename
+        }))
+
+        const transformedSteps = transformer(
+          blocksWithTypename
+        ) as TreeBlock<StepBlock>[]
+
+        console.log('transformedSteps', transformedSteps)
+
+        setSteps(transformedSteps)
       }
     })
   }
@@ -75,43 +88,31 @@ function AiPage(): ReactElement {
           </Form>
         )}
       </Formik>
-      {loading && <Box>Loading...</Box>}
-      {steps.length > 0 && (
-        <TemplateCardPreview
-          steps={transformer(steps) as TreeBlock<StepBlock>[]}
-          openTeamDialog={false}
-          setOpenTeamDialog={function (value: SetStateAction<boolean>): void {
-            throw new Error('Function not implemented.')
-          }}
-        />
+      {loading && (
+        <Box>
+          <CircularProgress />
+        </Box>
+      )}
+      {steps != null && (
+        <Box sx={{ width: '100%', height: '100%' }}>
+          <Conductor blocks={steps} />
+        </Box>
       )}
     </Stack>
   )
 }
 
-export const getServerSideProps = withUserTokenSSR({
-  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN
-})(async ({ user, locale, resolvedUrl, query }) => {
-  if (user == null)
-    return { redirect: { permanent: false, destination: '/users/sign-in' } }
-
-  const { apolloClient, redirect, translations, flags } = await initAndAuthApp({
-    user,
-    locale,
-    resolvedUrl
-  })
-
-  if (redirect != null) return { redirect }
-
+export const getStaticProps: GetStaticProps = async (context) => {
   return {
     props: {
-      initialApolloState: apolloClient.cache.extract(),
-      ...translations,
-      flags
-    }
+      ...(await serverSideTranslations(
+        context.locale ?? 'en',
+        ['apps-journeys', 'libs-journeys-ui'],
+        i18nConfig
+      ))
+    },
+    revalidate: 60
   }
-})
+}
 
-export default withUser({
-  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(AiPage)
+export default AiPage
