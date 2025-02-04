@@ -1,4 +1,4 @@
-import algoliasearch from 'algoliasearch'
+import { algoliasearch } from 'algoliasearch'
 import { Logger } from 'pino'
 
 import { prisma } from '../../../lib/prisma'
@@ -90,10 +90,12 @@ export async function service(logger?: Logger): Promise<void> {
       }
     })
 
-    const index = client.initIndex(appIndex)
-
     try {
-      await index.saveObjects(transformedLanguages).wait()
+      await client.saveObjects({
+        indexName: appIndex,
+        objects: transformedLanguages,
+        waitForTasks: true
+      })
       logger?.info(
         `Successfully exported ${transformedLanguages.length} records to algolia`
       )
