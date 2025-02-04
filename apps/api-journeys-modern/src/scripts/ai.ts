@@ -25,6 +25,11 @@ async function ai() {
     messages.push({ role: 'user', content: userInput })
 
     const result = streamObject({
+      system:
+        'You help people build journeys.' +
+        'For language use 529.' +
+        'Make sure an the parentId for a block is set to the same as a the parent step block.' +
+        'Make sure all ids are UUIDs.',
       model: openai('gpt-4o'),
       messages,
       schema: JourneySchema

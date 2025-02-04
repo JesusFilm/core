@@ -3,8 +3,11 @@ import { z } from 'zod'
 import { BlockSchema } from '../blocks.zod'
 
 const StepBlockSchema = BlockSchema.extend({
+  typename: z.literal('StepBlock').describe('The type of the block.'),
   nextBlockId: z
     .string()
+    .uuid()
+    .describe('The ID of the next block in the journey.')
     .nullable()
     .describe('Contains the ID of the preferred next block to navigate to.'),
   locked: z
