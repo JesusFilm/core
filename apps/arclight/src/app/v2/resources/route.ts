@@ -1,36 +1,5 @@
 import { SearchClient, algoliasearch } from 'algoliasearch'
-import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
-
-import { getApolloClient } from '../../../lib/apolloClient'
-
-const GET_COUNTRIES = graphql(`
-  query GetCountries(
-    $term: String!
-    $metadataLanguageId: ID
-    $fallbackLanguageId: ID
-  ) {
-    countries(term: $term) {
-      id
-      name(languageId: $metadataLanguageId) {
-        value
-      }
-      fallbackName: name(languageId: $fallbackLanguageId) {
-        value
-      }
-      continent {
-        name(languageId: $metadataLanguageId) {
-          value
-        }
-        fallbackName: name(languageId: $fallbackLanguageId) {
-          value
-        }
-      }
-      longitude
-      latitude
-    }
-  }
-`)
 
 type AlgoliaVideoVariantHit = {
   videoId?: string
@@ -60,6 +29,19 @@ type AlgoliaLanguageHit = {
     bcp47: string
   }>
   speakersCount: number
+}
+
+type AlgoliaCountryHit = {
+  objectID: string
+  countryId: string
+  names: Array<{
+    value: string
+    languageId: string
+    bcp47: string
+  }>
+  continentName: string
+  longitude: number
+  latitude: number
 }
 
 async function initAlgoliaClient() {
@@ -158,6 +140,36 @@ async function searchAlgoliaLanguages(
   }))
 }
 
+async function searchAlgoliaCountries(
+  term: string,
+  metadataLanguageTags: string[],
+  client: SearchClient
+) {
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_COUNTRIES
+  if (!indexName) {
+    throw new Error('Algolia environment variables are not set')
+  }
+
+  const facets = []
+  for (const tag of metadataLanguageTags) {
+    facets.push(`names.bcp47:${tag}`)
+  }
+
+  const response = await client.searchSingleIndex<AlgoliaCountryHit>({
+    indexName,
+    searchParams: {
+      query: term,
+      hitsPerPage: 1000,
+      facets: metadataLanguageTags.length > 0 ? ['names.bcp47'] : [],
+      ...(metadataLanguageTags.length > 0 && {
+        facetFilters: facets
+      })
+    }
+  })
+
+  return response.hits ?? []
+}
+
 export async function GET(request: NextRequest): Promise<Response> {
   const query = request.nextUrl.searchParams
   const apiKey = query.get('apiKey') ?? ''
@@ -180,15 +192,11 @@ export async function GET(request: NextRequest): Promise<Response> {
   try {
     const client = await initAlgoliaClient()
 
-    const [videoHits, languageHits, { data: countriesData }] =
-      await Promise.all([
-        searchVideoVariantsAlgolia(term, client),
-        searchAlgoliaLanguages(term, metadataLanguageTags, client),
-        getApolloClient().query<ResultOf<typeof GET_COUNTRIES>>({
-          query: GET_COUNTRIES,
-          variables: { term, metadataLanguageTags, fallbackLanguageId: 'en' }
-        })
-      ])
+    const [videoHits, languageHits, countryHits] = await Promise.all([
+      searchVideoVariantsAlgolia(term, client),
+      searchAlgoliaLanguages(term, metadataLanguageTags, client),
+      searchAlgoliaCountries(term, metadataLanguageTags, client)
+    ])
 
     const transformedVideos = videoHits.map((hit) => ({
       mediaComponentId: hit.videoId,
@@ -231,13 +239,29 @@ export async function GET(request: NextRequest): Promise<Response> {
           bcp47: hit.bcp47
         }
       ],
-      metadataLanguageTag: metadataLanguageTags[0] ?? 'en'
+      metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
+      __links: {
+        self: {
+          href: `http://api.arclight.org/v2/media-languages/${hit.objectID}?apiKey=${apiKey}`
+        }
+      }
     }))
 
-    const countries = countriesData.countries.filter(
-      (country) =>
-        country.name[0]?.value != null || country.fallbackName[0]?.value != null
-    )
+    const transformedCountries = countryHits.map((hit) => ({
+      countryId: hit.countryId,
+      name:
+        hit.names.find((n) => n.bcp47 === metadataLanguageTags[0])?.value ??
+        hit.names.find((n) => n.bcp47 === 'en')?.value ??
+        '',
+      continentName: hit.continentName,
+      longitude: hit.longitude,
+      latitude: hit.latitude,
+      __links: {
+        self: {
+          href: `http://api.arclight.org/v2/media-countries/${hit.countryId}?apiKey=${apiKey}`
+        }
+      }
+    }))
 
     const transformedResponse =
       bulk === 'true'
@@ -251,9 +275,9 @@ export async function GET(request: NextRequest): Promise<Response> {
               resources: {
                 resourceCount:
                   transformedVideos.length +
-                  countries.length +
+                  countryHits.length +
                   transformedLanguages.length,
-                mediaCountries: countries.map((country) => country.id),
+                mediaCountries: countryHits.map((country) => country.countryId),
                 mediaLanguages: transformedLanguages.map((language) =>
                   Number(language.languageId)
                 ),
@@ -275,44 +299,10 @@ export async function GET(request: NextRequest): Promise<Response> {
               resources: {
                 resourceCount:
                   transformedVideos.length +
-                  countries.length +
+                  countryHits.length +
                   transformedLanguages.length,
-                mediaCountries: countries.map((country) => ({
-                  countryId: country.id,
-                  name:
-                    country.name[0]?.value ??
-                    country.fallbackName[0]?.value ??
-                    '',
-                  continentName:
-                    country.continent.name[0]?.value ??
-                    country.continent.fallbackName[0]?.value ??
-                    '',
-                  metadataLanguageTag:
-                    country.name[0]?.value != null
-                      ? metadataLanguageTags[0]
-                      : (metadataLanguageTags[1] ?? 'en'),
-                  longitude: country.longitude,
-                  latitude: country.latitude,
-                  _links: {
-                    self: {
-                      href: `http://api.arclight.org/v2/media-countries/${country.id}?apiKey=${apiKey}`
-                    }
-                  }
-                })),
-                mediaLanguages: transformedLanguages.map((language) => ({
-                  languageId: Number(language.languageId),
-                  iso3: language.iso3,
-                  bcp47: language.bcp47,
-                  primaryCountryId: language.primaryCountryId,
-                  name: language.name,
-                  nameNative: language.nameNative ?? '',
-                  metadataLanguageTag: language.metadataLanguageTag,
-                  _links: {
-                    self: {
-                      href: `http://api.arclight.org/v2/media-languages/${language.languageId}?apiKey=${apiKey}`
-                    }
-                  }
-                })),
+                mediaCountries: transformedCountries,
+                mediaLanguages: transformedLanguages,
                 alternateLanguages: [],
                 mediaComponents: transformedVideos
               }
