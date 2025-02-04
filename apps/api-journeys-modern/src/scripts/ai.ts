@@ -45,7 +45,6 @@ export async function ai(prompt?: string): Promise<string> {
 
     messages.push({ role: 'assistant', content: fullResponse })
     return fullResponse
-    // await prisma.journey.create({ data: JSON.parse(fullResponse) })
   }
 }
 
