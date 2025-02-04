@@ -12,5 +12,6 @@ export interface GetGeneratedJourney {
 }
 
 export interface GetGeneratedJourneyVariables {
-  userInput: string;
+  prompt: string;
+  system: string;
 }

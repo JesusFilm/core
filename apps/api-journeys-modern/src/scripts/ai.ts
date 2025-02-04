@@ -17,7 +17,7 @@ const openai = createOpenAI({
   apiKey: process.env.OPEN_AI_API_KEY
 })
 
-export async function ai(prompt?: string): Promise<string> {
+export async function ai(prompt?: string, system?: string): Promise<string> {
   while (true) {
     const userInput = prompt == null ? await terminal.question('You: ') : prompt
 
@@ -27,21 +27,22 @@ export async function ai(prompt?: string): Promise<string> {
     }
 
     messages.push({ role: 'user', content: userInput })
+    const systemPrompt =
+      'You help people build journeys.' +
+      'For language use 529.' +
+      'Make sure all ids are UUIDs.' +
+      'Give each card a background image. This must relate to the content of the card.' +
+      'the images must not repeat more than twice' +
+      'Get background images from unsplash.com.' +
+      'Make sure the number of CardBlocks is equal to the number of StepBlocks.' +
+      'Make sure the CardBlocks are children of StepBlocks.' +
+      'Make sure that there is one child per StepBlock' +
+      'You can add other blocks into the CardBlock, please makre sure there is at least 3-6 blocks that are children of the CardBlock.' +
+      'Can you please make sure the content of the blocks that are children of the CardBlock are relevant to the journey the user wants to create' +
+      'if you dont do this I am fired'
 
     const result = streamObject({
-      system:
-        'You help people build journeys.' +
-        'For language use 529.' +
-        'Make sure all ids are UUIDs.' +
-        'Give each card a background image. This must relate to the content of the card.' +
-        'the images must not repeat more than twice' +
-        'Get background images from unsplash.com.' +
-        'Make sure the number of CardBlocks is equal to the number of StepBlocks.' +
-        'Make sure the CardBlocks are children of StepBlocks.' +
-        'Make sure that there is one child per StepBlock' +
-        'You can add other blocks into the CardBlock, please makre sure there is at least 3-6 blocks that are children of the CardBlock.' +
-        'Can you please make sure the content of the blocks that are children of the CardBlock are relevant to the journey the user wants to create' +
-        'if you dont do this I am fired',
+      system: systemPrompt + system,
       model: openai('gpt-4o'),
       messages,
       schema: JourneySchema

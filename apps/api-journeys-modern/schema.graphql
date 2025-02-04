@@ -13,7 +13,7 @@ type MuxVideo
 }
 
 type Query {
-  generateJourney(userInput: String!): String
+  generateJourney(prompt: String!, system: String!): String
 }
 
 type Video

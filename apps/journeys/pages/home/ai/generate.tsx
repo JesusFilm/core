@@ -22,8 +22,8 @@ import i18nConfig from '../../../next-i18next.config'
 import { Conductor } from '../../../src/components/Conductor'
 
 export const GET_GENERATED_JOURNEY = gql`
-  query GetGeneratedJourney($userInput: String!) {
-    generateJourney(userInput: $userInput)
+  query GetGeneratedJourney($prompt: String!, $system: String!) {
+    generateJourney(prompt: $prompt, system: $system)
   }
 `
 
@@ -38,7 +38,7 @@ function AiPage(): ReactElement {
 
   async function handleGenerateJourney(values: FormikValues) {
     const { data } = await getGenerateJourney({
-      variables: { userInput: values.userInput },
+      variables: { prompt: values.prompt, system: values.system },
       onCompleted: (data) => {
         if (data.generateJourney == null) return
         const parsedResponse = JSON.parse(data.generateJourney)
@@ -64,7 +64,7 @@ function AiPage(): ReactElement {
   return (
     <Stack>
       <Formik
-        initialValues={{ userInput: '' }}
+        initialValues={{ prompt: '', system: '' }}
         onSubmit={handleGenerateJourney}
         validateOnChange={false}
         validateOnBlur={false}
@@ -73,15 +73,23 @@ function AiPage(): ReactElement {
         {({ values, handleChange, handleSubmit }) => (
           <Form onSubmit={handleSubmit}>
             <TextField
-              value={values.userInput}
+              value={values.prompt}
               onChange={handleChange}
-              name="userInput"
+              name="prompt"
               label={t('Enter your prompt here')}
               multiline
               minRows={5}
               maxRows={20}
             />
-
+            <TextField
+              value={values.system}
+              onChange={handleChange}
+              name="system"
+              label={t('Enter your system prompt here')}
+              multiline
+              minRows={5}
+              maxRows={20}
+            />
             <Button type="submit"> {t('Generate Journey')}</Button>
           </Form>
         )}
