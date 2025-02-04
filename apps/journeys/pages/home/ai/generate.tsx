@@ -31,7 +31,7 @@ function AiPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [steps, setSteps] = useState<Array<TreeBlock<StepBlock>> | null>(null)
 
-  const [getGenerateJourney, { loading, error, data }] = useLazyQuery<
+  const [getGenerateJourney, { loading }] = useLazyQuery<
     GetGeneratedJourney,
     GetGeneratedJourneyVariables
   >(GET_GENERATED_JOURNEY)
@@ -43,8 +43,6 @@ function AiPage(): ReactElement {
         if (data.generateJourney == null) return
         const parsedResponse = JSON.parse(data.generateJourney)
         const parsedData = JSON.parse(parsedResponse)
-
-        console.log('parsedData', parsedData)
 
         const blocksWithTypename = parsedData['blocks'].map((block) => ({
           ...block,
@@ -93,7 +91,7 @@ function AiPage(): ReactElement {
           <CircularProgress />
         </Box>
       )}
-      {steps != null && (
+      {steps != null && steps?.length > 0 && (
         <Box sx={{ width: '100%', height: '100%' }}>
           <Conductor blocks={steps} />
         </Box>

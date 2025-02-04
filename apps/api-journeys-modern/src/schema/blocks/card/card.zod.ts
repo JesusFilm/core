@@ -9,7 +9,12 @@ const CardBlockSchema = BlockSchema.extend({
     .string()
     .nullable()
     .describe('Background color of the card block'),
-  coverBlockId: z.string().nullable().describe('ID of the cover block'),
+  coverBlockId: z
+    .string()
+    .nullable()
+    .describe(
+      'this ID can reference an existing ImageBlock to set the background image of the card. This can be more helpful that just injecting the Image into the card as a generic block'
+    ),
   fullscreen: z.boolean().describe('Indicates if the card block is fullscreen'),
   themeMode: ThemeModeSchema.nullable().describe(
     'Theme mode of the card block'
