@@ -7,7 +7,9 @@ const SignUpBlockSchema = BlockSchema.extend({
   typename: z
     .literal('SignUpBlock')
     .describe('This value must be "SignUpBlock".'),
-  action: ActionSchema.describe('An action associated with the sign-up block'),
+  action: ActionSchema.nullable().describe(
+    'An action associated with the sign-up block'
+  ),
   submitIconId: z
     .string()
     .nullable()

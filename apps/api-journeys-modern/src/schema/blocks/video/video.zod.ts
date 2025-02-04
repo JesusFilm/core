@@ -3,14 +3,13 @@ import { z } from 'zod'
 import { ActionSchema } from '../action/action.zod'
 import { BlockSchema } from '../blocks.zod'
 
-const VideoBlockSourceSchema = z.enum([
-  'internal',
-  'youTube',
-  'cloudflare',
-  'mux'
-])
+const VideoBlockSourceSchema = z
+  .enum(['internal', 'youTube', 'cloudflare', 'mux'])
+  .describe('The source platform for the video content.')
 
-const VideoBlockObjectFitSchema = z.enum(['fill', 'fit', 'zoomed'])
+const VideoBlockObjectFitSchema = z
+  .enum(['fill', 'fit', 'zoomed'])
+  .describe('How the video should be resized to fit its container.')
 
 const VideoBlockSchema = BlockSchema.extend({
   typename: z

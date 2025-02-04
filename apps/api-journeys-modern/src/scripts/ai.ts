@@ -21,6 +21,11 @@ export async function ai(prompt?: string): Promise<string> {
   while (true) {
     const userInput = prompt == null ? await terminal.question('You: ') : prompt
 
+    if (!userInput.trim()) {
+      console.log('\nPlease enter a valid message.')
+      continue
+    }
+
     messages.push({ role: 'user', content: userInput })
 
     const result = streamObject({
