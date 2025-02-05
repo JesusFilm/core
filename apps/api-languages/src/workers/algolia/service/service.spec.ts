@@ -1,4 +1,3 @@
-import { algoliasearch } from 'algoliasearch'
 import clone from 'lodash/clone'
 
 import { prismaMock } from '../../../../test/prismaMock'
@@ -41,6 +40,7 @@ describe('algolia/service', () => {
     process.env.ALGOLIA_API_KEY_LANGUAGES = 'key'
     process.env.ALGOLIA_APPLICATION_ID = 'id'
     process.env.ALGOLIA_INDEX_LANGUAGES = 'languages'
+    process.env.ALGOLIA_INDEX_COUNTRIES = 'countries'
 
     prismaMock.language.findMany.mockResolvedValueOnce([
       {
@@ -125,6 +125,82 @@ describe('algolia/service', () => {
             { value: '简体中文', languageId: '21754', bcp47: 'zh-Hans' }
           ],
           speakersCount: 1000000
+        }
+      ],
+      waitForTasks: true
+    })
+  })
+
+  it('should sync countries to Algolia', async () => {
+    process.env.ALGOLIA_API_KEY_LANGUAGES = 'key'
+    process.env.ALGOLIA_APPLICATION_ID = 'id'
+    process.env.ALGOLIA_INDEX_LANGUAGES = 'languages'
+    process.env.ALGOLIA_INDEX_COUNTRIES = 'countries'
+
+    prismaMock.language.findMany.mockResolvedValueOnce([
+      {
+        id: '21754',
+        bcp47: 'zh-Hans',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        iso3: null,
+        hasVideos: false,
+        slug: null
+      },
+      {
+        id: '529',
+        bcp47: 'en',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        iso3: null,
+        hasVideos: false,
+        slug: null
+      }
+    ])
+
+    prismaMock.country.findMany.mockResolvedValueOnce([
+      {
+        id: 'CN',
+        name: [
+          { value: 'China', languageId: '529' },
+          { value: '中國', languageId: '21754' }
+        ],
+        continent: {
+          id: 'AS',
+          name: [{ value: 'Asia', languageId: '529' }]
+        },
+        longitude: 116.3883,
+        latitude: 39.9289
+      } as any
+    ])
+
+    await service()
+
+    expect(prismaMock.country.findMany).toHaveBeenCalledWith({
+      include: {
+        name: true,
+        continent: {
+          select: {
+            id: true,
+            name: true
+          }
+        }
+      }
+    })
+
+    expect(saveObjectsSpy).toHaveBeenCalledWith({
+      indexName: 'countries',
+      objects: [
+        {
+          objectID: 'CN',
+          countryId: 'CN',
+          names: [
+            { value: 'China', languageId: '529', bcp47: 'en' },
+            { value: '中國', languageId: '21754', bcp47: 'zh-Hans' }
+          ],
+          continentName: 'Asia',
+          longitude: 116.3883,
+          latitude: 39.9289
         }
       ],
       waitForTasks: true
