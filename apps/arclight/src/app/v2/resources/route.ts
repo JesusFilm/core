@@ -1,19 +1,35 @@
 import { SearchClient, algoliasearch } from 'algoliasearch'
 import { NextRequest } from 'next/server'
 
-type AlgoliaVideoVariantHit = {
-  videoId?: string
-  label?: string
-  image?: string
-  duration?: number
-  childrenCount?: number
-  languageId?: string
-  titles?: string[]
-  description?: string[]
-  _highlightResult?: {
-    titles?: { value: string; matchedWords: string[] }[]
-    description?: { value: string; matchedWords: string[] }[]
+type AlgoliaVideoHit = {
+  mediaComponentId: string
+  componentType: string
+  subType?: string
+  contentType: string
+  lengthInMilliseconds?: number
+  titles: Array<{
+    value: string
+    languageId: string
+    bcp47: string
+  }>
+  descriptions: Array<{
+    value: string
+    languageId: string
+    bcp47: string
+  }>
+  studyQuestions: Array<{
+    value: string
+    languageId: string
+    bcp47: string
+  }>
+  isDownloadable: boolean
+  downloadSizes: {
+    approximateSmallDownloadSizeInBytes?: number
+    approximateLargeDownloadSizeInBytes?: number
   }
+  primaryLanguageId: number
+  bibleCitations: Array<any>
+  containsCount: number
 }
 
 type AlgoliaLanguageHit = {
@@ -55,19 +71,20 @@ async function initAlgoliaClient() {
   return algoliasearch(appID, apiKey)
 }
 
-async function searchVideoVariantsAlgolia(term: string, client: SearchClient) {
-  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_VIDEO_VARIANTS
+async function searchVideoVariantsAlgolia(
+  term: string,
+  metadataLanguageTags: string[],
+  client: SearchClient
+) {
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS
   if (!indexName) {
     throw new Error('Algolia environment variables are not set')
   }
 
-  const response = await client.searchSingleIndex<AlgoliaVideoVariantHit>({
+  const response = await client.searchSingleIndex<AlgoliaVideoHit>({
     indexName,
     searchParams: {
       query: term,
-      filters: 'languageId:529',
-      highlightPreTag: '<>',
-      highlightPostTag: '<>',
       hitsPerPage: 1000
     }
   })
@@ -76,15 +93,44 @@ async function searchVideoVariantsAlgolia(term: string, client: SearchClient) {
     return []
   }
 
-  return response.hits.map((hit: AlgoliaVideoVariantHit) => ({
-    videoId: hit.videoId ?? 'defaultVideoId',
-    label: hit.label,
-    image: hit.image,
-    duration: hit.duration ?? 0,
-    childrenCount: hit.childrenCount ?? 0,
-    languageId: hit.languageId ?? '0',
-    titles: hit.titles ?? [],
-    description: hit.description ?? []
+  return response.hits.map((hit) => ({
+    mediaComponentId: hit.mediaComponentId,
+    componentType: hit.componentType,
+    subType: hit.subType,
+    contentType: hit.contentType,
+    imageUrls: {
+      thumbnail: hit.imageUrls.thumbnail,
+      videoStill: hit.imageUrls.videoStill,
+      mobileCinematicHigh: hit.imageUrls.mobileCinematicHigh,
+      mobileCinematicLow: hit.imageUrls.mobileCinematicLow,
+      mobileCinematicVeryLow: hit.imageUrls.mobileCinematicVeryLow
+    },
+    lengthInMilliseconds: hit.lengthInMilliseconds ?? 0,
+    containsCount: hit.containsCount,
+    isDownloadable: hit.isDownloadable,
+    downloadSizes: hit.downloadSizes ?? {},
+    bibleCitations: hit.bibleCitations ?? [],
+    primaryLanguageId: hit.primaryLanguageId,
+    title:
+      hit.titles.find((t) => t.bcp47 === metadataLanguageTags[0])?.value ??
+      hit.titles.find((t) => t.bcp47 === 'en')?.value ??
+      '',
+    shortDescription:
+      hit.descriptions.find((d) => d.bcp47 === metadataLanguageTags[0])
+        ?.value ??
+      hit.descriptions.find((d) => d.bcp47 === 'en')?.value ??
+      '',
+    longDescription:
+      hit.descriptions.find((d) => d.bcp47 === metadataLanguageTags[0])
+        ?.value ??
+      hit.descriptions.find((d) => d.bcp47 === 'en')?.value ??
+      '',
+    studyQuestions:
+      hit.studyQuestions.find((q) => q.bcp47 === metadataLanguageTags[0])
+        ?.value ??
+      hit.studyQuestions.find((q) => q.bcp47 === 'en')?.value ??
+      '',
+    metadataLanguageTag: metadataLanguageTags[0]
   }))
 }
 
@@ -193,33 +239,33 @@ export async function GET(request: NextRequest): Promise<Response> {
     const client = await initAlgoliaClient()
 
     const [videoHits, languageHits, countryHits] = await Promise.all([
-      searchVideoVariantsAlgolia(term, client),
+      searchVideoVariantsAlgolia(term, metadataLanguageTags, client),
       searchAlgoliaLanguages(term, metadataLanguageTags, client),
       searchAlgoliaCountries(term, metadataLanguageTags, client)
     ])
 
     const transformedVideos = videoHits.map((hit) => ({
-      mediaComponentId: hit.videoId,
-      componentType: hit.label === 'shortFilm' ? 'content' : 'container',
-      subType: hit.label,
-      contentType: 'video',
+      mediaComponentId: hit.mediaComponentId,
+      componentType: hit.componentType,
+      subType: hit.subType,
+      contentType: hit.contentType,
       imageUrls: {
-        thumbnail: hit.image,
-        videoStill: hit.image,
-        mobileCinematicHigh: hit.image,
-        mobileCinematicLow: hit.image,
-        mobileCinematicVeryLow: hit.image
+        thumbnail: hit.imageUrls.thumbnail,
+        videoStill: hit.imageUrls.videoStill,
+        mobileCinematicHigh: hit.imageUrls.mobileCinematicHigh,
+        mobileCinematicLow: hit.imageUrls.mobileCinematicLow,
+        mobileCinematicVeryLow: hit.imageUrls.mobileCinematicVeryLow
       },
-      lengthInMilliseconds: hit.duration * 1000,
-      containsCount: hit.childrenCount,
-      isDownloadable: true,
-      downloadSizes: {},
-      bibleCitations: [],
-      primaryLanguageId: parseInt(hit.languageId),
-      title: hit.titles[0] ?? '',
-      shortDescription: hit.description[0] ?? '',
-      longDescription: hit.description[0] ?? '',
-      studyQuestions: [],
+      lengthInMilliseconds: hit.lengthInMilliseconds ?? 0,
+      containsCount: hit.containsCount,
+      isDownloadable: hit.isDownloadable,
+      downloadSizes: hit.downloadSizes ?? {},
+      bibleCitations: hit.bibleCitations ?? [],
+      primaryLanguageId: hit.primaryLanguageId,
+      title: hit.title,
+      shortDescription: hit.shortDescription,
+      longDescription: hit.longDescription,
+      studyQuestions: hit.studyQuestions,
       metadataLanguageTag: metadataLanguageTags[0]
     }))
 
