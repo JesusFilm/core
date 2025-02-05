@@ -73,7 +73,7 @@ const DynamicCard = forwardRef<HTMLDivElement, DynamicCardProps>(
           width: 'inherit',
           position: 'relative',
           height: '100%',
-          display: isCurrent ? 'block' : 'none'
+          display: isCurrent || isPreRender ? 'block' : 'none'
         }}
       >
         {isCurrent || isPreRender ? (
