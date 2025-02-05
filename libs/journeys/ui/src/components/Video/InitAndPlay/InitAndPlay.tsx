@@ -53,8 +53,9 @@ export function InitAndPlay({
   setLoading,
   setShowPoster,
   setVideoEndTime,
-  activeStep = false
-}: InitAndPlayProps): ReactElement {
+  activeStep = false,
+  onLoadedData
+}: InitAndPlayProps & { onLoadedData?: () => void }): ReactElement {
   const { variant } = useJourney()
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
@@ -84,6 +85,10 @@ export function InitAndPlay({
             source === VideoBlockSource.youTube
         })
       )
+      // Trigger the onLoadedData callback when video is loaded
+      player?.on('loadeddata', () => {
+        if (onLoadedData) onLoadedData() // ✅ Trigger callback
+      })
     }
   }, [
     startAt,
@@ -94,7 +99,9 @@ export function InitAndPlay({
     videoRef,
     autoplay,
     activeStep,
-    source
+    source,
+    onLoadedData,
+    player
   ])
 
   // Initiate video player listeners

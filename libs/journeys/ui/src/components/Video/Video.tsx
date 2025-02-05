@@ -74,8 +74,9 @@ export function Video({
   posterBlockId,
   children,
   action,
-  objectFit
-}: TreeBlock<VideoFields>): ReactElement {
+  objectFit,
+  onLoadedData
+}: TreeBlock<VideoFields> & { onLoadedData?: () => void }): ReactElement {
   const theme = useTheme()
   const hundredVh = use100vh()
 
@@ -235,6 +236,7 @@ export function Video({
               className="video-js vjs-tech"
               playsInline
               preload="auto"
+              onLoadedData={onLoadedData}
               sx={{
                 '&.video-js.vjs-youtube.vjs-fill': {
                   transform: 'scale(1.01)'

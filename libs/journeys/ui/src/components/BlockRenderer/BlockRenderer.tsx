@@ -120,13 +120,15 @@ const DynamicTypography = dynamic<TreeBlock<TypographyBlock>>(
 interface BlockRenderProps {
   block?: TreeBlock
   wrappers?: WrappersProps
+  onContentLoaded?: () => void
 }
 
 const DefaultWrapper: WrapperFn = ({ children }) => children
 
 export function BlockRenderer({
   block,
-  wrappers
+  wrappers,
+  onContentLoaded
 }: BlockRenderProps): ReactElement {
   const Wrapper = wrappers?.Wrapper ?? DefaultWrapper
   const ButtonWrapper = wrappers?.ButtonWrapper ?? DefaultWrapper

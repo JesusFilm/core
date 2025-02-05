@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
-import { ReactElement, forwardRef, useEffect } from 'react'
+import { ReactElement, forwardRef, useEffect, useState } from 'react'
 
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
@@ -63,6 +63,15 @@ interface DynamicCardProps {
 const DynamicCard = forwardRef<HTMLDivElement, DynamicCardProps>(
   function DynamicCard({ isCurrent, isPreRender, block }, ref) {
     const { setShowNavigation } = useBlocks()
+    const [isCurrentLoaded, setIsCurrentLoaded] = useState(false)
+
+    // Callback for when the isCurrent block is fully loaded
+    const handleContentLoaded = () => {
+      setIsCurrentLoaded(true)
+      console.log('Current block has fully loaded!')
+    }
+
+    //if prerender and if block is video block...
 
     return (
       <Box
@@ -76,14 +85,17 @@ const DynamicCard = forwardRef<HTMLDivElement, DynamicCardProps>(
           display: isCurrent ? 'block' : 'none'
         }}
       >
-        {isCurrent || isPreRender ? (
+        {isCurrent || (isPreRender && isCurrentLoaded) ? (
           <Box
             data-testid={`journey-card-${block.id}`}
             sx={{
               height: '100%'
             }}
           >
-            <BlockRenderer block={block} />
+            <BlockRenderer
+              block={block}
+              onContentLoaded={handleContentLoaded}
+            />
           </Box>
         ) : (
           <></>
