@@ -446,6 +446,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoTitleCreate(input: VideoTranslationCreateInput!) : VideoTitle! @join__field(graph: API_MEDIA) 
   videoTitleUpdate(input: VideoTranslationUpdateInput!) : VideoTitle! @join__field(graph: API_MEDIA) 
   videoTitleDelete(id: ID!) : VideoTitle! @join__field(graph: API_MEDIA) 
+  seoContentCreate(input: SeoContentCreateInput!) : SeoContent! @join__field(graph: API_MEDIA) 
+  seoContentUpdate(input: SeoContentUpdateInput!) : SeoContent! @join__field(graph: API_MEDIA) 
+  seoContentDelete(id: ID!) : SeoContent! @join__field(graph: API_MEDIA) 
   videoEditionCreate(input: VideoEditionCreateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionUpdate(input: VideoEditionUpdateInput!) : VideoEdition! @join__field(graph: API_MEDIA) 
   videoEditionDelete(id: ID!) : VideoEdition! @join__field(graph: API_MEDIA) 
@@ -970,6 +973,7 @@ type Video @join__type(graph: API_JOURNEYS, key: "id primaryLanguageId", extensi
   description(languageId: ID, primary: Boolean) : [VideoDescription!]! @join__field(graph: API_MEDIA) 
   studyQuestions(languageId: ID, primary: Boolean) : [VideoStudyQuestion!]! @join__field(graph: API_MEDIA) 
   imageAlt(languageId: ID, primary: Boolean) : [VideoImageAlt!]! @join__field(graph: API_MEDIA) 
+  seoContents(languageId: ID, primary: Boolean) : [SeoContent!]! @join__field(graph: API_MEDIA) 
   variantLanguages: [Language!]! @join__field(graph: API_MEDIA) 
   variantLanguagesCount(input: VideoVariantFilter) : Int! @join__field(graph: API_MEDIA) 
   """
@@ -2376,6 +2380,16 @@ type QueryShortLinksConnection @join__type(graph: API_MEDIA)  {
 type QueryShortLinksConnectionEdge @join__type(graph: API_MEDIA)  {
   node: ShortLink
   cursor: String!
+}
+
+type SeoContent @join__type(graph: API_MEDIA)  {
+  id: ID!
+  title: String!
+  description: String!
+  keywords: String!
+  content: String!
+  primary: Boolean!
+  language: Language!
 }
 
 """
@@ -4157,6 +4171,27 @@ input MutationShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
   the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
   """
   to: String!
+}
+
+input SeoContentCreateInput @join__type(graph: API_MEDIA)  {
+  id: String
+  videoId: String!
+  title: String!
+  description: String!
+  keywords: String!
+  content: String!
+  primary: Boolean!
+  languageId: String!
+}
+
+input SeoContentUpdateInput @join__type(graph: API_MEDIA)  {
+  id: String!
+  title: String
+  description: String
+  keywords: String
+  content: String
+  primary: Boolean
+  languageId: String
 }
 
 input VideoCreateInput @join__type(graph: API_MEDIA)  {

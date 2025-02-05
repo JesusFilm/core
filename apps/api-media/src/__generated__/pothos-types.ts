@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, CloudflareVideo, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain } from ".prisma/api-media-client";
+import type { Prisma, CloudflareImage, CloudflareVideo, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain, SeoContent } from ".prisma/api-media-client";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
@@ -79,8 +79,8 @@ export default interface PrismaTypes {
         Where: Prisma.VideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions";
-        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions";
+        RelationName: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "seoContents" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions";
+        ListRelations: "title" | "snippet" | "description" | "studyQuestions" | "imageAlt" | "seoContents" | "subtitles" | "children" | "parent" | "variants" | "bibleCitation" | "keywords" | "images" | "cloudflareAssets" | "videoEditions";
         Relations: {
             title: {
                 Shape: VideoTitle[];
@@ -105,6 +105,11 @@ export default interface PrismaTypes {
             imageAlt: {
                 Shape: VideoImageAlt[];
                 Name: "VideoImageAlt";
+                Nullable: false;
+            };
+            seoContents: {
+                Shape: SeoContent[];
+                Name: "SeoContent";
                 Nullable: false;
             };
             subtitles: {
@@ -645,5 +650,25 @@ export default interface PrismaTypes {
         RelationName: never;
         ListRelations: never;
         Relations: {};
+    };
+    SeoContent: {
+        Name: "SeoContent";
+        Shape: SeoContent;
+        Include: Prisma.SeoContentInclude;
+        Select: Prisma.SeoContentSelect;
+        OrderBy: Prisma.SeoContentOrderByWithRelationInput;
+        WhereUnique: Prisma.SeoContentWhereUniqueInput;
+        Where: Prisma.SeoContentWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "video";
+        ListRelations: never;
+        Relations: {
+            video: {
+                Shape: Video | null;
+                Name: "Video";
+                Nullable: true;
+            };
+        };
     };
 }

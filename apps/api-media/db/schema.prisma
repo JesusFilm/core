@@ -116,6 +116,7 @@ model Video {
   description       VideoDescription[]
   studyQuestions    VideoStudyQuestion[]
   imageAlt          VideoImageAlt[]
+  seoContents       SeoContent[]
   slug              String?              @unique
   noIndex           Boolean?
   childIds          String[] // needed for child sort order
@@ -448,4 +449,20 @@ model ShortLink {
 model ShortLinkBlocklistDomain {
   /// the hostname including subdomain, domain, and TLD, but excluding port
   hostname String @id
+}
+
+model SeoContent {
+  id          String  @id @default(uuid())
+  title       String
+  description String
+  keywords    String
+  content     String
+  languageId  String
+  primary     Boolean
+  videoId     String?
+  video       Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, languageId])
+  @@index(primary(type: Hash))
+  @@index(languageId(type: Hash))
 }

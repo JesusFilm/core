@@ -8,6 +8,7 @@ import {
   ImageAspectRatio,
   Keyword,
   Prisma,
+  SeoContent,
   Video,
   VideoDescription,
   VideoEdition,
@@ -46,6 +47,7 @@ describe('video', () => {
     description: VideoDescription[]
     studyQuestions: VideoStudyQuestion[]
     imageAlt: VideoImageAlt[]
+    seoContents: SeoContent[]
     children: Video[]
     parents: Video[]
     subtitles: VideoSubtitle[]
@@ -168,6 +170,18 @@ describe('video', () => {
         {
           id: 'imageAltId',
           value: 'value',
+          languageId: 'languageId',
+          videoId: 'videoId',
+          primary: true
+        }
+      ],
+      seoContents: [
+        {
+          id: 'seoContentId',
+          title: 'Test Title',
+          description: 'Test Description',
+          keywords: 'test,keywords',
+          content: 'Test Content',
           languageId: 'languageId',
           videoId: 'videoId',
           primary: true
@@ -334,6 +348,17 @@ describe('video', () => {
               id
             }
           }
+          seoContents(languageId: $languageId, primary: $primary) {
+            id
+            title
+            description
+            keywords
+            content
+            primary
+            language {
+              id
+            }
+          }
           variantLanguages {
             id
           }
@@ -432,6 +457,17 @@ describe('video', () => {
             language: { id: 'languageId' },
             primary: true,
             value: 'value'
+          }
+        ],
+        seoContents: [
+          {
+            id: 'seoContentId',
+            title: 'Test Title',
+            description: 'Test Description',
+            keywords: 'test,keywords',
+            content: 'Test Content',
+            primary: true,
+            language: { id: 'languageId' }
           }
         ],
         keywords: [{ id: 'keywordId' }],
