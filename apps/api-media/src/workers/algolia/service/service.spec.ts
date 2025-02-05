@@ -52,7 +52,8 @@ jest.mock('@apollo/client', () => {
 
 jest.mock('algoliasearch', () => ({
   algoliasearch: jest.fn().mockImplementation(() => ({
-    saveObjects: saveObjectsSpy
+    saveObjects: saveObjectsSpy,
+    setSettings: jest.fn().mockResolvedValue({})
   }))
 }))
 
@@ -76,6 +77,7 @@ describe('algolia/service', () => {
       process.env.ALGOLIA_API_KEY = undefined
       process.env.ALGOLIA_APPLICATION_ID = undefined
       process.env.ALGOLIA_INDEX = undefined
+      process.env.ALGOLIA_INDEX_VIDEOS = undefined
       await expect(service()).rejects.toThrow(
         'algolia environment variables not set'
       )
@@ -85,6 +87,7 @@ describe('algolia/service', () => {
       process.env.ALGOLIA_API_KEY = 'key'
       process.env.ALGOLIA_APPLICATION_ID = 'id'
       process.env.ALGOLIA_INDEX = 'video-variants'
+      process.env.ALGOLIA_INDEX_VIDEOS = 'videos'
       prismaMock.videoVariant.findMany
         .mockResolvedValueOnce([
           {
@@ -168,6 +171,7 @@ describe('algolia/service', () => {
       process.env.ALGOLIA_API_KEY = 'key'
       process.env.ALGOLIA_APPLICATION_ID = 'id'
       process.env.ALGOLIA_INDEX = 'video-variants-prd'
+      process.env.ALGOLIA_INDEX_VIDEOS = 'videos'
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([])
       await service()
       expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
