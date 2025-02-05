@@ -1,6 +1,9 @@
+import BarChartIcon from '@mui/icons-material/BarChart'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
 
@@ -22,6 +25,7 @@ import 'video.js/dist/video-js.css'
 
 // Usually FeatureFilm, ShortFilm, Episode or Segment Videos
 export function VideoContentPage(): ReactElement {
+  const { t } = useTranslation('apps-watch')
   const {
     title,
     snippet,
@@ -137,17 +141,23 @@ export function VideoContentPage(): ReactElement {
           >
             <VideoContent />
             <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-              <Stack spacing={5} mb={8} direction={{ md: 'column', lg: 'row' }}>
-                {variant != null && variant.downloads.length > 0 && (
-                  <DownloadButton
+              <Stack spacing={5} mb={8} direction="column">
+                <Stack direction="row" spacing={2}>
+                  {variant != null && variant.downloads.length > 0 && (
+                    <DownloadButton
+                      variant="button"
+                      onClick={() => setOpenDownload(true)}
+                    />
+                  )}
+                  <ShareButton
                     variant="button"
-                    onClick={() => setOpenDownload(true)}
+                    onClick={() => setOpenShare(true)}
                   />
-                )}
-                <ShareButton
-                  variant="button"
-                  onClick={() => setOpenShare(true)}
-                />
+                </Stack>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <BarChartIcon fontSize="small" sx={{ color: 'secondary.light' }} />
+                  <Typography>{t('Views: 12.2M')}</Typography>
+                </Stack>
               </Stack>
             </Box>
           </Stack>
