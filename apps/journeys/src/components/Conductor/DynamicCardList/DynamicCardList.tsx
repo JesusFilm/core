@@ -24,7 +24,7 @@ export function DynamicCardList({ blocks }: Props): ReactElement {
     | TreeBlock<StepFields>
     | undefined
   const nextBlock = getNextBlock({ activeBlock: currentBlock })
-
+  //
   useEffect(() => {
     setShowHeaderFooter(true)
   }, [currentBlock, setShowHeaderFooter])
