@@ -41,8 +41,8 @@ const IconBlockSchema = BlockSchema.extend({
   name: IconNameSchema.nullable().describe(
     'Icon name from MUI icons, available icons found in IconNameSchema enum.'
   ),
-  color: IconColorSchema.nullable().describe('Color of the icon'),
-  size: IconSizeSchema.nullable().describe('Size of the icon'),
+  color: IconColorSchema.describe('Color of the icon'),
+  size: IconSizeSchema.describe('Size of the icon'),
   parentBlockId: z
     .string()
     .uuid()

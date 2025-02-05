@@ -45,6 +45,7 @@ export async function ai(prompt?: string, system?: string): Promise<string> {
       system: systemPrompt + system,
       model: openai('gpt-4o'),
       messages,
+      output: 'object',
       schema: JourneySchema
     })
 

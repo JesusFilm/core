@@ -680,7 +680,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   Get a single visitor
   """
   visitor(id: ID!) : Visitor! @join__field(graph: API_JOURNEYS) 
-  generateJourney(prompt: String!, system: String!) : String @join__field(graph: API_JOURNEYS_MODERN) 
+  generateJourney(input: JourneyGenerationInput) : String @join__field(graph: API_JOURNEYS_MODERN) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
@@ -4086,6 +4086,14 @@ input VisitorUpdateInput @join__type(graph: API_JOURNEYS)  {
   The referring url of the visitor
   """
   referrer: String
+}
+
+input JourneyGenerationInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  theme: String!
+  targetAudience: String!
+  mainMessage: String!
+  language: String! = "529"
+  additionalContext: String
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {

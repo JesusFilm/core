@@ -3,15 +3,16 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { JourneyGenerationInput } from "./globalTypes";
+
 // ====================================================
-// GraphQL query operation: GetGeneratedJourney
+// GraphQL query operation: GenerateJourney
 // ====================================================
 
-export interface GetGeneratedJourney {
+export interface GenerateJourney {
   generateJourney: string | null;
 }
 
-export interface GetGeneratedJourneyVariables {
-  prompt: string;
-  system: string;
+export interface GenerateJourneyVariables {
+  input: JourneyGenerationInput;
 }

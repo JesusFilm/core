@@ -98,6 +98,9 @@ export function Button({
     | TreeBlock<IconFields>
     | undefined
 
+  console.log(startIcon)
+  console.log(endIcon)
+
   const messagePlatform = useMemo(() => findMessagePlatform(action), [action])
   const actionValue = useMemo(
     () => getActionLabel(action, treeBlocks, t),

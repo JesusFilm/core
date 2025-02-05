@@ -138,6 +138,13 @@
           "email dev --dir apps/api-journeys-modern/src/emails/templates --port 4601"
         ]
       }
+    },
+    "test-journey-generation": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node src/scripts/test-journey-generation.ts",
+        "cwd": "apps/api-journeys-modern"
+      }
     }
   }
 }

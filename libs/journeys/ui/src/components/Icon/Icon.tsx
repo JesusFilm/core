@@ -30,6 +30,10 @@ export function Icon({
   iconColor,
   iconSize
 }: TreeBlock<IconBlock>): ReactElement | null {
+  console.log(iconName)
+  console.log(iconColor)
+  console.log(iconSize)
+
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
