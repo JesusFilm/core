@@ -1,5 +1,7 @@
 import clone from 'lodash/clone'
 
+import { Country, Language } from '.prisma/api-languages-client'
+
 import { prismaMock } from '../../../../test/prismaMock'
 
 import { service } from '.'
@@ -84,7 +86,7 @@ describe('algolia/service', () => {
             country: { id: 'CN' }
           }
         ]
-      } as any
+      } as unknown as Language
     ])
 
     await service()
@@ -171,7 +173,7 @@ describe('algolia/service', () => {
         },
         longitude: 116.3883,
         latitude: 39.9289
-      } as any
+      } as unknown as Country
     ])
 
     await service()
