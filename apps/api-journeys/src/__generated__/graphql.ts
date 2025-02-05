@@ -339,17 +339,6 @@ export type CloudflareR2UpdateInput = {
   id: Scalars['String']['input'];
 };
 
-export type CloudflareVideo = {
-  __typename?: 'CloudflareVideo';
-  createdAt: Scalars['Date']['output'];
-  id: Scalars['ID']['output'];
-  primaryLanguageId?: Maybe<Scalars['ID']['output']>;
-  readyToStream: Scalars['Boolean']['output'];
-  source?: Maybe<VideoBlockSource>;
-  uploadUrl?: Maybe<Scalars['String']['output']>;
-  userId: Scalars['ID']['output'];
-};
-
 export type Continent = {
   __typename?: 'Continent';
   countries: Array<Country>;
@@ -1188,7 +1177,7 @@ export enum MediaRole {
   Publisher = 'publisher'
 }
 
-export type MediaVideo = CloudflareVideo | MuxVideo | Video | YouTube;
+export type MediaVideo = MuxVideo | Video | YouTube;
 
 export enum MessagePlatform {
   CheckBroken = 'checkBroken',
@@ -1257,8 +1246,6 @@ export type Mutation = {
   createCloudflareImageFromPrompt: CloudflareImage;
   createCloudflareUploadByFile: CloudflareImage;
   createCloudflareUploadByUrl: CloudflareImage;
-  createCloudflareVideoUploadByFile: CloudflareVideo;
-  createCloudflareVideoUploadByUrl: CloudflareVideo;
   /** @deprecated use createCloudflareImageFromPrompt */
   createImageBySegmindPrompt: CloudflareImage;
   createMuxVideoUploadByFile: MuxVideo;
@@ -1269,7 +1256,6 @@ export type Mutation = {
   customDomainDelete: CustomDomain;
   customDomainUpdate: CustomDomain;
   deleteCloudflareImage: Scalars['Boolean']['output'];
-  deleteCloudflareVideo: Scalars['Boolean']['output'];
   deleteMuxVideo: Scalars['Boolean']['output'];
   hostCreate: Host;
   hostDelete: Host;
@@ -1562,17 +1548,6 @@ export type MutationCreateCloudflareUploadByUrlArgs = {
 };
 
 
-export type MutationCreateCloudflareVideoUploadByFileArgs = {
-  name: Scalars['String']['input'];
-  uploadLength: Scalars['Int']['input'];
-};
-
-
-export type MutationCreateCloudflareVideoUploadByUrlArgs = {
-  url: Scalars['String']['input'];
-};
-
-
 export type MutationCreateImageBySegmindPromptArgs = {
   model: SegmindModel;
   prompt: Scalars['String']['input'];
@@ -1616,11 +1591,6 @@ export type MutationCustomDomainUpdateArgs = {
 
 
 export type MutationDeleteCloudflareImageArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type MutationDeleteCloudflareVideoArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -2235,6 +2205,8 @@ export type MutationVisitorUpdateForCurrentUserArgs = {
 export type MutationShortLinkCreateInput = {
   /** the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to */
   hostname: Scalars['String']['input'];
+  /** the unique identifier for the short link (will generate if not given) */
+  id?: InputMaybe<Scalars['String']['input']>;
   /** short link path not including the leading slash (defaults to a random 11 character string that is URL friendly) */
   pathname?: InputMaybe<Scalars['String']['input']>;
   /** the service that created this short link */
@@ -2584,6 +2556,7 @@ export type QrCode = {
   shortLink: ShortLink;
   /** Team where the Qr Code belongs to */
   team?: Maybe<Team>;
+  toJourneyId?: Maybe<Scalars['String']['output']>;
 };
 
 export type QrCodeCreateInput = {
@@ -2632,8 +2605,6 @@ export type Query = {
   getMuxVideo?: Maybe<MuxVideo>;
   getMyCloudflareImage: CloudflareImage;
   getMyCloudflareImages: Array<CloudflareImage>;
-  getMyCloudflareVideo: CloudflareVideo;
-  getMyCloudflareVideos: Array<CloudflareVideo>;
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
   getUserRole?: Maybe<UserRole>;
@@ -2707,6 +2678,7 @@ export type Query = {
   video: Video;
   videoEdition?: Maybe<VideoEdition>;
   videoEditions: Array<VideoEdition>;
+  videoVariant: VideoVariant;
   videoVariants: Array<VideoVariant>;
   videos: Array<Video>;
   videosCount: Scalars['Int']['output'];
@@ -2796,17 +2768,6 @@ export type QueryGetMyCloudflareImageArgs = {
 
 
 export type QueryGetMyCloudflareImagesArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  offset?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryGetMyCloudflareVideoArgs = {
-  id: Scalars['ID']['input'];
-};
-
-
-export type QueryGetMyCloudflareVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -3039,6 +3000,11 @@ export type QueryVideoArgs = {
 
 
 export type QueryVideoEditionArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryVideoVariantArgs = {
   id: Scalars['ID']['input'];
 };
 

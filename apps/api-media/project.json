@@ -106,6 +106,12 @@
         ]
       }
     },
+    "prisma-seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["npm run ts-node apps/api-media/db/seed.ts"]
+      }
+    },
     "prisma-studio": {
       "executor": "nx:run-commands",
       "options": {
@@ -156,12 +162,6 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "npm run ts-node apps/api-media/src/workers/cli.ts blocklist"
-      }
-    },
-    "queue-cloudflare": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npm run ts-node apps/api-media/src/workers/cli.ts cloudflare"
       }
     },
     "queue-seed": {

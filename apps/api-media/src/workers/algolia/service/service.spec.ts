@@ -1,4 +1,4 @@
-import algoliasearch from 'algoliasearch'
+import { algoliasearch } from 'algoliasearch'
 import clone from 'lodash/clone'
 
 import { VideoVariant } from '.prisma/api-media-client'
@@ -13,10 +13,6 @@ import { service } from '.'
 const saveObjectsSpy = jest
   .fn()
   .mockReturnValue({ wait: jest.fn().mockResolvedValue({}) })
-
-const initIndexSpy = jest.fn().mockReturnValue({
-  saveObjects: saveObjectsSpy
-})
 
 jest.mock('@apollo/client', () => {
   const originalModule = jest.requireActual('@apollo/client')
@@ -54,17 +50,13 @@ jest.mock('@apollo/client', () => {
   }
 })
 
-jest.mock('algoliasearch', () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      initIndex: initIndexSpy
-    }
-  })
-})
+jest.mock('algoliasearch', () => ({
+  algoliasearch: jest.fn().mockImplementation(() => ({
+    saveObjects: saveObjectsSpy
+  }))
+}))
 
-const mockAlgoliaSearch = algoliasearch as jest.MockedFunction<
-  typeof algoliasearch
->
+const mockAlgoliaSearch = algoliasearch
 
 describe('algolia/service', () => {
   const originalEnv = clone(process.env)
@@ -100,7 +92,10 @@ describe('algolia/service', () => {
             videoId: 'videoId',
             edition: 'edition',
             video: {
-              title: [{ value: 'title' }],
+              title: [
+                { value: 'title', languageId: '555' },
+                { value: 'title2', languageId: '529' }
+              ],
               description: [{ value: 'description' }],
               label: 'label',
               images: [
@@ -142,28 +137,31 @@ describe('algolia/service', () => {
         }
       })
       expect(mockAlgoliaSearch).toHaveBeenCalledWith('id', 'key')
-      expect(initIndexSpy).toHaveBeenCalledWith('video-variants')
-      expect(saveObjectsSpy).toHaveBeenCalledWith([
-        {
-          childrenCount: 1,
-          description: ['description'],
-          duration: 100,
-          image: `https://imagedelivery.net/${
-            process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
-          }/imageId/f=jpg,w=1280,h=600,q=95`,
-          imageAlt: 'imageAlt',
-          label: 'label',
-          languageId: '21754',
-          languageEnglishName: 'Chinese, Simplified',
-          languagePrimaryName: '简体中文',
-          objectID: 'id',
-          slug: 'slug',
-          subtitles: ['21754'],
-          titles: ['title'],
-          videoId: 'videoId',
-          manualRanking: 1
-        }
-      ])
+      expect(saveObjectsSpy).toHaveBeenCalledWith({
+        indexName: 'video-variants',
+        objects: [
+          {
+            childrenCount: 1,
+            description: ['description'],
+            duration: 100,
+            image: `https://imagedelivery.net/${
+              process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
+            }/imageId/f=jpg,w=1280,h=600,q=95`,
+            imageAlt: 'imageAlt',
+            label: 'label',
+            languageId: '21754',
+            languageEnglishName: 'Chinese, Simplified',
+            languagePrimaryName: '简体中文',
+            objectID: 'id',
+            slug: 'slug',
+            subtitles: ['21754'],
+            titles: ['title2', 'title'],
+            videoId: 'videoId',
+            manualRanking: 1
+          }
+        ],
+        waitForTasks: true
+      })
     })
 
     it('should sync all videos to Algolia when prd', async () => {

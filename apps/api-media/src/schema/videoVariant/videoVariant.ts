@@ -75,6 +75,22 @@ builder.prismaObject('VideoVariant', {
 })
 
 builder.queryFields((t) => ({
+  videoVariant: t.prismaField({
+    type: 'VideoVariant',
+    nullable: false,
+    args: {
+      id: t.arg.id({ required: true })
+    },
+    resolve: async (query, _parent, { id }) => {
+      const videoVariant = await prisma.videoVariant.findUnique({
+        ...query,
+        where: { id }
+      })
+      if (videoVariant == null)
+        throw new Error(`VideoVariant with id ${id} not found`)
+      return videoVariant
+    }
+  }),
   videoVariants: t.prismaField({
     type: ['VideoVariant'],
     nullable: false,
@@ -84,6 +100,7 @@ builder.queryFields((t) => ({
     resolve: async (query, _parent, { input }) =>
       await prisma.videoVariant.findMany({
         ...query,
+
         where: {
           published: input?.onlyPublished === false ? undefined : true
         }
