@@ -183,7 +183,7 @@ export function Canvas(): ReactElement {
               maxHeight: CARD_HEIGHT,
               maxWidth: CARD_WIDTH,
               transform: `scale(${scale})`,
-              transformOrigin: 'right',
+              transformOrigin: { xs: 'center', md: 'right' },
               my: `${calculateScaledMargin(CARD_HEIGHT, scale)}`,
               mx: `${calculateScaledMargin(CARD_WIDTH, scale)}`,
               borderRadius: 8,
