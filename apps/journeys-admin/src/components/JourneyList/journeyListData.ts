@@ -74,6 +74,7 @@ export const defaultJourney: Journey = {
       }
     ]
   },
+  updatedAt: formatISO(startOfYear(new Date(fakeDate))),
   createdAt: formatISO(startOfYear(new Date(fakeDate))),
   publishedAt: null,
   status: JourneyStatus.draft,

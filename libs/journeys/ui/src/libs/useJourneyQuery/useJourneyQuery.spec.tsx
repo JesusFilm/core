@@ -39,6 +39,7 @@ describe('useJourneyQuery', () => {
       themeMode: ThemeMode.light,
       slug: 'default',
       language,
+      updatedAt: formatISO(startOfYear(new Date())),
       createdAt: formatISO(startOfYear(new Date())),
       publishedAt: null,
       status: JourneyStatus.draft,
