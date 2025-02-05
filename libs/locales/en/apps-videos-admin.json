@@ -7,7 +7,7 @@
   "Label is required": "Label is required",
   "Successfully created video.": "Successfully created video.",
   "Something went wrong.": "Something went wrong.",
-  "Failed to create video. ID already exists.": "Failed to create video. ID already exists.",
+  "Failed to create video: ID already exists": "Failed to create video: ID already exists",
   "ID": "ID",
   "Slug": "Slug",
   "Label": "Label",
