@@ -660,6 +660,18 @@ describe('video', () => {
               languageId: '529'
             }
           },
+          seoContents: {
+            orderBy: {
+              primary: 'desc'
+            },
+            where: {
+              OR: [
+                {
+                  languageId: '529'
+                }
+              ]
+            }
+          },
           snippet: {
             orderBy: {
               primary: 'desc'
@@ -860,6 +872,21 @@ describe('video', () => {
           keywords: {
             where: {
               languageId: '987'
+            }
+          },
+          seoContents: {
+            orderBy: {
+              primary: 'desc'
+            },
+            where: {
+              OR: [
+                {
+                  primary: false
+                },
+                {
+                  languageId: '987'
+                }
+              ]
             }
           },
           snippet: {
