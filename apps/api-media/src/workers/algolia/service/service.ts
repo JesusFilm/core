@@ -11,6 +11,7 @@ export const GET_LANGUAGES = graphql(`
   query getLanguages {
     languages {
       id
+      bcp47
       name(languageId: "529", primary: true) {
         value
         primary
@@ -39,6 +40,7 @@ interface LanguageRecord {
   [key: string]: {
     english: string | undefined
     primary: string | undefined
+    bcp47: string | undefined
   }
 }
 
@@ -53,7 +55,8 @@ async function getLanguages(logger?: Logger): Promise<LanguageRecord> {
       languagesRecord[language.id] = {
         english: language.name.find(({ language }) => language.id === '529')
           ?.value,
-        primary: language.name.find(({ primary }) => primary)?.value
+        primary: language.name.find(({ primary }) => primary)?.value,
+        bcp47: language.bcp47 ?? undefined
       }
     })
 
@@ -77,14 +80,18 @@ function sortByEnglishFirst(a: Translation, b: Translation): number {
 export async function service(logger?: Logger): Promise<void> {
   const apiKey = process.env.ALGOLIA_API_KEY ?? ''
   const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
-  const appIndex = process.env.ALGOLIA_INDEX ?? ''
+  const videoVariantsIndex = process.env.ALGOLIA_INDEX ?? ''
+  const videosIndex = process.env.ALGOLIA_INDEX_VIDEOS ?? ''
 
-  if (apiKey === '' || appId === '' || appIndex === '')
+  if (
+    apiKey === '' ||
+    appId === '' ||
+    videoVariantsIndex === '' ||
+    videosIndex === ''
+  )
     throw new Error('algolia environment variables not set')
 
-  logger?.info('getting languages from gateway')
   const languages = await getLanguages(logger)
-
   const client = algoliasearch(appId, apiKey)
 
   let offset = 0
@@ -108,7 +115,7 @@ export async function service(logger?: Logger): Promise<void> {
           }
         },
         where:
-          appIndex === 'video-variants-prd'
+          videoVariantsIndex === 'video-variants-prd'
             ? undefined
             : {
                 languageId: {
@@ -160,7 +167,7 @@ export async function service(logger?: Logger): Promise<void> {
 
       try {
         await client.saveObjects({
-          indexName: appIndex,
+          indexName: videoVariantsIndex,
           objects: transformedVideos,
           waitForTasks: true
         })
@@ -174,5 +181,162 @@ export async function service(logger?: Logger): Promise<void> {
       logger?.error(error, 'unable to complete video processing loop')
       break
     }
+  }
+  await indexVideos(client, languages, videosIndex, logger)
+}
+
+async function indexVideos(
+  client: ReturnType<typeof algoliasearch>,
+  languages: LanguageRecord,
+  videosIndex: string,
+  logger?: Logger
+): Promise<void> {
+  await client.setSettings({
+    indexName: videosIndex,
+    indexSettings: {
+      searchableAttributes: [
+        'titles.value',
+        'descriptions.value',
+        'studyQuestions.value'
+      ],
+      attributesForFaceting: ['titles.bcp47']
+    },
+    forwardToReplicas: true
+  })
+
+  try {
+    const videos = await prisma.video.findMany({
+      include: {
+        title: true,
+        description: true,
+        imageAlt: true,
+        snippet: true,
+        subtitles: true,
+        images: true,
+        studyQuestions: true,
+        bibleCitation: true,
+        variants: {
+          include: {
+            downloads: true
+          }
+        }
+      }
+    })
+
+    const transformedVideos = videos.map((video) => {
+      const isDownloadable =
+        video.label === 'collection' || video.label === 'series'
+          ? false
+          : (video.variants[0]?.downloadable ?? false)
+
+      const titles = video.title.map((title) => ({
+        value: title.value,
+        languageId: title.languageId,
+        bcp47: languages[title.languageId]?.bcp47 ?? ''
+      }))
+
+      const descriptions = video.description.map((description) => ({
+        value: description.value,
+        languageId: description.languageId,
+        bcp47: languages[description.languageId]?.bcp47 ?? ''
+      }))
+
+      // Group study questions by language
+      const studyQuestionsByLanguage = video.studyQuestions.reduce(
+        (acc, question) => {
+          const bcp47 = languages[question.languageId]?.bcp47 ?? ''
+          if (!acc[question.languageId]) {
+            acc[question.languageId] = {
+              value: [],
+              languageId: question.languageId,
+              bcp47
+            }
+          }
+          acc[question.languageId].value.push(question.value)
+          return acc
+        },
+        {} as Record<
+          string,
+          { value: string[]; languageId: string; bcp47: string }
+        >
+      )
+
+      // Transform bible citations
+      const bibleCitations =
+        video.bibleCitation?.map((citation) => ({
+          osisBibleBook: citation.osisId,
+          chapterStart: citation.chapterStart,
+          verseStart: citation.verseStart,
+          chapterEnd: citation.chapterEnd ?? null,
+          verseEnd: citation.verseEnd ?? null
+        })) ?? []
+
+      // Find images by aspect ratio
+      const bannerImage = video.images.find(
+        (image) => image.aspectRatio === 'banner'
+      )
+      const hdImage = video.images.find((image) => image.aspectRatio === 'hd')
+
+      // Construct image URLs
+      const imageUrls = {
+        thumbnail: hdImage
+          ? `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'}/${hdImage.id}/f=jpg,w=120,h=68,q=95`
+          : null,
+        videoStill: hdImage
+          ? `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'}/${hdImage.id}/f=jpg,w=1920,h=1080,q=95`
+          : null,
+        mobileCinematicHigh: bannerImage
+          ? `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'}/${bannerImage.id}/f=jpg,w=1280,h=600,q=95`
+          : null,
+        mobileCinematicLow: bannerImage
+          ? `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'}/${bannerImage.id}/f=jpg,w=640,h=300,q=95`
+          : null,
+        mobileCinematicVeryLow: bannerImage
+          ? `https://imagedelivery.net/${process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'}/${bannerImage.id}/f=webp,w=640,h=300,q=50`
+          : null
+      }
+
+      return {
+        objectID: video.id,
+        mediaComponentId: video.id,
+        componentType: video.variants[0]?.hls != null ? 'content' : 'container',
+        subType: video.label,
+        contentType: video.variants[0]?.hls != null ? 'video' : 'none',
+        lengthInMilliseconds: video.variants[0]?.lengthInMilliseconds ?? 0,
+        titles,
+        descriptions,
+        studyQuestions: Object.values(studyQuestionsByLanguage),
+        isDownloadable,
+        downloadSizes: isDownloadable
+          ? {
+              approximateSmallDownloadSizeInBytes:
+                video.variants[0]?.downloads?.find(
+                  ({ quality }) => quality === 'low'
+                )?.size ?? 0,
+              approximateLargeDownloadSizeInBytes:
+                video.variants[0]?.downloads?.find(
+                  ({ quality }) => quality === 'high'
+                )?.size ?? 0
+            }
+          : {},
+        primaryLanguageId: Number(video.primaryLanguageId),
+        bibleCitations,
+        containsCount: video.childIds?.length ?? 0,
+        imageUrls
+      }
+    })
+
+    try {
+      await client.saveObjects({
+        indexName: videosIndex,
+        objects: transformedVideos,
+        waitForTasks: true
+      })
+      logger?.info(`indexed ${transformedVideos.length} videos to algolia`)
+    } catch (error) {
+      logger?.error(error, 'unable to export video records to algolia')
+    }
+  } catch (error) {
+    logger?.error(error, 'unable to complete video processing loop')
   }
 }
