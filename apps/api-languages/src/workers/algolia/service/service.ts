@@ -13,7 +13,7 @@ async function configureIndexSettings(
     await client.setSettings({
       indexName: languageIndex,
       indexSettings: {
-        searchableAttributes: ['names.value', 'nameNative', 'iso3', 'bcp47'],
+        searchableAttributes: ['names.value'],
         customRanking: ['desc(speakersCount)'],
         attributesForFaceting: ['names.bcp47']
       },
