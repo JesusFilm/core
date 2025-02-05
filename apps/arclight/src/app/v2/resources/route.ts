@@ -7,6 +7,13 @@ type AlgoliaVideoHit = {
   subType?: string
   contentType: string
   lengthInMilliseconds?: number
+  imageUrls: {
+    thumbnail?: string
+    videoStill?: string
+    mobileCinematicHigh?: string
+    mobileCinematicLow?: string
+    mobileCinematicVeryLow?: string
+  }
   titles: Array<{
     value: string
     languageId: string
