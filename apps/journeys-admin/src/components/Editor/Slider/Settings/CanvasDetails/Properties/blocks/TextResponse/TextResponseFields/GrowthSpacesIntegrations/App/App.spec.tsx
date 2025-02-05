@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
@@ -11,6 +12,7 @@ import {
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { GetLastActiveTeamIdAndTeams } from '../../../../../../../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { TextResponseType } from '../../../../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../../../../../__generated__/JourneyFields'
 import {
   TextResponseIntegrationUpdate,
   TextResponseIntegrationUpdateVariables
@@ -118,11 +120,13 @@ describe('App', () => {
       <MockedProvider
         mocks={[getTeamsMock, getIntegrationMock, integrationUpdateMock]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <TeamProvider>
-            <App />
-          </TeamProvider>
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <TeamProvider>
+              <App />
+            </TeamProvider>
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     await waitFor(() => {
@@ -145,12 +149,14 @@ describe('App', () => {
           integrationUpdateMock2
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <TeamProvider>
-            <CommandUndoItem variant="button" />
-            <App />
-          </TeamProvider>
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <TeamProvider>
+              <CommandUndoItem variant="button" />
+              <App />
+            </TeamProvider>
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     await waitFor(() => {
@@ -182,13 +188,15 @@ describe('App', () => {
           integrationUpdateMock2
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <TeamProvider>
-            <CommandUndoItem variant="button" />
-            <CommandRedoItem variant="button" />
-            <App />
-          </TeamProvider>
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <TeamProvider>
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
+              <App />
+            </TeamProvider>
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     await waitFor(() => {

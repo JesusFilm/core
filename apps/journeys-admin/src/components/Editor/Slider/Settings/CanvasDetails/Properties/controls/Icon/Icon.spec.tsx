@@ -3,10 +3,12 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { IconName } from '../../../../../../../../../__generated__/globalTypes'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
+import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
 import { CommandRedoItem } from '../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -116,9 +118,11 @@ describe('Icon', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock: testSelectedBlock }}>
-          <Icon id={testIcon.id} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock: testSelectedBlock }}>
+            <Icon id={testIcon.id} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -155,9 +159,11 @@ describe('Icon', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Icon id={icon.id} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Icon id={icon.id} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.mouseDown(getByRole('combobox', { name: 'icon-name' }))
@@ -193,9 +199,11 @@ describe('Icon', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Icon id={icon.id} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Icon id={icon.id} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.mouseDown(getByRole('combobox', { name: 'icon-name' }))
@@ -252,10 +260,12 @@ describe('Icon', () => {
 
     render(
       <MockedProvider mocks={[mockUpdateSuccess1, mockUpdateSuccess2]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <CommandUndoItem variant="button" />
-          <Icon id={icon.id} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <CommandUndoItem variant="button" />
+            <Icon id={icon.id} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -317,11 +327,13 @@ describe('Icon', () => {
 
     render(
       <MockedProvider mocks={[mockUpdateSuccess1, mockUpdateSuccess2]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <CommandUndoItem variant="button" />
-          <CommandRedoItem variant="button" />
-          <Icon id={icon.id} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+            <Icon id={icon.id} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 

@@ -3,9 +3,11 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { ButtonVariant } from '../../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../../../__generated__/JourneyFields'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -90,9 +92,11 @@ describe('Button variant selector', () => {
   it('should change the Variant property', async () => {
     render(
       <MockedProvider mocks={[variantUpdateMock]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Variant />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Variant />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(screen.getByRole('button', { name: 'Contained' })).toHaveClass(
@@ -105,10 +109,12 @@ describe('Button variant selector', () => {
   it('should undo the variant change', async () => {
     render(
       <MockedProvider mocks={[variantUpdateMock, variantUpdateMock2]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <CommandUndoItem variant="button" />
-          <Variant />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <CommandUndoItem variant="button" />
+            <Variant />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(screen.getByRole('button', { name: 'Contained' })).toHaveClass(
@@ -128,11 +134,13 @@ describe('Button variant selector', () => {
     }
     render(
       <MockedProvider mocks={[mockFirstUpdate, variantUpdateMock2]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <CommandUndoItem variant="button" />
-          <CommandRedoItem variant="button" />
-          <Variant />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+            <Variant />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(screen.getByRole('button', { name: 'Contained' })).toHaveClass(

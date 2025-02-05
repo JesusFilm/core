@@ -3,9 +3,11 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { TypographyColor } from '../../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../../../__generated__/JourneyFields'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { TYPOGRAPHY_BLOCK_UPDATE_COLOR } from './Color'
@@ -72,9 +74,11 @@ describe('Typography color selector', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Color />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Color />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Error' })).toHaveClass('Mui-selected')
@@ -135,10 +139,12 @@ describe('Typography color selector', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <CommandUndoItem variant="button" />
-          <Color />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <CommandUndoItem variant="button" />
+            <Color />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getByRole('button', { name: 'Secondary' }))

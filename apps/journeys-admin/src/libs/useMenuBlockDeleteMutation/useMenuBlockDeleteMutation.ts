@@ -12,6 +12,7 @@ import {
   MenuBlockDelete,
   MenuBlockDeleteVariables
 } from '../../../__generated__/MenuBlockDelete'
+import { journeyUpdatedAtCacheUpdate } from '../journeyUpdatedAtCacheUpdate'
 
 export const MENU_BLOCK_DELETE = gql`
   ${STEP_FIELDS}
@@ -55,6 +56,8 @@ export function removeCachedBlocks(cache, blocks, journeyId): void {
     })
     cache.gc()
   })
+
+  journeyUpdatedAtCacheUpdate(cache, journeyId)
 }
 
 export function useMenuBlockDeleteMutation(

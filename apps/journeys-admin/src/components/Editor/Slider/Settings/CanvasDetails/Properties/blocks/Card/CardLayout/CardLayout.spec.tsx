@@ -212,9 +212,11 @@ describe('CardLayout', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock: card }}>
-          <CardLayout />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock: card }}>
+            <CardLayout />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getByTestId('true'))
@@ -277,10 +279,12 @@ describe('CardLayout', () => {
           }
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock: card }}>
-          <CommandUndoItem variant="button" />
-          <CardLayout />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock: card }}>
+            <CommandUndoItem variant="button" />
+            <CardLayout />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getByTestId('true'))

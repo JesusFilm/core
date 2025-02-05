@@ -3,8 +3,10 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
+import { JourneyFields as Journey } from '../../../../../../../../../../../__generated__/JourneyFields'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -106,9 +108,11 @@ describe('MinRows', () => {
   it('should change rows of text response', async () => {
     render(
       <MockedProvider mocks={[mockMinRowsUpdate1]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <MinRows />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <MinRows />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -122,10 +126,12 @@ describe('MinRows', () => {
         mocks={[mockMinRowsUpdate1, mockMinRowsUpdate2]}
         addTypename={false}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <CommandUndoItem variant="button" />
-          <MinRows />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <CommandUndoItem variant="button" />
+            <MinRows />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -142,11 +148,13 @@ describe('MinRows', () => {
         mocks={[mockMinRowsUpdate1, mockMinRowsUpdate2, mockMinRowsUpdate3]}
         addTypename={false}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <CommandUndoItem variant="button" />
-          <CommandRedoItem variant="button" />
-          <MinRows />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+            <MinRows />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 

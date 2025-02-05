@@ -14,6 +14,7 @@ import {
   MenuBlockRestore,
   MenuBlockRestoreVariables
 } from '../../../__generated__/MenuBlockRestore'
+import { journeyUpdatedAtCacheUpdate } from '../journeyUpdatedAtCacheUpdate'
 
 export const MENU_BLOCK_RESTORE = gql`
   ${BLOCK_FIELDS}
@@ -75,6 +76,8 @@ export function restoreCache(cache, data, journeyId): void {
       })
     })
   })
+
+  journeyUpdatedAtCacheUpdate(cache, journeyId)
 }
 
 export function useMenuBlockRestoreMutation(

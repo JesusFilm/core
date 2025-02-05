@@ -54,7 +54,7 @@ describe('TrashedTemplateList', () => {
     jest.setSystemTime(new Date(fakeDate))
   })
 
-  it('should render templates in descending createdAt date by default', async () => {
+  it('should render templates in descending updatedAt date by default', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[trashedJourneysMock]}>
         <ThemeProvider>
@@ -66,11 +66,11 @@ describe('TrashedTemplateList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        'January 1'
+        'November 19, 2020'
       )
     )
     expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      'November 19, 2020'
+      'January 1'
     )
   })
 

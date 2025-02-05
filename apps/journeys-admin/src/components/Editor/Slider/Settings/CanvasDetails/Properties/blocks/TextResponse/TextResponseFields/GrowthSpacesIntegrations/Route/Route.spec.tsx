@@ -4,6 +4,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
@@ -13,6 +14,7 @@ import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../
 import { GetIntegration } from '../../../../../../../../../../../../__generated__/GetIntegration'
 import { GetLastActiveTeamIdAndTeams } from '../../../../../../../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import { TextResponseType } from '../../../../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../../../../../__generated__/JourneyFields'
 import {
   TextResponseRouteUpdate,
   TextResponseRouteUpdateVariables
@@ -124,11 +126,13 @@ describe('Route', () => {
           routeUpdateMock
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <TeamProvider>
-            <Route />
-          </TeamProvider>
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <TeamProvider>
+              <Route />
+            </TeamProvider>
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -181,12 +185,14 @@ describe('Route', () => {
           routeUpdateMock2
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <TeamProvider>
-            <Route />
-            <CommandUndoItem variant="button" />
-          </TeamProvider>
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <TeamProvider>
+              <Route />
+              <CommandUndoItem variant="button" />
+            </TeamProvider>
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -221,13 +227,15 @@ describe('Route', () => {
           routeUpdateMock2
         ]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <TeamProvider>
-            <Route />
-            <CommandUndoItem variant="button" />
-            <CommandRedoItem variant="button" />
-          </TeamProvider>
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <TeamProvider>
+              <Route />
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
+            </TeamProvider>
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 

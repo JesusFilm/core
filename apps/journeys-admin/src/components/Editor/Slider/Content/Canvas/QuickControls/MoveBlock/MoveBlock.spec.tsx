@@ -5,11 +5,13 @@ import { userEvent } from '@testing-library/user-event'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   BlockOrderUpdate,
   BlockOrderUpdateVariables
 } from '../../../../../../../../__generated__/BlockOrderUpdate'
+import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
 import { blockOrderUpdateMock } from '../../../../../../../libs/useBlockOrderUpdateMutation/useBlockOrderUpdateMutation.mock'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
@@ -155,15 +157,17 @@ describe('MoveBlockButton', () => {
           { ...mockBlockOrderFirstMock, result: resultRedo }
         ]}
       >
-        <EditorProvider
-          initialState={{ selectedBlock: block2, selectedStep: step }}
-        >
-          <CommandProvider>
-            <CommandUndoItem variant="button" />
-            <CommandRedoItem variant="button" />
-            <MoveBlock />
-          </CommandProvider>
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider
+            initialState={{ selectedBlock: block2, selectedStep: step }}
+          >
+            <CommandProvider>
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
+              <MoveBlock />
+            </CommandProvider>
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     await userEvent.click(screen.getByRole('button', { name: 'move-block-up' }))
@@ -191,29 +195,31 @@ describe('MoveBlockButton', () => {
           { ...mockBlockOrderLastMock, result: resultRedo }
         ]}
       >
-        <EditorProvider
-          initialState={{
-            selectedBlock: { ...block2, parentOrder: 0 },
-            selectedStep: {
-              ...step,
-              children: [
-                {
-                  ...card,
-                  children: [
-                    { ...block1, parentOrder: 1 },
-                    { ...block2, parentOrder: 0 }
-                  ]
-                }
-              ]
-            }
-          }}
-        >
-          <CommandProvider>
-            <CommandUndoItem variant="button" />
-            <CommandRedoItem variant="button" />
-            <MoveBlock />
-          </CommandProvider>
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: { ...block2, parentOrder: 0 },
+              selectedStep: {
+                ...step,
+                children: [
+                  {
+                    ...card,
+                    children: [
+                      { ...block1, parentOrder: 1 },
+                      { ...block2, parentOrder: 0 }
+                    ]
+                  }
+                ]
+              }
+            }}
+          >
+            <CommandProvider>
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
+              <MoveBlock />
+            </CommandProvider>
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     await userEvent.click(

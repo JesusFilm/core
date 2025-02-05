@@ -6,8 +6,10 @@ import DebounceLink from 'apollo-link-debounce'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
+import { JourneyFields as Journey } from '../../../../../../../../../../../__generated__/JourneyFields'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -129,9 +131,11 @@ describe('Edit Hint field', () => {
 
     render(
       <MockedProvider link={link} addTypename={false}>
-        <EditorProvider initialState={initialState}>
-          <Hint />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={initialState}>
+            <Hint />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -148,10 +152,12 @@ describe('Edit Hint field', () => {
 
     render(
       <MockedProvider link={link} addTypename={false}>
-        <EditorProvider initialState={initialState}>
-          <CommandUndoItem variant="button" />
-          <Hint />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={initialState}>
+            <CommandUndoItem variant="button" />
+            <Hint />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -171,11 +177,13 @@ describe('Edit Hint field', () => {
 
     render(
       <MockedProvider link={link} addTypename={false}>
-        <EditorProvider initialState={initialState}>
-          <CommandUndoItem variant="button" />
-          <CommandRedoItem variant="button" />
-          <Hint />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={initialState}>
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+            <Hint />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 

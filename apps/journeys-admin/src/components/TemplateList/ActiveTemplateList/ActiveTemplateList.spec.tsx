@@ -45,7 +45,7 @@ const noTemplatesMock = {
 }
 
 describe('ActiveTemplateList', () => {
-  it('should render templates in descending createdAt date by default', async () => {
+  it('should render templates in descending updatedAt date by default', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[ActiveTemplateListMock]}>
         <ThemeProvider>
@@ -57,11 +57,11 @@ describe('ActiveTemplateList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        'January 1'
+        'November 19, 2020'
       )
     )
     expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      'November 19, 2020'
+      'January 1'
     )
   })
 

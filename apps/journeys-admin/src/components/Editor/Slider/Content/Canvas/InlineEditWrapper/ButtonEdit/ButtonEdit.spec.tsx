@@ -6,9 +6,11 @@ import DebounceLink from 'apollo-link-debounce'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { ButtonFields } from '../../../../../../../../__generated__/ButtonFields'
 import { ButtonVariant } from '../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -98,9 +100,11 @@ describe('ButtonEdit', () => {
 
     render(
       <MockedProvider link={link}>
-        <EditorProvider>
-          <ButtonEdit {...props} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider>
+            <ButtonEdit {...props} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     const input = screen.getByRole('textbox', { name: '' })
@@ -116,10 +120,12 @@ describe('ButtonEdit', () => {
 
     render(
       <MockedProvider link={link}>
-        <EditorProvider>
-          <CommandUndoItem variant="button" />
-          <ButtonEdit {...props} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider>
+            <CommandUndoItem variant="button" />
+            <ButtonEdit {...props} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -143,11 +149,13 @@ describe('ButtonEdit', () => {
 
     render(
       <MockedProvider link={link}>
-        <EditorProvider>
-          <CommandUndoItem variant="button" />
-          <CommandRedoItem variant="button" />
-          <ButtonEdit {...props} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider>
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+            <ButtonEdit {...props} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 

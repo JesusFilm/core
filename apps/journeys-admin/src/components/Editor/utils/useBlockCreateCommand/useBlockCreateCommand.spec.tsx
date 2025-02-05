@@ -4,6 +4,8 @@ import { renderHook } from '@testing-library/react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_CardBlock as CardBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { useBlockCreateCommand } from './useBlockCreateCommand'
 
@@ -29,9 +31,13 @@ describe('useBlockCreateCommand', () => {
     const { result } = renderHook(() => useBlockCreateCommand(), {
       wrapper: ({ children }) => (
         <MockedProvider mocks={[]}>
-          <EditorProvider initialState={{ selectedBlock: block as TreeBlock }}>
-            {children}
-          </EditorProvider>
+          <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+            <EditorProvider
+              initialState={{ selectedBlock: block as TreeBlock }}
+            >
+              {children}
+            </EditorProvider>
+          </JourneyProvider>
         </MockedProvider>
       )
     })

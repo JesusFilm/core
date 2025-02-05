@@ -7,7 +7,9 @@ import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
 import { SignUpFields } from '../../../../../../../../__generated__/SignUpFields'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
@@ -96,11 +98,13 @@ describe('SignUpEdit', () => {
 
     render(
       <MockedProvider link={link}>
-        <SnackbarProvider>
-          <EditorProvider>
-            <SignUpEdit {...props} />
-          </EditorProvider>
-        </SnackbarProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <SnackbarProvider>
+            <EditorProvider>
+              <SignUpEdit {...props} />
+            </EditorProvider>
+          </SnackbarProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -117,12 +121,14 @@ describe('SignUpEdit', () => {
 
     render(
       <MockedProvider link={link}>
-        <SnackbarProvider>
-          <EditorProvider>
-            <CommandUndoItem variant="button" />
-            <SignUpEdit {...props} />
-          </EditorProvider>
-        </SnackbarProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <SnackbarProvider>
+            <EditorProvider>
+              <CommandUndoItem variant="button" />
+              <SignUpEdit {...props} />
+            </EditorProvider>
+          </SnackbarProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -147,13 +153,15 @@ describe('SignUpEdit', () => {
 
     render(
       <MockedProvider link={link}>
-        <SnackbarProvider>
-          <EditorProvider>
-            <CommandUndoItem variant="button" />
-            <CommandRedoItem variant="button" />
-            <SignUpEdit {...props} />
-          </EditorProvider>
-        </SnackbarProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <SnackbarProvider>
+            <EditorProvider>
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
+              <SignUpEdit {...props} />
+            </EditorProvider>
+          </SnackbarProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 

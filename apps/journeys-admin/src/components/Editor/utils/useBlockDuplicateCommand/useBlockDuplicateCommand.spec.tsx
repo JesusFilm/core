@@ -4,6 +4,8 @@ import { renderHook } from '@testing-library/react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_CardBlock as CardBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { selectedStep } from '../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 
@@ -31,11 +33,13 @@ describe('useBlockDuplicateCommand', () => {
     const { result } = renderHook(() => useBlockDuplicateCommand(), {
       wrapper: ({ children }) => (
         <MockedProvider mocks={[]}>
-          <EditorProvider
-            initialState={{ selectedBlock: block as TreeBlock, selectedStep }}
-          >
-            {children}
-          </EditorProvider>
+          <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+            <EditorProvider
+              initialState={{ selectedBlock: block as TreeBlock, selectedStep }}
+            >
+              {children}
+            </EditorProvider>
+          </JourneyProvider>
         </MockedProvider>
       )
     })

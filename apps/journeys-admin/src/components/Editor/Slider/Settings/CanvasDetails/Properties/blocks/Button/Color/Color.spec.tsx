@@ -3,9 +3,11 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { ButtonColor } from '../../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../../../__generated__/JourneyFields'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -92,9 +94,11 @@ describe('Button color selector', () => {
   it('should change the color property', async () => {
     render(
       <MockedProvider mocks={[colorUpdateMock]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Color />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Color />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(screen.getByRole('button', { name: 'Primary' })).toHaveClass(
@@ -107,10 +111,12 @@ describe('Button color selector', () => {
   it('should undo the color change', async () => {
     render(
       <MockedProvider mocks={[colorUpdateMock, colorUpdateMock2]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <CommandUndoItem variant="button" />
-          <Color />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <CommandUndoItem variant="button" />
+            <Color />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getByRole('button', { name: 'Secondary' }))
@@ -128,11 +134,13 @@ describe('Button color selector', () => {
 
     render(
       <MockedProvider mocks={[mockFirstUpdate, colorUpdateMock2]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <CommandUndoItem variant="button" />
-          <CommandRedoItem variant="button" />
-          <Color />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+            <Color />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getByRole('button', { name: 'Secondary' }))

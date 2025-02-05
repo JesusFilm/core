@@ -6,7 +6,9 @@ import DebounceLink from 'apollo-link-debounce'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
+import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
 import { RadioOptionFields } from '../../../../../../../../__generated__/RadioOptionFields'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
@@ -97,10 +99,12 @@ describe('RadioOptionEdit', () => {
 
     render(
       <MockedProvider link={link}>
-        <EditorProvider>
-          <CommandUndoItem variant="button" />
-          <RadioOptionEdit {...props} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider>
+            <CommandUndoItem variant="button" />
+            <RadioOptionEdit {...props} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -131,11 +135,13 @@ describe('RadioOptionEdit', () => {
 
     render(
       <MockedProvider link={link}>
-        <EditorProvider>
-          <CommandUndoItem variant="button" />
-          <CommandRedoItem variant="button" />
-          <RadioOptionEdit {...props} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider>
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+            <RadioOptionEdit {...props} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 

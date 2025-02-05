@@ -3,9 +3,11 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { ButtonSize } from '../../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../../../__generated__/JourneyFields'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -91,9 +93,11 @@ describe('Button size selector', () => {
   it('should change the size property', async () => {
     render(
       <MockedProvider mocks={[sizeUpdateMock]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Size />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Size />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(screen.getByRole('button', { name: 'Medium' })).toHaveClass(
@@ -106,10 +110,12 @@ describe('Button size selector', () => {
   it('should undo the size change', async () => {
     render(
       <MockedProvider mocks={[sizeUpdateMock, sizeUpdateMock2]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <CommandUndoItem variant="button" />
-          <Size />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <CommandUndoItem variant="button" />
+            <Size />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(screen.getByRole('button', { name: 'Medium' })).toHaveClass(
@@ -130,11 +136,13 @@ describe('Button size selector', () => {
 
     render(
       <MockedProvider mocks={[mockFirstUpdate, sizeUpdateMock2]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <CommandUndoItem variant="button" />
-          <CommandRedoItem variant="button" />
-          <Size />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+            <Size />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(screen.getByRole('button', { name: 'Medium' })).toHaveClass(

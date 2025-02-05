@@ -3,12 +3,14 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
   IconColor,
   IconName
 } from '../../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../../../__generated__/JourneyFields'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -93,9 +95,11 @@ describe('Color', () => {
   it('should change the icon color', async () => {
     const { getByRole } = render(
       <MockedProvider mocks={[mockIconColorUpdate1]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Color id="iconBlock.id" iconColor={IconColor.inherit} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Color id="iconBlock.id" iconColor={IconColor.inherit} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     expect(getByRole('button', { name: 'Default' })).toHaveClass('Mui-selected')
@@ -106,10 +110,12 @@ describe('Color', () => {
   it('should undo the icon color change', async () => {
     render(
       <MockedProvider mocks={[mockIconColorUpdate1, mockIconColorUpdate2]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <CommandUndoItem variant="button" />
-          <Color id="iconBlock.id" iconColor={IconColor.inherit} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <CommandUndoItem variant="button" />
+            <Color id="iconBlock.id" iconColor={IconColor.inherit} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -130,11 +136,13 @@ describe('Color', () => {
     }
     render(
       <MockedProvider mocks={[mockFirstUpdate, mockIconColorUpdate2]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <CommandUndoItem variant="button" />
-          <CommandRedoItem variant="button" />
-          <Color id="iconBlock.id" iconColor={IconColor.inherit} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+            <Color id="iconBlock.id" iconColor={IconColor.inherit} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 

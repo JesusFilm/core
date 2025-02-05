@@ -3,9 +3,11 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { TextResponseType } from '../../../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../../../../__generated__/JourneyFields'
 import { TextResponseTypeUpdate } from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
@@ -86,9 +88,11 @@ describe('Type', () => {
   it('should change type to email', async () => {
     render(
       <MockedProvider mocks={[mockEmailUpdate]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Type />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Type />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -99,18 +103,20 @@ describe('Type', () => {
   it('should reset integrationId and routeId to null if type is freeform', async () => {
     render(
       <MockedProvider mocks={[mockFreeformUpdate]}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: {
-              ...selectedBlock,
-              type: TextResponseType.email,
-              integrationId: 'integration',
-              routeId: 'route'
-            }
-          }}
-        >
-          <Type />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: {
+                ...selectedBlock,
+                type: TextResponseType.email,
+                integrationId: 'integration',
+                routeId: 'route'
+              }
+            }}
+          >
+            <Type />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -121,14 +127,16 @@ describe('Type', () => {
   it('should undo the change to type', async () => {
     render(
       <MockedProvider mocks={[mockEmailUpdate, mockFreeformUpdate]}>
-        <EditorProvider
-          initialState={{
-            selectedBlock
-          }}
-        >
-          <CommandUndoItem variant="button" />
-          <Type />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock
+            }}
+          >
+            <CommandUndoItem variant="button" />
+            <Type />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -148,11 +156,13 @@ describe('Type', () => {
       <MockedProvider
         mocks={[mockEmailUpdate, mockFreeformUpdate, mockRedoUpdate]}
       >
-        <EditorProvider initialState={{ selectedBlock }}>
-          <CommandUndoItem variant="button" />
-          <CommandRedoItem variant="button" />
-          <Type />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+            <Type />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -207,18 +217,20 @@ describe('Type', () => {
 
     render(
       <MockedProvider mocks={[mockNameUpdate]}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: {
-              ...selectedBlock,
-              type: TextResponseType.email,
-              integrationId: 'integration',
-              routeId: 'route'
-            }
-          }}
-        >
-          <Type />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: {
+                ...selectedBlock,
+                type: TextResponseType.email,
+                integrationId: 'integration',
+                routeId: 'route'
+              }
+            }}
+          >
+            <Type />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 

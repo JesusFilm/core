@@ -16,6 +16,7 @@ import {
   MenuBlockCreate,
   MenuBlockCreateVariables
 } from '../../../__generated__/MenuBlockCreate'
+import { journeyUpdatedAtCacheUpdate } from '../journeyUpdatedAtCacheUpdate'
 
 export const MENU_BLOCK_CREATE = gql`
   ${STEP_FIELDS}
@@ -111,6 +112,10 @@ function updateCache(
       }
     }
   })
+
+  if (journeyId != null) {
+    journeyUpdatedAtCacheUpdate(cache, journeyId)
+  }
 }
 
 export function useMenuBlockCreateMutation(

@@ -152,10 +152,12 @@ describe('TypographyEdit', () => {
 
     render(
       <MockedProvider link={link}>
-        <EditorProvider>
-          <CommandUndoItem variant="button" />
-          <TypographyEdit {...props} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider>
+            <CommandUndoItem variant="button" />
+            <TypographyEdit {...props} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -181,11 +183,13 @@ describe('TypographyEdit', () => {
 
     render(
       <MockedProvider link={link}>
-        <EditorProvider>
-          <CommandUndoItem variant="button" />
-          <CommandRedoItem variant="button" />
-          <TypographyEdit {...props} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider>
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+            <TypographyEdit {...props} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 

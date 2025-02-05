@@ -11,9 +11,11 @@ import {
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../../../../../../../__generated__/JourneyFields'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import { videoItems } from '../../../../../Drawer/VideoLibrary/data'
@@ -195,16 +197,18 @@ describe('VideoOptions', () => {
           }
         ]}
       >
-        <EditorProvider
-          initialState={{
-            selectedBlock: { ...video, videoId: null },
-            selectedAttributeId: video.id
-          }}
-        >
-          <ThemeProvider>
-            <VideoOptions />
-          </ThemeProvider>
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: { ...video, videoId: null },
+              selectedAttributeId: video.id
+            }}
+          >
+            <ThemeProvider>
+              <VideoOptions />
+            </ThemeProvider>
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -273,17 +277,19 @@ describe('VideoOptions', () => {
           }
         ]}
       >
-        <EditorProvider
-          initialState={{
-            selectedBlock: { ...video, videoId: null },
-            selectedAttributeId: video.id
-          }}
-        >
-          <ThemeProvider>
-            <CommandUndoItem variant="button" />
-            <VideoOptions />
-          </ThemeProvider>
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: { ...video, videoId: null },
+              selectedAttributeId: video.id
+            }}
+          >
+            <ThemeProvider>
+              <CommandUndoItem variant="button" />
+              <VideoOptions />
+            </ThemeProvider>
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     await waitFor(() =>

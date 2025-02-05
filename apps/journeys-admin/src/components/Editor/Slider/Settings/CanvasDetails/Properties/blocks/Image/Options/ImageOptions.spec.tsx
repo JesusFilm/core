@@ -5,12 +5,14 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
   ImageBlockUpdate,
   ImageBlockUpdateVariables
 } from '../../../../../../../../../../__generated__/ImageBlockUpdate'
+import { JourneyFields as Journey } from '../../../../../../../../../../__generated__/JourneyFields'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import { createCloudflareUploadByUrlMock } from '../../../../../Drawer/ImageBlockEditor/CustomImage/CustomUrl/data'
@@ -119,21 +121,23 @@ describe('ImageOptions', () => {
           }
         ]}
       >
-        <CommandProvider>
-          <EditorProvider
-            initialState={{
-              selectedBlock: {
-                ...selectedBlock,
-                src: 'https://example.com/old.jpg',
-                alt: 'prior-alt'
-              }
-            }}
-          >
-            <ImageOptions />
-            <CommandUndoItem variant="button" />
-            <CommandRedoItem variant="button" />
-          </EditorProvider>
-        </CommandProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <CommandProvider>
+            <EditorProvider
+              initialState={{
+                selectedBlock: {
+                  ...selectedBlock,
+                  src: 'https://example.com/old.jpg',
+                  alt: 'prior-alt'
+                }
+              }}
+            >
+              <ImageOptions />
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
+            </EditorProvider>
+          </CommandProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(
@@ -210,13 +214,15 @@ describe('ImageOptions', () => {
           }
         ]}
       >
-        <CommandProvider>
-          <EditorProvider initialState={{ selectedBlock }}>
-            <ImageOptions />
-            <CommandUndoItem variant="button" />
-            <CommandRedoItem variant="button" />
-          </EditorProvider>
-        </CommandProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <CommandProvider>
+            <EditorProvider initialState={{ selectedBlock }}>
+              <ImageOptions />
+              <CommandUndoItem variant="button" />
+              <CommandRedoItem variant="button" />
+            </EditorProvider>
+          </CommandProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(

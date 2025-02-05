@@ -82,7 +82,7 @@ describe('TrashedJourneyList', () => {
     jest.setSystemTime(new Date(fakeDate))
   })
 
-  it('should render journeys in descending createdAt date by default', async () => {
+  it('should render journeys in descending updatedAt date by default', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[trashedJourneysMock]}>
         <ThemeProvider>
@@ -94,11 +94,11 @@ describe('TrashedJourneyList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'January 1'
+        'November 19, 2020'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'November 19, 2020'
+      'January 1'
     )
   })
 

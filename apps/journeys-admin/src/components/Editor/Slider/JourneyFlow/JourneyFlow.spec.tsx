@@ -180,7 +180,8 @@ describe('JourneyFlow', () => {
           { id: 'step5.id', x: 2500, y: -8 },
           { id: 'step6.id', x: 3600, y: -8 }
         ]
-      }
+      },
+      update: expect.any(Function)
     })
     expect(screen.getByRole('button', { name: 'Undo' })).toBeDisabled()
   })
@@ -234,7 +235,8 @@ describe('JourneyFlow', () => {
           { id: 'step5.id', x: 2500, y: -8 },
           { id: 'step6.id', x: 3600, y: -8 }
         ]
-      }
+      },
+      update: expect.any(Function)
     }
 
     const mockUpdateUndo = {
@@ -259,7 +261,8 @@ describe('JourneyFlow', () => {
           { id: 'step5.id', x: 1500, y: 1 },
           { id: 'step6.id', x: 1800, y: 1 }
         ]
-      }
+      },
+      update: expect.any(Function)
     }
 
     await waitFor(() => expect(result).toHaveBeenCalled())
