@@ -38,11 +38,11 @@ const IconSizeSchema = z.enum(['sm', 'md', 'lg', 'xl', 'inherit'])
 // IconBlock schema
 const IconBlockSchema = BlockSchema.extend({
   typename: z.literal('IconBlock').describe('This value must be "IconBlock".'),
-  name: IconNameSchema.nullable().describe(
+  iconName: IconNameSchema.nullable().describe(
     'Icon name from MUI icons, available icons found in IconNameSchema enum.'
   ),
-  color: IconColorSchema.describe('Color of the icon'),
-  size: IconSizeSchema.describe('Size of the icon'),
+  iconColor: IconColorSchema.describe('Color of the icon'),
+  iconSize: IconSizeSchema.describe('Size of the icon'),
   parentBlockId: z
     .string()
     .uuid()

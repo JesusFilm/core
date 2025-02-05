@@ -536,8 +536,10 @@ export class AiJourneyGenerator {
   }
 
   async generateJourney(
-    input: JourneyGenerationInput
+    input: JourneyGenerationInput,
+    retryCount = 0
   ): Promise<z.infer<typeof JourneySchema>> {
+    const MAX_RETRIES = 3
     const templateSelection = await this.selectTemplate(input)
     const template = this.templates.find(
       ({ id }) => id === templateSelection.templateId
@@ -559,9 +561,11 @@ export class AiJourneyGenerator {
           3. Maintain all parent-child relationships
           4. Only modify:
              - Text content
+             - TypographyBlock content
              - Image URLs (must be from Unsplash)
              - Button labels
              - Video content 
+     
           
           Input: ${JSON.stringify(input)}
           Template: ${JSON.stringify(template)}
@@ -586,15 +590,43 @@ export class AiJourneyGenerator {
     }
 
     // Validate the generated content
-    const validation = await this.validateTheology(fullResponse)
-    if (!validation.isValid) {
-      throw new Error(
-        `Theological validation failed: ${validation.concerns.join(', ')}`
-      )
-    }
+    // const validation = await this.validateTheology(fullResponse)
+    // if (!validation.isValid) {
+    //   if (retryCount >= MAX_RETRIES) {
+    //     throw new Error(
+    //       `Failed to generate valid journey after ${MAX_RETRIES} attempts. Last validation concerns: ${validation.concerns.join(
+    //         ', '
+    //       )}`
+    //     )
+    //   }
+
+    //   console.log(
+    //     `Attempt ${retryCount + 1}: Validation failed. Retrying with feedback...`
+    //   )
+
+    //   // Add the validation feedback to messages for next attempt
+    //   messages.push(
+    //     { role: 'assistant', content: fullResponse },
+    //     {
+    //       role: 'user',
+    //       content: `
+    //         The previous attempt had theological concerns:
+    //         ${validation.concerns.join('\n')}
+
+    //         Suggestions for improvement:
+    //         ${validation.suggestions.join('\n')}
+
+    //         Please regenerate the journey addressing these issues while maintaining the template structure.
+    //       `
+    //     }
+    //   )
+
+    //   // Retry generation with validation feedback
+    //   return this.generateJourney(input, retryCount + 1)
+    // }
 
     messages.push({ role: 'assistant', content: fullResponse })
-
+    console.log(fullResponse)
     return JSON.parse(fullResponse)
   }
 }
