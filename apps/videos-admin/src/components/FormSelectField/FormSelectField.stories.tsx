@@ -78,7 +78,7 @@ export const Helper: Story = {
   }
 }
 
-export const Error: Story = {
+export const ValidationError: Story = {
   args: {
     ...Empty.args,
     name: 'error'

@@ -1,9 +1,12 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { GraphQLError } from 'graphql'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
+
+import { SnackbarProvider } from '../../../../../../libs/SnackbarProvider'
 
 import {
   CREATE_VIDEO,
@@ -135,5 +138,52 @@ describe('VideoCreateForm', () => {
     await user.click(screen.getByRole('button', { name: 'Create' }))
 
     expect(createVideoMockResult).toHaveBeenCalled()
+  })
+
+  it('should handle video creation error', async () => {
+    const errorMock = {
+      ...createVideoMock,
+      result: {
+        errors: [
+          new GraphQLError('Unexpected error', {
+            extensions: { code: 'DOWNSTREAM_SERVICE_ERROR' }
+          })
+        ]
+      }
+    }
+
+    render(
+      <NextIntlClientProvider locale="en">
+        <SnackbarProvider>
+          <MockedProvider mocks={[getLanguagesMock, errorMock]}>
+            <VideoCreateForm onCancel={mockCancel} />
+          </MockedProvider>
+        </SnackbarProvider>
+      </NextIntlClientProvider>
+    )
+
+    const user = userEvent.setup()
+
+    await user.type(screen.getByRole('textbox', { name: 'ID' }), 'test_video')
+    await user.type(
+      screen.getByRole('textbox', { name: 'Slug' }),
+      'test_video_slug'
+    )
+
+    await user.click(screen.getByRole('combobox', { name: 'Label' }))
+    await waitFor(async () => {
+      await user.click(screen.getByRole('option', { name: 'Short Film' }))
+    })
+
+    await user.click(screen.getByRole('combobox', { name: 'Primary Language' }))
+    await waitFor(async () => {
+      await user.click(screen.getByRole('option', { name: 'English' }))
+    })
+
+    await user.click(screen.getByRole('button', { name: 'Create' }))
+
+    expect(
+      screen.getByText('Failed to create video: ID already exists')
+    ).toBeInTheDocument()
   })
 })

@@ -44,8 +44,19 @@ export function VideoListHeader(): ReactElement {
       >
         {t('Create')}
       </Button>
-      <Modal open={show} onClose={() => setShow(false)}>
+      <Modal
+        open={show}
+        onClose={() => setShow(false)}
+        aria-labelledby="video-create-modal-title"
+        aria-describedby="video-create-modal-description"
+      >
         <Box sx={style}>
+          <Typography id="video-create-modal-title" variant="h4">
+            {t('Create Video')}
+          </Typography>
+          <Typography id="video-create-modal-description" sx={{ mb: 2 }}>
+            {t('Fill in the details to create a new video.')}
+          </Typography>
           <VideoCreateForm onCancel={() => setShow(false)} />
         </Box>
       </Modal>

@@ -120,7 +120,7 @@ export function VideoCreateForm({
     } catch (e) {
       // TODO: proper error handling for specific errors
       enqueueSnackbar(
-        t('Failed to create video. ID already exists.', {
+        t(`Failed to create video: ID already exists`, {
           variant: 'error',
           preventDuplicate: false
         })
@@ -143,13 +143,11 @@ export function VideoCreateForm({
     >
       <Form data-testid="VideoCreateForm">
         <Stack gap={2}>
-          <Typography variant="h4">{t('Create Video')}</Typography>
           <FormTextField name="id" label={t('ID')} fullWidth />
           <FormTextField name="slug" label={t('Slug')} fullWidth />
           <FormSelectField
             name="label"
             label={t('Label')}
-            // Needs to handle translated option labels
             options={videoLabels}
             fullWidth
           />
