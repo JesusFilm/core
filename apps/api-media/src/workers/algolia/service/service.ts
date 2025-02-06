@@ -80,7 +80,7 @@ function sortByEnglishFirst(a: Translation, b: Translation): number {
 export async function service(logger?: Logger): Promise<void> {
   const apiKey = process.env.ALGOLIA_API_KEY ?? ''
   const appId = process.env.ALGOLIA_APPLICATION_ID ?? ''
-  const videoVariantsIndex = process.env.ALGOLIA_INDEX ?? ''
+  const videoVariantsIndex = process.env.ALGOLIA_INDEX_VIDEO_VARIANTS ?? ''
   const videosIndex = process.env.ALGOLIA_INDEX_VIDEOS ?? ''
 
   if (

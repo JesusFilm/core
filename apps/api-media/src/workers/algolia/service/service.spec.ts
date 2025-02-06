@@ -76,7 +76,7 @@ describe('algolia/service', () => {
     it('should throw if no API key', async () => {
       process.env.ALGOLIA_API_KEY = undefined
       process.env.ALGOLIA_APPLICATION_ID = undefined
-      process.env.ALGOLIA_INDEX = undefined
+      process.env.ALGOLIA_INDEX_VIDEO_VARIANTS = undefined
       process.env.ALGOLIA_INDEX_VIDEOS = undefined
       await expect(service()).rejects.toThrow(
         'algolia environment variables not set'
@@ -86,7 +86,7 @@ describe('algolia/service', () => {
     it('should sync videos to Algolia', async () => {
       process.env.ALGOLIA_API_KEY = 'key'
       process.env.ALGOLIA_APPLICATION_ID = 'id'
-      process.env.ALGOLIA_INDEX = 'video-variants'
+      process.env.ALGOLIA_INDEX_VIDEO_VARIANTS = 'video-variants'
       process.env.ALGOLIA_INDEX_VIDEOS = 'videos'
       prismaMock.videoVariant.findMany
         .mockResolvedValueOnce([
@@ -170,7 +170,7 @@ describe('algolia/service', () => {
     it('should sync all videos to Algolia when prd', async () => {
       process.env.ALGOLIA_API_KEY = 'key'
       process.env.ALGOLIA_APPLICATION_ID = 'id'
-      process.env.ALGOLIA_INDEX = 'video-variants-prd'
+      process.env.ALGOLIA_INDEX_VIDEO_VARIANTS = 'video-variants-prd'
       process.env.ALGOLIA_INDEX_VIDEOS = 'videos'
       prismaMock.videoVariant.findMany.mockResolvedValueOnce([])
       await service()
