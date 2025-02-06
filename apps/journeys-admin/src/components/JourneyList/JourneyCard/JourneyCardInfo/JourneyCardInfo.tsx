@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography'
 import { Trans, useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
 import {
@@ -13,6 +14,8 @@ import {
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 import { AccessAvatars } from '../../../AccessAvatars'
 import { JourneyCardVariant } from '../journeyCardVariant'
+
+import { LastModifiedDate } from './LastModifiedDate'
 
 interface JourneyCardInfoProps {
   journey: Journey
@@ -81,11 +84,13 @@ export function JourneyCardInfo({
           )}
         </>
       ) : (
-        <Stack direction="row" alignItems="center" spacing={1.5}>
+        <Stack direction="row" alignItems="center" spacing={2}>
           <Globe1Icon sx={{ fontSize: 13 }} />
           <Typography variant="caption">
             {journey.language.name.find(({ primary }) => primary)?.value}
           </Typography>
+          <Edit2Icon sx={{ fontSize: 16 }} />
+          <LastModifiedDate modifiedDate={journey.updatedAt} />
         </Stack>
       )}
     </Stack>
