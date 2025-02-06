@@ -8,6 +8,7 @@ const aiGenerator = new AiJourneyGenerator()
 
 builder.queryField('generateJourney', (t) =>
   t.field({
+    // TODO: return Journey object or Block objects
     type: 'String',
     args: {
       input: t.arg({

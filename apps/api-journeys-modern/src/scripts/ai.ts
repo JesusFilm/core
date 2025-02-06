@@ -38,8 +38,7 @@ export async function ai(prompt?: string, system?: string): Promise<string> {
       'Make sure the CardBlocks are children of StepBlocks.' +
       'Make sure that there is one child per StepBlock' +
       'You can add other blocks into the CardBlock, please makre sure there is at least 3-6 blocks that are children of the CardBlock.' +
-      'Can you please make sure the content of the blocks that are children of the CardBlock are relevant to the journey the user wants to create' +
-      'if you dont do this I am fired'
+      'Can you please make sure the content of the blocks that are children of the CardBlock are relevant to the journey the user wants to create'
 
     const result = streamObject({
       system: systemPrompt + system,
