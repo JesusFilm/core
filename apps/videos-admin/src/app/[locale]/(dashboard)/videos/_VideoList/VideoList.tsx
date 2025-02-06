@@ -2,6 +2,7 @@
 
 import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import {
   DataGrid,
   GridCallbackDetails,
@@ -49,11 +50,19 @@ export const GET_ADMIN_VIDEOS_AND_COUNT = graphql(`
   }
 `)
 
+export const GET_HEYGEN_LANGUAGES = graphql(`
+  query GetHeyGenLanguages {
+    heygenLanguages
+  }
+`)
+
 type VideosFilter = VariablesOf<typeof GET_ADMIN_VIDEOS_AND_COUNT>['where']
 export type GetAdminVideosAndCount = ResultOf<typeof GET_ADMIN_VIDEOS_AND_COUNT>
 export type GetAdminVideosAndCountVariables = VariablesOf<
   typeof GET_ADMIN_VIDEOS_AND_COUNT
 >
+
+type GetHeyGenLanguages = ResultOf<typeof GET_HEYGEN_LANGUAGES>
 
 export function VideoList(): ReactElement {
   const videosLimit = 50
@@ -90,6 +99,12 @@ export function VideoList(): ReactElement {
       where: getVideosWhereArgs
     }
   })
+
+  const {
+    loading: loadingLanguages,
+    data: languagesData,
+    refetch
+  } = useQuery<GetHeyGenLanguages>(GET_HEYGEN_LANGUAGES)
 
   const rows: GridRowsProp =
     data?.adminVideos?.map((video) => {
@@ -181,6 +196,23 @@ export function VideoList(): ReactElement {
     setGetVideosWhereArgs(where)
   }
 
+  function CustomGridToolbar() {
+    return (
+      <Box sx={{ p: 1, display: 'flex' }}>
+        <GridToolbar />
+        <Button
+          variant="outlined"
+          size="small"
+          disabled={loadingLanguages}
+          onClick={() => refetch()}
+          sx={{ ml: 2 }}
+        >
+          {t('Test HeyGen')}
+        </Button>
+      </Box>
+    )
+  }
+
   return (
     <Box sx={{ height: 'calc(100vh - 150px)', width: '100%' }}>
       <DataGrid
@@ -200,7 +232,7 @@ export function VideoList(): ReactElement {
         rowCount={data?.adminVideosCount ?? 0}
         onRowClick={handleClick}
         slots={{
-          toolbar: GridToolbar
+          toolbar: CustomGridToolbar
         }}
         disableDensitySelector
         columnVisibilityModel={columnVisibilityModel}

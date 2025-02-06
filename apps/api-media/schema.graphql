@@ -407,6 +407,7 @@ type Query {
   videoVariants(input: VideoVariantFilter): [VideoVariant!]!
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
+  heygenLanguages: [String!]
 }
 
 union QueryShortLinkByPathResult = NotFoundError | QueryShortLinkByPathSuccess
