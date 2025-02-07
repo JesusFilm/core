@@ -158,7 +158,7 @@ export function Logo(): ReactElement {
   }
 
   function updateImageBlock(input: ImageBlockUpdateInput): void {
-    if (imageBlock == null) return
+    if (imageBlock == null || journey == null) return
 
     const block: ImageBlock = {
       ...imageBlock,
@@ -188,6 +188,9 @@ export function Logo(): ReactElement {
           },
           optimisticResponse: {
             imageBlockUpdate: block
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
         setSliderValue(block.scale ?? 1)
