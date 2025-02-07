@@ -2588,6 +2588,7 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   share: String
   downloadable: Boolean!
   downloads: [VideoVariantDownload!]!
+  sourceUrl: String
   duration: Int!
   lengthInMilliseconds: Int!
   language: Language!
@@ -4261,6 +4262,7 @@ input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {
   slug: String!
   downloadable: Boolean!
   published: Boolean = true
+  sourceUrl: String
 }
 
 input VideoVariantDownloadCreateInput @join__type(graph: API_MEDIA)  {
@@ -4300,6 +4302,7 @@ input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
   slug: String
   downloadable: Boolean
   published: Boolean
+  sourceUrl: String
 }
 
 input VideosFilter @join__type(graph: API_MEDIA)  {

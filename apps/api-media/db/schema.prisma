@@ -183,6 +183,7 @@ model VideoVariant {
   slug                 String                 @unique
   video                Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId              String
+  sourceUrl            String?
 
   @@unique([languageId, videoId])
   @@index(languageId(type: Hash))

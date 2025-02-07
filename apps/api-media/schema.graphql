@@ -876,6 +876,7 @@ type VideoVariant {
   share: String
   downloadable: Boolean!
   downloads: [VideoVariantDownload!]!
+  sourceUrl: String
   duration: Int!
   lengthInMilliseconds: Int!
   language: Language!
@@ -901,6 +902,7 @@ input VideoVariantCreateInput {
   slug: String!
   downloadable: Boolean!
   published: Boolean = true
+  sourceUrl: String
 }
 
 type VideoVariantDownload {
@@ -954,6 +956,7 @@ input VideoVariantUpdateInput {
   slug: String
   downloadable: Boolean
   published: Boolean
+  sourceUrl: String
 }
 
 input VideosFilter {

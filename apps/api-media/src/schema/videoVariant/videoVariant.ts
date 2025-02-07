@@ -17,6 +17,7 @@ builder.prismaObject('VideoVariant', {
     share: t.exposeString('share'),
     downloadable: t.exposeBoolean('downloadable', { nullable: false }),
     downloads: t.relation('downloads', { nullable: false }),
+    sourceUrl: t.exposeString('sourceUrl', { nullable: true }),
     duration: t.int({
       nullable: false,
       resolve: ({ duration }) => duration ?? 0
@@ -146,7 +147,8 @@ builder.mutationFields((t) => ({
           videoId: input.videoId ?? undefined,
           edition: input.edition ?? undefined,
           downloadable: input.downloadable ?? undefined,
-          published: input.published ?? undefined
+          published: input.published ?? undefined,
+          sourceUrl: input.sourceUrl ?? undefined
         }
       })
     }
