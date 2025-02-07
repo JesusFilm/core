@@ -1304,6 +1304,9 @@ export type Mutation = {
   radioQuestionBlockCreate: RadioQuestionBlock;
   radioQuestionBlockUpdate: RadioQuestionBlock;
   radioQuestionSubmissionEventCreate: RadioQuestionSubmissionEvent;
+  seoContentCreate: SeoContent;
+  seoContentDelete: SeoContent;
+  seoContentUpdate: SeoContent;
   /** create a new short link */
   shortLinkCreate: MutationShortLinkCreateResult;
   /** delete an existing short link */
@@ -1787,6 +1790,21 @@ export type MutationRadioQuestionBlockUpdateArgs = {
 
 export type MutationRadioQuestionSubmissionEventCreateArgs = {
   input: RadioQuestionSubmissionEventCreateInput;
+};
+
+
+export type MutationSeoContentCreateArgs = {
+  input: SeoContentCreateInput;
+};
+
+
+export type MutationSeoContentDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationSeoContentUpdateArgs = {
+  input: SeoContentUpdateInput;
 };
 
 
@@ -3161,6 +3179,38 @@ export enum SegmindModel {
   Tinysd1_5Txt2img = 'tinysd1__5_txt2img'
 }
 
+export type SeoContent = {
+  __typename?: 'SeoContent';
+  content: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  keywords: Scalars['String']['output'];
+  language: Language;
+  primary: Scalars['Boolean']['output'];
+  title: Scalars['String']['output'];
+};
+
+export type SeoContentCreateInput = {
+  content: Scalars['String']['input'];
+  description: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
+  keywords: Scalars['String']['input'];
+  languageId: Scalars['String']['input'];
+  primary: Scalars['Boolean']['input'];
+  title: Scalars['String']['input'];
+  videoId: Scalars['String']['input'];
+};
+
+export type SeoContentUpdateInput = {
+  content?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  id: Scalars['String']['input'];
+  keywords?: InputMaybe<Scalars['String']['input']>;
+  languageId?: InputMaybe<Scalars['String']['input']>;
+  primary?: InputMaybe<Scalars['Boolean']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
 export enum Service {
   ApiJourneys = 'apiJourneys',
   ApiLanguages = 'apiLanguages',
@@ -3890,6 +3940,7 @@ export type Video = {
   parents: Array<Video>;
   primaryLanguageId: Scalars['ID']['output'];
   published: Scalars['Boolean']['output'];
+  seoContents: Array<SeoContent>;
   /** slug is a permanent link to the video. */
   slug: Scalars['String']['output'];
   snippet: Array<VideoSnippet>;
@@ -3925,6 +3976,12 @@ export type VideoImagesArgs = {
 
 export type VideoKeywordsArgs = {
   languageId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type VideoSeoContentsArgs = {
+  languageId?: InputMaybe<Scalars['ID']['input']>;
+  primary?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 

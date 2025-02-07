@@ -158,6 +158,22 @@ const Video = builder.prismaObject('Video', {
         orderBy: { primary: 'desc' }
       })
     }),
+    seoContents: t.relation('seoContents', {
+      nullable: false,
+      args: {
+        languageId: t.arg.id({ required: false }),
+        primary: t.arg.boolean({ required: false })
+      },
+      query: ({ languageId, primary }) => ({
+        where: {
+          OR: compact([
+            primary != null ? { primary } : undefined,
+            { languageId: languageId ?? '529' }
+          ])
+        },
+        orderBy: { primary: 'desc' }
+      })
+    }),
     variantLanguages: t.field({
       type: [Language],
       nullable: false,

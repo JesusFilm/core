@@ -191,6 +191,9 @@ type Mutation {
   videoTitleCreate(input: VideoTranslationCreateInput!): VideoTitle!
   videoTitleUpdate(input: VideoTranslationUpdateInput!): VideoTitle!
   videoTitleDelete(id: ID!): VideoTitle!
+  seoContentCreate(input: SeoContentCreateInput!): SeoContent!
+  seoContentUpdate(input: SeoContentUpdateInput!): SeoContent!
+  seoContentDelete(id: ID!): SeoContent!
   videoEditionCreate(input: VideoEditionCreateInput!): VideoEdition!
   videoEditionUpdate(input: VideoEditionUpdateInput!): VideoEdition!
   videoEditionDelete(id: ID!): VideoEdition!
@@ -456,6 +459,37 @@ enum SegmindModel {
   tinysd1__5_txt2img
 }
 
+type SeoContent {
+  id: ID!
+  title: String!
+  description: String!
+  keywords: String!
+  content: String!
+  primary: Boolean!
+  language: Language!
+}
+
+input SeoContentCreateInput {
+  id: String
+  videoId: String!
+  title: String!
+  description: String!
+  keywords: String!
+  content: String!
+  primary: Boolean!
+  languageId: String!
+}
+
+input SeoContentUpdateInput {
+  id: String!
+  title: String
+  description: String
+  keywords: String
+  content: String
+  primary: Boolean
+  languageId: String
+}
+
 enum Service {
   apiJourneys
   apiLanguages
@@ -691,6 +725,7 @@ type Video
   description(languageId: ID, primary: Boolean): [VideoDescription!]!
   studyQuestions(languageId: ID, primary: Boolean): [VideoStudyQuestion!]!
   imageAlt(languageId: ID, primary: Boolean): [VideoImageAlt!]!
+  seoContents(languageId: ID, primary: Boolean): [SeoContent!]!
   variantLanguages: [Language!]!
   variantLanguagesCount(input: VideoVariantFilter): Int!
 
