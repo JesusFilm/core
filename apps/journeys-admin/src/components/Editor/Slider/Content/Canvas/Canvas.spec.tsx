@@ -68,7 +68,7 @@ describe('Canvas', () => {
     activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
   }
 
-  it('should show border around selected step', () => {
+  it('should show outline around selected step', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
@@ -99,7 +99,7 @@ describe('Canvas', () => {
     )
 
     expect(getByTestId('CanvasContainer')).toHaveStyle({
-      border: '2px solid #C52D3A'
+      outline: '2px solid #C52D3A'
     })
   })
 
