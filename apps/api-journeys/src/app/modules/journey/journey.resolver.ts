@@ -794,7 +794,10 @@ export class JourneyResolver {
         })
 
         if (input.slug != null) {
-          await this.qrCodeService.updateJourneyShortLink(updatedJourney.id)
+          await this.qrCodeService.updateJourneyShortLink(
+            updatedJourney.id,
+            input.slug
+          )
         }
 
         return updatedJourney

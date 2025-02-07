@@ -101,6 +101,15 @@ export const DELETE_SHORT_LINK = graphql(`
   }
 `)
 
+interface GetToVariables {
+  shortLinkId: string
+  teamId: string
+  toJourneyId: string
+  toBlockId?: string | undefined | null
+  newJourneySlug?: string
+  newCustomDomain?: string
+}
+
 @Injectable()
 export class QrCodeService {
   constructor(private readonly prismaService: PrismaService) {}
@@ -237,12 +246,14 @@ export class QrCodeService {
     }
   }
 
-  async getTo(
-    shortLinkId: string,
-    teamId: string,
-    toJourneyId: string,
-    toBlockId?: string | undefined | null
-  ): Promise<string> {
+  async getTo({
+    shortLinkId,
+    teamId,
+    toJourneyId,
+    toBlockId,
+    newJourneySlug,
+    newCustomDomain
+  }: GetToVariables): Promise<string> {
     if (process.env.JOURNEYS_URL == null)
       throw new GraphQLError('Journeys url not added', {
         extensions: { code: 'INTERNAL_SERVER_ERROR' }
@@ -251,11 +262,14 @@ export class QrCodeService {
     const journey = await this.prismaService.journey.findUniqueOrThrow({
       where: { id: toJourneyId }
     })
+    const journeySlug = newJourneySlug ?? journey.slug
+
     const customDomain = (
       await this.prismaService.customDomain.findMany({
         where: { teamId }
       })
     )[0]
+    const customDomainName = newCustomDomain ?? customDomain?.name
     const block =
       toBlockId != null
         ? await this.prismaService.block.findUniqueOrThrow({
@@ -264,17 +278,20 @@ export class QrCodeService {
         : null
 
     const base =
-      customDomain?.name != null
-        ? `https://${customDomain.name}`
+      customDomainName != null
+        ? `https://${customDomainName}`
         : process.env.JOURNEYS_URL
 
-    const path = `${journey.slug}${block != null ? `/${block.id}` : ''}`
+    const path = `${journeySlug}${block != null ? `/${block.id}` : ''}`
     const utm = `?utm_source=ns-qr-code&utm_campaign=${shortLinkId}`
 
     return `${base}/${path}${utm}`
   }
 
-  async updateTeamShortLinks(teamId: string): Promise<void> {
+  async updateTeamShortLinks(
+    teamId: string,
+    customDomainName: string
+  ): Promise<void> {
     const apollo = new ApolloClient({
       link: httpLink,
       cache: new InMemoryCache()
@@ -286,12 +303,15 @@ export class QrCodeService {
 
     try {
       qrCodes.forEach(async (qrCode) => {
-        const to = await this.getTo(
-          qrCode.id,
-          qrCode.teamId,
-          qrCode.toJourneyId,
-          qrCode.toBlockId
-        )
+        if (qrCode.journeyId !== qrCode.toJourneyId) return
+
+        const to = await this.getTo({
+          shortLinkId: qrCode.id,
+          teamId: qrCode.teamId,
+          toJourneyId: qrCode.toJourneyId,
+          toBlockId: qrCode.toBlockId,
+          newCustomDomain: customDomainName
+        })
 
         await apollo.mutate({
           mutation: UPDATE_SHORT_LINK,
@@ -305,7 +325,10 @@ export class QrCodeService {
     }
   }
 
-  async updateJourneyShortLink(toJourneyId: string): Promise<void> {
+  async updateJourneyShortLink(
+    toJourneyId: string,
+    newSlug: string
+  ): Promise<void> {
     const apollo = new ApolloClient({
       link: httpLink,
       cache: new InMemoryCache()
@@ -315,14 +338,14 @@ export class QrCodeService {
       where: { toJourneyId }
     })
 
-    if (qrCode == null) return
-
-    const to = await this.getTo(
-      qrCode.id,
-      qrCode.teamId,
-      qrCode.toJourneyId,
-      qrCode.toBlockId
-    )
+    if (qrCode == null || qrCode.journeyId !== toJourneyId) return
+    const to = await this.getTo({
+      shortLinkId: qrCode.id,
+      teamId: qrCode.teamId,
+      toJourneyId: qrCode.toJourneyId,
+      toBlockId: qrCode.toBlockId,
+      newJourneySlug: newSlug
+    })
 
     try {
       await apollo.mutate({
