@@ -6,11 +6,14 @@ import {
   useMutation
 } from '@apollo/client'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import {
   BlockActionLinkUpdate,
   BlockActionLinkUpdateVariables
 } from '../../../__generated__/BlockActionLinkUpdate'
 import { BlockFields } from '../../../__generated__/BlockFields'
+import { journeyUpdatedAtCacheUpdate } from '../journeyUpdatedAtCacheUpdate'
 
 export const BLOCK_ACTION_LINK_UPDATE = gql`
   mutation BlockActionLinkUpdate($id: ID!, $input: LinkActionInput!) {
@@ -38,6 +41,7 @@ export function useBlockActionLinkUpdateMutation(
   ) => Promise<FetchResult<BlockActionLinkUpdate> | undefined>,
   MutationResult<BlockActionLinkUpdate>
 ] {
+  const { journey } = useJourney()
   const [blockActionLinkUpdate, result] = useMutation<
     BlockActionLinkUpdate,
     BlockActionLinkUpdateVariables
@@ -66,7 +70,7 @@ export function useBlockActionLinkUpdateMutation(
         }
       },
       update(cache, { data }) {
-        if (data?.blockUpdateLinkAction != null) {
+        if (data?.blockUpdateLinkAction != null && journey != null) {
           cache.modify({
             id: cache.identify({
               __typename: block.__typename,
@@ -76,6 +80,7 @@ export function useBlockActionLinkUpdateMutation(
               action: () => data.blockUpdateLinkAction
             }
           })
+          journeyUpdatedAtCacheUpdate(cache, journey.id)
         }
       }
     })

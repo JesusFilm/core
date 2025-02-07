@@ -12,6 +12,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../../../libs/useBlockRestoreMutation'
 import { useStepAndCardBlockCreateMutation } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
@@ -87,6 +88,9 @@ export function useCreateStep(): (input: CreateStepInput) => void {
           optimisticResponse: {
             stepBlockCreate: step,
             cardBlockCreate: card
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -99,6 +103,9 @@ export function useCreateStep(): (input: CreateStepInput) => void {
         void blockDelete(step, {
           optimisticResponse: {
             blockDelete: [step]
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -112,6 +119,9 @@ export function useCreateStep(): (input: CreateStepInput) => void {
           variables: { id: step.id },
           optimisticResponse: {
             blockRestore: [step, card]
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

@@ -3,7 +3,10 @@ import { MockedProvider } from '@apollo/client/testing'
 import { renderHook, waitFor } from '@testing-library/react'
 import { act } from 'react'
 
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../__generated__/BlockFields'
+import { JourneyFields as Journey } from '../../../__generated__/JourneyFields'
 
 import { blockActionNavigateToBlockUpdateMock } from './useBlockActionNavigateToBlockUpdateMutation.mock'
 
@@ -67,7 +70,9 @@ describe('useBlockActionNavigateToBlockUpdateMutation', () => {
             mocks={[blockActionNavigateToBlockUpdateMock]}
             cache={cache}
           >
-            {children}
+            <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+              {children}
+            </JourneyProvider>
           </MockedProvider>
         )
       }

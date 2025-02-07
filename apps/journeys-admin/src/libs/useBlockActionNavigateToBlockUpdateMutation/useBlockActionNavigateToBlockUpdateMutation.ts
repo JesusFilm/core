@@ -7,11 +7,14 @@ import {
   useMutation
 } from '@apollo/client'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import {
   BlockActionNavigateToBlockUpdate,
   BlockActionNavigateToBlockUpdateVariables
 } from '../../../__generated__/BlockActionNavigateToBlockUpdate'
 import { BlockFields } from '../../../__generated__/BlockFields'
+import { journeyUpdatedAtCacheUpdate } from '../journeyUpdatedAtCacheUpdate'
 
 export const BLOCK_ACTION_NAVIGATE_TO_BLOCK_UPDATE = gql`
   mutation BlockActionNavigateToBlockUpdate($id: ID!, $blockId: String!) {
@@ -39,6 +42,7 @@ export function useBlockActionNavigateToBlockUpdateMutation(
   ) => Promise<FetchResult<BlockActionNavigateToBlockUpdate> | undefined>,
   MutationResult<BlockActionNavigateToBlockUpdate>
 ] {
+  const { journey } = useJourney()
   const [blockActionNavigateToBlockUpdate, result] = useMutation<
     BlockActionNavigateToBlockUpdate,
     BlockActionNavigateToBlockUpdateVariables
@@ -67,7 +71,7 @@ export function useBlockActionNavigateToBlockUpdateMutation(
         }
       },
       update(cache, { data }) {
-        if (data?.blockUpdateNavigateToBlockAction != null) {
+        if (data?.blockUpdateNavigateToBlockAction != null && journey != null) {
           cache.modify({
             id: cache.identify({
               __typename: block.__typename,
@@ -77,6 +81,7 @@ export function useBlockActionNavigateToBlockUpdateMutation(
               action: () => data.blockUpdateNavigateToBlockAction
             }
           })
+          journeyUpdatedAtCacheUpdate(cache, journey.id)
         }
       }
     })

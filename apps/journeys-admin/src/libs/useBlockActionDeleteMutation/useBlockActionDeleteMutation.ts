@@ -8,12 +8,14 @@ import {
 } from '@apollo/client'
 
 import { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import {
   BlockActionDelete,
   BlockActionDeleteVariables
 } from '../../../__generated__/BlockActionDelete'
 import { BlockFields } from '../../../__generated__/BlockFields'
+import { journeyUpdatedAtCacheUpdate } from '../journeyUpdatedAtCacheUpdate'
 
 export const BLOCK_ACTION_DELETE = gql`
   mutation BlockActionDelete($id: ID!) {
@@ -35,6 +37,7 @@ export function useBlockActionDeleteMutation(
   ) => Promise<FetchResult<BlockActionDelete> | undefined>,
   MutationResult<BlockActionDelete>
 ] {
+  const { journey } = useJourney()
   const [blockActionDeleteMutation, result] = useMutation<
     BlockActionDelete,
     BlockActionDeleteVariables
@@ -59,7 +62,7 @@ export function useBlockActionDeleteMutation(
         }
       },
       update(cache, { data }) {
-        if (data?.blockDeleteAction != null) {
+        if (data?.blockDeleteAction != null && journey != null) {
           cache.modify({
             id: cache.identify({
               __typename: block.__typename,
@@ -69,6 +72,7 @@ export function useBlockActionDeleteMutation(
               action: () => null
             }
           })
+          journeyUpdatedAtCacheUpdate(cache, journey.id)
         }
       }
     })

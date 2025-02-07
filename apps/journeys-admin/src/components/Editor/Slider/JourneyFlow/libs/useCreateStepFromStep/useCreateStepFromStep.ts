@@ -30,6 +30,7 @@ import {
   StepBlockRestoreFromStepVariables
 } from '../../../../../../../__generated__/StepBlockRestoreFromStep'
 import { blockDeleteUpdate } from '../../../../../../libs/blockDeleteUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { blockRestoreUpdate } from '../../../../../../libs/useBlockRestoreMutation'
 import { stepBlockCreateUpdate } from '../../../../../../libs/useStepAndCardBlockCreateMutation'
 import { CreateStepInput } from '../useCreateStep'
@@ -217,6 +218,7 @@ export function useCreateStepFromStep(): (
           },
           update(cache, { data }) {
             stepBlockCreateUpdate(cache, data, journey?.id)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -244,6 +246,7 @@ export function useCreateStepFromStep(): (
           },
           update(cache, { data }) {
             blockDeleteUpdate(step, data?.blockDelete, cache, journey.id)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       },
@@ -276,6 +279,7 @@ export function useCreateStepFromStep(): (
               cache,
               journey.id
             )
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

@@ -3,11 +3,13 @@ import { fireEvent, renderHook, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
+import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 import { blockActionNavigateToBlockUpdateMock } from '../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
 import { blockOrderUpdateMock } from '../../../../../../libs/useBlockOrderUpdateMutation/useBlockOrderUpdateMutation.mock'
@@ -62,14 +64,16 @@ describe('useUpdateEdge', () => {
             { ...blockOrderUpdateMock, result: mockRedoResult }
           ]}
         >
-          <EditorProvider
-            initialState={{ steps: [step1, { ...step1, id: 'blockId' }] }}
-          >
-            <TestEditorState />
-            <CommandUndoItem variant="icon-button" />
-            <CommandRedoItem variant="icon-button" />
-            {children}
-          </EditorProvider>
+          <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+            <EditorProvider
+              initialState={{ steps: [step1, { ...step1, id: 'blockId' }] }}
+            >
+              <TestEditorState />
+              <CommandUndoItem variant="icon-button" />
+              <CommandRedoItem variant="icon-button" />
+              {children}
+            </EditorProvider>
+          </JourneyProvider>
         </MockedProvider>
       )
     })
@@ -124,14 +128,16 @@ describe('useUpdateEdge', () => {
             }
           ]}
         >
-          <EditorProvider
-            initialState={{ steps: [{ ...step1, id: 'step0.id' }, step1] }}
-          >
-            <TestEditorState />
-            <CommandUndoItem variant="icon-button" />
-            <CommandRedoItem variant="icon-button" />
-            {children}
-          </EditorProvider>
+          <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+            <EditorProvider
+              initialState={{ steps: [{ ...step1, id: 'step0.id' }, step1] }}
+            >
+              <TestEditorState />
+              <CommandUndoItem variant="icon-button" />
+              <CommandRedoItem variant="icon-button" />
+              {children}
+            </EditorProvider>
+          </JourneyProvider>
         </MockedProvider>
       )
     })
@@ -218,9 +224,11 @@ describe('useUpdateEdge', () => {
             }
           ]}
         >
-          <EditorProvider initialState={{ steps: [step1] }}>
-            {children}
-          </EditorProvider>
+          <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+            <EditorProvider initialState={{ steps: [step1] }}>
+              {children}
+            </EditorProvider>
+          </JourneyProvider>
         </MockedProvider>
       )
     })

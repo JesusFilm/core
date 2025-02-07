@@ -2,8 +2,10 @@ import get from 'lodash/get'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { useStepBlockNextBlockUpdateMutation } from '../../../../../../libs/useStepBlockNextBlockUpdateMutation'
 import { useActionCommand } from '../../../../utils/useActionCommand'
 import { RawEdgeSource, convertToEdgeSource } from '../convertToEdgeSource'
@@ -16,6 +18,7 @@ export function useDeleteEdge(): (rawEdgeSource: RawEdgeSource) => void {
     dispatch,
     state: { steps }
   } = useEditor()
+  const { journey } = useJourney()
 
   return function deleteEdge(rawEdgeSource: RawEdgeSource): void {
     const edgeSource = convertToEdgeSource(rawEdgeSource)
@@ -24,7 +27,7 @@ export function useDeleteEdge(): (rawEdgeSource: RawEdgeSource) => void {
       case 'step': {
         const step = steps?.find((step) => step.id === edgeSource.stepId)
 
-        if (step == null) return
+        if (step == null || journey == null) return
 
         add({
           parameters: {
@@ -51,6 +54,9 @@ export function useDeleteEdge(): (rawEdgeSource: RawEdgeSource) => void {
                   __typename: 'StepBlock',
                   nextBlockId
                 }
+              },
+              update(cache) {
+                journeyUpdatedAtCacheUpdate(cache, journey.id)
               }
             })
           }

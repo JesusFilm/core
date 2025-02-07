@@ -3,8 +3,10 @@ import { Edge } from 'reactflow'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import {
   getNewParentOrder,
   useBlockOrderUpdateMutation
@@ -31,6 +33,7 @@ export function useUpdateEdge(): (
   const [stepBlockNextBlockUpdate] = useStepBlockNextBlockUpdateMutation()
   const deleteEdge = useDeleteEdge()
   const { add } = useCommand()
+  const { journey } = useJourney()
 
   return function updateEdge({
     target,
@@ -51,7 +54,7 @@ export function useUpdateEdge(): (
       case 'socialPreview': {
         const step = steps?.find((step) => step.id === target)
 
-        if (step == null) return
+        if (step == null || journey == null) return
 
         add({
           parameters: {
@@ -81,6 +84,9 @@ export function useUpdateEdge(): (
                   step,
                   parentOrder
                 )
+              },
+              update(cache) {
+                journeyUpdatedAtCacheUpdate(cache, journey.id)
               }
             })
           }
@@ -90,7 +96,7 @@ export function useUpdateEdge(): (
       case 'step': {
         const step = steps?.find((step) => step.id === edgeSource.stepId)
 
-        if (step == null) return
+        if (step == null || journey == null) return
 
         add({
           parameters: {
@@ -117,6 +123,9 @@ export function useUpdateEdge(): (
                   __typename: 'StepBlock',
                   nextBlockId
                 }
+              },
+              update(cache) {
+                journeyUpdatedAtCacheUpdate(cache, journey.id)
               }
             })
           }

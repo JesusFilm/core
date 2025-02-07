@@ -100,15 +100,7 @@ export class StepBlockResolver {
         strict: true
       })
 
-    return await this.prismaService.$transaction(async (tx) => {
-      await tx.journey.update({
-        where: {
-          id: block.journeyId
-        },
-        data: { updatedAt: new Date().toISOString() }
-      })
-      return await this.blockService.update(id, input)
-    })
+    return await this.blockService.update(id, input)
   }
 
   @Mutation()

@@ -6,11 +6,14 @@ import {
   useMutation
 } from '@apollo/client'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
 import {
   BlockActionEmailUpdate,
   BlockActionEmailUpdateVariables
 } from '../../../__generated__/BlockActionEmailUpdate'
 import { BlockFields } from '../../../__generated__/BlockFields'
+import { journeyUpdatedAtCacheUpdate } from '../journeyUpdatedAtCacheUpdate'
 
 export const BLOCK_ACTION_EMAIL_UPDATE = gql`
   mutation BlockActionEmailUpdate($id: ID!, $input: EmailActionInput!) {
@@ -38,6 +41,7 @@ export function useBlockActionEmailUpdateMutation(
   ) => Promise<FetchResult<BlockActionEmailUpdate> | undefined>,
   MutationResult<BlockActionEmailUpdate>
 ] {
+  const { journey } = useJourney()
   const [blockActionEmailUpdate, result] = useMutation<
     BlockActionEmailUpdate,
     BlockActionEmailUpdateVariables
@@ -66,7 +70,7 @@ export function useBlockActionEmailUpdateMutation(
         }
       },
       update(cache, { data }) {
-        if (data?.blockUpdateEmailAction != null) {
+        if (data?.blockUpdateEmailAction != null && journey != null) {
           cache.modify({
             id: cache.identify({
               __typename: block.__typename,
@@ -76,6 +80,7 @@ export function useBlockActionEmailUpdateMutation(
               action: () => data.blockUpdateEmailAction
             }
           })
+          journeyUpdatedAtCacheUpdate(cache, journey.id)
         }
       }
     })
