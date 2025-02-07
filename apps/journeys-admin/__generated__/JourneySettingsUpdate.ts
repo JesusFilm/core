@@ -74,6 +74,8 @@ export interface JourneySettingsUpdate_journeyUpdate {
   displayTitle: string | null;
   menuButtonIcon: JourneyMenuButtonIcon | null;
   menuStepBlock: JourneySettingsUpdate_journeyUpdate_menuStepBlock | null;
+  socialNodeX: number | null;
+  socialNodeY: number | null;
 }
 
 export interface JourneySettingsUpdate {
