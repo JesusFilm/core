@@ -37,6 +37,8 @@ describe('CodeDestination', () => {
 
   afterAll(() => {
     jest.resetAllMocks()
+    jest.useRealTimers()
+    return Promise.resolve() // Flush any pending promises
   })
 
   const qrCode: QrCode = {

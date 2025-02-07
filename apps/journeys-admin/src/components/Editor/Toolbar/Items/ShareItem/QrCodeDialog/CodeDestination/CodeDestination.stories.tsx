@@ -65,7 +65,7 @@ export const Default = {
     journeyId: 'journey.id',
     qrCode,
     to,
-    handleUpdateTo: { noop }
+    handleUpdateTo: noop
   },
   parameters: {
     apolloClient: {
@@ -80,7 +80,7 @@ export const NoDestination = {
     journeyId: 'journey.id',
     qrCode,
     to: null,
-    handleUpdateTo: { noop }
+    handleUpdateTo: noop
   },
   parameters: {
     apolloClient: {
