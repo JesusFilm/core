@@ -26,7 +26,7 @@ export function LastModifiedDate({
   let duration
 
   if (secondsDifference < MINUTE_SECONDS) {
-    duration = t('Just now')
+    duration = t('Edited just now')
   } else if (secondsDifference < HOUR_SECONDS) {
     const minutes = Math.floor(secondsDifference / MINUTE_SECONDS)
     duration =

@@ -553,7 +553,7 @@
   "1 user": "1 user",
   "{{ numberOfUsers }} users": "{{ numberOfUsers }} users",
   "<0>{usersRequestingAccess}</0><1>requested editing rights for your journey</1>": "<0>{usersRequestingAccess}</0><1>requested editing rights for your journey</1>",
-  "Just now": "Just now",
+  "Edited just now": "Edited just now",
   "1 minute ago": "1 minute ago",
   "{{count}} minutes ago_one": "{{count}} minutes ago",
   "{{count}} minutes ago_other": "{{count}} minutes ago",
