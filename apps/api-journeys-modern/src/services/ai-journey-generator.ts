@@ -1,5 +1,6 @@
 import { createOpenAI } from '@ai-sdk/openai'
 import { CoreMessage, streamObject } from 'ai'
+import omit from 'lodash/omit'
 import { z } from 'zod'
 
 import {
@@ -550,7 +551,7 @@ export class AiJourneyGenerator {
     const messages: CoreMessage[] = [
       {
         role: 'system',
-        content: this.systemPrompt
+        content: this.systemPrompt + input.systemPrompt
       },
       {
         role: 'user',
@@ -566,8 +567,8 @@ export class AiJourneyGenerator {
              - Button labels
              - Video content 
      
-          
-          Input: ${JSON.stringify(input)}
+       
+          Input: ${JSON.stringify(omit(input, ['systemPrompt']))}
           Template: ${JSON.stringify(template)}
           
           Return a complete journey object matching this template's structure.

@@ -4094,6 +4094,7 @@ input JourneyGenerationInput @join__type(graph: API_JOURNEYS_MODERN)  {
   mainMessage: String!
   language: String! = "529"
   additionalContext: String
+  systemPrompt: String
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {

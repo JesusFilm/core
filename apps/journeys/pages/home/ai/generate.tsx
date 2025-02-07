@@ -1,4 +1,4 @@
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { gql, useLazyQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -29,7 +29,8 @@ const validationSchema = object({
   targetAudience: string().required('Target audience is required'),
   mainMessage: string().required('Main message is required'),
   language: string().default('529'),
-  additionalContext: string()
+  additionalContext: string(),
+  systemPrompt: string()
 })
 
 function AiPage(): ReactElement {
@@ -54,7 +55,8 @@ function AiPage(): ReactElement {
           targetAudience: values.targetAudience,
           mainMessage: values.mainMessage,
           language: values.language,
-          additionalContext: values.additionalContext
+          additionalContext: values.additionalContext,
+          systemPrompt: values.systemPrompt
         }
       },
       onCompleted: (data) => {
@@ -84,7 +86,8 @@ function AiPage(): ReactElement {
           targetAudience: '',
           mainMessage: '',
           language: '529',
-          additionalContext: ''
+          additionalContext: '',
+          systemPrompt: ''
         }}
         validationSchema={validationSchema}
         onSubmit={handleGenerateJourney}
@@ -131,6 +134,15 @@ function AiPage(): ReactElement {
                 onChange={handleChange}
                 name="additionalContext"
                 label={t('Additional Context (Optional)')}
+                multiline
+                rows={3}
+              />
+              <TextField
+                fullWidth
+                value={values.systemPrompt}
+                onChange={handleChange}
+                name="systemPrompt"
+                label={t('System Prompt (Optional)')}
                 multiline
                 rows={3}
               />

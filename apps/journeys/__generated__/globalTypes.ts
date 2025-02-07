@@ -254,6 +254,7 @@ export interface JourneyGenerationInput {
   mainMessage: string;
   language: string;
   additionalContext?: string | null;
+  systemPrompt?: string | null;
 }
 
 export interface JourneyProfileUpdateInput {

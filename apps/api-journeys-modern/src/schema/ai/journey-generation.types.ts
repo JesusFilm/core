@@ -5,7 +5,8 @@ export const JourneyGenerationInputSchema = z.object({
   targetAudience: z.string().min(1),
   mainMessage: z.string().min(1),
   language: z.string().default('529'), // Default to English
-  additionalContext: z.string().optional()
+  additionalContext: z.string().optional(),
+  systemPrompt: z.string().optional()
 })
 
 export const TemplateSelectionSchema = z.object({
