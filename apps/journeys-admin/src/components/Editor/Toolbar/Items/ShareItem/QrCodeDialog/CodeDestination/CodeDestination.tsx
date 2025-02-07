@@ -1,28 +1,28 @@
+import { gql, useLazyQuery } from '@apollo/client'
 import FilledInput from '@mui/material/FilledInput'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import AlertTriangle from '@core/shared/ui/icons/AlertTriangle'
 
-import { useUserRoleSuspenseQuery } from '../../../../../../../libs/useUserRoleSuspenseQuery'
-
-import { ChangeButton } from './ChangeButton'
-import { CodeDestinationPopper } from './CodeDestinationPopper'
-import {
-  UserJourneyRole,
-  UserTeamRole
-} from 'libs/journeys/ui/__generated__/globalTypes'
-import { Role } from '../../../../../../../../__generated__/globalTypes'
-import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
-import { gql, useLazyQuery, useQuery } from '@apollo/client'
 import {
   GetUserPermissions,
   GetUserPermissionsVariables
 } from '../../../../../../../../__generated__/GetUserPermissions'
+import {
+  Role,
+  UserJourneyRole,
+  UserTeamRole
+} from '../../../../../../../../__generated__/globalTypes'
 import { QrCodeFields as QrCode } from '../../../../../../../../__generated__/QrCodeFields'
+import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
+import { useUserRoleSuspenseQuery } from '../../../../../../../libs/useUserRoleSuspenseQuery'
+
+import { ChangeButton } from './ChangeButton'
+import { CodeDestinationPopper } from './CodeDestinationPopper'
 
 export const GET_USER_PERMISSIONS = gql`
   query GetUserPermissions($id: ID!) {
@@ -91,6 +91,7 @@ export function CodeDestination({
       void loadUser()
       void loadUserPermissions({ variables: { id: journeyId } })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [journeyId])
 
   useEffect(() => {

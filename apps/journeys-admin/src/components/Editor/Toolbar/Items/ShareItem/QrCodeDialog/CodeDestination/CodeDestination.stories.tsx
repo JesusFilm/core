@@ -1,14 +1,15 @@
+import { MockedResponse } from '@apollo/client/testing'
 import type { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
-import { QrCodeFields as QrCode } from '../../../../../../../../__generated__/QrCodeFields'
 
+import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
+import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
+import { Role } from '../../../../../../../../__generated__/globalTypes'
+import { QrCodeFields as QrCode } from '../../../../../../../../__generated__/QrCodeFields'
+
 import { CodeDestination } from './CodeDestination'
-import { Role } from 'libs/journeys/ui/__generated__/globalTypes'
-import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
-import { MockedResponse } from '@apollo/client/testing'
-import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
 
 const meta: Meta<typeof CodeDestination> = {
   ...journeysAdminConfig,

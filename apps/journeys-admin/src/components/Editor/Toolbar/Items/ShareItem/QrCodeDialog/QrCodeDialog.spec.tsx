@@ -1,39 +1,32 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { act, Suspense } from 'react'
 import { formatISO } from 'date-fns'
+import { SnackbarProvider } from 'notistack'
+import { Suspense, act } from 'react'
+
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey as Journey } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
+import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
+import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
+
 import {
   GetJourneyQrCodes,
   GetJourneyQrCodesVariables
 } from '../../../../../../../__generated__/GetJourneyQrCodes'
-import { useCurrentUserLazyQuery } from '../../../../../../libs/useCurrentUserLazyQuery'
 import {
-  GET_JOURNEY_QR_CODES,
-  QR_CODE_CREATE,
-  QR_CODE_UPDATE,
-  QrCodeDialog
-} from './QrCodeDialog'
-import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
-import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
-import {
-  Role,
-  UserJourneyRole,
-  UserTeamRole
-} from 'libs/journeys/ui/__generated__/globalTypes'
-import { SnackbarProvider } from 'notistack'
-import { GET_USER_PERMISSIONS } from './CodeDestination/CodeDestination'
+  GetPlausibleJourneyQrCodeScans,
+  GetPlausibleJourneyQrCodeScansVariables
+} from '../../../../../../../__generated__/GetPlausibleJourneyQrCodeScans'
 import {
   GetUserPermissions,
   GetUserPermissionsVariables
 } from '../../../../../../../__generated__/GetUserPermissions'
 import {
-  GetPlausibleJourneyQrCodeScans,
-  GetPlausibleJourneyQrCodeScansVariables
-} from '../../../../../../../__generated__/GetPlausibleJourneyQrCodeScans'
-import { GET_PLAUSIBLE_JOURNEY_QR_CODE_SCANS } from './ScanCount/ScanCount'
-import { InMemoryCache } from '@apollo/client'
+  Role,
+  UserJourneyRole,
+  UserTeamRole
+} from '../../../../../../../__generated__/globalTypes'
 import {
   QrCodeCreate,
   QrCodeCreateVariables
@@ -43,6 +36,16 @@ import {
   QrCodeUpdate,
   QrCodeUpdateVariables
 } from '../../../../../../../__generated__/QrCodeUpdate'
+import { useCurrentUserLazyQuery } from '../../../../../../libs/useCurrentUserLazyQuery'
+
+import { GET_USER_PERMISSIONS } from './CodeDestination/CodeDestination'
+import {
+  GET_JOURNEY_QR_CODES,
+  QR_CODE_CREATE,
+  QR_CODE_UPDATE,
+  QrCodeDialog
+} from './QrCodeDialog'
+import { GET_PLAUSIBLE_JOURNEY_QR_CODE_SCANS } from './ScanCount/ScanCount'
 
 jest.mock('../../../../../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,

@@ -1,21 +1,22 @@
+import { MockedResponse } from '@apollo/client/testing'
 import type { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
+import { ComponentPropsWithoutRef } from 'react'
 
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { GetJourney_journey as Journey } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
+import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
+import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { GET_JOURNEY_QR_CODES, QrCodeDialog } from './QrCodeDialog'
-import { MockedResponse } from '@apollo/client/testing'
-import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
-import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
-import { Role } from 'libs/journeys/ui/__generated__/globalTypes'
-import { QrCodeFields } from '../../../../../../../__generated__/QrCodeFields'
 import {
   GetJourneyQrCodes,
   GetJourneyQrCodesVariables
 } from '../../../../../../../__generated__/GetJourneyQrCodes'
-import { GetJourney_journey as Journey } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { ComponentPropsWithoutRef } from 'react'
+import { Role } from '../../../../../../../__generated__/globalTypes'
+import { QrCodeFields } from '../../../../../../../__generated__/QrCodeFields'
+
+import { GET_JOURNEY_QR_CODES, QrCodeDialog } from './QrCodeDialog'
 
 const meta: Meta<typeof QrCodeDialog> = {
   ...journeysAdminConfig,

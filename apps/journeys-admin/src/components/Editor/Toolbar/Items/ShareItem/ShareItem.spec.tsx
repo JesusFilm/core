@@ -6,14 +6,14 @@ import { Suspense } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
+import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
 
+import { Role } from '../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 
 import { ShareItem } from './ShareItem'
-import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
-import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
-import { Role } from 'libs/journeys/ui/__generated__/globalTypes'
 
 jest.mock('../../../../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,

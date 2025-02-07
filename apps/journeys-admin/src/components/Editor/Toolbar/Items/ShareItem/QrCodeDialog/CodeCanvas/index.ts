@@ -1,1 +1,1 @@
-import { CodeCanvas } from './CodeCanvas'
+export { CodeCanvas } from './CodeCanvas'

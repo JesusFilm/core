@@ -24,7 +24,7 @@ import {
 } from '../../../../../../../__generated__/QrCodeUpdate'
 
 import { CodeActionButton } from './CodeActionButton'
-import { CodeCanvas } from './CodeCanvas/CodeCanvas'
+import { CodeCanvas } from './CodeCanvas'
 import { CodeDestination } from './CodeDestination'
 import { QR_CODE_FIELDS } from './qrCodeFields'
 import { ScanCount } from './ScanCount'

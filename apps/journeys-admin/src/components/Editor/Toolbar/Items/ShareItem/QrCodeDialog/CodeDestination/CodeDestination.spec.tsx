@@ -1,21 +1,23 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { act, Suspense } from 'react'
-import { QrCodeFields as QrCode } from '../../../../../../../../__generated__/QrCodeFields'
+import { Suspense, act } from 'react'
 
-import { CodeDestination, GET_USER_PERMISSIONS } from './CodeDestination'
-import { GetUserRole } from '../../../../../../../../__generated__/GetUserRole'
 import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
-import {
-  Role,
-  UserJourneyRole,
-  UserTeamRole
-} from 'libs/journeys/ui/__generated__/globalTypes'
-import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
+
 import {
   GetUserPermissions,
   GetUserPermissionsVariables
 } from '../../../../../../../../__generated__/GetUserPermissions'
+import { GetUserRole } from '../../../../../../../../__generated__/GetUserRole'
+import {
+  Role,
+  UserJourneyRole,
+  UserTeamRole
+} from '../../../../../../../../__generated__/globalTypes'
+import { QrCodeFields as QrCode } from '../../../../../../../../__generated__/QrCodeFields'
+import { useCurrentUserLazyQuery } from '../../../../../../../libs/useCurrentUserLazyQuery'
+
+import { CodeDestination, GET_USER_PERMISSIONS } from './CodeDestination'
 
 jest.mock('../../../../../../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,

@@ -48,6 +48,7 @@ export function CodeActionButton({
         document.body.appendChild(downloadLink)
         downloadLink.click()
         document.body.removeChild(downloadLink)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (e) {
         enqueueSnackbar(t('Error downloading'), {
           variant: 'error',
