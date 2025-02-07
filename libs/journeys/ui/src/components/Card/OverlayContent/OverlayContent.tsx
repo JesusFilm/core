@@ -58,8 +58,8 @@ export function OverlayContent({
           }
         }
       : {
-          pl: { xs: 6, sm: 10 },
-          pr: { xs: 6, sm: 10 }
+          pl: { xs: 3, sm: 10 },
+          pr: { xs: 3, sm: 10 }
         }
 
   const footerMobileSpacing = getFooterMobileSpacing({ journey, variant })
