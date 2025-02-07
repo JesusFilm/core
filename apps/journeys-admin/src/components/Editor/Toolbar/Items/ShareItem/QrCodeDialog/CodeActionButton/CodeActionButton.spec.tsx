@@ -61,7 +61,60 @@ describe('CodeActionButton', () => {
     expect(screen.getByRole('button', { name: 'Download PNG' })).toBeDisabled()
   })
 
-  // test for download png
+  it('should download png when canvas is present', () => {
+    const canvas = document.createElement('canvas')
+    canvas.id = 'qr-code-download'
+    document.body.appendChild(canvas)
+    const toDataURLMock = jest
+      .spyOn(canvas, 'toDataURL')
+      .mockReturnValue('data:image/png;base64,test')
 
-  // test for download svg
+    render(
+      <CodeActionButton shortLink="url" handleGenerateQrCode={jest.fn()} />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Download PNG' }))
+
+    expect(toDataURLMock).toHaveBeenCalledWith('image/png')
+    document.body.removeChild(canvas)
+  })
+
+  it('should handle error when downloading png', () => {
+    const canvas = document.createElement('canvas')
+    canvas.id = 'qr-code-download'
+    document.body.appendChild(canvas)
+    jest.spyOn(canvas, 'toDataURL').mockImplementation(() => {
+      throw new Error('Test error')
+    })
+
+    render(
+      <SnackbarProvider>
+        <CodeActionButton shortLink="url" handleGenerateQrCode={jest.fn()} />
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Download PNG' }))
+
+    expect(screen.getByText('Error downloading')).toBeInTheDocument()
+    document.body.removeChild(canvas)
+  })
+
+  it('should download svg when canvas is present', () => {
+    const canvas = document.createElement('canvas')
+    canvas.id = 'qr-code-download'
+    document.body.appendChild(canvas)
+    const toDataURLMock = jest
+      .spyOn(canvas, 'toDataURL')
+      .mockReturnValue('data:image/png;base64,test')
+
+    render(
+      <CodeActionButton shortLink="url" handleGenerateQrCode={jest.fn()} />
+    )
+
+    fireEvent.click(screen.getByTestId('DownloadDropdown'))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Download SVG' }))
+
+    expect(toDataURLMock).toHaveBeenCalledWith('image/png')
+    document.body.removeChild(canvas)
+  })
 })
