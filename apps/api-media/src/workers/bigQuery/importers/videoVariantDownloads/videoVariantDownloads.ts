@@ -25,6 +25,9 @@ const videoVariantDownloadSchema = z
 export async function importVideoVariantDownloads(
   logger?: Logger
 ): Promise<void> {
+  // only run in production
+  if (process.env.DEPLOYMENT_ENV !== 'prod') return
+
   await processTable(
     'jfp-data-warehouse.jfp_mmdb_prod.core_videoVariantDownload_arclight_data',
     importOne,
