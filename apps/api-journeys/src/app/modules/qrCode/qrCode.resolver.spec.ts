@@ -141,11 +141,11 @@ describe('QrCode', () => {
         ability
       )
       expect(res).toEqual(qrCodeWithAuth)
-      expect(qrCodeService.getTo).toHaveBeenCalledWith(
-        'shortLinkId',
-        'teamId',
-        'journeyId'
-      )
+      expect(qrCodeService.getTo).toHaveBeenCalledWith({
+        shortLinkId: 'shortLinkId',
+        teamId: 'teamId',
+        toJourneyId: 'journeyId'
+      })
       expect(prismaService.qrCode.create).toHaveBeenCalledWith({
         data: qrCode,
         include: {
