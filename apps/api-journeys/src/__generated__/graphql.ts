@@ -848,6 +848,14 @@ export type JourneyCreateInput = {
   title: Scalars['String']['input'];
 };
 
+export type JourneyGenerationInput = {
+  additionalContext?: InputMaybe<Scalars['String']['input']>;
+  language?: Scalars['String']['input'];
+  mainMessage: Scalars['String']['input'];
+  targetAudience: Scalars['String']['input'];
+  theme: Scalars['String']['input'];
+};
+
 export enum JourneyMenuButtonIcon {
   ChevronDown = 'chevronDown',
   Ellipsis = 'ellipsis',
@@ -2601,6 +2609,7 @@ export type Query = {
   country?: Maybe<Country>;
   customDomain: CustomDomain;
   customDomains: Array<CustomDomain>;
+  generateJourney?: Maybe<Scalars['String']['output']>;
   getJourneyProfile?: Maybe<JourneyProfile>;
   getMuxVideo?: Maybe<MuxVideo>;
   getMyCloudflareImage: CloudflareImage;
@@ -2754,6 +2763,11 @@ export type QueryCustomDomainArgs = {
 
 export type QueryCustomDomainsArgs = {
   teamId: Scalars['ID']['input'];
+};
+
+
+export type QueryGenerateJourneyArgs = {
+  input?: InputMaybe<JourneyGenerationInput>;
 };
 
 
