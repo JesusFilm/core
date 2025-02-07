@@ -1,14 +1,24 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { Suspense } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
+import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 
 import { ShareItem } from './ShareItem'
+import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
+import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
+import { Role } from 'libs/journeys/ui/__generated__/globalTypes'
+
+jest.mock('../../../../../libs/useCurrentUserLazyQuery', () => ({
+  __esModule: true,
+  useCurrentUserLazyQuery: jest.fn()
+}))
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -21,6 +31,9 @@ jest.mock('next/router', () => ({
 }))
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
+const mockUseCurrentUserLazyQuery = useCurrentUserLazyQuery as jest.Mock
+const user = { id: 'user.id', email: 'test@email.com' }
 
 Object.assign(navigator, {
   clipboard: {
@@ -41,6 +54,10 @@ describe('ShareItem', () => {
       ...originalEnv,
       NEXT_PUBLIC_JOURNEYS_URL: 'https://my.custom.domain'
     }
+    mockUseCurrentUserLazyQuery.mockReturnValue({
+      loadUser: jest.fn(),
+      data: user
+    })
   })
 
   afterEach(() => {
@@ -160,17 +177,35 @@ describe('ShareItem', () => {
         on
       }
     } as unknown as NextRouter)
+
+    const getUserRoleMock: MockedResponse<GetUserRole> = {
+      request: {
+        query: GET_USER_ROLE
+      },
+      result: jest.fn(() => ({
+        data: {
+          getUserRole: {
+            __typename: 'UserRole',
+            id: 'user.id',
+            roles: [Role.publisher]
+          }
+        }
+      }))
+    }
+
     render(
       <SnackbarProvider>
-        <MockedProvider>
-          <JourneyProvider
-            value={{
-              journey: defaultJourney,
-              variant: 'admin'
-            }}
-          >
-            <ShareItem variant="button" />
-          </JourneyProvider>
+        <MockedProvider mocks={[getUserRoleMock]}>
+          <Suspense>
+            <JourneyProvider
+              value={{
+                journey: defaultJourney,
+                variant: 'admin'
+              }}
+            >
+              <ShareItem variant="button" />
+            </JourneyProvider>
+          </Suspense>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -187,7 +222,11 @@ describe('ShareItem', () => {
       )
     })
 
-    expect(screen.getByRole('dialog', { name: 'QR Code' })).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
+        'QR Code'
+      )
+    )
     fireEvent.click(screen.getByTestId('dialog-close-button'))
     await waitFor(() =>
       expect(

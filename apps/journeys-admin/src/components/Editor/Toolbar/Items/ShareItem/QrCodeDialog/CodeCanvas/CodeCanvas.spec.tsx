@@ -6,7 +6,7 @@ import { CodeCanvas } from './CodeCanvas'
 describe('CodeCanvas', () => {
   it('should show qr code', () => {
     render(<CodeCanvas shortLink="url" loading={false} />)
-    expect(screen.getByRole('img', { name: 'QR Code' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'url' })).toBeInTheDocument()
   })
 
   it('should loading skeleton', () => {
