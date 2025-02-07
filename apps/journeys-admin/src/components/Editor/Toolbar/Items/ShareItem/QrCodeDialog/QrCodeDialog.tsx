@@ -78,16 +78,24 @@ export function QrCodeDialog({
   >(QR_CODE_UPDATE)
   const [loading, setLoading] = useState(true)
 
-  const { data, loading: getLoading } = useQuery<
-    GetJourneyQrCodes,
-    GetJourneyQrCodesVariables
-  >(GET_JOURNEY_QR_CODES, {
-    variables: {
-      where: {
-        journeyId: journey?.id
+  const {
+    data,
+    loading: getLoading,
+    refetch
+  } = useQuery<GetJourneyQrCodes, GetJourneyQrCodesVariables>(
+    GET_JOURNEY_QR_CODES,
+    {
+      variables: {
+        where: {
+          journeyId: journey?.id
+        }
       }
     }
-  })
+  )
+
+  useEffect(() => {
+    void refetch()
+  }, [journey?.slug, refetch])
 
   const qrCode = data?.qrCodes[0]
   const to = getTo(qrCode)
