@@ -34,7 +34,7 @@ yarn-error.log
 testem.log
 /typings
 **/public/locales
-api/api-gateway/router
+apis/api-gateway/router
 /**/tsconfig.tsbuildinfo
 .history/
 /.cache

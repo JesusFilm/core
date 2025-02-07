@@ -4,7 +4,7 @@ module.exports = {
     excludes: ['./**/*.test.tsx'],
     service: {
       name: 'api-gateway',
-      localSchemaFile: 'api/api-gateway/schema.graphql'
+      localSchemaFile: 'apis/api-gateway/schema.graphql'
     }
   }
 }

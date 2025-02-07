@@ -18,10 +18,10 @@ const storiesForProject = {
     '../apps/watch/src/components/**/*.stories.@(js|jsx|ts|tsx)'
   ],
   'api-journeys-modern': [
-    '../api/api-journeys-modern/src/emails/stories/*.stories.@(js|jsx|ts|tsx)'
+    '../apis/api-journeys-modern/src/emails/stories/*.stories.@(js|jsx|ts|tsx)'
   ],
   'api-users': [
-    '../api/api-users/src/emails/stories/*.stories.@(js|jsx|ts|tsx)'
+    '../apis/api-users/src/emails/stories/*.stories.@(js|jsx|ts|tsx)'
   ],
   'videos-admin': ['../apps/videos-admin/src/**/*.stories.@(js|jsx|ts|tsx)']
   // Add new UI projects here and in allStories
