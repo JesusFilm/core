@@ -20,9 +20,10 @@ export function CanvasFooter({ scale }: CanvasFooterProps): ReactElement {
     <Box
       data-testid="CanvasFooter"
       sx={{
+        width: showAnalytics === true ? '100%' : 'auto',
         mt: 4,
-        alignSelf: showAnalytics === true ? 'unset' : 'end',
-        transform: `scale(${scale})`
+        transform: `scale(${scale})`,
+        transformOrigin: { xs: 'center', md: 'right' }
       }}
     >
       {showAnalytics === true ? <CardAnalytics /> : <Fab variant="canvas" />}
