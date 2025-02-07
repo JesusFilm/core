@@ -102,7 +102,7 @@ function JourneyReportsPage({ flags, plausibleDashboardViewed }): ReactElement {
       >
         {flags.editorAnalytics === true ? (
           <>
-            <PlausibleEmbedDashboard />
+            <PlausibleEmbedDashboard host={process.env.NEXT_PUBLIC_PLAUSIBLE_HOST} />
             <NotificationPopover
               open={open}
               title={t('New Feature Feedback')}
