@@ -64,7 +64,7 @@ export function StepFooter({
         justifyContent="space-between"
         spacing={2}
         sx={{
-          px: { xs: 6, lg: 0 },
+          px: { xs: variant === 'default' ? 6 : 3, lg: 0 },
           py: { xs: 2, lg: 0 },
 
           flexDirection: { lg: rtl ? 'row-reverse' : 'row' },

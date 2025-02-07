@@ -139,6 +139,12 @@
         "command": "npm run ts-node apps/api-languages/src/workers/cli.ts big-query"
       }
     },
+    "queue-algolia": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apps/api-languages/src/workers/cli.ts algolia"
+      }
+    },
     "codegen": {
       "executor": "nx:run-commands",
       "options": {
