@@ -8,10 +8,10 @@ interface LastModifiedDateProps {
 }
 
 const MINUTE_SECONDS = 60
-const HOUR_SECONDS = 3600
-const DAY_SECONDS = 86400
-const MONTH_SECONDS = 2592000 // 30 days
-const YEAR_SECONDS = 31536000 // 365 days
+const HOUR_SECONDS = MINUTE_SECONDS * 60
+const DAY_SECONDS = HOUR_SECONDS * 24
+const MONTH_SECONDS = DAY_SECONDS * 30
+const YEAR_SECONDS = DAY_SECONDS * 365
 
 export function LastModifiedDate({
   modifiedDate
