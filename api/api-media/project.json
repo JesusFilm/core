@@ -10,7 +10,7 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "development",
       "options": {
-        "outputPath": "dist/api/api-media",
+        "outputPath": "dist/apps/api-media",
         "main": "api/api-media/src/index.ts",
         "tsConfig": "api/api-media/tsconfig.app.json",
         "compiler": "tsc",

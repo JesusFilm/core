@@ -12,7 +12,7 @@ RUN apk upgrade --update-cache --available && \
 RUN apk add --no-cache g++ make python3 py3-pip curl-dev
 
 WORKDIR /app
-COPY ./dist/api/api-languages .
+COPY ./dist/apps/api-languages .
 COPY ./package-lock.json .
 
 # dependencies that nestjs needs

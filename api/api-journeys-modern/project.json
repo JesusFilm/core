@@ -10,7 +10,7 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "development",
       "options": {
-        "outputPath": "dist/api/api-journeys-modern",
+        "outputPath": "dist/apps/api-journeys-modern",
         "main": "api/api-journeys-modern/src/index.ts",
         "tsConfig": "api/api-journeys-modern/tsconfig.app.json",
         "compiler": "tsc",

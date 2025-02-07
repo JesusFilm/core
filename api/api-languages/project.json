@@ -10,7 +10,7 @@
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "development",
       "options": {
-        "outputPath": "dist/api/api-languages",
+        "outputPath": "dist/apps/api-languages",
         "main": "api/api-languages/src/index.ts",
         "tsConfig": "api/api-languages/tsconfig.app.json",
         "compiler": "tsc",

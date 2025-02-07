@@ -11,7 +11,7 @@ RUN apk upgrade --update-cache --available && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /app
-COPY ./dist/api/api-media .
+COPY ./dist/apps/api-media .
 COPY ./package-lock.json .
 
 # dependencies that nestjs needs

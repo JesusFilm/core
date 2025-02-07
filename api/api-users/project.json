@@ -9,7 +9,7 @@
       "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/api/api-users",
+        "outputPath": "dist/apps/api-users",
         "main": "api/api-users/src/index.ts",
         "tsConfig": "api/api-users/tsconfig.app.json",
         "compiler": "tsc",

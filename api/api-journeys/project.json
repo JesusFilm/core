@@ -9,7 +9,7 @@
       "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/api/api-journeys",
+        "outputPath": "dist/apps/api-journeys",
         "main": "api/api-journeys/src/main.ts",
         "tsConfig": "api/api-journeys/tsconfig.app.json",
         "assets": [
