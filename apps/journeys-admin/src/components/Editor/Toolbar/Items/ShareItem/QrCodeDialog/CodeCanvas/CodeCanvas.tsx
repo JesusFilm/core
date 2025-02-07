@@ -36,6 +36,7 @@ export function CodeCanvas({
             size={122}
             level="L"
             value={shortLink}
+            aria-label={shortLink}
           />
         </Stack>
       )}

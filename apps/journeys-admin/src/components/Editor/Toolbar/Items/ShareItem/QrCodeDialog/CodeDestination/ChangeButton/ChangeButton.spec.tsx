@@ -4,19 +4,23 @@ import { ChangeButton } from './ChangeButton'
 
 describe('ChangeButton', () => {
   it('should render the ChangeButton component', () => {
-    render(<ChangeButton />)
+    const handleClick = jest.fn()
+    render(<ChangeButton handleClick={handleClick} />)
 
-    expect(screen.getByRole('button', { name: 'Change' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Change' }))
+    expect(handleClick).toHaveBeenCalled()
   })
 
   it('should show redirect button', () => {
-    render(<ChangeButton showRedirectButton />)
+    const handleRedirect = jest.fn()
+    render(<ChangeButton showRedirectButton handleRedirect={handleRedirect} />)
 
     expect(
       screen.queryByRole('button', { name: 'Change' })
     ).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Redirect' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Redirect' }))
+    expect(handleRedirect).toHaveBeenCalled()
   })
 
   it('should show tooltip on hover when disabled', async () => {

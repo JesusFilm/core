@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 
 import AlertTriangle from '@core/shared/ui/icons/AlertTriangle'
 
@@ -75,26 +75,28 @@ export function CodeDestination({
   const { t } = useTranslation('apps-journeys-admin')
   const { loadUser, data: user } = useCurrentUserLazyQuery()
   const { data } = useUserRoleSuspenseQuery()
-  const [showRedirectButton, setShowRedirectButton] = useState(false)
-  const [showRedirectDialog, setShowRedirectDialog] = useState(false)
-  const [disabled, setDisabled] = useState(true)
-  const [value, setValue] = useState(to ?? '')
   const [loadUserPermissions, { data: journeyData }] = useLazyQuery<
     GetUserPermissions,
     GetUserPermissionsVariables
   >(GET_USER_PERMISSIONS)
 
+  const originalToRef = useRef(to)
+  const disableChange = !canEdit() || to == null
+  const [value, setValue] = useState('')
+  const [showRedirectButton, setShowRedirectButton] = useState(false)
+  const [showRedirectDialog, setShowRedirectDialog] = useState(false)
+
   useEffect(() => {
     if (journeyId != null) {
+      void loadUser()
       void loadUserPermissions({ variables: { id: journeyId } })
     }
   }, [journeyId])
 
   useEffect(() => {
-    setValue(to ?? '')
+    if (to == null) return
+    setValue(to)
   }, [to])
-
-  const originalToRef = useRef(to)
 
   function canEdit(): boolean {
     if (
@@ -124,11 +126,6 @@ export function CodeDestination({
       return false
     }
   }
-
-  useEffect(() => {
-    void loadUser()
-    setDisabled(!canEdit() || to == null)
-  }, [data, journeyData, user, to])
 
   function handleClick(): void {
     setShowRedirectButton(!showRedirectButton)
@@ -181,7 +178,7 @@ export function CodeDestination({
           }}
         >
           <ChangeButton
-            disabled={disabled}
+            disabled={disableChange}
             showRedirectButton={showRedirectButton}
             handleClick={handleClick}
             handleRedirect={handleRedirect}
@@ -202,7 +199,7 @@ export function CodeDestination({
         sx={{ display: { xs: 'flex', sm: 'none' } }}
       >
         <ChangeButton
-          disabled={disabled}
+          disabled={disableChange}
           showRedirectButton={showRedirectButton}
           handleClick={handleClick}
           handleRedirect={handleRedirect}

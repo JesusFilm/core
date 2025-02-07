@@ -76,7 +76,7 @@ export function QrCodeDialog({
     QrCodeUpdate,
     QrCodeUpdateVariables
   >(QR_CODE_UPDATE)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   const { data, loading: getLoading } = useQuery<
     GetJourneyQrCodes,
@@ -89,9 +89,9 @@ export function QrCodeDialog({
     }
   })
 
-  const to = getTo(data?.qrCodes[0])
-  const shortLink = getShortLink(data?.qrCodes[0])
   const qrCode = data?.qrCodes[0]
+  const to = getTo(qrCode)
+  const shortLink = getShortLink(qrCode)
 
   useEffect(() => {
     if (getLoading || createLoading || updateLoading) {
@@ -148,11 +148,16 @@ export function QrCodeDialog({
         }
       },
       onError: () => {
-        enqueueSnackbar(t('Failed to update QR Code'), {
-          variant: 'error',
-          preventDuplicate: true
-        })
-        throw new Error('Failed to update QR Code')
+        enqueueSnackbar(
+          t('Failed to update QR Code, make sure new URL is valid'),
+          {
+            variant: 'error',
+            preventDuplicate: true
+          }
+        )
+        throw new Error(
+          t('Failed to update QR Code, make sure new URL is valid')
+        )
       }
     })
   }

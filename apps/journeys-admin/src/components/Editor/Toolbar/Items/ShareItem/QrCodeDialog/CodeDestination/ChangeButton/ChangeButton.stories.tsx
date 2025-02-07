@@ -38,7 +38,7 @@ export const Disabled = {
   }
 }
 
-export const Clickedtest = {
+export const Redirect = {
   ...Template,
   args: {
     disabled: false,

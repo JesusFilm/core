@@ -1,9 +1,21 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { ReactElement, useState } from 'react'
+import noop from 'lodash/noop'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { QrCodeDialog } from './QrCodeDialog'
+import { GET_JOURNEY_QR_CODES, QrCodeDialog } from './QrCodeDialog'
+import { MockedResponse } from '@apollo/client/testing'
+import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
+import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
+import { Role } from 'libs/journeys/ui/__generated__/globalTypes'
+import { QrCodeFields } from '../../../../../../../__generated__/QrCodeFields'
+import {
+  GetJourneyQrCodes,
+  GetJourneyQrCodesVariables
+} from '../../../../../../../__generated__/GetJourneyQrCodes'
+import { GetJourney_journey as Journey } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { ComponentPropsWithoutRef } from 'react'
 
 const meta: Meta<typeof QrCodeDialog> = {
   ...journeysAdminConfig,
@@ -15,30 +27,80 @@ const meta: Meta<typeof QrCodeDialog> = {
   }
 }
 
-const QrCodeDialogComponent = ({ ...args }): ReactElement => {
-  const [open, setOpen] = useState(true)
-
-  function handleClose(): void {
-    setOpen(false)
+const journey = {
+  id: 'journey.id',
+  team: {
+    id: 'team.id'
   }
-
-  return (
-    <QrCodeDialog
-      open={open}
-      onClose={handleClose}
-      initialJourneyUrl={args.initialJourneyUrl}
-    />
-  )
+} as unknown as Journey
+const qrCode: QrCodeFields = {
+  __typename: 'QrCode',
+  id: 'qrCode.id',
+  toJourneyId: 'journey.id',
+  shortLink: {
+    __typename: 'ShortLink',
+    id: 'shortLink.id',
+    domain: {
+      __typename: 'ShortLinkDomain',
+      hostname: 'localhost'
+    },
+    pathname: 'path',
+    to: 'http://localhost:4100/journeySlug?utm_source=ns-qr-code&utm_campaign=$shortLink.id'
+  }
+}
+const getUserRoleMock: MockedResponse<GetUserRole> = {
+  request: {
+    query: GET_USER_ROLE
+  },
+  result: {
+    data: {
+      getUserRole: {
+        __typename: 'UserRole',
+        id: 'user.id',
+        roles: [Role.publisher]
+      }
+    }
+  }
+}
+const getJourneyQrCodesMock: MockedResponse<
+  GetJourneyQrCodes,
+  GetJourneyQrCodesVariables
+> = {
+  request: {
+    query: GET_JOURNEY_QR_CODES,
+    variables: {
+      where: {
+        journeyId: 'journey.id'
+      }
+    }
+  },
+  result: {
+    data: {
+      qrCodes: [qrCode]
+    }
+  }
 }
 
-const Template: StoryObj<typeof QrCodeDialog> = {
-  render: ({ ...args }) => <QrCodeDialogComponent {...args} />
+const Template: StoryObj<ComponentPropsWithoutRef<typeof QrCodeDialog>> = {
+  render: ({ ...args }) => {
+    return (
+      <JourneyProvider value={{ journey }}>
+        <QrCodeDialog {...args} />
+      </JourneyProvider>
+    )
+  }
 }
 
 export const Default = {
   ...Template,
   args: {
-    open: true
+    open: true,
+    onClose: noop
+  },
+  parameters: {
+    apolloClient: {
+      mocks: [getUserRoleMock]
+    }
   }
 }
 
@@ -46,7 +108,12 @@ export const WithQRCode = {
   ...Template,
   args: {
     open: true,
-    initialJourneyUrl: 'url'
+    onClose: noop
+  },
+  parameters: {
+    apolloClient: {
+      mocks: [getUserRoleMock, getJourneyQrCodesMock]
+    }
   }
 }
 

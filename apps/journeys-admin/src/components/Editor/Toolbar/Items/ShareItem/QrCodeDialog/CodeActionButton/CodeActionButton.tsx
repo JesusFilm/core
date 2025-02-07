@@ -33,7 +33,7 @@ export function CodeActionButton({
     setShowDownloadMenu(!showDownloadMenu)
   }
 
-  function handleCodeActionButton(type: 'png' | 'svg'): void {
+  function handleDownload(type: 'png' | 'svg'): void {
     const canvas = document.getElementById(
       'qr-code-download'
     ) as HTMLCanvasElement | null
@@ -99,7 +99,7 @@ export function CodeActionButton({
             color="secondary"
             size="medium"
             onClick={() => {
-              handleCodeActionButton('png')
+              handleDownload('png')
               setShowDownloadMenu(false)
             }}
           >
@@ -133,7 +133,7 @@ export function CodeActionButton({
                 <MenuList id="split-button-menu" autoFocusItem>
                   <MenuItem
                     onClick={() => {
-                      handleCodeActionButton('svg')
+                      handleDownload('svg')
                       setShowDownloadMenu(false)
                     }}
                   >

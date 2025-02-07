@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/test'
+import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
@@ -20,24 +21,42 @@ const meta: Meta<typeof CodeActionButton> = {
 type Story = StoryObj<ComponentProps<typeof CodeActionButton>>
 
 const Template: Story = {
-  render: ({ to }) => <CodeActionButton to={to} />
+  render: ({ ...args }) => <CodeActionButton {...args} />
 }
 
 export const Default = {
   ...Template,
   args: {
-    to: 'url'
+    shortLink: 'url',
+    loading: false,
+    handleGenerateQrCode: noop
   }
 }
 
-export const Disabled = {
-  ...Template
+export const Generate = {
+  ...Template,
+  args: {
+    shortLink: undefined,
+    loading: false,
+    handleGenerateQrCode: noop
+  }
+}
+
+export const Loading = {
+  ...Template,
+  args: {
+    shortLink: undefined,
+    loading: true,
+    handleGenerateQrCode: noop
+  }
 }
 
 export const Dropdown = {
   ...Template,
   args: {
-    to: 'url'
+    shortLink: 'url',
+    loading: false,
+    handleGenerateQrCode: noop
   },
   play: async () => {
     await userEvent.click(screen.getByTestId('DownloadDropdown'))
