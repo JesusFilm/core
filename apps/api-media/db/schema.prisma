@@ -153,6 +153,10 @@ enum VideoVariantDownloadQuality {
   high
 }
 
+enum AITranslationSource {
+  heygen
+}
+
 model VideoVariantDownload {
   id             String                      @id @default(uuid())
   quality        VideoVariantDownloadQuality
@@ -183,6 +187,7 @@ model VideoVariant {
   slug                 String                 @unique
   video                Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId              String
+  aiTranslationSource  AITranslationSource?
 
   @@unique([languageId, videoId])
   @@index(languageId(type: Hash))

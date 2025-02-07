@@ -1,8 +1,15 @@
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
+
+import { GetLanguages_languages as Language } from '@core/journeys/ui/useLanguagesQuery/__generated__/GetLanguages'
 
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { Section } from '../Section'
@@ -17,9 +24,20 @@ import { VideoSnippet } from './VideoSnippet'
 interface MetadataProps {
   video: AdminVideo
   loading: boolean
+  missingLanguages?: Language[]
+  selectedLanguage: string
+  onLanguageChange: (event: { target: { value: string } }) => void
+  onCreateVariant: () => Promise<void>
 }
 
-export function Metadata({ video, loading }: MetadataProps): ReactElement {
+export function Metadata({
+  video,
+  loading,
+  missingLanguages,
+  selectedLanguage,
+  onLanguageChange,
+  onCreateVariant
+}: MetadataProps): ReactElement {
   const t = useTranslations()
 
   return (
@@ -33,6 +51,37 @@ export function Metadata({ video, loading }: MetadataProps): ReactElement {
           <Section title={t('Information')} variant="outlined">
             <VideoInformation video={video} />
           </Section>
+          {missingLanguages != null && missingLanguages.length > 0 && (
+            <Section title={t('Language Variants')} variant="outlined">
+              <Stack direction="row" spacing={2} alignItems="center">
+                <FormControl sx={{ minWidth: 200 }}>
+                  <InputLabel id="missing-language-label">
+                    {t('Add Language Variant')}
+                  </InputLabel>
+                  <Select
+                    labelId="missing-language-label"
+                    value={selectedLanguage}
+                    onChange={onLanguageChange}
+                    label={t('Add Language Variant')}
+                  >
+                    {missingLanguages.map((language) => (
+                      <MenuItem key={language.id} value={language.id}>
+                        {language.name.find((name) => name.primary)?.value}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <Button
+                  variant="contained"
+                  onClick={onCreateVariant}
+                  disabled={!selectedLanguage}
+                  color="secondary"
+                >
+                  {t('Create Variant')}
+                </Button>
+              </Stack>
+            </Section>
+          )}
           <Section title={t('Image')} variant="outlined">
             <Stack gap={4}>
               <VideoImage video={video} />

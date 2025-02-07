@@ -208,6 +208,12 @@
         ],
         "parallel": false
       }
+    },
+    "export-languages": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node apps/videos-admin/scripts/exportLanguages.ts"
+      }
     }
   }
 }

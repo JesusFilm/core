@@ -1,7 +1,9 @@
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
-import { FixedSizeList } from 'react-window'
+import { FixedSizeList, ListChildComponentProps } from 'react-window'
 
 import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
 import { Section } from '../Section'
@@ -45,6 +47,7 @@ export function Variants({
     height: 0,
     width: 0
   })
+
   function getVariantSectionDimensions(): void {
     const section = document.getElementById('Audio Languages-section')
     if (section == null) return
@@ -64,46 +67,51 @@ export function Variants({
     return new Map(variants?.map((variant) => [variant.language.id, variant]))
   }, [variants])
 
+  function renderRow(
+    props: ListChildComponentProps<{
+      variants: GetAdminVideoVariant[]
+      onClick: (variant: GetAdminVideoVariant) => void
+    }>
+  ): ReactElement {
+    const { data, index, style } = props
+    const variant = data.variants[index]
+    return (
+      <VariantCard variant={variant} style={style} onClick={data.onClick} />
+    )
+  }
+
   return (
-    <>
-      {variants != null && (
-        <Section
-          boxProps={{
-            sx: { p: 2, height: 'calc(100vh - 400px)' }
-          }}
-          // if you change the title, change the element selected in the getVariantSectionDimensions function above
-          title={t('Audio Languages')}
-          variant="outlined"
-        >
+    <Section
+      title={t('Audio Languages')}
+      sx={{ height: '100%' }}
+      variant="outlined"
+    >
+      <Stack spacing={2}>
+        {/* Existing variants list */}
+        <Box sx={{ height: size.height - ITEM_SIZE }}>
           <FixedSizeList
-            width={size.width - 20}
-            height={size.height - 90}
-            itemData={variants}
-            itemCount={variants.length}
+            height={size.height - ITEM_SIZE}
+            width="100%"
+            itemCount={variants?.length ?? 0}
             itemSize={ITEM_SIZE}
-            overscanCount={10}
-            style={{
-              marginTop: 8
+            itemData={{
+              variants: variants ?? [],
+              onClick: handleCardClick
             }}
           >
-            {({ index, style, data: items }) => (
-              <VariantCard
-                variant={items[index]}
-                style={style}
-                onClick={handleCardClick}
-              />
-            )}
+            {renderRow}
           </FixedSizeList>
-        </Section>
-      )}
-      {open != null && selectedVariant != null && (
+        </Box>
+      </Stack>
+
+      {selectedVariant != null && (
         <VariantDialog
-          open={open}
-          handleClose={handleClose}
           variant={selectedVariant}
+          open={open ?? false}
+          handleClose={handleClose}
           variantLanguagesMap={variantLanguagesMap}
         />
       )}
-    </>
+    </Section>
   )
 }

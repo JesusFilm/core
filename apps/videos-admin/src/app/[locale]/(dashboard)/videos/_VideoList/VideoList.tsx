@@ -106,6 +106,8 @@ export function VideoList(): ReactElement {
     refetch
   } = useQuery<GetHeyGenLanguages>(GET_HEYGEN_LANGUAGES)
 
+  console.log('languagesData', languagesData)
+
   const rows: GridRowsProp =
     data?.adminVideos?.map((video) => {
       const title = video?.title?.find(({ primary }) => primary)?.value
