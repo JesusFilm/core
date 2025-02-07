@@ -1,5 +1,5 @@
 import { JourneyGenerationInput } from '../schema/ai/journey-generation.types'
-import { AiJourneyGenerator } from '../services/ai-journey-generator'
+import { AiJourneyGenerator } from '../models/ai-journey-generator/ai-journey-generator'
 
 async function testJourneyGeneration(): Promise<void> {
   try {

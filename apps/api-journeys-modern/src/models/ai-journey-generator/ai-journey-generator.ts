@@ -8,8 +8,8 @@ import {
   TemplateSelectionSchema,
   TheologicalValidation,
   TheologicalValidationSchema
-} from '../schema/ai/journey-generation.types'
-import { JourneySchema } from '../schema/journey/journey.zod'
+} from '../../schema/ai/journey-generation.types'
+import { JourneySchema } from '../../schema/journey/journey.zod'
 
 const openai = createOpenAI({
   compatibility: 'strict',

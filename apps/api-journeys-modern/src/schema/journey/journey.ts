@@ -1,6 +1,6 @@
 import { createSchema } from 'graphql-yoga'
 
-import { AiJourneyGenerator } from '../../services/ai-journey-generator'
+import { AiJourneyGenerator } from '../../models/ai-journey-generator/ai-journey-generator'
 import { JourneyGenerationInput } from '../ai/journey-generation.types'
 import { builder } from '../builder'
 
