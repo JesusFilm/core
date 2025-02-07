@@ -125,7 +125,10 @@ export class CustomDomainResolver {
           )
         }
 
-        await this.qrCodeService.updateTeamShortLinks(customDomain.teamId)
+        await this.qrCodeService.updateTeamShortLinks(
+          customDomain.teamId,
+          customDomain.name
+        )
 
         return customDomain
       })
@@ -189,7 +192,10 @@ export class CustomDomainResolver {
       })
 
     await this.prismaService.$transaction(async (tx) => {
-      await this.qrCodeService.updateTeamShortLinks(customDomain.teamId)
+      await this.qrCodeService.updateTeamShortLinks(
+        customDomain.teamId,
+        customDomain.name
+      )
 
       await tx.customDomain.delete({
         where: { id }

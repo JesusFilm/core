@@ -64,11 +64,11 @@ export class QrCodeResolver {
     @CaslAbility() ability: AppAbility
   ): Promise<QrCode> {
     const shortLinkId = uuidv4()
-    const to = await this.qrCodeService.getTo(
+    const to = await this.qrCodeService.getTo({
       shortLinkId,
-      input.teamId,
-      input.journeyId
-    )
+      teamId: input.teamId,
+      toJourneyId: input.journeyId
+    })
 
     return await this.prismaService.$transaction(async (tx) => {
       if (process.env.JOURNEYS_SHORTLINK_DOMAIN == null)
@@ -121,12 +121,12 @@ export class QrCodeResolver {
       if (input.to != null) {
         const { toJourneyId, toBlockId } =
           await this.qrCodeService.parseAndVerifyTo(qrCode, input.to)
-        const to = await this.qrCodeService.getTo(
-          qrCode.shortLinkId,
-          qrCode.teamId,
-          toJourneyId ?? qrCode.toJourneyId,
-          toBlockId
-        )
+        const to = await this.qrCodeService.getTo({
+          shortLinkId: qrCode.shortLinkId,
+          teamId: qrCode.teamId,
+          toJourneyId: toJourneyId ?? qrCode.toJourneyId,
+          toBlockId: toBlockId
+        })
         await this.qrCodeService.updateShortLink({
           id: qrCode.shortLinkId,
           to
