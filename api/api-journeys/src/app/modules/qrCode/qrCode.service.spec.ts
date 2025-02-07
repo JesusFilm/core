@@ -300,7 +300,11 @@ describe('QrCodeService', () => {
       prismaService.journey.findUniqueOrThrow.mockResolvedValueOnce(journey)
       prismaService.customDomain.findMany.mockResolvedValueOnce([])
 
-      const result = await service.getTo('shortLinkId', 'teamId', 'journeyId')
+      const result = await service.getTo({
+        shortLinkId: 'shortLinkId',
+        teamId: 'teamId',
+        toJourneyId: 'journeyId'
+      })
       expect(result).toBe(
         'https://your.nextstep.is/journeySlug?utm_source=ns-qr-code&utm_campaign=shortLinkId'
       )
@@ -311,12 +315,12 @@ describe('QrCodeService', () => {
       prismaService.customDomain.findMany.mockResolvedValueOnce([])
       prismaService.block.findUniqueOrThrow.mockResolvedValueOnce(toBlock)
 
-      const result = await service.getTo(
-        'shortLinkId',
-        'teamId',
-        'journeyId',
-        'toBlockId'
-      )
+      const result = await service.getTo({
+        shortLinkId: 'shortLinkId',
+        teamId: 'teamId',
+        toJourneyId: 'journeyId',
+        toBlockId: 'toBlockId'
+      })
       expect(result).toBe(
         'https://your.nextstep.is/journeySlug/toBlockId?utm_source=ns-qr-code&utm_campaign=shortLinkId'
       )
@@ -326,9 +330,29 @@ describe('QrCodeService', () => {
       prismaService.journey.findUniqueOrThrow.mockResolvedValueOnce(journey)
       prismaService.customDomain.findMany.mockResolvedValueOnce([customDomain])
 
-      const result = await service.getTo('shortLinkId', 'teamId', 'journeyId')
+      const result = await service.getTo({
+        shortLinkId: 'shortLinkId',
+        teamId: 'teamId',
+        toJourneyId: 'journeyId'
+      })
       expect(result).toBe(
         'https://custom.domain/journeySlug?utm_source=ns-qr-code&utm_campaign=shortLinkId'
+      )
+    })
+
+    it('returns to for new custom domain name and journey slug', async () => {
+      prismaService.journey.findUniqueOrThrow.mockResolvedValueOnce(journey)
+      prismaService.customDomain.findMany.mockResolvedValueOnce([customDomain])
+
+      const result = await service.getTo({
+        shortLinkId: 'shortLinkId',
+        teamId: 'teamId',
+        toJourneyId: 'journeyId',
+        newCustomDomain: 'newCustom.domain',
+        newJourneySlug: 'newJourneySlug'
+      })
+      expect(result).toBe(
+        'https://newCustom.domain/newJourneySlug?utm_source=ns-qr-code&utm_campaign=shortLinkId'
       )
     })
 
@@ -338,7 +362,11 @@ describe('QrCodeService', () => {
       )
 
       await expect(
-        service.getTo('shortLinkId', 'teamId', 'journeyId')
+        service.getTo({
+          shortLinkId: 'shortLinkId',
+          teamId: 'teamId',
+          toJourneyId: 'journeyId'
+        })
       ).rejects.toThrow('Journey not found')
     })
 
@@ -350,16 +378,32 @@ describe('QrCodeService', () => {
       )
 
       await expect(
-        service.getTo('shortLinkId', 'teamId', 'journeyId', 'blockId')
+        service.getTo({
+          shortLinkId: 'shortLinkId',
+          teamId: 'teamId',
+          toJourneyId: 'journeyId',
+          toBlockId: 'blockId'
+        })
       ).rejects.toThrow('Block not found')
     })
   })
 
   describe('updateTeamShortLinks', () => {
-    it('updates short links', async () => {
+    it('updates short links if the qrCode has not been redirected', async () => {
       const qrCodes = [
         qrCode,
-        { id: 'qrCodeId2', teamId: 'teamId' } as unknown as QrCode
+        {
+          id: 'qrCodeId2',
+          teamId: 'teamId',
+          journeyId: 'journey2.id',
+          toJourneyId: 'journey2.id'
+        } as unknown as QrCode,
+        {
+          id: 'qrCodeId3',
+          teamId: 'teamId',
+          journeyId: 'journey3.id',
+          toJourneyId: 'journey3.id'
+        } as unknown as QrCode
       ]
       prismaService.qrCode.findMany.mockResolvedValue(qrCodes)
 
@@ -376,14 +420,18 @@ describe('QrCodeService', () => {
           } as unknown as ApolloQueryResult<unknown>)
       )
 
-      await service.updateTeamShortLinks('teamId')
+      await service.updateTeamShortLinks('teamId', 'newDomain')
       expect(ApolloClient.prototype.mutate).toHaveBeenCalledTimes(2)
     })
   })
 
   describe('updateJourneyShortLink', () => {
     it('updates short link', async () => {
-      prismaService.qrCode.findFirst.mockResolvedValue(qrCode)
+      prismaService.qrCode.findFirst.mockResolvedValue({
+        ...qrCode,
+        journeyId: 'toJourneyId',
+        toJourneyId: 'toJourneyId'
+      })
       jest.spyOn(service, 'getTo').mockResolvedValue('to')
 
       jest.spyOn(ApolloClient.prototype, 'mutate').mockImplementation(
@@ -398,7 +446,7 @@ describe('QrCodeService', () => {
           } as unknown as ApolloQueryResult<unknown>)
       )
 
-      await service.updateJourneyShortLink('qrCodeId')
+      await service.updateJourneyShortLink('toJourneyId', 'newJourneySlug')
       expect(ApolloClient.prototype.mutate).toHaveBeenCalledTimes(1)
     })
   })
