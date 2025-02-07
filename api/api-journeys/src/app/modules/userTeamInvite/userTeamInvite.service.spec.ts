@@ -4,8 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { Team, UserTeamRole } from '.prisma/api-journeys-client'
 
 import { TeamWithUserTeam } from '../../lib/prisma.types'
-import { UserTeamInviteModule } from './userTeamInvite.module'
 
+import { UserTeamInviteModule } from './userTeamInvite.module'
 import { UserTeamInviteService } from './userTeamInvite.service'
 
 describe('UserTeamService', () => {

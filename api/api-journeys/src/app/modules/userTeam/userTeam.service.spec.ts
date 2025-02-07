@@ -2,8 +2,8 @@ import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
 
 import { Team } from '../../__generated__/graphql'
-import { UserTeamModule } from './userTeam.module'
 
+import { UserTeamModule } from './userTeam.module'
 import { UserTeamService } from './userTeam.service'
 
 describe('UserTeamService', () => {

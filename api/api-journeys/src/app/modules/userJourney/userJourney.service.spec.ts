@@ -2,8 +2,8 @@ import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
 
 import { JourneyWithTeamAndUserJourney } from '../../lib/prisma.types'
-import { UserJourneyModule } from './userJourney.module'
 
+import { UserJourneyModule } from './userJourney.module'
 import { UserJourneyService } from './userJourney.service'
 
 describe('UserJourneyService', () => {
