@@ -1,10 +1,11 @@
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import { Trans, useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import Calendar2Icon from '@core/shared/ui/icons/Calendar2'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
 import {
@@ -14,8 +15,6 @@ import {
 import { UserJourneyRole } from '../../../../../__generated__/globalTypes'
 import { AccessAvatars } from '../../../AccessAvatars'
 import { JourneyCardVariant } from '../journeyCardVariant'
-
-import { LastModifiedDate } from './LastModifiedDate'
 
 interface JourneyCardInfoProps {
   journey: Journey
@@ -89,8 +88,24 @@ export function JourneyCardInfo({
           <Typography variant="caption">
             {journey.language.name.find(({ primary }) => primary)?.value}
           </Typography>
-          <Edit2Icon sx={{ fontSize: 16 }} />
-          <LastModifiedDate modifiedDate={journey.updatedAt} />
+          <Calendar2Icon sx={{ fontSize: 13 }} />
+          <Typography
+            variant="caption"
+            noWrap
+            sx={{
+              display: 'block',
+              color: 'secondary.main'
+            }}
+            suppressHydrationWarning
+          >
+            {intlFormat(parseISO(journey.createdAt as string), {
+              day: 'numeric',
+              month: 'long',
+              year: isThisYear(parseISO(String(journey.createdAt)))
+                ? undefined
+                : 'numeric'
+            })}
+          </Typography>
         </Stack>
       )}
     </Stack>
