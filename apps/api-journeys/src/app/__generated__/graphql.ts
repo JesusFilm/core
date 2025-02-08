@@ -736,6 +736,8 @@ export class JourneyUpdateInput {
     menuButtonIcon?: Nullable<JourneyMenuButtonIcon>;
     menuStepBlockId?: Nullable<string>;
     logoImageBlockId?: Nullable<string>;
+    socialNodeX?: Nullable<number>;
+    socialNodeY?: Nullable<number>;
 }
 
 export class JourneyTemplateInput {
@@ -1157,6 +1159,8 @@ export class Journey {
     showMenu?: Nullable<boolean>;
     showDisplayTitle?: Nullable<boolean>;
     menuButtonIcon?: Nullable<JourneyMenuButtonIcon>;
+    socialNodeX?: Nullable<number>;
+    socialNodeY?: Nullable<number>;
     userJourneys?: Nullable<UserJourney[]>;
 }
 
