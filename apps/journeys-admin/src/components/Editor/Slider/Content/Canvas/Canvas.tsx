@@ -234,9 +234,9 @@ export function Canvas(): ReactElement {
                         transition: 'opacity 0.3s ease'
                       },
                       position: 'relative',
-                      width: 'calc(100% - 20px)',
-                      height: 'calc(100vh - 20px)',
-                      m: '10px'
+                      width: 'calc(100% - 24px)',
+                      height: 'calc(100vh - 24px)',
+                      m: '12px'
                     }}
                   >
                     <CSSTransition
