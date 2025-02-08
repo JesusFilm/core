@@ -1,11 +1,9 @@
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { intlFormat, isThisYear, parseISO } from 'date-fns'
 import { Trans, useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import Calendar2Icon from '@core/shared/ui/icons/Calendar2'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 
 import {
@@ -83,28 +81,10 @@ export function JourneyCardInfo({
           )}
         </>
       ) : (
-        <Stack direction="row" alignItems="center" spacing={2}>
+        <Stack direction="row" alignItems="center" spacing={1.5}>
           <Globe1Icon sx={{ fontSize: 13 }} />
           <Typography variant="caption">
             {journey.language.name.find(({ primary }) => primary)?.value}
-          </Typography>
-          <Calendar2Icon sx={{ fontSize: 13 }} />
-          <Typography
-            variant="caption"
-            noWrap
-            sx={{
-              display: 'block',
-              color: 'secondary.main'
-            }}
-            suppressHydrationWarning
-          >
-            {intlFormat(parseISO(journey.createdAt as string), {
-              day: 'numeric',
-              month: 'long',
-              year: isThisYear(parseISO(String(journey.createdAt)))
-                ? undefined
-                : 'numeric'
-            })}
           </Typography>
         </Stack>
       )}
