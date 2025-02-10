@@ -72,7 +72,7 @@ locals {
 }
 
 module "api-gateway-stage" {
-  source           = "../../../apps/api-gateway/infrastructure"
+  source           = "../../../apis/api-gateway/infrastructure"
   ecs_config       = local.public_ecs_config
   env              = "stage"
   doppler_token    = data.aws_ssm_parameter.doppler_api_gateway_stage_token.value
@@ -81,7 +81,7 @@ module "api-gateway-stage" {
 }
 
 module "api-analytics" {
-  source                = "../../../apps/api-analytics/infrastructure"
+  source                = "../../../apis/api-analytics/infrastructure"
   ecs_config            = local.internal_ecs_config
   env                   = "stage"
   doppler_token         = data.aws_ssm_parameter.doppler_api_analytics_stage_token.value
@@ -94,7 +94,7 @@ module "api-analytics" {
 }
 
 module "api-journeys" {
-  source        = "../../../apps/api-journeys/infrastructure"
+  source        = "../../../apis/api-journeys/infrastructure"
   ecs_config    = local.internal_ecs_config
   env           = "stage"
   doppler_token = data.aws_ssm_parameter.doppler_api_journeys_stage_token.value
@@ -105,7 +105,7 @@ module "api-journeys" {
 }
 
 module "api-journeys-modern" {
-  source        = "../../../apps/api-journeys-modern/infrastructure"
+  source        = "../../../apis/api-journeys-modern/infrastructure"
   ecs_config    = local.internal_ecs_config
   env           = "stage"
   doppler_token = data.aws_ssm_parameter.doppler_api_journeys_stage_token.value
@@ -116,7 +116,7 @@ module "api-journeys-modern" {
 }
 
 module "api-languages" {
-  source        = "../../../apps/api-languages/infrastructure"
+  source        = "../../../apis/api-languages/infrastructure"
   ecs_config    = local.internal_ecs_config
   env           = "stage"
   doppler_token = data.aws_ssm_parameter.doppler_api_languages_stage_token.value
@@ -127,7 +127,7 @@ module "api-languages" {
 }
 
 module "api-users" {
-  source        = "../../../apps/api-users/infrastructure"
+  source        = "../../../apis/api-users/infrastructure"
   ecs_config    = local.internal_ecs_config
   env           = "stage"
   doppler_token = data.aws_ssm_parameter.doppler_api_users_stage_token.value
@@ -138,7 +138,7 @@ module "api-users" {
 }
 
 module "api-media" {
-  source        = "../../../apps/api-media/infrastructure"
+  source        = "../../../apis/api-media/infrastructure"
   ecs_config    = local.internal_ecs_config
   env           = "stage"
   doppler_token = data.aws_ssm_parameter.doppler_api_media_stage_token.value
