@@ -170,7 +170,7 @@ export function Canvas(): ReactElement {
             flexGrow: { xs: 1, md: 0 },
             height: { xs: '100%', md: 'auto' },
             pb: { xs: 5, md: 0 },
-            px: { xs: 3, md: 8 },
+            px: { xs: 3, md: 5 },
             justifyContent: 'center'
           }}
         >
@@ -181,9 +181,12 @@ export function Canvas(): ReactElement {
                 `${fadeIn} ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeInOut} 0.5s backwards`,
               position: 'relative',
               maxHeight: CARD_HEIGHT,
-              maxWidth: CARD_WIDTH,
+              width: CARD_WIDTH,
               transform: `scale(${scale})`,
-              transformOrigin: { xs: 'center', md: 'right' },
+              transformOrigin: {
+                xs: 'center',
+                md: activeSlide === ActiveSlide.JourneyFlow ? 'right' : 'center'
+              },
               my: `${calculateScaledMargin(CARD_HEIGHT, scale)}`,
               mx: `${calculateScaledMargin(CARD_WIDTH, scale)}`,
               borderRadius: 8,
@@ -194,6 +197,7 @@ export function Canvas(): ReactElement {
                   delay: 100,
                   easing: 'ease-out'
                 }),
+
               outline: (theme) =>
                 selectedStep.id === selectedBlock?.id
                   ? `2px solid ${theme.palette.primary.main}`
@@ -208,6 +212,7 @@ export function Canvas(): ReactElement {
           >
             <FramePortal
               height="100%"
+              width="100%"
               dir={rtl ? 'rtl' : 'ltr'}
               // frameRef assists to see if user is copying text from typog blocks
               ref={frameRef}
