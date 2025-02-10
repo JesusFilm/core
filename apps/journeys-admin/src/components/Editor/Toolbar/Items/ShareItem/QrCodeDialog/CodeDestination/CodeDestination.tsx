@@ -133,9 +133,10 @@ export function CodeDestination({
   }
 
   async function handleRedirect(): Promise<void> {
-    if (value === originalToRef.current) return
+    if (value === to) return
     try {
       await handleUpdateTo(value)
+      originalToRef.current = to
       setShowRedirectDialog(true)
     } catch (error) {
       setValue(to ?? '')
