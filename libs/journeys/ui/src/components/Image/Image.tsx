@@ -24,6 +24,8 @@ export function Image({
     return blurImage(blurhash, theme.palette.background.paper)
   }, [blurhash, theme])
 
+  console.log('rendering image: ', alt)
+
   return (
     <Box
       data-testid={`JourneysImage-${id}`}
@@ -43,6 +45,7 @@ export function Image({
           blurDataURL={placeholderSrc ?? src}
           layout="responsive"
           objectFit="cover"
+          priority
         />
       ) : (
         <Paper
