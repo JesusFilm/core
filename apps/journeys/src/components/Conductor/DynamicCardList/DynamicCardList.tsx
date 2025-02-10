@@ -74,8 +74,7 @@ const DynamicCard = forwardRef<HTMLDivElement, DynamicCardProps>(
           position: isPreRender ? 'absolute' : 'relative',
           height: '100%',
           display: 'block',
-          // opacity: isPreRender ? 0 : 1,
-          visibility: isPreRender ? 'hidden' : 'visible'
+          opacity: isPreRender ? 0 : 1
         }}
       >
         {isCurrent || isPreRender ? (
