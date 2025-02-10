@@ -324,7 +324,7 @@
     "playwright-lighthouse": "^2.2.2",
     "prettier": "3.4.2",
     "prisma": "^5.2.0",
-    "prisma-erd-generator": "^1.11.2",
+    "prisma-erd-generator": "^2.0.0",
     "react-refresh": "^0.16.0",
     "source-map-loader": "^5.0.0",
     "storybook-addon-apollo-client": "^7.3.0",
