@@ -71,9 +71,11 @@ const DynamicCard = forwardRef<HTMLDivElement, DynamicCardProps>(
         onClick={() => setShowNavigation(true)}
         sx={{
           width: 'inherit',
-          position: 'relative',
+          position: isPreRender ? 'absolute' : 'relative',
           height: '100%',
-          display: isCurrent ? 'block' : 'none'
+          display: 'block',
+          // opacity: isPreRender ? 0 : 1,
+          visibility: isPreRender ? 'hidden' : 'visible'
         }}
       >
         {isCurrent || isPreRender ? (
