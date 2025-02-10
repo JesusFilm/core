@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
+import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
@@ -8,6 +9,7 @@ import { ReactElement, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import Edit2 from '@core/shared/ui/icons/Edit2'
+import Upload1 from '@core/shared/ui/icons/Upload1'
 
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
@@ -60,13 +62,30 @@ export function VideoImage({ video }: VideoImageProps): ReactElement {
           flexShrink: 0
         }}
       >
-        <Image
-          src={src as string}
-          alt={alt ?? t('video image')}
-          layout="fill"
-          objectFit="cover"
-          priority
-        />
+        {src != null ? (
+          <Image
+            src={src}
+            alt={alt ?? t('video image')}
+            layout="fill"
+            objectFit="cover"
+            priority
+          />
+        ) : (
+          <Stack
+            sx={{
+              bgcolor: 'background.paper',
+              height: '100%',
+              width: '100%',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            <Upload1 />
+            <Typography variant="subtitle2" fontSize={14}>
+              {t('Upload image')}
+            </Typography>
+          </Stack>
+        )}
         <Tooltip title={t('Change image')}>
           <IconButton
             onClick={handleOpen}

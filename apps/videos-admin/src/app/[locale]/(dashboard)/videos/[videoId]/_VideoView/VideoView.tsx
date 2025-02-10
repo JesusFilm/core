@@ -8,10 +8,11 @@ import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { ReactElement, SyntheticEvent, useState } from 'react'
+import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { PublishedChip } from '../../../../../../components/PublishedChip'
 import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
+import { useVideoStore } from '../../../../../../libs/useVideoStore'
 
 import { Metadata } from './Metadata'
 import { TabContainer } from './Tabs/TabContainer'
@@ -23,16 +24,25 @@ import { getVideoChildrenLabel } from './VideoChildren/getVideoChildrenLabel'
 export function VideoView(): ReactElement {
   const t = useTranslations()
   const params = useParams<{ videoId: string; locale: string }>()
+
+  const setVideo = useVideoStore((state) => state.setVideo)
+
   const [tabValue, setTabValue] = useState(0)
   const { data, loading } = useAdminVideo({
     variables: { videoId: params?.videoId as string }
   })
   const video = data?.adminVideo
-  const videoTitle = data?.adminVideo.title[0].value
+  const videoTitle = data?.adminVideo.title?.[0]?.value ?? ''
 
   function handleTabChange(_e: SyntheticEvent, newValue: number): void {
     setTabValue(newValue)
   }
+
+  useEffect(() => {
+    if (video != null) {
+      setVideo(video)
+    }
+  }, [video])
 
   const showVideoChildren: boolean =
     video?.label === 'collection' ||

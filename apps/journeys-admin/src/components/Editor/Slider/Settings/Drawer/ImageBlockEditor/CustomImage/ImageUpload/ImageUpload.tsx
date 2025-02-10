@@ -11,7 +11,7 @@ import { useDropzone } from 'react-dropzone'
 
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import CheckBrokenIcon from '@core/shared/ui/icons/CheckBroken'
-import Upload1IconIcon from '@core/shared/ui/icons/Upload1'
+import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { CreateCloudflareUploadByFile } from '../../../../../../../../../__generated__/CreateCloudflareUploadByFile'

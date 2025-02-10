@@ -12,6 +12,7 @@ import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 import { object, string } from 'yup'
 
 import { CancelButton } from '../../../../../../../../components/CancelButton'
@@ -52,6 +53,15 @@ export const UPDATE_VIDEO_INFORMATION = graphql(`
   }
 `)
 
+export const CREATE_VIDEO_TITLE = graphql(`
+  mutation CreateVideoTitle($input: VideoTranslationCreateInput!) {
+    videoTitleCreate(input: $input) {
+      id
+      value
+    }
+  }
+`)
+
 interface VideoInformationProps {
   video: AdminVideo
 }
@@ -61,6 +71,7 @@ export function VideoInformation({
 }: VideoInformationProps): ReactElement {
   const t = useTranslations()
   const [updateVideoInformation] = useMutation(UPDATE_VIDEO_INFORMATION)
+  const [createVideoTitle] = useMutation(CREATE_VIDEO_TITLE)
   const theme = useTheme()
   const jesusFilmUrl = 'jesusfilm.org/watch/'
 
@@ -74,6 +85,26 @@ export function VideoInformation({
   async function handleUpdateVideoInformation(
     values: FormikValues
   ): Promise<void> {
+    let titleId = video.title[0]?.id
+
+    if (titleId == null) {
+      console.log('create video title')
+      const res = await createVideoTitle({
+        variables: {
+          input: {
+            videoId: video.id,
+            value: values.title,
+            primary: true,
+            languageId: '529'
+          }
+        }
+      })
+
+      if (res.data?.videoTitleCreate == null) return
+
+      titleId = res.data.videoTitleCreate.id
+    }
+
     await updateVideoInformation({
       variables: {
         infoInput: {
@@ -83,7 +114,7 @@ export function VideoInformation({
           label: values.label
         },
         titleInput: {
-          id: video.title[0].id,
+          id: titleId,
           value: values.title
         }
       }
@@ -93,7 +124,7 @@ export function VideoInformation({
   return (
     <Formik
       initialValues={{
-        title: video.title[0].value,
+        title: video.title?.[0]?.value ?? '',
         url: video.slug,
         published: video.published === true ? 'published' : 'unpublished',
         label: video.label

@@ -11,6 +11,16 @@ import { object, string } from 'yup'
 import { CancelButton } from '../../../../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useVideoStore } from '../../../../../../../../libs/useVideoStore'
+
+export const CREATE_VIDEO_IMAGE_ALT = graphql(`
+  mutation CreateVideoImageAlt($input: VideoTranslationCreateInput!) {
+    videoImageAltCreate(input: $input) {
+      id
+      value
+    }
+  }
+`)
 
 export const UPDATE_VIDEO_IMAGE_ALT = graphql(`
   mutation UpdateVideoImageAlt($input: VideoTranslationUpdateInput!) {
@@ -29,7 +39,10 @@ export function VideoImageAlt({
   videoImageAlts
 }: VideoImageAltProps): ReactElement {
   const t = useTranslations()
+  const [createVideoImageAlt] = useMutation(CREATE_VIDEO_IMAGE_ALT)
   const [updateVideoImageAlt] = useMutation(UPDATE_VIDEO_IMAGE_ALT)
+
+  const video = useVideoStore((state) => state.video)
 
   const validationSchema = object().shape({
     imageAlt: string().trim().required(t('Image Alt is required'))
@@ -38,20 +51,35 @@ export function VideoImageAlt({
   async function handleUpdateVideoImageAlt(
     values: FormikValues
   ): Promise<void> {
-    await updateVideoImageAlt({
-      variables: {
-        input: {
-          id: videoImageAlts[0].id,
-          value: values.imageAlt
+    if (video == null) return
+
+    if (videoImageAlts.length === 0) {
+      await createVideoImageAlt({
+        variables: {
+          input: {
+            videoId: video.id,
+            value: values.imageAlt,
+            primary: true,
+            languageId: '529'
+          }
         }
-      }
-    })
+      })
+    } else {
+      await updateVideoImageAlt({
+        variables: {
+          input: {
+            id: videoImageAlts[0].id,
+            value: values.imageAlt
+          }
+        }
+      })
+    }
   }
 
   return (
     <Formik
       initialValues={{
-        imageAlt: videoImageAlts?.[0].value
+        imageAlt: videoImageAlts?.[0]?.value ?? ''
       }}
       onSubmit={handleUpdateVideoImageAlt}
       validationSchema={validationSchema}

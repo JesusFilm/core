@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikValues } from 'formik'
-import { graphql } from 'gql.tada'
+import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import unescape from 'lodash/unescape'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
@@ -12,6 +12,21 @@ import { CancelButton } from '../../../../../../../../components/CancelButton'
 import { ResizableTextField } from '../../../../../../../../components/ResizableTextField'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo_VideoDescriptions as VideoDescriptions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useVideoStore } from '../../../../../../../../libs/useVideoStore'
+
+export const CREATE_VIDEO_DESCRIPTION = graphql(`
+  mutation CreateVideoDescription($input: VideoTranslationCreateInput!) {
+    videoDescriptionCreate(input: $input) {
+      id
+      value
+    }
+  }
+`)
+
+export type CreateVideoDescription = ResultOf<typeof CREATE_VIDEO_DESCRIPTION>
+export type CreateVideoDescriptionVariables = VariablesOf<
+  typeof CREATE_VIDEO_DESCRIPTION
+>
 
 export const UPDATE_VIDEO_DESCRIPTION = graphql(`
   mutation UpdateVideoDescription($input: VideoTranslationUpdateInput!) {
@@ -30,6 +45,8 @@ export function VideoDescription({
   videoDescriptions
 }: VideoDescriptionProps): ReactElement {
   const t = useTranslations()
+  const video = useVideoStore((state) => state.video)
+  const [createVideoDescription] = useMutation(CREATE_VIDEO_DESCRIPTION)
   const [updateVideoDescription] = useMutation(UPDATE_VIDEO_DESCRIPTION)
 
   const validationSchema = object().shape({
@@ -39,17 +56,31 @@ export function VideoDescription({
   async function handleUpdateVideoDescription(
     values: FormikValues
   ): Promise<void> {
-    if (videoDescriptions == null) return
-    await updateVideoDescription({
-      variables: {
-        input: {
-          id: videoDescriptions[0].id,
-          value: values.description
+    if (video == null) return
+
+    if (videoDescriptions.length === 0) {
+      await createVideoDescription({
+        variables: {
+          input: {
+            videoId: video.id,
+            value: values.description,
+            primary: true,
+            languageId: '529'
+          }
         }
-      }
-    })
+      })
+    } else {
+      await updateVideoDescription({
+        variables: {
+          input: {
+            id: videoDescriptions[0].id,
+            value: values.description
+          }
+        }
+      })
+    }
   }
-  const description = unescape(videoDescriptions?.[0].value).replace(
+  const description = unescape(videoDescriptions?.[0]?.value ?? '').replace(
     /&#13;/g,
     '\n'
   )
