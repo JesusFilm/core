@@ -346,5 +346,8 @@
   },
   "msw": {
     "workerDirectory": "./.storybook/static"
+  },
+  "overrides": {
+    "eslint": "$eslint"
   }
 }

@@ -53,7 +53,7 @@ const nextConfig = {
   },
   eslint: {
     // handled by github actions
-    ignoreDuringBuilds: process.env.CI === 'true'
+    ignoreDuringBuilds: true
   },
   transpilePackages: ['shared-ui'],
   experimental: {
