@@ -18,10 +18,6 @@ import {
   QrCodeCreateVariables
 } from '../../../../../../../__generated__/QrCodeCreate'
 import { QrCodeFields as QrCode } from '../../../../../../../__generated__/QrCodeFields'
-import {
-  QrCodeUpdate,
-  QrCodeUpdateVariables
-} from '../../../../../../../__generated__/QrCodeUpdate'
 
 import { CodeActionButton } from './CodeActionButton'
 import { CodeCanvas } from './CodeCanvas'
@@ -47,15 +43,6 @@ export const QR_CODE_CREATE = gql`
   }
 `
 
-export const QR_CODE_UPDATE = gql`
-  ${QR_CODE_FIELDS}
-  mutation QrCodeUpdate($id: ID!, $input: QrCodeUpdateInput!) {
-    qrCodeUpdate(id: $id, input: $input) {
-      ...QrCodeFields
-    }
-  }
-`
-
 interface QrCodeDialogProps {
   open: boolean
   onClose: () => void
@@ -72,10 +59,7 @@ export function QrCodeDialog({
     QrCodeCreate,
     QrCodeCreateVariables
   >(QR_CODE_CREATE)
-  const [qrCodeUpdate, { loading: updateLoading }] = useMutation<
-    QrCodeUpdate,
-    QrCodeUpdateVariables
-  >(QR_CODE_UPDATE)
+
   const [loading, setLoading] = useState(true)
 
   const {
@@ -102,12 +86,12 @@ export function QrCodeDialog({
   const shortLink = getShortLink(qrCode)
 
   useEffect(() => {
-    if (getLoading || createLoading || updateLoading) {
+    if (getLoading || createLoading) {
       setLoading(true)
     } else {
       setLoading(false)
     }
-  }, [getLoading, createLoading, updateLoading])
+  }, [getLoading, createLoading])
 
   async function handleGenerateQrCode(): Promise<void> {
     if (journey?.id == null || journey?.team?.id == null) return
@@ -142,30 +126,6 @@ export function QrCodeDialog({
           variant: 'error',
           preventDuplicate: true
         })
-      }
-    })
-  }
-
-  async function handleUpdateTo(url: string): Promise<void> {
-    if (qrCode == null) return
-    await qrCodeUpdate({
-      variables: {
-        id: qrCode.id,
-        input: {
-          to: url
-        }
-      },
-      onError: () => {
-        enqueueSnackbar(
-          t('Failed to update QR Code, make sure new URL is valid'),
-          {
-            variant: 'error',
-            preventDuplicate: true
-          }
-        )
-        throw new Error(
-          t('Failed to update QR Code, make sure new URL is valid')
-        )
       }
     })
   }
@@ -238,12 +198,7 @@ export function QrCodeDialog({
           </Stack>
         </Stack>
         <Divider />
-        <CodeDestination
-          journeyId={journey?.id}
-          qrCode={qrCode}
-          to={to}
-          handleUpdateTo={handleUpdateTo}
-        />
+        <CodeDestination to={to} />
       </Stack>
     </Dialog>
   )

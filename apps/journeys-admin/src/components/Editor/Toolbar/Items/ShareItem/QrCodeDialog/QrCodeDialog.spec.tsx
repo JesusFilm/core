@@ -3,12 +3,10 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { formatISO } from 'date-fns'
 import { SnackbarProvider } from 'notistack'
-import { Suspense, act } from 'react'
+import { Suspense } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey as Journey } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
-import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
-import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
 
 import {
   GetJourneyQrCodes,
@@ -19,40 +17,17 @@ import {
   GetPlausibleJourneyQrCodeScansVariables
 } from '../../../../../../../__generated__/GetPlausibleJourneyQrCodeScans'
 import {
-  GetUserPermissions,
-  GetUserPermissionsVariables
-} from '../../../../../../../__generated__/GetUserPermissions'
-import {
-  Role,
-  UserJourneyRole,
-  UserTeamRole
-} from '../../../../../../../__generated__/globalTypes'
-import {
   QrCodeCreate,
   QrCodeCreateVariables
 } from '../../../../../../../__generated__/QrCodeCreate'
 import { QrCodeFields as QrCode } from '../../../../../../../__generated__/QrCodeFields'
-import {
-  QrCodeUpdate,
-  QrCodeUpdateVariables
-} from '../../../../../../../__generated__/QrCodeUpdate'
-import { useCurrentUserLazyQuery } from '../../../../../../libs/useCurrentUserLazyQuery'
 
-import { GET_USER_PERMISSIONS } from './CodeDestination/CodeDestination'
 import {
   GET_JOURNEY_QR_CODES,
   QR_CODE_CREATE,
-  QR_CODE_UPDATE,
   QrCodeDialog
 } from './QrCodeDialog'
 import { GET_PLAUSIBLE_JOURNEY_QR_CODE_SCANS } from './ScanCount/ScanCount'
-
-jest.mock('../../../../../../libs/useCurrentUserLazyQuery', () => ({
-  __esModule: true,
-  useCurrentUserLazyQuery: jest.fn()
-}))
-const mockUseCurrentUserLazyQuery = useCurrentUserLazyQuery as jest.Mock
-const user = { id: 'user.id', email: 'test@email.com' }
 
 jest.mock('date-fns', () => {
   return {
@@ -65,10 +40,6 @@ const mockFormatIso = formatISO as jest.MockedFunction<typeof formatISO>
 
 describe('QrCodeDialog', () => {
   beforeEach(() => {
-    mockUseCurrentUserLazyQuery.mockReturnValue({
-      loadUser: jest.fn(),
-      data: user
-    })
     mockFormatIso.mockReturnValue('2024-09-26')
   })
 
@@ -119,68 +90,6 @@ describe('QrCodeDialog', () => {
     }
   }
 
-  const getUserRoleMock: MockedResponse<GetUserRole> = {
-    request: {
-      query: GET_USER_ROLE
-    },
-    result: jest.fn(() => ({
-      data: {
-        getUserRole: {
-          __typename: 'UserRole',
-          id: 'user.id',
-          roles: [Role.publisher]
-        }
-      }
-    }))
-  }
-
-  const getUserPermissionsMock: MockedResponse<
-    GetUserPermissions,
-    GetUserPermissionsVariables
-  > = {
-    request: {
-      query: GET_USER_PERMISSIONS,
-      variables: {
-        id: 'journey.id'
-      }
-    },
-    result: jest.fn(() => ({
-      data: {
-        adminJourney: {
-          __typename: 'Journey',
-          id: 'journey.id',
-          template: true,
-          team: {
-            __typename: 'Team',
-            id: 'team.id',
-            userTeams: [
-              {
-                __typename: 'UserTeam',
-                id: 'userTeam.id',
-                role: UserTeamRole.manager,
-                user: {
-                  __typename: 'User',
-                  email: 'test@email.com'
-                }
-              }
-            ]
-          },
-          userJourneys: [
-            {
-              __typename: 'UserJourney',
-              id: 'userJourney.id',
-              role: UserJourneyRole.owner,
-              user: {
-                __typename: 'User',
-                email: 'test@email.com'
-              }
-            }
-          ]
-        }
-      }
-    }))
-  }
-
   const getPlausibleJourneyQrCodeScansMock: MockedResponse<
     GetPlausibleJourneyQrCodeScans,
     GetPlausibleJourneyQrCodeScansVariables
@@ -208,9 +117,7 @@ describe('QrCodeDialog', () => {
 
   it('should render the dialog', async () => {
     render(
-      <MockedProvider
-        mocks={[getJourneyQrCodesMock, getUserRoleMock, getUserPermissionsMock]}
-      >
+      <MockedProvider mocks={[getJourneyQrCodesMock]}>
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
@@ -230,9 +137,7 @@ describe('QrCodeDialog', () => {
 
   it('should call onClose when close button is clicked', async () => {
     render(
-      <MockedProvider
-        mocks={[getJourneyQrCodesMock, getUserRoleMock, getUserPermissionsMock]}
-      >
+      <MockedProvider mocks={[getJourneyQrCodesMock]}>
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
@@ -249,12 +154,7 @@ describe('QrCodeDialog', () => {
   it('should show QR code for local', async () => {
     render(
       <MockedProvider
-        mocks={[
-          getJourneyQrCodesMock,
-          getUserRoleMock,
-          getUserPermissionsMock,
-          getPlausibleJourneyQrCodeScansMock
-        ]}
+        mocks={[getJourneyQrCodesMock, getPlausibleJourneyQrCodeScansMock]}
       >
         <Suspense>
           <JourneyProvider value={{ journey }}>
@@ -304,12 +204,7 @@ describe('QrCodeDialog', () => {
 
     render(
       <MockedProvider
-        mocks={[
-          deployedQrCodesMock,
-          getUserRoleMock,
-          getUserPermissionsMock,
-          getPlausibleJourneyQrCodeScansMock
-        ]}
+        mocks={[deployedQrCodesMock, getPlausibleJourneyQrCodeScansMock]}
       >
         <Suspense>
           <JourneyProvider value={{ journey }}>
@@ -361,12 +256,7 @@ describe('QrCodeDialog', () => {
     render(
       <MockedProvider
         cache={cache}
-        mocks={[
-          getEmptyQrCodesMock,
-          getUserRoleMock,
-          getUserPermissionsMock,
-          qrCodeCreateMock
-        ]}
+        mocks={[getEmptyQrCodesMock, qrCodeCreateMock]}
       >
         <Suspense>
           <JourneyProvider value={{ journey }}>
@@ -414,14 +304,7 @@ describe('QrCodeDialog', () => {
     }
 
     render(
-      <MockedProvider
-        mocks={[
-          getEmptyQrCodesMock,
-          getUserRoleMock,
-          getUserPermissionsMock,
-          qrCodeCreateMock
-        ]}
-      >
+      <MockedProvider mocks={[getEmptyQrCodesMock, qrCodeCreateMock]}>
         <Suspense>
           <JourneyProvider value={{ journey }}>
             <SnackbarProvider>
@@ -437,118 +320,6 @@ describe('QrCodeDialog', () => {
     )
     await waitFor(() =>
       expect(screen.getByText('Failed to create QR Code')).toBeInTheDocument()
-    )
-  })
-
-  it('should update QrCode', async () => {
-    const qrCodeUpdate: MockedResponse<QrCodeUpdate, QrCodeUpdateVariables> = {
-      request: {
-        query: QR_CODE_UPDATE
-      },
-      variableMatcher: () => true,
-      result: jest.fn(() => ({
-        data: {
-          qrCodeUpdate: {
-            __typename: 'QrCode',
-            id: 'qrCode.id',
-            toJourneyId: 'journey.id',
-            shortLink: {
-              __typename: 'ShortLink',
-              id: 'shortLink.id',
-              domain: {
-                __typename: 'ShortLinkDomain',
-                hostname: 'localhost'
-              },
-              pathname: 'path',
-              to: 'http://localhost:4100/newUrl?utm_source=ns-qr-code&utm_campaign=$shortLink.id'
-            }
-          }
-        }
-      }))
-    }
-    render(
-      <MockedProvider
-        mocks={[
-          getJourneyQrCodesMock,
-          getUserRoleMock,
-          getUserPermissionsMock,
-          getPlausibleJourneyQrCodeScansMock,
-          qrCodeUpdate
-        ]}
-      >
-        <Suspense>
-          <JourneyProvider value={{ journey }}>
-            <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} />
-            </SnackbarProvider>
-          </JourneyProvider>
-        </Suspense>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
-      expect(
-        screen.getAllByRole('button', { name: 'Change' })[0]
-      ).not.toBeDisabled()
-    )
-    fireEvent.click(screen.getAllByRole('button', { name: 'Change' })[0])
-    const textbox = screen.getByRole('textbox')
-    fireEvent.change(textbox, {
-      target: { value: 'http://localhost:4100/newUrl' }
-    })
-    await act(async () => {
-      fireEvent.click(screen.getAllByRole('button', { name: 'Redirect' })[0])
-    })
-
-    await waitFor(() => expect(qrCodeUpdate.result).toHaveBeenCalled())
-  })
-
-  it('should throw error if qr code update failed', async () => {
-    const qrCodeUpdate: MockedResponse<QrCodeUpdate, QrCodeUpdateVariables> = {
-      request: {
-        query: QR_CODE_UPDATE
-      },
-      variableMatcher: () => true,
-      error: new Error('error')
-    }
-    render(
-      <MockedProvider
-        mocks={[
-          getJourneyQrCodesMock,
-          getUserRoleMock,
-          getUserPermissionsMock,
-          getPlausibleJourneyQrCodeScansMock,
-          qrCodeUpdate
-        ]}
-      >
-        <Suspense>
-          <JourneyProvider value={{ journey }}>
-            <SnackbarProvider>
-              <QrCodeDialog open onClose={handleClose} />
-            </SnackbarProvider>
-          </JourneyProvider>
-        </Suspense>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
-      expect(
-        screen.getAllByRole('button', { name: 'Change' })[0]
-      ).not.toBeDisabled()
-    )
-    fireEvent.click(screen.getAllByRole('button', { name: 'Change' })[0])
-    const textbox = screen.getByRole('textbox')
-    fireEvent.change(textbox, {
-      target: { value: 'http://localhost:4100/newUrl' }
-    })
-    await act(async () => {
-      fireEvent.click(screen.getAllByRole('button', { name: 'Redirect' })[0])
-    })
-
-    await waitFor(() =>
-      expect(
-        screen.getByText('Failed to update QR Code, make sure new URL is valid')
-      ).toBeInTheDocument()
     )
   })
 })

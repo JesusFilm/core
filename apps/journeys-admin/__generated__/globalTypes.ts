@@ -529,12 +529,6 @@ export interface QrCodeCreateInput {
   journeyId: string;
 }
 
-export interface QrCodeUpdateInput {
-  to?: string | null;
-  color?: string | null;
-  backgroundColor?: string | null;
-}
-
 export interface QrCodesFilter {
   journeyId?: string | null;
   teamId?: string | null;

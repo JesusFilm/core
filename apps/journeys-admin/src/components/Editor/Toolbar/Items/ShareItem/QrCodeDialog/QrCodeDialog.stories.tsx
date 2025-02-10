@@ -5,15 +5,12 @@ import { ComponentPropsWithoutRef } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { GetJourney_journey as Journey } from '@core/journeys/ui/useJourneyQuery/__generated__/GetJourney'
-import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
-import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import {
   GetJourneyQrCodes,
   GetJourneyQrCodesVariables
 } from '../../../../../../../__generated__/GetJourneyQrCodes'
-import { Role } from '../../../../../../../__generated__/globalTypes'
 import { QrCodeFields } from '../../../../../../../__generated__/QrCodeFields'
 
 import { GET_JOURNEY_QR_CODES, QrCodeDialog } from './QrCodeDialog'
@@ -47,20 +44,6 @@ const qrCode: QrCodeFields = {
     },
     pathname: 'path',
     to: 'http://localhost:4100/journeySlug?utm_source=ns-qr-code&utm_campaign=$shortLink.id'
-  }
-}
-const getUserRoleMock: MockedResponse<GetUserRole> = {
-  request: {
-    query: GET_USER_ROLE
-  },
-  result: {
-    data: {
-      getUserRole: {
-        __typename: 'UserRole',
-        id: 'user.id',
-        roles: [Role.publisher]
-      }
-    }
   }
 }
 const getJourneyQrCodesMock: MockedResponse<
@@ -100,7 +83,7 @@ export const Default = {
   },
   parameters: {
     apolloClient: {
-      mocks: [getUserRoleMock]
+      mocks: []
     }
   }
 }
@@ -113,7 +96,7 @@ export const WithQRCode = {
   },
   parameters: {
     apolloClient: {
-      mocks: [getUserRoleMock, getJourneyQrCodesMock]
+      mocks: [getJourneyQrCodesMock]
     }
   }
 }
