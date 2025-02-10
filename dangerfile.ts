@@ -17,13 +17,11 @@ export default async () => {
 
   const isDependabot = danger.github.pr.user.login === 'renovate[bot]'
   // check lockfile updated when package changes
-  const packageChanged = danger.git.modified_files.includes('package.json')
-  const lockfileChanged =
-    danger.git.modified_files.includes('package-lock.json')
+  const packageChanged = danger.git.modified_files.includes('bun.lock')
+  const lockfileChanged = danger.git.modified_files.includes('bun.lock')
   if (packageChanged && !lockfileChanged) {
-    const message =
-      'Changes were made to package.json, but not to package-lock.json'
-    const idea = 'Perhaps you need to run `npm install`?'
+    const message = 'Changes were made to package.json, but not to bun.lock'
+    const idea = 'Perhaps you need to run `bun install`?'
     warn(`${message} - <i>${idea}</i>`)
   }
 

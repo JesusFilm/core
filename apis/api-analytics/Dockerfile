@@ -12,14 +12,15 @@ RUN apk upgrade --update-cache --available && \
 
 WORKDIR /app
 COPY ./dist/apps/api-analytics .
-COPY ./package-lock.json .
+COPY ./bun.lock .
 
+RUN 
 # dependencies that nestjs needs
-RUN npm install --production
+RUN bun install --production --frozen-lockfile
 
 WORKDIR /prisma
 COPY ./apis/api-analytics/db .
-RUN npx prisma@5 generate --generator client
+RUN bunx prisma@5 generate --generator client
 
 WORKDIR /app
 

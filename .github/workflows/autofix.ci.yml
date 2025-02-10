@@ -12,7 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [22]
+        bun-version: [1.2.2]
     services:
       postgres:
         image: postgres
@@ -35,22 +36,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
+
+      - uses: oven-sh/setup-bun@v1
         with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
+          bun-version: ${{ matrix.bun-version }}
+
       - name: Setup Cache
         uses: actions/cache@v4
         with:
           path: .cache
           key: lint-cache-${{ matrix.node-version }}-${{ hashFiles('**/.eslintrc.json', '**/tsconfig.json') }}
           restore-keys: lint-cache-${{ matrix.node-version }}-
-      - name: NPM Install
-        run: npm install --silent
+      - name: bun install
+        run: bun install --silent --frozen-lockfile
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -59,15 +57,15 @@ jobs:
           parallel: 1
         env:
           DISABLE_ERD: true
-      - name: NPM apollo and graphql for codegen
-        run: npm i -g apollo graphql
+      - name: apollo and graphql for codegen
+        run: bun i -g apollo graphql
       - name: Codegen
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: codegen
           all: true
       - name: Run Prettier
-        run: npm run prettier:fix
+        run: bun run prettier:fix
       - name: Run ESLint
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -80,10 +78,10 @@ jobs:
         env:
           HIVE_TOKEN: ${{ secrets.HIVE_PROD_READ_ONLY_TOKEN }}
       - name: lint commit messages
-        run: npx commitlint --from 9a45682 # earliest good commit to main
+        run: bun commitlint --from 9a45682 # earliest good commit to main
       - name: lint branch name
         if: ${{ github.event_name == 'pull_request' }}
-        run: npx validate-branch-name -t $GITHUB_HEAD_REF
+        run: bun validate-branch-name -t $GITHUB_HEAD_REF
       - uses: autofix-ci/action@551dded8c6cc8a1054039c8bc0b8b48c51dfc6ef
         with:
           commit-message: 'fix: lint issues'

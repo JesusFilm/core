@@ -15,7 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [22]
+        bun-version: [1.2.2]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,19 +26,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
+      - uses: oven-sh/setup-bun@v1
         with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
-      - name: NPM Install
-        run: npm install --silent
+          bun-version: ${{ matrix.bun-version }}
+      - name: bun install
+        run: bun install --silent --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4
       - name: nx Install
-        run: npm install -g nx --silent
+        run: bun install -g nx --silent
       - name: Build Stories
         id: build-storybook
         run: nx affected --target=build-storybook shared-storybook --webpack-stats-json

@@ -14,7 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [22]
+        bun-version: [1.2.2]
     services:
       postgres:
         image: postgres
@@ -37,16 +38,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
+      - uses: oven-sh/setup-bun@v1
         with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
-      - name: NPM Install
-        run: npm install --silent
+          bun-version: ${{ matrix.bun-version }}
+      - name: bun install
+        run: bun install --silent --frozen-lockfile
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -112,16 +108,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
+      - uses: oven-sh/setup-bun@v1
         with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
-      - name: NPM Install
-        run: npm install --silent
+          bun-version: ${{ matrix.bun-version }}
+      - name: bun install
+        run: bun install --silent --frozen-lockfile
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
