@@ -33,7 +33,7 @@ export function CodeActionButton({
     setShowDownloadMenu(!showDownloadMenu)
   }
 
-  function handleDownload(type: 'png' | 'svg'): void {
+  function handleDownload(): void {
     const canvas = document.getElementById(
       'qr-code-download'
     ) as HTMLCanvasElement | null
@@ -44,7 +44,7 @@ export function CodeActionButton({
           .replace('image/png', 'image/octet-stream')
         const downloadLink = document.createElement('a')
         downloadLink.href = pngUrl
-        downloadLink.download = `qr-code.${type}`
+        downloadLink.download = 'qr-code.png'
         document.body.appendChild(downloadLink)
         downloadLink.click()
         document.body.removeChild(downloadLink)
@@ -100,7 +100,7 @@ export function CodeActionButton({
             color="secondary"
             size="medium"
             onClick={() => {
-              handleDownload('png')
+              handleDownload()
               setShowDownloadMenu(false)
             }}
           >
@@ -132,14 +132,6 @@ export function CodeActionButton({
             <Paper>
               <ClickAwayListener onClickAway={() => setShowDownloadMenu(false)}>
                 <MenuList id="split-button-menu" autoFocusItem>
-                  <MenuItem
-                    onClick={() => {
-                      handleDownload('svg')
-                      setShowDownloadMenu(false)
-                    }}
-                  >
-                    {t('Download SVG')}
-                  </MenuItem>
                   <MenuItem
                     onClick={() => {
                       void handleCopyClick()
