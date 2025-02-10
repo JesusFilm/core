@@ -151,6 +151,11 @@ export function CodeDestination({
     }
   }
 
+  function handleCloseRedirectionDialog(): void {
+    setShowRedirectDialog(false)
+    setShowRedirectButton(false)
+  }
+
   return (
     <Stack spacing={5}>
       <Stack direction="row" justifyContent="space-between">
@@ -233,7 +238,7 @@ export function CodeDestination({
       {to != null && originalToRef.current != null && qrCode != null && (
         <RedirectDialog
           open={showRedirectDialog}
-          onClose={() => setShowRedirectDialog(false)}
+          onClose={handleCloseRedirectionDialog}
           qrCode={qrCode}
           to={to}
           handleUndo={handleUndo}

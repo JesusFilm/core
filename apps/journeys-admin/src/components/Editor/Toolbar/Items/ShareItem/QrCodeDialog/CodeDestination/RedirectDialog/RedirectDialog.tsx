@@ -96,7 +96,10 @@ export function RedirectDialog({
             variant="contained"
             color="secondary"
             size="medium"
-            onClick={handleRedirectClick}
+            onClick={() => {
+              handleRedirectClick()
+              onClose()
+            }}
           >
             {t('Go to this journey')}
           </Button>
