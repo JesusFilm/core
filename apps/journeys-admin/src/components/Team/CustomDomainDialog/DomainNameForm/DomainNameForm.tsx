@@ -79,7 +79,7 @@ export function DomainNameForm({
         .required(t('Domain name is a required field'))
         .matches(
           // pulled from isDomainValid function
-          // apps/api-journeys/src/app/modules/customDomain/customDomain.service.ts
+          // apis/api-journeys/src/app/modules/customDomain/customDomain.service.ts
           /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z]$/,
           t('Must be a valid URL')
         )
