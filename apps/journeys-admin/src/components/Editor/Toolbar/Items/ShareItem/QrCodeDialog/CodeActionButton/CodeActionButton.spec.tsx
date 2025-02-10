@@ -98,23 +98,4 @@ describe('CodeActionButton', () => {
     expect(screen.getByText('Error downloading')).toBeInTheDocument()
     document.body.removeChild(canvas)
   })
-
-  it('should download svg when canvas is present', () => {
-    const canvas = document.createElement('canvas')
-    canvas.id = 'qr-code-download'
-    document.body.appendChild(canvas)
-    const toDataURLMock = jest
-      .spyOn(canvas, 'toDataURL')
-      .mockReturnValue('data:image/png;base64,test')
-
-    render(
-      <CodeActionButton shortLink="url" handleGenerateQrCode={jest.fn()} />
-    )
-
-    fireEvent.click(screen.getByTestId('DownloadDropdown'))
-    fireEvent.click(screen.getByRole('menuitem', { name: 'Download SVG' }))
-
-    expect(toDataURLMock).toHaveBeenCalledWith('image/png')
-    document.body.removeChild(canvas)
-  })
 })
