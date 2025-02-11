@@ -5,8 +5,39 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { useVideoStore } from '../../../../../../../../libs/useVideoStore'
 
-import { UPDATE_VIDEO_SNIPPET, VideoSnippet } from './VideoSnippet'
+import {
+  CREATE_VIDEO_SNIPPET,
+  UPDATE_VIDEO_SNIPPET,
+  VideoSnippet
+} from './VideoSnippet'
+
+jest.mock('../../../../../../../../libs/useVideoStore', () => ({
+  useVideoStore: jest.fn()
+}))
+
+const mockCreateVideoSnippet = {
+  request: {
+    query: CREATE_VIDEO_SNIPPET,
+    variables: {
+      input: {
+        videoId: 'video.id',
+        value: 'new snippet text',
+        primary: true,
+        languageId: '529'
+      }
+    }
+  },
+  result: jest.fn(() => ({
+    data: {
+      videoSnippetCreate: {
+        id: 'snippet.id',
+        value: 'new snippet text'
+      }
+    }
+  }))
+}
 
 describe('VideoSnippet', () => {
   const mockUpdateVideoSnippet = {
@@ -70,6 +101,33 @@ describe('VideoSnippet', () => {
     expect(screen.getByRole('textbox')).toHaveValue('Hello')
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+  })
+
+  it('should create video snippet if none exists', async () => {
+    ;(useVideoStore as unknown as jest.Mock).mockReturnValue({ id: 'video.id' })
+
+    render(
+      <MockedProvider mocks={[mockCreateVideoSnippet]}>
+        <NextIntlClientProvider locale="en">
+          <VideoSnippet videoSnippets={[]} />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    const user = userEvent.setup()
+
+    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
+    expect(screen.getByRole('textbox')).toHaveValue('')
+
+    await user.type(screen.getByRole('textbox'), 'new snippet text')
+
+    expect(screen.getByRole('textbox')).toHaveValue('new snippet text')
+    expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+    await waitFor(() =>
+      expect(mockCreateVideoSnippet.result).toHaveBeenCalled()
+    )
+    expect(mockUpdateVideoSnippet.result).not.toHaveBeenCalled()
   })
 
   it('should update video snippet on submit', async () => {
