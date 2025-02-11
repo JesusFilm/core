@@ -116,13 +116,30 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoVariantCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.videoVariant.create({
+      const newVariant = await prisma.videoVariant.create({
         ...query,
         data: {
           ...input,
           published: input.published ?? true
         }
       })
+
+      const video = await prisma.video.findUnique({
+        where: { id: newVariant.videoId },
+        select: { availableLanguages: true }
+      })
+
+      const currentLanguages = video?.availableLanguages || []
+      const updatedLanguages = Array.from(
+        new Set([...currentLanguages, newVariant.languageId])
+      )
+
+      await prisma.video.update({
+        where: { id: newVariant.videoId },
+        data: { availableLanguages: updatedLanguages }
+      })
+
+      return newVariant
     }
   }),
   videoVariantUpdate: t.withAuth({ isPublisher: true }).prismaField({
