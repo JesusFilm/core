@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import type { Page } from 'playwright-core'
@@ -86,14 +85,14 @@ export class Register {
   async enterOTP(otp) {
     await this.page
       .locator(
-        'form[data-testid="EmailInviteForm"] div[class*="MuiAccordionSummary"]'
+        'form[data-testid="EmailInviteForm"] div[class*="MuiAccordionSummary-root"]'
       )
       .first()
       .click()
     await expect(
       this.page
         .locator(
-          'form[data-testid="EmailInviteForm"] div[class*="MuiAccordionSummary"]'
+          'form[data-testid="EmailInviteForm"] div[class*="MuiAccordionSummary-root"]'
         )
         .first()
     ).toHaveAttribute('aria-expanded', 'true')
