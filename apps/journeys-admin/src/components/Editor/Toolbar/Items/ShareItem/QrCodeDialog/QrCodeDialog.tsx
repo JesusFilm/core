@@ -1,5 +1,4 @@
 import { gql, useMutation, useQuery } from '@apollo/client'
-import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
@@ -21,7 +20,6 @@ import { QrCodeFields as QrCode } from '../../../../../../../__generated__/QrCod
 
 import { CodeActionButton } from './CodeActionButton'
 import { CodeCanvas } from './CodeCanvas'
-import { CodeDestination } from './CodeDestination'
 import { QR_CODE_FIELDS } from './qrCodeFields'
 import { ScanCount } from './ScanCount'
 
@@ -82,7 +80,6 @@ export function QrCodeDialog({
   }, [journey?.slug, refetch])
 
   const qrCode = data?.qrCodes[0]
-  const to = getTo(qrCode)
   const shortLink = getShortLink(qrCode)
 
   useEffect(() => {
@@ -143,12 +140,6 @@ export function QrCodeDialog({
     return `${protocol}//${hostname}${port}/${pathname}`
   }
 
-  function getTo(qrCode?: QrCode): string | undefined {
-    if (qrCode == null) return undefined
-    const to = new URL(qrCode.shortLink.to)
-    return `${to.origin}${to.pathname}`
-  }
-
   return (
     <Dialog
       open={open}
@@ -161,44 +152,36 @@ export function QrCodeDialog({
       }}
     >
       <Stack
-        spacing={7}
         sx={{
-          overflowX: 'hidden'
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: { xs: 4, sm: 7 },
+          alignItems: 'center'
         }}
       >
+        <CodeCanvas shortLink={shortLink} loading={loading} />
         <Stack
+          spacing={3}
           sx={{
-            flexDirection: { xs: 'column', sm: 'row' },
-            gap: { xs: 4, sm: 7 },
-            alignItems: 'center'
+            alignItems: { xs: 'center', sm: 'start' }
           }}
         >
-          <CodeCanvas shortLink={shortLink} loading={loading} />
-          <Stack
-            spacing={3}
-            sx={{
-              alignItems: { xs: 'center', sm: 'start' }
-            }}
-          >
-            <ScanCount shortLinkId={qrCode?.shortLink.id} />
-            <CodeActionButton
-              shortLink={shortLink}
-              loading={loading}
-              handleGenerateQrCode={handleGenerateQrCode}
-            />
-            <Typography
-              variant="body2"
-              color="secondary.main"
-              sx={{ display: { xs: 'none', sm: 'flex' } }}
-            >
-              {t(
-                'Here is your unique QR code that will direct people to your journey when scanned.'
-              )}
-            </Typography>
-          </Stack>
+          <ScanCount shortLinkId={qrCode?.shortLink.id} />
+          <CodeActionButton
+            shortLink={shortLink}
+            loading={loading}
+            handleGenerateQrCode={handleGenerateQrCode}
+          />
+          <Typography variant="body2" color="secondary.main">
+            {t(
+              'Here is your unique QR code that will direct people to your journey when scanned.'
+            )}
+          </Typography>
+          <Typography variant="body2" color="secondary.main">
+            {t(
+              'There’s no need to reprint if you change your journey URL or custom domain.'
+            )}
+          </Typography>
         </Stack>
-        <Divider />
-        <CodeDestination to={to} />
       </Stack>
     </Dialog>
   )

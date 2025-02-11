@@ -33,7 +33,7 @@ export function CodeCanvas({
           <QRCodeCanvas
             id="qr-code-download"
             title="QR Code"
-            size={122}
+            size={174}
             level="L"
             value={shortLink}
             aria-label={shortLink}
@@ -43,8 +43,8 @@ export function CodeCanvas({
       {showEmpty && (
         <Box
           sx={{
-            minHeight: 134,
-            minWidth: 134,
+            minHeight: 186,
+            minWidth: 186,
             backgroundColor: 'divider',
             borderRadius: 2,
             display: 'flex',
@@ -58,10 +58,8 @@ export function CodeCanvas({
       {loading && (
         <Skeleton
           variant="rectangular"
-          width={134}
-          height={134}
           aria-label="Loading QR code"
-          sx={{ borderRadius: 2, minHeight: 134, minWidth: 134 }}
+          sx={{ borderRadius: 2, minHeight: 186, minWidth: 186 }}
         />
       )}
     </>
