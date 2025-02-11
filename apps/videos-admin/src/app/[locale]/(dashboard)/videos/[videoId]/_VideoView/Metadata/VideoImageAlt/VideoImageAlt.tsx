@@ -5,12 +5,23 @@ import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
+import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
 import { CancelButton } from '../../../../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useVideoStore } from '../../../../../../../../libs/useVideoStore'
+
+export const CREATE_VIDEO_IMAGE_ALT = graphql(`
+  mutation CreateVideoImageAlt($input: VideoTranslationCreateInput!) {
+    videoImageAltCreate(input: $input) {
+      id
+      value
+    }
+  }
+`)
 
 export const UPDATE_VIDEO_IMAGE_ALT = graphql(`
   mutation UpdateVideoImageAlt($input: VideoTranslationUpdateInput!) {
@@ -29,7 +40,11 @@ export function VideoImageAlt({
   videoImageAlts
 }: VideoImageAltProps): ReactElement {
   const t = useTranslations()
+  const { enqueueSnackbar } = useSnackbar()
+  const [createVideoImageAlt] = useMutation(CREATE_VIDEO_IMAGE_ALT)
   const [updateVideoImageAlt] = useMutation(UPDATE_VIDEO_IMAGE_ALT)
+
+  const video = useVideoStore((state) => state.video)
 
   const validationSchema = object().shape({
     imageAlt: string().trim().required(t('Image Alt is required'))
@@ -38,20 +53,48 @@ export function VideoImageAlt({
   async function handleUpdateVideoImageAlt(
     values: FormikValues
   ): Promise<void> {
-    await updateVideoImageAlt({
-      variables: {
-        input: {
-          id: videoImageAlts[0].id,
-          value: values.imageAlt
+    if (video == null) return
+
+    if (videoImageAlts.length === 0) {
+      const res = await createVideoImageAlt({
+        variables: {
+          input: {
+            videoId: video.id,
+            value: values.imageAlt,
+            primary: true,
+            languageId: '529'
+          }
         }
+      })
+
+      if (res.data?.videoImageAltCreate == null) {
+        enqueueSnackbar(t('Failed to create video image alt'), {
+          variant: 'error'
+        })
+        return
       }
-    })
+    } else {
+      const res = await updateVideoImageAlt({
+        variables: {
+          input: {
+            id: videoImageAlts[0].id,
+            value: values.imageAlt
+          }
+        }
+      })
+
+      if (res.data?.videoImageAltUpdate == null) {
+        enqueueSnackbar(t('Failed to update video image alt'), {
+          variant: 'error'
+        })
+      }
+    }
   }
 
   return (
     <Formik
       initialValues={{
-        imageAlt: videoImageAlts?.[0].value
+        imageAlt: videoImageAlts?.[0]?.value ?? ''
       }}
       onSubmit={handleUpdateVideoImageAlt}
       validationSchema={validationSchema}
