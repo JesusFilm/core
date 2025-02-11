@@ -306,7 +306,7 @@
     "dotenv": "^16.3.1",
     "esbuild": "^0.19.2",
     "eslint": "9.20.0",
-    "eslint-config-love": "^84.0.0",
+    "eslint-config-love": "^85.0.0",
     "eslint-config-next": "14.2.24",
     "eslint-config-prettier": "9.1.0",
     "eslint-config-standard": "^17.0.0",
@@ -367,6 +367,6 @@
     "workerDirectory": "./.storybook/static"
   },
   "overrides": {
-    "eslint": "$eslint"
+    "eslint": "9.20.0"
   }
 }
