@@ -74,6 +74,7 @@ const Video = builder.prismaObject('Video', {
     }),
     id: t.exposeID('id', { nullable: false }),
     label: t.expose('label', { type: VideoLabel, nullable: false }),
+    locked: t.exposeBoolean('locked', { nullable: false }),
     primaryLanguageId: t.exposeID('primaryLanguageId', { nullable: false }),
     published: t.exposeBoolean('published', { nullable: false }),
     cloudflareAssets: t.relation('cloudflareAssets', { nullable: false }),
