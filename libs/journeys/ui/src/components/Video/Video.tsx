@@ -234,7 +234,7 @@ export function Video({
               ref={videoRef}
               className="video-js vjs-tech"
               playsInline
-              preload="auto"
+              preload="preload"
               sx={{
                 '&.video-js.vjs-youtube.vjs-fill': {
                   transform: 'scale(1.01)'
