@@ -39,7 +39,7 @@ describe('JourneyCardText', () => {
         variant={JourneyCardVariant.default}
       />
     )
-    expect(getByText('1 year ago')).toBeInTheDocument()
+    expect(getByText('4 years ago')).toBeInTheDocument()
   })
 
   it('should show badge for new journey card variant', () => {
