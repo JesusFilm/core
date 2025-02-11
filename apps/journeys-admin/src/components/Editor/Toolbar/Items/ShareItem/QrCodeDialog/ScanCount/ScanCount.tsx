@@ -1,4 +1,5 @@
 import { gql, useLazyQuery } from '@apollo/client'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { formatISO } from 'date-fns'
@@ -41,7 +42,7 @@ export function ScanCount({ shortLinkId }: ScanCountProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
 
-  const [loadPlausibleVisitors, { data }] = useLazyQuery<
+  const [loadPlausibleVisitors, { data, loading }] = useLazyQuery<
     GetPlausibleJourneyQrCodeScans,
     GetPlausibleJourneyQrCodeScansVariables
   >(GET_PLAUSIBLE_JOURNEY_QR_CODE_SCANS)
@@ -73,16 +74,28 @@ export function ScanCount({ shortLinkId }: ScanCountProps): ReactElement {
   return (
     <Stack
       direction="row"
-      spacing={2}
       alignItems="center"
       sx={{
         color: 'secondary.light'
       }}
     >
       <BarChartSquare3Icon />
-      <Trans t={t} scanCount={scanCount}>
-        <Typography variant="subtitle3">{scanCount}</Typography>
-      </Trans>
+      {loading ? (
+        <>
+          <Skeleton
+            variant="text"
+            sx={{ fontSize: '2.5rem', mx: 1 }}
+            data-testid={t('scan count loading')}
+          />
+          <Typography variant="subtitle3">{t('scans')}</Typography>
+        </>
+      ) : (
+        <Trans t={t} scanCount={scanCount}>
+          <Typography variant="subtitle3" sx={{ ml: 1 }}>
+            {scanCount}
+          </Typography>
+        </Trans>
+      )}
     </Stack>
   )
 }
