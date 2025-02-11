@@ -139,10 +139,11 @@ const DynamicCard = forwardRef<HTMLDivElement, DynamicCardProps>(
         // }}
         sx={{
           width: 'inherit',
-          position: isPreRender ? 'absolute' : 'relative',
-          // position: 'relative',
+          // position: isPreRender ? 'absolute' : 'relative',
+          position: 'relative',
           height: '100%',
           display: 'block',
+          // display: isCurrent ? 'block' : 'none',
           opacity: isPreRender ? 0 : 1
         }}
       >

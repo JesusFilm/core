@@ -184,6 +184,7 @@ export function ContainedCover({
             src={imageBlock?.src ?? backgroundBlur}
             alt={imageBlock?.alt}
             placeholder="blur"
+            loading="eager"
             blurDataURL={backgroundBlur}
             layout="fill"
             objectFit="cover"

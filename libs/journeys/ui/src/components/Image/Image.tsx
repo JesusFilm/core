@@ -42,6 +42,7 @@ export function Image({
           height={height}
           width={width}
           placeholder="blur"
+          loading="eager"
           blurDataURL={placeholderSrc ?? src}
           layout="responsive"
           objectFit="cover"

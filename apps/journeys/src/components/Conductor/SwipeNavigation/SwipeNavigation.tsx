@@ -263,7 +263,7 @@ export function SwipeNavigation({
       sx={{
         height: 'inherit',
         maxHeight: 'inherit',
-        overflow: 'visible',
+        overflow: 'hidden',
         position: 'relative'
       }}
       {...swipeHandlers}
