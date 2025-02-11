@@ -14,6 +14,7 @@ import { ResizableTextField } from '../../../../../../../../components/Resizable
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo_VideoDescriptions as VideoDescriptions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useVideoStore } from '../../../../../../../../libs/useVideoStore'
+import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 export const CREATE_VIDEO_DESCRIPTION = graphql(`
   mutation CreateVideoDescription($input: VideoTranslationCreateInput!) {
@@ -67,7 +68,7 @@ export function VideoDescription({
             videoId: video.id,
             value: values.description,
             primary: true,
-            languageId: '529'
+            languageId: DEFAULT_VIDEO_LANGUAGE_ID
           }
         }
       })

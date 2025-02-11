@@ -5,6 +5,7 @@ import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
 import unescape from 'lodash/unescape'
 import { useTranslations } from 'next-intl'
+import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
@@ -13,6 +14,7 @@ import { ResizableTextField } from '../../../../../../../../components/Resizable
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useVideoStore } from '../../../../../../../../libs/useVideoStore'
+import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 export const CREATE_VIDEO_SNIPPET = graphql(`
   mutation CreateVideoSnippet($input: VideoTranslationCreateInput!) {
@@ -40,6 +42,7 @@ export function VideoSnippet({
   videoSnippets
 }: VideoSnippetProps): ReactElement {
   const t = useTranslations()
+  const { enqueueSnackbar } = useSnackbar()
   const [createVideoSnippet] = useMutation(CREATE_VIDEO_SNIPPET)
   const [updateVideoSnippet] = useMutation(UPDATE_VIDEO_SNIPPET)
 
@@ -53,18 +56,25 @@ export function VideoSnippet({
     if (video == null) return
 
     if (videoSnippets.length === 0) {
-      await createVideoSnippet({
+      const res = await createVideoSnippet({
         variables: {
           input: {
             videoId: video.id,
             value: values.snippet,
             primary: true,
-            languageId: '529'
+            languageId: DEFAULT_VIDEO_LANGUAGE_ID
           }
         }
       })
+
+      if (res.data?.videoSnippetCreate == null) {
+        enqueueSnackbar(t('Failed to create video snippet'), {
+          variant: 'error'
+        })
+        return
+      }
     } else {
-      await updateVideoSnippet({
+      const res = await updateVideoSnippet({
         variables: {
           input: {
             id: videoSnippets[0].id,
@@ -72,6 +82,12 @@ export function VideoSnippet({
           }
         }
       })
+
+      if (res.data?.videoSnippetUpdate == null) {
+        enqueueSnackbar(t('Failed to update video snippet'), {
+          variant: 'error'
+        })
+      }
     }
   }
 
