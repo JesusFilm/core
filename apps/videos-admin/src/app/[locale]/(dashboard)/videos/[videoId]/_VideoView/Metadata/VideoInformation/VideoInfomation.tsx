@@ -11,6 +11,7 @@ import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
+import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
@@ -52,6 +53,15 @@ export const UPDATE_VIDEO_INFORMATION = graphql(`
   }
 `)
 
+export const CREATE_VIDEO_TITLE = graphql(`
+  mutation CreateVideoTitle($input: VideoTranslationCreateInput!) {
+    videoTitleCreate(input: $input) {
+      id
+      value
+    }
+  }
+`)
+
 interface VideoInformationProps {
   video: AdminVideo
 }
@@ -61,8 +71,10 @@ export function VideoInformation({
 }: VideoInformationProps): ReactElement {
   const t = useTranslations()
   const [updateVideoInformation] = useMutation(UPDATE_VIDEO_INFORMATION)
+  const [createVideoTitle] = useMutation(CREATE_VIDEO_TITLE)
   const theme = useTheme()
   const jesusFilmUrl = 'jesusfilm.org/watch/'
+  const { enqueueSnackbar } = useSnackbar()
 
   const validationSchema = object().shape({
     title: string().trim().required(t('Title is required')),
@@ -74,7 +86,31 @@ export function VideoInformation({
   async function handleUpdateVideoInformation(
     values: FormikValues
   ): Promise<void> {
-    await updateVideoInformation({
+    let titleId = video.title[0]?.id
+
+    if (titleId == null) {
+      const res = await createVideoTitle({
+        variables: {
+          input: {
+            videoId: video.id,
+            value: values.title,
+            primary: true,
+            languageId: '529'
+          }
+        }
+      })
+
+      if (res.data?.videoTitleCreate == null) {
+        enqueueSnackbar(t('Failed to create video title'), {
+          variant: 'error'
+        })
+        return
+      }
+
+      titleId = res.data.videoTitleCreate.id
+    }
+
+    const res = await updateVideoInformation({
       variables: {
         infoInput: {
           id: video.id,
@@ -83,17 +119,23 @@ export function VideoInformation({
           label: values.label
         },
         titleInput: {
-          id: video.title[0].id,
+          id: titleId,
           value: values.title
         }
       }
     })
+
+    if (res.data?.videoUpdate == null || res.data?.videoTitleUpdate == null) {
+      enqueueSnackbar(t('Failed to update video information'), {
+        variant: 'error'
+      })
+    }
   }
 
   return (
     <Formik
       initialValues={{
-        title: video.title[0].value,
+        title: video.title?.[0]?.value ?? '',
         url: video.slug,
         published: video.published === true ? 'published' : 'unpublished',
         label: video.label
