@@ -70,6 +70,10 @@ export function ScanCount({ shortLinkId }: ScanCountProps): ReactElement {
 
   const scans = data?.journeysPlausibleStatsAggregate?.visitors?.value ?? 0
   const scanCount = scans === 1 ? t('1 scan') : t('{{scans}} scans', { scans })
+  const showLoading =
+    loading ||
+    shortLinkId == null ||
+    data?.journeysPlausibleStatsAggregate == null
 
   return (
     <Stack
@@ -80,12 +84,12 @@ export function ScanCount({ shortLinkId }: ScanCountProps): ReactElement {
       }}
     >
       <BarChartSquare3Icon />
-      {loading ? (
+      {showLoading ? (
         <>
           <Skeleton
             variant="text"
             sx={{ fontSize: '2.5rem', mx: 1 }}
-            data-testid={t('scan count loading')}
+            aria-label={t('scan count loading')}
           />
           <Typography variant="subtitle3">{t('scans')}</Typography>
         </>

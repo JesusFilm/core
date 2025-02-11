@@ -111,4 +111,45 @@ describe('ScanCount', () => {
 
     await waitFor(() => expect(screen.getByText('5 scans')).toBeInTheDocument())
   })
+
+  it('should show loading', () => {
+    const getPlausibleJourneyQrCodeScansMock: MockedResponse<
+      GetPlausibleJourneyQrCodeScans,
+      GetPlausibleJourneyQrCodeScansVariables
+    > = {
+      request: {
+        query: GET_PLAUSIBLE_JOURNEY_QR_CODE_SCANS,
+        variables: {
+          id: 'journey.id',
+          filters: 'visit:utm_campaign==shortLink.id',
+          date: '2024-06-01,2024-09-26'
+        }
+      },
+      result: {
+        data: {
+          journeysPlausibleStatsAggregate: {
+            __typename: 'PlausibleStatsAggregateResponse',
+            visitors: {
+              __typename: 'PlausibleStatsAggregateValue',
+              value: 1
+            }
+          }
+        }
+      }
+    }
+
+    const journey = {
+      id: 'journey.id'
+    } as unknown as Journey
+
+    render(
+      <MockedProvider mocks={[getPlausibleJourneyQrCodeScansMock]}>
+        <JourneyProvider value={{ journey }}>
+          <ScanCount shortLinkId="shortLink.id" />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByLabelText('scan count loading')).toBeInTheDocument()
+  })
 })
