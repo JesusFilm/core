@@ -20,6 +20,8 @@ import {
 
 import { ArchivedJourneyList } from '.'
 
+const YEAR_MILLISECONDS = 365.25 * 24 * 60 * 60000
+
 jest.mock('@core/journeys/ui/useNavigationState', () => ({
   useNavigationState: jest.fn(() => false)
 }))
@@ -42,7 +44,16 @@ const archivedJourneysMock: MockedResponse<
   },
   result: {
     data: {
-      journeys: [defaultJourney, oldJourney]
+      journeys: [
+        {
+          ...defaultJourney,
+          updatedAt: new Date(Date.now() - 1 * YEAR_MILLISECONDS).toISOString()
+        },
+        {
+          ...oldJourney,
+          updatedAt: new Date(Date.now() - 4 * YEAR_MILLISECONDS).toISOString()
+        }
+      ]
     }
   }
 }
@@ -79,11 +90,11 @@ describe('ArchivedJourneyList', () => {
 
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'November 19, 2020'
+        '1 year ago'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'January 1'
+      '4 years ago'
     )
   })
 
@@ -121,11 +132,11 @@ describe('ArchivedJourneyList', () => {
 
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'a lower case titleJanuary 1, 2021English'
+        'a lower case title4 years agoEnglish'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'An Old Journey HeadingNovember 19, 2020 - Journey created before the current year should also show the year in the dateEnglish'
+      'An Old Journey Heading4 years ago - Journey created before the current year should also show the year in the dateEnglish'
     )
   })
 

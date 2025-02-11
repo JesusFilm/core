@@ -18,12 +18,21 @@ const mockUseNavigationState = useNavigationState as jest.MockedFunction<
 >
 
 describe('JourneyCard', () => {
+  const YEAR_MILLISECONDS = 365.25 * 24 * 60 * 60000
+
   it('should have correct link on title', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
-            <JourneyCard journey={defaultJourney} />
+            <JourneyCard
+              journey={{
+                ...defaultJourney,
+                updatedAt: new Date(
+                  Date.now() - 4 * YEAR_MILLISECONDS
+                ).toISOString()
+              }}
+            />
           </ThemeProvider>
         </MockedProvider>
       </SnackbarProvider>
@@ -31,7 +40,7 @@ describe('JourneyCard', () => {
 
     expect(
       screen.getByRole('link', {
-        name: 'Default Journey Heading January 1, 2021'
+        name: 'Default Journey Heading 4 years ago'
       })
     ).toHaveAttribute('href', '/journeys/journey-id')
   })
@@ -43,14 +52,21 @@ describe('JourneyCard', () => {
       <SnackbarProvider>
         <MockedProvider>
           <ThemeProvider>
-            <JourneyCard journey={defaultJourney} />
+            <JourneyCard
+              journey={{
+                ...defaultJourney,
+                updatedAt: new Date(
+                  Date.now() - 4 * YEAR_MILLISECONDS
+                ).toISOString()
+              }}
+            />
           </ThemeProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
 
     const link = screen.getByRole('link', {
-      name: 'Default Journey Heading January 1, 2021'
+      name: 'Default Journey Heading 4 years ago'
     })
     expect(link).toHaveClass('Mui-disabled')
   })

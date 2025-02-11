@@ -94,11 +94,11 @@ describe('TrashedJourneyList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'November 19, 2020'
+        '1 year ago'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'January 1'
+      '4 years ago'
     )
   })
 
@@ -142,11 +142,11 @@ describe('TrashedJourneyList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        `a lower case titleJanuary 1English`
+        'a lower case title11 months agoEnglish'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'An Old Journey HeadingNovember 19, 2020 - Journey created before the current year should also show the year in the dateEnglish'
+      'An Old Journey Heading11 months ago - Journey created before the current year should also show the year in the dateEnglish'
     )
   })
 
