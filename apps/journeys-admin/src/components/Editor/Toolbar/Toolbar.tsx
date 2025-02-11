@@ -22,7 +22,6 @@ import {
   setBeaconPageViewed,
   setBeaconRoute
 } from '@core/journeys/ui/beaconHooks'
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 import {
   ActiveContent,
   ActiveSlide,
