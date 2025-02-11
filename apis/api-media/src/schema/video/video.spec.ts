@@ -53,6 +53,7 @@ describe('video', () => {
     cloudflareAssets: CloudflareR2[]
     variants: VideoVariant[]
     videoEditions: VideoEdition[]
+    availableLanguages: string[]
   }
 
   const children: Video[] = [
@@ -63,7 +64,8 @@ describe('video', () => {
       slug: null,
       noIndex: null,
       published: true,
-      childIds: []
+      childIds: [],
+      availableLanguages: []
     },
     {
       id: 'videoId1',
@@ -72,7 +74,8 @@ describe('video', () => {
       slug: null,
       noIndex: null,
       published: true,
-      childIds: []
+      childIds: [],
+      availableLanguages: []
     }
   ]
 
@@ -84,7 +87,8 @@ describe('video', () => {
       slug: null,
       noIndex: null,
       published: true,
-      childIds: []
+      childIds: [],
+      availableLanguages: []
     },
     {
       id: 'videoId4',
@@ -93,7 +97,8 @@ describe('video', () => {
       slug: null,
       noIndex: null,
       published: true,
-      childIds: []
+      childIds: [],
+      availableLanguages: []
     }
   ]
 
@@ -106,6 +111,7 @@ describe('video', () => {
       noIndex: null,
       published: true,
       childIds: ['videoId1', 'videoId2'],
+      availableLanguages: [],
       bibleCitation: [
         {
           id: 'bibleCitationId',
@@ -269,7 +275,8 @@ describe('video', () => {
     published: true,
     slug: null,
     noIndex: null,
-    childIds: []
+    childIds: [],
+    availableLanguages: []
   }
 
   describe('videos', () => {
@@ -1605,7 +1612,8 @@ describe('video', () => {
       published: true,
       slug: null,
       noIndex: null,
-      childIds: []
+      childIds: [],
+      availableLanguages: []
     }
 
     it('should query video', async () => {
@@ -1791,7 +1799,8 @@ describe('video', () => {
           published: true,
           slug: 'slug',
           noIndex: true,
-          childIds: []
+          childIds: [],
+          availableLanguages: []
         } as unknown as Video)
         const result = await authClient({
           document: CREATE_VIDEO_MUTATION,
@@ -1864,7 +1873,8 @@ describe('video', () => {
           published: true,
           slug: 'slug',
           noIndex: true,
-          childIds: []
+          childIds: [],
+          availableLanguages: []
         } as unknown as Video)
         const result = await authClient({
           document: VIDEO_UPDATE_MUTATION,
@@ -1940,7 +1950,8 @@ describe('video', () => {
         slug: null,
         noIndex: null,
         published: true,
-        childIds: []
+        childIds: [],
+        availableLanguages: []
       })
       const data = await client({
         document: VIDEO
