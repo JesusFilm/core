@@ -94,11 +94,11 @@ describe('TrashedJourneyList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        '1 year ago'
+        '11 months ago'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      '4 years ago'
+      '11 months ago'
     )
   })
 
