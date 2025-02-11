@@ -1,7 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import unescape from 'lodash/unescape'
+import _unescape from 'lodash/unescape'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo_VideoDescriptions as VideoDescriptions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
@@ -99,7 +99,7 @@ describe('VideoDescription', () => {
       screen.queryByRole('button', { name: 'Cancel' })
     ).not.toBeInTheDocument()
     expect(screen.getByRole('textbox')).toHaveValue(
-      unescape(mockVideoDescriptions[0].value).replace(/&#13;/g, '\n')
+      _unescape(mockVideoDescriptions[0].value).replace(/&#13;/g, '\n')
     )
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'Hello' }
@@ -148,7 +148,7 @@ describe('VideoDescription', () => {
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     expect(screen.getByRole('textbox')).toHaveValue(
-      unescape(mockVideoDescriptions[0].value).replace(/&#13;/g, '\n')
+      _unescape(mockVideoDescriptions[0].value).replace(/&#13;/g, '\n')
     )
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: 'new description text' }
@@ -172,7 +172,7 @@ describe('VideoDescription', () => {
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
     expect(screen.getByRole('textbox')).toHaveValue(
-      unescape(mockVideoDescriptions[0].value).replace(/&#13;/g, '\n')
+      _unescape(mockVideoDescriptions[0].value).replace(/&#13;/g, '\n')
     )
     fireEvent.change(screen.getByRole('textbox'), {
       target: { value: '' }
@@ -196,7 +196,7 @@ describe('VideoDescription', () => {
     const textbox = screen.getByRole('textbox')
 
     expect(textbox).toHaveValue(
-      unescape(mockVideoDescriptions[0].value).replace(/&#13;/g, '\n')
+      _unescape(mockVideoDescriptions[0].value).replace(/&#13;/g, '\n')
     )
 
     await user.clear(textbox)
@@ -207,7 +207,7 @@ describe('VideoDescription', () => {
     await user.click(screen.getByRole('button', { name: 'Cancel' }))
 
     expect(screen.getByRole('textbox')).toHaveValue(
-      unescape(mockVideoDescriptions[0].value).replace(/&#13;/g, '\n')
+      _unescape(mockVideoDescriptions[0].value).replace(/&#13;/g, '\n')
     )
   })
 })

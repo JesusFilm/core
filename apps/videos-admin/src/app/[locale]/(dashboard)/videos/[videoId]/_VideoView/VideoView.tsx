@@ -42,7 +42,7 @@ export function VideoView(): ReactElement {
     if (video != null) {
       setVideo(video)
     }
-  }, [video])
+  }, [video?.id])
 
   const showVideoChildren: boolean =
     video?.label === 'collection' ||
