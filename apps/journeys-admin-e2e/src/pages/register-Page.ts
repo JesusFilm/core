@@ -83,20 +83,27 @@ export class Register {
   }
 
   async enterOTP(otp) {
-    await this.page
-      .locator(
-        'form[data-testid="EmailInviteForm"] div[class*="MuiAccordionSummary-root"]'
-      )
+    const accordionLocator = this.page
+      .locator('form[data-testid="EmailInviteForm"] div[role="button"]')
       .first()
-      .click()
-    await expect(
-      this.page
-        .locator(
-          'form[data-testid="EmailInviteForm"] div[class*="MuiAccordionSummary-root"]'
-        )
-        .first()
-    ).toHaveAttribute('aria-expanded', 'true')
-    await this.page.locator('div[role="region"]  input[name="token"]').fill(otp)
+
+    // Wait for the accordion to be visible and stable
+    await expect(accordionLocator).toBeVisible({
+      timeout: thirtySecondsTimeout
+    })
+    await expect(accordionLocator).toBeEnabled({
+      timeout: thirtySecondsTimeout
+    })
+
+    await accordionLocator.click({ timeout: thirtySecondsTimeout })
+
+    await expect(accordionLocator).toHaveAttribute('aria-expanded', 'true', {
+      timeout: thirtySecondsTimeout
+    })
+
+    await this.page
+      .locator('div[role="region"] input[name="token"]')
+      .fill(otp, { timeout: thirtySecondsTimeout })
   }
 
   async clickValidateEmailBtn() {
