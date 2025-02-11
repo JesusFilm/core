@@ -123,6 +123,21 @@ export async function importOne(row: unknown): Promise<void> {
     update: transformedVideoVariant,
     create: transformedVideoVariant
   })
+
+  const video = await prisma.video.findUnique({
+    where: { id: transformedVideoVariant.videoId },
+    select: { availableLanguages: true }
+  })
+
+  const currentLanguages = video?.availableLanguages || []
+  const updatedLanguages = Array.from(
+    new Set([...currentLanguages, transformedVideoVariant.languageId])
+  )
+
+  await prisma.video.update({
+    where: { id: transformedVideoVariant.videoId },
+    data: { availableLanguages: updatedLanguages }
+  })
 }
 
 export async function importMany(rows: unknown[]): Promise<void> {
@@ -139,24 +154,64 @@ export async function importMany(rows: unknown[]): Promise<void> {
     videoVariants.map((videoVariant) => transform(videoVariant, videoSlugs))
   )
 
-  for (const transformedVideoVariant of transformedVideoVariants) {
-    await prisma.videoEdition.upsert({
-      where: {
-        name_videoId: {
-          videoId: transformedVideoVariant.videoId,
-          name: transformedVideoVariant.edition
-        }
-      },
-      update: {},
-      create: {
-        videoId: transformedVideoVariant.videoId,
-        name: transformedVideoVariant.edition
+  // Batch process video editions
+  const videoEditionUpserts = transformedVideoVariants.map((variant) => ({
+    where: {
+      name_videoId: {
+        videoId: variant.videoId,
+        name: variant.edition
       }
-    })
-  }
+    },
+    create: {
+      videoId: variant.videoId,
+      name: variant.edition
+    },
+    update: {}
+  }))
+
+  await prisma.$transaction(
+    videoEditionUpserts.map((upsert) => prisma.videoEdition.upsert(upsert))
+  )
 
   await prisma.videoVariant.createMany({
     data: transformedVideoVariants,
     skipDuplicates: true
   })
+
+  const videoLanguageUpdates = new Map<string, Set<string>>()
+  transformedVideoVariants.forEach((variant) => {
+    const languages = videoLanguageUpdates.get(variant.videoId) || new Set()
+    languages.add(variant.languageId)
+    videoLanguageUpdates.set(variant.videoId, languages)
+  })
+
+  // Get all existing video data in one query
+  const existingVideos = await prisma.video.findMany({
+    where: {
+      id: {
+        in: Array.from(videoLanguageUpdates.keys())
+      }
+    },
+    select: {
+      id: true,
+      availableLanguages: true
+    }
+  })
+
+  const videoUpdates = existingVideos.map((video) => {
+    const newLanguages = videoLanguageUpdates.get(video.id)
+    if (!newLanguages) return null
+
+    const currentLanguages = video.availableLanguages || []
+    const updatedLanguages = Array.from(
+      new Set([...currentLanguages, ...newLanguages])
+    )
+
+    return prisma.video.update({
+      where: { id: video.id },
+      data: { availableLanguages: updatedLanguages }
+    })
+  })
+
+  await prisma.$transaction(compact(videoUpdates))
 }
