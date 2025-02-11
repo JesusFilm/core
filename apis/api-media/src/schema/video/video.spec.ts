@@ -1621,7 +1621,8 @@ describe('video', () => {
       slug: null,
       noIndex: null,
       childIds: [],
-      availableLanguages: []
+      availableLanguages: [],
+      locked: false
     }
 
     it('should query video', async () => {
