@@ -686,6 +686,7 @@ type Video
   published: Boolean!
   cloudflareAssets: [CloudflareR2!]!
   videoEditions: [VideoEdition!]!
+  availableLanguages: [String!]!
   title(languageId: ID, primary: Boolean): [VideoTitle!]!
   snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
   description(languageId: ID, primary: Boolean): [VideoDescription!]!
