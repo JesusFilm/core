@@ -197,7 +197,6 @@ export function Canvas(): ReactElement {
                   delay: 100,
                   easing: 'ease-out'
                 }),
-
               outline: (theme) =>
                 selectedStep.id === selectedBlock?.id
                   ? `2px solid ${theme.palette.primary.main}`
