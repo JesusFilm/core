@@ -62,9 +62,7 @@ const GET_VIDEO = graphql(`
         verseEnd
       }
       childrenCount
-      variantLanguages {
-        id
-      }
+      availableLanguages
       variant {
         hls
         lengthInMilliseconds
@@ -211,7 +209,7 @@ export async function GET(
         verseEnd: citation.verseEnd
       })),
       ...(expand.includes('languageIds')
-        ? { languageIds: video.variantLanguages.map(({ id }) => Number(id)) }
+        ? { languageIds: video.availableLanguages }
         : {}),
       primaryLanguageId: Number(video.primaryLanguageId),
       title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
