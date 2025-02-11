@@ -23,6 +23,7 @@ import {
   StepDuplicate,
   StepDuplicateVariables
 } from '../../../../../../../../../__generated__/StepDuplicate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { MenuItem } from '../../../../../../../MenuItem'
 import { useBlockDuplicateCommand } from '../../../../../../utils/useBlockDuplicateCommand'
 import { STEP_NODE_DUPLICATE_OFFSET } from '../../libs/sizes'
@@ -193,6 +194,7 @@ export function DuplicateStep({
                 }
               })
             })
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           },
           onCompleted: () => {
             enqueueSnackbar(t('Card Duplicated'), {

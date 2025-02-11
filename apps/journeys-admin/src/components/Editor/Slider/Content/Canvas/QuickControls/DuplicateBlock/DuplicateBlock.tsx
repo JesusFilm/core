@@ -18,6 +18,7 @@ import {
 } from '../../../../../../../../__generated__/BlockDuplicate'
 import { BlockFields } from '../../../../../../../../__generated__/BlockFields'
 import { BlockDuplicateIdMap } from '../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { useBlockDuplicateCommand } from '../../../../../utils/useBlockDuplicateCommand'
 
 interface DuplicateBlockProps {
@@ -145,6 +146,7 @@ export function DuplicateBlock({
                 }
               })
             })
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }
