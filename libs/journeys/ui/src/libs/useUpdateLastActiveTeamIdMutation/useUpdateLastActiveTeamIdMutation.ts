@@ -14,6 +14,7 @@ export const UPDATE_LAST_ACTIVE_TEAM_ID = gql`
   mutation UpdateLastActiveTeamId($input: JourneyProfileUpdateInput!) {
     journeyProfileUpdate(input: $input) {
       id
+      lastActiveTeamId
     }
   }
 `
