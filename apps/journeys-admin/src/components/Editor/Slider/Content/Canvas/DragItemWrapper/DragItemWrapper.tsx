@@ -117,7 +117,7 @@ export function DragItemWrapper({
         <Divider
           orientation="horizontal"
           sx={{
-            width: '256px',
+            width: '248px',
             height: '2px',
             mt: '6px',
             mb: '6px',
