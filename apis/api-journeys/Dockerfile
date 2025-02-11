@@ -19,9 +19,9 @@ RUN npm install --production
 
 WORKDIR /prisma
 COPY ./apis/api-journeys/db .
-RUN npx prisma@5 generate --generator client
+RUN npx prisma@6 generate --generator client
 
 WORKDIR /app
 
 RUN npm install tslib@^2.6.2 @nestjs/mapped-types @prisma/client@5 pino-pretty@^10.2.0
-CMD npx prisma@5 migrate deploy --schema /prisma/schema.prisma; node ./main.js
+CMD npx prisma@6 migrate deploy --schema /prisma/schema.prisma; node ./main.js
