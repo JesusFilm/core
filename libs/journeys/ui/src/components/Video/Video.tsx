@@ -235,6 +235,11 @@ export function Video({
               className="video-js vjs-tech"
               playsInline
               preload="preload"
+              onLoadedMetadata={() => {
+                if (videoRef.current) {
+                  videoRef.current.currentTime = startAt ?? 30
+                }
+              }}
               sx={{
                 '&.video-js.vjs-youtube.vjs-fill': {
                   transform: 'scale(1.01)'
