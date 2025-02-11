@@ -49,6 +49,8 @@
   "Video URL": "Video URL",
   "Status": "Status",
   "Snippet is required": "Snippet is required",
+  "Failed to create video snippet": "Failed to create video snippet",
+  "Failed to update video snippet": "Failed to update video snippet",
   "Downloads": "Downloads",
   "No downloads available": "No downloads available",
   "Quality": "Quality",
