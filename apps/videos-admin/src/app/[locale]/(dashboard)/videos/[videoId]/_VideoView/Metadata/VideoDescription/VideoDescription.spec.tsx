@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import unescape from 'lodash/unescape'
@@ -6,8 +6,44 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo_VideoDescriptions as VideoDescriptions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { useVideoStore } from '../../../../../../../../libs/useVideoStore'
 
-import { UPDATE_VIDEO_DESCRIPTION, VideoDescription } from './VideoDescription'
+import {
+  CREATE_VIDEO_DESCRIPTION,
+  CreateVideoDescription,
+  CreateVideoDescriptionVariables,
+  UPDATE_VIDEO_DESCRIPTION,
+  VideoDescription
+} from './VideoDescription'
+
+jest.mock('../../../../../../../../libs/useVideoStore', () => ({
+  useVideoStore: jest.fn()
+}))
+
+const mockCreateVideoDescription: MockedResponse<
+  CreateVideoDescription,
+  CreateVideoDescriptionVariables
+> = {
+  request: {
+    query: CREATE_VIDEO_DESCRIPTION,
+    variables: {
+      input: {
+        videoId: 'video.id',
+        value: 'new description text',
+        primary: true,
+        languageId: '529'
+      }
+    }
+  },
+  result: {
+    data: {
+      videoDescriptionCreate: {
+        id: '6aef078b-6fea-4577-b440-b002a0cdeb58',
+        value: 'new description text'
+      }
+    }
+  }
+}
 
 describe('VideoDescription', () => {
   const mockUpdateVideoDescription = {
@@ -71,6 +107,34 @@ describe('VideoDescription', () => {
     expect(screen.getByRole('textbox')).toHaveValue('Hello')
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+  })
+
+  it('should create video description if none exists', async () => {
+    ;(useVideoStore as unknown as jest.Mock).mockReturnValue({ id: 'video.id' })
+    const result = jest.fn().mockReturnValue(mockCreateVideoDescription.result)
+
+    render(
+      <MockedProvider
+        mocks={[
+          { ...mockCreateVideoDescription, result },
+          mockUpdateVideoDescription
+        ]}
+      >
+        <NextIntlClientProvider locale="en">
+          <VideoDescription videoDescriptions={[]} />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    const user = userEvent.setup()
+
+    const textbox = screen.getByRole('textbox')
+    expect(screen.getByRole('textbox')).toHaveValue('')
+    await user.type(textbox, 'new description text')
+
+    await user.click(screen.getByRole('button', { name: 'Save' }))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockUpdateVideoDescription.result).not.toHaveBeenCalled()
   })
 
   it('should update video description on submit', async () => {
