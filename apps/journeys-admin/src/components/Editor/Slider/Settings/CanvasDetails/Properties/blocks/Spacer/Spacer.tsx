@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
@@ -34,9 +35,12 @@ export function Spacer({ id, spacing }: TreeBlock<SpacerBlock>): ReactElement {
         id={`${id}-spacer-options`}
         icon={<SpaceHeight />}
         name={t('Spacer Height')}
-        value={`${value.toString()} Pixels`}
+        value={`${value.toString()} Units`}
       >
         <Stack data-testid="SpacerFields">
+          <Typography variant="caption" sx={{ mx: 4 }}>
+            {t('Spacer will appear invisible to Journey viewers')}
+          </Typography>
           <Box sx={{ p: 4, pt: 0 }} data-testid="Label">
             <Slider
               sx={{ width: '100%' }}
