@@ -658,21 +658,21 @@ export class CardLevelActionPage {
   async clickFeedBackPropertiesDropDown(feedBackProperty: string) {
     await expect(
       this.page.locator(
-        'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"]',
+        'div[data-testid="TextResponseProperties"] button[data-testid="AccordionSummary"]',
         { hasText: feedBackProperty }
       )
     ).toBeVisible()
     if (
       await this.page
         .locator(
-          'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"][aria-expanded="false"]',
+          'div[data-testid="TextResponseProperties"] button[data-testid="AccordionSummary"][aria-expanded="false"]',
           { hasText: feedBackProperty }
         )
         .isVisible()
     ) {
       await this.page
         .locator(
-          'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"]',
+          'div[data-testid="TextResponseProperties"] button[data-testid="AccordionSummary"]',
           { hasText: feedBackProperty }
         )
         .click()
