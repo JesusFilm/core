@@ -10,24 +10,6 @@ export const Spacer = ({ spacing }: TreeBlock<SpacerFields>): ReactElement => {
   const { variant } = useJourney()
 
   return (
-    // <Resizable
-    //   height={height}
-    //   axis="y"
-    //   onResize={onResize}
-    //   handle={
-    //     <DragHandle
-    //       ref={handleRef}
-    //       sx={{
-    //         color: 'white',
-    //         position: 'absolute',
-    //         bottom: 0,
-    //         left: '50%',
-    //         transform: 'translate(-50%, 0)',
-    //         cursor: 'ns-resize'
-    //       }}
-    //     />
-    //   }
-    // >
     <Box
       sx={{
         mb: 4,
@@ -38,6 +20,5 @@ export const Spacer = ({ spacing }: TreeBlock<SpacerFields>): ReactElement => {
       }}
       data-testid="JourneysTextResponse"
     />
-    // </Resizable>
   )
 }
