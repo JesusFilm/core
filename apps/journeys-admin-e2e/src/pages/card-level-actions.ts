@@ -831,7 +831,7 @@ export class CardLevelActionPage {
   async clickSubscribePropertiesDropDown(feedBackProperty: string) {
     await this.page
       .locator(
-        'div[data-testid="SignUpProperties"] div[data-testid="AccordionSummary"]',
+        'div[data-testid="SignUpProperties"] button[data-testid="AccordionSummary"]',
         { hasText: feedBackProperty }
       )
       .click()
