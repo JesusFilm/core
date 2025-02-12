@@ -2,8 +2,8 @@ import { RefObject } from 'react'
 
 import { EDIT_TOOLBAR_HEIGHT } from '../../../../../constants'
 
-export const CARD_WIDTH = 300
-export const CARD_HEIGHT = 650
+export const CARD_WIDTH = 324
+export const CARD_HEIGHT = 674
 
 export function calculateScale(ref: RefObject<HTMLDivElement>): number {
   const current = ref.current
