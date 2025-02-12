@@ -86,7 +86,7 @@ export class Register {
   async enterOTP(otp) {
     await this.page
       .locator(
-        'form[data-testid="EmailInviteForm"] div[class="MuiAccordion-heading"]'
+        'form[data-testid="EmailInviteForm"] div[class*="MuiAccordion-heading"]'
       )
       .first()
       .click()
