@@ -241,7 +241,6 @@
     "@nx/web": "20.4.2",
     "@nx/webpack": "20.4.2",
     "@nx/workspace": "20.4.2",
-    "@parcel/watcher": "^2.4.1",
     "@playwright/test": "^1.44.0",
     "@storybook/addon-a11y": "^8.4.0",
     "@storybook/addon-essentials": "^8.4.0",
