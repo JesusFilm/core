@@ -65,7 +65,8 @@ describe('video', () => {
       noIndex: null,
       published: true,
       childIds: [],
-      availableLanguages: []
+      availableLanguages: [],
+      locked: false
     },
     {
       id: 'videoId1',
@@ -75,7 +76,8 @@ describe('video', () => {
       noIndex: null,
       published: true,
       childIds: [],
-      availableLanguages: []
+      availableLanguages: [],
+      locked: false
     }
   ]
 
@@ -88,7 +90,8 @@ describe('video', () => {
       noIndex: null,
       published: true,
       childIds: [],
-      availableLanguages: []
+      availableLanguages: [],
+      locked: false
     },
     {
       id: 'videoId4',
@@ -98,7 +101,8 @@ describe('video', () => {
       noIndex: null,
       published: true,
       childIds: [],
-      availableLanguages: []
+      availableLanguages: [],
+      locked: false
     }
   ]
 
@@ -112,6 +116,7 @@ describe('video', () => {
       published: true,
       childIds: ['videoId1', 'videoId2'],
       availableLanguages: [],
+      locked: false,
       bibleCitation: [
         {
           id: 'bibleCitationId',
@@ -276,7 +281,8 @@ describe('video', () => {
     slug: null,
     noIndex: null,
     childIds: [],
-    availableLanguages: []
+    availableLanguages: [],
+    locked: false
   }
 
   describe('videos', () => {
@@ -301,6 +307,7 @@ describe('video', () => {
           }
           label
           primaryLanguageId
+          locked
           title(languageId: $languageId, primary: $primary) {
             id
             value
@@ -551,7 +558,8 @@ describe('video', () => {
           {
             id: 'assetId'
           }
-        ]
+        ],
+        locked: false
       }
     ]
 
@@ -1613,7 +1621,8 @@ describe('video', () => {
       slug: null,
       noIndex: null,
       childIds: [],
-      availableLanguages: []
+      availableLanguages: [],
+      locked: false
     }
 
     it('should query video', async () => {
@@ -1951,7 +1960,8 @@ describe('video', () => {
         noIndex: null,
         published: true,
         childIds: [],
-        availableLanguages: []
+        availableLanguages: [],
+        locked: false
       })
       const data = await client({
         document: VIDEO
