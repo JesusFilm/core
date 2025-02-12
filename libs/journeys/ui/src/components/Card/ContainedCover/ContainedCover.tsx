@@ -183,6 +183,7 @@ export function ContainedCover({
             data-testid="background-image"
             src={imageBlock?.src ?? backgroundBlur}
             alt={imageBlock?.alt}
+            loading="eager"
             placeholder="blur"
             blurDataURL={backgroundBlur}
             layout="fill"
