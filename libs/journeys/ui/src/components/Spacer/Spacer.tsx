@@ -16,7 +16,9 @@ export const Spacer = ({ spacing }: TreeBlock<SpacerFields>): ReactElement => {
         height: spacing,
         bgcolor:
           variant === 'admin' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0)',
-        borderRadius: '6px'
+        borderRadius: '6px',
+        transition: (theme) =>
+          theme.transitions.create('height', { duration: 300 })
       }}
       data-testid="JourneysTextResponse"
     />

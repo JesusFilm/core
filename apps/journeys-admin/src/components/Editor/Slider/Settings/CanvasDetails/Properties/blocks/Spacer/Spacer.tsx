@@ -90,7 +90,7 @@ export function Spacer({ id, spacing }: TreeBlock<SpacerBlock>): ReactElement {
       >
         <Stack data-testid="SpacerFields">
           <Typography variant="caption" sx={{ mx: 4 }}>
-            {t('Spacer will appear invisible to journey viewers')}
+            {t('Spacer will be invisible to journey viewers')}
           </Typography>
           <Box sx={{ p: 4, pt: 0 }} data-testid="Label">
             <Slider
