@@ -11,23 +11,11 @@ describe('Metadata', () => {
   const mockAdminVideo: AdminVideo =
     useAdminVideoMock['result']?.['data']?.['adminVideo']
 
-  it('should render loading fallback', () => {
-    render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider>
-          <Metadata loading video={mockAdminVideo} />
-        </MockedProvider>
-      </NextIntlClientProvider>
-    )
-
-    expect(screen.getByRole('progressbar')).toBeInTheDocument()
-  })
-
   it('should render with data', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <Metadata loading={false} video={mockAdminVideo} />
+          <Metadata video={mockAdminVideo} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
