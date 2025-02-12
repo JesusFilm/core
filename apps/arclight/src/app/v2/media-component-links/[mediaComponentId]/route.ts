@@ -143,9 +143,7 @@ const GET_VIDEO_CHILDREN = graphql(`
           }
         }
       }
-      variantLanguages {
-        id
-      }
+      availableLanguages
     }
   }
 `)
@@ -294,9 +292,7 @@ export async function GET(
                   })),
                   ...(expand.includes('languageIds')
                     ? {
-                        languageIds: variantLanguages.map(({ id }) =>
-                          Number(id)
-                        )
+                        languageIds: video.availableLanguages
                       }
                     : {}),
                   primaryLanguageId: Number(primaryLanguageId),
