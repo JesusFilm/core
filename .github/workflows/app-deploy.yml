@@ -24,21 +24,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
-      - name: NPM Install
-        run: npm install --silent
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Bun Install
+        run: bun install --silent --frozen-lockfile
+
       - uses: nrwl/nx-set-shas@v4
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          echo "matrix=$(npx ts-node tools/scripts/deploy-apps.ts --projects apps/* --exclude api-*)" >> $GITHUB_OUTPUT
+          echo "matrix=$(bunx ts-node tools/scripts/deploy-apps.ts --projects apps/* --exclude api-*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
   deploy-preview:
     name: Deploy Preview and Test
@@ -114,19 +111,19 @@ jobs:
           NEXT_PUBLIC_VERCEL_ENV: ${{ github.event_name == 'push' && github.ref == 'refs/heads/stage' && 'stage' || 'preview' }}
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
+        run: bunx nx run-many --target=deploy --projects=${{ matrix.app }}
       - name: upload sourcemaps to datadog
         env:
           GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-        run: npx nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
+        run: bunx nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
       - name: vercel set alias
         if: ${{ github.event_name == 'pull_request' }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: npx nx run-many --target=vercel-alias --projects=${{ matrix.app }}
+        run: bunx nx run-many --target=vercel-alias --projects=${{ matrix.app }}
       - name: Generate GitHub deployment comment
         id: deployment-url
         env:
@@ -169,12 +166,12 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
-      - run: npx playwright install --with-deps
+      - run: bunx playwright install --with-deps
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-      - run: npx playwright install-deps
+      - run: bunx playwright install-deps
         if: steps.cache-playwright-browsers.outputs.cache-hit == 'true'
       - name: Run Playwright tests
-        run: npx nx run ${{ matrix.app }}-e2e:e2e
+        run: bunx nx run ${{ matrix.app }}-e2e:e2e
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
@@ -269,12 +266,12 @@ jobs:
           NEXT_PUBLIC_VERCEL_ENV: prod
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --prod
+        run: bunx nx run-many --target=deploy --projects=${{ matrix.app }} --prod
       - name: upload sourcemaps to datadog
         env:
           GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-        run: npx nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
+        run: bunx nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
       - name: Generate GitHub comment
         id: deployment-url
         env:
