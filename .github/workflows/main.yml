@@ -40,7 +40,7 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
       - name: Bun Install
-        run: bun install --silent --frozen-lockfile
+        run: bun install --silent
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -106,16 +106,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
-      - name: NPM Install
-        run: npm install --silent
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+      - name: Bun Install
+        run: bun install --silent
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:

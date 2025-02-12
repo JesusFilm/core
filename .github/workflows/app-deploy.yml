@@ -29,7 +29,7 @@ jobs:
         uses: oven-sh/setup-bun@v1
 
       - name: Bun Install
-        run: bun install --silent --frozen-lockfile
+        run: bun install --silent 
 
       - uses: nrwl/nx-set-shas@v4
       - id: set-matrix

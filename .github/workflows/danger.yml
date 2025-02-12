@@ -33,7 +33,7 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
       - name: Bun Install
-        run: bun install --silent --frozen-lockfile
+        run: bun install --silent
       - name: Danger JS
         run: bunx danger ci --failOnErrors
         env:

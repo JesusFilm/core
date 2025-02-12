@@ -76,7 +76,7 @@ jobs:
         uses: oven-sh/setup-bun@v1
 
       - name: Bun Install
-        run: bun install --silent --frozen-lockfile
+        run: bun install --silent
 
       - name: nx Install
         run: npm install -g nx --silent

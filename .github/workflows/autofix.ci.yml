@@ -44,7 +44,7 @@ jobs:
           key: lint-cache-${{ matrix.node-version }}-${{ hashFiles('**/.eslintrc.json', '**/tsconfig.json') }}
           restore-keys: lint-cache-${{ matrix.node-version }}-
       - name: Bun Install
-        run: bun install --silent --frozen-lockfile
+        run: bun install --silent 
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
