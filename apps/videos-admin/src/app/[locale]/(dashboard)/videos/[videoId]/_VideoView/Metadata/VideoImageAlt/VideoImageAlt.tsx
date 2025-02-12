@@ -12,7 +12,7 @@ import { object, string } from 'yup'
 import { CancelButton } from '../../../../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useVideoStore } from '../../../../../../../../libs/useVideoStore'
+import { useVideo } from '../../../../../../../../libs/VideoProvider'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 export const CREATE_VIDEO_IMAGE_ALT = graphql(`
@@ -45,7 +45,7 @@ export function VideoImageAlt({
   const [createVideoImageAlt] = useMutation(CREATE_VIDEO_IMAGE_ALT)
   const [updateVideoImageAlt] = useMutation(UPDATE_VIDEO_IMAGE_ALT)
 
-  const video = useVideoStore((state) => state.video)
+  const video = useVideo()
 
   const validationSchema = object().shape({
     imageAlt: string().trim().required(t('Image Alt is required'))
@@ -54,8 +54,6 @@ export function VideoImageAlt({
   async function handleUpdateVideoImageAlt(
     values: FormikValues
   ): Promise<void> {
-    if (video == null) return
-
     if (videoImageAlts.length === 0) {
       const res = await createVideoImageAlt({
         variables: {

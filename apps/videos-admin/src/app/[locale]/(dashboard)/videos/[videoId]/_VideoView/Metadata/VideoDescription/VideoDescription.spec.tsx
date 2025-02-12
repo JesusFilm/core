@@ -6,7 +6,7 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo_VideoDescriptions as VideoDescriptions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { useVideoStore } from '../../../../../../../../libs/useVideoStore'
+import { VideoProvider } from '../../../../../../../../libs/VideoProvider'
 
 import {
   CREATE_VIDEO_DESCRIPTION,
@@ -16,9 +16,7 @@ import {
   VideoDescription
 } from './VideoDescription'
 
-jest.mock('../../../../../../../../libs/useVideoStore', () => ({
-  useVideoStore: jest.fn()
-}))
+const mockVideo = useAdminVideoMock['result']?.['data']?.['adminVideo']
 
 const mockCreateVideoDescription: MockedResponse<
   CreateVideoDescription,
@@ -28,7 +26,7 @@ const mockCreateVideoDescription: MockedResponse<
     query: CREATE_VIDEO_DESCRIPTION,
     variables: {
       input: {
-        videoId: 'video.id',
+        videoId: mockVideo.id,
         value: 'new description text',
         primary: true,
         languageId: '529'
@@ -77,7 +75,9 @@ describe('VideoDescription', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <VideoDescription videoDescriptions={mockVideoDescriptions} />
+          <VideoProvider video={mockVideo}>
+            <VideoDescription videoDescriptions={mockVideoDescriptions} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -89,7 +89,9 @@ describe('VideoDescription', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <VideoDescription videoDescriptions={mockVideoDescriptions} />
+          <VideoProvider video={mockVideo}>
+            <VideoDescription videoDescriptions={mockVideoDescriptions} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -110,7 +112,6 @@ describe('VideoDescription', () => {
   })
 
   it('should create video description if none exists', async () => {
-    ;(useVideoStore as unknown as jest.Mock).mockReturnValue({ id: 'video.id' })
     const result = jest.fn().mockReturnValue(mockCreateVideoDescription.result)
 
     render(
@@ -121,7 +122,9 @@ describe('VideoDescription', () => {
         ]}
       >
         <NextIntlClientProvider locale="en">
-          <VideoDescription videoDescriptions={[]} />
+          <VideoProvider video={mockVideo}>
+            <VideoDescription videoDescriptions={[]} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -141,7 +144,9 @@ describe('VideoDescription', () => {
     render(
       <MockedProvider mocks={[mockUpdateVideoDescription]}>
         <NextIntlClientProvider locale="en">
-          <VideoDescription videoDescriptions={mockVideoDescriptions} />
+          <VideoProvider video={mockVideo}>
+            <VideoDescription videoDescriptions={mockVideoDescriptions} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -165,7 +170,9 @@ describe('VideoDescription', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <VideoDescription videoDescriptions={mockVideoDescriptions} />
+          <VideoProvider video={mockVideo}>
+            <VideoDescription videoDescriptions={mockVideoDescriptions} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -187,7 +194,9 @@ describe('VideoDescription', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <VideoDescription videoDescriptions={mockVideoDescriptions} />
+          <VideoProvider video={mockVideo}>
+            <VideoDescription videoDescriptions={mockVideoDescriptions} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )

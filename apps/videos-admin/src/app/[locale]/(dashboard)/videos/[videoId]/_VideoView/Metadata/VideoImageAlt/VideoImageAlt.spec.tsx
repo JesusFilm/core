@@ -5,7 +5,7 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { useVideoStore } from '../../../../../../../../libs/useVideoStore'
+import { VideoProvider } from '../../../../../../../../libs/VideoProvider'
 
 import {
   CREATE_VIDEO_IMAGE_ALT,
@@ -13,16 +13,14 @@ import {
   VideoImageAlt
 } from './VideoImageAlt'
 
-jest.mock('../../../../../../../../libs/useVideoStore', () => ({
-  useVideoStore: jest.fn()
-}))
+const mockVideo = useAdminVideoMock['result']?.['data']?.['adminVideo']
 
 const mockCreateVideoImageAlt = {
   request: {
     query: CREATE_VIDEO_IMAGE_ALT,
     variables: {
       input: {
-        videoId: 'video.id',
+        videoId: mockVideo.id,
         value: 'new video image alt text',
         primary: true,
         languageId: '529'
@@ -71,7 +69,9 @@ describe('VideoImageAlt', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
+          <VideoProvider video={mockVideo}>
+            <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -86,7 +86,9 @@ describe('VideoImageAlt', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
+          <VideoProvider video={mockVideo}>
+            <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -102,13 +104,14 @@ describe('VideoImageAlt', () => {
   })
 
   it('should create video image alt if none exists', async () => {
-    ;(useVideoStore as unknown as jest.Mock).mockReturnValue({ id: 'video.id' })
     render(
       <MockedProvider
         mocks={[mockCreateVideoImageAlt, mockUpdateVideoImageAlt]}
       >
         <NextIntlClientProvider locale="en">
-          <VideoImageAlt videoImageAlts={[]} />
+          <VideoProvider video={mockVideo}>
+            <VideoImageAlt videoImageAlts={[]} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -132,7 +135,9 @@ describe('VideoImageAlt', () => {
     render(
       <MockedProvider mocks={[mockUpdateVideoImageAlt]}>
         <NextIntlClientProvider locale="en">
-          <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
+          <VideoProvider video={mockVideo}>
+            <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -154,7 +159,9 @@ describe('VideoImageAlt', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
+          <VideoProvider video={mockVideo}>
+            <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -174,7 +181,9 @@ describe('VideoImageAlt', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
+          <VideoProvider video={mockVideo}>
+            <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )

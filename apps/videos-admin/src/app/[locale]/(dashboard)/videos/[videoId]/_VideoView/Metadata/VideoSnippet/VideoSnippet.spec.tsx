@@ -5,7 +5,7 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { useVideoStore } from '../../../../../../../../libs/useVideoStore'
+import { VideoProvider } from '../../../../../../../../libs/VideoProvider'
 
 import {
   CREATE_VIDEO_SNIPPET,
@@ -13,16 +13,14 @@ import {
   VideoSnippet
 } from './VideoSnippet'
 
-jest.mock('../../../../../../../../libs/useVideoStore', () => ({
-  useVideoStore: jest.fn()
-}))
+const mockVideo = useAdminVideoMock['result']?.['data']?.['adminVideo']
 
 const mockCreateVideoSnippet = {
   request: {
     query: CREATE_VIDEO_SNIPPET,
     variables: {
       input: {
-        videoId: 'video.id',
+        videoId: mockVideo.id,
         value: 'new snippet text',
         primary: true,
         languageId: '529'
@@ -71,7 +69,9 @@ describe('VideoSnippet', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <VideoSnippet videoSnippets={mockVideoSnippets} />
+          <VideoProvider video={mockVideo}>
+            <VideoSnippet videoSnippets={mockVideoSnippets} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -83,7 +83,9 @@ describe('VideoSnippet', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <VideoSnippet videoSnippets={mockVideoSnippets} />
+          <VideoProvider video={mockVideo}>
+            <VideoSnippet videoSnippets={mockVideoSnippets} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -104,12 +106,12 @@ describe('VideoSnippet', () => {
   })
 
   it('should create video snippet if none exists', async () => {
-    ;(useVideoStore as unknown as jest.Mock).mockReturnValue({ id: 'video.id' })
-
     render(
       <MockedProvider mocks={[mockCreateVideoSnippet]}>
         <NextIntlClientProvider locale="en">
-          <VideoSnippet videoSnippets={[]} />
+          <VideoProvider video={mockVideo}>
+            <VideoSnippet videoSnippets={[]} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -134,7 +136,9 @@ describe('VideoSnippet', () => {
     render(
       <MockedProvider mocks={[mockUpdateVideoSnippet]}>
         <NextIntlClientProvider locale="en">
-          <VideoSnippet videoSnippets={mockVideoSnippets} />
+          <VideoProvider video={mockVideo}>
+            <VideoSnippet videoSnippets={mockVideoSnippets} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -158,7 +162,9 @@ describe('VideoSnippet', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <VideoSnippet videoSnippets={mockVideoSnippets} />
+          <VideoProvider video={mockVideo}>
+            <VideoSnippet videoSnippets={mockVideoSnippets} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
@@ -180,7 +186,9 @@ describe('VideoSnippet', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <VideoSnippet videoSnippets={mockVideoSnippets} />
+          <VideoProvider video={mockVideo}>
+            <VideoSnippet videoSnippets={mockVideoSnippets} />
+          </VideoProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )

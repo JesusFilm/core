@@ -12,7 +12,7 @@ import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { PublishedChip } from '../../../../../../components/PublishedChip'
 import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
-import { useVideoStore } from '../../../../../../libs/useVideoStore'
+import { VideoProvider } from '../../../../../../libs/VideoProvider'
 
 import { Metadata } from './Metadata'
 import { TabContainer } from './Tabs/TabContainer'
@@ -38,12 +38,6 @@ export function VideoView(): ReactElement {
     setTabValue(newValue)
   }
 
-  useEffect(() => {
-    if (video != null) {
-      setVideo(video)
-    }
-  }, [video?.id])
-
   const showVideoChildren: boolean =
     video?.label === 'collection' ||
     video?.label === 'featureFilm' ||
@@ -52,6 +46,7 @@ export function VideoView(): ReactElement {
   const videoLabel = getVideoChildrenLabel(video?.label)
 
   return (
+    <VideoProvider video={video}>
     <Stack
       gap={2}
       sx={{ width: '100%', maxWidth: 1700 }}
@@ -124,5 +119,6 @@ export function VideoView(): ReactElement {
         </Box>
       </Stack>
     </Stack>
+    </VideoProvider>
   )
 }

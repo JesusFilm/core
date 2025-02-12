@@ -3,7 +3,7 @@ import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
-import unescape from 'lodash/unescape'
+import _unescape from 'lodash/unescape'
 import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
@@ -13,7 +13,7 @@ import { CancelButton } from '../../../../../../../../components/CancelButton'
 import { ResizableTextField } from '../../../../../../../../components/ResizableTextField'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useVideoStore } from '../../../../../../../../libs/useVideoStore'
+import { useVideo } from '../../../../../../../../libs/VideoProvider'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 export const CREATE_VIDEO_SNIPPET = graphql(`
@@ -46,15 +46,13 @@ export function VideoSnippet({
   const [createVideoSnippet] = useMutation(CREATE_VIDEO_SNIPPET)
   const [updateVideoSnippet] = useMutation(UPDATE_VIDEO_SNIPPET)
 
-  const video = useVideoStore((state) => state.video)
+  const video = useVideo()
 
   const validationSchema = object().shape({
     snippet: string().required(t('Snippet is required'))
   })
 
   async function handleUpdateVideoSnippet(values: FormikValues): Promise<void> {
-    if (video == null) return
-
     if (videoSnippets.length === 0) {
       const res = await createVideoSnippet({
         variables: {
@@ -91,7 +89,7 @@ export function VideoSnippet({
     }
   }
 
-  const snippet = unescape(videoSnippets?.[0]?.value ?? '').replace(
+  const snippet = _unescape(videoSnippets?.[0]?.value ?? '').replace(
     /&#13;/g,
     '\n'
   )

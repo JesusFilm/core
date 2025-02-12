@@ -13,7 +13,7 @@ import { CancelButton } from '../../../../../../../../components/CancelButton'
 import { ResizableTextField } from '../../../../../../../../components/ResizableTextField'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo_VideoDescriptions as VideoDescriptions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useVideoStore } from '../../../../../../../../libs/useVideoStore'
+import { useVideo } from '../../../../../../../../libs/VideoProvider'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 export const CREATE_VIDEO_DESCRIPTION = graphql(`
@@ -48,7 +48,7 @@ export function VideoDescription({
 }: VideoDescriptionProps): ReactElement {
   const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
-  const video = useVideoStore((state) => state.video)
+  const video = useVideo()
   const [createVideoDescription] = useMutation(CREATE_VIDEO_DESCRIPTION)
   const [updateVideoDescription] = useMutation(UPDATE_VIDEO_DESCRIPTION)
 
@@ -59,8 +59,6 @@ export function VideoDescription({
   async function handleUpdateVideoDescription(
     values: FormikValues
   ): Promise<void> {
-    if (video == null) return
-
     if (videoDescriptions.length === 0) {
       const res = await createVideoDescription({
         variables: {
