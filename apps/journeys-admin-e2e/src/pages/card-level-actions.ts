@@ -918,7 +918,6 @@ export class CardLevelActionPage {
       .locator('div[data-testid="AccordionSummary"][aria-expanded="false"]', {
         hasText: tabName
       })
-      .locator('div[class*="expandIconWrapper "]')
       .click()
   }
 
