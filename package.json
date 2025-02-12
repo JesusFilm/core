@@ -62,7 +62,6 @@
     "@graphql-hive/gateway": "^1.0.7",
     "@graphql-yoga/plugin-response-cache": "^3.8.0",
     "@mailchimp/mailchimp_marketing": "^3.0.80",
-    "@mdx-js/react": "^2.3.0",
     "@mui/base": "^5.0.0-beta.58",
     "@mui/icons-material": "^6.0.1",
     "@mui/lab": "^6.0.0-beta.8",
