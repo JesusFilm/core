@@ -834,6 +834,7 @@ export class CardLevelActionPage {
         'div[data-testid="SignUpProperties"] button[data-testid="AccordionSummary"]',
         { hasText: feedBackProperty }
       )
+      .last()
       .click()
   }
 
