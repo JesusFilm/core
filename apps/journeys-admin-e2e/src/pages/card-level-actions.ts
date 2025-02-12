@@ -915,9 +915,12 @@ export class CardLevelActionPage {
 
   async expandJourneyAppearance(tabName: string) {
     await this.page
-      .locator('div[data-testid="AccordionSummary"][aria-expanded="false"]', {
-        hasText: tabName
-      })
+      .locator(
+        'button[data-testid="AccordionSummary"][aria-expanded="false"]',
+        {
+          hasText: tabName
+        }
+      )
       .click()
   }
 
