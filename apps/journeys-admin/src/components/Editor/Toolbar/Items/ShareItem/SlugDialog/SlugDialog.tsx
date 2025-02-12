@@ -36,9 +36,7 @@ export function SlugDialog({
   const [journeyUpdate] = useMutation<JourneySlugUpdate>(JOURNEY_SLUG_UPDATE)
   const { journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
-  const slugSchema = object().shape({
-    slug: string().required(t('Required'))
-  })
+  const slugSchema = object().shape({ slug: string().required(t('Required')) })
 
   const handleUpdateSlug = async (
     values: FormikValues,
@@ -51,17 +49,14 @@ export function SlugDialog({
         variables: { id: journey.id, input: { slug: values.slug } }
       })
       await setValues({ slug: response?.data?.journeyUpdate.slug })
-      void revalidateJourneysAdmin(journey.id)
+      // void revalidateJourneysAdmin(journey.id)
       onClose?.()
     } catch (error) {
       if (error instanceof ApolloError) {
         if (error.networkError != null) {
           enqueueSnackbar(
             t('Field update failed. Reload the page or try again.'),
-            {
-              variant: 'error',
-              preventDuplicate: true
-            }
+            { variant: 'error', preventDuplicate: true }
           )
           return
         }
@@ -96,10 +91,7 @@ export function SlugDialog({
               open={open}
               onClose={handleClose(resetForm)}
               dialogTitle={{ title: t('Edit URL') }}
-              dialogAction={{
-                onSubmit: handleSubmit,
-                closeLabel: t('Cancel')
-              }}
+              dialogAction={{ onSubmit: handleSubmit, closeLabel: t('Cancel') }}
               testId="SlugDialog"
             >
               <Form>

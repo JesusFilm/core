@@ -36,6 +36,8 @@ import { Editor } from '../../src/components/Editor'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_CUSTOM_DOMAINS } from '../../src/libs/useCustomDomainsQuery/useCustomDomainsQuery'
 
+export const dynamic = 'force-dynamic'
+
 export const GET_ADMIN_JOURNEY = gql`
   ${JOURNEY_FIELDS}
   query GetAdminJourney($id: ID!) {
@@ -75,9 +77,7 @@ function JourneyEditPage({ status }): ReactElement {
   const user = useUser()
   const { data } = useQuery<GetAdminJourney, GetAdminJourneyVariables>(
     GET_ADMIN_JOURNEY,
-    {
-      variables: { id: router.query.journeyId as string }
-    }
+    { variables: { id: router.query.journeyId as string } }
   )
 
   const searchClient = useInstantSearchClient()
@@ -139,18 +139,14 @@ export const getServerSideProps = withUserTokenSSR({
       GetSSRAdminJourneyVariables
     >({
       query: GET_SSR_ADMIN_JOURNEY,
-      variables: {
-        id: query?.journeyId as string
-      }
+      variables: { id: query?.journeyId as string }
     })
 
     if (data.journey?.team?.id != null) {
       // from: src/components/Editor/Properties/JourneyLink/JourneyLink.tsx
       await apolloClient.query<GetCustomDomains, GetCustomDomainsVariables>({
         query: GET_CUSTOM_DOMAINS,
-        variables: {
-          teamId: data.journey.team.id
-        }
+        variables: { teamId: data.journey.team.id }
       })
     }
 
@@ -168,12 +164,7 @@ export const getServerSideProps = withUserTokenSSR({
     })
   } catch (error) {
     if (error.message === 'journey not found') {
-      return {
-        redirect: {
-          permanent: false,
-          destination: '/'
-        }
-      }
+      return { redirect: { permanent: false, destination: '/' } }
     }
     if (error.message === 'user is not allowed to view journey') {
       return {
