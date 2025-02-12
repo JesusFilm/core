@@ -85,12 +85,16 @@ export class Register {
 
   async enterOTP(otp) {
     await this.page
-      .locator('form[data-testid="EmailInviteForm"] div[role="button"]')
+      .locator(
+        'form[data-testid="EmailInviteForm"] div[class="MuiAccordion-heading"]'
+      )
       .first()
       .click()
     await expect(
       this.page
-        .locator('form[data-testid="EmailInviteForm"] div[role="button"]')
+        .locator(
+          'form[data-testid="EmailInviteForm"] div[class*="MuiAccordion-heading"]'
+        )
         .first()
     ).toHaveAttribute('aria-expanded', 'true')
     await this.page.locator('div[role="region"]  input[name="token"]').fill(otp)
