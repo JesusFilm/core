@@ -1,184 +1,234 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import type { Page } from 'playwright-core'
 
+import { getOTP, getPassword } from '../framework/helpers'
 import testData from '../utils/testData.json'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
+const seventySecondsTimeout = 70000
 
-export class TeamsPage {
+export class Register {
   readonly page: Page
+  name: string
+  userEmail: string
   constructor(page: Page) {
     this.page = page
     randomNumber =
-      dayjs().format('DDMMYY-hhmmss') +
+      dayjs().format('DDMMYYhhmmss') +
       Math.floor(Math.random() * (100 - 999 + 1) + 999)
   }
 
-  teamName = ''
-  renameTeamName = ''
-  memberEmail = ''
-
-  async createNewTeamAndVerifyCreatedTeam() {
-    await this.clickThreeDotOfTeams()
-    await this.clickThreeDotOptions('New Team')
-    await this.enterTeamName()
+  async registerNewAccount() {
+    const otp = await getOTP()
+    const password = await getPassword()
+    await this.enterUserName()
+    await this.clickSignInWithEmailBtn()
+    await this.enterName()
+    await this.enterPassword(password)
+    await this.clickSignUpBtn()
+    await this.verifyPageNavigatedToVerifyYourEmailPage()
+    await this.enterOTP(otp)
+    await this.clickValidateEmailBtn()
+    await this.verifyPageNavigatedBeforeStartPage()
+    await this.clickIAgreeBtn()
+    await this.clickNextBtn()
+    await this.retryCreateYourWorkSpacePage()
+    // await this.verifyPageNavigatedFewQuestionsPage()
+    // await this.clickNextBtnInFewQuestionPage()
+    await this.verifyCreateYourWorkspacePage()
+    await this.entetTeamName()
     await this.clickCreateBtn()
-    await this.verifyTeamCreatedSnackbarMsg()
-    await this.clickDiaLogBoxCloseBtn()
-    await this.clickTeamSelectionDropDown()
-    // await this.selectLastTeam() // due to bug
-    // await this.clickTeamSelectionDropDown()
-    await this.selectCreatedNewTeam()
-    await this.verifyTeamNameUpdatedInTeamSelectDropdown()
+    await this.waitUntilDiscoverPageLoaded()
+    await this.waitUntilTheToestMsgDisappear()
   }
 
-  async verifyCreatedTeamRenamed() {
-    await this.clickThreeDotOfTeams()
-    await this.clickThreeDotOptions('Rename')
-    await this.enterTeamRename()
-    await this.clickSaveBtn()
-    await this.verifyTeamRenameSnackbarMsg()
-    await this.verifyRenamedTeamNameUpdatedInTeamSelectDropdown()
+  async enterUserName() {
+    this.userEmail = `playwright${randomNumber}@example.com`
+    await this.page.locator('input#username').fill(this.userEmail)
   }
 
-  async verifyMemberAddedViaMemberOptionOfThreeDotOptions() {
-    await this.clickThreeDotOfTeams()
-    await this.clickThreeDotOptions('Members')
-    await this.verifyMemberAdded()
-  }
-
-  async verifyMemberAdded() {
-    await this.enterTeamMember()
-    await this.clickPlusMemberInMemberPopup()
-    await this.verifyMemberAddedInMemberList()
-    await this.clickDiaLogBoxCloseBtn()
-  }
-
-  async verifyMemberAddedViaPlusIconAtTopOfTheRightCorner() {
-    await this.clickMemberPlusIcon()
-    await this.verifyMemberAdded()
-  }
-
-  async clickThreeDotOfTeams() {
-    await this.page.getByTestId('MainPanelHeader').locator('button').click()
-  }
-
-  async clickThreeDotOptions(options) {
+  async clickSignInWithEmailBtn() {
     await this.page
-      .locator('li[data-testid="JourneysAdminMenuItem"] span', {
-        hasText: options
+      .locator('form[data-testid="EmailSignInForm"] button[type="submit"]')
+      .click()
+  }
+
+  async enterName() {
+    await this.page
+      .locator('input#name')
+      .fill(testData.register.userName + randomNumber)
+  }
+
+  async enterPassword(password: string) {
+    await this.page.locator('input#new-password').fill(password)
+  }
+
+  async clickSignUpBtn() {
+    await this.page
+      .locator('form[data-testid="RegisterForm"] button', {
+        hasText: 'Sign Up'
       })
       .click()
   }
 
-  async enterTeamName() {
-    this.teamName = testData.teams.teamName + randomNumber
-    await this.page.locator('input#title').fill(this.teamName)
+  async verifyPageNavigatedToVerifyYourEmailPage() {
+    await expect(
+      this.page.locator(
+        'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
+        { hasText: 'Verify Your Email' }
+      )
+    ).toBeVisible({ timeout: 30000 })
+  }
+
+  async enterOTP(otp) {
+    await this.page
+      .locator('form[data-testid="EmailInviteForm"] div[role="button"]')
+      .first()
+      .click()
+    await expect(
+      this.page
+        .locator('form[data-testid="EmailInviteForm"] div[role="button"]')
+        .first()
+    ).toHaveAttribute('aria-expanded', 'true')
+    await this.page.locator('div[role="region"]  input[name="token"]').fill(otp)
+  }
+
+  async clickValidateEmailBtn() {
+    await this.page
+      .locator('button[type="submit"]', { hasText: 'Validate Email' })
+      .click()
+  }
+
+  async verifyPageNavigatedBeforeStartPage() {
+    await expect(
+      this.page.locator(
+        'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
+        { hasText: 'Terms and Conditions' }
+      )
+    ).toBeVisible({ timeout: 60000 })
+  }
+
+  async clickIAgreeBtn() {
+    await this.page.locator('input[aria-labelledby="i-agree-label"]').check()
+  }
+
+  async clickNextBtn() {
+    await this.page
+      .locator('button[type="button"]', { hasText: 'Next' })
+      .click({ delay: 2000 })
+  }
+
+  async verifyPageNavigatedFewQuestionsPage() {
+    await expect(
+      this.page.locator(
+        'div[data-testid="JourneysAdminOnboardingPageWrapper"]',
+        { hasText: 'User Insights' }
+      )
+    ).toBeVisible({ timeout: 50000 })
+  }
+
+  async clickNextBtnInFewQuestionPage() {
+    await this.page
+      .locator('button[type="submit"]', { hasText: 'Next' })
+      .click({ delay: 3000 })
+  }
+
+  async entetTeamName() {
+    await this.page
+      .locator('input#title')
+      .fill(testData.teams.teamName + randomNumber, { timeout: 60000 })
   }
 
   async clickCreateBtn() {
     await this.page
-      .locator('div[data-testid="dialog-action"] button', { hasText: 'Create' })
+      .locator('button[type="button"]', { hasText: 'Create' })
       .click()
   }
 
-  async verifyTeamCreatedSnackbarMsg() {
+  async verifyPageNavigatedInviteTeammatesPage() {
     await expect(
-      this.page.locator('div#notistack-snackbar', {
-        hasText: this.teamName + ' created.'
-      })
-    ).toBeVisible()
+      this.page.locator(
+        'div[data-testid="JourneysAdminOnboardingPageWrapper"] span',
+        { hasText: 'Invite Teammates' }
+      )
+    ).toBeVisible({ timeout: 50000 })
+  }
+
+  async clickSkipBtn() {
+    await this.page
+      .locator('button[type="button"]', { hasText: 'Skip' })
+      .click()
+  }
+
+  async waitUntilDiscoverPageLoaded() {
+    await expect(
+      this.page.locator(
+        'div[data-testid="JourneysAdminContainedIconButton"] button'
+      )
+    ).toBeVisible({ timeout: 65000 })
+  }
+
+  async waitUntilTheToestMsgDisappear() {
     await expect(this.page.locator('div#notistack-snackbar')).toHaveCount(0, {
       timeout: 30000
     })
   }
 
-  async clickDiaLogBoxCloseBtn() {
-    await this.page.locator('button[data-testid="dialog-close-button"]').click()
+  async verifyMoreJourneyHerePopup() {
+    // waiting for 'More journeys here' appear if it is don't, we doesn't need to assert the script
+    const moreJourneysLocator = this.page.locator(
+      'div[class*="MuiPopover-paper"] h6',
+      {
+        hasText: 'More journeys here'
+      }
+    )
+
+    try {
+      await expect(moreJourneysLocator).toBeVisible({ timeout: 5000 })
+      const dismissButtonLocator = this.page.locator(
+        'div[class*="MuiPopover-paper"] button',
+        {
+          hasText: 'Dismiss'
+        }
+      )
+      await dismissButtonLocator.click()
+    } catch {
+      console.log('More journeys here is not appear')
+    }
   }
 
-  async clickTeamSelectionDropDown() {
-    await this.page.locator('div[aria-haspopup="listbox"]').click()
+  async getUserEmailId() {
+    return this.userEmail
   }
 
-  async selectLastTeam() {
+  async clickNextBtnOfTermsAndConditions() {
     await this.page
-      .locator('ul[role="listbox"] li[role="option"]', {
-        hasNotText: 'Shared With Me'
-      })
-      .last()
+      .locator('button[data-testid="TermsAndConditionsNextButton"]')
       .click()
   }
 
-  async selectCreatedNewTeam() {
-    await this.page
-      .locator('ul[role="listbox"] li[role="option"]', {
-        hasText: this.teamName
-      })
-      .click()
+  async retryCreateYourWorkSpacePage() {
+    // clicking on 'Next' button twice if the Create Your Workspace page doesn't appears
+    try {
+      await expect(
+        this.page.locator(
+          'div[data-testid="JourneysAdminOnboardingPageWrapper"] h2',
+          { hasText: 'Create Your Workspace' }
+        )
+      ).toBeVisible({ timeout: 10000 })
+    } catch {
+      await this.clickNextBtnOfTermsAndConditions()
+    }
   }
 
-  async verifyTeamNameUpdatedInTeamSelectDropdown() {
-    await expect(this.page.locator('div[aria-haspopup="listbox"]')).toHaveText(
-      this.teamName
-    )
-  }
-
-  async clickCreateJourneyBtn() {
-    await this.page.locator('button[data-testid="AddJourneyButton"]').click()
-  }
-
-  async enterTeamRename() {
-    this.renameTeamName = testData.teams.teamRename + randomNumber
-    await this.page.locator('input#title').clear()
-    await this.page.locator('input#title').fill(this.renameTeamName)
-  }
-
-  async clickSaveBtn() {
-    await this.page
-      .locator('div[data-testid="dialog-action"] button', { hasText: 'Save' })
-      .click()
-  }
-
-  async verifyTeamRenameSnackbarMsg() {
-    await expect(this.page.locator('div#notistack-snackbar')).toContainText(
-      this.renameTeamName + ' updated.'
-    )
-    await expect(this.page.locator('div#notistack-snackbar')).toHaveCount(0, {
-      timeout: 30000
-    })
-  }
-
-  async verifyRenamedTeamNameUpdatedInTeamSelectDropdown() {
-    await expect(this.page.locator('div[aria-haspopup="listbox"]')).toHaveText(
-      this.renameTeamName,
-      { timeout: 60000 }
-    )
-  }
-
-  async enterTeamMember() {
-    this.memberEmail = 'playwright' + randomNumber + '@example.com'
-    await this.page.locator('input[name="email"]').fill(this.memberEmail)
-  }
-
-  async clickPlusMemberInMemberPopup() {
-    await this.page.locator('button[aria-label="add user"]').click()
-  }
-
-  async verifyMemberAddedInMemberList() {
+  async verifyCreateYourWorkspacePage() {
     await expect(
-      this.page.locator('div[data-testid*="UserTeamInviteListItem"] p', {
-        hasText: this.memberEmail
-      })
-    ).toBeVisible()
-  }
-
-  async clickMemberPlusIcon() {
-    await this.page
-      .locator('div[data-testid="member-dialog-open-avatar"]')
-      .click()
+      this.page.locator(
+        'div[data-testid="JourneysAdminOnboardingPageWrapper"] h2',
+        { hasText: 'Create Your Workspace' }
+      )
+    ).toBeVisible({ timeout: 10000 })
   }
 }
