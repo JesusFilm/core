@@ -5,7 +5,7 @@ generator client {
   provider        = "prisma-client-js"
   output          = env("PRISMA_LOCATION_MEDIA")
   binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
-  previewFeatures = ["fullTextSearch", "tracing"]
+  previewFeatures = ["fullTextSearchPostgres"]
 }
 
 generator pothos {
@@ -119,6 +119,7 @@ model Video {
   slug               String?              @unique
   noIndex            Boolean?
   childIds           String[] // needed for child sort order
+  locked             Boolean              @default(false)
   subtitles          VideoSubtitle[]
   children           Video[]              @relation("ParentChild")
   parent             Video[]              @relation("ParentChild")
