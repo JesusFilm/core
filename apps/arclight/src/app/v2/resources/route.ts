@@ -30,12 +30,18 @@ type AlgoliaVideoHit = {
     bcp47: string
   }>
   isDownloadable: boolean
-  downloadSizes: {
+  downloadSizes?: {
     approximateSmallDownloadSizeInBytes?: number
     approximateLargeDownloadSizeInBytes?: number
   }
+  bibleCitations?: Array<{
+    osisBibleBook: string
+    chapterStart: number
+    verseStart: number
+    chapterEnd: number | null
+    verseEnd: number | null
+  }>
   primaryLanguageId: number
-  bibleCitations: Array<any>
   containsCount: number
 }
 
@@ -67,6 +73,10 @@ type AlgoliaCountryHit = {
   latitude: number
 }
 
+type AlgoliaSearchResponse<T> = {
+  hits: T[]
+}
+
 async function initAlgoliaClient() {
   const appID = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID
   const apiKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY
@@ -82,63 +92,25 @@ async function searchVideoVariantsAlgolia(
   term: string,
   metadataLanguageTags: string[],
   client: SearchClient
-) {
+): Promise<AlgoliaVideoHit[]> {
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS
   if (!indexName) {
     throw new Error('Algolia environment variables are not set')
   }
 
-  const response = await client.searchSingleIndex<AlgoliaVideoHit>({
+  const response = (await client.searchSingleIndex<AlgoliaVideoHit>({
     indexName,
     searchParams: {
       query: term,
       hitsPerPage: 1000
     }
-  })
+  })) as AlgoliaSearchResponse<AlgoliaVideoHit>
 
   if (!response.hits) {
     return []
   }
 
-  return response.hits.map((hit) => ({
-    mediaComponentId: hit.mediaComponentId,
-    componentType: hit.componentType,
-    subType: hit.subType,
-    contentType: hit.contentType,
-    imageUrls: {
-      thumbnail: hit.imageUrls.thumbnail,
-      videoStill: hit.imageUrls.videoStill,
-      mobileCinematicHigh: hit.imageUrls.mobileCinematicHigh,
-      mobileCinematicLow: hit.imageUrls.mobileCinematicLow,
-      mobileCinematicVeryLow: hit.imageUrls.mobileCinematicVeryLow
-    },
-    lengthInMilliseconds: hit.lengthInMilliseconds ?? 0,
-    containsCount: hit.containsCount,
-    isDownloadable: hit.isDownloadable,
-    downloadSizes: hit.downloadSizes ?? {},
-    bibleCitations: hit.bibleCitations ?? [],
-    primaryLanguageId: hit.primaryLanguageId,
-    title:
-      hit.titles.find((t) => t.bcp47 === metadataLanguageTags[0])?.value ??
-      hit.titles.find((t) => t.bcp47 === 'en')?.value ??
-      '',
-    shortDescription:
-      hit.descriptions.find((d) => d.bcp47 === metadataLanguageTags[0])
-        ?.value ??
-      hit.descriptions.find((d) => d.bcp47 === 'en')?.value ??
-      '',
-    longDescription:
-      hit.descriptions.find((d) => d.bcp47 === metadataLanguageTags[0])
-        ?.value ??
-      hit.descriptions.find((d) => d.bcp47 === 'en')?.value ??
-      '',
-    studyQuestions:
-      hit.studyQuestions.find((q) => q.bcp47 === metadataLanguageTags[0])
-        ?.value ??
-      hit.studyQuestions.find((q) => q.bcp47 === 'en')?.value ??
-      '',
-    metadataLanguageTag: metadataLanguageTags[0]
-  }))
+  return response.hits
 }
 
 async function searchAlgoliaLanguages(
@@ -251,7 +223,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       searchAlgoliaCountries(term, metadataLanguageTags, client)
     ])
 
-    const transformedVideos = videoHits.map((hit) => ({
+    const transformedVideos = videoHits.map((hit: AlgoliaVideoHit) => ({
       mediaComponentId: hit.mediaComponentId,
       componentType: hit.componentType,
       subType: hit.subType,
@@ -266,14 +238,40 @@ export async function GET(request: NextRequest): Promise<Response> {
       lengthInMilliseconds: hit.lengthInMilliseconds ?? 0,
       containsCount: hit.containsCount,
       isDownloadable: hit.isDownloadable,
-      downloadSizes: hit.downloadSizes ?? {},
-      bibleCitations: hit.bibleCitations ?? [],
+      downloadSizes: {
+        approximateSmallDownloadSizeInBytes:
+          hit.downloadSizes?.approximateSmallDownloadSizeInBytes,
+        approximateLargeDownloadSizeInBytes:
+          hit.downloadSizes?.approximateLargeDownloadSizeInBytes
+      },
+      bibleCitations:
+        hit.bibleCitations?.map((citation) => ({
+          osisBibleBook: citation.osisBibleBook,
+          chapterStart: citation.chapterStart,
+          verseStart: citation.verseStart,
+          chapterEnd: citation.chapterEnd,
+          verseEnd: citation.verseEnd
+        })) ?? [],
       primaryLanguageId: hit.primaryLanguageId,
-      title: hit.title,
-      shortDescription: hit.shortDescription,
-      longDescription: hit.longDescription,
-      studyQuestions: hit.studyQuestions,
-      metadataLanguageTag: metadataLanguageTags[0]
+      title:
+        hit.titles.find((t) => t.bcp47 === metadataLanguageTags[0])?.value ??
+        hit.titles.find((t) => t.bcp47 === 'en')?.value ??
+        '',
+      shortDescription:
+        hit.descriptions.find((d) => d.bcp47 === metadataLanguageTags[0])
+          ?.value ??
+        hit.descriptions.find((d) => d.bcp47 === 'en')?.value ??
+        '',
+      longDescription:
+        hit.descriptions.find((d) => d.bcp47 === metadataLanguageTags[0])
+          ?.value ??
+        hit.descriptions.find((d) => d.bcp47 === 'en')?.value ??
+        '',
+      studyQuestions: hit.studyQuestions
+        .filter((q) => q.bcp47 === metadataLanguageTags[0] || q.bcp47 === 'en')
+        .map((q) => q.value)
+        .filter((q): q is string => q !== undefined && q !== ''),
+      metadataLanguageTag: metadataLanguageTags[0] ?? 'en'
     }))
 
     const transformedLanguages = languageHits.map((hit) => ({
@@ -281,19 +279,13 @@ export async function GET(request: NextRequest): Promise<Response> {
       iso3: hit.iso3,
       bcp47: hit.bcp47,
       primaryCountryId: hit.primaryCountryId,
-      nameNative:
-        hit.nameNative ?? hit.names.find((n) => n.bcp47 === 'en')?.value ?? '',
-      name: [
-        {
-          value:
-            hit.names.find((n) => n.bcp47 === metadataLanguageTags[0])?.value ??
-            hit.names.find((n) => n.bcp47 === 'en')?.value ??
-            '',
-          bcp47: hit.bcp47
-        }
-      ],
+      name:
+        hit.names.find((n) => n.bcp47 === metadataLanguageTags[0])?.value ??
+        hit.names.find((n) => n.bcp47 === 'en')?.value ??
+        '',
+      nameNative: hit.nameNative ?? '',
       metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
-      __links: {
+      _links: {
         self: {
           href: `http://api.arclight.org/v2/media-languages/${hit.objectID}?apiKey=${apiKey}`
         }
@@ -307,9 +299,10 @@ export async function GET(request: NextRequest): Promise<Response> {
         hit.names.find((n) => n.bcp47 === 'en')?.value ??
         '',
       continentName: hit.continentName,
+      metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
       longitude: hit.longitude,
       latitude: hit.latitude,
-      __links: {
+      _links: {
         self: {
           href: `http://api.arclight.org/v2/media-countries/${hit.countryId}?apiKey=${apiKey}`
         }
