@@ -15,7 +15,7 @@ async function searchResources(
 }
 
 test.describe('GET /v2/resources', () => {
-  test.fixme('returns United States in countries', async ({ request }) => {
+  test('returns United States in countries', async ({ request }) => {
     const response = await searchResources(request, { term: 'United' })
     expect(response.ok()).toBeTruthy()
 
@@ -42,7 +42,7 @@ test.describe('GET /v2/resources', () => {
     })
   })
 
-  test.fixme('returns English in languages', async ({ request }) => {
+  test('returns English in languages', async ({ request }) => {
     const response = await searchResources(request, { term: 'English' })
     expect(response.ok()).toBeTruthy()
 
@@ -69,8 +69,7 @@ test.describe('GET /v2/resources', () => {
     })
   })
 
-  test.fixme('search returns Paper Hats in videos', async ({ request }) => {
-    // Skipped because Algolia integration is not ready
+  test('search returns Paper Hats in videos', async ({ request }) => {
     const response = await searchResources(request, {
       term: 'Paper Hats',
       metadataLanguageTags: 'en'
