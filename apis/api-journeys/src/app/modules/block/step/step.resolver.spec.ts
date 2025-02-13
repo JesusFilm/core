@@ -60,6 +60,13 @@ describe('StepBlockResolver', () => {
     })
   }
 
+  const updatedAt: Date = new Date('2024-10-22T03:39:39.268Z')
+
+  beforeAll(async () => {
+    jest.useFakeTimers()
+    jest.setSystemTime(updatedAt)
+  })
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
@@ -209,6 +216,23 @@ describe('StepBlockResolver', () => {
           x: 1,
           y: 1
         }
+      })
+    })
+
+    it('should set the journey updatedAt when step positions are updated', async () => {
+      prismaService.block.findMany.mockResolvedValueOnce([
+        blockWithUserTeam,
+        { ...blockWithUserTeam, id: 'blockId2' }
+      ])
+      await resolver.stepBlockPositionUpdate(ability, [
+        blockPositionUpdateInput,
+        { id: 'blockId2', x: 1, y: 1 }
+      ])
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: {
+          id: block.journeyId
+        },
+        data: { updatedAt: updatedAt.toISOString() }
       })
     })
 
