@@ -67,6 +67,10 @@ describe('StepBlockResolver', () => {
     jest.setSystemTime(updatedAt)
   })
 
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [CaslAuthModule.register(AppCaslFactory)],
