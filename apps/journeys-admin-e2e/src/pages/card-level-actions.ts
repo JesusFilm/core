@@ -658,21 +658,21 @@ export class CardLevelActionPage {
   async clickFeedBackPropertiesDropDown(feedBackProperty: string) {
     await expect(
       this.page.locator(
-        'div[data-testid="TextResponseProperties"] button[data-testid="AccordionSummary"]',
+        'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"]',
         { hasText: feedBackProperty }
       )
     ).toBeVisible()
     if (
       await this.page
         .locator(
-          'div[data-testid="TextResponseProperties"] button[data-testid="AccordionSummary"][aria-expanded="false"]',
+          'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"][aria-expanded="false"]',
           { hasText: feedBackProperty }
         )
         .isVisible()
     ) {
       await this.page
         .locator(
-          'div[data-testid="TextResponseProperties"] button[data-testid="AccordionSummary"]',
+          'div[data-testid="TextResponseProperties"] div[data-testid="AccordionSummary"]',
           { hasText: feedBackProperty }
         )
         .click()
@@ -831,10 +831,9 @@ export class CardLevelActionPage {
   async clickSubscribePropertiesDropDown(feedBackProperty: string) {
     await this.page
       .locator(
-        'div[data-testid="SignUpProperties"] button[data-testid="AccordionSummary"]',
+        'div[data-testid="SignUpProperties"] div[data-testid="AccordionSummary"]',
         { hasText: feedBackProperty }
       )
-      .last()
       .click()
   }
 
@@ -916,12 +915,10 @@ export class CardLevelActionPage {
 
   async expandJourneyAppearance(tabName: string) {
     await this.page
-      .locator(
-        'button[data-testid="AccordionSummary"][aria-expanded="false"]',
-        {
-          hasText: tabName
-        }
-      )
+      .locator('div[data-testid="AccordionSummary"][aria-expanded="false"]', {
+        hasText: tabName
+      })
+      .locator('div[class*="expandIconWrapper "]')
       .click()
   }
 
