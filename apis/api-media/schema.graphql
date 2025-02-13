@@ -682,6 +682,7 @@ type Video
   keywords(languageId: ID): [Keyword!]!
   id: ID!
   label: VideoLabel!
+  locked: Boolean!
   primaryLanguageId: ID!
   published: Boolean!
   cloudflareAssets: [CloudflareR2!]!
