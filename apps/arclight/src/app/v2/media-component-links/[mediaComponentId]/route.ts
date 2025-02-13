@@ -12,8 +12,8 @@ const GET_VIDEO_CHILDREN = graphql(`
   query GetVideoChildren($id: ID!) {
     video(id: $id) {
       id
+      availableLanguages
       children {
-        availableLanguages
         id
         label
         primaryLanguageId
@@ -71,10 +71,8 @@ const GET_VIDEO_CHILDREN = graphql(`
             size
           }
         }
-        availableLanguages
       }
       parents {
-        availableLanguages
         id
         label
         primaryLanguageId
@@ -133,7 +131,6 @@ const GET_VIDEO_CHILDREN = graphql(`
           }
         }
       }
-      availableLanguages
     }
   }
 `)
