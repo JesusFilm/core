@@ -99,7 +99,6 @@ export class StepBlockResolver {
         lower: true,
         strict: true
       })
-
     return await this.blockService.update(id, input)
   }
 
