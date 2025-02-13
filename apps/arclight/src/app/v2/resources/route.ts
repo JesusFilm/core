@@ -309,51 +309,34 @@ export async function GET(request: NextRequest): Promise<Response> {
       }
     }))
 
-    const transformedResponse =
-      bulk === 'true'
-        ? {
-            _links: {
-              self: {
-                href: `http://api.arclight.org/v2/resources?term=${term}&bulk=false&apiKey=${apiKey}`
-              }
-            },
-            _embedded: {
-              resources: {
-                resourceCount:
-                  transformedVideos.length +
-                  countryHits.length +
-                  transformedLanguages.length,
-                mediaCountries: countryHits.map((country) => country.countryId),
-                mediaLanguages: transformedLanguages.map((language) =>
-                  Number(language.languageId)
-                ),
-                alternateLanguages: [],
-                mediaComponents: transformedVideos.map(
-                  (video: { mediaComponentId: string }) =>
-                    video.mediaComponentId
-                )
-              }
-            }
-          }
-        : {
-            _links: {
-              self: {
-                href: `http://api.arclight.org/v2/resources?term=${term}&bulk=false&apiKey=${apiKey}`
-              }
-            },
-            _embedded: {
-              resources: {
-                resourceCount:
-                  transformedVideos.length +
-                  countryHits.length +
-                  transformedLanguages.length,
-                mediaCountries: transformedCountries,
-                mediaLanguages: transformedLanguages,
-                alternateLanguages: [],
-                mediaComponents: transformedVideos
-              }
-            }
-          }
+    const transformedResponse = {
+      _links: {
+        self: {
+          href: `http://api.arclight.org/v2/resources?term=${term}&bulk=${bulk}&apiKey=${apiKey}`
+        }
+      },
+      _embedded: {
+        resources: {
+          resourceCount:
+            transformedVideos.length +
+            countryHits.length +
+            transformedLanguages.length,
+          mediaCountries:
+            bulk === 'true'
+              ? countryHits.map((country) => country.countryId)
+              : transformedCountries,
+          mediaLanguages:
+            bulk === 'true'
+              ? languageHits.map((language) => Number(language.objectID))
+              : transformedLanguages,
+          alternateLanguages: [],
+          mediaComponents:
+            bulk === 'true'
+              ? transformedVideos.map((video) => video.mediaComponentId)
+              : transformedVideos
+        }
+      }
+    }
 
     return new Response(JSON.stringify(transformedResponse), { status: 200 })
   } catch (error) {
