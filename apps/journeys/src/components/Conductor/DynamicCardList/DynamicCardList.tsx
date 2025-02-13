@@ -29,34 +29,27 @@ export function DynamicCardList({ blocks }: Props): ReactElement {
     setShowHeaderFooter(true)
   }, [currentBlock, setShowHeaderFooter])
 
-  // move current block to beginning of blocks array
-  const orderedBlocks = currentBlock
-    ? [currentBlock, ...blocks.filter((block) => block.id !== currentBlock.id)]
-    : blocks
-
   return (
     <>
-      {orderedBlocks.map((block) => {
+      {blocks.map((block) => {
         const isCurrent = block.id === currentBlock?.id
         // test via e2e: navigation to and from non-pre-rendered cards
         const isPreRender =
           block.id === nextBlock?.id || block.id === previousBlock?.id
 
-        if (isCurrent || isPreRender) {
-          return (
-            <Fade
-              key={block.id}
-              in={isCurrent}
-              timeout={{ appear: 0, enter: 200, exit: 0 }}
-            >
-              <DynamicCard
-                isCurrent={isCurrent}
-                isPreRender={isPreRender}
-                block={block}
-              />
-            </Fade>
-          )
-        }
+        return (
+          <Fade
+            key={block.id}
+            in={isCurrent}
+            timeout={{ appear: 0, enter: 200, exit: 0 }}
+          >
+            <DynamicCard
+              isCurrent={isCurrent}
+              isPreRender={isPreRender}
+              block={block}
+            />
+          </Fade>
+        )
       })}
     </>
   )
@@ -76,19 +69,11 @@ const DynamicCard = forwardRef<HTMLDivElement, DynamicCardProps>(
         ref={ref}
         className={isCurrent ? 'active-card' : undefined}
         onClick={() => setShowNavigation(true)}
-        data-testid={
-          isCurrent
-            ? 'CurrentCard'
-            : isPreRender
-              ? 'PreRenderCard'
-              : 'NonRenderedCard'
-        }
         sx={{
           width: 'inherit',
           position: 'relative',
           height: '100%',
-          display: 'block',
-          opacity: isPreRender ? 0 : 1
+          display: isCurrent ? 'block' : 'none'
         }}
       >
         {isCurrent || isPreRender ? (
