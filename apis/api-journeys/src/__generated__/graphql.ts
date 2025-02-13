@@ -3887,6 +3887,7 @@ export type Video = {
   images: Array<CloudflareImage>;
   keywords: Array<Keyword>;
   label: VideoLabel;
+  locked: Scalars['Boolean']['output'];
   noIndex?: Maybe<Scalars['Boolean']['output']>;
   parents: Array<Video>;
   primaryLanguageId: Scalars['ID']['output'];
