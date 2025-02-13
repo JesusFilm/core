@@ -201,7 +201,10 @@ describe('VideoLibrary', () => {
             parentOrder: 0,
             action: null,
             source: VideoBlockSource.youTube,
-            video: null,
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: 'videoId'
+            },
             objectFit: null,
             posterBlockId: 'poster1.id',
             children: []
@@ -264,35 +267,6 @@ describe('VideoLibrary', () => {
       expect(push).toHaveBeenCalledWith(
         {
           query: { param: 'video-library' }
-        },
-        undefined,
-        { shallow: true }
-      )
-    })
-  })
-
-  it('should render Cloudflare', async () => {
-    mockedUseRouter.mockReturnValue({
-      query: { param: null },
-      push,
-      events: {
-        on
-      }
-    } as unknown as NextRouter)
-
-    render(
-      <MockedProvider>
-        <VideoLibrary open />
-      </MockedProvider>
-    )
-    fireEvent.click(screen.getByRole('tab', { name: 'Upload' }))
-    await waitFor(() => {
-      expect(screen.getByText('Drop a video here')).toBeInTheDocument()
-    })
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        {
-          query: { param: 'video-upload' }
         },
         undefined,
         { shallow: true }

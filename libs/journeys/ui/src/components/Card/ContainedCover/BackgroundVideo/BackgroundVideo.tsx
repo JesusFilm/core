@@ -26,7 +26,7 @@ const StyledVideo = styled('video')(() => ({}))
 export function BackgroundVideo({
   source,
   children,
-  video,
+  mediaVideo,
   videoId,
   startAt,
   endAt,
@@ -94,7 +94,7 @@ export function BackgroundVideo({
         }
       })
     }
-  }, [playerRef, startAt, endAt, source, video, videoId, setLoading])
+  }, [playerRef, startAt, endAt, source, mediaVideo, videoId, setLoading])
 
   useEffect(() => {
     if (videoRef.current != null) videoRef.current.pause()
@@ -156,17 +156,9 @@ export function BackgroundVideo({
           pointerEvents: 'none'
         }}
       >
-        {source === VideoBlockSource.cloudflare && videoId != null && (
-          <source
-            src={`https://customer-${
-              process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-            }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`}
-            type="application/x-mpegURL"
-          />
-        )}
-        {source === VideoBlockSource.internal &&
-          video?.variant?.hls != null && (
-            <source src={video.variant.hls} type="application/x-mpegURL" />
+        {mediaVideo?.__typename === 'Video' &&
+          mediaVideo?.variant?.hls != null && (
+            <source src={mediaVideo.variant.hls} type="application/x-mpegURL" />
           )}
         {source === VideoBlockSource.youTube && videoId != null && (
           <source
@@ -176,6 +168,13 @@ export function BackgroundVideo({
             type="video/youtube"
           />
         )}
+        {mediaVideo?.__typename === 'MuxVideo' &&
+          mediaVideo?.playbackId != null && (
+            <source
+              src={`https://stream.mux.com/${mediaVideo.playbackId}.m3u8`}
+              type="application/x-mpegURL"
+            />
+          )}
       </StyledVideo>
     </Box>
   )

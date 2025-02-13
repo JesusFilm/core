@@ -10,8 +10,14 @@ export default class MyDocument extends Document<{
   emotionStyleTags: ReactElement[]
 }> {
   render(): ReactElement {
+    const pageProps = this.props.__NEXT_DATA__?.props?.pageProps
+    const language = pageProps?.content?.variant?.language
+    const bcp47 = language?.bcp47 ?? null
+    const languageName =
+      language?.name?.find((name) => name && !name.primary)?.value ?? null
+
     return (
-      <Html lang="en">
+      <Html lang={bcp47 ?? undefined}>
         <Head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
@@ -30,6 +36,7 @@ export default class MyDocument extends Document<{
             name="msapplication-TileImage"
             content="/watch/assets/favicon-180.png"
           />
+          {languageName && <meta name="language" content={languageName} />}
           {/* Inject MUI styles first to match with the prepend: true configuration. */}
           {this.props.emotionStyleTags}
         </Head>
