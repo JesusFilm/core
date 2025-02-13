@@ -88,7 +88,7 @@ describe('ThemeProvider', () => {
       </ThemeProvider>
     )
     expect(baseElement.parentElement?.innerHTML).toBe(
-      '<head></head><body><div>Hello from ThemeProvider</div></body>'
+      '<head><meta name="emotion-insertion-point" content=""></head><body><div>Hello from ThemeProvider</div></body>'
     )
   })
 })
