@@ -325,7 +325,7 @@
     "prisma-erd-generator": "^2.0.0",
     "react-refresh": "^0.16.0",
     "source-map-loader": "^5.0.0",
-    "storybook-addon-apollo-client": "^7.3.0",
+    "storybook-addon-apollo-client": "^8.0.0",
     "terser-webpack-plugin": "^5.1.1",
     "ts-jest": "^29.1.1",
     "ts-node": "10.9.2",
