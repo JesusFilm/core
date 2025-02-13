@@ -86,14 +86,14 @@ export class Register {
   async enterOTP(otp) {
     await this.page
       .locator(
-        'form[data-testid="EmailInviteForm"] div[class*="MuiPaper-root"] button'
+        'form[data-testid="EmailInviteForm"] div[class*="MuiAccordionSummary"]'
       )
       .first()
       .click()
     await expect(
       this.page
         .locator(
-          'form[data-testid="EmailInviteForm"] div[class*="MuiPaper-root"] button'
+          'form[data-testid="EmailInviteForm"] div[class*="MuiAccordionSummary"]'
         )
         .first()
     ).toHaveAttribute('aria-expanded', 'true')
