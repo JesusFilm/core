@@ -228,7 +228,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       studyQuestions: video.studyQuestions.map((question) => question.value),
       metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
       ...(expand.includes('languageIds')
-        ? { languageIds: video.availableLanguages }
+        ? { languageIds: video.availableLanguages.map((id) => Number(id)) }
         : {})
     }
   })

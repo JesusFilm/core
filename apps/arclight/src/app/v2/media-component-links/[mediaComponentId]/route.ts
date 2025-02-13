@@ -279,7 +279,9 @@ export async function GET(
                   })),
                   ...(expand.includes('languageIds')
                     ? {
-                        languageIds: video.availableLanguages
+                        languageIds: video.availableLanguages.map((id) =>
+                          Number(id)
+                        )
                       }
                     : {}),
                   primaryLanguageId: Number(primaryLanguageId),
@@ -355,7 +357,9 @@ export async function GET(
                         })),
                         ...(expand.includes('languageIds')
                           ? {
-                              languageIds: availableLanguages
+                              languageIds: availableLanguages.map((id) =>
+                                Number(id)
+                              )
                             }
                           : {}),
                         primaryLanguageId: Number(primaryLanguageId),

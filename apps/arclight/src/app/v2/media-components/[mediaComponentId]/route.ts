@@ -209,7 +209,7 @@ export async function GET(
         verseEnd: citation.verseEnd
       })),
       ...(expand.includes('languageIds')
-        ? { languageIds: video.availableLanguages }
+        ? { languageIds: video.availableLanguages.map((id) => Number(id)) }
         : {}),
       primaryLanguageId: Number(video.primaryLanguageId),
       title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
