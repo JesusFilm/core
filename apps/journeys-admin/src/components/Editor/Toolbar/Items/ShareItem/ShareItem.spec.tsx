@@ -8,6 +8,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
 import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { Role } from '../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
@@ -35,11 +36,7 @@ const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 const mockUseCurrentUserLazyQuery = useCurrentUserLazyQuery as jest.Mock
 const user = { id: 'user.id', email: 'test@email.com' }
 
-Object.assign(navigator, {
-  clipboard: {
-    writeText: jest.fn()
-  }
-})
+Object.assign(navigator, { clipboard: { writeText: jest.fn() } })
 
 describe('ShareItem', () => {
   const push = jest.fn()
@@ -68,19 +65,14 @@ describe('ShareItem', () => {
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
-      events: {
-        on
-      }
+      events: { on }
     } as unknown as NextRouter)
 
     render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
-            value={{
-              journey: defaultJourney,
-              variant: 'admin'
-            }}
+            value={{ journey: defaultJourney, variant: 'admin' }}
           >
             <ShareItem variant="button" />
           </JourneyProvider>
@@ -93,9 +85,7 @@ describe('ShareItem', () => {
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
-        {
-          query: { param: 'edit-url' }
-        },
+        { query: { param: 'edit-url' } },
         undefined,
         { shallow: true }
       )
@@ -120,18 +110,13 @@ describe('ShareItem', () => {
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
-      events: {
-        on
-      }
+      events: { on }
     } as unknown as NextRouter)
     render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
-            value={{
-              journey: defaultJourney,
-              variant: 'admin'
-            }}
+            value={{ journey: defaultJourney, variant: 'admin' }}
           >
             <ShareItem variant="button" />
           </JourneyProvider>
@@ -143,9 +128,7 @@ describe('ShareItem', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Embed Journey' }))
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
-        {
-          query: { param: 'embed-journey' }
-        },
+        { query: { param: 'embed-journey' } },
         undefined,
         { shallow: true }
       )
@@ -173,15 +156,11 @@ describe('ShareItem', () => {
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
-      events: {
-        on
-      }
+      events: { on }
     } as unknown as NextRouter)
 
     const getUserRoleMock: MockedResponse<GetUserRole> = {
-      request: {
-        query: GET_USER_ROLE
-      },
+      request: { query: GET_USER_ROLE },
       result: jest.fn(() => ({
         data: {
           getUserRole: {
@@ -194,29 +173,26 @@ describe('ShareItem', () => {
     }
 
     render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[getUserRoleMock]}>
-          <Suspense>
-            <JourneyProvider
-              value={{
-                journey: defaultJourney,
-                variant: 'admin'
-              }}
-            >
-              <ShareItem variant="button" />
-            </JourneyProvider>
-          </Suspense>
-        </MockedProvider>
-      </SnackbarProvider>
+      <FlagsProvider flags={{ qrCode: true }}>
+        <SnackbarProvider>
+          <MockedProvider mocks={[getUserRoleMock]}>
+            <Suspense>
+              <JourneyProvider
+                value={{ journey: defaultJourney, variant: 'admin' }}
+              >
+                <ShareItem variant="button" />
+              </JourneyProvider>
+            </Suspense>
+          </MockedProvider>
+        </SnackbarProvider>
+      </FlagsProvider>
     )
     fireEvent.click(screen.getByRole('button', { name: 'Share' }))
     expect(screen.getByRole('dialog')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'QR Code' }))
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
-        {
-          query: { param: 'qr-code' }
-        },
+        { query: { param: 'qr-code' } },
         undefined,
         { shallow: true }
       )
@@ -239,18 +215,13 @@ describe('ShareItem', () => {
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
-      events: {
-        on
-      }
+      events: { on }
     } as unknown as NextRouter)
     render(
       <SnackbarProvider>
         <MockedProvider>
           <JourneyProvider
-            value={{
-              journey: defaultJourney,
-              variant: 'admin'
-            }}
+            value={{ journey: defaultJourney, variant: 'admin' }}
           >
             <ShareItem variant="button" />
           </JourneyProvider>
@@ -269,9 +240,7 @@ describe('ShareItem', () => {
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
-      events: {
-        on
-      }
+      events: { on }
     } as unknown as NextRouter)
     render(
       <SnackbarProvider>
