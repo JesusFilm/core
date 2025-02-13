@@ -36,7 +36,8 @@ import { Editor } from '../../src/components/Editor'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_CUSTOM_DOMAINS } from '../../src/libs/useCustomDomainsQuery/useCustomDomainsQuery'
 
-export const dynamic = 'force-dynamic'
+export const fetchCache = 'force-no-store'
+// export const dynamic = 'force-dynamic'
 
 export const GET_ADMIN_JOURNEY = gql`
   ${JOURNEY_FIELDS}
