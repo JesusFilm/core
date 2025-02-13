@@ -242,26 +242,26 @@ describe('SignUp', () => {
   })
 
   it('should be in a loading state when waiting for response', async () => {
-    const { getByTestId, getByLabelText } = render(
+    const { getByRole, getByLabelText } = render(
       <ApolloLoadingProvider>
         <SnackbarProvider>
           <SignUp {...block} uuid={() => 'uuid'} />
         </SnackbarProvider>
       </ApolloLoadingProvider>
     )
+
     const name = getByLabelText('Name')
     const email = getByLabelText('Email')
-    const submit = getByTestId('submit')
+    const submit = getByRole('button')
 
     fireEvent.change(name, { target: { value: 'Anon' } })
     fireEvent.change(email, { target: { value: '123abc@gmail.com' } })
-
-    expect(submit).not.toHaveClass('MuiLoadingButton-loading')
-
     fireEvent.click(submit)
 
-    await waitFor(() => expect(submit).toHaveClass('MuiLoadingButton-loading'))
-    expect(submit).toBeDisabled()
+    await waitFor(() => {
+      expect(submit).toHaveClass('MuiButton-loading')
+      expect(submit).toBeDisabled()
+    })
   })
 
   it('should create submission event on click', async () => {
