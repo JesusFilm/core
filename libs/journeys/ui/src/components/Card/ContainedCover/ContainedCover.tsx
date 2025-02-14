@@ -137,7 +137,7 @@ export function ContainedCover({
             }}
           />
         )}
-        {/* Blurred Content Background image */}
+        {/* Blurred Content Background image for mobile embed */}
         {imageBlock != null && backgroundBlur != null && (
           <>
             <NextImage
