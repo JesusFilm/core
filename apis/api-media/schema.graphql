@@ -127,6 +127,9 @@ type Language
   @extends
 {
   id: ID! @external
+  seriesCount: Int!
+  featureFilmCount: Int!
+  shortFilmCount: Int!
   labeledVideoCounts: LabeledVideoCounts!
 }
 
