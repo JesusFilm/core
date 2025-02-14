@@ -15,7 +15,7 @@ async function getMediaLanguages(
 }
 
 test.describe('GET /v2/media-languages', () => {
-  test.skip('returns basic media languages list', async ({ request }) => {
+  test('returns basic media languages list', async ({ request }) => {
     const response = await getMediaLanguages(request, {
       ids: ['529']
     })
@@ -80,7 +80,7 @@ test.describe('GET /v2/media-languages', () => {
     })
   })
 
-  test.skip('filters by language IDs', async ({ request }) => {
+  test('filters by language IDs', async ({ request }) => {
     const response = await getMediaLanguages(request, {
       ids: ['529', '496']
     })
@@ -96,7 +96,7 @@ test.describe('GET /v2/media-languages', () => {
     expect(languageIds.length).toBe(2)
   })
 
-  test.skip('filters by BCP47 codes', async ({ request }) => {
+  test('filters by BCP47 codes', async ({ request }) => {
     const response = await getMediaLanguages(request, {
       bcp47: ['en']
     })
@@ -113,7 +113,7 @@ test.describe('GET /v2/media-languages', () => {
     expect(english?.bcp47).toBe('en')
   })
 
-  test.skip('filters by ISO3 codes', async ({ request }) => {
+  test('filters by ISO3 codes', async ({ request }) => {
     const response = await getMediaLanguages(request, {
       iso3: ['eng']
     })
@@ -130,7 +130,7 @@ test.describe('GET /v2/media-languages', () => {
     expect(english?.iso3).toBe('eng')
   })
 
-  test.skip('searches by term', async ({ request }) => {
+  test('searches by term', async ({ request }) => {
     const response = await getMediaLanguages(request, {
       term: 'English'
     })
@@ -146,7 +146,7 @@ test.describe('GET /v2/media-languages', () => {
     expect(english?.name).toBe('English')
   })
 
-  test.skip('handles metadata language tags', async ({ request }) => {
+  test('handles metadata language tags', async ({ request }) => {
     const response = await getMediaLanguages(request, {
       ids: ['529'],
       metadataLanguageTags: 'es'
