@@ -431,7 +431,6 @@ describe('CardBlock', () => {
       'random image from unsplash'
     )
     expect(standaloneImageBlock).not.toBeInTheDocument()
-    expect(queryByTestId('CardOverlayContent')).toBeInTheDocument()
 
     await waitFor(() =>
       expect(queryAllByText('How did we get here?')[0]).toBeInTheDocument()

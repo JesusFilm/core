@@ -102,9 +102,10 @@ describe('ContainedCover', () => {
     const imageCover = getByTestId('background-image')
 
     expect(imageCover).toHaveAccessibleName(imageBlock.alt)
+
     expect(imageCover).toHaveAttribute(
       'src',
-      expect.stringContaining(encodeURIComponent(imageBlock.src ?? ''))
+      expect.stringContaining(encodeURIComponent(imageBlock.src!))
     )
   })
 
