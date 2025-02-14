@@ -90,7 +90,8 @@ export const yoga = createYoga<
             'Query.getMuxVideo': 0
           },
           ttlPerType: {
-            User: 1000
+            User: 1000,
+            ShortLink: 0
           }
         })
       : {}
