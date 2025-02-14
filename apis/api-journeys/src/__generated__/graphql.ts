@@ -1110,17 +1110,22 @@ export type Keyword = {
   value: Scalars['String']['output'];
 };
 
+export type LabeledVideoCounts = {
+  __typename?: 'LabeledVideoCounts';
+  featureFilmCount: Scalars['Int']['output'];
+  seriesCount: Scalars['Int']['output'];
+  shortFilmCount: Scalars['Int']['output'];
+};
+
 export type Language = {
   __typename?: 'Language';
   audioPreview?: Maybe<AudioPreview>;
   bcp47?: Maybe<Scalars['String']['output']>;
   countryLanguages: Array<CountryLanguage>;
-  featureFilmCount: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
+  labeledVideoCounts: LabeledVideoCounts;
   name: Array<LanguageName>;
-  seriesCount: Scalars['Int']['output'];
-  shortFilmCount: Scalars['Int']['output'];
   slug?: Maybe<Scalars['String']['output']>;
 };
 
