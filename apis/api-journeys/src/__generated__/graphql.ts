@@ -2297,6 +2297,7 @@ export type MuxVideo = {
   uploadId?: Maybe<Scalars['String']['output']>;
   uploadUrl?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
+  videoVariants: Array<VideoVariant>;
 };
 
 export type NavigateToBlockAction = Action & {
@@ -4564,6 +4565,7 @@ export type VideoVariant = {
   id: Scalars['ID']['output'];
   language: Language;
   lengthInMilliseconds: Scalars['Int']['output'];
+  muxVideo?: Maybe<MuxVideo>;
   published: Scalars['Boolean']['output'];
   share?: Maybe<Scalars['String']['output']>;
   /** slug is a permanent link to the video variant. */
