@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -42,10 +42,32 @@ export function VideoImageAlt({
 }: VideoImageAltProps): ReactElement {
   const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
-  const [createVideoImageAlt] = useMutation(CREATE_VIDEO_IMAGE_ALT)
-  const [updateVideoImageAlt] = useMutation(UPDATE_VIDEO_IMAGE_ALT)
-
   const video = useVideo()
+
+  const [createVideoImageAlt] = useMutation(CREATE_VIDEO_IMAGE_ALT, {
+    update(cache, { data }) {
+      if (!data?.videoImageAltCreate) return
+
+      cache.modify({
+        id: cache.identify(video),
+        fields: {
+          imageAlt(existingVideoImageAlts = []) {
+            const newVideoImageAltRef = cache.writeFragment({
+              data: data.videoImageAltCreate,
+              fragment: gql`
+                fragment NewVideoImageAlt on VideoImageAlt {
+                  id
+                  value
+                }
+              `
+            })
+            return [...existingVideoImageAlts, newVideoImageAltRef]
+          }
+        }
+      })
+    }
+  })
+  const [updateVideoImageAlt] = useMutation(UPDATE_VIDEO_IMAGE_ALT)
 
   const validationSchema = object().shape({
     imageAlt: string().trim().required(t('Image Alt is required'))
@@ -63,6 +85,16 @@ export function VideoImageAlt({
             primary: true,
             languageId: DEFAULT_VIDEO_LANGUAGE_ID
           }
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t('Successfully created video image alt'), {
+            variant: 'success'
+          })
+        },
+        onError: () => {
+          enqueueSnackbar(t('Failed to create video image alt'), {
+            variant: 'error'
+          })
         }
       })
 

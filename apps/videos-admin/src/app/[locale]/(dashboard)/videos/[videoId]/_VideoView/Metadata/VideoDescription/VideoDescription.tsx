@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikValues } from 'formik'
@@ -49,7 +49,29 @@ export function VideoDescription({
   const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
   const video = useVideo()
-  const [createVideoDescription] = useMutation(CREATE_VIDEO_DESCRIPTION)
+  const [createVideoDescription] = useMutation(CREATE_VIDEO_DESCRIPTION, {
+    update(cache, { data }) {
+      if (!data?.videoDescriptionCreate) return
+
+      cache.modify({
+        id: cache.identify(video),
+        fields: {
+          description(existingDescriptions = []) {
+            const newDescriptionRef = cache.writeFragment({
+              data: data.videoDescriptionCreate,
+              fragment: gql`
+                fragment NewDescription on VideoDescription {
+                  id
+                  value
+                }
+              `
+            })
+            return [...existingDescriptions, newDescriptionRef]
+          }
+        }
+      })
+    }
+  })
   const [updateVideoDescription] = useMutation(UPDATE_VIDEO_DESCRIPTION)
 
   const validationSchema = object().shape({

@@ -1,93 +1,109 @@
 import { QueryHookOptions, QueryResult, useQuery } from '@apollo/client'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 
-export const GET_ADMIN_VIDEO = graphql(`
-  query GetAdminVideo($videoId: ID!) {
-    adminVideo(id: $videoId) {
+export const VideoInformationFragment = graphql(`
+  fragment VideoInformation on Video {
+    slug
+    label
+    published
+    title {
       id
-      slug
-      label
-      published
-      images(aspectRatio: banner) {
+      value
+    }
+  }
+`)
+
+export const GET_ADMIN_VIDEO = graphql(
+  `
+    query GetAdminVideo($videoId: ID!) {
+      adminVideo(id: $videoId) {
         id
-        mobileCinematicHigh
-        url
-      }
-      imageAlt {
-        id
-        value
-      }
-      noIndex
-      title {
-        id
-        value
-      }
-      description {
-        id
-        value
-      }
-      snippet {
-        id
-        value
-      }
-      children {
-        id
-        title {
-          id
-          value
-        }
+        ...VideoInformation
+        # slug
+        # label
+        # published
+        # title {
+        #   id
+        #   value
+        # }
         images(aspectRatio: banner) {
           id
           mobileCinematicHigh
+          url
         }
         imageAlt {
           id
           value
         }
-      }
-      variants {
-        id
-        videoId
-        slug
-        language {
+        noIndex
+        description {
           id
-          name {
-            value
-            primary
-          }
-          slug
+          value
         }
-        downloads {
+        snippet {
           id
-          quality
-          size
-          height
-          width
-          url
+          value
         }
-      }
-      studyQuestions {
-        id
-        value
-      }
-      variantLanguagesCount
-      subtitles {
-        id
-        edition
-        vttSrc
-        srtSrc
-        value
-        language {
+        children {
           id
-          name {
+          title {
+            id
             value
           }
+          images(aspectRatio: banner) {
+            id
+            mobileCinematicHigh
+          }
+          imageAlt {
+            id
+            value
+          }
+        }
+        variants {
+          id
+          videoId
           slug
+          language {
+            id
+            name {
+              value
+              primary
+            }
+            slug
+          }
+          downloads {
+            id
+            quality
+            size
+            height
+            width
+            url
+          }
+        }
+        studyQuestions {
+          id
+          value
+        }
+        variantLanguagesCount
+        subtitles {
+          id
+          edition
+          vttSrc
+          srtSrc
+          value
+          language {
+            id
+            name {
+              value
+            }
+            slug
+          }
         }
       }
     }
-  }
-`)
+  `,
+  [VideoInformationFragment]
+)
 
 export type GetAdminVideo = ResultOf<typeof GET_ADMIN_VIDEO>
 export type GetAdminVideoVariables = VariablesOf<typeof GET_ADMIN_VIDEO>

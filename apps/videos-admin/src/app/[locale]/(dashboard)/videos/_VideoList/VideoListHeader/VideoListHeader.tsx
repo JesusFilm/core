@@ -9,6 +9,7 @@ import { ReactElement, useState } from 'react'
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
 import { VideoCreateForm } from '../VideoCreateForm'
+import { Dialog } from '@core/shared/ui/Dialog'
 
 const style = {
   position: 'absolute',
@@ -44,22 +45,19 @@ export function VideoListHeader(): ReactElement {
       >
         {t('Create')}
       </Button>
-      <Modal
+
+      <Dialog
         open={show}
         onClose={() => setShow(false)}
-        aria-labelledby="video-create-modal-title"
-        aria-describedby="video-create-modal-description"
+        dialogTitle={{
+          title: t('Create Video'),
+          closeButton: true
+        }}
+        divider
+        sx={{ '& .MuiDialog-paperFullWidth': { maxWidth: 480 } }}
       >
-        <Box sx={style}>
-          <Typography id="video-create-modal-title" variant="h4">
-            {t('Create Video')}
-          </Typography>
-          <Typography id="video-create-modal-description" sx={{ mb: 2 }}>
-            {t('Fill in the details to create a new video.')}
-          </Typography>
-          <VideoCreateForm onCancel={() => setShow(false)} />
-        </Box>
-      </Modal>
+        <VideoCreateForm close={() => setShow(false)} />
+      </Dialog>
     </Stack>
   )
 }

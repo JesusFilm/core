@@ -1,10 +1,10 @@
-import { ReactElement } from 'react'
+import { ReactElement, Suspense } from 'react'
 
-import { query } from '../../../../../libs/apollo'
+import { PreloadQuery } from '../../../../../libs/apollo'
 import { GET_ADMIN_VIDEO } from '../../../../../libs/useAdminVideo'
 
 import { VideoView } from './_VideoView'
-import { VideoViewFallback } from './_VideoView/VideoViewFallback'
+import { VideoViewLoading } from './_VideoView/VideoViewLoading'
 
 export const revalidate = 300
 
@@ -15,14 +15,13 @@ export default async function VideoViewPage({
 }): Promise<ReactElement> {
   const { videoId } = await params
 
-  const { data } = await query({
-    query: GET_ADMIN_VIDEO,
-    variables: { videoId }
-  })
-
-  if (data?.adminVideo == null) {
-    return <VideoViewFallback />
-  }
-
-  return <VideoView video={data.adminVideo} />
+  return (
+    <PreloadQuery query={GET_ADMIN_VIDEO} variables={{ videoId }}>
+      {(queryRef) => (
+        <Suspense fallback={<VideoViewLoading />}>
+          <VideoView queryRef={queryRef} />
+        </Suspense>
+      )}
+    </PreloadQuery>
+  )
 }

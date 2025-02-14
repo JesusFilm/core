@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikValues } from 'formik'
@@ -43,7 +43,29 @@ export function VideoSnippet({
 }: VideoSnippetProps): ReactElement {
   const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
-  const [createVideoSnippet] = useMutation(CREATE_VIDEO_SNIPPET)
+  const [createVideoSnippet] = useMutation(CREATE_VIDEO_SNIPPET, {
+    update(cache, { data }) {
+      if (!data?.videoSnippetCreate) return
+
+      cache.modify({
+        id: cache.identify(video),
+        fields: {
+          snippet(existingSnippets = []) {
+            const newSnippetRef = cache.writeFragment({
+              data: data.videoSnippetCreate,
+              fragment: gql`
+                fragment NewSnippet on VideoSnippet {
+                  id
+                  value
+                }
+              `
+            })
+            return [...existingSnippets, newSnippetRef]
+          }
+        }
+      })
+    }
+  })
   const [updateVideoSnippet] = useMutation(UPDATE_VIDEO_SNIPPET)
 
   const video = useVideo()

@@ -1,16 +1,22 @@
 'use client'
 
+import { useReadQuery, useSuspenseQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
+import { ResultOf, readFragment } from 'gql.tada'
+import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 
 import { PublishedChip } from '../../../../../../components/PublishedChip'
-import { GetAdminVideo } from '../../../../../../libs/useAdminVideo'
+import {
+  GET_ADMIN_VIDEO,
+  VideoInformationFragment
+} from '../../../../../../libs/useAdminVideo/useAdminVideo'
 import { VideoProvider } from '../../../../../../libs/VideoProvider'
 
 import { Metadata } from './Metadata'
@@ -19,27 +25,41 @@ import { TabLabel } from './Tabs/TabLabel'
 import { Variants } from './Variants'
 import { VideoChildren } from './VideoChildren'
 import { getVideoChildrenLabel } from './VideoChildren/getVideoChildrenLabel'
+import { VideoViewFallback } from './VideoViewFallback'
 
-export function VideoView({
-  video
-}: {
-  video: GetAdminVideo['adminVideo']
-}): ReactElement {
+export function VideoView({ queryRef }): ReactElement {
   const t = useTranslations()
-
+  const params = useParams<{ locale: string; videoId: string }>()
   const [tabValue, setTabValue] = useState(0)
-  const videoTitle = video.title?.[0]?.value ?? ''
+
+  const { data } = useReadQuery<ResultOf<typeof GET_ADMIN_VIDEO>>(queryRef)
+  // const { data } = useSuspenseQuery(GET_ADMIN_VIDEO, {
+  //   variables: { videoId: params?.videoId as string }
+  // })
+
+  // const { data } = useQuery(GET_ADMIN_VIDEO, {
+  //   variables: { videoId: params?.videoId as string }
+  // })
+
+  if (data.adminVideo == null) {
+    return <VideoViewFallback />
+  }
+
+  const video = data.adminVideo
+  const information = readFragment(VideoInformationFragment, video)
+
+  const videoTitle = information.title?.[0]?.value ?? ''
 
   function handleTabChange(_e: SyntheticEvent, newValue: number): void {
     setTabValue(newValue)
   }
 
   const showVideoChildren: boolean =
-    video.label === 'collection' ||
-    video.label === 'featureFilm' ||
-    video.label === 'series'
+    information.label === 'collection' ||
+    information.label === 'featureFilm' ||
+    information.label === 'series'
 
-  const videoLabel = getVideoChildrenLabel(video.label)
+  const videoLabel = getVideoChildrenLabel(information.label)
 
   return (
     <VideoProvider video={video}>
@@ -57,7 +77,7 @@ export function VideoView({
           }}
         >
           <Typography variant="h4">{videoTitle}</Typography>
-          <PublishedChip published={video.published} />
+          <PublishedChip published={information.published} />
         </Stack>
         <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
           <Box width="100%">
