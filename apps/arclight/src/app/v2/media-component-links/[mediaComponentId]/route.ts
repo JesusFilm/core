@@ -12,10 +12,8 @@ const GET_VIDEO_CHILDREN = graphql(`
   query GetVideoChildren($id: ID!) {
     video(id: $id) {
       id
+      availableLanguages
       children {
-        variantLanguages {
-          id
-        }
         id
         label
         primaryLanguageId
@@ -58,9 +56,7 @@ const GET_VIDEO_CHILDREN = graphql(`
           verseEnd
         }
         childrenCount
-        variantLanguages {
-          id
-        }
+        availableLanguages
         variant {
           hls
           duration
@@ -74,15 +70,9 @@ const GET_VIDEO_CHILDREN = graphql(`
             quality
             size
           }
-        }
-        variantLanguages {
-          id
         }
       }
       parents {
-        variantLanguages {
-          id
-        }
         id
         label
         primaryLanguageId
@@ -125,9 +115,7 @@ const GET_VIDEO_CHILDREN = graphql(`
           verseEnd
         }
         childrenCount
-        variantLanguages {
-          id
-        }
+        availableLanguages
         variant {
           hls
           duration
@@ -142,9 +130,6 @@ const GET_VIDEO_CHILDREN = graphql(`
             size
           }
         }
-      }
-      variantLanguages {
-        id
       }
     }
   }
@@ -185,10 +170,10 @@ export async function GET(
       ? {
           contains: video.children
             .filter(
-              ({ variantLanguages }) =>
+              ({ availableLanguages }) =>
                 languageIds.length === 0 ||
-                variantLanguages.some(({ id }) =>
-                  languageIds.includes(String(id))
+                availableLanguages.some((languageId) =>
+                  languageIds.includes(languageId)
                 )
             )
             .map(({ id }) => id)
@@ -198,10 +183,10 @@ export async function GET(
       ? {
           containedBy: video.parents
             .filter(
-              ({ variantLanguages }) =>
+              ({ availableLanguages }) =>
                 languageIds.length === 0 ||
-                variantLanguages.some(({ id }) =>
-                  languageIds.includes(String(id))
+                availableLanguages.some((languageId) =>
+                  languageIds.includes(languageId)
                 )
             )
             .map(({ id }) => id)
@@ -237,10 +222,10 @@ export async function GET(
           __embedded: {
             contains: video.children
               .filter(
-                ({ variantLanguages }) =>
+                ({ availableLanguages }) =>
                   languageIds.length === 0 ||
-                  variantLanguages.some(({ id }) =>
-                    languageIds.includes(String(id))
+                  availableLanguages.some((languageId) =>
+                    languageIds.includes(languageId)
                   )
               )
               .map(
@@ -251,7 +236,7 @@ export async function GET(
                   images,
                   childrenCount,
                   bibleCitations,
-                  variantLanguages,
+                  availableLanguages,
                   primaryLanguageId,
                   title,
                   snippet,
@@ -294,7 +279,7 @@ export async function GET(
                   })),
                   ...(expand.includes('languageIds')
                     ? {
-                        languageIds: variantLanguages.map(({ id }) =>
+                        languageIds: video.availableLanguages.map((id) =>
                           Number(id)
                         )
                       }
@@ -313,10 +298,10 @@ export async function GET(
               ? {
                   containedBy: video.parents
                     .filter(
-                      ({ variantLanguages }) =>
+                      ({ availableLanguages }) =>
                         languageIds.length === 0 ||
-                        variantLanguages.some(({ id }) =>
-                          languageIds.includes(String(id))
+                        availableLanguages.some((languageId) =>
+                          languageIds.includes(languageId)
                         )
                     )
                     .map(
@@ -327,7 +312,7 @@ export async function GET(
                         images,
                         childrenCount,
                         bibleCitations,
-                        variantLanguages,
+                        availableLanguages,
                         primaryLanguageId,
                         title,
                         snippet,
@@ -372,7 +357,7 @@ export async function GET(
                         })),
                         ...(expand.includes('languageIds')
                           ? {
-                              languageIds: variantLanguages.map(({ id }) =>
+                              languageIds: availableLanguages.map((id) =>
                                 Number(id)
                               )
                             }
