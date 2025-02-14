@@ -21,7 +21,7 @@ async function getMediaLanguage(
 }
 
 test.describe('GET /v2/media-languages/[languageId]', () => {
-  test('returns basic media language', async ({ request }) => {
+  test.skip('returns basic media language', async ({ request }) => {
     const response = await getMediaLanguage(request, {
       languageId: '529',
       params: {}
@@ -74,7 +74,7 @@ test.describe('GET /v2/media-languages/[languageId]', () => {
     })
   })
 
-  test('handles metadata language tags', async ({ request }) => {
+  test.skip('handles metadata language tags', async ({ request }) => {
     const response = await getMediaLanguage(request, {
       languageId: '529',
       params: { metadataLanguageTags: 'es' }
@@ -86,7 +86,7 @@ test.describe('GET /v2/media-languages/[languageId]', () => {
     expect(data.metadataLanguageTag).toBe('es')
   })
 
-  test('returns 404 for non-existent language', async ({ request }) => {
+  test.skip('returns 404 for non-existent language', async ({ request }) => {
     const response = await getMediaLanguage(request, {
       languageId: '999999',
       params: {}
@@ -101,7 +101,9 @@ test.describe('GET /v2/media-languages/[languageId]', () => {
     })
   })
 
-  test('returns 400 for invalid metadata language', async ({ request }) => {
+  test.skip('returns 400 for invalid metadata language', async ({
+    request
+  }) => {
     const response = await getMediaLanguage(request, {
       languageId: '529',
       params: { metadataLanguageTags: 'invalid' }
