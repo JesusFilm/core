@@ -12,7 +12,6 @@ export interface AvatarProps {
   notification?: boolean
   sx?: SxProps
 }
-//
 
 export function Avatar({
   apiUser,
