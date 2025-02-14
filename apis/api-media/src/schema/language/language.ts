@@ -6,46 +6,71 @@ export const Language = builder.externalRef(
   builder.selection<{ id: string }>('id')
 )
 
+interface LabeledVideoCountsType {
+  seriesCount: number
+  featureFilmCount: number
+  shortFilmCount: number
+}
+
+const LabeledVideoCounts =
+  builder.objectRef<LabeledVideoCountsType>('LabeledVideoCounts')
+
+LabeledVideoCounts.implement({
+  fields: (t) => ({
+    seriesCount: t.exposeInt('seriesCount', { nullable: false }),
+    featureFilmCount: t.exposeInt('featureFilmCount', { nullable: false }),
+    shortFilmCount: t.exposeInt('shortFilmCount', { nullable: false })
+  })
+})
+
 Language.implement({
   externalFields: (t) => ({ id: t.id({ nullable: false }) }),
   fields: (t) => ({
-    seriesCount: t.int({
+    labeledVideoCounts: t.field({
+      type: LabeledVideoCounts,
       nullable: false,
       resolve: async (parent) => {
-        return await prisma.videoVariant.count({
+        const variants = await prisma.videoVariant.findMany({
           where: {
             languageId: parent.id,
             video: {
-              label: 'series'
+              label: {
+                in: ['series', 'featureFilm', 'shortFilm']
+              }
             }
-          }
-        })
-      }
-    }),
-    featureFilmCount: t.int({
-      nullable: false,
-      resolve: async (parent) => {
-        return await prisma.videoVariant.count({
-          where: {
-            languageId: parent.id,
+          },
+          select: {
             video: {
-              label: 'featureFilm'
+              select: {
+                label: true
+              }
             }
           }
         })
-      }
-    }),
-    shortFilmCount: t.int({
-      nullable: false,
-      resolve: async (parent) => {
-        return await prisma.videoVariant.count({
-          where: {
-            languageId: parent.id,
-            video: {
-              label: 'shortFilm'
+
+        const counts: LabeledVideoCountsType = {
+          seriesCount: 0,
+          featureFilmCount: 0,
+          shortFilmCount: 0
+        }
+
+        variants.forEach((variant) => {
+          if (variant.video?.label) {
+            switch (variant.video.label) {
+              case 'series':
+                counts.seriesCount++
+                break
+              case 'featureFilm':
+                counts.featureFilmCount++
+                break
+              case 'shortFilm':
+                counts.shortFilmCount++
+                break
             }
           }
         })
+
+        return counts
       }
     })
   })

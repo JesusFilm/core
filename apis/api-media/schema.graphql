@@ -116,14 +116,18 @@ type Keyword {
   language: Language!
 }
 
+type LabeledVideoCounts {
+  seriesCount: Int!
+  featureFilmCount: Int!
+  shortFilmCount: Int!
+}
+
 type Language
   @key(fields: "id")
   @extends
 {
   id: ID! @external
-  seriesCount: Int!
-  featureFilmCount: Int!
-  shortFilmCount: Int!
+  labeledVideoCounts: LabeledVideoCounts!
 }
 
 type LanguageWithSlug {
