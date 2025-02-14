@@ -304,6 +304,7 @@ type MuxVideo
   userId: ID!
   createdAt: Date!
   readyToStream: Boolean!
+  videoVariants: [VideoVariant!]!
 }
 
 type NotFoundError implements BaseError
@@ -881,6 +882,7 @@ type VideoVariant {
   duration: Int!
   lengthInMilliseconds: Int!
   language: Language!
+  muxVideo: MuxVideo
   published: Boolean!
   videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!

@@ -58,18 +58,19 @@ model CloudflareVideo {
 }
 
 model MuxVideo {
-  id            String   @id @default(uuid())
-  playbackId    String?  @unique
+  id            String         @id @default(uuid())
+  playbackId    String?        @unique
   uploadUrl     String?
-  uploadId      String?  @unique
-  assetId       String?  @unique
+  uploadId      String?        @unique
+  assetId       String?        @unique
   userId        String
   name          String?
-  duration      Int      @default(0)
-  downloadable  Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  readyToStream Boolean  @default(false)
-  updatedAt     DateTime @default(now()) @updatedAt
+  duration      Int            @default(0)
+  downloadable  Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  readyToStream Boolean        @default(false)
+  updatedAt     DateTime       @default(now()) @updatedAt
+  videoVariants VideoVariant[]
 
   @@index(userId(type: Hash))
   @@index(assetId(type: Hash))
@@ -185,6 +186,8 @@ model VideoVariant {
   slug                 String                 @unique
   video                Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId              String
+  muxVideoId           String?
+  muxVideo             MuxVideo?              @relation(fields: [muxVideoId], references: [id])
 
   @@unique([languageId, videoId])
   @@index(languageId(type: Hash))
