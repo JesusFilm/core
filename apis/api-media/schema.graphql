@@ -682,10 +682,12 @@ type Video
   keywords(languageId: ID): [Keyword!]!
   id: ID!
   label: VideoLabel!
+  locked: Boolean!
   primaryLanguageId: ID!
   published: Boolean!
   cloudflareAssets: [CloudflareR2!]!
   videoEditions: [VideoEdition!]!
+  availableLanguages: [String!]!
   title(languageId: ID, primary: Boolean): [VideoTitle!]!
   snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
   description(languageId: ID, primary: Boolean): [VideoDescription!]!
