@@ -15,7 +15,8 @@ export const VideoVariantCreateInput = builder.inputType(
       languageId: t.string({ required: true }),
       slug: t.string({ required: true }),
       downloadable: t.boolean({ required: true }),
-      published: t.boolean({ required: false, defaultValue: true })
+      published: t.boolean({ required: false, defaultValue: true }),
+      muxVideoId: t.string({ required: false })
     })
   }
 )
