@@ -426,14 +426,15 @@ Your output must be a valid JSON object with exactly one property "blocks", an a
 Ensure that:
   • Each block adheres to the provided BlockUnionSchema.
   • For any block with a non-null "parentBlockId", a corresponding parent block exists earlier in the "blocks" array.
-Follow the provided templates exactly and generate only the "blocks" property.`
+Follow the provided templates exactly in terms of parent children relationships, however modify the actual content HEAVILY in line with the user's prompt.`
 
 const USER_PROMPT_TEMPLATE = (context: string) => `
 Create a spiritual journey using the prompt: "${context}".
 
 IMPORTANT:
   • Output must be a valid JSON object with a single property "blocks" which is an array.
-  • Generate ONLY the "blocks" property following the structure defined by the provided templates.
+  • Generate ONLY the "blocks" property following the parent child relationships defined by the provided templates.
+  • You must HEAVILY modify the text content of the blocks to be relevant to the prompt.
   • You must change the text content of the blocks to be relevant to the prompt.
   • You must change the images to be relevant to the prompt.
   • You must change the button to be relevant to the prompt.
