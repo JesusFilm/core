@@ -30,6 +30,7 @@ builder.prismaObject('VideoVariant', {
       nullable: false,
       resolve: ({ languageId: id }) => ({ id })
     }),
+    muxVideo: t.relation('muxVideo', { nullable: true }),
     published: t.exposeBoolean('published', { nullable: false }),
     videoEdition: t.relation('videoEdition', { nullable: false }),
     subtitle: t.prismaField({
@@ -120,6 +121,7 @@ builder.mutationFields((t) => ({
         ...query,
         data: {
           ...input,
+          muxVideoId: input.muxVideoId ?? undefined,
           published: input.published ?? true
         }
       })
@@ -163,7 +165,8 @@ builder.mutationFields((t) => ({
           videoId: input.videoId ?? undefined,
           edition: input.edition ?? undefined,
           downloadable: input.downloadable ?? undefined,
-          published: input.published ?? undefined
+          published: input.published ?? undefined,
+          muxVideoId: input.muxVideoId ?? undefined
         }
       })
     }

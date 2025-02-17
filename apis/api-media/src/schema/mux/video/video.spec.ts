@@ -1,5 +1,7 @@
 import { graphql } from 'gql.tada'
 
+import { MuxVideo } from '.prisma/api-media-client'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 
@@ -43,6 +45,9 @@ describe('mux/video', () => {
             uploadUrl
             userId
             readyToStream
+            videoVariants {
+              id
+            }
           }
         }
       `)
@@ -66,8 +71,9 @@ describe('mux/video', () => {
             createdAt: new Date(),
             readyToStream: true,
             downloadable: false,
-            updatedAt: new Date()
-          }
+            updatedAt: new Date(),
+            videoVariants: []
+          } as unknown as MuxVideo
         ])
         const data = await authClient({
           document: GET_MY_MUX_VIDEOS
@@ -78,7 +84,8 @@ describe('mux/video', () => {
             playbackId: 'playbackId',
             uploadUrl: 'https://example.com/video.mp4',
             userId: 'userId',
-            readyToStream: true
+            readyToStream: true,
+            videoVariants: []
           }
         ])
       })

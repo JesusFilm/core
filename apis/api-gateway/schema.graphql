@@ -2137,6 +2137,7 @@ type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId
   userId: ID! @join__field(graph: API_MEDIA) 
   createdAt: Date! @join__field(graph: API_MEDIA) 
   readyToStream: Boolean! @join__field(graph: API_MEDIA) 
+  videoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
 }
 
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {
@@ -2600,6 +2601,7 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   duration: Int!
   lengthInMilliseconds: Int!
   language: Language!
+  muxVideo: MuxVideo
   published: Boolean!
   videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean) : [VideoSubtitle!]!
