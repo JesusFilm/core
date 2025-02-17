@@ -275,7 +275,7 @@ export function Video({
               )}
               {mediaVideo?.__typename === 'MuxVideo' && (
                 <source
-                  src={`https://stream.mux.com/${mediaVideo.playbackId}.m3u8?asset_start_time=${startAt}&asset_end_time=${endAt}`}
+                  src={`https://stream.mux.com/${mediaVideo.playbackId}.m3u8?asset_start_time=${effectiveStartAt}&asset_end_time=${effectiveEndAt}`}
                   type="application/x-mpegURL"
                 />
               )}
