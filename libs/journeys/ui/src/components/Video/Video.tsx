@@ -150,6 +150,11 @@ export function Video({
     source === VideoBlockSource.internal ||
     source === VideoBlockSource.mux
 
+  const effectiveStartAt =
+    mediaVideo?.__typename === 'MuxVideo' ? 0 : (startAt ?? 0)
+  const effectiveEndAt =
+    mediaVideo?.__typename === 'MuxVideo' ? 0 : (endAt ?? 10000)
+
   useEffect(() => {
     setActiveStep(isActiveBlockOrDescendant(blockId))
   }, [blockId, blockHistory])
@@ -189,8 +194,8 @@ export function Video({
         selectedBlock={selectedBlock}
         blockId={blockId}
         muted={muted}
-        startAt={startAt}
-        endAt={endAt}
+        startAt={effectiveStartAt}
+        endAt={effectiveEndAt}
         autoplay={autoplay}
         posterBlock={posterBlock}
         setLoading={setLoading}
@@ -209,7 +214,7 @@ export function Video({
             videoTitle={eventVideoTitle}
             source={source}
             videoId={eventVideoId}
-            startAt={startAt}
+            startAt={effectiveStartAt}
             endAt={videoEndTime}
             action={action}
           />
@@ -270,7 +275,7 @@ export function Video({
               )}
               {mediaVideo?.__typename === 'MuxVideo' && (
                 <source
-                  src={`https://stream.mux.com/${mediaVideo.playbackId}.m3u8`}
+                  src={`https://stream.mux.com/${mediaVideo.playbackId}.m3u8?asset_start_time=${startAt}&asset_end_time=${endAt}`}
                   type="application/x-mpegURL"
                 />
               )}
@@ -280,7 +285,7 @@ export function Video({
             <ThemeProvider theme={{ ...theme, direction: 'ltr' }}>
               <VideoControls
                 player={player}
-                startAt={startAt ?? 0}
+                startAt={effectiveStartAt}
                 endAt={videoEndTime}
                 isYoutube={source === VideoBlockSource.youTube}
                 loading={loading}
