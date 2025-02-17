@@ -2,10 +2,9 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
-  output          = env("PRISMA_LOCATION_USERS")
-  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
-  previewFeatures = ["tracing"]
+  provider      = "prisma-client-js"
+  output        = env("PRISMA_LOCATION_USERS")
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 generator erd {

@@ -53,6 +53,7 @@ describe('video', () => {
     cloudflareAssets: CloudflareR2[]
     variants: VideoVariant[]
     videoEditions: VideoEdition[]
+    availableLanguages: string[]
   }
 
   const children: Video[] = [
@@ -63,7 +64,9 @@ describe('video', () => {
       slug: null,
       noIndex: null,
       published: true,
-      childIds: []
+      childIds: [],
+      availableLanguages: [],
+      locked: false
     },
     {
       id: 'videoId1',
@@ -72,7 +75,9 @@ describe('video', () => {
       slug: null,
       noIndex: null,
       published: true,
-      childIds: []
+      childIds: [],
+      availableLanguages: [],
+      locked: false
     }
   ]
 
@@ -84,7 +89,9 @@ describe('video', () => {
       slug: null,
       noIndex: null,
       published: true,
-      childIds: []
+      childIds: [],
+      availableLanguages: [],
+      locked: false
     },
     {
       id: 'videoId4',
@@ -93,7 +100,9 @@ describe('video', () => {
       slug: null,
       noIndex: null,
       published: true,
-      childIds: []
+      childIds: [],
+      availableLanguages: [],
+      locked: false
     }
   ]
 
@@ -106,6 +115,8 @@ describe('video', () => {
       noIndex: null,
       published: true,
       childIds: ['videoId1', 'videoId2'],
+      availableLanguages: [],
+      locked: false,
       bibleCitation: [
         {
           id: 'bibleCitationId',
@@ -242,7 +253,8 @@ describe('video', () => {
           duration: null,
           lengthInMilliseconds: null,
           share: null,
-          published: true
+          published: true,
+          muxVideoId: 'muxVideoId'
         },
         {
           id: 'variantId1',
@@ -256,7 +268,8 @@ describe('video', () => {
           duration: null,
           lengthInMilliseconds: null,
           share: null,
-          published: false
+          published: false,
+          muxVideoId: 'muxVideoId1'
         }
       ]
     }
@@ -269,7 +282,9 @@ describe('video', () => {
     published: true,
     slug: null,
     noIndex: null,
-    childIds: []
+    childIds: [],
+    availableLanguages: [],
+    locked: false
   }
 
   describe('videos', () => {
@@ -294,6 +309,7 @@ describe('video', () => {
           }
           label
           primaryLanguageId
+          locked
           title(languageId: $languageId, primary: $primary) {
             id
             value
@@ -544,7 +560,8 @@ describe('video', () => {
           {
             id: 'assetId'
           }
-        ]
+        ],
+        locked: false
       }
     ]
 
@@ -1605,7 +1622,9 @@ describe('video', () => {
       published: true,
       slug: null,
       noIndex: null,
-      childIds: []
+      childIds: [],
+      availableLanguages: [],
+      locked: false
     }
 
     it('should query video', async () => {
@@ -1791,7 +1810,8 @@ describe('video', () => {
           published: true,
           slug: 'slug',
           noIndex: true,
-          childIds: []
+          childIds: [],
+          availableLanguages: []
         } as unknown as Video)
         const result = await authClient({
           document: CREATE_VIDEO_MUTATION,
@@ -1864,7 +1884,8 @@ describe('video', () => {
           published: true,
           slug: 'slug',
           noIndex: true,
-          childIds: []
+          childIds: [],
+          availableLanguages: []
         } as unknown as Video)
         const result = await authClient({
           document: VIDEO_UPDATE_MUTATION,
@@ -1940,7 +1961,9 @@ describe('video', () => {
         slug: null,
         noIndex: null,
         published: true,
-        childIds: []
+        childIds: [],
+        availableLanguages: [],
+        locked: false
       })
       const data = await client({
         document: VIDEO

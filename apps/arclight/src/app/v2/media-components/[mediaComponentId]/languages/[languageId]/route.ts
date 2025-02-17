@@ -93,9 +93,6 @@ const GET_VIDEO_VARIANT = graphql(`
           verseEnd
         }
         childrenCount
-        variantLanguages {
-          id
-        }
       }
     }
   }
