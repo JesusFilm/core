@@ -41,24 +41,23 @@ export async function importOne(row: unknown): Promise<void> {
 
 export async function importMany(rows: unknown[]): Promise<void> {
   const { data: videos, inValidRowIds } = parseMany(s3Schema, rows)
-
   const videosWithVariants = videos.filter(({ videoVariantId }) =>
     getVideoVariantIds().includes(videoVariantId)
   )
-
-  for (const video of videosWithVariants) {
-    await prisma.videoVariant.update({
-      where: {
-        id: video.videoVariantId
-      },
-      data: {
-        masterUrl: video.masterUri,
-        masterWidth: video.width,
-        masterHeight: video.height
-      }
-    })
-  }
-
+  await prisma.$transaction(
+    videosWithVariants.map((video) =>
+      prisma.videoVariant.update({
+        where: {
+          id: video.videoVariantId
+        },
+        data: {
+          masterUrl: video.masterUri,
+          masterWidth: video.width,
+          masterHeight: video.height
+        }
+      })
+    )
+  )
   if (videos.length !== rows.length)
     throw new Error(`some rows do not match schema: ${inValidRowIds.join(',')}`)
 }

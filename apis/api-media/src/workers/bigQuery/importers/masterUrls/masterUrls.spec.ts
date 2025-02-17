@@ -39,7 +39,7 @@ describe('bigQuery/importers/masterUrls', () => {
       await importOne({
         height: 180,
         width: 320,
-        masterUri: 'www.example.com',
+        masterUri: 'https://www.example.com',
         videoVariantId: 'mockVariantId'
       })
       expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
@@ -47,7 +47,7 @@ describe('bigQuery/importers/masterUrls', () => {
           id: 'mockVariantId'
         },
         data: {
-          masterUrl: 'www.example.com',
+          masterUrl: 'https://www.example.com',
           masterWidth: 320,
           masterHeight: 180
         }
@@ -59,7 +59,7 @@ describe('bigQuery/importers/masterUrls', () => {
         importOne({
           height: 180,
           width: 320,
-          masterUri: 'www.example.com',
+          masterUri: 'https://www.example.com',
           videoVariantId: 'mockVariantId2'
         })
       ).rejects.toThrow('VideoVariant with id mockVariantId2 not found')
@@ -67,6 +67,12 @@ describe('bigQuery/importers/masterUrls', () => {
   })
 
   describe('importMany', () => {
+    // beforeEach(() => {
+    //   prismaMock.$transaction.mockImplementation((callback) =>
+    //     Promise.resolve(callback(prismaMock))
+    //   )
+    // })
+
     it('should import many master videos', async () => {
       prismaMock.videoVariant.update.mockResolvedValue(
         {} as unknown as VideoVariant
@@ -75,22 +81,33 @@ describe('bigQuery/importers/masterUrls', () => {
         {
           height: 180,
           width: 320,
-          masterUri: 'www.example.com',
+          masterUri: 'https://www.example.com',
           videoVariantId: 'mockVariantId'
         },
         {
           height: 180,
           width: 320,
-          masterUri: 'www.example.com',
+          masterUri: 'https://www.example.com',
           videoVariantId: 'mockVariantId1'
         }
       ])
+      expect(prismaMock.$transaction).toHaveBeenCalled()
       expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
         where: {
           id: 'mockVariantId'
         },
         data: {
-          masterUrl: 'www.example.com',
+          masterUrl: 'https://www.example.com',
+          masterWidth: 320,
+          masterHeight: 180
+        }
+      })
+      expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
+        where: {
+          id: 'mockVariantId1'
+        },
+        data: {
+          masterUrl: 'https://www.example.com',
           masterWidth: 320,
           masterHeight: 180
         }
