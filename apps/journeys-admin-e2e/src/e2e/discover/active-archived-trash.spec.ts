@@ -1,5 +1,6 @@
 /* eslint-disable playwright/no-skipped-test */
 /* eslint-disable playwright/expect-expect */
+// just to run the tests daily
 import { test } from '@playwright/test'
 
 import { JourneyPage } from '../../pages/journey-page'
