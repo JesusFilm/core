@@ -72,6 +72,53 @@ Language.implement({
 
         return counts
       }
+    }),
+    labeledVideoCounts: t.field({
+      type: LabeledVideoCounts,
+      nullable: false,
+      resolve: async (parent) => {
+        const variants = await prisma.videoVariant.findMany({
+          where: {
+            languageId: parent.id,
+            video: {
+              label: {
+                in: ['series', 'featureFilm', 'shortFilm']
+              }
+            }
+          },
+          select: {
+            video: {
+              select: {
+                label: true
+              }
+            }
+          }
+        })
+
+        const counts: LabeledVideoCountsType = {
+          seriesCount: 0,
+          featureFilmCount: 0,
+          shortFilmCount: 0
+        }
+
+        variants.forEach((variant) => {
+          if (variant.video?.label) {
+            switch (variant.video.label) {
+              case 'series':
+                counts.seriesCount++
+                break
+              case 'featureFilm':
+                counts.featureFilmCount++
+                break
+              case 'shortFilm':
+                counts.shortFilmCount++
+                break
+            }
+          }
+        })
+
+        return counts
+      }
     })
   })
 })
