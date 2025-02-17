@@ -155,26 +155,19 @@ export async function importMany(rows: unknown[]): Promise<void> {
   )
 
   // Prepare all database operations
-  const videoEditionUpserts = transformedVideoVariants.map((variant) =>
-    prisma.videoEdition.upsert({
-      where: {
-        name_videoId: {
-          videoId: variant.videoId,
-          name: variant.edition
-        }
-      },
-      create: {
+  const videoEditionUpserts = transformedVideoVariants.map((variant) => ({
+    where: {
+      name_videoId: {
         videoId: variant.videoId,
         name: variant.edition
-      },
-      update: {}
-    })
-  )
-
-  const videoVariantCreate = prisma.videoVariant.createMany({
-    data: transformedVideoVariants,
-    skipDuplicates: true
-  })
+      }
+    },
+    create: {
+      videoId: variant.videoId,
+      name: variant.edition
+    },
+    update: {}
+  }))
 
   // Prepare video language updates
   const videoLanguageUpdates = new Map<string, Set<string>>()
@@ -185,40 +178,54 @@ export async function importMany(rows: unknown[]): Promise<void> {
   })
 
   // Execute all operations in a single transaction
-  await prisma.$transaction(async (tx) => {
-    await Promise.all(
-      videoEditionUpserts.map((upsert) => tx.$executeRaw`${upsert}`)
-    )
-
-    await videoVariantCreate
-
-    const existingVideos = await tx.video.findMany({
-      where: {
-        id: {
-          in: Array.from(videoLanguageUpdates.keys())
-        }
-      },
-      select: {
-        id: true,
-        availableLanguages: true
-      }
-    })
-
-    const videoUpdates = existingVideos.map((video) => {
-      const newLanguages = videoLanguageUpdates.get(video.id)
-      if (!newLanguages) return null
-
-      const currentLanguages = video.availableLanguages || []
-      const updatedLanguages = Array.from(
-        new Set([...currentLanguages, ...newLanguages])
+  await prisma.$transaction(
+    async (tx) => {
+      await Promise.all(
+        videoEditionUpserts.map(({ where, create, update }) =>
+          tx.videoEdition.upsert({
+            where,
+            create,
+            update
+          })
+        )
       )
 
-      return tx.video.update({
-        where: { id: video.id },
-        data: { availableLanguages: updatedLanguages }
+      await tx.videoVariant.createMany({
+        data: transformedVideoVariants,
+        skipDuplicates: true
       })
-    })
 
-    await Promise.all(compact(videoUpdates))
-  })
+      const existingVideos = await tx.video.findMany({
+        where: {
+          id: {
+            in: Array.from(videoLanguageUpdates.keys())
+          }
+        },
+        select: {
+          id: true,
+          availableLanguages: true
+        }
+      })
+
+      const videoUpdates = existingVideos.map((video) => {
+        const newLanguages = videoLanguageUpdates.get(video.id)
+        if (!newLanguages) return null
+
+        const currentLanguages = video.availableLanguages || []
+        const updatedLanguages = Array.from(
+          new Set([...currentLanguages, ...newLanguages])
+        )
+
+        return tx.video.update({
+          where: { id: video.id },
+          data: { availableLanguages: updatedLanguages }
+        })
+      })
+
+      await Promise.all(compact(videoUpdates))
+    },
+    {
+      timeout: 30000
+    }
+  )
 }

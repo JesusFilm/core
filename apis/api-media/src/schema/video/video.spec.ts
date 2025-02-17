@@ -253,7 +253,8 @@ describe('video', () => {
           duration: null,
           lengthInMilliseconds: null,
           share: null,
-          published: true
+          published: true,
+          muxVideoId: 'muxVideoId'
         },
         {
           id: 'variantId1',
@@ -267,7 +268,8 @@ describe('video', () => {
           duration: null,
           lengthInMilliseconds: null,
           share: null,
-          published: false
+          published: false,
+          muxVideoId: 'muxVideoId1'
         }
       ]
     }
