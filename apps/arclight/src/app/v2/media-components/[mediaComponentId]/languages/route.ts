@@ -14,14 +14,14 @@ const GET_VIDEO_LANGUAGES = graphql(`
       id
       variants {
         id
-        duration
+        lengthInMilliseconds
         hls
         dash
         share
         subtitle {
           language {
             id
-            name {
+            name(languageId: "529") {
               value
             }
             bcp47
@@ -48,6 +48,8 @@ const GET_VIDEO_LANGUAGES = graphql(`
 interface GetParams {
   params: { mediaComponentId: string }
 }
+
+export const maxDuration = 60
 
 export async function GET(
   request: NextRequest,
@@ -97,10 +99,6 @@ export async function GET(
                     ? undefined
                     : {
                         url: downloadLow.url,
-                        ...(!reduce.includes('quantities') && {
-                          height: downloadLow.height,
-                          width: downloadLow.width
-                        }),
                         sizeInBytes: downloadLow.size
                       },
                 high:
@@ -108,10 +106,6 @@ export async function GET(
                     ? undefined
                     : {
                         url: downloadHigh.url,
-                        ...(!reduce.includes('quantities') && {
-                          height: downloadHigh.height,
-                          width: downloadHigh.width
-                        }),
                         sizeInBytes: downloadHigh.size
                       }
               }
@@ -174,7 +168,12 @@ export async function GET(
                   break
                 case 'ios':
                   streamingUrls = {
-                    m3u8: [{ videoBitrate: 0, url: variant.hls }],
+                    m3u8: [
+                      {
+                        videoBitrate: 0,
+                        url: variant.hls
+                      }
+                    ],
                     http: []
                   }
                   break
@@ -196,7 +195,7 @@ export async function GET(
               mediaComponentId,
               languageId: Number(variant.language?.id),
               refId: variant.id,
-              lengthInMilliseconds: variant.duration,
+              lengthInMilliseconds: variant?.lengthInMilliseconds ?? 0,
               subtitleUrls,
               downloadUrls,
               streamingUrls,
@@ -204,18 +203,18 @@ export async function GET(
               socialMediaUrls: {},
               ...(platform === 'web' && {
                 webEmbedPlayer,
-                webEmbedSharePlayer
+                webEmbedSharePlayer,
+                openGraphVideoPlayer: 'https://jesusfilm.org/'
               }),
-              openGraphVideoPlayer: 'https://jesusfilm.org/',
               _links: {
                 self: {
-                  href: `https://api.arclight.com/v2/media-components/${mediaComponentId}/languages/${variant.language?.id}?platform=${platform}&apiKey=${apiKey}`
+                  href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/${variant.language?.id}?platform=${platform}&apiKey=${apiKey}`
                 },
                 mediaComponent: {
-                  href: `https://api.arclight.com/v2/media-components/${mediaComponentId}?apiKey=${apiKey}`
+                  href: `http://api.arclight.org/v2/media-components/${mediaComponentId}?apiKey=${apiKey}`
                 },
                 mediaLanguage: {
-                  href: `https://api.arclight.com/v2/media-languages/${variant.language?.id}/?apiKey=${apiKey}`
+                  href: `http://api.arclight.org/v2/media-languages/${variant.language?.id}/?apiKey=${apiKey}`
                 }
               }
             }
@@ -233,10 +232,10 @@ export async function GET(
     apiSessionId,
     _links: {
       self: {
-        href: `/v2/media-components/${mediaComponentId}/languages?${queryString}`
+        href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages?${queryString}`
       },
       mediaComponent: {
-        href: `/v2/media-components/${mediaComponentId}` // TODO: mediacomponent querystring
+        href: `http://api.arclight.org/v2/media-components/${mediaComponentId}`
       }
     },
     _embedded: {

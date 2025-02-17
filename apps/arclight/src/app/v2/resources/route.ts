@@ -1,131 +1,199 @@
-import { ResultOf, graphql } from 'gql.tada'
+import { SearchClient, algoliasearch } from 'algoliasearch'
 import { NextRequest } from 'next/server'
 
-import { getApolloClient } from '../../../lib/apolloClient'
-import { getLanguageIdsFromTags } from '../../../lib/getLanguageIdsFromTags'
-
-const GET_VIDEO = graphql(`
-  query GetVideos(
-    $term: String!
-    $metadataLanguageId: ID
-    $fallbackLanguageId: ID
-  ) {
-    videos(where: { title: $term }) {
-      id
-      label
-      primaryLanguageId
-      images {
-        thumbnail
-        videoStill
-        mobileCinematicHigh
-        mobileCinematicLow
-        mobileCinematicVeryLow
-      }
-      title(languageId: $metadataLanguageId) {
-        value
-      }
-      fallbackTitle: title(languageId: $fallbackLanguageId) {
-        value
-      }
-      description(languageId: $metadataLanguageId) {
-        value
-      }
-      fallbackDescription: description(languageId: $fallbackLanguageId) {
-        value
-      }
-      snippet(languageId: $metadataLanguageId) {
-        value
-      }
-      fallbackSnippet: snippet(languageId: $fallbackLanguageId) {
-        value
-      }
-      studyQuestions(languageId: $metadataLanguageId) {
-        value
-      }
-      fallbackStudyQuestions: studyQuestions(languageId: $fallbackLanguageId) {
-        value
-      }
-      bibleCitations {
-        osisId
-        chapterStart
-        verseStart
-        chapterEnd
-        verseEnd
-      }
-      childrenCount
-      variantLanguages {
-        id
-      }
-      variant {
-        hls
-        duration
-        language {
-          bcp47
-        }
-        downloadable
-        downloads {
-          height
-          width
-          quality
-          size
-        }
-      }
-    }
+type AlgoliaVideoHit = {
+  mediaComponentId: string
+  componentType: string
+  subType?: string
+  contentType: string
+  lengthInMilliseconds?: number
+  imageUrls: {
+    thumbnail?: string
+    videoStill?: string
+    mobileCinematicHigh?: string
+    mobileCinematicLow?: string
+    mobileCinematicVeryLow?: string
   }
-`)
-
-const GET_LANGUAGES = graphql(`
-  query GetLanguagesWithTags(
-    $term: String
-    $limit: Int
-    $metadataLanguageId: ID
-    $fallbackLanguageId: ID
-  ) {
-    languagesCount(term: $term)
-    languages(limit: $limit, term: $term) {
-      id
-      iso3
-      bcp47
-      name(languageId: $metadataLanguageId) {
-        value
-        primary
-      }
-      fallbackName: name(languageId: $fallbackLanguageId) {
-        value
-        primary
-      }
-      primaryCountryId
-    }
+  titles: Array<{
+    value: string
+    languageId: string
+    bcp47: string
+  }>
+  descriptions: Array<{
+    value: string
+    languageId: string
+    bcp47: string
+  }>
+  studyQuestions: Array<{
+    value: string
+    languageId: string
+    bcp47: string
+  }>
+  isDownloadable: boolean
+  downloadSizes?: {
+    approximateSmallDownloadSizeInBytes?: number
+    approximateLargeDownloadSizeInBytes?: number
   }
-`)
+  bibleCitations?: Array<{
+    osisBibleBook: string
+    chapterStart: number
+    verseStart: number
+    chapterEnd: number | null
+    verseEnd: number | null
+  }>
+  primaryLanguageId: number
+  containsCount: number
+}
 
-const GET_COUNTRIES = graphql(`
-  query GetCountries(
-    $term: String!
-    $metadataLanguageId: ID
-    $fallbackLanguageId: ID
-  ) {
-    countries(term: $term) {
-      id
-      name(languageId: $metadataLanguageId) {
-        value
-      }
-      fallbackName: name(languageId: $fallbackLanguageId) {
-        value
-      }
-      continent {
-        name(languageId: $metadataLanguageId) {
-          value
-        }
-        fallbackName: name(languageId: $fallbackLanguageId) {
-          value
-        }
-      }
-      longitude
-      latitude
-    }
+type AlgoliaLanguageHit = {
+  objectID: string
+  languageId: number
+  iso3: string
+  bcp47: string
+  primaryCountryId: string
+  nameNative: string
+  names: Array<{
+    value: string
+    languageId: string
+    bcp47: string
+  }>
+  speakersCount: number
+}
+
+type AlgoliaCountryHit = {
+  objectID: string
+  countryId: string
+  names: Array<{
+    value: string
+    languageId: string
+    bcp47: string
+  }>
+  continentName: string
+  longitude: number
+  latitude: number
+}
+
+type AlgoliaSearchResponse<T> = {
+  hits: T[]
+}
+
+async function initAlgoliaClient() {
+  const appID = process.env.NEXT_PUBLIC_ALGOLIA_APP_ID
+  const apiKey = process.env.NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY
+
+  if (!appID || !apiKey) {
+    throw new Error('Algolia environment variables are not set')
   }
-`)
+
+  return algoliasearch(appID, apiKey)
+}
+
+async function searchVideoVariantsAlgolia(
+  term: string,
+  metadataLanguageTags: string[],
+  client: SearchClient
+): Promise<AlgoliaVideoHit[]> {
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_VIDEOS
+  if (!indexName) {
+    throw new Error('Algolia environment variables are not set')
+  }
+
+  const response = (await client.searchSingleIndex<AlgoliaVideoHit>({
+    indexName,
+    searchParams: {
+      query: term,
+      hitsPerPage: 1000
+    }
+  })) as AlgoliaSearchResponse<AlgoliaVideoHit>
+
+  if (!response.hits) {
+    return []
+  }
+
+  return response.hits
+}
+
+async function searchAlgoliaLanguages(
+  term: string,
+  metadataLanguageTags: string[],
+  client: SearchClient
+) {
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_LANGUAGES
+  if (!indexName) {
+    throw new Error('Algolia environment variables are not set')
+  }
+
+  const facets = []
+  for (const tag of metadataLanguageTags) {
+    facets.push(`names.bcp47:${tag}`)
+  }
+
+  const response = await client.searchSingleIndex<AlgoliaLanguageHit>({
+    indexName,
+    searchParams: {
+      query: term,
+      hitsPerPage: 1000,
+      facets: metadataLanguageTags.length > 0 ? ['names.bcp47'] : [],
+      ...(metadataLanguageTags.length > 0 && {
+        facetFilters: facets
+      }),
+      maxValuesPerFacet: 100,
+      attributesToRetrieve: [
+        'objectID',
+        'languageId',
+        'iso3',
+        'bcp47',
+        'primaryCountryId',
+        'nameNative',
+        'names',
+        'speakersCount'
+      ]
+    }
+  })
+
+  if (!response.hits) {
+    return []
+  }
+
+  return response.hits.map((hit) => ({
+    objectID: hit.objectID,
+    iso3: hit.iso3,
+    bcp47: hit.bcp47,
+    primaryCountryId: hit.primaryCountryId,
+    nameNative: hit.nameNative,
+    names: hit.names
+  }))
+}
+
+async function searchAlgoliaCountries(
+  term: string,
+  metadataLanguageTags: string[],
+  client: SearchClient
+) {
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_COUNTRIES
+  if (!indexName) {
+    throw new Error('Algolia environment variables are not set')
+  }
+
+  const facets = []
+  for (const tag of metadataLanguageTags) {
+    facets.push(`names.bcp47:${tag}`)
+  }
+
+  const response = await client.searchSingleIndex<AlgoliaCountryHit>({
+    indexName,
+    searchParams: {
+      query: term,
+      hitsPerPage: 1000,
+      facets: metadataLanguageTags.length > 0 ? ['names.bcp47'] : [],
+      ...(metadataLanguageTags.length > 0 && {
+        facetFilters: facets
+      })
+    }
+  })
+
+  return response.hits ?? []
+}
 
 export async function GET(request: NextRequest): Promise<Response> {
   const query = request.nextUrl.searchParams
@@ -135,13 +203,6 @@ export async function GET(request: NextRequest): Promise<Response> {
   const metadataLanguageTags =
     query.get('metadataLanguageTags')?.split(',') ?? []
 
-  const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
-  if (languageResult instanceof Response) {
-    return languageResult
-  }
-
-  const { metadataLanguageId, fallbackLanguageId } = languageResult
-
   if (term === '') {
     return new Response(
       JSON.stringify({
@@ -149,183 +210,160 @@ export async function GET(request: NextRequest): Promise<Response> {
           'Parameter "term" of value "" violated a constraint. This value should not be empty.',
         logref: 400
       }),
-
       { status: 400 }
     )
   }
 
-  const { data: languagesData } = await getApolloClient().query<
-    ResultOf<typeof GET_LANGUAGES>
-  >({
-    query: GET_LANGUAGES,
-    variables: {
-      term,
-      metadataLanguageId,
-      fallbackLanguageId
-    }
-  })
-  const languages = languagesData.languages.filter(
-    (language) =>
-      language.name[0]?.value != null || language.fallbackName[0]?.value != null
-  )
+  try {
+    const client = await initAlgoliaClient()
 
-  const { data: videosData } = await getApolloClient().query<
-    ResultOf<typeof GET_VIDEO>
-  >({
-    query: GET_VIDEO,
-    variables: {
-      term,
-      metadataLanguageId,
-      fallbackLanguageId
-    }
-  })
-  const videos = videosData.videos.filter(
-    (video) =>
-      video.title[0]?.value != null || video.fallbackTitle[0]?.value != null
-  )
+    const [videoHits, languageHits, countryHits] = await Promise.all([
+      searchVideoVariantsAlgolia(term, metadataLanguageTags, client),
+      searchAlgoliaLanguages(term, metadataLanguageTags, client),
+      searchAlgoliaCountries(term, metadataLanguageTags, client)
+    ])
 
-  const { data: countriesData } = await getApolloClient().query<
-    ResultOf<typeof GET_COUNTRIES>
-  >({
-    query: GET_COUNTRIES,
-    variables: {
-      term,
-      metadataLanguageId,
-      fallbackLanguageId
-    }
-  })
-  const countries = countriesData.countries.filter(
-    (country) =>
-      country.name[0]?.value != null || country.fallbackName[0]?.value != null
-  )
+    const transformedVideos = videoHits.map((hit: AlgoliaVideoHit) => ({
+      mediaComponentId: hit.mediaComponentId,
+      componentType: hit.componentType,
+      subType: hit.subType,
+      contentType: hit.contentType,
+      imageUrls: {
+        thumbnail: hit.imageUrls.thumbnail,
+        videoStill: hit.imageUrls.videoStill,
+        mobileCinematicHigh: hit.imageUrls.mobileCinematicHigh,
+        mobileCinematicLow: hit.imageUrls.mobileCinematicLow,
+        mobileCinematicVeryLow: hit.imageUrls.mobileCinematicVeryLow
+      },
+      lengthInMilliseconds: hit.lengthInMilliseconds ?? 0,
+      containsCount: hit.containsCount,
+      isDownloadable: hit.isDownloadable,
+      downloadSizes: {
+        approximateSmallDownloadSizeInBytes:
+          hit.downloadSizes?.approximateSmallDownloadSizeInBytes,
+        approximateLargeDownloadSizeInBytes:
+          hit.downloadSizes?.approximateLargeDownloadSizeInBytes
+      },
+      bibleCitations:
+        hit.bibleCitations?.map((citation) => ({
+          osisBibleBook: citation.osisBibleBook,
+          chapterStart: citation.chapterStart,
+          verseStart: citation.verseStart,
+          chapterEnd: citation.chapterEnd,
+          verseEnd: citation.verseEnd
+        })) ?? [],
+      primaryLanguageId: hit.primaryLanguageId,
+      title:
+        hit.titles.find((t) => t.bcp47 === metadataLanguageTags[0])?.value ??
+        hit.titles.find((t) => t.bcp47 === 'en')?.value ??
+        '',
+      shortDescription:
+        hit.descriptions.find((d) => d.bcp47 === metadataLanguageTags[0])
+          ?.value ??
+        hit.descriptions.find((d) => d.bcp47 === 'en')?.value ??
+        '',
+      longDescription:
+        hit.descriptions.find((d) => d.bcp47 === metadataLanguageTags[0])
+          ?.value ??
+        hit.descriptions.find((d) => d.bcp47 === 'en')?.value ??
+        '',
+      studyQuestions: hit.studyQuestions
+        .filter((q) => q.bcp47 === metadataLanguageTags[0] || q.bcp47 === 'en')
+        .map((q) => q.value)
+        .filter((q): q is string => q !== undefined && q !== ''),
+      metadataLanguageTag: metadataLanguageTags[0] ?? 'en'
+    }))
 
-  let transformedResponse
-  if (bulk === 'true') {
-    transformedResponse = {
+    const transformedLanguages = languageHits.map((hit) => ({
+      languageId: Number(hit.objectID),
+      iso3: hit.iso3,
+      bcp47: hit.bcp47,
+      primaryCountryId: hit.primaryCountryId,
+      name:
+        hit.names.find((n) => n.bcp47 === metadataLanguageTags[0])?.value ??
+        hit.names.find((n) => n.bcp47 === 'en')?.value ??
+        '',
+      nameNative: hit.nameNative ?? '',
+      metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
       _links: {
         self: {
-          href: `http://api.arclight.org/v2/resources?term=${term}&bulk=false&apiKey=${apiKey}`
+          href: `http://api.arclight.org/v2/media-languages/${hit.objectID}?apiKey=${apiKey}`
+        }
+      }
+    }))
+
+    const transformedCountries = countryHits.map((hit) => ({
+      countryId: hit.countryId,
+      name:
+        hit.names.find((n) => n.bcp47 === metadataLanguageTags[0])?.value ??
+        hit.names.find((n) => n.bcp47 === 'en')?.value ??
+        '',
+      continentName: hit.continentName,
+      metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
+      longitude: hit.longitude,
+      latitude: hit.latitude,
+      _links: {
+        self: {
+          href: `http://api.arclight.org/v2/media-countries/${hit.countryId}?apiKey=${apiKey}`
+        }
+      }
+    }))
+
+    const transformedResponse = {
+      _links: {
+        self: {
+          href: `http://api.arclight.org/v2/resources?term=${term}&bulk=${bulk}&apiKey=${apiKey}`
         }
       },
       _embedded: {
         resources: {
-          resourceCount: videos.length + countries.length + languages.length,
-          mediaCountries: countries.map((country) => country.id),
-          mediaLanguages: languages.map((language) => Number(language.id)),
+          resourceCount:
+            transformedVideos.length +
+            countryHits.length +
+            transformedLanguages.length,
+          mediaCountries:
+            bulk === 'true'
+              ? countryHits.map((country) => country.countryId)
+              : transformedCountries,
+          mediaLanguages:
+            bulk === 'true'
+              ? languageHits.map((language) => Number(language.objectID))
+              : transformedLanguages,
           alternateLanguages: [],
-          mediaComponents: videos.map((video) => video.id)
+          mediaComponents:
+            bulk === 'true'
+              ? transformedVideos.map((video) => video.mediaComponentId)
+              : transformedVideos
         }
       }
     }
-  } else {
-    transformedResponse = {
-      _links: {
-        self: {
-          href: `http://api.arclight.org/v2/resources?term=${term}&bulk=false&apiKey=${apiKey}`
-        }
-      },
-      _embedded: {
-        resources: {
-          resourceCount: videos.length + countries.length + languages.length,
-          mediaCountries: countries.map((country) => ({
-            countryId: country.id,
-            name:
-              country.name[0]?.value ?? country.fallbackName[0]?.value ?? '',
-            continentName:
-              country.continent.name[0]?.value ??
-              country.continent.fallbackName[0]?.value ??
-              '',
-            metadataLanguageTag:
-              country.name[0]?.value != null
-                ? metadataLanguageTags[0]
-                : (metadataLanguageTags[1] ?? 'en'),
-            longitude: country.longitude,
-            latitude: country.latitude,
-            _links: {
-              self: {
-                href: `http://api.arclight.org/v2/media-countries/${country.id}?apiKey=${apiKey}`
-              }
-            }
-          })),
-          mediaLanguages: languages.map((language) => ({
-            languageId: Number(language.id),
-            iso3: language.iso3,
-            bcp47: language.bcp47,
-            primaryCountryId: language.primaryCountryId,
-            name:
-              language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
-            nameNative:
-              (
-                language.name.find(({ primary }) => primary) ??
-                language.fallbackName.find(({ primary }) => primary)
-              )?.value ?? '',
-            metadataLanguageTag:
-              language.name[0]?.value != null
-                ? metadataLanguageTags[0]
-                : (metadataLanguageTags[1] ?? 'en'),
-            _links: {
-              self: {
-                href: `http://api.arclight.org/v2/media-languages/${language.id}?apiKey=${apiKey}`
-              }
-            }
-          })),
-          alternateLanguages: [],
-          mediaComponents: videos.map((video) => ({
-            mediaComponentId: video.id,
-            componentType:
-              video.variant?.hls != null ? 'content' : 'collection',
-            contentType: 'video',
-            subType: video.label,
-            imageUrls: {
-              thumbnail:
-                video.images.find((image) => image.thumbnail != null)
-                  ?.thumbnail ?? '',
-              videoStill:
-                video.images.find((image) => image.videoStill != null)
-                  ?.videoStill ?? '',
-              mobileCinematicHigh:
-                video.images.find((image) => image.mobileCinematicHigh != null)
-                  ?.mobileCinematicHigh ?? '',
-              mobileCinematicLow:
-                video.images.find((image) => image.mobileCinematicLow != null)
-                  ?.mobileCinematicLow ?? '',
-              mobileCinematicVeryLow:
-                video.images.find(
-                  (image) => image.mobileCinematicVeryLow != null
-                )?.mobileCinematicVeryLow ?? ''
-            },
-            lengthInMilliseconds: (video?.variant?.duration ?? 0) * 1000,
-            containsCount: video.childrenCount ?? 0,
-            isDownloadable: true,
-            downloadSizes: {},
-            bibleCitations: video.bibleCitations.map((citation) => ({
-              osisBibleBook: citation.osisId,
-              chapterStart: citation.chapterStart,
-              verseStart: citation.verseStart,
-              chapterEnd: citation.chapterEnd,
-              verseEnd: citation.verseEnd
-            })),
-            primaryLanguageId: Number(video.primaryLanguageId),
-            title: video.title[0]?.value ?? video.fallbackTitle[0]?.value ?? '',
-            shortDescription:
-              video.snippet[0]?.value ?? video.fallbackSnippet[0]?.value ?? '',
-            longDescription:
-              video.description[0]?.value ??
-              video.fallbackDescription[0]?.value ??
-              '',
-            studyQuestions: (video.studyQuestions.length > 0
-              ? video.studyQuestions
-              : video.fallbackStudyQuestions
-            ).map((question) => question.value),
-            metadataLanguageTag:
-              video.title[0]?.value != null
-                ? metadataLanguageTags[0]
-                : (metadataLanguageTags[1] ?? 'en')
-          }))
-        }
+
+    return new Response(JSON.stringify(transformedResponse), { status: 200 })
+  } catch (error) {
+    if (error && typeof error === 'object' && 'name' in error) {
+      if (error.name === 'ApiError') {
+        console.error('Algolia API Error:', error)
+        return new Response(
+          JSON.stringify({
+            message: `Algolia API Error: ${(error as { message?: string }).message ?? 'Unknown error'}`,
+            logref: 403
+          }),
+          { status: 403 }
+        )
       }
     }
+
+    const errorMessage =
+      error instanceof Error ? error.message : 'An unexpected error occurred'
+
+    console.error('Resources API Error:', error)
+
+    return new Response(
+      JSON.stringify({
+        message: `Internal server error: ${errorMessage}`,
+        logref: 500
+      }),
+      { status: 500 }
+    )
   }
-
-  return new Response(JSON.stringify(transformedResponse), { status: 200 })
 }

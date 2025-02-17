@@ -25,7 +25,11 @@ describe('VideoChildren', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <VideoChildren childVideos={childVideos} label="Clips" />
+          <VideoChildren
+            videoId="videoId"
+            childVideos={childVideos}
+            label="Clips"
+          />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -43,7 +47,11 @@ describe('VideoChildren', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <VideoChildren childVideos={oneChildVideo} label="Clips" />
+          <VideoChildren
+            videoId="videoId"
+            childVideos={oneChildVideo}
+            label="Clips"
+          />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -59,7 +67,7 @@ describe('VideoChildren', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <VideoChildren childVideos={[]} label="Clips" />
+          <VideoChildren videoId="videoId" childVideos={[]} label="Clips" />
         </MockedProvider>
       </NextIntlClientProvider>
     )

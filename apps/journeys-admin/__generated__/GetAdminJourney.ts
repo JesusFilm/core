@@ -290,11 +290,8 @@ export interface GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video {
 export interface GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
-}
-
-export interface GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_YouTube {
@@ -302,7 +299,7 @@ export interface GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_YouTube {
   id: string;
 }
 
-export type GetAdminJourney_journey_blocks_VideoBlock_mediaVideo = GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video | GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_MuxVideo | GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_CloudflareVideo | GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_YouTube;
+export type GetAdminJourney_journey_blocks_VideoBlock_mediaVideo = GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video | GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_MuxVideo | GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_YouTube;
 
 export interface GetAdminJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";

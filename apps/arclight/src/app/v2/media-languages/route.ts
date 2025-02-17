@@ -51,9 +51,14 @@ const GET_LANGUAGES = graphql(`
         bitrate
         codec
       }
-      speakerCount
-      countriesCount
-      primaryCountryId
+      countryLanguages {
+        country {
+          id
+        }
+        speakers
+        primary
+        suggested
+      }
       seriesCount
       featureFilmCount
       shortFilmCount
@@ -61,9 +66,12 @@ const GET_LANGUAGES = graphql(`
   }
 `)
 
+export const maxDuration = 60
+
 export async function GET(request: NextRequest): Promise<Response> {
   const query = request.nextUrl.searchParams
 
+  const apiKey = query.get('apiKey')
   const page = Number(query.get('page') ?? 1)
   const limit = Number(query.get('limit') ?? 10)
   const offset = (page - 1) * limit
@@ -131,48 +139,68 @@ export async function GET(request: NextRequest): Promise<Response> {
     )
     .map((language) => ({
       languageId: Number(language.id),
-      iso3: language.iso3,
-      bcp47: language.bcp47,
+      iso3: language.iso3 ?? '',
+      bcp47: language.bcp47 ?? '',
       counts: {
         speakerCount: {
-          value: language.speakerCount,
+          value: language.countryLanguages
+            .filter(({ suggested }) => !suggested)
+            .reduce((acc, { speakers }) => acc + speakers, 0),
           description: 'Number of speakers'
         },
         countriesCount: {
-          value: language.countriesCount,
+          value: language.countryLanguages.filter(({ suggested }) => !suggested)
+            .length,
           description: 'Number of countries'
         },
-        series: {
-          value: language.seriesCount,
-          description: 'Series'
-        },
-        featureFilm: {
-          value: language.featureFilmCount,
-          description: 'Feature Film'
-        },
-        shortFilm: {
-          value: language.shortFilmCount,
-          description: 'Short Film'
-        }
-      },
-      audioPreview:
-        language.audioPreview != null
+        ...(language.seriesCount != 0
           ? {
+              series: {
+                value: language.seriesCount,
+                description: 'Series'
+              }
+            }
+          : {}),
+        ...(language.featureFilmCount != 0
+          ? {
+              featureFilm: {
+                value: language.featureFilmCount,
+                description: 'Feature Film'
+              }
+            }
+          : {}),
+        ...(language.shortFilmCount != 0
+          ? {
+              shortFilm: {
+                value: language.shortFilmCount,
+                description: 'Short Film'
+              }
+            }
+          : {})
+      },
+      ...(language.audioPreview != null
+        ? {
+            audioPreview: {
               url: language.audioPreview.value,
               audioBitrate: language.audioPreview.bitrate,
               audioContainer: language.audioPreview.codec,
               sizeInBytes: language.audioPreview.size
             }
-          : null,
-      primaryCountryId: language.primaryCountryId ?? '',
+          }
+        : {}),
+      primaryCountryId:
+        language.countryLanguages.find(({ primary }) => primary)?.country.id ??
+        '',
       name: language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
-      nameNative: language.nameNative.find(({ primary }) => primary)?.value,
-      alternateLanguageName: '',
-      alternateLanguageNameNative: '',
+      nameNative:
+        language.nameNative.find(({ primary }) => primary)?.value ??
+        language.name[0]?.value ??
+        language.fallbackName[0]?.value ??
+        '',
       metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
       _links: {
         self: {
-          href: `/v2/media-languages/${language.id}`
+          href: `http://api.arclight.org/v2/media-languages/${language.id}?apiKey=${apiKey}`
         }
       }
     }))

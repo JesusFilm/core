@@ -290,11 +290,8 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaV
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
-}
-
-export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_YouTube {
@@ -302,7 +299,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaV
   id: string;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo = GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_MuxVideo | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_CloudflareVideo | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_YouTube;
+export type GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo = GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_MuxVideo | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_YouTube;
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";

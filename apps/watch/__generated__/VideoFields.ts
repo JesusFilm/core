@@ -49,11 +49,8 @@ export interface VideoFields_mediaVideo_Video {
 export interface VideoFields_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
-}
-
-export interface VideoFields_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface VideoFields_mediaVideo_YouTube {
@@ -61,7 +58,7 @@ export interface VideoFields_mediaVideo_YouTube {
   id: string;
 }
 
-export type VideoFields_mediaVideo = VideoFields_mediaVideo_Video | VideoFields_mediaVideo_MuxVideo | VideoFields_mediaVideo_CloudflareVideo | VideoFields_mediaVideo_YouTube;
+export type VideoFields_mediaVideo = VideoFields_mediaVideo_Video | VideoFields_mediaVideo_MuxVideo | VideoFields_mediaVideo_YouTube;
 
 export interface VideoFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";

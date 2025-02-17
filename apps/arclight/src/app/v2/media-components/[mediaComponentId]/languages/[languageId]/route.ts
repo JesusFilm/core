@@ -17,7 +17,7 @@ const GET_VIDEO_VARIANT = graphql(`
       id
       variant(languageId: $languageId) {
         id
-        duration
+        lengthInMilliseconds
         hls
         dash
         share
@@ -25,7 +25,7 @@ const GET_VIDEO_VARIANT = graphql(`
           language {
             id
             bcp47
-            name {
+            name(languageId: "529") {
               value
             }
           }
@@ -46,7 +46,7 @@ const GET_VIDEO_VARIANT = graphql(`
         primaryLanguageId
         variant {
           hls
-          duration
+          lengthInMilliseconds
           downloadable
           downloads {
             height
@@ -58,7 +58,7 @@ const GET_VIDEO_VARIANT = graphql(`
             language {
               id
               bcp47
-              name {
+              name(languageId: "529") {
                 value
               }
             }
@@ -93,9 +93,6 @@ const GET_VIDEO_VARIANT = graphql(`
           verseEnd
         }
         childrenCount
-        variantLanguages {
-          id
-        }
       }
     }
   }
@@ -210,7 +207,13 @@ export async function GET(
         break
       case 'ios':
         streamingUrls = {
-          m3u8: [{ videoBitrate: 0, url: video.variant?.hls }],
+          m3u8: [
+            {
+              videoBitrate: 0,
+              videoContainer: 'M2TS',
+              url: video.variant?.hls
+            }
+          ],
           http: []
         }
         break
@@ -223,7 +226,7 @@ export async function GET(
     refId: video.variant?.id,
     apiSessionId,
     platform,
-    lengthInMilliseconds: video.variant?.duration ?? 0,
+    lengthInMilliseconds: video.variant?.lengthInMilliseconds ?? 0,
     subtitleUrls,
     downloadUrls,
     streamingUrls,
@@ -236,13 +239,13 @@ export async function GET(
     openGraphVideoPlayer: 'https://jesusfilm.org/',
     _links: {
       self: {
-        href: `https://api.arclight.com/v2/media-components/${mediaComponentId}/languages/${languageId}?platform=${platform}&apiKey=${apiKey}`
+        href: `http://api.arclight.org/v2/media-components/${mediaComponentId}/languages/${languageId}?platform=${platform}&apiKey=${apiKey}`
       },
       mediaComponent: {
-        href: `https://api.arclight.com/v2/media-components/${mediaComponentId}?apiKey=${apiKey}`
+        href: `http://api.arclight.org/v2/media-components/${mediaComponentId}?apiKey=${apiKey}`
       },
       mediaLanguage: {
-        href: `https://api.arclight.com/v2/media-languages/${languageId}?apiKey=${apiKey}`
+        href: `http://api.arclight.org/v2/media-languages/${languageId}?apiKey=${apiKey}`
       }
     },
     ...(expand.includes('contains') &&
@@ -253,7 +256,7 @@ export async function GET(
             languageId: Number(languageId),
             refId: `${child.id}_${languageId}-${child.label}`,
             apiSessionId,
-            lengthInMilliseconds: child.variant?.duration ?? 0,
+            lengthInMilliseconds: child.variant?.lengthInMilliseconds ?? 0,
             subtitleUrls: {
               vtt:
                 child.variant?.subtitle?.map((subtitle) => ({

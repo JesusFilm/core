@@ -26,11 +26,12 @@ const VideoDetails = dynamic(
     ).then((mod) => mod.VideoDetails),
   { ssr: false }
 )
-const VideoFromCloudflare = dynamic(
+
+const VideoFromMux = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/VideoLibrary/VideoFromCloudflare/VideoFromCloudflare" */ './VideoFromCloudflare'
-    ).then((mod) => mod.VideoFromCloudflare),
+      /* webpackChunkName: "Editor/VideoLibrary/VideoFromCMux/VideoFromMux" */ './VideoFromMux'
+    ).then((mod) => mod.VideoFromMux),
   { ssr: false }
 )
 
@@ -135,7 +136,7 @@ export function VideoLibrary({
             <Tab
               icon={<Upload1Icon />}
               label={t('Upload')}
-              {...tabA11yProps('video-from-cloudflare', 2)}
+              {...tabA11yProps('video-from-mux', 2)}
               sx={{ flexGrow: 1 }}
             />
           </Tabs>
@@ -169,13 +170,13 @@ export function VideoLibrary({
             <VideoFromYouTube onSelect={onSelect} />
           </TabPanel>
           <TabPanel
-            name="video-from-cloudflare"
+            name="video-from-mux"
             value={activeTab}
             index={2}
             sx={{ flexGrow: 1, overflow: 'auto' }}
             unmountUntilVisible
           >
-            <VideoFromCloudflare onSelect={onSelect} />
+            <VideoFromMux onSelect={onSelect} />
           </TabPanel>
         </Box>
       </Drawer>

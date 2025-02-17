@@ -49,11 +49,8 @@ export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video {
 export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
-}
-
-export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_CloudflareVideo {
-  __typename: "CloudflareVideo";
-  id: string;
+  assetId: string | null;
+  playbackId: string | null;
 }
 
 export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube {
@@ -61,7 +58,7 @@ export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube {
   id: string;
 }
 
-export type VideoBlockUpdate_videoBlockUpdate_mediaVideo = VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video | VideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo | VideoBlockUpdate_videoBlockUpdate_mediaVideo_CloudflareVideo | VideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube;
+export type VideoBlockUpdate_videoBlockUpdate_mediaVideo = VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video | VideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo | VideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube;
 
 export interface VideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
