@@ -22,7 +22,7 @@ type Story = StoryObj<ComponentProps<typeof VideoView>>
 const Template: Story = {
   render: () => (
     <NextIntlClientProvider locale="en">
-      <VideoView video={useAdminVideoMock.result?.['data']?.['adminVideo']} />
+      <VideoView />
     </NextIntlClientProvider>
   )
 }
