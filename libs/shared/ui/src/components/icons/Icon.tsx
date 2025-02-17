@@ -269,6 +269,7 @@ export type IconName =
   | 'CopyRight'
   | 'CopyTo'
   | 'Crop1'
+  | 'Crop169'
   | 'Cursor4'
   | 'Cursor6'
   | 'CursorPointer'
@@ -486,6 +487,7 @@ const iconComponents: IconComponents = {
   CopyRight,
   CopyTo,
   Crop1,
+  Crop169,
   Cursor4,
   Cursor6,
   CursorPointer,

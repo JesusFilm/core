@@ -7,7 +7,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { SPACER_FIELDS } from '@core/journeys/ui/Spacer/spacerFields'
-import SpaceHorizontal from '@core/shared/ui/icons/SpaceHorizontal'
+import Crop169Icon from '@core/shared/ui/icons/Crop169'
 
 import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
 import { BlockFields_SpacerBlock as SpacerBlock } from '../../../../../../../../__generated__/BlockFields'
@@ -75,9 +75,10 @@ export function NewSpacerButton(): ReactElement {
       }
     })
   }
+
   return (
     <Button
-      icon={<SpaceHorizontal />}
+      icon={<Crop169Icon />}
       value={t('Spacer')}
       onClick={handleClick}
       testId="NewSpacerButton"
