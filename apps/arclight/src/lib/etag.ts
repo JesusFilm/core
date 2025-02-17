@@ -26,14 +26,14 @@ export async function generateETag(
 /**
  * Gets the current date in RFC 2822 format with caching
  */
-const getCurrentDate = (() => {
+const DEFAULT_UPDATE_INTERVAL = 1000
+const getCurrentDate = ((updateInterval = DEFAULT_UPDATE_INTERVAL) => {
   let cachedDate: string | null = null
   let lastUpdate = 0
-  const UPDATE_INTERVAL = 1000
 
   return function (): string {
     const now = Date.now()
-    if (cachedDate === null || now - lastUpdate > UPDATE_INTERVAL) {
+    if (cachedDate === null || now - lastUpdate > updateInterval) {
       cachedDate = new Date().toUTCString()
       lastUpdate = now
     }
@@ -59,7 +59,6 @@ export async function createETagResponse(
   status = 200,
   headers: Record<string, string> = {}
 ): Promise<Response> {
-  console.log('headers', headers)
   const encoding = headers['content-encoding'] ?? 'gzip'
   const etag = await generateETag(content, encoding)
   const currentDate = getCurrentDate()
