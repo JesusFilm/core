@@ -16,7 +16,7 @@ import { SPACER_SPACING_UPDATE } from './Spacing'
 
 import { Spacing } from '.'
 
-describe('Button color selector', () => {
+describe('Spacing', () => {
   const selectedBlock: TreeBlock<SpacerBlock> = {
     __typename: 'SpacerBlock',
     id: 'id',
@@ -80,9 +80,7 @@ describe('Button color selector', () => {
         </EditorProvider>
       </MockedProvider>
     )
-    expect(
-      screen.getByText('Spacer will be invisible to journey viewers')
-    ).toBeInTheDocument()
+
     expect(screen.getByRole('slider')).toBeInTheDocument()
   })
 

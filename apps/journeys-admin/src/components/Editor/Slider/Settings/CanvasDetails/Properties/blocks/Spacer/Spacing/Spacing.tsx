@@ -1,9 +1,6 @@
 import { gql, useMutation } from '@apollo/client'
-import Box from '@mui/material/Box'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
 import { Dispatch, ReactElement, SetStateAction } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -35,7 +32,6 @@ export function Spacing({ value, setValue }: SpacingProps): ReactElement {
     SpacerSpacingUpdate,
     SpacerSpacingUpdateVariables
   >(SPACER_SPACING_UPDATE)
-  const { t } = useTranslation('apps-journeys-admin')
   const { state } = useEditor()
   const { add } = useCommand()
 
@@ -74,21 +70,16 @@ export function Spacing({ value, setValue }: SpacingProps): ReactElement {
     })
   }
   return (
-    <Stack data-testid="Spacing">
-      <Typography variant="caption" sx={{ mx: 4 }}>
-        {t('Spacer will be invisible to journey viewers')}
-      </Typography>
-      <Box sx={{ p: 4, pt: 0 }} data-testid="Label">
-        <Slider
-          sx={{ width: '100%' }}
-          min={20}
-          max={400}
-          step={10}
-          value={value}
-          onChange={handleChange}
-          onChangeCommitted={handleSpacingChange}
-        />
-      </Box>
+    <Stack sx={{ p: 4, pt: 0 }} data-testid="Label">
+      <Slider
+        sx={{ width: '100%' }}
+        min={20}
+        max={400}
+        step={10}
+        value={value}
+        onChange={handleChange}
+        onChangeCommitted={handleSpacingChange}
+      />
     </Stack>
   )
 }

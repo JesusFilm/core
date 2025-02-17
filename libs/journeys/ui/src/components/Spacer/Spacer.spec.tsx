@@ -18,7 +18,7 @@ describe('Spacer', () => {
     children: []
   }
 
-  it('should render invisible on journeys context', () => {
+  it('should render correctly on journeys context', () => {
     render(
       <JourneyProvider
         value={{ journey: {} as unknown as Journey, variant: 'default' }}
@@ -30,9 +30,10 @@ describe('Spacer', () => {
     const spacer = screen.getByTestId('JourneysSpacer')
     expect(spacer).toHaveStyle(`height: 200px`)
     expect(spacer).toHaveStyle(`background-color: rgba(0, 0, 0, 0)`)
+    expect(spacer).toHaveStyle(`outline: none`)
   })
 
-  it('should render opaque on editor context', () => {
+  it('should render correctly on editor context', () => {
     render(
       <JourneyProvider
         value={{ journey: {} as unknown as Journey, variant: 'admin' }}
@@ -43,6 +44,7 @@ describe('Spacer', () => {
 
     const spacer = screen.getByTestId('JourneysSpacer')
     expect(spacer).toHaveStyle(`height: 200px`)
-    expect(spacer).toHaveStyle(`background-color: rgba(255, 255, 255, 0.2)`)
+    expect(spacer).toHaveStyle(`background-color: rgba(0, 0, 0, 0)`)
+    expect(spacer).toHaveStyle(`outline: 8px dotted rgba(0, 0, 0, 0.12)`)
   })
 })

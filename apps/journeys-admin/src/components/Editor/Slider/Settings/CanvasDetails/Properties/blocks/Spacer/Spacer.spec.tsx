@@ -30,7 +30,7 @@ describe('Spacer', () => {
     )
 
     expect(getByText('Spacer Height')).toBeInTheDocument()
-    expect(getByText('100 Units')).toBeInTheDocument()
+    expect(getByText('100 Pixels')).toBeInTheDocument()
   })
 
   it('should have accordion open', () => {

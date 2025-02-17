@@ -4,7 +4,7 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import SpaceHeight from '@core/shared/ui/icons/SpaceHeight'
+import Crop169Icon from '@core/shared/ui/icons/Crop169'
 
 import { BlockFields_SpacerBlock as SpacerBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
@@ -27,9 +27,9 @@ export function Spacer({ id, spacing }: TreeBlock<SpacerBlock>): ReactElement {
     <Box data-testid="SpacerProperties">
       <Accordion
         id={`${id}-spacer-options`}
-        icon={<SpaceHeight />}
+        icon={<Crop169Icon />}
         name={t('Spacer Height')}
-        value={t('{{units}} Units', { units: value })}
+        value={t('{{pixels}} Pixels', { pixels: value })}
       >
         <Spacing value={value} setValue={setValue} />
       </Accordion>
