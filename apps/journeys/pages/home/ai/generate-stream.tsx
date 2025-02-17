@@ -1,4 +1,10 @@
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 import { experimental_useObject as useObject } from 'ai/react'
+import { Form, Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useState } from 'react'
 import { z } from 'zod'
@@ -24,33 +30,74 @@ export default function GenerateStreamPage() {
     }
   })
 
-  // Update blocks as they stream in
-  if (object?.blocks) {
-    setBlocks((prevBlocks) => [...prevBlocks, ...object.blocks])
-  }
+  console.log(object)
+
+  //   // Update blocks as they stream in
+  //   if (object?.blocks) {
+  //     setBlocks((prevBlocks) => [...prevBlocks, ...object.blocks])
+  //   }
 
   return (
-    <div>
-      <button
-        onClick={() => submit('Create a journey about forgiveness')}
-        disabled={isLoading}
+    <Box sx={{ p: 2 }}>
+      <Formik
+        initialValues={{ prompt: '' }}
+        onSubmit={(values, { setSubmitting }) => {
+          submit(values.prompt)
+          setSubmitting(false)
+        }}
       >
-        {t('Generate Journey')}
-      </button>
+        {({ isSubmitting, values, handleChange, handleBlur }) => (
+          <Form>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <TextField
+                id="prompt"
+                name="prompt"
+                label={t('User Prompt')}
+                variant="outlined"
+                value={values.prompt}
+                onChange={handleChange}
+                onBlur={handleBlur}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                disabled={isSubmitting || isLoading}
+              >
+                {t('Generate Journey')}
+              </Button>
+            </Box>
+          </Form>
+        )}
+      </Formik>
 
       {error && (
-        <div className="text-red-500">
+        <Typography variant="body1" color="error" sx={{ mt: 2 }}>
           {t('An error occurred while generating the journey')}
-        </div>
+        </Typography>
       )}
 
-      {isLoading && <div>Generating journey...</div>}
+      {isLoading && (
+        <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+          <CircularProgress size={24} />
+          <Typography sx={{ ml: 2 }}>{t('Generating journey...')}</Typography>
+        </Box>
+      )}
 
-      {blocks.map((block, index) => (
-        <div key={index}>
+      {object?.blocks?.map((block, index) => (
+        <Box
+          key={index}
+          sx={{
+            mt: 2,
+            p: 2,
+            border: '1px solid #ccc',
+            borderRadius: 2,
+            overflowX: 'auto'
+          }}
+        >
           <pre>{JSON.stringify(block, null, 2)}</pre>
-        </div>
+        </Box>
       ))}
-    </div>
+    </Box>
   )
 }

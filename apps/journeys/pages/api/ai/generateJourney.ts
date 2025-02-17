@@ -1,10 +1,24 @@
-import { openai } from '@ai-sdk/openai'
+import { createOpenAI } from '@ai-sdk/openai'
 import { CoreMessage, streamObject } from 'ai'
 import { z } from 'zod'
 
 import { BlockUnionSchema } from '@core/yoga/zodSchema/blocks/blockUnion.zod'
 
-const streamingJourneySchema = BlockUnionSchema
+const streamingJourneySchema = z
+  .object({
+    blocks: z.array(BlockUnionSchema)
+  })
+  .refine(
+    (data) => {
+      const blockIds = new Set(data.blocks.map((b) => b.id))
+      return data.blocks.every(
+        (block) => !block.parentBlockId || blockIds.has(block.parentBlockId)
+      )
+    },
+    {
+      message: 'Invalid parent-child relationships in blocks.'
+    }
+  )
 
 export const config = {
   runtime: 'edge',
@@ -407,36 +421,44 @@ const templates = [
   }
 ]
 
-const SYSTEM_PROMPT = `You are an AI journey creator specializing in creating meaningful, engaging spiritual journeys.
-Your task is to generate journey blocks that follow specific templates and maintain a cohesive narrative flow.
-
-Guidelines:
-- Generate blocks in the exact order defined in the templates
-- Each block should naturally flow from the previous one
-- Ensure content is engaging and spiritually meaningful
-- Use natural, conversational language
-- Keep titles concise and compelling
-- Include relevant scripture references where appropriate
-- Maintain focus on the journey's spiritual theme
-
-Remember: Each block group should be complete and self-contained while contributing to the overall journey narrative.`
+const SYSTEM_PROMPT = `You are an AI journey creator specialized in crafting cohesive, spiritually meaningful journeys.
+Your output must be a valid JSON object with exactly one property "blocks", an array of block objects.
+Ensure that:
+  • Each block adheres to the provided BlockUnionSchema.
+  • For any block with a non-null "parentBlockId", a corresponding parent block exists earlier in the "blocks" array.
+Follow the provided templates exactly and generate only the "blocks" property.`
 
 const USER_PROMPT_TEMPLATE = (context: string) => `
-Create a spiritual journey with my prompt: ${context}
+Create a spiritual journey using the prompt: "${context}".
 
-Follow these templates exactly:
+IMPORTANT:
+  • Output must be a valid JSON object with a single property "blocks" which is an array.
+  • Generate ONLY the "blocks" property following the structure defined by the provided templates.
+  • You must change the text content of the blocks to be relevant to the prompt.
+  • You must change the images to be relevant to the prompt.
+  • You must change the button to be relevant to the prompt.
+  • You must change the radio option to be relevant to the prompt.
+  • You must change the step to be relevant to the prompt.
+   
+
+Templates:
 ${JSON.stringify(templates, null, 2)}
 
 Requirements:
-1. Generate blocks in the exact sequence shown in the templates
-2. Each block should build upon previous blocks
-3. Maintain consistent tone and theme throughout
-4. Include clear calls to action
-5. Ensure scripture references are relevant and meaningful
+  1. The "blocks" array must reflect valid parent–child relationships (each child block's parent exists earlier).
+  2. Step Blocks must have no parents 
+  3. Card Blocks should have a parent of type StepBlock.
+  4. Blocks must follow the structure of the BlockUnionSchema.
+  5. The narrative should be cohesive and consistent.
+  6. Ensure scripture references are relevant and meaningful
 
-Please generate the journey blocks now.`
+Please output the complete journey object (with only "blocks") as valid JSON.`
 
 const messages: CoreMessage[] = [{ role: 'system', content: SYSTEM_PROMPT }]
+const openai = createOpenAI({
+  compatibility: 'strict',
+  apiKey: process.env.OPEN_AI_API_KEY
+})
 
 export default async function POST(req: Request) {
   try {
