@@ -20,12 +20,5 @@ input SpacerBlockUpdateInput {
 
 extend type Mutation {
   spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock!
-  spacerBlockUpdate(
-    id: ID!
-    input: SpacerBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): SpacerBlock
+  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!): SpacerBlock
 }

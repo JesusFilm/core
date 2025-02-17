@@ -245,14 +245,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     journeyId: ID
   ): SignUpBlock @join__field(graph: API_JOURNEYS) 
   spacerBlockCreate(input: SpacerBlockCreateInput!) : SpacerBlock! @join__field(graph: API_JOURNEYS) 
-  spacerBlockUpdate(
-    id: ID!
-    input: SpacerBlockUpdateInput!
-    """
-    drop this parameter after merging teams
-    """
-    journeyId: ID
-  ): SpacerBlock @join__field(graph: API_JOURNEYS) 
+  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!) : SpacerBlock @join__field(graph: API_JOURNEYS) 
   stepBlockCreate(input: StepBlockCreateInput!) : StepBlock! @join__field(graph: API_JOURNEYS) 
   stepBlockUpdate(
     id: ID!
