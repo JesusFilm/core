@@ -1,28 +1,13 @@
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Modal from '@mui/material/Modal'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
+import { Dialog } from '@core/shared/ui/Dialog'
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
 import { VideoCreateForm } from '../VideoCreateForm'
-import { Dialog } from '@core/shared/ui/Dialog'
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid',
-  borderColor: 'divider',
-  borderRadius: 2,
-  p: 4
-}
 
 export function VideoListHeader(): ReactElement {
   const t = useTranslations()

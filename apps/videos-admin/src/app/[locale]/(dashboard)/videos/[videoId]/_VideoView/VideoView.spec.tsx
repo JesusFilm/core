@@ -1,29 +1,34 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { useParams } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 import { VideoView } from './VideoView'
 
-const baseVideo = useAdminVideoMock.result?.['data']?.['adminVideo']
-
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),
+  useParams: jest.fn(),
   useRouter: jest.fn()
 }))
 
+const mockUseParams = useParams as jest.MockedFunction<typeof mockUseParams>
+
 describe('VideoView', () => {
-  it('should render video details', () => {
+  it('should get video details', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
+
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <VideoView video={baseVideo} />
+          <VideoView />
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(
       screen.getByRole('heading', { level: 4, name: 'JESUS' })
     ).toBeInTheDocument()
@@ -47,159 +52,222 @@ describe('VideoView', () => {
   })
 
   it('should change tabs', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue(useAdminVideoMock.result)
+
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <VideoView video={baseVideo} />
+          <VideoView />
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
-    const user = userEvent.setup()
-
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getAllByRole('tab')).toHaveLength(3)
-    await user.click(screen.getByRole('tab', { name: 'Clips 3' }))
+    fireEvent.click(screen.getByRole('tab', { name: 'Clips 3' }))
     expect(
       screen.getByRole('heading', { level: 6, name: '1. The Beginning' })
     ).toBeInTheDocument()
   })
 
-  it('should not show video children if a video label is episodes', () => {
-    const video = {
-      ...baseVideo,
-      label: 'episodes'
-    }
+  it('should not show video children if a video label is episodes', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          label: 'episodes'
+        }
+      }
+    })
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <VideoView video={video} />
+          <VideoView />
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getAllByRole('tab')).toHaveLength(2)
   })
 
-  it('should show video children if a video label is series', () => {
-    const video = {
-      ...baseVideo,
-      label: 'series'
-    }
+  it('should  show video children if a video label is series', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          label: 'series'
+        }
+      }
+    })
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <VideoView video={video} />
+          <VideoView />
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getAllByRole('tab')).toHaveLength(3)
     expect(screen.getByRole('tab', { name: 'Episodes 3' })).toBeInTheDocument()
   })
 
-  it('should show video children if a video label is featureFilm', () => {
-    const video = {
-      ...baseVideo,
-      label: 'featureFilm'
-    }
+  it('should  show video children if a video label is featureFilm', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          label: 'featureFilm'
+        }
+      }
+    })
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <VideoView video={video} />
+          <VideoView />
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getAllByRole('tab')).toHaveLength(3)
     expect(screen.getByRole('tab', { name: 'Clips 3' })).toBeInTheDocument()
   })
 
-  it('should show video children if a video label is collection', () => {
-    const video = {
-      ...baseVideo,
-      label: 'collection'
-    }
+  it('should  show video children if a video label is collection', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          label: 'collection'
+        }
+      }
+    })
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <VideoView video={video} />
+          <VideoView />
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getAllByRole('tab')).toHaveLength(3)
     expect(screen.getByRole('tab', { name: 'Items 3' })).toBeInTheDocument()
   })
 
-  it('should not show video children if a video label is segment', () => {
-    const video = {
-      ...baseVideo,
-      label: 'segment'
-    }
+  it('should not show video children if a video label is segment', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          label: 'segment'
+        }
+      }
+    })
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <VideoView video={video} />
+          <VideoView />
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getAllByRole('tab')).toHaveLength(2)
   })
 
-  it('should not show video children if a video label is shortFilm', () => {
-    const video = {
-      ...baseVideo,
-      label: 'shortFilm'
-    }
+  it('should not show video children if a video label is shortFilm', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          label: 'shortFilm'
+        }
+      }
+    })
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <VideoView video={video} />
+          <VideoView />
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getAllByRole('tab')).toHaveLength(2)
   })
 
-  it('should not show video children if a video label is trailer', () => {
-    const video = {
-      ...baseVideo,
-      label: 'trailer'
-    }
+  it('should not show video children if a video label is trailer', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          label: 'trailer'
+        }
+      }
+    })
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <VideoView video={video} />
+          <VideoView />
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getAllByRole('tab')).toHaveLength(2)
   })
 
-  it('should not show video children if a video label is behindTheScenes', () => {
-    const video = {
-      ...baseVideo,
-      label: 'behindTheScenes'
-    }
+  it('should not show video children if a video label is behindTheScenes', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          label: 'behindTheScenes'
+        }
+      }
+    })
 
     render(
-      <MockedProvider>
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
         <NextIntlClientProvider locale="en">
-          <VideoView video={video} />
+          <VideoView />
         </NextIntlClientProvider>
       </MockedProvider>
     )
 
+    await waitFor(() => expect(result).toHaveBeenCalled())
     expect(screen.getAllByRole('tab')).toHaveLength(2)
+  })
+
+  it('should render loading ui', async () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <NextIntlClientProvider locale="en">
+          <VideoView />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+    expect(screen.queryByTestId('PublishedChip')).not.toBeInTheDocument()
   })
 })

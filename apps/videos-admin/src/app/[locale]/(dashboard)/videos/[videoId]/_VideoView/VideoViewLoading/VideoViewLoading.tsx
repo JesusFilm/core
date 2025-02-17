@@ -1,11 +1,13 @@
 'use client'
 
-import Typography from '@mui/material/Typography'
-import { useTranslations } from 'next-intl'
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
 import { ReactElement } from 'react'
 
 export function VideoViewLoading(): ReactElement {
-  const t = useTranslations()
-
-  return <Typography>{t('Loading...')}</Typography>
+  return (
+    <Box sx={{ height: 240, display: 'grid', placeItems: 'center' }}>
+      <CircularProgress />
+    </Box>
+  )
 }

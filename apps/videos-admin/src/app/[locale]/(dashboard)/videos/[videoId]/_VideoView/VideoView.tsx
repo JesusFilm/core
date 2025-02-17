@@ -1,22 +1,18 @@
 'use client'
 
-import { useReadQuery, useSuspenseQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
-import { ResultOf, readFragment } from 'gql.tada'
+import { readFragment } from 'gql.tada'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 
 import { PublishedChip } from '../../../../../../components/PublishedChip'
-import {
-  GET_ADMIN_VIDEO,
-  VideoInformationFragment
-} from '../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
 import { VideoProvider } from '../../../../../../libs/VideoProvider'
 
 import { Metadata } from './Metadata'
@@ -26,40 +22,41 @@ import { Variants } from './Variants'
 import { VideoChildren } from './VideoChildren'
 import { getVideoChildrenLabel } from './VideoChildren/getVideoChildrenLabel'
 import { VideoViewFallback } from './VideoViewFallback'
+import { VideoViewLoading } from './VideoViewLoading'
 
-export function VideoView({ queryRef }): ReactElement {
+export function VideoView(): ReactElement {
   const t = useTranslations()
-  const params = useParams<{ locale: string; videoId: string }>()
+  const params = useParams<{ videoId: string; locale: string }>()
   const [tabValue, setTabValue] = useState(0)
 
-  const { data } = useReadQuery<ResultOf<typeof GET_ADMIN_VIDEO>>(queryRef)
-  // const { data } = useSuspenseQuery(GET_ADMIN_VIDEO, {
-  //   variables: { videoId: params?.videoId as string }
-  // })
+  const { data, loading } = useAdminVideo({
+    variables: { videoId: params?.videoId as string }
+  })
 
-  // const { data } = useQuery(GET_ADMIN_VIDEO, {
-  //   variables: { videoId: params?.videoId as string }
-  // })
+  if (loading) {
+    return <VideoViewLoading />
+  }
 
-  if (data.adminVideo == null) {
+  console.log(data)
+
+  if (data?.adminVideo == null) {
     return <VideoViewFallback />
   }
 
   const video = data.adminVideo
-  const information = readFragment(VideoInformationFragment, video)
 
-  const videoTitle = information.title?.[0]?.value ?? ''
+  const videoTitle = video?.title?.[0]?.value ?? ''
 
   function handleTabChange(_e: SyntheticEvent, newValue: number): void {
     setTabValue(newValue)
   }
 
   const showVideoChildren: boolean =
-    information.label === 'collection' ||
-    information.label === 'featureFilm' ||
-    information.label === 'series'
+    video.label === 'collection' ||
+    video.label === 'featureFilm' ||
+    video.label === 'series'
 
-  const videoLabel = getVideoChildrenLabel(information.label)
+  const videoLabel = getVideoChildrenLabel(video.label)
 
   return (
     <VideoProvider video={video}>
@@ -68,17 +65,19 @@ export function VideoView({ queryRef }): ReactElement {
         sx={{ width: '100%', maxWidth: 1700 }}
         data-testid="VideoView"
       >
-        <Stack
-          gap={2}
-          sx={{
-            mb: 2,
-            alignItems: { xs: 'start', sm: 'center' },
-            flexDirection: { xs: 'col', sm: 'row' }
-          }}
-        >
-          <Typography variant="h4">{videoTitle}</Typography>
-          <PublishedChip published={information.published} />
-        </Stack>
+        {data != null && (
+          <Stack
+            gap={2}
+            sx={{
+              mb: 2,
+              alignItems: { xs: 'start', sm: 'center' },
+              flexDirection: { xs: 'col', sm: 'row' }
+            }}
+          >
+            <Typography variant="h4">{videoTitle}</Typography>
+            <PublishedChip published={video.published} />
+          </Stack>
+        )}
         <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
           <Box width="100%">
             <Tabs
@@ -93,7 +92,7 @@ export function VideoView({ queryRef }): ReactElement {
                   label={
                     <TabLabel
                       label={videoLabel}
-                      count={video?.children?.length}
+                      count={video.children?.length}
                     />
                   }
                 />
@@ -103,7 +102,7 @@ export function VideoView({ queryRef }): ReactElement {
                 label={
                   <TabLabel
                     label={t('Audio Languages')}
-                    count={video?.variants?.length}
+                    count={video.variants?.length}
                   />
                 }
               />
@@ -116,13 +115,13 @@ export function VideoView({ queryRef }): ReactElement {
               {showVideoChildren && videoLabel != null && (
                 <VideoChildren
                   videoId={video?.id ?? ''}
-                  childVideos={video?.children ?? []}
+                  childVideos={video.children ?? []}
                   label={videoLabel}
                 />
               )}
             </TabContainer>
             <TabContainer value={tabValue} index={2}>
-              <Variants variants={video?.variants} />
+              <Variants variants={video.variants} />
             </TabContainer>
           </Box>
         </Stack>

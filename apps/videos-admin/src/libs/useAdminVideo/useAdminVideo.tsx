@@ -13,97 +13,93 @@ export const VideoInformationFragment = graphql(`
   }
 `)
 
-export const GET_ADMIN_VIDEO = graphql(
-  `
-    query GetAdminVideo($videoId: ID!) {
-      adminVideo(id: $videoId) {
+export const GET_ADMIN_VIDEO = graphql(`
+  query GetAdminVideo($videoId: ID!) {
+    adminVideo(id: $videoId) {
+      id
+      slug
+      label
+      published
+      title {
         id
-        ...VideoInformation
-        # slug
-        # label
-        # published
-        # title {
-        #   id
-        #   value
-        # }
+        value
+      }
+      images(aspectRatio: banner) {
+        id
+        mobileCinematicHigh
+        url
+      }
+      imageAlt {
+        id
+        value
+      }
+      noIndex
+      description {
+        id
+        value
+      }
+      snippet {
+        id
+        value
+      }
+      children {
+        id
+        title {
+          id
+          value
+        }
         images(aspectRatio: banner) {
           id
           mobileCinematicHigh
-          url
         }
         imageAlt {
           id
           value
         }
-        noIndex
-        description {
+      }
+      variants {
+        id
+        videoId
+        slug
+        language {
           id
-          value
-        }
-        snippet {
-          id
-          value
-        }
-        children {
-          id
-          title {
-            id
+          name {
             value
+            primary
           }
-          images(aspectRatio: banner) {
-            id
-            mobileCinematicHigh
-          }
-          imageAlt {
-            id
-            value
-          }
-        }
-        variants {
-          id
-          videoId
           slug
-          language {
-            id
-            name {
-              value
-              primary
-            }
-            slug
-          }
-          downloads {
-            id
-            quality
-            size
-            height
-            width
-            url
-          }
         }
-        studyQuestions {
+        downloads {
           id
-          value
+          quality
+          size
+          height
+          width
+          url
         }
-        variantLanguagesCount
-        subtitles {
+      }
+      studyQuestions {
+        id
+        value
+      }
+      variantLanguagesCount
+      subtitles {
+        id
+        edition
+        vttSrc
+        srtSrc
+        value
+        language {
           id
-          edition
-          vttSrc
-          srtSrc
-          value
-          language {
-            id
-            name {
-              value
-            }
-            slug
+          name {
+            value
           }
+          slug
         }
       }
     }
-  `,
-  [VideoInformationFragment]
-)
+  }
+`)
 
 export type GetAdminVideo = ResultOf<typeof GET_ADMIN_VIDEO>
 export type GetAdminVideoVariables = VariablesOf<typeof GET_ADMIN_VIDEO>

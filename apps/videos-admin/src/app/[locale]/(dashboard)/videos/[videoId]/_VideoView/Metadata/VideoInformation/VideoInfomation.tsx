@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
-import { graphql, readFragment } from 'gql.tada'
+import { graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
@@ -17,10 +17,7 @@ import { object, string } from 'yup'
 
 import { CancelButton } from '../../../../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
-import {
-  GetAdminVideo_AdminVideo as AdminVideo,
-  VideoInformationFragment
-} from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 const videoStatuses = [
@@ -73,8 +70,6 @@ interface VideoInformationProps {
 export function VideoInformation({
   video
 }: VideoInformationProps): ReactElement {
-  const information = readFragment(VideoInformationFragment, video)
-
   const t = useTranslations()
   const [updateVideoInformation] = useMutation(UPDATE_VIDEO_INFORMATION)
   const [createVideoTitle] = useMutation(CREATE_VIDEO_TITLE, {
@@ -114,7 +109,7 @@ export function VideoInformation({
   async function handleUpdateVideoInformation(
     values: FormikValues
   ): Promise<void> {
-    let titleId = information.title[0]?.id
+    let titleId = video.title[0]?.id
 
     if (titleId == null) {
       const res = await createVideoTitle({
@@ -172,10 +167,10 @@ export function VideoInformation({
   return (
     <Formik
       initialValues={{
-        title: information.title?.[0]?.value ?? '',
-        url: information.slug,
-        published: information.published === true ? 'published' : 'unpublished',
-        label: information.label
+        title: video.title?.[0]?.value ?? '',
+        url: video.slug,
+        published: video.published === true ? 'published' : 'unpublished',
+        label: video.label
       }}
       onSubmit={handleUpdateVideoInformation}
       validationSchema={validationSchema}

@@ -99,39 +99,30 @@ export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
   const [createVideo] = useMutation(CREATE_VIDEO)
 
   const handleSubmit = async (values: InferType<typeof validationSchema>) => {
-    try {
-      await createVideo({
-        variables: {
-          input: {
-            id: values.id,
-            slug: values.slug,
-            label: values.label,
-            primaryLanguageId: values.primaryLanguageId,
-            noIndex: false,
-            published: false,
-            childIds: []
-          }
-        },
-        onCompleted: () => {
-          enqueueSnackbar(t('Successfully created video.'), {
-            variant: 'success'
-          })
-          close()
-          router.push(`${pathname}/${values.slug}`)
-        },
-        onError: () => {
-          enqueueSnackbar(t('Something went wrong.'), { variant: 'error' })
+    await createVideo({
+      variables: {
+        input: {
+          id: values.id,
+          slug: values.slug,
+          label: values.label,
+          primaryLanguageId: values.primaryLanguageId,
+          noIndex: false,
+          published: false,
+          childIds: []
         }
-      })
-    } catch (e) {
-      // TODO: proper error handling for specific errors
-      enqueueSnackbar(
-        t(`Failed to create video: ID already exists`, {
-          variant: 'error',
-          preventDuplicate: false
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t('Successfully created video.'), {
+          variant: 'success'
         })
-      )
-    }
+        close()
+        router.push(`${pathname}/${values.slug}`)
+      },
+      onError: () => {
+        // TODO: proper error handling for specific errors
+        enqueueSnackbar(t('Something went wrong.'), { variant: 'error' })
+      }
+    })
   }
 
   const initialValues: InferType<typeof validationSchema> = {
