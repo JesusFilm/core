@@ -7,7 +7,7 @@ import { NextRequest } from 'next/server'
 async function generateHash(content: string): Promise<string> {
   const encoder = new TextEncoder()
   const data = encoder.encode(content)
-  const hashBuffer = await crypto.subtle.digest('SHA-1', data)
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
   const hashArray = Array.from(new Uint8Array(hashBuffer))
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
 }
@@ -15,9 +15,12 @@ async function generateHash(content: string): Promise<string> {
 /**
  * Generates an ETag for the given content with content encoding
  */
-export async function generateETag(content: string): Promise<string> {
+export async function generateETag(
+  content: string,
+  encoding: string = 'gzip'
+): Promise<string> {
   const hash = await generateHash(content)
-  return `"${hash}-gzip"`
+  return `"${hash}-${encoding}"`
 }
 
 /**
@@ -55,7 +58,9 @@ export async function createETagResponse(
   status = 200,
   headers: Record<string, string> = {}
 ): Promise<Response> {
-  const etag = await generateETag(content)
+  console.log('headers', headers)
+  const encoding = headers['content-encoding'] ?? 'gzip'
+  const etag = await generateETag(content, encoding)
   const currentDate = getCurrentDate()
 
   const commonHeaders = {
@@ -66,7 +71,7 @@ export async function createETagResponse(
     expires: currentDate,
     'last-modified': currentDate,
     vary: headers['vary'] ?? 'Accept-Encoding',
-    'content-encoding': 'gzip',
+    'content-encoding': encoding,
     connection: 'keep-alive',
     'keep-alive': 'timeout=5'
   }
