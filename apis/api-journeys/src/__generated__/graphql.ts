@@ -1852,7 +1852,6 @@ export type MutationSpacerBlockCreateArgs = {
 export type MutationSpacerBlockUpdateArgs = {
   id: Scalars['ID']['input'];
   input: SpacerBlockUpdateInput;
-  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
