@@ -85,9 +85,7 @@ const GET_VIDEOS_WITH_FALLBACK = graphql(`
         verseEnd
       }
       childrenCount
-      variantLanguages {
-        id
-      }
+      availableLanguages
       variant {
         hls
         duration
@@ -230,7 +228,7 @@ export async function GET(request: NextRequest): Promise<Response> {
       studyQuestions: video.studyQuestions.map((question) => question.value),
       metadataLanguageTag: video.title[0]?.language.bcp47 ?? 'en',
       ...(expand.includes('languageIds')
-        ? { languageIds: video.variantLanguages.map(({ id }) => Number(id)) }
+        ? { languageIds: video.availableLanguages.map((id) => Number(id)) }
         : {})
     }
   })

@@ -524,6 +524,16 @@ export interface MeInput {
   redirect?: string | null;
 }
 
+export interface QrCodeCreateInput {
+  teamId: string;
+  journeyId: string;
+}
+
+export interface QrCodesFilter {
+  journeyId?: string | null;
+  teamId?: string | null;
+}
+
 export interface RadioOptionBlockCreateInput {
   id?: string | null;
   journeyId: string;
