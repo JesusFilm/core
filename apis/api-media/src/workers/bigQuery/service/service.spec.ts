@@ -4,6 +4,7 @@ import {
   importBibleCitations,
   importKeywords,
   importLanguageSlugs,
+  importMasterUrls,
   importVideoChildren,
   importVideoDescriptions,
   importVideoImageAlts,
@@ -25,6 +26,7 @@ jest.mock('../importers', () => ({
   importBibleCitations: jest.fn(),
   importKeywords: jest.fn(),
   importLanguageSlugs: jest.fn(),
+  importMasterUrls: jest.fn(),
   importVideoChildren: jest.fn(),
   importVideoDescriptions: jest.fn(),
   importVideoImages: jest.fn(),
@@ -47,6 +49,7 @@ describe('bigQuery/service', () => {
       expect(importBibleCitations).toHaveBeenCalled()
       expect(importKeywords).toHaveBeenCalled()
       expect(importLanguageSlugs).toHaveBeenCalled()
+      expect(importMasterUrls).toHaveBeenCalled()
       expect(importVideoChildren).toHaveBeenCalled()
       expect(importVideoDescriptions).toHaveBeenCalled()
       expect(importVideoImageAlts).toHaveBeenCalled()

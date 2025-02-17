@@ -254,7 +254,10 @@ describe('video', () => {
           lengthInMilliseconds: null,
           share: null,
           published: true,
-          muxVideoId: 'muxVideoId'
+          muxVideoId: 'muxVideoId',
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180
         },
         {
           id: 'variantId1',
@@ -269,7 +272,10 @@ describe('video', () => {
           lengthInMilliseconds: null,
           share: null,
           published: false,
-          muxVideoId: 'muxVideoId1'
+          muxVideoId: 'muxVideoId1',
+          masterUrl: 'masterUrl1',
+          masterWidth: 320,
+          masterHeight: 180
         }
       ]
     }
