@@ -825,7 +825,7 @@ type GridContainerBlock implements Block @join__type(graph: API_JOURNEYS)  @join
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  spacing: Int!
+  gap: Int!
   direction: GridDirection!
   justifyContent: GridJustifyContent!
   alignItems: GridAlignItems!
