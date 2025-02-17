@@ -46,7 +46,8 @@ const getCurrentDate = (() => {
  */
 export function isETagMatch(request: NextRequest, etag: string): boolean {
   const ifNoneMatch = request.headers.get('if-none-match')
-  return ifNoneMatch === etag
+  if (!ifNoneMatch) return false
+  return ifNoneMatch.split(/,\s*/).some((tag) => tag === etag || tag === '*')
 }
 
 /**
