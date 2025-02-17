@@ -97,6 +97,23 @@ export const GET_ADMIN_VIDEO = graphql(`
           slug
         }
       }
+      videoEditions {
+        id
+        name
+        videoSubtitles {
+          id
+          vttSrc
+          srtSrc
+          value
+          language {
+            id
+            name {
+              value
+            }
+            slug
+          }
+        }
+      }
     }
   }
 `)
