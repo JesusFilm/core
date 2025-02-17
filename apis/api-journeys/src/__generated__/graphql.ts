@@ -527,12 +527,12 @@ export type GridContainerBlock = Block & {
   __typename?: 'GridContainerBlock';
   alignItems: GridAlignItems;
   direction: GridDirection;
+  gap: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   justifyContent: GridJustifyContent;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
-  spacing: Scalars['Int']['output'];
 };
 
 export enum GridDirection {

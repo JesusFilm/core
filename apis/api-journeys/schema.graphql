@@ -688,7 +688,7 @@ type GridContainerBlock implements Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  spacing: Int!
+  gap: Int!
   direction: GridDirection!
   justifyContent: GridJustifyContent!
   alignItems: GridAlignItems!
