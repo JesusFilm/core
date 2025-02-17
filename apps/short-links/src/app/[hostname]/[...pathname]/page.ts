@@ -5,7 +5,6 @@ import { getApolloClient } from '../../../lib/apolloClient'
 
 import { GET_SHORT_LINK_QUERY } from './getShortLinkQuery'
 
-// export const dynamic = 'force-dynamic'
 export const fetchCache = 'force-no-store'
 
 export default async function PathnamePage({
