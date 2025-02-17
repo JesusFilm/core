@@ -240,7 +240,7 @@ type Mutation {
     journeyId: ID
   ): SignUpBlock
   spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock!
-  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!): SpacerBlock
+  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!): SpacerBlock!
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
   stepBlockUpdate(
     id: ID!

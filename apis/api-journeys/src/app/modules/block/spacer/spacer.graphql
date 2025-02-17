@@ -20,5 +20,5 @@ input SpacerBlockUpdateInput {
 
 extend type Mutation {
   spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock!
-  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!): SpacerBlock
+  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!): SpacerBlock!
 }
