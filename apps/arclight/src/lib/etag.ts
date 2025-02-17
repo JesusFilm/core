@@ -72,15 +72,14 @@ export async function createETagResponse(
     expires: currentDate,
     'last-modified': currentDate,
     vary: headers['vary'] ?? 'Accept-Encoding',
-    'content-encoding': encoding,
-    connection: 'keep-alive',
-    'keep-alive': 'timeout=5'
+    'content-encoding': encoding
   }
 
   if (isETagMatch(request, etag)) {
     return new Response(null, {
       status: 304,
       headers: {
+        ...headers,
         'content-type': 'text/plain;charset=UTF-8',
         ...commonHeaders
       }
@@ -90,9 +89,9 @@ export async function createETagResponse(
   return new Response(content, {
     status,
     headers: {
+      ...headers,
       'content-type': headers['content-type'] ?? 'application/json',
-      ...commonHeaders,
-      ...headers
+      ...commonHeaders
     }
   })
 }
