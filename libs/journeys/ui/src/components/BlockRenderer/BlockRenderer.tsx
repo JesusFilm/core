@@ -10,7 +10,6 @@ import {
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_RadioQuestionBlock as RadioQuestionBlock,
   BlockFields_SignUpBlock as SignUpBlock,
-  BlockFields_SpacerBlock as SpacerBlock,
   BlockFields_StepBlock as StepBlock,
   BlockFields_TextResponseBlock as TextResponseBlock,
   BlockFields_TypographyBlock as TypographyBlock,
@@ -33,7 +32,6 @@ export interface WrappersProps {
   RadioOptionWrapper?: WrapperFn<RadioOptionBlock>
   RadioQuestionWrapper?: WrapperFn<RadioQuestionBlock>
   SignUpWrapper?: WrapperFn<SignUpBlock>
-  SpacerWrapper?: WrapperFn<SpacerBlock>
   StepWrapper?: WrapperFn<StepBlock>
   TextResponseWrapper?: WrapperFn<TextResponseBlock>
   TypographyWrapper?: WrapperFn<TypographyBlock>
@@ -94,14 +92,6 @@ const DynamicSignUp = dynamic<TreeBlock<SignUpBlock>>(
     ).then((mod) => mod.SignUp)
 )
 
-const DynamicSpacer = dynamic<TreeBlock<SpacerBlock>>(
-  async () =>
-    await import(
-      /* webpackChunkName: "Spacer" */
-      '../Spacer'
-    ).then((mod) => mod.Spacer)
-)
-
 const DynamicStep = dynamic<
   TreeBlock<StepBlock> & { wrappers?: WrappersProps }
 >(
@@ -145,7 +135,6 @@ export function BlockRenderer({
   const RadioOptionWrapper = wrappers?.RadioOptionWrapper ?? DefaultWrapper
   const RadioQuestionWrapper = wrappers?.RadioQuestionWrapper ?? DefaultWrapper
   const SignUpWrapper = wrappers?.SignUpWrapper ?? DefaultWrapper
-  const SpacerWrapper = wrappers?.SpacerWrapper ?? DefaultWrapper
   const StepWrapper = wrappers?.StepWrapper ?? DefaultWrapper
   const TextResponseWrapper = wrappers?.TextResponseWrapper ?? DefaultWrapper
   const TypographyWrapper = wrappers?.TypographyWrapper ?? DefaultWrapper
@@ -210,16 +199,6 @@ export function BlockRenderer({
             <SignUpWrapper block={block}>
               <DynamicSignUp {...block} />
             </SignUpWrapper>
-          </Wrapper>
-        </DragItemWrapper>
-      )
-    case 'SpacerBlock':
-      return (
-        <DragItemWrapper block={block}>
-          <Wrapper block={block}>
-            <SpacerWrapper block={block}>
-              <DynamicSpacer {...block} />
-            </SpacerWrapper>
           </Wrapper>
         </DragItemWrapper>
       )
