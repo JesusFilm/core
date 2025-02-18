@@ -1,15 +1,11 @@
 import { ResultOf, graphql } from 'gql.tada'
-import { NextRequest } from 'next/server'
+import { Hono } from 'hono'
 
-import { getApolloClient } from '../../../../../../lib/apolloClient'
+import { getApolloClient } from '../../../../../../../lib/apolloClient'
 import {
   getWebEmbedPlayer,
   getWebEmbedSharePlayer
-} from '../../../../../../lib/stringsForArclight/webEmbedStrings'
-
-interface GetParams {
-  params: { mediaComponentId: string; languageId: string }
-}
+} from '../../../../../../../lib/stringsForArclight/webEmbedStrings'
 
 const GET_VIDEO_VARIANT = graphql(`
   query GetVideoWithVariant($id: ID!, $languageId: ID!) {
@@ -98,13 +94,12 @@ const GET_VIDEO_VARIANT = graphql(`
   }
 `)
 
-export async function GET(
-  req: NextRequest,
-  { params }: GetParams
-): Promise<Response> {
-  const { mediaComponentId, languageId } = params
-  const query = req.nextUrl.searchParams
-  const expand = query.get('expand') ?? ''
+export const mediaComponentLanguage = new Hono()
+
+mediaComponentLanguage.get('/', async (c) => {
+  const mediaComponentId = c.req.param('mediaComponentId')
+  const languageId = c.req.param('languageId')
+  const expand = c.req.query('expand') ?? ''
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_VIDEO_VARIANT>
@@ -116,15 +111,14 @@ export async function GET(
     }
   })
 
-  const apiKey = query.get('apiKey') ?? '616db012e9a951.51499299'
-  const platform = query.get('platform') ?? 'ios'
+  const apiKey = c.req.query('apiKey') ?? '616db012e9a951.51499299'
+  const platform = c.req.query('platform') ?? 'ios'
   // TODO: implement
   const apiSessionId = '6622f10d2260a8.05128925'
 
   const video = data.video
 
-  if (video == null || video.variant == null)
-    return new Response(null, { status: 404 })
+  if (video == null || video.variant == null) return c.notFound()
 
   const downloadLow = video.variant?.downloads?.find(
     (download) => download.quality === 'low'
@@ -324,5 +318,5 @@ export async function GET(
       })
   }
 
-  return new Response(JSON.stringify(response), { status: 200 })
-}
+  return c.json(response)
+})

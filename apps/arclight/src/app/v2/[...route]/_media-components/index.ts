@@ -1,9 +1,11 @@
 import { ResultOf, graphql } from 'gql.tada'
-import { NextRequest } from 'next/server'
+import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 
-import { getApolloClient } from '../../../lib/apolloClient'
-import { getLanguageIdsFromTags } from '../../../lib/getLanguageIdsFromTags'
-import { paramsToRecord } from '../../../lib/paramsToRecord'
+import { getApolloClient } from '../../../../lib/apolloClient'
+import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
+
+import { mediaComponent } from './[mediaComponentId]'
 
 const GET_VIDEOS_WITH_FALLBACK = graphql(`
   query GetVideosWithFallback(
@@ -107,32 +109,34 @@ const GET_VIDEOS_WITH_FALLBACK = graphql(`
 
 export const maxDuration = 60
 
-export async function GET(request: NextRequest): Promise<Response> {
-  const query = request.nextUrl.searchParams
+export const mediaComponents = new Hono()
+mediaComponents.route('/:mediaComponentId', mediaComponent)
 
-  const page = Number(query.get('page')) === 0 ? 1 : Number(query.get('page'))
+mediaComponents.get('/', async (c) => {
+  const page =
+    Number(c.req.query('page')) === 0 ? 1 : Number(c.req.query('page'))
   const limit =
-    Number(query.get('limit')) === 0 ? 10000 : Number(query.get('limit'))
+    Number(c.req.query('limit')) === 0 ? 10000 : Number(c.req.query('limit'))
   const offset = (page - 1) * limit
-  const expand = query.get('expand') ?? ''
+  const expand = c.req.query('expand') ?? ''
   const subTypes =
-    query.get('subTypes')?.split(',').filter(Boolean).length === 0
+    c.req.query('subTypes')?.split(',').filter(Boolean).length === 0
       ? undefined
-      : query.get('subTypes')?.split(',').filter(Boolean)
+      : c.req.query('subTypes')?.split(',').filter(Boolean)
   const languageIds =
-    query.get('languageIds')?.split(',').filter(Boolean).length === 0
+    c.req.query('languageIds')?.split(',').filter(Boolean).length === 0
       ? undefined
-      : query.get('languageIds')?.split(',').filter(Boolean)
+      : c.req.query('languageIds')?.split(',').filter(Boolean)
   const ids =
-    query.get('ids')?.split(',').filter(Boolean).length === 0
+    c.req.query('ids')?.split(',').filter(Boolean).length === 0
       ? undefined
-      : query.get('ids')?.split(',').filter(Boolean)
+      : c.req.query('ids')?.split(',').filter(Boolean)
   const metadataLanguageTags =
-    query.get('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
+    c.req.query('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
 
   const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
-  if (languageResult instanceof Response) {
-    return languageResult
+  if (languageResult instanceof HTTPException) {
+    throw languageResult
   }
 
   const { metadataLanguageId, fallbackLanguageId } = languageResult
@@ -154,8 +158,8 @@ export async function GET(request: NextRequest): Promise<Response> {
 
   const videos = data.videos
   const total = data.videosCount
-  const queryObject: Record<string, string> = {
-    ...paramsToRecord(query.entries()),
+  const queryObject = {
+    ...c.req.query(),
     page: page.toString(),
     limit: limit.toString()
   }
@@ -286,5 +290,5 @@ export async function GET(request: NextRequest): Promise<Response> {
       mediaComponents
     }
   }
-  return new Response(JSON.stringify(response), { status: 200 })
-}
+  return c.json(response)
+})

@@ -1,12 +1,13 @@
 import { ResultOf, graphql } from 'gql.tada'
-import { NextRequest } from 'next/server'
+import { Hono } from 'hono'
 
-import { getApolloClient } from '../../../../../lib/apolloClient'
-import { paramsToRecord } from '../../../../../lib/paramsToRecord'
+import { getApolloClient } from '../../../../../../lib/apolloClient'
 import {
   getWebEmbedPlayer,
   getWebEmbedSharePlayer
-} from '../../../../../lib/stringsForArclight/webEmbedStrings'
+} from '../../../../../../lib/stringsForArclight/webEmbedStrings'
+
+import { mediaComponentLanguage } from './[languageId]'
 
 const GET_VIDEO_LANGUAGES = graphql(`
   query GetVideoVariants($id: ID!) {
@@ -45,23 +46,18 @@ const GET_VIDEO_LANGUAGES = graphql(`
   }
 `)
 
-interface GetParams {
-  params: { mediaComponentId: string }
-}
-
 export const maxDuration = 60
 
-export async function GET(
-  request: NextRequest,
-  { params }: GetParams
-): Promise<Response> {
-  const { mediaComponentId } = params
-  const query = request.nextUrl.searchParams
+export const mediaComponentLanguages = new Hono()
+mediaComponentLanguages.route('/:languageId', mediaComponentLanguage)
 
-  const apiKey = query.get('apiKey') ?? '616db012e9a951.51499299'
-  const platform = query.get('platform') ?? 'ios'
-  const languageIds = query.get('languageIds')?.split(',') ?? []
-  const reduce = query.get('reduce') ?? ''
+mediaComponentLanguages.get('/', async (c) => {
+  const mediaComponentId = c.req.param('mediaComponentId')
+
+  const apiKey = c.req.query('apiKey') ?? '616db012e9a951.51499299'
+  const platform = c.req.query('platform') ?? 'ios'
+  const languageIds = c.req.query('languageIds')?.split(',') ?? []
+  const reduce = c.req.query('reduce') ?? ''
   const apiSessionId = '6622f10d2260a8.05128925'
 
   const { data } = await getApolloClient().query<
@@ -220,9 +216,7 @@ export async function GET(
             }
           })
 
-  const queryObject: Record<string, string> = {
-    ...paramsToRecord(query.entries())
-  }
+  const queryObject = c.req.query()
 
   const queryString = new URLSearchParams(queryObject).toString()
 
@@ -242,5 +236,5 @@ export async function GET(
       mediaComponentLanguage
     }
   }
-  return new Response(JSON.stringify(response), { status: 200 })
-}
+  return c.json(response)
+})
