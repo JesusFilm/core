@@ -28,7 +28,6 @@ taxonomies.get('/', async (c) => {
   const metadataLanguageTags = c.req
     .query('metadataLanguageTags')
     ?.split(',') ?? ['en']
-  const queryString = c.req.query().toString()
   const apiKey = c.req.query('apiKey') ?? ''
 
   const { data } = await getApolloClient().query<
@@ -88,7 +87,7 @@ taxonomies.get('/', async (c) => {
 
   const response = {
     _links: {
-      self: { href: `http://api.arclight.org/v2/taxonomies?${queryString}` }
+      self: { href: `http://api.arclight.org/v2/taxonomies?apiKey=${apiKey}` }
     },
     _embedded: { taxonomies: groupedTaxonomies }
   }
