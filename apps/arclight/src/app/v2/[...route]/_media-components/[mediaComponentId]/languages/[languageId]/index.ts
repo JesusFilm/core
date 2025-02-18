@@ -6,6 +6,7 @@ import {
   getWebEmbedPlayer,
   getWebEmbedSharePlayer
 } from '../../../../../../../lib/stringsForArclight/webEmbedStrings'
+import { linksSchema } from '../../../../links.schema'
 
 const GET_VIDEO_VARIANT = graphql(`
   query GetVideoWithVariant($id: ID!, $languageId: ID!) {
@@ -108,11 +109,50 @@ const ParamsSchema = z.object({
   languageId: z.string()
 })
 
+const SubtitleSchema = z.object({
+  languageId: z.number(),
+  languageName: z.string(),
+  languageTag: z.string(),
+  url: z.string()
+})
+
+const DownloadUrlSchema = z.object({
+  url: z.string(),
+  height: z.number(),
+  width: z.number(),
+  sizeInBytes: z.number()
+})
+
 const ResponseSchema = z.object({
   mediaComponentId: z.string(),
   languageId: z.string(),
   refId: z.string(),
-  apiSessionId: z.string()
+  apiSessionId: z.string(),
+  platform: z.string(),
+  lengthInMilliseconds: z.number(),
+  subtitleUrls: z.object({
+    vtt: z.array(SubtitleSchema),
+    srt: z.array(SubtitleSchema)
+  }),
+  downloadUrls: z.object({
+    low: DownloadUrlSchema,
+    high: DownloadUrlSchema
+  }),
+  streamingUrls: z.record(z.string(), z.string()),
+  shareUrl: z.string(),
+  socialMediaUrls: z.record(z.string(), z.string()),
+  _embedded: z.object({
+    contains: z.array(
+      z.object({
+        mediaComponentId: z.string(),
+        languageId: z.number(),
+        refId: z.string(),
+        apiSessionId: z.string(),
+        lengthInMilliseconds: z.number()
+      })
+    )
+  }),
+  _links: linksSchema
 })
 
 const route = createRoute({

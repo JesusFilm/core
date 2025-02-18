@@ -23,5 +23,15 @@ export const linksSchema = z.object({
     .object({
       href: z.string()
     })
+    .optional(),
+  mediaComponent: z
+    .object({
+      href: z.string()
+    })
+    .optional(),
+  mediaLanguage: z
+    .object({
+      href: z.string()
+    })
     .optional()
 })
