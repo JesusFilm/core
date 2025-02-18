@@ -120,11 +120,13 @@ export function VideoImageUpload({
             id
           }
         })
-        await deleteImage({
-          variables: {
-            id: video.images[0].id
-          }
-        })
+        if (video.images.length > 0) {
+          await deleteImage({
+            variables: {
+              id: video.images[0].id
+            }
+          })
+        }
         if (response.success) {
           cache.modify({
             id: cache.identify({ id: video.id, __typename: 'Video' }),
@@ -149,6 +151,7 @@ export function VideoImageUpload({
             id: cache.identify({ id: video.id, __typename: 'Video' }),
             fields: {
               images(refs, { readField }) {
+                if (video.images.length === 0) return refs
                 return refs.filter(
                   (ref) => video.images[0].id !== readField('id', ref)
                 )

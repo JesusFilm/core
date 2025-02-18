@@ -6,7 +6,6 @@ import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
-import { readFragment } from 'gql.tada'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, SyntheticEvent, useState } from 'react'
@@ -36,8 +35,6 @@ export function VideoView(): ReactElement {
   if (loading) {
     return <VideoViewLoading />
   }
-
-  console.log(data)
 
   if (data?.adminVideo == null) {
     return <VideoViewFallback />
