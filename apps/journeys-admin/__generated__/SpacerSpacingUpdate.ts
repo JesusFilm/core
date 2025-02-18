@@ -14,7 +14,7 @@ export interface SpacerSpacingUpdate_spacerBlockUpdate {
 }
 
 export interface SpacerSpacingUpdate {
-  spacerBlockUpdate: SpacerSpacingUpdate_spacerBlockUpdate | null;
+  spacerBlockUpdate: SpacerSpacingUpdate_spacerBlockUpdate;
 }
 
 export interface SpacerSpacingUpdateVariables {
