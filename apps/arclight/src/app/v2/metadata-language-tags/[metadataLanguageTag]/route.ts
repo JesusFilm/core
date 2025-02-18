@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 
+import { generateETag } from '../../../../lib/etag'
 import { languages } from '../languages'
 
 interface GetParams {
@@ -45,8 +46,14 @@ export async function GET(
     }
   ]
 
-  return new Response(JSON.stringify(response), {
+  const responseJson = JSON.stringify(response)
+  const etag = await generateETag(responseJson)
+
+  return new Response(responseJson, {
     status: 200,
-    headers: { 'Content-Type': 'application/json' }
+    headers: {
+      'Content-Type': 'application/json',
+      ETag: etag
+    }
   })
 }

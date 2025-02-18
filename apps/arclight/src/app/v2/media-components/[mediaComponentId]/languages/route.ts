@@ -2,6 +2,7 @@ import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
+import { generateETag } from '../../../../../lib/etag'
 import { paramsToRecord } from '../../../../../lib/paramsToRecord'
 import {
   getWebEmbedPlayer,
@@ -242,5 +243,15 @@ export async function GET(
       mediaComponentLanguage
     }
   }
-  return new Response(JSON.stringify(response), { status: 200 })
+
+  const responseJson = JSON.stringify(response)
+  const etag = await generateETag(responseJson)
+
+  return new Response(responseJson, {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      ETag: etag
+    }
+  })
 }

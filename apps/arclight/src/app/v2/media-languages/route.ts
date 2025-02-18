@@ -2,6 +2,7 @@ import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
 import { getApolloClient } from '../../../lib/apolloClient'
+import { generateETag } from '../../../lib/etag'
 import { getLanguageIdsFromTags } from '../../../lib/getLanguageIdsFromTags'
 import { paramsToRecord } from '../../../lib/paramsToRecord'
 
@@ -240,5 +241,14 @@ export async function GET(request: NextRequest): Promise<Response> {
     }
   }
 
-  return new Response(JSON.stringify(response), { status: 200 })
+  const responseJson = JSON.stringify(response)
+  const etag = await generateETag(responseJson)
+
+  return new Response(responseJson, {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      ETag: etag
+    }
+  })
 }

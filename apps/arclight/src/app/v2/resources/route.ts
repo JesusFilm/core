@@ -1,6 +1,8 @@
 import { SearchClient, algoliasearch } from 'algoliasearch'
 import { NextRequest } from 'next/server'
 
+import { generateETag } from '../../../lib/etag'
+
 type AlgoliaVideoHit = {
   mediaComponentId: string
   componentType: string
@@ -338,7 +340,16 @@ export async function GET(request: NextRequest): Promise<Response> {
       }
     }
 
-    return new Response(JSON.stringify(transformedResponse), { status: 200 })
+    const responseJson = JSON.stringify(transformedResponse)
+    const etag = await generateETag(responseJson)
+
+    return new Response(responseJson, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        ETag: etag
+      }
+    })
   } catch (error) {
     if (error && typeof error === 'object' && 'name' in error) {
       if (error.name === 'ApiError') {
