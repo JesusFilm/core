@@ -6,6 +6,7 @@ import {
   importBibleCitations,
   importKeywords,
   importLanguageSlugs,
+  importMasterUrls,
   importVideoChildren,
   importVideoDescriptions,
   importVideoImageAlts,
@@ -40,6 +41,7 @@ export async function service(logger?: Logger): Promise<void> {
     await importBibleCitations(logger),
     // depends on videoVariants
     await importVideoVariantDownloads(logger),
+    await importMasterUrls(logger),
     // run last since it can be slow initially
     await importVideoImages(logger)
   ]

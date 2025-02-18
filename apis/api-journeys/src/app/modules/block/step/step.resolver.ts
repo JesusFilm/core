@@ -131,6 +131,12 @@ export class StepBlockResolver {
         })
     })
     return await this.prismaService.$transaction(async (tx) => {
+      await tx.journey.update({
+        where: {
+          id: blocks[0].journeyId
+        },
+        data: { updatedAt: new Date().toISOString() }
+      })
       return await Promise.all(
         input.map(
           async (input) =>

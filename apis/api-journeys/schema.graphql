@@ -239,6 +239,8 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): SignUpBlock
+  spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock!
+  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!): SpacerBlock!
   stepBlockCreate(input: StepBlockCreateInput!): StepBlock!
   stepBlockUpdate(
     id: ID!
@@ -688,7 +690,7 @@ type GridContainerBlock implements Block {
   journeyId: ID!
   parentBlockId: ID
   parentOrder: Int
-  spacing: Int!
+  gap: Int!
   direction: GridDirection!
   justifyContent: GridJustifyContent!
   alignItems: GridAlignItems!
@@ -889,6 +891,26 @@ input SignUpBlockUpdateInput {
   parentBlockId: ID
   submitIconId: ID
   submitLabel: String
+}
+
+type SpacerBlock implements Block {
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  spacing: Int
+}
+
+input SpacerBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  spacing: Int
+}
+
+input SpacerBlockUpdateInput {
+  parentBlockId: ID
+  spacing: Int
 }
 
 type StepBlock implements Block {
