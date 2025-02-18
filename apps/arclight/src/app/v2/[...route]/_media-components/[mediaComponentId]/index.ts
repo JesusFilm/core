@@ -1,9 +1,11 @@
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
-import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
+import { linksSchema } from '../../links.schema'
+import { mediaComponentSchema } from '../../mediaComponent.schema'
 
 import { mediaComponentLanguages } from './languages'
 
@@ -83,10 +85,52 @@ const GET_VIDEO = graphql(`
   }
 `)
 
-export const mediaComponent = new Hono()
+export const mediaComponent = new OpenAPIHono()
 mediaComponent.route('/languages', mediaComponentLanguages)
 
-mediaComponent.get('/', async (c) => {
+const QuerySchema = z.object({
+  expand: z.string().optional(),
+  filter: z.string().optional(),
+  platform: z.string().optional(),
+  apiKey: z.string().optional()
+})
+
+const ParamsSchema = z.object({
+  mediaComponentId: z.string()
+})
+
+const ResponseSchema = z.object({
+  ...mediaComponentSchema.shape,
+  _links: linksSchema
+})
+
+const route = createRoute({
+  method: 'get',
+  path: '/',
+  request: { query: QuerySchema, params: ParamsSchema },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: ResponseSchema
+        }
+      },
+      description: 'media component'
+    },
+    404: {
+      content: {
+        'application/json': {
+          schema: z.object({
+            message: z.string()
+          })
+        }
+      },
+      description: 'media component not found'
+    }
+  }
+})
+
+mediaComponent.openapi(route, async (c) => {
   const mediaComponentId = c.req.param('mediaComponentId')
   const expand = c.req.query('expand') ?? ''
   const filter = c.req.query('filter') ?? ''

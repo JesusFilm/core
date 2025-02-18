@@ -1,5 +1,5 @@
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
-import { Hono } from 'hono'
 
 import { getApolloClient } from '../../../../../../../lib/apolloClient'
 import {
@@ -94,9 +94,47 @@ const GET_VIDEO_VARIANT = graphql(`
   }
 `)
 
-export const mediaComponentLanguage = new Hono()
+export const mediaComponentLanguage = new OpenAPIHono()
 
-mediaComponentLanguage.get('/', async (c) => {
+const QuerySchema = z.object({
+  apiKey: z.string(),
+  platform: z.string(),
+  languageIds: z.string(),
+  reduce: z.string()
+})
+
+const ParamsSchema = z.object({
+  mediaComponentId: z.string(),
+  languageId: z.string()
+})
+
+const ResponseSchema = z.object({
+  mediaComponentId: z.string(),
+  languageId: z.string(),
+  refId: z.string(),
+  apiSessionId: z.string()
+})
+
+const route = createRoute({
+  method: 'get',
+  path: '/',
+  request: {
+    query: QuerySchema,
+    params: ParamsSchema
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: ResponseSchema
+        }
+      },
+      description: 'media component language'
+    }
+  }
+})
+
+mediaComponentLanguage.openapi(route, async (c) => {
   const mediaComponentId = c.req.param('mediaComponentId')
   const languageId = c.req.param('languageId')
   const expand = c.req.query('expand') ?? ''

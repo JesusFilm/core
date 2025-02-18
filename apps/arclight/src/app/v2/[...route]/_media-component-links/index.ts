@@ -1,9 +1,10 @@
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
-import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
 import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
+import { linksSchema } from '../links.schema'
 
 import { mediaComponentLinksWithId } from './[mediaComponentId]'
 
@@ -32,10 +33,48 @@ const GET_VIDEOS_CHILDREN = graphql(`
   }
 `)
 
-export const mediaComponentLinks = new Hono()
+const QuerySchema = z.object({
+  ids: z.string().optional(),
+  metadataLanguageTags: z.string().optional()
+})
+
+const ResponseSchema = z.object({
+  _links: linksSchema,
+  _embedded: z.object({
+    mediaComponentsLinks: z.array(
+      z.object({
+        mediaComponentId: z.string(),
+        linkedMediaComponentIds: z.object({
+          contains: z.array(z.string()).optional(),
+          containedBy: z.array(z.string()).optional()
+        })
+      })
+    )
+  })
+})
+
+export const mediaComponentLinks = new OpenAPIHono()
 mediaComponentLinks.route('/:mediaComponentId', mediaComponentLinksWithId)
 
-mediaComponentLinks.get('/', async (c) => {
+const route = createRoute({
+  method: 'get',
+  path: '/',
+  request: {
+    query: QuerySchema
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: ResponseSchema
+        }
+      },
+      description: 'media component links'
+    }
+  }
+})
+
+mediaComponentLinks.openapi(route, async (c) => {
   const ids = c.req.query('ids')?.split(',').filter(Boolean) ?? undefined
   const metadataLanguageTags =
     c.req.query('metadataLanguageTags')?.split(',') ?? []
