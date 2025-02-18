@@ -117,7 +117,7 @@ describe('Video', () => {
       .getByTestId('JourneysVideo-video0.id')
       .querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toBe(
-      'https://www.youtube.com/embed/videoId?start=10&end=0'
+      'https://www.youtube.com/embed/videoId?start=10&end=10000'
     )
     expect(sourceTag?.getAttribute('type')).toBe('video/youtube')
   })
