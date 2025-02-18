@@ -1,9 +1,11 @@
 import { ResultOf, graphql } from 'gql.tada'
-import { NextRequest } from 'next/server'
+import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 
-import { paramsToRecord } from '../../../../../lib/paramsToRecord'
 import { getApolloClient } from '../../../../lib/apolloClient'
 import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
+
+import { mediaComponentLinksWithId } from './[mediaComponentId]'
 
 const GET_VIDEOS_CHILDREN = graphql(`
   query GetVideosChildren(
@@ -30,18 +32,18 @@ const GET_VIDEOS_CHILDREN = graphql(`
   }
 `)
 
-export const mediaComponentLinks = function GET(request: NextRequest): Promise<Response> {
-  const query = request.nextUrl.searchParams
-  const ids = query.get('ids')?.split(',').filter(Boolean) ?? undefined
+export const mediaComponentLinks = new Hono()
+mediaComponentLinks.route('/:mediaComponentId', mediaComponentLinksWithId)
+
+mediaComponentLinks.get('/', async (c) => {
+  const ids = c.req.query('ids')?.split(',').filter(Boolean) ?? undefined
   const metadataLanguageTags =
-    query.get('metadataLanguageTags')?.split(',') ?? []
-  const queryObject: Record<string, string> = {
-    ...paramsToRecord(query.entries())
-  }
+    c.req.query('metadataLanguageTags')?.split(',') ?? []
+  const queryObject = c.req.query()
 
   const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
-  if (languageResult instanceof Response) {
-    return languageResult
+  if (languageResult instanceof HTTPException) {
+    throw languageResult
   }
 
   const { metadataLanguageId, fallbackLanguageId } = languageResult
@@ -87,5 +89,5 @@ export const mediaComponentLinks = function GET(request: NextRequest): Promise<R
       mediaComponentsLinks
     }
   }
-  return new Response(JSON.stringify(response), { status: 200 })
-}
+  return c.json(response)
+})

@@ -1,12 +1,7 @@
 import { ResultOf, graphql } from 'gql.tada'
-import { NextRequest } from 'next/server'
+import { Hono } from 'hono'
 
-import { getApolloClient } from '../../../../lib/apolloClient'
-import { paramsToRecord } from '../../../../lib/paramsToRecord'
-
-interface GetParams {
-  params: { mediaComponentId: string }
-}
+import { getApolloClient } from '../../../../../lib/apolloClient'
 
 const GET_VIDEO_CHILDREN = graphql(`
   query GetVideoChildren($id: ID!) {
@@ -135,15 +130,14 @@ const GET_VIDEO_CHILDREN = graphql(`
   }
 `)
 
-export async function GET(
-  req: NextRequest,
-  { params }: GetParams
-): Promise<Response> {
-  const { mediaComponentId } = params
-  const query = req.nextUrl.searchParams
-  const expand = query.get('expand') ?? ''
-  const rel = query.get('rel') ?? ''
-  const languageIds = query.get('languageIds')?.split(',').filter(Boolean) ?? []
+export const mediaComponentLinksWithId = new Hono()
+
+mediaComponentLinksWithId.get('/', async (c) => {
+  const mediaComponentId = c.req.param('mediaComponentId')
+  const expand = c.req.query('expand') ?? ''
+  const rel = c.req.query('rel') ?? ''
+  const languageIds =
+    c.req.query('languageIds')?.split(',').filter(Boolean) ?? []
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_VIDEO_CHILDREN>
@@ -157,12 +151,12 @@ export async function GET(
   const video = data.video
 
   if (video == null)
-    return new Response(
-      JSON.stringify({
+    return c.json(
+      {
         message: `${mediaComponentId}:\n  Media-component ID(s) '${mediaComponentId}' not allowed.\n${mediaComponentId}:\n    Media-component ID(s) '${mediaComponentId}' not found.\n`,
         logref: 404
-      }),
-      { status: 404 }
+      },
+      404
     )
 
   const linkedMediaComponentIds = {
@@ -194,9 +188,7 @@ export async function GET(
       : {})
   }
 
-  const queryObject: Record<string, string> = {
-    ...paramsToRecord(query.entries())
-  }
+  const queryObject = c.req.query()
 
   const queryString = new URLSearchParams(queryObject).toString()
 
@@ -378,5 +370,5 @@ export async function GET(
         }
       : {})
   }
-  return new Response(JSON.stringify(response), { status: 200 })
-}
+  return c.json(response)
+})

@@ -1,21 +1,14 @@
 import { Hono } from 'hono'
+import { etag } from 'hono/etag'
 import { handle } from 'hono/vercel'
+
+import { mediaComponentLinks } from './_media-component-links'
 
 export const dynamic = 'force-dynamic'
 
 const app = new Hono().basePath('/v2')
+app.use(etag())
 
-app.get('/media-component-links', (c) => {
-  return c.json({
-    message: 'Hello from Hono on Vercel!'
-  })
-})
-
-app.get('/:wild', (c) => {
-  const wild = c.req.param('wild')
-  return c.json({
-    message: `Hello from Hono on Vercel! You're now on /api/${wild}!`
-  })
-})
+app.route('/media-component-links', mediaComponentLinks)
 
 export const GET = handle(app)

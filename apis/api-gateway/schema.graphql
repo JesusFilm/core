@@ -4272,6 +4272,7 @@ input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {
   slug: String!
   downloadable: Boolean!
   published: Boolean = true
+  muxVideoId: String
 }
 
 input VideoVariantDownloadCreateInput @join__type(graph: API_MEDIA)  {
@@ -4311,6 +4312,7 @@ input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
   slug: String
   downloadable: Boolean
   published: Boolean
+  muxVideoId: String
 }
 
 input VideosFilter @join__type(graph: API_MEDIA)  {
