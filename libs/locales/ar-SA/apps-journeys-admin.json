@@ -465,7 +465,7 @@
   "Copy Short Link": "نسخ الرابط المختصر",
   "Failed to create QR Code": "فشل إنشاء رمز الاستجابة السريعة",
   "QR Code": "رمز الاستجابة السريعة",
-  "Here is the unique QR code for your Journey. For the moment, please avoid changing the Journey URL after generating the QR code": "إليك رمز الاستجابة السريعة الفريد لرحلتك. في الوقت الحالي، يرجى تجنب تغيير عنوان URL للرحلة بعد إنشاء رمز الاستجابة السريعة",
+  "Here is the unique QR code for your Journey. You can change the Journey URL without needing to re-generate the QR code": "Here is the unique QR code for your Journey. You can change the Journey URL without needing to re-generate the QR code",
   "1 scan": "1 المسح الضوئي",
   "{{scans}} scans": "{{scans}} المسح الضوئي",
   "scan count loading": "تحميل عدد المسح الضوئي",
