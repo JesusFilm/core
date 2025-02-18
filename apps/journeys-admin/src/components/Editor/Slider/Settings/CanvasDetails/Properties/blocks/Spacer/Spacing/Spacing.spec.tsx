@@ -127,7 +127,7 @@ describe('Spacing', () => {
     expect(setValue).toHaveBeenCalledWith(100)
   })
 
-  it('should redo the undone spaci change', async () => {
+  it('should redo the undone spacing change', async () => {
     const mockFirstUpdate = {
       ...spacingUpdateMock,
       maxUsageCount: 2
