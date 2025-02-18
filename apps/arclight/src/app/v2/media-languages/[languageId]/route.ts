@@ -46,9 +46,11 @@ const GET_LANGUAGE = graphql(`
         primary
         suggested
       }
-      seriesCount
-      featureFilmCount
-      shortFilmCount
+      labeledVideoCounts {
+        seriesCount
+        featureFilmCount
+        shortFilmCount
+      }
     }
   }
 `)
@@ -131,21 +133,21 @@ export async function GET(
           .length,
         description: 'Number of countries'
       },
-      ...(language.seriesCount > 0 && {
+      ...(language.labeledVideoCounts.seriesCount > 0 && {
         series: {
-          value: language.seriesCount,
+          value: language.labeledVideoCounts.seriesCount,
           description: 'Series'
         }
       }),
-      ...(language.featureFilmCount > 0 && {
+      ...(language.labeledVideoCounts.featureFilmCount > 0 && {
         featureFilm: {
-          value: language.featureFilmCount,
+          value: language.labeledVideoCounts.featureFilmCount,
           description: 'Feature Film'
         }
       }),
-      ...(language.shortFilmCount > 0 && {
+      ...(language.labeledVideoCounts.shortFilmCount > 0 && {
         shortFilm: {
-          value: language.shortFilmCount,
+          value: language.labeledVideoCounts.shortFilmCount,
           description: 'Short Film'
         }
       })
