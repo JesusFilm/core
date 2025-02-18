@@ -6,6 +6,23 @@ export const Language = builder.externalRef(
   builder.selection<{ id: string }>('id')
 )
 
+interface LabeledVideoCountsType {
+  seriesCount: number
+  featureFilmCount: number
+  shortFilmCount: number
+}
+
+const LabeledVideoCounts =
+  builder.objectRef<LabeledVideoCountsType>('LabeledVideoCounts')
+
+LabeledVideoCounts.implement({
+  fields: (t) => ({
+    seriesCount: t.exposeInt('seriesCount', { nullable: false }),
+    featureFilmCount: t.exposeInt('featureFilmCount', { nullable: false }),
+    shortFilmCount: t.exposeInt('shortFilmCount', { nullable: false })
+  })
+})
+
 Language.implement({
   externalFields: (t) => ({ id: t.id({ nullable: false }) }),
   fields: (t) => ({
@@ -46,6 +63,53 @@ Language.implement({
             }
           }
         })
+      }
+    }),
+    labeledVideoCounts: t.field({
+      type: LabeledVideoCounts,
+      nullable: false,
+      resolve: async (parent) => {
+        const variants = await prisma.videoVariant.findMany({
+          where: {
+            languageId: parent.id,
+            video: {
+              label: {
+                in: ['series', 'featureFilm', 'shortFilm']
+              }
+            }
+          },
+          select: {
+            video: {
+              select: {
+                label: true
+              }
+            }
+          }
+        })
+
+        const counts: LabeledVideoCountsType = {
+          seriesCount: 0,
+          featureFilmCount: 0,
+          shortFilmCount: 0
+        }
+
+        variants.forEach((variant) => {
+          if (variant.video?.label) {
+            switch (variant.video.label) {
+              case 'series':
+                counts.seriesCount++
+                break
+              case 'featureFilm':
+                counts.featureFilmCount++
+                break
+              case 'shortFilm':
+                counts.shortFilmCount++
+                break
+            }
+          }
+        })
+
+        return counts
       }
     })
   })
