@@ -176,6 +176,13 @@ export async function GET(request: NextRequest): Promise<Response> {
 
   const responseJson = JSON.stringify(response)
   const etag = await generateETag(responseJson)
++  const ifNoneMatch = request.headers.get('If-None-Match')
++  if (ifNoneMatch === etag) {
++    return new Response(null, {
++      status: 304,
++      headers: { ETag: etag }
++    })
++  }
 
   return new Response(responseJson, {
     status: 200,
