@@ -1,5 +1,5 @@
 import { SearchClient, algoliasearch } from 'algoliasearch'
-import { NextRequest } from 'next/server'
+import { Hono } from 'hono'
 
 type AlgoliaVideoHit = {
   mediaComponentId: string
@@ -195,22 +195,23 @@ async function searchAlgoliaCountries(
   return response.hits ?? []
 }
 
-export async function GET(request: NextRequest): Promise<Response> {
-  const query = request.nextUrl.searchParams
-  const apiKey = query.get('apiKey') ?? ''
-  const term = query.get('term') ?? ''
-  const bulk = query.get('bulk') ?? 'false'
+export const resources = new Hono()
+
+resources.get('/', async (c) => {
+  const apiKey = c.req.query('apiKey') ?? ''
+  const term = c.req.query('term') ?? ''
+  const bulk = c.req.query('bulk') ?? 'false'
   const metadataLanguageTags =
-    query.get('metadataLanguageTags')?.split(',') ?? []
+    c.req.query('metadataLanguageTags')?.split(',') ?? []
 
   if (term === '') {
-    return new Response(
-      JSON.stringify({
+    return c.json(
+      {
         message:
           'Parameter "term" of value "" violated a constraint. This value should not be empty.',
         logref: 400
-      }),
-      { status: 400 }
+      },
+      400
     )
   }
 
@@ -338,17 +339,17 @@ export async function GET(request: NextRequest): Promise<Response> {
       }
     }
 
-    return new Response(JSON.stringify(transformedResponse), { status: 200 })
+    return c.json(transformedResponse, 200)
   } catch (error) {
     if (error && typeof error === 'object' && 'name' in error) {
       if (error.name === 'ApiError') {
         console.error('Algolia API Error:', error)
-        return new Response(
-          JSON.stringify({
+        return c.json(
+          {
             message: `Algolia API Error: ${(error as { message?: string }).message ?? 'Unknown error'}`,
             logref: 403
-          }),
-          { status: 403 }
+          },
+          403
         )
       }
     }
@@ -358,12 +359,12 @@ export async function GET(request: NextRequest): Promise<Response> {
 
     console.error('Resources API Error:', error)
 
-    return new Response(
-      JSON.stringify({
+    return c.json(
+      {
         message: `Internal server error: ${errorMessage}`,
         logref: 500
-      }),
-      { status: 500 }
+      },
+      500
     )
   }
-}
+})
