@@ -1,9 +1,11 @@
 import { ResultOf, graphql } from 'gql.tada'
-import { NextRequest } from 'next/server'
+import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 
-import { getApolloClient } from '../../../lib/apolloClient'
-import { getLanguageIdsFromTags } from '../../../lib/getLanguageIdsFromTags'
-import { paramsToRecord } from '../../../lib/paramsToRecord'
+import { getApolloClient } from '../../../../lib/apolloClient'
+import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
+
+import { mediaLanguage } from './[languageId]'
 
 const GET_LANGUAGES = graphql(`
   query GetLanguagesWithTags(
@@ -68,23 +70,24 @@ const GET_LANGUAGES = graphql(`
 
 export const maxDuration = 60
 
-export async function GET(request: NextRequest): Promise<Response> {
-  const query = request.nextUrl.searchParams
+export const mediaLanguages = new Hono()
+mediaLanguages.route('/:languageId', mediaLanguage)
 
-  const apiKey = query.get('apiKey')
-  const page = Number(query.get('page') ?? 1)
-  const limit = Number(query.get('limit') ?? 10)
+mediaLanguages.get('/', async (c) => {
+  const apiKey = c.req.query('apiKey')
+  const page = Number(c.req.query('page') ?? 1)
+  const limit = Number(c.req.query('limit') ?? 10)
   const offset = (page - 1) * limit
-  const bcp47 = query.get('bcp47')?.split(',')
-  const ids = query.get('ids')?.split(',')
-  const iso3 = query.get('iso3')?.split(',')
+  const bcp47 = c.req.query('bcp47')?.split(',')
+  const ids = c.req.query('ids')?.split(',')
+  const iso3 = c.req.query('iso3')?.split(',')
   const metadataLanguageTags =
-    query.get('metadataLanguageTags')?.split(',') ?? []
-  const term = query.get('term')
+    c.req.query('metadataLanguageTags')?.split(',') ?? []
+  const term = c.req.query('term')
 
   const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
-  if (languageResult instanceof Response) {
-    return languageResult
+  if (languageResult instanceof HTTPException) {
+    throw languageResult
   }
 
   const { metadataLanguageId, fallbackLanguageId } = languageResult
@@ -106,8 +109,8 @@ export async function GET(request: NextRequest): Promise<Response> {
   })
   const languages = data.languages
 
-  const queryObject: Record<string, string> = {
-    ...paramsToRecord(query.entries()),
+  const queryObject = {
+    ...c.req.query(),
     page: page.toString(),
     limit: limit.toString()
   }
@@ -240,5 +243,5 @@ export async function GET(request: NextRequest): Promise<Response> {
     }
   }
 
-  return new Response(JSON.stringify(response), { status: 200 })
-}
+  return c.json(response)
+})

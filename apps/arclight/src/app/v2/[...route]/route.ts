@@ -6,6 +6,7 @@ import { mediaComponentLinks } from './_media-component-links'
 import { mediaComponents } from './_media-components'
 import { mediaCountries } from './_media-countries'
 import { mediaCountryLinks } from './_media-country-links'
+import { mediaLanguages } from './_media-languages'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,5 +17,6 @@ app.route('/media-component-links', mediaComponentLinks)
 app.route('/media-components', mediaComponents)
 app.route('/media-countries', mediaCountries)
 app.route('/media-country-links', mediaCountryLinks)
+app.route('/media-languages', mediaLanguages)
 
 export const GET = handle(app)

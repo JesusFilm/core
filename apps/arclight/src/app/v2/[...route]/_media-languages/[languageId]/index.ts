@@ -1,9 +1,9 @@
 import { ResultOf, graphql } from 'gql.tada'
-import { NextRequest } from 'next/server'
+import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 
-import { getApolloClient } from '../../../../lib/apolloClient'
-import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
-import { paramsToRecord } from '../../../../lib/paramsToRecord'
+import { getApolloClient } from '../../../../../lib/apolloClient'
+import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
 
 const GET_LANGUAGE = graphql(`
   query GetLanguage(
@@ -52,22 +52,16 @@ const GET_LANGUAGE = graphql(`
   }
 `)
 
-interface GetParams {
-  params: { languageId: string }
-}
+export const mediaLanguage = new Hono()
 
-export async function GET(
-  request: NextRequest,
-  { params }: GetParams
-): Promise<Response> {
-  const query = request.nextUrl.searchParams
-  const { languageId } = params
+mediaLanguage.get('/', async (c) => {
+  const languageId = c.req.param('languageId')
   const metadataLanguageTags =
-    query.get('metadataLanguageTags')?.split(',') ?? []
+    c.req.query('metadataLanguageTags')?.split(',') ?? []
 
   const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
-  if (languageResult instanceof Response) {
-    return languageResult
+  if (languageResult instanceof HTTPException) {
+    throw languageResult
   }
 
   const { metadataLanguageId, fallbackLanguageId } = languageResult
@@ -84,17 +78,15 @@ export async function GET(
   )
   const language = data.language
 
-  const queryObject: Record<string, string> = {
-    ...paramsToRecord(query.entries())
-  }
+  const queryObject = c.req.query()
 
   if (language == null)
-    return new Response(
-      JSON.stringify({
+    return c.json(
+      {
         message: `${languageId}:\n  The requested language ID '${languageId}'not found.\n`,
         logref: 404
-      }),
-      { status: 404 }
+      },
+      404
     )
 
   if (
@@ -102,14 +94,14 @@ export async function GET(
     language.name[0]?.value == null &&
     language.fallbackName[0]?.value == null
   ) {
-    return new Response(
-      JSON.stringify({
+    return c.json(
+      {
         message: `Unable to generate metadata for media language [${languageId}] acceptable according to metadata language(s) [${metadataLanguageTags.join(
           ','
         )}]`,
         logref: 406
-      }),
-      { status: 400 }
+      },
+      400
     )
   }
   const queryString = new URLSearchParams(queryObject).toString()
@@ -173,5 +165,5 @@ export async function GET(
     }
   }
 
-  return new Response(JSON.stringify(response), { status: 200 })
-}
+  return c.json(response)
+})
