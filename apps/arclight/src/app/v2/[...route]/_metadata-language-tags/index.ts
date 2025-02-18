@@ -1,12 +1,10 @@
-import { NextRequest } from 'next/server'
-
-import { paramsToRecord } from '../../../lib/paramsToRecord'
+import { Hono } from 'hono'
 
 import { languages } from './languages'
 
-export async function GET(req: NextRequest): Promise<Response> {
-  const query = req.nextUrl.searchParams
-  const apiKey = query.get('apiKey') ?? ''
+export const metadataLanguageTags = new Hono()
+metadataLanguageTags.get('/', async (c) => {
+  const apiKey = c.req.query('apiKey') ?? ''
 
   const languagesList = languages
     .map((language) => ({
@@ -24,15 +22,10 @@ export async function GET(req: NextRequest): Promise<Response> {
     }))
     .sort((a, b) => a.tag.localeCompare(b.tag))
 
-  const queryObject: Record<string, string> = {
-    ...paramsToRecord(query.entries())
-  }
-
-  const queryString = new URLSearchParams(queryObject).toString()
   const response = {
     _links: {
       self: {
-        href: `http://api.arclight.org/v2/media-languages/${queryString}`
+        href: `http://api.arclight.org/v2/metadata-language-tags?apiKey=${apiKey}`
       }
     },
     _embedded: {
@@ -40,8 +33,5 @@ export async function GET(req: NextRequest): Promise<Response> {
     }
   }
 
-  return new Response(JSON.stringify(response), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' }
-  })
-}
+  return c.json(response)
+})
