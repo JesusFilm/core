@@ -1110,6 +1110,13 @@ export type Keyword = {
   value: Scalars['String']['output'];
 };
 
+export type LabeledVideoCounts = {
+  __typename?: 'LabeledVideoCounts';
+  featureFilmCount: Scalars['Int']['output'];
+  seriesCount: Scalars['Int']['output'];
+  shortFilmCount: Scalars['Int']['output'];
+};
+
 export type Language = {
   __typename?: 'Language';
   audioPreview?: Maybe<AudioPreview>;
@@ -1118,6 +1125,7 @@ export type Language = {
   featureFilmCount: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
+  labeledVideoCounts: LabeledVideoCounts;
   name: Array<LanguageName>;
   seriesCount: Scalars['Int']['output'];
   shortFilmCount: Scalars['Int']['output'];
