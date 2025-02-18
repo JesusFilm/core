@@ -1329,7 +1329,7 @@ export type Mutation = {
   signUpSubmissionEventCreate: SignUpSubmissionEvent;
   siteCreate: MutationSiteCreateResult;
   spacerBlockCreate: SpacerBlock;
-  spacerBlockUpdate?: Maybe<SpacerBlock>;
+  spacerBlockUpdate: SpacerBlock;
   stepBlockCreate: StepBlock;
   stepBlockPositionUpdate: Array<StepBlock>;
   stepBlockUpdate: StepBlock;
