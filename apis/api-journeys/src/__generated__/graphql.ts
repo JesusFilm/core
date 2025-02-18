@@ -1328,6 +1328,8 @@ export type Mutation = {
   signUpBlockUpdate?: Maybe<SignUpBlock>;
   signUpSubmissionEventCreate: SignUpSubmissionEvent;
   siteCreate: MutationSiteCreateResult;
+  spacerBlockCreate: SpacerBlock;
+  spacerBlockUpdate: SpacerBlock;
   stepBlockCreate: StepBlock;
   stepBlockPositionUpdate: Array<StepBlock>;
   stepBlockUpdate: StepBlock;
@@ -1847,6 +1849,17 @@ export type MutationSignUpSubmissionEventCreateArgs = {
 
 export type MutationSiteCreateArgs = {
   input: SiteCreateInput;
+};
+
+
+export type MutationSpacerBlockCreateArgs = {
+  input: SpacerBlockCreateInput;
+};
+
+
+export type MutationSpacerBlockUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: SpacerBlockUpdateInput;
 };
 
 
@@ -3309,6 +3322,27 @@ export type SiteSharedLink = {
   __typename?: 'SiteSharedLink';
   id: Scalars['String']['output'];
   slug: Scalars['String']['output'];
+};
+
+export type SpacerBlock = Block & {
+  __typename?: 'SpacerBlock';
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  parentBlockId?: Maybe<Scalars['ID']['output']>;
+  parentOrder?: Maybe<Scalars['Int']['output']>;
+  spacing?: Maybe<Scalars['Int']['output']>;
+};
+
+export type SpacerBlockCreateInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  journeyId: Scalars['ID']['input'];
+  parentBlockId: Scalars['ID']['input'];
+  spacing?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type SpacerBlockUpdateInput = {
+  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  spacing?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type StepBlock = Block & {
