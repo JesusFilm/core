@@ -1,9 +1,10 @@
 import { ResultOf, graphql } from 'gql.tada'
+import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 import { NextRequest } from 'next/server'
 
-import { getApolloClient } from '../../../../lib/apolloClient'
-import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
-import { paramsToRecord } from '../../../../lib/paramsToRecord'
+import { getApolloClient } from '../../../../../lib/apolloClient'
+import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
 
 interface MediaCountryResponse {
   countryId: string
@@ -104,19 +105,17 @@ interface GetParams {
   params: { countryId: string }
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: GetParams
-): Promise<Response> {
-  const query = request.nextUrl.searchParams
-  const { countryId } = params
-  const expand = query.get('expand')
+export const mediaCountry = new Hono()
+
+mediaCountry.get('/', async (c) => {
+  const countryId = c.req.param('countryId') as string
+  const expand = c.req.query('expand')
   const metadataLanguageTags =
-    query.get('metadataLanguageTags')?.split(',') ?? []
+    c.req.query('metadataLanguageTags')?.split(',') ?? []
 
   const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
-  if (languageResult instanceof Response) {
-    return languageResult
+  if (languageResult instanceof HTTPException) {
+    throw languageResult
   }
 
   const { metadataLanguageId, fallbackLanguageId } = languageResult
@@ -132,12 +131,12 @@ export async function GET(
   const country = data.country
 
   if (country == null) {
-    return new Response(
-      JSON.stringify({
+    return c.json(
+      {
         message: `${countryId}:\n  The requested country ID '${countryId}' not found.\n`,
         logref: 404
-      }),
-      { status: 404 }
+      },
+      404
     )
   }
 
@@ -157,9 +156,7 @@ export async function GET(
     )
   }
 
-  const queryObject: Record<string, string> = {
-    ...paramsToRecord(query.entries())
-  }
+  const queryObject = c.req.query()
 
   const queryString = new URLSearchParams(queryObject).toString()
 
@@ -228,5 +225,5 @@ export async function GET(
     }
   }
 
-  return new Response(JSON.stringify(response), { status: 200 })
-}
+  return c.json(response)
+})

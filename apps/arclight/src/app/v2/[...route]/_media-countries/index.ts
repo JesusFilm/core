@@ -1,9 +1,11 @@
 import { ResultOf, graphql } from 'gql.tada'
-import { NextRequest } from 'next/server'
+import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 
-import { getApolloClient } from '../../../lib/apolloClient'
-import { getLanguageIdsFromTags } from '../../../lib/getLanguageIdsFromTags'
-import { paramsToRecord } from '../../../lib/paramsToRecord'
+import { getApolloClient } from '../../../../lib/apolloClient'
+import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
+
+import { mediaCountry } from './[countryId]'
 
 const GET_COUNTRIES = graphql(`
   query Country(
@@ -43,21 +45,22 @@ const GET_COUNTRIES = graphql(`
   }
 `)
 
-export async function GET(request: NextRequest): Promise<Response> {
-  const query = request.nextUrl.searchParams
+export const mediaCountries = new Hono()
+mediaCountries.route('/:countryId', mediaCountry)
 
-  const page = Number(query.get('page') ?? 1)
-  const limit = Number(query.get('limit') ?? 10)
-  const idsParam = query.get('ids')
+mediaCountries.get('/', async (c) => {
+  const page = Number(c.req.query('page') ?? 1)
+  const limit = Number(c.req.query('limit') ?? 10)
+  const idsParam = c.req.query('ids')
   const ids = idsParam ? idsParam.split(',') : undefined
-  const expand = query.get('expand')
+  const expand = c.req.query('expand')
   const offset = (page - 1) * limit
   const metadataLanguageTags =
-    query.get('metadataLanguageTags')?.split(',') ?? []
+    c.req.query('metadataLanguageTags')?.split(',') ?? []
 
   const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
-  if (languageResult instanceof Response) {
-    return languageResult
+  if (languageResult instanceof HTTPException) {
+    throw languageResult
   }
 
   const { metadataLanguageId, fallbackLanguageId } = languageResult
@@ -73,8 +76,8 @@ export async function GET(request: NextRequest): Promise<Response> {
     }
   })
 
-  const queryObject: Record<string, string> = {
-    ...paramsToRecord(query.entries()),
+  const queryObject = {
+    ...c.req.query(),
     page: page.toString(),
     limit: limit.toString()
   }
@@ -173,5 +176,5 @@ export async function GET(request: NextRequest): Promise<Response> {
     }
   }
 
-  return new Response(JSON.stringify(response), { status: 200 })
-}
+  return c.json(response)
+})

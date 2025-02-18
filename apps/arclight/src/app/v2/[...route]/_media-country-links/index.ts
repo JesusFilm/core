@@ -1,8 +1,7 @@
 import { ResultOf, graphql } from 'gql.tada'
-import { NextRequest } from 'next/server'
+import { Hono } from 'hono'
 
-import { getApolloClient } from '../../../lib/apolloClient'
-import { paramsToRecord } from '../../../lib/paramsToRecord'
+import { getApolloClient } from '../../../../lib/apolloClient'
 
 const GET_COUNTRIES_LANGUAGES = graphql(`
   query GetCountriesLanguages {
@@ -23,11 +22,11 @@ const GET_COUNTRIES_LANGUAGES = graphql(`
   }
 `)
 
-export async function GET(request: NextRequest): Promise<Response> {
-  const query = request.nextUrl.searchParams
-  const queryObject: Record<string, string> = {
-    ...paramsToRecord(query.entries())
-  }
+export const mediaCountryLinks = new Hono()
+
+mediaCountryLinks.get('/', async (c) => {
+  const queryObject = c.req.query()
+
   const ids = queryObject.ids?.split(',') ?? []
 
   const { data } = await getApolloClient().query<
@@ -78,5 +77,5 @@ export async function GET(request: NextRequest): Promise<Response> {
       mediaCountriesLinks
     }
   }
-  return new Response(JSON.stringify(response), { status: 200 })
-}
+  return c.json(response)
+})
