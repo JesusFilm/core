@@ -4,7 +4,7 @@ import { NextRequest } from 'next/server'
 import { getApolloClient } from '../../../../lib/apolloClient'
 import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
 import { paramsToRecord } from '../../../../lib/paramsToRecord'
-import { generateETag } from '../../../lib/etag'
+import { generateETag } from '../../../../lib/etag'
 
 interface MediaCountryResponse {
   countryId: string
