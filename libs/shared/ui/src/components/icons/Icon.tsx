@@ -56,7 +56,6 @@ import CopyLeft from './CopyLeft'
 import CopyRight from './CopyRight'
 import CopyTo from './CopyTo'
 import Crop1 from './Crop1'
-import Crop169 from './Crop169'
 import Cursor4 from './Cursor4'
 import Cursor6 from './Cursor6'
 import CursorPointer from './CursorPointer'
@@ -270,7 +269,6 @@ export type IconName =
   | 'CopyRight'
   | 'CopyTo'
   | 'Crop1'
-  | 'Crop169'
   | 'Cursor4'
   | 'Cursor6'
   | 'CursorPointer'
@@ -488,7 +486,6 @@ const iconComponents: IconComponents = {
   CopyRight,
   CopyTo,
   Crop1,
-  Crop169,
   Cursor4,
   Cursor6,
   CursorPointer,

@@ -20,7 +20,6 @@ export const cache = (): InMemoryCache =>
         'RadioQuestionBlock',
         'RadioOptionBlock',
         'SignUpBlock',
-        'SpacerBlock',
         'StepBlock',
         'TextResponseBlock',
         'TypographyBlock',

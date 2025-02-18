@@ -15,7 +15,6 @@ import { NewButtonButton } from './NewButtonButton'
 import { NewImageButton } from './NewImageButton'
 import { NewRadioQuestionButton } from './NewRadioQuestionButton'
 import { NewSignUpButton } from './NewSignUpButton'
-import { NewSpacerButton } from './NewSpacerButton'
 import { NewTextResponseButton } from './NewTextResponseButton'
 import { NewTypographyButton } from './NewTypographyButton'
 import { NewVideoButton } from './NewVideoButton'
@@ -64,9 +63,6 @@ export function AddBlock(): ReactElement {
         </Grid>
         <Grid item xs={6} md={12}>
           <NewButtonButton />
-        </Grid>
-        <Grid item xs={6} md={12}>
-          <NewSpacerButton />
         </Grid>
       </Grid>
     </Drawer>

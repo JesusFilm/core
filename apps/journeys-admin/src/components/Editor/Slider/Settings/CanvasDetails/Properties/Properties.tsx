@@ -84,14 +84,6 @@ const SignUp = dynamic(
   { ssr: false }
 )
 
-const Spacer = dynamic(
-  async () =>
-    await import(
-      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Spacer" */ './blocks/Spacer'
-    ).then((mod) => mod.Spacer),
-  { ssr: false }
-)
-
 interface PropertiesProps {
   block?: TreeBlock
   step?: TreeBlock<StepBlock>
@@ -153,10 +145,6 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
     case 'SignUpBlock':
       title = t('Subscribe Properties')
       component = <SignUp {...selectedBlock} />
-      break
-    case 'SpacerBlock':
-      title = t('Spacer Properties')
-      component = <Spacer {...selectedBlock} />
       break
     case 'TextResponseBlock':
       title = t('Text Input Properties')
