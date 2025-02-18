@@ -1,9 +1,12 @@
 import { ResultOf, graphql } from 'gql.tada'
-import { NextRequest } from 'next/server'
+import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 
-import { getApolloClient } from '../../../../lib/apolloClient'
-import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
-import { paramsToRecord } from '../../../../lib/paramsToRecord'
+import { getApolloClient } from '../../../../../lib/apolloClient'
+import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
+import { paramsToRecord } from '../../../../../lib/paramsToRecord'
+
+import { mediaComponentLanguages } from './languages'
 
 const GET_VIDEO = graphql(`
   query GetVideo($id: ID!, $metadataLanguageId: ID, $fallbackLanguageId: ID) {
@@ -81,24 +84,21 @@ const GET_VIDEO = graphql(`
   }
 `)
 
-interface GetParams {
-  params: { mediaComponentId: string }
-}
-export async function GET(
-  req: NextRequest,
-  { params: { mediaComponentId } }: GetParams
-): Promise<Response> {
-  const query = req.nextUrl.searchParams
-  const expand = query.get('expand') ?? ''
-  const filter = query.get('filter') ?? ''
-  const platform = query.get('platform') ?? 'ios'
-  const apiKey = query.get('apiKey') ?? ''
+export const mediaComponent = new Hono()
+mediaComponent.route('/languages', mediaComponentLanguages)
+
+mediaComponent.get('/', async (c) => {
+  const mediaComponentId = c.req.param('mediaComponentId')
+  const expand = c.req.query('expand') ?? ''
+  const filter = c.req.query('filter') ?? ''
+  const platform = c.req.query('platform') ?? 'ios'
+  const apiKey = c.req.query('apiKey') ?? ''
   const metadataLanguageTags =
-    query.get('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
+    c.req.query('metadataLanguageTags')?.split(',').filter(Boolean) ?? []
 
   const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
-  if (languageResult instanceof Response) {
-    return languageResult
+  if (languageResult instanceof HTTPException) {
+    throw languageResult
   }
 
   const { metadataLanguageId, fallbackLanguageId } = languageResult
@@ -112,7 +112,7 @@ export async function GET(
         id: mediaComponentId
       }
     })
-    if (data.video == null) return new Response(null, { status: 404 })
+    if (data.video == null) return c.notFound()
 
     const video = data.video
 
@@ -134,9 +134,7 @@ export async function GET(
       )
     }
 
-    const queryObject: Record<string, string> = {
-      ...paramsToRecord(query.entries())
-    }
+    const queryObject = c.req.query()
     const queryString = new URLSearchParams(queryObject).toString()
     const mediaComponentLinksQuerystring = new URLSearchParams(
       queryObject
@@ -164,9 +162,7 @@ export async function GET(
     }
 
     if (filter.includes('descriptorsonly')) {
-      return new Response(JSON.stringify(descriptorsonlyResponse), {
-        status: 200
-      })
+      return c.json(descriptorsonlyResponse)
     }
     const response = {
       mediaComponentId,
@@ -237,16 +233,14 @@ export async function GET(
       }
     }
 
-    return new Response(JSON.stringify(response), { status: 200 })
+    return c.json(response)
   } catch {
-    return new Response(
-      JSON.stringify({
+    return c.json(
+      {
         message: `Media component '${mediaComponentId}' resource not found!`,
         logref: 404
-      }),
-      {
-        status: 404
-      }
+      },
+      404
     )
   }
-}
+})
