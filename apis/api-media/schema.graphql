@@ -912,6 +912,7 @@ input VideoVariantCreateInput {
   slug: String!
   downloadable: Boolean!
   published: Boolean = true
+  muxVideoId: String
 }
 
 type VideoVariantDownload {
@@ -965,6 +966,7 @@ input VideoVariantUpdateInput {
   slug: String
   downloadable: Boolean
   published: Boolean
+  muxVideoId: String
 }
 
 input VideosFilter {
