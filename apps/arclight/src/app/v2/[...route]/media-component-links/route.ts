@@ -1,9 +1,9 @@
 import { ResultOf, graphql } from 'gql.tada'
 import { NextRequest } from 'next/server'
 
-import { getApolloClient } from '../../../lib/apolloClient'
-import { getLanguageIdsFromTags } from '../../../lib/getLanguageIdsFromTags'
-import { paramsToRecord } from '../../../lib/paramsToRecord'
+import { paramsToRecord } from '../../../../../lib/paramsToRecord'
+import { getApolloClient } from '../../../../lib/apolloClient'
+import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
 
 const GET_VIDEOS_CHILDREN = graphql(`
   query GetVideosChildren(
@@ -30,7 +30,7 @@ const GET_VIDEOS_CHILDREN = graphql(`
   }
 `)
 
-export async function GET(request: NextRequest): Promise<Response> {
+export const mediaComponentLinks = function GET(request: NextRequest): Promise<Response> {
   const query = request.nextUrl.searchParams
   const ids = query.get('ids')?.split(',').filter(Boolean) ?? undefined
   const metadataLanguageTags =
