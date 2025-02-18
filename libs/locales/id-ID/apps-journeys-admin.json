@@ -465,7 +465,7 @@
   "Copy Short Link": "Salin Tautan Pendek",
   "Failed to create QR Code": "Gagal membuat Kode QR",
   "QR Code": "Kode QR",
-  "Here is the unique QR code for your Journey. For the moment, please avoid changing the Journey URL after generating the QR code": "Berikut adalah kode QR unik untuk Journey Anda. Untuk saat ini, hindari mengubah URL Journey setelah membuat kode QR",
+  "Here is the unique QR code for your Journey. You can change the Journey URL without needing to re-generate the QR code": "Here is the unique QR code for your Journey. You can change the Journey URL without needing to re-generate the QR code",
   "1 scan": "1 pemindaian",
   "{{scans}} scans": "{{scans}} scan",
   "scan count loading": "pemuatan jumlah pemindaian",
