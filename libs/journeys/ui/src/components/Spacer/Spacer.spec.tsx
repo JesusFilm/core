@@ -45,6 +45,6 @@ describe('Spacer', () => {
     const spacer = screen.getByTestId('JourneysSpacer')
     expect(spacer).toHaveStyle(`height: 200px`)
     expect(spacer).toHaveStyle(`background-color: rgba(0, 0, 0, 0)`)
-    expect(spacer).toHaveStyle(`outline: 8px dotted rgba(0, 0, 0, 0.12)`)
+    expect(spacer).toHaveStyle(`outline: 4px dashed rgba(0, 0, 0, 0.12)`)
   })
 })

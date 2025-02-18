@@ -17,8 +17,8 @@ export const Spacer = ({ spacing }: TreeBlock<SpacerFields>): ReactElement => {
         bgcolor: 'rgba(0,0,0,0)',
         borderRadius: '6px',
         outline: (theme) =>
-          variant === 'admin' ? `8px dotted ${theme.palette.divider}` : 'none',
-        outlineOffset: -8,
+          variant === 'admin' ? `4px dashed ${theme.palette.divider}` : 'none',
+        outlineOffset: -4,
         transition: (theme) =>
           theme.transitions.create('height', { duration: 200 })
       }}
