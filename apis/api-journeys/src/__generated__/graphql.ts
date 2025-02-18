@@ -852,6 +852,7 @@ export type JourneyGenerationInput = {
   additionalContext?: InputMaybe<Scalars['String']['input']>;
   language?: Scalars['String']['input'];
   mainMessage: Scalars['String']['input'];
+  systemPrompt?: InputMaybe<Scalars['String']['input']>;
   targetAudience: Scalars['String']['input'];
   theme: Scalars['String']['input'];
 };
