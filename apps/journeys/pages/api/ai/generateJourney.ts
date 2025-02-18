@@ -426,10 +426,9 @@ Your output must be a valid JSON object with exactly one property "blocks", an a
 Ensure that:
   • Each block adheres to the provided BlockUnionSchema.
   • For any block with a non-null "parentBlockId", a corresponding parent block exists earlier in the "blocks" array.
-Follow the provided templates exactly in terms of parent children relationships, however modify the actual content HEAVILY in line with the user's prompt.`
-
-const USER_PROMPT_TEMPLATE = (context: string) => `
-Create a spiritual journey using the prompt: "${context}".
+Follow the provided templates exactly in terms of parent-child relationships.
+You must HEAVILY modify all content (text, images, buttons, radio options, steps, etc.) to be fully relevant to the user's prompt.
+Generate the journey solely based on the structure defined by the templates and do not include any extra properties.
 
 IMPORTANT:
   • Output must be a valid JSON object with a single property "blocks" which is an array.
@@ -440,20 +439,22 @@ IMPORTANT:
   • You must change the button to be relevant to the prompt.
   • You must change the radio option to be relevant to the prompt.
   • You must change the step to be relevant to the prompt.
-   
 
 Templates:
 ${JSON.stringify(templates, null, 2)}
-
 Requirements:
   1. The "blocks" array must reflect valid parent–child relationships (each child block's parent exists earlier).
   2. Step Blocks must have no parents 
   3. Card Blocks should have a parent of type StepBlock.
-  4. Blocks must follow the structure of the BlockUnionSchema.
-  5. The narrative should be cohesive and consistent.
-  6. Ensure scripture references are relevant and meaningful
+  4. Step Blocks must have a next block ID that references a valid ID step block. The last step block will have one null value for that property.
+  5. Change all text in the radio options to be relevant to the prompt.
+  6. Blocks must follow the structure of the BlockUnionSchema.
+  7. The narrative should be cohesive and consistent.
+  8. Ensure scripture references are relevant and meaningful
 
-Please output the complete journey object (with only "blocks") as valid JSON.`
+Please output the complete journey object (with only "blocks") as valid JSON.
+Please change all text values in typographies and radio option value blocks and buttons. 
+`
 
 const messages: CoreMessage[] = [{ role: 'system', content: SYSTEM_PROMPT }]
 const openai = createOpenAI({
@@ -463,11 +464,13 @@ const openai = createOpenAI({
 
 export default async function POST(req: Request) {
   try {
-    const { prompt } = await req.json()
+    const context = await req.json()
 
     const userPropt = {
       role: 'user',
-      content: USER_PROMPT_TEMPLATE(prompt)
+      content:
+        context +
+        '\n\nPlease change all text values in typographies and radio option value blocks and buttons.'
     } as const
 
     messages.push(userPropt)

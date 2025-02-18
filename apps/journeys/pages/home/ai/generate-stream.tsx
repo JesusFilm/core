@@ -32,22 +32,28 @@ export default function GenerateStreamPage() {
 
   console.log(object)
 
-  //   // Update blocks as they stream in
-  //   if (object?.blocks) {
-  //     setBlocks((prevBlocks) => [...prevBlocks, ...object.blocks])
-  //   }
+  // Update blocks when a complete object is received
+  if (object?.blocks && Array.isArray(object.blocks)) {
+    const newBlocks = object.blocks.filter(
+      (block) => !blocks.some((existingBlock) => existingBlock.id === block.id)
+    )
+    if (newBlocks.length > 0) {
+      setBlocks((prevBlocks) => [...prevBlocks, ...newBlocks])
+    }
+  }
 
   return (
     <Box sx={{ p: 2 }}>
       <Formik
         initialValues={{ prompt: '' }}
-        onSubmit={(values, { setSubmitting }) => {
-          submit(values.prompt)
-          setSubmitting(false)
+        onSubmit={async (values, { setSubmitting }) => {
+          console.log('values', values.prompt)
+          await submit(values.prompt)
+          // setSubmitting(false)
         }}
       >
-        {({ isSubmitting, values, handleChange, handleBlur }) => (
-          <Form>
+        {({ isSubmitting, values, handleChange, handleBlur, handleSubmit }) => (
+          <Form onSubmit={handleSubmit}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <TextField
                 id="prompt"

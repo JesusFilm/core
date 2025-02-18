@@ -1,15 +1,6 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
-input JourneyGenerationInput {
-  theme: String!
-  targetAudience: String!
-  mainMessage: String!
-  language: String! = "529"
-  additionalContext: String
-  systemPrompt: String
-}
-
 union MediaVideo = MuxVideo | Video | YouTube
 
 type MuxVideo
@@ -19,10 +10,6 @@ type MuxVideo
   id: ID! @external
   primaryLanguageId: ID @external
   source: VideoBlockSource! @shareable
-}
-
-type Query {
-  generateJourney(input: JourneyGenerationInput): String
 }
 
 type Video
