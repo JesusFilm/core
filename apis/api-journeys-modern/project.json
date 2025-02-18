@@ -87,6 +87,22 @@
         ]
       }
     },
+    "prisma-migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "bash -c 'npx prisma migrate dev --schema apis/api-journeys-modern/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "npx prisma migrate deploy --schema apis/api-journeys-modern/db/schema.prisma"
+          ]
+        }
+      }
+    },
     "prisma-studio": {
       "executor": "nx:run-commands",
       "options": {

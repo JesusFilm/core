@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, ChatButton, Event, Visitor, Host, JourneyVisitor, Team, Integration, UserTeam, UserTeamInvite, UserJourney, JourneyTag, Journey, UserRole, JourneyProfile, UserInvite, Block, Action, JourneysEmailPreference, JourneyNotification, CustomDomain, JourneyCollection, JourneyCollectionJourneys, QrCode } from ".prisma/api-journeys-modern-client";
+import type { Prisma, ChatButton, Event, Visitor, Host, JourneyVisitor, Team, Integration, UserTeam, UserTeamInvite, UserJourney, JourneyTag, Journey, UserRole, JourneyProfile, UserInvite, Block, Action, JourneysEmailPreference, JourneyNotification, CustomDomain, JourneyCollection, JourneyCollectionJourneys, QrCode, Document } from ".prisma/api-journeys-modern-client";
 export default interface PrismaTypes {
     ChatButton: {
         Name: "ChatButton";
@@ -712,5 +712,19 @@ export default interface PrismaTypes {
                 Nullable: false;
             };
         };
+    };
+    Document: {
+        Name: "Document";
+        Shape: Document;
+        Include: never;
+        Select: Prisma.DocumentSelect;
+        OrderBy: Prisma.DocumentOrderByWithRelationInput;
+        WhereUnique: Prisma.DocumentWhereUniqueInput;
+        Where: Prisma.DocumentWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: never;
+        ListRelations: never;
+        Relations: {};
     };
 }
