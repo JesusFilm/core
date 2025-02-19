@@ -3,13 +3,13 @@ import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
 // Type Definition
-export const Document = builder.prismaObject('Document', {
+builder.prismaObject('Document', {
   fields: (t) => ({
     id: t.exposeID('id'),
     documentName: t.exposeString('documentName'),
     content: t.exposeString('content'),
-    createdAt: t.expose('createdAt', { type: 'Date', nullable: false }),
-    updatedAt: t.expose('updatedAt', { type: 'Date', nullable: false })
+    createdAt: t.expose('createdAt', { type: 'Date' }),
+    updatedAt: t.expose('updatedAt', { type: 'Date' })
   })
 })
 
@@ -33,7 +33,7 @@ builder.mutationFields((t) => ({
       documentName: t.arg.string({ required: true }),
       content: t.arg.string({ required: true })
     },
-    resolve: async (query, root, { documentName, content }) => {
+    resolve: async (query, _root, { documentName, content }) => {
       const embedding = await createEmbedding(content)
 
       return prisma.document.create({
@@ -51,7 +51,7 @@ builder.mutationFields((t) => ({
     args: {
       id: t.arg.string({ required: true })
     },
-    resolve: async (query, root, { id }) => {
+    resolve: async (query, _root, { id }) => {
       return prisma.document.delete({
         ...query,
         where: { id }
