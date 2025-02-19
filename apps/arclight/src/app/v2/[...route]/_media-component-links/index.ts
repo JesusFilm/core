@@ -4,7 +4,6 @@ import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
 import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
-import { linksSchema } from '../links.schema'
 
 import { mediaComponentLinksWithId } from './[mediaComponentId]'
 
@@ -39,7 +38,11 @@ const QuerySchema = z.object({
 })
 
 const ResponseSchema = z.object({
-  _links: linksSchema,
+  _links: z.object({
+    self: z.object({
+      href: z.string()
+    })
+  }),
   _embedded: z.object({
     mediaComponentsLinks: z.array(
       z.object({
@@ -53,10 +56,7 @@ const ResponseSchema = z.object({
   })
 })
 
-export const mediaComponentLinks = new OpenAPIHono()
-mediaComponentLinks.route('/:mediaComponentId', mediaComponentLinksWithId)
-
-const route = createRoute({
+export const route = createRoute({
   method: 'get',
   path: '/',
   request: {
@@ -73,6 +73,9 @@ const route = createRoute({
     }
   }
 })
+
+export const mediaComponentLinks = new OpenAPIHono()
+mediaComponentLinks.route('/:mediaComponentId', mediaComponentLinksWithId)
 
 mediaComponentLinks.openapi(route, async (c) => {
   const ids = c.req.query('ids')?.split(',').filter(Boolean) ?? undefined

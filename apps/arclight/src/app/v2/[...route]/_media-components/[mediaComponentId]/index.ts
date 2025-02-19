@@ -4,7 +4,6 @@ import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
-import { linksSchema } from '../../links.schema'
 import { mediaComponentSchema } from '../../mediaComponent.schema'
 
 import { mediaComponentLanguages } from './languages'
@@ -101,7 +100,25 @@ const ParamsSchema = z.object({
 
 const ResponseSchema = z.object({
   ...mediaComponentSchema.shape,
-  _links: linksSchema
+  _links: z.object({
+    self: z.object({
+      href: z.string()
+    }),
+    mediaComponentLinks: z.object({
+      href: z.string().url()
+    }),
+    mediaComponent: z.array(
+      z.object({
+        href: z.string().url()
+      })
+    ),
+    sampleMediaComponentLanguage: z.object({
+      href: z.string().url()
+    }),
+    osisBibleBooks: z.object({
+      href: z.string().url()
+    })
+  })
 })
 
 const route = createRoute({
@@ -118,14 +135,7 @@ const route = createRoute({
       description: 'media component'
     },
     404: {
-      content: {
-        'application/json': {
-          schema: z.object({
-            message: z.string()
-          })
-        }
-      },
-      description: 'media component not found'
+      description: 'Not found'
     }
   }
 })

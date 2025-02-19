@@ -6,7 +6,6 @@ import {
   getWebEmbedPlayer,
   getWebEmbedSharePlayer
 } from '../../../../../../../lib/stringsForArclight/webEmbedStrings'
-import { linksSchema } from '../../../../links.schema'
 
 const GET_VIDEO_VARIANT = graphql(`
   query GetVideoWithVariant($id: ID!, $languageId: ID!) {
@@ -152,7 +151,17 @@ const ResponseSchema = z.object({
       })
     )
   }),
-  _links: linksSchema
+  _links: z.object({
+    self: z.object({
+      href: z.string().url()
+    }),
+    mediaComponent: z.object({
+      href: z.string().url()
+    }),
+    mediaLanguage: z.object({
+      href: z.string().url()
+    })
+  })
 })
 
 const route = createRoute({
@@ -170,6 +179,9 @@ const route = createRoute({
         }
       },
       description: 'media component language'
+    },
+    404: {
+      description: 'Not found'
     }
   }
 })

@@ -10,19 +10,21 @@ const ParamsSchema = z.object({
   metadataLanguageTag: z.string()
 })
 
-const ResponseSchema = z.object({
-  tag: z.string(),
-  name: z.string(),
-  nameNative: z.string(),
-  _links: z.object({
-    self: z.object({
-      href: z.string().url()
-    }),
-    metadataLanguageTags: z.object({
-      href: z.string().url()
+const ResponseSchema = z.array(
+  z.object({
+    tag: z.string(),
+    name: z.string(),
+    nameNative: z.string(),
+    _links: z.object({
+      self: z.object({
+        href: z.string().url()
+      }),
+      metadataLanguageTags: z.object({
+        href: z.string().url()
+      })
     })
   })
-})
+)
 
 const route = createRoute({
   method: 'get',
@@ -37,20 +39,9 @@ const route = createRoute({
       description: 'Metadata language tag'
     },
     400: {
-      content: {
-        'application/json': { schema: z.object({ message: z.string() }) }
-      },
       description: 'Metadata language tag is required'
     },
     404: {
-      content: {
-        'application/json': {
-          schema: z.object({
-            message: z.string(),
-            logref: z.number()
-          })
-        }
-      },
       description: 'Metadata language tag not found'
     }
   }

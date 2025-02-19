@@ -7,7 +7,6 @@ import {
   getWebEmbedPlayer,
   getWebEmbedSharePlayer
 } from '../../../../../../lib/stringsForArclight/webEmbedStrings'
-import { linksSchema } from '../../../links.schema'
 
 import { mediaComponentLanguage } from './[languageId]'
 
@@ -63,7 +62,15 @@ const ParamsSchema = z.object({
 })
 
 const ResponseSchema = z.object({
-  _links: linksSchema
+  _links: z.object({
+    self: z.object({
+      href: z.string().url()
+    }),
+    mediaComponent: z.object({
+      href: z.string().url()
+    })
+  }),
+  _embedded: z.object({})
 })
 
 const route = createRoute({
