@@ -9,8 +9,8 @@ import { ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName,
 // GraphQL fragment: BlockFields
 // ====================================================
 
-export interface BlockFields_SpacerBlock {
-  __typename: "SpacerBlock" | "GridContainerBlock" | "GridItemBlock";
+export interface BlockFields_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -185,6 +185,14 @@ export interface BlockFields_SignUpBlock {
   submitLabel: string | null;
   submitIconId: string | null;
   action: BlockFields_SignUpBlock_action | null;
+}
+
+export interface BlockFields_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
 }
 
 export interface BlockFields_StepBlock {
@@ -421,4 +429,4 @@ export interface BlockFields_VideoTriggerBlock {
   triggerAction: BlockFields_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockFields = BlockFields_SpacerBlock | BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TextResponseBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;
+export type BlockFields = BlockFields_GridContainerBlock | BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_SpacerBlock | BlockFields_StepBlock | BlockFields_TextResponseBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;
