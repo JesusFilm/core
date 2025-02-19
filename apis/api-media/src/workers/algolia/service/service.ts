@@ -191,19 +191,6 @@ async function indexVideos(
   videosIndex: string,
   logger?: Logger
 ): Promise<void> {
-  await client.setSettings({
-    indexName: videosIndex,
-    indexSettings: {
-      searchableAttributes: [
-        'titles.value',
-        'descriptions.value',
-        'studyQuestions.value'
-      ],
-      attributesForFaceting: ['titles.bcp47']
-    },
-    forwardToReplicas: true
-  })
-
   try {
     const videos = await prisma.video.findMany({
       include: {
