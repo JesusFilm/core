@@ -77,7 +77,7 @@ export function VideoImageAlt({
     values: FormikValues
   ): Promise<void> {
     if (videoImageAlts.length === 0) {
-      const res = await createVideoImageAlt({
+      await createVideoImageAlt({
         variables: {
           input: {
             videoId: video.id,
@@ -87,7 +87,7 @@ export function VideoImageAlt({
           }
         },
         onCompleted: () => {
-          enqueueSnackbar(t('Successfully created video image alt'), {
+          enqueueSnackbar(t('Video image alt created'), {
             variant: 'success'
           })
         },
@@ -97,28 +97,25 @@ export function VideoImageAlt({
           })
         }
       })
-
-      if (res.data?.videoImageAltCreate == null) {
-        enqueueSnackbar(t('Failed to create video image alt'), {
-          variant: 'error'
-        })
-        return
-      }
     } else {
-      const res = await updateVideoImageAlt({
+      await updateVideoImageAlt({
         variables: {
           input: {
             id: videoImageAlts[0].id,
             value: values.imageAlt
           }
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t('Video image alt updated'), {
+            variant: 'success'
+          })
+        },
+        onError: () => {
+          enqueueSnackbar(t('Failed to update video image alt'), {
+            variant: 'error'
+          })
         }
       })
-
-      if (res.data?.videoImageAltUpdate == null) {
-        enqueueSnackbar(t('Failed to update video image alt'), {
-          variant: 'error'
-        })
-      }
     }
   }
 

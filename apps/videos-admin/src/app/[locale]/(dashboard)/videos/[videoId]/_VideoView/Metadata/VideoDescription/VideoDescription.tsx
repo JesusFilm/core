@@ -82,7 +82,7 @@ export function VideoDescription({
     values: FormikValues
   ): Promise<void> {
     if (videoDescriptions.length === 0) {
-      const res = await createVideoDescription({
+      await createVideoDescription({
         variables: {
           input: {
             videoId: video.id,
@@ -90,30 +90,37 @@ export function VideoDescription({
             primary: true,
             languageId: DEFAULT_VIDEO_LANGUAGE_ID
           }
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t('Video description created'), {
+            variant: 'success'
+          })
+        },
+        onError: () => {
+          enqueueSnackbar(t('Failed to create video description'), {
+            variant: 'error'
+          })
         }
       })
-
-      if (res.data?.videoDescriptionCreate == null) {
-        enqueueSnackbar(t('Failed to create video description'), {
-          variant: 'error'
-        })
-        return
-      }
     } else {
-      const res = await updateVideoDescription({
+      await updateVideoDescription({
         variables: {
           input: {
             id: videoDescriptions[0].id,
             value: values.description
           }
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t('Video description updated'), {
+            variant: 'success'
+          })
+        },
+        onError: () => {
+          enqueueSnackbar(t('Failed to update video description'), {
+            variant: 'error'
+          })
         }
       })
-
-      if (res.data?.videoDescriptionUpdate == null) {
-        enqueueSnackbar(t('Failed to update video description'), {
-          variant: 'error'
-        })
-      }
     }
   }
   const description = _unescape(videoDescriptions?.[0]?.value ?? '').replace(

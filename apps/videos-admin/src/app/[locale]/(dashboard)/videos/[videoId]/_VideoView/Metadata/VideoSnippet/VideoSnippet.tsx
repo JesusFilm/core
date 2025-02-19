@@ -76,7 +76,7 @@ export function VideoSnippet({
 
   async function handleUpdateVideoSnippet(values: FormikValues): Promise<void> {
     if (videoSnippets.length === 0) {
-      const res = await createVideoSnippet({
+      await createVideoSnippet({
         variables: {
           input: {
             videoId: video.id,
@@ -84,30 +84,37 @@ export function VideoSnippet({
             primary: true,
             languageId: DEFAULT_VIDEO_LANGUAGE_ID
           }
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t('Video snippet created'), {
+            variant: 'success'
+          })
+        },
+        onError: () => {
+          enqueueSnackbar(t('Failed to create video snippet'), {
+            variant: 'error'
+          })
         }
       })
-
-      if (res.data?.videoSnippetCreate == null) {
-        enqueueSnackbar(t('Failed to create video snippet'), {
-          variant: 'error'
-        })
-        return
-      }
     } else {
-      const res = await updateVideoSnippet({
+      await updateVideoSnippet({
         variables: {
           input: {
             id: videoSnippets[0].id,
             value: values.snippet
           }
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t('Video snippet updated'), {
+            variant: 'success'
+          })
+        },
+        onError: () => {
+          enqueueSnackbar(t('Failed to update video snippet'), {
+            variant: 'error'
+          })
         }
       })
-
-      if (res.data?.videoSnippetUpdate == null) {
-        enqueueSnackbar(t('Failed to update video snippet'), {
-          variant: 'error'
-        })
-      }
     }
   }
 
