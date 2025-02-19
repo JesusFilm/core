@@ -9,12 +9,12 @@ const JourneySortMock = ({ ...args }): ReactElement => {
 }
 
 describe('JourneyList/JourneySort', () => {
-  it('should sort by last modified by default', () => {
+  it('should sort by date created by default', () => {
     const { getByRole, getByLabelText } = render(<JourneySortMock />)
 
     fireEvent.click(getByRole('button', { name: 'Sort By' }))
 
-    expect(getByLabelText('Last Modified')).toBeChecked()
+    expect(getByLabelText('Date Created')).toBeChecked()
   })
 
   it('should sort by name', async () => {

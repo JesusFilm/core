@@ -20,8 +20,6 @@ import {
 
 import { ArchivedJourneyList } from '.'
 
-const YEAR_MILLISECONDS = 365.25 * 24 * 60 * 60000
-
 jest.mock('@core/journeys/ui/useNavigationState', () => ({
   useNavigationState: jest.fn(() => false)
 }))
@@ -44,16 +42,7 @@ const archivedJourneysMock: MockedResponse<
   },
   result: {
     data: {
-      journeys: [
-        {
-          ...defaultJourney,
-          updatedAt: new Date(Date.now() - 1 * YEAR_MILLISECONDS).toISOString()
-        },
-        {
-          ...oldJourney,
-          updatedAt: new Date(Date.now() - 4 * YEAR_MILLISECONDS).toISOString()
-        }
-      ]
+      journeys: [defaultJourney, oldJourney]
     }
   }
 }
@@ -77,7 +66,7 @@ const noJourneysMock: MockedResponse<
 }
 
 describe('ArchivedJourneyList', () => {
-  it('should render journeys in descending updatedAt date by default', async () => {
+  it('should render journeys in descending createdAt date by default', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[archivedJourneysMock]}>
         <ThemeProvider>
@@ -90,11 +79,11 @@ describe('ArchivedJourneyList', () => {
 
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        '1 year ago'
+        'January 1'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      '4 years ago'
+      'November 19, 2020'
     )
   })
 
@@ -132,11 +121,11 @@ describe('ArchivedJourneyList', () => {
 
     await waitFor(() =>
       expect(getAllByLabelText('journey-card')[0].textContent).toContain(
-        'a lower case title4 years agoEnglish'
+        'a lower case titleJanuary 1, 2021English'
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'An Old Journey Heading4 years ago - Journey created before the current year should also show the year in the dateEnglish'
+      'An Old Journey HeadingNovember 19, 2020 - Journey created before the current year should also show the year in the dateEnglish'
     )
   })
 
