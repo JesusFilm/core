@@ -4,6 +4,7 @@ import { ReactElement, forwardRef, useEffect } from 'react'
 
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
+import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 
 import { StepFields } from '../../../../__generated__/StepFields'
 
@@ -12,7 +13,7 @@ interface Props {
 }
 
 export function DynamicCardList({ blocks }: Props): ReactElement {
-  const { blockHistory, getNextBlock, setShowHeaderFooter } = useBlocks()
+  const { blockHistory, setShowHeaderFooter } = useBlocks()
 
   const treeBlock = blockHistory[blockHistory.length - 1] as
     | TreeBlock<StepFields>
@@ -23,7 +24,19 @@ export function DynamicCardList({ blocks }: Props): ReactElement {
   const previousBlock = blockHistory[blockHistory.length - 2] as
     | TreeBlock<StepFields>
     | undefined
-  const nextBlock = getNextBlock({ activeBlock: currentBlock })
+
+  const actionsBlocks = filterActionBlocks(currentBlock)
+  const actionIds = actionsBlocks.reduce<string[]>((acc, actionBlock) => {
+    if (actionBlock.action?.__typename === 'NavigateToBlockAction') {
+      acc.push(actionBlock.action.blockId)
+    }
+    return acc
+  }, [])
+  const prerenderIds = [
+    ...actionIds,
+    currentBlock?.nextBlockId,
+    previousBlock?.id
+  ]
 
   useEffect(() => {
     setShowHeaderFooter(true)
@@ -34,8 +47,7 @@ export function DynamicCardList({ blocks }: Props): ReactElement {
       {blocks.map((block) => {
         const isCurrent = block.id === currentBlock?.id
         // test via e2e: navigation to and from non-pre-rendered cards
-        const isPreRender =
-          block.id === nextBlock?.id || block.id === previousBlock?.id
+        const isPreRender = prerenderIds.includes(block.id)
 
         return (
           <Fade
