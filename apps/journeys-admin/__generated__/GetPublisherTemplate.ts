@@ -23,8 +23,8 @@ export interface GetPublisherTemplate_publisherTemplate_language {
   name: GetPublisherTemplate_publisherTemplate_language_name[];
 }
 
-export interface GetPublisherTemplate_publisherTemplate_blocks_SpacerBlock {
-  __typename: "SpacerBlock" | "GridContainerBlock" | "GridItemBlock";
+export interface GetPublisherTemplate_publisherTemplate_blocks_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -199,6 +199,14 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock {
   submitLabel: string | null;
   submitIconId: string | null;
   action: GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action | null;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_StepBlock {
@@ -435,7 +443,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock
   triggerAction: GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetPublisherTemplate_publisherTemplate_blocks = GetPublisherTemplate_publisherTemplate_blocks_SpacerBlock | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock | GetPublisherTemplate_publisherTemplate_blocks_CardBlock | GetPublisherTemplate_publisherTemplate_blocks_IconBlock | GetPublisherTemplate_publisherTemplate_blocks_ImageBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBlock | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock | GetPublisherTemplate_publisherTemplate_blocks_StepBlock | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock | GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock;
+export type GetPublisherTemplate_publisherTemplate_blocks = GetPublisherTemplate_publisherTemplate_blocks_GridContainerBlock | GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock | GetPublisherTemplate_publisherTemplate_blocks_CardBlock | GetPublisherTemplate_publisherTemplate_blocks_IconBlock | GetPublisherTemplate_publisherTemplate_blocks_ImageBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock | GetPublisherTemplate_publisherTemplate_blocks_RadioQuestionBlock | GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock | GetPublisherTemplate_publisherTemplate_blocks_SpacerBlock | GetPublisherTemplate_publisherTemplate_blocks_StepBlock | GetPublisherTemplate_publisherTemplate_blocks_TextResponseBlock | GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoBlock | GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock;
 
 export interface GetPublisherTemplate_publisherTemplate_primaryImageBlock {
   __typename: "ImageBlock";
