@@ -178,7 +178,12 @@ export function VideoImageUpload({
   return (
     <FileUpload
       onDrop={handleDrop}
-      accept={{ 'image/*': [] }}
+      accept={{
+        'image/png': [],
+        'image/jpg': [],
+        'image/jpeg': [],
+        'image/webp': []
+      }}
       onUploadComplete={onUploadComplete}
       loading={loading}
     />
