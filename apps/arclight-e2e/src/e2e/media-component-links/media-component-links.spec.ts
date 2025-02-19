@@ -4,14 +4,15 @@ import { getBaseUrl } from '../../framework/helpers'
 import {
   convertArrayToObject,
   getObjectDiff
-} from '../../utils/comparison-utils'
-import { apiKey, mediaComponentLinks } from '../../utils/testData.json'
+} from '../../utils/media-component-utils'
+import testData from '../../utils/testData.json'
 
 test('compare media component links between environments', async ({
   request
 }) => {
   const baseUrl = await getBaseUrl()
   const compareUrl = 'https://api.arclight.org'
+  const { apiKey, mediaComponentLinks } = testData
 
   const queryParams = new URLSearchParams({
     apiKey,

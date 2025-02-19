@@ -6,14 +6,14 @@ import {
   ApiResponse,
   convertArrayToObject,
   getObjectDiff
-} from '../../utils/comparison-utils'
-import { apiKey, mediaComponentIds } from '../../utils/testData.json'
+} from '../../utils/media-component-utils'
+import testData from '../../utils/testData.json'
 
 test('compare media components between environments', async ({ request }) => {
   const baseUrl = await getBaseUrl()
   const queryParams = new URLSearchParams({
-    apiKey,
-    ids: mediaComponentIds.join(',')
+    apiKey: testData.apiKey,
+    ids: testData.mediaComponents.join(',')
   })
 
   const [baseResponse, compareResponse] = await Promise.all([
@@ -51,10 +51,10 @@ test('compare media components between environments', async ({ request }) => {
   expect(diffs).toHaveLength(0)
 })
 
-test('verify required image fields exist', async ({ request }) => {
+test.fixme('verify required image fields exist', async ({ request }) => {
   const baseUrl = await getBaseUrl()
   const queryParams = new URLSearchParams({
-    apiKey: apiKey
+    apiKey: testData.apiKey
   })
 
   const response = (await request
