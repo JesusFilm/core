@@ -31,8 +31,24 @@ const Template: Story = {
   )
 }
 
-export const Default: Story = {
+export const Admin: Story = {
   ...Template,
+  args: { spacing: 200 }
+}
+
+export const Journeys: Story = {
+  ...Template,
+  render: ({ ...args }) => (
+    <JourneyProvider
+      value={{ journey: {} as unknown as Journey, variant: 'default' }}
+    >
+      <StoryCard>
+        <Typography mb={4}>Text above Spacer</Typography>
+        <Spacer {...args} />
+        <Typography>Text below Spacer</Typography>
+      </StoryCard>
+    </JourneyProvider>
+  ),
   args: { spacing: 200 }
 }
 
