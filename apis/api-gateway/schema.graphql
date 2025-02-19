@@ -4344,6 +4344,7 @@ input VideosFilter @join__type(graph: API_MEDIA)  {
   ids: [ID!]
   subtitleLanguageIds: [ID!]
   published: Boolean
+  locked: Boolean
 }
 
 input CreateVerificationRequestInput @join__type(graph: API_USERS)  {

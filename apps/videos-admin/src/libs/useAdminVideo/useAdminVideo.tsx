@@ -66,6 +66,10 @@ export const GET_ADMIN_VIDEO = graphql(`
           url
         }
       }
+      videoEditions {
+        id
+        name
+      }
       studyQuestions {
         id
         value
@@ -107,6 +111,8 @@ export type GetAdminVideo_AdminVideo_StudyQuestions =
   GetAdminVideo['adminVideo']['studyQuestions']
 export type GetAdminVideo_AdminVideo_Children =
   GetAdminVideo['adminVideo']['children']
+export type GetAdminVideo_AdminVideo_VideoEditions =
+  GetAdminVideo['adminVideo']['videoEditions']
 
 export function useAdminVideo(
   options: QueryHookOptions<GetAdminVideo, GetAdminVideoVariables>
