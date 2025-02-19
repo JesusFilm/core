@@ -215,6 +215,7 @@ async function indexVideos(
         images: true,
         studyQuestions: true,
         bibleCitation: true,
+        keywords: true,
         variants: {
           include: {
             downloads: true
@@ -306,6 +307,7 @@ async function indexVideos(
         titles,
         descriptions,
         studyQuestions: Object.values(studyQuestionsByLanguage),
+        keywords: video.keywords.map((keyword) => keyword.value),
         isDownloadable,
         downloadSizes: isDownloadable
           ? {
