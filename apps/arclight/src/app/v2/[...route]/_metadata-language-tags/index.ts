@@ -1,8 +1,10 @@
 import { Hono } from 'hono'
 
+import { metadataLanguageTag } from './[metadataLanguageTag]'
 import { languages } from './languages'
 
 export const metadataLanguageTags = new Hono()
+metadataLanguageTags.route('/:metadataLanguageTag', metadataLanguageTag)
 metadataLanguageTags.get('/', async (c) => {
   const apiKey = c.req.query('apiKey') ?? ''
 

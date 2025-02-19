@@ -114,10 +114,9 @@ mediaComponents.route('/:mediaComponentId', mediaComponent)
 mediaComponents.get(
   '/',
   async (c) => {
-    const page =
-      Number(c.req.query('page')) === 0 ? 1 : Number(c.req.query('page'))
+    const page = c.req.query('page') == null ? 1 : Number(c.req.query('page'))
     const limit =
-      Number(c.req.query('limit')) === 0 ? 10000 : Number(c.req.query('limit'))
+      c.req.query('limit') == null ? 10000 : Number(c.req.query('limit'))
     const offset = (page - 1) * limit
     const expand = c.req.query('expand') ?? ''
     const subTypes =
