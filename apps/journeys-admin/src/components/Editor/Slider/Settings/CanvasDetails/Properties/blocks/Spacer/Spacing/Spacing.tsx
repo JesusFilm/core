@@ -6,12 +6,14 @@ import { Dispatch, ReactElement, SetStateAction } from 'react'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_SpacerBlock as SpacerBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
   SpacerSpacingUpdate,
   SpacerSpacingUpdateVariables
 } from '../../../../../../../../../../__generated__/SpacerSpacingUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 
 export const SPACER_SPACING_UPDATE = gql`
   mutation SpacerSpacingUpdate($id: ID!, $spacing: Int!) {
@@ -34,6 +36,7 @@ export function Spacing({ value, setValue }: SpacingProps): ReactElement {
   >(SPACER_SPACING_UPDATE)
   const { state } = useEditor()
   const { add } = useCommand()
+  const { journey } = useJourney()
 
   const selectedBlock = state.selectedBlock as
     | TreeBlock<SpacerBlock>
@@ -44,7 +47,7 @@ export function Spacing({ value, setValue }: SpacingProps): ReactElement {
   }
 
   function handleSpacingChange(_event, spacing: number): void {
-    if (selectedBlock == null) return
+    if (selectedBlock == null || journey == null) return
     add({
       parameters: {
         execute: { spacing },
@@ -62,6 +65,9 @@ export function Spacing({ value, setValue }: SpacingProps): ReactElement {
               spacing,
               __typename: 'SpacerBlock'
             }
+          },
+          update(cache) {
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         }).then(() => {
           setValue(spacing)

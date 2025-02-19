@@ -12,6 +12,7 @@ import Crop169Icon from '@core/shared/ui/icons/Crop169'
 import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../../__generated__/BlockFields'
 import { BlockFields_SpacerBlock as SpacerBlock } from '../../../../../../../../__generated__/BlockFields'
 import { SpacerBlockCreate } from '../../../../../../../../__generated__/SpacerBlockCreate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
@@ -70,6 +71,7 @@ export function NewSpacerButton(): ReactElement {
           },
           update(cache, { data }) {
             blockCreateUpdate(cache, journey?.id, data?.spacerBlockCreate)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

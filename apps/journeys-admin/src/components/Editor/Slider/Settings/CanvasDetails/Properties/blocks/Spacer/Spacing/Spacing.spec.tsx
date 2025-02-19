@@ -3,6 +3,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { BlockFields_SpacerBlock as SpacerBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import {
@@ -89,9 +91,11 @@ describe('Spacing', () => {
 
     render(
       <MockedProvider mocks={[spacingUpdateMock]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <Spacing value={100} setValue={setValue} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <Spacing value={100} setValue={setValue} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -108,10 +112,12 @@ describe('Spacing', () => {
     const setValue = jest.fn()
     render(
       <MockedProvider mocks={[spacingUpdateMock, spacingUpdateMock2]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <CommandUndoItem variant="button" />
-          <Spacing value={100} setValue={setValue} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <CommandUndoItem variant="button" />
+            <Spacing value={100} setValue={setValue} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     const slider = screen.getByTestId('Label').querySelectorAll('input')[0]
@@ -136,11 +142,13 @@ describe('Spacing', () => {
     const setValue = jest.fn()
     render(
       <MockedProvider mocks={[mockFirstUpdate, spacingUpdateMock2]}>
-        <EditorProvider initialState={{ selectedBlock }}>
-          <CommandUndoItem variant="button" />
-          <CommandRedoItem variant="button" />
-          <Spacing value={100} setValue={setValue} />
-        </EditorProvider>
+        <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <CommandUndoItem variant="button" />
+            <CommandRedoItem variant="button" />
+            <Spacing value={100} setValue={setValue} />
+          </EditorProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
     const slider = screen.getByTestId('Label').querySelectorAll('input')[0]
