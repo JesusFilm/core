@@ -17,6 +17,7 @@ import {
 import { mockReactFlow } from '../../../test/mockReactFlow'
 import { ThemeProvider } from '../ThemeProvider'
 
+import { BackgroundUploadProvider } from './BackgroundUpload'
 import { GET_STEP_BLOCKS_WITH_POSITION } from './Slider/JourneyFlow/JourneyFlow'
 
 import { Editor } from '.'
@@ -110,11 +111,13 @@ describe('Editor', () => {
   it('should render the Toolbar', () => {
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <ThemeProvider>
-            <Editor journey={journey} />
-          </ThemeProvider>
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <ThemeProvider>
+              <Editor journey={journey} />
+            </ThemeProvider>
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
     expect(screen.getByTestId('Toolbar')).toBeInTheDocument()
