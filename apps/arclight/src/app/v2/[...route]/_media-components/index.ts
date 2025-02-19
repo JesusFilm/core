@@ -1,8 +1,7 @@
-import { OpenAPIHono, createRoute } from '@hono/zod-openapi'
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
 import { HTTPException } from 'hono/http-exception'
 import { timeout } from 'hono/timeout'
-import { z } from 'zod'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
 import { getLanguageIdsFromTags } from '../../../../lib/getLanguageIdsFromTags'
@@ -148,10 +147,9 @@ export const mediaComponents = new OpenAPIHono()
 mediaComponents.route('/:mediaComponentId', mediaComponent)
 
 mediaComponents.openapi(route, async (c) => {
-  const page =
-    Number(c.req.query('page')) === 0 ? 1 : Number(c.req.query('page'))
+  const page = c.req.query('page') == null ? 1 : Number(c.req.query('page'))
   const limit =
-    Number(c.req.query('limit')) === 0 ? 10000 : Number(c.req.query('limit'))
+    c.req.query('limit') == null ? 10000 : Number(c.req.query('limit'))
   const offset = (page - 1) * limit
   const expand = c.req.query('expand') ?? ''
   const subTypes =
