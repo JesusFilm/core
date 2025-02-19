@@ -5,7 +5,7 @@ import { createQueryParams, getBaseUrl } from '../../framework/helpers'
 test.describe('GET /v2/metadata-language-tags', () => {
   test('returns all metadata language tags', async ({ request }) => {
     const response = await request.get(
-      `${await getBaseUrl()}/v2/metadata-language-tags?${createQueryParams({})}`
+      `${await getBaseUrl()}/v2/metadata-language-tags/?${createQueryParams({})}`
     )
 
     expect(response.ok()).toBeTruthy()
