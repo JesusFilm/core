@@ -14,6 +14,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import Code1Icon from '@core/shared/ui/icons/Code1'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import ShareIcon from '@core/shared/ui/icons/Share'
+import TransformIcon from '@core/shared/ui/icons/Transform'
 
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { Item } from '../Item/Item'
@@ -35,6 +36,15 @@ const SlugDialog = dynamic(
   { ssr: false }
 )
 
+const QrCodeDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/EditorToolbar/ShareButton/QrCodeDialog" */
+      './QrCodeDialog'
+    ).then((mod) => mod.QrCodeDialog),
+  { ssr: false }
+)
+
 interface ShareItemProps {
   variant: ComponentProps<typeof Item>['variant']
   closeMenu?: () => void
@@ -53,6 +63,7 @@ export function ShareItem({
   const router = useRouter()
   const [showSlugDialog, setShowSlugDialog] = useState<boolean | undefined>()
   const [showEmbedDialog, setShowEmbedDialog] = useState<boolean | undefined>()
+  const [showQrCodeDialog, setShowQrCodeDialog] = useState<boolean>(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
   function handleShowMenu(event: MouseEvent<HTMLElement>): void {
@@ -78,9 +89,7 @@ export function ShareItem({
         label={t('Share')}
         icon={<ShareIcon />}
         onClick={handleShowMenu}
-        ButtonProps={{
-          variant: 'contained'
-        }}
+        ButtonProps={{ variant: 'contained' }}
       />
       <Dialog open={Boolean(anchorEl)} onClose={handleCloseMenu}>
         <Stack direction="column" spacing={4}>
@@ -108,10 +117,7 @@ export function ShareItem({
               size="small"
               startIcon={<Edit2Icon />}
               disabled={journey == null}
-              style={{
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis'
-              }}
+              style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
             >
               {t('Edit URL')}
             </Button>
@@ -123,12 +129,21 @@ export function ShareItem({
               size="small"
               startIcon={<Code1Icon />}
               disabled={journey == null}
-              style={{
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis'
-              }}
+              style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
             >
               {t('Embed Journey')}
+            </Button>
+            <Button
+              onClick={() => {
+                setShowQrCodeDialog(true)
+                setRoute('qr-code')
+              }}
+              size="small"
+              startIcon={<TransformIcon />}
+              disabled={journey == null}
+              style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+            >
+              {t('QR Code')}
             </Button>
           </Stack>
         </Stack>
@@ -144,6 +159,12 @@ export function ShareItem({
         <EmbedJourneyDialog
           open={showEmbedDialog}
           onClose={() => setShowEmbedDialog(false)}
+        />
+      )}
+      {showQrCodeDialog != null && (
+        <QrCodeDialog
+          open={showQrCodeDialog}
+          onClose={() => setShowQrCodeDialog(false)}
         />
       )}
     </Box>

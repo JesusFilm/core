@@ -61,6 +61,7 @@ const chapter1: VideoContentFields = {
     language: {
       __typename: 'Language',
       id: '529',
+      bcp47: 'en',
       name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
     },
     slug: 'the-beginning/english',

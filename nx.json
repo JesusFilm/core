@@ -97,6 +97,5 @@
     ]
   },
   "parallel": 1,
-  "defaultBase": "main",
-  "useLegacyCache": true
+  "defaultBase": "main"
 }

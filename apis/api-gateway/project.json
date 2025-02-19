@@ -1,0 +1,55 @@
+{
+  "name": "api-gateway",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apis/api-gateway/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx hive-gateway supergraph -c ./apis/api-gateway/gateway.config.ts -p 4000"
+      }
+    },
+    "serve-all": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "echo 'This command is no longer supported. Please run `nf start` instead.'"
+          },
+          {
+            "command": "echo 'If `bash: nf: command not found` returns please run `npm i -g foreman` then try again.'"
+          }
+        ]
+      }
+    },
+    "generate-graphql": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx hive dev --service api-analytics --url http://127.0.0.1:4008/graphql --schema ./apis/api-analytics/schema.graphql --service api-journeys --url http://127.0.0.1:4001/graphql --schema ./apis/api-journeys/schema.graphql --service api-users --url http://127.0.0.1:4002/graphql --schema ./apis/api-users/schema.graphql --service api-languages --url http://127.0.0.1:4003/graphql --schema ./apis/api-languages/schema.graphql --service api-media --url http://127.0.0.1:4005/graphql --schema ./apis/api-media/schema.graphql --service api-journeys-modern --url http://127.0.0.1:4004/graphql --schema ./apis/api-journeys-modern/schema.graphql --write ./apis/api-gateway/schema.graphql"
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_GATEWAY_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-gateway > apis/api-gateway/.env"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apis/api-gateway/tsconfig.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/api-gateway/eslint",
+        "cacheStrategy": "content"
+      }
+    }
+  }
+}

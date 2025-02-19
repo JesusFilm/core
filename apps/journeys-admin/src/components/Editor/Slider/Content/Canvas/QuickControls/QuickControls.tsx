@@ -24,9 +24,6 @@ export function QuickControls({ open, anchorEl, block }): ReactElement {
         anchorEl={anchorEl}
         onClick={handleClick}
         placement="top"
-        sx={{
-          zIndex: (theme) => theme.zIndex.modal + 1
-        }}
         transition
         data-testid="QuickControls"
         modifiers={[
@@ -37,6 +34,9 @@ export function QuickControls({ open, anchorEl, block }): ReactElement {
             }
           }
         ]}
+        sx={{
+          zIndex: (theme) => theme.zIndex.modal + 1
+        }}
       >
         {({ TransitionProps }) => (
           <Fade {...TransitionProps} timeout={350}>

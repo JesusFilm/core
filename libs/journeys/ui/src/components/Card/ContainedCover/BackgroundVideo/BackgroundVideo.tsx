@@ -156,14 +156,6 @@ export function BackgroundVideo({
           pointerEvents: 'none'
         }}
       >
-        {source === VideoBlockSource.cloudflare && videoId != null && (
-          <source
-            src={`https://customer-${
-              process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
-            }.cloudflarestream.com/${videoId ?? ''}/manifest/video.m3u8`}
-            type="application/x-mpegURL"
-          />
-        )}
         {mediaVideo?.__typename === 'Video' &&
           mediaVideo?.variant?.hls != null && (
             <source src={mediaVideo.variant.hls} type="application/x-mpegURL" />
@@ -176,6 +168,13 @@ export function BackgroundVideo({
             type="video/youtube"
           />
         )}
+        {mediaVideo?.__typename === 'MuxVideo' &&
+          mediaVideo?.playbackId != null && (
+            <source
+              src={`https://stream.mux.com/${mediaVideo.playbackId}.m3u8`}
+              type="application/x-mpegURL"
+            />
+          )}
       </StyledVideo>
     </Box>
   )

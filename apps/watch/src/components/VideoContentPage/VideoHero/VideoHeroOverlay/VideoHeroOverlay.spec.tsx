@@ -37,6 +37,7 @@ describe('VideoHeroOverlay', () => {
       language: {
         __typename: 'Language',
         id: '529',
+        bcp47: 'en',
         name: [
           {
             __typename: 'LanguageName',
