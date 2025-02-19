@@ -25,7 +25,7 @@ const mockUseRouter = jest.fn()
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({ push: mockUseRouter }),
-  usePathname: () => '/videos'
+  usePathname: () => '/en/videos'
 }))
 
 const createVideoMock: MockedResponse<CreateVideo, CreateVideoVariables> = {
@@ -151,6 +151,7 @@ describe('VideoCreateForm', () => {
     await user.click(screen.getByRole('button', { name: 'Create' }))
 
     expect(createVideoMockResult).toHaveBeenCalled()
+    expect(mockUseRouter).toHaveBeenCalledWith('/en/videos/test_video')
   })
 
   it('should handle video creation error', async () => {

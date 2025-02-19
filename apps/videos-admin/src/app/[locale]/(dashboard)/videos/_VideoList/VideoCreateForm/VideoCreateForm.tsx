@@ -116,7 +116,7 @@ export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
           variant: 'success'
         })
         close()
-        router.push(`${pathname}/${values.slug}`)
+        router.push(`${pathname}/${values.id}`)
       },
       onError: () => {
         // TODO: proper error handling for specific errors
