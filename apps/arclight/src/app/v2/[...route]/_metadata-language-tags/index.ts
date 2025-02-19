@@ -18,7 +18,7 @@ metadataLanguageTags.get('/', async (c) => {
           href: `http://api.arclight.org/v2/metadata-language-tags/${language.tag}?apiKey=${apiKey}`
         },
         metadataLanguageTags: {
-          href: `http://api.arclight.org/v2/metadata-language-tags?apiKey=${apiKey}`
+          href: `http://api.arclight.org/v2/metadata-language-tags/?apiKey=${apiKey}`
         }
       }
     }))
@@ -27,7 +27,7 @@ metadataLanguageTags.get('/', async (c) => {
   const response = {
     _links: {
       self: {
-        href: `http://api.arclight.org/v2/metadata-language-tags?apiKey=${apiKey}`
+        href: `http://api.arclight.org/v2/metadata-language-tags/?apiKey=${apiKey}`
       }
     },
     _embedded: {
