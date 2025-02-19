@@ -271,6 +271,7 @@ resources.get('/', async (c) => {
       studyQuestions: hit.studyQuestions
         .filter((q) => q.bcp47 === metadataLanguageTags[0] || q.bcp47 === 'en')
         .map((q) => q.value)
+        .flat()
         .filter((q): q is string => q !== undefined && q !== ''),
       metadataLanguageTag: metadataLanguageTags[0] ?? 'en'
     }))
@@ -322,19 +323,24 @@ resources.get('/', async (c) => {
             transformedVideos.length +
             countryHits.length +
             transformedLanguages.length,
-          mediaCountries:
-            bulk === 'true'
-              ? countryHits.map((country) => country.countryId)
-              : transformedCountries,
-          mediaLanguages:
-            bulk === 'true'
-              ? languageHits.map((language) => Number(language.objectID))
-              : transformedLanguages,
-          alternateLanguages: [],
-          mediaComponents:
-            bulk === 'true'
-              ? transformedVideos.map((video) => video.mediaComponentId)
-              : transformedVideos
+          ...(bulk === 'true'
+            ? {
+                countryIds: countryHits.map((country) => country.countryId),
+                languageIds: languageHits.map((language) =>
+                  Number(language.objectID)
+                ),
+                alternateLanguageIds: [],
+                mediaComponentIds: transformedVideos.map(
+                  (video) => video.mediaComponentId
+                )
+              }
+            : {
+                mediaCountries: transformedCountries,
+                mediaLanguages: transformedLanguages,
+                alternateLanguages: [],
+                mediaComponents: transformedVideos
+              }),
+          _links: {}
         }
       }
     }
