@@ -14,7 +14,7 @@ test.describe('GET /v2/metadata-language-tags', () => {
     expect(data).toMatchObject({
       _links: {
         self: {
-          href: expect.stringMatching(/\/v2\/media-languages\/.+/)
+          href: expect.stringMatching(/\/v2\/metadata-language-tags\/.+/)
         }
       },
       _embedded: {
