@@ -16,6 +16,7 @@ import type {
   BlockFields_RadioQuestionBlock as RadioQuestionBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import type { RadioQuestionBlockCreate } from '../../../../../../../../__generated__/RadioQuestionBlockCreate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
@@ -121,6 +122,7 @@ export function NewRadioQuestionButton(): ReactElement {
             blockCreateUpdate(cache, journey.id, data?.radioQuestionBlockCreate)
             blockCreateUpdate(cache, journey.id, data?.radioOption1)
             blockCreateUpdate(cache, journey.id, data?.radioOption2)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

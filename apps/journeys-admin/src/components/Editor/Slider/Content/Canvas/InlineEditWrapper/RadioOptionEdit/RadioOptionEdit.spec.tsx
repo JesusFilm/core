@@ -10,6 +10,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
 import { RadioOptionFields } from '../../../../../../../../__generated__/RadioOptionFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -19,6 +20,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
+
+jest.mock('../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 describe('RadioOptionEdit', () => {
   const props: TreeBlock<RadioOptionFields> = {
@@ -117,6 +124,8 @@ describe('RadioOptionEdit', () => {
     await waitFor(() =>
       expect(mockRadioOptionUpdate2.result).toHaveBeenCalled()
     )
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo the change to label that was undone', async () => {
@@ -156,6 +165,8 @@ describe('RadioOptionEdit', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(redoUpdateMock.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should not save if label hasnt changed', async () => {
@@ -176,6 +187,10 @@ describe('RadioOptionEdit', () => {
     await userEvent.type(input, 'test label')
     await waitFor(() =>
       expect(mockRadioOptionUpdate2.result).not.toHaveBeenCalled()
+    )
+
+    await waitFor(() =>
+      expect(journeyUpdatedAtCacheUpdate).not.toHaveBeenCalled()
     )
   })
 })

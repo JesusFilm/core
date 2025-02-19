@@ -14,6 +14,7 @@ import {
   BlockFields_ImageBlock as ImageBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import { ImageBlockCreate } from '../../../../../../../../__generated__/ImageBlockCreate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
@@ -77,6 +78,7 @@ export function NewImageButton(): ReactElement {
           optimisticResponse: { imageBlockCreate: imageBlock },
           update(cache, { data }) {
             blockCreateUpdate(cache, journey?.id, data?.imageBlockCreate)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

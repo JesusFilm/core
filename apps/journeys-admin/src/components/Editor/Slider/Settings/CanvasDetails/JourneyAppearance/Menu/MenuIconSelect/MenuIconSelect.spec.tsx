@@ -12,11 +12,18 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { JourneyMenuButtonIcon } from '../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { getJourneySettingsUpdateMock } from '../../../../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation.mock'
 import { CommandRedoItem } from '../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { MenuIconSelect } from '.'
+
+jest.mock('../../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 describe('MenuIconSelect', () => {
   it('should render without icon selected', () => {
@@ -78,6 +85,7 @@ describe('MenuIconSelect', () => {
     fireEvent.click(options[6])
 
     await waitFor(() => expect(mockUpdate.result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('can reset the icon', async () => {
@@ -122,6 +130,8 @@ describe('MenuIconSelect', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(mockUpdateRedo.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should handle undo/redo', async () => {
@@ -159,5 +169,7 @@ describe('MenuIconSelect', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(mockUpdateRedo.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

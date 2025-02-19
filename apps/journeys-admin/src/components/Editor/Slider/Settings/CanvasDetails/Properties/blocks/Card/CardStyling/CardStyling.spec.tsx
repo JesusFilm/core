@@ -16,6 +16,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { CARD_BLOCK_THEME_MODE_UPDATE, CardStyling } from './CardStyling'
@@ -24,6 +25,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
+
+jest.mock('../../../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 const initialBlock: TreeBlock<CardBlock> = {
   id: 'card1.id',
@@ -243,6 +250,7 @@ describe('CardStyling', () => {
     )
     fireEvent.click(screen.getByTestId('Dark'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo a styling change', async () => {
@@ -310,5 +318,7 @@ describe('CardStyling', () => {
     await waitFor(() => expect(result).toHaveBeenCalledTimes(1))
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(result).toHaveBeenCalledTimes(2))
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

@@ -16,6 +16,7 @@ import {
   BlockFields_SignUpBlock as SignUpBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import { SignUpBlockCreate } from '../../../../../../../../__generated__/SignUpBlockCreate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
@@ -111,6 +112,7 @@ export function NewSignUpButton(): ReactElement {
           update(cache, { data }) {
             blockCreateUpdate(cache, journey?.id, data?.submitIcon)
             blockCreateUpdate(cache, journey?.id, data?.signUpBlockUpdate)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

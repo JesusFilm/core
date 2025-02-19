@@ -16,12 +16,19 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../../../../../../../__generated__/JourneyFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import { videoItems } from '../../../../../Drawer/VideoLibrary/data'
 import { GET_VIDEO } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
 
 import { VIDEO_BLOCK_UPDATE, VideoOptions } from './VideoOptions'
+
+jest.mock('../../../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 jest.mock('react-instantsearch')
 
@@ -222,6 +229,7 @@ describe('VideoOptions', () => {
     await waitFor(() =>
       expect(videoBlockResult).toHaveBeenCalledWith(videoBlockUpdateVariables)
     )
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo the property change', async () => {
@@ -304,5 +312,7 @@ describe('VideoOptions', () => {
     await waitFor(() => expect(result1).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(result2).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

@@ -7,6 +7,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { JourneyFields as Journey } from '../../../../../../../../../../../__generated__/JourneyFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -18,6 +19,15 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
+
+jest.mock(
+  '../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate',
+  () => {
+    return {
+      journeyUpdatedAtCacheUpdate: jest.fn()
+    }
+  }
+)
 
 const selectedBlock: TreeBlock<TextResponseBlock> = {
   __typename: 'TextResponseBlock',
@@ -118,6 +128,7 @@ describe('MinRows', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Four Rows' }))
     await waitFor(() => expect(mockMinRowsUpdate1.result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo min rows change', async () => {
@@ -140,6 +151,8 @@ describe('MinRows', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(mockMinRowsUpdate2.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo the change to min rows that was undone', async () => {
@@ -166,6 +179,8 @@ describe('MinRows', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(mockMinRowsUpdate3.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should not call mutation if no selected block', async () => {
@@ -180,6 +195,9 @@ describe('MinRows', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Four Rows' }))
     await waitFor(() =>
       expect(mockMinRowsUpdate1.result).not.toHaveBeenCalled()
+    )
+    await waitFor(() =>
+      expect(journeyUpdatedAtCacheUpdate).not.toHaveBeenCalled()
     )
   })
 })

@@ -11,6 +11,7 @@ import {
   IconName
 } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../../../../../../../__generated__/JourneyFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -20,6 +21,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
+
+jest.mock('../../../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 describe('Color', () => {
   const selectedBlock: TreeBlock<ButtonBlock> = {
@@ -105,6 +112,7 @@ describe('Color', () => {
     expect(getByRole('button', { name: 'Default' })).toHaveClass('Mui-selected')
     fireEvent.click(getByRole('button', { name: 'Secondary' }))
     await waitFor(() => expect(mockIconColorUpdate1.result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo the icon color change', async () => {
@@ -127,6 +135,8 @@ describe('Color', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(mockIconColorUpdate2.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo the icon color change that was undone', async () => {
@@ -157,5 +167,7 @@ describe('Color', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

@@ -11,6 +11,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { ButtonFields } from '../../../../../../../../__generated__/ButtonFields'
 import { ButtonVariant } from '../../../../../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -20,6 +21,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
+
+jest.mock('../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 describe('ButtonEdit', () => {
   const props: TreeBlock<ButtonFields> = {
@@ -110,6 +117,7 @@ describe('ButtonEdit', () => {
     const input = screen.getByRole('textbox', { name: '' })
     await userEvent.type(input, ' update')
     await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo the label change', async () => {
@@ -135,6 +143,8 @@ describe('ButtonEdit', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(mockLabelUpdate2.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo the undone label change', async () => {
@@ -168,6 +178,8 @@ describe('ButtonEdit', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(redoLabelMock.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should not submit if the current value is the same', async () => {

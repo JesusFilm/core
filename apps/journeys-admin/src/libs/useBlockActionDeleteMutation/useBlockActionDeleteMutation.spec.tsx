@@ -6,10 +6,17 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../__generated__/BlockFields'
 import { JourneyFields as Journey } from '../../../__generated__/JourneyFields'
+import { journeyUpdatedAtCacheUpdate } from '../journeyUpdatedAtCacheUpdate'
 
 import { blockActionDeleteMock } from './useBlockActionDeleteMutation.mock'
 
 import { useBlockActionDeleteMutation } from '.'
+
+jest.mock('../journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 describe('useBlockActionDeleteMutation', () => {
   const journey = {
@@ -55,6 +62,8 @@ describe('useBlockActionDeleteMutation', () => {
 
       expect(mockResult).toHaveBeenCalled()
     })
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should update cache', async () => {
@@ -85,5 +94,7 @@ describe('useBlockActionDeleteMutation', () => {
         })
       )
     })
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

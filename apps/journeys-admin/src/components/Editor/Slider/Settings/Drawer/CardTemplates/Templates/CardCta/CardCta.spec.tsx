@@ -27,6 +27,7 @@ import {
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { CommandRedoItem } from '../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -43,6 +44,12 @@ jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()
 }))
+
+jest.mock('../../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
@@ -513,6 +520,7 @@ describe('CardCta', () => {
         { __ref: 'IconBlock:endIcon3Id' }
       ])
     })
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('undoes the creation of the card cta template', async () => {
@@ -553,6 +561,8 @@ describe('CardCta', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(result2).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('redoes the creation of the card cta template', async () => {
@@ -598,5 +608,7 @@ describe('CardCta', () => {
     await waitFor(() => expect(result2).toHaveBeenCalled())
     fireEvent.click(getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(result3).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

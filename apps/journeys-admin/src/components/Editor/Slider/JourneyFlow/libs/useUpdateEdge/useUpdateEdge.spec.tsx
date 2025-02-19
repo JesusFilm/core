@@ -10,6 +10,7 @@ import {
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
 import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 import { blockActionNavigateToBlockUpdateMock } from '../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
 import { blockOrderUpdateMock } from '../../../../../../libs/useBlockOrderUpdateMutation/useBlockOrderUpdateMutation.mock'
@@ -21,6 +22,12 @@ import { CommandRedoItem } from '../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../Toolbar/Items/CommandUndoItem'
 
 import { useUpdateEdge } from './useUpdateEdge'
+
+jest.mock('../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 const block = {
   __typename: 'ButtonBlock',
@@ -94,6 +101,8 @@ describe('useUpdateEdge', () => {
     fireEvent.click(redo)
     await waitFor(() => expect(mockRedoResult).toHaveBeenCalled())
     expect(screen.getByText('selectedStep: blockId')).toBeInTheDocument()
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should update nextBlockId for step block edge and undo/redo', async () => {
@@ -158,6 +167,8 @@ describe('useUpdateEdge', () => {
     fireEvent.click(redo)
     await waitFor(() => expect(mockRedoResult).toHaveBeenCalled())
     expect(screen.getByText('selectedStep: step1.id')).toBeInTheDocument()
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should update navigateToBlockAction for action edge and undo/redo', async () => {
@@ -187,6 +198,7 @@ describe('useUpdateEdge', () => {
       sourceHandle: 'button2.id'
     })
     await waitFor(() => expect(blockActionResult).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should update edge for source node change', async () => {
@@ -244,5 +256,6 @@ describe('useUpdateEdge', () => {
       }
     })
     await waitFor(() => expect(stepBlockResult).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

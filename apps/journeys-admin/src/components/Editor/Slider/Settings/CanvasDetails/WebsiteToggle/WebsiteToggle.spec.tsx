@@ -9,11 +9,18 @@ import {
   JourneySettingsUpdate,
   JourneySettingsUpdateVariables
 } from '../../../../../../../__generated__/JourneySettingsUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { JOURNEY_SETTINGS_UPDATE } from '../../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
 import { CommandRedoItem } from '../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../Toolbar/Items/CommandUndoItem'
 
 import { WebsiteToggle } from '.'
+
+jest.mock('../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 describe('WebsiteToggle', () => {
   const defaultJourney = {
@@ -79,6 +86,7 @@ describe('WebsiteToggle', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: 'Website' }))
     await waitFor(() => expect(mockWebsiteTrueUpdate.result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should update to journey mode', async () => {
@@ -106,6 +114,7 @@ describe('WebsiteToggle', () => {
     await waitFor(() =>
       expect(mockWebsiteFalseUpdate.result).toHaveBeenCalled()
     )
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should not update when clicking the already selected option', async () => {
@@ -174,5 +183,7 @@ describe('WebsiteToggle', () => {
     await waitFor(() =>
       expect(mockWebsiteTrueSecondUpdate.result).toHaveBeenCalled()
     )
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

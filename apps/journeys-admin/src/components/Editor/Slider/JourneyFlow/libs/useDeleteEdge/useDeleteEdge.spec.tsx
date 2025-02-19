@@ -10,6 +10,7 @@ import {
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../__generated__/BlockFields'
 import { JourneyFields as Journey } from '../../../../../../../__generated__/JourneyFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
 import { blockActionDeleteMock } from '../../../../../../libs/useBlockActionDeleteMutation/useBlockActionDeleteMutation.mock'
 import { blockActionNavigateToBlockUpdateMock } from '../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
@@ -21,6 +22,12 @@ import { CommandRedoItem } from '../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../Toolbar/Items/CommandUndoItem'
 
 import { useDeleteEdge } from './useDeleteEdge'
+
+jest.mock('../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 const block = {
   __typename: 'ButtonBlock',
@@ -112,6 +119,8 @@ describe('useDeleteEdge', () => {
     fireEvent.click(redo)
     await waitFor(() => expect(mockRedoResult).toHaveBeenCalled())
     expect(screen.getByText('selectedStep: step0.id')).toBeInTheDocument()
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should delete an edge from a block action and undo/redo', async () => {
@@ -159,5 +168,7 @@ describe('useDeleteEdge', () => {
     fireEvent.click(redo)
     await waitFor(() => expect(mockRedoResult).toHaveBeenCalled())
     expect(screen.getByText('selectedStep: step1.id')).toBeInTheDocument()
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

@@ -25,6 +25,7 @@ import {
 } from '../../../../../../../../../../__generated__/CoverBlockRestore'
 import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import { VideoBlockSource } from '../../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { COVER_BLOCK_DELETE } from '../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
 import { COVER_BLOCK_RESTORE } from '../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
@@ -48,6 +49,12 @@ jest.mock('next/router', () => ({
     }
   }))
 }))
+
+jest.mock('../../../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
@@ -446,5 +453,6 @@ describe('BackgroundMedia', () => {
         { shallow: true }
       )
     })
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

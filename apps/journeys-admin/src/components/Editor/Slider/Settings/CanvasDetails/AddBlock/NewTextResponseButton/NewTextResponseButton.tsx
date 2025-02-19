@@ -14,6 +14,7 @@ import type {
   BlockFields_TextResponseBlock as TextResponseBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import type { TextResponseBlockCreate } from '../../../../../../../../__generated__/TextResponseBlockCreate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
@@ -76,6 +77,7 @@ export function NewTextResponseButton(): ReactElement {
           },
           update(cache, { data }) {
             blockCreateUpdate(cache, journey?.id, data?.textResponseBlockCreate)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

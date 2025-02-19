@@ -8,11 +8,18 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../../../__generated__/GetJourney'
 import { TypographyVariant } from '../../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { TYPOGRAPHY_BLOCK_UPDATE_VARIANT } from './Variant'
 
 import { Variant } from '.'
+
+jest.mock('../../../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 describe('Typography variant selector', () => {
   it('should show variant properties', () => {
@@ -105,6 +112,7 @@ describe('Typography variant selector', () => {
     )
     fireEvent.click(getByRole('button', { name: 'Overline' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo the property change', async () => {
@@ -184,5 +192,7 @@ describe('Typography variant selector', () => {
     await waitFor(() => expect(result1).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(result2).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

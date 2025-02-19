@@ -21,6 +21,7 @@ import {
 } from '../../../../../../../../../__generated__/CardVideoRestore'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 import { CommandRedoItem } from '../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../Toolbar/Items/CommandUndoItem'
@@ -42,6 +43,12 @@ jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()
 }))
+
+jest.mock('../../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
@@ -229,6 +236,7 @@ describe('CardVideo', () => {
         { __ref: 'VideoBlock:videoBlockId' }
       ])
     })
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should select videoblock on click', async () => {
@@ -283,6 +291,7 @@ describe('CardVideo', () => {
     await waitFor(() => {
       expect(result2).toHaveBeenCalled()
     })
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo card video', async () => {
@@ -323,5 +332,6 @@ describe('CardVideo', () => {
     await waitFor(() => {
       expect(result3).toHaveBeenCalled()
     })
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

@@ -16,6 +16,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { CARD_BLOCK_LAYOUT_UPDATE, CardLayout } from './CardLayout'
@@ -24,6 +25,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
+
+jest.mock('../../../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -222,6 +229,8 @@ describe('CardLayout', () => {
     )
     fireEvent.click(screen.getByTestId('true'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('undoes changes to layout', async () => {
@@ -292,5 +301,7 @@ describe('CardLayout', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(result2).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

@@ -13,6 +13,7 @@ import {
   SpacerBlockCreate,
   SpacerBlockCreateVariables
 } from '../../../../../../../../__generated__/SpacerBlockCreate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
@@ -31,6 +32,12 @@ jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()
 }))
+
+jest.mock('../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
@@ -102,6 +109,7 @@ describe('NewSpacerButton', () => {
 
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(spacerBlockCreateMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo when undo clicked', async () => {
@@ -148,6 +156,8 @@ describe('NewSpacerButton', () => {
     await waitFor(() => expect(spacerBlockCreateMock.result).toHaveBeenCalled())
     fireEvent.click(getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(deleteResult).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo when redo clicked', async () => {
@@ -209,6 +219,8 @@ describe('NewSpacerButton', () => {
     await waitFor(() => expect(deleteResult).toHaveBeenCalled())
     fireEvent.click(getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(restoreResult).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should update cache', async () => {

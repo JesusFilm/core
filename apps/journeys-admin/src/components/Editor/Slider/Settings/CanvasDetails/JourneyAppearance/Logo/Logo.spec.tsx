@@ -18,6 +18,7 @@ import {
   LogoBlockCreate,
   LogoBlockCreateVariables
 } from '../../../../../../../../__generated__/LogoBlockCreate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 import { createCloudflareUploadByUrlMock } from '../../../Drawer/ImageBlockEditor/CustomImage/CustomUrl/data'
@@ -37,6 +38,12 @@ jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()
 }))
+
+jest.mock('../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
@@ -193,6 +200,7 @@ describe('Logo', () => {
     fireEvent.blur(textBox)
 
     await waitFor(() => expect(createLogoMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
     expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
       { __ref: 'ImageBlock:logoImageBlockId' }
     ])
@@ -246,6 +254,8 @@ describe('Logo', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(redoMock.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should update logo image', async () => {
@@ -294,6 +304,7 @@ describe('Logo', () => {
     fireEvent.blur(textBox)
 
     await waitFor(() => expect(updateMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo logo image update', async () => {
@@ -355,6 +366,7 @@ describe('Logo', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(undoMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should delete logo image block', async () => {
@@ -394,6 +406,7 @@ describe('Logo', () => {
     )
 
     await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo logo image block delete', async () => {
@@ -445,6 +458,8 @@ describe('Logo', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
     await waitFor(() => expect(undoMock.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should update logo scale', async () => {
@@ -484,6 +499,7 @@ describe('Logo', () => {
     )
 
     await waitFor(() => expect(updateMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo logo scale update', async () => {
@@ -534,5 +550,7 @@ describe('Logo', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
     await waitFor(() => expect(undoMock.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

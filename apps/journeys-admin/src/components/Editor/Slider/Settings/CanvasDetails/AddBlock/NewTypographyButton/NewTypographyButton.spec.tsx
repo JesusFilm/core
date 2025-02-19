@@ -12,6 +12,7 @@ import {
 } from '../../../../../../../../__generated__/BlockFields'
 import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
@@ -30,6 +31,12 @@ jest.mock('uuid', () => ({
   __esModule: true,
   v4: () => 'typographyBlockId'
 }))
+
+jest.mock('../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 describe('NewTypographyButton', () => {
   const selectedStep: TreeBlock = {
@@ -129,6 +136,8 @@ describe('NewTypographyButton', () => {
     )
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should create a body2 variant if another typography block already exists', async () => {
@@ -185,6 +194,8 @@ describe('NewTypographyButton', () => {
     )
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo if undo is clicked', async () => {
@@ -254,6 +265,8 @@ describe('NewTypographyButton', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(deleteResult).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo if redo is clicked', async () => {

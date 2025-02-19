@@ -19,11 +19,21 @@ import {
   TextResponseRouteUpdate,
   TextResponseRouteUpdateVariables
 } from '../../../../../../../../../../../../__generated__/TextResponseRouteUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { getIntegrationMock } from '../../../../../../../../../../../libs/useIntegrationQuery/useIntegrationQuery.mock'
 import { CommandRedoItem } from '../../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { Route, TEXT_RESPONSE_ROUTE_UPDATE } from './Route'
+
+jest.mock(
+  '../../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate',
+  () => {
+    return {
+      journeyUpdatedAtCacheUpdate: jest.fn()
+    }
+  }
+)
 
 const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
@@ -141,6 +151,7 @@ describe('Route', () => {
       fireEvent.click(screen.getByRole('option', { name: 'My First Email' }))
     )
     expect(routeUpdateMock.result).toHaveBeenCalled()
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should not render route select if integrationId is not set', async () => {
@@ -205,6 +216,8 @@ describe('Route', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(routeUpdateMock2.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo the change to routeId that was undone', async () => {
@@ -251,5 +264,7 @@ describe('Route', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

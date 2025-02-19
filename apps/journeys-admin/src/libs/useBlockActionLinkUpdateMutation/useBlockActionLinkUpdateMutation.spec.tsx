@@ -7,10 +7,17 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../__generated__/BlockFields'
 import { JourneyFields as Journey } from '../../../__generated__/JourneyFields'
+import { journeyUpdatedAtCacheUpdate } from '../journeyUpdatedAtCacheUpdate'
 
 import { blockActionLinkUpdateMock } from './useBlockActionLinkUpdateMutation.mock'
 
 import { useBlockActionLinkUpdateMutation } from '.'
+
+jest.mock('../journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 describe('useBlockActionLinkUpdateMutation', () => {
   const block1: ButtonBlock = {
@@ -37,7 +44,9 @@ describe('useBlockActionLinkUpdateMutation', () => {
         <MockedProvider
           mocks={[{ ...blockActionLinkUpdateMock, result: mockResult }]}
         >
-          {children}
+          <JourneyProvider value={{ journey: {} as unknown as Journey }}>
+            {children}
+          </JourneyProvider>
         </MockedProvider>
       )
     })
@@ -47,6 +56,8 @@ describe('useBlockActionLinkUpdateMutation', () => {
 
       expect(mockResult).toHaveBeenCalled()
     })
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should update cache', async () => {
@@ -82,5 +93,7 @@ describe('useBlockActionLinkUpdateMutation', () => {
         })
       )
     })
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

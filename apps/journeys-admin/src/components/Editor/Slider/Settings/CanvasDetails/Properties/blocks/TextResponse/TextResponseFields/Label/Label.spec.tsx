@@ -10,6 +10,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { JourneyFields as Journey } from '../../../../../../../../../../../__generated__/JourneyFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -21,6 +22,15 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
+
+jest.mock(
+  '../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate',
+  () => {
+    return {
+      journeyUpdatedAtCacheUpdate: jest.fn()
+    }
+  }
+)
 
 describe('Edit Label field', () => {
   const block: TreeBlock<TextResponseBlock> = {
@@ -138,6 +148,7 @@ describe('Edit Label field', () => {
     const field = screen.getByRole('textbox', { name: 'Label' })
     await userEvent.type(field, ' more')
     await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo the label change', async () => {
@@ -163,6 +174,8 @@ describe('Edit Label field', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(mockLabelUpdate2.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo the change to label that was undone', async () => {
@@ -192,6 +205,8 @@ describe('Edit Label field', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(mockLabelUpdate3.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should not call mutation if not selectedBlock', async () => {
@@ -211,5 +226,8 @@ describe('Edit Label field', () => {
     const field = screen.getByRole('textbox', { name: 'Label' })
     await userEvent.type(field, ' more')
     await waitFor(() => expect(mockLabelUpdate1.result).not.toHaveBeenCalled())
+    await waitFor(() =>
+      expect(journeyUpdatedAtCacheUpdate).not.toHaveBeenCalled()
+    )
   })
 })

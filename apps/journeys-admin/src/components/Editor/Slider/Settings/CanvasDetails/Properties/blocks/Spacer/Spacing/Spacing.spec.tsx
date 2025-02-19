@@ -11,12 +11,19 @@ import {
   SpacerSpacingUpdate,
   SpacerSpacingUpdateVariables
 } from '../../../../../../../../../../__generated__/SpacerSpacingUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { SPACER_SPACING_UPDATE } from './Spacing'
 
 import { Spacing } from '.'
+
+jest.mock('../../../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 describe('Spacing', () => {
   const selectedBlock: TreeBlock<SpacerBlock> = {
@@ -106,6 +113,7 @@ describe('Spacing', () => {
 
     await waitFor(() => expect(spacingUpdateMock.result).toHaveBeenCalled())
     expect(setValue).toHaveBeenCalledWith(200)
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo the spacing change', async () => {
@@ -131,6 +139,8 @@ describe('Spacing', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(spacingUpdateMock2.result).toHaveBeenCalled())
     expect(setValue).toHaveBeenCalledWith(100)
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo the undone spacing change', async () => {
@@ -166,6 +176,8 @@ describe('Spacing', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
     expect(setValue).toHaveBeenCalledWith(200)
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should not call mutation if no selected block', async () => {
@@ -183,5 +195,8 @@ describe('Spacing', () => {
     fireEvent.mouseUp(slider)
 
     await waitFor(() => expect(spacingUpdateMock.result).not.toHaveBeenCalled())
+    await waitFor(() =>
+      expect(journeyUpdatedAtCacheUpdate).not.toHaveBeenCalled()
+    )
   })
 })

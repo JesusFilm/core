@@ -20,6 +20,7 @@ import {
   ButtonSize,
   ButtonVariant
 } from '../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
@@ -139,6 +140,7 @@ export function NewButtonButton(): ReactElement {
             blockCreateUpdate(cache, journey.id, data?.startIcon)
             blockCreateUpdate(cache, journey.id, data?.endIcon)
             blockCreateUpdate(cache, journey.id, data?.buttonBlockUpdate)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

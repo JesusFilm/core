@@ -35,6 +35,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { COVER_BLOCK_DELETE } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
 import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
@@ -58,6 +59,15 @@ jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()
 }))
+
+jest.mock(
+  '../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate',
+  () => {
+    return {
+      journeyUpdatedAtCacheUpdate: jest.fn()
+    }
+  }
+)
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
@@ -321,6 +331,8 @@ describe('BackgroundMediaImage', () => {
     expect(cache.extract()[`CardBlock:${card.id}`]?.coverBlockId).toEqual(
       image.id
     )
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   describe('Existing image cover', () => {
@@ -444,6 +456,10 @@ describe('BackgroundMediaImage', () => {
       await waitFor(() => expect(undoResult).toHaveBeenCalled())
       fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
       await waitFor(() => expect(redoResult).toHaveBeenCalled())
+
+      await waitFor(() =>
+        expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled()
+      )
     })
 
     it('deletes an image block', async () => {
@@ -505,6 +521,9 @@ describe('BackgroundMediaImage', () => {
         expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
           { __ref: `CardBlock:${card.id}` }
         ])
+      )
+      await waitFor(() =>
+        expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled()
       )
     })
   })

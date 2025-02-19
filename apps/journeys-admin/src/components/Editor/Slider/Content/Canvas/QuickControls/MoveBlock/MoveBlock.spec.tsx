@@ -12,6 +12,7 @@ import {
   BlockOrderUpdateVariables
 } from '../../../../../../../../__generated__/BlockOrderUpdate'
 import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { blockOrderUpdateMock } from '../../../../../../../libs/useBlockOrderUpdateMutation/useBlockOrderUpdateMutation.mock'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
@@ -22,6 +23,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
+
+jest.mock('../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 describe('MoveBlockButton', () => {
   const block1: TreeBlock = {
@@ -176,6 +183,8 @@ describe('MoveBlockButton', () => {
     await waitFor(() => expect(resultUndo).toHaveBeenCalled())
     await userEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(resultRedo).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should move selected block down on click', async () => {
@@ -230,6 +239,8 @@ describe('MoveBlockButton', () => {
     await waitFor(() => expect(resultUndo).toHaveBeenCalled())
     await userEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(resultRedo).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should disable move up if first block', async () => {

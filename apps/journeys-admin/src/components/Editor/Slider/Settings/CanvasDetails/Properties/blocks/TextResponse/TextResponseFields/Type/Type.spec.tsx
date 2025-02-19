@@ -9,10 +9,20 @@ import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../
 import { TextResponseType } from '../../../../../../../../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../../../../../../../../__generated__/JourneyFields'
 import { TextResponseTypeUpdate } from '../../../../../../../../../../../__generated__/TextResponseTypeUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import { TEXT_RESPONSE_TYPE_UPDATE, Type } from './Type'
+
+jest.mock(
+  '../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate',
+  () => {
+    return {
+      journeyUpdatedAtCacheUpdate: jest.fn()
+    }
+  }
+)
 
 describe('Type', () => {
   const selectedBlock: TreeBlock<TextResponseBlock> = {
@@ -98,6 +108,7 @@ describe('Type', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Email' }))
     await waitFor(() => expect(mockEmailUpdate.result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should reset integrationId and routeId to null if type is freeform', async () => {
@@ -122,6 +133,7 @@ describe('Type', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Freeform' }))
     await waitFor(() => expect(mockFreeformUpdate.result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo the change to type', async () => {
@@ -145,6 +157,8 @@ describe('Type', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(mockFreeformUpdate.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo the change to type that was undone', async () => {
@@ -174,6 +188,8 @@ describe('Type', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(mockRedoUpdate.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should not call mutation if there is no selected block', async () => {
@@ -187,6 +203,9 @@ describe('Type', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Email' }))
     await waitFor(() => expect(mockEmailUpdate.result).not.toHaveBeenCalled())
+    await waitFor(() =>
+      expect(journeyUpdatedAtCacheUpdate).not.toHaveBeenCalled()
+    )
   })
 
   it('should retain integration and route when switching from email to name', async () => {

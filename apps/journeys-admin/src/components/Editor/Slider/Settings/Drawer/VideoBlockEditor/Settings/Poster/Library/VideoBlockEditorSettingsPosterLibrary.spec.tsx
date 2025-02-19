@@ -36,6 +36,7 @@ import {
   PosterImageBlockUpdate,
   PosterImageBlockUpdateVariables
 } from '../../../../../../../../../../__generated__/PosterImageBlockUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import { createCloudflareUploadByUrlMock } from '../../../../ImageBlockEditor/CustomImage/CustomUrl/data'
@@ -60,6 +61,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
+
+jest.mock('../../../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -361,6 +368,10 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           { __ref: `ImageBlock:${image.id}` }
         ])
       )
+
+      await waitFor(() =>
+        expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled()
+      )
     })
   })
 
@@ -483,6 +494,10 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
       await waitFor(() => expect(undoResult).toHaveBeenCalled())
       fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
       await waitFor(() => expect(redoResult).toHaveBeenCalled())
+
+      await waitFor(() =>
+        expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled()
+      )
     })
 
     it('deletes an image block', async () => {
@@ -541,6 +556,10 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
         expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
           { __ref: `VideoBlock:${video.id}` }
         ])
+      )
+
+      await waitFor(() =>
+        expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled()
       )
     })
   })

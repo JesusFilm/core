@@ -8,6 +8,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
 import { ButtonSize } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../../../../../../../__generated__/JourneyFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -19,6 +20,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
+
+jest.mock('../../../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 describe('Button size selector', () => {
   const selectedBlock: TreeBlock<ButtonBlock> = {
@@ -105,6 +112,7 @@ describe('Button size selector', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: 'Small' }))
     await waitFor(() => expect(sizeUpdateMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo the size change', async () => {
@@ -126,6 +134,8 @@ describe('Button size selector', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(sizeUpdateMock2.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo the undone size change', async () => {
@@ -156,6 +166,8 @@ describe('Button size selector', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should not call mutation when no selected block', async () => {
@@ -171,5 +183,8 @@ describe('Button size selector', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: 'Small' }))
     await waitFor(() => expect(sizeUpdateMock.result).not.toHaveBeenCalled())
+    await waitFor(() =>
+      expect(journeyUpdatedAtCacheUpdate).not.toHaveBeenCalled()
+    )
   })
 })

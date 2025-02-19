@@ -13,6 +13,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import { StepDuplicate } from '../../../../../../../../../__generated__/StepDuplicate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 import {
   deleteBlockMock,
@@ -29,6 +30,12 @@ import { DuplicateStep } from '.'
 jest.mock('uuid', () => ({
   v4: jest.fn()
 }))
+
+jest.mock('../../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 const mockV4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
@@ -110,6 +117,7 @@ describe('DuplicateStep', () => {
     await waitFor(async () => await userEvent.click(duplicateButton))
 
     await waitFor(() => expect(mockDuplicateStepResult).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo the duplicated step', async () => {
@@ -165,6 +173,8 @@ describe('DuplicateStep', () => {
       })
     )
     await waitFor(() => expect(blockDeleteMockResult).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo the duplicated step', async () => {
@@ -239,6 +249,8 @@ describe('DuplicateStep', () => {
       })
     )
     await waitFor(() => expect(blockRestoreMockResult).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should update cache after duplication', async () => {

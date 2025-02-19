@@ -17,6 +17,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { TestEditorState } from '../../../../../../../../../libs/TestEditorState'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
@@ -30,6 +31,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
+
+jest.mock('../../../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 const journey: Journey = {
   __typename: 'Journey',
@@ -187,6 +194,7 @@ describe('BackgroundColor', () => {
     )
     fireEvent.click(screen.getAllByTestId('Swatch-#B0BEC5')[0])
     await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('undoes any color changes via palette picker', async () => {
@@ -258,6 +266,7 @@ describe('BackgroundColor', () => {
     await waitFor(() =>
       expect(cardBlockBackgroundColorUpdateUndoMockResult).toHaveBeenCalled()
     )
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
     expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
   })
@@ -309,5 +318,6 @@ describe('BackgroundColor', () => {
 
     fireEvent.change(textField, { target: { value: '#B0BEC5' } })
     await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

@@ -22,9 +22,16 @@ import {
   mockMenuButton2,
   mockMenuButton3
 } from '../../components/Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Menu/MenuActionButton/data'
+import { journeyUpdatedAtCacheUpdate } from '../journeyUpdatedAtCacheUpdate'
 
 import { useMenuBlockCreateMutation } from './useMenuBlockCreateMutation'
 import { mockUseMenuBlockCreateMutation } from './useMenuBlockCreateMutation.mock'
+
+jest.mock('../journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 describe('useMenuBlockCreateMutation', () => {
   const input = {
@@ -105,6 +112,7 @@ describe('useMenuBlockCreateMutation', () => {
 
       expect(mockUseMenuBlockCreateMutation.result).toHaveBeenCalled()
     })
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should update cache', async () => {
@@ -142,5 +150,6 @@ describe('useMenuBlockCreateMutation', () => {
         ])
       )
     })
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

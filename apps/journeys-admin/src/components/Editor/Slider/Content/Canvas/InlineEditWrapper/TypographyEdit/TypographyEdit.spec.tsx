@@ -10,6 +10,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -19,6 +20,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
+
+jest.mock('../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 describe('TypographyEdit', () => {
   const props: ComponentProps<typeof TypographyEdit> = {
@@ -113,6 +120,9 @@ describe('TypographyEdit', () => {
     await waitFor(() =>
       expect(mockUpdateSuccess1.result).not.toHaveBeenCalled()
     )
+    await waitFor(() =>
+      expect(journeyUpdatedAtCacheUpdate).not.toHaveBeenCalled()
+    )
   })
 
   it('persists selection state on outside click', async () => {
@@ -168,6 +178,8 @@ describe('TypographyEdit', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(mockUpdateSuccess2.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo the typography content change', async () => {
@@ -202,5 +214,7 @@ describe('TypographyEdit', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(firstUpdateMock.result).toHaveBeenCalled())
+
+    expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled()
   })
 })

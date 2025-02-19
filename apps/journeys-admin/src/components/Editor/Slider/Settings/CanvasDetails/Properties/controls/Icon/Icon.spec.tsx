@@ -9,6 +9,7 @@ import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../
 import { IconName } from '../../../../../../../../../__generated__/globalTypes'
 import { IconFields } from '../../../../../../../../../__generated__/IconFields'
 import { JourneyFields as Journey } from '../../../../../../../../../__generated__/JourneyFields'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { CommandRedoItem } from '../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -20,6 +21,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
+
+jest.mock('../../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 describe('Icon', () => {
   const icon: TreeBlock<IconFields> = {
@@ -129,6 +136,7 @@ describe('Icon', () => {
     fireEvent.mouseDown(getByRole('combobox', { name: 'icon-name' }))
     fireEvent.click(getByRole('option', { name: 'Arrow Right' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('removes icon when selecing the default option', async () => {
@@ -169,6 +177,7 @@ describe('Icon', () => {
     fireEvent.mouseDown(getByRole('combobox', { name: 'icon-name' }))
     fireEvent.click(getByRole('option', { name: 'None' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('changes the icon when selecting a different icon', async () => {
@@ -209,6 +218,7 @@ describe('Icon', () => {
     fireEvent.mouseDown(getByRole('combobox', { name: 'icon-name' }))
     fireEvent.click(getByRole('option', { name: 'Been Here' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo the icon change', async () => {
@@ -275,6 +285,8 @@ describe('Icon', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(result2).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo the icon change that was undone', async () => {
@@ -346,5 +358,7 @@ describe('Icon', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(result1).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

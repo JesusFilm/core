@@ -6,6 +6,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
+import { journeyUpdatedAtCacheUpdate } from '../../../../libs/journeyUpdatedAtCacheUpdate'
 import {
   deleteCardBlockMock,
   deleteStepMock,
@@ -19,6 +20,12 @@ import {
 import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 
 import { useBlockDeleteCommand } from './useBlockDeleteCommand'
+
+jest.mock('../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 describe('useBlockDeleteCommand', () => {
   const initiatEditorState = {
@@ -76,6 +83,7 @@ describe('useBlockDeleteCommand', () => {
     await waitFor(() => {
       expect(useBlockRestoreMutationMockResult).toHaveBeenCalled()
     })
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should call block delete for non step block', async () => {
@@ -123,5 +131,6 @@ describe('useBlockDeleteCommand', () => {
     await waitFor(() => {
       expect(useBlockRestoreMutationMockResult).toHaveBeenCalled()
     })
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

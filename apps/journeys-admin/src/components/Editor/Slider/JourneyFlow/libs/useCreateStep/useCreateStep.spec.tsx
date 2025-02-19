@@ -6,6 +6,7 @@ import {
   BlockRestore,
   BlockRestoreVariables
 } from '../../../../../../../__generated__/BlockRestore'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { restoreStepMock } from '../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 import { stepAndCardBlockCreateMock } from '../../../../../../libs/useStepAndCardBlockCreateMutation/useStepAndCardBlockCreateMutation.mock'
 import { TestUseCreateStepHooks } from '../TestUseCreateStepHooks'
@@ -16,6 +17,12 @@ jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()
 }))
+
+jest.mock('../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
@@ -35,6 +42,7 @@ describe('useCreateStep', () => {
     fireEvent.click(screen.getByTestId('useCreateStep'))
 
     await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo a step', async () => {
@@ -59,6 +67,8 @@ describe('useCreateStep', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(result2).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo a step', async () => {
@@ -98,5 +108,7 @@ describe('useCreateStep', () => {
     await waitFor(() => expect(result2).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(result3).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

@@ -15,6 +15,7 @@ import {
 } from '../../../../../../../../__generated__/BlockFields'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
 import { TypographyBlockCreate } from '../../../../../../../../__generated__/TypographyBlockCreate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
@@ -80,6 +81,7 @@ export function NewTypographyButton(): ReactElement {
           optimisticResponse: { typographyBlockCreate: typographyBlock },
           update(cache, { data }) {
             blockCreateUpdate(cache, journey?.id, data?.typographyBlockCreate)
+            journeyUpdatedAtCacheUpdate(cache, journey.id)
           }
         })
       }

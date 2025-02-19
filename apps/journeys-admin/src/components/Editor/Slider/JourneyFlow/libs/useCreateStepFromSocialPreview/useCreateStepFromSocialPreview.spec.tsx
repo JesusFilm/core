@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { TestUseCreateStepHooks } from '../TestUseCreateStepHooks'
 
 import {
@@ -17,6 +18,12 @@ jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()
 }))
+
+jest.mock('../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
@@ -39,6 +46,8 @@ describe('useCreateStepFromSocialPreview', () => {
 
     fireEvent.click(screen.getByTestId('useCreateStepFromSocialPreview'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo a new step', async () => {
@@ -71,6 +80,8 @@ describe('useCreateStepFromSocialPreview', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(result2).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo a new step even if it is the only step', async () => {
@@ -98,6 +109,8 @@ describe('useCreateStepFromSocialPreview', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(result2).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo a step', async () => {
@@ -131,5 +144,7 @@ describe('useCreateStepFromSocialPreview', () => {
     await waitFor(() => expect(result2).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(result3).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

@@ -43,6 +43,7 @@ import {
   GetVideoVariables
 } from '../../../../../../../../../../../__generated__/GetVideo'
 import { VideoBlockSource } from '../../../../../../../../../../../__generated__/globalTypes'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { COVER_BLOCK_DELETE } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
 import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
 import { ThemeProvider } from '../../../../../../../../../ThemeProvider'
@@ -62,6 +63,15 @@ jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn()
 }))
+
+jest.mock(
+  '../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate',
+  () => {
+    return {
+      journeyUpdatedAtCacheUpdate: jest.fn()
+    }
+  }
+)
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
@@ -371,6 +381,7 @@ describe('BackgroundMediaVideo', () => {
     expect(cache.extract()[`CardBlock:${card.id}`]?.coverBlockId).toEqual(
       video.id
     )
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   describe('Existing video cover', () => {
@@ -483,6 +494,10 @@ describe('BackgroundMediaVideo', () => {
       await waitFor(() => expect(undoResult).toHaveBeenCalled())
       fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
       await waitFor(() => expect(redoResult).toHaveBeenCalled())
+
+      await waitFor(() =>
+        expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled()
+      )
     })
 
     it('deletes video cover block when video removed', async () => {
@@ -546,6 +561,9 @@ describe('BackgroundMediaVideo', () => {
         expect(cache.extract()[`Journey:${journey.id}`]?.blocks).toEqual([
           { __ref: `CardBlock:${card.id}` }
         ])
+      )
+      await waitFor(() =>
+        expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled()
       )
     })
   })

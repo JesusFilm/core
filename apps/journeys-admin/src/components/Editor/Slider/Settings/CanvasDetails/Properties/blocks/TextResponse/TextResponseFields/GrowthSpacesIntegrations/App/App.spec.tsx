@@ -17,6 +17,7 @@ import {
   TextResponseIntegrationUpdate,
   TextResponseIntegrationUpdateVariables
 } from '../../../../../../../../../../../../__generated__/TextResponseIntegrationUpdate'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { getIntegrationMock } from '../../../../../../../../../../../libs/useIntegrationQuery/useIntegrationQuery.mock'
 import { CommandRedoItem } from '../../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../../Toolbar/Items/CommandUndoItem'
@@ -24,6 +25,15 @@ import { CommandUndoItem } from '../../../../../../../../../Toolbar/Items/Comman
 import { TEXT_RESPONSE_INTEGRATION_UPDATE } from './App'
 
 import { App } from '.'
+
+jest.mock(
+  '../../../../../../../../../../../libs/journeyUpdatedAtCacheUpdate',
+  () => {
+    return {
+      journeyUpdatedAtCacheUpdate: jest.fn()
+    }
+  }
+)
 
 const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
@@ -137,6 +147,7 @@ describe('App', () => {
       fireEvent.click(screen.getByRole('option', { name: 'access.id' }))
     )
     expect(integrationUpdateMock.result).toHaveBeenCalled()
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo change to integration', async () => {
@@ -171,6 +182,7 @@ describe('App', () => {
     await waitFor(() =>
       expect(integrationUpdateMock2.result).toHaveBeenCalled()
     )
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo the change to integration that was undone', async () => {
@@ -213,5 +225,7 @@ describe('App', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(mockFirstUpdate.result).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 })

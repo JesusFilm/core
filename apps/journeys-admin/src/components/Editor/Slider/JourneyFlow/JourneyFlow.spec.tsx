@@ -24,6 +24,7 @@ import {
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { StepFields as StepBlock } from '../../../../../__generated__/StepFields'
 import { mockReactFlow } from '../../../../../test/mockReactFlow'
+import { journeyUpdatedAtCacheUpdate } from '../../../../libs/journeyUpdatedAtCacheUpdate'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 import { CommandRedoItem } from '../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
@@ -45,6 +46,12 @@ jest.mock('../../../../libs/useStepBlockPositionUpdateMutation', () => {
     useStepBlockPositionUpdateMutation: jest
       .fn()
       .mockReturnValue([jest.fn(), null])
+  }
+})
+
+jest.mock('../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
   }
 })
 

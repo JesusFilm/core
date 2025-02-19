@@ -7,6 +7,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import type { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { journeyUpdatedAtCacheUpdate } from '../../../../../../../libs/journeyUpdatedAtCacheUpdate'
 import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
@@ -25,6 +26,12 @@ jest.mock('uuid', () => ({
   __esModule: true,
   v4: () => 'imageBlockId'
 }))
+
+jest.mock('../../../../../../../libs/journeyUpdatedAtCacheUpdate', () => {
+  return {
+    journeyUpdatedAtCacheUpdate: jest.fn()
+  }
+})
 
 describe('NewImageButton', () => {
   const selectedStep: TreeBlock = {
@@ -101,6 +108,7 @@ describe('NewImageButton', () => {
     )
     fireEvent.click(getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should redo if redo clicked', async () => {
@@ -191,6 +199,8 @@ describe('NewImageButton', () => {
     await waitFor(() => expect(deleteResult).toHaveBeenCalled())
     fireEvent.click(getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(restoreResult).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should undo if undo clicked', async () => {
@@ -261,6 +271,8 @@ describe('NewImageButton', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(deleteResult).toHaveBeenCalled())
+
+    await waitFor(() => expect(journeyUpdatedAtCacheUpdate).toHaveBeenCalled())
   })
 
   it('should update the cache', async () => {
