@@ -83,10 +83,10 @@ test.describe('GET /v2/resources', () => {
       _embedded: {
         resources: {
           resourceCount: expect.any(Number),
-          mediaCountries: expect.any(Array),
-          mediaLanguages: expect.any(Array),
-          alternateLanguages: expect.any(Array),
-          mediaComponents: expect.any(Array)
+          countryIds: expect.any(Array),
+          languageIds: expect.any(Array),
+          alternateLanguageIds: expect.any(Array),
+          mediaComponentIds: expect.any(Array)
         }
       }
     })
@@ -134,10 +134,10 @@ test.describe('GET /v2/resources', () => {
       _embedded: {
         resources: {
           resourceCount: expect.any(Number),
-          mediaCountries: expect.any(Array),
-          mediaLanguages: expect.any(Array),
-          alternateLanguages: expect.any(Array),
-          mediaComponents: expect.any(Array)
+          countryIds: expect.any(Array),
+          languageIds: expect.any(Array),
+          alternateLanguageIds: expect.any(Array),
+          mediaComponentIds: expect.any(Array)
         }
       }
     })
@@ -191,17 +191,16 @@ test.describe('GET /v2/resources', () => {
       }
     )
 
-    if (paperHatsVideo.bibleCitations.length > 0) {
-      const citation = paperHatsVideo.bibleCitations[0]
-      expect(citation.osisBibleBook).toEqual(expect.any(String))
-      expect(citation.chapterStart).toEqual(expect.any(Number))
-      expect(citation.verseStart).toEqual(expect.any(Number))
-      expect(
-        citation.chapterEnd === null || typeof citation.chapterEnd === 'number'
-      ).toBeTruthy()
-      expect(
-        citation.verseEnd === null || typeof citation.verseEnd === 'number'
-      ).toBeTruthy()
-    }
+    expect(paperHatsVideo.bibleCitations).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          osisBibleBook: expect.any(String),
+          chapterStart: expect.any(Number),
+          verseStart: expect.any(Number),
+          chapterEnd: expect.any(Number) || null,
+          verseEnd: expect.any(Number) || null
+        })
+      ])
+    )
   })
 })

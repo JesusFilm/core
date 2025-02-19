@@ -322,16 +322,16 @@ resources.get('/', async (c) => {
             transformedVideos.length +
             countryHits.length +
             transformedLanguages.length,
-          mediaCountries:
+          countryIds:
             bulk === 'true'
               ? countryHits.map((country) => country.countryId)
               : transformedCountries,
-          mediaLanguages:
+          languageIds:
             bulk === 'true'
               ? languageHits.map((language) => Number(language.objectID))
               : transformedLanguages,
-          alternateLanguages: [],
-          mediaComponents:
+          alternateLanguageIds: [],
+          mediaComponentIds:
             bulk === 'true'
               ? transformedVideos.map((video) => video.mediaComponentId)
               : transformedVideos
