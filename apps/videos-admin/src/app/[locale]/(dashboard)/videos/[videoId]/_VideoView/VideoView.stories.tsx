@@ -20,7 +20,7 @@ const meta: Meta<typeof VideoView> = {
 type Story = StoryObj<ComponentProps<typeof VideoView>>
 
 const Template: Story = {
-  render: ({ state }) => (
+  render: () => (
     <NextIntlClientProvider locale="en">
       <VideoView />
     </NextIntlClientProvider>
