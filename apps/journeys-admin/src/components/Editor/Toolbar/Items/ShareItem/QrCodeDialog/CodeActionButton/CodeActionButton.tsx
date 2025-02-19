@@ -13,15 +13,17 @@ import { MouseEvent, ReactElement, useState } from 'react'
 
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-interface DownloadQrCodeProps {
-  to?: string
+interface CodeActionButtonProps {
+  shortLink?: string
   loading?: boolean
+  handleGenerateQrCode: () => Promise<void>
 }
 
-export function DownloadQrCode({
-  to,
-  loading
-}: DownloadQrCodeProps): ReactElement {
+export function CodeActionButton({
+  shortLink,
+  loading,
+  handleGenerateQrCode
+}: CodeActionButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [showDownloadMenu, setShowDownloadMenu] = useState(false)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -31,7 +33,7 @@ export function DownloadQrCode({
     setShowDownloadMenu(!showDownloadMenu)
   }
 
-  function handleDownloadQrCode(type: 'png' | 'svg'): void {
+  function handleDownload(): void {
     const canvas = document.getElementById(
       'qr-code-download'
     ) as HTMLCanvasElement | null
@@ -42,31 +44,22 @@ export function DownloadQrCode({
           .replace('image/png', 'image/octet-stream')
         const downloadLink = document.createElement('a')
         downloadLink.href = pngUrl
-        downloadLink.download = `qr-code.${type}`
+        downloadLink.download = 'qr-code.png'
         document.body.appendChild(downloadLink)
         downloadLink.click()
         document.body.removeChild(downloadLink)
-      } catch (error) {
-        if (
-          error.message ===
-          "Failed to execute 'toDataURL' on 'HTMLCanvasElement': Tainted canvases may not be exported."
-        ) {
-          enqueueSnackbar('Error downloading, check CORS setting', {
-            variant: 'error',
-            preventDuplicate: true
-          })
-        } else {
-          enqueueSnackbar('Error downloading', {
-            variant: 'error',
-            preventDuplicate: true
-          })
-        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (e) {
+        enqueueSnackbar(t('Error downloading'), {
+          variant: 'error',
+          preventDuplicate: true
+        })
       }
     }
   }
 
   async function handleCopyClick(): Promise<void> {
-    await navigator.clipboard.writeText(to ?? '')
+    await navigator.clipboard.writeText(shortLink ?? '')
     enqueueSnackbar('Link copied', {
       variant: 'success',
       preventDuplicate: true
@@ -80,42 +73,53 @@ export function DownloadQrCode({
         alignItems: { xs: 'center', sm: 'start' }
       }}
     >
-      <ButtonGroup
-        variant="contained"
-        disabled={to == null || loading}
-        sx={{
-          width: 200,
-          height: 42,
-          boxShadow: 'none',
-          '.MuiButtonGroup-grouped': {
-            borderColor: 'background.paper'
-          }
-        }}
-      >
+      {!loading && shortLink == null ? (
         <Button
           fullWidth
           variant="contained"
           color="secondary"
           size="medium"
-          onClick={() => {
-            handleDownloadQrCode('png')
-            setShowDownloadMenu(false)
-          }}
+          onClick={handleGenerateQrCode}
         >
-          {t('Download PNG')}
+          {t('Generate Code')}
         </Button>
-        <Button
+      ) : (
+        <ButtonGroup
           variant="contained"
-          color="secondary"
-          size="medium"
-          data-testid="DownloadDropdown"
-          onClick={(e) => {
-            handleMenuClick(e)
+          disabled={shortLink == null || loading}
+          sx={{
+            boxShadow: 'none',
+            '.MuiButtonGroup-grouped': {
+              borderColor: 'background.paper'
+            }
           }}
         >
-          <ChevronDownIcon />
-        </Button>
-      </ButtonGroup>
+          <Button
+            fullWidth
+            variant="contained"
+            color="secondary"
+            size="medium"
+            onClick={() => {
+              handleDownload()
+              setShowDownloadMenu(false)
+            }}
+          >
+            {t('Download PNG')}
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="medium"
+            data-testid="DownloadDropdown"
+            onClick={(e) => {
+              handleMenuClick(e)
+            }}
+          >
+            <ChevronDownIcon />
+          </Button>
+        </ButtonGroup>
+      )}
+
       <Popper
         sx={{ zIndex: 1 }}
         open={showDownloadMenu}
@@ -128,14 +132,6 @@ export function DownloadQrCode({
             <Paper>
               <ClickAwayListener onClickAway={() => setShowDownloadMenu(false)}>
                 <MenuList id="split-button-menu" autoFocusItem>
-                  <MenuItem
-                    onClick={() => {
-                      handleDownloadQrCode('svg')
-                      setShowDownloadMenu(false)
-                    }}
-                  >
-                    {t('Download SVG')}
-                  </MenuItem>
                   <MenuItem
                     onClick={() => {
                       void handleCopyClick()
