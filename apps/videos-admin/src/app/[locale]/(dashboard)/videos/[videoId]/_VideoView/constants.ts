@@ -1,0 +1,1 @@
+export const DEFAULT_VIDEO_LANGUAGE_ID = '529'

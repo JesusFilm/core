@@ -1,4 +1,5 @@
 import { ResultOf, graphql } from 'gql.tada'
+import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from './apolloClient'
 
@@ -17,7 +18,7 @@ interface LanguageIds {
 
 export async function getLanguageIdsFromTags(
   metadataLanguageTags: string[]
-): Promise<LanguageIds | Response> {
+): Promise<LanguageIds | HTTPException> {
   let metadataLanguageId = '529'
   let fallbackLanguageId = ''
 
@@ -30,13 +31,12 @@ export async function getLanguageIdsFromTags(
     })
     if (data.language == null) {
       const metadataTagsString = metadataLanguageTags.join(', ')
-      return new Response(
-        JSON.stringify({
+      return new HTTPException(400, {
+        message: JSON.stringify({
           message: `Parameter "metadataLanguageTags" of value "${metadataTagsString}" violated a constraint "Not acceptable metadata language tag(s): ${metadataTagsString}"`,
           logref: 400
-        }),
-        { status: 400 }
-      )
+        })
+      })
     }
 
     metadataLanguageId = data.language?.id
