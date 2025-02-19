@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { NextIntlClientProvider } from 'next-intl'
 
+import { SnackbarProvider } from '../../../../../../../../libs/SnackbarProvider'
 import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { VideoProvider } from '../../../../../../../../libs/VideoProvider'
@@ -107,13 +108,15 @@ describe('VideoSnippet', () => {
 
   it('should create video snippet if none exists', async () => {
     render(
-      <MockedProvider mocks={[mockCreateVideoSnippet]}>
-        <NextIntlClientProvider locale="en">
-          <VideoProvider video={mockVideo}>
-            <VideoSnippet videoSnippets={[]} />
-          </VideoProvider>
-        </NextIntlClientProvider>
-      </MockedProvider>
+      <NextIntlClientProvider locale="en">
+        <MockedProvider mocks={[mockCreateVideoSnippet]}>
+          <SnackbarProvider>
+            <VideoProvider video={mockVideo}>
+              <VideoSnippet videoSnippets={[]} />
+            </VideoProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      </NextIntlClientProvider>
     )
 
     const user = userEvent.setup()
@@ -130,17 +133,22 @@ describe('VideoSnippet', () => {
       expect(mockCreateVideoSnippet.result).toHaveBeenCalled()
     )
     expect(mockUpdateVideoSnippet.result).not.toHaveBeenCalled()
+    expect(
+      screen.getByText('Video short description created')
+    ).toBeInTheDocument()
   })
 
   it('should update video snippet on submit', async () => {
     render(
-      <MockedProvider mocks={[mockUpdateVideoSnippet]}>
-        <NextIntlClientProvider locale="en">
-          <VideoProvider video={mockVideo}>
-            <VideoSnippet videoSnippets={mockVideoSnippets} />
-          </VideoProvider>
-        </NextIntlClientProvider>
-      </MockedProvider>
+      <NextIntlClientProvider locale="en">
+        <MockedProvider mocks={[mockUpdateVideoSnippet]}>
+          <SnackbarProvider>
+            <VideoProvider video={mockVideo}>
+              <VideoSnippet videoSnippets={mockVideoSnippets} />
+            </VideoProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      </NextIntlClientProvider>
     )
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
@@ -156,6 +164,9 @@ describe('VideoSnippet', () => {
     await waitFor(() =>
       expect(mockUpdateVideoSnippet.result).toHaveBeenCalled()
     )
+    expect(
+      screen.getByText('Video short description updated')
+    ).toBeInTheDocument()
   })
 
   it('should require snippet field', async () => {

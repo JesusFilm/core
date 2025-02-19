@@ -86,12 +86,12 @@ export function VideoSnippet({
           }
         },
         onCompleted: () => {
-          enqueueSnackbar(t('Video snippet created'), {
+          enqueueSnackbar(t('Video short description created'), {
             variant: 'success'
           })
         },
         onError: () => {
-          enqueueSnackbar(t('Failed to create video snippet'), {
+          enqueueSnackbar(t('Failed to create video short description'), {
             variant: 'error'
           })
         }
@@ -105,12 +105,12 @@ export function VideoSnippet({
           }
         },
         onCompleted: () => {
-          enqueueSnackbar(t('Video snippet updated'), {
+          enqueueSnackbar(t('Video short description updated'), {
             variant: 'success'
           })
         },
         onError: () => {
-          enqueueSnackbar(t('Failed to update video snippet'), {
+          enqueueSnackbar(t('Failed to update video short description'), {
             variant: 'error'
           })
         }
