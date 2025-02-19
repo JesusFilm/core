@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
@@ -35,7 +36,7 @@ describe('VideoImageAlt', () => {
     jest.clearAllMocks()
   })
 
-  it('should show disabled save button if values have not been changed', () => {
+  it('should disable form buttons if values have not been changed', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
@@ -45,9 +46,12 @@ describe('VideoImageAlt', () => {
     )
 
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
+    expect(
+      screen.queryByRole('button', { name: 'Cancel' })
+    ).not.toBeInTheDocument()
   })
 
-  it('should enable save button if image alt has been changed', async () => {
+  it('should enable form buttons if alt has changed', async () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
@@ -63,6 +67,7 @@ describe('VideoImageAlt', () => {
     })
     expect(screen.getByRole('textbox')).toHaveValue('Hello')
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
   })
 
   it('should update video image alt on submit', async () => {
@@ -105,5 +110,26 @@ describe('VideoImageAlt', () => {
       expect(screen.getByText('Image Alt is required')).toBeInTheDocument()
     )
     expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
+  })
+
+  it('should reset form when cancel button is clicked', async () => {
+    render(
+      <MockedProvider>
+        <NextIntlClientProvider locale="en">
+          <VideoImageAlt videoImageAlts={mockVideoImageAlt} />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    const user = userEvent.setup()
+
+    const textbox = screen.getByRole('textbox')
+    expect(textbox).toHaveValue('JESUS')
+
+    await user.type(textbox, ' Video')
+    expect(textbox).toHaveValue('JESUS Video')
+
+    await user.click(screen.getByRole('button', { name: 'Cancel' }))
+    expect(textbox).toHaveValue('JESUS')
   })
 })

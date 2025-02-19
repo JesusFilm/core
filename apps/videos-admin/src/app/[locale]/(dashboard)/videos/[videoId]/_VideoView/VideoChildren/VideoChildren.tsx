@@ -13,6 +13,7 @@ import { GetAdminVideo_AdminVideo_Children as AdminVideoChildren } from '../../.
 import { Section } from '../Section'
 
 interface ChildrenProps {
+  videoId: string
   childVideos: AdminVideoChildren
   label: 'Items' | 'Clips' | 'Episodes'
 }
@@ -29,6 +30,7 @@ export const VIDEO_CHILDREN_ORDER_UPDATE = graphql(`
 `)
 
 export function VideoChildren({
+  videoId,
   childVideos,
   label
 }: ChildrenProps): ReactElement {
@@ -61,7 +63,7 @@ export function VideoChildren({
       await updateVideoChildrenOrder({
         variables: {
           input: {
-            id: active.id.toString(),
+            id: videoId,
             childIds: newOrder.map((video) => video.id)
           }
         }

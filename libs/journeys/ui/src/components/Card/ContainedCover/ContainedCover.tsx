@@ -74,9 +74,7 @@ export function ContainedCover({
   const contentRef = useRef() as RefObject<HTMLDivElement>
 
   const posterImage =
-    videoBlock?.mediaVideo?.__typename !== 'YouTube' &&
-    videoBlock?.mediaVideo?.__typename !== 'CloudflareVideo' &&
-    videoBlock?.mediaVideo?.__typename !== 'MuxVideo'
+    videoBlock?.mediaVideo?.__typename === 'Video'
       ? // Use posterBlockId image or default poster image on video
         videoBlock?.posterBlockId != null
         ? (
@@ -87,7 +85,7 @@ export function ContainedCover({
             ) as TreeBlock<ImageFields>
           ).src
         : videoBlock?.mediaVideo?.images[0]?.mobileCinematicHigh
-      : // Use Youtube or Cloudflare set poster image
+      : // Use Youtube or mux set poster image
         videoBlock?.image
 
   useEffect(() => {
@@ -139,7 +137,7 @@ export function ContainedCover({
             }}
           />
         )}
-        {/* Blurred Content Background image */}
+        {/* Blurred Content Background image for mobile embed */}
         {imageBlock != null && backgroundBlur != null && (
           <>
             <NextImage
@@ -185,6 +183,7 @@ export function ContainedCover({
             data-testid="background-image"
             src={imageBlock?.src ?? backgroundBlur}
             alt={imageBlock?.alt}
+            loading="eager"
             placeholder="blur"
             blurDataURL={backgroundBlur}
             layout="fill"

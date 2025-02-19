@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
+import { CancelButton } from '../../../../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
@@ -56,7 +57,15 @@ export function VideoImageAlt({
       validationSchema={validationSchema}
       enableReinitialize
     >
-      {({ values, errors, handleChange, isValid, isSubmitting, dirty }) => (
+      {({
+        values,
+        errors,
+        handleChange,
+        isValid,
+        isSubmitting,
+        dirty,
+        resetForm
+      }) => (
         <Form>
           <Stack gap={2}>
             <Stack direction="row" gap={2}>
@@ -73,7 +82,8 @@ export function VideoImageAlt({
               />
             </Stack>
             <Divider sx={{ mx: -4 }} />
-            <Stack direction="row" justifyContent="flex-end">
+            <Stack direction="row" justifyContent="flex-end" gap={1}>
+              <CancelButton show={dirty} handleCancel={() => resetForm()} />
               <SaveButton disabled={!isValid || isSubmitting || !dirty} />
             </Stack>
           </Stack>

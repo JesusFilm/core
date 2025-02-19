@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
+import { CancelButton } from '../../../../../../../../components/CancelButton'
 import { ResizableTextField } from '../../../../../../../../components/ResizableTextField'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
@@ -58,7 +59,15 @@ export function VideoSnippet({
       validationSchema={validationSchema}
       enableReinitialize
     >
-      {({ values, errors, handleChange, isValid, isSubmitting, dirty }) => (
+      {({
+        values,
+        errors,
+        handleChange,
+        isValid,
+        isSubmitting,
+        dirty,
+        resetForm
+      }) => (
         <Form>
           <Stack gap={2}>
             <ResizableTextField
@@ -72,7 +81,8 @@ export function VideoSnippet({
               maxRows={6}
             />
             <Divider sx={{ mx: -4 }} />
-            <Stack direction="row" justifyContent="flex-end">
+            <Stack direction="row" justifyContent="flex-end" gap={1}>
+              <CancelButton show={dirty} handleCancel={() => resetForm()} />
               <SaveButton disabled={!isValid || isSubmitting || !dirty} />
             </Stack>
           </Stack>

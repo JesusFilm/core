@@ -1,6 +1,10 @@
 'use client'
 
-import { NormalizedCacheObject, createHttpLink } from '@apollo/client'
+import {
+  NormalizedCacheObject,
+  createHttpLink,
+  useApolloClient
+} from '@apollo/client'
 import { setContext } from '@apollo/client/link/context'
 import {
   ApolloClient,
@@ -11,6 +15,22 @@ import { PropsWithChildren, ReactNode } from 'react'
 
 import { cache } from '../../../libs/apollo/cache'
 import { User } from '../../../libs/auth/authContext'
+
+function UpdateAuth({
+  token,
+  children
+}: {
+  token?: string
+  children: ReactNode
+}) {
+  const apolloClient = useApolloClient()
+
+  if (token != null) {
+    apolloClient.defaultContext.token = token
+  }
+
+  return <>{children}</>
+}
 
 const httpLink = createHttpLink({
   uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
@@ -25,9 +45,7 @@ export function ApolloProvider({
   children,
   user
 }: PropsWithChildren & { user?: User | null }): ReactNode {
-  const authLink = setContext(async (_, { headers }) => {
-    const token = await user?.token
-
+  const authLink = setContext(async (_, { headers, token }) => {
     return {
       headers: {
         ...headers,
@@ -47,7 +65,7 @@ export function ApolloProvider({
 
   return (
     <ApolloNextAppProvider makeClient={makeClient}>
-      {children}
+      <UpdateAuth token={user?.token}>{children}</UpdateAuth>
     </ApolloNextAppProvider>
   )
 }

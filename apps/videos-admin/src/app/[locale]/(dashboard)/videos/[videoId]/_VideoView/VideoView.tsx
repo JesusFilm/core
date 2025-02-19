@@ -47,17 +47,19 @@ export function VideoView(): ReactElement {
       sx={{ width: '100%', maxWidth: 1700 }}
       data-testid="VideoView"
     >
-      <Stack
-        gap={2}
-        sx={{
-          mb: 2,
-          alignItems: { xs: 'start', sm: 'center' },
-          flexDirection: { xs: 'col', sm: 'row' }
-        }}
-      >
-        <Typography variant="h4">{videoTitle}</Typography>
-        <PublishedChip published={data?.adminVideo.published ?? false} />
-      </Stack>
+      {data != null && (
+        <Stack
+          gap={2}
+          sx={{
+            mb: 2,
+            alignItems: { xs: 'start', sm: 'center' },
+            flexDirection: { xs: 'col', sm: 'row' }
+          }}
+        >
+          <Typography variant="h4">{videoTitle}</Typography>
+          <PublishedChip published={data.adminVideo.published} />
+        </Stack>
+      )}
       <Stack gap={2} sx={{ flexDirection: { xs: 'column', sm: 'row' } }}>
         <Box width="100%">
           {loading ? (
@@ -98,6 +100,7 @@ export function VideoView(): ReactElement {
               <TabContainer value={tabValue} index={1}>
                 {showVideoChildren && videoLabel != null && (
                   <VideoChildren
+                    videoId={video?.id ?? ''}
                     childVideos={video?.children ?? []}
                     label={videoLabel}
                   />

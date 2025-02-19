@@ -1,34 +1,25 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { NextIntlClientProvider } from 'next-intl'
-import { ComponentProps } from 'react'
+import { ComponentPropsWithoutRef } from 'react'
 
 import { videosAdminConfig } from '../../libs/storybookConfig'
 
 import { SaveButton } from './SaveButton'
 
-const meta: Meta<typeof SaveButton> = {
+type StoryArgs = ComponentPropsWithoutRef<typeof SaveButton>
+
+const meta = {
   ...videosAdminConfig,
   component: SaveButton,
   title: 'Videos-Admin/SaveButton'
-}
+} satisfies Meta<StoryArgs>
 
-type Story = StoryObj<ComponentProps<typeof SaveButton>>
+type Story = StoryObj<typeof meta>
 
-const Template: Story = {
-  render: ({ disabled }) => (
-    <NextIntlClientProvider locale="en">
-      <SaveButton disabled={disabled} />
-    </NextIntlClientProvider>
-  )
-}
-
-export const Default = {
-  ...Template,
+export const Default: Story = {
   args: { disabled: false }
 }
 
-export const Disabled = {
-  ...Template,
+export const Disabled: Story = {
   args: { disabled: true }
 }
 

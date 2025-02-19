@@ -14,6 +14,7 @@ import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
+import { CancelButton } from '../../../../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
@@ -101,7 +102,15 @@ export function VideoInformation({
       validationSchema={validationSchema}
       enableReinitialize
     >
-      {({ values, errors, handleChange, isValid, isSubmitting, dirty }) => (
+      {({
+        values,
+        errors,
+        handleChange,
+        isValid,
+        isSubmitting,
+        dirty,
+        resetForm
+      }) => (
         <Form>
           <Stack gap={2}>
             <Stack
@@ -204,7 +213,8 @@ export function VideoInformation({
               </FormControl>
             </Stack>
             <Divider sx={{ mx: -4 }} />
-            <Stack direction="row" justifyContent="flex-end">
+            <Stack direction="row" justifyContent="flex-end" gap={1}>
+              <CancelButton show={dirty} handleCancel={() => resetForm()} />
               <SaveButton disabled={!isValid || isSubmitting || !dirty} />
             </Stack>
           </Stack>

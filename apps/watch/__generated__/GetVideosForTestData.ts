@@ -56,6 +56,7 @@ export interface GetVideosForTestData_videos_variant_language {
   __typename: "Language";
   id: string;
   name: GetVideosForTestData_videos_variant_language_name[];
+  bcp47: string | null;
 }
 
 export interface GetVideosForTestData_videos_variant {
