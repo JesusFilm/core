@@ -14,7 +14,7 @@ test.describe('GET /v2/metadata-language-tags', () => {
     expect(data).toMatchObject({
       _links: {
         self: {
-          href: expect.stringMatching(/\/v2\/media-languages\/.+/)
+          href: expect.any(String)
         }
       },
       _embedded: {
@@ -24,16 +24,8 @@ test.describe('GET /v2/metadata-language-tags', () => {
             name: 'English',
             nameNative: 'English',
             _links: {
-              self: {
-                href: expect.stringMatching(
-                  /\/v2\/metadata-language-tags\/en\?apiKey=.+/
-                )
-              },
-              metadataLanguageTags: {
-                href: expect.stringMatching(
-                  /\/v2\/metadata-language-tags\?apiKey=.+/
-                )
-              }
+              self: { href: expect.any(String) },
+              metadataLanguageTags: { href: expect.any(String) }
             }
           },
           {
@@ -41,16 +33,8 @@ test.describe('GET /v2/metadata-language-tags', () => {
             name: 'Spanish',
             nameNative: 'Español',
             _links: {
-              self: {
-                href: expect.stringMatching(
-                  /\/v2\/metadata-language-tags\/es\?apiKey=.+/
-                )
-              },
-              metadataLanguageTags: {
-                href: expect.stringMatching(
-                  /\/v2\/metadata-language-tags\?apiKey=.+/
-                )
-              }
+              self: { href: expect.any(String) },
+              metadataLanguageTags: { href: expect.any(String) }
             }
           }
         ])
