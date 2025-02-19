@@ -582,6 +582,13 @@ export interface SignUpSubmissionEventCreateInput {
   email: string;
 }
 
+export interface SpacerBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  spacing?: number | null;
+}
+
 export interface StepBlockCreateInput {
   id?: string | null;
   journeyId: string;
