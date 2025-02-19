@@ -178,7 +178,7 @@ const route = createRoute({
           schema: ResponseSchema
         }
       },
-      description: 'media component language'
+      description: 'Media component language'
     },
     404: {
       description: 'Not found'

@@ -137,7 +137,7 @@ const route = createRoute({
           schema: ResponseSchema
         }
       },
-      description: 'media components'
+      description: 'Media components'
     }
   },
   middleware: [timeout(60000)]

@@ -132,7 +132,7 @@ const route = createRoute({
           schema: ResponseSchema
         }
       },
-      description: 'media component'
+      description: 'Media component'
     },
     404: {
       description: 'Not found'

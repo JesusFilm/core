@@ -1,5 +1,5 @@
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
-import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
@@ -45,12 +45,94 @@ const GET_COUNTRIES = graphql(`
   }
 `)
 
-export const mediaCountries = new Hono()
+export const mediaCountries = new OpenAPIHono()
 mediaCountries.route('/:countryId', mediaCountry)
 
-mediaCountries.get('/', async (c) => {
-  const page = Number(c.req.query('page') ?? 1)
-  const limit = Number(c.req.query('limit') ?? 10)
+const QuerySchema = z.object({
+  page: z.number().optional(),
+  limit: z.number().optional(),
+  ids: z.string().optional(),
+  expand: z.string().optional(),
+  metadataLanguageTags: z.string().optional()
+})
+
+const ResponseSchema = z.object({
+  page: z.number(),
+  limit: z.number(),
+  pages: z.number(),
+  total: z.number(),
+  _links: z.object({
+    self: z.object({
+      href: z.string()
+    }),
+    first: z.object({
+      href: z.string()
+    }),
+    last: z.object({
+      href: z.string()
+    }),
+    next: z.object({
+      href: z.string()
+    })
+  }),
+  _embedded: z.object({
+    mediaCountries: z.array(
+      z.object({
+        countryId: z.string(),
+        name: z.string(),
+        continentName: z.string(),
+        metadataLanguageTag: z.string(),
+        longitude: z.number(),
+        latitude: z.number(),
+        counts: z.object({
+          languageCount: z.object({
+            value: z.number(),
+            description: z.string()
+          }),
+          population: z.object({
+            value: z.number(),
+            description: z.string()
+          }),
+          languageHavingMediaCount: z.object({
+            value: z.number(),
+            description: z.string()
+          })
+        }),
+        assets: z.object({
+          flagUrls: z.object({
+            png8: z.string().optional(),
+            webpLossy50: z.string().optional()
+          })
+        }),
+        _links: z.object({
+          self: z.object({
+            href: z.string()
+          })
+        })
+      })
+    )
+  })
+})
+
+const route = createRoute({
+  method: 'get',
+  path: '/',
+  request: { query: QuerySchema },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: ResponseSchema
+        }
+      },
+      description: 'Media countries'
+    }
+  }
+})
+
+mediaCountries.openapi(route, async (c) => {
+  const page = c.req.query('page') ? Number(c.req.query('page')) : 1
+  const limit = c.req.query('limit') ? Number(c.req.query('limit')) : 10
   const idsParam = c.req.query('ids')
   const ids = idsParam ? idsParam.split(',') : undefined
   const expand = c.req.query('expand')

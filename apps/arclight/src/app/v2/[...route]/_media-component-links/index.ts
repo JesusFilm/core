@@ -69,7 +69,7 @@ export const route = createRoute({
           schema: ResponseSchema
         }
       },
-      description: 'media component links'
+      description: 'Media component links'
     }
   }
 })
