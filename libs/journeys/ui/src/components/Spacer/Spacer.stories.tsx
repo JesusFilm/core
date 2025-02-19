@@ -31,7 +31,7 @@ const Template: Story = {
   )
 }
 
-export const Admin: Story = {
+export const Default: Story = {
   ...Template,
   args: { spacing: 200 }
 }
