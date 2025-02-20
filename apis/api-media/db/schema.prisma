@@ -5,7 +5,7 @@ generator client {
   provider        = "prisma-client-js"
   output          = env("PRISMA_LOCATION_MEDIA")
   binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
-  previewFeatures = ["fullTextSearch", "tracing"]
+  previewFeatures = ["fullTextSearchPostgres"]
 }
 
 generator pothos {
@@ -58,18 +58,19 @@ model CloudflareVideo {
 }
 
 model MuxVideo {
-  id            String   @id @default(uuid())
-  playbackId    String?  @unique
+  id            String         @id @default(uuid())
+  playbackId    String?        @unique
   uploadUrl     String?
-  uploadId      String?  @unique
-  assetId       String?  @unique
+  uploadId      String?        @unique
+  assetId       String?        @unique
   userId        String
   name          String?
-  duration      Int      @default(0)
-  downloadable  Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  readyToStream Boolean  @default(false)
-  updatedAt     DateTime @default(now()) @updatedAt
+  duration      Int            @default(0)
+  downloadable  Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  readyToStream Boolean        @default(false)
+  updatedAt     DateTime       @default(now()) @updatedAt
+  videoVariants VideoVariant[]
 
   @@index(userId(type: Hash))
   @@index(assetId(type: Hash))
@@ -107,27 +108,29 @@ enum VideoLabel {
 }
 
 model Video {
-  id                String               @id @default(uuid())
-  label             VideoLabel
-  primaryLanguageId String
-  published         Boolean              @default(true)
-  title             VideoTitle[]
-  snippet           VideoSnippet[]
-  description       VideoDescription[]
-  studyQuestions    VideoStudyQuestion[]
-  imageAlt          VideoImageAlt[]
-  slug              String?              @unique
-  noIndex           Boolean?
-  childIds          String[] // needed for child sort order
-  subtitles         VideoSubtitle[]
-  children          Video[]              @relation("ParentChild")
-  parent            Video[]              @relation("ParentChild")
-  variants          VideoVariant[]
-  bibleCitation     BibleCitation[]
-  keywords          Keyword[]            @relation("VideoToKeyword")
-  images            CloudflareImage[]
-  cloudflareAssets  CloudflareR2[]
-  videoEditions     VideoEdition[]
+  id                 String               @id @default(uuid())
+  label              VideoLabel
+  primaryLanguageId  String
+  published          Boolean              @default(true)
+  title              VideoTitle[]
+  snippet            VideoSnippet[]
+  description        VideoDescription[]
+  studyQuestions     VideoStudyQuestion[]
+  imageAlt           VideoImageAlt[]
+  slug               String?              @unique
+  noIndex            Boolean?
+  childIds           String[] // needed for child sort order
+  locked             Boolean              @default(false)
+  subtitles          VideoSubtitle[]
+  children           Video[]              @relation("ParentChild")
+  parent             Video[]              @relation("ParentChild")
+  variants           VideoVariant[]
+  bibleCitation      BibleCitation[]
+  keywords           Keyword[]            @relation("VideoToKeyword")
+  images             CloudflareImage[]
+  cloudflareAssets   CloudflareR2[]
+  videoEditions      VideoEdition[]
+  availableLanguages String[]
 
   @@index(label)
   @@index(childIds)
@@ -177,12 +180,17 @@ model VideoVariant {
   duration             Int?
   lengthInMilliseconds Int?
   languageId           String
+  masterUrl            String?
+  masterWidth          Int?
+  masterHeight         Int?
   published            Boolean                @default(true)
   edition              String                 @default("base")
   videoEdition         VideoEdition           @relation(fields: [edition, videoId], references: [name, videoId])
   slug                 String                 @unique
   video                Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId              String
+  muxVideoId           String?
+  muxVideo             MuxVideo?              @relation(fields: [muxVideoId], references: [id])
 
   @@unique([languageId, videoId])
   @@index(languageId(type: Hash))

@@ -14,6 +14,7 @@ import { ImageBlockResolver } from './image/image.resolver'
 import { RadioOptionBlockResolver } from './radioOption/radioOption.resolver'
 import { RadioQuestionBlockResolver } from './radioQuestion/radioQuestion.resolver'
 import { SignUpBlockResolver } from './signUp/signUp.resolver'
+import { SpacerBlockResolver } from './spacer/spacer.resolver'
 import { StepBlockResolver } from './step/step.resolver'
 import { TextResponseBlockResolver } from './textResponse/textResponse.resolver'
 import { TypographyBlockResolver } from './typography/typography.resolver'
@@ -33,6 +34,7 @@ import { VideoTriggerResolver } from './videoTrigger/videoTrigger.resolver'
     RadioOptionBlockResolver,
     RadioQuestionBlockResolver,
     SignUpBlockResolver,
+    SpacerBlockResolver,
     StepBlockResolver,
     TextResponseBlockResolver,
     TypographyBlockResolver,

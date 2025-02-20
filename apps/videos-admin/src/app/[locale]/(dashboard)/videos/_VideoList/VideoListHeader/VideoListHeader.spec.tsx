@@ -5,6 +5,13 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { VideoListHeader } from './VideoListHeader'
 
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn().mockReturnValue({
+    push: jest.fn()
+  }),
+  usePathname: jest.fn().mockReturnValue('/videos')
+}))
+
 describe('VideoListHeader', () => {
   it('should render', () => {
     render(

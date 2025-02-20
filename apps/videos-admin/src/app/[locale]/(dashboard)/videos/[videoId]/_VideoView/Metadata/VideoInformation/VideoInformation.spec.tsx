@@ -6,7 +6,33 @@ import { NextIntlClientProvider } from 'next-intl'
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
-import { UPDATE_VIDEO_INFORMATION, VideoInformation } from './VideoInfomation'
+import {
+  CREATE_VIDEO_TITLE,
+  UPDATE_VIDEO_INFORMATION,
+  VideoInformation
+} from './VideoInfomation'
+
+const mockCreateVideoTitle = {
+  request: {
+    query: CREATE_VIDEO_TITLE,
+    variables: {
+      input: {
+        videoId: '1_jf-0-0',
+        value: 'new title',
+        primary: true,
+        languageId: '529'
+      }
+    }
+  },
+  result: jest.fn(() => ({
+    data: {
+      videoTitleCreate: {
+        id: 'bb35d6a2-682e-4909-9218-4fbf5f4cd5b8',
+        value: 'new title'
+      }
+    }
+  }))
+}
 
 describe('VideoInformation', () => {
   const mockUpdateVideoInformation = {
@@ -124,6 +150,31 @@ describe('VideoInformation', () => {
     )
     expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled()
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+  })
+
+  it('should create video title if none exists', async () => {
+    render(
+      <MockedProvider
+        mocks={[mockCreateVideoTitle, mockUpdateVideoInformation]}
+      >
+        <NextIntlClientProvider locale="en">
+          <VideoInformation video={{ ...mockVideo, title: [] }} />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    const user = userEvent.setup()
+
+    const textbox = screen.getByRole('textbox', { name: 'Title' })
+    expect(textbox).toHaveValue('')
+
+    await user.type(textbox, 'new title')
+    await user.click(screen.getByRole('button', { name: 'Save' }))
+
+    await waitFor(() => {
+      expect(mockCreateVideoTitle.result).toHaveBeenCalled()
+    })
+    expect(mockUpdateVideoInformation.result).toHaveBeenCalled()
   })
 
   it('should update video information on submit', async () => {

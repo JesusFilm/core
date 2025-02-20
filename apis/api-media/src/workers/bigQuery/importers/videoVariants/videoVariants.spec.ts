@@ -1,4 +1,5 @@
 import { VideoVariant } from '.prisma/api-media-client'
+import { Prisma } from '@prisma/client'
 
 import { prismaMock } from '../../../../../test/prismaMock'
 import { processTable } from '../../importer'
@@ -128,6 +129,23 @@ describe('bigQuery/importers/videoVariants', () => {
 
   describe('importMany', () => {
     it('should import many videoVariants', async () => {
+      const transactionMock = {
+        videoEdition: {
+          upsert: jest.fn().mockResolvedValue({})
+        },
+        videoVariant: {
+          createMany: jest.fn().mockResolvedValue({})
+        },
+        video: {
+          findMany: jest.fn().mockResolvedValue([]),
+          update: jest.fn().mockResolvedValue({})
+        }
+      } as unknown as Prisma.TransactionClient
+
+      prismaMock.$transaction.mockImplementation(async (callback) => {
+        return await callback(transactionMock)
+      })
+
       await importMany([
         {
           id: 'mockId',
@@ -160,13 +178,14 @@ describe('bigQuery/importers/videoVariants', () => {
           edition: 'mockEdition'
         }
       ])
-      expect(prismaMock.videoEdition.upsert).toHaveBeenCalledWith({
+
+      expect(transactionMock.videoEdition.upsert).toHaveBeenCalledWith({
         create: { name: 'mockEdition', videoId: 'videoId' },
         update: {},
         where: { name_videoId: { name: 'mockEdition', videoId: 'videoId' } }
       })
-      expect(prismaMock.videoEdition.upsert).toHaveBeenCalledTimes(2)
-      expect(prismaMock.videoVariant.createMany).toHaveBeenCalledWith({
+      expect(transactionMock.videoEdition.upsert).toHaveBeenCalledTimes(2)
+      expect(transactionMock.videoVariant.createMany).toHaveBeenCalledWith({
         data: [
           {
             id: 'mockId',

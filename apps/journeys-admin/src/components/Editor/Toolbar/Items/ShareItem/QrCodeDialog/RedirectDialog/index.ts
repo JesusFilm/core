@@ -1,1 +1,0 @@
-export { RedirectDialog } from './RedirectDialog'

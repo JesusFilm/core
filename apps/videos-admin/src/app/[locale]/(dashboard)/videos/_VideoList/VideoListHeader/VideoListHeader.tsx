@@ -1,27 +1,13 @@
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Modal from '@mui/material/Modal'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
+import { Dialog } from '@core/shared/ui/Dialog'
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
 import { VideoCreateForm } from '../VideoCreateForm'
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid',
-  borderColor: 'divider',
-  borderRadius: 2,
-  p: 4
-}
 
 export function VideoListHeader(): ReactElement {
   const t = useTranslations()
@@ -44,22 +30,19 @@ export function VideoListHeader(): ReactElement {
       >
         {t('Create')}
       </Button>
-      <Modal
+
+      <Dialog
         open={show}
         onClose={() => setShow(false)}
-        aria-labelledby="video-create-modal-title"
-        aria-describedby="video-create-modal-description"
+        dialogTitle={{
+          title: t('Create Video'),
+          closeButton: true
+        }}
+        divider
+        sx={{ '& .MuiDialog-paperFullWidth': { maxWidth: 480 } }}
       >
-        <Box sx={style}>
-          <Typography id="video-create-modal-title" variant="h4">
-            {t('Create Video')}
-          </Typography>
-          <Typography id="video-create-modal-description" sx={{ mb: 2 }}>
-            {t('Fill in the details to create a new video.')}
-          </Typography>
-          <VideoCreateForm onCancel={() => setShow(false)} />
-        </Box>
-      </Modal>
+        <VideoCreateForm close={() => setShow(false)} />
+      </Dialog>
     </Stack>
   )
 }

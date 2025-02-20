@@ -479,6 +479,7 @@ model Block {
   themeMode               String?
   themeName               String?
   spacing                 Int?
+  gap                     Int?
   direction               String?
   justifyContent          String?
   alignItems              String?

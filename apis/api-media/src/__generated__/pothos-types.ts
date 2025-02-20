@@ -38,16 +38,22 @@ export default interface PrismaTypes {
     MuxVideo: {
         Name: "MuxVideo";
         Shape: MuxVideo;
-        Include: never;
+        Include: Prisma.MuxVideoInclude;
         Select: Prisma.MuxVideoSelect;
         OrderBy: Prisma.MuxVideoOrderByWithRelationInput;
         WhereUnique: Prisma.MuxVideoWhereUniqueInput;
         Where: Prisma.MuxVideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: never;
-        ListRelations: never;
-        Relations: {};
+        RelationName: "videoVariants";
+        ListRelations: "videoVariants";
+        Relations: {
+            videoVariants: {
+                Shape: VideoVariant[];
+                Name: "VideoVariant";
+                Nullable: false;
+            };
+        };
     };
     CloudflareR2: {
         Name: "CloudflareR2";
@@ -204,7 +210,7 @@ export default interface PrismaTypes {
         Where: Prisma.VideoVariantWhereInput;
         Create: {};
         Update: {};
-        RelationName: "downloads" | "videoEdition" | "video";
+        RelationName: "downloads" | "videoEdition" | "video" | "muxVideo";
         ListRelations: "downloads";
         Relations: {
             downloads: {
@@ -220,6 +226,11 @@ export default interface PrismaTypes {
             video: {
                 Shape: Video | null;
                 Name: "Video";
+                Nullable: true;
+            };
+            muxVideo: {
+                Shape: MuxVideo | null;
+                Name: "MuxVideo";
                 Nullable: true;
             };
         };

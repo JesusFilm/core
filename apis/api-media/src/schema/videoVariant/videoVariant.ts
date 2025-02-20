@@ -30,6 +30,7 @@ builder.prismaObject('VideoVariant', {
       nullable: false,
       resolve: ({ languageId: id }) => ({ id })
     }),
+    muxVideo: t.relation('muxVideo', { nullable: true }),
     published: t.exposeBoolean('published', { nullable: false }),
     videoEdition: t.relation('videoEdition', { nullable: false }),
     subtitle: t.prismaField({
@@ -116,13 +117,31 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoVariantCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.videoVariant.create({
+      const newVariant = await prisma.videoVariant.create({
         ...query,
         data: {
           ...input,
+          muxVideoId: input.muxVideoId ?? undefined,
           published: input.published ?? true
         }
       })
+
+      const video = await prisma.video.findUnique({
+        where: { id: newVariant.videoId },
+        select: { availableLanguages: true }
+      })
+
+      const currentLanguages = video?.availableLanguages || []
+      const updatedLanguages = Array.from(
+        new Set([...currentLanguages, newVariant.languageId])
+      )
+
+      await prisma.video.update({
+        where: { id: newVariant.videoId },
+        data: { availableLanguages: updatedLanguages }
+      })
+
+      return newVariant
     }
   }),
   videoVariantUpdate: t.withAuth({ isPublisher: true }).prismaField({
@@ -146,7 +165,8 @@ builder.mutationFields((t) => ({
           videoId: input.videoId ?? undefined,
           edition: input.edition ?? undefined,
           downloadable: input.downloadable ?? undefined,
-          published: input.published ?? undefined
+          published: input.published ?? undefined,
+          muxVideoId: input.muxVideoId ?? undefined
         }
       })
     }
