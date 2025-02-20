@@ -98,7 +98,7 @@ describe('TrashedJourneyList', () => {
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      '11 months ago'
+      '1 year ago'
     )
   })
 
@@ -146,7 +146,7 @@ describe('TrashedJourneyList', () => {
       )
     )
     expect(getAllByLabelText('journey-card')[1].textContent).toContain(
-      'An Old Journey Heading11 months ago - Journey created before the current year should also show the year in the dateEnglish'
+      'An Old Journey Heading1 year ago - Journey created before the current year should also show the year in the dateEnglish'
     )
   })
 
