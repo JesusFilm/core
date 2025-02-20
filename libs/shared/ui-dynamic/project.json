@@ -3,6 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/shared/ui-dynamic/src",
   "projectType": "library",
+  "tags": [],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint",
@@ -44,6 +45,5 @@
         "command": "codecov -f coverage/libs/shared/ui-dynamic/cobertura-coverage.xml -F libs.shared.ui"
       }
     }
-  },
-  "tags": []
+  }
 }

@@ -22,7 +22,7 @@ You will need access to the algolia admin dashboard to create indexes, test and 
 For data to be available, you need to push it to an algolia index. Create one in the algolia dashboard.
 Depending on where your data is coming from may define what this looks like but we are currently doing this for WordPress content, and core data calls.
 
-For populating algolia from core, see `apps/api-media/src/workers/algolia/service/service.ts`
+For populating algolia from core, see `apis/api-media/src/workers/algolia/service/service.ts`
 
 ```typescript
 const index = client.initIndex(appIndex)
@@ -34,6 +34,6 @@ try {
 }
 ```
 
-This script is configured to to run on a cron job defined in `apps/api-media/src/workers/algolia/config.ts`
+This script is configured to to run on a cron job defined in `apis/api-media/src/workers/algolia/config.ts`
 
 For populating algolia from WordPress, you will need WP access and be able to use the [WP Algolia Plugin](https://wordpress.org/plugins/wp-search-with-algolia/).

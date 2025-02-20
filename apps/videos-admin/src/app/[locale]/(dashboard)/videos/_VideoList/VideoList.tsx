@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery } from '@apollo/client'
-import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import {
   DataGrid,
   GridCallbackDetails,
@@ -24,6 +24,8 @@ import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
 import { PublishedChip } from '../../../../../components/PublishedChip'
+
+import { VideoListHeader } from './VideoListHeader'
 
 export const GET_ADMIN_VIDEOS_AND_COUNT = graphql(`
   query GetAdminVideosAndCount(
@@ -182,7 +184,8 @@ export function VideoList(): ReactElement {
   }
 
   return (
-    <Box sx={{ height: 'calc(100vh - 90px)', width: '100%' }}>
+    <Stack sx={{ height: 'calc(100vh - 150px)', width: '100%' }} gap={2}>
+      <VideoListHeader />
       <DataGrid
         getRowClassName={(params) =>
           params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
@@ -226,6 +229,6 @@ export function VideoList(): ReactElement {
           }
         }}
       />
-    </Box>
+    </Stack>
   )
 }
