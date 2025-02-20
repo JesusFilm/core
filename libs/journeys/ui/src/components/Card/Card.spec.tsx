@@ -43,6 +43,15 @@ jest.mock('uuid', () => ({
   v4: jest.fn()
 }))
 
+jest.mock('next/legacy/image', () => ({
+  __esModule: true,
+  default: jest.fn(
+    ({ priority, blurDataURL, objectFit, objectPosition, ...props }) => {
+      return <img {...props} />
+    }
+  )
+}))
+
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 jest.mock('@next/third-parties/google', () => ({
@@ -405,7 +414,7 @@ describe('CardBlock', () => {
     expect(queryByText('How did we get here?')).toBeInTheDocument()
   })
 
-  it('should render contained cover with image cover', () => {
+  it('should render contained cover with image cover', async () => {
     const { queryByTestId, queryAllByText } = render(
       <MockedProvider>
         <Card
@@ -422,7 +431,10 @@ describe('CardBlock', () => {
       'random image from unsplash'
     )
     expect(standaloneImageBlock).not.toBeInTheDocument()
-    expect(queryAllByText('How did we get here?')[0]).toBeInTheDocument()
+
+    await waitFor(() =>
+      expect(queryAllByText('How did we get here?')[0]).toBeInTheDocument()
+    )
   })
 
   it('should render contained cover with video cover regardless of fullscreen true', () => {

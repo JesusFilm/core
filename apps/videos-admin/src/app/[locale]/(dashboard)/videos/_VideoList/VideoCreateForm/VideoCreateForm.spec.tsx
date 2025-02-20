@@ -15,6 +15,19 @@ import {
   VideoCreateForm
 } from './VideoCreateForm'
 
+jest.mock('next/navigation', () => ({
+  ...jest.requireActual('next/navigation'),
+  useRouter: jest.fn(),
+  usePathname: jest.fn()
+}))
+
+const mockUseRouter = jest.fn()
+
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: mockUseRouter }),
+  usePathname: () => '/en/videos'
+}))
+
 const createVideoMock: MockedResponse<CreateVideo, CreateVideoVariables> = {
   request: {
     query: CREATE_VIDEO,
@@ -46,7 +59,7 @@ describe('VideoCreateForm', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <VideoCreateForm onCancel={mockCancel} />
+          <VideoCreateForm close={mockCancel} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -65,7 +78,7 @@ describe('VideoCreateForm', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <VideoCreateForm onCancel={mockCancel} />
+          <VideoCreateForm close={mockCancel} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -81,7 +94,7 @@ describe('VideoCreateForm', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <VideoCreateForm onCancel={mockCancel} />
+          <VideoCreateForm close={mockCancel} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -112,7 +125,7 @@ describe('VideoCreateForm', () => {
             { ...createVideoMock, result: createVideoMockResult }
           ]}
         >
-          <VideoCreateForm onCancel={mockCancel} />
+          <VideoCreateForm close={mockCancel} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -138,6 +151,7 @@ describe('VideoCreateForm', () => {
     await user.click(screen.getByRole('button', { name: 'Create' }))
 
     expect(createVideoMockResult).toHaveBeenCalled()
+    expect(mockUseRouter).toHaveBeenCalledWith('/en/videos/test_video')
   })
 
   it('should handle video creation error', async () => {
@@ -156,7 +170,7 @@ describe('VideoCreateForm', () => {
       <NextIntlClientProvider locale="en">
         <SnackbarProvider>
           <MockedProvider mocks={[getLanguagesMock, errorMock]}>
-            <VideoCreateForm onCancel={mockCancel} />
+            <VideoCreateForm close={mockCancel} />
           </MockedProvider>
         </SnackbarProvider>
       </NextIntlClientProvider>
@@ -182,8 +196,6 @@ describe('VideoCreateForm', () => {
 
     await user.click(screen.getByRole('button', { name: 'Create' }))
 
-    expect(
-      screen.getByText('Failed to create video: ID already exists')
-    ).toBeInTheDocument()
+    expect(screen.getByText('Something went wrong.')).toBeInTheDocument()
   })
 })
