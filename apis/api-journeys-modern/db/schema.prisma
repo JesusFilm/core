@@ -2,9 +2,10 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider      = "prisma-client-js"
-  output        = env("PRISMA_LOCATION_JOURNEYS_MODERN")
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  output          = env("PRISMA_LOCATION_JOURNEYS_MODERN")
+  binaryTargets   = ["native", "linux-musl-openssl-3.0.x"]
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 generator erd {
@@ -20,8 +21,9 @@ generator pothos {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("PG_DATABASE_URL_JOURNEYS")
+  provider   = "postgresql"
+  url        = env("PG_DATABASE_URL_JOURNEYS")
+  extensions = [vector]
 }
 
 enum MessagePlatform {
@@ -635,4 +637,13 @@ model QrCode {
   backgroundColor String? @default("#FFFFFF")
   team            Team    @relation(fields: [teamId], references: [id])
   journey         Journey @relation(fields: [journeyId], references: [id])
+}
+
+model Document {
+  id           String                      @id @default(uuid())
+  documentName String
+  content      String                      @db.Text
+  embedding    Unsupported("vector(1536)")
+  createdAt    DateTime                    @default(now())
+  updatedAt    DateTime                    @updatedAt
 }

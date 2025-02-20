@@ -248,6 +248,15 @@ export interface ChatOpenEventCreateInput {
   value?: MessagePlatform | null;
 }
 
+export interface JourneyGenerationInput {
+  theme: string;
+  targetAudience: string;
+  mainMessage: string;
+  language: string;
+  additionalContext?: string | null;
+  systemPrompt?: string | null;
+}
+
 export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
   journeyFlowBackButtonClicked?: boolean | null;

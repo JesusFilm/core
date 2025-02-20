@@ -67,6 +67,12 @@
         "command": "npx hive schema:check apis/api-journeys-modern/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys-modern"
       }
     },
+    "ai": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apps/api-journeys-modern/src/scripts/ai.ts"
+      }
+    },
     "fetch-secrets": {
       "executor": "nx:run-commands",
       "options": {
@@ -79,6 +85,22 @@
         "commands": [
           "npx prisma generate --schema apis/api-journeys-modern/db/schema.prisma"
         ]
+      }
+    },
+    "prisma-migrate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "bash -c 'npx prisma migrate dev --schema apis/api-journeys-modern/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "npx prisma migrate deploy --schema apis/api-journeys-modern/db/schema.prisma"
+          ]
+        }
       }
     },
     "prisma-studio": {
@@ -131,6 +153,13 @@
           "if lsof -Pi :4601 -sTCP:LISTEN -t>/dev/null; then\nkill -9 $(lsof -Pi :4601 -sTCP:LISTEN -t)\nfi",
           "email dev --dir apis/api-journeys-modern/src/emails/templates --port 4601"
         ]
+      }
+    },
+    "test-journey-generation": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node src/scripts/test-journey-generation.ts",
+        "cwd": "apps/api-journeys-modern"
       }
     }
   }

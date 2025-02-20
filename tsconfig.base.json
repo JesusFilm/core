@@ -33,7 +33,8 @@
         "libs/shared/ui/src/components/*",
         "libs/shared/ui/src/libs/*"
       ],
-      "@core/yoga/*": ["libs/yoga/src/*"]
+      "@core/yoga/*": ["libs/yoga/src/*"],
+      "@api-journeys-modern/*": ["apps/api-journeys-modern/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

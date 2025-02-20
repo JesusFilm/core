@@ -57,6 +57,7 @@ export const builder = new SchemaBuilder<{
   PrismaTypes: PrismaTypes
   Scalars: {
     ID: { Input: string; Output: number | string }
+    Date: { Input: Date; Output: Date }
   }
 }>({
   plugins: [
