@@ -40,7 +40,10 @@ describe('EditionDelete', () => {
       <NextIntlClientProvider locale="en">
         <MockedProvider>
           <VideoProvider video={mockVideo}>
-            <EditionDelete close={jest.fn()} edition={null} />
+            <EditionDelete
+              close={jest.fn()}
+              edition={mockVideo.videoEditions[0]}
+            />
           </VideoProvider>
         </MockedProvider>
       </NextIntlClientProvider>
@@ -132,7 +135,7 @@ describe('EditionDelete', () => {
       <NextIntlClientProvider locale="en">
         <MockedProvider>
           <VideoProvider video={mockVideo}>
-            <EditionDelete close={close} edition={null} />
+            <EditionDelete close={close} edition={mockVideo.videoEditions[0]} />
           </VideoProvider>
         </MockedProvider>
       </NextIntlClientProvider>
