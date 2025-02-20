@@ -21,7 +21,7 @@ export enum DialogAction {
 export interface EditionDialogProps {
   action: DialogAction | null
   close: () => void
-  edition: ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
+  edition: ArrayElement<GetAdminVideo_AdminVideo_VideoEditions> | null
 }
 
 export function EditionDialog({
@@ -46,11 +46,17 @@ export function EditionDialog({
   }
 
   const renderContent = () => {
+    if (action === DialogAction.CREATE) {
+      return <EditionCreate close={close} />
+    }
+
+    if (edition == null) {
+      return null
+    }
+
     switch (action) {
       case DialogAction.VIEW:
         return <EditionView edition={edition} />
-      case DialogAction.CREATE:
-        return <EditionCreate close={close} />
       case DialogAction.EDIT:
         return <EditionEdit edition={edition} close={close} />
       case DialogAction.DELETE:
