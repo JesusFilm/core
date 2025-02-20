@@ -1328,6 +1328,8 @@ export type Mutation = {
   signUpBlockUpdate?: Maybe<SignUpBlock>;
   signUpSubmissionEventCreate: SignUpSubmissionEvent;
   siteCreate: MutationSiteCreateResult;
+  spacerBlockCreate: SpacerBlock;
+  spacerBlockUpdate: SpacerBlock;
   stepBlockCreate: StepBlock;
   stepBlockPositionUpdate: Array<StepBlock>;
   stepBlockUpdate: StepBlock;
@@ -1847,6 +1849,17 @@ export type MutationSignUpSubmissionEventCreateArgs = {
 
 export type MutationSiteCreateArgs = {
   input: SiteCreateInput;
+};
+
+
+export type MutationSpacerBlockCreateArgs = {
+  input: SpacerBlockCreateInput;
+};
+
+
+export type MutationSpacerBlockUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: SpacerBlockUpdateInput;
 };
 
 
@@ -3311,6 +3324,27 @@ export type SiteSharedLink = {
   slug: Scalars['String']['output'];
 };
 
+export type SpacerBlock = Block & {
+  __typename?: 'SpacerBlock';
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  parentBlockId?: Maybe<Scalars['ID']['output']>;
+  parentOrder?: Maybe<Scalars['Int']['output']>;
+  spacing?: Maybe<Scalars['Int']['output']>;
+};
+
+export type SpacerBlockCreateInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  journeyId: Scalars['ID']['input'];
+  parentBlockId: Scalars['ID']['input'];
+  spacing?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type SpacerBlockUpdateInput = {
+  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  spacing?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type StepBlock = Block & {
   __typename?: 'StepBlock';
   id: Scalars['ID']['output'];
@@ -4599,6 +4633,7 @@ export type VideoVariantCreateInput = {
   id: Scalars['String']['input'];
   languageId: Scalars['String']['input'];
   lengthInMilliseconds?: InputMaybe<Scalars['Int']['input']>;
+  muxVideoId?: InputMaybe<Scalars['String']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;
   slug: Scalars['String']['input'];
@@ -4653,6 +4688,7 @@ export type VideoVariantUpdateInput = {
   id: Scalars['String']['input'];
   languageId?: InputMaybe<Scalars['String']['input']>;
   lengthInMilliseconds?: InputMaybe<Scalars['Int']['input']>;
+  muxVideoId?: InputMaybe<Scalars['String']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;

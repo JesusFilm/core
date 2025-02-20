@@ -180,6 +180,9 @@ model VideoVariant {
   duration             Int?
   lengthInMilliseconds Int?
   languageId           String
+  masterUrl            String?
+  masterWidth          Int?
+  masterHeight         Int?
   published            Boolean                @default(true)
   edition              String                 @default("base")
   videoEdition         VideoEdition           @relation(fields: [edition, videoId], references: [name, videoId])

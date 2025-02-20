@@ -1,16 +1,28 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
+import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
 import { CancelButton } from '../../../../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useVideo } from '../../../../../../../../libs/VideoProvider'
+import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
+
+export const CREATE_VIDEO_IMAGE_ALT = graphql(`
+  mutation CreateVideoImageAlt($input: VideoTranslationCreateInput!) {
+    videoImageAltCreate(input: $input) {
+      id
+      value
+    }
+  }
+`)
 
 export const UPDATE_VIDEO_IMAGE_ALT = graphql(`
   mutation UpdateVideoImageAlt($input: VideoTranslationUpdateInput!) {
@@ -29,6 +41,32 @@ export function VideoImageAlt({
   videoImageAlts
 }: VideoImageAltProps): ReactElement {
   const t = useTranslations()
+  const { enqueueSnackbar } = useSnackbar()
+  const video = useVideo()
+
+  const [createVideoImageAlt] = useMutation(CREATE_VIDEO_IMAGE_ALT, {
+    update(cache, { data }) {
+      if (!data?.videoImageAltCreate) return
+
+      cache.modify({
+        id: cache.identify(video),
+        fields: {
+          imageAlt(existingVideoImageAlts = []) {
+            const newVideoImageAltRef = cache.writeFragment({
+              data: data.videoImageAltCreate,
+              fragment: gql`
+                fragment NewVideoImageAlt on VideoImageAlt {
+                  id
+                  value
+                }
+              `
+            })
+            return [...existingVideoImageAlts, newVideoImageAltRef]
+          }
+        }
+      })
+    }
+  })
   const [updateVideoImageAlt] = useMutation(UPDATE_VIDEO_IMAGE_ALT)
 
   const validationSchema = object().shape({
@@ -38,20 +76,53 @@ export function VideoImageAlt({
   async function handleUpdateVideoImageAlt(
     values: FormikValues
   ): Promise<void> {
-    await updateVideoImageAlt({
-      variables: {
-        input: {
-          id: videoImageAlts[0].id,
-          value: values.imageAlt
+    if (videoImageAlts.length === 0) {
+      await createVideoImageAlt({
+        variables: {
+          input: {
+            videoId: video.id,
+            value: values.imageAlt,
+            primary: true,
+            languageId: DEFAULT_VIDEO_LANGUAGE_ID
+          }
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t('Video image alt created'), {
+            variant: 'success'
+          })
+        },
+        onError: () => {
+          enqueueSnackbar(t('Failed to create video image alt'), {
+            variant: 'error'
+          })
         }
-      }
-    })
+      })
+    } else {
+      await updateVideoImageAlt({
+        variables: {
+          input: {
+            id: videoImageAlts[0].id,
+            value: values.imageAlt
+          }
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t('Video image alt updated'), {
+            variant: 'success'
+          })
+        },
+        onError: () => {
+          enqueueSnackbar(t('Failed to update video image alt'), {
+            variant: 'error'
+          })
+        }
+      })
+    }
   }
 
   return (
     <Formik
       initialValues={{
-        imageAlt: videoImageAlts?.[0].value
+        imageAlt: videoImageAlts?.[0]?.value ?? ''
       }}
       onSubmit={handleUpdateVideoImageAlt}
       validationSchema={validationSchema}

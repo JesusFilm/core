@@ -11,7 +11,6 @@ import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { CopyTextField } from '@core/shared/ui/CopyTextField'
 import { Dialog } from '@core/shared/ui/Dialog'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Code1Icon from '@core/shared/ui/icons/Code1'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import ShareIcon from '@core/shared/ui/icons/Share'
@@ -62,7 +61,6 @@ export function ShareItem({
     skip: journey?.team?.id == null
   })
   const router = useRouter()
-  const { qrCode } = useFlags()
   const [showSlugDialog, setShowSlugDialog] = useState<boolean | undefined>()
   const [showEmbedDialog, setShowEmbedDialog] = useState<boolean | undefined>()
   const [showQrCodeDialog, setShowQrCodeDialog] = useState<boolean>(false)
@@ -135,20 +133,18 @@ export function ShareItem({
             >
               {t('Embed Journey')}
             </Button>
-            {qrCode && (
-              <Button
-                onClick={() => {
-                  setShowQrCodeDialog(true)
-                  setRoute('qr-code')
-                }}
-                size="small"
-                startIcon={<TransformIcon />}
-                disabled={journey == null}
-                style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
-              >
-                {t('QR Code')}
-              </Button>
-            )}
+            <Button
+              onClick={() => {
+                setShowQrCodeDialog(true)
+                setRoute('qr-code')
+              }}
+              size="small"
+              startIcon={<TransformIcon />}
+              disabled={journey == null}
+              style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+            >
+              {t('QR Code')}
+            </Button>
           </Stack>
         </Stack>
       </Dialog>
