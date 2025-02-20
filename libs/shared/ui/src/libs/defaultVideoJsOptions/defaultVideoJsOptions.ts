@@ -8,19 +8,19 @@ export const defaultVideoJsOptions = {
       limitRenditionByPlayerDimensions: false,
       useBandwidthFromLocalStorage: true,
       useNetworkInformationApi: true,
-      useDevicePixelRatio: true,
-      maxBufferLength: 30,
-      maxMaxBufferLength: 60,
-      initialBufferLength: 10
+      useDevicePixelRatio: true
+      // maxBufferLength: 30,
+      // maxMaxBufferLength: 60,
+      // initialBufferLength: 10
     },
     hls: {
       limitRenditionByPlayerDimensions: false,
       useBandwidthFromLocalStorage: true,
       useNetworkInformationApi: true,
-      useDevicePixelRatio: true,
-      maxBufferLength: 30,
-      maxMaxBufferLength: 60,
-      initialBufferLength: 10
+      useDevicePixelRatio: true
+      // maxBufferLength: 30,
+      // maxMaxBufferLength: 60,
+      // initialBufferLength: 10
     }
   }
 }

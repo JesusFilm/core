@@ -60,9 +60,13 @@ export function InitAndPlay({
   const activeBlock = blockHistory[blockHistory.length - 1]
   const [error, setError] = useState(false)
 
+  const isActive = activeStep
+
   // Initiate video player
   useEffect(() => {
     if (videoRef.current != null) {
+      const userGenerated = source === VideoBlockSource.mux
+      console.log('setting player: ', source)
       setPlayer(
         videojs(videoRef.current, {
           ...defaultVideoJsOptions,
@@ -81,7 +85,16 @@ export function InitAndPlay({
           autoplay:
             autoplay === true &&
             activeStep &&
-            source === VideoBlockSource.youTube
+            source === VideoBlockSource.youTube,
+          plugins: {
+            mux: {
+              data: {
+                env_key: userGenerated
+                  ? 'bmthvokooapuadu6ti0ld5r57'
+                  : 'e2thjm49ulacc6tgf56laoeak'
+              }
+            }
+          }
         })
       )
     }
@@ -99,6 +112,12 @@ export function InitAndPlay({
 
   // Initiate video player listeners
   useEffect(() => {
+    console.log(
+      'initating video player listeners for: ',
+      source,
+      ', is active: ',
+      isActive
+    )
     const startTime = startAt ?? 0
 
     const handleStopLoading = (): void => {
