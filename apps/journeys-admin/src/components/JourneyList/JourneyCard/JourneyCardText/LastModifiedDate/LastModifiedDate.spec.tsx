@@ -1,17 +1,25 @@
 import { render } from '@testing-library/react'
 
+import { fakeDate } from '../../../journeyListData'
+
 import { LastModifiedDate } from '.'
 
 describe('LastModifiedDate', () => {
+  beforeAll(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date(fakeDate))
+  })
+
   it('should show "Edited just now" for recent edits', () => {
+    const modifiedDate = '2021-12-11'
     const { getByText } = render(
-      <LastModifiedDate modifiedDate={new Date().toISOString()} />
+      <LastModifiedDate modifiedDate={modifiedDate} />
     )
     expect(getByText('Edited just now')).toBeInTheDocument()
   })
 
   it('should show "1 minute ago" for edits 1 minute ago', () => {
-    const modifiedDate = new Date(Date.now() - 60 * 1000).toISOString()
+    const modifiedDate = '2021-12-10 23:59'
     const { getByText } = render(
       <LastModifiedDate modifiedDate={modifiedDate} />
     )
@@ -19,7 +27,7 @@ describe('LastModifiedDate', () => {
   })
 
   it('should show "3 hours ago" for edits 3 hours ago', () => {
-    const modifiedDate = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString()
+    const modifiedDate = '2021-12-10 21:00'
     const { getByText } = render(
       <LastModifiedDate modifiedDate={modifiedDate} />
     )
@@ -27,9 +35,7 @@ describe('LastModifiedDate', () => {
   })
 
   it('should show "10 days ago" for edits 10 days ago', () => {
-    const modifiedDate = new Date(
-      Date.now() - 10 * 24 * 60 * 60 * 1000
-    ).toISOString()
+    const modifiedDate = '2021-12-01'
     const { getByText } = render(
       <LastModifiedDate modifiedDate={modifiedDate} />
     )
@@ -37,9 +43,7 @@ describe('LastModifiedDate', () => {
   })
 
   it('should show "1 month ago" for edits 1 month ago', () => {
-    const modifiedDate = new Date(
-      Date.now() - 30 * 24 * 60 * 60 * 1000
-    ).toISOString()
+    const modifiedDate = '2021-11-11'
     const { getByText } = render(
       <LastModifiedDate modifiedDate={modifiedDate} />
     )
@@ -47,9 +51,7 @@ describe('LastModifiedDate', () => {
   })
 
   it('should show "1 year ago" for edits 1 year ago', () => {
-    const modifiedDate = new Date(
-      Date.now() - 365 * 24 * 60 * 60 * 1000
-    ).toISOString()
+    const modifiedDate = '2020-12-11'
     const { getByText } = render(
       <LastModifiedDate modifiedDate={modifiedDate} />
     )
