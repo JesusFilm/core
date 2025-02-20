@@ -4,8 +4,12 @@ import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
 import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
-import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import {
+  GetAdminVideo_AdminVideo as Video,
+  GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets
+} from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { VideoProvider } from '../../../../../../../../libs/VideoProvider'
 
 import { VideoSnippet } from './VideoSnippet'
 
@@ -33,7 +37,9 @@ type Story = StoryObj<ComponentProps<typeof VideoSnippet>>
 const Template: Story = {
   render: ({ videoSnippets }) => (
     <NextIntlClientProvider locale="en">
-      <VideoSnippet videoSnippets={videoSnippets} />
+      <VideoProvider video={{ id: '1' } as Video}>
+        <VideoSnippet videoSnippets={videoSnippets} />
+      </VideoProvider>
     </NextIntlClientProvider>
   )
 }
