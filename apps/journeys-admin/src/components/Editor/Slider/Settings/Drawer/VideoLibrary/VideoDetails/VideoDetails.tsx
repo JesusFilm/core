@@ -18,8 +18,8 @@ import {
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
 import { Drawer } from '../../Drawer'
-import { CloudflareDetails } from '../VideoFromCloudflare/CloudflareDetails'
 import { LocalDetails } from '../VideoFromLocal/LocalDetails'
+import { MuxDetails } from '../VideoFromMux/MuxDetails'
 import { YouTubeDetails } from '../VideoFromYouTube/YouTubeDetails'
 
 export interface VideoDetailsProps {
@@ -63,15 +63,18 @@ export function VideoDetails({
   const { t } = useTranslation('apps-journeys-admin')
 
   let Details: (
-    props: Pick<VideoDetailsProps, 'id' | 'open' | 'onSelect'>
+    props: Pick<
+      VideoDetailsProps,
+      'id' | 'open' | 'onSelect' | 'activeVideoBlock'
+    >
   ) => ReactElement
 
   switch (source) {
-    case VideoBlockSource.cloudflare:
-      Details = CloudflareDetails
-      break
     case VideoBlockSource.internal:
       Details = LocalDetails
+      break
+    case VideoBlockSource.mux:
+      Details = MuxDetails
       break
     case VideoBlockSource.youTube:
       Details = YouTubeDetails
@@ -142,7 +145,12 @@ export function VideoDetails({
             mt: activeVideoBlock != null ? -6 : 0
           }}
         >
-          <Details id={id} open={open} onSelect={handleSelect} />
+          <Details
+            id={id}
+            open={open}
+            onSelect={handleSelect}
+            activeVideoBlock={activeVideoBlock}
+          />
         </Box>
       </Stack>
     </Drawer>

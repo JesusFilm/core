@@ -187,6 +187,14 @@ export interface MenuBlockRestore_stepRestore_SignUpBlock {
   action: MenuBlockRestore_stepRestore_SignUpBlock_action | null;
 }
 
+export interface MenuBlockRestore_stepRestore_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
 export interface MenuBlockRestore_stepRestore_StepBlock {
   __typename: "StepBlock";
   id: string;
@@ -246,42 +254,56 @@ export interface MenuBlockRestore_stepRestore_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface MenuBlockRestore_stepRestore_VideoBlock_video_title {
+export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface MenuBlockRestore_stepRestore_VideoBlock_video_images {
+export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface MenuBlockRestore_stepRestore_VideoBlock_video_variant {
+export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface MenuBlockRestore_stepRestore_VideoBlock_video_variantLanguages_name {
+export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface MenuBlockRestore_stepRestore_VideoBlock_video_variantLanguages {
+export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: MenuBlockRestore_stepRestore_VideoBlock_video_variantLanguages_name[];
+  name: MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface MenuBlockRestore_stepRestore_VideoBlock_video {
+export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: MenuBlockRestore_stepRestore_VideoBlock_video_title[];
-  images: MenuBlockRestore_stepRestore_VideoBlock_video_images[];
-  variant: MenuBlockRestore_stepRestore_VideoBlock_video_variant | null;
-  variantLanguages: MenuBlockRestore_stepRestore_VideoBlock_video_variantLanguages[];
+  title: MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_title[];
+  images: MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_images[];
+  variant: MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
+
+export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  assetId: string | null;
+  playbackId: string | null;
+}
+
+export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type MenuBlockRestore_stepRestore_VideoBlock_mediaVideo = MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video | MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_MuxVideo | MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_YouTube;
 
 export interface MenuBlockRestore_stepRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -374,11 +396,7 @@ export interface MenuBlockRestore_stepRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: MenuBlockRestore_stepRestore_VideoBlock_video | null;
+  mediaVideo: MenuBlockRestore_stepRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
@@ -421,7 +439,7 @@ export interface MenuBlockRestore_stepRestore_VideoTriggerBlock {
   triggerAction: MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type MenuBlockRestore_stepRestore = MenuBlockRestore_stepRestore_GridContainerBlock | MenuBlockRestore_stepRestore_ButtonBlock | MenuBlockRestore_stepRestore_CardBlock | MenuBlockRestore_stepRestore_IconBlock | MenuBlockRestore_stepRestore_ImageBlock | MenuBlockRestore_stepRestore_RadioOptionBlock | MenuBlockRestore_stepRestore_RadioQuestionBlock | MenuBlockRestore_stepRestore_SignUpBlock | MenuBlockRestore_stepRestore_StepBlock | MenuBlockRestore_stepRestore_TextResponseBlock | MenuBlockRestore_stepRestore_TypographyBlock | MenuBlockRestore_stepRestore_VideoBlock | MenuBlockRestore_stepRestore_VideoTriggerBlock;
+export type MenuBlockRestore_stepRestore = MenuBlockRestore_stepRestore_GridContainerBlock | MenuBlockRestore_stepRestore_ButtonBlock | MenuBlockRestore_stepRestore_CardBlock | MenuBlockRestore_stepRestore_IconBlock | MenuBlockRestore_stepRestore_ImageBlock | MenuBlockRestore_stepRestore_RadioOptionBlock | MenuBlockRestore_stepRestore_RadioQuestionBlock | MenuBlockRestore_stepRestore_SignUpBlock | MenuBlockRestore_stepRestore_SpacerBlock | MenuBlockRestore_stepRestore_StepBlock | MenuBlockRestore_stepRestore_TextResponseBlock | MenuBlockRestore_stepRestore_TypographyBlock | MenuBlockRestore_stepRestore_VideoBlock | MenuBlockRestore_stepRestore_VideoTriggerBlock;
 
 export interface MenuBlockRestore_journeyUpdate_menuStepBlock {
   __typename: "StepBlock";

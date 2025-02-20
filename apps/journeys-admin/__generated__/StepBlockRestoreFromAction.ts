@@ -187,6 +187,14 @@ export interface StepBlockRestoreFromAction_blockRestore_SignUpBlock {
   action: StepBlockRestoreFromAction_blockRestore_SignUpBlock_action | null;
 }
 
+export interface StepBlockRestoreFromAction_blockRestore_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
 export interface StepBlockRestoreFromAction_blockRestore_StepBlock {
   __typename: "StepBlock";
   id: string;
@@ -246,42 +254,56 @@ export interface StepBlockRestoreFromAction_blockRestore_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_video_title {
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_video_images {
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_video_variant {
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_video_variantLanguages_name {
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_video_variantLanguages {
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: StepBlockRestoreFromAction_blockRestore_VideoBlock_video_variantLanguages_name[];
+  name: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_video {
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: StepBlockRestoreFromAction_blockRestore_VideoBlock_video_title[];
-  images: StepBlockRestoreFromAction_blockRestore_VideoBlock_video_images[];
-  variant: StepBlockRestoreFromAction_blockRestore_VideoBlock_video_variant | null;
-  variantLanguages: StepBlockRestoreFromAction_blockRestore_VideoBlock_video_variantLanguages[];
+  title: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_title[];
+  images: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_images[];
+  variant: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  assetId: string | null;
+  playbackId: string | null;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo = StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video | StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_MuxVideo | StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_YouTube;
 
 export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -374,11 +396,7 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: StepBlockRestoreFromAction_blockRestore_VideoBlock_video | null;
+  mediaVideo: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
@@ -421,10 +439,10 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock {
   triggerAction: StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type StepBlockRestoreFromAction_blockRestore = StepBlockRestoreFromAction_blockRestore_GridContainerBlock | StepBlockRestoreFromAction_blockRestore_ButtonBlock | StepBlockRestoreFromAction_blockRestore_CardBlock | StepBlockRestoreFromAction_blockRestore_IconBlock | StepBlockRestoreFromAction_blockRestore_ImageBlock | StepBlockRestoreFromAction_blockRestore_RadioOptionBlock | StepBlockRestoreFromAction_blockRestore_RadioQuestionBlock | StepBlockRestoreFromAction_blockRestore_SignUpBlock | StepBlockRestoreFromAction_blockRestore_StepBlock | StepBlockRestoreFromAction_blockRestore_TextResponseBlock | StepBlockRestoreFromAction_blockRestore_TypographyBlock | StepBlockRestoreFromAction_blockRestore_VideoBlock | StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock;
+export type StepBlockRestoreFromAction_blockRestore = StepBlockRestoreFromAction_blockRestore_GridContainerBlock | StepBlockRestoreFromAction_blockRestore_ButtonBlock | StepBlockRestoreFromAction_blockRestore_CardBlock | StepBlockRestoreFromAction_blockRestore_IconBlock | StepBlockRestoreFromAction_blockRestore_ImageBlock | StepBlockRestoreFromAction_blockRestore_RadioOptionBlock | StepBlockRestoreFromAction_blockRestore_RadioQuestionBlock | StepBlockRestoreFromAction_blockRestore_SignUpBlock | StepBlockRestoreFromAction_blockRestore_SpacerBlock | StepBlockRestoreFromAction_blockRestore_StepBlock | StepBlockRestoreFromAction_blockRestore_TextResponseBlock | StepBlockRestoreFromAction_blockRestore_TypographyBlock | StepBlockRestoreFromAction_blockRestore_VideoBlock | StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock;
 
 export interface StepBlockRestoreFromAction_blockUpdateAction_parentBlock {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 

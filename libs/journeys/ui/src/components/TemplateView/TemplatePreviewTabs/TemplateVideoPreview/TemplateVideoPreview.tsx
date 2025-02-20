@@ -1,6 +1,7 @@
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
 import Box from '@mui/material/Box'
 import { styled, useTheme } from '@mui/material/styles'
+import get from 'lodash/get'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { ReactElement, useState } from 'react'
@@ -63,22 +64,33 @@ function TemplateVideoPreviewItem({
       />
       {hasPlayed ? (
         <DynamicTemplateVideoPlayer
-          id={block?.video?.variant?.hls ?? block?.videoId}
+          id={
+            block?.mediaVideo?.__typename == 'Video'
+              ? block?.mediaVideo?.variant?.hls
+              : get(block, 'mediaVideo.id')
+          }
           source={block?.source}
           poster={
-            (block?.image as string) ??
-            block?.video?.images[0]?.mobileCinematicHigh
+            block?.mediaVideo?.__typename != 'Video'
+              ? (block?.image as string)
+              : (block?.mediaVideo?.images[0]?.mobileCinematicHigh as string)
           }
           startAt={block?.startAt ?? 0}
           endAt={block?.endAt ?? 10000}
+          mediaVideo={block?.mediaVideo}
         />
       ) : (
         <Image
           src={
-            (block?.image as string) ??
-            block?.video?.images[0]?.mobileCinematicHigh
+            block?.mediaVideo?.__typename != 'Video'
+              ? (block?.image as string)
+              : (block?.mediaVideo?.images[0]?.mobileCinematicHigh as string)
           }
-          alt={block?.video?.title[0]?.value ?? 'video' + ' image'}
+          alt={
+            block?.mediaVideo?.__typename == 'Video'
+              ? block?.mediaVideo?.title[0]?.value
+              : 'video image'
+          }
           fill
           sizes="100vw"
           onLoad={() => setOpacity(0)}

@@ -211,7 +211,7 @@ describe('Card', () => {
             description: null,
             duration: null,
             image: null,
-            video: {
+            mediaVideo: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
               title: [
@@ -289,7 +289,7 @@ describe('Card', () => {
             description: null,
             duration: null,
             image: null,
-            video: {
+            mediaVideo: {
               __typename: 'Video',
               id: '2_0-FallingPlates',
               title: [

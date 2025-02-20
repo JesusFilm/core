@@ -42,7 +42,7 @@ locals {
 }
 
 module "api-gateway" {
-  source           = "../../../apps/api-gateway/infrastructure"
+  source           = "../../../apis/api-gateway/infrastructure"
   ecs_config       = local.public_ecs_config
   doppler_token    = data.aws_ssm_parameter.doppler_api_gateway_prod_token.value
   alb_listener_arn = module.prod.public_alb.alb_listener.arn
@@ -50,7 +50,7 @@ module "api-gateway" {
 }
 
 module "api-analytics" {
-  source                = "../../../apps/api-analytics/infrastructure"
+  source                = "../../../apis/api-analytics/infrastructure"
   ecs_config            = local.internal_ecs_config
   doppler_token         = data.aws_ssm_parameter.doppler_api_analytics_prod_token.value
   subnet_group_name     = module.prod.vpc.db_subnet_group_name
@@ -62,7 +62,7 @@ module "api-analytics" {
 }
 
 module "api-journeys" {
-  source        = "../../../apps/api-journeys/infrastructure"
+  source        = "../../../apis/api-journeys/infrastructure"
   ecs_config    = local.internal_ecs_config
   doppler_token = data.aws_ssm_parameter.doppler_api_journeys_prod_token.value
   alb = {
@@ -72,7 +72,7 @@ module "api-journeys" {
 }
 
 module "api-journeys-modern" {
-  source        = "../../../apps/api-journeys-modern/infrastructure"
+  source        = "../../../apis/api-journeys-modern/infrastructure"
   ecs_config    = local.internal_ecs_config
   doppler_token = data.aws_ssm_parameter.doppler_api_journeys_prod_token.value
   alb = {
@@ -82,7 +82,7 @@ module "api-journeys-modern" {
 }
 
 module "api-languages" {
-  source        = "../../../apps/api-languages/infrastructure"
+  source        = "../../../apis/api-languages/infrastructure"
   ecs_config    = local.internal_ecs_config
   doppler_token = data.aws_ssm_parameter.doppler_api_languages_prod_token.value
   alb = {
@@ -92,7 +92,7 @@ module "api-languages" {
 }
 
 module "api-users" {
-  source        = "../../../apps/api-users/infrastructure"
+  source        = "../../../apis/api-users/infrastructure"
   ecs_config    = local.internal_ecs_config
   doppler_token = data.aws_ssm_parameter.doppler_api_users_prod_token.value
   alb = {
@@ -102,13 +102,27 @@ module "api-users" {
 }
 
 module "api-media" {
-  source        = "../../../apps/api-media/infrastructure"
+  source        = "../../../apis/api-media/infrastructure"
   ecs_config    = local.internal_ecs_config
   doppler_token = data.aws_ssm_parameter.doppler_api_media_prod_token.value
   alb = {
     arn      = module.prod.internal_alb.arn
     dns_name = module.prod.internal_alb.dns_name
   }
+}
+
+module "arclight" {
+  source = "../../../apps/arclight/infrastructure"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/"
+      health_check_port = "3000"
+    })
+  })
+  doppler_token    = data.aws_ssm_parameter.doppler_arclight_prod_token.value
+  alb_listener_arn = module.prod.public_alb.alb_listener.arn
+  alb_dns_name     = module.prod.public_alb.dns_name
+  host_name        = "core.arclight.org"
 }
 
 module "bastion" {

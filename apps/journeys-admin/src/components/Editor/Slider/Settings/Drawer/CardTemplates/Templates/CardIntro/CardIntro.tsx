@@ -287,7 +287,7 @@ export function CardIntro(): ReactElement {
       image: null,
       duration: null,
       objectFit: null,
-      video: {
+      mediaVideo: {
         id: '1_jf-0-0',
         __typename: 'Video',
         title: [
@@ -365,12 +365,12 @@ export function CardIntro(): ReactElement {
               ...pick(videoBlock, [
                 'id',
                 'parentBlockId',
-                'videoId',
                 'videoVariantLanguageId',
                 'startAt',
                 'endAt',
                 'source'
               ]),
+              videoId: videoBlock.mediaVideo?.id,
               journeyId: journey.id,
               isCover: true
             }

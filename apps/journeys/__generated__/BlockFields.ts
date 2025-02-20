@@ -187,6 +187,14 @@ export interface BlockFields_SignUpBlock {
   action: BlockFields_SignUpBlock_action | null;
 }
 
+export interface BlockFields_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
 export interface BlockFields_StepBlock {
   __typename: "StepBlock";
   id: string;
@@ -236,42 +244,56 @@ export interface BlockFields_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface BlockFields_VideoBlock_video_title {
+export interface BlockFields_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface BlockFields_VideoBlock_video_images {
+export interface BlockFields_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface BlockFields_VideoBlock_video_variant {
+export interface BlockFields_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface BlockFields_VideoBlock_video_variantLanguages_name {
+export interface BlockFields_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface BlockFields_VideoBlock_video_variantLanguages {
+export interface BlockFields_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: BlockFields_VideoBlock_video_variantLanguages_name[];
+  name: BlockFields_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface BlockFields_VideoBlock_video {
+export interface BlockFields_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: BlockFields_VideoBlock_video_title[];
-  images: BlockFields_VideoBlock_video_images[];
-  variant: BlockFields_VideoBlock_video_variant | null;
-  variantLanguages: BlockFields_VideoBlock_video_variantLanguages[];
+  title: BlockFields_VideoBlock_mediaVideo_Video_title[];
+  images: BlockFields_VideoBlock_mediaVideo_Video_images[];
+  variant: BlockFields_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: BlockFields_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
+
+export interface BlockFields_VideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  assetId: string | null;
+  playbackId: string | null;
+}
+
+export interface BlockFields_VideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type BlockFields_VideoBlock_mediaVideo = BlockFields_VideoBlock_mediaVideo_Video | BlockFields_VideoBlock_mediaVideo_MuxVideo | BlockFields_VideoBlock_mediaVideo_YouTube;
 
 export interface BlockFields_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -364,11 +386,7 @@ export interface BlockFields_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: BlockFields_VideoBlock_video | null;
+  mediaVideo: BlockFields_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
@@ -411,4 +429,4 @@ export interface BlockFields_VideoTriggerBlock {
   triggerAction: BlockFields_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockFields = BlockFields_GridContainerBlock | BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_StepBlock | BlockFields_TextResponseBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;
+export type BlockFields = BlockFields_GridContainerBlock | BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_SpacerBlock | BlockFields_StepBlock | BlockFields_TextResponseBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;

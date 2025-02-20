@@ -187,6 +187,14 @@ export interface BlockDuplicate_blockDuplicate_SignUpBlock {
   action: BlockDuplicate_blockDuplicate_SignUpBlock_action | null;
 }
 
+export interface BlockDuplicate_blockDuplicate_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
 export interface BlockDuplicate_blockDuplicate_StepBlock {
   __typename: "StepBlock";
   id: string;
@@ -236,42 +244,56 @@ export interface BlockDuplicate_blockDuplicate_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface BlockDuplicate_blockDuplicate_VideoBlock_video_title {
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface BlockDuplicate_blockDuplicate_VideoBlock_video_images {
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface BlockDuplicate_blockDuplicate_VideoBlock_video_variant {
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface BlockDuplicate_blockDuplicate_VideoBlock_video_variantLanguages_name {
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface BlockDuplicate_blockDuplicate_VideoBlock_video_variantLanguages {
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: BlockDuplicate_blockDuplicate_VideoBlock_video_variantLanguages_name[];
+  name: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface BlockDuplicate_blockDuplicate_VideoBlock_video {
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: BlockDuplicate_blockDuplicate_VideoBlock_video_title[];
-  images: BlockDuplicate_blockDuplicate_VideoBlock_video_images[];
-  variant: BlockDuplicate_blockDuplicate_VideoBlock_video_variant | null;
-  variantLanguages: BlockDuplicate_blockDuplicate_VideoBlock_video_variantLanguages[];
+  title: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_title[];
+  images: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_images[];
+  variant: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
+
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  assetId: string | null;
+  playbackId: string | null;
+}
+
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo = BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video | BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_MuxVideo | BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_YouTube;
 
 export interface BlockDuplicate_blockDuplicate_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -364,11 +386,7 @@ export interface BlockDuplicate_blockDuplicate_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: BlockDuplicate_blockDuplicate_VideoBlock_video | null;
+  mediaVideo: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
@@ -411,7 +429,7 @@ export interface BlockDuplicate_blockDuplicate_VideoTriggerBlock {
   triggerAction: BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockDuplicate_blockDuplicate = BlockDuplicate_blockDuplicate_GridContainerBlock | BlockDuplicate_blockDuplicate_ButtonBlock | BlockDuplicate_blockDuplicate_CardBlock | BlockDuplicate_blockDuplicate_IconBlock | BlockDuplicate_blockDuplicate_ImageBlock | BlockDuplicate_blockDuplicate_RadioOptionBlock | BlockDuplicate_blockDuplicate_RadioQuestionBlock | BlockDuplicate_blockDuplicate_SignUpBlock | BlockDuplicate_blockDuplicate_StepBlock | BlockDuplicate_blockDuplicate_TextResponseBlock | BlockDuplicate_blockDuplicate_TypographyBlock | BlockDuplicate_blockDuplicate_VideoBlock | BlockDuplicate_blockDuplicate_VideoTriggerBlock;
+export type BlockDuplicate_blockDuplicate = BlockDuplicate_blockDuplicate_GridContainerBlock | BlockDuplicate_blockDuplicate_ButtonBlock | BlockDuplicate_blockDuplicate_CardBlock | BlockDuplicate_blockDuplicate_IconBlock | BlockDuplicate_blockDuplicate_ImageBlock | BlockDuplicate_blockDuplicate_RadioOptionBlock | BlockDuplicate_blockDuplicate_RadioQuestionBlock | BlockDuplicate_blockDuplicate_SignUpBlock | BlockDuplicate_blockDuplicate_SpacerBlock | BlockDuplicate_blockDuplicate_StepBlock | BlockDuplicate_blockDuplicate_TextResponseBlock | BlockDuplicate_blockDuplicate_TypographyBlock | BlockDuplicate_blockDuplicate_VideoBlock | BlockDuplicate_blockDuplicate_VideoTriggerBlock;
 
 export interface BlockDuplicate {
   /**
