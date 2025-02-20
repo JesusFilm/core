@@ -8,6 +8,7 @@ import { VideoProvider } from '../../../../../../../../libs/VideoProvider'
 import { DialogAction, EditionDialog } from './EditionDialog'
 
 const mockVideo = useAdminVideoMock['result']?.['data']?.['adminVideo']
+const mockEdition = mockVideo?.videoEditions?.[0]
 
 const noop = () => undefined
 
@@ -38,9 +39,7 @@ export const Hidden: Story = {
   args: {
     action: null,
     close: noop,
-    edition: {
-      id: '1'
-    }
+    edition: null
   }
 }
 
@@ -48,7 +47,7 @@ export const View: Story = {
   args: {
     action: DialogAction.VIEW,
     close: noop,
-    edition: { id: '1' }
+    edition: mockEdition
   }
 }
 
@@ -56,9 +55,7 @@ export const Create: Story = {
   args: {
     action: DialogAction.CREATE,
     close: noop,
-    edition: {
-      id: '1'
-    }
+    edition: null
   }
 }
 
@@ -66,7 +63,7 @@ export const Edit: Story = {
   args: {
     action: DialogAction.EDIT,
     close: noop,
-    edition: { id: '1' }
+    edition: mockEdition
   }
 }
 
@@ -74,6 +71,6 @@ export const Delete: Story = {
   args: {
     action: DialogAction.DELETE,
     close: noop,
-    edition: { id: '1' }
+    edition: mockEdition
   }
 }

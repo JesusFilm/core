@@ -109,7 +109,7 @@ export function VideoView(): ReactElement {
                 label={
                   <TabLabel
                     label={t('Editions')}
-                    count={video?.videoEditions.length}
+                    count={video.videoEditions?.length}
                   />
                 }
               />
@@ -131,7 +131,7 @@ export function VideoView(): ReactElement {
               <Variants variants={video.variants} />
             </TabContainer>
             <TabContainer value={tabValue} index={3}>
-              <Editions editions={video?.videoEditions} />
+              <Editions editions={video.videoEditions ?? []} />
             </TabContainer>
           </Box>
         </Stack>

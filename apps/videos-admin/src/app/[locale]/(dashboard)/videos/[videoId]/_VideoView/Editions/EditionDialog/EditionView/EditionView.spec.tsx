@@ -4,7 +4,8 @@ import { EditionView } from './EditionView'
 
 const mockEdition = {
   id: 'edition.id',
-  name: 'Edition 1'
+  name: 'Edition 1',
+  videoSubtitles: []
 }
 
 describe('EditionView', () => {

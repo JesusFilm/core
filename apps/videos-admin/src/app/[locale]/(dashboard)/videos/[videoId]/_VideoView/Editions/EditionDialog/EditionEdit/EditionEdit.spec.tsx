@@ -129,7 +129,7 @@ describe('EditionEdit', () => {
     const textbox = screen.getByRole('textbox', { name: 'Name' })
 
     await user.clear(textbox)
-    await user.type(textbox, 'Updated Title')
+    await user.type(textbox, 'updated edition')
     await user.click(screen.getByRole('button', { name: 'Update' }))
 
     await waitFor(() => {
