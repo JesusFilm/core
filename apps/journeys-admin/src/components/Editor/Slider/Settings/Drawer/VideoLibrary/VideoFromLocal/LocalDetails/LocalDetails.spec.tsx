@@ -223,6 +223,7 @@ describe('LocalDetails', () => {
     )
     expect(getByRole('button', { name: 'Select' })).toBeDisabled()
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(getByRole('button', { name: 'Select' })).not.toBeDisabled()
   })
 
   it('should keep startAt and endAt values if already exist on select click', async () => {
