@@ -14,7 +14,11 @@ jest.mock('next/router', () => ({
       query: {
         tab: 'active'
       },
-      push: jest.fn()
+      push: jest.fn(),
+      events: {
+        on: jest.fn(),
+        off: jest.fn()
+      }
     }
   })
 }))
@@ -50,7 +54,11 @@ describe('JourneyList', () => {
 
   it('should show add journey button on active tab', () => {
     mockedUseRouter.mockReturnValue({
-      query: { tab: 'active' }
+      query: { tab: 'active' },
+      events: {
+        on: jest.fn(),
+        off: jest.fn()
+      }
     } as unknown as NextRouter)
     const { getByRole } = render(
       <SnackbarProvider>
@@ -66,7 +74,11 @@ describe('JourneyList', () => {
 
   it('should hide add journey button on trashed tab', () => {
     mockedUseRouter.mockReturnValue({
-      query: { tab: 'trashed' }
+      query: { tab: 'trashed' },
+      events: {
+        on: jest.fn(),
+        off: jest.fn()
+      }
     } as unknown as NextRouter)
     const { queryByRole } = render(
       <SnackbarProvider>
@@ -82,7 +94,11 @@ describe('JourneyList', () => {
 
   it('should hide add journey button on archived tab', () => {
     mockedUseRouter.mockReturnValue({
-      query: { tab: 'archived' }
+      query: { tab: 'archived' },
+      events: {
+        on: jest.fn(),
+        off: jest.fn()
+      }
     } as unknown as NextRouter)
     const { queryByRole } = render(
       <SnackbarProvider>
