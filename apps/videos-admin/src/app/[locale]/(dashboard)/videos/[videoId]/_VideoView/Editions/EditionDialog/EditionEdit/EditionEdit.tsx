@@ -4,6 +4,8 @@ import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
+import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { ArrayElement } from '../../../../../../../../../types/array-types'
 import { EditionForm, EditionValidationSchema } from '../../EditionForm'
 
 export const UPDATE_VIDEO_EDITION = graphql(`
@@ -21,7 +23,7 @@ export type UpdateVideoEditionVariables = VariablesOf<
 export type UpdateVideoEdition = ResultOf<typeof UPDATE_VIDEO_EDITION>
 
 interface EditionEditProps {
-  edition: any
+  edition: ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
   close: () => void
 }
 
@@ -57,7 +59,7 @@ export function EditionEdit({
   return (
     <EditionForm
       variant="edit"
-      initialValues={{ name: edition?.name }}
+      initialValues={{ name: edition?.name ?? '' }}
       onSubmit={handleSubmit}
     />
   )
