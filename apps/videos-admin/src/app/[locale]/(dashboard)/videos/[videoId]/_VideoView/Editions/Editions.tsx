@@ -73,13 +73,11 @@ export function Editions({ editions }: EditionsProps): ReactElement {
           <Typography>{t('No editions.')}</Typography>
         </Box>
       )}
-      {selectedEdition && (
-        <EditionDialog
-          action={action}
-          close={() => setAction(null)}
-          edition={selectedEdition}
-        />
-      )}
+      <EditionDialog
+        action={action}
+        close={() => setAction(null)}
+        edition={selectedEdition}
+      />
     </Section>
   )
 }
