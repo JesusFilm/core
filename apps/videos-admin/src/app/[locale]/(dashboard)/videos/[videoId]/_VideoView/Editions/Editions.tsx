@@ -6,10 +6,14 @@ import { ReactElement, useState } from 'react'
 
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
+import { GetAdminVideo_AdminVideo_VideoEditions as VideoEditions } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { ArrayElement } from '../../../../../../../types/array-types'
 import { Section } from '../Section'
 
 import { EditionCard } from './EditionCard'
 import { DialogAction } from './EditionDialog'
+
+type Edition = ArrayElement<VideoEditions>
 
 const EditionDialog = dynamic(
   async () =>
@@ -21,15 +25,15 @@ const EditionDialog = dynamic(
 )
 
 interface EditionsProps {
-  editions: any
+  editions: VideoEditions
 }
 
 export function Editions({ editions }: EditionsProps): ReactElement {
   const t = useTranslations()
   const [action, setAction] = useState<DialogAction | null>(null)
-  const [selectedEdition, setSelectedEdition] = useState<any>(null)
+  const [selectedEdition, setSelectedEdition] = useState<Edition | null>(null)
 
-  const handleAction = (action: DialogAction, edition: any) => {
+  const handleAction = (action: DialogAction, edition: Edition) => {
     setSelectedEdition(edition)
     setAction(action)
   }
@@ -69,11 +73,13 @@ export function Editions({ editions }: EditionsProps): ReactElement {
           <Typography>{t('No editions.')}</Typography>
         </Box>
       )}
-      <EditionDialog
-        action={action}
-        close={() => setAction(null)}
-        edition={selectedEdition}
-      />
+      {selectedEdition && (
+        <EditionDialog
+          action={action}
+          close={() => setAction(null)}
+          edition={selectedEdition}
+        />
+      )}
     </Section>
   )
 }

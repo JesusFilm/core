@@ -9,6 +9,9 @@ import { ReactElement, useState } from 'react'
 
 import More from '@core/shared/ui/icons/More'
 
+import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { ArrayElement } from '../../../../../../../../types/array-types'
+
 interface MenuActions {
   view: () => void
   edit: () => void
@@ -43,7 +46,7 @@ function MenuButton({ actions }: { actions: MenuActions }): ReactElement {
 }
 
 interface EditionCardProps {
-  edition: any
+  edition: ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
   onClick: () => void
   actions: MenuActions
 }

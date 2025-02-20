@@ -3,6 +3,9 @@ import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
+import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { ArrayElement } from '../../../../../../../../types/array-types'
+
 import { EditionCreate } from './EditionCreate'
 import { EditionDelete } from './EditionDelete'
 import { EditionEdit } from './EditionEdit'
@@ -18,7 +21,7 @@ export enum DialogAction {
 export interface EditionDialogProps {
   action: DialogAction | null
   close: () => void
-  edition: any
+  edition: ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
 }
 
 export function EditionDialog({

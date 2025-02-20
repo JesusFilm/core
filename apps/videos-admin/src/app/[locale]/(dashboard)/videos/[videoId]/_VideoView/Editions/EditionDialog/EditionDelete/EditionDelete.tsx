@@ -8,7 +8,9 @@ import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
+import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useVideo } from '../../../../../../../../../libs/VideoProvider'
+import { ArrayElement } from '../../../../../../../../../types/array-types'
 
 export const DELETE_VIDEO_EDITION = graphql(`
   mutation DeleteVideoEdition($id: ID!) {
@@ -25,7 +27,7 @@ export type DeleteVideoEdition = ResultOf<typeof DELETE_VIDEO_EDITION>
 
 interface EditionDeleteProps {
   close: () => void
-  edition: any
+  edition: ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
 }
 
 export function EditionDelete({
@@ -45,7 +47,7 @@ export function EditionDelete({
         fields: {
           videoEditions(existingRefs = [], { readField }) {
             return existingRefs.filter(
-              (ref: any) => readField('id', ref) !== data.videoEditionDelete.id
+              (ref) => readField('id', ref) !== data.videoEditionDelete.id
             )
           }
         }
