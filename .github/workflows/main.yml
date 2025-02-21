@@ -41,6 +41,8 @@ jobs:
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: ${{ matrix.bun-version }}
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
       - name: bun install
         run: bun install --silent --frozen-lockfile
       - name: generate prisma imports
@@ -111,6 +113,8 @@ jobs:
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: ${{ matrix.bun-version }}
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
       - name: bun install
         run: bun install --silent --frozen-lockfile
       - name: generate prisma imports
