@@ -153,6 +153,9 @@ const ResponseSchema = z.object({
 const route = createRoute({
   method: 'get',
   path: '/',
+  tags: ['Media Countries'],
+  summary: 'Get media country by country id',
+  description: 'Get media country by country id',
   request: {
     query: QuerySchema
   },

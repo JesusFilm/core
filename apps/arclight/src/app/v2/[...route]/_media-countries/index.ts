@@ -71,9 +71,11 @@ const ResponseSchema = z.object({
     last: z.object({
       href: z.string()
     }),
-    next: z.object({
-      href: z.string()
-    })
+    next: z
+      .object({
+        href: z.string()
+      })
+      .optional()
   }),
   _embedded: z.object({
     mediaCountries: z.array(
@@ -100,8 +102,8 @@ const ResponseSchema = z.object({
         }),
         assets: z.object({
           flagUrls: z.object({
-            png8: z.string().optional(),
-            webpLossy50: z.string().optional()
+            png8: z.string().nullable(),
+            webpLossy50: z.string().nullable()
           })
         }),
         _links: z.object({
@@ -117,6 +119,9 @@ const ResponseSchema = z.object({
 const route = createRoute({
   method: 'get',
   path: '/',
+  tags: ['Media Countries'],
+  summary: 'Get media countries',
+  description: 'Get media countries',
   request: { query: QuerySchema },
   responses: {
     200: {
@@ -196,15 +201,15 @@ mediaCountries.openapi(route, async (c) => {
       latitude: country.latitude ? country.latitude : 0,
       counts: {
         languageCount: {
-          value: country.languageCount,
+          value: country.languageCount ?? 0,
           description: 'Number of spoken languages'
         },
         population: {
-          value: country.population,
+          value: country.population ?? 0,
           description: 'Country population'
         },
         languageHavingMediaCount: {
-          value: country.languageHavingMediaCount,
+          value: country.languageHavingMediaCount ?? 0,
           description: 'Number of languages having media'
         }
       },
