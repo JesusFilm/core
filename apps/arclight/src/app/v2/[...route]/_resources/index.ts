@@ -339,7 +339,8 @@ resources.get('/', async (c) => {
                 mediaLanguages: transformedLanguages,
                 alternateLanguages: [],
                 mediaComponents: transformedVideos
-              })
+              }),
+          _links: {}
         }
       }
     }

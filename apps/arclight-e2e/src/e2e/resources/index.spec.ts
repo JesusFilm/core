@@ -52,7 +52,14 @@ test.describe('GET /v2/resources', () => {
       continentName: expect.any(String),
       metadataLanguageTag: 'en',
       longitude: expect.any(Number),
-      latitude: expect.any(Number)
+      latitude: expect.any(Number),
+      _links: {
+        self: {
+          href: expect.stringMatching(
+            /^http.*\/v2\/media-countries\/US\?apiKey=.*$/
+          )
+        }
+      }
     })
   })
 
@@ -93,7 +100,14 @@ test.describe('GET /v2/resources', () => {
       primaryCountryId: 'GB',
       name: 'English',
       nameNative: 'English',
-      metadataLanguageTag: 'en'
+      metadataLanguageTag: 'en',
+      _links: {
+        self: {
+          href: expect.stringMatching(
+            /^http.*\/v2\/media-languages\/529\?apiKey=.*$/
+          )
+        }
+      }
     })
   })
 
@@ -203,7 +217,8 @@ test.describe('GET /v2/resources', () => {
       'countryIds',
       'languageIds',
       'alternateLanguageIds',
-      'mediaComponentIds'
+      'mediaComponentIds',
+      '_links'
     ])
   })
 
@@ -228,7 +243,8 @@ test.describe('GET /v2/resources', () => {
       'countryIds',
       'languageIds',
       'alternateLanguageIds',
-      'mediaComponentIds'
+      'mediaComponentIds',
+      '_links'
     ])
   })
 
@@ -257,7 +273,8 @@ test.describe('GET /v2/resources', () => {
       'countryIds',
       'languageIds',
       'alternateLanguageIds',
-      'mediaComponentIds'
+      'mediaComponentIds',
+      '_links'
     ])
   })
 })
