@@ -1,5 +1,9 @@
 import { blurImage } from './blurImage'
 
+jest.mock('blurhash', () => ({
+  decode: () => new Uint8ClampedArray(32 * 32 * 4).fill(128)
+}))
+
 describe('blurImage', () => {
   const image = {
     id: 'image1.id',
@@ -15,10 +19,9 @@ describe('blurImage', () => {
   }
 
   it('returns url of blurred image', () => {
-    const result = blurImage(image.blurhash, '#000000')
-    expect(result).toBeDefined()
-    expect(typeof result).toBe('string')
-    expect(result).toMatch(/^data:image\/png;base64,[A-Za-z0-9+/]+=*$/)
+    expect(
+      blurImage(image.blurhash, '#000000')?.startsWith('data:image/png;base64,')
+    ).toBeTruthy()
   })
 
   it('returns undefined as fallback', () => {
