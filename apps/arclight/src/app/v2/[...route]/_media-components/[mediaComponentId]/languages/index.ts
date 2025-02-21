@@ -51,10 +51,12 @@ export const mediaComponentLanguages = new OpenAPIHono()
 mediaComponentLanguages.route('/:languageId', mediaComponentLanguage)
 
 const QuerySchema = z.object({
-  apiKey: z.string(),
-  platform: z.string(),
-  languageIds: z.string(),
-  reduce: z.string()
+  apiKey: z.string().optional().describe('API key'),
+  platform: z.string().optional().describe('Platform (ios, android, web)'),
+  languageIds: z
+    .string()
+    .optional()
+    .describe('Filter by language IDs (comma separated)')
 })
 
 const ParamsSchema = z.object({
@@ -102,7 +104,6 @@ mediaComponentLanguages.openapi(route, async (c) => {
   const apiKey = c.req.query('apiKey') ?? '616db012e9a951.51499299'
   const platform = c.req.query('platform') ?? 'ios'
   const languageIds = c.req.query('languageIds')?.split(',') ?? []
-  const reduce = c.req.query('reduce') ?? ''
   const apiSessionId = '6622f10d2260a8.05128925'
 
   const { data } = await getApolloClient().query<
