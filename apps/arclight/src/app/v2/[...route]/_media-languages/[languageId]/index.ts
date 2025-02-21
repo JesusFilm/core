@@ -54,55 +54,76 @@ const GET_LANGUAGE = graphql(`
   }
 `)
 
+const QuerySchema = z.object({
+  metadataLanguageTags: z
+    .string()
+    .optional()
+    .describe('Filter by metadata language tags'),
+  apiKey: z.string().optional().describe('API key')
+})
+
+const ResponseSchema = z.object({
+  languageId: z.number(),
+  iso3: z.string(),
+  bcp47: z.string(),
+  counts: z.object({
+    speakerCount: z.object({
+      value: z.number(),
+      description: z.string()
+    }),
+    countriesCount: z.object({
+      value: z.number(),
+      description: z.string()
+    }),
+    series: z.object({
+      value: z.number(),
+      description: z.string()
+    }),
+    featureFilm: z.object({
+      value: z.number(),
+      description: z.string()
+    }),
+    shortFilm: z.object({
+      value: z.number(),
+      description: z.string()
+    })
+  }),
+  audioPreview: z.object({
+    url: z.string(),
+    audioBitrate: z.number(),
+    audioContainer: z.string(),
+    sizeInBytes: z.number()
+  }),
+  primaryCountryId: z.string(),
+  name: z.string(),
+  nameNative: z.string(),
+  alternateLanguageName: z.string(),
+  alternateLanguageNameNative: z.string(),
+  metadataLanguageTag: z.string(),
+  _links: z.object({
+    self: z.object({
+      href: z.string()
+    })
+  })
+})
+
 const route = createRoute({
   method: 'get',
   path: '/',
+  tags: ['Media Languages'],
+  summary: 'Get media language by language ID',
+  description: 'Get media language by language ID',
   request: {
     params: z.object({
       languageId: z.string()
     }),
-    query: z.object({
-      metadataLanguageTags: z.string().optional(),
-      apiKey: z.string().optional()
-    })
+    query: QuerySchema
   },
   responses: {
     200: {
       content: {
         'application/json': {
-          schema: z.object({
-            languageId: z.number(),
-            iso3: z.string(),
-            bcp47: z.string(),
-            counts: z.object({
-              speakerCount: z.object({
-                value: z.number(),
-                description: z.string()
-              }),
-              countriesCount: z.object({
-                value: z.number(),
-                description: z.string()
-              }),
-              series: z.object({
-                value: z.number(),
-                description: z.string()
-              }),
-              featureFilm: z.object({
-                value: z.number(),
-                description: z.string()
-              }),
-              shortFilm: z.object({
-                value: z.number(),
-                description: z.string()
-              })
-            }),
-            audioPreview: z.object({
-              url: z.string(),
-              audioBitrate: z.number(),
-              audioContainer: z.string(),
-              sizeInBytes: z.number()
-            })
-          })
+          schema: ResponseSchema
         }
       },
       description: 'Media language'

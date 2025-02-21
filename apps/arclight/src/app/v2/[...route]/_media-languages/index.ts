@@ -70,14 +70,17 @@ const GET_LANGUAGES = graphql(`
 `)
 
 const QuerySchema = z.object({
-  apiKey: z.string().optional(),
-  page: z.string().optional(),
-  limit: z.string().optional(),
-  ids: z.string().optional(),
-  bcp47: z.string().optional(),
-  iso3: z.string().optional(),
-  metadataLanguageTags: z.string().optional(),
-  term: z.string().optional()
+  apiKey: z.string().optional().describe('API key'),
+  page: z.string().optional().describe('Page number'),
+  limit: z.string().optional().describe('Number of items per page'),
+  ids: z.string().optional().describe('Filter by language IDs'),
+  bcp47: z.string().optional().describe('Filter by BCP-47 language codes'),
+  iso3: z.string().optional().describe('Filter by ISO-3 language codes'),
+  metadataLanguageTags: z
+    .string()
+    .optional()
+    .describe('Filter by metadata language tags'),
+  term: z.string().optional().describe('Search term')
 })
 
 const ResponseSchema = z.object({
@@ -114,6 +117,10 @@ const ResponseSchema = z.object({
 const route = createRoute({
   method: 'get',
   path: '/',
+  tags: ['Media Languages'],
+  summary: 'Get Language information for all languages that have active media',
+  description:
+    'Get Language information for all languages that have active media',
   request: {
     query: QuerySchema
   },
