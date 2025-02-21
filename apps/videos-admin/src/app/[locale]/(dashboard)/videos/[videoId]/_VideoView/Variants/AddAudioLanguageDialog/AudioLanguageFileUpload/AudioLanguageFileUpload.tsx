@@ -92,7 +92,7 @@ export function AudioLanguageFileUpload({
         }}
         {...getRootProps({ isDragAccept })}
       >
-        <input {...getInputProps()} />
+        <input {...getInputProps()} data-testid="DropZone" />
         {error != null || fileRejected ? (
           <AlertTriangleIcon
             sx={{ fontSize: 48, color: 'primary.main', mb: 1 }}
