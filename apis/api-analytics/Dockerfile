@@ -12,6 +12,7 @@ RUN apk upgrade --update-cache --available && \
 
 WORKDIR /app
 COPY ./dist/apps/api-analytics .
+COPY ./package.json .
 COPY ./bun.lock .
 
 RUN 
@@ -20,7 +21,7 @@ RUN bun install --production --frozen-lockfile
 
 WORKDIR /prisma
 COPY ./apis/api-analytics/db .
-RUN bunx prisma@5 generate --generator client
+RUN bunx prisma@6 generate --generator client
 
 WORKDIR /app
 

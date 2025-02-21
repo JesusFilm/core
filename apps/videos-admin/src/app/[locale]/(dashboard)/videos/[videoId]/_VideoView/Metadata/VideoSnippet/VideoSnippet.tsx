@@ -1,10 +1,11 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
-import unescape from 'lodash/unescape'
+import _unescape from 'lodash/unescape'
 import { useTranslations } from 'next-intl'
+import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
@@ -12,6 +13,17 @@ import { CancelButton } from '../../../../../../../../components/CancelButton'
 import { ResizableTextField } from '../../../../../../../../components/ResizableTextField'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useVideo } from '../../../../../../../../libs/VideoProvider'
+import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
+
+export const CREATE_VIDEO_SNIPPET = graphql(`
+  mutation CreateVideoSnippet($input: VideoTranslationCreateInput!) {
+    videoSnippetCreate(input: $input) {
+      id
+      value
+    }
+  }
+`)
 
 export const UPDATE_VIDEO_SNIPPET = graphql(`
   mutation UpdateVideoSnippet($input: VideoTranslationUpdateInput!) {
@@ -30,25 +42,86 @@ export function VideoSnippet({
   videoSnippets
 }: VideoSnippetProps): ReactElement {
   const t = useTranslations()
+  const { enqueueSnackbar } = useSnackbar()
+  const [createVideoSnippet] = useMutation(CREATE_VIDEO_SNIPPET, {
+    update(cache, { data }) {
+      if (!data?.videoSnippetCreate) return
+
+      cache.modify({
+        id: cache.identify(video),
+        fields: {
+          snippet(existingSnippets = []) {
+            const newSnippetRef = cache.writeFragment({
+              data: data.videoSnippetCreate,
+              fragment: gql`
+                fragment NewSnippet on VideoSnippet {
+                  id
+                  value
+                }
+              `
+            })
+            return [...existingSnippets, newSnippetRef]
+          }
+        }
+      })
+    }
+  })
   const [updateVideoSnippet] = useMutation(UPDATE_VIDEO_SNIPPET)
+
+  const video = useVideo()
 
   const validationSchema = object().shape({
     snippet: string().required(t('Snippet is required'))
   })
 
   async function handleUpdateVideoSnippet(values: FormikValues): Promise<void> {
-    if (videoSnippets == null) return
-    await updateVideoSnippet({
-      variables: {
-        input: {
-          id: videoSnippets[0].id,
-          value: values.snippet
+    if (videoSnippets.length === 0) {
+      await createVideoSnippet({
+        variables: {
+          input: {
+            videoId: video.id,
+            value: values.snippet,
+            primary: true,
+            languageId: DEFAULT_VIDEO_LANGUAGE_ID
+          }
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t('Video short description created'), {
+            variant: 'success'
+          })
+        },
+        onError: () => {
+          enqueueSnackbar(t('Failed to create video short description'), {
+            variant: 'error'
+          })
         }
-      }
-    })
+      })
+    } else {
+      await updateVideoSnippet({
+        variables: {
+          input: {
+            id: videoSnippets[0].id,
+            value: values.snippet
+          }
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t('Video short description updated'), {
+            variant: 'success'
+          })
+        },
+        onError: () => {
+          enqueueSnackbar(t('Failed to update video short description'), {
+            variant: 'error'
+          })
+        }
+      })
+    }
   }
 
-  const snippet = unescape(videoSnippets?.[0].value).replace(/&#13;/g, '\n')
+  const snippet = _unescape(videoSnippets?.[0]?.value ?? '').replace(
+    /&#13;/g,
+    '\n'
+  )
 
   return (
     <Formik

@@ -28,7 +28,8 @@ export function DashboardLayout({
           sx={(theme) => ({
             flexGrow: 1,
             backgroundColor: alpha(theme.palette.background.default, 1),
-            overflow: 'auto'
+            overflow: 'auto',
+            minHeight: '100svh'
           })}
         >
           <Stack
@@ -37,7 +38,8 @@ export function DashboardLayout({
               alignItems: 'center',
               mx: 3,
               pb: 10,
-              mt: { xs: 8, md: 0 }
+              mt: { xs: 8, md: 0 },
+              height: '100%'
             }}
           >
             <Header />

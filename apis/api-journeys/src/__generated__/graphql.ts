@@ -527,12 +527,12 @@ export type GridContainerBlock = Block & {
   __typename?: 'GridContainerBlock';
   alignItems: GridAlignItems;
   direction: GridDirection;
+  gap: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
   justifyContent: GridJustifyContent;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
-  spacing: Scalars['Int']['output'];
 };
 
 export enum GridDirection {
@@ -1110,6 +1110,13 @@ export type Keyword = {
   value: Scalars['String']['output'];
 };
 
+export type LabeledVideoCounts = {
+  __typename?: 'LabeledVideoCounts';
+  featureFilmCount: Scalars['Int']['output'];
+  seriesCount: Scalars['Int']['output'];
+  shortFilmCount: Scalars['Int']['output'];
+};
+
 export type Language = {
   __typename?: 'Language';
   audioPreview?: Maybe<AudioPreview>;
@@ -1118,6 +1125,7 @@ export type Language = {
   featureFilmCount: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
+  labeledVideoCounts: LabeledVideoCounts;
   name: Array<LanguageName>;
   seriesCount: Scalars['Int']['output'];
   shortFilmCount: Scalars['Int']['output'];
@@ -1320,6 +1328,8 @@ export type Mutation = {
   signUpBlockUpdate?: Maybe<SignUpBlock>;
   signUpSubmissionEventCreate: SignUpSubmissionEvent;
   siteCreate: MutationSiteCreateResult;
+  spacerBlockCreate: SpacerBlock;
+  spacerBlockUpdate: SpacerBlock;
   stepBlockCreate: StepBlock;
   stepBlockPositionUpdate: Array<StepBlock>;
   stepBlockUpdate: StepBlock;
@@ -1842,6 +1852,17 @@ export type MutationSiteCreateArgs = {
 };
 
 
+export type MutationSpacerBlockCreateArgs = {
+  input: SpacerBlockCreateInput;
+};
+
+
+export type MutationSpacerBlockUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: SpacerBlockUpdateInput;
+};
+
+
 export type MutationStepBlockCreateArgs = {
   input: StepBlockCreateInput;
 };
@@ -2297,6 +2318,7 @@ export type MuxVideo = {
   uploadId?: Maybe<Scalars['String']['output']>;
   uploadUrl?: Maybe<Scalars['String']['output']>;
   userId: Scalars['ID']['output'];
+  videoVariants: Array<VideoVariant>;
 };
 
 export type NavigateToBlockAction = Action & {
@@ -3302,6 +3324,27 @@ export type SiteSharedLink = {
   slug: Scalars['String']['output'];
 };
 
+export type SpacerBlock = Block & {
+  __typename?: 'SpacerBlock';
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  parentBlockId?: Maybe<Scalars['ID']['output']>;
+  parentOrder?: Maybe<Scalars['Int']['output']>;
+  spacing?: Maybe<Scalars['Int']['output']>;
+};
+
+export type SpacerBlockCreateInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  journeyId: Scalars['ID']['input'];
+  parentBlockId: Scalars['ID']['input'];
+  spacing?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type SpacerBlockUpdateInput = {
+  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  spacing?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type StepBlock = Block & {
   __typename?: 'StepBlock';
   id: Scalars['ID']['output'];
@@ -3875,6 +3918,7 @@ export type UserTeamUpdateInput = {
 
 export type Video = {
   __typename?: 'Video';
+  availableLanguages: Array<Scalars['String']['output']>;
   bibleCitations: Array<BibleCitation>;
   children: Array<Video>;
   /** the number value of the amount of children on a video */
@@ -3886,6 +3930,7 @@ export type Video = {
   images: Array<CloudflareImage>;
   keywords: Array<Keyword>;
   label: VideoLabel;
+  locked: Scalars['Boolean']['output'];
   noIndex?: Maybe<Scalars['Boolean']['output']>;
   parents: Array<Video>;
   primaryLanguageId: Scalars['ID']['output'];
@@ -4562,6 +4607,7 @@ export type VideoVariant = {
   id: Scalars['ID']['output'];
   language: Language;
   lengthInMilliseconds: Scalars['Int']['output'];
+  muxVideo?: Maybe<MuxVideo>;
   published: Scalars['Boolean']['output'];
   share?: Maybe<Scalars['String']['output']>;
   /** slug is a permanent link to the video variant. */
@@ -4587,6 +4633,7 @@ export type VideoVariantCreateInput = {
   id: Scalars['String']['input'];
   languageId: Scalars['String']['input'];
   lengthInMilliseconds?: InputMaybe<Scalars['Int']['input']>;
+  muxVideoId?: InputMaybe<Scalars['String']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;
   slug: Scalars['String']['input'];
@@ -4641,6 +4688,7 @@ export type VideoVariantUpdateInput = {
   id: Scalars['String']['input'];
   languageId?: InputMaybe<Scalars['String']['input']>;
   lengthInMilliseconds?: InputMaybe<Scalars['Int']['input']>;
+  muxVideoId?: InputMaybe<Scalars['String']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
@@ -4651,6 +4699,7 @@ export type VideosFilter = {
   availableVariantLanguageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   ids?: InputMaybe<Array<Scalars['ID']['input']>>;
   labels?: InputMaybe<Array<VideoLabel>>;
+  locked?: InputMaybe<Scalars['Boolean']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
   subtitleLanguageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   title?: InputMaybe<Scalars['String']['input']>;

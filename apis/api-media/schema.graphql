@@ -116,6 +116,12 @@ type Keyword {
   language: Language!
 }
 
+type LabeledVideoCounts {
+  seriesCount: Int!
+  featureFilmCount: Int!
+  shortFilmCount: Int!
+}
+
 type Language
   @key(fields: "id")
   @extends
@@ -124,6 +130,7 @@ type Language
   seriesCount: Int!
   featureFilmCount: Int!
   shortFilmCount: Int!
+  labeledVideoCounts: LabeledVideoCounts!
 }
 
 type LanguageWithSlug {
@@ -304,6 +311,7 @@ type MuxVideo
   userId: ID!
   createdAt: Date!
   readyToStream: Boolean!
+  videoVariants: [VideoVariant!]!
 }
 
 type NotFoundError implements BaseError
@@ -682,10 +690,12 @@ type Video
   keywords(languageId: ID): [Keyword!]!
   id: ID!
   label: VideoLabel!
+  locked: Boolean!
   primaryLanguageId: ID!
   published: Boolean!
   cloudflareAssets: [CloudflareR2!]!
   videoEditions: [VideoEdition!]!
+  availableLanguages: [String!]!
   title(languageId: ID, primary: Boolean): [VideoTitle!]!
   snippet(languageId: ID, primary: Boolean): [VideoSnippet!]!
   description(languageId: ID, primary: Boolean): [VideoDescription!]!
@@ -879,6 +889,7 @@ type VideoVariant {
   duration: Int!
   lengthInMilliseconds: Int!
   language: Language!
+  muxVideo: MuxVideo
   published: Boolean!
   videoEdition: VideoEdition!
   subtitle(languageId: ID, primary: Boolean): [VideoSubtitle!]!
@@ -901,6 +912,7 @@ input VideoVariantCreateInput {
   slug: String!
   downloadable: Boolean!
   published: Boolean = true
+  muxVideoId: String
 }
 
 type VideoVariantDownload {
@@ -954,6 +966,7 @@ input VideoVariantUpdateInput {
   slug: String
   downloadable: Boolean
   published: Boolean
+  muxVideoId: String
 }
 
 input VideosFilter {
@@ -963,6 +976,7 @@ input VideosFilter {
   ids: [ID!]
   subtitleLanguageIds: [ID!]
   published: Boolean
+  locked: Boolean
 }
 
 type Youtube

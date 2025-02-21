@@ -1,0 +1,24 @@
+type SpacerBlock implements Block {
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  spacing: Int
+}
+
+input SpacerBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  spacing: Int
+}
+
+input SpacerBlockUpdateInput {
+  parentBlockId: ID
+  spacing: Int
+}
+
+extend type Mutation {
+  spacerBlockCreate(input: SpacerBlockCreateInput!): SpacerBlock!
+  spacerBlockUpdate(id: ID!, input: SpacerBlockUpdateInput!): SpacerBlock!
+}
