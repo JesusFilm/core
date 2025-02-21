@@ -2,7 +2,6 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider } from 'notistack'
-import { ReactElement } from 'react'
 
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 

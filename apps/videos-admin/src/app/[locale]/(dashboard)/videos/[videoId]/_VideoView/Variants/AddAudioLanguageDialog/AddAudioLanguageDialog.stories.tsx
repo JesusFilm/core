@@ -1,15 +1,17 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
+import noop from 'lodash/noop'
 import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider } from 'notistack'
 
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
+import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
+
 import {
   AddAudioLanguageDialog,
   CREATE_VIDEO_VARIANT
 } from './AddAudioLanguageDialog'
-import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
 
 const meta: Meta<typeof AddAudioLanguageDialog> = {
   title: 'Videos-Admin/Variants/AddAudioLanguageDialog',
@@ -103,7 +105,7 @@ export const Default: Story = {
   ...Template,
   args: {
     open: true,
-    handleClose: () => {},
+    handleClose: noop,
     variantLanguagesMap: new Map(),
     editions: [
       { id: 'edition1', name: 'base' },
