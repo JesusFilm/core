@@ -97,10 +97,12 @@ const GET_VIDEO_VARIANT = graphql(`
 export const mediaComponentLanguage = new OpenAPIHono()
 
 const QuerySchema = z.object({
-  apiKey: z.string(),
-  platform: z.string(),
-  languageIds: z.string(),
-  reduce: z.string()
+  apiKey: z.string().optional().describe('API key'),
+  platform: z.string().optional().describe('Platform (ios, android, web)'),
+  languageIds: z
+    .string()
+    .optional()
+    .describe('Filter by language IDs (comma separated)')
 })
 
 const ParamsSchema = z.object({
@@ -167,7 +169,7 @@ const ResponseSchema = z.object({
 const route = createRoute({
   method: 'get',
   path: '/',
-  tags: ['Media Components'],
+  tags: ['Media Component Languages'],
   summary: 'Get media component language by media component id and language id',
   description:
     'Get media component language by media component id and language id',

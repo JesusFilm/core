@@ -78,7 +78,7 @@ const ResponseSchema = z.object({
 const route = createRoute({
   method: 'get',
   path: '/',
-  tags: ['Media Components'],
+  tags: ['Media Component Languages'],
   summary: 'Get media component languages',
   description: 'Get media component languages',
   request: {
