@@ -37,7 +37,7 @@ jobs:
       - name: Install dependencies
         run: apt-get install -y pixman-1
       - name: bun install
-        run: bun install --silent --frozen-lockfile
+        run: bun install --verbose --frozen-lockfile
       - name: Danger JS
         run: bunx danger ci --failOnErrors
         env:
