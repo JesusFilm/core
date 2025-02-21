@@ -15,9 +15,10 @@ describe('blurImage', () => {
   }
 
   it('returns url of blurred image', () => {
-    expect(
-      blurImage(image.blurhash, '#000000')?.startsWith('data:image/png;base64,')
-    ).toBeTruthy()
+    const result = blurImage(image.blurhash, '#000000')
+    expect(result).toBeDefined()
+    expect(typeof result).toBe('string')
+    expect(result).toMatch(/^data:image\/png;base64,[A-Za-z0-9+/]+=*$/)
   })
 
   it('returns undefined as fallback', () => {
