@@ -23,6 +23,10 @@ describe('JourneyCard', () => {
     jest.setSystemTime(new Date(fakeDate))
   })
 
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   it('should have correct link on title', () => {
     render(
       <SnackbarProvider>

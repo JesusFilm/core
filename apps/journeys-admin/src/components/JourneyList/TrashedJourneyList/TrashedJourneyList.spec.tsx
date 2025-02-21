@@ -82,6 +82,10 @@ describe('TrashedJourneyList', () => {
     jest.setSystemTime(new Date(fakeDate))
   })
 
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   it('should render journeys in descending updatedAt date by default', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[trashedJourneysMock]}>

@@ -53,6 +53,10 @@ describe('TrashedTemplateList', () => {
     jest.setSystemTime(new Date(fakeDate))
   })
 
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   it('should render templates in descending updatedAt date by default', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[trashedJourneysMock]}>
