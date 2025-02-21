@@ -267,7 +267,7 @@ describe('VideoView', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByText('Loading...')).toBeInTheDocument()
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
     expect(screen.queryByTestId('PublishedChip')).not.toBeInTheDocument()
   })
 })

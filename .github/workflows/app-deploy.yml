@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [22]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -55,7 +55,7 @@ jobs:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
         github-event-name: ['${{ github.event_name }}']
-        node-version: [20]
+        node-version: [22]
         exclude:
           # handled by production job below
           - app: journeys
@@ -214,7 +214,7 @@ jobs:
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
-        node-version: [20]
+        node-version: [22]
         exclude:
           # handled by ecs-frontend-deploy-prod
           - app: journeys-admin
