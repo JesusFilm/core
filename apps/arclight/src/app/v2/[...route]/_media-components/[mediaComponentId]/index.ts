@@ -124,6 +124,9 @@ const ResponseSchema = z.object({
 const route = createRoute({
   method: 'get',
   path: '/',
+  tags: ['Media Components'],
+  summary: 'Get media component by media component id',
+  description: 'Get media component by media component id',
   request: { query: QuerySchema, params: ParamsSchema },
   responses: {
     200: {

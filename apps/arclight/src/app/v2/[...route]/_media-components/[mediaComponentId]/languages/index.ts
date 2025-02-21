@@ -76,6 +76,9 @@ const ResponseSchema = z.object({
 const route = createRoute({
   method: 'get',
   path: '/',
+  tags: ['Media Components'],
+  summary: 'Get media component languages',
+  description: 'Get media component languages',
   request: {
     query: QuerySchema,
     params: ParamsSchema
