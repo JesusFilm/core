@@ -25,7 +25,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b libs/yoga/tsconfig.json"
+        "command": "bunx tsc -b libs/yoga/tsconfig.json"
       }
     }
   }

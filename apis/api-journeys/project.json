@@ -87,13 +87,13 @@
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx -y @apollo/rover@0.23.0 subgraph introspect http://localhost:4001/graphql > apis/api-journeys/schema.graphql"
+        "command": "bunx -y @apollo/rover@0.23.0 subgraph introspect http://localhost:4001/graphql > apis/api-journeys/schema.graphql"
       }
     },
     "subgraph-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx hive schema:check apis/api-journeys/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys"
+        "command": "bunx hive schema:check apis/api-journeys/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-journeys"
       }
     },
     "fetch-secrets": {
@@ -107,7 +107,7 @@
       "options": {
         "parallel": false,
         "commands": [
-          "npx prisma generate --schema apis/api-journeys/db/schema.prisma",
+          "bunx prisma generate --schema apis/api-journeys/db/schema.prisma",
           "npm run ts-node apis/api-journeys/src/app/lib/casl/caslPrismaGenerator.ts"
         ]
       }
@@ -116,13 +116,13 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bash -c 'npx prisma migrate dev --schema apis/api-journeys/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
+          "bash -c 'bunx prisma migrate dev --schema apis/api-journeys/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
         ]
       },
       "configurations": {
         "production": {
           "commands": [
-            "npx prisma migrate deploy --schema apis/api-journeys/db/schema.prisma"
+            "bunx prisma migrate deploy --schema apis/api-journeys/db/schema.prisma"
           ]
         }
       }
@@ -131,7 +131,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma migrate reset --schema apis/api-journeys/db/schema.prisma --force"
+          "bunx prisma migrate reset --schema apis/api-journeys/db/schema.prisma --force"
         ]
       }
     },
@@ -145,7 +145,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma studio --schema apis/api-journeys/db/schema.prisma"
+          "bunx prisma studio --schema apis/api-journeys/db/schema.prisma"
         ]
       }
     },
@@ -153,7 +153,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma validate --schema apis/api-journeys/db/schema.prisma"
+          "bunx prisma validate --schema apis/api-journeys/db/schema.prisma"
         ]
       }
     },
@@ -161,14 +161,14 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx prisma migrate resolve --schema apis/api-journeys/db/schema.prisma --applied 20230711193802_20230711193801"
+          "bunx prisma migrate resolve --schema apis/api-journeys/db/schema.prisma --applied 20230711193802_20230711193801"
         ]
       }
     },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apis/api-journeys/tsconfig.json"
+        "command": "bunx tsc -b apis/api-journeys/tsconfig.json"
       }
     },
     "codecov": {

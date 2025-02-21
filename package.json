@@ -359,6 +359,7 @@
     "canvas",
     "core-js",
     "core-js-pure",
+    "cypress",
     "dd-trace",
     "esbuild",
     "msgpackr-extract",
