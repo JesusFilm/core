@@ -5,6 +5,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, useField } from 'formik'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
+import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
@@ -43,7 +44,7 @@ export type CreateVideoVariables = VariablesOf<typeof CREATE_VIDEO>
 export type CreateVideo = ResultOf<typeof CREATE_VIDEO>
 
 interface VideoCreateFormProps {
-  onCancel: () => void
+  close: () => void
 }
 
 function LanguageSelect({ label }: { label: string }): ReactElement {
@@ -80,9 +81,7 @@ function LanguageSelect({ label }: { label: string }): ReactElement {
   )
 }
 
-export function VideoCreateForm({
-  onCancel
-}: VideoCreateFormProps): ReactElement {
+export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const t = useTranslations()
   const validationSchema = object().shape({
@@ -94,38 +93,36 @@ export function VideoCreateForm({
       .required(t('Label is required'))
   })
 
+  const router = useRouter()
+  const pathname = usePathname()
+
   const [createVideo] = useMutation(CREATE_VIDEO)
 
   const handleSubmit = async (values: InferType<typeof validationSchema>) => {
-    try {
-      const res = await createVideo({
-        variables: {
-          input: {
-            id: values.id,
-            slug: values.slug,
-            label: values.label,
-            primaryLanguageId: values.primaryLanguageId,
-            noIndex: false,
-            published: false,
-            childIds: []
-          }
+    await createVideo({
+      variables: {
+        input: {
+          id: values.id,
+          slug: values.slug,
+          label: values.label,
+          primaryLanguageId: values.primaryLanguageId,
+          noIndex: false,
+          published: false,
+          childIds: []
         }
-      })
-
-      if (res.data?.videoCreate != null) {
-        enqueueSnackbar(t('Successfully created video.'))
-      } else {
-        enqueueSnackbar(t('Something went wrong.'))
-      }
-    } catch (e) {
-      // TODO: proper error handling for specific errors
-      enqueueSnackbar(
-        t(`Failed to create video: ID already exists`, {
-          variant: 'error',
-          preventDuplicate: false
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t('Successfully created video.'), {
+          variant: 'success'
         })
-      )
-    }
+        close()
+        router.push(`${pathname}/${values.id}`)
+      },
+      onError: () => {
+        // TODO: proper error handling for specific errors
+        enqueueSnackbar(t('Something went wrong.'), { variant: 'error' })
+      }
+    })
   }
 
   const initialValues: InferType<typeof validationSchema> = {
@@ -152,11 +149,11 @@ export function VideoCreateForm({
             fullWidth
           />
           <LanguageSelect label={t('Primary Language')} />
-          <Stack direction="row" justifyContent="end" gap={1}>
-            <Button variant="text" onClick={onCancel}>
+          <Stack direction="row" sx={{ gap: 1, mt: 2 }}>
+            <Button variant="outlined" onClick={close} fullWidth>
               {t('Cancel')}
             </Button>
-            <Button variant="contained" type="submit">
+            <Button variant="contained" type="submit" fullWidth>
               {t('Create')}
             </Button>
           </Stack>

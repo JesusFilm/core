@@ -415,7 +415,10 @@ describe('videoVariant', () => {
           published: true,
           share: 'share',
           downloadable: true,
-          muxVideoId: null
+          muxVideoId: null,
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180
         })
         const result = await authClient({
           document: VIDEO_VARIANT_CREATE_MUTATION,
@@ -507,7 +510,10 @@ describe('videoVariant', () => {
           published: true,
           share: 'share',
           downloadable: false,
-          muxVideoId: null
+          muxVideoId: null,
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180
         })
         const result = await authClient({
           document: VIDEO_VARIANT_UPDATE_MUTATION,
@@ -598,7 +604,10 @@ describe('videoVariant', () => {
           published: true,
           share: 'share',
           downloadable: true,
-          muxVideoId: null
+          muxVideoId: null,
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180
         })
         const result = await authClient({
           document: VIDEO_VARIANT_DELETE_MUTATION,
