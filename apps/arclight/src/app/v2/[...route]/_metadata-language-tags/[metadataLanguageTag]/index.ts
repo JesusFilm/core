@@ -3,11 +3,11 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { languages } from '../languages'
 
 const QuerySchema = z.object({
-  apiKey: z.string().optional()
+  apiKey: z.string().optional().describe('API key')
 })
 
 const ParamsSchema = z.object({
-  metadataLanguageTag: z.string()
+  metadataLanguageTag: z.string().describe('Metadata language tag')
 })
 
 const ResponseSchema = z.array(
@@ -29,6 +29,9 @@ const ResponseSchema = z.array(
 const route = createRoute({
   method: 'get',
   path: '/',
+  tags: ['Metadata Language Tags'],
+  summary: 'Get metadata language tag by tag',
+  description: 'Get metadata language tag by tag',
   request: {
     query: QuerySchema,
     params: ParamsSchema

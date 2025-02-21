@@ -6,34 +6,41 @@ import { languages } from './languages'
 export const metadataLanguageTags = new OpenAPIHono()
 metadataLanguageTags.route('/:metadataLanguageTag', metadataLanguageTag)
 
+const QuerySchema = z.object({
+  apiKey: z.string().optional().describe('API key')
+})
+
+const ResponseSchema = z.object({
+  _links: z.object({
+    self: z.object({
+      href: z.string()
+    })
+  }),
+  _embedded: z.object({
+    metadataLanguageTags: z.array(
+      z.object({
+        tag: z.string(),
+        name: z.string(),
+        nameNative: z.string()
+      })
+    )
+  })
+})
+
 const route = createRoute({
   method: 'get',
+  tags: ['Metadata Language Tags'],
+  summary: 'Get metadata language tags',
+  description: 'Get metadata language tags',
   path: '/',
   request: {
-    query: z.object({
-      apiKey: z.string().optional()
-    })
+    query: QuerySchema
   },
   responses: {
     200: {
       content: {
         'application/json': {
-          schema: z.object({
-            _links: z.object({  
-              self: z.object({
-                href: z.string()
-              })
-            }),
-            _embedded: z.object({
-              metadataLanguageTags: z.array(
-                z.object({
-                  tag: z.string(),
-                  name: z.string(),
-                  nameNative: z.string()
-                })
-              )
-            })
-          })
+          schema: ResponseSchema
         }
       },
       description: 'Metadata language tags'
