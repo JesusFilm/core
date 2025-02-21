@@ -8,11 +8,12 @@ ENV VERCEL=true
 
 WORKDIR /app
 COPY ./dist/apps/journeys-admin .
-COPY ./package-lock.json .
+COPY ./package.json .
+COPY ./bun.lock .
 
 # dependencies
-RUN npm i -g next
-RUN npm i --omit=dev --force --silent
-RUN npm i sharp pino dd-trace next-logger --force --silent
+RUN bun install -g next
+RUN bun install --production --frozen-lockfile
+RUN bun install sharp pino dd-trace next-logger --force --silent
 
-CMD NODE_OPTIONS='-r next-logger' npm start
+CMD NODE_OPTIONS='-r next-logger' bun run start

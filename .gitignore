@@ -84,3 +84,6 @@ terraform.tfstate.backup
 
 # react-email
 .react-email
+
+# bun
+.bun/

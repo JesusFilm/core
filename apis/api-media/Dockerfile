@@ -12,16 +12,17 @@ RUN apk upgrade --update-cache --available && \
 
 WORKDIR /app
 COPY ./dist/apps/api-media .
-COPY ./package-lock.json .
+COPY ./package.json .
+COPY ./bun.lock .
 
 # dependencies that nestjs needs
-RUN npm install --production
+RUN bun install --production --frozen-lockfile
 
 WORKDIR /prisma
 COPY ./apis/api-media/db .
-RUN npx prisma@6 generate --generator client
+RUN bunx prisma@6 generate --generator client
 
 WORKDIR /app
 
-RUN npm install @prisma/client@5
-CMD npx prisma@6 migrate deploy --schema /prisma/schema.prisma; node ./main.js
+RUN bun install @prisma/client@5
+CMD bunx prisma@6 migrate deploy --schema /prisma/schema.prisma; node ./main.js

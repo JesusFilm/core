@@ -13,16 +13,17 @@ RUN apk add --no-cache g++ make python3 py3-pip curl-dev
 
 WORKDIR /app
 COPY ./dist/apps/api-languages .
-COPY ./package-lock.json .
+COPY ./package.json .
+COPY ./bun.lock .
 
 # dependencies that nestjs needs
-RUN npm install --production
+RUN bun install --production --frozen-lockfile
 
 WORKDIR /prisma
 COPY ./apis/api-languages/db .
-RUN npx prisma@6 generate --generator client
+RUN bunx prisma@6 generate --generator client
 
 WORKDIR /app
 
-RUN npm install tslib@^2.6.2 @prisma/client@5
-CMD npx prisma@6 migrate deploy --schema /prisma/schema.prisma; node ./main.js
+RUN bun install tslib@^2.6.2 @prisma/client@5
+CMD bunx prisma@6 migrate deploy --schema /prisma/schema.prisma; node ./main.js

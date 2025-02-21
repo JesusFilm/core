@@ -32,6 +32,7 @@ The user asks questions about the following back-end frameworks:
 - Prisma
 
 The project uses the nx framework monorepo
+The project uses bun for package management
 
 ### Code Implementation Guidelines
 
