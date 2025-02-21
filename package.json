@@ -117,7 +117,6 @@
     "blurhash": "^2.0.5",
     "bullmq": "^5.1.11",
     "cache-manager": "^5.2.3",
-    "canvas": "^2.5.0",
     "cloudflare": "^3.5.0",
     "clsx": "^2.0.0",
     "cors": "^2.8.5",
