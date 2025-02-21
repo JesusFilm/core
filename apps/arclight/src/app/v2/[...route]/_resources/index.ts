@@ -283,7 +283,6 @@ const LanguageSchema = z.object({
   name: z.string()
 })
 
-// Combined response schema with optional fields for both bulk and regular responses
 const ResourcesResponseSchema = z.object({
   _links: z.object({
     self: z.object({
@@ -293,22 +292,18 @@ const ResourcesResponseSchema = z.object({
   _embedded: z.object({
     resources: z.object({
       resourceCount: z.number(),
-      // Regular response fields
       mediaComponents: z.array(VideoSchema).optional(),
       mediaCountries: z.array(CountrySchema).optional(),
       mediaLanguages: z.array(LanguageSchema).optional(),
       alternateLanguages: z.array(z.unknown()).optional(),
-      // Bulk response fields
       countryIds: z.array(z.string()).optional(),
       languageIds: z.array(z.number()).optional(),
       alternateLanguageIds: z.array(z.unknown()).optional(),
-      mediaComponentIds: z.array(z.string()).optional(),
-      _links: z.object({}).optional()
+      mediaComponentIds: z.array(z.string()).optional()
     })
   })
 })
 
-// OpenAPI Route
 const searchRoute = createRoute({
   method: 'get',
   path: '/',
