@@ -70,6 +70,7 @@ export function JourneyList({
 
   useEffect(() => {
     const handleRouteChange = (url: string) => {
+      // for updating journey list cache for shallow loading
       if (url === '/') {
         void refetch()
       }

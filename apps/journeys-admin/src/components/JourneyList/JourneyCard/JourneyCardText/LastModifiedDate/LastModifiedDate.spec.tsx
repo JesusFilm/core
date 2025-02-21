@@ -10,6 +10,10 @@ describe('LastModifiedDate', () => {
     jest.setSystemTime(new Date(fakeDate))
   })
 
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   it('should show "Edited just now" for recent edits', () => {
     const modifiedDate = '2021-12-11'
     const { getByText } = render(

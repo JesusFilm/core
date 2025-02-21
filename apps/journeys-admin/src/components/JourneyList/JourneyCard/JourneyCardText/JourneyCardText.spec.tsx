@@ -15,6 +15,10 @@ describe('JourneyCardText', () => {
     jest.setSystemTime(new Date(fakeDate))
   })
 
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   it('should show title', () => {
     const { getByText } = render(
       <JourneyCardText

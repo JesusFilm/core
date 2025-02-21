@@ -16,6 +16,10 @@ describe('TemplateListItem', () => {
     jest.setSystemTime(new Date(fakeDate))
   })
 
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   it('should render', () => {
     const { getByText } = render(<TemplateListItem journey={oldTemplate} />)
     expect(getByText('An Old Template Heading')).toBeInTheDocument()
