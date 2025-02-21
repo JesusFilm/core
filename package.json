@@ -345,7 +345,31 @@
     "workerDirectory": "./.storybook/static"
   },
   "trustedDependencies": [
+    "@apollo/protobufjs",
+    "@datadog/native-appsec",
+    "@datadog/native-iast-taint-tracking",
+    "@datadog/native-metrics",
+    "@datadog/pprof",
+    "@nestjs/core",
+    "@parcel/watcher",
+    "@prisma/client",
+    "@prisma/engines",
+    "@swc/core",
+    "aws-sdk",
+    "canvas",
+    "core-js",
+    "core-js-pure",
+    "dd-trace",
+    "esbuild",
+    "msgpackr-extract",
+    "msw",
+    "nestjs-pino",
+    "nx",
+    "prisma",
+    "protobufjs",
+    "puppeteer",
     "sharp",
-    "canvas"
+    "vue-demi",
+    "yarn"
   ]
 }
