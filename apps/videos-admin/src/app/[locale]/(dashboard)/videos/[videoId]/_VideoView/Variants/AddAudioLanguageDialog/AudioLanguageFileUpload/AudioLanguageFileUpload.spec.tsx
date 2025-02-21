@@ -3,21 +3,10 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { AudioLanguageFileUpload } from './AudioLanguageFileUpload'
 
-const messages = {
-  'Drop a video here': 'Drop a video here',
-  'Upload file': 'Upload file',
-  'Change file': 'Change file',
-  'Uploading...': 'Uploading...',
-  'Processing...': 'Processing...',
-  'Upload Failed!': 'Upload Failed!',
-  'Something went wrong, try again': 'Something went wrong, try again',
-  'Invalid file type.': 'Invalid file type.'
-}
-
 describe('AudioLanguageFileUpload', () => {
   it('should render upload area', () => {
     render(
-      <NextIntlClientProvider locale="en" messages={messages}>
+      <NextIntlClientProvider locale="en" messages={{}}>
         <AudioLanguageFileUpload onFileSelect={jest.fn()} />
       </NextIntlClientProvider>
     )
@@ -31,7 +20,7 @@ describe('AudioLanguageFileUpload', () => {
     const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
 
     render(
-      <NextIntlClientProvider locale="en" messages={messages}>
+      <NextIntlClientProvider locale="en" messages={{}}>
         <AudioLanguageFileUpload onFileSelect={jest.fn()} selectedFile={file} />
       </NextIntlClientProvider>
     )
@@ -43,7 +32,7 @@ describe('AudioLanguageFileUpload', () => {
   describe('upload states', () => {
     it('should show uploading state', () => {
       render(
-        <NextIntlClientProvider locale="en" messages={messages}>
+        <NextIntlClientProvider locale="en" messages={{}}>
           <AudioLanguageFileUpload onFileSelect={jest.fn()} uploading />
         </NextIntlClientProvider>
       )
@@ -54,7 +43,7 @@ describe('AudioLanguageFileUpload', () => {
 
     it('should show processing state', () => {
       render(
-        <NextIntlClientProvider locale="en" messages={messages}>
+        <NextIntlClientProvider locale="en" messages={{}}>
           <AudioLanguageFileUpload onFileSelect={jest.fn()} processing />
         </NextIntlClientProvider>
       )
@@ -65,7 +54,7 @@ describe('AudioLanguageFileUpload', () => {
 
     it('should show error state', () => {
       render(
-        <NextIntlClientProvider locale="en" messages={messages}>
+        <NextIntlClientProvider locale="en" messages={{}}>
           <AudioLanguageFileUpload
             onFileSelect={jest.fn()}
             error="Something went wrong"
@@ -86,7 +75,7 @@ describe('AudioLanguageFileUpload', () => {
       const onFileSelect = jest.fn()
 
       render(
-        <NextIntlClientProvider locale="en" messages={messages}>
+        <NextIntlClientProvider locale="en" messages={{}}>
           <AudioLanguageFileUpload onFileSelect={onFileSelect} />
         </NextIntlClientProvider>
       )
@@ -103,16 +92,16 @@ describe('AudioLanguageFileUpload', () => {
       const onFileSelect = jest.fn()
 
       render(
-        <NextIntlClientProvider locale="en" messages={messages}>
+        <NextIntlClientProvider locale="en" messages={{}}>
           <AudioLanguageFileUpload onFileSelect={onFileSelect} />
         </NextIntlClientProvider>
       )
 
-      const input = screen.getByTestId('DropZone')
-      Object.defineProperty(input, 'files', {
-        value: [file]
+      const dropzone = screen.getByTestId('AudioLanguageDropZone')
+      await waitFor(() => {
+        fireEvent.drop(dropzone, createDtWithFiles([file]))
       })
-      fireEvent.drop(input, {})
+
       await waitFor(() =>
         expect(screen.getByText('Invalid file type.')).toBeInTheDocument()
       )
@@ -120,3 +109,18 @@ describe('AudioLanguageFileUpload', () => {
     })
   })
 })
+
+function createDtWithFiles(files: File[] = []) {
+  return {
+    dataTransfer: {
+      files,
+      items: files.map((file) => ({
+        kind: 'file',
+        size: file.size,
+        type: file.type,
+        getAsFile: () => file
+      })),
+      types: ['Files']
+    }
+  }
+}
