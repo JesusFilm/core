@@ -2,6 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { BackgroundUploadProvider } from '../../BackgroundUpload'
+
 import { Items } from './Items'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
@@ -14,7 +16,9 @@ describe('Items', () => {
     const { getByTestId } = render(
       <SnackbarProvider>
         <MockedProvider>
-          <Items />
+          <BackgroundUploadProvider>
+            <Items />
+          </BackgroundUploadProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
