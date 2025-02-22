@@ -39,6 +39,6 @@ jobs:
       - name: bun install
         run: bun install --verbose --frozen-lockfile
       - name: Danger JS
-        run: bunx danger ci --failOnErrors
+        run: bun run danger ci --failOnErrors
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

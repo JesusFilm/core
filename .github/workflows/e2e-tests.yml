@@ -41,9 +41,9 @@ jobs:
       - name: bun install
         run: bun install --silent --frozen-lockfile
       - name: Install Playwright Browsers
-        run: bunx playwright install --with-deps
+        run: bun run playwright install --with-deps
       - name: Run Playwright tests
-        run: bunx nx run ${{ inputs.TargetTests }}:${{ inputs.TargetAction }}
+        run: bun run nx run ${{ inputs.TargetTests }}:${{ inputs.TargetAction }}
         env:
           DEPLOYMENT_URL: ${{ inputs.TargetAppUrl }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}

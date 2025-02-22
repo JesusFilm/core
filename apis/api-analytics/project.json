@@ -28,7 +28,7 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "nx _serve api-analytics | bunx pino-pretty --config .pino-prettyrc.js"
+        "command": "nx _serve api-analytics | bun run pino-pretty --config .pino-prettyrc.js"
       }
     },
     "_serve": {
@@ -57,13 +57,13 @@
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "GENERATE_SCHEMA=true bunx ts-node -P apis/api-analytics/tsconfig.app.json -r tsconfig-paths/register apis/api-analytics/src/schema/index.ts"
+        "command": "GENERATE_SCHEMA=true bun run ts-node -P apis/api-analytics/tsconfig.app.json -r tsconfig-paths/register apis/api-analytics/src/schema/index.ts"
       }
     },
     "subgraph-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "bunx hive schema:check apis/api-analytics/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-analytics"
+        "command": "bun run hive schema:check apis/api-analytics/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-analytics"
       }
     },
     "fetch-secrets": {
@@ -76,7 +76,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bunx prisma generate --schema apis/api-analytics/db/schema.prisma"
+          "bun run prisma generate --schema apis/api-analytics/db/schema.prisma"
         ]
       }
     },
@@ -84,7 +84,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bunx prisma studio --schema apis/api-analytics/db/schema.prisma"
+          "bun run prisma studio --schema apis/api-analytics/db/schema.prisma"
         ]
       }
     },
@@ -92,7 +92,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bunx prisma validate --schema apis/api-analytics/db/schema.prisma"
+          "bun run prisma validate --schema apis/api-analytics/db/schema.prisma"
         ]
       }
     },
@@ -100,7 +100,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bunx prisma introspect --schema apis/api-analytics/db/schema.prisma"
+          "bun run prisma introspect --schema apis/api-analytics/db/schema.prisma"
         ]
       }
     },

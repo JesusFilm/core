@@ -33,16 +33,16 @@ jobs:
       - uses: oven-sh/setup-bun@v1
         with:
           bun-version: ${{ matrix.bun-version }}
-          
+
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
-  
+
       - name: nx Install
         run: bun install -g nx --silent
 
       - name: Get affected apps
         run: |
-          echo "apps=$(bunx ts-node tools/scripts/affected-apps.ts --projects apis/api-*)" >> $GITHUB_OUTPUT
+          echo "apps=$(bun run ts-node tools/scripts/affected-apps.ts --projects apis/api-*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
         id: affected-apps
 

@@ -36,7 +36,7 @@ jobs:
       - id: set-matrix
         name: set matrix app to affected array
         run: |
-          echo "matrix=$(bunx ts-node tools/scripts/deploy-apps.ts --projects apps/* --exclude api-*)" >> $GITHUB_OUTPUT
+          echo "matrix=$(bun run ts-node tools/scripts/deploy-apps.ts --projects apps/* --exclude api-*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
   deploy-preview:
     name: Deploy Preview and Test
@@ -110,19 +110,19 @@ jobs:
           NEXT_PUBLIC_VERCEL_ENV: ${{ github.event_name == 'push' && github.ref == 'refs/heads/stage' && 'stage' || 'preview' }}
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: bunx nx run-many --target=deploy --projects=${{ matrix.app }}
+        run: bun run nx run-many --target=deploy --projects=${{ matrix.app }}
       - name: upload sourcemaps to datadog
         env:
           GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-        run: bunx nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
+        run: bun run nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
       - name: vercel set alias
         if: ${{ github.event_name == 'pull_request' }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: bunx nx run-many --target=vercel-alias --projects=${{ matrix.app }}
+        run: bun run nx run-many --target=vercel-alias --projects=${{ matrix.app }}
       - name: Generate GitHub deployment comment
         id: deployment-url
         env:
@@ -165,12 +165,12 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
-      - run: bunx playwright install --with-deps
+      - run: bun run playwright install --with-deps
         if: steps.cache-playwright-browsers.outputs.cache-hit != 'true'
-      - run: bunx playwright install-deps
+      - run: bun run playwright install-deps
         if: steps.cache-playwright-browsers.outputs.cache-hit == 'true'
       - name: Run Playwright tests
-        run: bunx nx run ${{ matrix.app }}-e2e:e2e
+        run: bun run nx run ${{ matrix.app }}-e2e:e2e
         env:
           DEPLOYMENT_URL: ${{ steps.deployment-url.outputs.deployment-url }}
           PLAYWRIGHT_EMAIL: ${{ secrets.PLAYWRIGHT_EMAIL }}
@@ -264,12 +264,12 @@ jobs:
           NEXT_PUBLIC_VERCEL_ENV: prod
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
-        run: bunx nx run-many --target=deploy --projects=${{ matrix.app }} --prod
+        run: bun run nx run-many --target=deploy --projects=${{ matrix.app }} --prod
       - name: upload sourcemaps to datadog
         env:
           GIT_COMMIT_SHA: ${{ github.sha }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
-        run: bunx nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
+        run: bun run nx run-many --target=upload-sourcemaps --projects=${{ matrix.app }}
       - name: Generate GitHub comment
         id: deployment-url
         env:

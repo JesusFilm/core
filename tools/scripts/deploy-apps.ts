@@ -11,7 +11,7 @@ async function main() {
   args.splice(0, 2)
 
   const { stdout: deployable } = await execAsync(
-    `bunx nx show projects --withTarget deploy ${args.join(' ')}`
+    `bun run nx show projects --withTarget deploy ${args.join(' ')}`
   )
 
   const deployableServices = deployable
@@ -19,7 +19,7 @@ async function main() {
     .filter((value) => value != null && value !== '')
 
   const { stdout: affected } = await execAsync(
-    `bunx nx show projects --affected ${args.join(' ')}`
+    `bun run nx show projects --affected ${args.join(' ')}`
   )
 
   const services = [

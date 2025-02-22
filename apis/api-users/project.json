@@ -34,7 +34,7 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "nx _serve api-users | bunx pino-pretty --config .pino-prettyrc.js"
+        "command": "nx _serve api-users | bun run pino-pretty --config .pino-prettyrc.js"
       }
     },
     "lint": {
@@ -56,13 +56,13 @@
     "generate-graphql": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "GENERATE_SCHEMA=true bunx ts-node -P apis/api-users/tsconfig.app.json -r tsconfig-paths/register apis/api-users/src/schema/index.ts"
+        "command": "GENERATE_SCHEMA=true bun run ts-node -P apis/api-users/tsconfig.app.json -r tsconfig-paths/register apis/api-users/src/schema/index.ts"
       }
     },
     "subgraph-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "bunx hive schema:check apis/api-users/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-users"
+        "command": "bun run hive schema:check apis/api-users/schema.graphql --registry.accessToken $HIVE_TOKEN --github --service api-users"
       }
     },
     "fetch-secrets": {
@@ -75,7 +75,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bunx prisma generate --schema apis/api-users/db/schema.prisma"
+          "bun run prisma generate --schema apis/api-users/db/schema.prisma"
         ]
       }
     },
@@ -83,13 +83,13 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bash -c 'bunx prisma migrate dev --schema apis/api-users/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
+          "bash -c 'bun run prisma migrate dev --schema apis/api-users/db/schema.prisma --name `date +\"%Y%m%d%H%M%S\"`'"
         ]
       },
       "configurations": {
         "production": {
           "commands": [
-            "bunx prisma migrate deploy --schema apis/api-users/db/schema.prisma"
+            "bun run prisma migrate deploy --schema apis/api-users/db/schema.prisma"
           ]
         }
       }
@@ -98,7 +98,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bunx prisma migrate reset --schema apis/api-users/db/schema.prisma --force"
+          "bun run prisma migrate reset --schema apis/api-users/db/schema.prisma --force"
         ]
       }
     },
@@ -106,7 +106,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bunx prisma studio --schema apis/api-users/db/schema.prisma"
+          "bun run prisma studio --schema apis/api-users/db/schema.prisma"
         ]
       }
     },
@@ -114,14 +114,14 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "bunx prisma validate --schema apis/api-users/db/schema.prisma"
+          "bun run prisma validate --schema apis/api-users/db/schema.prisma"
         ]
       }
     },
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "bunx tsc -b apis/api-users/tsconfig.json"
+        "command": "bun run tsc -b apis/api-users/tsconfig.json"
       }
     },
     "codecov": {

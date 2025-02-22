@@ -32,7 +32,7 @@ module.exports = {
       "options": {
         "commands": [
           {
-            "command": "bunx i18next --config PROJECT_PATH/i18next-parser.config.js"
+            "command": "bun run i18next --config PROJECT_PATH/i18next-parser.config.js"
           }
         ]
       }

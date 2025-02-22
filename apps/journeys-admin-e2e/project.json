@@ -39,7 +39,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "bunx tsc -b apps/journeys-admin-e2e/tsconfig.json"
+        "command": "bun run tsc -b apps/journeys-admin-e2e/tsconfig.json"
       }
     },
     "lint": {
