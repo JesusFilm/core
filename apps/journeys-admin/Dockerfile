@@ -14,6 +14,5 @@ COPY ./bun.lock .
 # dependencies
 RUN bun install -g next
 RUN bun install --production --frozen-lockfile
-RUN bun install sharp pino dd-trace next-logger --force --silent
 
 CMD NODE_OPTIONS='-r next-logger' bun run start
