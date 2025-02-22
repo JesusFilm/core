@@ -25,7 +25,10 @@ export function getClient(): S3Client {
   })
 }
 
-export async function getPresignedUrl(fileName: string): Promise<string> {
+export async function getPresignedUrl(
+  fileName: string,
+  contentType: string
+): Promise<string> {
   if (process.env.CLOUDFLARE_R2_BUCKET == null)
     throw new Error('Missing CLOUDFLARE_R2_BUCKET')
 
@@ -33,6 +36,7 @@ export async function getPresignedUrl(fileName: string): Promise<string> {
     getClient(),
     new PutObjectCommand({
       Bucket: process.env.CLOUDFLARE_R2_BUCKET,
+      ContentType: contentType,
       Key: fileName
     })
   )
@@ -67,11 +71,10 @@ builder.mutationFields((t) => ({
     },
     resolve: async (query, _parent, { input }, { user }) => {
       if (user == null) throw new Error('User not found')
-      const uploadUrl = await getPresignedUrl(input.fileName)
+      const uploadUrl = await getPresignedUrl(input.fileName, input.contentType)
       return await prisma.cloudflareR2.create({
         ...query,
         data: {
-          ...input,
           id: input.id ?? undefined,
           userId: user.id,
           fileName: input.fileName,
@@ -89,7 +92,7 @@ builder.mutationFields((t) => ({
     },
     resolve: async (query, _parent, { input }, { user }) => {
       if (user == null) throw new Error('User not found')
-      const uploadUrl = await getPresignedUrl(input.fileName)
+      const uploadUrl = await getPresignedUrl(input.fileName, input.contentType)
       return await prisma.cloudflareR2.update({
         ...query,
         where: { id: input.id },

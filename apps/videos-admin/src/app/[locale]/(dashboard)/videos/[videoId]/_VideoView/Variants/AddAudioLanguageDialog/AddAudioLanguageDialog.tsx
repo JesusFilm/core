@@ -220,6 +220,7 @@ export function AddAudioLanguageDialog({
         variables: {
           input: {
             fileName: values.file.name,
+            contentType: values.file.type,
             videoId: params.videoId
           }
         }
@@ -234,13 +235,14 @@ export function AddAudioLanguageDialog({
 
       const formData = new FormData()
       formData.append('file', values.file, values.file.name)
+      formData.append('Content-Type', values.file.type)
       const response = await fetch(
         r2Response.data.cloudflareR2Create.uploadUrl,
         {
           method: 'PUT',
           body: formData,
           headers: {
-            'Content-Type': 'multipart/form-data'
+            'Content-Type': values.file.type
           }
         }
       )

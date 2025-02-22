@@ -329,12 +329,14 @@ export type CloudflareR2 = {
 };
 
 export type CloudflareR2CreateInput = {
+  contentType: Scalars['String']['input'];
   fileName: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
   videoId: Scalars['String']['input'];
 };
 
 export type CloudflareR2UpdateInput = {
+  contentType: Scalars['String']['input'];
   fileName: Scalars['String']['input'];
   id: Scalars['String']['input'];
 };

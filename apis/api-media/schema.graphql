@@ -59,12 +59,14 @@ type CloudflareR2 {
 input CloudflareR2CreateInput {
   id: String
   fileName: String!
+  contentType: String!
   videoId: String!
 }
 
 input CloudflareR2UpdateInput {
   id: String!
   fileName: String!
+  contentType: String!
 }
 
 """

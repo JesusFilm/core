@@ -5,7 +5,8 @@ export const CloudflareR2UpdateInput = builder.inputType(
   {
     fields: (t) => ({
       id: t.string({ required: true }),
-      fileName: t.string({ required: true })
+      fileName: t.string({ required: true }),
+      contentType: t.string({ required: true })
     })
   }
 )
