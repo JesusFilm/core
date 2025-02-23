@@ -1,6 +1,39 @@
 import { blurImage } from './blurImage'
 
+// Mock blurhash decode function
+jest.mock('blurhash', () => ({
+  decode: () => new Uint8ClampedArray(32 * 32 * 4).fill(128)
+}))
+
 describe('blurImage', () => {
+  // Mock canvas and context before each test
+  beforeEach(() => {
+    // Create a mock canvas context
+    const mockContext = {
+      createImageData: () => ({
+        data: new Uint8ClampedArray(32 * 32 * 4)
+      }),
+      putImageData: jest.fn(),
+      fillStyle: '',
+      fillRect: jest.fn()
+    }
+
+    // Create a mock canvas element
+    const mockCanvas = {
+      getContext: () => mockContext,
+      setAttribute: jest.fn(),
+      toDataURL: () => 'data:image/png;base64,mockImageData'
+    }
+
+    // Mock document.createElement
+    document.createElement = jest.fn((tagName) => {
+      if (tagName === 'canvas') {
+        return mockCanvas as unknown as HTMLCanvasElement
+      }
+      return {} as HTMLElement
+    })
+  })
+
   const image = {
     id: 'image1.id',
     __typename: 'ImageBlock',
@@ -21,19 +54,16 @@ describe('blurImage', () => {
   })
 
   it('returns undefined as fallback', () => {
-    // Prevent 2d canvas from being generated
-    const createElement = document.createElement.bind(document)
-    document.createElement = <K extends keyof HTMLElementTagNameMap>(
-      tagName: K
-    ) => {
+    // Override the mock to return null context
+    document.createElement = jest.fn((tagName) => {
       if (tagName === 'canvas') {
         return {
           getContext: () => null,
-          setAttribute: () => ({})
-        }
+          setAttribute: jest.fn()
+        } as unknown as HTMLCanvasElement
       }
-      return createElement(tagName)
-    }
+      return {} as HTMLElement
+    })
 
     expect(blurImage(image.blurhash, '#000000')).toBeUndefined()
   })

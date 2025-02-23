@@ -386,6 +386,7 @@ describe('BackgroundMediaVideo', () => {
     }
 
     it('updates video cover block', async () => {
+      const getVideoResult = jest.fn().mockReturnValue(getVideoMock.result)
       const response: CoverVideoBlockUpdate = {
         videoBlockUpdate: {
           ...video
@@ -402,10 +403,10 @@ describe('BackgroundMediaVideo', () => {
             input: {
               videoId: 'videoId',
               videoVariantLanguageId: '529',
-              duration: 0,
+              duration: 144,
               source: VideoBlockSource.internal,
               startAt: 0,
-              endAt: 0
+              endAt: 144
             }
           }
         },
@@ -425,7 +426,7 @@ describe('BackgroundMediaVideo', () => {
       render(
         <MockedProvider
           mocks={[
-            getVideoMock,
+            { ...getVideoMock, result: getVideoResult },
             {
               ...coverVideoBlockUpdateMock,
               result: updateResult
@@ -484,6 +485,7 @@ describe('BackgroundMediaVideo', () => {
       )
       fireEvent.click(screen.getByRole('button', { name: 'Change Video' }))
       fireEvent.click(screen.getByText('title1'))
+      await waitFor(() => expect(getVideoResult).toHaveBeenCalled())
       fireEvent.click(screen.getAllByRole('button', { name: 'Select' })[0])
       await waitFor(() => expect(updateResult).toHaveBeenCalled())
       fireEvent.click(screen.getByRole('button', { name: 'Undo' }))

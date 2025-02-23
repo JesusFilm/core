@@ -1,7 +1,8 @@
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
-import { Hono } from 'hono'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
+import { mediaComponentSchema } from '../../mediaComponent.schema'
 
 const GET_VIDEO_CHILDREN = graphql(`
   query GetVideoChildren($id: ID!) {
@@ -130,9 +131,66 @@ const GET_VIDEO_CHILDREN = graphql(`
   }
 `)
 
-export const mediaComponentLinksWithId = new Hono()
+export const mediaComponentLinksWithId = new OpenAPIHono()
 
-mediaComponentLinksWithId.get('/', async (c) => {
+const ParamsSchema = z.object({
+  mediaComponentId: z.string()
+})
+
+const QuerySchema = z.object({
+  expand: z.string().optional(),
+  rel: z.string().optional(),
+  languageIds: z.string().optional()
+})
+
+const ResponseSchema = z.object({
+  mediaComponentId: z.string(),
+  linkedMediaComponentIds: z.object({
+    contains: z.array(z.string()).optional(),
+    containedBy: z.array(z.string()).optional()
+  }),
+  _links: z.object({
+    self: z.object({
+      href: z.string()
+    }),
+    mediaComponent: z.array(
+      z.object({
+        href: z.string(),
+        templated: z.boolean().optional()
+      })
+    )
+  }),
+  _embedded: z.object({
+    mediaComponents: z.array(mediaComponentSchema)
+  })
+})
+
+export const route = createRoute({
+  method: 'get',
+  path: '/',
+  tags: ['Media Components'],
+  summary: 'Get media component links by media component id',
+  description: 'Get media component links by media component id',
+  request: {
+    query: QuerySchema,
+    params: ParamsSchema
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: ResponseSchema
+        }
+      },
+      description: 'Media component link'
+    },
+    404: {
+      description: 'Not Found'
+    }
+  }
+})
+
+mediaComponentLinksWithId.openapi(route, async (c) => {
   const mediaComponentId = c.req.param('mediaComponentId')
   const expand = c.req.query('expand') ?? ''
   const rel = c.req.query('rel') ?? ''

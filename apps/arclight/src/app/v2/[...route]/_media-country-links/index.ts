@@ -1,5 +1,5 @@
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
-import { Hono } from 'hono'
 
 import { getApolloClient } from '../../../../lib/apolloClient'
 
@@ -22,12 +22,66 @@ const GET_COUNTRIES_LANGUAGES = graphql(`
   }
 `)
 
-export const mediaCountryLinks = new Hono()
+export const mediaCountryLinks = new OpenAPIHono()
 
-mediaCountryLinks.get('/', async (c) => {
-  const queryObject = c.req.query()
+const QuerySchema = z.object({
+  ids: z.string().optional(),
+  metadataLanguageTags: z.string().optional()
+})
 
-  const ids = queryObject.ids?.split(',') ?? []
+const ResponseSchema = z.object({
+  _links: z.object({
+    self: z.object({
+      href: z.string()
+    })
+  }),
+  _embedded: z.object({
+    mediaCountriesLinks: z.array(
+      z.object({
+        countryId: z.string(),
+        linkedMediaLanguages: z.object({
+          suggested: z.array(
+            z.object({
+              languageId: z.number(),
+              languageRank: z.number()
+            })
+          ),
+          spoken: z.array(
+            z.object({
+              languageId: z.number(),
+              speakerCount: z.number()
+            })
+          )
+        })
+      })
+    )
+  })
+})
+
+const route = createRoute({
+  method: 'get',
+  path: '/',
+  tags: ['Media Countries'],
+  summary: 'Get media country links',
+  description: 'Get media country links',
+  request: {
+    query: QuerySchema
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: ResponseSchema
+        }
+      },
+      description: 'Media country links'
+    }
+  }
+})
+
+mediaCountryLinks.openapi(route, async (c) => {
+  const ids = c.req.query('ids')?.split(',') ?? []
+  const apiKey = c.req.query('apikey')
 
   const { data } = await getApolloClient().query<
     ResultOf<typeof GET_COUNTRIES_LANGUAGES>
@@ -66,11 +120,10 @@ mediaCountryLinks.get('/', async (c) => {
       }
     }))
 
-  const queryString = new URLSearchParams(queryObject).toString()
   const response = {
     _links: {
       self: {
-        href: `http://api.arclight.org/v2/media-country-links?${queryString}`
+        href: `http://api.arclight.org/v2/media-country-links?$apikey=${apiKey}`
       }
     },
     _embedded: {

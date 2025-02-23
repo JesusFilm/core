@@ -254,6 +254,7 @@ export function LocalDetails({
           onClick={handleSelect}
           size="small"
           sx={{ backgroundColor: 'secondary.dark' }}
+          disabled={loading}
         >
           {t('Select')}
         </Button>
