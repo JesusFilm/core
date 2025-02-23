@@ -4,13 +4,17 @@ const config: CodegenConfig = {
   schema: 'apis/api-gateway/schema.graphql',
   documents: ['libs/journeys/ui/src/**/*.{ts,tsx}'],
   generates: {
-    'libs/journeys/ui/__generated__/': {
-      preset: 'client',
-      plugins: [],
+    'libs/journeys/ui/src/': {
+      preset: 'near-operation-file',
       presetConfig: {
-        gqlTagName: 'gql',
-        fragmentMasking: false
-      }
+        extension: '.ts',
+        baseTypesPath: '../__generated__/types.ts',
+        folder: '__generated__'
+      },
+      plugins: ['typescript-operations']
+    },
+    'libs/journeys/ui/__generated__/types.ts': {
+      plugins: ['typescript']
     }
   },
   ignoreNoDocuments: true
