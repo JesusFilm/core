@@ -1,21 +1,66 @@
-import { Hono } from 'hono'
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 
 import { languages } from '../languages'
 
-export const metadataLanguageTag = new Hono()
-metadataLanguageTag.get('/', async (c) => {
+const QuerySchema = z.object({
+  apiKey: z.string().optional().describe('API key')
+})
+
+const ParamsSchema = z.object({
+  metadataLanguageTag: z.string().describe('Metadata language tag')
+})
+
+const ResponseSchema = z.array(
+  z.object({
+    tag: z.string(),
+    name: z.string(),
+    nameNative: z.string(),
+    _links: z.object({
+      self: z.object({
+        href: z.string().url()
+      }),
+      metadataLanguageTags: z.object({
+        href: z.string().url()
+      })
+    })
+  })
+)
+
+const route = createRoute({
+  method: 'get',
+  path: '/',
+  tags: ['Metadata Language Tags'],
+  summary: 'Get metadata language tag by tag',
+  description: 'Get metadata language tag by tag',
+  request: {
+    query: QuerySchema,
+    params: ParamsSchema
+  },
+  responses: {
+    200: {
+      content: { 'application/json': { schema: ResponseSchema } },
+      description: 'Metadata language tag'
+    },
+    400: {
+      description: 'Metadata language tag is required'
+    },
+    404: {
+      description: 'Metadata language tag not found'
+    }
+  }
+})
+
+export const metadataLanguageTag = new OpenAPIHono()
+metadataLanguageTag.openapi(route, async (c) => {
   const metadataLanguageTag = c.req.param('metadataLanguageTag')
   const apiKey = c.req.query('apiKey') ?? ''
 
   if (!metadataLanguageTag) {
-    return new Response(
-      JSON.stringify({
-        message: 'Metadata language tag is required'
-      }),
+    return c.json(
       {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      }
+        message: 'Metadata language tag is required'
+      },
+      400
     )
   }
 

@@ -4699,6 +4699,7 @@ export type VideosFilter = {
   availableVariantLanguageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   ids?: InputMaybe<Array<Scalars['ID']['input']>>;
   labels?: InputMaybe<Array<VideoLabel>>;
+  locked?: InputMaybe<Scalars['Boolean']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
   subtitleLanguageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   title?: InputMaybe<Scalars['String']['input']>;

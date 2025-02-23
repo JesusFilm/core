@@ -976,6 +976,7 @@ input VideosFilter {
   ids: [ID!]
   subtitleLanguageIds: [ID!]
   published: Boolean
+  locked: Boolean
 }
 
 type Youtube

@@ -1,4 +1,5 @@
-import { Hono } from 'hono'
+import { swaggerUI } from '@hono/swagger-ui'
+import { OpenAPIHono } from '@hono/zod-openapi'
 import { etag } from 'hono/etag'
 import { handle } from 'hono/vercel'
 
@@ -13,7 +14,7 @@ import { taxonomies } from './_taxonomies'
 
 export const dynamic = 'force-dynamic'
 
-const app = new Hono().basePath('/v2')
+const app = new OpenAPIHono().basePath('/v2')
 app.use(etag())
 
 app.route('/media-component-links', mediaComponentLinks)
@@ -24,5 +25,15 @@ app.route('/media-languages', mediaLanguages)
 app.route('/metadata-language-tags', metadataLanguageTags)
 app.route('/taxonomies', taxonomies)
 app.route('/resources', resources)
+
+app.doc('/doc', {
+  openapi: '3.0.0',
+  info: {
+    version: '2.0.0',
+    title: 'Arclight'
+  }
+})
+
+app.get('/ui', swaggerUI({ url: '/v2/doc' }))
 
 export const GET = handle(app)
