@@ -8,6 +8,7 @@ export const VideosFilter = builder.inputType('VideosFilter', {
     labels: t.field({ type: [VideoLabel] }),
     ids: t.idList(),
     subtitleLanguageIds: t.idList(),
-    published: t.boolean()
+    published: t.boolean(),
+    locked: t.boolean()
   })
 })

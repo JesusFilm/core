@@ -188,6 +188,95 @@ describe('VideoImageUpload', () => {
     })
   })
 
+  it('should not delete image if there are no images', async () => {
+    const video: AdminVideo = {
+      ...useAdminVideoMock['result']?.['data']?.['adminVideo'],
+      images: []
+    }
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => await Promise.resolve(cfResponse)
+    } as unknown as Response)
+
+    const result = jest
+      .fn()
+      .mockReturnValue(mockCreateCloudflareUploadByFile.result)
+
+    const result2 = jest
+      .fn()
+      .mockReturnValue(mockCloudflareUploadComplete.result)
+    const result3 = jest.fn().mockReturnValue(mockDeleteCloudflareImage.result)
+
+    const cache = new InMemoryCache()
+    cache.restore({
+      'Video:1_jf-0-0': {
+        images: [{ __ref: 'CloudflareImage:imageId' }]
+      },
+      'CloudflareImage:imageId': {
+        id: 'imageId',
+        __typename: 'CloudflareImage'
+      }
+    })
+
+    render(
+      <NextIntlClientProvider locale="en">
+        <SnackbarProvider>
+          <MockedProvider
+            cache={cache}
+            mocks={[
+              { ...mockCreateCloudflareUploadByFile, result },
+              {
+                ...mockCloudflareUploadComplete,
+                result: result2
+              },
+              {
+                ...mockDeleteCloudflareImage,
+                result: result3
+              }
+            ]}
+          >
+            <VideoImageUpload video={video} />
+          </MockedProvider>
+        </SnackbarProvider>
+      </NextIntlClientProvider>
+    )
+    const input = screen.getByTestId('DropZone')
+    const file = new File(['file'], 'testFile.png', {
+      type: 'image/png'
+    })
+    Object.defineProperty(input, 'files', {
+      value: [file]
+    })
+    fireEvent.drop(input)
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() => expect(result2).toHaveBeenCalled())
+    await waitFor(() => expect(result3).not.toHaveBeenCalled())
+    expect(cache.extract()).toEqual({
+      'CloudflareImage:imageId': {
+        __typename: 'CloudflareImage',
+        id: 'imageId'
+      },
+      'CloudflareImage:uploadId': {
+        __typename: 'CloudflareImage',
+        id: 'uploadId',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369300/f=jpg,w=1280,h=600,q=95',
+        uploadUrl:
+          'https://upload.imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369300',
+        url: 'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/f7245a5d-5bf4-4343-764c-e0dd40369300'
+      },
+      ROOT_MUTATION: { __typename: 'Mutation' },
+      'Video:1_jf-0-0': {
+        images: [
+          { __ref: 'CloudflareImage:imageId' },
+          { __ref: 'CloudflareImage:uploadId' }
+        ]
+      },
+      __META: { extraRootIds: ['CloudflareImage:uploadId'] }
+    })
+  })
+
   it('should call on upload complete when file dropped', async () => {
     const mockOnUploadComplete = jest.fn()
     render(
