@@ -55,12 +55,6 @@ jobs:
         node-version: [22]
     runs-on: ubuntu-latest
     steps:
-      - name: start deployment
-        uses: chrnorm/deployment-action@v2
-        id: deployment
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          environment: Stage - ${{ matrix.app }}
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -99,12 +93,6 @@ jobs:
         node-version: [22]
     runs-on: ubuntu-latest
     steps:
-      - name: start deployment
-        uses: chrnorm/deployment-action@v2
-        id: deployment
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          environment: Production - ${{ matrix.app }}
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
