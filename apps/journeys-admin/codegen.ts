@@ -1,15 +1,15 @@
 import { CodegenConfig } from '@graphql-codegen/cli'
 
 const config: CodegenConfig = {
-  schema: '../../apis/api-gateway/schema.graphql',
+  schema: 'apis/api-gateway/schema.graphql',
   documents: [
-    './pages/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-    '../../libs/journeys/ui/**/*.{ts,tsx}',
+    'apps/journeys-admin/pages/**/*.{ts,tsx}',
+    'apps/journeys-admin/src/**/*.{ts,tsx}',
+    'libs/journeys/ui/**/*.{ts,tsx}',
     '!**/*.test.{ts,tsx}'
   ],
   generates: {
-    './src/__generated__/': {
+    'apps/journeys-admin/src/__generated__/': {
       preset: 'client',
       plugins: [],
       presetConfig: {
