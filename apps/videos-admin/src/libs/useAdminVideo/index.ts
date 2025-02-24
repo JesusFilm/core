@@ -4,5 +4,6 @@ export {
   type GetAdminVideo,
   type GetAdminVideoVariables,
   type GetAdminVideoVariant,
-  type GetAdminVideo_AdminVideo_Children
+  type GetAdminVideo_AdminVideo_Children,
+  type GetAdminVideo_AdminVideo
 } from './useAdminVideo'
