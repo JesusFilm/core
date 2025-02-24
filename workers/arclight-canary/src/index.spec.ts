@@ -67,6 +67,62 @@ describe('arclight-canary worker', () => {
     expect(res.headers.get('x-routed-to')).toBe('arclight')
   })
 
+  describe('path-based routing', () => {
+    it.each([
+      '/_next/static/chunks/main.js',
+      '/_next/data/build-id/page.json',
+      '/_next/image'
+    ])(
+      'should always route %s to core endpoint regardless of weight',
+      async (path) => {
+        // Mock Math.random to return 0 (0%) to ensure it would otherwise go to arclight
+        Math.random = () => 0
+
+        fetchMock
+          .get('http://core.test')
+          .intercept({ path })
+          .reply(200, 'core endpoint content')
+
+        const res = await app.request(
+          `http://localhost${path}`,
+          {},
+          {
+            ENDPOINT_CORE: 'http://core.test',
+            ENDPOINT_ARCLIGHT: 'http://arclight.test',
+            ENDPOINT_ARCLIGHT_WEIGHT: '100' // Would always go to arclight if not for path
+          }
+        )
+
+        expect(res.status).toBe(200)
+        expect(await res.text()).toBe('core endpoint content')
+        expect(res.headers.get('x-routed-to')).toBe('core')
+      }
+    )
+
+    it('should allow normal routing for non-core paths', async () => {
+      Math.random = () => 0 // Would go to arclight
+
+      fetchMock
+        .get('http://arclight.test')
+        .intercept({ path: '/api/graphql' })
+        .reply(200, 'arclight endpoint content')
+
+      const res = await app.request(
+        'http://localhost/api/graphql',
+        {},
+        {
+          ENDPOINT_CORE: 'http://core.test',
+          ENDPOINT_ARCLIGHT: 'http://arclight.test',
+          ENDPOINT_ARCLIGHT_WEIGHT: '100'
+        }
+      )
+
+      expect(res.status).toBe(200)
+      expect(await res.text()).toBe('arclight endpoint content')
+      expect(res.headers.get('x-routed-to')).toBe('arclight')
+    })
+  })
+
   it('should preserve request method and headers', async () => {
     Math.random = () => 1 // Force core endpoint
     const headers = { 'x-custom-header': 'test-value' }

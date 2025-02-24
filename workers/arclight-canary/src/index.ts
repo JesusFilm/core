@@ -15,6 +15,11 @@ type Bindings = {
 const app = new Hono<{ Bindings: Bindings }>()
 
 /**
+ * Paths that should always be routed to the core endpoint
+ */
+const CORE_ONLY_PATHS = ['/_next/']
+
+/**
  * Custom error for weight validation failures
  */
 class WeightValidationError extends Error {
@@ -43,6 +48,15 @@ const parseWeight = (weightStr: string): number => {
     )
   }
   return weight
+}
+
+/**
+ * Determines if a path should always be routed to the core endpoint
+ * @param path - Request path
+ * @returns boolean - true if path should always use core endpoint
+ */
+const shouldAlwaysUseCore = (path: string): boolean => {
+  return CORE_ONLY_PATHS.some((prefix) => path.startsWith(prefix))
 }
 
 /**
@@ -83,8 +97,9 @@ app.all('*', async (c) => {
     // Get and validate the configured weight (defaults to 50%)
     const weight = parseWeight(c.env.ENDPOINT_ARCLIGHT_WEIGHT ?? '50')
 
-    // Determine which endpoint to use based on random weight
-    const useArclight = shouldUseArclight(weight)
+    // Check if path should always use core endpoint
+    const useArclight =
+      !shouldAlwaysUseCore(url.pathname) && shouldUseArclight(weight)
     const baseEndpoint = useArclight
       ? c.env.ENDPOINT_ARCLIGHT
       : c.env.ENDPOINT_CORE
