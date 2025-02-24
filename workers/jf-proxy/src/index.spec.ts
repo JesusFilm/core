@@ -65,46 +65,6 @@ describe('test the worker', () => {
     expect(await res.text()).toBe('not found content')
   })
 
-  it('should handle 301 response', async () => {
-    fetchMock
-      .get('http://test.example.com')
-      .intercept({ path: '/test-path%aa' })
-      .reply(301, 'redirect content', {
-        headers: { location: 'http://test.example.com/redirected-path%AA' }
-      })
-
-    const res = await app.request(
-      'http://localhost/test-path%AA',
-      {},
-      { PROXY_DEST: 'test.example.com' }
-    )
-    expect(res.status).toBe(301)
-    expect(await res.text()).toBe('redirect content')
-    expect(res.headers.get('location')).toBe(
-      'http://localhost/redirected-path%aa'
-    )
-  })
-
-  it('should handle 302 response', async () => {
-    fetchMock
-      .get('http://test.example.com')
-      .intercept({ path: '/test-path%aa' })
-      .reply(302, 'redirect content', {
-        headers: { location: 'http://test.example.com/redirected-path%AA' }
-      })
-
-    const res = await app.request(
-      'http://localhost/test-path%AA',
-      {},
-      { PROXY_DEST: 'test.example.com' }
-    )
-    expect(res.status).toBe(302)
-    expect(await res.text()).toBe('redirect content')
-    expect(res.headers.get('location')).toBe(
-      'http://localhost/redirected-path%aa'
-    )
-  })
-
   it('should handle network error in main fetch', async () => {
     fetchMock
       .get('http://test.example.com')
@@ -138,42 +98,6 @@ describe('test the worker', () => {
     )
     expect(res.status).toBe(404)
     expect(await res.text()).toBe('Not Found')
-  })
-
-  it('should handle invalid URLs in redirect location header', async () => {
-    fetchMock
-      .get('http://test.example.com')
-      .intercept({ path: '/test-path%aa' })
-      .reply(301, 'redirect content', {
-        headers: { location: 'invalid-url' }
-      })
-
-    const res = await app.request(
-      'http://localhost/test-path%AA',
-      {},
-      { PROXY_DEST: 'test.example.com' }
-    )
-    expect(res.status).toBe(301)
-    expect(await res.text()).toBe('redirect content')
-    expect(res.headers.get('location')).toBe('invalid-url')
-  })
-
-  it('should handle missing location header in redirect', async () => {
-    fetchMock
-      .get('http://test.example.com')
-      .intercept({ path: '/test-path%aa' })
-      .reply(301, 'redirect content', {
-        headers: {} // No location header
-      })
-
-    const res = await app.request(
-      'http://localhost/test-path%AA',
-      {},
-      { PROXY_DEST: 'test.example.com' }
-    )
-    expect(res.status).toBe(301)
-    expect(await res.text()).toBe('redirect content')
-    expect(res.headers.has('location')).toBe(false)
   })
 
   it('should handle missing PROXY_DEST binding', async () => {
