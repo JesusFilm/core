@@ -13,9 +13,9 @@ import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../
 import { ArrayElement } from '../../../../../../../../types/array-types'
 
 interface MenuActions {
-  view: () => void
-  edit: () => void
-  delete: () => void
+  view?: () => void
+  edit?: () => void
+  delete?: () => void
 }
 
 function MenuButton({ actions }: { actions: MenuActions }): ReactElement {
@@ -37,9 +37,15 @@ function MenuButton({ actions }: { actions: MenuActions }): ReactElement {
         <More fontSize="small" />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <MenuItem onClick={actions.view}>{t('View')}</MenuItem>
-        <MenuItem onClick={actions.edit}>{t('Edit')}</MenuItem>
-        <MenuItem onClick={actions.delete}>{t('Delete')}</MenuItem>
+        {actions.view != null && (
+          <MenuItem onClick={actions.view}>{t('View')}</MenuItem>
+        )}
+        {actions.edit != null && (
+          <MenuItem onClick={actions.edit}>{t('Edit')}</MenuItem>
+        )}
+        {actions.delete != null && (
+          <MenuItem onClick={actions.delete}>{t('Delete')}</MenuItem>
+        )}
       </Menu>
     </div>
   )
@@ -57,6 +63,11 @@ export function EditionCard({
   actions
 }: EditionCardProps): ReactElement {
   const t = useTranslations()
+
+  const menuActions = {
+    ...actions,
+    delete: edition.videoSubtitles.length === 0 ? actions.delete : undefined
+  }
 
   return (
     <Box
@@ -84,7 +95,7 @@ export function EditionCard({
         <Typography variant="h4" sx={{ ml: 1 }}>
           {edition.name}
         </Typography>
-        <MenuButton actions={actions} />
+        <MenuButton actions={menuActions} />
       </Stack>
       <Box sx={{ p: 2 }}>
         <Typography sx={{ color: 'text.secondary' }}>

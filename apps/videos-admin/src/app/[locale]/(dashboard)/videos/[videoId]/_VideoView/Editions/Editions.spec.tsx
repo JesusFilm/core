@@ -127,7 +127,6 @@ describe('Editions', () => {
 
     expect(screen.getByRole('menuitem', { name: 'View' })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: 'Delete' })).toBeInTheDocument()
 
     await user.click(editMenuItem)
 
@@ -141,7 +140,9 @@ describe('Editions', () => {
       <NextIntlClientProvider locale="en">
         <MockedProvider>
           <VideoProvider video={mockVideo}>
-            <Editions editions={mockVideo.videoEditions} />
+            <Editions
+              editions={[{ ...mockVideo.videoEditions[0], videoSubtitles: [] }]}
+            />
           </VideoProvider>
         </MockedProvider>
       </NextIntlClientProvider>
