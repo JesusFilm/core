@@ -30,7 +30,7 @@ const shouldUseArclight = (weight: number): boolean => {
  * @param headers - Response headers from the upstream service
  * @returns HeadersInit - Sanitized headers object
  */
-const sanitizeHeaders = (headers: Headers): HeadersInit => {
+const sanitizeHeaders = (headers: Headers): Record<string, string> => {
   return Object.fromEntries(
     Array.from(headers.entries()).filter(
       ([, value]) => value !== undefined && value !== null
@@ -52,7 +52,8 @@ app.all('*', async (c) => {
   const weight = parseInt(c.env.ENDPOINT_ARCLIGHT_WEIGHT ?? '50', 10)
 
   // Determine which endpoint to use based on random weight
-  const baseEndpoint = shouldUseArclight(weight)
+  const useArclight = shouldUseArclight(weight)
+  const baseEndpoint = useArclight
     ? c.env.ENDPOINT_ARCLIGHT
     : c.env.ENDPOINT_CORE
 
@@ -78,10 +79,14 @@ app.all('*', async (c) => {
       redirect: 'manual' // Prevent automatic redirect following
     })
 
+    // Get sanitized headers and add routing information
+    const headers = sanitizeHeaders(response.headers)
+    headers['x-routed-to'] = useArclight ? 'arclight' : 'core'
+
     // Return the response with sanitized headers
     return new Response(response.body, {
       status: response.status,
-      headers: sanitizeHeaders(response.headers)
+      headers
     })
   } catch (error) {
     // Log and handle any network or upstream service errors
