@@ -40,9 +40,9 @@ export function Editions({ editions }: EditionsProps): ReactElement {
 
   return (
     <Section
-      title="Editions"
+      title={t('Editions')}
       action={{
-        label: 'New Edition',
+        label: t('New Edition'),
         onClick: () => setAction(DialogAction.CREATE),
         startIcon: <Plus2 />
       }}

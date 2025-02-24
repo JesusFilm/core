@@ -93,6 +93,7 @@ export const GET_ADMIN_VIDEO = graphql(`
           vttSrc
           srtSrc
           value
+          primary
           language {
             id
             name {
