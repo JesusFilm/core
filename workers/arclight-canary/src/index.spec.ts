@@ -34,12 +34,13 @@ describe('arclight-canary worker', () => {
       {
         ENDPOINT_CORE: 'http://core.test',
         ENDPOINT_ARCLIGHT: 'http://arclight.test',
-        ENDPOINT_B_WEIGHT: '50'
+        ENDPOINT_ARCLIGHT_WEIGHT: '50'
       }
     )
 
     expect(res.status).toBe(200)
     expect(await res.text()).toBe('core endpoint content')
+    expect(res.headers.get('x-routed-to')).toBe('core')
   })
 
   it('should route to arclight endpoint when random value is below weight', async () => {
@@ -57,12 +58,13 @@ describe('arclight-canary worker', () => {
       {
         ENDPOINT_CORE: 'http://core.test',
         ENDPOINT_ARCLIGHT: 'http://arclight.test',
-        ENDPOINT_B_WEIGHT: '50'
+        ENDPOINT_ARCLIGHT_WEIGHT: '50'
       }
     )
 
     expect(res.status).toBe(200)
     expect(await res.text()).toBe('arclight endpoint content')
+    expect(res.headers.get('x-routed-to')).toBe('arclight')
   })
 
   it('should preserve request method and headers', async () => {
@@ -82,11 +84,12 @@ describe('arclight-canary worker', () => {
       {
         ENDPOINT_CORE: 'http://core.test',
         ENDPOINT_ARCLIGHT: 'http://arclight.test',
-        ENDPOINT_B_WEIGHT: '0' // Force core endpoint
+        ENDPOINT_ARCLIGHT_WEIGHT: '0' // Force core endpoint
       }
     )
 
     expect(res.status).toBe(200)
+    expect(res.headers.get('x-routed-to')).toBe('core')
   })
 
   it('should handle network errors gracefully', async () => {
@@ -103,7 +106,7 @@ describe('arclight-canary worker', () => {
       {
         ENDPOINT_CORE: 'http://core.test',
         ENDPOINT_ARCLIGHT: 'http://arclight.test',
-        ENDPOINT_B_WEIGHT: '0' // Force core endpoint
+        ENDPOINT_ARCLIGHT_WEIGHT: '0' // Force core endpoint
       }
     )
 
@@ -116,7 +119,7 @@ describe('arclight-canary worker', () => {
       'http://localhost/test-path',
       {},
       {
-        ENDPOINT_B_WEIGHT: '50'
+        ENDPOINT_ARCLIGHT_WEIGHT: '50'
       }
     )
 
