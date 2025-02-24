@@ -5,6 +5,8 @@ import { usePlausible } from 'next-plausible'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  CardBlock as CardBlockType,
+  StepBlock as StepBlockType,
   ThemeMode,
   ThemeName,
   VideoBlockSource
@@ -14,24 +16,25 @@ import {
   blockHistoryVar,
   treeBlocksVar
 } from '../../libs/block'
-import {
-  BlockFields_CardBlock as CardBlock,
-  BlockFields_StepBlock as StepBlock
-} from '../../libs/block/__generated__/BlockFields'
 import { blurImage } from '../../libs/blurImage'
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from '../../libs/JourneyProvider/__generated__/journeyFields'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
-import { ImageFields } from '../Image/__generated__/ImageFields'
-import { StepViewEventCreate } from '../Step/__generated__/StepViewEventCreate'
+import { ImageFieldsFragment as ImageFields } from '../Image/__generated__/imageFields'
+import { StepViewEventCreateMutation } from '../Step/__generated__/Step'
 import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
-import { VideoFields } from '../Video/__generated__/VideoFields'
+import { VideoFieldsFragment as VideoFields } from '../Video/__generated__/videoFields'
 
-import { StepNextEventCreate } from './__generated__/StepNextEventCreate'
-import { StepPreviousEventCreate } from './__generated__/StepPreviousEventCreate'
+import {
+  StepNextEventCreateMutation,
+  StepPreviousEventCreateMutation
+} from './__generated__/Card'
 import { STEP_NEXT_EVENT_CREATE, STEP_PREVIOUS_EVENT_CREATE } from './Card'
 
 import { Card } from '.'
+
+type StepBlock = TreeBlock<Omit<StepBlockType, 'journeyId' | 'x' | 'y'>>
+type CardBlock = TreeBlock<Omit<CardBlockType, 'journeyId' | 'x' | 'y'>>
 
 jest.mock('../../libs/blurImage', () => ({
   __esModule: true,
@@ -267,30 +270,31 @@ describe('CardBlock', () => {
     }
   } as unknown as Journey
 
-  const mockStepPreviousEventCreate: MockedResponse<StepPreviousEventCreate> = {
-    request: {
-      query: STEP_PREVIOUS_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId: 'step2.id',
-          previousStepId: 'step1.id',
-          label: 'Step {{number}}',
-          value: 'Step {{number}}'
+  const mockStepPreviousEventCreate: MockedResponse<StepPreviousEventCreateMutation> =
+    {
+      request: {
+        query: STEP_PREVIOUS_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'uuid',
+            blockId: 'step2.id',
+            previousStepId: 'step1.id',
+            label: 'Step {{number}}',
+            value: 'Step {{number}}'
+          }
         }
-      }
-    },
-    result: jest.fn(() => ({
-      data: {
-        stepPreviousEventCreate: {
-          id: 'uuid',
-          __typename: 'StepPreviousEvent'
+      },
+      result: jest.fn(() => ({
+        data: {
+          stepPreviousEventCreate: {
+            id: 'uuid',
+            __typename: 'StepPreviousEvent'
+          }
         }
-      }
-    }))
-  }
+      }))
+    }
 
-  const mockStepNextEventCreate: MockedResponse<StepNextEventCreate> = {
+  const mockStepNextEventCreate: MockedResponse<StepNextEventCreateMutation> = {
     request: {
       query: STEP_NEXT_EVENT_CREATE,
       variables: {
@@ -316,7 +320,7 @@ describe('CardBlock', () => {
   const getStepViewEventMock = (
     blockId: string,
     value?: string
-  ): MockedResponse<StepViewEventCreate> => ({
+  ): MockedResponse<StepViewEventCreateMutation> => ({
     request: {
       query: STEP_VIEW_EVENT_CREATE,
       variables: {

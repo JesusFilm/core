@@ -6,16 +6,18 @@ import { ComponentPropsWithoutRef } from 'react'
 
 import {
   JourneyStatus,
+  StepBlock as StepBlockType,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
 import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
-import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from '../../libs/JourneyProvider/__generated__/journeyFields'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
 
 import { StepHeader } from '.'
+
+type StepBlock = Omit<TreeBlock<StepBlockType>, 'journeyId' | 'x' | 'y'>
 
 const Demo: Meta<typeof StepHeader> = {
   ...journeyUiConfig,

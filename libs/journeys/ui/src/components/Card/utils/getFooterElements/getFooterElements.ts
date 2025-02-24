@@ -1,4 +1,4 @@
-import { JourneyFields } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as JourneyFields } from '../../../../libs/JourneyProvider/__generated__/journeyFields'
 
 export const FULL_HEIGHT = '90px'
 export const HALF_HEIGHT = '60px'

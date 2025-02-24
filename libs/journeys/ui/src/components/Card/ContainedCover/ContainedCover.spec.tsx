@@ -1,10 +1,9 @@
 import { render, waitFor } from '@testing-library/react'
 
-import { VideoBlockSource } from '../../../../__generated__/globalTypes'
+import { Video, VideoBlockSource } from '../../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../../libs/block'
-import { BlockFields_VideoBlock_mediaVideo_Video } from '../../../libs/block/__generated__/BlockFields'
-import { ImageFields } from '../../Image/__generated__/ImageFields'
-import { VideoFields } from '../../Video/__generated__/VideoFields'
+import { ImageFieldsFragment as ImageFields } from '../../Image/__generated__/imageFields'
+import { VideoFieldsFragment as VideoFields } from '../../Video/__generated__/videoFields'
 
 import { ContainedCover } from '.'
 
@@ -183,8 +182,7 @@ describe('ContainedCover', () => {
     expect(posterImage).toHaveAccessibleName('card video image')
     expect(posterImage).toHaveAttribute(
       'aria-details',
-      (videoBlock.mediaVideo as BlockFields_VideoBlock_mediaVideo_Video)
-        ?.images[0]?.mobileCinematicHigh
+      (videoBlock.mediaVideo as Video)?.images[0]?.mobileCinematicHigh
     )
   })
 

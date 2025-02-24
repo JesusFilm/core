@@ -11,13 +11,12 @@ import {
   ThemeName
 } from '../../../__generated__/globalTypes'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery'
-import {
-  GetJourneys,
-  GetJourneys_journeys as Journey,
-  GetJourneys_journeys_tags as Tag
-} from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+import { GetJourneysQuery } from '../../libs/useJourneysQuery/__generated__/useJourneysQuery'
 
 import { TemplateSections } from '.'
+
+type Journey = GetJourneysQuery['journeys'][number]
+type Tag = GetJourneysQuery['journeys'][number]['tags'][number]
 
 const TemplateSectionsStory: Meta<typeof TemplateSections> = {
   ...journeysAdminConfig,
@@ -168,7 +167,7 @@ const journeys: Journey[] = [
   }
 ]
 
-const getJourneysMock: MockedResponse<GetJourneys> = {
+const getJourneysMock: MockedResponse<GetJourneysQuery> = {
   request: {
     query: GET_JOURNEYS,
     variables: {
@@ -186,7 +185,7 @@ const getJourneysMock: MockedResponse<GetJourneys> = {
   }
 }
 
-const getJourneysWithTagIdsMock: MockedResponse<GetJourneys> = {
+const getJourneysWithTagIdsMock: MockedResponse<GetJourneysQuery> = {
   request: {
     query: GET_JOURNEYS,
     variables: {
@@ -207,7 +206,7 @@ const getJourneysWithTagIdsMock: MockedResponse<GetJourneys> = {
   }
 }
 
-const getJourneysWithInvalidTagIdsMock: MockedResponse<GetJourneys> = {
+const getJourneysWithInvalidTagIdsMock: MockedResponse<GetJourneysQuery> = {
   request: {
     query: GET_JOURNEYS,
     variables: {

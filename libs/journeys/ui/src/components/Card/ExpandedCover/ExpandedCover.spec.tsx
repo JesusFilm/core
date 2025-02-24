@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react'
 
 import type { TreeBlock } from '../../../libs/block'
-import { ImageFields } from '../../Image/__generated__/ImageFields'
+import { ImageFieldsFragment as ImageFields } from '../../Image/__generated__/imageFields'
 
 import { ExpandedCover } from '.'
 

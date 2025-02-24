@@ -1,9 +1,9 @@
-import { TypographyVariant } from '../../../../../__generated__/globalTypes'
-import { TreeBlock } from '../../../../libs/block'
 import {
-  ButtonFields_action_LinkAction as LinkAction,
-  ButtonFields_action_NavigateToBlockAction as NavigateToBlockAction
-} from '../../__generated__/ButtonFields'
+  LinkAction,
+  NavigateToBlockAction,
+  TypographyVariant
+} from '../../../../../__generated__/globalTypes'
+import { TreeBlock } from '../../../../libs/block'
 
 import { getActionLabel } from './getActionLabel'
 
@@ -14,7 +14,7 @@ describe('getActionLabel', () => {
       parentBlockId: 'parentBlock.id',
       gtmEventName: 'click',
       blockId: 'step.id'
-    }
+    } as NavigateToBlockAction
     const treeBlocks: TreeBlock[] = [
       {
         __typename: 'StepBlock',
@@ -51,7 +51,7 @@ describe('getActionLabel', () => {
       parentBlockId: 'parentBlock.id',
       gtmEventName: 'click',
       blockId: 'step.id'
-    }
+    } as NavigateToBlockAction
     const treeBlocks: TreeBlock[] = [
       {
         __typename: 'StepBlock',
@@ -76,7 +76,7 @@ describe('getActionLabel', () => {
       parentBlockId: 'parentBlock.id',
       gtmEventName: 'click',
       url: 'https://test.com/some-address'
-    }
+    } as LinkAction
 
     const result = getActionLabel(action)
     expect(result).toEqual(action.url)

@@ -7,12 +7,11 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { JourneyFieldsFragment as Journey } from '../../libs/JourneyProvider/__generated__/journeyFields'
 
 import { ContentCarousel } from './ContentCarousel'
 
 describe('ContentCarousel', () => {
-  const journey: Journey = {
+  const journey = {
     __typename: 'Journey',
     id: '1',
     title: 'Featured Template 1',

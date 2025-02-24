@@ -5,7 +5,7 @@ import Player from 'video.js/dist/types/player'
 
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
-import { VideoFields } from '../../../Video/__generated__/VideoFields'
+import { VideoFieldsFragment as VideoFields } from '../../../Video/__generated__/videoFields'
 
 import { BackgroundVideo } from './BackgroundVideo'
 

@@ -11,24 +11,27 @@ import {
   IconColor,
   IconName,
   IconSize,
-  MessagePlatform
+  LinkAction as LinkActionType,
+  MessagePlatform,
+  StepBlock as StepBlockType
 } from '../../../__generated__/globalTypes'
 import { handleAction } from '../../libs/action'
 import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
-import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from '../../libs/JourneyProvider/__generated__/journeyFields'
 import { keyify } from '../../libs/plausibleHelpers'
 
-import {
-  ButtonFields,
-  ButtonFields_action,
-  ButtonFields_action_LinkAction as LinkAction
-} from './__generated__/ButtonFields'
+import { ButtonFieldsFragment as ButtonFields } from './__generated__/buttonFields'
 import { BUTTON_CLICK_EVENT_CREATE, CHAT_OPEN_EVENT_CREATE } from './Button'
 import { GoalType } from './utils/getLinkActionGoal'
 
 import { Button } from '.'
+
+type StepBlock = TreeBlock<Omit<StepBlockType, 'journeyId' | 'x' | 'y'>>
+type LinkAction = Omit<
+  TreeBlock<LinkActionType>,
+  'parentBlock' | 'children' | 'target'
+>
 
 jest.mock('uuid', () => ({
   __esModule: true,
@@ -304,7 +307,7 @@ describe('Button', () => {
   it('should add LinkAction outbound_action_click event to dataLayer', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
 
-    const action: ButtonFields_action = {
+    const action: ButtonFields['action'] = {
       __typename: 'LinkAction',
       parentBlockId: 'button',
       gtmEventName: 'click',
@@ -374,7 +377,7 @@ describe('Button', () => {
     mockUuidv4.mockReturnValueOnce('uuid')
     const mockPlausible = jest.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
-    const action: ButtonFields_action = {
+    const action: ButtonFields['action'] = {
       __typename: 'LinkAction',
       parentBlockId: 'button',
       gtmEventName: 'click',
@@ -499,7 +502,7 @@ describe('Button', () => {
           __typename: 'IconBlock',
           parentBlockId: 'id',
           parentOrder: 0,
-          iconName: IconName.CheckCircleRounded,
+          iconName: IconName.checkCircleRounded,
           iconColor: null,
           iconSize: IconSize.md,
           children: []
@@ -529,7 +532,7 @@ describe('Button', () => {
           __typename: 'IconBlock',
           parentBlockId: 'id',
           parentOrder: 0,
-          iconName: IconName.CheckCircleRounded,
+          iconName: IconName.checkCircleRounded,
           iconColor: IconColor.primary,
           iconSize: IconSize.md,
           children: []

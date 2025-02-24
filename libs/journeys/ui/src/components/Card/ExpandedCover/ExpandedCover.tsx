@@ -5,7 +5,7 @@ import { NextImage } from '@core/shared/ui/NextImage'
 
 import type { TreeBlock } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
-import { ImageFields } from '../../Image/__generated__/ImageFields'
+import { ImageFieldsFragment as ImageFields } from '../../Image/__generated__/imageFields'
 import { OverlayContent } from '../OverlayContent'
 
 interface ExpandedCoverProps {

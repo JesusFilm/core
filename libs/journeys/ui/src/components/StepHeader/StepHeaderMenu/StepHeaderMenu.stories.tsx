@@ -5,7 +5,7 @@ import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { JourneyMenuButtonIcon } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from '../../../libs/JourneyProvider/__generated__/journeyFields'
 import { defaultJourney } from '../../TemplateView/data'
 
 import { StepHeaderMenu } from '.'

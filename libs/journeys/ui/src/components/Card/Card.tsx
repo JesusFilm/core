@@ -20,19 +20,17 @@ import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { getJourneyRTL } from '../../libs/rtl'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
-import { ImageFields } from '../Image/__generated__/ImageFields'
-import { StepFields } from '../Step/__generated__/StepFields'
-import { VideoFields } from '../Video/__generated__/VideoFields'
+import { ImageFieldsFragment as ImageFields } from '../Image/__generated__/imageFields'
+import { StepFieldsFragment as StepFields } from '../Step/__generated__/stepFields'
+import { VideoFieldsFragment as VideoFields } from '../Video/__generated__/videoFields'
 
-import { CardFields } from './__generated__/CardFields'
 import {
-  StepNextEventCreate,
-  StepNextEventCreateVariables
-} from './__generated__/StepNextEventCreate'
-import {
-  StepPreviousEventCreate,
-  StepPreviousEventCreateVariables
-} from './__generated__/StepPreviousEventCreate'
+  StepNextEventCreateMutation,
+  StepNextEventCreateMutationVariables,
+  StepPreviousEventCreateMutation,
+  StepPreviousEventCreateMutationVariables
+} from './__generated__/Card'
+import { CardFieldsFragment as CardFields } from './__generated__/cardFields'
 import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
 
@@ -65,12 +63,12 @@ export function Card({
   wrappers
 }: CardProps): ReactElement {
   const [stepNextEventCreate] = useMutation<
-    StepNextEventCreate,
-    StepNextEventCreateVariables
+    StepNextEventCreateMutation,
+    StepNextEventCreateMutationVariables
   >(STEP_NEXT_EVENT_CREATE)
   const [stepPreviousEventCreate] = useMutation<
-    StepPreviousEventCreate,
-    StepPreviousEventCreateVariables
+    StepPreviousEventCreateMutation,
+    StepPreviousEventCreateMutationVariables
   >(STEP_PREVIOUS_EVENT_CREATE)
 
   const { t } = useTranslation('journeys-ui')

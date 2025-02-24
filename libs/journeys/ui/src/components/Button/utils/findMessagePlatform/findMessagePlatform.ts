@@ -1,8 +1,8 @@
 import { MessagePlatform } from '../../../../../__generated__/globalTypes'
-import { ButtonFields_action } from '../../__generated__/ButtonFields'
+import { ButtonFieldsFragment as ButtonFields } from '../../__generated__/buttonFields'
 
 export function findMessagePlatform(
-  buttonAction: ButtonFields_action | null
+  buttonAction: ButtonFields['action'] | null
 ): MessagePlatform | undefined {
   if (buttonAction?.__typename !== 'LinkAction') return undefined
 

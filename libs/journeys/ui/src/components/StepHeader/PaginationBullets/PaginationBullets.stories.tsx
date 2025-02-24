@@ -4,8 +4,8 @@ import { ComponentProps } from 'react'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
+import { StepBlock as StepBlockType } from '../../../../__generated__/globalTypes'
 import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../../libs/block'
-import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
 import { journeyUiConfig } from '../../../libs/journeyUiConfig'
 
 import { PaginationBullets } from './PaginationBullets'
@@ -15,6 +15,8 @@ const Demo: Meta<typeof PaginationBullets> = {
   component: PaginationBullets,
   title: 'Journeys-Ui/StepHeader/PaginationBullets'
 }
+
+type StepBlock = Omit<TreeBlock<StepBlockType>, 'journeyId' | 'x' | 'y'>
 
 const step1: TreeBlock<StepBlock> = {
   id: 'step1.id',

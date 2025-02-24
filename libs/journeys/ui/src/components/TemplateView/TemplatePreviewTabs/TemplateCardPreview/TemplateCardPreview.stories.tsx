@@ -3,9 +3,9 @@ import noop from 'lodash/noop'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
+import { StepBlock } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
 import { transformer } from '../../../../libs/transformer'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
 import { journeyVideoBlocks } from '../data'
 
 import { TemplateCardPreview } from './TemplateCardPreview'
@@ -20,7 +20,7 @@ const TemplateCardPreviewStory: Meta<typeof TemplateCardPreview> = {
   }
 }
 
-const steps = transformer(journeyVideoBlocks) as Array<TreeBlock<StepBlock>>
+const steps = transformer(journeyVideoBlocks as Array<TreeBlock<StepBlock>>)
 
 const Template: StoryObj<typeof TemplateCardPreview> = {
   render: (args) => (

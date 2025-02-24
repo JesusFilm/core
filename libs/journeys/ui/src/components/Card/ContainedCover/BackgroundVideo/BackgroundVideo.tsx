@@ -11,7 +11,7 @@ import {
   VideoBlockSource
 } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
-import { VideoFields } from '../../../Video/__generated__/VideoFields'
+import { VideoFieldsFragment as VideoFields } from '../../../Video/__generated__/videoFields'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'

@@ -6,7 +6,7 @@ import { ComponentProps } from 'react'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { JourneyProvider } from '../../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from '../../../libs/JourneyProvider/__generated__/journeyFields'
 
 import { journey } from './data'
 import { TemplateFooter } from './TemplateFooter'

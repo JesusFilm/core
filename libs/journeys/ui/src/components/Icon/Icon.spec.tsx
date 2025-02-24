@@ -7,7 +7,7 @@ import {
 } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 
-import { IconFields } from './__generated__/IconFields'
+import { IconFieldsFragment as IconFields } from './__generated__/iconFields'
 
 import { Icon } from '.'
 
@@ -16,7 +16,7 @@ const block: TreeBlock<IconFields> = {
   __typename: 'IconBlock',
   parentBlockId: 'parent',
   parentOrder: 0,
-  iconName: IconName.CheckCircleRounded,
+  iconName: IconName.checkCircleRounded,
   iconColor: IconColor.error,
   iconSize: IconSize.md,
   children: []
