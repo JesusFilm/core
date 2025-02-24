@@ -21,7 +21,15 @@
       }
     },
     "deploy": {
-      "executor": "@naxodev/nx-cloudflare:deploy"
+      "executor": "@naxodev/nx-cloudflare:deploy",
+      "options": {
+        "env": "stage"
+      },
+      "configurations": {
+        "prod": {
+          "env": "prod"
+        }
+      }
     }
   }
 }
