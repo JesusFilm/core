@@ -1,7 +1,9 @@
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
-import { GetJourney_journey_blocks as Blocks } from '../../../libs/useJourneyQuery/__generated__/GetJourney'
+import { GetJourneyQuery } from '../../../libs/useJourneyQuery/__generated__/useJourneyQuery'
 
-export const journeyVideoBlocks: Blocks[] = [
+type Blocks = GetJourneyQuery['journey']['blocks']
+
+export const journeyVideoBlocks: Blocks = [
   {
     __typename: 'CardBlock',
     id: '779a6977-73d6-42dd-b909-aa8c5c6b2bab',

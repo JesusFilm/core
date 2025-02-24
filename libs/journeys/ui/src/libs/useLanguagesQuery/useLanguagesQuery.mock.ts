@@ -1,15 +1,15 @@
 import { MockedResponse } from '@apollo/client/testing'
 
 import {
-  GetLanguages,
-  GetLanguagesVariables
-} from './__generated__/GetLanguages'
+  GetLanguagesQuery,
+  GetLanguagesQueryVariables
+} from './__generated__/useLanguagesQuery'
 
 import { GET_LANGUAGES } from '.'
 
 export const getLanguagesMock: MockedResponse<
-  GetLanguages,
-  GetLanguagesVariables
+  GetLanguagesQuery,
+  GetLanguagesQueryVariables
 > = {
   request: {
     query: GET_LANGUAGES,

@@ -4,11 +4,11 @@ import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
-import { VideoFields_mediaVideo } from '../../../../Video/__generated__/VideoFields'
+import { VideoFieldsFragment as VideoFields } from '../../../../Video/__generated__/videoFields'
 
 export interface TemplateVideoPlayerProps {
   id?: string | null
-  mediaVideo?: VideoFields_mediaVideo | null
+  mediaVideo?: VideoFields['mediaVideo'] | null
   source?: VideoBlockSource
   poster?: string
   startAt: number

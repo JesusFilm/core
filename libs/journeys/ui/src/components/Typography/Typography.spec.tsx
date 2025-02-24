@@ -7,7 +7,7 @@ import {
 } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 
-import { TypographyFields } from './__generated__/TypographyFields'
+import { TypographyFieldsFragment as TypographyFields } from './__generated__/typographyFields'
 import { Typography } from './Typography'
 
 const block: TreeBlock<TypographyFields> = {

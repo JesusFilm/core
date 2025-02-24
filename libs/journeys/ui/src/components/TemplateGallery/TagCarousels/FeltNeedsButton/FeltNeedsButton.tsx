@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography'
 import NextImage, { StaticImageData } from 'next/image'
 import { ReactElement } from 'react'
 
-import { GetTags_tags as Tag } from '../../../../libs/useTagsQuery/__generated__/GetTags'
+import { GetTagsQuery } from '../../../../libs/useTagsQuery/__generated__/useTagsQuery'
 
 import acceptanceImage from './assets/acceptance.jpg'
 import depressionImage from './assets/depression.jpg'
@@ -18,7 +18,7 @@ import loveImage from './assets/love.jpg'
 import securityImage from './assets/security.jpg'
 import significanceImage from './assets/significance.jpg'
 
-type ChildTag = Tag & { parentId: string }
+type ChildTag = GetTagsQuery['tags'][number] & { parentId: string }
 
 function tagImage(tagLabel?: string):
   | {

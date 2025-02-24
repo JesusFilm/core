@@ -1,4 +1,6 @@
-import { GetCountry_country as Country } from './__generated__/GetCountry'
+import { GetCountryQuery } from './__generated__/useCountryQuery'
+
+type Country = GetCountryQuery['country']
 
 export const country: Country = {
   __typename: 'Country',

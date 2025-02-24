@@ -1,11 +1,12 @@
-import {
-  GetLanguagesContinents_languages_countryLanguages as CountryLanguage,
-  GetLanguagesContinents_languages as Languages
-} from '../useLanguagesContinentsQuery/__generated__/GetLanguagesContinents'
+import { GetLanguagesContinentsQuery } from '../useLanguagesContinentsQuery/__generated__/useLanguagesContinentsQuery'
 import { languagesContinents } from '../useLanguagesContinentsQuery/data'
 import { sortedLanguageContinents } from '../useLanguagesContinentsQuery/sortLanguageContinents/data'
 
 import { useSortLanguageContinents } from './useSortLanguageContinents'
+
+type Languages = GetLanguagesContinentsQuery['languages'][number]
+type CountryLanguage =
+  GetLanguagesContinentsQuery['languages'][number]['countryLanguages'][number]
 
 describe('useSortLanguageContinents', () => {
   it('should return a record of continents and languages', () => {

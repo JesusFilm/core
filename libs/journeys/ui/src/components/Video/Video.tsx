@@ -28,12 +28,12 @@ import {
 import { blurImage } from '../../libs/blurImage'
 import { useEditor } from '../../libs/EditorProvider'
 import { useJourney } from '../../libs/JourneyProvider'
-import { ImageFields } from '../Image/__generated__/ImageFields'
+import { ImageFieldsFragment as ImageFields } from '../Image/__generated__/imageFields'
 import { VideoEvents } from '../VideoEvents'
 import { VideoTrigger } from '../VideoTrigger'
-import { VideoTriggerFields } from '../VideoTrigger/__generated__/VideoTriggerFields'
+import { VideoTriggerFieldsFragment as VideoTriggerFields } from '../VideoTrigger/__generated__/videoTriggerFields'
 
-import { VideoFields } from './__generated__/VideoFields'
+import { VideoFieldsFragment as VideoFields } from './__generated__/videoFields'
 import { InitAndPlay } from './InitAndPlay'
 import { VideoControls } from './VideoControls'
 

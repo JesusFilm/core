@@ -6,7 +6,7 @@ import type { TreeBlock } from '../../libs/block'
 import { EditorProvider } from '../../libs/EditorProvider'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 
-import { VideoFields } from './__generated__/VideoFields'
+import { VideoFieldsFragment as VideoFields } from './__generated__/videoFields'
 
 import { Video } from '.'
 

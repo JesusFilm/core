@@ -13,14 +13,14 @@ import { SwiperOptions } from 'swiper/types'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
-import { ThemeMode, ThemeName } from '../../../../../__generated__/globalTypes'
+import {
+  StepBlock,
+  ThemeMode,
+  ThemeName
+} from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
 import { useJourney } from '../../../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../../../libs/rtl'
-import {
-  GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_StepBlock as StepBlock
-} from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
 import { BlockRenderer } from '../../../BlockRenderer'
 import { CardWrapper } from '../../../CardWrapper'
 import { FramePortal } from '../../../FramePortal'
@@ -48,7 +48,7 @@ function TemplateCardPreviewItem({
   const { rtl, locale } = getJourneyRTL(journey)
   const cardBlock = step.children.find(
     (child) => child.__typename === 'CardBlock'
-  ) as TreeBlock<CardBlock>
+  )
 
   return (
     <Box

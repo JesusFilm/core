@@ -1,8 +1,8 @@
-import * as Types from '../../../../__generated__/types';
+import * as Types from '../../../../__generated__/globalTypes';
 
 export type RadioQuestionSubmissionEventCreateMutationVariables = Types.Exact<{
   input: Types.RadioQuestionSubmissionEventCreateInput;
 }>;
 
 
-export type RadioQuestionSubmissionEventCreateMutation = { __typename?: 'Mutation', radioQuestionSubmissionEventCreate: { __typename?: 'RadioQuestionSubmissionEvent', id: string } };
+export type RadioQuestionSubmissionEventCreateMutation = { radioQuestionSubmissionEventCreate: { __typename: 'RadioQuestionSubmissionEvent', id: string } };

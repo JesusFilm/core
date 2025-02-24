@@ -1,7 +1,7 @@
 import sortBy from 'lodash/sortBy'
 
 import type { TreeBlock } from '../block'
-import type { BlockFields } from '../block/__generated__/BlockFields'
+import type { BlockFieldsFragment as BlockFields } from '../block/__generated__/blockFields'
 
 export function transformer(data: BlockFields[]): TreeBlock[] {
   const tree: TreeBlock[] = []

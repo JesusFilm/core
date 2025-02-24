@@ -4,13 +4,12 @@ import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '../../../libs/JourneyProvider'
-import {
-  JourneyFields as Journey,
-  JourneyFields_primaryImageBlock as PrimaryImageBlock
-} from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from '../../../libs/JourneyProvider/__generated__/journeyFields'
 import { journey } from '../TemplateFooter/data'
 
 import { TemplateViewHeader } from './TemplateViewHeader'
+
+type PrimaryImageBlock = Journey['primaryImageBlock']
 
 describe('TemplateViewHeader', () => {
   const setOpenTeamDialogMock = jest.fn()

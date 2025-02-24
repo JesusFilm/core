@@ -7,11 +7,13 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+import { GetJourneysQuery } from '../../libs/useJourneysQuery/__generated__/useJourneysQuery'
 
 import { TemplateGalleryCard } from '.'
 
 import '../../../test/i18n'
+
+type Journey = GetJourneysQuery['journeys'][number]
 
 jest.mock('@core/journeys/ui/useNavigationState', () => ({
   useNavigationState: jest.fn(() => false)

@@ -1,14 +1,14 @@
 import { MockedResponse } from '@apollo/client/testing'
 
 import {
-  GetJourneyAnalytics,
-  GetJourneyAnalyticsVariables
-} from './__generated__/GetJourneyAnalytics'
+  GetJourneyAnalyticsQuery,
+  GetJourneyAnalyticsQueryVariables
+} from './__generated__/useJourneyAnalyticsQuery'
 import { GET_JOURNEY_ANALYTICS } from './useJourneyAnalyticsQuery'
 
 export const getJourneyAnalytics: MockedResponse<
-  GetJourneyAnalytics,
-  GetJourneyAnalyticsVariables
+  GetJourneyAnalyticsQuery,
+  GetJourneyAnalyticsQueryVariables
 > = {
   request: {
     query: GET_JOURNEY_ANALYTICS,

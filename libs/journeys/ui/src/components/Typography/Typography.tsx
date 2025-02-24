@@ -3,7 +3,7 @@ import { ReactElement } from 'react'
 
 import type { TreeBlock } from '../../libs/block'
 
-import { TypographyFields } from './__generated__/TypographyFields'
+import { TypographyFieldsFragment as TypographyFields } from './__generated__/typographyFields'
 
 export interface TypographyProps extends TreeBlock<TypographyFields> {
   editableContent?: ReactElement

@@ -2,7 +2,10 @@ import { QueryResult, gql, useQuery } from '@apollo/client'
 
 import { JOURNEY_FIELDS } from '../JourneyProvider/journeyFields'
 
-import { GetJourney, GetJourneyVariables } from './__generated__/GetJourney'
+import {
+  GetJourneyQuery,
+  GetJourneyQueryVariables
+} from './__generated__/useJourneyQuery'
 
 export const GET_JOURNEY = gql`
   ${JOURNEY_FIELDS}
@@ -14,11 +17,14 @@ export const GET_JOURNEY = gql`
 `
 
 export function useJourneyQuery(
-  variables?: GetJourneyVariables
-): QueryResult<GetJourney, GetJourneyVariables> {
-  const query = useQuery<GetJourney, GetJourneyVariables>(GET_JOURNEY, {
-    variables
-  })
+  variables?: GetJourneyQueryVariables
+): QueryResult<GetJourneyQuery, GetJourneyQueryVariables> {
+  const query = useQuery<GetJourneyQuery, GetJourneyQueryVariables>(
+    GET_JOURNEY,
+    {
+      variables
+    }
+  )
 
   return query
 }

@@ -13,8 +13,10 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { abbreviateLanguageName } from '../../libs/abbreviateLanguageName'
-import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+import { GetJourneysQuery } from '../../libs/useJourneysQuery/__generated__/useJourneysQuery'
 import { useNavigationState } from '../../libs/useNavigationState'
+
+type Journey = GetJourneysQuery['journeys'][number]
 
 interface HoverLayerProps {
   className?: string

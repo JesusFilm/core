@@ -8,15 +8,16 @@ import {
 } from '../../../__generated__/globalTypes'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery'
 import {
-  GetJourneys,
-  GetJourneysVariables,
-  GetJourneys_journeys as Journey,
-  GetJourneys_journeys_tags as Tag
-} from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+  GetJourneysQuery,
+  GetJourneysQueryVariables
+} from '../../libs/useJourneysQuery/__generated__/useJourneysQuery'
 import { GET_LANGUAGES } from '../../libs/useLanguagesQuery'
-import { GetLanguages } from '../../libs/useLanguagesQuery/__generated__/GetLanguages'
+import { GetLanguagesQuery } from '../../libs/useLanguagesQuery/__generated__/useLanguagesQuery'
 import { GET_TAGS } from '../../libs/useTagsQuery'
-import { GetTags } from '../../libs/useTagsQuery/__generated__/GetTags'
+import { GetTagsQuery } from '../../libs/useTagsQuery/__generated__/useTagsQuery'
+
+type Journey = GetJourneysQuery['journeys'][number]
+type Tag = Journey['tags'][number]
 
 const defaultTemplate: Journey = {
   __typename: 'Journey',
@@ -159,8 +160,8 @@ const journeys: Journey[] = [
 ]
 
 export const getJourneysMock: MockedResponse<
-  GetJourneys,
-  GetJourneysVariables
+  GetJourneysQuery,
+  GetJourneysQueryVariables
 > = {
   request: {
     query: GET_JOURNEYS,
@@ -180,8 +181,8 @@ export const getJourneysMock: MockedResponse<
 }
 
 export const getJourneysMockWithAcceptanceTag: MockedResponse<
-  GetJourneys,
-  GetJourneysVariables
+  GetJourneysQuery,
+  GetJourneysQueryVariables
 > = {
   request: {
     query: GET_JOURNEYS,
@@ -202,8 +203,8 @@ export const getJourneysMockWithAcceptanceTag: MockedResponse<
 }
 
 export const getJourneysMockWithoutTagsEnglish: MockedResponse<
-  GetJourneys,
-  GetJourneysVariables
+  GetJourneysQuery,
+  GetJourneysQueryVariables
 > = {
   request: {
     query: GET_JOURNEYS,
@@ -224,8 +225,8 @@ export const getJourneysMockWithoutTagsEnglish: MockedResponse<
 }
 
 export const getJourneysMockWithoutTagsFrench: MockedResponse<
-  GetJourneys,
-  GetJourneysVariables
+  GetJourneysQuery,
+  GetJourneysQueryVariables
 > = {
   request: {
     query: GET_JOURNEYS,
@@ -246,8 +247,8 @@ export const getJourneysMockWithoutTagsFrench: MockedResponse<
 }
 
 export const getJourneysWithoutLanguageIdsMock: MockedResponse<
-  GetJourneys,
-  GetJourneysVariables
+  GetJourneysQuery,
+  GetJourneysQueryVariables
 > = {
   request: {
     query: GET_JOURNEYS,
@@ -265,7 +266,7 @@ export const getJourneysWithoutLanguageIdsMock: MockedResponse<
   }
 }
 
-export const getLanguagesMock: MockedResponse<GetLanguages> = {
+export const getLanguagesMock: MockedResponse<GetLanguagesQuery> = {
   request: {
     query: GET_LANGUAGES,
     variables: {
@@ -352,7 +353,7 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
   }
 }
 
-export const getTagsMock: MockedResponse<GetTags> = {
+export const getTagsMock: MockedResponse<GetTagsQuery> = {
   request: {
     query: GET_TAGS
   },

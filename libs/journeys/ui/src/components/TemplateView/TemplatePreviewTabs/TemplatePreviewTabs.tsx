@@ -15,14 +15,10 @@ import {
 
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
+import { CardBlock, StepBlock, VideoBlock } from '../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../libs/block/TreeBlock'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { transformer } from '../../../libs/transformer'
-import {
-  GetJourney_journey_blocks_CardBlock as CardBlock,
-  GetJourney_journey_blocks_StepBlock as StepBlock,
-  GetJourney_journey_blocks_VideoBlock as VideoBlock
-} from '../../../libs/useJourneyQuery/__generated__/GetJourney'
 
 import { TemplateCardPreview } from './TemplateCardPreview/TemplateCardPreview'
 import { TemplateVideoPreview } from './TemplateVideoPreview'

@@ -1,4 +1,4 @@
-import * as Types from '../../../../__generated__/types';
+import * as Types from '../../../../__generated__/globalTypes';
 
 export type JourneyDuplicateMutationVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
@@ -6,6 +6,6 @@ export type JourneyDuplicateMutationVariables = Types.Exact<{
 }>;
 
 
-export type JourneyDuplicateMutation = { __typename?: 'Mutation', journeyDuplicate: { __typename?: 'Journey', id: string } };
+export type JourneyDuplicateMutation = { journeyDuplicate: { __typename: 'Journey', id: string } };
 
-export type DuplicatedJourneyFragment = { __typename?: 'Journey', id: string };
+export type DuplicatedJourneyFragment = { __typename: 'Journey', id: string };

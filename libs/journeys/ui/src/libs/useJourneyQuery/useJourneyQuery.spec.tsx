@@ -9,11 +9,11 @@ import {
   UserJourneyRole
 } from '../../../__generated__/globalTypes'
 
-import {
-  GetJourney_journey as Journey,
-  GetJourney_journey_language as Language
-} from './__generated__/GetJourney'
+import { GetJourneyQuery } from './__generated__/useJourneyQuery'
 import { GET_JOURNEY, useJourneyQuery } from './useJourneyQuery'
+
+type Language = GetJourneyQuery['journey']['language']
+type Journey = GetJourneyQuery['journey']
 
 describe('useJourneyQuery', () => {
   it('should get journey', async () => {

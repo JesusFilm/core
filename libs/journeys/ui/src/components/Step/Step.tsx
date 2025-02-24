@@ -15,11 +15,11 @@ import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 
-import { StepFields } from './__generated__/StepFields'
 import {
-  StepViewEventCreate,
-  StepViewEventCreateVariables
-} from './__generated__/StepViewEventCreate'
+  StepViewEventCreateMutation,
+  StepViewEventCreateMutationVariables
+} from './__generated__/Step'
+import { StepFieldsFragment as StepFields } from './__generated__/stepFields'
 
 export const STEP_VIEW_EVENT_CREATE = gql`
   mutation StepViewEventCreate($input: StepViewEventCreateInput!) {
@@ -39,8 +39,8 @@ export function Step({
   wrappers
 }: StepProps): ReactElement {
   const [stepViewEventCreate] = useMutation<
-    StepViewEventCreate,
-    StepViewEventCreateVariables
+    StepViewEventCreateMutation,
+    StepViewEventCreateMutationVariables
   >(STEP_VIEW_EVENT_CREATE)
   const plausible = usePlausible<JourneyPlausibleEvents>()
   const { variant, journey } = useJourney()

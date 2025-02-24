@@ -6,7 +6,7 @@ import { TreeBlock, useBlocks } from '../../../libs/block'
 import { filterActionBlocks } from '../../../libs/filterActionBlocks'
 import { ActionBlock } from '../../../libs/isActionBlock'
 import { useJourney } from '../../../libs/JourneyProvider'
-import { StepFields } from '../../Step/__generated__/StepFields'
+import { StepFieldsFragment as StepFields } from '../../Step/__generated__/stepFields'
 
 import { Bullet } from './Bullet'
 

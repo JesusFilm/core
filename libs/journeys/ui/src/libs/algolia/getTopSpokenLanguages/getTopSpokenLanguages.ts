@@ -1,7 +1,9 @@
 import { RefinementListItem } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 import orderBy from 'lodash/orderBy'
 
-import { GetCountry_country as Country } from '../../useCountryQuery/__generated__/GetCountry'
+import { GetCountryQuery } from '../../useCountryQuery/__generated__/useCountryQuery'
+
+type Country = GetCountryQuery['country']
 
 export function removeCommas(str: string): string {
   return str.replace(/,/g, '').trim()

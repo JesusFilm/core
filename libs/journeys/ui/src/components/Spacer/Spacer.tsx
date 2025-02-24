@@ -4,7 +4,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 
-import { SpacerFields } from './__generated__/SpacerFields'
+import { SpacerFieldsFragment as SpacerFields } from './__generated__/spacerFields'
 
 export const Spacer = ({ spacing }: TreeBlock<SpacerFields>): ReactElement => {
   const { variant } = useJourney()

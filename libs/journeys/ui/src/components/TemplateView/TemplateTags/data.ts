@@ -1,5 +1,8 @@
-import { JourneyFields_tags as Tag } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { GetTags_tags as ParentTag } from '../../../libs/useTagsQuery/__generated__/GetTags'
+import { JourneyFieldsFragment } from '../../../libs/JourneyProvider/__generated__/journeyFields'
+import { GetTagsQuery } from '../../../libs/useTagsQuery/__generated__/useTagsQuery'
+
+type Tag = JourneyFieldsFragment['tags'][number]
+type ParentTag = GetTagsQuery['tags'][number]
 
 export const parentTags: ParentTag[] = [
   {

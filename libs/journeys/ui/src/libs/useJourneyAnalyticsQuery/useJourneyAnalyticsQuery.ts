@@ -9,9 +9,9 @@ import { useState } from 'react'
 import { Edge, Node } from 'reactflow'
 
 import {
-  GetJourneyAnalytics,
-  GetJourneyAnalyticsVariables
-} from './__generated__/GetJourneyAnalytics'
+  GetJourneyAnalyticsQuery,
+  GetJourneyAnalyticsQueryVariables
+} from './__generated__/useJourneyAnalyticsQuery'
 import { transformJourneyAnalytics } from './transformJourneyAnalytics'
 
 export const GET_JOURNEY_ANALYTICS = gql`
@@ -145,29 +145,29 @@ export interface JourneyAnalytics {
 export function useJourneyAnalyticsQuery(
   options?: Omit<
     QueryHookOptions<
-      NoInfer<GetJourneyAnalytics>,
-      NoInfer<GetJourneyAnalyticsVariables>
+      NoInfer<GetJourneyAnalyticsQuery>,
+      NoInfer<GetJourneyAnalyticsQueryVariables>
     >,
     'onCompleted'
   > & { onCompleted?: (data: JourneyAnalytics | undefined) => void }
 ): Omit<
-  QueryResult<GetJourneyAnalytics, GetJourneyAnalyticsVariables>,
+  QueryResult<GetJourneyAnalyticsQuery, GetJourneyAnalyticsQueryVariables>,
   'data'
 > & { data: JourneyAnalytics | undefined } {
   const [data, setData] = useState<JourneyAnalytics | undefined>()
-  const query = useQuery<GetJourneyAnalytics, GetJourneyAnalyticsVariables>(
-    GET_JOURNEY_ANALYTICS,
-    {
-      ...options,
-      onCompleted: (data) => {
-        const journeyAnalytics = transformJourneyAnalytics(
-          options?.variables?.id,
-          data
-        )
-        setData(journeyAnalytics)
-        options?.onCompleted?.(journeyAnalytics)
-      }
+  const query = useQuery<
+    GetJourneyAnalyticsQuery,
+    GetJourneyAnalyticsQueryVariables
+  >(GET_JOURNEY_ANALYTICS, {
+    ...options,
+    onCompleted: (data) => {
+      const journeyAnalytics = transformJourneyAnalytics(
+        options?.variables?.id,
+        data
+      )
+      setData(journeyAnalytics)
+      options?.onCompleted?.(journeyAnalytics)
     }
-  )
+  })
   return { ...query, data }
 }

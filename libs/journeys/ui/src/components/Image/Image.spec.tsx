@@ -3,7 +3,7 @@ import { render } from '@testing-library/react'
 import type { TreeBlock } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 
-import { ImageFields } from './__generated__/ImageFields'
+import { ImageFieldsFragment as ImageFields } from './__generated__/imageFields'
 
 import { Image } from '.'
 

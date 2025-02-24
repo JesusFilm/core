@@ -8,20 +8,20 @@ import { ReactElement } from 'react'
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
 import {
+  ChatButton,
   ChatOpenEventCreateInput,
   MessagePlatform
 } from '../../../../__generated__/globalTypes'
 import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
-import { JourneyFields_chatButtons as ChatButton } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { MessageChatIcon } from '../../../libs/MessageChatIcon'
 import { JourneyPlausibleEvents, keyify } from '../../../libs/plausibleHelpers'
 import { getJourneyRTL } from '../../../libs/rtl'
 
 import {
-  ChatButtonEventCreate,
-  ChatButtonEventCreateVariables
-} from './__generated__/ChatButtonEventCreate'
+  ChatButtonEventCreateMutation,
+  ChatButtonEventCreateMutationVariables
+} from './__generated__/ChatButtons'
 
 export const CHAT_BUTTON_EVENT_CREATE = gql`
   mutation ChatButtonEventCreate($input: ChatOpenEventCreateInput!) {
@@ -44,8 +44,8 @@ export function ChatButtons(): ReactElement {
   const showDefault = variant === 'admin' && chatButtons?.length === 0
 
   const [chatButtonEventCreate] = useMutation<
-    ChatButtonEventCreate,
-    ChatButtonEventCreateVariables
+    ChatButtonEventCreateMutation,
+    ChatButtonEventCreateMutationVariables
   >(CHAT_BUTTON_EVENT_CREATE)
 
   const getColor = (

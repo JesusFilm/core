@@ -1,4 +1,4 @@
-import * as Types from '../../../../__generated__/types';
+import * as Types from '../../../../__generated__/globalTypes';
 
 export type GetJourneyAnalyticsQueryVariables = Types.Exact<{
   id: Types.Scalars['ID']['input'];
@@ -10,4 +10,4 @@ export type GetJourneyAnalyticsQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetJourneyAnalyticsQuery = { __typename?: 'Query', journeySteps: Array<{ __typename?: 'PlausibleStatsResponse', property: string, visitors?: number | null, timeOnPage?: number | null }>, journeyStepsActions: Array<{ __typename?: 'PlausibleStatsResponse', property: string, visitors?: number | null }>, journeyReferrer: Array<{ __typename?: 'PlausibleStatsResponse', property: string, visitors?: number | null }>, journeyUtmCampaign: Array<{ __typename?: 'PlausibleStatsResponse', property: string, visitors?: number | null }>, journeyVisitorsPageExits: Array<{ __typename?: 'PlausibleStatsResponse', property: string, visitors?: number | null }>, journeyActionsSums: Array<{ __typename?: 'PlausibleStatsResponse', property: string, visitors?: number | null }>, journeyAggregateVisitors: { __typename?: 'PlausibleStatsAggregateResponse', visitors?: { __typename?: 'PlausibleStatsAggregateValue', value: number } | null } };
+export type GetJourneyAnalyticsQuery = { journeySteps: Array<{ __typename: 'PlausibleStatsResponse', property: string, visitors: number | null, timeOnPage: number | null }>, journeyStepsActions: Array<{ __typename: 'PlausibleStatsResponse', property: string, visitors: number | null }>, journeyReferrer: Array<{ __typename: 'PlausibleStatsResponse', property: string, visitors: number | null }>, journeyUtmCampaign: Array<{ __typename: 'PlausibleStatsResponse', property: string, visitors: number | null }>, journeyVisitorsPageExits: Array<{ __typename: 'PlausibleStatsResponse', property: string, visitors: number | null }>, journeyActionsSums: Array<{ __typename: 'PlausibleStatsResponse', property: string, visitors: number | null }>, journeyAggregateVisitors: { __typename: 'PlausibleStatsAggregateResponse', visitors: { __typename: 'PlausibleStatsAggregateValue', value: number } | null } };

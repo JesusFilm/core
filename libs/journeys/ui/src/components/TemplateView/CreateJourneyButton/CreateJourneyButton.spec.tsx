@@ -8,7 +8,9 @@ import {
   ThemeName
 } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
-import type { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import {
+  JourneyFieldsFragment as Journey
+} from '../../../libs/JourneyProvider/__generated__/journeyFields'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider

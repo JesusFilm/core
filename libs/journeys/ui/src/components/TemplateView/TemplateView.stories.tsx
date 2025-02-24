@@ -8,22 +8,22 @@ import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { Role } from '../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import {
-  JourneyFields as Journey,
-  JourneyFields_tags as Tag
-} from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { GetJourney_journey_primaryImageBlock as PrimaryImageBlock } from '../../libs/useJourneyQuery/__generated__/GetJourney'
+import { JourneyFieldsFragment as Journey } from '../../libs/JourneyProvider/__generated__/journeyFields'
+import { GetJourneyQuery } from '../../libs/useJourneyQuery/__generated__/useJourneyQuery'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery'
-import { GetJourneys } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+import { GetJourneysQuery } from '../../libs/useJourneysQuery/__generated__/useJourneysQuery'
 import { GET_TAGS } from '../../libs/useTagsQuery'
-import { GetTags } from '../../libs/useTagsQuery/__generated__/GetTags'
+import { GetTagsQuery } from '../../libs/useTagsQuery/__generated__/useTagsQuery'
 import { GET_USER_ROLE } from '../../libs/useUserRoleQuery'
-import { GetUserRole } from '../../libs/useUserRoleQuery/__generated__/GetUserRole'
+import { GetUserRoleQuery } from '../../libs/useUserRoleQuery/__generated__/useUserRoleQuery'
 
 import { defaultJourney, publishedJourney } from './data'
 import { journeyVideoBlocks } from './TemplatePreviewTabs/data'
 import { parentTags, tags } from './TemplateTags/data'
 import { TemplateView } from './TemplateView'
+
+type Tag = Journey['tags'][number]
+type PrimaryImageBlock = GetJourneyQuery['journey']['primaryImageBlock']
 
 const TemplateViewStory: Meta<typeof TemplateView> = {
   ...journeysAdminConfig,
@@ -49,7 +49,7 @@ const tag: Tag = {
   ]
 }
 
-const getTagsMockEmpty: MockedResponse<GetTags> = {
+const getTagsMockEmpty: MockedResponse<GetTagsQuery> = {
   request: {
     query: GET_TAGS
   },
@@ -60,7 +60,7 @@ const getTagsMockEmpty: MockedResponse<GetTags> = {
   }
 }
 
-const getTagsMock: MockedResponse<GetTags> = {
+const getTagsMock: MockedResponse<GetTagsQuery> = {
   request: {
     query: GET_TAGS
   },
@@ -86,7 +86,7 @@ const primaryImageBlock: PrimaryImageBlock = {
   focalTop: 50
 }
 
-const getJourneysMockEmpty: MockedResponse<GetJourneys> = {
+const getJourneysMockEmpty: MockedResponse<GetJourneysQuery> = {
   request: {
     query: GET_JOURNEYS,
     variables: {
@@ -104,7 +104,7 @@ const getJourneysMockEmpty: MockedResponse<GetJourneys> = {
   }
 }
 
-const getJourneysMock: MockedResponse<GetJourneys> = {
+const getJourneysMock: MockedResponse<GetJourneysQuery> = {
   request: {
     query: GET_JOURNEYS,
     variables: {
@@ -158,7 +158,7 @@ const journey = {
   primaryImageBlock
 }
 
-const getUserRoleMockEmpty: MockedResponse<GetUserRole> = {
+const getUserRoleMockEmpty: MockedResponse<GetUserRoleQuery> = {
   request: {
     query: GET_USER_ROLE
   },
@@ -172,7 +172,7 @@ const getUserRoleMockEmpty: MockedResponse<GetUserRole> = {
     }
   }
 }
-const getUserRoleMock: MockedResponse<GetUserRole> = {
+const getUserRoleMock: MockedResponse<GetUserRoleQuery> = {
   request: {
     query: GET_USER_ROLE
   },
@@ -189,10 +189,10 @@ const getUserRoleMock: MockedResponse<GetUserRole> = {
 
 const Template: StoryObj<
   ComponentProps<typeof TemplateView> & {
-    getJourneysMock: MockedResponse<GetJourneys>
-    getUserRoleMock: MockedResponse<GetUserRole>
+    getJourneysMock: MockedResponse<GetJourneysQuery>
+    getUserRoleMock: MockedResponse<GetUserRoleQuery>
     journey: Journey
-    getTagsMock: MockedResponse<GetTags>
+    getTagsMock: MockedResponse<GetTagsQuery>
   }
 > = {
   render: (args) => {

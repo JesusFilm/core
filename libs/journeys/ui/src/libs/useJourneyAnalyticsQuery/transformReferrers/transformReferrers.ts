@@ -1,6 +1,8 @@
 import type { Edge, Node } from 'reactflow'
 
-import type { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '../__generated__/GetJourneyAnalytics'
+import type { GetJourneyAnalyticsQuery } from '../__generated__/useJourneyAnalyticsQuery'
+
+type JourneyReferrer = GetJourneyAnalyticsQuery['journeyReferrer'][number]
 
 interface OtherSource {
   property: 'other sources'

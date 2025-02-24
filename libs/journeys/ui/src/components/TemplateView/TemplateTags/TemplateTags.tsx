@@ -5,12 +5,14 @@ import { ReactElement, ReactNode, useMemo } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { SwiperOptions } from 'swiper/types'
 
-import { JourneyFields_tags as Tag } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment } from '../../../libs/JourneyProvider/__generated__/journeyFields'
 import { useTagsQuery } from '../../../libs/useTagsQuery'
 import { ParentTagIcon } from '../../ParentTagIcon'
 
 import { getSortedTags } from './getSortedTags'
 import { TagItem } from './TagItem'
+
+type Tag = JourneyFieldsFragment['tags'][number]
 
 interface TemplateTagsProps {
   tags?: Tag[]

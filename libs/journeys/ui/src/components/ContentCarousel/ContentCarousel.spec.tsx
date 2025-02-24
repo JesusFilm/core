@@ -7,7 +7,7 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+import { JourneyFieldsFragment as Journey } from '../../libs/JourneyProvider/__generated__/journeyFields'
 
 import { ContentCarousel } from './ContentCarousel'
 

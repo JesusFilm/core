@@ -2,7 +2,7 @@ import { NextRouter } from 'next/dist/client/router'
 
 import { nextActiveBlock } from '../block'
 
-import { ActionFields } from './__generated__/ActionFields'
+import { ActionFieldsFragment as ActionFields } from './__generated__/actionFields'
 
 export function handleAction(
   router: NextRouter,

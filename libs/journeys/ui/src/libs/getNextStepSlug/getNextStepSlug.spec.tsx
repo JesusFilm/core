@@ -1,8 +1,6 @@
-import { ActionFields as Action } from '../action/__generated__/ActionFields'
-import {
-  JourneyFields as Journey,
-  JourneyFields_blocks_StepBlock as StepBlock
-} from '../JourneyProvider/__generated__/JourneyFields'
+import { ActionFieldsFragment as Action } from '../action/__generated__/actionFields'
+import { BlockFields_StepBlock_Fragment as StepBlock } from '../block/__generated__/blockFields'
+import { JourneyFieldsFragment as Journey } from '../JourneyProvider/__generated__/journeyFields'
 
 import { getNextStepSlug } from './getNextStepSlug'
 

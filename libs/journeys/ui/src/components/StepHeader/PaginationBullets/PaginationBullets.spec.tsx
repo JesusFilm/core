@@ -1,10 +1,12 @@
 import { render, screen } from '@testing-library/react'
 
+import { StepBlock as StepBlockType } from '../../../../__generated__/globalTypes'
 import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../../libs/block'
-import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 
 import { PaginationBullets } from './PaginationBullets'
+
+type StepBlock = Omit<StepBlockType, 'journeyId' | 'x' | 'y'>
 
 describe('PaginationBullets', () => {
   const step1: TreeBlock<StepBlock> = {

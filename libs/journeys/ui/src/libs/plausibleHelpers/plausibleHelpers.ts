@@ -16,11 +16,11 @@ import {
   VideoStartEventCreateInput
 } from '../../../__generated__/globalTypes'
 import {
-  BlockFields_ButtonBlock_action,
-  BlockFields_RadioOptionBlock_action,
-  BlockFields_SignUpBlock_action,
-  BlockFields_VideoBlock_action
-} from '../block/__generated__/BlockFields'
+  BlockFields_ButtonBlock_Fragment as ButtonBlock,
+  BlockFields_RadioOptionBlock_Fragment as RadioOptionBlock,
+  BlockFields_SignUpBlock_Fragment as SignUpBlock,
+  BlockFields_VideoBlock_Fragment as VideoBlock
+} from '../block/__generated__/blockFields'
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,6 +75,8 @@ interface KeyifyProps {
 }
 
 export function generateActionTargetKey(action: Action): string {
+  if (action == null) return ''
+
   switch (action.__typename) {
     case 'NavigateToBlockAction':
       return action.blockId
@@ -82,6 +84,8 @@ export function generateActionTargetKey(action: Action): string {
       return `link:${action.url}`
     case 'EmailAction':
       return `email:${action.email}`
+    default:
+      return ''
   }
 }
 
@@ -117,10 +121,10 @@ export function reverseKeyify(key: string): {
 }
 
 type Action =
-  | BlockFields_ButtonBlock_action
-  | BlockFields_RadioOptionBlock_action
-  | BlockFields_SignUpBlock_action
-  | BlockFields_VideoBlock_action
+  | ButtonBlock['action']
+  | RadioOptionBlock['action']
+  | SignUpBlock['action']
+  | VideoBlock['action']
 
 export function getTargetEventKey(action?: Action | null): string {
   if (action == null) return ''

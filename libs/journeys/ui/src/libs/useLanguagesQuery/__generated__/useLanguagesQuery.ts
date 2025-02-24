@@ -1,4 +1,4 @@
-import * as Types from '../../../../__generated__/types';
+import * as Types from '../../../../__generated__/globalTypes';
 
 export type GetLanguagesQueryVariables = Types.Exact<{
   languageId?: Types.InputMaybe<Types.Scalars['ID']['input']>;
@@ -6,4 +6,4 @@ export type GetLanguagesQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetLanguagesQuery = { __typename?: 'Query', languages: Array<{ __typename?: 'Language', id: string, slug?: string | null, name: Array<{ __typename?: 'LanguageName', value: string, primary: boolean }> }> };
+export type GetLanguagesQuery = { languages: Array<{ __typename: 'Language', id: string, slug: string | null, name: Array<{ __typename: 'LanguageName', value: string, primary: boolean }> }> };

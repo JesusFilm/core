@@ -3,21 +3,21 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 
 import {
+  ChatButton,
   JourneyStatus,
   MessagePlatform,
+  StepBlock as StepBlockType,
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
 import { TreeBlock, blockHistoryVar } from '../../../libs/block'
-import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
-import {
-  JourneyFields_chatButtons as ChatButton,
-  JourneyFields as Journey
-} from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from '../../../libs/JourneyProvider/__generated__/journeyFields'
 import { keyify } from '../../../libs/plausibleHelpers'
 
 import { CHAT_BUTTON_EVENT_CREATE, ChatButtons } from './ChatButtons'
+
+type StepBlock = Omit<StepBlockType, 'journeyId' | 'x' | 'y'>
 
 jest.mock('next-plausible', () => ({
   __esModule: true,

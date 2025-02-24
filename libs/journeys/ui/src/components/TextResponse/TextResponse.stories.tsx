@@ -112,7 +112,7 @@ export const Complete = {
         __typename: 'IconBlock',
         parentBlockId: 'parent',
         parentOrder: 0,
-        iconName: IconName.SendRounded,
+        iconName: IconName.sendRounded,
         iconSize: null,
         iconColor: null,
         children: []

@@ -9,7 +9,7 @@ import { NextImage } from '@core/shared/ui/NextImage'
 import type { TreeBlock } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 
-import { ImageFields } from './__generated__/ImageFields'
+import { ImageFieldsFragment as ImageFields } from './__generated__/imageFields'
 
 export function Image({
   id,

@@ -2,9 +2,11 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
 import { JourneyProvider } from '../../../libs/JourneyProvider'
-import { GetJourney_journey as Journey } from '../../../libs/useJourneyQuery/__generated__/GetJourney'
+import { GetJourneyQuery } from '../../../libs/useJourneyQuery/__generated__/useJourneyQuery'
 
 import { Logo } from '.'
+
+type Journey = GetJourneyQuery['journey']
 
 jest.mock('next/router', () => ({
   __esModule: true,

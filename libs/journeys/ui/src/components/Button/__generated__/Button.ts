@@ -1,15 +1,15 @@
-import * as Types from '../../../../__generated__/types';
+import * as Types from '../../../../__generated__/globalTypes';
 
 export type ButtonClickEventCreateMutationVariables = Types.Exact<{
   input: Types.ButtonClickEventCreateInput;
 }>;
 
 
-export type ButtonClickEventCreateMutation = { __typename?: 'Mutation', buttonClickEventCreate: { __typename?: 'ButtonClickEvent', id: string } };
+export type ButtonClickEventCreateMutation = { buttonClickEventCreate: { __typename: 'ButtonClickEvent', id: string } };
 
 export type ChatOpenEventCreateMutationVariables = Types.Exact<{
   input: Types.ChatOpenEventCreateInput;
 }>;
 
 
-export type ChatOpenEventCreateMutation = { __typename?: 'Mutation', chatOpenEventCreate: { __typename?: 'ChatOpenEvent', id: string } };
+export type ChatOpenEventCreateMutation = { chatOpenEventCreate: { __typename: 'ChatOpenEvent', id: string } };

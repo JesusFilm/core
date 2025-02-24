@@ -1,8 +1,8 @@
-import * as Types from '../../../../__generated__/types';
+import * as Types from '../../../../__generated__/globalTypes';
 
 export type StepViewEventCreateMutationVariables = Types.Exact<{
   input: Types.StepViewEventCreateInput;
 }>;
 
 
-export type StepViewEventCreateMutation = { __typename?: 'Mutation', stepViewEventCreate: { __typename?: 'StepViewEvent', id: string } };
+export type StepViewEventCreateMutation = { stepViewEventCreate: { __typename: 'StepViewEvent', id: string } };

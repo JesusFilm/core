@@ -12,11 +12,11 @@ import {
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from '../../libs/JourneyProvider/__generated__/journeyFields'
 import { keyify } from '../../libs/plausibleHelpers'
 
-import { StepFields } from './__generated__/StepFields'
-import { StepViewEventCreate } from './__generated__/StepViewEventCreate'
+import { StepViewEventCreateMutation } from './__generated__/Step'
+import { StepFieldsFragment as StepFields } from './__generated__/stepFields'
 import { STEP_VIEW_EVENT_CREATE, Step } from './Step'
 
 jest.mock('uuid', () => ({
@@ -164,7 +164,7 @@ describe('Step', () => {
     Object.defineProperty(window, 'location', originalLocation)
   })
 
-  const mockStepViewEventCreate: MockedResponse<StepViewEventCreate> = {
+  const mockStepViewEventCreate: MockedResponse<StepViewEventCreateMutation> = {
     request: {
       query: STEP_VIEW_EVENT_CREATE,
       variables: {

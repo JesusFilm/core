@@ -9,9 +9,11 @@ import { ReactElement, useMemo } from 'react'
 import { SwiperOptions } from 'swiper/types'
 
 import { useJourneysQuery } from '../../libs/useJourneysQuery'
-import { GetJourneys_journeys as Journey } from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+import { GetJourneysQuery } from '../../libs/useJourneysQuery/__generated__/useJourneysQuery'
 import { ContentCarousel } from '../ContentCarousel'
 import { TemplateGalleryCard } from '../TemplateGalleryCard'
+
+type Journey = GetJourneysQuery['journeys'][number]
 
 interface Contents {
   [key: string]: { category: string; journeys: Journey[] }

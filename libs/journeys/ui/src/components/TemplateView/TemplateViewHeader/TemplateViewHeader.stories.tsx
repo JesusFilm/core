@@ -5,13 +5,12 @@ import { ComponentProps } from 'react'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { JourneyProvider } from '../../../libs/JourneyProvider'
-import {
-  JourneyFields as Journey,
-  JourneyFields_primaryImageBlock as PrimaryImageBlock
-} from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from '../../../libs/JourneyProvider/__generated__/journeyFields'
 import { journey } from '../TemplateFooter/data'
 
 import { TemplateViewHeader } from './TemplateViewHeader'
+
+type PrimaryImageBlock = Journey['primaryImageBlock']
 
 const TemplateViewHeaderStory: Meta<typeof TemplateViewHeader> = {
   ...journeysAdminConfig,

@@ -3,8 +3,8 @@ import { ThemeProvider, createTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { render, waitFor } from '@testing-library/react'
 
+import { StepBlock } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block/TreeBlock'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
 
 import { TemplateCardPreview } from './TemplateCardPreview'
 

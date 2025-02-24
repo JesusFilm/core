@@ -6,10 +6,12 @@ import { ComponentProps } from 'react'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
-import { GetJourney_journey as Journey } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
+import { GetJourneyQuery } from '../../../../libs/useJourneyQuery/__generated__/useJourneyQuery'
 import { defaultJourney } from '../../data'
 
 import { SocialImage } from './SocialImage'
+
+type Journey = GetJourneyQuery['journey']
 
 const SocialImageStory: Meta<typeof SocialImage> = {
   ...simpleComponentConfig,

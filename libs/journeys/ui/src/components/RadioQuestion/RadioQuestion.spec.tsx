@@ -5,12 +5,12 @@ import { usePlausible } from 'next-plausible'
 
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
-import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+import { BlockFields_StepBlock_Fragment as StepBlock } from '../../libs/block/__generated__/blockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from '../../libs/JourneyProvider/__generated__/journeyFields'
 import { keyify } from '../../libs/plausibleHelpers'
 
-import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
+import { RadioQuestionFieldsFragment as RadioQuestionFields } from './__generated__/radioQuestionFields'
 
 import { RADIO_QUESTION_SUBMISSION_EVENT_CREATE, RadioQuestion } from '.'
 

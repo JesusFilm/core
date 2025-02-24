@@ -3,12 +3,11 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import {
-  JourneyFields as Journey,
-  JourneyFields_language as Language
-} from '../JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from '../JourneyProvider/__generated__/journeyFields'
 
 import { getJourneyRTL } from '.'
+
+type Language = Journey['language']
 
 const language: Language = {
   __typename: 'Language',

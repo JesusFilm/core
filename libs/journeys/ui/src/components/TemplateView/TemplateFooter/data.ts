@@ -6,9 +6,9 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../../__generated__/globalTypes'
-import { GetJourney_journey as Journey } from '../../../libs/useJourneyQuery/__generated__/GetJourney'
+import { GetJourneyQuery } from '../../../libs/useJourneyQuery/__generated__/useJourneyQuery'
 
-export const journey: Journey = {
+export const journey: GetJourneyQuery['journey'] = {
   __typename: 'Journey',
   id: 'journeyId',
   themeName: ThemeName.base,

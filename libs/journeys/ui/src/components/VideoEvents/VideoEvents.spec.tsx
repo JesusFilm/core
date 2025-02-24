@@ -9,11 +9,11 @@ import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import { TreeBlock, blockHistoryVar } from '../../libs/block'
-import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+import { BlockFields_StepBlock_Fragment as StepBlock } from '../../libs/block/__generated__/blockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from '../../libs/JourneyProvider/__generated__/journeyFields'
 import { keyify } from '../../libs/plausibleHelpers'
-import { VideoTriggerFields_triggerAction } from '../VideoTrigger/__generated__/VideoTriggerFields'
+import { VideoTriggerFieldsFragment as VideoTriggerFields } from '../VideoTrigger/__generated__/videoTriggerFields'
 
 import {
   VIDEO_COLLAPSE_EVENT_CREATE,
@@ -761,7 +761,7 @@ describe('VideoEvents', () => {
       parentBlockId: 'step.id',
       gtmEventName: 'gtm.event',
       blockId: 'block2.id'
-    } as unknown as VideoTriggerFields_triggerAction
+    } as unknown as VideoTriggerFields['triggerAction']
 
     render(
       <MockedProvider

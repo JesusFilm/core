@@ -18,33 +18,24 @@ import {
 import { useBlocks } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
-import { VideoTriggerFields_triggerAction } from '../VideoTrigger/__generated__/VideoTriggerFields'
+import { VideoTriggerFieldsFragment as VideoTriggerFields } from '../VideoTrigger/__generated__/videoTriggerFields'
 
 import {
-  VideoCollapseEventCreate,
-  VideoCollapseEventCreateVariables
-} from './__generated__/VideoCollapseEventCreate'
-import {
-  VideoCompleteEventCreate,
-  VideoCompleteEventCreateVariables
-} from './__generated__/VideoCompleteEventCreate'
-import {
-  VideoExpandEventCreate,
-  VideoExpandEventCreateVariables
-} from './__generated__/VideoExpandEventCreate'
-import {
-  VideoPauseEventCreate,
-  VideoPauseEventCreateVariables
-} from './__generated__/VideoPauseEventCreate'
-import {
-  VideoPlayEventCreate,
-  VideoPlayEventCreateVariables
-} from './__generated__/VideoPlayEventCreate'
-import {
-  VideoProgressEventCreate,
-  VideoProgressEventCreateVariables
-} from './__generated__/VideoProgressEventCreate'
-import { VideoStartEventCreate } from './__generated__/VideoStartEventCreate'
+  VideoCollapseEventCreateMutation,
+  VideoCollapseEventCreateMutationVariables,
+  VideoCompleteEventCreateMutation,
+  VideoCompleteEventCreateMutationVariables,
+  VideoExpandEventCreateMutation,
+  VideoExpandEventCreateMutationVariables,
+  VideoPauseEventCreateMutation,
+  VideoPauseEventCreateMutationVariables,
+  VideoPlayEventCreateMutation,
+  VideoPlayEventCreateMutationVariables,
+  VideoProgressEventCreateMutation,
+  VideoProgressEventCreateMutationVariables,
+  VideoStartEventCreateMutation,
+  VideoStartEventCreateMutationVariables
+} from './__generated__/VideoEvents'
 
 export const VIDEO_START_EVENT_CREATE = gql`
   mutation VideoStartEventCreate($input: VideoStartEventCreateInput!) {
@@ -106,7 +97,7 @@ export interface VideoEventsProps {
   videoId: string
   startAt: number | null
   endAt: number | null
-  action: VideoTriggerFields_triggerAction | null
+  action: VideoTriggerFields['triggerAction'] | null
 }
 
 export function VideoEvents({
@@ -119,23 +110,25 @@ export function VideoEvents({
   endAt,
   action
 }: VideoEventsProps): ReactElement {
-  const [videoStartEventCreate, { called: calledStart }] =
-    useMutation<VideoStartEventCreate>(VIDEO_START_EVENT_CREATE)
+  const [videoStartEventCreate, { called: calledStart }] = useMutation<
+    VideoStartEventCreateMutation,
+    VideoStartEventCreateMutationVariables
+  >(VIDEO_START_EVENT_CREATE)
   const [videoPlayEventCreate] = useMutation<
-    VideoPlayEventCreate,
-    VideoPlayEventCreateVariables
+    VideoPlayEventCreateMutation,
+    VideoPlayEventCreateMutationVariables
   >(VIDEO_PLAY_EVENT_CREATE)
   const [videoPauseEventCreate] = useMutation<
-    VideoPauseEventCreate,
-    VideoPauseEventCreateVariables
+    VideoPauseEventCreateMutation,
+    VideoPauseEventCreateMutationVariables
   >(VIDEO_PAUSE_EVENT_CREATE)
   const [videoExpandEventCreate] = useMutation<
-    VideoExpandEventCreate,
-    VideoExpandEventCreateVariables
+    VideoExpandEventCreateMutation,
+    VideoExpandEventCreateMutationVariables
   >(VIDEO_EXPAND_EVENT_CREATE)
   const [videoCollapseEventCreate] = useMutation<
-    VideoCollapseEventCreate,
-    VideoCollapseEventCreateVariables
+    VideoCollapseEventCreateMutation,
+    VideoCollapseEventCreateMutationVariables
   >(VIDEO_COLLAPSE_EVENT_CREATE)
 
   const plausible = usePlausible<JourneyPlausibleEvents>()
@@ -151,20 +144,20 @@ export function VideoEvents({
   const position75 = ((end - start) * 3) / 4 + start
 
   const [videoProgressEventCreate25, { called: called25 }] = useMutation<
-    VideoProgressEventCreate,
-    VideoProgressEventCreateVariables
+    VideoProgressEventCreateMutation,
+    VideoProgressEventCreateMutationVariables
   >(VIDEO_PROGRESS_EVENT_CREATE)
   const [videoProgressEventCreate50, { called: called50 }] = useMutation<
-    VideoProgressEventCreate,
-    VideoProgressEventCreateVariables
+    VideoProgressEventCreateMutation,
+    VideoProgressEventCreateMutationVariables
   >(VIDEO_PROGRESS_EVENT_CREATE)
   const [videoProgressEventCreate75, { called: called75 }] = useMutation<
-    VideoProgressEventCreate,
-    VideoProgressEventCreateVariables
+    VideoProgressEventCreateMutation,
+    VideoProgressEventCreateMutationVariables
   >(VIDEO_PROGRESS_EVENT_CREATE)
   const [videoCompleteEventCreate, { called: calledComplete }] = useMutation<
-    VideoCompleteEventCreate,
-    VideoCompleteEventCreateVariables
+    VideoCompleteEventCreateMutation,
+    VideoCompleteEventCreateMutationVariables
   >(VIDEO_COMPLETE_EVENT_CREATE)
 
   // PLAY event

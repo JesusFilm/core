@@ -6,7 +6,7 @@ import {
   ThemeName
 } from '../../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from '../../../libs/JourneyProvider/__generated__/journeyFields'
 
 import { HostAvatars } from './HostAvatars'
 

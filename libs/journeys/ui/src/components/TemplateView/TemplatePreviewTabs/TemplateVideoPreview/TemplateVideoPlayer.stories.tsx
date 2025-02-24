@@ -2,8 +2,8 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
+import { VideoBlock } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
-import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
 import { videoBlocksFiltered } from '../data'
 
 import { TemplateVideoPreview } from './TemplateVideoPreview'

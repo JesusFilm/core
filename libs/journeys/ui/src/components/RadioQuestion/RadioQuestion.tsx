@@ -17,13 +17,13 @@ import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { RadioOption } from '../RadioOption'
-import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
+import { RadioOptionFieldsFragment as RadioOptionFields } from '../RadioOption/__generated__/radioOptionFields'
 
-import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
 import {
-  RadioQuestionSubmissionEventCreate,
-  RadioQuestionSubmissionEventCreateVariables
-} from './__generated__/RadioQuestionSubmissionEventCreate'
+  RadioQuestionSubmissionEventCreateMutation,
+  RadioQuestionSubmissionEventCreateMutationVariables
+} from './__generated__/RadioQuestion'
+import { RadioQuestionFieldsFragment as RadioQuestionFields } from './__generated__/radioQuestionFields'
 
 export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
   mutation RadioQuestionSubmissionEventCreate(
@@ -53,8 +53,8 @@ export function RadioQuestion({
   addOption
 }: RadioQuestionProps): ReactElement {
   const [radioQuestionSubmissionEventCreate] = useMutation<
-    RadioQuestionSubmissionEventCreate,
-    RadioQuestionSubmissionEventCreateVariables
+    RadioQuestionSubmissionEventCreateMutation,
+    RadioQuestionSubmissionEventCreateMutationVariables
   >(RADIO_QUESTION_SUBMISSION_EVENT_CREATE)
   const plausible = usePlausible<JourneyPlausibleEvents>()
   const { variant, journey } = useJourney()

@@ -17,8 +17,8 @@ import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import { TextField } from '../TextField'
 
-import { TextResponseFields } from './__generated__/TextResponseFields'
-import { TextResponseSubmissionEventCreate } from './__generated__/TextResponseSubmissionEventCreate'
+import { TextResponseSubmissionEventCreateMutation } from './__generated__/TextResponse'
+import { TextResponseFieldsFragment as TextResponseFields } from './__generated__/textResponseFields'
 
 export const TEXT_RESPONSE_SUBMISSION_EVENT_CREATE = gql`
   mutation TextResponseSubmissionEventCreate(
@@ -61,7 +61,7 @@ export const TextResponse = ({
       : 'None'
 
   const [textResponseSubmissionEventCreate, { loading }] =
-    useMutation<TextResponseSubmissionEventCreate>(
+    useMutation<TextResponseSubmissionEventCreateMutation>(
       TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
     )
 

@@ -4,9 +4,9 @@ import { SnackbarProvider } from 'notistack'
 
 import { TreeBlock, blockHistoryVar } from '../../../../libs/block'
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from '../../../../libs/JourneyProvider/__generated__/journeyFields'
 import { keyify } from '../../../../libs/plausibleHelpers'
-import { StepFields } from '../../../Step/__generated__/StepFields'
+import { StepFieldsFragment as StepFields } from '../../../Step/__generated__/stepFields'
 
 import { ShareButton } from './ShareButton'
 

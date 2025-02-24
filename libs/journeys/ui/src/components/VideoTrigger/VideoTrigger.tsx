@@ -12,7 +12,7 @@ import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 
-import { VideoTriggerFields } from './__generated__/VideoTriggerFields'
+import { VideoTriggerFieldsFragment as VideoTriggerFields } from './__generated__/videoTriggerFields'
 
 type VideoTriggerProps = (
   | TreeBlock<VideoTriggerFields>

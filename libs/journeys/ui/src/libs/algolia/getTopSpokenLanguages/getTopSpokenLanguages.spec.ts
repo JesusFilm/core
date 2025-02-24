@@ -1,9 +1,11 @@
 import { RefinementListItem } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'
 
-import { GetCountry_country as Country } from '../../useCountryQuery/__generated__/GetCountry'
+import { GetCountryQuery } from '../../useCountryQuery/__generated__/useCountryQuery'
 import { country } from '../../useCountryQuery/data'
 
 import { getTopSpokenLanguages, removeCommas } from './getTopSpokenLanguages'
+
+type Country = GetCountryQuery['country']
 
 describe('removeCommas', () => {
   it('should remove commas from a string', () => {
@@ -25,7 +27,7 @@ describe('getTopSpokenLanguages', () => {
   const countryWithMoreLanguages: Country = {
     ...country,
     countryLanguages: [
-      ...country.countryLanguages,
+      ...(country?.countryLanguages ?? []),
       {
         __typename: 'CountryLanguage',
         language: {
@@ -69,7 +71,7 @@ describe('getTopSpokenLanguages', () => {
         speakers: 50
       }
     ]
-  }
+  } as Country
 
   it('should return the top spoken languages of a country', () => {
     const topSpokenLanguages = getTopSpokenLanguages({

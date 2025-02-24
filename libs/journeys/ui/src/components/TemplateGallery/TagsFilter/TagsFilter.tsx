@@ -15,8 +15,10 @@ import { ReactElement, SyntheticEvent, useCallback } from 'react'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { useTagsQuery } from '../../../libs/useTagsQuery'
-import { GetTags_tags as Tag } from '../../../libs/useTagsQuery/__generated__/GetTags'
+import { GetTagsQuery } from '../../../libs/useTagsQuery/__generated__/useTagsQuery'
 import { ParentTagIcon } from '../../ParentTagIcon'
+
+type Tag = GetTagsQuery['tags'][number]
 
 interface TagsFilterProps {
   label: string

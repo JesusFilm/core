@@ -5,7 +5,7 @@ import {
 } from '../../../__generated__/globalTypes'
 import { TreeBlock } from '../block/TreeBlock'
 
-import { JourneyFields as Journey } from './__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from './__generated__/journeyFields'
 
 export const journey: Journey = {
   __typename: 'Journey',

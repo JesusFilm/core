@@ -1,8 +1,8 @@
-import * as Types from '../../../../__generated__/types';
+import * as Types from '../../../../__generated__/globalTypes';
 
 export type UpdateLastActiveTeamIdMutationVariables = Types.Exact<{
   input: Types.JourneyProfileUpdateInput;
 }>;
 
 
-export type UpdateLastActiveTeamIdMutation = { __typename?: 'Mutation', journeyProfileUpdate: { __typename?: 'JourneyProfile', id: string } };
+export type UpdateLastActiveTeamIdMutation = { journeyProfileUpdate: { __typename: 'JourneyProfile', id: string } };

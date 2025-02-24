@@ -1,12 +1,12 @@
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'
-import { CardFields } from '../../components/Card/__generated__/CardFields'
-import { StepFields } from '../../components/Step/__generated__/StepFields'
+import { CardFieldsFragment } from '../../components/Card/__generated__/cardFields'
+import { StepFieldsFragment } from '../../components/Step/__generated__/stepFields'
 import type { TreeBlock } from '../block'
 
 import { getStepTheme } from '.'
 
 describe('getStepTheme', () => {
-  const stepBlock: TreeBlock<StepFields> = {
+  const stepBlock: TreeBlock<StepFieldsFragment> = {
     __typename: 'StepBlock',
     id: 'step.id',
     parentBlockId: null,
@@ -17,7 +17,7 @@ describe('getStepTheme', () => {
     children: []
   }
 
-  const cardBlock: TreeBlock<CardFields> = {
+  const cardBlock: TreeBlock<CardFieldsFragment> = {
     __typename: 'CardBlock',
     id: 'card',
     parentBlockId: null,

@@ -10,7 +10,7 @@ import type { TreeBlock } from '../../libs/block'
 import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { useJourney } from '../../libs/JourneyProvider'
 
-import { RadioOptionFields } from './__generated__/RadioOptionFields'
+import { RadioOptionFieldsFragment as RadioOptionFields } from './__generated__/radioOptionFields'
 
 interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
   selected?: boolean

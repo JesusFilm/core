@@ -2,9 +2,9 @@ import { render, screen } from '@testing-library/react'
 
 import type { TreeBlock } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from '../../libs/JourneyProvider/__generated__/journeyFields'
 
-import { SpacerFields } from './__generated__/SpacerFields'
+import { SpacerFieldsFragment as SpacerFields } from './__generated__/spacerFields'
 
 import { Spacer } from '.'
 

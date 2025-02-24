@@ -8,13 +8,11 @@ import {
   useState
 } from 'react'
 
-import {
-  GetLastActiveTeamIdAndTeams,
-  GetLastActiveTeamIdAndTeams_teams as Team
-} from './__generated__/GetLastActiveTeamIdAndTeams'
+import { GetLastActiveTeamIdAndTeamsQuery } from './__generated__/TeamProvider'
 
+type Team = GetLastActiveTeamIdAndTeamsQuery['teams'][number]
 interface Context {
-  query: QueryResult<GetLastActiveTeamIdAndTeams, OperationVariables>
+  query: QueryResult<GetLastActiveTeamIdAndTeamsQuery, OperationVariables>
   /** activeTeam is null if loaded and set intentionally */
   activeTeam: Team | null | undefined
   setActiveTeam: (team: Team | null) => void
@@ -67,7 +65,7 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
     undefined
   )
 
-  function updateActiveTeam(data: GetLastActiveTeamIdAndTeams): void {
+  function updateActiveTeam(data: GetLastActiveTeamIdAndTeamsQuery): void {
     if (activeTeam != null || data.teams == null) return
     sendGTMEvent({
       event: 'get_teams',
@@ -79,7 +77,7 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
     setActiveTeam(lastActiveTeam ?? null)
   }
 
-  const query = useQuery<GetLastActiveTeamIdAndTeams>(
+  const query = useQuery<GetLastActiveTeamIdAndTeamsQuery>(
     GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
     {
       onCompleted: (data) => {

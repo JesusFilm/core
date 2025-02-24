@@ -11,7 +11,7 @@ import {
 } from 'react'
 
 import type { TreeBlock } from '../block'
-import { BlockFields_StepBlock as StepBlock } from '../block/__generated__/BlockFields'
+import { BlockFields_StepBlock_Fragment as StepBlock } from '../block/__generated__/blockFields'
 import { CommandProvider } from '../CommandProvider'
 import { searchBlocks } from '../searchBlocks'
 import { type JourneyAnalytics } from '../useJourneyAnalyticsQuery'

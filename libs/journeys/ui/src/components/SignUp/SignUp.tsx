@@ -22,14 +22,14 @@ import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 import { Icon } from '../Icon'
-import { IconFields } from '../Icon/__generated__/IconFields'
+import { IconFieldsFragment as IconFields } from '../Icon/__generated__/iconFields'
 import { TextField } from '../TextField'
 
-import { SignUpFields } from './__generated__/SignUpFields'
 import {
-  SignUpSubmissionEventCreate,
-  SignUpSubmissionEventCreateVariables
-} from './__generated__/SignUpSubmissionEventCreate'
+  SignUpSubmissionEventCreateMutation,
+  SignUpSubmissionEventCreateMutationVariables
+} from './__generated__/SignUp'
+import { SignUpFieldsFragment as SignUpFields } from './__generated__/signUpFields'
 
 export const SIGN_UP_SUBMISSION_EVENT_CREATE = gql`
   mutation SignUpSubmissionEventCreate(
@@ -82,8 +82,8 @@ export const SignUp = ({
 
   const router = useRouter()
   const [signUpSubmissionEventCreate, { loading }] = useMutation<
-    SignUpSubmissionEventCreate,
-    SignUpSubmissionEventCreateVariables
+    SignUpSubmissionEventCreateMutation,
+    SignUpSubmissionEventCreateMutationVariables
   >(SIGN_UP_SUBMISSION_EVENT_CREATE)
 
   const initialValues: SignUpFormValues = { name: '', email: '' }

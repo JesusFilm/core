@@ -1,6 +1,6 @@
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
-import { JourneyFields as Journey } from './__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from './__generated__/journeyFields'
 
 interface Context {
   journey?: Journey

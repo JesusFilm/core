@@ -1,7 +1,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
+import { VideoBlock } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
-import { GetJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
 import { videoBlocksFiltered } from '../data'
 
 import { TemplateVideoPreview } from './TemplateVideoPreview'
@@ -10,7 +10,9 @@ describe('TemplateVideoPreview', () => {
   it('should only render an video image and play button on render', () => {
     const { getAllByRole, getAllByTestId, queryByTestId } = render(
       <TemplateVideoPreview
-        videoBlocks={videoBlocksFiltered as Array<TreeBlock<VideoBlock>>}
+        videoBlocks={
+          videoBlocksFiltered as unknown as Array<TreeBlock<VideoBlock>>
+        }
       />
     )
 
@@ -22,7 +24,9 @@ describe('TemplateVideoPreview', () => {
   it('should only render the video and player when clicked on', async () => {
     const { getAllByRole, queryByTestId, getByRole } = render(
       <TemplateVideoPreview
-        videoBlocks={videoBlocksFiltered as Array<TreeBlock<VideoBlock>>}
+        videoBlocks={
+          videoBlocksFiltered as unknown as Array<TreeBlock<VideoBlock>>
+        }
       />
     )
 

@@ -1,9 +1,11 @@
-import { ActionFields as Action } from '../action/__generated__/ActionFields'
-import { BlockFields_ButtonBlock_action as ButtonBlockAction } from '../block/__generated__/BlockFields'
+import { ActionFieldsFragment as Action } from '../action/__generated__/actionFields'
+import { BlockFields_ButtonBlock_Fragment } from '../block/__generated__/blockFields'
 
 import { getTargetEventKey } from './plausibleHelpers'
 
 import { generateActionTargetKey, keyify, reverseKeyify } from '.'
+
+type ButtonBlockAction = BlockFields_ButtonBlock_Fragment['action']
 
 describe('PlausibleHelpers', () => {
   describe('generateActionTargetKey', () => {

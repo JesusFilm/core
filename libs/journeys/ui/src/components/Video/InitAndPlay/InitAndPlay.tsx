@@ -14,7 +14,7 @@ import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { TreeBlock, useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
-import { ImageFields } from '../../Image/__generated__/ImageFields'
+import { ImageFieldsFragment as ImageFields } from '../../Image/__generated__/imageFields'
 
 interface InitAndPlayProps {
   videoRef: RefObject<HTMLVideoElement>

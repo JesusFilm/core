@@ -7,14 +7,13 @@ import {
   ThemeName
 } from '../../../__generated__/globalTypes'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery'
-import {
-  GetJourneys,
-  GetJourneys_journeys as Journey,
-  GetJourneys_journeys_tags as Tag
-} from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+import { GetJourneysQuery } from '../../libs/useJourneysQuery/__generated__/useJourneysQuery'
 
 import { TemplateSections } from './TemplateSections'
 import '../../../test/i18n'
+
+type Journey = GetJourneysQuery['journeys'][number]
+type Tag = GetJourneysQuery['journeys'][number]['tags'][number]
 
 describe('TemplateSections', () => {
   const defaultTemplate: Journey = {
@@ -156,7 +155,7 @@ describe('TemplateSections', () => {
     }
   ]
 
-  const getJourneysMock: MockedResponse<GetJourneys> = {
+  const getJourneysMock: MockedResponse<GetJourneysQuery> = {
     request: {
       query: GET_JOURNEYS,
       variables: {
@@ -174,7 +173,7 @@ describe('TemplateSections', () => {
     }
   }
 
-  const getJourneysWithTagIdsMock: MockedResponse<GetJourneys> = {
+  const getJourneysWithTagIdsMock: MockedResponse<GetJourneysQuery> = {
     ...getJourneysMock,
     request: {
       ...getJourneysMock.request,
@@ -196,7 +195,7 @@ describe('TemplateSections', () => {
     }
   }
 
-  const getJourneysWithLanguageIdsMock: MockedResponse<GetJourneys> = {
+  const getJourneysWithLanguageIdsMock: MockedResponse<GetJourneysQuery> = {
     request: {
       query: GET_JOURNEYS,
       variables: {
@@ -236,7 +235,7 @@ describe('TemplateSections', () => {
     }
   }
 
-  const getJourneysEmptyMock: MockedResponse<GetJourneys> = {
+  const getJourneysEmptyMock: MockedResponse<GetJourneysQuery> = {
     ...getJourneysMock,
     result: {
       data: {

@@ -3,13 +3,12 @@ import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 
-import {
-  GetLastActiveTeamIdAndTeams,
-  GetLastActiveTeamIdAndTeams_teams as Team
-} from './__generated__/GetLastActiveTeamIdAndTeams'
+import { GetLastActiveTeamIdAndTeamsQuery } from './__generated__/TeamProvider'
 import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from './TeamProvider'
 
 import { TeamProvider, useTeam } from '.'
+
+type Team = GetLastActiveTeamIdAndTeamsQuery['teams'][number]
 
 jest.mock('@next/third-parties/google', () => ({
   sendGTMEvent: jest.fn()
@@ -65,7 +64,7 @@ const teams: Team[] = [
   }
 ]
 
-const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeamsQuery> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
@@ -97,19 +96,20 @@ describe('TeamProvider', () => {
   })
 
   it('should show last viewed team as the active team', async () => {
-    const getLastViewedTeamMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
-      ...getTeamsMock,
-      result: {
-        data: {
-          teams,
-          getJourneyProfile: {
-            __typename: 'JourneyProfile',
-            id: 'journeyProfileId',
-            lastActiveTeamId: 'teamId2'
+    const getLastViewedTeamMock: MockedResponse<GetLastActiveTeamIdAndTeamsQuery> =
+      {
+        ...getTeamsMock,
+        result: {
+          data: {
+            teams,
+            getJourneyProfile: {
+              __typename: 'JourneyProfile',
+              id: 'journeyProfileId',
+              lastActiveTeamId: 'teamId2'
+            }
           }
         }
       }
-    }
     render(
       <MockedProvider mocks={[getLastViewedTeamMock]}>
         <TeamProvider>

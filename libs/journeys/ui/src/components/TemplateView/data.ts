@@ -13,8 +13,8 @@ import {
   UserJourneyRole,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
-import { BlockFields as Block } from '../../libs/block/__generated__/BlockFields'
-import { GetJourney_journey as Journey } from '../../libs/useJourneyQuery/__generated__/GetJourney'
+import { BlockFieldsFragment as Block } from '../../libs/block/__generated__/blockFields'
+import { JourneyFieldsFragment as Journey } from '../../libs/JourneyProvider/__generated__/journeyFields'
 
 export interface StepBlockWithPosition {
   __typename: 'StepBlock'
@@ -191,7 +191,7 @@ export const publishedJourney: Journey = {
       __typename: 'IconBlock',
       parentBlockId: 'button',
       parentOrder: 0,
-      iconName: IconName.PlayArrowRounded,
+      iconName: IconName.playArrowRounded,
       iconColor: null,
       iconSize: IconSize.md
     }
@@ -275,7 +275,7 @@ export const blocks: Block[] = [
     __typename: 'IconBlock',
     parentBlockId: 'button0.id',
     parentOrder: 0,
-    iconName: IconName.PlayArrowRounded,
+    iconName: IconName.playArrowRounded,
     iconColor: null,
     iconSize: IconSize.md
   },
@@ -400,7 +400,7 @@ export const blocks: Block[] = [
     __typename: 'IconBlock',
     parentBlockId: 'button1.id',
     parentOrder: 0,
-    iconName: IconName.PlayArrowRounded,
+    iconName: IconName.playArrowRounded,
     iconColor: null,
     iconSize: IconSize.md
   },
@@ -811,7 +811,7 @@ export const blocks: Block[] = [
     __typename: 'IconBlock',
     parentBlockId: 'button3.id',
     parentOrder: 0,
-    iconName: IconName.PlayArrowRounded,
+    iconName: IconName.playArrowRounded,
     iconColor: null,
     iconSize: IconSize.md
   }

@@ -1,6 +1,9 @@
 import { QueryResult, gql, useQuery } from '@apollo/client'
 
-import { GetCountry, GetCountryVariables } from './__generated__/GetCountry'
+import {
+  GetCountryQuery,
+  GetCountryQueryVariables
+} from './__generated__/useCountryQuery'
 
 export const GET_COUNTRY = gql`
   query GetCountry($countryId: ID!) {
@@ -26,9 +29,9 @@ export const GET_COUNTRY = gql`
 `
 
 export function useCountryQuery(
-  variables: GetCountryVariables
-): QueryResult<GetCountry, GetCountryVariables> {
-  return useQuery<GetCountry, GetCountryVariables>(GET_COUNTRY, {
+  variables: GetCountryQueryVariables
+): QueryResult<GetCountryQuery, GetCountryQueryVariables> {
+  return useQuery<GetCountryQuery, GetCountryQueryVariables>(GET_COUNTRY, {
     variables
   })
 }

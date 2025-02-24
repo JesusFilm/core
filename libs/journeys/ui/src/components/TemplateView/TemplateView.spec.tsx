@@ -3,21 +3,20 @@ import { render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import {
-  JourneyFields as Journey,
-  JourneyFields_tags as Tag
-} from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from '../../libs/JourneyProvider/__generated__/journeyFields'
 import { GET_JOURNEYS } from '../../libs/useJourneysQuery'
 import {
-  GetJourneys,
-  GetJourneysVariables
-} from '../../libs/useJourneysQuery/__generated__/GetJourneys'
+  GetJourneysQuery,
+  GetJourneysQueryVariables
+} from '../../libs/useJourneysQuery/__generated__/useJourneysQuery'
 import { GET_TAGS } from '../../libs/useTagsQuery'
-import { GetTags } from '../../libs/useTagsQuery/__generated__/GetTags'
+import { GetTagsQuery } from '../../libs/useTagsQuery/__generated__/useTagsQuery'
 
 import { defaultJourney } from './data'
 import { parentTags, tags } from './TemplateTags/data'
 import { TemplateView } from './TemplateView'
+
+type Tag = Journey['tags'][number]
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -39,7 +38,10 @@ describe('TemplateView', () => {
     ]
   }
 
-  const getJourneysMock: MockedResponse<GetJourneys, GetJourneysVariables> = {
+  const getJourneysMock: MockedResponse<
+    GetJourneysQuery,
+    GetJourneysQueryVariables
+  > = {
     request: {
       query: GET_JOURNEYS,
       variables: {
@@ -276,7 +278,7 @@ describe('TemplateView', () => {
   })
 
   it('should render template tags', async () => {
-    const getTagsMock: MockedResponse<GetTags> = {
+    const getTagsMock: MockedResponse<GetTagsQuery> = {
       request: {
         query: GET_TAGS
       },

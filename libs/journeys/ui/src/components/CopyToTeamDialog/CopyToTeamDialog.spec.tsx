@@ -3,9 +3,9 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { GetJourney_journey as Journey } from '../../libs/useJourneyQuery/__generated__/GetJourney'
+import { JourneyFieldsFragment as Journey } from '../../libs/JourneyProvider/__generated__/journeyFields'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
-import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
+import { UpdateLastActiveTeamIdMutation } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/useUpdateLastActiveTeamIdMutation'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
@@ -71,24 +71,25 @@ describe('DuplicateJourneys', () => {
   })
 
   it('should call submit action on dialog submit', async () => {
-    const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
-      request: {
-        query: UPDATE_LAST_ACTIVE_TEAM_ID,
-        variables: {
-          input: {
-            lastActiveTeamId: 'teamId'
+    const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamIdMutation> =
+      {
+        request: {
+          query: UPDATE_LAST_ACTIVE_TEAM_ID,
+          variables: {
+            input: {
+              lastActiveTeamId: 'teamId'
+            }
           }
-        }
-      },
-      result: jest.fn(() => ({
-        data: {
-          journeyProfileUpdate: {
-            __typename: 'JourneyProfile',
-            id: 'teamId'
+        },
+        result: jest.fn(() => ({
+          data: {
+            journeyProfileUpdate: {
+              __typename: 'JourneyProfile',
+              id: 'teamId'
+            }
           }
-        }
-      }))
-    }
+        }))
+      }
     const result = jest.fn(() => ({
       data: {
         teams: [

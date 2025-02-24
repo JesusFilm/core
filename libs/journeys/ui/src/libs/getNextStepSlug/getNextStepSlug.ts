@@ -1,9 +1,9 @@
-import { ActionFields } from '../action/__generated__/ActionFields'
-import { JourneyFields } from '../JourneyProvider/__generated__/JourneyFields'
+import { ActionFieldsFragment } from '../action/__generated__/actionFields'
+import { JourneyFieldsFragment } from '../JourneyProvider/__generated__/journeyFields'
 
 export function getNextStepSlug(
-  journey?: Pick<JourneyFields, 'slug' | 'blocks' | 'website'>,
-  action?: ActionFields | null
+  journey?: Pick<JourneyFieldsFragment, 'slug' | 'blocks' | 'website'>,
+  action?: ActionFieldsFragment | null
 ): string | undefined {
   if (
     journey == null ||

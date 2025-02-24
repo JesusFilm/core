@@ -21,7 +21,7 @@ import { ReactElement, createElement } from 'react'
 
 import { IconName } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
-import { BlockFields_IconBlock as IconBlock } from '../../libs/block/__generated__/BlockFields'
+import { BlockFields_IconBlock_Fragment } from '../../libs/block/__generated__/blockFields'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 
@@ -29,7 +29,7 @@ export function Icon({
   iconName,
   iconColor,
   iconSize
-}: TreeBlock<IconBlock>): ReactElement | null {
+}: TreeBlock<BlockFields_IconBlock_Fragment>): ReactElement | null {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
 
@@ -68,8 +68,8 @@ export function Icon({
 
   const iconRTL =
     rtl &&
-    (iconName === IconName.ChatBubbleOutlineRounded ||
-      iconName === IconName.SendRounded)
+    (iconName === IconName.chatBubbleOutlineRounded ||
+      iconName === IconName.sendRounded)
 
   return iconName === null ? (
     <div data-testid="None" />

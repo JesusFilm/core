@@ -7,10 +7,10 @@ import { ReactElement } from 'react'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
-import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+import { BlockFields_StepBlock_Fragment as StepBlock } from '../../libs/block/__generated__/blockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 
-import { TextResponseFields } from './__generated__/TextResponseFields'
+import { TextResponseFieldsFragment as TextResponseFields } from './__generated__/textResponseFields'
 import {
   TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
   TextResponse

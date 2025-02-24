@@ -23,17 +23,15 @@ import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { Icon } from '../Icon'
-import { IconFields } from '../Icon/__generated__/IconFields'
+import { IconFieldsFragment as IconFields } from '../Icon/__generated__/iconFields'
 
 import {
-  ButtonClickEventCreate,
-  ButtonClickEventCreateVariables
-} from './__generated__/ButtonClickEventCreate'
-import { ButtonFields } from './__generated__/ButtonFields'
-import {
-  ChatOpenEventCreate,
-  ChatOpenEventCreateVariables
-} from './__generated__/ChatOpenEventCreate'
+  ButtonClickEventCreateMutation,
+  ButtonClickEventCreateMutationVariables,
+  ChatOpenEventCreateMutation,
+  ChatOpenEventCreateMutationVariables
+} from './__generated__/Button'
+import { ButtonFieldsFragment as ButtonFields } from './__generated__/buttonFields'
 import { findMessagePlatform } from './utils/findMessagePlatform'
 import { getActionLabel } from './utils/getActionLabel'
 import { getLinkActionGoal } from './utils/getLinkActionGoal'
@@ -71,12 +69,12 @@ export function Button({
   editableLabel
 }: ButtonProps): ReactElement {
   const [buttonClickEventCreate] = useMutation<
-    ButtonClickEventCreate,
-    ButtonClickEventCreateVariables
+    ButtonClickEventCreateMutation,
+    ButtonClickEventCreateMutationVariables
   >(BUTTON_CLICK_EVENT_CREATE)
   const [chatOpenEventCreate] = useMutation<
-    ChatOpenEventCreate,
-    ChatOpenEventCreateVariables
+    ChatOpenEventCreateMutation,
+    ChatOpenEventCreateMutationVariables
   >(CHAT_OPEN_EVENT_CREATE)
 
   const plausible = usePlausible<JourneyPlausibleEvents>()

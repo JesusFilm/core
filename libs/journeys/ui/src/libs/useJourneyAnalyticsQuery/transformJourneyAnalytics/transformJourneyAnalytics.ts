@@ -2,17 +2,18 @@ import replace from 'lodash/replace'
 
 import { messagePlatforms } from '../../../components/Button/utils/findMessagePlatform'
 import { JourneyPlausibleEvents, reverseKeyify } from '../../plausibleHelpers'
-import {
-  GetJourneyAnalytics,
-  GetJourneyAnalytics_journeyActionsSums as JourneyActionsSums,
-  GetJourneyAnalytics_journeyStepsActions as JourneyStepsAction,
-  GetJourneyAnalytics_journeyVisitorsPageExits as JourneyVisitorsPageExit
-} from '../__generated__/GetJourneyAnalytics'
+import { GetJourneyAnalyticsQuery } from '../__generated__/useJourneyAnalyticsQuery'
 import { transformReferrers } from '../transformReferrers'
 import {
   type JourneyAnalytics,
   type StepStat
 } from '../useJourneyAnalyticsQuery'
+
+type JourneyActionsSums = GetJourneyAnalyticsQuery['journeyActionsSums'][number]
+type JourneyStepsAction =
+  GetJourneyAnalyticsQuery['journeyStepsActions'][number]
+type JourneyVisitorsPageExit =
+  GetJourneyAnalyticsQuery['journeyVisitorsPageExits'][number]
 
 const ACTION_EVENTS: Array<keyof JourneyPlausibleEvents> = [
   'navigateNextStep',
@@ -35,7 +36,7 @@ interface PlausibleEvent {
 
 export function transformJourneyAnalytics(
   journeyId: string | undefined,
-  data: GetJourneyAnalytics
+  data: GetJourneyAnalyticsQuery
 ): JourneyAnalytics | undefined {
   if (journeyId == null || data == null) return
   const {

@@ -1,10 +1,10 @@
-import { GetJourneyAnalytics } from '../__generated__/GetJourneyAnalytics'
+import { GetJourneyAnalyticsQuery } from '../__generated__/useJourneyAnalyticsQuery'
 
 import { transformJourneyAnalytics } from './transformJourneyAnalytics'
 
 describe('transformJourneyAnalytics', () => {
   it('should return journey analytics', () => {
-    const data: GetJourneyAnalytics = {
+    const data: GetJourneyAnalyticsQuery = {
       journeySteps: [
         {
           __typename: 'PlausibleStatsResponse',

@@ -1,6 +1,6 @@
 import { getLocaleRTL } from '@core/shared/ui/rtl'
 
-import { JourneyFields as Journey } from '../JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment as Journey } from '../JourneyProvider/__generated__/journeyFields'
 
 export function getJourneyRTL(journey: Pick<Journey, 'language'> | undefined): {
   rtl: boolean
