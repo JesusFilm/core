@@ -69,17 +69,22 @@ describe('arclight-canary worker', () => {
 
   it('should preserve request method and headers', async () => {
     Math.random = () => 1 // Force core endpoint
+    const headers = { 'x-custom-header': 'test-value' }
 
     fetchMock
       .get('http://core.test')
-      .intercept({ path: '/test-path', method: 'POST' })
+      .intercept({
+        path: '/test-path',
+        method: 'POST',
+        headers
+      })
       .reply(200, 'success')
 
     const res = await app.request(
       'http://localhost/test-path',
       {
         method: 'POST',
-        headers: { 'x-custom-header': 'test-value' }
+        headers
       },
       {
         ENDPOINT_CORE: 'http://core.test',
