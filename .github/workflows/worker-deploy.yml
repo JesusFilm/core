@@ -1,0 +1,117 @@
+name: Worker Deploy
+
+on:
+  push:
+    branches: [main, stage]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  affected:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [22]
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
+      - name: NPM Install
+        run: npm install --silent
+      - uses: nrwl/nx-set-shas@v4
+      - id: set-matrix
+        name: set matrix worker to affected array
+        run: |
+          echo "matrix=$(npx ts-node tools/scripts/deploy-apps.ts --projects workers/*)" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
+
+  deploy-stage:
+    name: Deploy Stage
+    needs: affected
+    if: |
+      needs.affected.outputs.matrix != '[]' &&
+      needs.affected.outputs.matrix != '' &&
+      github.ref == 'refs/heads/stage'
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{fromJson(needs.affected.outputs.matrix)}}
+        github-ref-name: ['${{ github.ref_name }}']
+        node-version: [22]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
+      - name: NPM Install
+        run: npm install --silent
+      - uses: nrwl/nx-set-shas@v4
+      - name: worker deployment
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GIT_COMMIT_SHA: ${{ github.sha }}
+        run: npx nx run-many --target=deploy --projects=${{ matrix.app }}
+
+  deploy-production:
+    name: Deploy Production
+    needs: affected
+    if: |
+      needs.affected.outputs.matrix != '[]' &&
+      needs.affected.outputs.matrix != '' &&
+      github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{fromJson(needs.affected.outputs.matrix)}}
+        github-ref-name: ['${{ github.ref_name }}']
+        node-version: [22]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Cache Node Modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-${{ matrix.node-version }}-
+      - name: NPM Install
+        run: npm install --silent
+      - uses: nrwl/nx-set-shas@v4
+      - name: worker deployment
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GIT_COMMIT_SHA: ${{ github.sha }}
+        run: npx nx run-many --target=deploy --projects=${{ matrix.app }} --prod
