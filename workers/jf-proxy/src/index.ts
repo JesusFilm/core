@@ -12,7 +12,7 @@ app.get('*', async (c) => {
       url
         .toString()
         .replace(/(%[0-9A-F][0-9A-F])/g, (match) => match.toLowerCase()),
-      c.req
+      { ...c.req, redirect: 'manual' }
     )
   } catch (error) {
     console.error('Proxy fetch error:', error)
@@ -23,7 +23,10 @@ app.get('*', async (c) => {
     const notFoundUrl = new URL(c.req.url)
     notFoundUrl.pathname = '/not-found.html'
     try {
-      response = await fetch(notFoundUrl.toString(), c.req)
+      response = await fetch(notFoundUrl.toString(), {
+        ...c.req,
+        redirect: 'manual'
+      })
     } catch (error) {
       console.error('Not found page fetch error:', error)
       return new Response('Not Found', { status: 404 })
