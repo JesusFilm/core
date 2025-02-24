@@ -63,12 +63,6 @@ input CloudflareR2CreateInput {
   videoId: String!
 }
 
-input CloudflareR2UpdateInput {
-  id: String!
-  fileName: String!
-  contentType: String!
-}
-
 """
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -150,8 +144,9 @@ type Mutation {
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
   deleteCloudflareImage(id: ID!): Boolean!
   cloudflareUploadComplete(id: ID!): Boolean!
+
+  """The endpoint to upload a file to Cloudflare R2"""
   cloudflareR2Create(input: CloudflareR2CreateInput!): CloudflareR2!
-  cloudflareR2Update(input: CloudflareR2UpdateInput!): CloudflareR2!
   cloudflareR2Delete(id: ID!): CloudflareR2!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!

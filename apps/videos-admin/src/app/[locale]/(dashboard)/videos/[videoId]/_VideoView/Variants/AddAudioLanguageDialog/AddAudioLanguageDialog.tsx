@@ -2,19 +2,13 @@ import { useLazyQuery, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
+import FormHelperText from '@mui/material/FormHelperText'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import {
-  Field,
-  Form,
-  Formik,
-  FormikHelpers,
-  FormikProps,
-  FormikValues
-} from 'formik'
+import { Form, Formik, FormikProps, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -50,7 +44,7 @@ export const CREATE_VIDEO_VARIANT = graphql(`
   }
 `)
 
-const CLOUDFLARE_R2_CREATE = graphql(`
+export const CLOUDFLARE_R2_CREATE = graphql(`
   mutation CloudflareR2Create($input: CloudflareR2CreateInput!) {
     cloudflareR2Create(input: $input) {
       id
@@ -61,7 +55,7 @@ const CLOUDFLARE_R2_CREATE = graphql(`
   }
 `)
 
-const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
+export const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
   mutation CreateMuxVideoUploadByUrl($url: String!) {
     createMuxVideoUploadByUrl(url: $url) {
       id
@@ -73,7 +67,7 @@ const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
   }
 `)
 
-const GET_MY_MUX_VIDEO = graphql(`
+export const GET_MY_MUX_VIDEO = graphql(`
   query GetMyMuxVideo($id: ID!) {
     getMyMuxVideo(id: $id) {
       id
@@ -117,7 +111,10 @@ export function AddAudioLanguageDialog({
   const [processing, setProcessing] = useState(false)
   const [muxVideoId, setMuxVideoId] = useState<string>()
 
+  const formikRef = useRef<FormikProps<FormikValues>>(null)
+
   const [createVideoVariant, { loading }] = useMutation(CREATE_VIDEO_VARIANT)
+
   const [createR2Asset] = useMutation(CLOUDFLARE_R2_CREATE)
   const [createMuxVideo] = useMutation(CREATE_MUX_VIDEO_UPLOAD_BY_URL)
   const [getMyMuxVideo, { stopPolling }] = useLazyQuery(GET_MY_MUX_VIDEO, {
@@ -131,7 +128,10 @@ export function AddAudioLanguageDialog({
       ) {
         stopPolling()
         setProcessing(false)
-        void handleCreateVideoVariant(data.getMyMuxVideo.id)
+        void handleCreateVideoVariant(
+          data.getMyMuxVideo.id,
+          data.getMyMuxVideo.playbackId
+        )
       }
     }
   })
@@ -144,7 +144,10 @@ export function AddAudioLanguageDialog({
     (language) => !variantLanguagesMap.has(language.id)
   )
 
-  async function handleCreateVideoVariant(muxId: string): Promise<void> {
+  async function handleCreateVideoVariant(
+    muxId: string,
+    url: string
+  ): Promise<void> {
     if (formikRef.current?.values == null || params?.videoId == null) return
 
     const values = formikRef.current.values
@@ -200,12 +203,7 @@ export function AddAudioLanguageDialog({
     })
   }
 
-  const formikRef = useRef<FormikProps<FormikValues>>(null)
-
-  const handleSubmit = async (
-    values: FormikValues,
-    { resetForm }: FormikHelpers<FormikValues>
-  ): Promise<void> => {
+  const handleSubmit = async (values: FormikValues): Promise<void> => {
     if (
       values.language == null ||
       params?.videoId == null ||
@@ -214,7 +212,6 @@ export function AddAudioLanguageDialog({
       return
 
     setUploading(true)
-
     try {
       const r2Response = await createR2Asset({
         variables: {
@@ -232,18 +229,11 @@ export function AddAudioLanguageDialog({
       ) {
         throw new Error(t('Failed to create R2 asset'))
       }
-
-      const formData = new FormData()
-      formData.append('file', values.file, values.file.name)
-      formData.append('Content-Type', values.file.type)
       const response = await fetch(
         r2Response.data.cloudflareR2Create.uploadUrl,
         {
           method: 'PUT',
-          body: formData,
-          headers: {
-            'Content-Type': values.file.type
-          }
+          body: values.file
         }
       )
 
@@ -291,6 +281,7 @@ export function AddAudioLanguageDialog({
       onClose={handleClose}
       dialogTitle={{ title: t('Add Audio Language'), closeButton: true }}
       divider
+      fullscreen
     >
       <Formik
         initialValues={initialValues}
@@ -306,13 +297,18 @@ export function AddAudioLanguageDialog({
                   fullWidth
                   error={touched.edition && errors.edition != null}
                 >
-                  <InputLabel>{t('Edition')}</InputLabel>
-                  <Field
-                    as={Select}
+                  <InputLabel id="edition-label">{t('Edition')}</InputLabel>
+                  <Select
+                    labelId="edition-label"
                     data-testid="EditionSelect"
                     id="edition"
                     name="edition"
                     label={t('Edition')}
+                    error={touched.edition && errors.edition != null}
+                    value={values.edition}
+                    onChange={async (event) => {
+                      await setFieldValue('edition', event.target.value)
+                    }}
                   >
                     {editions?.map(
                       (edition) =>
@@ -322,7 +318,12 @@ export function AddAudioLanguageDialog({
                           </MenuItem>
                         )
                     )}
-                  </Field>
+                  </Select>
+                  <FormHelperText>
+                    {touched.edition && errors.edition
+                      ? (errors.edition as string)
+                      : undefined}
+                  </FormHelperText>
                 </FormControl>
                 <Box sx={{ width: '100%' }}>
                   <LanguageAutocomplete
@@ -363,7 +364,17 @@ export function AddAudioLanguageDialog({
                   selectedFile={values.file}
                 />
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <Button type="submit" disabled={loading || languagesLoading}>
+                  <Button
+                    type="submit"
+                    disabled={
+                      loading ||
+                      languagesLoading ||
+                      uploading ||
+                      processing ||
+                      values.language == null ||
+                      values.edition == null
+                    }
+                  >
                     {t('Add')}
                   </Button>
                 </Box>
