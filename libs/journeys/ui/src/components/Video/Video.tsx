@@ -74,7 +74,8 @@ export function Video({
   posterBlockId,
   children,
   action,
-  objectFit
+  objectFit,
+  videoVariantLanguageId
 }: TreeBlock<VideoFields>): ReactElement {
   const theme = useTheme()
   const hundredVh = use100vh()
@@ -198,6 +199,9 @@ export function Video({
         setVideoEndTime={setVideoEndTime}
         source={source}
         activeStep={activeStep}
+        title={title}
+        mediaVideo={mediaVideo}
+        videoVariantLanguageId={videoVariantLanguageId}
       />
       {activeStep &&
         player != null &&
