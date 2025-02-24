@@ -19,7 +19,7 @@ routes = [
 ENDPOINT_CORE = "https://core-stage.arclight.org"
 ENDPOINT_ARCLIGHT = "https://preprod.arclight.org"
 # percentage of requests that will be sent to the arclight endpoint
-ENDPOINT_ARCLIGHT_WEIGHT = "90"
+ENDPOINT_ARCLIGHT_WEIGHT = "50"
 
 [env.prod]
 name = "arclight-canary-prod"
