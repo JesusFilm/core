@@ -15,6 +15,37 @@ type Bindings = {
 const app = new Hono<{ Bindings: Bindings }>()
 
 /**
+ * Custom error for weight validation failures
+ */
+class WeightValidationError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'WeightValidationError'
+  }
+}
+
+/**
+ * Validates and parses the weight string into a number
+ * @param weightStr - String representation of weight percentage
+ * @returns number - Parsed weight value
+ * @throws WeightValidationError if weight is invalid
+ */
+const parseWeight = (weightStr: string): number => {
+  const weight = Number(weightStr)
+  if (
+    Number.isNaN(weight) ||
+    !Number.isInteger(weight) ||
+    weight < 0 ||
+    weight > 100
+  ) {
+    throw new WeightValidationError(
+      'Weight must be an integer between 0 and 100'
+    )
+  }
+  return weight
+}
+
+/**
  * Determines if a request should be routed to the arclight endpoint
  * based on the configured weight percentage
  * @param weight - Percentage (0-100) of requests to route to arclight
@@ -48,25 +79,25 @@ app.all('*', async (c) => {
   // Parse the incoming request URL
   const url = new URL(c.req.url)
 
-  // Get the configured weight for arclight routing (defaults to 50%)
-  const weight = parseInt(c.env.ENDPOINT_ARCLIGHT_WEIGHT ?? '50', 10)
-
-  // Determine which endpoint to use based on random weight
-  const useArclight = shouldUseArclight(weight)
-  const baseEndpoint = useArclight
-    ? c.env.ENDPOINT_ARCLIGHT
-    : c.env.ENDPOINT_CORE
-
-  // Ensure we have a valid endpoint configured
-  if (!baseEndpoint) {
-    console.error('Missing endpoint configuration')
-    return new Response('Internal Server Error', { status: 500 })
-  }
-
-  // Construct the target URL preserving the original path and query
-  const targetUrl = new URL(url.pathname + url.search, baseEndpoint)
-
   try {
+    // Get and validate the configured weight (defaults to 50%)
+    const weight = parseWeight(c.env.ENDPOINT_ARCLIGHT_WEIGHT ?? '50')
+
+    // Determine which endpoint to use based on random weight
+    const useArclight = shouldUseArclight(weight)
+    const baseEndpoint = useArclight
+      ? c.env.ENDPOINT_ARCLIGHT
+      : c.env.ENDPOINT_CORE
+
+    // Ensure we have a valid endpoint configured
+    if (!baseEndpoint) {
+      console.error('Missing endpoint configuration')
+      return new Response('Internal Server Error', { status: 500 })
+    }
+
+    // Construct the target URL preserving the original path and query
+    const targetUrl = new URL(url.pathname + url.search, baseEndpoint)
+
     // Forward the request to the selected endpoint
     const response = await fetch(targetUrl.toString(), {
       method: c.req.method,
@@ -89,9 +120,18 @@ app.all('*', async (c) => {
       headers
     })
   } catch (error) {
-    // Log and handle any network or upstream service errors
-    console.error('Proxy fetch error:', error)
-    return new Response('Service Unavailable', { status: 503 })
+    if (error instanceof WeightValidationError) {
+      console.error('Weight validation error:', error)
+      return new Response('Invalid Configuration: ' + error.message, {
+        status: 400
+      })
+    }
+    if (error instanceof TypeError) {
+      console.error('Network error:', error)
+      return new Response('Service Unavailable', { status: 503 })
+    }
+    console.error('Unexpected error:', error)
+    return new Response('Internal Server Error', { status: 500 })
   }
 })
 

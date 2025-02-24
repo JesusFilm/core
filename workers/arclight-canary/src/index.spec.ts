@@ -15,8 +15,8 @@ describe('arclight-canary worker', () => {
   })
 
   afterEach(() => {
-    fetchMock.assertNoPendingInterceptors()
     Math.random = originalRandom
+    fetchMock.assertNoPendingInterceptors()
   })
 
   it('should route to core endpoint when random value is above weight', async () => {
@@ -92,38 +92,115 @@ describe('arclight-canary worker', () => {
     expect(res.headers.get('x-routed-to')).toBe('core')
   })
 
-  it('should handle network errors gracefully', async () => {
-    Math.random = () => 1 // Force core endpoint
+  describe('error handling', () => {
+    it('should handle network errors with 503', async () => {
+      Math.random = () => 1 // Force core endpoint
 
-    fetchMock
-      .get('http://core.test')
-      .intercept({ path: '/test-path' })
-      .replyWithError(new Error('Network error'))
+      fetchMock
+        .get('http://core.test')
+        .intercept({ path: '/test-path' })
+        .replyWithError(new TypeError('Failed to fetch'))
 
-    const res = await app.request(
-      'http://localhost/test-path',
-      {},
-      {
-        ENDPOINT_CORE: 'http://core.test',
-        ENDPOINT_ARCLIGHT: 'http://arclight.test',
-        ENDPOINT_ARCLIGHT_WEIGHT: '0' // Force core endpoint
-      }
-    )
+      const res = await app.request(
+        'http://localhost/test-path',
+        {},
+        {
+          ENDPOINT_CORE: 'http://core.test',
+          ENDPOINT_ARCLIGHT: 'http://arclight.test',
+          ENDPOINT_ARCLIGHT_WEIGHT: '0' // Force core endpoint
+        }
+      )
 
-    expect(res.status).toBe(503)
-    expect(await res.text()).toBe('Service Unavailable')
+      expect(res.status).toBe(503)
+      expect(await res.text()).toBe('Service Unavailable')
+    })
+
+    it('should handle unexpected errors with 500', async () => {
+      Math.random = () => 1 // Force core endpoint
+
+      fetchMock
+        .get('http://core.test')
+        .intercept({ path: '/test-path' })
+        .replyWithError(new Error('Unexpected error'))
+
+      const res = await app.request(
+        'http://localhost/test-path',
+        {},
+        {
+          ENDPOINT_CORE: 'http://core.test',
+          ENDPOINT_ARCLIGHT: 'http://arclight.test',
+          ENDPOINT_ARCLIGHT_WEIGHT: '0' // Force core endpoint
+        }
+      )
+
+      expect(res.status).toBe(500)
+      expect(await res.text()).toBe('Internal Server Error')
+    })
+
+    it('should handle missing endpoint configuration with 500', async () => {
+      const res = await app.request(
+        'http://localhost/test-path',
+        {},
+        {
+          ENDPOINT_ARCLIGHT_WEIGHT: '50'
+        }
+      )
+
+      expect(res.status).toBe(500)
+      expect(await res.text()).toBe('Internal Server Error')
+    })
   })
 
-  it('should handle missing endpoint configuration', async () => {
-    const res = await app.request(
-      'http://localhost/test-path',
-      {},
-      {
-        ENDPOINT_ARCLIGHT_WEIGHT: '50'
-      }
-    )
+  describe('weight validation', () => {
+    it('should reject negative weights with 400', async () => {
+      const res = await app.request(
+        'http://localhost/test-path',
+        {},
+        {
+          ENDPOINT_CORE: 'http://core.test',
+          ENDPOINT_ARCLIGHT: 'http://arclight.test',
+          ENDPOINT_ARCLIGHT_WEIGHT: '-10'
+        }
+      )
 
-    expect(res.status).toBe(500)
-    expect(await res.text()).toBe('Internal Server Error')
+      expect(res.status).toBe(400)
+      expect(await res.text()).toBe(
+        'Invalid Configuration: Weight must be an integer between 0 and 100'
+      )
+    })
+
+    it('should reject weights above 100 with 400', async () => {
+      const res = await app.request(
+        'http://localhost/test-path',
+        {},
+        {
+          ENDPOINT_CORE: 'http://core.test',
+          ENDPOINT_ARCLIGHT: 'http://arclight.test',
+          ENDPOINT_ARCLIGHT_WEIGHT: '150'
+        }
+      )
+
+      expect(res.status).toBe(400)
+      expect(await res.text()).toBe(
+        'Invalid Configuration: Weight must be an integer between 0 and 100'
+      )
+    })
+
+    it('should reject non-integer weights with 400', async () => {
+      const res = await app.request(
+        'http://localhost/test-path',
+        {},
+        {
+          ENDPOINT_CORE: 'http://core.test',
+          ENDPOINT_ARCLIGHT: 'http://arclight.test',
+          ENDPOINT_ARCLIGHT_WEIGHT: '50.5'
+        }
+      )
+
+      expect(res.status).toBe(400)
+      expect(await res.text()).toBe(
+        'Invalid Configuration: Weight must be an integer between 0 and 100'
+      )
+    })
   })
 })
