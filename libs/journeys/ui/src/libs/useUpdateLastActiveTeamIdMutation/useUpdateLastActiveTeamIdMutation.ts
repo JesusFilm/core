@@ -6,9 +6,9 @@ import {
 } from '@apollo/client'
 
 import {
-  UpdateLastActiveTeamId,
-  UpdateLastActiveTeamIdVariables
-} from './__generated__/UpdateLastActiveTeamId'
+  UpdateLastActiveTeamIdMutation,
+  UpdateLastActiveTeamIdMutationVariables
+} from './__generated__/useUpdateLastActiveTeamIdMutation'
 
 export const UPDATE_LAST_ACTIVE_TEAM_ID = gql`
   mutation UpdateLastActiveTeamId($input: JourneyProfileUpdateInput!) {
@@ -20,18 +20,18 @@ export const UPDATE_LAST_ACTIVE_TEAM_ID = gql`
 
 export function useUpdateLastActiveTeamIdMutation(
   options?: MutationHookOptions<
-    UpdateLastActiveTeamId,
-    UpdateLastActiveTeamIdVariables
+    UpdateLastActiveTeamIdMutation,
+    UpdateLastActiveTeamIdMutationVariables
   >
 ): (
   options?: MutationHookOptions<
-    UpdateLastActiveTeamId,
-    UpdateLastActiveTeamIdVariables
+    UpdateLastActiveTeamIdMutation,
+    UpdateLastActiveTeamIdMutationVariables
   >
-) => Promise<FetchResult<UpdateLastActiveTeamId> | undefined> {
+) => Promise<FetchResult<UpdateLastActiveTeamIdMutation> | undefined> {
   const [updateLastActiveTeamId] = useMutation<
-    UpdateLastActiveTeamId,
-    UpdateLastActiveTeamIdVariables
+    UpdateLastActiveTeamIdMutation,
+    UpdateLastActiveTeamIdMutationVariables
   >(UPDATE_LAST_ACTIVE_TEAM_ID, options)
 
   return updateLastActiveTeamId

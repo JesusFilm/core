@@ -1,9 +1,9 @@
 import { QueryResult, gql, useQuery } from '@apollo/client'
 
 import {
-  GetLanguages,
-  GetLanguagesVariables
-} from './__generated__/GetLanguages'
+  GetLanguagesQuery,
+  GetLanguagesQueryVariables
+} from './__generated__/useLanguagesQuery'
 
 export const GET_LANGUAGES = gql`
   query GetLanguages($languageId: ID, $where: LanguagesFilter) {
@@ -19,11 +19,14 @@ export const GET_LANGUAGES = gql`
 `
 
 export function useLanguagesQuery(
-  variables?: GetLanguagesVariables
-): QueryResult<GetLanguages, GetLanguagesVariables> {
-  const query = useQuery<GetLanguages, GetLanguagesVariables>(GET_LANGUAGES, {
-    variables
-  })
+  variables?: GetLanguagesQueryVariables
+): QueryResult<GetLanguagesQuery, GetLanguagesQueryVariables> {
+  const query = useQuery<GetLanguagesQuery, GetLanguagesQueryVariables>(
+    GET_LANGUAGES,
+    {
+      variables
+    }
+  )
 
   return query
 }

@@ -1,4 +1,6 @@
-import { GetLanguagesContinents_languages as Languages } from './__generated__/GetLanguagesContinents'
+import { GetLanguagesContinentsQuery } from './__generated__/useLanguagesContinentsQuery'
+
+type Languages = GetLanguagesContinentsQuery['languages'][number]
 
 export const languagesContinents: Languages[] = [
   {

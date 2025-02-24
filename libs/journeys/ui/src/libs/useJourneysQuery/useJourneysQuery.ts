@@ -6,7 +6,10 @@ import {
   useQuery
 } from '@apollo/client'
 
-import { GetJourneys, GetJourneysVariables } from './__generated__/GetJourneys'
+import {
+  GetJourneysQuery,
+  GetJourneysQueryVariables
+} from './__generated__/useJourneysQuery'
 
 export const GET_JOURNEYS = gql`
   query GetJourneys($where: JourneysFilter) {
@@ -70,11 +73,11 @@ export const GET_JOURNEYS = gql`
 
 export function useJourneysQuery(
   options?: QueryHookOptions<
-    NoInfer<GetJourneys>,
-    NoInfer<GetJourneysVariables>
+    NoInfer<GetJourneysQuery>,
+    NoInfer<GetJourneysQueryVariables>
   >
-): QueryResult<GetJourneys, GetJourneysVariables> {
-  const query = useQuery<GetJourneys, GetJourneysVariables>(
+): QueryResult<GetJourneysQuery, GetJourneysQueryVariables> {
+  const query = useQuery<GetJourneysQuery, GetJourneysQueryVariables>(
     GET_JOURNEYS,
     options
   )

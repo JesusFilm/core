@@ -1,6 +1,6 @@
 import { QueryResult, gql, useQuery } from '@apollo/client'
 
-import { GetUserRole } from './__generated__/GetUserRole'
+import { GetUserRoleQuery } from './__generated__/useUserRoleQuery'
 
 export const GET_USER_ROLE = gql`
   query GetUserRole {
@@ -11,8 +11,8 @@ export const GET_USER_ROLE = gql`
   }
 `
 
-export function useUserRoleQuery(): QueryResult<GetUserRole> {
-  const query = useQuery<GetUserRole>(GET_USER_ROLE)
+export function useUserRoleQuery(): QueryResult<GetUserRoleQuery> {
+  const query = useQuery<GetUserRoleQuery>(GET_USER_ROLE)
 
   return query
 }

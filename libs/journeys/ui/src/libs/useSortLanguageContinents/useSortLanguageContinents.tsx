@@ -1,10 +1,12 @@
 import mapValues from 'lodash/mapValues'
 
-import { GetLanguagesContinents_languages as Languages } from '../useLanguagesContinentsQuery/__generated__/GetLanguagesContinents'
+import { GetLanguagesContinentsQuery } from '../useLanguagesContinentsQuery/__generated__/useLanguagesContinentsQuery'
 
 interface LanguageContinentsRecord {
   [continent: string]: string[]
 }
+
+type Languages = GetLanguagesContinentsQuery['languages'][number]
 
 interface useSortLanguageContinentsProps {
   languages: Languages[]

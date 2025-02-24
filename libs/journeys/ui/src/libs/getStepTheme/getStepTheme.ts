@@ -1,13 +1,13 @@
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
-import { CardFields } from '../../components/Card/__generated__/CardFields'
-import { StepFields } from '../../components/Step/__generated__/StepFields'
+import { CardFieldsFragment } from '../../components/Card/__generated__/cardFields'
+import { StepFieldsFragment } from '../../components/Step/__generated__/stepFields'
 import type { TreeBlock } from '../block'
-import { JourneyFields } from '../JourneyProvider/__generated__/JourneyFields'
+import { JourneyFieldsFragment } from '../JourneyProvider/__generated__/journeyFields'
 
 export function getStepTheme(
-  block?: TreeBlock<StepFields> | TreeBlock<CardFields>,
-  journey?: Pick<JourneyFields, 'themeName' | 'themeMode'>
+  block?: TreeBlock<StepFieldsFragment> | TreeBlock<CardFieldsFragment>,
+  journey?: Pick<JourneyFieldsFragment, 'themeName' | 'themeMode'>
 ): { themeName: ThemeName; themeMode: ThemeMode } {
   const cardFromStep =
     block?.children != null &&

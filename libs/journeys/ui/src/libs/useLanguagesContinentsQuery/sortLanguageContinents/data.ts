@@ -1,9 +1,10 @@
-import {
-  GetLanguagesContinents_languages_countryLanguages as CountryLanguage,
-  GetLanguagesContinents_languages as Languages
-} from '../__generated__/GetLanguagesContinents'
+import { GetLanguagesContinentsQuery } from '../__generated__/useLanguagesContinentsQuery'
 
 import { LanguageContinentsRecord } from './sortLanguageContinents'
+
+type Languages = GetLanguagesContinentsQuery['languages'][number]
+type CountryLanguage =
+  GetLanguagesContinentsQuery['languages'][number]['countryLanguages'][number]
 
 export const sortedLanguageContinents: LanguageContinentsRecord = {
   Africa: ['Deutsch', 'Arabic'],

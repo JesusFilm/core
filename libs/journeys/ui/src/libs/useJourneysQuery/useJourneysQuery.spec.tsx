@@ -7,7 +7,7 @@ import {
   ThemeMode,
   ThemeName,
   UserJourneyRole
-} from '../../../__generated__/globalTypes'
+} from '../../../__generated__/types'
 
 import { GET_JOURNEYS, useJourneysQuery } from './useJourneysQuery'
 
