@@ -21,6 +21,11 @@ const app = new Hono<{ Bindings: Bindings }>()
 const CORE_ONLY_PATHS = ['/_next/']
 
 /**
+ * Paths that should always be routed to the arclight endpoint
+ */
+const ARCLIGHT_ONLY_PATHS = ['/build/v1harness/images/primary.png']
+
+/**
  * Custom error for weight validation failures
  */
 class WeightValidationError extends Error {
@@ -61,6 +66,15 @@ const shouldAlwaysUseCore = (path: string): boolean => {
 }
 
 /**
+ * Determines if a path should always be routed to the arclight endpoint
+ * @param path - Request path
+ * @returns boolean - true if path should always use arclight endpoint
+ */
+const shouldAlwaysUseArclight = (path: string): boolean => {
+  return ARCLIGHT_ONLY_PATHS.some((exactPath) => path === exactPath)
+}
+
+/**
  * Determines if a request should be routed to the arclight endpoint
  * based on the configured weight percentage
  * @param weight - Percentage (0-100) of requests to route to arclight
@@ -98,9 +112,10 @@ app.all('*', async (c) => {
     // Get and validate the configured weight (defaults to 50%)
     const weight = parseWeight(c.env.ENDPOINT_ARCLIGHT_WEIGHT ?? '50')
 
-    // Check if path should always use core endpoint
+    // Check path-based routing rules
     const useArclight =
-      !shouldAlwaysUseCore(url.pathname) && shouldUseArclight(weight)
+      shouldAlwaysUseArclight(url.pathname) ||
+      (!shouldAlwaysUseCore(url.pathname) && shouldUseArclight(weight))
     const baseEndpoint = useArclight
       ? c.env.ENDPOINT_ARCLIGHT
       : c.env.ENDPOINT_CORE

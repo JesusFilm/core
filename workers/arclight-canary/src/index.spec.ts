@@ -99,6 +99,29 @@ describe('arclight-canary worker', () => {
       }
     )
 
+    it('should always route harness image to arclight endpoint regardless of weight', async () => {
+      const path = '/build/v1harness/images/primary.png'
+
+      fetchMock
+        .get('http://arclight.test')
+        .intercept({ path })
+        .reply(200, 'arclight endpoint content')
+
+      const res = await app.request(
+        `http://localhost${path}`,
+        {},
+        {
+          ENDPOINT_CORE: 'http://core.test',
+          ENDPOINT_ARCLIGHT: 'http://arclight.test',
+          ENDPOINT_ARCLIGHT_WEIGHT: '0' // Would always go to core if not for path
+        }
+      )
+
+      expect(res.status).toBe(200)
+      expect(await res.text()).toBe('arclight endpoint content')
+      expect(res.headers.get('x-routed-to')).toBe('arclight')
+    })
+
     it('should allow normal routing for non-core paths', async () => {
       fetchMock
         .get('http://arclight.test')
@@ -176,7 +199,7 @@ describe('arclight-canary worker', () => {
           ENDPOINT_CORE: 'http://core.test',
           ENDPOINT_ARCLIGHT: 'http://arclight.test',
           ENDPOINT_ARCLIGHT_WEIGHT: '0',
-          TIMEOUT: 100
+          TIMEOUT: '100'
         }
       )
 
