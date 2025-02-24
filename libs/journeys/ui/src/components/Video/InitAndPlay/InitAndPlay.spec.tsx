@@ -8,8 +8,28 @@ import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { TreeBlock, blockHistoryVar } from '../../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
+import { JourneyProvider } from '../../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+
+import { getMuxMetadata } from './getMuxMetadata'
 
 import { InitAndPlay } from '.'
+
+jest.mock('./getMuxMetadata', () => ({
+  getMuxMetadata: jest.fn(() => ({
+    env_key: 'env_key',
+    video_duration: 100,
+    custom_1: 'journeyId',
+    custom_2: 'blockId',
+    player_name: 'journeys',
+    video_id: 'muxAssetId',
+    video_title: 'video title'
+  }))
+}))
+
+const mockGetMuxMetadata = getMuxMetadata as jest.MockedFunction<
+  typeof getMuxMetadata
+>
 
 describe('InitAndPlay', () => {
   let defaultProps: ComponentProps<typeof InitAndPlay>
@@ -56,7 +76,15 @@ describe('InitAndPlay', () => {
       setLoading: jest.fn(),
       setShowPoster: jest.fn(),
       setVideoEndTime: jest.fn(),
-      source: VideoBlockSource.internal
+      source: VideoBlockSource.internal,
+      title: 'video title',
+      mediaVideo: {
+        __typename: 'MuxVideo',
+        id: 'muxVideoId',
+        assetId: 'muxAssetId',
+        playbackId: 'muxPlaybackId'
+      },
+      videoVariantLanguageId: 'languageId'
     }
   })
 
@@ -67,8 +95,29 @@ describe('InitAndPlay', () => {
   it('should set player', () => {
     blockHistoryVar([defaultStepBlock])
 
-    render(<InitAndPlay {...defaultProps} />)
+    render(
+      <JourneyProvider
+        value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+      >
+        <InitAndPlay {...defaultProps} />
+      </JourneyProvider>
+    )
     expect(defaultProps.setPlayer).toHaveBeenCalled()
+    expect(mockGetMuxMetadata).toHaveBeenCalledWith({
+      journeyId: 'journeyId',
+      videoBlock: {
+        id: 'blockId',
+        title: 'video title',
+        mediaVideo: {
+          __typename: 'MuxVideo',
+          id: 'muxVideoId',
+          assetId: 'muxAssetId',
+          playbackId: 'muxPlaybackId'
+        },
+        endAt: 100,
+        videoVariantLanguageId: 'languageId'
+      }
+    })
   })
 
   it('should listen for player ready', () => {
