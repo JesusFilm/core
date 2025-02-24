@@ -10,17 +10,19 @@ import {
 
 export function FormLanguageSelect({
   name,
-  label
+  label,
+  initialLanguage
 }: {
   name: string
   label: string
+  initialLanguage?: LanguageOption
 }): ReactElement {
   // TODO: provide correct languageId
   const { data, loading } = useLanguagesQuery({ languageId: '529' })
   const [formikProps, meta, helpers] = useField(name)
   const [selectedLanguage, setSelectedLanguage] = useState<
     LanguageOption | undefined
-  >(undefined)
+  >(initialLanguage)
 
   const handleChange = async (newLanguage: LanguageOption) => {
     setSelectedLanguage(newLanguage)

@@ -9,6 +9,7 @@ import { ReactElement } from 'react'
 import { Accept, useDropzone } from 'react-dropzone'
 
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
+import { File } from '../../../../../../../../../components/File'
 
 interface FileUploadProps {
   onDrop: (file: File) => Promise<void>
@@ -35,14 +36,20 @@ export function FileUpload({
     onUploadComplete?.()
   }
 
-  const { getRootProps, open, getInputProps, isDragAccept, isDragReject } =
-    useDropzone({
-      onDrop,
-      noClick,
-      multiple: false,
-      maxSize: 10000000,
-      accept
-    })
+  const {
+    getRootProps,
+    open,
+    getInputProps,
+    isDragAccept,
+    isDragReject,
+    acceptedFiles
+  } = useDropzone({
+    onDrop,
+    noClick,
+    multiple: false,
+    maxSize: 10000000,
+    accept
+  })
 
   const noBorder = loading != null && loading
 
@@ -100,6 +107,13 @@ export function FileUpload({
         <Button variant="outlined" fullWidth onClick={open}>
           {t('Upload file')}
         </Button>
+      )}
+      {acceptedFiles.length > 0 && (
+        <>
+          {acceptedFiles.map((file) => (
+            <File key={file.name} file={file} onDelete={() => {}} />
+          ))}
+        </>
       )}
     </Stack>
   )
