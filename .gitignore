@@ -46,6 +46,7 @@ Thumbs.db
 # local .env files
 .env
 .env*local
+.dev.vars
 
 # nx generated files
 migrations.json

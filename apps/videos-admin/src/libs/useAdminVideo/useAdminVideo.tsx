@@ -1,6 +1,18 @@
 import { QueryHookOptions, QueryResult, useQuery } from '@apollo/client'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 
+export const VideoInformationFragment = graphql(`
+  fragment VideoInformation on Video {
+    slug
+    label
+    published
+    title {
+      id
+      value
+    }
+  }
+`)
+
 export const GET_ADMIN_VIDEO = graphql(`
   query GetAdminVideo($videoId: ID!) {
     adminVideo(id: $videoId) {
@@ -8,6 +20,10 @@ export const GET_ADMIN_VIDEO = graphql(`
       slug
       label
       published
+      title {
+        id
+        value
+      }
       images(aspectRatio: banner) {
         id
         mobileCinematicHigh
@@ -18,10 +34,6 @@ export const GET_ADMIN_VIDEO = graphql(`
         value
       }
       noIndex
-      title {
-        id
-        value
-      }
       description {
         id
         value
