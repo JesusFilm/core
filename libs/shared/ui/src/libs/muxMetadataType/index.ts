@@ -1,1 +1,1 @@
-export { MuxMetadata } from './muxMetadataType'
+export type { MuxMetadata } from './muxMetadataType'
