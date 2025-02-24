@@ -63,7 +63,7 @@ describe('EditionCard', () => {
     render(
       <NextIntlClientProvider locale="en">
         <EditionCard
-          edition={mockEdition}
+          edition={{ ...mockEdition, videoSubtitles: [] }}
           onClick={jest.fn()}
           actions={{
             view: viewFn,
@@ -85,5 +85,30 @@ describe('EditionCard', () => {
 
     await user.click(screen.getByRole('menuitem', { name: 'Delete' }))
     expect(deleteFn).toHaveBeenCalled()
+  })
+
+  it('should not show delete option if there are subtitles', async () => {
+    render(
+      <NextIntlClientProvider locale="en">
+        <EditionCard
+          edition={mockEdition}
+          onClick={jest.fn()}
+          actions={{
+            view: jest.fn(),
+            edit: jest.fn(),
+            delete: jest.fn()
+          }}
+        />
+      </NextIntlClientProvider>
+    )
+
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('button', { name: 'More options' }))
+
+    expect(screen.getByRole('menuitem', { name: 'View' })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
+    expect(
+      screen.queryByRole('menuitem', { name: 'Delete' })
+    ).not.toBeInTheDocument()
   })
 })
