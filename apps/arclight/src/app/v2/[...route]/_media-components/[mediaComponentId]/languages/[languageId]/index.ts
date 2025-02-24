@@ -1,5 +1,5 @@
+import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from 'gql.tada'
-import { Hono } from 'hono'
 
 import { getApolloClient } from '../../../../../../../lib/apolloClient'
 import {
@@ -94,9 +94,105 @@ const GET_VIDEO_VARIANT = graphql(`
   }
 `)
 
-export const mediaComponentLanguage = new Hono()
+export const mediaComponentLanguage = new OpenAPIHono()
 
-mediaComponentLanguage.get('/', async (c) => {
+const QuerySchema = z.object({
+  apiKey: z.string().optional().describe('API key'),
+  platform: z.string().optional().describe('Platform (ios, android, web)'),
+  languageIds: z
+    .string()
+    .optional()
+    .describe('Filter by language IDs (comma separated)')
+})
+
+const ParamsSchema = z.object({
+  mediaComponentId: z.string(),
+  languageId: z.string()
+})
+
+const SubtitleSchema = z.object({
+  languageId: z.number(),
+  languageName: z.string(),
+  languageTag: z.string(),
+  url: z.string()
+})
+
+const DownloadUrlSchema = z.object({
+  url: z.string(),
+  height: z.number(),
+  width: z.number(),
+  sizeInBytes: z.number()
+})
+
+const ResponseSchema = z.object({
+  mediaComponentId: z.string(),
+  languageId: z.string(),
+  refId: z.string(),
+  apiSessionId: z.string(),
+  platform: z.string(),
+  lengthInMilliseconds: z.number(),
+  subtitleUrls: z.object({
+    vtt: z.array(SubtitleSchema),
+    srt: z.array(SubtitleSchema)
+  }),
+  downloadUrls: z.object({
+    low: DownloadUrlSchema,
+    high: DownloadUrlSchema
+  }),
+  streamingUrls: z.record(z.string(), z.string()),
+  shareUrl: z.string(),
+  socialMediaUrls: z.record(z.string(), z.string()),
+  _embedded: z.object({
+    contains: z.array(
+      z.object({
+        mediaComponentId: z.string(),
+        languageId: z.number(),
+        refId: z.string(),
+        apiSessionId: z.string(),
+        lengthInMilliseconds: z.number()
+      })
+    )
+  }),
+  _links: z.object({
+    self: z.object({
+      href: z.string().url()
+    }),
+    mediaComponent: z.object({
+      href: z.string().url()
+    }),
+    mediaLanguage: z.object({
+      href: z.string().url()
+    })
+  })
+})
+
+const route = createRoute({
+  method: 'get',
+  path: '/',
+  tags: ['Media Component Languages'],
+  summary: 'Get media component language by media component id and language id',
+  description:
+    'Get media component language by media component id and language id',
+  request: {
+    query: QuerySchema,
+    params: ParamsSchema
+  },
+  responses: {
+    200: {
+      content: {
+        'application/json': {
+          schema: ResponseSchema
+        }
+      },
+      description: 'Media component language'
+    },
+    404: {
+      description: 'Not found'
+    }
+  }
+})
+
+mediaComponentLanguage.openapi(route, async (c) => {
   const mediaComponentId = c.req.param('mediaComponentId')
   const languageId = c.req.param('languageId')
   const expand = c.req.query('expand') ?? ''
