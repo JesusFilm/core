@@ -10,6 +10,7 @@ type Bindings = {
   ENDPOINT_CORE?: string
   ENDPOINT_ARCLIGHT?: string
   ENDPOINT_ARCLIGHT_WEIGHT?: string
+  TIMEOUT?: string
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
@@ -18,6 +19,11 @@ const app = new Hono<{ Bindings: Bindings }>()
  * Paths that should always be routed to the core endpoint
  */
 const CORE_ONLY_PATHS = ['/_next/']
+
+/**
+ * Paths that should always be routed to the arclight endpoint
+ */
+const ARCLIGHT_ONLY_PATHS = ['/build/v1harness/images/primary.png']
 
 /**
  * Custom error for weight validation failures
@@ -60,6 +66,15 @@ const shouldAlwaysUseCore = (path: string): boolean => {
 }
 
 /**
+ * Determines if a path should always be routed to the arclight endpoint
+ * @param path - Request path
+ * @returns boolean - true if path should always use arclight endpoint
+ */
+const shouldAlwaysUseArclight = (path: string): boolean => {
+  return ARCLIGHT_ONLY_PATHS.some((exactPath) => path === exactPath)
+}
+
+/**
  * Determines if a request should be routed to the arclight endpoint
  * based on the configured weight percentage
  * @param weight - Percentage (0-100) of requests to route to arclight
@@ -97,9 +112,10 @@ app.all('*', async (c) => {
     // Get and validate the configured weight (defaults to 50%)
     const weight = parseWeight(c.env.ENDPOINT_ARCLIGHT_WEIGHT ?? '50')
 
-    // Check if path should always use core endpoint
+    // Check path-based routing rules
     const useArclight =
-      !shouldAlwaysUseCore(url.pathname) && shouldUseArclight(weight)
+      shouldAlwaysUseArclight(url.pathname) ||
+      (!shouldAlwaysUseCore(url.pathname) && shouldUseArclight(weight))
     const baseEndpoint = useArclight
       ? c.env.ENDPOINT_ARCLIGHT
       : c.env.ENDPOINT_CORE
@@ -113,17 +129,24 @@ app.all('*', async (c) => {
     // Construct the target URL preserving the original path and query
     const targetUrl = new URL(url.pathname + url.search, baseEndpoint)
 
+    const controller = new AbortController()
+    const timeout = setTimeout(
+      () => controller.abort(),
+      Number(c.env.TIMEOUT) ?? 30000
+    ) // 30 seconds timeout
+
     // Forward the request to the selected endpoint
     const response = await fetch(targetUrl.toString(), {
       method: c.req.method,
       headers: c.req.raw.headers,
+      signal: controller.signal,
       // Only include body for non-GET/HEAD requests
       body:
         c.req.method !== 'GET' && c.req.method !== 'HEAD'
           ? await c.req.raw.clone().arrayBuffer()
           : undefined,
       redirect: 'manual' // Prevent automatic redirect following
-    })
+    }).finally(() => clearTimeout(timeout))
 
     // Get sanitized headers and add routing information
     const headers = sanitizeHeaders(response.headers)
@@ -140,6 +163,10 @@ app.all('*', async (c) => {
       return new Response('Invalid Configuration: ' + error.message, {
         status: 400
       })
+    }
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error('Request timed out')
+      return new Response('Service Unavailable', { status: 503 })
     }
     if (error instanceof TypeError) {
       console.error('Network error:', error)
