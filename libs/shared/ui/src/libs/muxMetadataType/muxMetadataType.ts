@@ -1,6 +1,6 @@
 /**
  * Interface representing metadata for a Mux video. Should match
- * https://www.mux.com/docs/guides/make-your-data-actionable-with-metadata#overridable-metadata
+ * https://www.mux.com/docs/guides/make-your-data-actionable-with-metadata
  */
 
 export interface MuxMetadata extends HighPriority, Optional, Overridable {}

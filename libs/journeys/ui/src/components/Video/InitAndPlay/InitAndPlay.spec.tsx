@@ -16,15 +16,7 @@ import { getMuxMetadata } from './getMuxMetadata'
 import { InitAndPlay } from '.'
 
 jest.mock('./getMuxMetadata', () => ({
-  getMuxMetadata: jest.fn(() => ({
-    env_key: 'env_key',
-    video_duration: 100,
-    custom_1: 'journeyId',
-    custom_2: 'blockId',
-    player_name: 'journeys',
-    video_id: 'muxAssetId',
-    video_title: 'video title'
-  }))
+  getMuxMetadata: jest.fn()
 }))
 
 const mockGetMuxMetadata = getMuxMetadata as jest.MockedFunction<
