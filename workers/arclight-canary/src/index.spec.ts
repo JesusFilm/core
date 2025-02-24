@@ -100,8 +100,6 @@ describe('arclight-canary worker', () => {
     )
 
     it('should allow normal routing for non-core paths', async () => {
-      Math.random = () => 0 // Would go to arclight
-
       fetchMock
         .get('http://arclight.test')
         .intercept({ path: '/api/graphql' })
@@ -113,7 +111,7 @@ describe('arclight-canary worker', () => {
         {
           ENDPOINT_CORE: 'http://core.test',
           ENDPOINT_ARCLIGHT: 'http://arclight.test',
-          ENDPOINT_ARCLIGHT_WEIGHT: '100'
+          ENDPOINT_ARCLIGHT_WEIGHT: '100' // Force arclight endpoint
         }
       )
 
@@ -124,15 +122,22 @@ describe('arclight-canary worker', () => {
   })
 
   it('should preserve request method and headers', async () => {
-    Math.random = () => 1 // Force core endpoint
-    const headers = { 'x-custom-header': 'test-value' }
+    const headers = {
+      'x-custom-header': 'test-value',
+      'content-type': 'application/json',
+      accept: 'application/json'
+    }
+    let interceptedHeaders: Record<string, string>
 
     fetchMock
       .get('http://core.test')
       .intercept({
         path: '/test-path',
         method: 'POST',
-        headers
+        headers: (h) => {
+          interceptedHeaders = h
+          return true
+        }
       })
       .reply(200, 'success')
 
@@ -151,12 +156,35 @@ describe('arclight-canary worker', () => {
 
     expect(res.status).toBe(200)
     expect(res.headers.get('x-routed-to')).toBe('core')
+    Object.entries(headers).forEach(([key, value]) => {
+      expect(interceptedHeaders[key]).toBe(value)
+    })
   })
 
   describe('error handling', () => {
-    it('should handle network errors with 503', async () => {
-      Math.random = () => 1 // Force core endpoint
+    it('should handle request timeouts with 503', async () => {
+      fetchMock
+        .get('http://core.test')
+        .intercept({ path: '/test-path' })
+        .reply(200, 'success')
+        .delay(150) // Delay longer than timeout
 
+      const res = await app.request(
+        'http://localhost/test-path',
+        {},
+        {
+          ENDPOINT_CORE: 'http://core.test',
+          ENDPOINT_ARCLIGHT: 'http://arclight.test',
+          ENDPOINT_ARCLIGHT_WEIGHT: '0',
+          TIMEOUT: 100
+        }
+      )
+
+      expect(res.status).toBe(503)
+      expect(await res.text()).toBe('Service Unavailable')
+    })
+
+    it('should handle network errors with 503', async () => {
       fetchMock
         .get('http://core.test')
         .intercept({ path: '/test-path' })
@@ -177,8 +205,6 @@ describe('arclight-canary worker', () => {
     })
 
     it('should handle unexpected errors with 500', async () => {
-      Math.random = () => 1 // Force core endpoint
-
       fetchMock
         .get('http://core.test')
         .intercept({ path: '/test-path' })

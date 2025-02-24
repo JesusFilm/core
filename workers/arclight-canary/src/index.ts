@@ -10,6 +10,7 @@ type Bindings = {
   ENDPOINT_CORE?: string
   ENDPOINT_ARCLIGHT?: string
   ENDPOINT_ARCLIGHT_WEIGHT?: string
+  TIMEOUT?: string
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
@@ -113,17 +114,24 @@ app.all('*', async (c) => {
     // Construct the target URL preserving the original path and query
     const targetUrl = new URL(url.pathname + url.search, baseEndpoint)
 
+    const controller = new AbortController()
+    const timeout = setTimeout(
+      () => controller.abort(),
+      Number(c.env.TIMEOUT) ?? 30000
+    ) // 30 seconds timeout
+
     // Forward the request to the selected endpoint
     const response = await fetch(targetUrl.toString(), {
       method: c.req.method,
       headers: c.req.raw.headers,
+      signal: controller.signal,
       // Only include body for non-GET/HEAD requests
       body:
         c.req.method !== 'GET' && c.req.method !== 'HEAD'
           ? await c.req.raw.clone().arrayBuffer()
           : undefined,
       redirect: 'manual' // Prevent automatic redirect following
-    })
+    }).finally(() => clearTimeout(timeout))
 
     // Get sanitized headers and add routing information
     const headers = sanitizeHeaders(response.headers)
@@ -140,6 +148,10 @@ app.all('*', async (c) => {
       return new Response('Invalid Configuration: ' + error.message, {
         status: 400
       })
+    }
+    if (error instanceof Error && error.name === 'AbortError') {
+      console.error('Request timed out')
+      return new Response('Service Unavailable', { status: 503 })
     }
     if (error instanceof TypeError) {
       console.error('Network error:', error)
