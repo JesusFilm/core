@@ -55,6 +55,7 @@ export function AnalyticsOverlaySwitch(): ReactElement {
         <Typography variant="subtitle2">{t('Analytics Overlay')}</Typography>
       }
       labelPlacement="start"
+      sx={{ m: 0 }}
     />
   )
 }
