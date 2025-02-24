@@ -1,5 +1,6 @@
 import { useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
 import DialogActions from '@mui/material/DialogActions'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -38,7 +39,7 @@ export function EditionDelete({
   const { enqueueSnackbar } = useSnackbar()
   const video = useVideo()
 
-  const [deleteEdition] = useMutation(DELETE_VIDEO_EDITION, {
+  const [deleteEdition, { loading }] = useMutation(DELETE_VIDEO_EDITION, {
     update(cache, { data }) {
       if (data?.videoEditionDelete == null) return
 
@@ -86,8 +87,13 @@ export function EditionDelete({
         <Button variant="outlined" onClick={close}>
           {t('Cancel')}
         </Button>
-        <Button variant="contained" color="error" onClick={handleDelete}>
-          {t('Delete')}
+        <Button
+          variant="contained"
+          color="error"
+          onClick={handleDelete}
+          disabled={loading}
+        >
+          {loading ? <CircularProgress size={20} /> : t('Delete')}
         </Button>
       </DialogActions>
     </Stack>
