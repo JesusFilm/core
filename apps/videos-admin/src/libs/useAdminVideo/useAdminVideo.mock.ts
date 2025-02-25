@@ -242,6 +242,56 @@ export const useAdminVideoMock: MockedResponse<
             }
           }
         ],
+        videoEditions: [
+          {
+            id: 'edition.id',
+            name: 'base',
+            videoSubtitles: [
+              {
+                id: 'dc006e9e-3f94-4c88-8442-563bbb2048fa',
+                vttSrc:
+                  'https://d389zwyrhi20m0.cloudfront.net/483/1_jf-0-0/0-0-JL-483-32114.vtt',
+                srtSrc:
+                  'https://d389zwyrhi20m0.cloudfront.net/483/1_jf-0-0/0-0-JL-483-32114.srt',
+                value:
+                  'https://d389zwyrhi20m0.cloudfront.net/483/1_jf-0-0/0-0-JL-483-32114.vtt',
+                language: {
+                  id: '483',
+                  name: [
+                    {
+                      value: 'Ελληνικά'
+                    },
+                    {
+                      value: 'Greek'
+                    }
+                  ],
+                  slug: 'greek'
+                }
+              },
+              {
+                id: '5fec1e4d-ff30-4b44-b4d9-bcd04d187367',
+                vttSrc:
+                  'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.vtt',
+                srtSrc:
+                  'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.srt',
+                value:
+                  'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.vtt',
+                language: {
+                  id: '496',
+                  name: [
+                    {
+                      value: 'Français'
+                    },
+                    {
+                      value: 'French'
+                    }
+                  ],
+                  slug: 'french'
+                }
+              }
+            ]
+          }
+        ],
         subtitles: [
           {
             id: '97c4bc0e-6a2d-4650-9b60-91b99293ba1b',
