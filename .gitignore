@@ -85,3 +85,5 @@ terraform.tfstate.backup
 
 # react-email
 .react-email
+
+.cursor/rules/*.dev.mdc
