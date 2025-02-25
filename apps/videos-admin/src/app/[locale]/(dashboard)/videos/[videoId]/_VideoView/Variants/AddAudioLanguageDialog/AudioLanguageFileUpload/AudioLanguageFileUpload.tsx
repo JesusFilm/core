@@ -2,6 +2,7 @@ import Upload1Icon from '@mui/icons-material/CloudUpload'
 import AlertTriangleIcon from '@mui/icons-material/Warning'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import LinearProgress from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslations } from 'next-intl'
@@ -16,6 +17,7 @@ interface AudioLanguageFileUploadProps {
   uploading?: boolean
   processing?: boolean
   selectedFile?: File | null
+  uploadProgress?: number
 }
 
 export function AudioLanguageFileUpload({
@@ -25,7 +27,8 @@ export function AudioLanguageFileUpload({
   error,
   uploading,
   processing,
-  selectedFile
+  selectedFile,
+  uploadProgress = 0
 }: AudioLanguageFileUploadProps): ReactElement {
   const t = useTranslations()
   const [fileRejected, setFileRejected] = useState(false)
@@ -105,7 +108,7 @@ export function AudioLanguageFileUpload({
           color={
             error != null || fileRejected ? 'error.main' : 'secondary.light'
           }
-          sx={{ pb: 4 }}
+          sx={{ pb: uploading || processing ? 2 : 4 }}
         >
           {uploading && t('Uploading...')}
           {processing && t('Processing...')}
@@ -123,6 +126,22 @@ export function AudioLanguageFileUpload({
             selectedFile != null &&
             selectedFile.name}
         </Typography>
+
+        {uploading && (
+          <Box sx={{ width: '80%', mb: 2 }}>
+            <LinearProgress
+              variant="determinate"
+              value={uploadProgress}
+              sx={{ height: 8, borderRadius: 4 }}
+            />
+          </Box>
+        )}
+
+        {processing && (
+          <Box sx={{ width: '80%', mb: 2 }}>
+            <LinearProgress sx={{ height: 8, borderRadius: 4 }} />
+          </Box>
+        )}
       </Box>
       <Stack
         direction="row"

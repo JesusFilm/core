@@ -1,4 +1,3 @@
-import { useLazyQuery, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
@@ -12,9 +11,7 @@ import { Form, Formik, FormikProps, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useRef, useState } from 'react'
-import { v4 as uuidv4 } from 'uuid'
+import { ReactElement, useRef } from 'react'
 import { mixed, object, string } from 'yup'
 
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
@@ -25,9 +22,9 @@ import {
   GetAdminVideoVariant,
   GetAdminVideo_AdminVideo_VideoEditions as VideoEditions
 } from '../../../../../../../../libs/useAdminVideo'
+import { useUploadVideoVariant } from '../../../../../../../contexts/UploadVideoVariantContext'
 
 import { AudioLanguageFileUpload } from './AudioLanguageFileUpload/AudioLanguageFileUpload'
-import { getExtension } from './utils/getExtension'
 
 export const CREATE_VIDEO_VARIANT = graphql(`
   mutation CreateVideoVariant($input: VideoVariantCreateInput!) {
@@ -106,34 +103,10 @@ export function AddAudioLanguageDialog({
   editions
 }: AddAudioLanguageDialogProps): ReactElement {
   const t = useTranslations()
-  const { enqueueSnackbar } = useSnackbar()
   const params = useParams<{ videoId: string }>()
-
-  const [uploading, setUploading] = useState(false)
-  const [processing, setProcessing] = useState(false)
-  const [muxVideoId, setMuxVideoId] = useState<string>()
+  const { uploadState, startUpload } = useUploadVideoVariant()
 
   const formikRef = useRef<FormikProps<FormikValues>>(null)
-
-  const [createVideoVariant, { loading }] = useMutation(CREATE_VIDEO_VARIANT)
-
-  const [createR2Asset] = useMutation(CLOUDFLARE_R2_CREATE)
-  const [createMuxVideo] = useMutation(CREATE_MUX_VIDEO_UPLOAD_BY_URL)
-  const [getMyMuxVideo, { stopPolling }] = useLazyQuery(GET_MY_MUX_VIDEO, {
-    pollInterval: 1000,
-    notifyOnNetworkStatusChange: true,
-    onCompleted: (data) => {
-      if (
-        data.getMyMuxVideo.playbackId != null &&
-        data.getMyMuxVideo.assetId != null &&
-        data.getMyMuxVideo.readyToStream
-      ) {
-        stopPolling()
-        setProcessing(false)
-        void handleCreateVideoVariant(data.getMyMuxVideo.id)
-      }
-    }
-  })
 
   const { data, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529'
@@ -143,62 +116,6 @@ export function AddAudioLanguageDialog({
     (language) => !variantLanguagesMap.has(language.id)
   )
 
-  async function handleCreateVideoVariant(muxId: string): Promise<void> {
-    if (formikRef.current?.values == null || params?.videoId == null) return
-
-    const values = formikRef.current.values
-    await createVideoVariant({
-      variables: {
-        input: {
-          id: `${values.language.id}_${params?.videoId}`,
-          videoId: params?.videoId,
-          edition: values.edition,
-          languageId: values.language.id,
-          slug: `${params.videoId}/${values.language.slug}`,
-          downloadable: true,
-          published: true,
-          muxVideoId: muxId
-        }
-      },
-      onCompleted: () => {
-        enqueueSnackbar(t('Audio Language Added'), { variant: 'success' })
-        formikRef.current?.resetForm()
-        handleClose?.()
-      },
-      update: (cache, { data }) => {
-        if (data?.videoVariantCreate == null) return
-        cache.modify({
-          id: cache.identify({
-            __typename: 'Video',
-            id: data.videoVariantCreate.videoId
-          }),
-          fields: {
-            variants(existingVariants = []) {
-              const newVariantRef = cache.writeFragment({
-                data: data.videoVariantCreate,
-                fragment: graphql(`
-                  fragment NewVariant on VideoVariant {
-                    id
-                    videoId
-                    slug
-                    language {
-                      id
-                      name {
-                        value
-                        primary
-                      }
-                    }
-                  }
-                `)
-              })
-              return [...existingVariants, newVariantRef]
-            }
-          }
-        })
-      }
-    })
-  }
-
   const handleSubmit = async (values: FormikValues): Promise<void> => {
     if (
       values.language == null ||
@@ -206,75 +123,14 @@ export function AddAudioLanguageDialog({
       values.file == null
     )
       return
-
-    setUploading(true)
-    const videoVariantId = `${values.language.id}_${params?.videoId}`
-    const languageId = values.language.id
-    const videoId = params.videoId
-    const extension = getExtension(values.file.name)
-
-    try {
-      const r2Response = await createR2Asset({
-        variables: {
-          input: {
-            fileName: `${videoId}/variants/${languageId}/videos/${uuidv4()}/${videoVariantId}${extension}`,
-            contentType: values.file.type,
-            videoId
-          }
-        }
-      })
-
-      if (
-        r2Response.data?.cloudflareR2Create?.uploadUrl == null ||
-        r2Response.data?.cloudflareR2Create?.publicUrl == null
-      ) {
-        throw new Error(t('Failed to create R2 asset'))
-      }
-      const response = await fetch(
-        r2Response.data.cloudflareR2Create.uploadUrl,
-        {
-          method: 'PUT',
-          body: values.file
-        }
-      )
-
-      if (!response.ok) {
-        throw new Error(t('Failed to upload file to R2'))
-      }
-
-      setUploading(false)
-      setProcessing(true)
-
-      const muxResponse = await createMuxVideo({
-        variables: {
-          url: r2Response.data.cloudflareR2Create.publicUrl
-        }
-      })
-
-      if (muxResponse.data?.createMuxVideoUploadByUrl?.id == null) {
-        throw new Error(t('Failed to create Mux video'))
-      }
-
-      setMuxVideoId(muxResponse.data.createMuxVideoUploadByUrl.id)
-    } catch (error) {
-      setUploading(false)
-      setProcessing(false)
-      enqueueSnackbar(
-        error instanceof Error ? error.message : t('Upload failed'),
-        {
-          variant: 'error'
-        }
-      )
-    }
+    await startUpload(
+      values.file,
+      params.videoId,
+      values.language.id,
+      values.edition
+    )
+    handleClose?.()
   }
-
-  useEffect(() => {
-    if (processing && muxVideoId != null) {
-      void getMyMuxVideo({
-        variables: { id: muxVideoId }
-      })
-    }
-  }, [processing, getMyMuxVideo, muxVideoId])
 
   return (
     <Dialog
@@ -332,7 +188,7 @@ export function AddAudioLanguageDialog({
                       await setFieldValue('language', value)
                     }}
                     languages={availableLanguages}
-                    loading={loading || languagesLoading}
+                    loading={languagesLoading}
                     value={values.language ?? undefined}
                     renderInput={(params) => (
                       <TextField
@@ -350,30 +206,31 @@ export function AddAudioLanguageDialog({
                   />
                 </Box>
                 <AudioLanguageFileUpload
-                  disabled={loading}
+                  disabled={uploadState.isUploading || uploadState.isProcessing}
                   onFileSelect={async (file) => {
                     await setFieldValue('file', file)
                   }}
                   error={
                     touched.file && errors.file
                       ? (errors.file as string)
-                      : undefined
+                      : (uploadState.error ?? undefined)
                   }
-                  loading={loading}
-                  uploading={uploading}
-                  processing={processing}
+                  loading={false}
+                  uploading={uploadState.isUploading}
+                  processing={uploadState.isProcessing}
                   selectedFile={values.file}
+                  uploadProgress={uploadState.uploadProgress}
                 />
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button
                     type="submit"
                     disabled={
-                      loading ||
                       languagesLoading ||
-                      uploading ||
-                      processing ||
+                      uploadState.isUploading ||
+                      uploadState.isProcessing ||
                       values.language == null ||
-                      values.edition == null
+                      values.edition === '' ||
+                      values.file == null
                     }
                   >
                     {t('Add')}

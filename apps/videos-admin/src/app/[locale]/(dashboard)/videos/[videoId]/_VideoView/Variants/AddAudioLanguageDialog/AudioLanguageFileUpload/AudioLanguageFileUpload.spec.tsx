@@ -30,18 +30,27 @@ describe('AudioLanguageFileUpload', () => {
   })
 
   describe('upload states', () => {
-    it('should show uploading state', () => {
+    it('should show uploading state with progress bar', () => {
       render(
         <NextIntlClientProvider locale="en" messages={{}}>
-          <AudioLanguageFileUpload onFileSelect={jest.fn()} uploading />
+          <AudioLanguageFileUpload
+            onFileSelect={jest.fn()}
+            uploading
+            uploadProgress={50}
+          />
         </NextIntlClientProvider>
       )
 
       expect(screen.getByText('Uploading...')).toBeInTheDocument()
+      expect(screen.getByRole('progressbar')).toBeInTheDocument()
+      expect(screen.getByRole('progressbar')).toHaveAttribute(
+        'aria-valuenow',
+        '50'
+      )
       expect(screen.getByRole('button')).toBeDisabled()
     })
 
-    it('should show processing state', () => {
+    it('should show processing state with indeterminate progress bar', () => {
       render(
         <NextIntlClientProvider locale="en" messages={{}}>
           <AudioLanguageFileUpload onFileSelect={jest.fn()} processing />
@@ -49,6 +58,10 @@ describe('AudioLanguageFileUpload', () => {
       )
 
       expect(screen.getByText('Processing...')).toBeInTheDocument()
+      expect(screen.getByRole('progressbar')).toBeInTheDocument()
+      expect(screen.getByRole('progressbar')).not.toHaveAttribute(
+        'aria-valuenow'
+      )
       expect(screen.getByRole('button')).toBeDisabled()
     })
 
