@@ -1,5 +1,7 @@
 export function getExtension(fileName: string): string | null {
-  const [, extension] = fileName.split('.')
-  if (extension == null) return null
-  return `.${extension.toLowerCase()}`
+  if (!fileName?.length) return null
+  const lastDotIndex = fileName.lastIndexOf('.')
+  if (lastDotIndex === -1) return null
+  const extension = fileName.slice(lastDotIndex)
+  return `${extension.toLowerCase()}`
 }
