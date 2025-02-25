@@ -1,9 +1,20 @@
+import { readFile } from 'fs/promises'
+
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import ffmpeg from './types/fluent-ffmpeg'
 import { Job, Queue, Worker } from 'bullmq'
-import { readFile } from 'fs/promises'
 import fetch from 'node-fetch'
+
+import ffmpeg from './types/fluent-ffmpeg'
+
+interface TranscodeVideoJob {
+  inputUrl: string
+  resolution: string
+  videoBitrate: string
+  contentType: string
+  outputFilename: string
+  outputPath: string
+}
 
 export function getClient(): S3Client {
   if (process.env.CLOUDFLARE_R2_ENDPOINT == null)
@@ -36,21 +47,25 @@ export async function getPresignedUrl(fileName: string): Promise<string> {
   )
 }
 
-export async function uploadToR2(jobId: string, job: Job, queue: Queue) {
+export async function uploadToR2(
+  jobId: string,
+  job: Job<TranscodeVideoJob>,
+  queue: Queue
+) {
   if (!process.env.BULLMQ_OUTPUT_QUEUE) {
     throw new Error('BULLMQ_OUTPUT_QUEUE is not set')
   }
-  const url = await getPresignedUrl(job.data.r2Filename)
+  const url = await getPresignedUrl(job.data.outputFilename)
   await fetch(url, {
     method: 'PUT',
-    body: await readFile(job.data.outputFile),
+    body: await readFile(job.data.outputFilename),
     headers: {
       'Content-Type': job.data.contentType
     }
   })
-  job.updateProgress(100)
-  job.moveToCompleted({ message: 'Uploaded to R2' }, jobId)
-  queue.add(process.env.BULLMQ_OUTPUT_QUEUE, job.data)
+  await job.updateProgress(100)
+  await job.moveToCompleted({ message: 'Uploaded to R2' }, jobId)
+  await queue.add(process.env.BULLMQ_OUTPUT_QUEUE, job.data)
 }
 
 export async function main() {
@@ -84,7 +99,7 @@ export async function main() {
   const worker = new Worker(process.env.BULLMQ_QUEUE)
 
   const jobId = process.env.BULLMQ_JOB
-  const job = await worker.getNextJob(jobId)
+  const job = (await worker.getNextJob(jobId)) as Job<TranscodeVideoJob>
 
   if (job == null) {
     throw new Error(`Job ${process.env.BULLMQ_JOB} not found`)
@@ -93,26 +108,26 @@ export async function main() {
   try {
     ffmpeg()
       .input(job.data.inputUrl)
-      .size(job.data.size)
+      .size(job.data.resolution)
       .autopad()
       .videoBitrate(job.data.videoBitrate)
-      .saveToFile(job.data.outputFile)
+      .saveToFile(job.data.outputFilename)
       .on('progress', (progress: { percent: number }) => {
         if (progress.percent) {
-          job.updateProgress(progress.percent * 0.8)
+          void job.updateProgress(progress.percent * 0.8)
         }
       })
-      .on('end', async () => {
-        await uploadToR2(jobId, job, outputQueue)
+      .on('end', () => {
+        void uploadToR2(jobId, job, outputQueue)
       })
       .on('error', (error: Error) => {
         throw error
       })
   } catch (error) {
     if (error instanceof Error) {
-      job.moveToFailed({ message: error.message, name: error.name }, jobId)
+      void job.moveToFailed({ message: error.message, name: error.name }, jobId)
     } else {
-      job.moveToFailed(
+      void job.moveToFailed(
         { message: 'Unknown error', name: 'UnknownError' },
         jobId
       )

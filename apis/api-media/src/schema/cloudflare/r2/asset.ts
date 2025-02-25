@@ -41,6 +41,7 @@ export async function getPresignedUrl(fileName: string): Promise<string> {
 builder.prismaObject('CloudflareR2', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    contentType: t.exposeString('contentType', { nullable: false }),
     fileName: t.exposeString('fileName', { nullable: false }),
     uploadUrl: t.withAuth({ isPublisher: true }).exposeString('uploadUrl'),
     userId: t
