@@ -36,28 +36,6 @@ interface InitAndPlayProps {
   activeStep?: boolean
 }
 
-const waitForBuffer = async (player: Player): Promise<void> => {
-  return await new Promise((resolve) => {
-    const maxWaitTime = 10000 // 10 seconds
-    const startTime = Date.now()
-
-    const checkBuffer = () => {
-      // Add timeout protection
-      if (Date.now() - startTime > maxWaitTime) {
-        resolve()
-        return
-      }
-
-      if (player.readyState() >= 3 && player.networkState() !== 2) {
-        resolve()
-      } else {
-        setTimeout(checkBuffer, 150)
-      }
-    }
-    checkBuffer()
-  })
-}
-
 export function InitAndPlay({
   videoRef,
   player,
@@ -197,6 +175,7 @@ export function InitAndPlay({
           }
         }
       }
+
       if (selectedBlock === undefined) {
         player.on('durationchange', handleDurationChange)
       }
@@ -219,49 +198,28 @@ export function InitAndPlay({
   useEffect(() => {
     if (player == null || autoplay !== true) return
 
-    const handlePlay = async (): Promise<void> => {
-      if (source === VideoBlockSource.youTube) {
-        try {
-          setLoading(true)
-          await waitForBuffer(player)
+    if (activeStep) {
+      const block = activeBlock.children[0]?.children[0] ?? undefined
+      const onFirstStep =
+        block?.__typename === 'VideoBlock' && activeBlock?.parentOrder === 0
+      if (onFirstStep) {
+        player.muted(true)
+      }
 
-          if (!activeStep) return
-
-          const block = activeBlock.children[0]?.children[0] ?? undefined
-          const onFirstStep =
-            block?.__typename === 'VideoBlock' && activeBlock?.parentOrder === 0
-          if (onFirstStep) {
-            player.muted(true)
-          }
-
-          const playPromise = player.play()
-          if (playPromise != null) {
-            await playPromise
-          }
-        } catch (error) {
-          console.error('[Video Debug] Play error:', error)
+      // Tries to autoplay, fallback to muted autoplay if not allowed
+      const playPromise = player.play()
+      if (playPromise != null) {
+        playPromise.catch(() => {
           player.muted(true)
           setError(true)
-        } finally {
-          setLoading(false)
-        }
+        })
+      }
+
+      if (error) {
+        void playPromise
       }
     }
-
-    if (activeStep) {
-      void handlePlay()
-    }
-  }, [
-    activeStep,
-    activeBlock,
-    autoplay,
-    blockId,
-    player,
-    setError,
-    error,
-    source,
-    setLoading
-  ])
+  }, [activeStep, activeBlock, autoplay, blockId, player, setError, error])
 
   // Pause video when inactive or admin
   useEffect(() => {
@@ -270,5 +228,6 @@ export function InitAndPlay({
       player.pause()
     }
   }, [activeStep, player, selectedBlock])
+
   return <></>
 }
