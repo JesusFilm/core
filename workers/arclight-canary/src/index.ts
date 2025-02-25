@@ -132,7 +132,7 @@ app.all('*', async (c) => {
     const controller = new AbortController()
     const timeout = setTimeout(
       () => controller.abort(),
-      Number(c.env.TIMEOUT) ?? 30000
+      c.env.TIMEOUT != null ? Number(c.env.TIMEOUT) : 30000
     ) // 30 seconds timeout
 
     // Forward the request to the selected endpoint
