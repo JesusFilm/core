@@ -147,14 +147,17 @@ mediaLanguages.route('/:languageId', mediaLanguage)
 mediaLanguages.openapi(route, async (c) => {
   const apiKey = c.req.query('apiKey')
   const page = Number(c.req.query('page') ?? 1)
-  const limit = Number(c.req.query('limit') ?? 10)
-  const offset = (page - 1) * limit
   const bcp47 = c.req.query('bcp47')?.split(',')
   const ids = c.req.query('ids')?.split(',')
   const iso3 = c.req.query('iso3')?.split(',')
   const metadataLanguageTags =
     c.req.query('metadataLanguageTags')?.split(',') ?? []
   const term = c.req.query('term')
+  let limit = Number(c.req.query('limit') ?? 10)
+  if (!limit || limit < 1) {
+    limit = 1
+  }
+  const offset = (page - 1) * limit
 
   const languageResult = await getLanguageIdsFromTags(metadataLanguageTags)
   if (languageResult instanceof HTTPException) {
