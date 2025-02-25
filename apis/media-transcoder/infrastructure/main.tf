@@ -9,10 +9,8 @@ module "ecs-task-job" {
   environment_variables = [
     "CLOUDFLARE_R2_ACCESS_KEY_ID",
     "CLOUDFLARE_R2_BUCKET",
-    "CLOUDFLARE_R2_CUSTOM_DOMAIN",
     "CLOUDFLARE_R2_ENDPOINT",
     "CLOUDFLARE_R2_SECRET",
-    "CLOUDFLARE_STREAM_TOKEN",
     "REDIS_PORT",
     "REDIS_URL",
   ]
