@@ -1,5 +1,7 @@
 import { graphql } from 'gql.tada'
 
+import { Video } from '.prisma/api-media-client'
+
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 
@@ -49,12 +51,15 @@ describe('cloudflare/r2/asset', () => {
           userId: 'userId',
           roles: ['publisher']
         })
+        prismaMock.video.findUnique.mockResolvedValue({
+          id: 'videoId'
+        } as Video)
         prismaMock.cloudflareR2.create.mockResolvedValue({
           id: 'id',
-          fileName: 'fileName',
+          fileName: 'videoId/id.jpg',
           uploadUrl: 'presignedUrl',
-          userId: 'testUserId',
-          publicUrl: 'https://assets.jesusfilm.org/fileName',
+          userId: 'userId',
+          publicUrl: 'https://assets.jesusfilm.org/videoId/id.jpg',
           createdAt: new Date(),
           updatedAt: new Date(),
           videoId: 'videoId'
@@ -64,7 +69,8 @@ describe('cloudflare/r2/asset', () => {
           variables: {
             input: {
               id: 'id',
-              fileName: 'fileName',
+              fileName: 'test.jpg',
+              contentType: 'image/jpeg',
               videoId: 'videoId'
             }
           }
@@ -72,21 +78,20 @@ describe('cloudflare/r2/asset', () => {
         expect(prismaMock.cloudflareR2.create).toHaveBeenCalledWith({
           data: {
             id: 'id',
-            fileName: 'fileName',
+            fileName: 'videoId/id.jpg',
             uploadUrl: 'presignedUrl',
             userId: 'testUserId',
-            publicUrl: 'https://assets.jesusfilm.org/fileName',
-            videoId: 'videoId'
+            publicUrl: 'https://assets.jesusfilm.org/videoId/id.jpg'
           }
         })
         expect(result).toHaveProperty('data.cloudflareR2Create.id', 'id')
         expect(result).toHaveProperty(
           'data.cloudflareR2Create.userId',
-          'testUserId'
+          'userId'
         )
         expect(result).toHaveProperty(
           'data.cloudflareR2Create.fileName',
-          'fileName'
+          'videoId/id.jpg'
         )
         expect(result).toHaveProperty(
           'data.cloudflareR2Create.uploadUrl',
@@ -94,8 +99,30 @@ describe('cloudflare/r2/asset', () => {
         )
         expect(result).toHaveProperty(
           'data.cloudflareR2Create.publicUrl',
-          'https://assets.jesusfilm.org/fileName'
+          'https://assets.jesusfilm.org/videoId/id.jpg'
         )
+      })
+
+      it('should fail if video not found', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        prismaMock.video.findUnique.mockResolvedValue(null)
+
+        const result = await authClient({
+          document: VIDEO_CLOUDFLARE_ASSETS_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              fileName: 'test.jpg',
+              contentType: 'image/jpeg',
+              videoId: 'videoId'
+            }
+          }
+        })
+        expect(result).toHaveProperty('data', null)
       })
 
       it('should fail if not publisher', async () => {
@@ -105,89 +132,8 @@ describe('cloudflare/r2/asset', () => {
             input: {
               id: 'id',
               fileName: 'fileName',
-              videoId: 'videoId'
-            }
-          }
-        })
-        expect(result).toHaveProperty('data', null)
-      })
-    })
-
-    describe('cloudflareR2Update', () => {
-      const VIDEO_CLOUDFLARE_ASSETS_MUTATION = graphql(`
-        mutation VideoCloudflareAssetsUpdate($input: CloudflareR2UpdateInput!) {
-          cloudflareR2Update(input: $input) {
-            id
-            fileName
-            uploadUrl
-            userId
-            publicUrl
-            createdAt
-            updatedAt
-          }
-        }
-      `)
-
-      it('should update a r2 asset', async () => {
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
-          id: 'userId',
-          userId: 'userId',
-          roles: ['publisher']
-        })
-        prismaMock.cloudflareR2.update.mockResolvedValue({
-          id: 'id',
-          fileName: 'fileName',
-          uploadUrl: 'presignedUrl',
-          userId: 'testUserId',
-          publicUrl: 'https://assets.jesusfilm.org/fileName',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          videoId: 'videoId'
-        })
-        const result = await authClient({
-          document: VIDEO_CLOUDFLARE_ASSETS_MUTATION,
-          variables: {
-            input: {
-              id: 'id',
-              fileName: 'fileName'
-            }
-          }
-        })
-        expect(prismaMock.cloudflareR2.update).toHaveBeenCalledWith({
-          where: { id: 'id' },
-          data: {
-            fileName: 'fileName',
-            uploadUrl: 'presignedUrl',
-            userId: 'testUserId',
-            publicUrl: 'https://assets.jesusfilm.org/fileName'
-          }
-        })
-        expect(result).toHaveProperty('data.cloudflareR2Update.id', 'id')
-        expect(result).toHaveProperty(
-          'data.cloudflareR2Update.userId',
-          'testUserId'
-        )
-        expect(result).toHaveProperty(
-          'data.cloudflareR2Update.fileName',
-          'fileName'
-        )
-        expect(result).toHaveProperty(
-          'data.cloudflareR2Update.uploadUrl',
-          'presignedUrl'
-        )
-        expect(result).toHaveProperty(
-          'data.cloudflareR2Update.publicUrl',
-          'https://assets.jesusfilm.org/fileName'
-        )
-      })
-
-      it('should fail if not publisher', async () => {
-        const result = await client({
-          document: VIDEO_CLOUDFLARE_ASSETS_MUTATION,
-          variables: {
-            input: {
-              id: 'id',
-              fileName: 'fileName'
+              videoId: 'videoId',
+              contentType: 'video/mp4'
             }
           }
         })
