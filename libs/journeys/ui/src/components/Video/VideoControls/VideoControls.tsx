@@ -228,7 +228,15 @@ export function VideoControls({
     activeStep
   ])
 
+  const isYoutubeLoading =
+    isYoutube && state.playing && (player.currentTime() ?? 0) === 0
+
   function handlePlay(): void {
+    // Disables play button when video is at 0.0 for YouTube videos
+    if (isYoutubeLoading) {
+      return
+    }
+
     if (!state.playing) {
       void player.play()
       // Youtube breaks when this is gone
@@ -426,6 +434,7 @@ export function VideoControls({
               showFullscreenButton={variant !== 'embed' || isIPhone()}
               fullscreen={fullscreen}
               handleFullscreen={handleFullscreen}
+              disabled={isYoutubeLoading}
             />
           </Container>
         </Fade>
