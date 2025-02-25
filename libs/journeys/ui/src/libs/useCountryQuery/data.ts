@@ -22,12 +22,31 @@ export const country: Country = {
         name: [
           {
             __typename: 'LanguageName',
+            primary: true,
+            value: 'French'
+          },
+          {
+            __typename: 'LanguageName',
+            primary: false,
+            value: 'French'
+          }
+        ]
+      },
+      speakers: 100
+    },
+    {
+      __typename: 'CountryLanguage',
+      language: {
+        __typename: 'Language',
+        name: [
+          {
+            __typename: 'LanguageName',
             primary: false,
             value: 'English'
           }
         ]
       },
-      speakers: 100
+      speakers: 300
     },
     {
       __typename: 'CountryLanguage',
