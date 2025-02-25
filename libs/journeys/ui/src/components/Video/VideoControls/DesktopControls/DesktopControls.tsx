@@ -20,6 +20,7 @@ interface DesktopControlsProps {
   startAt: number
   endAt: number
   progress: number
+  disabled: boolean
   handleSeek: (e: Event, value: number | number[]) => void
   volume: number
   handleVolume: (e: Event, value: number | number[]) => void
@@ -40,6 +41,7 @@ export function DesktopControls({
   startAt,
   endAt,
   progress,
+  disabled,
   handleSeek,
   volume,
   handleVolume,
@@ -65,6 +67,7 @@ export function DesktopControls({
       <IconButton
         aria-label={playing ? 'bar-pause-button' : 'bar-play-button'}
         onClick={handlePlay}
+        disabled={disabled}
         sx={{
           ml: { xs: 0, lg: -1 }
         }}
