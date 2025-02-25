@@ -393,6 +393,7 @@ export interface VideosFilter {
   ids?: string[] | null;
   subtitleLanguageIds?: string[] | null;
   published?: boolean | null;
+  locked?: boolean | null;
 }
 
 //==============================================================
