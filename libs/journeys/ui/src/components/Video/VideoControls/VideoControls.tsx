@@ -17,7 +17,6 @@ import Player from 'video.js/dist/types/player'
 import { isIOS, isIPhone } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
-import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 
@@ -31,7 +30,6 @@ interface VideoControlProps {
   startAt: number
   endAt: number
   isYoutube?: boolean
-  isMux?: boolean
   loading?: boolean
   autoplay?: boolean
   muted?: boolean
@@ -43,7 +41,6 @@ export function VideoControls({
   startAt,
   endAt,
   isYoutube = false,
-  isMux = false,
   loading = false,
   muted: initialMuted = false,
   activeStep = false
