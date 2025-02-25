@@ -29,6 +29,14 @@
       "options": {
         "lintFilePatterns": ["apis/media-transcoder/**/*.ts"]
       }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{workspaceRoot}/coverage/apis/media-transcoder"],
+      "options": {
+        "passWithNoTests": true,
+        "reportsDirectory": "../../coverage/apis/media-transcoder"
+      }
     }
   },
   "tags": []
