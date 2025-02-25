@@ -1,13 +1,10 @@
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { GraphQLError } from 'graphql'
-import { v4 as uuidv4 } from 'uuid'
 
 import { prisma } from '../../../lib/prisma'
 import { builder } from '../../builder'
 
-import { CloudflareR2CreateInput } from './inputs'
-import { getExtension } from './libs/getExtension'
+import { CloudflareR2CreateInput } from './inputs/cloudflareR2Create'
 
 export function getClient(): S3Client {
   if (process.env.CLOUDFLARE_R2_ENDPOINT == null)
@@ -38,8 +35,8 @@ export async function getPresignedUrl(
     getClient(),
     new PutObjectCommand({
       Bucket: process.env.CLOUDFLARE_R2_BUCKET,
-      ContentType: contentType,
-      Key: fileName
+      Key: fileName,
+      ContentType: contentType
     })
   )
 }
@@ -73,25 +70,17 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: CloudflareR2CreateInput, required: true })
     },
     resolve: async (query, _parent, { input }, { user }) => {
-      if (user == null) throw new GraphQLError('User not found')
-      const video = await prisma.video.findUnique({
-        where: { id: input.videoId },
-        select: {
-          id: true
-        }
-      })
-      if (video == null) throw new GraphQLError('Video not found')
-      const id = input.id ?? uuidv4()
-      const fileName = `${input.videoId}/${id}${getExtension(input.fileName)}`
-      const uploadUrl = await getPresignedUrl(fileName, input.contentType)
+      if (user == null) throw new Error('User not found')
+      const uploadUrl = await getPresignedUrl(input.fileName, input.contentType)
       return await prisma.cloudflareR2.create({
         ...query,
         data: {
-          id,
+          id: input.id ?? undefined,
+          videoId: input.videoId,
           userId: user.id,
-          fileName,
+          fileName: input.fileName,
           uploadUrl,
-          publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${fileName}`
+          publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${input.fileName}`
         }
       })
     }
