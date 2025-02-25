@@ -17,6 +17,7 @@ import Player from 'video.js/dist/types/player'
 import { isIOS, isIPhone } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 
@@ -30,6 +31,7 @@ interface VideoControlProps {
   startAt: number
   endAt: number
   isYoutube?: boolean
+  isMux?: boolean
   loading?: boolean
   autoplay?: boolean
   muted?: boolean
@@ -41,6 +43,7 @@ export function VideoControls({
   startAt,
   endAt,
   isYoutube = false,
+  isMux = false,
   loading = false,
   muted: initialMuted = false,
   activeStep = false
@@ -229,6 +232,11 @@ export function VideoControls({
   ])
 
   function handlePlay(): void {
+    // Disables play button when video is at 0.0 for YouTube videos
+    if (isYoutube && state.playing && (player.currentTime() ?? 0) === 0) {
+      return
+    }
+
     if (!state.playing) {
       void player.play()
       // Youtube breaks when this is gone
@@ -426,6 +434,14 @@ export function VideoControls({
               showFullscreenButton={variant !== 'embed' || isIPhone()}
               fullscreen={fullscreen}
               handleFullscreen={handleFullscreen}
+              currentTime={player.currentTime() ?? 0}
+              source={
+                isYoutube
+                  ? VideoBlockSource.youTube
+                  : isMux
+                    ? VideoBlockSource.mux
+                    : VideoBlockSource.internal
+              }
             />
           </Container>
         </Fade>

@@ -11,6 +11,8 @@ import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
+import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
+
 interface DesktopControlsProps {
   playing: boolean
   handlePlay: () => void
@@ -20,6 +22,8 @@ interface DesktopControlsProps {
   startAt: number
   endAt: number
   progress: number
+  currentTime: number
+  source: VideoBlockSource
   handleSeek: (e: Event, value: number | number[]) => void
   volume: number
   handleVolume: (e: Event, value: number | number[]) => void
@@ -40,6 +44,8 @@ export function DesktopControls({
   startAt,
   endAt,
   progress,
+  currentTime,
+  source,
   handleSeek,
   volume,
   handleVolume,
@@ -65,8 +71,14 @@ export function DesktopControls({
       <IconButton
         aria-label={playing ? 'bar-pause-button' : 'bar-play-button'}
         onClick={handlePlay}
+        disabled={
+          source === VideoBlockSource.youTube && playing && currentTime === 0
+        }
         sx={{
-          ml: { xs: 0, lg: -1 }
+          ml: { xs: 0, lg: -1 },
+          '&.Mui-disabled': {
+            opacity: 0.5
+          }
         }}
       >
         {!playing ? <PlayArrowRounded /> : <PauseRounded />}
