@@ -1,7 +1,7 @@
 {
-  "name": "jf-proxy",
+  "name": "arclight-canary",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "workers/jf-proxy/src",
+  "sourceRoot": "workers/arclight-canary/src",
   "projectType": "application",
   "tags": [],
   "targets": {
@@ -15,9 +15,9 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../coverage/workers/jf-proxy",
-        "config": "workers/jf-proxy/vite.config.ts",
-        "configFile": "workers/jf-proxy/vitest.config.ts"
+        "reportsDirectory": "../../coverage/workers/arclight-canary",
+        "config": "workers/arclight-canary/vite.config.ts",
+        "configFile": "workers/arclight-canary/vitest.config.ts"
       }
     },
     "deploy": {

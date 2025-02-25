@@ -4,7 +4,7 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   root: __dirname,
-  cacheDir: '../../node_modules/.vite/apps/jf-proxy',
+  cacheDir: '../../node_modules/.vite/apps/arclight-canary',
   plugins: [nxViteTsPaths(), nxCopyAssetsPlugin(['*.md'])],
   worker: {
     plugins: () => [nxViteTsPaths()]
@@ -16,7 +16,7 @@ export default defineConfig({
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
     coverage: {
-      reportsDirectory: '../../coverage/apps/jf-proxy',
+      reportsDirectory: '../../coverage/apps/arclight-canary',
       provider: 'v8'
     }
   }
