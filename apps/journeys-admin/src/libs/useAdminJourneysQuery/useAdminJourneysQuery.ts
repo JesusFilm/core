@@ -21,6 +21,7 @@ export const GET_ADMIN_JOURNEYS = gql`
       createdAt
       publishedAt
       trashedAt
+      updatedAt
       description
       slug
       themeName
