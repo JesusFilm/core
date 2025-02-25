@@ -396,8 +396,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   deleteCloudflareImage(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   cloudflareUploadComplete(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
+  """
+  The endpoint to upload a file to Cloudflare R2
+  """
   cloudflareR2Create(input: CloudflareR2CreateInput!) : CloudflareR2! @join__field(graph: API_MEDIA) 
-  cloudflareR2Update(input: CloudflareR2UpdateInput!) : CloudflareR2! @join__field(graph: API_MEDIA) 
   cloudflareR2Delete(id: ID!) : CloudflareR2! @join__field(graph: API_MEDIA) 
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!) : CloudflareImage! @join__field(graph: API_MEDIA)  @deprecated(reason: "use createCloudflareImageFromPrompt") 
   triggerUnsplashDownload(url: String!) : Boolean! @join__field(graph: API_MEDIA) 
@@ -4128,13 +4130,18 @@ input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
 
 input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   id: String
+  """
+  the name of the file that is being uploaded
+  """
   fileName: String!
+  """
+  the type of file that is being uploaded. e.g. image or video/mp4
+  """
+  contentType: String!
+  """
+  the id of the Video object this file relates to in the database
+  """
   videoId: String!
-}
-
-input CloudflareR2UpdateInput @join__type(graph: API_MEDIA)  {
-  id: String!
-  fileName: String!
 }
 
 input ImageInput @join__type(graph: API_MEDIA)  {
