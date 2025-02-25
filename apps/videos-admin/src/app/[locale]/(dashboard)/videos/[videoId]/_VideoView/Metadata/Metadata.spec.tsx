@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { VideoProvider } from '../../../../../../../libs/VideoProvider'
 
 import { Metadata } from './Metadata'
 
@@ -11,23 +12,13 @@ describe('Metadata', () => {
   const mockAdminVideo: AdminVideo =
     useAdminVideoMock['result']?.['data']?.['adminVideo']
 
-  it('should render loading fallback', () => {
-    render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider>
-          <Metadata loading video={mockAdminVideo} />
-        </MockedProvider>
-      </NextIntlClientProvider>
-    )
-
-    expect(screen.getByRole('progressbar')).toBeInTheDocument()
-  })
-
   it('should render with data', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <Metadata loading={false} video={mockAdminVideo} />
+          <VideoProvider video={mockAdminVideo}>
+            <Metadata video={mockAdminVideo} />
+          </VideoProvider>
         </MockedProvider>
       </NextIntlClientProvider>
     )

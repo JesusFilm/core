@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -11,12 +11,14 @@ import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
+import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
 import { CancelButton } from '../../../../../../../../components/CancelButton'
 import { SaveButton } from '../../../../../../../../components/SaveButton'
 import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 const videoStatuses = [
   { label: 'Published', value: 'published' },
@@ -52,6 +54,15 @@ export const UPDATE_VIDEO_INFORMATION = graphql(`
   }
 `)
 
+export const CREATE_VIDEO_TITLE = graphql(`
+  mutation CreateVideoTitle($input: VideoTranslationCreateInput!) {
+    videoTitleCreate(input: $input) {
+      id
+      value
+    }
+  }
+`)
+
 interface VideoInformationProps {
   video: AdminVideo
 }
@@ -61,8 +72,32 @@ export function VideoInformation({
 }: VideoInformationProps): ReactElement {
   const t = useTranslations()
   const [updateVideoInformation] = useMutation(UPDATE_VIDEO_INFORMATION)
+  const [createVideoTitle] = useMutation(CREATE_VIDEO_TITLE, {
+    update(cache, { data }) {
+      if (!data?.videoTitleCreate) return
+
+      cache.modify({
+        id: cache.identify(video),
+        fields: {
+          title(existingTitles = []) {
+            const newTitleRef = cache.writeFragment({
+              data: data.videoTitleCreate,
+              fragment: gql`
+                fragment NewTitle on VideoTitle {
+                  id
+                  value
+                }
+              `
+            })
+            return [...existingTitles, newTitleRef]
+          }
+        }
+      })
+    }
+  })
   const theme = useTheme()
   const jesusFilmUrl = 'jesusfilm.org/watch/'
+  const { enqueueSnackbar } = useSnackbar()
 
   const validationSchema = object().shape({
     title: string().trim().required(t('Title is required')),
@@ -74,6 +109,35 @@ export function VideoInformation({
   async function handleUpdateVideoInformation(
     values: FormikValues
   ): Promise<void> {
+    let titleId = video.title[0]?.id
+
+    if (titleId == null) {
+      const res = await createVideoTitle({
+        variables: {
+          input: {
+            videoId: video.id,
+            value: values.title,
+            primary: true,
+            languageId: DEFAULT_VIDEO_LANGUAGE_ID
+          }
+        },
+        onError: () => {
+          enqueueSnackbar(t('Failed to create video title'), {
+            variant: 'error'
+          })
+        }
+      })
+
+      if (res?.data?.videoTitleCreate == null) {
+        enqueueSnackbar(t('Failed to create video title'), {
+          variant: 'error'
+        })
+        return
+      }
+
+      titleId = res.data.videoTitleCreate.id
+    }
+
     await updateVideoInformation({
       variables: {
         infoInput: {
@@ -83,9 +147,19 @@ export function VideoInformation({
           label: values.label
         },
         titleInput: {
-          id: video.title[0].id,
+          id: titleId,
           value: values.title
         }
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t('Successfully updated video information'), {
+          variant: 'success'
+        })
+      },
+      onError: () => {
+        enqueueSnackbar(t('Failed to update video information'), {
+          variant: 'error'
+        })
       }
     })
   }
@@ -93,7 +167,7 @@ export function VideoInformation({
   return (
     <Formik
       initialValues={{
-        title: video.title[0].value,
+        title: video.title?.[0]?.value ?? '',
         url: video.slug,
         published: video.published === true ? 'published' : 'unpublished',
         label: video.label
