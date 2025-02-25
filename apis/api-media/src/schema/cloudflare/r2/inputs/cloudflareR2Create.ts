@@ -6,6 +6,7 @@ export const CloudflareR2CreateInput = builder.inputType(
     fields: (t) => ({
       id: t.string({ required: false }),
       fileName: t.string({ required: true }),
+      contentType: t.string({ required: true }),
       videoId: t.string({ required: true })
     })
   }

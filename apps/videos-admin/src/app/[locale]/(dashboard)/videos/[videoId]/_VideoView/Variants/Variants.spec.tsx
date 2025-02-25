@@ -12,6 +12,10 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => false
 }))
 
+jest.mock('next/navigation', () => ({
+  useParams: () => ({ videoId: 'video123' })
+}))
+
 describe('Variants', () => {
   const mockVideoVariants: VideoVariants[] =
     useAdminVideoMock['result']?.['data']?.['adminVideo']?.['variants']
@@ -82,5 +86,17 @@ describe('Variants', () => {
 
     const section = document.getElementById('Audio Languages-section')
     expect(section).toBeInTheDocument()
+  })
+
+  it('should open add audio language dialog when clicking add audio language button', async () => {
+    render(
+      <MockedProvider>
+        <NextIntlClientProvider locale="en">
+          <Variants variants={mockVideoVariants} />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByText('Add Audio Language'))
+    await waitFor(() => expect(screen.getByRole('dialog')).toBeInTheDocument())
   })
 })
