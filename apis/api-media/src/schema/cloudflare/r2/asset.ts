@@ -75,8 +75,8 @@ builder.mutationFields((t) => ({
       return await prisma.cloudflareR2.create({
         ...query,
         data: {
-          ...input,
           id: input.id ?? undefined,
+          videoId: input.videoId,
           userId: user.id,
           fileName: input.fileName,
           uploadUrl,

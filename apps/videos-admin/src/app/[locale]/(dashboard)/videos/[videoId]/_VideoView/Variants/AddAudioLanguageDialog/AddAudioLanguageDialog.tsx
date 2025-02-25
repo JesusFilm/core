@@ -14,6 +14,7 @@ import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useRef, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 import { mixed, object, string } from 'yup'
 
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
@@ -26,6 +27,7 @@ import {
 } from '../../../../../../../../libs/useAdminVideo'
 
 import { AudioLanguageFileUpload } from './AudioLanguageFileUpload/AudioLanguageFileUpload'
+import { getExtension } from './utils/getExtension'
 
 export const CREATE_VIDEO_VARIANT = graphql(`
   mutation CreateVideoVariant($input: VideoVariantCreateInput!) {
@@ -128,10 +130,7 @@ export function AddAudioLanguageDialog({
       ) {
         stopPolling()
         setProcessing(false)
-        void handleCreateVideoVariant(
-          data.getMyMuxVideo.id,
-          data.getMyMuxVideo.playbackId
-        )
+        void handleCreateVideoVariant(data.getMyMuxVideo.id)
       }
     }
   })
@@ -144,10 +143,7 @@ export function AddAudioLanguageDialog({
     (language) => !variantLanguagesMap.has(language.id)
   )
 
-  async function handleCreateVideoVariant(
-    muxId: string,
-    url: string
-  ): Promise<void> {
+  async function handleCreateVideoVariant(muxId: string): Promise<void> {
     if (formikRef.current?.values == null || params?.videoId == null) return
 
     const values = formikRef.current.values
@@ -212,13 +208,18 @@ export function AddAudioLanguageDialog({
       return
 
     setUploading(true)
+    const videoVariantId = `${values.language.id}_${params?.videoId}`
+    const languageId = values.language.id
+    const videoId = params.videoId
+    const extension = getExtension(values.file.name)
+
     try {
       const r2Response = await createR2Asset({
         variables: {
           input: {
-            fileName: values.file.name,
+            fileName: `${videoId}/variants/${languageId}/videos/${uuidv4()}/${videoVariantId}${extension}`,
             contentType: values.file.type,
-            videoId: params.videoId
+            videoId
           }
         }
       })
