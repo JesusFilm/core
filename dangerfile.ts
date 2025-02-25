@@ -49,20 +49,6 @@ export default async () => {
     })
     markdown(`> (pr title - ${danger.github.pr.title}): \n${errors}`)
   }
-  // check PR has description and is different from template
-
-  const pullRequestTemplate = await readFile(
-    join(__dirname, '/.github/pull_request_template.md'),
-    'utf8'
-  )
-  if (
-    danger.github.pr.body.length < 10 ||
-    danger.github.pr.body.replace(/\r\n/g, '\n') === pullRequestTemplate
-  ) {
-    fail(
-      'This pull request needs a description (that differs from the template).'
-    )
-  }
 
   // check PR has assignee
   if (danger.github.pr.assignee === null) {
