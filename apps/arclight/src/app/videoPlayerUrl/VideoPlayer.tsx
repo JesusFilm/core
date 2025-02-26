@@ -23,7 +23,7 @@ export function VideoPlayer({
   const initPlayer = (ref: typeof playerRef): void => {
     if (ref.current == null) return
     const muxMetadata: MuxMetadata = {
-      env_key: 'e2thjm49ulacc6tgf56laoeak',
+      env_key: process.env.NEXT_PUBLIC_MUX_DEFAULT_REPORTING_KEY || '',
       player_name: 'arclight',
       video_title: videoTitle
     }
