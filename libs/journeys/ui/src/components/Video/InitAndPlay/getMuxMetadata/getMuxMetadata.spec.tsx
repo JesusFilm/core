@@ -4,14 +4,18 @@ import {
   VideoFields_mediaVideo_YouTube as YoutubeVideo
 } from '../../__generated__/VideoFields'
 
-import {
-  GetMuxMetadataProps,
-  getMuxMetadata,
-  muxEnvKeys
-} from './getMuxMetadata'
+import { GetMuxMetadataProps, getMuxMetadata } from './getMuxMetadata'
 
 describe('getMuxMetadata', () => {
   const originalEnv = process.env
+
+  beforeEach(() => {
+    process.env = {
+      ...originalEnv,
+      NEXT_PUBLIC_MUX_DEFAULT_REPORTING_KEY: 'defaultKey',
+      NEXT_PUBLIC_MUX_USER_GENERATED_REPORTING_KEY: 'userGeneratedKey'
+    }
+  })
 
   afterEach(() => {
     process.env = originalEnv
@@ -66,15 +70,7 @@ describe('getMuxMetadata', () => {
     player_name: 'journeys'
   }
 
-  const localDomain = 'localhost:4100'
-  const stageDomain = 'your-stage.nextstep.is'
-  const productionDomain = 'your.nextstep.is'
-
   it('should return meta data for local video', () => {
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_ROOT_DOMAIN: localDomain
-    }
     const props: GetMuxMetadataProps = {
       ...defaultProps,
       videoBlock: {
@@ -85,7 +81,7 @@ describe('getMuxMetadata', () => {
 
     expect(getMuxMetadata(props)).toEqual({
       ...defaultResult,
-      env_key: muxEnvKeys[localDomain].default,
+      env_key: 'defaultKey',
       video_id: 'videoId',
       video_title: 'library video title',
       video_language_code: 'languageId'
@@ -93,10 +89,6 @@ describe('getMuxMetadata', () => {
   })
 
   it('should return meta data for local mux video', () => {
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_ROOT_DOMAIN: localDomain
-    }
     const props: GetMuxMetadataProps = {
       ...defaultProps,
       videoBlock: {
@@ -107,17 +99,13 @@ describe('getMuxMetadata', () => {
 
     expect(getMuxMetadata(props)).toEqual({
       ...defaultResult,
-      env_key: muxEnvKeys[localDomain].userGenerated,
+      env_key: 'userGeneratedKey',
       video_id: 'muxAssetId',
       video_title: 'video title'
     })
   })
 
   it('should return meta data for local youtube video', () => {
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_ROOT_DOMAIN: localDomain
-    }
     const props: GetMuxMetadataProps = {
       ...defaultProps,
       videoBlock: {
@@ -128,135 +116,7 @@ describe('getMuxMetadata', () => {
 
     expect(getMuxMetadata(props)).toEqual({
       ...defaultResult,
-      env_key: muxEnvKeys[localDomain].default,
-      video_id: 'youtubeId',
-      video_title: 'video title'
-    })
-  })
-
-  it('should return meta data for stage video', () => {
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_ROOT_DOMAIN: stageDomain
-    }
-    const props: GetMuxMetadataProps = {
-      ...defaultProps,
-      videoBlock: {
-        ...defaultProps.videoBlock,
-        mediaVideo: { ...defaultMediaVideo }
-      }
-    }
-
-    expect(getMuxMetadata(props)).toEqual({
-      ...defaultResult,
-      env_key: muxEnvKeys[stageDomain].default,
-      video_id: 'videoId',
-      video_title: 'library video title',
-      video_language_code: 'languageId'
-    })
-  })
-
-  it('should return meta data for stage mux video', () => {
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_ROOT_DOMAIN: stageDomain
-    }
-    const props: GetMuxMetadataProps = {
-      ...defaultProps,
-      videoBlock: {
-        ...defaultProps.videoBlock,
-        mediaVideo: { ...userGeneratedMediaVideo }
-      }
-    }
-
-    expect(getMuxMetadata(props)).toEqual({
-      ...defaultResult,
-      env_key: muxEnvKeys[stageDomain].userGenerated,
-      video_id: 'muxAssetId',
-      video_title: 'video title'
-    })
-  })
-
-  it('should return meta data for stage youtube video', () => {
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_ROOT_DOMAIN: stageDomain
-    }
-    const props: GetMuxMetadataProps = {
-      ...defaultProps,
-      videoBlock: {
-        ...defaultProps.videoBlock,
-        mediaVideo: { ...youtubeMediaVideo }
-      }
-    }
-
-    expect(getMuxMetadata(props)).toEqual({
-      ...defaultResult,
-      env_key: muxEnvKeys[stageDomain].default,
-      video_id: 'youtubeId',
-      video_title: 'video title'
-    })
-  })
-
-  it('should return meta data for production video', () => {
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_ROOT_DOMAIN: productionDomain
-    }
-    const props: GetMuxMetadataProps = {
-      ...defaultProps,
-      videoBlock: {
-        ...defaultProps.videoBlock,
-        mediaVideo: { ...defaultMediaVideo }
-      }
-    }
-
-    expect(getMuxMetadata(props)).toEqual({
-      ...defaultResult,
-      env_key: muxEnvKeys[productionDomain].default,
-      video_id: 'videoId',
-      video_title: 'library video title',
-      video_language_code: 'languageId'
-    })
-  })
-
-  it('should return meta data for production mux video', () => {
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_ROOT_DOMAIN: productionDomain
-    }
-    const props: GetMuxMetadataProps = {
-      ...defaultProps,
-      videoBlock: {
-        ...defaultProps.videoBlock,
-        mediaVideo: { ...userGeneratedMediaVideo }
-      }
-    }
-
-    expect(getMuxMetadata(props)).toEqual({
-      ...defaultResult,
-      env_key: muxEnvKeys[productionDomain].userGenerated,
-      video_id: 'muxAssetId',
-      video_title: 'video title'
-    })
-  })
-
-  it('should return meta data for production youtube video', () => {
-    process.env = {
-      ...originalEnv,
-      NEXT_PUBLIC_ROOT_DOMAIN: productionDomain
-    }
-    const props: GetMuxMetadataProps = {
-      ...defaultProps,
-      videoBlock: {
-        ...defaultProps.videoBlock,
-        mediaVideo: { ...youtubeMediaVideo }
-      }
-    }
-
-    expect(getMuxMetadata(props)).toEqual({
-      ...defaultResult,
-      env_key: muxEnvKeys[productionDomain].default,
+      env_key: 'defaultKey',
       video_id: 'youtubeId',
       video_title: 'video title'
     })
