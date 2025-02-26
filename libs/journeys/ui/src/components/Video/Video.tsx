@@ -1,5 +1,7 @@
+import AssessmentIcon from '@mui/icons-material/Assessment'
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
 import { ThemeProvider, styled, useTheme } from '@mui/material/styles'
 import get from 'lodash/get'
@@ -36,9 +38,11 @@ import { VideoTriggerFields } from '../VideoTrigger/__generated__/VideoTriggerFi
 import { VideoFields } from './__generated__/VideoFields'
 import { InitAndPlay } from './InitAndPlay'
 import { VideoControls } from './VideoControls'
+import { VideoStats } from './VideoStats'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
+// HTTP streaming is included in Video.js core since version 7
 
 const VIDEO_BACKGROUND_COLOR = '#000'
 const VIDEO_FOREGROUND_COLOR = '#FFF'
@@ -84,6 +88,7 @@ export function Video({
   const [player, setPlayer] = useState<Player>()
   const [showPoster, setShowPoster] = useState(true)
   const [activeStep, setActiveStep] = useState(false)
+  const [showStats, setShowStats] = useState(true)
 
   const { blockHistory } = useBlocks()
   const { variant } = useJourney()
@@ -153,6 +158,37 @@ export function Video({
   useEffect(() => {
     setActiveStep(isActiveBlockOrDescendant(blockId))
   }, [blockId, blockHistory])
+
+  // Check if we're using an HLS source
+  const isHlsSource = useMemo(() => {
+    return (
+      (mediaVideo?.__typename === 'Video' &&
+        mediaVideo?.variant?.hls != null) ||
+      mediaVideo?.__typename === 'MuxVideo' ||
+      (source === VideoBlockSource.internal && videoId?.includes('.m3u8'))
+    )
+  }, [mediaVideo, source, videoId])
+
+  // Ensure VHS tech is properly initialized for HLS streams
+  useEffect(() => {
+    if (player && isHlsSource) {
+      // Force VHS tech to be used for HLS streams
+      try {
+        const tech = player.tech({ IWillNotUseThisInPlugins: true }) as any
+        if (tech && !tech.vhs && !tech.hls) {
+          console.log('Initializing VHS tech for HLS stream')
+          // This is just to ensure the VHS tech is properly initialized
+          // The actual initialization happens internally in video.js
+          player.src({
+            src: player.currentSrc(),
+            type: 'application/x-mpegURL'
+          })
+        }
+      } catch (error) {
+        console.error('Error initializing VHS tech:', error)
+      }
+    }
+  }, [player, isHlsSource])
 
   return (
     <Box
@@ -288,6 +324,24 @@ export function Video({
                 muted={muted ?? false}
                 activeStep={activeStep}
               />
+              <IconButton
+                aria-label="Toggle video stats"
+                onClick={() => setShowStats(!showStats)}
+                sx={{
+                  position: 'absolute',
+                  bottom: 12,
+                  right: 12,
+                  zIndex: 2,
+                  color: 'white',
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.7)'
+                  }
+                }}
+              >
+                <AssessmentIcon />
+              </IconButton>
+              {showStats && <VideoStats player={player} isHls={isHlsSource} />}
             </ThemeProvider>
           )}
           {/* TODO: Add back VideoTriggers when we have a way to add them in admin */}
