@@ -48,7 +48,7 @@ export async function service(
     lastName: user.lastName ?? '',
     imageUrl: user.imageUrl ?? undefined
   }
-  const html = render(
+  const html = await render(
     EmailVerifyEmail({
       token: job.data.token,
       recipient,
@@ -59,7 +59,7 @@ export async function service(
     }
   )
 
-  const text = render(
+  const text = await render(
     EmailVerifyEmail({
       token: job.data.token,
       recipient,
