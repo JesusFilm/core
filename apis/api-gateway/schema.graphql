@@ -1215,9 +1215,6 @@ type Language @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @joi
   name(languageId: ID, primary: Boolean) : [LanguageName!]! @join__field(graph: API_LANGUAGES) 
   countryLanguages: [CountryLanguage!]! @join__field(graph: API_LANGUAGES) 
   audioPreview: AudioPreview @join__field(graph: API_LANGUAGES) 
-  seriesCount: Int! @join__field(graph: API_MEDIA) 
-  featureFilmCount: Int! @join__field(graph: API_MEDIA) 
-  shortFilmCount: Int! @join__field(graph: API_MEDIA) 
   labeledVideoCounts: LabeledVideoCounts! @join__field(graph: API_MEDIA) 
 }
 
