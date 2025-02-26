@@ -243,44 +243,52 @@ mediaLanguages.openapi(route, async (c) => {
 
       const countriesCount = nonSuggestedCountryLanguages.length
 
+      type CountsType = {
+        speakerCount: { value: number; description: string }
+        countriesCount: { value: number; description: string }
+        [key: string]: { value: number; description: string }
+      }
+
+      const counts: CountsType = {
+        speakerCount: {
+          value: speakerCount,
+          description: 'Number of speakers'
+        },
+        countriesCount: {
+          value: countriesCount,
+          description: 'Number of countries'
+        }
+      }
+
+      const { seriesCount, featureFilmCount, shortFilmCount } =
+        language.labeledVideoCounts
+
+      if (seriesCount > 0) {
+        counts['series'] = {
+          value: seriesCount,
+          description: 'Series'
+        }
+      }
+
+      if (featureFilmCount > 0) {
+        counts['featureFilm'] = {
+          value: featureFilmCount,
+          description: 'Feature Film'
+        }
+      }
+
+      if (shortFilmCount > 0) {
+        counts['shortFilm'] = {
+          value: shortFilmCount,
+          description: 'Short Film'
+        }
+      }
+
       return {
         languageId: Number(language.id),
         iso3: language.iso3 ?? '',
         bcp47: language.bcp47 ?? '',
-        counts: {
-          speakerCount: {
-            value: speakerCount,
-            description: 'Number of speakers'
-          },
-          countriesCount: {
-            value: countriesCount,
-            description: 'Number of countries'
-          },
-          ...(language.labeledVideoCounts.seriesCount != 0
-            ? {
-                series: {
-                  value: language.labeledVideoCounts.seriesCount,
-                  description: 'Series'
-                }
-              }
-            : {}),
-          ...(language.labeledVideoCounts.featureFilmCount != 0
-            ? {
-                featureFilm: {
-                  value: language.labeledVideoCounts.featureFilmCount,
-                  description: 'Feature Film'
-                }
-              }
-            : {}),
-          ...(language.labeledVideoCounts.shortFilmCount != 0
-            ? {
-                shortFilm: {
-                  value: language.labeledVideoCounts.shortFilmCount,
-                  description: 'Short Film'
-                }
-              }
-            : {})
-        },
+        counts,
         ...(language.audioPreview != null
           ? {
               audioPreview: {
