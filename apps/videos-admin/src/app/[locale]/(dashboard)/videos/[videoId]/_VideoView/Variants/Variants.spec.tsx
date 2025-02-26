@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
+import { UploadVideoVariantProvider } from '../../../../../../../libs/UploadVideoVariantProvider'
 import { GetAdminVideoVariant as VideoVariants } from '../../../../../../../libs/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
@@ -92,7 +93,9 @@ describe('Variants', () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
-          <Variants variants={mockVideoVariants} />
+          <UploadVideoVariantProvider>
+            <Variants variants={mockVideoVariants} />
+          </UploadVideoVariantProvider>
         </NextIntlClientProvider>
       </MockedProvider>
     )
