@@ -1,3 +1,5 @@
+import DataLoader from 'dataloader'
+
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
@@ -23,93 +25,86 @@ LabeledVideoCounts.implement({
   })
 })
 
-Language.implement({
-  externalFields: (t) => ({ id: t.id({ nullable: false }) }),
-  fields: (t) => ({
-    seriesCount: t.int({
-      nullable: false,
-      resolve: async (parent) => {
-        return await prisma.videoVariant.count({
-          where: {
-            languageId: parent.id,
-            video: {
-              label: 'series'
-            }
-          }
-        })
-      }
-    }),
-    featureFilmCount: t.int({
-      nullable: false,
-      resolve: async (parent) => {
-        return await prisma.videoVariant.count({
-          where: {
-            languageId: parent.id,
-            video: {
-              label: 'featureFilm'
-            }
-          }
-        })
-      }
-    }),
-    shortFilmCount: t.int({
-      nullable: false,
-      resolve: async (parent) => {
-        return await prisma.videoVariant.count({
-          where: {
-            languageId: parent.id,
-            video: {
-              label: 'shortFilm'
-            }
-          }
-        })
-      }
-    }),
-    labeledVideoCounts: t.field({
-      type: LabeledVideoCounts,
-      nullable: false,
-      resolve: async (parent) => {
-        const variants = await prisma.videoVariant.findMany({
-          where: {
-            languageId: parent.id,
-            video: {
-              label: {
-                in: ['series', 'featureFilm', 'shortFilm']
-              }
-            }
-          },
+const createVideoCountsLoader = () => {
+  return new DataLoader<string, LabeledVideoCountsType>(async (languageIds) => {
+    const results = await prisma.videoVariant.findMany({
+      where: {
+        languageId: { in: Array.from(languageIds) },
+        video: {
+          label: { in: ['series', 'featureFilm', 'shortFilm'] }
+        }
+      },
+      select: {
+        languageId: true,
+        video: {
           select: {
-            video: {
-              select: {
-                label: true
-              }
-            }
+            label: true
           }
-        })
+        }
+      }
+    })
 
-        const counts: LabeledVideoCountsType = {
+    const countsMap = new Map<string, LabeledVideoCountsType>()
+
+    languageIds.forEach((id) => {
+      countsMap.set(id, {
+        seriesCount: 0,
+        featureFilmCount: 0,
+        shortFilmCount: 0
+      })
+    })
+
+    results.forEach((variant) => {
+      if (variant.video?.label) {
+        const counts = countsMap.get(variant.languageId)
+        if (counts) {
+          switch (variant.video.label) {
+            case 'series':
+              counts.seriesCount++
+              break
+            case 'featureFilm':
+              counts.featureFilmCount++
+              break
+            case 'shortFilm':
+              counts.shortFilmCount++
+              break
+          }
+        }
+      }
+    })
+
+    return languageIds.map(
+      (id) =>
+        countsMap.get(id) || {
           seriesCount: 0,
           featureFilmCount: 0,
           shortFilmCount: 0
         }
+    )
+  })
+}
 
-        variants.forEach((variant) => {
-          if (variant.video?.label) {
-            switch (variant.video.label) {
-              case 'series':
-                counts.seriesCount++
-                break
-              case 'featureFilm':
-                counts.featureFilmCount++
-                break
-              case 'shortFilm':
-                counts.shortFilmCount++
-                break
-            }
-          }
-        })
+let videoCountsLoader: DataLoader<string, LabeledVideoCountsType> | null = null
 
-        return counts
+const getVideoCountsLoader = () => {
+  if (!videoCountsLoader) {
+    videoCountsLoader = createVideoCountsLoader()
+  }
+  return videoCountsLoader
+}
+
+export const resetVideoCountsLoader = () => {
+  videoCountsLoader = null
+}
+
+Language.implement({
+  externalFields: (t) => ({ id: t.id({ nullable: false }) }),
+  fields: (t) => ({
+    labeledVideoCounts: t.field({
+      type: LabeledVideoCounts,
+      nullable: false,
+      resolve: async (parent) => {
+        return await getVideoCountsLoader().load(parent.id)
       }
     })
   })
