@@ -118,7 +118,10 @@ export function VideoView(): ReactElement {
               )}
             </TabContainer>
             <TabContainer value={tabValue} index={2}>
-              <Variants variants={video.variants} />
+              <Variants
+                variants={video?.variants}
+                editions={video?.videoEditions}
+              />
             </TabContainer>
           </Box>
         </Stack>
