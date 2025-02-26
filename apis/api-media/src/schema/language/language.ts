@@ -30,7 +30,6 @@ Language.implement({
       type: LabeledVideoCounts,
       nullable: false,
       load: async (languageIds: readonly string[]) => {
-        // Query VideoVariants with their related Video to get the label
         const results = await prisma.videoVariant.findMany({
           where: {
             languageId: { in: Array.from(languageIds) },
@@ -50,7 +49,6 @@ Language.implement({
 
         const countsMap = new Map<string, LabeledVideoCountsType>()
 
-        // Initialize counts for all requested IDs
         languageIds.forEach((id) => {
           countsMap.set(id.toString(), {
             seriesCount: 0,
@@ -59,7 +57,6 @@ Language.implement({
           })
         })
 
-        // Update counts based on results
         results.forEach((variant) => {
           if (variant.video?.label) {
             const counts = countsMap.get(variant.languageId)
@@ -79,7 +76,6 @@ Language.implement({
           }
         })
 
-        // Return counts in the same order as the input IDs
         return languageIds.map(
           (id) =>
             countsMap.get(id.toString()) || {
