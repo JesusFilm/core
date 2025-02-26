@@ -8,7 +8,6 @@ import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
-import { graphql } from 'gql.tada'
 import { useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useRef } from 'react'
@@ -82,12 +81,30 @@ export function AddAudioLanguageDialog({
     )
   }
 
+  const isUploadInProgress = uploadState.isUploading || uploadState.isProcessing
+
+  const handleDialogClose = (): void => {
+    // Don't close the dialog if upload is in progress
+    if (isUploadInProgress) {
+      return
+    }
+    handleClose?.()
+  }
+
   return (
     <Dialog
       open={open ?? false}
-      onClose={handleClose}
-      dialogTitle={{ title: t('Add Audio Language'), closeButton: true }}
+      onClose={handleDialogClose}
+      dialogTitle={{
+        title: t('Add Audio Language'),
+        closeButton: true
+      }}
       divider
+      slotProps={{
+        titleButton: {
+          disabled: isUploadInProgress
+        }
+      }}
     >
       <Formik
         initialValues={initialValues}
@@ -115,6 +132,7 @@ export function AddAudioLanguageDialog({
                     onChange={async (event) => {
                       await setFieldValue('edition', event.target.value)
                     }}
+                    disabled={isUploadInProgress}
                   >
                     {editions?.map(
                       (edition) =>
@@ -138,6 +156,7 @@ export function AddAudioLanguageDialog({
                     }}
                     languages={availableLanguages}
                     loading={languagesLoading}
+                    disabled={isUploadInProgress}
                     value={values.language ?? undefined}
                     renderInput={(params) => (
                       <TextField
@@ -155,7 +174,7 @@ export function AddAudioLanguageDialog({
                   />
                 </Box>
                 <AudioLanguageFileUpload
-                  disabled={uploadState.isUploading || uploadState.isProcessing}
+                  disabled={isUploadInProgress}
                   onFileSelect={async (file) => {
                     await setFieldValue('file', file)
                   }}
@@ -164,7 +183,7 @@ export function AddAudioLanguageDialog({
                       ? (errors.file as string)
                       : (uploadState.error ?? undefined)
                   }
-                  loading={false}
+                  loading={languagesLoading}
                   uploading={uploadState.isUploading}
                   processing={uploadState.isProcessing}
                   selectedFile={values.file}
@@ -175,8 +194,7 @@ export function AddAudioLanguageDialog({
                     type="submit"
                     disabled={
                       languagesLoading ||
-                      uploadState.isUploading ||
-                      uploadState.isProcessing ||
+                      isUploadInProgress ||
                       values.language == null ||
                       values.edition === '' ||
                       values.file == null
