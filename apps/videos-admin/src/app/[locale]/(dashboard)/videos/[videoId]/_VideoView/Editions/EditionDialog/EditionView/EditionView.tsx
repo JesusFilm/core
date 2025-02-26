@@ -9,8 +9,8 @@ import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../
 import { useCrudState } from '../../../../../../../../../libs/useCrudState'
 import { ArrayElement } from '../../../../../../../../../types/array-types'
 import { Section } from '../../../Section'
-import { SubtitleDialog } from '../../Subtitles/SubtitleDialog'
 import { SubtitleCard } from '../../Subtitles/SubtitleCard'
+import { SubtitleDialog } from '../../Subtitles/SubtitleDialog'
 
 type Edition = ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
 type Subtitle = ArrayElement<Edition['videoSubtitles']>

@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import {
   CrudDialog,
   DialogAction
@@ -8,9 +10,17 @@ import { SubtitleDelete } from './SubtitleDelete'
 import { SubtitleEdit } from './SubtitleEdit'
 
 export function SubtitleDialog({ action, close, subtitle, edition }) {
+  const [loading, setLoading] = useState(false)
+
   const renderContent = () => {
     if (action === DialogAction.CREATE) {
-      return <SubtitleCreate close={close} edition={edition} />
+      return (
+        <SubtitleCreate
+          close={close}
+          edition={edition}
+          dialogState={{ loading, setLoading }}
+        />
+      )
     }
 
     if (subtitle == null) {
@@ -18,12 +28,14 @@ export function SubtitleDialog({ action, close, subtitle, edition }) {
     }
 
     switch (action) {
-      case DialogAction.VIEW:
-        return <div>View</div>
-      // return <SubtitleView subtitle={subtitle} />
       case DialogAction.EDIT:
         return (
-          <SubtitleEdit subtitle={subtitle} edition={edition} close={close} />
+          <SubtitleEdit
+            subtitle={subtitle}
+            edition={edition}
+            close={close}
+            dialogState={{ loading, setLoading }}
+          />
         )
       case DialogAction.DELETE:
         return <SubtitleDelete subtitle={subtitle} close={close} />
@@ -32,8 +44,13 @@ export function SubtitleDialog({ action, close, subtitle, edition }) {
     }
   }
 
+  const handleClose = () => {
+    if (loading) return
+    close()
+  }
+
   return (
-    <CrudDialog action={action} close={close} resource="Subtitle">
+    <CrudDialog action={action} close={handleClose} resource="Subtitle">
       {renderContent()}
     </CrudDialog>
   )

@@ -5,10 +5,11 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
 import { useTranslations } from 'next-intl'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { Accept, useDropzone } from 'react-dropzone'
 
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
+
 import { File } from '../../../../../../../../../components/File'
 
 interface FileUploadProps {
@@ -107,13 +108,6 @@ export function FileUpload({
         <Button variant="outlined" fullWidth onClick={open}>
           {t('Upload file')}
         </Button>
-      )}
-      {acceptedFiles.length > 0 && (
-        <>
-          {acceptedFiles.map((file) => (
-            <File key={file.name} file={file} onDelete={() => {}} />
-          ))}
-        </>
       )}
     </Stack>
   )
