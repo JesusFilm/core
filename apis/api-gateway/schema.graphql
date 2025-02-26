@@ -4130,8 +4130,17 @@ input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
 
 input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   id: String
+  """
+  the name of the file that is being uploaded
+  """
   fileName: String!
+  """
+  the type of file that is being uploaded. e.g. image or video/mp4
+  """
   contentType: String!
+  """
+  the id of the Video object this file relates to in the database
+  """
   videoId: String!
 }
 

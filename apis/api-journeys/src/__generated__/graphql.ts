@@ -329,16 +329,13 @@ export type CloudflareR2 = {
 };
 
 export type CloudflareR2CreateInput = {
+  /** the type of file that is being uploaded. e.g. image or video/mp4 */
   contentType: Scalars['String']['input'];
+  /** the name of the file that is being uploaded */
   fileName: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
+  /** the id of the Video object this file relates to in the database */
   videoId: Scalars['String']['input'];
-};
-
-export type CloudflareR2UpdateInput = {
-  contentType: Scalars['String']['input'];
-  fileName: Scalars['String']['input'];
-  id: Scalars['String']['input'];
 };
 
 export type Continent = {
@@ -1249,9 +1246,9 @@ export type Mutation = {
   chatButtonRemove: ChatButton;
   chatButtonUpdate: ChatButton;
   chatOpenEventCreate: ChatOpenEvent;
+  /** The endpoint to upload a file to Cloudflare R2 */
   cloudflareR2Create: CloudflareR2;
   cloudflareR2Delete: CloudflareR2;
-  cloudflareR2Update: CloudflareR2;
   cloudflareUploadComplete: Scalars['Boolean']['output'];
   createCloudflareImageFromPrompt: CloudflareImage;
   createCloudflareUploadByFile: CloudflareImage;
@@ -1530,11 +1527,6 @@ export type MutationCloudflareR2CreateArgs = {
 
 export type MutationCloudflareR2DeleteArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type MutationCloudflareR2UpdateArgs = {
-  input: CloudflareR2UpdateInput;
 };
 
 
