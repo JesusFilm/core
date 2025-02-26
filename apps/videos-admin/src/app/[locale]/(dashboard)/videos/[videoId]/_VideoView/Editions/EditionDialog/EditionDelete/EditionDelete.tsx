@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 
 import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useVideo } from '../../../../../../../../../libs/VideoProvider'
@@ -38,6 +38,7 @@ export function EditionDelete({
   const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
   const video = useVideo()
+  const abortController = useRef<AbortController | null>(null)
 
   const [deleteEdition, { loading }] = useMutation(DELETE_VIDEO_EDITION, {
     update(cache, { data }) {
@@ -57,6 +58,8 @@ export function EditionDelete({
   })
 
   const handleDelete = async () => {
+    abortController.current = new AbortController()
+
     await deleteEdition({
       variables: {
         id: edition.id
@@ -67,11 +70,36 @@ export function EditionDelete({
         })
         close()
       },
-      onError: () => {
-        enqueueSnackbar(t('Something went wrong.'), { variant: 'error' })
+      onError: (e) => {
+        if (e.message.includes('aborted')) {
+          enqueueSnackbar(t('Edition delete cancelled.'))
+        } else {
+          enqueueSnackbar(t('Something went wrong.'), { variant: 'error' })
+        }
+      },
+      context: {
+        fetchOptions: {
+          signal: abortController.current?.signal
+        }
       }
     })
   }
+
+  const handleCancel = () => {
+    if (abortController.current != null && loading) {
+      abortController.current.abort()
+      abortController.current = null
+    }
+    close()
+  }
+
+  useEffect(() => {
+    return () => {
+      if (abortController.current != null) {
+        abortController.current.abort()
+      }
+    }
+  }, [])
 
   return (
     <Stack gap={4}>
@@ -84,7 +112,7 @@ export function EditionDelete({
         </Typography>
       </div>
       <DialogActions sx={{ gap: 1, justifyContent: 'flex-end' }}>
-        <Button variant="outlined" onClick={close}>
+        <Button variant="outlined" onClick={handleCancel}>
           {t('Cancel')}
         </Button>
         <Button
