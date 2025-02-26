@@ -20,7 +20,6 @@ import { prisma } from './lib/prisma'
 import { logger } from './logger'
 import { schema } from './schema'
 import { Context } from './schema/builder'
-import { resetVideoCountsLoader } from './schema/language/language'
 
 export const cache = createInMemoryCache()
 
@@ -31,8 +30,6 @@ export const yoga = createYoga<
   schema,
   logging: logger,
   context: async ({ request, params }) => {
-    resetVideoCountsLoader()
-
     const payload = get(params, 'extensions.jwt.payload')
     const user = getUserFromPayload(payload, logger)
 

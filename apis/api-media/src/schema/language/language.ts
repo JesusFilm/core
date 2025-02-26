@@ -1,5 +1,3 @@
-import DataLoader from 'dataloader'
-
 import { prisma } from '../../lib/prisma'
 import { builder } from '../builder'
 
@@ -25,87 +23,73 @@ LabeledVideoCounts.implement({
   })
 })
 
-const createVideoCountsLoader = () => {
-  return new DataLoader<string, LabeledVideoCountsType>(async (languageIds) => {
-    const results = await prisma.videoVariant.findMany({
-      where: {
-        languageId: { in: Array.from(languageIds) },
-        video: {
-          label: { in: ['series', 'featureFilm', 'shortFilm'] }
-        }
-      },
-      select: {
-        languageId: true,
-        video: {
-          select: {
-            label: true
-          }
-        }
-      }
-    })
-
-    const countsMap = new Map<string, LabeledVideoCountsType>()
-
-    languageIds.forEach((id) => {
-      countsMap.set(id, {
-        seriesCount: 0,
-        featureFilmCount: 0,
-        shortFilmCount: 0
-      })
-    })
-
-    results.forEach((variant) => {
-      if (variant.video?.label) {
-        const counts = countsMap.get(variant.languageId)
-        if (counts) {
-          switch (variant.video.label) {
-            case 'series':
-              counts.seriesCount++
-              break
-            case 'featureFilm':
-              counts.featureFilmCount++
-              break
-            case 'shortFilm':
-              counts.shortFilmCount++
-              break
-          }
-        }
-      }
-    })
-
-    return languageIds.map(
-      (id) =>
-        countsMap.get(id) || {
-          seriesCount: 0,
-          featureFilmCount: 0,
-          shortFilmCount: 0
-        }
-    )
-  })
-}
-
-let videoCountsLoader: DataLoader<string, LabeledVideoCountsType> | null = null
-
-const getVideoCountsLoader = () => {
-  if (!videoCountsLoader) {
-    videoCountsLoader = createVideoCountsLoader()
-  }
-  return videoCountsLoader
-}
-
-export const resetVideoCountsLoader = () => {
-  videoCountsLoader = null
-}
-
 Language.implement({
   externalFields: (t) => ({ id: t.id({ nullable: false }) }),
   fields: (t) => ({
-    labeledVideoCounts: t.field({
+    labeledVideoCounts: t.loadable({
       type: LabeledVideoCounts,
       nullable: false,
-      resolve: async (parent) => {
-        return await getVideoCountsLoader().load(parent.id)
-      }
+      load: async (languageIds: readonly string[]) => {
+        // Query VideoVariants with their related Video to get the label
+        const results = await prisma.videoVariant.findMany({
+          where: {
+            languageId: { in: Array.from(languageIds) },
+            video: {
+              label: { in: ['series', 'featureFilm', 'shortFilm'] }
+            }
+          },
+          select: {
+            languageId: true,
+            video: {
+              select: {
+                label: true
+              }
+            }
+          }
+        })
+
+        const countsMap = new Map<string, LabeledVideoCountsType>()
+
+        // Initialize counts for all requested IDs
+        languageIds.forEach((id) => {
+          countsMap.set(id.toString(), {
+            seriesCount: 0,
+            featureFilmCount: 0,
+            shortFilmCount: 0
+          })
+        })
+
+        // Update counts based on results
+        results.forEach((variant) => {
+          if (variant.video?.label) {
+            const counts = countsMap.get(variant.languageId)
+            if (counts) {
+              switch (variant.video.label) {
+                case 'series':
+                  counts.seriesCount++
+                  break
+                case 'featureFilm':
+                  counts.featureFilmCount++
+                  break
+                case 'shortFilm':
+                  counts.shortFilmCount++
+                  break
+              }
+            }
+          }
+        })
+
+        // Return counts in the same order as the input IDs
+        return languageIds.map(
+          (id) =>
+            countsMap.get(id.toString()) || {
+              seriesCount: 0,
+              featureFilmCount: 0,
+              shortFilmCount: 0
+            }
+        )
+      },
+      resolve: (parent) => parent.id
     })
   })
 })
