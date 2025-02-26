@@ -26,57 +26,6 @@ import { useUploadVideoVariant } from '../../../../../../../contexts/UploadVideo
 
 import { AudioLanguageFileUpload } from './AudioLanguageFileUpload/AudioLanguageFileUpload'
 
-export const CREATE_VIDEO_VARIANT = graphql(`
-  mutation CreateVideoVariant($input: VideoVariantCreateInput!) {
-    videoVariantCreate(input: $input) {
-      id
-      videoId
-      slug
-      language {
-        id
-        name {
-          value
-          primary
-        }
-      }
-    }
-  }
-`)
-
-export const CLOUDFLARE_R2_CREATE = graphql(`
-  mutation CloudflareR2Create($input: CloudflareR2CreateInput!) {
-    cloudflareR2Create(input: $input) {
-      id
-      fileName
-      uploadUrl
-      publicUrl
-    }
-  }
-`)
-
-export const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
-  mutation CreateMuxVideoUploadByUrl($url: String!) {
-    createMuxVideoUploadByUrl(url: $url) {
-      id
-      assetId
-      playbackId
-      uploadUrl
-      readyToStream
-    }
-  }
-`)
-
-export const GET_MY_MUX_VIDEO = graphql(`
-  query GetMyMuxVideo($id: ID!) {
-    getMyMuxVideo(id: $id) {
-      id
-      assetId
-      playbackId
-      readyToStream
-    }
-  }
-`)
-
 interface AddAudioLanguageDialogProps {
   open?: boolean
   handleClose?: () => void
@@ -127,9 +76,10 @@ export function AddAudioLanguageDialog({
       values.file,
       params.videoId,
       values.language.id,
-      values.edition
+      values.language.slug,
+      values.edition,
+      handleClose
     )
-    handleClose?.()
   }
 
   return (
@@ -138,7 +88,6 @@ export function AddAudioLanguageDialog({
       onClose={handleClose}
       dialogTitle={{ title: t('Add Audio Language'), closeButton: true }}
       divider
-      fullscreen
     >
       <Formik
         initialValues={initialValues}

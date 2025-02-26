@@ -108,7 +108,7 @@ export function AudioLanguageFileUpload({
           color={
             error != null || fileRejected ? 'error.main' : 'secondary.light'
           }
-          sx={{ pb: uploading || processing ? 2 : 4 }}
+          sx={{ pb: uploading || processing ? 2 : 4, textAlign: 'center' }}
         >
           {uploading && t('Uploading...')}
           {processing && t('Processing...')}

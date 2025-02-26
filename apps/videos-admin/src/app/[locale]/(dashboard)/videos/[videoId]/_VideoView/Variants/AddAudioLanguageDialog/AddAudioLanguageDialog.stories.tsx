@@ -7,11 +7,9 @@ import { SnackbarProvider } from 'notistack'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
+import { CREATE_VIDEO_VARIANT } from '../../../../../../../contexts/UploadVideoVariantContext'
 
-import {
-  AddAudioLanguageDialog,
-  CREATE_VIDEO_VARIANT
-} from './AddAudioLanguageDialog'
+import { AddAudioLanguageDialog } from './AddAudioLanguageDialog'
 
 const meta: Meta<typeof AddAudioLanguageDialog> = {
   title: 'Videos-Admin/Variants/AddAudioLanguageDialog',

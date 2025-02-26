@@ -1,3 +1,4 @@
+'use client'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import axios from 'axios'
 import { graphql } from 'gql.tada'
@@ -8,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { getExtension } from '../[locale]/(dashboard)/videos/[videoId]/_VideoView/Variants/AddAudioLanguageDialog/utils/getExtension'
 
-const CLOUDFLARE_R2_CREATE = graphql(`
+export const CLOUDFLARE_R2_CREATE = graphql(`
   mutation CloudflareR2Create($input: CloudflareR2CreateInput!) {
     cloudflareR2Create(input: $input) {
       id
@@ -19,7 +20,7 @@ const CLOUDFLARE_R2_CREATE = graphql(`
   }
 `)
 
-const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
+export const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
   mutation CreateMuxVideoUploadByUrl($url: String!) {
     createMuxVideoUploadByUrl(url: $url) {
       id
@@ -31,7 +32,7 @@ const CREATE_MUX_VIDEO_UPLOAD_BY_URL = graphql(`
   }
 `)
 
-const CREATE_VIDEO_VARIANT = graphql(`
+export const CREATE_VIDEO_VARIANT = graphql(`
   mutation CreateVideoVariant($input: VideoVariantCreateInput!) {
     videoVariantCreate(input: $input) {
       id
@@ -48,7 +49,7 @@ const CREATE_VIDEO_VARIANT = graphql(`
   }
 `)
 
-const GET_MY_MUX_VIDEO = graphql(`
+export const GET_MY_MUX_VIDEO = graphql(`
   query GetMyMuxVideo($id: ID!) {
     getMyMuxVideo(id: $id) {
       id
@@ -66,6 +67,10 @@ interface UploadVideoVariantState {
   error: string | null
   muxVideoId: string | null
   edition: string | null
+  languageId: string | null
+  languageSlug: string | null
+  videoId: string | null
+  onComplete?: () => void
 }
 
 interface UploadVideoVariantContextType {
@@ -74,7 +79,9 @@ interface UploadVideoVariantContextType {
     file: File,
     videoId: string,
     languageId: string,
-    edition: string
+    languageSlug: string,
+    edition: string,
+    onComplete?: () => void
   ) => Promise<void>
   clearUploadState: () => void
 }
@@ -85,7 +92,11 @@ const initialState: UploadVideoVariantState = {
   isProcessing: false,
   error: null,
   muxVideoId: null,
-  edition: null
+  edition: null,
+  languageId: null,
+  languageSlug: null,
+  videoId: null,
+  onComplete: undefined
 }
 
 const UploadVideoVariantContext = createContext<
@@ -93,7 +104,14 @@ const UploadVideoVariantContext = createContext<
 >(undefined)
 
 type UploadAction =
-  | { type: 'START_UPLOAD' }
+  | {
+      type: 'START_UPLOAD'
+      videoId: string
+      languageId: string
+      languageSlug: string
+      edition: string
+      onComplete?: () => void
+    }
   | { type: 'SET_PROGRESS'; progress: number }
   | { type: 'START_PROCESSING'; muxVideoId: string }
   | { type: 'COMPLETE' }
@@ -106,7 +124,15 @@ function uploadReducer(
 ): UploadVideoVariantState {
   switch (action.type) {
     case 'START_UPLOAD':
-      return { ...initialState, isUploading: true }
+      return {
+        ...initialState,
+        isUploading: true,
+        videoId: action.videoId,
+        languageId: action.languageId,
+        languageSlug: action.languageSlug,
+        edition: action.edition,
+        onComplete: action.onComplete
+      }
     case 'SET_PROGRESS':
       return { ...state, uploadProgress: action.progress }
     case 'START_PROCESSING':
@@ -152,29 +178,71 @@ export function UploadVideoVariantProvider({
         stopPolling()
         await handleCreateVideoVariant(data.getMyMuxVideo.id)
       }
+    },
+    onError: (error) => {
+      stopPolling()
+      const errorMessage = error.message || t('Failed to get Mux video status')
+      dispatch({ type: 'SET_ERROR', error: errorMessage })
+      enqueueSnackbar(errorMessage, { variant: 'error' })
     }
   })
 
   const handleCreateVideoVariant = async (muxId: string) => {
-    if (state.muxVideoId == null || state.edition == null) return
+    if (
+      state.videoId == null ||
+      state.languageId == null ||
+      state.languageSlug == null ||
+      state.edition == null
+    )
+      return
 
     try {
-      // This would be populated from the upload context state
-      // In a real implementation, you would store these values in the state
-      const [languageId, videoId] = state.muxVideoId.split('_')
-
       await createVideoVariant({
         variables: {
           input: {
-            id: `${languageId}_${videoId}`,
-            videoId,
-            edition: state.edition, // This would come from state in a real implementation
-            languageId,
-            slug: `${videoId}/${languageId}`,
+            id: `${state.languageId}_${state.videoId}`,
+            videoId: state.videoId,
+            edition: state.edition,
+            languageId: state.languageId,
+            slug: `${state.videoId}/${state.languageSlug}`,
             downloadable: true,
             published: true,
             muxVideoId: muxId
           }
+        },
+        onCompleted: () => {
+          state.onComplete?.()
+        },
+        update: (cache, { data }) => {
+          if (data?.videoVariantCreate == null || state.videoId == null) return
+          cache.modify({
+            id: cache.identify({
+              __typename: 'Video',
+              id: state.videoId
+            }),
+            fields: {
+              variants(existingVariants = []) {
+                const newVariantRef = cache.writeFragment({
+                  data: data.videoVariantCreate,
+                  fragment: graphql(`
+                    fragment NewVariant on VideoVariant {
+                      id
+                      videoId
+                      slug
+                      language {
+                        id
+                        name {
+                          value
+                          primary
+                        }
+                      }
+                    }
+                  `)
+                })
+                return [...existingVariants, newVariantRef]
+              }
+            }
+          })
         }
       })
 
@@ -192,14 +260,22 @@ export function UploadVideoVariantProvider({
     file: File,
     videoId: string,
     languageId: string,
-    edition: string
+    languageSlug: string,
+    edition: string,
+    onComplete?: () => void
   ) => {
     try {
-      dispatch({ type: 'START_UPLOAD' })
+      dispatch({
+        type: 'START_UPLOAD',
+        videoId,
+        languageId,
+        languageSlug,
+        edition,
+        onComplete
+      })
 
       const videoVariantId = `${languageId}_${videoId}`
       const extension = getExtension(file.name)
-
       // Create R2 asset
       const r2Response = await createR2Asset({
         variables: {
@@ -215,7 +291,10 @@ export function UploadVideoVariantProvider({
         r2Response.data?.cloudflareR2Create?.uploadUrl == null ||
         r2Response.data?.cloudflareR2Create?.publicUrl == null
       ) {
-        throw new Error(t('Failed to create R2 asset'))
+        const errorMessage = t('Failed to create R2 asset')
+        dispatch({ type: 'SET_ERROR', error: errorMessage })
+        enqueueSnackbar(errorMessage, { variant: 'error' })
+        return
       }
 
       // Upload to R2 with progress tracking
@@ -239,12 +318,16 @@ export function UploadVideoVariantProvider({
       })
 
       if (muxResponse.data?.createMuxVideoUploadByUrl?.id == null) {
-        throw new Error(t('Failed to create Mux video'))
+        const errorMessage = t('Failed to create Mux video')
+        dispatch({ type: 'SET_ERROR', error: errorMessage })
+        enqueueSnackbar(errorMessage, { variant: 'error' })
+        return
       }
 
-      // Store context for variant creation
-      const contextId = `${languageId}_${videoId}_${edition}`
-      dispatch({ type: 'START_PROCESSING', muxVideoId: contextId })
+      dispatch({
+        type: 'START_PROCESSING',
+        muxVideoId: muxResponse.data.createMuxVideoUploadByUrl.id
+      })
 
       // Start polling for Mux video status
       void getMyMuxVideo({

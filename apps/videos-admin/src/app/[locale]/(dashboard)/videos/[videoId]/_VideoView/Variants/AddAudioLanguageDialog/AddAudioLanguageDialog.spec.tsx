@@ -6,15 +6,25 @@ import { SnackbarProvider } from 'notistack'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import {
-  AddAudioLanguageDialog,
   CLOUDFLARE_R2_CREATE,
   CREATE_MUX_VIDEO_UPLOAD_BY_URL,
   CREATE_VIDEO_VARIANT,
-  GET_MY_MUX_VIDEO
-} from './AddAudioLanguageDialog'
+  GET_MY_MUX_VIDEO,
+  UploadVideoVariantProvider
+} from '../../../../../../../contexts/UploadVideoVariantContext'
+
+import { AddAudioLanguageDialog } from './AddAudioLanguageDialog'
 
 jest.mock('next/navigation', () => ({
   useParams: () => ({ videoId: 'video123' })
+}))
+
+jest.mock('uuid', () => ({
+  v4: jest.fn().mockReturnValue('uuidv4')
+}))
+
+jest.mock('axios', () => ({
+  put: jest.fn().mockResolvedValue({})
 }))
 
 const getLanguagesMock = {
@@ -77,7 +87,7 @@ const cloudflareR2CreateMock = {
     query: CLOUDFLARE_R2_CREATE,
     variables: {
       input: {
-        fileName: 'test.mp4',
+        fileName: 'video123/variants/529/videos/uuidv4/529_video123.mp4',
         contentType: 'video/mp4',
         videoId: 'video123'
       }
@@ -135,12 +145,7 @@ const getMuxVideoMock = {
 
 describe('AddAudioLanguageDialog', () => {
   beforeEach(() => {
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ success: true, errors: [] })
-      })
-    ) as jest.Mock
+    jest.clearAllMocks()
   })
 
   it('should render dialog with edition and language inputs', async () => {
@@ -148,12 +153,14 @@ describe('AddAudioLanguageDialog', () => {
       <MockedProvider mocks={[getLanguagesMock]}>
         <SnackbarProvider>
           <NextIntlClientProvider locale="en" messages={{}}>
-            <AddAudioLanguageDialog
-              open
-              handleClose={jest.fn()}
-              variantLanguagesMap={new Map()}
-              editions={[{ id: 'edition1', name: 'base' }]}
-            />
+            <UploadVideoVariantProvider>
+              <AddAudioLanguageDialog
+                open
+                handleClose={jest.fn()}
+                variantLanguagesMap={new Map()}
+                editions={[{ id: 'edition1', name: 'base' }]}
+              />
+            </UploadVideoVariantProvider>
           </NextIntlClientProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -173,12 +180,14 @@ describe('AddAudioLanguageDialog', () => {
       >
         <SnackbarProvider>
           <NextIntlClientProvider locale="en" messages={{}}>
-            <AddAudioLanguageDialog
-              open
-              handleClose={jest.fn()}
-              variantLanguagesMap={new Map()}
-              editions={[{ id: 'edition1', name: 'base' }]}
-            />
+            <UploadVideoVariantProvider>
+              <AddAudioLanguageDialog
+                open
+                handleClose={jest.fn()}
+                variantLanguagesMap={new Map()}
+                editions={[{ id: 'edition1', name: 'base' }]}
+              />
+            </UploadVideoVariantProvider>
           </NextIntlClientProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -217,12 +226,14 @@ describe('AddAudioLanguageDialog', () => {
       >
         <SnackbarProvider>
           <NextIntlClientProvider locale="en" messages={{}}>
-            <AddAudioLanguageDialog
-              open
-              handleClose={handleClose}
-              variantLanguagesMap={new Map()}
-              editions={[{ id: 'edition1', name: 'base' }]}
-            />
+            <UploadVideoVariantProvider>
+              <AddAudioLanguageDialog
+                open
+                handleClose={handleClose}
+                variantLanguagesMap={new Map()}
+                editions={[{ id: 'edition1', name: 'base' }]}
+              />
+            </UploadVideoVariantProvider>
           </NextIntlClientProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -264,24 +275,48 @@ describe('AddAudioLanguageDialog', () => {
     await waitFor(() => {
       expect(createVideoVariantMockResult).toHaveBeenCalled()
     })
-    await waitFor(() => {
-      expect(handleClose).toHaveBeenCalled()
-    })
+    expect(handleClose).toHaveBeenCalled()
   })
 
   it('should show error when R2 upload fails', async () => {
-    global.fetch = jest.fn(() => Promise.resolve({ ok: false })) as jest.Mock
+    const cloudflareR2CreateMock = {
+      request: {
+        query: CLOUDFLARE_R2_CREATE,
+        variables: {
+          input: {
+            fileName: 'video123/variants/529/videos/uuidv4/529_video123.mp4',
+            contentType: 'video/mp4',
+            videoId: 'video123'
+          }
+        }
+      },
+      result: {
+        data: {
+          cloudflareR2Create: {
+            id: 'r2asset1',
+            fileName: 'test.mp4',
+            uploadUrl: null,
+            publicUrl: null
+          }
+        }
+      }
+    }
+    const result = jest.fn().mockReturnValue(cloudflareR2CreateMock.result)
 
     render(
-      <MockedProvider mocks={[getLanguagesMock, cloudflareR2CreateMock]}>
+      <MockedProvider
+        mocks={[getLanguagesMock, { ...cloudflareR2CreateMock, result }]}
+      >
         <SnackbarProvider>
           <NextIntlClientProvider locale="en" messages={{}}>
-            <AddAudioLanguageDialog
-              open
-              handleClose={jest.fn()}
-              variantLanguagesMap={new Map()}
-              editions={[{ id: 'edition1', name: 'base' }]}
-            />
+            <UploadVideoVariantProvider>
+              <AddAudioLanguageDialog
+                open
+                handleClose={jest.fn()}
+                variantLanguagesMap={new Map()}
+                editions={[{ id: 'edition1', name: 'base' }]}
+              />
+            </UploadVideoVariantProvider>
           </NextIntlClientProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -311,9 +346,7 @@ describe('AddAudioLanguageDialog', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Add' }))
     )
     await waitFor(() => {
-      expect(
-        screen.getByText('Failed to upload file to R2')
-      ).toBeInTheDocument()
+      expect(screen.getByText('Failed to create R2 asset')).toBeInTheDocument()
     })
   })
 })
