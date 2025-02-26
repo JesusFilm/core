@@ -12,7 +12,7 @@ import {
   GET_MY_MUX_VIDEO,
   UploadVideoVariantProvider,
   useUploadVideoVariant
-} from './UploadVideoVariantContext'
+} from './UploadVideoVariantProvider'
 
 // Mock axios
 jest.mock('axios', () => ({

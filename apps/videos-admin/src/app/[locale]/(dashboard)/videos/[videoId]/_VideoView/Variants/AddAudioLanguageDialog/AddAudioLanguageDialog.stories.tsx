@@ -7,7 +7,7 @@ import { SnackbarProvider } from 'notistack'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
-import { CREATE_VIDEO_VARIANT } from '../../../../../../../contexts/UploadVideoVariantContext'
+import { CREATE_VIDEO_VARIANT } from '../../../../../../../../libs/UploadVideoVariantProvider'
 
 import { AddAudioLanguageDialog } from './AddAudioLanguageDialog'
 

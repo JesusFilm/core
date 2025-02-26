@@ -6,7 +6,7 @@ import { ReactNode } from 'react'
 import { AuthProvider } from '../../libs/auth/AuthProvider'
 import { getUser } from '../../libs/auth/getUser'
 import { SnackbarProvider } from '../../libs/SnackbarProvider'
-import { UploadVideoVariantProvider } from '../contexts/UploadVideoVariantContext'
+import { UploadVideoVariantProvider } from '../../libs/UploadVideoVariantProvider/UploadVideoVariantContext'
 
 import { ApolloProvider } from './_ApolloProvider'
 

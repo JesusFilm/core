@@ -18,11 +18,11 @@ import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete/LanguageAutocomplete'
 
+import { useUploadVideoVariant } from '../../../../../../../../libs/UploadVideoVariantProvider'
 import {
   GetAdminVideoVariant,
   GetAdminVideo_AdminVideo_VideoEditions as VideoEditions
 } from '../../../../../../../../libs/useAdminVideo'
-import { useUploadVideoVariant } from '../../../../../../../contexts/UploadVideoVariantContext'
 
 import { AudioLanguageFileUpload } from './AudioLanguageFileUpload/AudioLanguageFileUpload'
 
