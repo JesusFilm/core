@@ -2,19 +2,19 @@ import CloseIcon from '@mui/icons-material/Close'
 import FavoriteIcon from '@mui/icons-material/Favorite'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
-import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
-import MuiLink from '@mui/material/Link'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import logo from '../assets/logo.svg'
+
+import { HeaderLinkAccordion } from './HeaderLinkAccordion'
+import { headerLinks } from './headerLinks'
 
 interface HeaderMenuPanelProps {
   onClose: () => void
@@ -23,34 +23,25 @@ interface HeaderMenuPanelProps {
 export function HeaderMenuPanel({
   onClose
 }: HeaderMenuPanelProps): ReactElement {
-  const theme = useTheme()
-
   const { t } = useTranslation('apps-watch')
+  const [expanded, setExpanded] = useState<string | false>(false)
 
-  const HeaderLink = ({
-    url,
-    label
-  }: {
-    url: string
-    label: string
-  }): ReactElement => (
-    <MuiLink
-      href={url}
-      underline="none"
-      rel="noopener"
-      color="text.primary"
-      variant="overline2"
-      onClick={onClose}
-    >
-      {label}
-      <Divider
-        sx={{ pb: 3, [theme.breakpoints.up('sm')]: { display: 'none' } }}
-      />
-    </MuiLink>
-  )
+  const handleAccordionChange =
+    (panel: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpanded(isExpanded ? panel : false)
+    }
 
   return (
-    <Paper elevation={0} data-testid="HeaderMenuPanel">
+    <Paper
+      elevation={0}
+      data-testid="HeaderMenuPanel"
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        width: { xs: '100%' }
+      }}
+    >
       <Container maxWidth="xxl" disableGutters>
         <Stack
           spacing={0.5}
@@ -73,7 +64,7 @@ export function HeaderMenuPanel({
           </NextLink>
           <IconButton
             color="inherit"
-            aria-label="open drawer"
+            aria-label="close drawer"
             edge="start"
             onClick={onClose}
           >
@@ -81,31 +72,42 @@ export function HeaderMenuPanel({
           </IconButton>
         </Stack>
       </Container>
-      <Divider />
-      <Container maxWidth="xxl" disableGutters>
+      <Container
+        maxWidth="xxl"
+        disableGutters
+        sx={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'auto'
+        }}
+      >
         <Stack
-          direction={{ xs: 'column', sm: 'row' }}
+          direction="column"
           justifyContent="space-between"
-          p={8}
+          p={4}
+          sx={{ flexGrow: 1 }}
         >
           <Stack
-            justifyContent="space-between"
-            alignItems={{ sm: 'center' }}
-            spacing={{ xs: 3, sm: 3, md: 8 }}
-            direction={{ xs: 'column', sm: 'row' }}
+            justifyContent="flex-start"
+            spacing={0}
+            direction="column"
+            alignItems="flex-end"
           >
-            <HeaderLink url="https://www.jesusfilm.org/give/" label="Give" />
-            <HeaderLink url="https://www.jesusfilm.org/about/" label="About" />
-            <HeaderLink
-              url="https://www.jesusfilm.org/partners/"
-              label="Partners"
-            />
-            <HeaderLink url="https://www.jesusfilm.org/blog/" label="Blog" />
-            <HeaderLink url="https://www.jesusfilm.org/tools/" label="Tools" />
-            <HeaderLink
-              url="https://www.jesusfilm.org/contact/"
-              label="Contact"
-            />
+            {headerLinks.map((link) => (
+              <HeaderLinkAccordion
+                key={link.label}
+                label={t(link.label)}
+                url={link.url}
+                expanded={expanded === link.label}
+                onAccordionChange={handleAccordionChange}
+                subLinks={link.subLinks?.map((subLink) => ({
+                  ...subLink,
+                  label: t(subLink.label)
+                }))}
+                onClose={onClose}
+              />
+            ))}
           </Stack>
           <Button
             startIcon={<FavoriteIcon />}

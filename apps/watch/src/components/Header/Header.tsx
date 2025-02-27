@@ -85,7 +85,13 @@ const LocalAppBar = forwardRef<HTMLDivElement, LocalAppBarProps>(
               >
                 <HeaderTabButtons />
               </Grid>
-              <Grid item sx={{ gridRow: 1, gridColumn: 3 }}>
+              <Grid
+                item
+                sx={{
+                  gridRow: 1,
+                  gridColumn: 3
+                }}
+              >
                 <Box data-testid="MenuBox">
                   <IconButton
                     color="inherit"
@@ -195,7 +201,7 @@ export function Header({
         nested
       >
         <SwipeableDrawer
-          anchor="top"
+          anchor="right"
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
           onOpen={() => setDrawerOpen(true)}
