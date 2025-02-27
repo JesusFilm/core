@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { useField } from 'formik'
 
 import { FormCheckbox } from './FormCheckbox'
-import userEvent from '@testing-library/user-event'
 
 const props = {
   name: 'name',

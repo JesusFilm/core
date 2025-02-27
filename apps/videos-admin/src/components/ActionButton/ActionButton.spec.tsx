@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
-import { ActionButton } from './ActionButton'
-import { NextIntlClientProvider } from 'next-intl'
 import userEvent from '@testing-library/user-event'
+import { NextIntlClientProvider } from 'next-intl'
+
+import { ActionButton } from './ActionButton'
 
 describe('ActionButton', () => {
   it('should render without actions', async () => {

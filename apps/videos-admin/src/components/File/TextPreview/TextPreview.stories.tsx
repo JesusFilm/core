@@ -1,7 +1,9 @@
-import { ComponentPropsWithoutRef } from 'react'
-import { TextPreview } from './TextPreview'
-import { videosAdminConfig } from '../../../libs/storybookConfig'
 import { Meta, StoryObj } from '@storybook/react'
+import { ComponentPropsWithoutRef } from 'react'
+
+import { videosAdminConfig } from '../../../libs/storybookConfig'
+
+import { TextPreview } from './TextPreview'
 
 type StoryArgs = ComponentPropsWithoutRef<typeof TextPreview>
 

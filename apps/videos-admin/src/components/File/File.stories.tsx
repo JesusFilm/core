@@ -1,7 +1,9 @@
-import { ComponentPropsWithoutRef } from 'react'
-import { File as FileComponent } from './File'
-import { videosAdminConfig } from '../../libs/storybookConfig'
 import { Meta, StoryObj } from '@storybook/react'
+import { ComponentPropsWithoutRef } from 'react'
+
+import { videosAdminConfig } from '../../libs/storybookConfig'
+
+import { File as FileComponent } from './File'
 
 const noop = () => undefined
 

@@ -14,6 +14,7 @@ import Trash2 from '@core/shared/ui/icons/Trash2'
 import VideoOn from '@core/shared/ui/icons/VideoOn'
 
 import { bytesToSize } from '../../app/[locale]/(dashboard)/videos/[videoId]/_VideoView/Variants/VariantDialog/Downloads/utils/bytesToSize'
+
 import { TextPreview } from './TextPreview'
 
 export function File({

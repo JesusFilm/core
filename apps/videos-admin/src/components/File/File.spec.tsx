@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import { File as FileComponent } from './File'
-import userEvent from '@testing-library/user-event'
 
 const file = new File(['test'], 'test.txt', { type: 'text/vtt' })
 
