@@ -2,16 +2,17 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
+import { DialogAction } from '../../../../../../../components/CrudDialog'
 import { GetAdminVideo_AdminVideo_VideoEditions as VideoEditions } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useCrudState } from '../../../../../../../libs/useCrudState'
 import { ArrayElement } from '../../../../../../../types/array-types'
 import { Section } from '../Section'
 
 import { EditionCard } from './EditionCard'
-import { DialogAction } from './EditionDialog'
 
 type Edition = ArrayElement<VideoEditions>
 
@@ -30,20 +31,15 @@ interface EditionsProps {
 
 export function Editions({ editions }: EditionsProps): ReactElement {
   const t = useTranslations()
-  const [action, setAction] = useState<DialogAction | null>(null)
-  const [selectedEdition, setSelectedEdition] = useState<Edition | null>(null)
 
-  const handleAction = (action: DialogAction, edition: Edition) => {
-    setSelectedEdition(edition)
-    setAction(action)
-  }
+  const { selectedItem, action, dispatch } = useCrudState<Edition>(editions)
 
   return (
     <Section
-      title="Editions"
+      title={t('Editions')}
       action={{
-        label: 'New Edition',
-        onClick: () => setAction(DialogAction.CREATE),
+        label: t('New Edition'),
+        onClick: () => dispatch({ type: DialogAction.CREATE }),
         startIcon: <Plus2 />
       }}
     >
@@ -59,24 +55,29 @@ export function Editions({ editions }: EditionsProps): ReactElement {
             <EditionCard
               key={edition.id}
               edition={edition}
-              onClick={() => handleAction(DialogAction.VIEW, edition)}
+              onClick={() =>
+                dispatch({ type: DialogAction.VIEW, item: edition })
+              }
               actions={{
-                view: () => handleAction(DialogAction.VIEW, edition),
-                edit: () => handleAction(DialogAction.EDIT, edition),
-                delete: () => handleAction(DialogAction.DELETE, edition)
+                view: () =>
+                  dispatch({ type: DialogAction.VIEW, item: edition }),
+                edit: () =>
+                  dispatch({ type: DialogAction.EDIT, item: edition }),
+                delete: () =>
+                  dispatch({ type: DialogAction.DELETE, item: edition })
               }}
             />
           ))}
         </Box>
       ) : (
         <Box sx={{ display: 'grid', placeItems: 'center', height: 200 }}>
-          <Typography>{t('No editions.')}</Typography>
+          <Typography>{t('No editions')}</Typography>
         </Box>
       )}
       <EditionDialog
         action={action}
-        close={() => setAction(null)}
-        edition={selectedEdition}
+        close={() => dispatch({ type: 'reset' })}
+        edition={selectedItem}
       />
     </Section>
   )
