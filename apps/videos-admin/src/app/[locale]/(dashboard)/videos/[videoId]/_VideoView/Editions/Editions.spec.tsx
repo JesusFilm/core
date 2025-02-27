@@ -38,7 +38,7 @@ describe('Editions', () => {
     )
 
     expect(screen.getByText('Editions')).toBeInTheDocument()
-    expect(screen.getByText('No editions.')).toBeInTheDocument()
+    expect(screen.getByText('No editions')).toBeInTheDocument()
   })
 
   it('should open create edition dialog', async () => {
@@ -120,7 +120,7 @@ describe('Editions', () => {
 
     const user = userEvent.setup()
 
-    const menuButton = screen.getByRole('button', { name: 'More options' })
+    const menuButton = screen.getByRole('button', { name: /more options/i })
     await user.click(menuButton)
 
     const editMenuItem = screen.getByRole('menuitem', { name: 'Edit' })
@@ -150,7 +150,7 @@ describe('Editions', () => {
 
     const user = userEvent.setup()
 
-    const menuButton = screen.getByRole('button', { name: 'More options' })
+    const menuButton = screen.getByRole('button', { name: /more options/i })
     await user.click(menuButton)
 
     const editMenuItem = screen.getByRole('menuitem', { name: 'Delete' })
