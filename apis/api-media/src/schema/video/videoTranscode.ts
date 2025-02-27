@@ -1,4 +1,4 @@
-import { Queue } from 'bullmq'
+import { Job, Queue } from 'bullmq'
 
 import { prisma } from '../../lib/prisma'
 import { connection } from '../../workers/lib/connection'
@@ -30,14 +30,16 @@ builder.mutationFields((t) => ({
           id: input.r2AssetId
         }
       })
+      if (!inputAsset) throw new Error('Input asset not found')
 
       const queue = new Queue('jfp-video-transcode', { connection })
       const job = (await queue.add('api-media-transcode-video', {
-        r2Filename: input.inputUrl,
+        inputUrl: inputAsset.publicUrl,
         resolution: input.resolution,
         bitrate: input.bitrate ?? undefined,
-        outputBucket: input.outputBucket ?? undefined,
-        outputKey: input.outputKey ?? undefined
+        contentType: inputAsset.contentType,
+        outputFilename: input.outputFilename,
+        outputPath: input.outputPath
       })) as Job<TranscodeVideoJob>
 
       try {
