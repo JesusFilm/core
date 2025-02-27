@@ -27,12 +27,10 @@ const GET_VIDEO_TITLE = graphql(`
   }
 `)
 
-export default async function Page(
-  props: {
-    searchParams: Promise<{ refId?: string }>
-  }
-) {
-  const searchParams = await props.searchParams;
+export default async function Page(props: {
+  searchParams: Promise<{ refId?: string }>
+}) {
+  const searchParams = await props.searchParams
   if (!searchParams.refId) {
     return {
       message: 'Missing refId parameter',
