@@ -109,8 +109,8 @@ const GET_VIDEOS_WITH_FALLBACK = graphql(`
 `)
 
 const QuerySchema = z.object({
-  page: z.string().optional(),
-  limit: z.string().optional(),
+  page: z.coerce.number().optional(),
+  limit: z.coerce.number().optional(),
   subTypes: z.string().optional(),
   languageIds: z.string().optional(),
   ids: z.string().optional()
