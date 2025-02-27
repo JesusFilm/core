@@ -81,12 +81,6 @@ async function main(): Promise<void> {
       './seed'
     )
   )
-  run(
-    await import(
-      /* webpackChunkName: "video-transcode" */
-      './videoTranscode'
-    )
-  )
 }
 
 // avoid running on test environment
