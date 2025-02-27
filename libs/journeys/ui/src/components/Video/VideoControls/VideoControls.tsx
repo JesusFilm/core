@@ -407,6 +407,7 @@ export function VideoControls({
               showFullscreenButton={variant !== 'embed' || isIPhone()}
               fullscreen={fullscreen}
               handleFullscreen={handleFullscreen}
+              player={player}
             />
             <DesktopControls
               playing={state.playing}
@@ -426,6 +427,7 @@ export function VideoControls({
               showFullscreenButton={variant !== 'embed' || isIPhone()}
               fullscreen={fullscreen}
               handleFullscreen={handleFullscreen}
+              player={player}
             />
           </Container>
         </Fade>

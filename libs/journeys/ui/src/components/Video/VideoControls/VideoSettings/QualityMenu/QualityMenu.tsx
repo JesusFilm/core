@@ -5,7 +5,22 @@ import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
+import Player from 'video.js/dist/types/player'
+
+interface QualityLevel {
+  height: number
+  id: number
+  enabled: boolean
+}
+
+interface QualityLevels {
+  length: number
+  on: (event: string, callback: () => void) => void
+  off: (event: string, callback: () => void) => void
+  selectedIndex: number
+  [index: number]: QualityLevel
+}
 
 export interface QualityMenuItem {
   resolution: string
@@ -17,9 +32,8 @@ interface QualityMenuProps {
   open: boolean
   onClose: () => void
   onBack: () => void
-  qualities: QualityMenuItem[]
-  selectedQuality: number | null
-  onQualityChange: (quality: number) => void
+  player: Player & { qualityLevels(): QualityLevels }
+  onQualityChanged: (quality: string) => void
 }
 
 export function QualityMenu({
@@ -27,15 +41,93 @@ export function QualityMenu({
   open,
   onClose,
   onBack,
-  qualities,
-  selectedQuality,
-  onQualityChange
+  player,
+  onQualityChanged
 }: QualityMenuProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
+  const [qualities, setQualities] = useState<QualityMenuItem[]>([])
+  const [selectedQuality, setSelectedQuality] = useState<number>(-1)
+
+  useEffect(() => {
+    // Get quality levels from the player
+    const qualityLevels = player.qualityLevels()
+
+    // Listen for changes in quality levels
+    const handleQualityChange = () => {
+      const levels = []
+      // Add Auto option
+      levels.push({ resolution: 'Auto', qualityLevel: -1 })
+
+      // Add available quality levels
+      const uniqueResolutions = new Set()
+      for (let i = 0; i < qualityLevels.length; i++) {
+        const level = qualityLevels[i]
+        // Convert height to common resolution name
+        const height = level.height
+        let resolution = `${height}p`
+        if (height >= 2160) resolution = '4K'
+        else if (height >= 1440) resolution = '2K'
+
+        // Only add if resolution hasn't been seen before
+        if (!uniqueResolutions.has(resolution)) {
+          uniqueResolutions.add(resolution)
+          levels.push({ resolution, qualityLevel: i })
+        }
+      }
+
+      setQualities(levels)
+
+      // Only update selected quality if it was previously set by user
+      if (selectedQuality !== -1) {
+        // Find currently selected quality
+        const selectedIndex = Array.from(qualityLevels).findIndex(
+          (level) => level.enabled
+        )
+        const newQuality = selectedIndex === -1 ? -1 : selectedIndex
+        setSelectedQuality(newQuality)
+
+        // Notify parent of quality change
+        const resolution =
+          levels.find((q) => q.qualityLevel === newQuality)?.resolution ??
+          'Auto'
+        onQualityChanged(resolution)
+      }
+    }
+
+    qualityLevels.on('change', handleQualityChange)
+    handleQualityChange() // Initial setup
+
+    return () => {
+      qualityLevels.off('change', handleQualityChange)
+    }
+  }, [player, onQualityChanged, selectedQuality])
+
+  const handleQualityChange = (quality: number): void => {
+    const qualityLevels = player.qualityLevels()
+
+    // Enable all levels for Auto
+    if (quality === -1) {
+      for (let i = 0; i < qualityLevels.length; i++) {
+        qualityLevels[i].enabled = true
+      }
+    } else {
+      // Enable only selected quality level
+      for (let i = 0; i < qualityLevels.length; i++) {
+        qualityLevels[i].enabled = i === quality
+      }
+    }
+
+    setSelectedQuality(quality)
+
+    // Notify parent of quality change
+    const resolution =
+      qualities.find((q) => q.qualityLevel === quality)?.resolution ?? 'Auto'
+    onQualityChanged(resolution)
+    onClose()
+  }
 
   return (
     <Menu
-      id="quality-menu"
       anchorEl={anchorEl}
       open={open}
       onClose={onClose}
@@ -56,20 +148,19 @@ export function QualityMenu({
       </MenuItem>
       {qualities.map(({ resolution, qualityLevel }) => (
         <MenuItem
-          key={qualityLevel}
-          onClick={() => {
-            onQualityChange(qualityLevel)
-            onClose()
-          }}
+          key={resolution}
+          onClick={() => handleQualityChange(qualityLevel)}
           sx={{
             display: 'flex',
-            alignItems: 'center',
             justifyContent: 'space-between',
-            gap: 1
+            alignItems: 'center',
+            minWidth: 150
           }}
         >
-          <Typography>{resolution}</Typography>
-          {selectedQuality === qualityLevel && <CheckIcon fontSize="small" />}
+          {resolution}
+          {selectedQuality === qualityLevel && (
+            <CheckIcon fontSize="small" sx={{ ml: 1 }} />
+          )}
         </MenuItem>
       ))}
     </Menu>

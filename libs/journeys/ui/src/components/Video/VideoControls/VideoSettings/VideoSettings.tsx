@@ -1,20 +1,32 @@
-import SettingsIcon from '@mui/icons-material/Settings'
-import IconButton from '@mui/material/IconButton'
-import { MouseEvent, ReactElement, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
-import { QualityMenu } from './QualityMenu'
-import { SettingsMenu } from './SettingsMenu'
+import { QualityMenu } from './QualityMenu/QualityMenu'
+import { SettingsButton } from './SettingsButton'
+import { SettingsMenu } from './SettingsMenu/SettingsMenu'
+
+interface QualityLevels {
+  length: number
+  on: (event: string, callback: () => void) => void
+  off: (event: string, callback: () => void) => void
+  selectedIndex: number
+  [index: number]: {
+    height: number
+    id: number
+    enabled: boolean
+  }
+}
 
 interface VideoSettingsProps {
-  player: Player
+  player: Player & { qualityLevels(): QualityLevels }
 }
 
 export function VideoSettings({ player }: VideoSettingsProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showQualityMenu, setShowQualityMenu] = useState(false)
+  const [currentQuality, setCurrentQuality] = useState('Auto')
 
-  const handleClick = (event: MouseEvent<HTMLElement>): void => {
+  const handleClick = (event: React.MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget)
   }
 
@@ -31,41 +43,20 @@ export function VideoSettings({ player }: VideoSettingsProps): ReactElement {
     setShowQualityMenu(false)
   }
 
-  const handleQualityChange = (quality: number): void => {
-    // Will implement quality change logic in next step
-    console.log('Quality changed to:', quality)
+  const handleQualityChanged = (quality: string): void => {
+    setCurrentQuality(quality)
   }
 
-  // Temporary mock data until we implement quality levels
-  const mockQualities = [
-    { resolution: 'Auto', qualityLevel: -1 },
-    { resolution: '1080p', qualityLevel: 0 },
-    { resolution: '720p', qualityLevel: 1 },
-    { resolution: '480p', qualityLevel: 2 },
-    { resolution: '360p', qualityLevel: 3 }
-  ]
-
-  const currentQuality =
-    mockQualities.find((q) => q.qualityLevel === -1)?.resolution ?? 'Auto'
   const open = Boolean(anchorEl)
 
   return (
     <>
-      <IconButton
+      <SettingsButton
         onClick={handleClick}
-        aria-label="video settings"
         aria-controls={open ? 'settings-menu' : undefined}
-        aria-expanded={open}
         aria-haspopup
-        sx={{
-          color: 'common.white',
-          '&:hover': {
-            backgroundColor: 'action.hover'
-          }
-        }}
-      >
-        <SettingsIcon />
-      </IconButton>
+        aria-expanded={open}
+      />
       <SettingsMenu
         anchorEl={anchorEl}
         open={open && !showQualityMenu}
@@ -78,9 +69,8 @@ export function VideoSettings({ player }: VideoSettingsProps): ReactElement {
         open={open && showQualityMenu}
         onClose={handleClose}
         onBack={handleQualityBack}
-        qualities={mockQualities}
-        selectedQuality={-1}
-        onQualityChange={handleQualityChange}
+        player={player}
+        onQualityChanged={handleQualityChanged}
       />
     </>
   )

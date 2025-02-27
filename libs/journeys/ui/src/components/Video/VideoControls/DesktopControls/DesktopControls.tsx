@@ -10,6 +10,9 @@ import IconButton from '@mui/material/IconButton'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import Player from 'video.js/dist/types/player'
+
+import { VideoSettings } from '../VideoSettings'
 
 interface DesktopControlsProps {
   playing: boolean
@@ -29,6 +32,7 @@ interface DesktopControlsProps {
   showFullscreenButton: boolean
   fullscreen: boolean
   handleFullscreen: () => void
+  player: Player
 }
 
 export function DesktopControls({
@@ -48,7 +52,8 @@ export function DesktopControls({
   handleMute,
   showFullscreenButton,
   fullscreen,
-  handleFullscreen
+  handleFullscreen,
+  player
 }: DesktopControlsProps): JSX.Element {
   return (
     <Stack
@@ -165,6 +170,7 @@ export function DesktopControls({
           )}
         </IconButton>
       </Stack>
+      <VideoSettings player={player} />
       {showFullscreenButton && (
         <IconButton
           aria-label="fullscreen"
