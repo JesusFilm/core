@@ -148,8 +148,7 @@ export function SubtitleCreate({
           input: {
             videoId: video.id,
             fileName: fileName,
-            // TODO: figure out how to handle srt files
-            contentType: 'text/vtt'
+            contentType: file.type
           }
         },
         onCompleted: async (data) => {
@@ -161,7 +160,7 @@ export function SubtitleCreate({
             method: 'PUT',
             body: file,
             headers: {
-              'Content-Type': 'text/vtt'
+              'Content-Type': file.type
             }
           })
 
