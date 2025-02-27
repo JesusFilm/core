@@ -61,5 +61,11 @@
   "Visit a Website": "Visit a Website",
   "Untitled": "Untitled",
   "Step {{number}}": "Step {{number}}",
-  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>"
+  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>",
+  "quality-settings": "Quality Settings",
+  "Quality": "Quality",
+  "Auto": "Auto",
+  "Auto ({{quality}})": "Auto ({{quality}})",
+  "settings": "Settings",
+  "Settings": "Settings"
 }
