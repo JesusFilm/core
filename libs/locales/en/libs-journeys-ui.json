@@ -55,17 +55,16 @@
   "Related Templates": "Related Templates",
   "Preview": "Preview",
   "Edit": "Edit",
+  "Auto": "Auto",
+  "Auto ({{quality}})": "Auto ({{quality}})",
+  "settings": "Settings",
+  "Quality": "Quality",
+  "Settings": "Settings",
   "Start a Conversation": "Start a Conversation",
   "Link to Bible": "Link to Bible",
   "Send an Email": "Send an Email",
   "Visit a Website": "Visit a Website",
   "Untitled": "Untitled",
   "Step {{number}}": "Step {{number}}",
-  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>",
-  "quality-settings": "Quality Settings",
-  "Quality": "Quality",
-  "Auto": "Auto",
-  "Auto ({{quality}})": "Auto ({{quality}})",
-  "settings": "Settings",
-  "Settings": "Settings"
+  "<0>Journey Templates</0><1>in</1><2>{{firstLanguage}}</2>_zero": "<0>Journey Templates</0><1>in</1><2>All Languages</2>"
 }
