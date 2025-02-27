@@ -79,8 +79,8 @@ const GET_LANGUAGES_DATA = graphql(`
 
 const QuerySchema = z.object({
   apiKey: z.string().optional().describe('API key'),
-  page: z.string().optional().describe('Page number'),
-  limit: z.string().optional().describe('Number of items per page'),
+  page: z.coerce.number().optional().describe('Page number'),
+  limit: z.coerce.number().optional().describe('Number of items per page'),
   ids: z.string().optional().describe('Filter by language IDs'),
   bcp47: z.string().optional().describe('Filter by BCP-47 language codes'),
   iso3: z.string().optional().describe('Filter by ISO-3 language codes'),
