@@ -1,0 +1,1 @@
+export { SubtitleCard } from './SubtitleCard'
