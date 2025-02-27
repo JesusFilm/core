@@ -55,9 +55,6 @@ export function QualityMenu({
     // Listen for changes in quality levels
     const handleQualityChange = () => {
       const levels = []
-      // Add Auto option
-      levels.push({ resolution: 'Auto', qualityLevel: -1 })
-
       // Add available quality levels
       const uniqueResolutions = new Set()
       for (let i = 0; i < qualityLevels.length; i++) {
@@ -71,27 +68,46 @@ export function QualityMenu({
         // Only add if resolution hasn't been seen before
         if (!uniqueResolutions.has(resolution)) {
           uniqueResolutions.add(resolution)
-          levels.push({ resolution, qualityLevel: i })
+          levels.push({ resolution, qualityLevel: i, height })
         }
       }
 
-      setQualities(levels)
+      // Sort levels by height in descending order
+      levels.sort((a, b) => (b.height ?? 0) - (a.height ?? 0))
+
+      // Add Auto option at the top
+      levels.unshift({ resolution: 'Auto', qualityLevel: -1, height: Infinity })
+
+      // Remove height property before setting state
+      setQualities(
+        levels.map(({ resolution, qualityLevel }) => ({
+          resolution,
+          qualityLevel
+        }))
+      )
+
+      // Find currently selected quality
+      const selectedIndex = Array.from(qualityLevels).findIndex(
+        (level) => level.enabled
+      )
+      const newQuality = selectedIndex === -1 ? -1 : selectedIndex
 
       // Only update selected quality if it was previously set by user
       if (selectedQuality !== -1) {
-        // Find currently selected quality
-        const selectedIndex = Array.from(qualityLevels).findIndex(
-          (level) => level.enabled
-        )
-        const newQuality = selectedIndex === -1 ? -1 : selectedIndex
         setSelectedQuality(newQuality)
-
-        // Notify parent of quality change
-        const resolution =
-          levels.find((q) => q.qualityLevel === newQuality)?.resolution ??
-          'Auto'
-        onQualityChanged(resolution)
       }
+
+      // Always notify parent of current active quality
+      const activeQualityLevel = qualityLevels.selectedIndex
+      const activeResolution = levels.find(
+        (q) => q.qualityLevel === activeQualityLevel
+      )?.resolution
+      const displayQuality =
+        selectedQuality === -1 && activeResolution != null
+          ? `Auto (${activeResolution})`
+          : (qualities.find((q) => q.qualityLevel === selectedQuality)
+              ?.resolution ?? 'Auto')
+      onQualityChanged(displayQuality)
     }
 
     qualityLevels.on('change', handleQualityChange)
@@ -100,7 +116,7 @@ export function QualityMenu({
     return () => {
       qualityLevels.off('change', handleQualityChange)
     }
-  }, [player, onQualityChanged, selectedQuality])
+  }, [player, onQualityChanged, selectedQuality, qualities])
 
   const handleQualityChange = (quality: number): void => {
     const qualityLevels = player.qualityLevels()
@@ -119,10 +135,20 @@ export function QualityMenu({
 
     setSelectedQuality(quality)
 
-    // Notify parent of quality change
-    const resolution =
-      qualities.find((q) => q.qualityLevel === quality)?.resolution ?? 'Auto'
-    onQualityChanged(resolution)
+    // Find currently active quality for Auto mode
+    const activeQualityLevel = qualityLevels.selectedIndex
+    const activeResolution = qualities.find(
+      (q) => q.qualityLevel === activeQualityLevel
+    )?.resolution
+
+    // Show actual quality in Auto mode
+    const displayQuality =
+      quality === -1 && activeResolution != null
+        ? `Auto (${activeResolution})`
+        : (qualities.find((q) => q.qualityLevel === quality)?.resolution ??
+          'Auto')
+
+    onQualityChanged(displayQuality)
     onClose()
   }
 
