@@ -49,18 +49,6 @@ export class ECSService {
       { name: 'RESOLUTION', value: params.resolution }
     ]
 
-    if (params.bitrate) {
-      environment.push({ name: 'BITRATE', value: params.bitrate.toString() })
-    }
-
-    if (params.outputBucket) {
-      environment.push({ name: 'OUTPUT_BUCKET', value: params.outputBucket })
-    }
-
-    if (params.outputKey) {
-      environment.push({ name: 'OUTPUT_KEY', value: params.outputKey })
-    }
-
     const input: RunTaskCommandInput = {
       cluster: process.env.ECS_CLUSTER,
       taskDefinition: process.env.ECS_TASK_DEFINITION,
