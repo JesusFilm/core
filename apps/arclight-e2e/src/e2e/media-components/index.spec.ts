@@ -149,7 +149,6 @@ test.describe('media components', () => {
   })
 
   test('handles string values for numeric parameters', async ({ request }) => {
-    // This test specifically verifies that string values for numeric parameters are handled correctly
     const params = createQueryParams({
       page: '3',
       limit: '2'
