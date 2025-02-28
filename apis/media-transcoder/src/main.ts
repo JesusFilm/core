@@ -1,8 +1,8 @@
-import { readFile } from 'fs/promises'
+import { readFile, stat } from 'fs/promises'
 
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { Job, Queue, Worker } from 'bullmq'
+import { Job, Worker } from 'bullmq'
 import fetch from 'node-fetch'
 
 import ffmpeg from './types/fluent-ffmpeg'
@@ -14,6 +14,8 @@ interface TranscodeVideoJob {
   contentType: string
   outputFilename: string
   outputPath: string
+  outputSize?: number
+  publicUrl?: string
 }
 
 export function getClient(): S3Client {
@@ -47,14 +49,7 @@ export async function getPresignedUrl(fileName: string): Promise<string> {
   )
 }
 
-export async function uploadToR2(
-  jobId: string,
-  job: Job<TranscodeVideoJob>,
-  queue: Queue
-) {
-  if (!process.env.BULLMQ_OUTPUT_QUEUE) {
-    throw new Error('BULLMQ_OUTPUT_QUEUE is not set')
-  }
+export async function uploadToR2(job: Job<TranscodeVideoJob>) {
   const url = await getPresignedUrl(job.data.outputFilename)
   await fetch(url, {
     method: 'PUT',
@@ -63,18 +58,26 @@ export async function uploadToR2(
       'Content-Type': job.data.contentType
     }
   })
+  await job.updateData({
+    ...job.data,
+    publicUrl: url
+  })
   await job.updateProgress(100)
-  await job.moveToCompleted({ message: 'Uploaded to R2' }, jobId)
-  await queue.add(process.env.BULLMQ_OUTPUT_QUEUE, job.data)
+  await job.moveToCompleted({ message: 'Uploaded to R2' }, job.id)
+}
+
+async function transcodeFinished(job: Job<TranscodeVideoJob>) {
+  const fileState = await stat(job.data.outputFilename)
+  await job.updateData({
+    ...job.data,
+    outputSize: fileState.size
+  })
+  await uploadToR2(job)
 }
 
 export async function main() {
   if (!process.env.BULLMQ_QUEUE) {
     throw new Error('BULLMQ_QUEUE is not set')
-  }
-
-  if (!process.env.BULLMQ_OUTPUT_QUEUE) {
-    throw new Error('BULLMQ_OUTPUT_QUEUE is not set')
   }
 
   if (!process.env.BULLMQ_JOB) {
@@ -94,9 +97,7 @@ export async function main() {
     port: process.env.REDIS_PORT != null ? Number(process.env.REDIS_PORT) : 6379
   }
 
-  const outputQueue = new Queue(process.env.BULLMQ_OUTPUT_QUEUE, { connection })
-
-  const worker = new Worker(process.env.BULLMQ_QUEUE)
+  const worker = new Worker(process.env.BULLMQ_QUEUE, { connection })
 
   const jobId = process.env.BULLMQ_JOB
   const job = (await worker.getNextJob(jobId)) as Job<TranscodeVideoJob>
@@ -118,7 +119,7 @@ export async function main() {
         }
       })
       .on('end', () => {
-        void uploadToR2(jobId, job, outputQueue)
+        void transcodeFinished(job)
       })
       .on('error', (error: Error) => {
         throw error

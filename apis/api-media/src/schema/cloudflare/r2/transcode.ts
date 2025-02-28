@@ -3,7 +3,7 @@ import {
   RunTaskCommand,
   RunTaskCommandInput
 } from '@aws-sdk/client-ecs'
-import { Job, Queue } from 'bullmq'
+import { Job, Queue, QueueEvents } from 'bullmq'
 
 import { prisma } from '../../../lib/prisma'
 import { connection } from '../../../workers/lib/connection'
@@ -18,7 +18,23 @@ interface TranscodeVideoJob {
   contentType: string
   outputFilename: string
   outputPath: string
+  outputSize?: number
+  publicUrl?: string
 }
+
+const queueName = 'jfp-video-transcode'
+const queue = new Queue(queueName, { connection })
+const queueEvents = new QueueEvents(queueName)
+
+queueEvents.on('completed', (job: Job<TranscodeVideoJob>) => {
+  void prisma.cloudflareR2.create({
+    data: {
+      publicUrl: job.data.publicUrl,
+      contentType: job.data.contentType,
+      contentLength: job.data.outputSize ?? 0
+    }
+  })
+})
 
 builder.mutationFields((t) => ({
   transcodeAsset: t.withAuth({ isPublisher: true }).field({
@@ -37,7 +53,6 @@ builder.mutationFields((t) => ({
       })
       if (!inputAsset) throw new Error('Input asset not found')
 
-      const queue = new Queue('jfp-video-transcode', { connection })
       const job = (await queue.add('api-media-transcode-video', {
         inputUrl: inputAsset.publicUrl,
         resolution: input.resolution,
@@ -51,11 +66,21 @@ builder.mutationFields((t) => ({
 
       await launchTranscodeTask({
         jobId: job.id,
-        queue: 'jfp-video-transcode',
-        outputQueue: 'jfp-video-transcode-output'
+        queue: queueName
       })
 
       return job.id
+    }
+  }),
+  getTranscodeStatus: t.withAuth({ isPublisher: true }).field({
+    type: 'Number',
+    args: {
+      jobId: t.arg({ type: 'String', required: true })
+    },
+    resolve: async (_parent, { jobId }) => {
+      const job = await queue.getJob(jobId)
+      if (!job) throw new Error('Job not found')
+      return job.progress
     }
   })
 }))
@@ -63,7 +88,6 @@ builder.mutationFields((t) => ({
 export interface TranscodeVideoParams {
   jobId: string
   queue: string
-  outputQueue: string
 }
 
 let ecsClient: ECSClient | null = null
@@ -97,8 +121,7 @@ export async function launchTranscodeTask(
 
   const environment = [
     { name: 'BULLMQ_JOB', value: params.jobId },
-    { name: 'BULLMQ_QUEUE', value: params.queue },
-    { name: 'BULLMQ_OUTPUT_QUEUE', value: params.outputQueue }
+    { name: 'BULLMQ_QUEUE', value: params.queue }
   ]
 
   const input: RunTaskCommandInput = {
