@@ -209,7 +209,8 @@ export function Header({
             sx: {
               width: '100%',
               background: 'transparent',
-              boxShadow: 'none'
+              boxShadow: 'none',
+              overflowX: 'hidden'
             }
           }}
         >

@@ -44,7 +44,14 @@ export function HeaderMenuPanel({
         borderBottomRightRadius: 0
       }}
     >
-      <Stack spacing={0.5} direction="row" justifyContent="space-between" p={8}>
+      <Stack
+        spacing={0.5}
+        direction="row"
+        justifyContent="space-between"
+        py={8}
+        pl={8}
+        pr={2}
+      >
         <NextLink href="/watch">
           <Image
             src={logo}
