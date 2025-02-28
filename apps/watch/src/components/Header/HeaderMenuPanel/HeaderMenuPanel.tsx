@@ -52,7 +52,7 @@ export function HeaderMenuPanel({
         justifyContent="space-between"
         py={8}
         pl={8}
-        pr={2}
+        pr={4}
       >
         <NextLink href="/watch">
           <Image
@@ -87,7 +87,8 @@ export function HeaderMenuPanel({
           direction="column"
           alignItems="flex-end"
           sx={{
-            gap: { xs: 4, sm: 2 }
+            gap: { xs: 4, sm: 2 },
+            pr: 2
           }}
         >
           {headerLinks.map((link) => (
