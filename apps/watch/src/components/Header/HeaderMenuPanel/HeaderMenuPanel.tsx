@@ -41,7 +41,9 @@ export function HeaderMenuPanel({
         width: '100%',
         backgroundColor: 'background.paper',
         borderTopRightRadius: 0,
-        borderBottomRightRadius: 0
+        borderBottomRightRadius: 0,
+        borderTopLeftRadius: { xs: 0, sm: 4 },
+        borderBottomLeftRadius: { xs: 0, sm: 4 }
       }}
     >
       <Stack
@@ -82,9 +84,11 @@ export function HeaderMenuPanel({
       >
         <Stack
           justifyContent="flex-start"
-          spacing={0}
           direction="column"
           alignItems="flex-end"
+          sx={{
+            gap: { xs: 4, sm: 2 }
+          }}
         >
           {headerLinks.map((link) => (
             <HeaderLinkAccordion

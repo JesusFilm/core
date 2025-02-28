@@ -62,9 +62,10 @@ export function HeaderLinkAccordion({
         id={`${label}-header`}
         sx={{
           p: 0,
+          minHeight: '0 !important',
           '& .MuiAccordionSummary-content': {
             justifyContent: 'flex-end',
-            margin: 0
+            margin: '0 !important'
           }
         }}
       >
