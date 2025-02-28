@@ -205,8 +205,42 @@ export function Header({
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
           onOpen={() => setDrawerOpen(true)}
+          PaperProps={{
+            sx: {
+              width: '100%',
+              background: 'transparent',
+              boxShadow: 'none'
+            }
+          }}
         >
-          <HeaderMenuPanel onClose={() => setDrawerOpen(false)} />
+          <Container
+            maxWidth="xxl"
+            disableGutters
+            sx={{
+              height: '100%',
+              display: 'flex',
+              justifyContent: 'flex-end',
+              position: 'relative',
+              '&::after': {
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: '100%',
+                width: '100vw',
+                backgroundColor: 'background.paper'
+              }
+            }}
+          >
+            <Box
+              sx={{
+                height: '100%',
+                width: { xs: '100%', sm: '400px' }
+              }}
+            >
+              <HeaderMenuPanel onClose={() => setDrawerOpen(false)} />
+            </Box>
+          </Container>
         </SwipeableDrawer>
       </ThemeProvider>
     </>

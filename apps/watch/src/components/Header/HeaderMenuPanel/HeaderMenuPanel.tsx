@@ -39,85 +39,70 @@ export function HeaderMenuPanel({
         height: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        width: { xs: '100%' }
+        width: '100%',
+        backgroundColor: 'background.paper',
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: 0
       }}
     >
-      <Container maxWidth="xxl" disableGutters>
-        <Stack
-          spacing={0.5}
-          direction="row"
-          justifyContent="space-between"
-          p={8}
+      <Stack spacing={0.5} direction="row" justifyContent="space-between" p={8}>
+        <NextLink href="/watch">
+          <Image
+            src={logo}
+            width="160"
+            height="40"
+            alt="Watch Logo"
+            style={{
+              cursor: 'pointer',
+              maxWidth: '100%',
+              height: 'auto'
+            }}
+          />
+        </NextLink>
+        <IconButton
+          color="inherit"
+          aria-label="close drawer"
+          edge="start"
+          onClick={onClose}
         >
-          <NextLink href="/watch">
-            <Image
-              src={logo}
-              width="160"
-              height="40"
-              alt="Watch Logo"
-              style={{
-                cursor: 'pointer',
-                maxWidth: '100%',
-                height: 'auto'
-              }}
-            />
-          </NextLink>
-          <IconButton
-            color="inherit"
-            aria-label="close drawer"
-            edge="start"
-            onClick={onClose}
-          >
-            <CloseIcon />
-          </IconButton>
-        </Stack>
-      </Container>
-      <Container
-        maxWidth="xxl"
-        disableGutters
-        sx={{
-          flexGrow: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'auto'
-        }}
+          <CloseIcon />
+        </IconButton>
+      </Stack>
+      <Stack
+        direction="column"
+        justifyContent="space-between"
+        p={4}
+        sx={{ flexGrow: 1 }}
       >
         <Stack
+          justifyContent="flex-start"
+          spacing={0}
           direction="column"
-          justifyContent="space-between"
-          p={4}
-          sx={{ flexGrow: 1 }}
+          alignItems="flex-end"
         >
-          <Stack
-            justifyContent="flex-start"
-            spacing={0}
-            direction="column"
-            alignItems="flex-end"
-          >
-            {headerLinks.map((link) => (
-              <HeaderLinkAccordion
-                key={link.label}
-                label={t(link.label)}
-                url={link.url}
-                expanded={expanded === link.label}
-                onAccordionChange={handleAccordionChange}
-                subLinks={link.subLinks?.map((subLink) => ({
-                  ...subLink,
-                  label: t(subLink.label)
-                }))}
-                onClose={onClose}
-              />
-            ))}
-          </Stack>
-          <Button
-            startIcon={<FavoriteIcon />}
-            href="https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now-2/?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=https%3A%2F%2Fwww.jesusfilm.org%2Fcontent%2Fjf%2Fus%2Fdevelopment%2Fspecial%2Fthank-you-refer%2Fsocial-share.html"
-            rel="noopener"
-          >
-            <Typography variant="overline2">{t('Give Now')}</Typography>
-          </Button>
+          {headerLinks.map((link) => (
+            <HeaderLinkAccordion
+              key={link.label}
+              label={t(link.label)}
+              url={link.url}
+              expanded={expanded === link.label}
+              onAccordionChange={handleAccordionChange}
+              subLinks={link.subLinks?.map((subLink) => ({
+                ...subLink,
+                label: t(subLink.label)
+              }))}
+              onClose={onClose}
+            />
+          ))}
         </Stack>
-      </Container>
+        <Button
+          startIcon={<FavoriteIcon />}
+          href="https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now-2/?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=https%3A%2F%2Fwww.jesusfilm.org%2Fcontent%2Fjf%2Fus%2Fdevelopment%2Fspecial%2Fthank-you-refer%2Fsocial-share.html"
+          rel="noopener"
+        >
+          <Typography variant="overline2">{t('Give Now')}</Typography>
+        </Button>
+      </Stack>
     </Paper>
   )
 }
