@@ -170,6 +170,7 @@ export function Video({
   }, [mediaVideo, source, videoId])
 
   // Ensure VHS tech is properly initialized for HLS streams
+  /*
   useEffect(() => {
     if (player && isHlsSource) {
       // Force VHS tech to be used for HLS streams
@@ -189,6 +190,7 @@ export function Video({
       }
     }
   }, [player, isHlsSource])
+  */
 
   return (
     <Box
