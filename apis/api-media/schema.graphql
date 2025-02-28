@@ -58,13 +58,15 @@ type CloudflareR2 {
 
 input CloudflareR2CreateInput {
   id: String
-  fileName: String!
-  videoId: String!
-}
 
-input CloudflareR2UpdateInput {
-  id: String!
+  """the name of the file that is being uploaded"""
   fileName: String!
+
+  """the type of file that is being uploaded. e.g. image or video/mp4"""
+  contentType: String!
+
+  """the id of the Video object this file relates to in the database"""
+  videoId: String!
 }
 
 """
@@ -127,9 +129,6 @@ type Language
   @extends
 {
   id: ID! @external
-  seriesCount: Int!
-  featureFilmCount: Int!
-  shortFilmCount: Int!
   labeledVideoCounts: LabeledVideoCounts!
 }
 
@@ -148,8 +147,9 @@ type Mutation {
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
   deleteCloudflareImage(id: ID!): Boolean!
   cloudflareUploadComplete(id: ID!): Boolean!
+
+  """The endpoint to upload a file to Cloudflare R2"""
   cloudflareR2Create(input: CloudflareR2CreateInput!): CloudflareR2!
-  cloudflareR2Update(input: CloudflareR2UpdateInput!): CloudflareR2!
   cloudflareR2Delete(id: ID!): CloudflareR2!
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!): CloudflareImage! @deprecated(reason: "use createCloudflareImageFromPrompt")
   triggerUnsplashDownload(url: String!): Boolean!
@@ -976,6 +976,7 @@ input VideosFilter {
   ids: [ID!]
   subtitleLanguageIds: [ID!]
   published: Boolean
+  locked: Boolean
 }
 
 type Youtube

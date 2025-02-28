@@ -329,14 +329,13 @@ export type CloudflareR2 = {
 };
 
 export type CloudflareR2CreateInput = {
+  /** the type of file that is being uploaded. e.g. image or video/mp4 */
+  contentType: Scalars['String']['input'];
+  /** the name of the file that is being uploaded */
   fileName: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
+  /** the id of the Video object this file relates to in the database */
   videoId: Scalars['String']['input'];
-};
-
-export type CloudflareR2UpdateInput = {
-  fileName: Scalars['String']['input'];
-  id: Scalars['String']['input'];
 };
 
 export type Continent = {
@@ -1122,13 +1121,10 @@ export type Language = {
   audioPreview?: Maybe<AudioPreview>;
   bcp47?: Maybe<Scalars['String']['output']>;
   countryLanguages: Array<CountryLanguage>;
-  featureFilmCount: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
   labeledVideoCounts: LabeledVideoCounts;
   name: Array<LanguageName>;
-  seriesCount: Scalars['Int']['output'];
-  shortFilmCount: Scalars['Int']['output'];
   slug?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1247,9 +1243,9 @@ export type Mutation = {
   chatButtonRemove: ChatButton;
   chatButtonUpdate: ChatButton;
   chatOpenEventCreate: ChatOpenEvent;
+  /** The endpoint to upload a file to Cloudflare R2 */
   cloudflareR2Create: CloudflareR2;
   cloudflareR2Delete: CloudflareR2;
-  cloudflareR2Update: CloudflareR2;
   cloudflareUploadComplete: Scalars['Boolean']['output'];
   createCloudflareImageFromPrompt: CloudflareImage;
   createCloudflareUploadByFile: CloudflareImage;
@@ -1528,11 +1524,6 @@ export type MutationCloudflareR2CreateArgs = {
 
 export type MutationCloudflareR2DeleteArgs = {
   id: Scalars['ID']['input'];
-};
-
-
-export type MutationCloudflareR2UpdateArgs = {
-  input: CloudflareR2UpdateInput;
 };
 
 
@@ -4699,6 +4690,7 @@ export type VideosFilter = {
   availableVariantLanguageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   ids?: InputMaybe<Array<Scalars['ID']['input']>>;
   labels?: InputMaybe<Array<VideoLabel>>;
+  locked?: InputMaybe<Scalars['Boolean']['input']>;
   published?: InputMaybe<Scalars['Boolean']['input']>;
   subtitleLanguageIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   title?: InputMaybe<Scalars['String']['input']>;

@@ -217,8 +217,7 @@ test.describe('GET /v2/resources', () => {
       'countryIds',
       'languageIds',
       'alternateLanguageIds',
-      'mediaComponentIds',
-      '_links'
+      'mediaComponentIds'
     ])
   })
 
@@ -243,8 +242,7 @@ test.describe('GET /v2/resources', () => {
       'countryIds',
       'languageIds',
       'alternateLanguageIds',
-      'mediaComponentIds',
-      '_links'
+      'mediaComponentIds'
     ])
   })
 
@@ -273,8 +271,7 @@ test.describe('GET /v2/resources', () => {
       'countryIds',
       'languageIds',
       'alternateLanguageIds',
-      'mediaComponentIds',
-      '_links'
+      'mediaComponentIds'
     ])
   })
 })
