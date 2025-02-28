@@ -4136,8 +4136,6 @@ input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
 input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   id: String
   fileName: String!
-  contentType: String!
-  contentLength: Int!
   videoId: String!
 }
 
