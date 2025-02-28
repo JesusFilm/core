@@ -82,14 +82,13 @@ export function InitAndPlay({
           muted: muted === true,
           autoplay:
             autoplay === true &&
-            (activeStep || activeBlock) &&
             source === VideoBlockSource.youTube
         })
       )
       playerInitializedRef.current = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- should only run once
-  }, [])
+  }, [videoRef.current])
 
   // Initiate video player listeners
   useEffect(() => {
