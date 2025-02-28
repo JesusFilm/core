@@ -99,9 +99,11 @@ export function File({
             gap: 1
           }}
         >
-          <IconButton onClick={() => setShow(true)} aria-label="view-file">
-            <EyeOpen fontSize="small" />
-          </IconButton>
+          {type != null && (
+            <IconButton onClick={() => setShow(true)} aria-label="view-file">
+              <EyeOpen fontSize="small" />
+            </IconButton>
+          )}
           {actions?.onDownload != null && (
             <IconButton onClick={actions.onDownload} aria-label="download-file">
               <Download2 fontSize="small" />

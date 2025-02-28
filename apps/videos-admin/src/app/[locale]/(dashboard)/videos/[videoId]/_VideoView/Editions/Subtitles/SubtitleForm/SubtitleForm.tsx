@@ -69,7 +69,7 @@ export function SubtitleForm({
             initialLanguage={initialLanguage}
           />
           <FormCheckbox name="primary" label={t('Primary')} />
-          <SubtitleFileUpload />
+          <SubtitleFileUpload subtitle={subtitle} />
           <Button
             variant="contained"
             type="submit"
