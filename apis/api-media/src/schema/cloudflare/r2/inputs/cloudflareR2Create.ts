@@ -14,6 +14,10 @@ export const CloudflareR2CreateInput = builder.inputType(
         description:
           'the type of file that is being uploaded. e.g. image or video/mp4'
       }),
+      contentLength: t.int({
+        required: true,
+        description: 'the size of the file that is being uploaded'
+      }),
       videoId: t.string({
         required: true,
         description:
