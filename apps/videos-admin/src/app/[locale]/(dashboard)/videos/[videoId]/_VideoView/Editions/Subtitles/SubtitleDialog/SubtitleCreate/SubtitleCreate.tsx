@@ -151,7 +151,8 @@ export function SubtitleCreate({
           input: {
             videoId: video.id,
             fileName: fileName,
-            contentType: file.type
+            contentType: file.type,
+            contentLength: file.size
           }
         },
         onCompleted: async (data) => {

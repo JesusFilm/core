@@ -77,13 +77,17 @@ const subtitleEditWithFileMock = getEditSubtitleMock({
 const createR2VttAssetMock = getCreateR2AssetMock({
   videoId: '1_jf-0-0',
   contentType: 'text/vtt',
-  fileName: '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt'
+  fileName:
+    '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt',
+  contentLength: 13
 })
 
 const createR2SrtAssetMock = getCreateR2AssetMock({
   videoId: '1_jf-0-0',
   contentType: 'application/x-subrip',
-  fileName: '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt'
+  fileName:
+    '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
+  contentLength: 13
 })
 
 const deleteR2AssetMock = getDeleteR2AssetMock({
