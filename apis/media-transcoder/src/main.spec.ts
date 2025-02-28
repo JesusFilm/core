@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { Job, Queue, Worker } from 'bullmq'
-import { readFile } from 'fs/promises'
+import { Job, Queue } from 'bullmq'
 import fetch from 'node-fetch'
-import * as main from './main'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { getClient, getPresignedUrl, main, uploadToR2 } from './main'
 
 // Define a minimal FfmpegCommand type for testing
 interface MockFfmpegCommand {
@@ -154,7 +154,7 @@ describe('Media Transcoder', () => {
 
   describe('getClient', () => {
     it('should create an S3Client with correct configuration', () => {
-      const client = main.getClient()
+      const client = getClient()
       expect(S3Client).toHaveBeenCalledWith({
         region: 'auto',
         endpoint: 'https://mock-endpoint.com',
@@ -167,23 +167,21 @@ describe('Media Transcoder', () => {
 
     it('should throw an error if environment variables are missing', () => {
       delete process.env.CLOUDFLARE_R2_ENDPOINT
-      expect(() => main.getClient()).toThrow('Missing CLOUDFLARE_R2_ENDPOINT')
+      expect(() => getClient()).toThrow('Missing CLOUDFLARE_R2_ENDPOINT')
 
       process.env.CLOUDFLARE_R2_ENDPOINT = 'https://mock-endpoint.com'
       delete process.env.CLOUDFLARE_R2_ACCESS_KEY_ID
-      expect(() => main.getClient()).toThrow(
-        'Missing CLOUDFLARE_R2_ACCESS_KEY_ID'
-      )
+      expect(() => getClient()).toThrow('Missing CLOUDFLARE_R2_ACCESS_KEY_ID')
 
       process.env.CLOUDFLARE_R2_ACCESS_KEY_ID = 'mock-access-key'
       delete process.env.CLOUDFLARE_R2_SECRET
-      expect(() => main.getClient()).toThrow('Missing CLOUDFLARE_R2_SECRET')
+      expect(() => getClient()).toThrow('Missing CLOUDFLARE_R2_SECRET')
     })
   })
 
   describe('getPresignedUrl', () => {
     it('should generate a presigned URL with correct parameters', async () => {
-      const url = await main.getPresignedUrl('test-file.mp4')
+      const url = await getPresignedUrl('test-file.mp4')
       expect(getSignedUrl).toHaveBeenCalledWith(
         expect.any(Object),
         expect.objectContaining({
@@ -196,7 +194,7 @@ describe('Media Transcoder', () => {
 
     it('should throw an error if CLOUDFLARE_R2_BUCKET is missing', async () => {
       delete process.env.CLOUDFLARE_R2_BUCKET
-      await expect(main.getPresignedUrl('test-file.mp4')).rejects.toThrow(
+      await expect(getPresignedUrl('test-file.mp4')).rejects.toThrow(
         'Missing CLOUDFLARE_R2_BUCKET'
       )
     })
@@ -208,7 +206,7 @@ describe('Media Transcoder', () => {
       const mockQueue = createMockQueue()
       const jobId = 'test-job-id'
 
-      await main.uploadToR2(jobId, mockJob, mockQueue)
+      await uploadToR2(jobId, mockJob, mockQueue)
 
       expect(getSignedUrl).toHaveBeenCalled()
       expect(fetch).toHaveBeenCalledWith(
@@ -238,7 +236,7 @@ describe('Media Transcoder', () => {
       const mockQueue = createMockQueue()
       const jobId = 'test-job-id'
 
-      await expect(main.uploadToR2(jobId, mockJob, mockQueue)).rejects.toThrow(
+      await expect(uploadToR2(jobId, mockJob, mockQueue)).rejects.toThrow(
         'BULLMQ_OUTPUT_QUEUE is not set'
       )
     })
@@ -266,7 +264,7 @@ describe('Media Transcoder', () => {
       mockFfmpeg.mockReturnValue(mockFfmpegInstance)
 
       // Run the main function
-      await main.main()
+      await main()
 
       // Verify the ffmpeg configuration was set up correctly
       expect(mockFfmpegInstance.input).toHaveBeenCalledWith(
@@ -290,7 +288,7 @@ describe('Media Transcoder', () => {
         const originalValue = process.env[varName]
         delete process.env[varName]
 
-        await expect(main.main()).rejects.toThrow(`${varName} is not set`)
+        await expect(main()).rejects.toThrow(`${varName} is not set`)
 
         // Restore the variable for the next test
         process.env[varName] = originalValue
@@ -301,7 +299,7 @@ describe('Media Transcoder', () => {
       // Set up the mock for getNextJob to return null
       mockGetNextJob.mockResolvedValue(null)
 
-      await expect(main.main()).rejects.toThrow(
+      await expect(main()).rejects.toThrow(
         `Job ${process.env.BULLMQ_JOB} not found`
       )
     })
@@ -333,7 +331,7 @@ describe('Media Transcoder', () => {
       mockFfmpeg.mockReturnValue(mockFfmpegInstance)
 
       // Run the main function and wait for it to complete
-      await main.main()
+      await main()
 
       // Verify the job was moved to failed
       expect(mockJob.moveToFailed).toHaveBeenCalledWith(
