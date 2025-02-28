@@ -98,6 +98,7 @@
     "@opentelemetry/sdk-trace-node": "^1.26.0",
     "@opentelemetry/semantic-conventions": "^1.27.0",
     "@pothos/core": "^4.0.0",
+    "@pothos/plugin-dataloader": "^4.3.0",
     "@pothos/plugin-directives": "^4.0.0",
     "@pothos/plugin-errors": "^4.0.0",
     "@pothos/plugin-federation": "^4.0.0",
