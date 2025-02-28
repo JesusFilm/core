@@ -37,7 +37,8 @@ locals {
     "VERCEL_TEAM_ID",
     "VERCEL_TOKEN",
     "SEGMIND_API_KEY",
-    "UNSPLASH_ACCESS_KEY"
+    "UNSPLASH_ACCESS_KEY",
+    "DOPPLER_ENVIRONMENT"
   ]
   service_config = {
     name           = "api-media"
