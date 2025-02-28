@@ -48,7 +48,9 @@ type CloudflareImage {
 
 type CloudflareR2 {
   id: ID!
+  contentType: String!
   fileName: String!
+  contentLength: Int!
   uploadUrl: String
   userId: ID!
   publicUrl: String
@@ -143,6 +145,9 @@ enum MediaRole {
 }
 
 type Mutation {
+  """Transcode an asset. Returns the bullmq job ID."""
+  transcodeAsset(input: TranscodeVideoInput!): String
+  getTranscodeStatus(jobId: String!): Int
   createCloudflareUploadByFile(input: ImageInput): CloudflareImage!
   createCloudflareUploadByUrl(url: String!, input: ImageInput): CloudflareImage!
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
@@ -567,6 +572,14 @@ type TaxonomyName {
   label: String!
   language: Language!
   taxonomy: Taxonomy!
+}
+
+input TranscodeVideoInput {
+  r2AssetId: String!
+  resolution: String!
+  bitrate: Int
+  outputFilename: String!
+  outputPath: String!
 }
 
 enum UnsplashColor {

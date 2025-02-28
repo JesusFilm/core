@@ -391,6 +391,11 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Allow current user to update specific allowable fields of their visitor record
   """
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS) 
+  """
+  Transcode an asset. Returns the bullmq job ID.
+  """
+  transcodeAsset(input: TranscodeVideoInput!) : String @join__field(graph: API_MEDIA) 
+  getTranscodeStatus(jobId: String!) : Int @join__field(graph: API_MEDIA) 
   createCloudflareUploadByFile(input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareUploadByUrl(url: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
@@ -2258,7 +2263,9 @@ type CloudflareImage @join__type(graph: API_MEDIA)  {
 
 type CloudflareR2 @join__type(graph: API_MEDIA)  {
   id: ID!
+  contentType: String!
   fileName: String!
+  contentLength: Int!
   uploadUrl: String
   userId: ID!
   publicUrl: String
@@ -4129,6 +4136,8 @@ input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
 input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   id: String
   fileName: String!
+  contentType: String!
+  contentLength: Int!
   videoId: String!
 }
 
@@ -4190,6 +4199,14 @@ input MutationShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
   the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
   """
   to: String!
+}
+
+input TranscodeVideoInput @join__type(graph: API_MEDIA)  {
+  r2AssetId: String!
+  resolution: String!
+  bitrate: Int
+  outputFilename: String!
+  outputPath: String!
 }
 
 input VideoCreateInput @join__type(graph: API_MEDIA)  {

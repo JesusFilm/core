@@ -18,23 +18,34 @@ interface TranscodeVideoJob {
   contentType: string
   outputFilename: string
   outputPath: string
+  userId: string
   outputSize?: number
   publicUrl?: string
 }
 
 const queueName = 'jfp-video-transcode'
 const queue = new Queue(queueName, { connection })
-const queueEvents = new QueueEvents(queueName)
 
-queueEvents.on('completed', (job: Job<TranscodeVideoJob>) => {
+export function initializeQueue() {
+  const queueEvents = new QueueEvents(queueName, { connection })
+  queueEvents.on('completed', ({ jobId }) => {
+    void completeJob(jobId)
+  })
+}
+
+const completeJob = async (jobId: string) => {
+  const job = (await queue.getJob(jobId)) as Job<TranscodeVideoJob>
+  if (!job) return
   void prisma.cloudflareR2.create({
     data: {
       publicUrl: job.data.publicUrl,
       contentType: job.data.contentType,
-      contentLength: job.data.outputSize ?? 0
+      contentLength: job.data.outputSize ?? 0,
+      fileName: job.data.outputFilename,
+      userId: job.data.userId
     }
   })
-})
+}
 
 builder.mutationFields((t) => ({
   transcodeAsset: t.withAuth({ isPublisher: true }).field({
@@ -59,7 +70,8 @@ builder.mutationFields((t) => ({
         bitrate: input.bitrate ?? undefined,
         contentType: inputAsset.contentType,
         outputFilename: input.outputFilename,
-        outputPath: input.outputPath
+        outputPath: input.outputPath,
+        userId: user.id
       })) as Job<TranscodeVideoJob>
 
       if (!job.id) throw new Error('Failed to create job')
@@ -73,14 +85,14 @@ builder.mutationFields((t) => ({
     }
   }),
   getTranscodeStatus: t.withAuth({ isPublisher: true }).field({
-    type: 'Number',
+    type: 'Int',
     args: {
       jobId: t.arg({ type: 'String', required: true })
     },
     resolve: async (_parent, { jobId }) => {
       const job = await queue.getJob(jobId)
       if (!job) throw new Error('Job not found')
-      return job.progress
+      return Number(job.progress)
     }
   })
 }))

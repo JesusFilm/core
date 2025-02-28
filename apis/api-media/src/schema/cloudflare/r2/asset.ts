@@ -43,6 +43,7 @@ builder.prismaObject('CloudflareR2', {
     id: t.exposeID('id', { nullable: false }),
     contentType: t.exposeString('contentType', { nullable: false }),
     fileName: t.exposeString('fileName', { nullable: false }),
+    contentLength: t.exposeInt('contentLength', { nullable: false }),
     uploadUrl: t.withAuth({ isPublisher: true }).exposeString('uploadUrl'),
     userId: t
       .withAuth({ isPublisher: true })

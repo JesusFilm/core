@@ -2,7 +2,7 @@ import { readFile, stat } from 'fs/promises'
 
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { Job, Worker } from 'bullmq'
+import { Job, Queue } from 'bullmq'
 import fetch from 'node-fetch'
 
 import ffmpeg from './types/fluent-ffmpeg'
@@ -14,6 +14,7 @@ interface TranscodeVideoJob {
   contentType: string
   outputFilename: string
   outputPath: string
+  userId: string
   outputSize?: number
   publicUrl?: string
 }
@@ -63,7 +64,7 @@ export async function uploadToR2(job: Job<TranscodeVideoJob>) {
     publicUrl: url
   })
   await job.updateProgress(100)
-  await job.moveToCompleted({ message: 'Uploaded to R2' }, job.id)
+  await job.moveToCompleted({ message: 'Uploaded to R2' }, job.id as string)
 }
 
 async function transcodeFinished(job: Job<TranscodeVideoJob>) {
@@ -97,10 +98,13 @@ export async function main() {
     port: process.env.REDIS_PORT != null ? Number(process.env.REDIS_PORT) : 6379
   }
 
-  const worker = new Worker(process.env.BULLMQ_QUEUE, { connection })
+  const queue = new Queue(process.env.BULLMQ_QUEUE, { connection })
+  const job = (await queue.getJob(
+    process.env.BULLMQ_JOB
+  )) as Job<TranscodeVideoJob>
 
-  const jobId = process.env.BULLMQ_JOB
-  const job = (await worker.getNextJob(jobId)) as Job<TranscodeVideoJob>
+  // const jobId = process.env.BULLMQ_JOB
+  // const job = (await worker.getNextJob(jobId)) as Job<TranscodeVideoJob>
 
   if (job == null) {
     throw new Error(`Job ${process.env.BULLMQ_JOB} not found`)
@@ -126,11 +130,14 @@ export async function main() {
       })
   } catch (error) {
     if (error instanceof Error) {
-      void job.moveToFailed({ message: error.message, name: error.name }, jobId)
+      void job.moveToFailed(
+        { message: error.message, name: error.name },
+        job.id as string
+      )
     } else {
       void job.moveToFailed(
         { message: 'Unknown error', name: 'UnknownError' },
-        jobId
+        job.id as string
       )
     }
   }
