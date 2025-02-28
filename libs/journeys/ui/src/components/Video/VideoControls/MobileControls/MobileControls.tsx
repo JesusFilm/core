@@ -1,3 +1,4 @@
+import AssessmentIcon from '@mui/icons-material/Assessment'
 import FullscreenExitRounded from '@mui/icons-material/FullscreenExitRounded'
 import FullscreenRounded from '@mui/icons-material/FullscreenRounded'
 import Container from '@mui/material/Container'
@@ -5,6 +6,7 @@ import IconButton from '@mui/material/IconButton'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { MouseEvent } from 'react'
 
 interface MobileControlsProps {
   showTime: boolean
@@ -18,6 +20,7 @@ interface MobileControlsProps {
   showFullscreenButton: boolean
   fullscreen: boolean
   handleFullscreen: () => void
+  handleToggleStats: (event: MouseEvent) => void
 }
 
 export function MobileControls({
@@ -31,7 +34,8 @@ export function MobileControls({
   disableProgress,
   showFullscreenButton,
   fullscreen,
-  handleFullscreen
+  handleFullscreen,
+  handleToggleStats
 }: MobileControlsProps): JSX.Element {
   return (
     <Container
@@ -61,15 +65,24 @@ export function MobileControls({
             {displayTime} / {duration}
           </Typography>
         )}
-        {showFullscreenButton && (
+        <Stack direction="row" spacing={1}>
           <IconButton
-            aria-label="fullscreen"
-            onClick={handleFullscreen}
-            sx={{ py: 0, px: 2 }}
+            aria-label="Toggle video stats"
+            onClick={handleToggleStats}
+            sx={{ py: 0, px: 1 }}
           >
-            {fullscreen ? <FullscreenExitRounded /> : <FullscreenRounded />}
+            <AssessmentIcon />
           </IconButton>
-        )}
+          {showFullscreenButton && (
+            <IconButton
+              aria-label="fullscreen"
+              onClick={handleFullscreen}
+              sx={{ py: 0, px: 1 }}
+            >
+              {fullscreen ? <FullscreenExitRounded /> : <FullscreenRounded />}
+            </IconButton>
+          )}
+        </Stack>
       </Stack>
       <Slider
         aria-label="mobile-progress-control"
