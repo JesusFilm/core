@@ -79,12 +79,12 @@ export function QualityMenu({
       levels.unshift({ resolution: 'Auto', qualityLevel: -1, height: Infinity })
 
       // Remove height property before setting state
-      setQualities(
-        levels.map(({ resolution, qualityLevel }) => ({
-          resolution,
-          qualityLevel
-        }))
-      )
+      const newQualities = levels.map(({ resolution, qualityLevel }) => ({
+        resolution,
+        qualityLevel
+      }))
+
+      setQualities(newQualities)
 
       // Find currently selected quality
       const selectedIndex = Array.from(qualityLevels).findIndex(
@@ -105,7 +105,7 @@ export function QualityMenu({
       const displayQuality =
         selectedQuality === -1 && activeResolution != null
           ? `Auto (${activeResolution})`
-          : (qualities.find((q) => q.qualityLevel === selectedQuality)
+          : (newQualities.find((q) => q.qualityLevel === selectedQuality)
               ?.resolution ?? 'Auto')
       onQualityChanged(displayQuality)
     }
@@ -116,7 +116,7 @@ export function QualityMenu({
     return () => {
       qualityLevels.off('change', handleQualityChange)
     }
-  }, [player, onQualityChanged, selectedQuality, qualities])
+  }, [player, onQualityChanged, selectedQuality])
 
   const handleQualityChange = (quality: number): void => {
     const qualityLevels = player.qualityLevels()
