@@ -4,6 +4,7 @@ import {
   RefObject,
   SetStateAction,
   useEffect,
+  useMemo,
   useState
 } from 'react'
 import videojs from 'video.js'
@@ -15,6 +16,10 @@ import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { TreeBlock, useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
+import { VideoFields_mediaVideo } from '../__generated__/VideoFields'
+
+import { getMuxMetadata } from './getMuxMetadata'
+import 'videojs-mux'
 
 interface InitAndPlayProps {
   videoRef: RefObject<HTMLVideoElement>
@@ -34,6 +39,9 @@ interface InitAndPlayProps {
   setShowPoster: Dispatch<SetStateAction<boolean>>
   setVideoEndTime: Dispatch<SetStateAction<number>>
   activeStep?: boolean
+  title: string | null
+  mediaVideo: VideoFields_mediaVideo | null
+  videoVariantLanguageId: string | null
 }
 
 export function InitAndPlay({
@@ -53,12 +61,30 @@ export function InitAndPlay({
   setLoading,
   setShowPoster,
   setVideoEndTime,
-  activeStep = false
+  activeStep = false,
+  title,
+  mediaVideo,
+  videoVariantLanguageId
 }: InitAndPlayProps): ReactElement {
-  const { variant } = useJourney()
+  const { journey, variant } = useJourney()
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
   const [error, setError] = useState(false)
+
+  const muxMetadata = useMemo(() => {
+    return journey != null
+      ? getMuxMetadata({
+          journeyId: journey.id,
+          videoBlock: {
+            id: blockId,
+            title,
+            mediaVideo,
+            endAt,
+            videoVariantLanguageId
+          }
+        })
+      : {}
+  }, [journey, blockId, title, mediaVideo, endAt, videoVariantLanguageId])
 
   // Initiate video player
   useEffect(() => {
@@ -81,7 +107,13 @@ export function InitAndPlay({
           autoplay:
             autoplay === true &&
             activeStep &&
-            source === VideoBlockSource.youTube
+            source === VideoBlockSource.youTube,
+          plugins: {
+            mux: {
+              debug: false,
+              data: muxMetadata
+            }
+          }
         })
       )
     }
@@ -94,7 +126,8 @@ export function InitAndPlay({
     videoRef,
     autoplay,
     activeStep,
-    source
+    source,
+    muxMetadata
   ])
 
   // Initiate video player listeners
