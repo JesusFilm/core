@@ -30,15 +30,18 @@ export function HeaderLinkAccordion({
 }: HeaderLinkAccordionProps): ReactElement {
   if (!subLinks?.length) {
     return (
-      <MuiLink
-        href={url}
-        underline="none"
-        rel="noopener"
-        color="text.primary"
-        variant="h5"
-      >
-        {label}
-      </MuiLink>
+      <Stack alignItems="flex-end">
+        <MuiLink
+          href={url}
+          underline="none"
+          rel="noopener"
+          color="text.primary"
+          variant="h5"
+          onClick={onClose}
+        >
+          {label}
+        </MuiLink>
+      </Stack>
     )
   }
 
