@@ -131,7 +131,8 @@ describe('SubtitleCreate', () => {
       videoId: mockVideo.id,
       contentType: 'text/vtt',
       fileName:
-        '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt'
+        '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt',
+      contentLength: 13
     })
 
     render(
@@ -184,7 +185,8 @@ describe('SubtitleCreate', () => {
       videoId: mockVideo.id,
       contentType: 'application/x-subrip',
       fileName:
-        '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt'
+        '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
+      contentLength: 13
     })
 
     render(
