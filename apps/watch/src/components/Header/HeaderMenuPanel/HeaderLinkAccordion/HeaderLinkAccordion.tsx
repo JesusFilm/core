@@ -36,7 +36,6 @@ export function HeaderLinkAccordion({
         rel="noopener"
         color="text.primary"
         variant="h5"
-        onClick={onClose}
       >
         {label}
       </MuiLink>
