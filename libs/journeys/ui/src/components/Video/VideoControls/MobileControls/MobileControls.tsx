@@ -5,6 +5,9 @@ import IconButton from '@mui/material/IconButton'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import Player from 'video.js/dist/types/player'
+
+import { QualitySelector } from '../QualitySelector/QualitySelector'
 
 interface MobileControlsProps {
   showTime: boolean
@@ -18,6 +21,7 @@ interface MobileControlsProps {
   showFullscreenButton: boolean
   fullscreen: boolean
   handleFullscreen: () => void
+  player: Player
 }
 
 export function MobileControls({
@@ -31,7 +35,8 @@ export function MobileControls({
   disableProgress,
   showFullscreenButton,
   fullscreen,
-  handleFullscreen
+  handleFullscreen,
+  player
 }: MobileControlsProps): JSX.Element {
   return (
     <Container
@@ -61,15 +66,18 @@ export function MobileControls({
             {displayTime} / {duration}
           </Typography>
         )}
-        {showFullscreenButton && (
-          <IconButton
-            aria-label="fullscreen"
-            onClick={handleFullscreen}
-            sx={{ py: 0, px: 2 }}
-          >
-            {fullscreen ? <FullscreenExitRounded /> : <FullscreenRounded />}
-          </IconButton>
-        )}
+        <Stack direction="row">
+          <QualitySelector player={player} isMobile />
+          {showFullscreenButton && (
+            <IconButton
+              aria-label="fullscreen"
+              onClick={handleFullscreen}
+              sx={{ py: 0, px: 2 }}
+            >
+              {fullscreen ? <FullscreenExitRounded /> : <FullscreenRounded />}
+            </IconButton>
+          )}
+        </Stack>
       </Stack>
       <Slider
         aria-label="mobile-progress-control"

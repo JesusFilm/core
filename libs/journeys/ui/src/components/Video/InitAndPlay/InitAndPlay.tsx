@@ -8,6 +8,7 @@ import {
 } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
+import 'videojs-contrib-quality-levels'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
@@ -81,7 +82,18 @@ export function InitAndPlay({
           autoplay:
             autoplay === true &&
             activeStep &&
-            source === VideoBlockSource.youTube
+            source === VideoBlockSource.youTube,
+          html5: {
+            ...defaultVideoJsOptions.html5,
+            vhs: {
+              ...defaultVideoJsOptions.html5.vhs,
+              // Enable quality levels for HLS streams
+              enableLowInitialPlaylist: true,
+              overrideNative: true
+            },
+            nativeAudioTracks: false,
+            nativeVideoTracks: false
+          }
         })
       )
     }

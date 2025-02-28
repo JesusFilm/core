@@ -277,6 +277,13 @@ export function VideoControls({
     }
   }
 
+  // declare quality levels
+  // create function to change quality level
+  // pass function down into mobile/desktop controls.
+  // in mobile/desktop controls, create a button/menu
+
+  // function setQuality
+
   function handleSeek(e: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
       setProgress(value)
@@ -407,6 +414,7 @@ export function VideoControls({
               showFullscreenButton={variant !== 'embed' || isIPhone()}
               fullscreen={fullscreen}
               handleFullscreen={handleFullscreen}
+              player={player}
             />
             <DesktopControls
               playing={state.playing}
@@ -426,6 +434,7 @@ export function VideoControls({
               showFullscreenButton={variant !== 'embed' || isIPhone()}
               fullscreen={fullscreen}
               handleFullscreen={handleFullscreen}
+              player={player}
             />
           </Container>
         </Fade>
