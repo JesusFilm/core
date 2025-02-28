@@ -319,6 +319,8 @@ export type CloudflareImage = {
 
 export type CloudflareR2 = {
   __typename?: 'CloudflareR2';
+  contentLength: Scalars['Int']['output'];
+  contentType: Scalars['String']['output'];
   createdAt: Scalars['Date']['output'];
   fileName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
@@ -329,6 +331,8 @@ export type CloudflareR2 = {
 };
 
 export type CloudflareR2CreateInput = {
+  /** the size of the file that is being uploaded */
+  contentLength: Scalars['Int']['input'];
   /** the type of file that is being uploaded. e.g. image or video/mp4 */
   contentType: Scalars['String']['input'];
   /** the name of the file that is being uploaded */

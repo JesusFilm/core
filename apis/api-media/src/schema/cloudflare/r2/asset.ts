@@ -82,7 +82,9 @@ builder.mutationFields((t) => ({
           userId: user.id,
           fileName: input.fileName,
           uploadUrl,
-          publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${input.fileName}`
+          publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${input.fileName}`,
+          contentType: input.contentType,
+          contentLength: input.contentLength
         }
       })
     }

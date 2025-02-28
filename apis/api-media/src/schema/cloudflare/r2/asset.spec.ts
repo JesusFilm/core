@@ -60,7 +60,7 @@ describe('cloudflare/r2/asset', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           videoId: 'videoId',
-          contentType: 'application/octet-stream',
+          contentType: 'image/jpeg',
           contentLength: 0
         })
         const result = await authClient({
@@ -82,7 +82,9 @@ describe('cloudflare/r2/asset', () => {
             uploadUrl: 'presignedUrl',
             userId: 'testUserId',
             publicUrl: 'https://assets.jesusfilm.org/fileName',
-            videoId: 'videoId'
+            videoId: 'videoId',
+            contentType: 'image/jpeg',
+            contentLength: 0
           }
         })
         expect(result).toHaveProperty('data.cloudflareR2Create.id', 'id')
@@ -104,7 +106,7 @@ describe('cloudflare/r2/asset', () => {
         )
         expect(result).toHaveProperty(
           'data.cloudflareR2Create.contentType',
-          'application/octet-stream'
+          'image/jpeg'
         )
         expect(result).toHaveProperty(
           'data.cloudflareR2Create.contentLength',
@@ -120,7 +122,8 @@ describe('cloudflare/r2/asset', () => {
               id: 'id',
               fileName: 'fileName',
               videoId: 'videoId',
-              contentType: 'image/jpeg'
+              contentType: 'image/jpeg',
+              contentLength: 0
             }
           }
         })
