@@ -103,4 +103,20 @@ test.describe('GET /v2/media-countries', () => {
     const unitedStates = data._embedded.mediaCountries[0]
     expect(unitedStates.metadataLanguageTag).toBe('es')
   })
+
+  test('handles string values for numeric parameters', async ({ request }) => {
+    const response = await getMediaCountries(request, {
+      ids: ['US'],
+      page: '2',
+      limit: '1'
+    })
+
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+
+    expect(data.page).toBe(2)
+    expect(data.limit).toBe(1)
+    expect(data._links).toHaveProperty('previous')
+    expect(data._embedded.mediaCountries.length).toBeLessThanOrEqual(1)
+  })
 })
