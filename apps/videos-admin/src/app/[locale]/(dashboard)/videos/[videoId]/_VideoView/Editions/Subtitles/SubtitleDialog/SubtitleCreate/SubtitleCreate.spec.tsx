@@ -78,11 +78,7 @@ describe('SubtitleCreate', () => {
       <NextIntlClientProvider locale="en">
         <VideoProvider video={mockVideo}>
           <MockedProvider mocks={[]}>
-            <SubtitleCreate
-              edition={mockEdition}
-              close={jest.fn()}
-              dialogState={{ loading: false, setLoading: jest.fn() }}
-            />
+            <SubtitleCreate edition={mockEdition} close={jest.fn()} />
           </MockedProvider>
         </VideoProvider>
       </NextIntlClientProvider>
@@ -103,11 +99,7 @@ describe('SubtitleCreate', () => {
       <NextIntlClientProvider locale="en">
         <VideoProvider video={mockVideo}>
           <MockedProvider mocks={[getLanguagesMock, createSubtitleMock]}>
-            <SubtitleCreate
-              edition={mockEdition}
-              close={jest.fn()}
-              dialogState={{ loading: false, setLoading: jest.fn() }}
-            />
+            <SubtitleCreate edition={mockEdition} close={jest.fn()} />
           </MockedProvider>
         </VideoProvider>
       </NextIntlClientProvider>
@@ -128,7 +120,7 @@ describe('SubtitleCreate', () => {
     })
   })
 
-  it('should handle subtitle creation with a file', async () => {
+  it('should handle subtitle creation with a vtt file', async () => {
     const createSubtitleMock = getCreateSubtitleMock({
       vttSrc:
         'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt',
@@ -152,11 +144,7 @@ describe('SubtitleCreate', () => {
               createSubtitleMock
             ]}
           >
-            <SubtitleCreate
-              edition={mockEdition}
-              close={jest.fn()}
-              dialogState={{ loading: false, setLoading: jest.fn() }}
-            />
+            <SubtitleCreate edition={mockEdition} close={jest.fn()} />
           </MockedProvider>
         </VideoProvider>
       </NextIntlClientProvider>
@@ -175,6 +163,61 @@ describe('SubtitleCreate', () => {
     await user.upload(
       dropzone,
       new File(['subtitle file'], 'subtitle1.vtt', { type: 'text/vtt' })
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Create' }))
+
+    await waitFor(() => {
+      expect(createR2SubtitleAssetMock.result).toHaveBeenCalled()
+    })
+    expect(createSubtitleMock.result).toHaveBeenCalled()
+  })
+
+  it('should handle subtitle creation with a srt file', async () => {
+    const createSubtitleMock = getCreateSubtitleMock({
+      vttSrc: null,
+      srtSrc:
+        'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
+      primary: true
+    })
+    const createR2SubtitleAssetMock = getCreateR2AssetMock({
+      videoId: mockVideo.id,
+      contentType: 'application/x-subrip',
+      fileName:
+        '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt'
+    })
+
+    render(
+      <NextIntlClientProvider locale="en">
+        <VideoProvider video={mockVideo}>
+          <MockedProvider
+            mocks={[
+              getLanguagesMock,
+              createR2SubtitleAssetMock,
+              createSubtitleMock
+            ]}
+          >
+            <SubtitleCreate edition={mockEdition} close={jest.fn()} />
+          </MockedProvider>
+        </VideoProvider>
+      </NextIntlClientProvider>
+    )
+
+    const user = userEvent.setup()
+
+    const select = screen.getByRole('combobox', { name: 'Language' })
+    await user.click(select)
+    await waitFor(async () => {
+      await user.click(screen.getByRole('option', { name: 'English' }))
+    })
+    await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
+
+    const dropzone = screen.getByTestId('DropZone')
+    await user.upload(
+      dropzone,
+      new File(['subtitle file'], 'subtitle1.srt', {
+        type: 'application/x-subrip'
+      })
     )
 
     await user.click(screen.getByRole('button', { name: 'Create' }))

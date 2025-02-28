@@ -2,7 +2,7 @@ import { gql, useMutation } from '@apollo/client'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useCreateR2AssetMutation } from '../../../../../../../../../../libs/useCreateR2Asset'
@@ -10,6 +10,7 @@ import { useVideo } from '../../../../../../../../../../libs/VideoProvider'
 import { ArrayElement } from '../../../../../../../../../../types/array-types'
 import { SubtitleForm } from '../../SubtitleForm'
 import { SubtitleValidationSchema } from '../../SubtitleForm/SubtitleForm'
+import { getSubtitleR2Path } from '../getSubtitleR2Path'
 
 export const CREATE_VIDEO_SUBTITLE = graphql(`
   mutation CreateVideoSubtitle($input: VideoSubtitleCreateInput!) {
@@ -37,30 +38,22 @@ export type CreateVideoSubtitleVariables = VariablesOf<
 >
 export type CreateVideoSubtitle = ResultOf<typeof CREATE_VIDEO_SUBTITLE>
 
-const getFileName = (video, edition, languageId, file) => {
-  const extension = file.name.split('.').pop()
-  return `${video.id}/editions/${edition.id}/subtitles/${video.id}_${edition.id}_${languageId}.${extension}`
-}
-
 interface SubtitleCreateProps {
   close: () => void
   edition: ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
-  dialogState: {
-    loading: boolean
-    setLoading: (loading: boolean) => void
-  }
 }
 
 export function SubtitleCreate({
   close,
-  edition,
-  dialogState
+  edition
 }: SubtitleCreateProps): ReactElement {
   const video = useVideo()
   const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
-  const [createR2Asset] = useCreateR2AssetMutation()
+  const abortController = useRef<AbortController | null>(null)
+  const [loading, setLoading] = useState(false)
 
+  const [createR2Asset] = useCreateR2AssetMutation()
   const [createVideoSubtitle] = useMutation(CREATE_VIDEO_SUBTITLE, {
     update(cache, { data }) {
       if (data?.videoSubtitleCreate == null) return
@@ -99,7 +92,8 @@ export function SubtitleCreate({
 
   const handleSubmit = async (values: SubtitleValidationSchema) => {
     if (edition == null) return
-    dialogState.setLoading(true)
+    setLoading(true)
+    abortController.current = new AbortController()
 
     const file = values.file as File | null
 
@@ -127,21 +121,30 @@ export function SubtitleCreate({
           enqueueSnackbar(t('Successfully created subtitle.'), {
             variant: 'success'
           })
-          dialogState.setLoading(false)
+          setLoading(false)
           close()
         },
-        onError: () => {
-          enqueueSnackbar(t('Failed to create subtitle.'), {
-            variant: 'error'
-          })
-          dialogState.setLoading(false)
+        onError: (e) => {
+          if (e.message.includes('aborted')) {
+            enqueueSnackbar(t('Subtitle creation cancelled.'))
+          } else {
+            enqueueSnackbar(t('Failed to create subtitle.'), {
+              variant: 'error'
+            })
+          }
+          setLoading(false)
+        },
+        context: {
+          fetchOptions: {
+            signal: abortController.current?.signal
+          }
         }
       })
     }
 
     // Create Cloudflare R2 asset
     if (file != null) {
-      const fileName = getFileName(video, edition, '529', file)
+      const fileName = getSubtitleR2Path(video, edition, '529', file)
 
       await createR2Asset({
         variables: {
@@ -155,33 +158,58 @@ export function SubtitleCreate({
           if (data?.cloudflareR2Create?.uploadUrl == null) return
 
           const uploadUrl = data.cloudflareR2Create.uploadUrl
+          const publicUrl = data.cloudflareR2Create.publicUrl
 
-          const res = await fetch(uploadUrl, {
-            method: 'PUT',
-            body: file,
-            headers: {
-              'Content-Type': file.type
-            }
-          })
+          try {
+            const res = await fetch(uploadUrl, {
+              method: 'PUT',
+              body: file,
+              headers: {
+                'Content-Type': file.type
+              },
+              signal: abortController.current?.signal
+            })
 
-          if (res.ok) {
-            if (data.cloudflareR2Create.publicUrl != null) {
-              await performCreateSubtitle({
-                vttSrc: data.cloudflareR2Create.publicUrl,
+            if (res.ok && publicUrl != null) {
+              const sources: {
+                vttSrc: string | null
+                srtSrc: string | null
+              } = {
+                vttSrc: null,
                 srtSrc: null
+              }
+
+              if (file.type === 'text/vtt') {
+                sources.vttSrc = publicUrl
+              } else if (file.type === 'application/x-subrip') {
+                sources.srtSrc = publicUrl
+              }
+
+              await performCreateSubtitle(sources)
+            } else {
+              enqueueSnackbar(t('Failed to upload subtitle file.'), {
+                variant: 'error'
               })
             }
-          } else {
+          } catch (e) {
             enqueueSnackbar(t('Failed to upload subtitle file.'), {
               variant: 'error'
             })
           }
         },
-        onError: () => {
-          enqueueSnackbar(t('Failed to create subtitle.'), {
-            variant: 'error'
-          })
-          dialogState.setLoading(false)
+        onError: (e) => {
+          if (e.message.includes('aborted')) {
+            enqueueSnackbar(t('Upload cancelled.'))
+          } else {
+            enqueueSnackbar(t('Failed to create r2 asset.'), {
+              variant: 'error'
+            })
+          }
+        },
+        context: {
+          fetchOptions: {
+            signal: abortController.current?.signal
+          }
         }
       })
     } else {
@@ -192,12 +220,21 @@ export function SubtitleCreate({
     }
   }
 
+  useEffect(() => {
+    return () => {
+      if (abortController.current != null) {
+        abortController.current.abort()
+        abortController.current = null
+      }
+    }
+  }, [])
+
   return (
     <SubtitleForm
       variant="create"
       initialValues={{ language: '', primary: false }}
       onSubmit={handleSubmit}
-      loading={dialogState.loading}
+      loading={loading}
     />
   )
 }
