@@ -4,6 +4,7 @@ import {
   RefObject,
   SetStateAction,
   useEffect,
+  useRef,
   useState
 } from 'react'
 import videojs from 'video.js'
@@ -59,10 +60,11 @@ export function InitAndPlay({
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
   const [error, setError] = useState(false)
+  const playerInitializedRef = useRef(false)
 
-  // Initiate video player
   useEffect(() => {
-    if (videoRef.current != null) {
+    // Only initialize video player if not already done
+    if (videoRef.current != null && !playerInitializedRef.current) {
       setPlayer(
         videojs(videoRef.current, {
           ...defaultVideoJsOptions,
@@ -84,9 +86,10 @@ export function InitAndPlay({
             source === VideoBlockSource.youTube
         })
       )
+      playerInitializedRef.current = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- should only run once
-  }, [muted, setPlayer, videoRef, autoplay, source])
+  }, [])
 
   // Initiate video player listeners
   useEffect(() => {
