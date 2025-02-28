@@ -61,7 +61,6 @@ export function HeaderLinkAccordion({
       <AccordionSummary
         expandIcon={null}
         aria-controls={`${label}-content`}
-        id={`${label}-header`}
         sx={{
           p: 0,
           minHeight: '0 !important',
