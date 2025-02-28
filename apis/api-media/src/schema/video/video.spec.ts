@@ -236,7 +236,9 @@ describe('video', () => {
           userId: 'testUserId',
           publicUrl: 'https://assets.jesusfilm.org/assetFileName',
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          contentType: 'application/octet-stream',
+          contentLength: 0
         }
       ],
       videoEditions: [{ id: 'edition', name: 'base', videoId: 'videoId' }],
