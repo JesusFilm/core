@@ -74,13 +74,18 @@ const subtitleEditWithFileMock = getEditSubtitleMock({
   primary: true
 })
 
-const createR2SubtitleAssetMock = getCreateR2AssetMock({
+const createR2VttAssetMock = getCreateR2AssetMock({
   videoId: '1_jf-0-0',
   contentType: 'text/vtt',
   fileName: '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt'
 })
 
-// const createR2SubtitleAssetMock = createR2AssetMock
+const createR2SrtAssetMock = getCreateR2AssetMock({
+  videoId: '1_jf-0-0',
+  contentType: 'application/x-subrip',
+  fileName: '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt'
+})
+
 const deleteR2AssetMock = getDeleteR2AssetMock({
   id: 'subtitle1.id'
 })
@@ -104,12 +109,7 @@ describe('SubtitleEdit', () => {
       <NextIntlClientProvider locale="en">
         <VideoProvider video={mockVideo}>
           <MockedProvider mocks={[]}>
-            <SubtitleEdit
-              subtitle={mockSubtitle}
-              edition={mockEdition}
-              close={jest.fn()}
-              dialogState={{ loading: false, setLoading: jest.fn() }}
-            />
+            <SubtitleEdit subtitle={mockSubtitle} edition={mockEdition} />
           </MockedProvider>
         </VideoProvider>
       </NextIntlClientProvider>
@@ -120,165 +120,304 @@ describe('SubtitleEdit', () => {
   })
 
   describe('subtitle file upload', () => {
-    it('should update subtitle without a file', async () => {
-      const close = jest.fn()
-      const setLoading = jest.fn()
+    describe('vtt', () => {
+      it('should update subtitle without a file', async () => {
+        render(
+          <NextIntlClientProvider locale="en">
+            <VideoProvider video={mockVideo}>
+              <MockedProvider
+                mocks={[
+                  getLanguagesMock,
+                  createR2VttAssetMock,
+                  subtitleEditWithoutFileMock
+                ]}
+              >
+                <SubtitleEdit
+                  subtitle={{
+                    ...mockSubtitle,
+                    primary: false,
+                    value: null,
+                    vttSrc: null,
+                    srtSrc: null
+                  }}
+                  edition={mockEdition}
+                />
+              </MockedProvider>
+            </VideoProvider>
+          </NextIntlClientProvider>
+        )
 
-      render(
-        <NextIntlClientProvider locale="en">
-          <VideoProvider video={mockVideo}>
-            <MockedProvider
-              mocks={[
-                getLanguagesMock,
-                createR2SubtitleAssetMock,
-                subtitleEditWithoutFileMock
-              ]}
-            >
-              <SubtitleEdit
-                subtitle={{
-                  ...mockSubtitle,
-                  primary: false,
-                  value: null,
-                  vttSrc: null,
-                  srtSrc: null
-                }}
-                edition={mockEdition}
-                close={close}
-                dialogState={{ loading: false, setLoading }}
-              />
-            </MockedProvider>
-          </VideoProvider>
-        </NextIntlClientProvider>
-      )
+        const user = userEvent.setup()
 
-      const user = userEvent.setup()
+        const select = screen.getByRole('combobox', { name: 'Language' })
+        await user.click(select)
+        await waitFor(async () => {
+          await user.click(screen.getByRole('option', { name: 'English' }))
+        })
+        await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
+        await user.click(screen.getByRole('button', { name: 'Update' }))
 
-      const select = screen.getByRole('combobox', { name: 'Language' })
-      await user.click(select)
-      await waitFor(async () => {
-        await user.click(screen.getByRole('option', { name: 'English' }))
+        await waitFor(() => {
+          expect(subtitleEditWithoutFileMock.result).toHaveBeenCalled()
+        })
       })
-      await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
-      await user.click(screen.getByRole('button', { name: 'Update' }))
 
-      await waitFor(() => {
-        expect(subtitleEditWithoutFileMock.result).toHaveBeenCalled()
+      it('should update without an existing file', async () => {
+        render(
+          <NextIntlClientProvider locale="en">
+            <VideoProvider video={mockVideo}>
+              <MockedProvider
+                mocks={[
+                  getLanguagesMock,
+                  createR2VttAssetMock,
+                  subtitleEditWithFileMock
+                ]}
+              >
+                <SubtitleEdit
+                  subtitle={{
+                    ...mockSubtitle,
+                    primary: false,
+                    value: null,
+                    vttSrc: null,
+                    srtSrc: null
+                  }}
+                  edition={mockEdition}
+                />
+              </MockedProvider>
+            </VideoProvider>
+          </NextIntlClientProvider>
+        )
+        const user = userEvent.setup()
+
+        const select = screen.getByRole('combobox', { name: 'Language' })
+        await user.click(select)
+        await waitFor(async () => {
+          await user.click(screen.getByRole('option', { name: 'English' }))
+        })
+        await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
+
+        const dropzone = screen.getByTestId('DropZone')
+        await user.upload(
+          dropzone,
+          new File(['subtitle file'], 'subtitle1.vtt', { type: 'text/vtt' })
+        )
+
+        await user.click(screen.getByRole('button', { name: 'Update' }))
+
+        await waitFor(() => {
+          expect(createR2VttAssetMock.result).toHaveBeenCalled()
+        })
+        expect(subtitleEditWithFileMock.result).toHaveBeenCalled()
+      })
+
+      it('should update subtitle with an existing file', async () => {
+        const subtitleEditWithExistingFileMock = getEditSubtitleMock({
+          vttSrc:
+            'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt',
+          srtSrc:
+            'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.srt',
+          primary: true
+        })
+
+        render(
+          <NextIntlClientProvider locale="en">
+            <VideoProvider video={mockVideo}>
+              <MockedProvider
+                mocks={[
+                  getLanguagesMock,
+                  deleteR2AssetMock,
+                  createR2VttAssetMock,
+                  subtitleEditWithExistingFileMock
+                ]}
+              >
+                <SubtitleEdit
+                  subtitle={{
+                    ...mockSubtitle,
+                    primary: false
+                  }}
+                  edition={mockEdition}
+                />
+              </MockedProvider>
+            </VideoProvider>
+          </NextIntlClientProvider>
+        )
+        const user = userEvent.setup()
+
+        const select = screen.getByRole('combobox', { name: 'Language' })
+        await user.click(select)
+        await waitFor(async () => {
+          await user.click(screen.getByRole('option', { name: 'English' }))
+        })
+        await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
+
+        const dropzone = screen.getByTestId('DropZone')
+        await user.upload(
+          dropzone,
+          new File(['subtitle file'], 'subtitle1.vtt', { type: 'text/vtt' })
+        )
+
+        await user.click(screen.getByRole('button', { name: 'Update' }))
+
+        await waitFor(() => {
+          expect(deleteR2AssetMock.result).toHaveBeenCalled()
+        })
+        await waitFor(() => {
+          expect(createR2VttAssetMock.result).toHaveBeenCalled()
+        })
+        expect(subtitleEditWithExistingFileMock.result).toHaveBeenCalled()
       })
     })
 
-    it('should update subtitle without an existing file', async () => {
-      const close = jest.fn()
-      const setLoading = jest.fn()
+    describe('srt', () => {
+      it('should update subtitle without a file', async () => {
+        render(
+          <NextIntlClientProvider locale="en">
+            <VideoProvider video={mockVideo}>
+              <MockedProvider
+                mocks={[
+                  getLanguagesMock,
+                  createR2SrtAssetMock,
+                  subtitleEditWithoutFileMock
+                ]}
+              >
+                <SubtitleEdit
+                  subtitle={{
+                    ...mockSubtitle,
+                    primary: false,
+                    value: null,
+                    vttSrc: null,
+                    srtSrc: null
+                  }}
+                  edition={mockEdition}
+                />
+              </MockedProvider>
+            </VideoProvider>
+          </NextIntlClientProvider>
+        )
 
-      render(
-        <NextIntlClientProvider locale="en">
-          <VideoProvider video={mockVideo}>
-            <MockedProvider
-              mocks={[
-                getLanguagesMock,
-                createR2SubtitleAssetMock,
-                subtitleEditWithFileMock
-              ]}
-            >
-              <SubtitleEdit
-                subtitle={{
-                  ...mockSubtitle,
-                  primary: false,
-                  value: null,
-                  vttSrc: null,
-                  srtSrc: null
-                }}
-                edition={mockEdition}
-                close={close}
-                dialogState={{ loading: false, setLoading }}
-              />
-            </MockedProvider>
-          </VideoProvider>
-        </NextIntlClientProvider>
-      )
-      const user = userEvent.setup()
+        const user = userEvent.setup()
 
-      const select = screen.getByRole('combobox', { name: 'Language' })
-      await user.click(select)
-      await waitFor(async () => {
-        await user.click(screen.getByRole('option', { name: 'English' }))
-      })
-      await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
+        const select = screen.getByRole('combobox', { name: 'Language' })
+        await user.click(select)
+        await waitFor(async () => {
+          await user.click(screen.getByRole('option', { name: 'English' }))
+        })
+        await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
+        await user.click(screen.getByRole('button', { name: 'Update' }))
 
-      const dropzone = screen.getByTestId('DropZone')
-      await user.upload(
-        dropzone,
-        new File(['subtitle file'], 'subtitle1.vtt', { type: 'text/vtt' })
-      )
-
-      await user.click(screen.getByRole('button', { name: 'Update' }))
-
-      await waitFor(() => {
-        expect(createR2SubtitleAssetMock.result).toHaveBeenCalled()
-      })
-      expect(subtitleEditWithFileMock.result).toHaveBeenCalled()
-    })
-
-    it('should update subtitle with an existing file', async () => {
-      const close = jest.fn()
-      const setLoading = jest.fn()
-
-      const subtitleEditWithExistingFileMock = getEditSubtitleMock({
-        vttSrc:
-          'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt',
-        srtSrc:
-          'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.srt',
-        primary: true
+        await waitFor(() => {
+          expect(subtitleEditWithoutFileMock.result).toHaveBeenCalled()
+        })
       })
 
-      render(
-        <NextIntlClientProvider locale="en">
-          <VideoProvider video={mockVideo}>
-            <MockedProvider
-              mocks={[
-                getLanguagesMock,
-                deleteR2AssetMock,
-                createR2SubtitleAssetMock,
-                subtitleEditWithExistingFileMock
-              ]}
-            >
-              <SubtitleEdit
-                subtitle={{
-                  ...mockSubtitle,
-                  primary: false
-                }}
-                edition={mockEdition}
-                close={close}
-                dialogState={{ loading: false, setLoading }}
-              />
-            </MockedProvider>
-          </VideoProvider>
-        </NextIntlClientProvider>
-      )
-      const user = userEvent.setup()
+      it('should update without an existing file', async () => {
+        render(
+          <NextIntlClientProvider locale="en">
+            <VideoProvider video={mockVideo}>
+              <MockedProvider
+                mocks={[
+                  getLanguagesMock,
+                  createR2SrtAssetMock,
+                  subtitleEditWithFileMock
+                ]}
+              >
+                <SubtitleEdit
+                  subtitle={{
+                    ...mockSubtitle,
+                    primary: false,
+                    value: null,
+                    vttSrc: null,
+                    srtSrc: null
+                  }}
+                  edition={mockEdition}
+                />
+              </MockedProvider>
+            </VideoProvider>
+          </NextIntlClientProvider>
+        )
+        const user = userEvent.setup()
 
-      const select = screen.getByRole('combobox', { name: 'Language' })
-      await user.click(select)
-      await waitFor(async () => {
-        await user.click(screen.getByRole('option', { name: 'English' }))
+        const select = screen.getByRole('combobox', { name: 'Language' })
+        await user.click(select)
+        await waitFor(async () => {
+          await user.click(screen.getByRole('option', { name: 'English' }))
+        })
+        await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
+
+        const dropzone = screen.getByTestId('DropZone')
+        await user.upload(
+          dropzone,
+          new File(['subtitle file'], 'subtitle1.srt', {
+            type: 'application/x-subrip'
+          })
+        )
+
+        await user.click(screen.getByRole('button', { name: 'Update' }))
+
+        await waitFor(() => {
+          expect(createR2SrtAssetMock.result).toHaveBeenCalled()
+        })
+        expect(subtitleEditWithFileMock.result).toHaveBeenCalled()
       })
-      await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
 
-      const dropzone = screen.getByTestId('DropZone')
-      await user.upload(
-        dropzone,
-        new File(['subtitle file'], 'subtitle1.vtt', { type: 'text/vtt' })
-      )
+      it('should update subtitle with an existing file', async () => {
+        const subtitleEditWithExistingFileMock = getEditSubtitleMock({
+          vttSrc:
+            'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.vtt',
+          srtSrc:
+            'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
+          primary: true
+        })
 
-      await user.click(screen.getByRole('button', { name: 'Update' }))
+        render(
+          <NextIntlClientProvider locale="en">
+            <VideoProvider video={mockVideo}>
+              <MockedProvider
+                mocks={[
+                  getLanguagesMock,
+                  deleteR2AssetMock,
+                  createR2SrtAssetMock,
+                  subtitleEditWithExistingFileMock
+                ]}
+              >
+                <SubtitleEdit
+                  subtitle={{
+                    ...mockSubtitle,
+                    primary: false
+                  }}
+                  edition={mockEdition}
+                />
+              </MockedProvider>
+            </VideoProvider>
+          </NextIntlClientProvider>
+        )
+        const user = userEvent.setup()
 
-      await waitFor(() => {
-        expect(deleteR2AssetMock.result).toHaveBeenCalled()
+        const select = screen.getByRole('combobox', { name: 'Language' })
+        await user.click(select)
+        await waitFor(async () => {
+          await user.click(screen.getByRole('option', { name: 'English' }))
+        })
+        await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
+
+        const dropzone = screen.getByTestId('DropZone')
+        await user.upload(
+          dropzone,
+          new File(['subtitle file'], 'subtitle1.srt', {
+            type: 'application/x-subrip'
+          })
+        )
+
+        await user.click(screen.getByRole('button', { name: 'Update' }))
+
+        await waitFor(() => {
+          expect(deleteR2AssetMock.result).toHaveBeenCalled()
+        })
+        await waitFor(() => {
+          expect(createR2SrtAssetMock.result).toHaveBeenCalled()
+        })
+        expect(subtitleEditWithExistingFileMock.result).toHaveBeenCalled()
       })
-      await waitFor(() => {
-        expect(createR2SubtitleAssetMock.result).toHaveBeenCalled()
-      })
-      expect(subtitleEditWithExistingFileMock.result).toHaveBeenCalled()
     })
   })
 })
