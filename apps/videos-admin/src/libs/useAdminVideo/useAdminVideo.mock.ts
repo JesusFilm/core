@@ -242,6 +242,7 @@ export const useAdminVideoMock: MockedResponse<
             }
           }
         ],
+        videoEditions: [],
         subtitles: [
           {
             id: '97c4bc0e-6a2d-4650-9b60-91b99293ba1b',

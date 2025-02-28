@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
+import { UploadVideoVariantProvider } from '../../../../../../../libs/UploadVideoVariantProvider'
 import { GetAdminVideoVariant as VideoVariants } from '../../../../../../../libs/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
@@ -10,6 +11,10 @@ import { Variants } from './Variants'
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => false
+}))
+
+jest.mock('next/navigation', () => ({
+  useParams: () => ({ videoId: 'video123' })
 }))
 
 describe('Variants', () => {
@@ -82,5 +87,19 @@ describe('Variants', () => {
 
     const section = document.getElementById('Audio Languages-section')
     expect(section).toBeInTheDocument()
+  })
+
+  it('should open add audio language dialog when clicking add audio language button', async () => {
+    render(
+      <MockedProvider>
+        <NextIntlClientProvider locale="en">
+          <UploadVideoVariantProvider>
+            <Variants variants={mockVideoVariants} />
+          </UploadVideoVariantProvider>
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByText('Add Audio Language'))
+    await waitFor(() => expect(screen.getByRole('dialog')).toBeInTheDocument())
   })
 })
