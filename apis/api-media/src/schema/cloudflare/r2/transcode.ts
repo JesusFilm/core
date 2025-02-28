@@ -84,7 +84,7 @@ builder.mutationFields((t) => ({
       return job.id
     }
   }),
-  getTranscodeStatus: t.withAuth({ isPublisher: true }).field({
+  getTranscodeAssetProgress: t.withAuth({ isPublisher: true }).field({
     type: 'Int',
     args: {
       jobId: t.arg({ type: 'String', required: true })

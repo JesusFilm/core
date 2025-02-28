@@ -395,7 +395,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Transcode an asset. Returns the bullmq job ID.
   """
   transcodeAsset(input: TranscodeVideoInput!) : String @join__field(graph: API_MEDIA) 
-  getTranscodeStatus(jobId: String!) : Int @join__field(graph: API_MEDIA) 
+  getTranscodeAssetProgress(jobId: String!) : Int @join__field(graph: API_MEDIA) 
   createCloudflareUploadByFile(input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareUploadByUrl(url: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
@@ -4142,6 +4142,10 @@ input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   the type of file that is being uploaded. e.g. image or video/mp4
   """
   contentType: String!
+  """
+  the size of the file that is being uploaded
+  """
+  contentLength: Int!
   """
   the id of the Video object this file relates to in the database
   """

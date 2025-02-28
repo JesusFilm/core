@@ -67,6 +67,9 @@ input CloudflareR2CreateInput {
   """the type of file that is being uploaded. e.g. image or video/mp4"""
   contentType: String!
 
+  """the size of the file that is being uploaded"""
+  contentLength: Int!
+
   """the id of the Video object this file relates to in the database"""
   videoId: String!
 }
@@ -146,7 +149,7 @@ enum MediaRole {
 type Mutation {
   """Transcode an asset. Returns the bullmq job ID."""
   transcodeAsset(input: TranscodeVideoInput!): String
-  getTranscodeStatus(jobId: String!): Int
+  getTranscodeAssetProgress(jobId: String!): Int
   createCloudflareUploadByFile(input: ImageInput): CloudflareImage!
   createCloudflareUploadByUrl(url: String!, input: ImageInput): CloudflareImage!
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
