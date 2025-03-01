@@ -3651,11 +3651,11 @@ export enum ThemeName {
 }
 
 export type TranscodeVideoInput = {
-  bitrate?: InputMaybe<Scalars['Int']['input']>;
   outputFilename: Scalars['String']['input'];
   outputPath: Scalars['String']['input'];
   r2AssetId: Scalars['String']['input'];
   resolution: Scalars['String']['input'];
+  videoBitrate?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Translation = {
