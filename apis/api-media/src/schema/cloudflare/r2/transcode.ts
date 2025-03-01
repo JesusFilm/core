@@ -14,7 +14,7 @@ import { TranscodeVideoInput } from './inputs/transcodeVideoInput'
 interface TranscodeVideoJob {
   inputUrl: string
   resolution: string
-  videoBitrate: string
+  bitrate: string
   contentType: string
   outputFilename: string
   outputPath: string
@@ -36,15 +36,19 @@ export function initializeQueue() {
 const completeJob = async (jobId: string) => {
   const job = (await queue.getJob(jobId)) as Job<TranscodeVideoJob>
   if (!job) return
-  void prisma.cloudflareR2.create({
-    data: {
-      publicUrl: job.data.publicUrl,
-      contentType: job.data.contentType,
-      contentLength: job.data.outputSize ?? 0,
-      fileName: job.data.outputFilename,
-      userId: job.data.userId
-    }
-  })
+  try {
+    await prisma.cloudflareR2.create({
+      data: {
+        publicUrl: job.data.publicUrl,
+        contentType: job.data.contentType,
+        contentLength: job.data.outputSize ?? 0,
+        fileName: job.data.outputFilename,
+        userId: job.data.userId
+      }
+    })
+  } catch (err) {
+    console.error('Failed to persist the completed job in DB', err)
+  }
 }
 
 builder.mutationFields((t) => ({
