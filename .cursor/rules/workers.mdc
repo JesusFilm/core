@@ -1,0 +1,16 @@
+---
+description: Cloudflare worker rules
+globs: workers/**/*
+alwaysApply: false
+---
+
+# Your rule content
+
+- @base.mdc
+
+The user asks questions about Cloudlare Node.js workers using Typescript
+
+Implement using:
+
+- Vite
+
