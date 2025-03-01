@@ -3655,7 +3655,7 @@ export type TranscodeVideoInput = {
   outputPath: Scalars['String']['input'];
   r2AssetId: Scalars['String']['input'];
   resolution: Scalars['String']['input'];
-  videoBitrate?: InputMaybe<Scalars['Int']['input']>;
+  videoBitrate?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Translation = {
