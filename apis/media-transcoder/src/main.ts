@@ -11,7 +11,7 @@ import ffmpeg from './types/fluent-ffmpeg'
 export interface TranscodeVideoJob {
   inputUrl: string
   resolution: string
-  videoBitrate: number
+  videoBitrate: string
   contentType: string
   outputFilename: string
   outputPath: string
@@ -116,7 +116,7 @@ export async function main() {
       .input(job.data.inputUrl)
       .size(job.data.resolution)
       .autopad()
-      .videoBitrate(job.data.videoBitrate)
+      .videoBitrate(job.data.videoBitrate.toString())
       .saveToFile(job.data.outputFilename)
       .on('progress', (progress: { percent: number }) => {
         if (progress.percent) {

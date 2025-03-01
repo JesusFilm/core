@@ -14,7 +14,7 @@ import { TranscodeVideoInput } from './inputs/transcodeVideoInput'
 interface TranscodeVideoJob {
   inputUrl: string
   resolution: string
-  videoBitrate: number
+  videoBitrate: string
   contentType: string
   outputFilename: string
   outputPath: string
