@@ -1,8 +1,8 @@
 import { S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { Job, Queue } from 'bullmq'
+import { mockDeep, mockReset } from 'jest-mock-extended'
 import fetch from 'node-fetch'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { getClient, getPresignedUrl, main, uploadToR2 } from './main'
 
@@ -18,111 +18,104 @@ interface MockFfmpegCommand {
 }
 
 // Hoisted mocks
-const mockFfmpeg = vi.hoisted(() => {
-  return vi.fn()
-})
+const mockFfmpeg = jest.fn()
 
-// Mock Worker class
-const mockGetNextJob = vi.fn()
+// Mock deep objects
+const mockJob = mockDeep<Job<any>>()
+const mockQueue = mockDeep<Queue>()
 
 // Mock all external dependencies
-vi.mock('@aws-sdk/client-s3', () => {
+jest.mock('@aws-sdk/client-s3', () => {
   return {
-    S3Client: vi.fn().mockImplementation(() => ({
+    S3Client: jest.fn().mockImplementation(() => ({
       // Mock methods as needed
     })),
-    PutObjectCommand: vi.fn().mockImplementation((params) => ({
+    PutObjectCommand: jest.fn().mockImplementation((params) => ({
       ...params
     }))
   }
 })
 
-vi.mock('@aws-sdk/s3-request-presigner', () => {
+jest.mock('@aws-sdk/s3-request-presigner', () => {
   return {
-    getSignedUrl: vi.fn().mockResolvedValue('https://mock-presigned-url.com')
+    getSignedUrl: jest.fn().mockResolvedValue('https://mock-presigned-url.com')
   }
 })
 
 // Mock ffmpeg
-vi.mock('./types/fluent-ffmpeg', () => {
-  return {
-    default: mockFfmpeg
-  }
-})
+jest.mock('./types/fluent-ffmpeg', () => {
+  // Create a mock ffmpeg instance that properly handles events
+  type ProgressCallback = (progress: { percent: number }) => void
+  type EndCallback = () => void
+  type ErrorCallback = (error: Error) => void
 
-// Create mock job and queue for testing
-const createMockJob = () =>
-  ({
-    data: {
-      inputUrl: 'https://example.com/input.mp4',
-      outputFile: '/tmp/output.mp4',
-      size: '1280x720',
-      videoBitrate: '1000k',
-      r2Filename: 'output.mp4',
-      contentType: 'video/mp4'
+  const eventHandlers: {
+    progress: ProgressCallback | null
+    end: EndCallback | null
+    error: ErrorCallback | null
+  } = {
+    progress: null,
+    end: null,
+    error: null
+  }
+
+  const mockFfmpegInstance = {
+    input: jest.fn().mockReturnThis(),
+    size: jest.fn().mockReturnThis(),
+    autopad: jest.fn().mockReturnThis(),
+    videoBitrate: jest.fn().mockReturnThis(),
+    saveToFile: jest.fn().mockReturnThis(),
+    on: jest.fn().mockImplementation((event: string, callback: any) => {
+      if (event === 'progress') {
+        eventHandlers.progress = callback as ProgressCallback
+      } else if (event === 'end') {
+        eventHandlers.end = callback as EndCallback
+      } else if (event === 'error') {
+        eventHandlers.error = callback as ErrorCallback
+      }
+      return mockFfmpegInstance
+    }),
+    // Helper methods to trigger events in tests
+    _triggerProgress: (percent: number) => {
+      if (eventHandlers.progress) {
+        eventHandlers.progress({ percent })
+      }
     },
-    updateProgress: vi.fn(),
-    moveToCompleted: vi.fn(),
-    moveToFailed: vi.fn(),
-    // Add required Job properties
-    queue: {} as any,
-    name: 'test-job',
-    opts: {},
-    queueQualifiedName: 'test-queue:test-job',
-    id: 'test-job-id',
-    attemptsMade: 0
-  }) as unknown as Job
-
-const createMockQueue = () =>
-  ({
-    add: vi.fn()
-  }) as unknown as Queue
-
-vi.mock('bullmq', () => {
-  const mockUpdateProgress = vi.fn()
-  const mockMoveToCompleted = vi.fn()
-  const mockMoveToFailed = vi.fn()
-  const mockAdd = vi.fn()
+    _triggerEnd: () => {
+      if (eventHandlers.end) {
+        eventHandlers.end()
+      }
+    },
+    _triggerError: (error: Error) => {
+      if (eventHandlers.error) {
+        eventHandlers.error(error)
+      }
+    }
+  }
 
   return {
-    Job: vi.fn().mockImplementation(() => ({
-      updateProgress: mockUpdateProgress,
-      moveToCompleted: mockMoveToCompleted,
-      moveToFailed: mockMoveToFailed,
-      data: {
-        inputUrl: 'https://example.com/input.mp4',
-        outputFile: '/tmp/output.mp4',
-        size: '1280x720',
-        videoBitrate: '1000k',
-        r2Filename: 'output.mp4',
-        contentType: 'video/mp4'
-      },
-      // Add required Job properties
-      queue: {},
-      name: 'test-job',
-      opts: {},
-      queueQualifiedName: 'test-queue:test-job',
-      id: 'test-job-id',
-      attemptsMade: 0
-    })),
-    Queue: vi.fn().mockImplementation(() => ({
-      add: mockAdd
-    })),
-    Worker: vi.fn().mockImplementation(() => ({
-      getNextJob: mockGetNextJob
-    }))
+    default: jest.fn().mockReturnValue(mockFfmpegInstance)
   }
 })
 
-vi.mock('fs/promises', () => {
+// Mock bullmq
+jest.mock('bullmq', () => {
   return {
-    readFile: vi.fn().mockResolvedValue(Buffer.from('mock file content'))
+    Queue: jest.fn().mockImplementation(() => mockQueue),
+    Job: jest.fn().mockImplementation(() => mockJob)
   }
 })
 
-vi.mock('node-fetch', () => {
+jest.mock('fs/promises', () => {
   return {
-    default: vi.fn().mockResolvedValue({
+    readFile: jest.fn().mockResolvedValue(Buffer.from('mock file content')),
+    stat: jest.fn().mockResolvedValue({ size: 1024 })
+  }
+})
+
+jest.mock('node-fetch', () => {
+  return {
+    default: jest.fn().mockResolvedValue({
       ok: true
     })
   }
@@ -138,13 +131,26 @@ describe('Media Transcoder', () => {
     process.env.CLOUDFLARE_R2_SECRET = 'mock-secret'
     process.env.CLOUDFLARE_R2_BUCKET = 'mock-bucket'
     process.env.BULLMQ_QUEUE = 'mock-queue'
-    process.env.BULLMQ_OUTPUT_QUEUE = 'mock-output-queue'
     process.env.BULLMQ_JOB = 'mock-job-id'
     process.env.REDIS_URL = 'mock-redis-url'
     process.env.REDIS_PORT = '6379'
 
     // Reset all mocks
-    vi.clearAllMocks()
+    jest.clearAllMocks()
+    mockReset(mockJob)
+    mockReset(mockQueue)
+
+    // Setup default mock job data
+    mockJob.data = {
+      inputUrl: 'https://example.com/input.mp4',
+      outputFilename: '/tmp/output.mp4',
+      resolution: '1280x720',
+      videoBitrate: '1000k',
+      contentType: 'video/mp4',
+      outputPath: '/tmp',
+      userId: 'test-user'
+    }
+    mockJob.id = 'test-job-id'
   })
 
   afterEach(() => {
@@ -201,12 +207,8 @@ describe('Media Transcoder', () => {
   })
 
   describe('uploadToR2', () => {
-    it('should upload file to R2 and move job to completed', async () => {
-      const mockJob = createMockJob()
-      const mockQueue = createMockQueue()
-      const jobId = 'test-job-id'
-
-      await uploadToR2(jobId, mockJob, mockQueue)
+    it('should upload file to R2 and update job progress', async () => {
+      await uploadToR2(mockJob)
 
       expect(getSignedUrl).toHaveBeenCalled()
       expect(fetch).toHaveBeenCalledWith(
@@ -219,126 +221,109 @@ describe('Media Transcoder', () => {
           }
         })
       )
+      expect(mockJob.updateData).toHaveBeenCalled()
       expect(mockJob.updateProgress).toHaveBeenCalledWith(100)
       expect(mockJob.moveToCompleted).toHaveBeenCalledWith(
         { message: 'Uploaded to R2' },
-        jobId
-      )
-      expect(mockQueue.add).toHaveBeenCalledWith(
-        'mock-output-queue',
-        mockJob.data
-      )
-    })
-
-    it('should throw an error if BULLMQ_OUTPUT_QUEUE is missing', async () => {
-      delete process.env.BULLMQ_OUTPUT_QUEUE
-      const mockJob = createMockJob()
-      const mockQueue = createMockQueue()
-      const jobId = 'test-job-id'
-
-      await expect(uploadToR2(jobId, mockJob, mockQueue)).rejects.toThrow(
-        'BULLMQ_OUTPUT_QUEUE is not set'
+        'test-job-id'
       )
     })
   })
 
   describe('main', () => {
     it('should process a job successfully', async () => {
-      // Setup mocks
-      const mockJob = createMockJob()
+      // Mock the getJob method to return our mock job
+      mockQueue.getJob.mockResolvedValue(mockJob)
 
-      // Set up the mock for getNextJob
-      mockGetNextJob.mockResolvedValue(mockJob)
-
-      // Create a mock ffmpeg instance
-      const mockFfmpegInstance: MockFfmpegCommand = {
-        input: vi.fn().mockReturnThis(),
-        size: vi.fn().mockReturnThis(),
-        autopad: vi.fn().mockReturnThis(),
-        videoBitrate: vi.fn().mockReturnThis(),
-        saveToFile: vi.fn().mockReturnThis(),
-        on: vi.fn().mockReturnThis()
-      }
-
-      // Set up the ffmpeg mock
-      mockFfmpeg.mockReturnValue(mockFfmpegInstance)
+      // Get the mock ffmpeg instance
+      const mockFfmpegInstance = mockFfmpeg()
 
       // Run the main function
       await main()
 
-      // Verify the ffmpeg configuration was set up correctly
+      // Verify the Queue constructor was called with correct params
+      expect(Queue).toHaveBeenCalledWith('mock-queue', {
+        connection: {
+          host: 'mock-redis-url',
+          port: 6379
+        }
+      })
+
+      // Verify getJob was called with the correct job ID
+      expect(mockQueue.getJob).toHaveBeenCalledWith('mock-job-id')
+
+      // Verify ffmpeg was called with correct parameters
+      expect(mockFfmpeg).toHaveBeenCalled()
       expect(mockFfmpegInstance.input).toHaveBeenCalledWith(
-        mockJob.data.inputUrl
+        'https://example.com/input.mp4'
       )
-      expect(mockFfmpegInstance.size).toHaveBeenCalledWith(mockJob.data.size)
-      expect(mockFfmpegInstance.videoBitrate).toHaveBeenCalledWith(
-        mockJob.data.videoBitrate
-      )
+      expect(mockFfmpegInstance.size).toHaveBeenCalledWith('1280x720')
+      expect(mockFfmpegInstance.autopad).toHaveBeenCalled()
+      expect(mockFfmpegInstance.videoBitrate).toHaveBeenCalledWith('1000k')
       expect(mockFfmpegInstance.saveToFile).toHaveBeenCalledWith(
-        mockJob.data.outputFile
+        '/tmp/output.mp4'
       )
-      expect(mockFfmpegInstance.on).toHaveBeenCalledTimes(3) // progress, end, error
+
+      // Verify event handlers were registered
+      expect(mockFfmpegInstance.on).toHaveBeenCalledWith(
+        'progress',
+        expect.any(Function)
+      )
+      expect(mockFfmpegInstance.on).toHaveBeenCalledWith(
+        'end',
+        expect.any(Function)
+      )
+      expect(mockFfmpegInstance.on).toHaveBeenCalledWith(
+        'error',
+        expect.any(Function)
+      )
+
+      // Trigger progress event and verify job progress was updated
+      mockFfmpegInstance._triggerProgress(50)
+      expect(mockJob.updateProgress).toHaveBeenCalledWith(40) // 50 * 0.8 = 40
+
+      // Trigger end event and verify transcodeFinished was called
+      mockFfmpegInstance._triggerEnd()
+      // Wait for async operations to complete
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(mockJob.updateData).toHaveBeenCalled()
     })
 
-    it('should throw an error if required environment variables are missing', async () => {
-      // Test each required environment variable
-      const requiredVars = ['BULLMQ_QUEUE', 'BULLMQ_OUTPUT_QUEUE', 'BULLMQ_JOB']
+    it('should throw an error if BULLMQ_QUEUE is not set', async () => {
+      delete process.env.BULLMQ_QUEUE
+      await expect(main()).rejects.toThrow('BULLMQ_QUEUE is not set')
+    })
 
-      for (const varName of requiredVars) {
-        const originalValue = process.env[varName]
-        delete process.env[varName]
-
-        await expect(main()).rejects.toThrow(`${varName} is not set`)
-
-        // Restore the variable for the next test
-        process.env[varName] = originalValue
-      }
+    it('should throw an error if BULLMQ_JOB is not set', async () => {
+      delete process.env.BULLMQ_JOB
+      await expect(main()).rejects.toThrow('BULLMQ_JOB is not set')
     })
 
     it('should throw an error if job is not found', async () => {
-      // Set up the mock for getNextJob to return null
-      mockGetNextJob.mockResolvedValue(null)
-
-      await expect(main()).rejects.toThrow(
-        `Job ${process.env.BULLMQ_JOB} not found`
-      )
+      mockQueue.getJob.mockResolvedValue(null)
+      await expect(main()).rejects.toThrow('Job mock-job-id not found')
     })
 
-    it('should handle ffmpeg errors correctly', async () => {
-      // Setup mocks
-      const mockJob = createMockJob()
+    it('should handle ffmpeg errors', async () => {
+      // Mock the getJob method to return our mock job
+      mockQueue.getJob.mockResolvedValue(mockJob)
 
-      // Set up the mock for getNextJob
-      mockGetNextJob.mockResolvedValue(mockJob)
+      // Get the mock ffmpeg instance and set up to trigger an error
+      const mockFfmpegInstance = mockFfmpeg()
 
-      // Create a mock ffmpeg instance that triggers an error
-      const mockFfmpegInstance: MockFfmpegCommand = {
-        input: vi.fn().mockReturnThis(),
-        size: vi.fn().mockReturnThis(),
-        autopad: vi.fn().mockReturnThis(),
-        videoBitrate: vi.fn().mockReturnThis(),
-        saveToFile: vi.fn().mockReturnThis(),
-        on: vi.fn().mockImplementation(function (event, callback) {
-          if (event === 'error') {
-            // Execute callback immediately
-            callback(new Error('Ffmpeg error'))
-          }
-          return this
-        })
-      }
-
-      // Set up the ffmpeg mock
-      mockFfmpeg.mockReturnValue(mockFfmpegInstance)
-
-      // Run the main function and wait for it to complete
+      // Run the main function
       await main()
 
-      // Verify the job was moved to failed
+      // Trigger an error
+      mockFfmpegInstance._triggerError(new Error('Ffmpeg error'))
+
+      // Wait for async operations to complete
+      await new Promise((resolve) => setTimeout(resolve, 0))
+
+      // Verify job was moved to failed
       expect(mockJob.moveToFailed).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: 'Ffmpeg error'
-        }),
-        process.env.BULLMQ_JOB
+        { message: 'Ffmpeg error', name: 'Error' },
+        'test-job-id'
       )
     })
   })

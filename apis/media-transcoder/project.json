@@ -31,11 +31,11 @@
       }
     },
     "test": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apis/media-transcoder"],
       "options": {
-        "passWithNoTests": true,
-        "reportsDirectory": "../../coverage/apis/media-transcoder"
+        "jestConfig": "apis/media-transcoder/jest.config.ts",
+        "passWithNoTests": true
       }
     }
   },
