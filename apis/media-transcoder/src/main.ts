@@ -5,6 +5,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { Job, Queue } from 'bullmq'
 import fetch from 'node-fetch'
 
+// Import ffmpeg from our custom module
 import ffmpeg from './types/fluent-ffmpeg'
 
 interface TranscodeVideoJob {
