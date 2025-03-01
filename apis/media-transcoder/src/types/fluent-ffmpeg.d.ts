@@ -1,5 +1,3 @@
-import ffmpeg from 'fluent-ffmpeg'
-
 declare module 'fluent-ffmpeg' {
   interface FfmpegCommand {
     input(url: string): FfmpegCommand

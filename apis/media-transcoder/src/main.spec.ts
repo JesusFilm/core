@@ -123,15 +123,6 @@ const triggerEnd = () => {
   }
 }
 
-const triggerError = (error: Error) => {
-  // Find the error callback and call it
-  const calls = mockFfmpegInstance.on.mock.calls
-  const errorCall = calls.find((call) => call[0] === 'error')
-  if (errorCall && errorCall[1]) {
-    errorCall[1](error)
-  }
-}
-
 describe('Media Transcoder', () => {
   const originalEnv = { ...process.env }
 
@@ -288,7 +279,7 @@ describe('Media Transcoder', () => {
 
   describe('getClient', () => {
     it('should create an S3Client with correct configuration', () => {
-      const client = getClient()
+      getClient()
       expect(S3Client).toHaveBeenCalledWith({
         region: 'auto',
         endpoint: 'https://mock-endpoint.com',

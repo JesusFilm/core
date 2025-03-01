@@ -1,3 +1,4 @@
+/* eslint-disable */
 // This is a mock implementation of fluent-ffmpeg for testing
 export interface FfmpegCommand {
   input(url: string): FfmpegCommand
