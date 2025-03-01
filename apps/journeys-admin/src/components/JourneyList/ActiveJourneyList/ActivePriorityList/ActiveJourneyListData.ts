@@ -70,6 +70,7 @@ export const defaultJourney: Journey = {
       }
     ]
   },
+  updatedAt: '2020-02-01T00:00:00Z',
   createdAt: '2020-02-01T00:00:00Z',
   publishedAt: null,
   status: JourneyStatus.draft,
