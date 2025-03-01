@@ -8,10 +8,10 @@ import fetch from 'node-fetch'
 // Import ffmpeg from our custom module
 import ffmpeg from './types/fluent-ffmpeg'
 
-interface TranscodeVideoJob {
+export interface TranscodeVideoJob {
   inputUrl: string
   resolution: string
-  videoBitrate: string
+  videoBitrate: number
   contentType: string
   outputFilename: string
   outputPath: string

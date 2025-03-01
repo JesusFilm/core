@@ -4,20 +4,13 @@ import { Job, Queue } from 'bullmq'
 import fetch from 'node-fetch'
 
 // Import after mocks are set up
-import { getClient, getPresignedUrl, main, uploadToR2 } from './main'
-
-// Define the TranscodeVideoJob interface to match the one in main.ts
-interface TranscodeVideoJob {
-  inputUrl: string
-  resolution: string
-  videoBitrate: string
-  contentType: string
-  outputFilename: string
-  outputPath: string
-  userId: string
-  outputSize?: number
-  publicUrl?: string
-}
+import {
+  type TranscodeVideoJob,
+  getClient,
+  getPresignedUrl,
+  main,
+  uploadToR2
+} from './main'
 
 // Mock all external dependencies first
 jest.mock('@aws-sdk/client-s3', () => ({

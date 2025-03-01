@@ -580,7 +580,7 @@ type TaxonomyName {
 input TranscodeVideoInput {
   r2AssetId: String!
   resolution: String!
-  bitrate: Int
+  videoBitrate: Int
   outputFilename: String!
   outputPath: String!
 }

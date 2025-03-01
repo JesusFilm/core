@@ -4210,7 +4210,7 @@ input MutationShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
 input TranscodeVideoInput @join__type(graph: API_MEDIA)  {
   r2AssetId: String!
   resolution: String!
-  bitrate: Int
+  videoBitrate: Int
   outputFilename: String!
   outputPath: String!
 }

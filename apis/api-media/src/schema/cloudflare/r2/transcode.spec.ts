@@ -1,5 +1,5 @@
 import { graphql } from 'gql.tada'
-import { ExecutionResult, GraphQLError } from 'graphql'
+import { ExecutionResult } from 'graphql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'

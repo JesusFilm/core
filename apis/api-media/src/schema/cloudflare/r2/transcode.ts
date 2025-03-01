@@ -14,7 +14,7 @@ import { TranscodeVideoInput } from './inputs/transcodeVideoInput'
 interface TranscodeVideoJob {
   inputUrl: string
   resolution: string
-  bitrate: string
+  videoBitrate: number
   contentType: string
   outputFilename: string
   outputPath: string
@@ -71,7 +71,7 @@ builder.mutationFields((t) => ({
       const job = (await queue.add('api-media-transcode-video', {
         inputUrl: inputAsset.publicUrl,
         resolution: input.resolution,
-        bitrate: input.bitrate ?? undefined,
+        videoBitrate: input.videoBitrate ?? undefined,
         contentType: inputAsset.contentType,
         outputFilename: input.outputFilename,
         outputPath: input.outputPath,
