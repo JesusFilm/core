@@ -6,6 +6,8 @@ alwaysApply: false
 
 # Apps Rules
 
+- [base.mdc](mdc:.cursor/rules/base.mdc)
+
 The user asks questions about the following front-end coding languages and frameworks:
 
 - ReactJS

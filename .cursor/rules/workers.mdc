@@ -4,7 +4,7 @@ globs: workers/**/*
 alwaysApply: false
 ---
 
-# Your rule content
+# Cloudflare workers
 
 - @base.mdc
 
