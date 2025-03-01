@@ -14,8 +14,6 @@
         "outputPath": "dist/apis/media-transcoder",
         "main": "apis/media-transcoder/src/main.ts",
         "tsConfig": "apis/media-transcoder/tsconfig.app.json",
-        "assets": ["apis/media-transcoder/src/assets"],
-        "isolatedConfig": true,
         "webpackConfig": "apis/media-transcoder/webpack.config.js"
       },
       "configurations": {
@@ -36,12 +34,6 @@
       "options": {
         "jestConfig": "apis/media-transcoder/jest.config.ts",
         "passWithNoTests": true
-      }
-    },
-    "type-check": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "tsc --noEmit -p apis/media-transcoder/tsconfig.app.json"
       }
     }
   },
