@@ -1,18 +1,6 @@
 import { QueryHookOptions, QueryResult, useQuery } from '@apollo/client'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 
-export const VideoInformationFragment = graphql(`
-  fragment VideoInformation on Video {
-    slug
-    label
-    published
-    title {
-      id
-      value
-    }
-  }
-`)
-
 export const GET_ADMIN_VIDEO = graphql(`
   query GetAdminVideo($videoId: ID!) {
     adminVideo(id: $videoId) {
@@ -97,6 +85,23 @@ export const GET_ADMIN_VIDEO = graphql(`
           slug
         }
       }
+      videoEditions {
+        id
+        name
+        videoSubtitles {
+          id
+          vttSrc
+          srtSrc
+          value
+          language {
+            id
+            name {
+              value
+            }
+            slug
+          }
+        }
+      }
     }
   }
 `)
@@ -119,6 +124,8 @@ export type GetAdminVideo_AdminVideo_StudyQuestions =
   GetAdminVideo['adminVideo']['studyQuestions']
 export type GetAdminVideo_AdminVideo_Children =
   GetAdminVideo['adminVideo']['children']
+export type GetAdminVideo_AdminVideo_VideoEditions =
+  GetAdminVideo['adminVideo']['videoEditions']
 
 export function useAdminVideo(
   options: QueryHookOptions<GetAdminVideo, GetAdminVideoVariables>
