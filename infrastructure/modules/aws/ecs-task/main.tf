@@ -77,11 +77,11 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         ]), var.include_aws_env_vars ? [
         {
           name  = "AWS_ACCESS_KEY_ID",
-          value = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/AWS_ACCESS_KEY_ID"
+          valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/AWS_ACCESS_KEY_ID"
         },
         {
           name  = "AWS_SECRET_ACCESS_KEY",
-          value = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/AWS_SECRET_ACCESS_KEY"
+          valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/AWS_SECRET_ACCESS_KEY"
         }
       ] : [])
       logConfiguration = {
