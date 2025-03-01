@@ -1,5 +1,5 @@
 import { graphql } from 'gql.tada'
-import { ExecutionResult } from 'graphql'
+import { ExecutionResult, GraphQLError } from 'graphql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
@@ -102,7 +102,7 @@ describe('cloudflare/r2/transcode', () => {
             input: {
               r2AssetId: 'assetId',
               resolution: '720p',
-              bitrate: 2000,
+              videoBitrate: '2000',
               outputFilename: 'output.mp4',
               outputPath: '/videos/'
             }
@@ -122,7 +122,7 @@ describe('cloudflare/r2/transcode', () => {
             input: {
               r2AssetId: 'assetId',
               resolution: '720p',
-              bitrate: 2000,
+              videoBitrate: '2000',
               outputFilename: 'output.mp4',
               outputPath: '/videos/'
             }
@@ -142,7 +142,7 @@ describe('cloudflare/r2/transcode', () => {
             input: {
               r2AssetId: 'nonExistentAssetId',
               resolution: '720p',
-              bitrate: 2000,
+              videoBitrate: '2000',
               outputFilename: 'output.mp4',
               outputPath: '/videos/'
             }
@@ -150,7 +150,7 @@ describe('cloudflare/r2/transcode', () => {
         })) as ExecutionResult<TranscodeAssetResponse>
 
         expect(result.errors).toBeDefined()
-        // The actual error message might be different in the test environment
+        // Just check that there's an error message, don't check the specific content
         expect(result.errors?.[0]?.message).toBeDefined()
       })
     })
@@ -198,7 +198,7 @@ describe('cloudflare/r2/transcode', () => {
         })) as ExecutionResult<GetTranscodeAssetProgressResponse>
 
         expect(result.errors).toBeDefined()
-        // The actual error message might be different in the test environment
+        // Just check that there's an error message, don't check the specific content
         expect(result.errors?.[0]?.message).toBeDefined()
       })
     })
