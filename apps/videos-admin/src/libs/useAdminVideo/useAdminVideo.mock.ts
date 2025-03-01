@@ -248,28 +248,27 @@ export const useAdminVideoMock: MockedResponse<
             name: 'base',
             videoSubtitles: [
               {
-                id: 'dc006e9e-3f94-4c88-8442-563bbb2048fa',
+                id: 'subtitle1.id',
                 vttSrc:
-                  'https://d389zwyrhi20m0.cloudfront.net/483/1_jf-0-0/0-0-JL-483-32114.vtt',
+                  'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.vtt',
                 srtSrc:
-                  'https://d389zwyrhi20m0.cloudfront.net/483/1_jf-0-0/0-0-JL-483-32114.srt',
+                  'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.srt',
                 value:
-                  'https://d389zwyrhi20m0.cloudfront.net/483/1_jf-0-0/0-0-JL-483-32114.vtt',
+                  'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.vtt',
                 language: {
-                  id: '483',
+                  id: '529',
                   name: [
                     {
-                      value: 'Ελληνικά'
-                    },
-                    {
-                      value: 'Greek'
+                      value: 'English',
+                      primary: true
                     }
                   ],
-                  slug: 'greek'
-                }
+                  slug: 'english'
+                },
+                primary: true
               },
               {
-                id: '5fec1e4d-ff30-4b44-b4d9-bcd04d187367',
+                id: 'subtitle2.id',
                 vttSrc:
                   'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.vtt',
                 srtSrc:
@@ -280,14 +279,17 @@ export const useAdminVideoMock: MockedResponse<
                   id: '496',
                   name: [
                     {
-                      value: 'Français'
+                      value: 'Français',
+                      primary: true
                     },
                     {
-                      value: 'French'
+                      value: 'French',
+                      primary: false
                     }
                   ],
                   slug: 'french'
-                }
+                },
+                primary: false
               }
             ]
           }

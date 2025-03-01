@@ -1,8 +1,9 @@
-import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
-import { Dialog } from '@core/shared/ui/Dialog'
-
+import {
+  CrudDialog,
+  DialogAction
+} from '../../../../../../../../components/CrudDialog'
 import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { ArrayElement } from '../../../../../../../../types/array-types'
 
@@ -10,13 +11,6 @@ import { EditionCreate } from './EditionCreate'
 import { EditionDelete } from './EditionDelete'
 import { EditionEdit } from './EditionEdit'
 import { EditionView } from './EditionView'
-
-export enum DialogAction {
-  VIEW = 'view',
-  CREATE = 'create',
-  EDIT = 'edit',
-  DELETE = 'delete'
-}
 
 export interface EditionDialogProps {
   action: DialogAction | null
@@ -29,22 +23,6 @@ export function EditionDialog({
   close,
   edition
 }: EditionDialogProps): ReactElement {
-  const t = useTranslations()
-  const getTitle = (action: DialogAction | null): string => {
-    switch (action) {
-      case DialogAction.VIEW:
-        return t('View Edition')
-      case DialogAction.CREATE:
-        return t('Create Edition')
-      case DialogAction.EDIT:
-        return t('Edit Edition')
-      case DialogAction.DELETE:
-        return t('Delete Edition')
-      default:
-        return ''
-    }
-  }
-
   const renderContent = () => {
     if (action === DialogAction.CREATE) {
       return <EditionCreate close={close} />
@@ -67,16 +45,8 @@ export function EditionDialog({
   }
 
   return (
-    <Dialog
-      open={action !== null}
-      onClose={close}
-      dialogTitle={{
-        title: getTitle(action),
-        closeButton: true
-      }}
-      divider
-    >
+    <CrudDialog action={action} close={close} resource="Edition">
       {renderContent()}
-    </Dialog>
+    </CrudDialog>
   )
 }
