@@ -282,6 +282,7 @@ export function UploadVideoVariantProvider({
           input: {
             fileName: `${videoId}/variants/${languageId}/videos/${uuidv4()}/${videoVariantId}${extension}`,
             contentType: file.type,
+            contentLength: file.size,
             videoId
           }
         }

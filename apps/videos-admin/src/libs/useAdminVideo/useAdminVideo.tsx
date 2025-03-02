@@ -66,10 +66,6 @@ export const GET_ADMIN_VIDEO = graphql(`
           url
         }
       }
-      videoEditions {
-        id
-        name
-      }
       studyQuestions {
         id
         value
