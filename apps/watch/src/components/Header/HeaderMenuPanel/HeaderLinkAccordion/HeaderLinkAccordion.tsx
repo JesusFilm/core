@@ -35,9 +35,9 @@ export function HeaderLinkAccordion({
           href={url}
           underline="none"
           rel="noopener"
-          color="text.primary"
-          variant="h5"
+          color="text.secondary"
           onClick={onClose}
+          sx={{ fontSize: { xs: 30, sm: 38 }, fontWeight: 700 }}
         >
           {label}
         </MuiLink>
@@ -70,7 +70,10 @@ export function HeaderLinkAccordion({
           }
         }}
       >
-        <Typography variant="h5" color="text.primary">
+        <Typography
+          color="text.secondary"
+          sx={{ fontSize: { xs: 30, sm: 38 }, fontWeight: 700 }}
+        >
           {label}
         </Typography>
       </AccordionSummary>
@@ -82,9 +85,9 @@ export function HeaderLinkAccordion({
               href={subLink.url}
               underline="none"
               rel="noopener"
-              color="text.primary"
-              variant="subtitle1"
+              color="text.secondary"
               onClick={onClose}
+              sx={{ fontSize: { xs: 22, sm: 27 }, fontWeight: 'bold' }}
             >
               {subLink.label}
             </MuiLink>

@@ -83,7 +83,7 @@ export function HeaderMenuPanel({
           direction="column"
           alignItems="flex-end"
           sx={{
-            gap: { xs: 4, sm: 2 },
+            gap: 2,
             pr: 2
           }}
         >
