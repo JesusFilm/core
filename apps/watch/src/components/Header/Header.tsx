@@ -236,7 +236,7 @@ export function Header({
             <Box
               sx={{
                 minHeight: '100%',
-                width: { xs: '100%', sm: '400px' }
+                width: { xs: '100%', sm: 550 }
               }}
             >
               <HeaderMenuPanel onClose={() => setDrawerOpen(false)} />
