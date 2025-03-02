@@ -31,7 +31,7 @@ export function HeaderMenuPanel({
       elevation={0}
       data-testid="HeaderMenuPanel"
       sx={{
-        height: '100vh',
+        minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
         width: '100%',

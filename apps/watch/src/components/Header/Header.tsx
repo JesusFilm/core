@@ -218,7 +218,7 @@ export function Header({
             maxWidth="xxl"
             disableGutters
             sx={{
-              height: '100%',
+              minHeight: '100%',
               display: 'flex',
               justifyContent: 'flex-end',
               position: 'relative',
@@ -235,7 +235,7 @@ export function Header({
           >
             <Box
               sx={{
-                height: '100%',
+                minHeight: '100%',
                 width: { xs: '100%', sm: '400px' }
               }}
             >
