@@ -5,12 +5,8 @@ import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Image from 'next/image'
-import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-
-import logo from '../assets/logo.svg'
 
 import { HeaderLinkAccordion } from './HeaderLinkAccordion'
 import { headerLinks } from './headerLinks'
