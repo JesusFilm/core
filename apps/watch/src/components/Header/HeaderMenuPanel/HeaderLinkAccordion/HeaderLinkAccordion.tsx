@@ -71,8 +71,12 @@ export function HeaderLinkAccordion({
         }}
       >
         <Typography
-          color="text.secondary"
-          sx={{ fontSize: { xs: 30, sm: 38 }, fontWeight: 700 }}
+          sx={{
+            fontSize: { xs: 30, sm: 38 },
+            fontWeight: 700,
+            color: expanded ? 'primary.main' : 'text.secondary',
+            '&:hover': { color: 'primary.main' }
+          }}
         >
           {label}
         </Typography>
@@ -87,7 +91,13 @@ export function HeaderLinkAccordion({
               rel="noopener"
               color="text.secondary"
               onClick={onClose}
-              sx={{ fontSize: { xs: 22, sm: 27 }, fontWeight: 'bold' }}
+              sx={{
+                fontSize: { xs: 22, sm: 27 },
+                fontWeight: 'bold',
+                '&:hover': {
+                  color: 'primary.main'
+                }
+              }}
             >
               {subLink.label}
             </MuiLink>
