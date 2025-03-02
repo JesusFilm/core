@@ -39,7 +39,7 @@ describe('HeaderLinkAccordion', () => {
           label="About"
           subLinks={defaultSubLinks}
           expanded={false}
-          onAccordionChange={(panel) => mockOnAccordionChange(panel)}
+          onAccordionChange={mockOnAccordionChange}
           onClose={mockOnClose}
         />
       )
@@ -63,7 +63,7 @@ describe('HeaderLinkAccordion', () => {
           label="About"
           subLinks={defaultSubLinks}
           expanded
-          onAccordionChange={(panel) => mockOnAccordionChange(panel)}
+          onAccordionChange={mockOnAccordionChange}
           onClose={mockOnClose}
         />
       )
@@ -84,7 +84,7 @@ describe('HeaderLinkAccordion', () => {
           label="About"
           subLinks={[defaultSubLinks[0]]}
           expanded
-          onAccordionChange={(panel) => mockOnAccordionChange(panel)}
+          onAccordionChange={mockOnAccordionChange}
           onClose={mockOnClose}
         />
       )
@@ -98,21 +98,19 @@ describe('HeaderLinkAccordion', () => {
     })
 
     it('should handle accordion state changes', () => {
-      const handleAccordionChange = jest.fn()
-
       render(
         <HeaderLinkAccordion
           label="About"
           subLinks={[defaultSubLinks[0]]}
           expanded={false}
-          onAccordionChange={() => handleAccordionChange}
+          onAccordionChange={mockOnAccordionChange}
           onClose={mockOnClose}
         />
       )
 
       const accordionButton = screen.getByRole('button', { name: 'About' })
       fireEvent.click(accordionButton)
-      expect(handleAccordionChange).toHaveBeenCalled()
+      expect(mockOnAccordionChange).toHaveBeenCalled()
     })
   })
 })
