@@ -12,6 +12,7 @@ import {
   GET_MY_MUX_VIDEO,
   UploadVideoVariantProvider
 } from '../../../../../../../../libs/UploadVideoVariantProvider'
+import { GetAdminVideo_AdminVideo_VideoEditions as VideoEditions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 import { AddAudioLanguageDialog } from './AddAudioLanguageDialog'
 
@@ -89,6 +90,7 @@ const cloudflareR2CreateMock = {
       input: {
         fileName: 'video123/variants/529/videos/uuidv4/529_video123.mp4',
         contentType: 'video/mp4',
+        contentLength: 4,
         videoId: 'video123'
       }
     }
@@ -158,7 +160,21 @@ describe('AddAudioLanguageDialog', () => {
                 open
                 handleClose={jest.fn()}
                 variantLanguagesMap={new Map()}
-                editions={[{ id: 'edition1', name: 'base' }]}
+                editions={[
+                  {
+                    id: 'edition1',
+                    name: 'base',
+                    videoSubtitles: [
+                      {
+                        id: 'subtitle1',
+                        vttSrc: null,
+                        srtSrc: null,
+                        value: 'English Subtitle',
+                        language: { id: 'lang1', name: [{ value: 'English' }] }
+                      }
+                    ]
+                  }
+                ]}
               />
             </UploadVideoVariantProvider>
           </NextIntlClientProvider>
@@ -185,7 +201,21 @@ describe('AddAudioLanguageDialog', () => {
                 open
                 handleClose={jest.fn()}
                 variantLanguagesMap={new Map()}
-                editions={[{ id: 'edition1', name: 'base' }]}
+                editions={[
+                  {
+                    id: 'edition1',
+                    name: 'base',
+                    videoSubtitles: [
+                      {
+                        id: 'subtitle1',
+                        vttSrc: null,
+                        srtSrc: null,
+                        value: 'English Subtitle',
+                        language: { id: 'lang1', name: [{ value: 'English' }] }
+                      }
+                    ]
+                  }
+                ]}
               />
             </UploadVideoVariantProvider>
           </NextIntlClientProvider>
@@ -231,7 +261,21 @@ describe('AddAudioLanguageDialog', () => {
                 open
                 handleClose={handleClose}
                 variantLanguagesMap={new Map()}
-                editions={[{ id: 'edition1', name: 'base' }]}
+                editions={[
+                  {
+                    id: 'edition1',
+                    name: 'base',
+                    videoSubtitles: [
+                      {
+                        id: 'subtitle1',
+                        vttSrc: null,
+                        srtSrc: null,
+                        value: 'English Subtitle',
+                        language: { id: 'lang1', name: [{ value: 'English' }] }
+                      }
+                    ]
+                  }
+                ]}
               />
             </UploadVideoVariantProvider>
           </NextIntlClientProvider>
@@ -286,6 +330,7 @@ describe('AddAudioLanguageDialog', () => {
           input: {
             fileName: 'video123/variants/529/videos/uuidv4/529_video123.mp4',
             contentType: 'video/mp4',
+            contentLength: 4,
             videoId: 'video123'
           }
         }
@@ -314,7 +359,21 @@ describe('AddAudioLanguageDialog', () => {
                 open
                 handleClose={jest.fn()}
                 variantLanguagesMap={new Map()}
-                editions={[{ id: 'edition1', name: 'base' }]}
+                editions={[
+                  {
+                    id: 'edition1',
+                    name: 'base',
+                    videoSubtitles: [
+                      {
+                        id: 'subtitle1',
+                        vttSrc: null,
+                        srtSrc: null,
+                        value: 'English Subtitle',
+                        language: { id: 'lang1', name: [{ value: 'English' }] }
+                      }
+                    ]
+                  } as unknown as VideoEditions
+                ]}
               />
             </UploadVideoVariantProvider>
           </NextIntlClientProvider>

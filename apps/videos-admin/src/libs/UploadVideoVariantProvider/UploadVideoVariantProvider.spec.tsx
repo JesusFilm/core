@@ -37,6 +37,7 @@ const cloudflareR2CreateMock = {
       input: {
         fileName: `video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4`,
         contentType: 'video/mp4',
+        contentLength: 4,
         videoId: 'video-id'
       }
     }
@@ -133,6 +134,7 @@ const cloudflareR2CreateErrorMock = {
       input: {
         fileName: `video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4`,
         contentType: 'video/mp4',
+        contentLength: 4,
         videoId: 'video-id'
       }
     }
