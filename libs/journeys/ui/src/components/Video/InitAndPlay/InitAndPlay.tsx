@@ -5,6 +5,7 @@ import {
   SetStateAction,
   useEffect,
   useMemo,
+  useRef,
   useState
 } from 'react'
 import videojs from 'video.js'
@@ -70,6 +71,7 @@ export function InitAndPlay({
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
   const [error, setError] = useState(false)
+  const playerInitializedRef = useRef(false)
 
   const muxMetadata = useMemo(() => {
     return journey != null
@@ -88,7 +90,8 @@ export function InitAndPlay({
 
   // Initiate video player
   useEffect(() => {
-    if (videoRef.current != null) {
+    // Only initialize video player if not already done
+    if (videoRef.current != null && !playerInitializedRef.current) {
       setPlayer(
         videojs(videoRef.current, {
           ...defaultVideoJsOptions,
@@ -104,10 +107,7 @@ export function InitAndPlay({
           },
           responsive: true,
           muted: muted === true,
-          autoplay:
-            autoplay === true &&
-            activeStep &&
-            source === VideoBlockSource.youTube,
+          autoplay: autoplay === true && source === VideoBlockSource.youTube,
           plugins: {
             mux: {
               debug: false,
@@ -116,19 +116,10 @@ export function InitAndPlay({
           }
         })
       )
+      playerInitializedRef.current = true
     }
-  }, [
-    startAt,
-    endAt,
-    muted,
-    posterBlock,
-    setPlayer,
-    videoRef,
-    autoplay,
-    activeStep,
-    source,
-    muxMetadata
-  ])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- should only run once
+  }, [videoRef.current])
 
   // Initiate video player listeners
   useEffect(() => {
