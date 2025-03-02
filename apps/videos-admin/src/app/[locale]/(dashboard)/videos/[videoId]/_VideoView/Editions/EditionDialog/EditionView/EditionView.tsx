@@ -1,17 +1,71 @@
 import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
+import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
+import Plus2 from '@core/shared/ui/icons/Plus2'
+
+import { DialogAction } from '../../../../../../../../../components/CrudDialog'
 import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useCrudState } from '../../../../../../../../../libs/useCrudState'
 import { ArrayElement } from '../../../../../../../../../types/array-types'
+import { Section } from '../../../Section'
+import { SubtitleCard } from '../../Subtitles/SubtitleCard'
+import { SubtitleDialog } from '../../Subtitles/SubtitleDialog'
+
+type Edition = ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
+type Subtitle = ArrayElement<Edition['videoSubtitles']>
 
 interface EditionViewProps {
-  edition: ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
+  edition: Edition
 }
 
 export function EditionView({ edition }: EditionViewProps): ReactElement {
+  const t = useTranslations()
+  const { selectedItem, action, dispatch } = useCrudState<Subtitle>(
+    edition.videoSubtitles
+  )
+
   return (
     <Box>
-      <pre>{JSON.stringify(edition, null, 2)}</pre>
+      <Section
+        title={t('Subtitles')}
+        action={{
+          label: t('New Subtitle'),
+          onClick: () => dispatch({ type: DialogAction.CREATE }),
+          startIcon: <Plus2 />
+        }}
+      >
+        {edition.videoSubtitles.length > 0 ? (
+          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+            {edition.videoSubtitles.map((subtitle) => (
+              <SubtitleCard
+                key={subtitle.id}
+                subtitle={subtitle}
+                onClick={() =>
+                  dispatch({ type: DialogAction.EDIT, item: subtitle })
+                }
+                actions={{
+                  edit: () =>
+                    dispatch({ type: DialogAction.EDIT, item: subtitle }),
+                  delete: () =>
+                    dispatch({ type: DialogAction.DELETE, item: subtitle })
+                }}
+              />
+            ))}
+          </Box>
+        ) : (
+          <Box sx={{ display: 'grid', placeItems: 'center', height: 200 }}>
+            <Typography>{t('No subtitles')}</Typography>
+          </Box>
+        )}
+      </Section>
+      <SubtitleDialog
+        action={action}
+        close={() => dispatch({ type: 'reset' })}
+        subtitle={selectedItem}
+        edition={edition}
+      />
     </Box>
   )
 }
