@@ -106,8 +106,40 @@ export const Default: Story = {
     handleClose: noop,
     variantLanguagesMap: new Map(),
     editions: [
-      { id: 'edition1', name: 'base' },
-      { id: 'edition2', name: 'director-cut' }
+      {
+        id: 'edition1',
+        name: 'base',
+        videoSubtitles: [
+          {
+            id: 'subtitle1',
+            vttSrc: null,
+            srtSrc: null,
+            value: 'English Subtitle',
+            language: {
+              id: '529',
+              slug: 'en',
+              name: [{ value: 'English' }]
+            }
+          }
+        ]
+      },
+      {
+        id: 'edition2',
+        name: 'director-cut',
+        videoSubtitles: [
+          {
+            id: 'subtitle2',
+            vttSrc: null,
+            srtSrc: null,
+            value: 'Spanish Subtitle',
+            language: {
+              id: '496',
+              slug: 'es',
+              name: [{ value: 'Spanish' }]
+            }
+          }
+        ]
+      }
     ]
   }
 }
