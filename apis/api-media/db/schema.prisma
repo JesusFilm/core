@@ -77,15 +77,17 @@ model MuxVideo {
 }
 
 model CloudflareR2 {
-  id        String   @id @default(uuid())
-  fileName  String
-  uploadUrl String?
-  userId    String
-  publicUrl String?
-  videoId   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-  video     Video?   @relation(fields: [videoId], references: [id])
+  id            String   @id @default(uuid())
+  fileName      String
+  uploadUrl     String?
+  userId        String
+  publicUrl     String?
+  videoId       String?
+  contentType   String   @default("application/octet-stream")
+  contentLength Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+  video         Video?   @relation(fields: [videoId], references: [id])
 
   @@index(videoId(type: Hash))
   @@index(userId(type: Hash))

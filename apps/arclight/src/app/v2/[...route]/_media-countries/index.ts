@@ -49,8 +49,8 @@ export const mediaCountries = new OpenAPIHono()
 mediaCountries.route('/:countryId', mediaCountry)
 
 const QuerySchema = z.object({
-  page: z.number().optional(),
-  limit: z.number().optional(),
+  page: z.coerce.number().optional(),
+  limit: z.coerce.number().optional(),
   ids: z.string().optional(),
   expand: z.string().optional(),
   metadataLanguageTags: z.string().optional()
@@ -72,6 +72,11 @@ const ResponseSchema = z.object({
       href: z.string()
     }),
     next: z
+      .object({
+        href: z.string()
+      })
+      .optional(),
+    previous: z
       .object({
         href: z.string()
       })
@@ -182,6 +187,10 @@ mediaCountries.openapi(route, async (c) => {
     ...queryObject,
     page: (page + 1).toString()
   }).toString()
+  const previousQueryString = new URLSearchParams({
+    ...queryObject,
+    page: (page - 1).toString()
+  }).toString()
 
   const mediaCountries = data.countries
     .slice(offset, offset + limit)
@@ -255,6 +264,12 @@ mediaCountries.openapi(route, async (c) => {
         page < totalPages
           ? {
               href: `http://api.arclight.org/v2/media-countries?${nextQueryString}`
+            }
+          : undefined,
+      previous:
+        page > 1
+          ? {
+              href: `http://api.arclight.org/v2/media-countries?${previousQueryString}`
             }
           : undefined
     },

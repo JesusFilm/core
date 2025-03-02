@@ -26,59 +26,19 @@ LabeledVideoCounts.implement({
 Language.implement({
   externalFields: (t) => ({ id: t.id({ nullable: false }) }),
   fields: (t) => ({
-    seriesCount: t.int({
-      nullable: false,
-      resolve: async (parent) => {
-        return await prisma.videoVariant.count({
-          where: {
-            languageId: parent.id,
-            video: {
-              label: 'series'
-            }
-          }
-        })
-      }
-    }),
-    featureFilmCount: t.int({
-      nullable: false,
-      resolve: async (parent) => {
-        return await prisma.videoVariant.count({
-          where: {
-            languageId: parent.id,
-            video: {
-              label: 'featureFilm'
-            }
-          }
-        })
-      }
-    }),
-    shortFilmCount: t.int({
-      nullable: false,
-      resolve: async (parent) => {
-        return await prisma.videoVariant.count({
-          where: {
-            languageId: parent.id,
-            video: {
-              label: 'shortFilm'
-            }
-          }
-        })
-      }
-    }),
-    labeledVideoCounts: t.field({
+    labeledVideoCounts: t.loadable({
       type: LabeledVideoCounts,
       nullable: false,
-      resolve: async (parent) => {
-        const variants = await prisma.videoVariant.findMany({
+      load: async (languageIds: readonly string[]) => {
+        const results = await prisma.videoVariant.findMany({
           where: {
-            languageId: parent.id,
+            languageId: { in: Array.from(languageIds) },
             video: {
-              label: {
-                in: ['series', 'featureFilm', 'shortFilm']
-              }
+              label: { in: ['series', 'featureFilm', 'shortFilm'] }
             }
           },
           select: {
+            languageId: true,
             video: {
               select: {
                 label: true
@@ -87,30 +47,45 @@ Language.implement({
           }
         })
 
-        const counts: LabeledVideoCountsType = {
-          seriesCount: 0,
-          featureFilmCount: 0,
-          shortFilmCount: 0
-        }
+        const countsMap = new Map<string, LabeledVideoCountsType>()
 
-        variants.forEach((variant) => {
+        languageIds.forEach((id) => {
+          countsMap.set(id.toString(), {
+            seriesCount: 0,
+            featureFilmCount: 0,
+            shortFilmCount: 0
+          })
+        })
+
+        results.forEach((variant) => {
           if (variant.video?.label) {
-            switch (variant.video.label) {
-              case 'series':
-                counts.seriesCount++
-                break
-              case 'featureFilm':
-                counts.featureFilmCount++
-                break
-              case 'shortFilm':
-                counts.shortFilmCount++
-                break
+            const counts = countsMap.get(variant.languageId)
+            if (counts) {
+              switch (variant.video.label) {
+                case 'series':
+                  counts.seriesCount++
+                  break
+                case 'featureFilm':
+                  counts.featureFilmCount++
+                  break
+                case 'shortFilm':
+                  counts.shortFilmCount++
+                  break
+              }
             }
           }
         })
 
-        return counts
-      }
+        return languageIds.map(
+          (id) =>
+            countsMap.get(id.toString()) || {
+              seriesCount: 0,
+              featureFilmCount: 0,
+              shortFilmCount: 0
+            }
+        )
+      },
+      resolve: (parent) => parent.id
     })
   })
 })
