@@ -1,13 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 
-import {
-  JourneyStatus,
-  MessagePlatform,
-  ThemeMode,
-  ThemeName
-} from '../../../../__generated__/globalTypes'
+import { MessagePlatform } from '../../../../__generated__/globalTypes'
 import { TreeBlock, blockHistoryVar } from '../../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
@@ -16,6 +11,7 @@ import {
   JourneyFields as Journey
 } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { keyify } from '../../../libs/plausibleHelpers'
+import { defaultJourney } from '../../TemplateView/data'
 
 import { CHAT_BUTTON_EVENT_CREATE, ChatButtons } from './ChatButtons'
 
@@ -56,51 +52,10 @@ describe('ChatButtons', () => {
   }
 
   const journey: Journey = {
-    __typename: 'Journey',
+    ...defaultJourney,
     id: 'journeyId',
-    themeName: ThemeName.base,
-    themeMode: ThemeMode.light,
-    featuredAt: null,
-    title: 'my journey',
-    strategySlug: null,
-    slug: 'my-journey',
-    language: {
-      __typename: 'Language',
-      id: '529',
-      bcp47: 'en',
-      iso3: 'eng',
-      name: [
-        {
-          __typename: 'LanguageName',
-          value: 'English',
-          primary: true
-        }
-      ]
-    },
-    description: 'my cool journey',
-    status: JourneyStatus.draft,
-    createdAt: '2021-11-19T12:34:56.647Z',
-    publishedAt: null,
     blocks: [stepBlock],
-    creatorDescription: null,
-    creatorImageBlock: null,
-    primaryImageBlock: null,
-    userJourneys: [],
-    template: null,
-    seoTitle: 'My awesome journey',
-    seoDescription: null,
-    chatButtons: [],
-    host: null,
-    team: null,
-    tags: [],
-    website: null,
-    showShareButton: null,
-    showLikeButton: null,
-    showDislikeButton: null,
-    displayTitle: null,
-    logoImageBlock: null,
-    menuButtonIcon: null,
-    menuStepBlock: null
+    chatButtons: []
   }
 
   const result = jest.fn(() => ({
@@ -148,18 +103,22 @@ describe('ChatButtons', () => {
   })
 
   it('renders chat buttons', () => {
-    const { getAllByRole, getByTestId } = render(
+    render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: { ...journey, chatButtons } }}>
+        <JourneyProvider
+          value={{
+            journey: { ...journey, chatButtons, showChatButtons: true }
+          }}
+        >
           <ChatButtons />
         </JourneyProvider>
       </MockedProvider>
     )
 
-    const buttons = getAllByRole('button')
+    const buttons = screen.getAllByRole('button')
     expect(buttons).toHaveLength(chatButtons.length)
-    expect(getByTestId('FacebookIcon')).toBeInTheDocument()
-    expect(getByTestId('TelegramIcon')).toBeInTheDocument()
+    expect(screen.getByTestId('FacebookIcon')).toBeInTheDocument()
+    expect(screen.getByTestId('TelegramIcon')).toBeInTheDocument()
   })
 
   it('handles button click and sends a mutation', async () => {
@@ -168,15 +127,19 @@ describe('ChatButtons', () => {
     const mockPlausible = jest.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
 
-    const { getAllByRole } = render(
+    render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider value={{ journey: { ...journey, chatButtons } }}>
+        <JourneyProvider
+          value={{
+            journey: { ...journey, chatButtons, showChatButtons: true }
+          }}
+        >
           <ChatButtons />
         </JourneyProvider>
       </MockedProvider>
     )
 
-    const buttons = getAllByRole('button')
+    const buttons = screen.getAllByRole('button')
     fireEvent.click(buttons[0])
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(window.open).toHaveBeenCalledWith(chatButtons[0].link, '_blank')
@@ -205,17 +168,20 @@ describe('ChatButtons', () => {
   it('does not open a new window or send a mutation for admin user', async () => {
     window.open = jest.fn()
 
-    const { getAllByRole } = render(
+    render(
       <MockedProvider mocks={mocks}>
         <JourneyProvider
-          value={{ journey: { ...journey, chatButtons }, variant: 'admin' }}
+          value={{
+            journey: { ...journey, chatButtons, showChatButtons: true },
+            variant: 'admin'
+          }}
         >
           <ChatButtons />
         </JourneyProvider>
       </MockedProvider>
     )
 
-    const buttons = getAllByRole('button')
+    const buttons = screen.getAllByRole('button')
     fireEvent.click(buttons[0])
 
     await waitFor(() => {
@@ -224,35 +190,67 @@ describe('ChatButtons', () => {
     })
   })
 
-  it('displays a placeholder button when admin is true and there are no chat buttons', () => {
-    const { getByTestId } = render(
+  it('displays a placeholder button when admin is true and showChatButtons is falsy', () => {
+    render(
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <ChatButtons />
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByTestId('Plus2Icon')).toBeInTheDocument()
+    expect(screen.getByTestId('Plus2Icon')).toBeInTheDocument()
   })
 
-  it('does not display a placeholder button when admin is false and there are no chat buttons', () => {
-    const { queryByTestId } = render(
+  it('does not display a placeholder button when admin is false and showChatButtons is falsy', () => {
+    render(
       <MockedProvider>
         <JourneyProvider value={{ journey }}>
           <ChatButtons />
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(queryByTestId('Plus2Icon')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('Plus2Icon')).not.toBeInTheDocument()
+  })
+
+  it('should display the empty state when on admin and showChatButtons is true', () => {
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: { ...journey, showChatButtons: true },
+            variant: 'admin'
+          }}
+        >
+          <ChatButtons />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('MessageTypingIcon')).toBeInTheDocument()
+  })
+
+  it('should not display the empty state when not on admin and showChatButtons is true', () => {
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: { ...journey, showChatButtons: true }
+          }}
+        >
+          <ChatButtons />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(screen.queryByTestId('MessageTypingIcon')).not.toBeInTheDocument()
   })
 
   it('displays default icon when there is no platform selected', () => {
-    const { getByTestId } = render(
+    render(
       <MockedProvider>
         <JourneyProvider
           value={{
             journey: {
               ...journey,
+              showChatButtons: true,
               chatButtons: [{ ...chatButtons[0], platform: null }]
             }
           }}
@@ -261,6 +259,6 @@ describe('ChatButtons', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByTestId('MessageTypingIcon')).toBeInTheDocument()
+    expect(screen.getByTestId('MessageTypingIcon')).toBeInTheDocument()
   })
 })
