@@ -1,3 +1,4 @@
+import AssessmentIcon from '@mui/icons-material/Assessment'
 import FullscreenExitRounded from '@mui/icons-material/FullscreenExitRounded'
 import FullscreenRounded from '@mui/icons-material/FullscreenRounded'
 import PauseRounded from '@mui/icons-material/PauseRounded'
@@ -10,6 +11,7 @@ import IconButton from '@mui/material/IconButton'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { MouseEvent } from 'react'
 
 interface DesktopControlsProps {
   playing: boolean
@@ -29,6 +31,7 @@ interface DesktopControlsProps {
   showFullscreenButton: boolean
   fullscreen: boolean
   handleFullscreen: () => void
+  handleToggleStats: (event: MouseEvent) => void
 }
 
 export function DesktopControls({
@@ -48,7 +51,8 @@ export function DesktopControls({
   handleMute,
   showFullscreenButton,
   fullscreen,
-  handleFullscreen
+  handleFullscreen,
+  handleToggleStats
 }: DesktopControlsProps): JSX.Element {
   return (
     <Stack
@@ -165,6 +169,13 @@ export function DesktopControls({
           )}
         </IconButton>
       </Stack>
+      <IconButton
+        aria-label="Toggle video stats"
+        onClick={handleToggleStats}
+        sx={{ p: 0 }}
+      >
+        <AssessmentIcon />
+      </IconButton>
       {showFullscreenButton && (
         <IconButton
           aria-label="fullscreen"

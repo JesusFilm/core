@@ -1,5 +1,6 @@
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
 import { ThemeProvider, styled, useTheme } from '@mui/material/styles'
 import get from 'lodash/get'
@@ -39,6 +40,7 @@ import { VideoControls } from './VideoControls'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
+// HTTP streaming is included in Video.js core since version 7
 
 const VIDEO_BACKGROUND_COLOR = '#000'
 const VIDEO_FOREGROUND_COLOR = '#FFF'
@@ -160,6 +162,16 @@ export function Video({
   useEffect(() => {
     setActiveStep(isActiveBlockOrDescendant(blockId))
   }, [blockId, blockHistory])
+
+  // Check if we're using an HLS source
+  const isHlsSource = useMemo(() => {
+    return (
+      (mediaVideo?.__typename === 'Video' &&
+        mediaVideo?.variant?.hls != null) ||
+      mediaVideo?.__typename === 'MuxVideo' ||
+      (source === VideoBlockSource.internal && videoId?.includes('.m3u8'))
+    )
+  }, [mediaVideo, source, videoId])
 
   return (
     <Box
@@ -297,6 +309,7 @@ export function Video({
                 autoplay={autoplay ?? false}
                 muted={muted ?? false}
                 activeStep={activeStep}
+                isHls={isHlsSource}
               />
             </ThemeProvider>
           )}
