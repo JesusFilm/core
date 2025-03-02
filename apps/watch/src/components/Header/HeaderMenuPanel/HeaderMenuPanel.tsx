@@ -71,16 +71,14 @@ export function HeaderMenuPanel({
       <Stack
         direction="column"
         justifyContent="space-between"
-        p={4}
+        py={4}
         sx={{ flexGrow: 1 }}
       >
         <Stack
           justifyContent="flex-start"
           direction="column"
-          alignItems="flex-end"
           sx={{
-            gap: 2,
-            pr: 2
+            gap: 2
           }}
         >
           {headerLinks.map((link) => (

@@ -205,6 +205,13 @@ export function Header({
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
           onOpen={() => setDrawerOpen(true)}
+          slotProps={{
+            backdrop: {
+              sx: {
+                backgroundColor: 'rgba(0, 0, 0, 0.13)'
+              }
+            }
+          }}
           PaperProps={{
             sx: {
               width: '100%',
@@ -221,16 +228,7 @@ export function Header({
               minHeight: '100%',
               display: 'flex',
               justifyContent: 'flex-end',
-              position: 'relative',
-              '&::after': {
-                content: '""',
-                position: 'absolute',
-                top: 0,
-                bottom: 0,
-                left: '100%',
-                width: '100vw',
-                backgroundColor: 'background.paper'
-              }
+              position: 'relative'
             }}
           >
             <Box
