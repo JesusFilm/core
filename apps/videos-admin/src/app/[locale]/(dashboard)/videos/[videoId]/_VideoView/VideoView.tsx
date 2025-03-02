@@ -14,6 +14,7 @@ import { PublishedChip } from '../../../../../../components/PublishedChip'
 import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
 import { VideoProvider } from '../../../../../../libs/VideoProvider'
 
+import { Editions } from './Editions'
 import { Metadata } from './Metadata'
 import { TabContainer } from './Tabs/TabContainer'
 import { TabLabel } from './Tabs/TabLabel'
@@ -103,6 +104,15 @@ export function VideoView(): ReactElement {
                   />
                 }
               />
+              <Tab
+                value={3}
+                label={
+                  <TabLabel
+                    label={t('Editions')}
+                    count={video.videoEditions?.length}
+                  />
+                }
+              />
             </Tabs>
             <Divider sx={{ mb: 4 }} />
             <TabContainer value={tabValue} index={0}>
@@ -122,6 +132,9 @@ export function VideoView(): ReactElement {
                 variants={video?.variants}
                 editions={video?.videoEditions}
               />
+            </TabContainer>
+            <TabContainer value={tabValue} index={3}>
+              <Editions editions={video.videoEditions ?? []} />
             </TabContainer>
           </Box>
         </Stack>
