@@ -16,10 +16,9 @@ describe('Header', () => {
   })
 
   it('should open navigation panel on menu icon click', async () => {
-    const { getByText, getByRole } = render(<Header />)
+    const { getByRole } = render(<Header />)
     fireEvent.click(getByRole('button', { name: 'open header menu' }))
-    const button = getByText('About')
-    expect(button.getAttribute('href')).toBe('https://www.jesusfilm.org/about/')
+    expect(getByRole('button', { name: 'About Us' })).toBeInTheDocument()
   })
 
   it('should hide absolute app bar', () => {
