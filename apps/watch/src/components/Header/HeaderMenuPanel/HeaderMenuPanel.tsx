@@ -49,29 +49,25 @@ export function HeaderMenuPanel({
       <Stack
         spacing={0.5}
         direction="row"
-        justifyContent="space-between"
+        justifyContent="flex-end"
+        alignItems="center"
         py={8}
         pl={8}
         pr={4}
       >
-        <NextLink href="/watch">
-          <Image
-            src={logo}
-            width="160"
-            height="40"
-            alt="Watch Logo"
-            style={{
-              cursor: 'pointer',
-              maxWidth: '100%',
-              height: 'auto'
-            }}
-          />
-        </NextLink>
+        <Button
+          startIcon={<FavoriteIcon />}
+          href="https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now-2/?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=https%3A%2F%2Fwww.jesusfilm.org%2Fcontent%2Fjf%2Fus%2Fdevelopment%2Fspecial%2Fthank-you-refer%2Fsocial-share.html"
+          rel="noopener"
+        >
+          <Typography variant="overline2">{t('Give Now')}</Typography>
+        </Button>
         <IconButton
           color="inherit"
           aria-label="close drawer"
           edge="start"
           onClick={onClose}
+          sx={{ width: 40, height: 40 }}
         >
           <CloseIcon />
         </IconButton>
@@ -106,13 +102,6 @@ export function HeaderMenuPanel({
             />
           ))}
         </Stack>
-        <Button
-          startIcon={<FavoriteIcon />}
-          href="https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now-2/?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=https%3A%2F%2Fwww.jesusfilm.org%2Fcontent%2Fjf%2Fus%2Fdevelopment%2Fspecial%2Fthank-you-refer%2Fsocial-share.html"
-          rel="noopener"
-        >
-          <Typography variant="overline2">{t('Give Now')}</Typography>
-        </Button>
       </Stack>
     </Paper>
   )
