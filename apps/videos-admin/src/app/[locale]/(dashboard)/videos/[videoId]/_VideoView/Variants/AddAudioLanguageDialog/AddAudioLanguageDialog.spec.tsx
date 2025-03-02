@@ -170,7 +170,11 @@ describe('AddAudioLanguageDialog', () => {
                         vttSrc: null,
                         srtSrc: null,
                         value: 'English Subtitle',
-                        language: { id: 'lang1', name: [{ value: 'English' }] }
+                        language: {
+                          id: '529',
+                          slug: 'en',
+                          name: [{ value: 'English' }]
+                        }
                       }
                     ]
                   }
@@ -211,7 +215,11 @@ describe('AddAudioLanguageDialog', () => {
                         vttSrc: null,
                         srtSrc: null,
                         value: 'English Subtitle',
-                        language: { id: 'lang1', name: [{ value: 'English' }] }
+                        language: {
+                          id: '529',
+                          slug: 'en',
+                          name: [{ value: 'English' }]
+                        }
                       }
                     ]
                   }
@@ -271,7 +279,11 @@ describe('AddAudioLanguageDialog', () => {
                         vttSrc: null,
                         srtSrc: null,
                         value: 'English Subtitle',
-                        language: { id: 'lang1', name: [{ value: 'English' }] }
+                        language: {
+                          id: '529',
+                          slug: 'en',
+                          name: [{ value: 'English' }]
+                        }
                       }
                     ]
                   }
@@ -369,10 +381,14 @@ describe('AddAudioLanguageDialog', () => {
                         vttSrc: null,
                         srtSrc: null,
                         value: 'English Subtitle',
-                        language: { id: 'lang1', name: [{ value: 'English' }] }
+                        language: {
+                          id: '529',
+                          slug: 'en',
+                          name: [{ value: 'English' }]
+                        }
                       }
                     ]
-                  } as unknown as VideoEditions
+                  }
                 ]}
               />
             </UploadVideoVariantProvider>
