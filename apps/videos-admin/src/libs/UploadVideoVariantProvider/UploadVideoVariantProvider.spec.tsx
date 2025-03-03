@@ -104,7 +104,8 @@ const createVideoVariantMock = {
         slug: 'video-id/en',
         downloadable: true,
         published: true,
-        muxVideoId: 'mux-id'
+        muxVideoId: 'mux-id',
+        hls: 'https://stream.mux.com/playback-id.m3u8'
       }
     }
   },
@@ -173,7 +174,8 @@ const createVideoVariantErrorMock = {
         slug: 'video-id/en',
         downloadable: true,
         published: true,
-        muxVideoId: 'mux-id'
+        muxVideoId: 'mux-id',
+        hls: 'https://stream.mux.com/playback-id.m3u8'
       }
     }
   },
