@@ -33,14 +33,18 @@ export function File({
 
   useEffect(() => {
     if (file.type != null) {
-      if (file.type.startsWith('image/')) {
-        setType('image')
-      }
-      if (file.type.startsWith('text/')) {
-        setType('text')
-      }
-      if (file.type.startsWith('video/')) {
-        setType('video')
+      switch (true) {
+        case file.type.startsWith('image/'):
+          setType('image')
+          break
+        case file.type.startsWith('text/'):
+          setType('text')
+          break
+        case file.type.startsWith('video/'):
+          setType('video')
+          break
+        default:
+          setType(null)
       }
     }
   }, [file])

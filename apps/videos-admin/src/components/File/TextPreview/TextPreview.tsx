@@ -10,9 +10,7 @@ export function TextPreview({ file }: { file: File }): ReactElement {
       setContent(fileReader.result as string)
     }
 
-    if (content == null) {
-      fileReader.readAsText(file)
-    }
+    fileReader.readAsText(file)
   }, [file])
 
   return (
