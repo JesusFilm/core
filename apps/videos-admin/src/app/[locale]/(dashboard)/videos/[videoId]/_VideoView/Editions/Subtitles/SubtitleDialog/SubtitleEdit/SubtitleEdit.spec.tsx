@@ -90,10 +90,6 @@ const createR2SrtAssetMock = getCreateR2AssetMock({
   contentLength: 13
 })
 
-const deleteR2AssetMock = getDeleteR2AssetMock({
-  id: 'subtitle1.id'
-})
-
 describe('SubtitleEdit', () => {
   beforeAll(() => {
     global.fetch = jest.fn(
@@ -229,7 +225,6 @@ describe('SubtitleEdit', () => {
               <MockedProvider
                 mocks={[
                   getLanguagesMock,
-                  deleteR2AssetMock,
                   createR2VttAssetMock,
                   subtitleEditWithExistingFileMock
                 ]}
@@ -262,9 +257,6 @@ describe('SubtitleEdit', () => {
 
         await user.click(screen.getByRole('button', { name: 'Update' }))
 
-        await waitFor(() => {
-          expect(deleteR2AssetMock.result).toHaveBeenCalled()
-        })
         await waitFor(() => {
           expect(createR2VttAssetMock.result).toHaveBeenCalled()
         })
@@ -379,7 +371,6 @@ describe('SubtitleEdit', () => {
               <MockedProvider
                 mocks={[
                   getLanguagesMock,
-                  deleteR2AssetMock,
                   createR2SrtAssetMock,
                   subtitleEditWithExistingFileMock
                 ]}
@@ -414,9 +405,6 @@ describe('SubtitleEdit', () => {
 
         await user.click(screen.getByRole('button', { name: 'Update' }))
 
-        await waitFor(() => {
-          expect(deleteR2AssetMock.result).toHaveBeenCalled()
-        })
         await waitFor(() => {
           expect(createR2SrtAssetMock.result).toHaveBeenCalled()
         })
