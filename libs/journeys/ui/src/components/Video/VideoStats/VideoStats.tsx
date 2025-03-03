@@ -133,7 +133,6 @@ export function VideoStats({
     if (!player) return
 
     player.on('timeupdate', updateStats)
-    player.on('progress', updateStats)
 
     const events = ['play', 'playing', 'seeking', 'seeked']
     events.forEach((event) => {
@@ -142,7 +141,6 @@ export function VideoStats({
 
     return () => {
       player.off('timeupdate', updateStats)
-      player.off('progress', updateStats)
       events.forEach((event) => {
         player.off(event, handleEvent(event))
       })
@@ -153,8 +151,8 @@ export function VideoStats({
     <Paper
       sx={{
         position: 'absolute',
-        bottom: 60,
-        right: 10,
+        top: 10,
+        left: 10,
         zIndex: 2,
         padding: 2,
         backgroundColor: 'rgba(0, 0, 0, 0.7)',
