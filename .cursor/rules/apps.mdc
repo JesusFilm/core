@@ -35,5 +35,4 @@ Follow these rules when you write code:
 Follow these rules when you write tests in the frontend: 
 
 - use '@testing-library/react' npm package
-- for apollo graphql calls, mock calls using '@apollo/client/testing' npm package
-- for apollo graphl calls, always test that the result of the mocked has been called
+

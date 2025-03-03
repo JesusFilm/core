@@ -1,10 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
+import { SnackbarProvider } from 'notistack'
 
 import { UploadVideoVariantProvider } from '../../../../../../../libs/UploadVideoVariantProvider'
 import { GetAdminVideoVariant as VideoVariants } from '../../../../../../../libs/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { DELETE_VIDEO_VARIANT } from '../../../../../../../libs/useDeleteVideoVariantMutation'
 
 import { Variants } from './Variants'
 
@@ -87,6 +89,67 @@ describe('Variants', () => {
 
     const section = document.getElementById('Audio Languages-section')
     expect(section).toBeInTheDocument()
+  })
+
+  it('should successfully delete a variant when delete is confirmed', async () => {
+    const deleteMutationMock = {
+      request: {
+        query: DELETE_VIDEO_VARIANT,
+        variables: {
+          id: mockVideoVariants[0].id
+        }
+      },
+      result: {
+        data: {
+          videoVariantDelete: {
+            id: mockVideoVariants[0].id,
+            videoId: mockVideoVariants[0].videoId
+          }
+        }
+      }
+    }
+
+    // Create a mock for the delete mutation that we can track
+    const deleteMutationMockResult = jest
+      .fn()
+      .mockResolvedValue(deleteMutationMock.result)
+
+    render(
+      <MockedProvider
+        mocks={[{ ...deleteMutationMock, result: deleteMutationMockResult }]}
+      >
+        <NextIntlClientProvider locale="en">
+          <SnackbarProvider>
+            <Variants variants={mockVideoVariants} />
+          </SnackbarProvider>
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    const deleteButtons = screen.getAllByLabelText('delete variant')
+    fireEvent.click(deleteButtons[0])
+
+    await waitFor(() => {
+      expect(screen.getByText('Delete Audio Language')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByText('Delete'))
+
+    await waitFor(() => {
+      expect(deleteMutationMockResult).toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Audio language deleted successfully')
+      ).toBeInTheDocument()
+    })
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Delete Audio Language')
+      ).not.toBeInTheDocument()
+    })
   })
 
   it('should open add audio language dialog when clicking add audio language button', async () => {
