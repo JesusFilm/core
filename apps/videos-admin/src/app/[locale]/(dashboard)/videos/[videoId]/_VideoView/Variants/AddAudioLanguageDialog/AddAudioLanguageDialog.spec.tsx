@@ -12,7 +12,6 @@ import {
   GET_MY_MUX_VIDEO,
   UploadVideoVariantProvider
 } from '../../../../../../../../libs/UploadVideoVariantProvider'
-import { GetAdminVideo_AdminVideo_VideoEditions as VideoEditions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 import { AddAudioLanguageDialog } from './AddAudioLanguageDialog'
 
@@ -61,7 +60,8 @@ const createVideoVariantMock = {
         slug: 'video123/en',
         downloadable: true,
         published: true,
-        muxVideoId: 'muxVideo1'
+        muxVideoId: 'muxVideo1',
+        hls: 'https://stream.mux.com/playback123.m3u8'
       }
     }
   },
