@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
@@ -6,7 +6,6 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useCreateR2AssetMutation } from '../../../../../../../../../../libs/useCreateR2Asset'
-import { useDeleteR2AssetMutation } from '../../../../../../../../../../libs/useDeleteR2Asset'
 import { useVideo } from '../../../../../../../../../../libs/VideoProvider'
 import { ArrayElement } from '../../../../../../../../../../types/array-types'
 import { SubtitleForm, SubtitleValidationSchema } from '../../SubtitleForm'
@@ -61,32 +60,11 @@ export function SubtitleEdit({
   const [loading, setLoading] = useState(false)
 
   const [createR2Asset] = useCreateR2AssetMutation()
-  const [deleteR2Asset] = useDeleteR2AssetMutation()
-  const [updateVideoSubtitle] = useMutation(UPDATE_VIDEO_SUBTITLE, {
-    update(cache, { data }) {
-      if (data?.videoSubtitleUpdate == null) return
-
-      cache.modify({
-        id: cache.identify(edition),
-        fields: {
-          videoSubtitles(existingData) {
-            const newVideoSubtitleRef = cache.writeFragment({
-              data: data.videoSubtitleUpdate,
-              fragment: gql`
-                fragment NewVideoSubtitle on VideoSubtitle {
-                  id
-                }
-              `
-            })
-
-            return [...existingData, newVideoSubtitleRef]
-          }
-        }
-      })
-    }
-  })
+  const [updateVideoSubtitle] = useMutation(UPDATE_VIDEO_SUBTITLE)
 
   const handleSubmit = async (values: SubtitleValidationSchema) => {
+    setLoading(true)
+
     const sources: { vttSrc: string | null; srtSrc: string | null } = {
       vttSrc: subtitle.vttSrc ?? null,
       srtSrc: subtitle.srtSrc ?? null
@@ -109,6 +87,7 @@ export function SubtitleEdit({
           enqueueSnackbar(t('Successfully updated subtitle.'), {
             variant: 'success'
           })
+          setLoading(false)
         },
         onError: () => {
           enqueueSnackbar(t('Failed to update subtitle.'), {
@@ -122,20 +101,6 @@ export function SubtitleEdit({
 
     // Only upload if file exists in the form and the file is not the same as the existing file
     if (file != null && file?.name !== existingFileName) {
-      // Delete existing r2 asset if it exists
-      if (subtitle.value != null) {
-        await deleteR2Asset({
-          variables: {
-            id: subtitle.id
-          },
-          onError: (e) => {
-            enqueueSnackbar(t('Failed to delete existing file.'), {
-              variant: 'error'
-            })
-          }
-        })
-      }
-
       const fileName = getSubtitleR2Path(video, edition, '529', file)
 
       await createR2Asset({
@@ -171,11 +136,13 @@ export function SubtitleEdit({
 
               await performSubtitleUpdate(sources)
             } else {
+              setLoading(false)
               enqueueSnackbar(t('Failed to upload subtitle file.'), {
                 variant: 'error'
               })
             }
           } catch (e) {
+            setLoading(false)
             enqueueSnackbar(t('Failed to upload subtitle file.'), {
               variant: 'error'
             })
@@ -193,7 +160,6 @@ export function SubtitleEdit({
         }
       })
     } else {
-      // If no new file is being uploaded, just update the subtitle with existing sources
       await performSubtitleUpdate(sources)
     }
   }
