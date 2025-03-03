@@ -386,7 +386,7 @@ export function VideoControls({
         <PlaybackIcon state={state} loading={loading} visible={visible} />
 
         {/* Add VideoStats component outside of the Fade component so it stays visible */}
-        {showStats && <VideoStats player={player} isHls={isHls} />}
+        <VideoStats player={player} isHls={isHls} visible={showStats} />
 
         <Fade
           in

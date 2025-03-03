@@ -15,6 +15,7 @@ import {
 interface VideoStatsProps {
   player: Player
   isHls?: boolean
+  visible: boolean
 }
 
 interface StatsData {
@@ -55,7 +56,11 @@ interface Vhs {
   }
 }
 
-export function VideoStats({ player, isHls = false }: VideoStatsProps) {
+export function VideoStats({
+  player,
+  isHls = false,
+  visible
+}: VideoStatsProps) {
   const { t } = useTranslation('libs-journeys-ui')
   const eventCountsRef = useRef({
     play: 0,
@@ -128,6 +133,7 @@ export function VideoStats({ player, isHls = false }: VideoStatsProps) {
     if (!player) return
 
     player.on('timeupdate', updateStats)
+    player.on('progress', updateStats)
 
     const events = ['play', 'playing', 'seeking', 'seeked']
     events.forEach((event) => {
@@ -136,6 +142,7 @@ export function VideoStats({ player, isHls = false }: VideoStatsProps) {
 
     return () => {
       player.off('timeupdate', updateStats)
+      player.off('progress', updateStats)
       events.forEach((event) => {
         player.off(event, handleEvent(event))
       })
@@ -155,7 +162,10 @@ export function VideoStats({ player, isHls = false }: VideoStatsProps) {
         maxWidth: 300,
         maxHeight: 400,
         overflow: 'auto',
-        borderRadius: 1
+        borderRadius: 1,
+        visibility: visible ? 'visible' : 'hidden',
+        opacity: visible ? 1 : 0,
+        transition: 'visibility 0.2s, opacity 0.2s'
       }}
     >
       <Typography variant="h6">{t('Player Stats')}</Typography>
