@@ -1,2 +1,2 @@
 export { service } from './service'
-export { queueName } from './config'
+export { queueName, jobName } from './config'
