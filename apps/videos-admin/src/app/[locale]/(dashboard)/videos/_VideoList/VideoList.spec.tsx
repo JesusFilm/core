@@ -34,19 +34,22 @@ describe('VideoList', () => {
             id: 'example-id',
             snippet: [{ value: 'Example snippet', primary: true }],
             title: [{ value: 'Example title', primary: true }],
-            published: true
+            published: true,
+            locked: true
           },
           {
             id: 'example-id',
             snippet: [{ value: 'Example snippet', primary: true }],
             title: [{ value: 'Example title', primary: true }],
-            published: false
+            published: false,
+            locked: false
           },
           {
             id: 'example-id',
             snippet: [{ value: 'Example snippet', primary: true }],
             title: [{ value: 'Example title', primary: true }],
-            published: true
+            published: true,
+            locked: false
           }
         ]
       }
