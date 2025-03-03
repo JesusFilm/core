@@ -15,6 +15,8 @@ import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../block.service'
 
+import { VideoBlockResolver } from './video.resolver'
+
 jest.mock('node-fetch', () => {
   const originalModule = jest.requireActual('node-fetch')
   return {

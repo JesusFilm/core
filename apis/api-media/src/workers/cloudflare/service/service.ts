@@ -30,6 +30,8 @@ async function getCloudflareVideos(cloudflare: Cloudflare): Promise<string[]> {
   let done = false
   let last = undefined
   while (!done) {
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
     const videos = await cloudflare.stream.list({
       account_id: process.env.CLOUDFLARE_ACCOUNT_ID as string,
       asc: true,
