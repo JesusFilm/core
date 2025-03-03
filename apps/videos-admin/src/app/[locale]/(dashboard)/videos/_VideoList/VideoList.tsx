@@ -189,6 +189,8 @@ export function VideoList(): ReactElement {
     _event: MuiEvent,
     _details: GridCallbackDetails
   ): void {
+    if (params.row.locked) return
+
     router.push(`${pathname}/${params.id}`)
   }
 
