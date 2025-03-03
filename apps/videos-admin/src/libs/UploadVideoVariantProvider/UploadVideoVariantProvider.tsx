@@ -176,7 +176,10 @@ export function UploadVideoVariantProvider({
         state.muxVideoId != null
       ) {
         stopPolling()
-        await handleCreateVideoVariant(data.getMyMuxVideo.id)
+        await handleCreateVideoVariant(
+          data.getMyMuxVideo.id,
+          data.getMyMuxVideo.playbackId
+        )
       }
     },
     onError: (error) => {
@@ -187,7 +190,10 @@ export function UploadVideoVariantProvider({
     }
   })
 
-  const handleCreateVideoVariant = async (muxId: string) => {
+  const handleCreateVideoVariant = async (
+    muxId: string,
+    playbackId: string
+  ) => {
     if (
       state.videoId == null ||
       state.languageId == null ||
@@ -207,7 +213,8 @@ export function UploadVideoVariantProvider({
             slug: `${state.videoId}/${state.languageSlug}`,
             downloadable: true,
             published: true,
-            muxVideoId: muxId
+            muxVideoId: muxId,
+            hls: `https://stream.mux.com/${playbackId}.m3u8`
           }
         },
         onCompleted: () => {
