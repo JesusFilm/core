@@ -93,7 +93,12 @@ export function SubtitleEdit({
 
     try {
       if (file != null && file?.name !== existingFileName) {
-        const fileName = getSubtitleR2Path(video, edition, '529', file)
+        const fileName = getSubtitleR2Path(
+          video,
+          edition,
+          values.language,
+          file
+        )
 
         const result = await createR2Asset({
           variables: {
