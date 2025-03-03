@@ -31,7 +31,7 @@ export function HeaderLinkAccordion({
 }: HeaderLinkAccordionProps): ReactElement {
   if (!subLinks?.length) {
     return (
-      <Stack alignItems="flex-end" sx={{ pr: 4 }}>
+      <Stack alignItems="flex-end" sx={{ pr: 6 }}>
         <MuiLink
           href={url}
           underline="none"
@@ -49,7 +49,7 @@ export function HeaderLinkAccordion({
   return (
     <Box
       sx={{
-        pr: 4,
+        pr: 6,
         '&::after': {
           content: '""',
           position: 'absolute',
@@ -78,6 +78,7 @@ export function HeaderLinkAccordion({
           aria-controls={`${label}-content`}
           sx={{
             minHeight: '0 !important',
+            padding: 0,
             '& .MuiAccordionSummary-content': {
               justifyContent: 'flex-end',
               margin: '0 !important'
@@ -98,6 +99,7 @@ export function HeaderLinkAccordion({
         <AccordionDetails
           sx={{
             my: 2,
+            px: 0,
             py: { xs: 4, sm: 8 },
             backgroundColor: '#F5F4ED',
             '&::after': {
