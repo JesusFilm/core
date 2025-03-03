@@ -236,6 +236,7 @@ export function UploadVideoVariantProvider({
                       id
                       videoId
                       slug
+                      hls
                       language {
                         id
                         name {
