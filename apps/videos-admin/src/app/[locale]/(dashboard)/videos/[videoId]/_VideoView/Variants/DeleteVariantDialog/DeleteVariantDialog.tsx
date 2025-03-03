@@ -28,7 +28,8 @@ export function DeleteVariantDialog({
   const t = useTranslations()
 
   const languageName =
-    variant?.language.name.find(({ primary }) => primary)?.value || ''
+    variant?.language.name.find(({ primary }) => primary)?.value ??
+    variant?.language.name.find(({ primary }) => !primary)?.value
 
   const handleConfirm = async (): Promise<void> => {
     await onConfirm()
@@ -45,12 +46,9 @@ export function DeleteVariantDialog({
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {t(
-            'Are you sure you want to delete the {language} audio language? This action cannot be undone.',
-            {
-              language: languageName
-            }
-          )}
+          {t('deleteVariantDialog', {
+            language: languageName
+          })}
         </DialogContentText>
       </DialogContent>
       <DialogActions>

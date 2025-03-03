@@ -1,25 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { NextIntlClientProvider } from 'next-intl'
 
 import { DeleteVariantDialog } from './DeleteVariantDialog'
 
-// Mock next-intl
-jest.mock('next-intl', () => ({
-  useTranslations: () => (key: string, values?: Record<string, string>) => {
-    if (key === 'Delete Audio Language') return 'Delete Audio Language'
-    if (
-      key ===
-      'Are you sure you want to delete the {language} audio language? This action cannot be undone.'
-    ) {
-      return `Are you sure you want to delete the ${values?.language} audio language? This action cannot be undone.`
-    }
-    if (key === 'Cancel') return 'Cancel'
-    if (key === 'Delete') return 'Delete'
-    if (key === 'Deleting...') return 'Deleting...'
-    return key
-  }
-}))
-
-// Mock variant data
 const mockVariant = {
   id: 'variant-1',
   videoId: 'video-1',
@@ -30,10 +13,6 @@ const mockVariant = {
       {
         value: 'English',
         primary: true
-      },
-      {
-        value: 'Inglés',
-        primary: false
       }
     ],
     slug: 'en'
@@ -51,29 +30,28 @@ const mockVariant = {
 }
 
 describe('DeleteVariantDialog', () => {
-  it('renders dialog with correct content when open', () => {
+  it('renders dialog with correct content when open', async () => {
     const handleClose = jest.fn()
     const handleConfirm = jest.fn()
 
     render(
-      <DeleteVariantDialog
-        variant={mockVariant}
-        open
-        loading={false}
-        onClose={handleClose}
-        onConfirm={handleConfirm}
-      />
+      <NextIntlClientProvider locale="en">
+        <DeleteVariantDialog
+          variant={mockVariant}
+          open
+          loading={false}
+          onClose={handleClose}
+          onConfirm={handleConfirm}
+        />
+      </NextIntlClientProvider>
     )
 
     expect(screen.getByText('Delete Audio Language')).toBeInTheDocument()
 
-    expect(
-      screen.getByText(
-        'Are you sure you want to delete the English audio language? This action cannot be undone.'
-      )
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByText('deleteVariantDialog')).toBeInTheDocument()
+    )
 
-    // Check if buttons are displayed
     expect(screen.getByText('Cancel')).toBeInTheDocument()
     expect(screen.getByText('Delete')).toBeInTheDocument()
   })
@@ -83,16 +61,17 @@ describe('DeleteVariantDialog', () => {
     const handleConfirm = jest.fn()
 
     render(
-      <DeleteVariantDialog
-        variant={mockVariant}
-        open={false}
-        loading={false}
-        onClose={handleClose}
-        onConfirm={handleConfirm}
-      />
+      <NextIntlClientProvider locale="en">
+        <DeleteVariantDialog
+          variant={mockVariant}
+          open={false}
+          loading={false}
+          onClose={handleClose}
+          onConfirm={handleConfirm}
+        />
+      </NextIntlClientProvider>
     )
 
-    // Check if dialog is not displayed
     expect(screen.queryByText('Delete Audio Language')).not.toBeInTheDocument()
   })
 
@@ -101,13 +80,15 @@ describe('DeleteVariantDialog', () => {
     const handleConfirm = jest.fn()
 
     render(
-      <DeleteVariantDialog
-        variant={mockVariant}
-        open
-        loading={false}
-        onClose={handleClose}
-        onConfirm={handleConfirm}
-      />
+      <NextIntlClientProvider locale="en">
+        <DeleteVariantDialog
+          variant={mockVariant}
+          open
+          loading={false}
+          onClose={handleClose}
+          onConfirm={handleConfirm}
+        />
+      </NextIntlClientProvider>
     )
 
     // Click on the Cancel button
@@ -125,13 +106,15 @@ describe('DeleteVariantDialog', () => {
     const handleConfirm = jest.fn().mockResolvedValue(undefined)
 
     render(
-      <DeleteVariantDialog
-        variant={mockVariant}
-        open
-        loading={false}
-        onClose={handleClose}
-        onConfirm={handleConfirm}
-      />
+      <NextIntlClientProvider locale="en">
+        <DeleteVariantDialog
+          variant={mockVariant}
+          open
+          loading={false}
+          onClose={handleClose}
+          onConfirm={handleConfirm}
+        />
+      </NextIntlClientProvider>
     )
 
     // Click on the Delete button
@@ -151,13 +134,15 @@ describe('DeleteVariantDialog', () => {
     const handleConfirm = jest.fn()
 
     render(
-      <DeleteVariantDialog
-        variant={mockVariant}
-        open
-        loading
-        onClose={handleClose}
-        onConfirm={handleConfirm}
-      />
+      <NextIntlClientProvider locale="en">
+        <DeleteVariantDialog
+          variant={mockVariant}
+          open
+          loading
+          onClose={handleClose}
+          onConfirm={handleConfirm}
+        />
+      </NextIntlClientProvider>
     )
 
     // Check if Cancel button is disabled

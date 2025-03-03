@@ -85,7 +85,7 @@
   "Invalid file type. ": "Invalid file type. ",
   "Change file": "Change file",
   "Delete Audio Language": "Delete Audio Language",
-  "Are you sure you want to delete the {language} audio language? This action cannot be undone.": "Are you sure you want to delete the {language} audio language? This action cannot be undone.",
+  "deleteVariantDialog": "Are you sure you want to delete the { language } audio language? This action cannot be undone.",
   "Deleting...": "Deleting...",
   "Downloads": "Downloads",
   "No downloads available": "No downloads available",
