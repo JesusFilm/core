@@ -38,6 +38,7 @@ export const CREATE_VIDEO_VARIANT = graphql(`
       id
       videoId
       slug
+      hls
       language {
         id
         name {
