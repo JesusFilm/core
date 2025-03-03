@@ -62,105 +62,96 @@ export function SubtitleEdit({
   const [createR2Asset] = useCreateR2AssetMutation()
   const [updateVideoSubtitle] = useMutation(UPDATE_VIDEO_SUBTITLE)
 
+  const uploadAssetFile = async (file: File, uploadUrl: string) => {
+    const res = await fetch(uploadUrl, {
+      method: 'PUT',
+      body: file,
+      headers: { 'Content-Type': file.type },
+      signal: abortController.current?.signal
+    })
+
+    if (!res.ok) {
+      throw new Error(t('Failed to upload subtitle file.'))
+    }
+  }
+
   const handleSubmit = async (values: SubtitleValidationSchema) => {
+    if (edition.name == null) return
     setLoading(true)
 
-    const sources: { vttSrc: string | null; srtSrc: string | null } = {
+    const input: UpdateVideoSubtitleVariables['input'] = {
+      id: subtitle.id,
+      edition: edition.name,
+      languageId: values.language,
+      primary: values.primary,
       vttSrc: subtitle.vttSrc ?? null,
       srtSrc: subtitle.srtSrc ?? null
     }
 
+    const file = values.file as File | null
     const existingFileName = extractSubtitleFileName(subtitle)
 
-    const performSubtitleUpdate = async (currentSources: typeof sources) => {
+    try {
+      if (file != null && file?.name !== existingFileName) {
+        const fileName = getSubtitleR2Path(video, edition, '529', file)
+
+        const result = await createR2Asset({
+          variables: {
+            input: {
+              videoId: video.id,
+              fileName: fileName,
+              contentType: file.type,
+              contentLength: file.size
+            }
+          },
+          context: {
+            fetchOptions: {
+              signal: abortController.current?.signal
+            }
+          }
+        })
+
+        if (result.data?.cloudflareR2Create?.uploadUrl == null) {
+          throw new Error(t('Failed to create r2 asset.'))
+        }
+
+        const uploadUrl = result.data.cloudflareR2Create.uploadUrl
+        const publicUrl = result.data.cloudflareR2Create.publicUrl
+
+        await uploadAssetFile(file, uploadUrl)
+
+        if (file.type === 'text/vtt') {
+          input.vttSrc = publicUrl
+        } else if (file.type === 'application/x-subrip') {
+          input.srtSrc = publicUrl
+        }
+      }
+
       await updateVideoSubtitle({
         variables: {
-          input: {
-            id: subtitle.id,
-            edition: edition.name ?? '',
-            languageId: values.language,
-            primary: values.primary,
-            ...currentSources
-          }
+          input
         },
         onCompleted: () => {
           enqueueSnackbar(t('Successfully updated subtitle.'), {
             variant: 'success'
           })
-          setLoading(false)
         },
-        onError: () => {
-          enqueueSnackbar(t('Failed to update subtitle.'), {
-            variant: 'error'
-          })
+        context: {
+          fetchOptions: {
+            signal: abortController.current?.signal
+          }
         }
       })
-    }
-
-    const file = values.file as File | null
-
-    // Only upload if file exists in the form and the file is not the same as the existing file
-    if (file != null && file?.name !== existingFileName) {
-      const fileName = getSubtitleR2Path(video, edition, '529', file)
-
-      await createR2Asset({
-        variables: {
-          input: {
-            videoId: video.id,
-            fileName: fileName,
-            contentType: file.type,
-            contentLength: file.size
-          }
-        },
-        onCompleted: async (data) => {
-          if (data?.cloudflareR2Create?.uploadUrl == null) return
-
-          const uploadUrl = data.cloudflareR2Create.uploadUrl
-
-          try {
-            const res = await fetch(uploadUrl, {
-              method: 'PUT',
-              body: file,
-              headers: {
-                'Content-Type': file.type
-              },
-              signal: abortController.current?.signal
-            })
-
-            if (res.ok && data.cloudflareR2Create.publicUrl != null) {
-              if (file.type === 'text/vtt') {
-                sources.vttSrc = data.cloudflareR2Create.publicUrl
-              } else if (file.type === 'application/x-subrip') {
-                sources.srtSrc = data.cloudflareR2Create.publicUrl
-              }
-
-              await performSubtitleUpdate(sources)
-            } else {
-              setLoading(false)
-              enqueueSnackbar(t('Failed to upload subtitle file.'), {
-                variant: 'error'
-              })
-            }
-          } catch (e) {
-            setLoading(false)
-            enqueueSnackbar(t('Failed to upload subtitle file.'), {
-              variant: 'error'
-            })
-          }
-        },
-        onError: (e) => {
-          if (e.message.includes('aborted')) {
-            enqueueSnackbar(t('Upload cancelled.'))
-          } else {
-            enqueueSnackbar(t('Failed to create r2 asset.'), {
-              variant: 'error'
-            })
-          }
-          setLoading(false)
-        }
-      })
-    } else {
-      await performSubtitleUpdate(sources)
+    } catch (e) {
+      if (e.name === 'AbortError' || e.message.includes('aborted')) {
+        enqueueSnackbar(t('Subtitle update cancelled.'))
+      } else {
+        enqueueSnackbar(t('Failed to update subtitle.'), {
+          variant: 'error'
+        })
+      }
+    } finally {
+      setLoading(false)
     }
   }
 

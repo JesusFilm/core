@@ -1,10 +1,12 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { GraphQLError } from 'graphql'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
 
+import { SnackbarProvider } from '../../../../../../../../../../libs/SnackbarProvider'
 import { useAdminVideoMock } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { getCreateR2AssetMock } from '../../../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset.mock'
 import { VideoProvider } from '../../../../../../../../../../libs/VideoProvider'
@@ -228,5 +230,73 @@ describe('SubtitleCreate', () => {
       expect(createR2SubtitleAssetMock.result).toHaveBeenCalled()
     })
     expect(createSubtitleMock.result).toHaveBeenCalled()
+  })
+
+  it('should not create subtitle if asset was not created', async () => {
+    const createSubtitleMock = getCreateSubtitleMock({
+      vttSrc: null,
+      srtSrc:
+        'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
+      primary: true
+    })
+
+    const createR2SubtitleAssetMock = getCreateR2AssetMock({
+      videoId: mockVideo.id,
+      contentType: 'application/x-subrip',
+      fileName:
+        '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
+      contentLength: 13
+    })
+
+    const createR2AssetErrorMock = {
+      ...createR2SubtitleAssetMock,
+      result: {
+        errors: [
+          new GraphQLError('Unexpected error', {
+            extensions: { code: 'DOWNSTREAM_SERVICE_ERROR' }
+          })
+        ]
+      }
+    }
+
+    render(
+      <NextIntlClientProvider locale="en">
+        <SnackbarProvider>
+          <VideoProvider video={mockVideo}>
+            <MockedProvider
+              mocks={[
+                getLanguagesMock,
+                createR2AssetErrorMock,
+                createSubtitleMock
+              ]}
+            >
+              <SubtitleCreate edition={mockEdition} close={jest.fn()} />
+            </MockedProvider>
+          </VideoProvider>
+        </SnackbarProvider>
+      </NextIntlClientProvider>
+    )
+
+    const user = userEvent.setup()
+
+    const select = screen.getByRole('combobox', { name: 'Language' })
+    await user.click(select)
+    await waitFor(async () => {
+      await user.click(screen.getByRole('option', { name: 'English' }))
+    })
+    await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
+
+    const dropzone = screen.getByTestId('DropZone')
+    await user.upload(
+      dropzone,
+      new File(['subtitle file'], 'subtitle1.srt', {
+        type: 'application/x-subrip'
+      })
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Create' }))
+
+    expect(screen.getByText('Failed to create subtitle.')).toBeInTheDocument()
+    expect(createSubtitleMock.result).not.toHaveBeenCalled()
   })
 })

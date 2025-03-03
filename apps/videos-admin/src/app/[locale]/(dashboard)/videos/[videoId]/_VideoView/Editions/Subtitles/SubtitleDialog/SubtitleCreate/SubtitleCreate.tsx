@@ -90,49 +90,79 @@ export function SubtitleCreate({
     }
   })
 
+  const uploadAssetFile = async (file: File, uploadUrl: string) => {
+    const res = await fetch(uploadUrl, {
+      method: 'PUT',
+      body: file,
+      headers: { 'Content-Type': file.type },
+      signal: abortController.current?.signal
+    })
+
+    if (!res.ok) {
+      throw new Error(t('Failed to upload subtitle file.'))
+    }
+  }
+
   const handleSubmit = async (values: SubtitleValidationSchema) => {
-    if (edition == null) return
+    if (edition == null || edition.name == null) return
     setLoading(true)
     abortController.current = new AbortController()
 
     const file = values.file as File | null
 
-    const performCreateSubtitle = async ({
-      vttSrc = null,
-      srtSrc = null
-    }: {
-      vttSrc: string | null
-      srtSrc: string | null
-    }) => {
-      if (edition.name == null) return
+    const input: CreateVideoSubtitleVariables['input'] = {
+      videoId: video.id,
+      edition: edition.name,
+      languageId: values.language,
+      primary: values.primary,
+      vttSrc: null,
+      srtSrc: null
+    }
+
+    try {
+      if (file != null) {
+        const fileName = getSubtitleR2Path(video, edition, '529', file)
+
+        const result = await createR2Asset({
+          variables: {
+            input: {
+              videoId: video.id,
+              fileName: fileName,
+              contentType: file.type,
+              contentLength: file.size
+            }
+          },
+          context: {
+            fetchOptions: {
+              signal: abortController.current?.signal
+            }
+          }
+        })
+
+        if (result.data?.cloudflareR2Create?.uploadUrl == null) {
+          throw new Error(t('Failed to create r2 asset.'))
+        }
+
+        const uploadUrl = result.data.cloudflareR2Create.uploadUrl
+        const publicUrl = result.data.cloudflareR2Create.publicUrl
+
+        await uploadAssetFile(file, uploadUrl)
+
+        if (file.type === 'text/vtt') {
+          input.vttSrc = publicUrl
+        } else if (file.type === 'application/x-subrip') {
+          input.srtSrc = publicUrl
+        }
+      }
 
       await createVideoSubtitle({
         variables: {
-          input: {
-            videoId: video.id,
-            edition: edition.name,
-            languageId: values.language,
-            primary: values.primary,
-            vttSrc,
-            srtSrc
-          }
+          input
         },
         onCompleted: () => {
           enqueueSnackbar(t('Successfully created subtitle.'), {
             variant: 'success'
           })
-          setLoading(false)
-          close()
-        },
-        onError: (e) => {
-          if (e.message.includes('aborted')) {
-            enqueueSnackbar(t('Subtitle creation cancelled.'))
-          } else {
-            enqueueSnackbar(t('Failed to create subtitle.'), {
-              variant: 'error'
-            })
-          }
-          setLoading(false)
         },
         context: {
           fetchOptions: {
@@ -140,84 +170,18 @@ export function SubtitleCreate({
           }
         }
       })
-    }
 
-    // Create Cloudflare R2 asset
-    if (file != null) {
-      const fileName = getSubtitleR2Path(video, edition, '529', file)
-
-      await createR2Asset({
-        variables: {
-          input: {
-            videoId: video.id,
-            fileName: fileName,
-            contentType: file.type,
-            contentLength: file.size
-          }
-        },
-        onCompleted: async (data) => {
-          if (data?.cloudflareR2Create?.uploadUrl == null) return
-
-          const uploadUrl = data.cloudflareR2Create.uploadUrl
-          const publicUrl = data.cloudflareR2Create.publicUrl
-
-          try {
-            const res = await fetch(uploadUrl, {
-              method: 'PUT',
-              body: file,
-              headers: {
-                'Content-Type': file.type
-              },
-              signal: abortController.current?.signal
-            })
-
-            if (res.ok && publicUrl != null) {
-              const sources: {
-                vttSrc: string | null
-                srtSrc: string | null
-              } = {
-                vttSrc: null,
-                srtSrc: null
-              }
-
-              if (file.type === 'text/vtt') {
-                sources.vttSrc = publicUrl
-              } else if (file.type === 'application/x-subrip') {
-                sources.srtSrc = publicUrl
-              }
-
-              await performCreateSubtitle(sources)
-            } else {
-              enqueueSnackbar(t('Failed to upload subtitle file.'), {
-                variant: 'error'
-              })
-            }
-          } catch (e) {
-            enqueueSnackbar(t('Failed to upload subtitle file.'), {
-              variant: 'error'
-            })
-          }
-        },
-        onError: (e) => {
-          if (e.message.includes('aborted')) {
-            enqueueSnackbar(t('Upload cancelled.'))
-          } else {
-            enqueueSnackbar(t('Failed to create r2 asset.'), {
-              variant: 'error'
-            })
-          }
-        },
-        context: {
-          fetchOptions: {
-            signal: abortController.current?.signal
-          }
-        }
-      })
-    } else {
-      await performCreateSubtitle({
-        vttSrc: null,
-        srtSrc: null
-      })
+      close()
+    } catch (e) {
+      if (e.name === 'AbortError' || e.message.includes('aborted')) {
+        enqueueSnackbar(t('Subtitle create cancelled.'))
+      } else {
+        enqueueSnackbar(t('Failed to create subtitle.'), {
+          variant: 'error'
+        })
+      }
+    } finally {
+      setLoading(false)
     }
   }
 

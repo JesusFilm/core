@@ -7,7 +7,6 @@ import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguag
 
 import { useAdminVideoMock } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { getCreateR2AssetMock } from '../../../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset.mock'
-import { getDeleteR2AssetMock } from '../../../../../../../../../../libs/useDeleteR2Asset/useDeleteR2Asset.mock'
 import { VideoProvider } from '../../../../../../../../../../libs/VideoProvider'
 
 import {
