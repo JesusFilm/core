@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
 import {
@@ -15,7 +15,6 @@ import {
 interface VideoStatsProps {
   player: Player
   isHls?: boolean
-  visible: boolean
 }
 
 interface StatsData {
@@ -24,15 +23,9 @@ interface StatsData {
     duration: number
     buffered: string
     seekable: string
-    events: {
-      play: number
-      playing: number
-      seeking: number
-      seeked: number
-    }
   }
-  enhanced?: {
-    measuredBitrate: number
+  enhanced: {
+    measuredBitrate: number | string
     currentQuality: string
     currentFrameRate: string | number
   }
@@ -56,44 +49,22 @@ interface Vhs {
   }
 }
 
-export function VideoStats({
-  player,
-  isHls = false,
-  visible
-}: VideoStatsProps) {
+export function VideoStats({ player, isHls = false }: VideoStatsProps) {
   const { t } = useTranslation('libs-journeys-ui')
-  const eventCountsRef = useRef({
-    play: 0,
-    playing: 0,
-    seeking: 0,
-    seeked: 0
-  })
 
   const [stats, setStats] = useState<StatsData>({
     basic: {
       currentTime: 0,
       duration: 0,
       buffered: '-',
-      seekable: '-',
-      events: eventCountsRef.current
+      seekable: '-'
+    },
+    enhanced: {
+      measuredBitrate: '-',
+      currentQuality: '-',
+      currentFrameRate: '-'
     }
   })
-
-  const handleEvent = useCallback(
-    (eventName: string) => () => {
-      eventCountsRef.current[
-        eventName as keyof typeof eventCountsRef.current
-      ] += 1
-      setStats((prev) => ({
-        ...prev,
-        basic: {
-          ...prev.basic,
-          events: { ...eventCountsRef.current }
-        }
-      }))
-    },
-    []
-  )
 
   const updateStats = useCallback(() => {
     if (!player) return
@@ -102,14 +73,18 @@ export function VideoStats({
       currentTime: player.currentTime() || 0,
       duration: player.duration() || 0,
       buffered: formatTimeRanges(player.buffered()),
-      seekable: formatTimeRanges(player.seekable()),
-      events: eventCountsRef.current
+      seekable: formatTimeRanges(player.seekable())
     }
 
-    let enhancedStats = undefined
-    const tech = player.tech(true) as any
+    // Default enhanced stats with hyphens
+    let enhancedStats = {
+      measuredBitrate: '-' as string | number,
+      currentQuality: '-',
+      currentFrameRate: '-' as string | number
+    }
 
-    const vhs = tech.vhs as Vhs
+    const tech = player.tech(true) as any
+    const vhs = tech?.vhs as Vhs
 
     if (isHls && vhs) {
       const streamBitrate =
@@ -117,9 +92,9 @@ export function VideoStats({
       const liveFrameRate = getLiveFrameRate(player)
 
       enhancedStats = {
-        measuredBitrate: streamBitrate,
-        currentQuality: getCurrentQuality(),
-        currentFrameRate: liveFrameRate
+        measuredBitrate: streamBitrate || '-',
+        currentQuality: getCurrentQuality() || '-',
+        currentFrameRate: liveFrameRate || '-'
       }
     }
 
@@ -134,18 +109,10 @@ export function VideoStats({
 
     player.on('timeupdate', updateStats)
 
-    const events = ['play', 'playing', 'seeking', 'seeked']
-    events.forEach((event) => {
-      player.on(event, handleEvent(event))
-    })
-
     return () => {
       player.off('timeupdate', updateStats)
-      events.forEach((event) => {
-        player.off(event, handleEvent(event))
-      })
     }
-  }, [player, updateStats, handleEvent])
+  }, [player, updateStats])
 
   return (
     <Paper
@@ -160,10 +127,7 @@ export function VideoStats({
         maxWidth: 300,
         maxHeight: 400,
         overflow: 'auto',
-        borderRadius: 1,
-        visibility: visible ? 'visible' : 'hidden',
-        opacity: visible ? 1 : 0,
-        transition: 'visibility 0.2s, opacity 0.2s'
+        borderRadius: 1
       }}
     >
       <Typography variant="h6">{t('Player Stats')}</Typography>
@@ -179,29 +143,15 @@ export function VideoStats({
       </Box>
 
       <Typography variant="subtitle1" sx={{ mt: 1 }}>
-        {t('Event Counts')}
+        {t('Enhanced Info')}
       </Typography>
       <Box>
-        <Typography variant="body2">{`${t('Play')}: ${stats.basic.events.play}`}</Typography>
-        <Typography variant="body2">{`${t('Playing')}: ${stats.basic.events.playing}`}</Typography>
-        <Typography variant="body2">{`${t('Seeking')}: ${stats.basic.events.seeking}`}</Typography>
-        <Typography variant="body2">{`${t('Seeked')}: ${stats.basic.events.seeked}`}</Typography>
+        <Typography variant="body2">{`${t('Current Quality')}: ${stats.enhanced.currentQuality}`}</Typography>
+        <Typography variant="body2">
+          {`${t('Frame Rate')}: ${typeof stats.enhanced.currentFrameRate === 'number' ? `${stats.enhanced.currentFrameRate}${t('fps')}` : stats.enhanced.currentFrameRate}`}
+        </Typography>
+        <Typography variant="body2">{`${t('Bitrate')}: ${stats.enhanced.measuredBitrate === '-' ? '-' : `${stats.enhanced.measuredBitrate} ${t('kbps')}`}`}</Typography>
       </Box>
-
-      {stats.enhanced && (
-        <>
-          <Typography variant="subtitle1" sx={{ mt: 1 }}>
-            {t('Enhanced Info')}
-          </Typography>
-          <Box>
-            <Typography variant="body2">{`${t('Current Quality')}: ${stats.enhanced.currentQuality}`}</Typography>
-            <Typography variant="body2">
-              {`${t('Frame Rate')}: ${typeof stats.enhanced.currentFrameRate === 'number' ? `${stats.enhanced.currentFrameRate}${t('fps')}` : stats.enhanced.currentFrameRate}`}
-            </Typography>
-            <Typography variant="body2">{`${t('Bitrate')}: ${stats.enhanced.measuredBitrate} ${t('kbps')}`}</Typography>
-          </Box>
-        </>
-      )}
     </Paper>
   )
 }
