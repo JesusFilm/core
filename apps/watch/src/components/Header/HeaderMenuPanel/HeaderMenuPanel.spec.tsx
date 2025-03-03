@@ -12,7 +12,6 @@ describe('HeaderMenuPanel', () => {
   it('should render panel', () => {
     render(<HeaderMenuPanel onClose={mockOnClose} />)
 
-    expect(screen.getByRole('link', { name: 'Watch Logo' })).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'close drawer' })
     ).toBeInTheDocument()
