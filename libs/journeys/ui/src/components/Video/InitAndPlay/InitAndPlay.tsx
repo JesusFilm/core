@@ -90,7 +90,6 @@ export function InitAndPlay({
 
   // Initiate video player
   useEffect(() => {
-    // Only initialize video player if not already done
     if (videoRef.current != null && !playerInitializedRef.current) {
       setPlayer(
         videojs(videoRef.current, {
