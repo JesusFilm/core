@@ -119,10 +119,6 @@ export class VideoBlockResolver {
           objectFit: null
         }
         break
-      default:
-        throw new GraphQLError('Invalid video block source', {
-          extensions: { code: 'BAD_USER_INPUT' }
-        })
     }
     return await this.prismaService.$transaction(async (tx) => {
       if (input.isCover === true) {
@@ -260,10 +256,6 @@ export class VideoBlockResolver {
           }
         }
         break
-      default:
-        throw new GraphQLError('Invalid video block source', {
-          extensions: { code: 'BAD_USER_INPUT' }
-        })
     }
     return await this.blockService.update(id, input)
   }
