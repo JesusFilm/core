@@ -15,10 +15,7 @@ import { AppAbility, AppCaslFactory } from '../../../lib/casl/caslFactory'
 import { PrismaService } from '../../../lib/prisma.service'
 import { BlockService } from '../block.service'
 
-import {
-  CloudflareRetrieveVideoDetailsResponse,
-  VideoBlockResolver
-} from './video.resolver'
+import { VideoBlockResolver } from './video.resolver'
 
 jest.mock('node-fetch', () => {
   const originalModule = jest.requireActual('node-fetch')
@@ -600,136 +597,6 @@ describe('VideoBlockResolver', () => {
           duration: 1167,
           image: 'https://i.ytimg.com/vi/7RoqnGcEjcs/hqdefault.jpg',
           title: 'What is the Bible?'
-        })
-      })
-    })
-
-    describe('Cloudflare Source', () => {
-      it('throws error when videoId is not on Cloudflare', async () => {
-        prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-        mockFetch.mockResolvedValueOnce({
-          ok: true,
-          json: async () =>
-            await Promise.resolve<CloudflareRetrieveVideoDetailsResponse>({
-              errors: [],
-              messages: [],
-              result: null,
-              success: false
-            })
-        } as unknown as Response)
-        await expect(
-          resolver.videoBlockUpdate(ability, 'blockId', {
-            videoId: 'ea95132c15732412d22c1476fa83f27a',
-            source: VideoBlockSource.cloudflare
-          })
-        ).rejects.toThrow('videoId cannot be found on Cloudflare')
-      })
-
-      it('updates videoId', async () => {
-        prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-        mockFetch.mockResolvedValueOnce({
-          ok: true,
-          json: async () =>
-            await Promise.resolve<CloudflareRetrieveVideoDetailsResponse>({
-              errors: [],
-              messages: [],
-              result: {
-                duration: 100,
-                input: {
-                  height: 0,
-                  width: 0
-                },
-                playback: {
-                  hls: 'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/manifest/video.m3u8'
-                },
-                preview:
-                  'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/watch',
-                readyToStream: true,
-                size: 4190963,
-                thumbnail:
-                  'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg',
-                uid: 'ea95132c15732412d22c1476fa83f27a',
-                meta: {
-                  name: 'video.jpg'
-                }
-              },
-              success: true
-            })
-        } as unknown as Response)
-        await resolver.videoBlockUpdate(ability, 'blockId', {
-          videoId: 'ea95132c15732412d22c1476fa83f27a',
-          source: VideoBlockSource.cloudflare
-        })
-        expect(service.update).toHaveBeenCalledWith('blockId', {
-          videoId: 'ea95132c15732412d22c1476fa83f27a',
-          source: VideoBlockSource.cloudflare,
-          duration: 100,
-          endAt: 100,
-          image:
-            'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg?time=2s&height=768',
-          title: 'video.jpg'
-        })
-        expect(mockFetch).toHaveBeenCalledWith(
-          expect.stringMatching(
-            /https:\/\/api\.cloudflare\.com\/client\/v4\/accounts\/.*\/stream\/ea95132c15732412d22c1476fa83f27a/
-          ),
-          { headers: { Authorization: expect.stringMatching(/Bearer .*/) } }
-        )
-      })
-
-      it('updates videoId title when meta name not present', async () => {
-        prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-        mockFetch.mockResolvedValueOnce({
-          ok: true,
-          json: async () =>
-            await Promise.resolve<CloudflareRetrieveVideoDetailsResponse>({
-              errors: [],
-              messages: [],
-              result: {
-                duration: 100,
-                input: {
-                  height: 0,
-                  width: 0
-                },
-                playback: {
-                  hls: 'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/manifest/video.m3u8'
-                },
-                preview:
-                  'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/watch',
-                readyToStream: true,
-                size: 4190963,
-                thumbnail:
-                  'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg',
-                uid: 'ea95132c15732412d22c1476fa83f27a',
-                meta: {}
-              },
-              success: true
-            })
-        } as unknown as Response)
-        await resolver.videoBlockUpdate(ability, 'blockId', {
-          videoId: 'ea95132c15732412d22c1476fa83f27a',
-          source: VideoBlockSource.cloudflare
-        })
-        expect(service.update).toHaveBeenCalledWith('blockId', {
-          videoId: 'ea95132c15732412d22c1476fa83f27a',
-          source: VideoBlockSource.cloudflare,
-          duration: 100,
-          endAt: 100,
-          image:
-            'https://cloudflarestream.com/ea95132c15732412d22c1476fa83f27a/thumbnails/thumbnail.jpg?time=2s&height=768',
-          title: 'ea95132c15732412d22c1476fa83f27a'
-        })
-      })
-
-      it('updates a VideoBlock', async () => {
-        prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
-        await resolver.videoBlockUpdate(ability, 'blockId', {
-          autoplay: true,
-          source: VideoBlockSource.cloudflare
-        })
-        expect(service.update).toHaveBeenCalledWith('blockId', {
-          autoplay: true,
-          source: VideoBlockSource.cloudflare
         })
       })
     })
