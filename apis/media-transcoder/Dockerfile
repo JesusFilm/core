@@ -20,7 +20,7 @@ RUN apk upgrade --update-cache --available && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /app
-COPY ./dist/apps/media-transcoder .
+COPY ./dist/apis/media-transcoder .
 COPY ./package-lock.json .
 
 # dependencies that nestjs needs
