@@ -7,19 +7,16 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 import Player from 'video.js/dist/types/player'
+import Tech from 'video.js/dist/types/tech/tech'
 
-interface QualityLevel {
-  height: number
-  id: number
-  enabled: boolean
-}
+import { QualityLevels } from '../VideoSettings'
 
-interface QualityLevels {
-  length: number
-  on: (event: string, callback: () => void) => void
-  off: (event: string, callback: () => void) => void
-  selectedIndex: number
-  [index: number]: QualityLevel
+interface VhsTech extends Tech {
+  vhs?: {
+    playlistController_?: {
+      fastQualityChange_?: () => void
+    }
+  }
 }
 
 export interface QualityMenuItem {
@@ -48,100 +45,89 @@ export function QualityMenu({
   const [qualities, setQualities] = useState<QualityMenuItem[]>([])
   const [selectedQuality, setSelectedQuality] = useState<number>(-1)
 
+  // Sets the quality levels from the player
   useEffect(() => {
-    // Get quality levels from the player
     const qualityLevels = player.qualityLevels()
+    const qualities = Array.from({ length: qualityLevels.length }).reduce<
+      (QualityMenuItem & { height: number })[]
+    >((acc, _, i) => {
+      const index = qualityLevels.length - 1 - i
+      const level = qualityLevels[index]
+      const height = level.height
+      const resolution =
+        height >= 2160 ? '4K' : height >= 1440 ? '2K' : `${height}p`
 
-    // Listen for changes in quality levels
-    const handleQualityChange = () => {
-      const levels = []
-      // Add available quality levels
-      const uniqueResolutions = new Set()
-      for (let i = 0; i < qualityLevels.length; i++) {
-        const level = qualityLevels[i]
-        // Convert height to common resolution name
-        const height = level.height
-        let resolution = `${height}p`
-        if (height >= 2160) resolution = '4K'
-        else if (height >= 1440) resolution = '2K'
-
-        // Only add if resolution hasn't been seen before
-        if (!uniqueResolutions.has(resolution)) {
-          uniqueResolutions.add(resolution)
-          levels.push({ resolution, qualityLevel: i, height })
-        }
+      if (!acc.some((q) => q.height === height)) {
+        acc.push({ resolution, qualityLevel: index, height })
       }
+      return acc
+    }, [])
 
-      // Sort levels by height in descending order
-      levels.sort((a, b) => (b.height ?? 0) - (a.height ?? 0))
-
-      // Add Auto option at the top
-      levels.unshift({ resolution: 'Auto', qualityLevel: -1, height: Infinity })
-
-      // Remove height property before setting state
-      const newQualities = levels.map(({ resolution, qualityLevel }) => ({
+    setQualities([
+      { resolution: 'Auto', qualityLevel: -1 },
+      ...qualities.map(({ resolution, qualityLevel }) => ({
         resolution,
         qualityLevel
       }))
+    ])
+  }, [player])
 
-      setQualities(newQualities)
+  // Handles the auto quality change
+  useEffect(() => {
+    if (selectedQuality === -1) {
+      const qualityLevels = player.qualityLevels()
 
-      // Find currently selected quality
-      const selectedIndex = Array.from(qualityLevels).findIndex(
-        (level) => level.enabled
-      )
-      const newQuality = selectedIndex === -1 ? -1 : selectedIndex
-
-      // Only update selected quality if it was previously set by user
-      if (selectedQuality !== -1) {
-        setSelectedQuality(newQuality)
+      const handleAutoQualityChange = () => {
+        const activeResolution = qualities.find(
+          (q) => q.qualityLevel === qualityLevels.selectedIndex
+        )?.resolution
+        if (activeResolution) {
+          onQualityChanged(`Auto (${activeResolution})`)
+        }
       }
 
-      // Always notify parent of current active quality
-      const activeQualityLevel = qualityLevels.selectedIndex
-      const activeResolution = levels.find(
-        (q) => q.qualityLevel === activeQualityLevel
-      )?.resolution
-      const displayQuality =
-        selectedQuality === -1 && activeResolution != null
-          ? `Auto (${activeResolution})`
-          : (newQualities.find((q) => q.qualityLevel === selectedQuality)
-              ?.resolution ?? 'Auto')
-      onQualityChanged(displayQuality)
-    }
+      qualityLevels.on('change', handleAutoQualityChange)
+      handleAutoQualityChange()
 
-    qualityLevels.on('change', handleQualityChange)
-    handleQualityChange() // Initial setup
-
-    return () => {
-      qualityLevels.off('change', handleQualityChange)
+      return () => {
+        qualityLevels.off('change', handleAutoQualityChange)
+      }
     }
-  }, [player, onQualityChanged, selectedQuality])
+  }, [player, selectedQuality, onQualityChanged, qualities])
 
   const handleQualityChange = (quality: number): void => {
     const qualityLevels = player.qualityLevels()
+    const tech = player.tech() as VhsTech
 
-    // Enable all levels for Auto
-    if (quality === -1) {
-      for (let i = 0; i < qualityLevels.length; i++) {
-        qualityLevels[i].enabled = true
-      }
-    } else {
-      // Enable only selected quality level
-      for (let i = 0; i < qualityLevels.length; i++) {
-        qualityLevels[i].enabled = i === quality
-      }
+    // Clear buffer when switching quality
+    const mediaSource = tech?.vhs?.mediaSource
+    if (mediaSource?.activeSourceBuffers?.length > 0) {
+      const duration = player.duration() ?? 0
+      Array.from(mediaSource.activeSourceBuffers).forEach((sourceBuffer) => {
+        if (!sourceBuffer.updating) {
+          sourceBuffer.remove(0, duration)
+        }
+      })
+    }
+
+    // Enable/disable quality levels
+    Array.from({ length: qualityLevels.length }).forEach((_, i) => {
+      qualityLevels[i].enabled = quality === -1 || i === quality
+    })
+
+    // Try fast quality change if available
+    if (tech?.vhs?.playlistController_?.fastQualityChange_) {
+      tech.vhs.playlistController_.fastQualityChange_()
     }
 
     setSelectedQuality(quality)
 
-    // Find currently active quality for Auto mode
+    // Update display quality
     const activeQualityLevel = qualityLevels.selectedIndex
     const activeResolution = qualities.find(
       (q) => q.qualityLevel === activeQualityLevel
     )?.resolution
 
-    // Show actual quality in Auto mode
     const displayQuality =
       quality === -1 && activeResolution != null
         ? `Auto (${activeResolution})`
@@ -166,7 +152,7 @@ export function QualityMenu({
         horizontal: 'right'
       }}
     >
-      <MenuItem onClick={onBack} sx={{ minWidth: 200 }}>
+      <MenuItem onClick={onBack} sx={{ minWidth: 220 }}>
         <Stack direction="row" alignItems="center" gap={1}>
           <ArrowBackIosNewRounded fontSize="small" />
           <Typography>{t('Quality')}</Typography>
@@ -174,7 +160,7 @@ export function QualityMenu({
       </MenuItem>
       {qualities.map(({ resolution, qualityLevel }) => (
         <MenuItem
-          key={resolution}
+          key={`${resolution}-${qualityLevel}`}
           onClick={() => handleQualityChange(qualityLevel)}
           sx={{
             display: 'flex',

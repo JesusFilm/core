@@ -1,1 +1,1 @@
-export { VideoSettings } from './VideoSettings'
+export { VideoSettings, type QualityLevels } from './VideoSettings'

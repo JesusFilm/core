@@ -38,7 +38,7 @@ export function SettingsMenu({
         horizontal: 'right'
       }}
     >
-      <MenuItem onClick={onQualityClick} sx={{ minWidth: 200 }}>
+      <MenuItem onClick={onQualityClick} sx={{ minWidth: 220 }}>
         <Stack
           direction="row"
           alignItems="center"
