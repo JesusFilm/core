@@ -146,6 +146,7 @@ export const useAdminVideoMock: MockedResponse<
             id: '1_4334-jf-0-0',
             videoId: '1_jf-0-0',
             slug: 'jesus/munukutuba',
+            hls: 'https://arc.gt/hls/munukutuba/master.m3u8',
             downloads: [
               {
                 id: '529a0228-67ce-4b08-bc78-cecf1b7ec358',
@@ -179,6 +180,7 @@ export const useAdminVideoMock: MockedResponse<
             id: '1_19558-jf-0-0',
             videoId: '1_jf-0-0',
             slug: 'jesus/kom',
+            hls: 'https://arc.gt/hls/kom/master.m3u8',
             downloads: [
               {
                 id: 'fe363739-adb1-4871-be5b-97d3e7871038',
@@ -212,6 +214,7 @@ export const useAdminVideoMock: MockedResponse<
             id: '1_529-jf-0-0',
             videoId: '1_jf-0-0',
             slug: 'jesus/english',
+            hls: 'https://arc.gt/hls/english/master.m3u8',
             downloads: [
               {
                 id: '5f6dae80-87eb-4db1-9af1-07ddf8d9ca63',
