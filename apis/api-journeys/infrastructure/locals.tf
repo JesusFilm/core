@@ -3,8 +3,6 @@ locals {
   environment_variables = [
     "AWS_ACCESS_KEY_ID",
     "AWS_SECRET_ACCESS_KEY",
-    "CLOUDFLARE_ACCOUNT_ID",
-    "CLOUDFLARE_STREAM_TOKEN",
     "FIREBASE_API_KEY",
     "GATEWAY_URL",
     "GIT_BRANCH",
