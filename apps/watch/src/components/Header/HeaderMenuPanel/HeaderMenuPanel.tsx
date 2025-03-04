@@ -1,12 +1,16 @@
 import CloseIcon from '@mui/icons-material/Close'
-import FavoriteIcon from '@mui/icons-material/Favorite'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import Image from 'next/image'
+import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
+
+import logo from '../assets/logo.svg'
 
 import { HeaderLinkAccordion } from './HeaderLinkAccordion'
 import { headerLinks } from './headerLinks'
@@ -45,43 +49,74 @@ export function HeaderMenuPanel({
       <Stack
         spacing={2}
         direction="row"
-        justifyContent="flex-end"
-        alignItems="center"
-        py={8}
-        pl={8}
-        pr={4}
+        sx={{
+          height: { xs: 100, sm: 160 },
+          pl: 4,
+          pr: 5,
+          alignItems: 'center',
+          justifyContent: { xs: 'space-between', sm: 'flex-end' }
+        }}
       >
-        <Button
-          href="https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now-2/?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=https%3A%2F%2Fwww.jesusfilm.org%2Fcontent%2Fjf%2Fus%2Fdevelopment%2Fspecial%2Fthank-you-refer%2Fsocial-share.html"
-          rel="noopener"
-          variant="contained"
+        <Box
           sx={{
-            height: 34,
-            minWidth: 100,
-            px: 4,
-            borderRadius: 4,
-            '&:hover': {
-              backgroundColor: 'background.paper',
-              color: 'primary.main',
-              border: '1px solid',
-              borderColor: 'primary.main',
-              boxShadow: 'none'
-            }
+            display: { xs: 'flex', sm: 'none' }
           }}
         >
-          <Typography sx={{ fontSize: 15, fontWeight: 700 }}>
-            {t('Give Now')}
-          </Typography>
-        </Button>
-        <IconButton
-          color="inherit"
-          aria-label="close drawer"
-          edge="start"
-          onClick={onClose}
-          sx={{ width: 40, height: 40 }}
+          <NextLink href="/watch">
+            <Image
+              src={logo}
+              width="126"
+              height="40"
+              alt="Watch Logo"
+              style={{
+                cursor: 'pointer',
+                maxWidth: '100%',
+                height: 'auto'
+              }}
+            />
+          </NextLink>
+        </Box>
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="flex-end"
+          alignItems="center"
+          py={8}
+          pl={8}
+          pr={5}
         >
-          <CloseIcon />
-        </IconButton>
+          <Button
+            href="https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now-2/?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=https%3A%2F%2Fwww.jesusfilm.org%2Fcontent%2Fjf%2Fus%2Fdevelopment%2Fspecial%2Fthank-you-refer%2Fsocial-share.html"
+            rel="noopener"
+            variant="contained"
+            sx={{
+              height: 34,
+              minWidth: 100,
+              px: 4,
+              borderRadius: 4,
+              '&:hover': {
+                backgroundColor: 'background.paper',
+                color: 'primary.main',
+                border: '1px solid',
+                borderColor: 'primary.main',
+                boxShadow: 'none'
+              }
+            }}
+          >
+            <Typography sx={{ fontSize: 15, fontWeight: 700 }}>
+              {t('Give Now')}
+            </Typography>
+          </Button>
+          <IconButton
+            color="inherit"
+            aria-label="close drawer"
+            edge="start"
+            onClick={onClose}
+            sx={{ width: 40, height: 40 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </Stack>
       </Stack>
       <Stack
         direction="column"

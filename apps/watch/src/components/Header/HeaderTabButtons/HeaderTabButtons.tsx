@@ -58,11 +58,11 @@ export function HeaderTabButtons(): ReactElement {
         data-testid="HeaderTabButtons"
         sx={{
           display: { xs: 'none', lg: 'flex' },
-          pr: { xl: '20px' },
           width: '100%',
           height: '48px',
           justifyContent: 'space-between',
-          gap: '12px' // todo: reduce to 4px on smaller devices
+          gap: { sm: '8px', md: '12px' },
+          alignItems: 'center'
         }}
       >
         {headerItems.map(({ label, icon, href }) => (
@@ -79,7 +79,10 @@ export function HeaderTabButtons(): ReactElement {
                 borderColor:
                   (router?.pathname?.startsWith(href) ?? false)
                     ? (theme) => theme.palette.primary.main
-                    : 'transparent'
+                    : 'transparent',
+                py: { sm: 1 },
+                px: { sm: 2 },
+                fontSize: { sm: '0.875rem', md: '1rem' }
               }}
               startIcon={icon}
             >
@@ -93,7 +96,7 @@ export function HeaderTabButtons(): ReactElement {
           top: '-10px',
           pr: { md: '20px' },
           display: { xs: 'flex', lg: 'none' },
-          justifyContent: 'center',
+          justifyContent: 'flex-end',
           width: '100%'
         }}
       >
