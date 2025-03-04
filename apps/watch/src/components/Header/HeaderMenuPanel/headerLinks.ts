@@ -57,21 +57,42 @@ export const headerLinks: HeaderLinkProps[] = [
     ]
   },
   {
-    label: 'Resources',
+    label: 'Partner With Us',
     subLinks: [
+      { label: 'Become A Partner', url: 'https://www.jesusfilm.org/partners/' },
+      {
+        label: 'Resources',
+        url: 'https://www.jesusfilm.org/partners/resources/'
+      },
       {
         label: 'Strategies',
         url: 'https://www.jesusfilm.org/partners/resources/strategies/'
       },
-      { label: 'Journeys', url: 'https://admin.nextstep.is/templates' },
-      { label: 'Videos', url: 'https://www.jesusfilm.org/watch.html' },
+      {
+        label: 'Mission Trips',
+        url: 'https://www.jesusfilm.org/partners/mission-trips/'
+      },
+      {
+        label: 'Pray With Us',
+        url: 'https://www.jesusfilm.org/partners/resources/pray/'
+      },
+      {
+        label: "Women's Strategies",
+        url: 'https://www.jesusfilm.org/partners/resources/strategies/women/'
+      }
+    ]
+  },
+  {
+    label: 'Evangelism Tools',
+    subLinks: [
+      { label: 'All Tools', url: 'https://www.jesusfilm.org/tools/' },
       { label: 'JesusFilm App', url: 'https://www.jesusfilm.org/tools/app/' },
       { label: 'Youtube', url: 'https://www.jesusfilm.org/tools/youtube/' },
+      { label: 'Watch', url: 'https://www.jesusfilm.org/watch.html' },
       {
         label: 'DVDs & Media',
         url: 'https://crustore.org/product-category/jesus-film-project/'
-      },
-      { label: 'Become A Partner', url: 'https://www.jesusfilm.org/partners/' }
+      }
     ]
   },
   { label: 'Careers', url: 'https://www.jesusfilm.org/serve/' },
