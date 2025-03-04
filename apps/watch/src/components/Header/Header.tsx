@@ -86,10 +86,12 @@ export function Header({
           )}
           <Fade
             appear={false}
-            in={hideAbsoluteAppBar !== true || trigger}
+            in={hideAbsoluteAppBar !== true || !bottomBarTrigger}
             style={{
               transitionDelay:
-                hideAbsoluteAppBar !== true || trigger ? undefined : '2s',
+                hideAbsoluteAppBar !== true || !bottomBarTrigger
+                  ? undefined
+                  : '2s',
               transitionDuration: '225ms'
             }}
             timeout={{ exit: 2225 }}
