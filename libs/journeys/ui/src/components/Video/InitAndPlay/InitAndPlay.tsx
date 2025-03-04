@@ -117,7 +117,7 @@ export function InitAndPlay({
       )
       playerInitializedRef.current = true
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- should only run once
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- should only run once unless videoRef.current is null
   }, [videoRef.current])
 
   // Initiate video player listeners
