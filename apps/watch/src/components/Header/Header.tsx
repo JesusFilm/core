@@ -110,8 +110,6 @@ export function Header({
           </Stack>
         </Box>
       </ThemeProvider>
-
-      {/* HeaderMenu */}
       <ThemeProvider
         themeName={ThemeName.website}
         themeMode={ThemeMode.light}
