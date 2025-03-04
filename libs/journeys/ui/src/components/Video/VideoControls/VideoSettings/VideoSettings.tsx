@@ -4,7 +4,8 @@ import Player from 'video.js/dist/types/player'
 import { QualityMenu } from './QualityMenu/QualityMenu'
 import { SettingsButton } from './SettingsButton'
 import { SettingsMenu } from './SettingsMenu/SettingsMenu'
-
+// TODO: extract and put into a utils file
+// TODO: Where is this coming from lol?
 export interface QualityLevels {
   length: number
   on: (event: string, callback: () => void) => void

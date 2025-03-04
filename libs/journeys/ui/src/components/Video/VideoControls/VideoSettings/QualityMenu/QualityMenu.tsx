@@ -11,11 +11,27 @@ import Tech from 'video.js/dist/types/tech/tech'
 
 import { QualityLevels } from '../VideoSettings'
 
-interface VhsTech extends Tech {
-  vhs?: {
+// TODO: extract and put into a utils file
+// TODO: link to docs
+// Since VHS is built into Video.js 7+, we can extend the Tech type
+// with the VHS-specific properties documented in @videojs/http-streaming
+interface Html5 extends Tech {
+  vhs: {
+    playlists: {
+      main: any
+      media: () => any
+    }
+    systemBandwidth: number
+    bandwidth: number
+    throughput: number
+    selectPlaylist: () => any
+    representations: () => any
+    xhr: any
+    stats: any
     playlistController_?: {
       fastQualityChange_?: () => void
     }
+    mediaSource?: MediaSource
   }
 }
 
@@ -70,7 +86,7 @@ export function QualityMenu({
         qualityLevel
       }))
     ])
-  }, [player])
+  }, [player, onQualityChanged])
 
   // Handles the auto quality change
   useEffect(() => {
@@ -97,13 +113,16 @@ export function QualityMenu({
 
   const handleQualityChange = (quality: number): void => {
     const qualityLevels = player.qualityLevels()
-    const tech = player.tech() as VhsTech
+    const tech = player.tech() as Html5
+    const currentTime = player.currentTime()
+    const wasPlaying = !player.paused()
+    player.pause()
 
-    // Clear buffer when switching quality
-    const mediaSource = tech?.vhs?.mediaSource
-    if (mediaSource?.activeSourceBuffers?.length > 0) {
+    // Clears buffer
+    const sourceBuffers = tech?.vhs?.mediaSource?.activeSourceBuffers
+    if (sourceBuffers != null && sourceBuffers.length > 0) {
       const duration = player.duration() ?? 0
-      Array.from(mediaSource.activeSourceBuffers).forEach((sourceBuffer) => {
+      Array.from(sourceBuffers).forEach((sourceBuffer: SourceBuffer) => {
         if (!sourceBuffer.updating) {
           sourceBuffer.remove(0, duration)
         }
@@ -115,12 +134,18 @@ export function QualityMenu({
       qualityLevels[i].enabled = quality === -1 || i === quality
     })
 
-    // Try fast quality change if available
+    // Change quality level
     if (tech?.vhs?.playlistController_?.fastQualityChange_) {
       tech.vhs.playlistController_.fastQualityChange_()
     }
 
-    setSelectedQuality(quality)
+    setTimeout(async () => {
+      // player sometimes skips ahead when changing quality
+      player.currentTime(currentTime)
+      if (wasPlaying) {
+        await player.play()
+      }
+    }, 100)
 
     // Update display quality
     const activeQualityLevel = qualityLevels.selectedIndex
@@ -134,6 +159,7 @@ export function QualityMenu({
         : (qualities.find((q) => q.qualityLevel === quality)?.resolution ??
           'Auto')
 
+    setSelectedQuality(quality)
     onQualityChanged(displayQuality)
     onClose()
   }
