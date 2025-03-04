@@ -167,7 +167,7 @@ export function Footer(): ReactElement {
         >
           <Stack
             direction="row"
-            justifyContent="center"
+            justifyContent={{ xs: 'center', sm: 'flex-start' }}
             flexGrow={1}
             alignItems="center"
             divider={<Divider orientation="vertical" flexItem />}
@@ -206,7 +206,7 @@ export function Footer(): ReactElement {
             </Stack>
           </Stack>
           {/* Newsletter Section */}
-          <Stack flexGrow={1} alignItems="center">
+          <Stack flexGrow={1} alignItems={{ xs: 'center', sm: 'flex-end' }}>
             <Button
               component="a"
               href="/email/"
