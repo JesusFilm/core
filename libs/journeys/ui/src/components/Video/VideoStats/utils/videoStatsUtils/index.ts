@@ -2,5 +2,8 @@ export {
   formatTimeRanges,
   formatTime,
   getCurrentQuality,
-  getLiveFrameRate
+  getLiveFrameRate,
+  calculateBitrate
 } from './videoStatsUtils'
+
+export type { Vhs } from './videoStatsUtils'

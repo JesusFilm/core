@@ -6,6 +6,8 @@ import { useCallback, useEffect, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
 import {
+  Vhs,
+  calculateBitrate,
   formatTime,
   formatTimeRanges,
   getCurrentQuality,
@@ -28,24 +30,6 @@ interface StatsData {
     measuredBitrate: number | string
     currentQuality: string
     currentFrameRate: string | number
-  }
-}
-
-interface Vhs {
-  stats?: {
-    bandwidth?: number
-    streamBitrate?: number
-  }
-  bandwidth?: number
-  streamBitrate?: number
-  playlists?: {
-    master?: {
-      playlists: Array<{
-        attributes?: {
-          FRAME_RATE?: number
-        }
-      }>
-    }
   }
 }
 
@@ -85,14 +69,15 @@ export function VideoStats({ player, isHls = false }: VideoStatsProps) {
 
     const tech = player.tech(true) as any
     const vhs = tech?.vhs as Vhs
+    console.log('vhs', vhs)
 
     if (isHls && vhs) {
-      const streamBitrate =
-        vhs.stats?.streamBitrate || vhs.streamBitrate || vhs.bandwidth || 0
+      // Get bitrate using the utility function
+      const calculatedBitrate = calculateBitrate(vhs)
       const liveFrameRate = getLiveFrameRate(player)
 
       enhancedStats = {
-        measuredBitrate: streamBitrate || '-',
+        measuredBitrate: calculatedBitrate || '-',
         currentQuality: getCurrentQuality() || '-',
         currentFrameRate: liveFrameRate || '-'
       }
