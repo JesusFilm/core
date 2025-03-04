@@ -48,11 +48,11 @@ export function Header({
             onMenuClick={() => setDrawerOpen(true)}
           />
         </Box>
-        <Box sx={{ position: 'relative' }}>
-          {!hideSpacer && (
-            <Box data-testid="HeaderSpacer" sx={{ height: 80 }} />
-          )}
-          {shouldShowBottomAppBar && (
+        {shouldShowBottomAppBar && (
+          <Box sx={{ position: 'relative' }}>
+            {!hideSpacer && (
+              <Box data-testid="HeaderSpacer" sx={{ height: 80 }} />
+            )}
             <Fade
               appear={false}
               in={hideAbsoluteAppBar !== true || bottomBarTrigger}
@@ -70,8 +70,8 @@ export function Header({
                 bottomBarTrigger={bottomBarTrigger}
               />
             </Fade>
-          )}
-        </Box>
+          </Box>
+        )}
       </ThemeProvider>
       <ThemeProvider
         themeName={ThemeName.website}

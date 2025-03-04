@@ -57,22 +57,14 @@ export function HeaderMenuPanel({
           justifyContent: { xs: 'space-between', sm: 'flex-end' }
         }}
       >
-        <Box
-          sx={{
-            display: { xs: 'flex', sm: 'none' }
-          }}
-        >
+        <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
           <NextLink href="/watch">
             <Image
               src={logo}
               width="126"
               height="40"
               alt="Watch Logo"
-              style={{
-                cursor: 'pointer',
-                maxWidth: '100%',
-                height: 'auto'
-              }}
+              style={{ cursor: 'pointer', maxWidth: '100%', height: 'auto' }}
             />
           </NextLink>
         </Box>
@@ -121,13 +113,7 @@ export function HeaderMenuPanel({
         justifyContent="space-between"
         sx={{ flexGrow: 1, py: { xs: 16, md: 4, xl: 0 } }}
       >
-        <Stack
-          justifyContent="flex-start"
-          direction="column"
-          sx={{
-            gap: 1
-          }}
-        >
+        <Stack justifyContent="flex-start" direction="column" sx={{ gap: 1 }}>
           {headerLinks.map((link) => (
             <HeaderLinkAccordion
               key={link.label}
