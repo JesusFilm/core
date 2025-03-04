@@ -60,7 +60,7 @@ jobs:
 
       - name: Get affected apps
         run: |
-          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects app/*)" >> $GITHUB_OUTPUT
+          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apps/*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
         id: affected-apps
 
