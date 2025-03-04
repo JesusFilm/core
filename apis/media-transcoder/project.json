@@ -14,7 +14,8 @@
         "outputPath": "dist/apis/media-transcoder",
         "main": "apis/media-transcoder/src/main.ts",
         "tsConfig": "apis/media-transcoder/tsconfig.app.json",
-        "webpackConfig": "apis/media-transcoder/webpack.config.js"
+        "webpackConfig": "apis/media-transcoder/webpack.config.js",
+        "generatePackageJson": true
       },
       "configurations": {
         "development": {},
