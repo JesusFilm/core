@@ -62,6 +62,7 @@ describe('VariantCard', () => {
           slug: 'munukutuba'
         },
         slug: 'jesus/munukutuba',
+        hls: 'https://arc.gt/hls/munukutuba/master.m3u8',
         videoId: '1_jf-0-0'
       })
     )
