@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
+import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
@@ -47,6 +48,8 @@ export function Header({
 
   const appBarStyles = lightTheme ? lightStyles : darkStyles
 
+  const trigger = useScrollTrigger({ disableHysteresis: true })
+
   const bottomBarTrigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: isXS ? 100 : 159
@@ -81,33 +84,45 @@ export function Header({
               }}
             />
           )}
-          <Stack
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              height: 80,
-              position: bottomBarTrigger ? 'fixed' : 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              width: '100%',
-              zIndex: 3,
-              background: 'transparent',
-              '&::before': {
-                content: "' '",
-                position: 'absolute',
+          <Fade
+            appear={false}
+            in={hideAbsoluteAppBar !== true || trigger}
+            style={{
+              transitionDelay:
+                hideAbsoluteAppBar !== true || trigger ? undefined : '2s',
+              transitionDuration: '225ms'
+            }}
+            timeout={{ exit: 2225 }}
+            data-testid="Header"
+          >
+            <Stack
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                height: 80,
+                position: bottomBarTrigger ? 'fixed' : 'absolute',
                 top: 0,
                 left: 0,
-                bottom: 0,
                 right: 0,
-                opacity: bottomBarTrigger ? 1 : 0,
-                ...appBarStyles,
-                transition: 'opacity 0.3s ease'
-              }
-            }}
-          >
-            <BottomAppBar data-testid="HeaderBottomBar" />
-          </Stack>
+                width: '100%',
+                zIndex: 3,
+                background: 'transparent',
+                '&::before': {
+                  content: "' '",
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  right: 0,
+                  opacity: bottomBarTrigger ? 1 : 0,
+                  ...appBarStyles,
+                  transition: 'opacity 0.3s ease'
+                }
+              }}
+            >
+              <BottomAppBar data-testid="HeaderBottomBar" />
+            </Stack>
+          </Fade>
         </Box>
       </ThemeProvider>
       <ThemeProvider
