@@ -64,7 +64,7 @@ export const headerLinks: HeaderLinkProps[] = [
         url: 'https://www.jesusfilm.org/partners/resources/strategies/'
       },
       { label: 'Journeys', url: 'https://admin.nextstep.is/templates' },
-      { label: 'Videos', url: 'https://www.jesusfilm.org/watch.html' },
+      { label: 'Videos', url: '/watch' },
       { label: 'JesusFilm App', url: 'https://www.jesusfilm.org/tools/app/' },
       { label: 'Youtube', url: 'https://www.jesusfilm.org/tools/youtube/' },
       {
