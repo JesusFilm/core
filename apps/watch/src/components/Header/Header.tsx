@@ -60,7 +60,7 @@ export function Header({
       <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
         <Box
           sx={{
-            background: 'background.default'
+            background: 'pink'
           }}
         >
           <LocalAppBar
@@ -86,10 +86,10 @@ export function Header({
           )}
           <Fade
             appear={false}
-            in={hideAbsoluteAppBar !== true || !bottomBarTrigger}
+            in={hideAbsoluteAppBar !== true || bottomBarTrigger}
             style={{
               transitionDelay:
-                hideAbsoluteAppBar !== true || !bottomBarTrigger
+                hideAbsoluteAppBar !== true || bottomBarTrigger
                   ? undefined
                   : '2s',
               transitionDuration: '225ms'
