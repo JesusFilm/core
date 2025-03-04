@@ -71,6 +71,7 @@ export function NavbarBreadcrumbs(): ReactElement {
           </MuiLink>
         ) : (
           <Typography
+            key={index}
             variant="body1"
             sx={{
               display: 'flex',
