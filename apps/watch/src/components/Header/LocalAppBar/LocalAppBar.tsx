@@ -29,8 +29,7 @@ export function LocalAppBar({
       sx={{
         px: 4,
         pb: showDivider ? 0 : 0,
-        pt: { xs: 0, sm: 6 },
-        justifyContent: 'center',
+        pt: { xs: 6, sm: 14 },
         color: 'text.primary',
         width: '100%',
         height: { xs: 100, sm: 159 },
