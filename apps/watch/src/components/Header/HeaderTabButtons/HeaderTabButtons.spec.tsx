@@ -10,9 +10,7 @@ import { HeaderTabButtons } from './HeaderTabButtons'
 jest.mock('next/compat/router', () => ({
   __esModule: true,
   useRouter() {
-    return {
-      pathname: '/watch'
-    }
+    return { pathname: '/watch' }
   }
 }))
 
@@ -86,7 +84,7 @@ describe('HeaderTabButtons', () => {
       expect(router?.pathname).toBe('/watch')
 
       const videosButton = screen.getByTestId('VideosButton')
-      expect(videosButton).toHaveStyle('border-color: #EF3340')
+      expect(videosButton).toHaveStyle('border-color: #CB333B')
 
       // other buttons shouldn't have red border
       const journeysButton = screen.getByTestId('JourneysButton')
