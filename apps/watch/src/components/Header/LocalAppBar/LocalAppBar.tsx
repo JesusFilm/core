@@ -2,7 +2,6 @@ import MenuIcon from '@mui/icons-material/Menu'
 import AppBar, { AppBarProps } from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
 import IconButton from '@mui/material/IconButton'
 import Toolbar from '@mui/material/Toolbar'
@@ -13,31 +12,36 @@ import { MouseEventHandler, ReactElement } from 'react'
 import logo from '../assets/logo.svg'
 
 interface LocalAppBarProps extends AppBarProps {
-  showDivider?: boolean
   onMenuClick: MouseEventHandler<HTMLButtonElement>
+  hideSpacer?: boolean
 }
 
 export function LocalAppBar({
   onMenuClick,
-  showDivider = false,
+  hideSpacer = false,
   ...props
 }: LocalAppBarProps): ReactElement {
   return (
     <AppBar
+      data-testid="Header"
       position="static"
       {...props}
       sx={{
-        px: 4,
-        pb: showDivider ? 0 : 0,
-        pt: { xs: 6, sm: 14 },
-        color: 'text.primary',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        background: 'transparent',
+        color: hideSpacer ? 'background.default' : 'inherit',
+        boxShadow: 'none',
+        px: 8,
+        pt: { xs: 0, sm: 10 },
         width: '100%',
         height: { xs: 100, sm: 159 },
         ...props.sx
       }}
     >
       <Container maxWidth="xl" disableGutters>
-        <Toolbar>
+        <Toolbar disableGutters>
           <Grid
             container
             sx={{
@@ -84,6 +88,7 @@ export function LocalAppBar({
                   aria-label="open header menu"
                   edge="start"
                   onClick={onMenuClick}
+                  sx={{ width: 40, height: 40, pr: 0 }}
                 >
                   <MenuIcon />
                 </IconButton>
@@ -92,15 +97,6 @@ export function LocalAppBar({
           </Grid>
         </Toolbar>
       </Container>
-      {showDivider && (
-        <Divider
-          sx={{
-            pt: 12,
-            mx: '-16px'
-          }}
-          data-testid="AppBarDivider"
-        />
-      )}
     </AppBar>
   )
 }

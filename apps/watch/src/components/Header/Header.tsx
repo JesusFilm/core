@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Fade from '@mui/material/Fade'
-import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -27,28 +26,9 @@ export function Header({
   themeMode = ThemeMode.light
 }: HeaderProps): ReactElement {
   const [drawerOpen, setDrawerOpen] = useState(false)
-
   const theme = useTheme()
   const isXS = useMediaQuery(theme.breakpoints.only('xs'))
-
   const lightTheme = themeMode === ThemeMode.light
-
-  const lightStyles = {
-    backgroundImage:
-      'linear-gradient(rgb(255 255 255 / 60%), rgb(255 255 255 / 26%))',
-    backdropFilter: 'blur(20px) brightness(1.1)',
-    '-webkit-backdrop-filter': 'blur(20px) brightness(1.1)'
-  }
-
-  const darkStyles = {
-    backgroundImage: 'linear-gradient(rgb(0 0 0 / 60%), rgb(0 0 0 / 26%))',
-    backdropFilter: 'blur(20px) brightness(0.9)',
-    '-webkit-backdrop-filter': 'blur(20px) brightness(0.9)'
-  }
-
-  const appBarStyles = lightTheme ? lightStyles : darkStyles
-
-  const trigger = useScrollTrigger({ disableHysteresis: true })
 
   const bottomBarTrigger = useScrollTrigger({
     disableHysteresis: true,
@@ -60,25 +40,18 @@ export function Header({
       <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
         <Box
           sx={{
-            background: 'pink'
+            background: 'background.default'
           }}
         >
           <LocalAppBar
-            sx={{
-              background: 'transparent',
-              color: hideSpacer ? 'background.default' : 'inherit',
-              boxShadow: 'none',
-              display: 'flex',
-              alignItems: 'center'
-            }}
-            data-testid="Header"
-            showDivider={lightTheme}
+            hideSpacer={hideSpacer}
             onMenuClick={() => setDrawerOpen(true)}
           />
         </Box>
         <Box sx={{ position: 'relative' }}>
           {!hideSpacer && (
             <Box
+              data-testid="HeaderSpacer"
               sx={{
                 height: 80
               }}
@@ -95,35 +68,11 @@ export function Header({
               transitionDuration: '225ms'
             }}
             timeout={{ exit: 2225 }}
-            data-testid="Header"
           >
-            <Stack
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                height: 80,
-                position: bottomBarTrigger ? 'fixed' : 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                width: '100%',
-                zIndex: 3,
-                background: 'transparent',
-                '&::before': {
-                  content: "' '",
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  bottom: 0,
-                  right: 0,
-                  opacity: bottomBarTrigger ? 1 : 0,
-                  ...appBarStyles,
-                  transition: 'opacity 0.3s ease'
-                }
-              }}
-            >
-              <BottomAppBar data-testid="HeaderBottomBar" />
-            </Stack>
+            <BottomAppBar
+              lightTheme={lightTheme}
+              bottomBarTrigger={bottomBarTrigger}
+            />
           </Fade>
         </Box>
       </ThemeProvider>

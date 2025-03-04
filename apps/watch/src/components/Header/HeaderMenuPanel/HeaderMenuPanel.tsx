@@ -50,8 +50,9 @@ export function HeaderMenuPanel({
         spacing={2}
         direction="row"
         sx={{
-          height: { xs: 100, sm: 160 },
-          px: 6,
+          height: { xs: 100, sm: 159 },
+          px: { xs: 8, xl: 3 },
+          pt: { xs: 0, sm: 10 },
           alignItems: 'center',
           justifyContent: { xs: 'space-between', sm: 'flex-end' }
         }}
@@ -109,7 +110,7 @@ export function HeaderMenuPanel({
             aria-label="close drawer"
             edge="start"
             onClick={onClose}
-            sx={{ width: 40, height: 40 }}
+            sx={{ width: 40, height: 40, pr: 0 }}
           >
             <CloseIcon />
           </IconButton>
@@ -118,14 +119,13 @@ export function HeaderMenuPanel({
       <Stack
         direction="column"
         justifyContent="space-between"
-        py={4}
-        sx={{ flexGrow: 1 }}
+        sx={{ flexGrow: 1, py: { xs: 16, md: 4, xl: 0 } }}
       >
         <Stack
           justifyContent="flex-start"
           direction="column"
           sx={{
-            gap: 2
+            gap: 1
           }}
         >
           {headerLinks.map((link) => (
