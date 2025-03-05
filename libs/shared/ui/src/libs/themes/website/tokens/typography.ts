@@ -34,7 +34,7 @@ type ValueOf<T> = T[keyof T]
 const pxToRem = (pixel: number, fontSize: number): number => pixel / fontSize
 
 export const typography = {
-  fontFamily: ['"Apercu", "Arial", sans-serif'].join(','),
+  fontFamily: 'var(--font-apercu-pro)',
   h1: {
     fontWeight: 700,
     fontSize: 36,
@@ -45,7 +45,6 @@ export const typography = {
       letterSpacing: -3
     }
   },
-
   h2: {
     fontWeight: 700,
     fontSize: 27,
@@ -85,9 +84,9 @@ export const typography = {
   },
   // TODO: H6 on Figma?
   h6: {
-    fontWeight: 700,
-    fontSize: 21,
-    lineHeight: pxToRem(27, 21)
+    fontSize: 16,
+    fontWeight: 500,
+    lineHeight: pxToRem(28, 16)
   },
   subtitle1: {
     fontWeight: 500,
@@ -111,15 +110,19 @@ export const typography = {
   body1: {
     fontSize: 16,
     fontWeight: 500,
-    lineHeight: pxToRem(21, 16)
+    lineHeight: pxToRem(28, 16),
+    fontFamily: 'var(--font-noto-serif)'
   },
   body2: {
     fontSize: 14,
     fontWeight: 500,
-    lineHeight: pxToRem(20, 14)
+    lineHeight: pxToRem(20, 14),
+    fontFamily: 'var(--font-noto-serif)'
   },
   // TODO: use same mobile overline styles for both
   overline1: {
+    // overline inherits from body1 so font needs to be overridden
+    fontFamily: 'var(--font-apercu-pro)',
     fontSize: 14,
     fontWeight: 700,
     lineHeight: pxToRem(14, 14),
@@ -131,6 +134,8 @@ export const typography = {
     }
   },
   overline2: {
+    // overline inherits from body1 so font needs to be overridden
+    fontFamily: 'var(--font-apercu-pro)',
     fontSize: 14,
     fontWeight: 700,
     lineHeight: pxToRem(17, 14),

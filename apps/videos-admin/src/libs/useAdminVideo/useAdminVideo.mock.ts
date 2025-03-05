@@ -19,6 +19,7 @@ export const useAdminVideoMock: MockedResponse<
       adminVideo: {
         id: '1_jf-0-0',
         slug: 'jesus',
+        locked: false,
         images: [
           {
             id: '1_jf-0-0.mobileCinematicHigh.jpg',
