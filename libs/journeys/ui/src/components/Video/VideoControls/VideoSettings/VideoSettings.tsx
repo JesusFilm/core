@@ -1,25 +1,13 @@
 import { ReactElement, useState } from 'react'
-import Player from 'video.js/dist/types/player'
+
+import VideoJsPlayer from '../../utils/videoJsTypes'
 
 import { QualityMenu } from './QualityMenu/QualityMenu'
 import { SettingsButton } from './SettingsButton'
 import { SettingsMenu } from './SettingsMenu/SettingsMenu'
-// TODO: extract and put into a utils file
-// TODO: Where is this coming from lol?
-export interface QualityLevels {
-  length: number
-  on: (event: string, callback: () => void) => void
-  off: (event: string, callback: () => void) => void
-  selectedIndex: number
-  [index: number]: {
-    height: number
-    id: number
-    enabled: boolean
-  }
-}
 
 interface VideoSettingsProps {
-  player: Player & { qualityLevels(): QualityLevels }
+  player: VideoJsPlayer
 }
 
 export function VideoSettings({ player }: VideoSettingsProps): ReactElement {

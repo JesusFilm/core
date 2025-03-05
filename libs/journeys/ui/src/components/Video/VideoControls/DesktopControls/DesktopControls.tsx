@@ -10,8 +10,8 @@ import IconButton from '@mui/material/IconButton'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Player from 'video.js/dist/types/player'
 
+import VideoJsPlayer from '../../utils/videoJsTypes'
 import { VideoSettings } from '../VideoSettings'
 
 interface DesktopControlsProps {
@@ -32,7 +32,7 @@ interface DesktopControlsProps {
   showFullscreenButton: boolean
   fullscreen: boolean
   handleFullscreen: () => void
-  player: Player
+  player: VideoJsPlayer
 }
 
 export function DesktopControls({

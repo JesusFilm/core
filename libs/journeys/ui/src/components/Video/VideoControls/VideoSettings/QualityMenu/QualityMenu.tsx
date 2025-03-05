@@ -6,34 +6,8 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
-import Player from 'video.js/dist/types/player'
-import Tech from 'video.js/dist/types/tech/tech'
 
-import { QualityLevels } from '../VideoSettings'
-
-// TODO: extract and put into a utils file
-// TODO: link to docs
-// Since VHS is built into Video.js 7+, we can extend the Tech type
-// with the VHS-specific properties documented in @videojs/http-streaming
-interface Html5 extends Tech {
-  vhs: {
-    playlists: {
-      main: any
-      media: () => any
-    }
-    systemBandwidth: number
-    bandwidth: number
-    throughput: number
-    selectPlaylist: () => any
-    representations: () => any
-    xhr: any
-    stats: any
-    playlistController_?: {
-      fastQualityChange_?: () => void
-    }
-    mediaSource?: MediaSource
-  }
-}
+import VideoJsPlayer from '../../../utils/videoJsTypes'
 
 export interface QualityMenuItem {
   resolution: string
@@ -45,7 +19,7 @@ interface QualityMenuProps {
   open: boolean
   onClose: () => void
   onBack: () => void
-  player: Player & { qualityLevels(): QualityLevels }
+  player: VideoJsPlayer
   onQualityChanged: (quality: string) => void
 }
 
@@ -113,7 +87,7 @@ export function QualityMenu({
 
   const handleQualityChange = (quality: number): void => {
     const qualityLevels = player.qualityLevels()
-    const tech = player.tech() as Html5
+    const tech = player.tech()
     const currentTime = player.currentTime()
     const wasPlaying = !player.paused()
     player.pause()
