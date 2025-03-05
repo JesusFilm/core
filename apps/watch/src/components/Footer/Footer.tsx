@@ -32,28 +32,24 @@ export function Footer(): ReactElement {
           </Stack>
           <Stack direction="row" spacing={4} justifyContent="space-between">
             <Stack direction="row" spacing={10} justifyContent="space-between">
-              <Typography variant="body2">
+              <Typography variant="h6">
                 {t('Copyright © 1995-{{date}}', {
                   date: new Date().getFullYear()
                 })}
               </Typography>
-              <Typography variant="body2">
-                {t('Jesus Film Project®')}
-              </Typography>
-              <Typography variant="body2">
-                {t('All rights reserved')}
-              </Typography>
+              <Typography variant="h6">{t('Jesus Film Project®')}</Typography>
+              <Typography variant="h6">{t('All rights reserved')}</Typography>
             </Stack>
             <Stack direction="row" spacing={4} justifyContent="space-between">
               <FooterLink
                 url="https://www.jesusfilm.org/terms/"
                 label="Terms of use"
-                variant="body2"
+                variant="h6"
               />
               <FooterLink
                 url="https://www.jesusfilm.org/legal/"
                 label="Legal Statement"
-                variant="body2"
+                variant="h6"
               />
             </Stack>
           </Stack>
@@ -70,12 +66,12 @@ export function Footer(): ReactElement {
             alignItems="center"
           >
             <Stack>
-              <Typography variant="body2">
-                {t('Copyright © 1995-2023')}
+              <Typography variant="h6">
+                {t('Copyright © 1995-{{date}}', {
+                  date: new Date().getFullYear()
+                })}
               </Typography>
-              <Typography variant="body2">
-                {t('Jesus Film Project®')}
-              </Typography>
+              <Typography variant="h6">{t('Jesus Film Project®')}</Typography>
             </Stack>
             <FooterLogos />
           </Stack>
@@ -83,13 +79,11 @@ export function Footer(): ReactElement {
             <FooterLink
               url="https://www.jesusfilm.org/legal/"
               label="Legal Statement"
-              variant="body2"
             />
             <Typography variant="body2">{t('All rights reserved')}</Typography>
             <FooterLink
               url="https://www.jesusfilm.org/terms/"
               label="Terms of use"
-              variant="body2"
             />
           </Stack>
         </Stack>

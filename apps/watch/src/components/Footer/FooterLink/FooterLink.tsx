@@ -20,7 +20,7 @@ interface FooterLinkProps {
 export function FooterLink({
   url,
   label,
-  variant = 'body1',
+  variant = 'h6',
   underline = 'none',
   src,
   width,
