@@ -1,10 +1,8 @@
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -54,7 +52,7 @@ export function Footer(): ReactElement {
     <Container
       component="footer"
       maxWidth="xxl"
-      sx={{ backgroundColor: 'background.default', pt: '96px', pb: 10 }}
+      sx={{ backgroundColor: 'background.default', pt: 10, pb: 10 }}
       data-testid="Footer"
     >
       <Stack spacing={7.5}>
