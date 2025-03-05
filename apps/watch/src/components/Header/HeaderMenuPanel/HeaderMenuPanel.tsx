@@ -37,7 +37,7 @@ export function HeaderMenuPanel({
         display: 'flex',
         flexDirection: 'column',
         width: '100%',
-        backgroundColor: 'background.paper',
+        backgroundColor: 'background.default',
         borderTopRightRadius: 0,
         borderBottomRightRadius: 0,
         borderTopLeftRadius: { xs: 0, sm: 4 },

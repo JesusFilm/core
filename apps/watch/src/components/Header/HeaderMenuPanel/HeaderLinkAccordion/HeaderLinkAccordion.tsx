@@ -102,7 +102,7 @@ export function HeaderLinkAccordion({
             my: 5,
             px: 0,
             py: 4,
-            backgroundColor: '#F5F4ED',
+            backgroundColor: 'background.paper',
             '&::after': {
               content: '""',
               position: 'absolute',
@@ -110,7 +110,7 @@ export function HeaderLinkAccordion({
               bottom: 20,
               left: '100%',
               width: '100vw',
-              backgroundColor: '#F5F4ED',
+              backgroundColor: 'background.paper',
               zIndex: 1
             }
           }}
