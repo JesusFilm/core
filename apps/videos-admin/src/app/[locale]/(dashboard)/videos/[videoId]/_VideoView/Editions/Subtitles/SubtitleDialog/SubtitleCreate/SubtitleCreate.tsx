@@ -4,10 +4,12 @@ import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
-import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import {
+  GetAdminVideo_AdminVideo_VideoEdition as Edition,
+  GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle
+} from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useCreateR2AssetMutation } from '../../../../../../../../../../libs/useCreateR2Asset'
 import { useVideo } from '../../../../../../../../../../libs/VideoProvider'
-import { ArrayElement } from '../../../../../../../../../../types/array-types'
 import { SubtitleForm } from '../../SubtitleForm'
 import { SubtitleValidationSchema } from '../../SubtitleForm/SubtitleForm'
 import { getSubtitleR2Path } from '../getSubtitleR2Path'
@@ -40,12 +42,14 @@ export type CreateVideoSubtitle = ResultOf<typeof CREATE_VIDEO_SUBTITLE>
 
 interface SubtitleCreateProps {
   close: () => void
-  edition: ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
+  edition: Edition
+  subtitleLanguagesMap: Map<string, Subtitle>
 }
 
 export function SubtitleCreate({
   close,
-  edition
+  edition,
+  subtitleLanguagesMap
 }: SubtitleCreateProps): ReactElement {
   const video = useVideo()
   const t = useTranslations()
@@ -105,6 +109,7 @@ export function SubtitleCreate({
 
   const handleSubmit = async (values: SubtitleValidationSchema) => {
     if (edition == null || edition.name == null) return
+
     setLoading(true)
     abortController.current = new AbortController()
 
@@ -181,6 +186,7 @@ export function SubtitleCreate({
       if (e.name === 'AbortError' || e.message.includes('aborted')) {
         enqueueSnackbar(t('Subtitle create cancelled.'))
       } else {
+        console.log('here')
         enqueueSnackbar(t('Failed to create subtitle.'), {
           variant: 'error'
         })
@@ -205,6 +211,7 @@ export function SubtitleCreate({
       initialValues={{ language: '', primary: false }}
       onSubmit={handleSubmit}
       loading={loading}
+      subtitleLanguagesMap={subtitleLanguagesMap}
     />
   )
 }

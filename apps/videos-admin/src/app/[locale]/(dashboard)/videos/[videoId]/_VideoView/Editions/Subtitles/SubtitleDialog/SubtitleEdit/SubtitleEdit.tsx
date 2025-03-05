@@ -4,10 +4,12 @@ import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
-import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import {
+  GetAdminVideo_AdminVideo_VideoEdition as Edition,
+  GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle
+} from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useCreateR2AssetMutation } from '../../../../../../../../../../libs/useCreateR2Asset'
 import { useVideo } from '../../../../../../../../../../libs/VideoProvider'
-import { ArrayElement } from '../../../../../../../../../../types/array-types'
 import { SubtitleForm, SubtitleValidationSchema } from '../../SubtitleForm'
 import { getSubtitleR2Path } from '../getSubtitleR2Path'
 
@@ -41,17 +43,16 @@ function extractSubtitleFileName(subtitle: any) {
   return fileName
 }
 
-type Edition = ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
-type Subtitle = ArrayElement<Edition['videoSubtitles']>
-
 interface SubtitleEditProps {
   edition: Edition
   subtitle: Subtitle
+  subtitleLanguagesMap: Map<string, Subtitle>
 }
 
 export function SubtitleEdit({
+  edition,
   subtitle,
-  edition
+  subtitleLanguagesMap
 }: SubtitleEditProps): ReactElement {
   const video = useVideo()
   const t = useTranslations()
@@ -180,6 +181,7 @@ export function SubtitleEdit({
       }}
       onSubmit={handleSubmit}
       loading={loading}
+      subtitleLanguagesMap={subtitleLanguagesMap}
     />
   )
 }

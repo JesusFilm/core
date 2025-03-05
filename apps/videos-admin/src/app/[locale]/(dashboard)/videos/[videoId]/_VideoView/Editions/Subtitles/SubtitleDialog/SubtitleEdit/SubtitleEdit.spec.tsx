@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { NextIntlClientProvider } from 'next-intl'
+import { SnackbarProvider } from 'notistack'
 
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
 
@@ -21,6 +22,13 @@ const unMockedFetch = global.fetch
 const mockVideo = useAdminVideoMock['result']?.['data']?.['adminVideo']
 const mockEdition = mockVideo.videoEditions[0]
 const mockSubtitle = mockEdition.videoSubtitles[0]
+const mockSubtitle2 = mockEdition.videoSubtitles[1]
+
+// Create a mock subtitleLanguagesMap
+const mockSubtitleLanguagesMap = new Map([
+  [mockSubtitle.language.id, mockSubtitle],
+  [mockSubtitle2.language.id, mockSubtitle2]
+])
 
 type EditSubtitleInput = Pick<
   UpdateVideoSubtitleVariables['input'],
@@ -108,7 +116,11 @@ describe('SubtitleEdit', () => {
       <NextIntlClientProvider locale="en">
         <VideoProvider video={mockVideo}>
           <MockedProvider mocks={[]}>
-            <SubtitleEdit subtitle={mockSubtitle} edition={mockEdition} />
+            <SubtitleEdit
+              subtitle={mockSubtitle}
+              edition={mockEdition}
+              subtitleLanguagesMap={mockSubtitleLanguagesMap}
+            />
           </MockedProvider>
         </VideoProvider>
       </NextIntlClientProvider>
@@ -116,6 +128,48 @@ describe('SubtitleEdit', () => {
 
     expect(screen.getByTestId('SubtitleForm')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Update' })).toBeInTheDocument()
+  })
+
+  it('should prevent changing to a language that already has a subtitle', async () => {
+    render(
+      <NextIntlClientProvider locale="en">
+        <SnackbarProvider>
+          <VideoProvider video={mockVideo}>
+            <MockedProvider mocks={[getLanguagesMock]}>
+              <SubtitleEdit
+                subtitle={mockSubtitle}
+                edition={mockEdition}
+                subtitleLanguagesMap={mockSubtitleLanguagesMap}
+              />
+            </MockedProvider>
+          </VideoProvider>
+        </SnackbarProvider>
+      </NextIntlClientProvider>
+    )
+
+    const user = userEvent.setup()
+
+    // The current subtitle's language should be in the dropdown
+    const select = screen.getByRole('combobox', { name: 'Language' })
+    await user.click(select)
+
+    // The language of the current subtitle should be in the dropdown
+    await waitFor(() => {
+      expect(
+        screen.getByRole('option', {
+          name: mockSubtitle.language.name[0].value
+        })
+      ).toBeInTheDocument()
+    })
+
+    // But the language of the other subtitle should not be in the dropdown
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('option', {
+          name: mockSubtitle2.language.name[0].value
+        })
+      ).not.toBeInTheDocument()
+    })
   })
 
   describe('subtitle file upload', () => {
@@ -140,6 +194,7 @@ describe('SubtitleEdit', () => {
                     srtSrc: null
                   }}
                   edition={mockEdition}
+                  subtitleLanguagesMap={mockSubtitleLanguagesMap}
                 />
               </MockedProvider>
             </VideoProvider>
@@ -181,6 +236,7 @@ describe('SubtitleEdit', () => {
                     srtSrc: null
                   }}
                   edition={mockEdition}
+                  subtitleLanguagesMap={mockSubtitleLanguagesMap}
                 />
               </MockedProvider>
             </VideoProvider>
@@ -234,6 +290,7 @@ describe('SubtitleEdit', () => {
                     primary: false
                   }}
                   edition={mockEdition}
+                  subtitleLanguagesMap={mockSubtitleLanguagesMap}
                 />
               </MockedProvider>
             </VideoProvider>
@@ -284,6 +341,7 @@ describe('SubtitleEdit', () => {
                     srtSrc: null
                   }}
                   edition={mockEdition}
+                  subtitleLanguagesMap={mockSubtitleLanguagesMap}
                 />
               </MockedProvider>
             </VideoProvider>
@@ -325,6 +383,7 @@ describe('SubtitleEdit', () => {
                     srtSrc: null
                   }}
                   edition={mockEdition}
+                  subtitleLanguagesMap={mockSubtitleLanguagesMap}
                 />
               </MockedProvider>
             </VideoProvider>
@@ -380,6 +439,7 @@ describe('SubtitleEdit', () => {
                     primary: false
                   }}
                   edition={mockEdition}
+                  subtitleLanguagesMap={mockSubtitleLanguagesMap}
                 />
               </MockedProvider>
             </VideoProvider>

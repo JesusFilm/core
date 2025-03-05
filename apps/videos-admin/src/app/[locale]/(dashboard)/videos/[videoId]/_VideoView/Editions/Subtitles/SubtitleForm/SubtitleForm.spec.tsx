@@ -9,9 +9,16 @@ import { useAdminVideoMock } from '../../../../../../../../../libs/useAdminVideo
 
 import { SubtitleForm } from './SubtitleForm'
 
-const mockSubtitle =
-  useAdminVideoMock['result']?.['data']?.adminVideo.videoEditions[0]
-    .videoSubtitles[0]
+const mockVideo = useAdminVideoMock['result']?.['data']?.adminVideo
+const mockEdition = mockVideo.videoEditions[0]
+const mockSubtitle = mockEdition.videoSubtitles[0]
+const mockSubtitle2 = mockEdition.videoSubtitles[1]
+
+// Create a mock subtitleLanguagesMap
+const mockSubtitleLanguagesMap = new Map([
+  [mockSubtitle.language.id, mockSubtitle],
+  [mockSubtitle2.language.id, mockSubtitle2]
+])
 
 describe('SubtitleForm', () => {
   it('should render as create form', async () => {
@@ -24,6 +31,7 @@ describe('SubtitleForm', () => {
             variant="create"
             initialValues={{ language: '', primary: false, file: null }}
             onSubmit={onSubmit}
+            subtitleLanguagesMap={mockSubtitleLanguagesMap}
           />
         </MockedProvider>
       </NextIntlClientProvider>
@@ -34,7 +42,7 @@ describe('SubtitleForm', () => {
     const languageSelect = screen.getByRole('combobox', { name: 'Language' })
     await user.click(languageSelect)
     await waitFor(async () => {
-      await user.click(screen.getByRole('option', { name: 'English' }))
+      await user.click(screen.getByRole('option', { name: 'Spanish' }))
     })
 
     await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
@@ -49,7 +57,7 @@ describe('SubtitleForm', () => {
 
     expect(onSubmit).toHaveBeenCalledWith(
       {
-        language: '529',
+        language: '528',
         primary: true,
         file
       },
@@ -68,12 +76,14 @@ describe('SubtitleForm', () => {
         <MockedProvider mocks={[getLanguagesMock]}>
           <SubtitleForm
             variant="edit"
+            subtitle={mockSubtitle}
             initialValues={{
               language: mockSubtitle.language.id,
               primary: true,
               file: existingFile
             }}
             onSubmit={onSubmit}
+            subtitleLanguagesMap={mockSubtitleLanguagesMap}
           />
         </MockedProvider>
       </NextIntlClientProvider>
@@ -106,5 +116,79 @@ describe('SubtitleForm', () => {
       },
       expect.any(Object)
     )
+  })
+
+  it('should filter out languages that already have subtitles', async () => {
+    render(
+      <NextIntlClientProvider locale="en">
+        <MockedProvider mocks={[getLanguagesMock]}>
+          <SubtitleForm
+            variant="create"
+            initialValues={{ language: '', primary: false, file: null }}
+            onSubmit={jest.fn()}
+            subtitleLanguagesMap={mockSubtitleLanguagesMap}
+          />
+        </MockedProvider>
+      </NextIntlClientProvider>
+    )
+
+    const user = userEvent.setup()
+
+    const languageSelect = screen.getByRole('combobox', { name: 'Language' })
+    await user.click(languageSelect)
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('option', {
+          name: mockSubtitle.language.name[0].value
+        })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('option', {
+          name: mockSubtitle2.language.name[0].value
+        })
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  it('should include current subtitle language when editing', async () => {
+    render(
+      <NextIntlClientProvider locale="en">
+        <MockedProvider mocks={[getLanguagesMock]}>
+          <SubtitleForm
+            variant="edit"
+            subtitle={mockSubtitle}
+            initialValues={{
+              language: mockSubtitle.language.id,
+              primary: true,
+              file: null
+            }}
+            onSubmit={jest.fn()}
+            subtitleLanguagesMap={mockSubtitleLanguagesMap}
+          />
+        </MockedProvider>
+      </NextIntlClientProvider>
+    )
+
+    const user = userEvent.setup()
+
+    const languageSelect = screen.getByRole('combobox', { name: 'Language' })
+    await user.click(languageSelect)
+
+    // Current subtitle's language should be in the dropdown
+    await waitFor(() => {
+      expect(
+        screen.getByRole('option', {
+          name: mockSubtitle.language.name[0].value
+        })
+      ).toBeInTheDocument()
+    })
+
+    // Other subtitle's language should not be in the dropdown
+    expect(
+      screen.queryByRole('option', {
+        name: mockSubtitle2.language.name[0].value
+      })
+    ).not.toBeInTheDocument()
   })
 })

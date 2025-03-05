@@ -22,10 +22,15 @@ const unMockedFetch = global.fetch
 
 const mockVideo = useAdminVideoMock['result']?.['data']?.['adminVideo']
 const mockEdition = mockVideo?.['videoEditions'][0]
+const mockSubtitle = mockEdition.videoSubtitles[0]
+
+const mockSubtitleLanguagesMap = new Map([
+  [mockSubtitle.language.id, mockSubtitle]
+])
 
 type CreateSubtitleInput = Pick<
   CreateVideoSubtitleVariables['input'],
-  'vttSrc' | 'srtSrc' | 'primary'
+  'vttSrc' | 'srtSrc' | 'primary' | 'languageId'
 >
 
 const getCreateSubtitleMock = <T extends CreateSubtitleInput>(
@@ -38,7 +43,7 @@ const getCreateSubtitleMock = <T extends CreateSubtitleInput>(
         ...input,
         videoId: mockVideo.id,
         edition: 'base',
-        languageId: '529'
+        languageId: input.languageId ?? '529'
       }
     }
   },
@@ -79,9 +84,15 @@ describe('SubtitleCreate', () => {
     render(
       <NextIntlClientProvider locale="en">
         <VideoProvider video={mockVideo}>
-          <MockedProvider mocks={[]}>
-            <SubtitleCreate edition={mockEdition} close={jest.fn()} />
-          </MockedProvider>
+          <SnackbarProvider>
+            <MockedProvider mocks={[]}>
+              <SubtitleCreate
+                edition={mockEdition}
+                close={jest.fn()}
+                subtitleLanguagesMap={mockSubtitleLanguagesMap}
+              />
+            </MockedProvider>
+          </SnackbarProvider>
         </VideoProvider>
       </NextIntlClientProvider>
     )
@@ -94,14 +105,19 @@ describe('SubtitleCreate', () => {
     const createSubtitleMock = getCreateSubtitleMock({
       vttSrc: null,
       srtSrc: null,
-      primary: true
+      primary: true,
+      languageId: '528'
     })
 
     render(
       <NextIntlClientProvider locale="en">
         <VideoProvider video={mockVideo}>
           <MockedProvider mocks={[getLanguagesMock, createSubtitleMock]}>
-            <SubtitleCreate edition={mockEdition} close={jest.fn()} />
+            <SubtitleCreate
+              edition={mockEdition}
+              close={jest.fn()}
+              subtitleLanguagesMap={mockSubtitleLanguagesMap}
+            />
           </MockedProvider>
         </VideoProvider>
       </NextIntlClientProvider>
@@ -112,7 +128,7 @@ describe('SubtitleCreate', () => {
     const select = screen.getByRole('combobox', { name: 'Language' })
     await user.click(select)
     await waitFor(async () => {
-      await user.click(screen.getByRole('option', { name: 'English' }))
+      await user.click(screen.getByRole('option', { name: 'Spanish' }))
     })
     await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
     await user.click(screen.getByRole('button', { name: 'Create' }))
@@ -122,18 +138,54 @@ describe('SubtitleCreate', () => {
     })
   })
 
+  it('should prevent creating a subtitle with a language that already exists', async () => {
+    const close = jest.fn()
+
+    render(
+      <NextIntlClientProvider locale="en">
+        <SnackbarProvider>
+          <VideoProvider video={mockVideo}>
+            <MockedProvider mocks={[getLanguagesMock]}>
+              <SubtitleCreate
+                edition={mockEdition}
+                close={close}
+                subtitleLanguagesMap={mockSubtitleLanguagesMap}
+              />
+            </MockedProvider>
+          </VideoProvider>
+        </SnackbarProvider>
+      </NextIntlClientProvider>
+    )
+
+    const user = userEvent.setup()
+
+    // Try to select the language that already has a subtitle
+    const select = screen.getByRole('combobox', { name: 'Language' })
+    await user.click(select)
+
+    // The language that already has a subtitle should not be in the dropdown
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('option', {
+          name: mockSubtitle.language.name[0].value
+        })
+      ).not.toBeInTheDocument()
+    })
+  })
+
   it('should handle subtitle creation with a vtt file', async () => {
     const createSubtitleMock = getCreateSubtitleMock({
       vttSrc:
-        'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt',
+        'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.vtt',
       srtSrc: null,
-      primary: true
+      primary: true,
+      languageId: '528'
     })
     const createR2SubtitleAssetMock = getCreateR2AssetMock({
       videoId: mockVideo.id,
       contentType: 'text/vtt',
       fileName:
-        '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt',
+        '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.vtt',
       contentLength: 13
     })
 
@@ -147,7 +199,11 @@ describe('SubtitleCreate', () => {
               createSubtitleMock
             ]}
           >
-            <SubtitleCreate edition={mockEdition} close={jest.fn()} />
+            <SubtitleCreate
+              edition={mockEdition}
+              close={jest.fn()}
+              subtitleLanguagesMap={mockSubtitleLanguagesMap}
+            />
           </MockedProvider>
         </VideoProvider>
       </NextIntlClientProvider>
@@ -158,7 +214,7 @@ describe('SubtitleCreate', () => {
     const select = screen.getByRole('combobox', { name: 'Language' })
     await user.click(select)
     await waitFor(async () => {
-      await user.click(screen.getByRole('option', { name: 'English' }))
+      await user.click(screen.getByRole('option', { name: 'Spanish' }))
     })
     await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
 
@@ -180,14 +236,15 @@ describe('SubtitleCreate', () => {
     const createSubtitleMock = getCreateSubtitleMock({
       vttSrc: null,
       srtSrc:
-        'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
-      primary: true
+        'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.srt',
+      primary: true,
+      languageId: '528'
     })
     const createR2SubtitleAssetMock = getCreateR2AssetMock({
       videoId: mockVideo.id,
       contentType: 'application/x-subrip',
       fileName:
-        '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
+        '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.srt',
       contentLength: 13
     })
 
@@ -201,7 +258,11 @@ describe('SubtitleCreate', () => {
               createSubtitleMock
             ]}
           >
-            <SubtitleCreate edition={mockEdition} close={jest.fn()} />
+            <SubtitleCreate
+              edition={mockEdition}
+              close={jest.fn()}
+              subtitleLanguagesMap={mockSubtitleLanguagesMap}
+            />
           </MockedProvider>
         </VideoProvider>
       </NextIntlClientProvider>
@@ -212,7 +273,7 @@ describe('SubtitleCreate', () => {
     const select = screen.getByRole('combobox', { name: 'Language' })
     await user.click(select)
     await waitFor(async () => {
-      await user.click(screen.getByRole('option', { name: 'English' }))
+      await user.click(screen.getByRole('option', { name: 'Spanish' }))
     })
     await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
 
@@ -236,15 +297,16 @@ describe('SubtitleCreate', () => {
     const createSubtitleMock = getCreateSubtitleMock({
       vttSrc: null,
       srtSrc:
-        'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
-      primary: true
+        'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.srt',
+      primary: true,
+      languageId: '528'
     })
 
     const createR2SubtitleAssetMock = getCreateR2AssetMock({
       videoId: mockVideo.id,
       contentType: 'application/x-subrip',
       fileName:
-        '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
+        '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.srt',
       contentLength: 13
     })
 
@@ -270,7 +332,11 @@ describe('SubtitleCreate', () => {
                 createSubtitleMock
               ]}
             >
-              <SubtitleCreate edition={mockEdition} close={jest.fn()} />
+              <SubtitleCreate
+                edition={mockEdition}
+                close={jest.fn()}
+                subtitleLanguagesMap={mockSubtitleLanguagesMap}
+              />
             </MockedProvider>
           </VideoProvider>
         </SnackbarProvider>
@@ -282,7 +348,7 @@ describe('SubtitleCreate', () => {
     const select = screen.getByRole('combobox', { name: 'Language' })
     await user.click(select)
     await waitFor(async () => {
-      await user.click(screen.getByRole('option', { name: 'English' }))
+      await user.click(screen.getByRole('option', { name: 'Spanish' }))
     })
     await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
 
@@ -296,7 +362,9 @@ describe('SubtitleCreate', () => {
 
     await user.click(screen.getByRole('button', { name: 'Create' }))
 
-    expect(screen.getByText('Failed to create subtitle.')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByText('Failed to create subtitle.')).toBeInTheDocument()
+    )
     expect(createSubtitleMock.result).not.toHaveBeenCalled()
   })
 })

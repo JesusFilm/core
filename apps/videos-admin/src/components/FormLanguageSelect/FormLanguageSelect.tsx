@@ -1,6 +1,6 @@
 import TextField from '@mui/material/TextField'
 import { useField } from 'formik'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import {
@@ -11,11 +11,15 @@ import {
 export function FormLanguageSelect({
   name,
   label,
-  initialLanguage
+  initialLanguage,
+  existingLanguages,
+  parentObjectId
 }: {
   name: string
   label: string
   initialLanguage?: LanguageOption
+  existingLanguages?: Map<string, any>
+  parentObjectId?: string
 }): ReactElement {
   // TODO: provide correct languageId
   const { data, loading } = useLanguagesQuery({ languageId: '529' })
@@ -31,12 +35,28 @@ export function FormLanguageSelect({
 
   const hasError = meta.error !== undefined && meta.touched
 
+  const filteredLanguages = useMemo(() => {
+    if (!data?.languages || !existingLanguages) {
+      return data?.languages
+    }
+
+    return data.languages.filter((language) => {
+      if (
+        parentObjectId &&
+        existingLanguages.get(language.id)?.id === parentObjectId
+      ) {
+        return true
+      }
+      return !existingLanguages.has(language.id)
+    })
+  }, [data?.languages, existingLanguages, parentObjectId])
+
   return (
     <LanguageAutocomplete
       value={selectedLanguage}
       onChange={handleChange}
       loading={loading}
-      languages={data?.languages}
+      languages={filteredLanguages}
       renderInput={(params) => (
         <TextField
           {...params}

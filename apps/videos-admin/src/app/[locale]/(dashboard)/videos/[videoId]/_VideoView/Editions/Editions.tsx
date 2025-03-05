@@ -7,14 +7,11 @@ import { ReactElement } from 'react'
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
 import { DialogAction } from '../../../../../../../components/CrudDialog'
-import { GetAdminVideo_AdminVideo_VideoEditions as VideoEditions } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { GetAdminVideo_AdminVideo_VideoEdition as Edition } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useCrudState } from '../../../../../../../libs/useCrudState'
-import { ArrayElement } from '../../../../../../../types/array-types'
 import { Section } from '../Section'
 
 import { EditionCard } from './EditionCard'
-
-type Edition = ArrayElement<VideoEditions>
 
 const EditionDialog = dynamic(
   async () =>
@@ -26,7 +23,7 @@ const EditionDialog = dynamic(
 )
 
 interface EditionsProps {
-  editions: VideoEditions
+  editions: Array<Edition>
 }
 
 export function Editions({ editions }: EditionsProps): ReactElement {

@@ -8,8 +8,7 @@ import { InferType, boolean, mixed, object, string } from 'yup'
 
 import { FormCheckbox } from '../../../../../../../../../components/FormCheckbox'
 import { FormLanguageSelect } from '../../../../../../../../../components/FormLanguageSelect'
-import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { ArrayElement } from '../../../../../../../../../types/array-types'
+import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 import { SubtitleFileUpload } from './SubtitleFileUpload'
 
@@ -25,15 +24,13 @@ export type SubtitleValidationSchema = InferType<
   ReturnType<typeof createValidationSchema>
 >
 
-type Edition = ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
-type Subtitle = ArrayElement<Edition['videoSubtitles']>
-
 interface SubtitleFormProps {
   subtitle?: Subtitle
   variant: 'create' | 'edit'
   initialValues: SubtitleValidationSchema
   onSubmit: (values: SubtitleValidationSchema) => void
   loading?: boolean
+  subtitleLanguagesMap: Map<string, Subtitle>
 }
 
 export function SubtitleForm({
@@ -41,7 +38,8 @@ export function SubtitleForm({
   variant,
   initialValues,
   onSubmit,
-  loading
+  loading,
+  subtitleLanguagesMap
 }: SubtitleFormProps): ReactElement {
   const t = useTranslations()
   const validationSchema = useMemo(() => createValidationSchema(t), [t])
@@ -67,6 +65,8 @@ export function SubtitleForm({
             name="language"
             label={t('Language')}
             initialLanguage={initialLanguage}
+            existingLanguages={subtitleLanguagesMap}
+            parentObjectId={subtitle?.id}
           />
           <FormCheckbox name="primary" label={t('Primary')} />
           <SubtitleFileUpload subtitle={subtitle} />
