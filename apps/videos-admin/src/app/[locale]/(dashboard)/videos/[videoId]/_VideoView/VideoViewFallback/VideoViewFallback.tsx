@@ -1,30 +1,31 @@
 'use client'
 
-import Button from '@mui/material/Button'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import { useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
+import { Fallback } from '../../../../../../../components/Fallback'
+
+const getVideosPath = (url: string | null): string => {
+  if (!url) return '/en/videos'
+
+  const parts = url.split('/')
+  parts.pop()
+  return parts.join('/')
+}
+
 export function VideoViewFallback(): ReactElement {
   const t = useTranslations()
-  const router = useRouter()
+  const pathname = usePathname()
 
   return (
-    <Stack
-      sx={{
-        height: '100%',
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 2
+    <Fallback
+      title={t('Video not found')}
+      subtitle={t('Could not find the video you are looking for')}
+      action={{
+        href: getVideosPath(pathname),
+        label: t('View Videos')
       }}
-    >
-      <Typography variant="h4">{t('Video not found')}</Typography>
-      <Button variant="contained" color="primary" onClick={() => router.back()}>
-        {t('Go Back')}
-      </Button>
-    </Stack>
+    />
   )
 }

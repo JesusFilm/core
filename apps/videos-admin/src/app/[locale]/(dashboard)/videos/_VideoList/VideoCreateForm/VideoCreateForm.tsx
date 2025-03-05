@@ -19,6 +19,7 @@ import {
 import { FormSelectField } from '../../../../../../components/FormSelectField'
 import { FormTextField } from '../../../../../../components/FormTextField'
 import { videoLabels } from '../../../../../../constants'
+import { useCreateEditionMutation } from '../../../../../../libs/useCreateEdition'
 
 enum VideoLabel {
   behindTheScenes = 'behindTheScenes',
@@ -96,6 +97,7 @@ export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
   const pathname = usePathname()
 
   const [createVideo] = useMutation(CREATE_VIDEO)
+  const [createEdition] = useCreateEditionMutation()
 
   const handleSubmit = async (values: InferType<typeof validationSchema>) => {
     await createVideo({
@@ -110,12 +112,29 @@ export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
           childIds: []
         }
       },
-      onCompleted: () => {
-        enqueueSnackbar(t('Successfully created video.'), {
-          variant: 'success'
+      onCompleted: async (data) => {
+        const videoId = data.videoCreate.id
+
+        await createEdition({
+          variables: {
+            input: {
+              videoId,
+              name: 'base'
+            }
+          },
+          onCompleted: () => {
+            enqueueSnackbar(t('Successfully created video.'), {
+              variant: 'success'
+            })
+            close()
+            router.push(`${pathname}/${values.id}`)
+          },
+          onError: () => {
+            enqueueSnackbar(t('Failed to create video edition.'), {
+              variant: 'error'
+            })
+          }
         })
-        close()
-        router.push(`${pathname}/${values.id}`)
       },
       onError: () => {
         // TODO: proper error handling for specific errors
