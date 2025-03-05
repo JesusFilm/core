@@ -88,7 +88,7 @@ export function HeaderTabButtons(): ReactElement {
           top: '-10px',
           pr: { md: '20px' },
           display: { xs: 'flex', lg: 'none' },
-          justifyContent: 'flex-end',
+          justifyContent: 'center',
           width: '100%'
         }}
       >
@@ -125,7 +125,9 @@ export function HeaderTabButtons(): ReactElement {
               selected={router?.pathname?.startsWith(href)}
             >
               <ListItemIcon>{icon}</ListItemIcon>
-              <ListItemText>{t(label)}</ListItemText>
+              <ListItemText primaryTypographyProps={{ variant: 'h6' }}>
+                {t(label)}
+              </ListItemText>
             </MenuItem>
           </NextLink>
         ))}

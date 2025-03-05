@@ -55,7 +55,8 @@ export function LocalAppBar({
               sx={{
                 width: { xs: 126, lg: 186 },
                 mt: { xs: 1.2, lg: 3.5 },
-                mb: { xs: -1.2, lg: -3.5 }
+                mb: { xs: -1.2, lg: -3.5 },
+                zIndex: (theme) => ({ xs: theme.zIndex.drawer + 1, lg: 0 })
               }}
             >
               <Image
