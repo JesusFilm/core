@@ -33,7 +33,7 @@ export function HeaderLinkAccordion({
     return (
       <Stack alignItems="flex-end" sx={{ pr: { xs: 10, xl: 5 } }}>
         <MuiLink
-          variant="h6"
+          variant="h5"
           href={url}
           underline="none"
           rel="noopener"
