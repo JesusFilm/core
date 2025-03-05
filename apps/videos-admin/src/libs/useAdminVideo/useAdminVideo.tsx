@@ -49,6 +49,10 @@ export const GET_ADMIN_VIDEO = graphql(`
         id
         videoId
         slug
+        videoEdition {
+          id
+          name
+        }
         language {
           id
           name {
