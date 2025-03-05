@@ -24,6 +24,14 @@ export function SubtitleCard({
   actions
 }: SubtitleCardProps): ReactElement {
   const t = useTranslations()
+
+  const localName = subtitle?.language?.name?.find(
+    ({ primary }) => !primary
+  )?.value
+  const nativeName = subtitle?.language?.name?.find(
+    ({ primary }) => primary
+  )?.value
+
   return (
     <Box
       sx={{
@@ -47,7 +55,7 @@ export function SubtitleCard({
           justifyContent: 'space-between'
         }}
       >
-        <Typography variant="h6">{subtitle.language.name[0].value}</Typography>
+        <Typography variant="h6">{localName ?? nativeName}</Typography>
         <ActionButton actions={actions} />
       </Stack>
       <Stack direction="row" alignItems="center" gap={1}>

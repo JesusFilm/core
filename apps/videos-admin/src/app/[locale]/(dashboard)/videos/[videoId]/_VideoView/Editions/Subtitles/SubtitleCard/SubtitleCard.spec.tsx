@@ -42,7 +42,9 @@ describe('SubtitleCard', () => {
       </NextIntlClientProvider>
     )
     expect(
-      screen.getByText(mockPrimarySubtitle.language.name[0].value)
+      screen.getByText(
+        mockPrimarySubtitle.language.name.find(({ primary }) => primary)?.value
+      )
     ).toBeInTheDocument()
     expect(screen.getByText('Primary')).toBeInTheDocument()
     expect(screen.getByTestId('ActionButton')).toBeInTheDocument()
