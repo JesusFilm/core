@@ -31,7 +31,7 @@ export function HeaderLinkAccordion({
 }: HeaderLinkAccordionProps): ReactElement {
   if (!subLinks?.length) {
     return (
-      <Stack alignItems="flex-end" sx={{ pr: { xs: 10, xl: 5 } }}>
+      <Stack alignItems="flex-end" sx={{ pr: { xs: 8, lg: 5, xl: 8 } }}>
         <MuiLink
           variant="h5"
           href={url}
@@ -50,7 +50,7 @@ export function HeaderLinkAccordion({
   return (
     <Box
       sx={{
-        pr: { xs: 10, xl: 5 },
+        pr: { xs: 8, lg: 5, xl: 8 },
         '&::after': {
           content: '""',
           position: 'absolute',
