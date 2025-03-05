@@ -33,12 +33,13 @@ export function HeaderLinkAccordion({
     return (
       <Stack alignItems="flex-end" sx={{ pr: { xs: 10, xl: 5 } }}>
         <MuiLink
+          variant="h6"
           href={url}
           underline="none"
           rel="noopener"
           color="text.secondary"
           onClick={onClose}
-          sx={{ fontSize: { xs: 30, sm: 38 }, fontWeight: 700 }}
+          sx={{ fontSize: { xs: 30, sm: 38 } }}
         >
           {label}
         </MuiLink>
@@ -86,9 +87,9 @@ export function HeaderLinkAccordion({
           }}
         >
           <Typography
+            variant="h5"
             sx={{
               fontSize: { xs: 30, sm: 38 },
-              fontWeight: 700,
               color: expanded ? 'primary.main' : 'text.secondary',
               '&:hover': { color: 'primary.main' }
             }}
@@ -98,15 +99,15 @@ export function HeaderLinkAccordion({
         </AccordionSummary>
         <AccordionDetails
           sx={{
-            my: 2,
+            my: 5,
             px: 0,
-            py: { xs: 4, sm: 8 },
+            py: 4,
             backgroundColor: '#F5F4ED',
             '&::after': {
               content: '""',
               position: 'absolute',
-              top: { xs: 47.5, sm: 58 },
-              bottom: 8,
+              top: { xs: 55, sm: 66.5 },
+              bottom: 20,
               left: '100%',
               width: '100vw',
               backgroundColor: '#F5F4ED',
@@ -114,9 +115,15 @@ export function HeaderLinkAccordion({
             }
           }}
         >
-          <Stack spacing={2} alignItems="flex-end">
+          <Stack
+            alignItems="flex-end"
+            sx={{
+              gap: { xs: 4, sm: 3 }
+            }}
+          >
             {subLinks.map((subLink) => (
               <MuiLink
+                variant="h5"
                 key={subLink.label}
                 href={subLink.url}
                 underline="none"
@@ -125,7 +132,6 @@ export function HeaderLinkAccordion({
                 onClick={onClose}
                 sx={{
                   fontSize: { xs: 22, sm: 27 },
-                  fontWeight: 'bold',
                   '&:hover': {
                     color: 'primary.main'
                   }

@@ -93,7 +93,7 @@ export function HeaderMenuPanel({
               }
             }}
           >
-            <Typography sx={{ fontSize: 15, fontWeight: 700 }}>
+            <Typography variant="h6" sx={{ fontSize: 15, fontWeight: 'bold' }}>
               {t('Give Now')}
             </Typography>
           </Button>
@@ -111,9 +111,13 @@ export function HeaderMenuPanel({
       <Stack
         direction="column"
         justifyContent="space-between"
-        sx={{ flexGrow: 1, py: { xs: 16, md: 4, xl: 0 } }}
+        sx={{ flexGrow: 1, py: { xs: 17, md: 2, xl: 0 } }}
       >
-        <Stack justifyContent="flex-start" direction="column" sx={{ gap: 1 }}>
+        <Stack
+          justifyContent="flex-start"
+          direction="column"
+          sx={{ gap: { xs: 2, sm: 1 } }}
+        >
           {headerLinks.map((link) => (
             <HeaderLinkAccordion
               key={link.label}
