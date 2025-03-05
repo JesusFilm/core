@@ -179,7 +179,6 @@ export function Footer(): ReactElement {
               <Typography variant="h6" fontSize={12} lineHeight={1.2}>
                 {t('Orlando, FL, 32832')}
               </Typography>
-              <Typography variant="h6">{t('Jesus Film Project®')}</Typography>
             </Stack>
 
             <Stack>
