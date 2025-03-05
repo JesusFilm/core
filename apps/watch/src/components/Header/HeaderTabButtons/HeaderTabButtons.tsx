@@ -49,7 +49,7 @@ export function HeaderTabButtons(): ReactElement {
       <Box
         data-testid="HeaderTabButtons"
         sx={{
-          display: { xs: 'none', lg: 'flex' },
+          display: { xs: 'none', md: 'flex' },
           width: '100%',
           height: '48px',
           justifyContent: 'space-between',
@@ -87,12 +87,13 @@ export function HeaderTabButtons(): ReactElement {
         sx={{
           top: '-10px',
           pr: { md: '20px' },
-          display: { xs: 'flex', lg: 'none' },
+          display: { xs: 'flex', md: 'none' },
           justifyContent: 'center',
           width: '100%'
         }}
       >
         <Button
+          fullWidth
           data-testid="DropDownButton"
           color="inherit"
           startIcon={<Play1Icon />}
