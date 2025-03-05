@@ -11,15 +11,13 @@ import { useTranslation } from 'next-i18next'
 import { type MouseEvent, type ReactElement, useState } from 'react'
 
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import Calendar2Icon from '@core/shared/ui/icons/Calendar2'
 import ChervonDownIcon from '@core/shared/ui/icons/ChevronDown'
-import Grid1Icon from '@core/shared/ui/icons/Grid1'
 import JourneysIcon from '@core/shared/ui/icons/Journeys'
 import Play1Icon from '@core/shared/ui/icons/Play1'
 import TerminalIcon from '@core/shared/ui/icons/Terminal'
 
 export function HeaderTabButtons(): ReactElement {
-  const { strategies, journeys, calendar, products } = useFlags()
+  const { strategies, journeys } = useFlags()
   const { t } = useTranslation('apps-watch')
   const router = useRouter()
 
@@ -30,13 +28,7 @@ export function HeaderTabButtons(): ReactElement {
     journeys
       ? { label: t('Journeys'), icon: <JourneysIcon />, href: '/journeys' }
       : undefined,
-    { label: t('Videos'), icon: <Play1Icon />, href: '/watch' },
-    calendar
-      ? { label: t('Calendar'), icon: <Calendar2Icon />, href: '/calendar' }
-      : undefined,
-    products
-      ? { label: t('Products'), icon: <Grid1Icon />, href: '/products' }
-      : undefined
+    { label: t('Videos'), icon: <Play1Icon />, href: '/watch' }
   ])
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -58,11 +50,11 @@ export function HeaderTabButtons(): ReactElement {
         data-testid="HeaderTabButtons"
         sx={{
           display: { xs: 'none', lg: 'flex' },
-          pr: { xl: '20px' },
           width: '100%',
           height: '48px',
           justifyContent: 'space-between',
-          gap: '12px' // todo: reduce to 4px on smaller devices
+          gap: { sm: '8px', md: '12px' },
+          alignItems: 'center'
         }}
       >
         {headerItems.map(({ label, icon, href }) => (
@@ -79,7 +71,10 @@ export function HeaderTabButtons(): ReactElement {
                 borderColor:
                   (router?.pathname?.startsWith(href) ?? false)
                     ? (theme) => theme.palette.primary.main
-                    : 'transparent'
+                    : 'transparent',
+                py: { sm: 1 },
+                px: { sm: 2 },
+                fontSize: { sm: '0.875rem', md: '1rem' }
               }}
               startIcon={icon}
             >
@@ -108,9 +103,7 @@ export function HeaderTabButtons(): ReactElement {
             borderStyle: 'solid',
             borderColor: 'text.disabled',
             backgroundColor: 'background.default',
-            '&:hover': {
-              backgroundColor: 'background.default'
-            },
+            '&:hover': { backgroundColor: 'background.default' },
             height: '48px'
           }}
           onClick={handleShowMenu}
@@ -123,13 +116,7 @@ export function HeaderTabButtons(): ReactElement {
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
         keepMounted
-        slotProps={{
-          paper: {
-            style: {
-              width: anchorEl?.clientWidth
-            }
-          }
-        }}
+        slotProps={{ paper: { style: { width: anchorEl?.clientWidth } } }}
       >
         {headerItems.map(({ label, icon, href }) => (
           <NextLink href={href} passHref legacyBehavior key={label}>
@@ -138,7 +125,9 @@ export function HeaderTabButtons(): ReactElement {
               selected={router?.pathname?.startsWith(href)}
             >
               <ListItemIcon>{icon}</ListItemIcon>
-              <ListItemText>{t(label)}</ListItemText>
+              <ListItemText primaryTypographyProps={{ variant: 'h6' }}>
+                {t(label)}
+              </ListItemText>
             </MenuItem>
           </NextLink>
         ))}
