@@ -12,17 +12,7 @@ describe('HeaderMenuPanel', () => {
   it('should render panel', () => {
     render(<HeaderMenuPanel onClose={mockOnClose} />)
 
-    expect(
-      screen.getByRole('button', { name: 'close drawer' })
-    ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Give Now' })).toBeInTheDocument()
-  })
-
-  it('should close panel when close button is clicked', () => {
-    render(<HeaderMenuPanel onClose={mockOnClose} />)
-
-    fireEvent.click(screen.getByRole('button', { name: 'close drawer' }))
-    expect(mockOnClose).toHaveBeenCalledTimes(1)
   })
 
   it('should handle accordion expand and collapse', async () => {

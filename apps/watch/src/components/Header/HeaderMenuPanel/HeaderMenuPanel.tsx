@@ -1,7 +1,5 @@
-import CloseIcon from '@mui/icons-material/Close'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -73,7 +71,8 @@ export function HeaderMenuPanel({
           spacing={2}
           justifyContent="flex-end"
           alignItems="center"
-          py={8}
+          pb={6.5}
+          pr={14}
         >
           <Button
             href="https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now-2/?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=https%3A%2F%2Fwww.jesusfilm.org%2Fcontent%2Fjf%2Fus%2Fdevelopment%2Fspecial%2Fthank-you-refer%2Fsocial-share.html"
@@ -93,19 +92,13 @@ export function HeaderMenuPanel({
               }
             }}
           >
-            <Typography variant="h6" sx={{ fontSize: 15, fontWeight: 'bold' }}>
+            <Typography
+              variant="h6"
+              sx={{ fontSize: 15, fontWeight: 'bold', lineHeight: 1 }}
+            >
               {t('Give Now')}
             </Typography>
           </Button>
-          <IconButton
-            color="inherit"
-            aria-label="close drawer"
-            edge="start"
-            onClick={onClose}
-            sx={{ width: 40, height: 40, pr: 0 }}
-          >
-            <CloseIcon />
-          </IconButton>
         </Stack>
       </Stack>
       <Stack

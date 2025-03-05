@@ -45,7 +45,8 @@ export function Header({
         <Box sx={{ background: 'background.default' }}>
           <LocalAppBar
             hideSpacer={hideSpacer}
-            onMenuClick={() => setDrawerOpen(true)}
+            onMenuClick={() => setDrawerOpen((prev) => !prev)}
+            menuOpen={drawerOpen}
           />
         </Box>
         {shouldShowBottomAppBar && (

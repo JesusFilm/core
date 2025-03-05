@@ -35,4 +35,20 @@ describe('LocalAppBar', () => {
       'https://www.jesusfilm.org/'
     )
   })
+
+  it('should add expanded class to menu button when menuOpen is true', () => {
+    render(<LocalAppBar onMenuClick={mockOnMenuClick} menuOpen />)
+
+    const menuButton = screen.getByRole('button', { name: 'open header menu' })
+    expect(menuButton).toHaveClass('expanded')
+    expect(menuButton).toHaveAttribute('aria-expanded', 'true')
+  })
+
+  it('should not add expanded class to menu button when menuOpen is false', () => {
+    render(<LocalAppBar onMenuClick={mockOnMenuClick} menuOpen={false} />)
+
+    const menuButton = screen.getByRole('button', { name: 'open header menu' })
+    expect(menuButton).not.toHaveClass('expanded')
+    expect(menuButton).toHaveAttribute('aria-expanded', 'false')
+  })
 })
