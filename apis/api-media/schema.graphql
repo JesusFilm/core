@@ -48,6 +48,8 @@ type CloudflareImage {
 
 type CloudflareR2 {
   id: ID!
+  contentLength: Int!
+  contentType: String!
   fileName: String!
   uploadUrl: String
   userId: ID!
@@ -59,11 +61,14 @@ type CloudflareR2 {
 input CloudflareR2CreateInput {
   id: String
 
-  """the name of the file that is being uploaded"""
-  fileName: String!
+  """the size of the file that is being uploaded"""
+  contentLength: Int!
 
   """the type of file that is being uploaded. e.g. image or video/mp4"""
   contentType: String!
+
+  """the name of the file that is being uploaded"""
+  fileName: String!
 
   """the id of the Video object this file relates to in the database"""
   videoId: String!
@@ -129,9 +134,6 @@ type Language
   @extends
 {
   id: ID! @external
-  seriesCount: Int!
-  featureFilmCount: Int!
-  shortFilmCount: Int!
   labeledVideoCounts: LabeledVideoCounts!
 }
 
@@ -145,6 +147,9 @@ enum MediaRole {
 }
 
 type Mutation {
+  """Transcode an asset. Returns the bullmq job ID."""
+  transcodeAsset(input: TranscodeVideoInput!): String
+  getTranscodeAssetProgress(jobId: String!): Int
   createCloudflareUploadByFile(input: ImageInput): CloudflareImage!
   createCloudflareUploadByUrl(url: String!, input: ImageInput): CloudflareImage!
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
@@ -570,6 +575,14 @@ type TaxonomyName {
   label: String!
   language: Language!
   taxonomy: Taxonomy!
+}
+
+input TranscodeVideoInput {
+  r2AssetId: String!
+  resolution: String!
+  videoBitrate: String
+  outputFilename: String!
+  outputPath: String!
 }
 
 enum UnsplashColor {

@@ -76,7 +76,8 @@ export function Video({
   posterBlockId,
   children,
   action,
-  objectFit
+  objectFit,
+  videoVariantLanguageId
 }: TreeBlock<VideoFields>): ReactElement {
   const theme = useTheme()
   const hundredVh = use100vh()
@@ -152,6 +153,12 @@ export function Video({
     source === VideoBlockSource.internal ||
     source === VideoBlockSource.mux
 
+  const effectiveStartAt = startAt ?? 0
+  const effectiveEndAt = endAt ?? 10000
+  // Mux video clipping handles timestamps internally, so videos must start at 0 to avoid extra clipping
+  const videoControlsStartAt =
+    mediaVideo?.__typename === 'MuxVideo' ? 0 : effectiveStartAt
+
   useEffect(() => {
     setActiveStep(isActiveBlockOrDescendant(blockId))
   }, [blockId, blockHistory])
@@ -201,8 +208,8 @@ export function Video({
         selectedBlock={selectedBlock}
         blockId={blockId}
         muted={muted}
-        startAt={startAt}
-        endAt={endAt}
+        startAt={videoControlsStartAt}
+        endAt={effectiveEndAt}
         autoplay={autoplay}
         posterBlock={posterBlock}
         setLoading={setLoading}
@@ -210,6 +217,9 @@ export function Video({
         setVideoEndTime={setVideoEndTime}
         source={source}
         activeStep={activeStep}
+        title={title}
+        mediaVideo={mediaVideo}
+        videoVariantLanguageId={videoVariantLanguageId}
       />
       {activeStep &&
         player != null &&
@@ -221,7 +231,7 @@ export function Video({
             videoTitle={eventVideoTitle}
             source={source}
             videoId={eventVideoId}
-            startAt={startAt}
+            startAt={videoControlsStartAt}
             endAt={videoEndTime}
             action={action}
           />
@@ -275,14 +285,14 @@ export function Video({
               {source === VideoBlockSource.youTube && (
                 <source
                   src={`https://www.youtube.com/embed/${videoId}?start=${
-                    startAt ?? 0
-                  }&end=${endAt ?? 0}`}
+                    effectiveStartAt
+                  }&end=${effectiveEndAt}`}
                   type="video/youtube"
                 />
               )}
               {mediaVideo?.__typename === 'MuxVideo' && (
                 <source
-                  src={`https://stream.mux.com/${mediaVideo.playbackId}.m3u8`}
+                  src={`https://stream.mux.com/${mediaVideo.playbackId}.m3u8?asset_start_time=${effectiveStartAt}&asset_end_time=${effectiveEndAt}`}
                   type="application/x-mpegURL"
                 />
               )}
@@ -292,7 +302,7 @@ export function Video({
             <ThemeProvider theme={{ ...theme, direction: 'ltr' }}>
               <VideoControls
                 player={player}
-                startAt={startAt ?? 0}
+                startAt={videoControlsStartAt}
                 endAt={videoEndTime}
                 isYoutube={source === VideoBlockSource.youTube}
                 loading={loading}

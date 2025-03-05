@@ -391,6 +391,11 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Allow current user to update specific allowable fields of their visitor record
   """
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS) 
+  """
+  Transcode an asset. Returns the bullmq job ID.
+  """
+  transcodeAsset(input: TranscodeVideoInput!) : String @join__field(graph: API_MEDIA) 
+  getTranscodeAssetProgress(jobId: String!) : Int @join__field(graph: API_MEDIA) 
   createCloudflareUploadByFile(input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareUploadByUrl(url: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
@@ -1215,9 +1220,6 @@ type Language @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @joi
   name(languageId: ID, primary: Boolean) : [LanguageName!]! @join__field(graph: API_LANGUAGES) 
   countryLanguages: [CountryLanguage!]! @join__field(graph: API_LANGUAGES) 
   audioPreview: AudioPreview @join__field(graph: API_LANGUAGES) 
-  seriesCount: Int! @join__field(graph: API_MEDIA) 
-  featureFilmCount: Int! @join__field(graph: API_MEDIA) 
-  shortFilmCount: Int! @join__field(graph: API_MEDIA) 
   labeledVideoCounts: LabeledVideoCounts! @join__field(graph: API_MEDIA) 
 }
 
@@ -2260,6 +2262,8 @@ type CloudflareImage @join__type(graph: API_MEDIA)  {
 
 type CloudflareR2 @join__type(graph: API_MEDIA)  {
   id: ID!
+  contentLength: Int!
+  contentType: String!
   fileName: String!
   uploadUrl: String
   userId: ID!
@@ -4131,13 +4135,17 @@ input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
 input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   id: String
   """
-  the name of the file that is being uploaded
+  the size of the file that is being uploaded
   """
-  fileName: String!
+  contentLength: Int!
   """
   the type of file that is being uploaded. e.g. image or video/mp4
   """
   contentType: String!
+  """
+  the name of the file that is being uploaded
+  """
+  fileName: String!
   """
   the id of the Video object this file relates to in the database
   """
@@ -4197,6 +4205,14 @@ input MutationShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
   the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
   """
   to: String!
+}
+
+input TranscodeVideoInput @join__type(graph: API_MEDIA)  {
+  r2AssetId: String!
+  resolution: String!
+  videoBitrate: String
+  outputFilename: String!
+  outputPath: String!
 }
 
 input VideoCreateInput @join__type(graph: API_MEDIA)  {

@@ -319,6 +319,8 @@ export type CloudflareImage = {
 
 export type CloudflareR2 = {
   __typename?: 'CloudflareR2';
+  contentLength: Scalars['Int']['output'];
+  contentType: Scalars['String']['output'];
   createdAt: Scalars['Date']['output'];
   fileName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
@@ -329,6 +331,8 @@ export type CloudflareR2 = {
 };
 
 export type CloudflareR2CreateInput = {
+  /** the size of the file that is being uploaded */
+  contentLength: Scalars['Int']['input'];
   /** the type of file that is being uploaded. e.g. image or video/mp4 */
   contentType: Scalars['String']['input'];
   /** the name of the file that is being uploaded */
@@ -1121,13 +1125,10 @@ export type Language = {
   audioPreview?: Maybe<AudioPreview>;
   bcp47?: Maybe<Scalars['String']['output']>;
   countryLanguages: Array<CountryLanguage>;
-  featureFilmCount: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
   labeledVideoCounts: LabeledVideoCounts;
   name: Array<LanguageName>;
-  seriesCount: Scalars['Int']['output'];
-  shortFilmCount: Scalars['Int']['output'];
   slug?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1264,6 +1265,7 @@ export type Mutation = {
   customDomainUpdate: CustomDomain;
   deleteCloudflareImage: Scalars['Boolean']['output'];
   deleteMuxVideo: Scalars['Boolean']['output'];
+  getTranscodeAssetProgress?: Maybe<Scalars['Int']['output']>;
   hostCreate: Host;
   hostDelete: Host;
   hostUpdate: Host;
@@ -1340,6 +1342,8 @@ export type Mutation = {
   textResponseBlockCreate: TextResponseBlock;
   textResponseBlockUpdate?: Maybe<TextResponseBlock>;
   textResponseSubmissionEventCreate: TextResponseSubmissionEvent;
+  /** Transcode an asset. Returns the bullmq job ID. */
+  transcodeAsset?: Maybe<Scalars['String']['output']>;
   triggerUnsplashDownload: Scalars['Boolean']['output'];
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
@@ -1601,6 +1605,11 @@ export type MutationDeleteCloudflareImageArgs = {
 
 export type MutationDeleteMuxVideoArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationGetTranscodeAssetProgressArgs = {
+  jobId: Scalars['String']['input'];
 };
 
 
@@ -1914,6 +1923,11 @@ export type MutationTextResponseBlockUpdateArgs = {
 
 export type MutationTextResponseSubmissionEventCreateArgs = {
   input: TextResponseSubmissionEventCreateInput;
+};
+
+
+export type MutationTranscodeAssetArgs = {
+  input: TranscodeVideoInput;
 };
 
 
@@ -3635,6 +3649,14 @@ export enum ThemeMode {
 export enum ThemeName {
   Base = 'base'
 }
+
+export type TranscodeVideoInput = {
+  outputFilename: Scalars['String']['input'];
+  outputPath: Scalars['String']['input'];
+  r2AssetId: Scalars['String']['input'];
+  resolution: Scalars['String']['input'];
+  videoBitrate?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type Translation = {
   __typename?: 'Translation';
