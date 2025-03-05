@@ -64,7 +64,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           protocol      = "tcp"
         }
       ]
-      secrets = concat([
+      secrets = concat(concat([
         for param in aws_ssm_parameter.parameters : {
           name      = param.tags.name
           valueFrom = param.arn
@@ -74,7 +74,16 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           name      = "DD_API_KEY"
           valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/DATADOG_API_KEY"
         }
-      ])
+        ]), var.include_aws_env_vars ? [
+        {
+          name  = "AWS_ACCESS_KEY_ID",
+          valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/AWS_ACCESS_KEY_ID"
+        },
+        {
+          name  = "AWS_SECRET_ACCESS_KEY",
+          valueFrom = "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/terraform/prd/AWS_SECRET_ACCESS_KEY"
+        }
+      ] : [])
       logConfiguration = {
         logDriver = "awsfirelens"
         options = {
@@ -95,7 +104,7 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
           }
         ]
       }
-      environment = [
+      environment = concat([
         {
           name  = "NODE_ENV",
           value = "production"
@@ -107,8 +116,17 @@ resource "aws_ecs_task_definition" "ecs_task_definition" {
         {
           name  = "SERVICE_ENV",
           value = var.env
-        }
-      ]
+        }],
+        var.include_aws_env_vars ? [
+          {
+            name  = "AWS_REGION",
+            value = data.aws_region.current.name
+          },
+          {
+            name  = "ECS_CLUSTER",
+            value = var.ecs_config.cluster.name
+          }
+      ] : [])
       mountPoints = []
       volumesFrom = []
     },

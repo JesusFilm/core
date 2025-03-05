@@ -77,3 +77,8 @@ variable "host_name" {
   type    = string
   default = null
 }
+
+variable "include_aws_env_vars" {
+  type    = bool
+  default = false
+}
