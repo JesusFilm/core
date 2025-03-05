@@ -38,6 +38,7 @@ export function Header({
   })
 
   const shouldShowBottomAppBar = strategies || journeys
+  const shouldFade = hideAbsoluteAppBar !== true || bottomBarTrigger
 
   return (
     <>
@@ -56,12 +57,9 @@ export function Header({
             )}
             <Fade
               appear={false}
-              in={hideAbsoluteAppBar !== true || bottomBarTrigger}
+              in={shouldFade}
               style={{
-                transitionDelay:
-                  hideAbsoluteAppBar !== true || bottomBarTrigger
-                    ? undefined
-                    : '2s',
+                transitionDelay: shouldFade ? undefined : '2s',
                 transitionDuration: '225ms'
               }}
               timeout={{ exit: 2225 }}
