@@ -39,13 +39,7 @@ const stories = [
 ]
 
 const config: StorybookConfig = {
-  staticDirs: [
-    './static',
-    {
-      from: '../apps/watch/public/watch/assets/fonts',
-      to: '/watch/assets/fonts'
-    }
-  ],
+  staticDirs: ['./static'],
 
   stories,
 
