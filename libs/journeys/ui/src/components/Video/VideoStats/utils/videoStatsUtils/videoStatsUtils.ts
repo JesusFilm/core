@@ -13,6 +13,11 @@ export interface Vhs {
   streamBitrate?: number
 }
 
+/**
+ * Formats a TimeRanges object into a readable string
+ * @param timeRanges The TimeRanges object to format
+ * @returns A string representation of the time ranges
+ */
 export function formatTimeRanges(timeRanges?: TimeRanges | null): string {
   if (!timeRanges) return '-'
 
@@ -25,12 +30,21 @@ export function formatTimeRanges(timeRanges?: TimeRanges | null): string {
   return ranges.join(', ')
 }
 
+/**
+ * Formats seconds into a MM:SS format
+ * @param seconds The number of seconds to format
+ * @returns A string in MM:SS format
+ */
 export function formatTime(seconds: number): string {
   const minutes = Math.floor(seconds / 60)
   const remainingSeconds = Math.floor(seconds % 60)
   return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
 }
 
+/**
+ * Gets the current video quality as a string in the format "widthxheight"
+ * @returns The current video quality or an empty string if not available
+ */
 export function getCurrentQuality(): string {
   const videoEl = document.querySelector('video')
   if (!videoEl) return ''
@@ -40,6 +54,11 @@ export function getCurrentQuality(): string {
   return width && height ? `${width}x${height}` : ''
 }
 
+/**
+ * Gets the current frame rate of the video
+ * @param player The video.js player instance
+ * @returns The frame rate as a number or a string message if not available
+ */
 export function getLiveFrameRate(player: Player): string | number {
   const videoEl = player.el().querySelector('video')
   if (!videoEl) return 'No video element'
