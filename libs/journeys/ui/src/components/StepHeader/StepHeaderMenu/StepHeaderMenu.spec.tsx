@@ -34,7 +34,8 @@ describe('StepHeaderMenu', () => {
     it('should not render menu icon when icon is null', () => {
       const journey = {
         ...defaultJourney,
-        menuButtonIcon: null
+        menuButtonIcon: null,
+        showMenu: true
       }
 
       render(
@@ -54,7 +55,8 @@ describe('StepHeaderMenu', () => {
       const journey = {
         ...defaultJourney,
         menuButtonIcon: JourneyMenuButtonIcon.home3,
-        menuStepBlock: menuStep
+        menuStepBlock: menuStep,
+        showMenu: true
       }
 
       render(
@@ -66,7 +68,26 @@ describe('StepHeaderMenu', () => {
       const button = screen.getByRole('button')
 
       expect(button).toBeInTheDocument()
+      expect(button).not.toBeDisabled()
       expect(within(button).getByTestId('Home3Icon')).toBeInTheDocument()
+    })
+
+    it('should not render fallback when showMenu is false', () => {
+      const journey = {
+        ...defaultJourney,
+        menuButtonIcon: JourneyMenuButtonIcon.home3,
+        menuStepBlock: menuStep,
+        showMenu: false
+      }
+
+      render(
+        <JourneyProvider value={{ journey, variant: 'default' }}>
+          <StepHeaderMenu />
+        </JourneyProvider>
+      )
+
+      expect(screen.queryByTestId('Menu1Icon')).not.toBeInTheDocument()
+      expect(screen.queryByTestId('Home3Icon')).not.toBeInTheDocument()
     })
 
     it('should render close icon for menu card', () => {
@@ -74,6 +95,7 @@ describe('StepHeaderMenu', () => {
         ...defaultJourney,
         menuStepBlock: menuStep,
         menuButtonIcon: JourneyMenuButtonIcon.home3,
+        showMenu: true,
         blocks: [menuStep]
       }
 
@@ -97,7 +119,8 @@ describe('StepHeaderMenu', () => {
       const journey = {
         ...defaultJourney,
         menuStepBlock: menuStep,
-        menuButtonIcon: JourneyMenuButtonIcon.home3
+        menuButtonIcon: JourneyMenuButtonIcon.home3,
+        showMenu: true
       }
 
       render(
@@ -123,6 +146,7 @@ describe('StepHeaderMenu', () => {
         ...defaultJourney,
         menuStepBlock: menuStep,
         menuButtonIcon: JourneyMenuButtonIcon.home3,
+        showMenu: true,
         blocks: [menuStep]
       }
 
@@ -139,7 +163,7 @@ describe('StepHeaderMenu', () => {
   })
 
   describe('Admin', () => {
-    it('should render placeholder', () => {
+    it('should render fallback when showMenu is falsy', () => {
       const journey = {
         ...defaultJourney,
         menuButtonIcon: null
@@ -157,7 +181,8 @@ describe('StepHeaderMenu', () => {
     it('should render menu icon', () => {
       const journey = {
         ...defaultJourney,
-        menuButtonIcon: JourneyMenuButtonIcon.home3
+        menuButtonIcon: JourneyMenuButtonIcon.home3,
+        showMenu: true
       }
 
       render(
@@ -166,14 +191,18 @@ describe('StepHeaderMenu', () => {
         </JourneyProvider>
       )
 
-      expect(screen.queryByRole('button')).not.toBeInTheDocument()
-      expect(screen.getByTestId('Home3Icon')).toBeInTheDocument()
+      const button = screen.getByRole('button')
+
+      expect(button).toBeInTheDocument()
+      expect(button).toBeDisabled()
+      expect(within(button).getByTestId('Home3Icon')).toBeInTheDocument()
     })
 
     it('should not navigate when clicked', () => {
       const journey = {
         ...defaultJourney,
-        menuButtonIcon: JourneyMenuButtonIcon.home3
+        menuButtonIcon: JourneyMenuButtonIcon.home3,
+        showMenu: true
       }
 
       render(

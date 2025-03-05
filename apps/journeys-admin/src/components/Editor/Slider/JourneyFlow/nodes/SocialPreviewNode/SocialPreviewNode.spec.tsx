@@ -90,7 +90,13 @@ describe('SocialPreviewNode', () => {
     displayTitle: null,
     logoImageBlock: null,
     menuButtonIcon: null,
-    menuStepBlock: null
+    menuStepBlock: null,
+    showHosts: null,
+    showChatButtons: null,
+    showReactionButtons: null,
+    showLogo: null,
+    showMenu: null,
+    showDisplayTitle: null
   }
 
   const blankSeoJourney: Journey = {
