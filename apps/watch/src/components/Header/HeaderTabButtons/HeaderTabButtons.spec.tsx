@@ -40,8 +40,6 @@ describe('HeaderTabButtons', () => {
       expect(screen.getByTestId('ResourcesButton')).toBeInTheDocument()
       expect(screen.getByTestId('JourneysButton')).toBeInTheDocument()
       expect(screen.getByTestId('VideosButton')).toBeInTheDocument()
-      expect(screen.getByTestId('CalendarButton')).toBeInTheDocument()
-      expect(screen.getByTestId('ProductsButton')).toBeInTheDocument()
     })
 
     it('buttons should have correct links', () => {
@@ -61,14 +59,6 @@ describe('HeaderTabButtons', () => {
       expect(screen.getByTestId('VideosButton')).toHaveAttribute(
         'href',
         '/watch'
-      )
-      expect(screen.getByTestId('CalendarButton')).toHaveAttribute(
-        'href',
-        '/calendar'
-      )
-      expect(screen.getByTestId('ProductsButton')).toHaveAttribute(
-        'href',
-        '/products'
       )
     })
 
@@ -137,12 +127,6 @@ describe('HeaderTabButtons', () => {
       expect(
         screen.getByRole('menuitem', { name: 'Videos' })
       ).toBeInTheDocument()
-      expect(
-        screen.getByRole('menuitem', { name: 'Calendar' })
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('menuitem', { name: 'Products' })
-      ).toBeInTheDocument()
     })
 
     it('menu buttons should have correct links', () => {
@@ -163,12 +147,6 @@ describe('HeaderTabButtons', () => {
         'href',
         '/watch'
       )
-      expect(
-        screen.getByRole('menuitem', { name: 'Calendar' })
-      ).toHaveAttribute('href', '/calendar')
-      expect(
-        screen.getByRole('menuitem', { name: 'Products' })
-      ).toHaveAttribute('href', '/products')
     })
 
     it('should have Videos as name of dropdown button when on /watch', () => {

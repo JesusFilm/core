@@ -11,7 +11,7 @@ const palette = {
 export const websiteColorsLight: Required<Pick<ThemeOptions, 'palette'>> = {
   palette: {
     mode: 'light',
-    background: { default: palette[0] },
+    background: { default: palette[0], paper: '#F5F4ED' },
     primary: {
       main: '#CB333B',
       light: '#F8485E',

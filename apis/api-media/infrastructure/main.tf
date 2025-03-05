@@ -15,4 +15,5 @@ module "ecs-task" {
   alb_listener_arn      = module.alb-listener.arn
   alb_dns_name          = var.alb.dns_name
   dd_source             = "graphql-yoga"
+  include_aws_env_vars  = true
 }

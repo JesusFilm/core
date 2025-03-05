@@ -7,6 +7,7 @@ import useMediaQuery from '@mui/material/useMediaQuery'
 import useScrollTrigger from '@mui/material/useScrollTrigger'
 import { ReactElement, useState } from 'react'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
@@ -29,52 +30,47 @@ export function Header({
   const theme = useTheme()
   const isXS = useMediaQuery(theme.breakpoints.only('xs'))
   const lightTheme = themeMode === ThemeMode.light
+  const { strategies, journeys } = useFlags()
 
   const bottomBarTrigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: isXS ? 100 : 159
   })
 
+  const shouldShowBottomAppBar = strategies || journeys
+  const shouldFade = hideAbsoluteAppBar !== true || bottomBarTrigger
+
   return (
     <>
       <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
-        <Box
-          sx={{
-            background: 'background.default'
-          }}
-        >
+        <Box sx={{ background: 'background.default' }}>
           <LocalAppBar
             hideSpacer={hideSpacer}
-            onMenuClick={() => setDrawerOpen(true)}
+            onMenuClick={() => setDrawerOpen((prev) => !prev)}
+            menuOpen={drawerOpen}
           />
         </Box>
-        <Box sx={{ position: 'relative' }}>
-          {!hideSpacer && (
-            <Box
-              data-testid="HeaderSpacer"
-              sx={{
-                height: 80
+        {shouldShowBottomAppBar && (
+          <Box sx={{ position: 'relative' }}>
+            {!hideSpacer && (
+              <Box data-testid="HeaderSpacer" sx={{ height: 80 }} />
+            )}
+            <Fade
+              appear={false}
+              in={shouldFade}
+              style={{
+                transitionDelay: shouldFade ? undefined : '2s',
+                transitionDuration: '225ms'
               }}
-            />
-          )}
-          <Fade
-            appear={false}
-            in={hideAbsoluteAppBar !== true || bottomBarTrigger}
-            style={{
-              transitionDelay:
-                hideAbsoluteAppBar !== true || bottomBarTrigger
-                  ? undefined
-                  : '2s',
-              transitionDuration: '225ms'
-            }}
-            timeout={{ exit: 2225 }}
-          >
-            <BottomAppBar
-              lightTheme={lightTheme}
-              bottomBarTrigger={bottomBarTrigger}
-            />
-          </Fade>
-        </Box>
+              timeout={{ exit: 2225 }}
+            >
+              <BottomAppBar
+                lightTheme={lightTheme}
+                bottomBarTrigger={bottomBarTrigger}
+              />
+            </Fade>
+          </Box>
+        )}
       </ThemeProvider>
       <ThemeProvider
         themeName={ThemeName.website}
@@ -87,11 +83,7 @@ export function Header({
           onClose={() => setDrawerOpen(false)}
           onOpen={() => setDrawerOpen(true)}
           slotProps={{
-            backdrop: {
-              sx: {
-                backgroundColor: 'rgba(0, 0, 0, 0.13)'
-              }
-            }
+            backdrop: { sx: { backgroundColor: 'rgba(0, 0, 0, 0.13)' } }
           }}
           PaperProps={{
             sx: {
@@ -103,7 +95,7 @@ export function Header({
           }}
         >
           <Container
-            maxWidth="xl"
+            maxWidth="xxl"
             disableGutters
             sx={{
               minHeight: '100%',
@@ -112,12 +104,7 @@ export function Header({
               position: 'relative'
             }}
           >
-            <Box
-              sx={{
-                minHeight: '100%',
-                width: { xs: '100%', md: 500 }
-              }}
-            >
+            <Box sx={{ minHeight: '100%', width: { xs: '100%', lg: 530 } }}>
               <HeaderMenuPanel onClose={() => setDrawerOpen(false)} />
             </Box>
           </Container>
