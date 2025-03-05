@@ -47,16 +47,17 @@ export function FileUpload({
   const noBorder = loading != null && loading
 
   const getDragStyles = () => {
-    if (isDragAccept)
+    if (isDragAccept) {
       return {
         bgcolor: ({ palette }) => alpha(palette.success.light, 0.25),
         borderColor: 'success.main'
       }
-    if (isDragReject)
+    } else if (isDragReject) {
       return {
         bgcolor: ({ palette }) => alpha(palette.error.light, 0.25),
         borderColor: 'error.main'
       }
+    }
     return { bgcolor: 'background.paper', borderColor: 'divider' }
   }
 

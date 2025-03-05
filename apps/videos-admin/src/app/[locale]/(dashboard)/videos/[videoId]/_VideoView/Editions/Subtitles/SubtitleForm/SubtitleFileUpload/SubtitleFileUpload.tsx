@@ -81,10 +81,13 @@ export function SubtitleFileUpload({ subtitle }: { subtitle?: Subtitle }) {
           'application/x-subrip': ['.srt']
         }}
         loading={false}
-        noClick={false}
       />
       {field.value ? (
-        <File file={field.value} actions={{ onDelete: handleDelete }} />
+        <File
+          file={field.value}
+          type="text"
+          actions={{ onDelete: handleDelete }}
+        />
       ) : subtitle?.value ? (
         <LinkFile
           name={subtitle.value.split('/').pop() ?? ''}

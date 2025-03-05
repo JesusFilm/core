@@ -7,7 +7,7 @@ const file = new File(['test'], 'test.txt', { type: 'text/vtt' })
 
 describe('File', () => {
   it('should render without actions', () => {
-    render(<FileComponent file={file} />)
+    render(<FileComponent file={file} type="text" />)
 
     expect(screen.getByText('test.txt')).toBeInTheDocument()
     expect(
@@ -24,7 +24,13 @@ describe('File', () => {
   it('should render with actions', () => {
     const onDelete = jest.fn()
     const onDownload = jest.fn()
-    render(<FileComponent file={file} actions={{ onDelete, onDownload }} />)
+    render(
+      <FileComponent
+        file={file}
+        type="text"
+        actions={{ onDelete, onDownload }}
+      />
+    )
 
     expect(screen.getByText('test.txt')).toBeInTheDocument()
     expect(
@@ -44,7 +50,7 @@ describe('File', () => {
     })
 
     it('should render', () => {
-      render(<FileComponent file={textFile} />)
+      render(<FileComponent file={textFile} type="text" />)
 
       expect(screen.getByText('test.txt')).toBeInTheDocument()
       expect(screen.getByTestId('EyeOpenIcon')).toBeInTheDocument()
@@ -54,7 +60,7 @@ describe('File', () => {
     })
 
     it('should open text preview', async () => {
-      render(<FileComponent file={textFile} />)
+      render(<FileComponent file={textFile} type="text" />)
       const user = userEvent.setup()
 
       const button = screen.getByRole('button', { name: 'view-file' })

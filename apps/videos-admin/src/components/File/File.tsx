@@ -3,7 +3,7 @@ import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import Download2 from '@core/shared/ui/icons/Download2'
@@ -17,49 +17,29 @@ import { bytesToSize } from '../../app/[locale]/(dashboard)/videos/[videoId]/_Vi
 
 import { TextPreview } from './TextPreview'
 
-export function File({
-  file,
-  actions
-}: {
+interface FileProps {
   file: File
+  type: 'text' | 'image' | 'video'
   actions?: {
     onDelete?: () => void
     onDownload?: () => void
   }
-  downloadable?: boolean
-}): ReactElement {
-  const [type, setType] = useState<'text' | 'image' | 'video' | null>(null)
+}
+
+export function File({ file, type, actions }: FileProps): ReactElement {
   const [show, setShow] = useState<boolean>(false)
 
-  useEffect(() => {
-    if (file.type != null) {
-      switch (true) {
-        case file.type.startsWith('image/'):
-          setType('image')
-          break
-        case file.type.startsWith('text/'):
-          setType('text')
-          break
-        case file.type.startsWith('video/'):
-          setType('video')
-          break
-        default:
-          setType(null)
-      }
+  const getFileIcon = (): ReactElement => {
+    switch (type) {
+      case 'image':
+        return <Image3 />
+      case 'text':
+        return <File5 />
+      case 'video':
+        return <VideoOn />
+      default:
+        return <File5 />
     }
-  }, [file])
-
-  const getFileIcon = (file: File): ReactElement => {
-    if (file.type.startsWith('image/')) {
-      return <Image3 />
-    }
-    if (file.type.startsWith('text/')) {
-      return <File5 />
-    }
-    if (file.type.startsWith('video/')) {
-      return <VideoOn />
-    }
-    return <File5 />
   }
 
   return (
@@ -87,7 +67,7 @@ export function File({
             width: 40
           }}
         >
-          {getFileIcon(file)}
+          {getFileIcon()}
         </Box>
         <Stack>
           <Typography variant="subtitle2" fontWeight={600}>

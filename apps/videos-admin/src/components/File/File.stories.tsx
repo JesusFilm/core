@@ -26,36 +26,34 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
+export const TextFile: Story = {
   args: {
-    file: textFile
+    file: textFile,
+    type: 'text'
+  }
+}
+
+export const ImageFile: Story = {
+  args: {
+    file: new File(['image file content'], 'file.png', { type: 'image/png' }),
+    type: 'image'
+  }
+}
+
+export const VideoFile: Story = {
+  args: {
+    file: new File(['video file content'], 'file.mp4', { type: 'video/mp4' }),
+    type: 'video'
   }
 }
 
 export const WithActions: Story = {
   args: {
     file: textFile,
+    type: 'text',
     actions: {
       onDelete: noop,
       onDownload: noop
     }
-  }
-}
-
-export const TextFile: Story = {
-  args: {
-    file: textFile
-  }
-}
-
-export const ImageFile: Story = {
-  args: {
-    file: new File(['image file content'], 'file.png', { type: 'image/png' })
-  }
-}
-
-export const VideoFile: Story = {
-  args: {
-    file: new File(['video file content'], 'file.mp4', { type: 'video/mp4' })
   }
 }
