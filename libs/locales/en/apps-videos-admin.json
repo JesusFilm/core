@@ -6,6 +6,7 @@
   "Primary language is required": "Primary language is required",
   "Label is required": "Label is required",
   "Successfully created video.": "Successfully created video.",
+  "Failed to create video edition.": "Failed to create video edition.",
   "Something went wrong.": "Something went wrong.",
   "ID": "ID",
   "Slug": "Slug",
