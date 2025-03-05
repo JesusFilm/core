@@ -31,22 +31,22 @@ export function Footer(): ReactElement {
     {
       name: 'X (Twitter)',
       href: 'https://twitter.com/jesusfilm',
-      icon: '/footer/x-twitter.svg'
+      icon: '/watch/assets/footer/x-twitter.svg'
     },
     {
       name: 'Facebook',
       href: 'https://www.facebook.com/jesusfilm',
-      icon: '/footer/facebook.svg'
+      icon: '/watch/assets/footer/facebook.svg'
     },
     {
       name: 'Instagram',
       href: 'https://www.instagram.com/jesusfilm',
-      icon: '/footer/instagram.svg'
+      icon: '/watch/assets/footer/instagram.svg'
     },
     {
       name: 'YouTube',
       href: 'https://www.youtube.com/user/jesusfilm',
-      icon: '/footer/youtube.svg'
+      icon: '/watch/assets/footer/youtube.svg'
     }
   ]
 
@@ -77,7 +77,7 @@ export function Footer(): ReactElement {
           <FooterLink
             url="/"
             label="Jesus Film logo"
-            src="/footer/jesus-film-logo.png"
+            src="/watch/assets/footer/jesus-film-logo.png"
             width={60}
             height={60}
             sx={{ lineHeight: 0 }}
