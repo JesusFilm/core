@@ -1,9 +1,13 @@
+import AddIcon from '@mui/icons-material/Add'
 import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { useSnackbar } from 'notistack'
+import { MouseEvent, ReactElement, useEffect, useMemo, useState } from 'react'
 import { FixedSizeList } from 'react-window'
 
 import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
+import { GetAdminVideo_AdminVideo_VideoEditions as VideoEditions } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useDeleteVideoVariantMutation } from '../../../../../../../libs/useDeleteVideoVariantMutation/useDeleteVideoVariantMutation'
 import { Section } from '../Section'
 
 import { VariantCard } from './VariantCard'
@@ -17,17 +21,48 @@ const VariantDialog = dynamic(
   { ssr: false }
 )
 
+const AddAudioLanguageDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "AddAudioLanguageDialog" */
+      './AddAudioLanguageDialog'
+    ).then((mod) => mod.AddAudioLanguageDialog),
+  { ssr: false }
+)
+
+const DeleteVariantDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "DeleteVariantDialog" */
+      './DeleteVariantDialog'
+    ).then((mod) => mod.DeleteVariantDialog),
+  {
+    ssr: false
+  }
+)
+
 const ITEM_SIZE = 75
 
 export function Variants({
-  variants
+  variants,
+  editions
 }: {
   variants?: GetAdminVideoVariant[]
+  editions?: VideoEditions
 }): ReactElement {
   const t = useTranslations()
   const [selectedVariant, setSelectedVariant] =
     useState<GetAdminVideoVariant | null>(null)
   const [open, setOpen] = useState<boolean | null>(null)
+  const [openAddDialog, setOpenAddDialog] = useState<boolean | null>(null)
+  const { enqueueSnackbar } = useSnackbar()
+
+  const [deleteVariant, setDeleteVariant] =
+    useState<GetAdminVideoVariant | null>(null)
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean | null>(null)
+
+  const [deleteVariantMutation, { loading: deleteLoading }] =
+    useDeleteVideoVariantMutation()
 
   function handleCardClick(variant: GetAdminVideoVariant): void {
     setSelectedVariant(variant)
@@ -36,6 +71,46 @@ export function Variants({
 
   function handleClose(): void {
     setOpen(null)
+  }
+
+  function handleAddClose(): void {
+    setOpenAddDialog(false)
+  }
+
+  function handleDeleteClick(
+    variant: GetAdminVideoVariant,
+    event: MouseEvent<HTMLButtonElement>
+  ): void {
+    event.stopPropagation()
+    setDeleteVariant(variant)
+    setOpenDeleteDialog(true)
+  }
+
+  function handleDeleteClose(): void {
+    setOpenDeleteDialog(false)
+  }
+
+  async function handleDeleteConfirm(): Promise<void> {
+    if (!deleteVariant) return
+
+    try {
+      await deleteVariantMutation({
+        variables: {
+          id: deleteVariant.id
+        }
+      })
+
+      enqueueSnackbar(t('Audio language deleted successfully'), {
+        variant: 'success'
+      })
+
+      setOpenDeleteDialog(false)
+      setDeleteVariant(null)
+    } catch (error) {
+      enqueueSnackbar(t('Failed to delete audio language'), {
+        variant: 'error'
+      })
+    }
   }
 
   const [size, setSize] = useState<{
@@ -74,6 +149,11 @@ export function Variants({
           // if you change the title, change the element selected in the getVariantSectionDimensions function above
           title={t('Audio Languages')}
           variant="outlined"
+          action={{
+            label: t('Add Audio Language'),
+            startIcon: <AddIcon />,
+            onClick: () => setOpenAddDialog(true)
+          }}
         >
           <FixedSizeList
             width={size.width - 20}
@@ -81,16 +161,19 @@ export function Variants({
             itemData={variants}
             itemCount={variants.length}
             itemSize={ITEM_SIZE}
+            itemKey={(index, data) => data[index].id}
             overscanCount={10}
             style={{
               marginTop: 8
             }}
           >
-            {({ index, style, data: items }) => (
+            {({ index, style, data }) => (
               <VariantCard
-                variant={items[index]}
+                key={data[index].id}
+                variant={data[index]}
                 style={style}
                 onClick={handleCardClick}
+                onDelete={handleDeleteClick}
               />
             )}
           </FixedSizeList>
@@ -102,6 +185,23 @@ export function Variants({
           handleClose={handleClose}
           variant={selectedVariant}
           variantLanguagesMap={variantLanguagesMap}
+        />
+      )}
+      {openAddDialog != null && (
+        <AddAudioLanguageDialog
+          open={openAddDialog}
+          handleClose={handleAddClose}
+          variantLanguagesMap={variantLanguagesMap}
+          editions={editions}
+        />
+      )}
+      {openDeleteDialog != null && deleteVariant != null && (
+        <DeleteVariantDialog
+          variant={deleteVariant}
+          open={openDeleteDialog}
+          loading={deleteLoading}
+          onClose={handleDeleteClose}
+          onConfirm={handleDeleteConfirm}
         />
       )}
     </>
