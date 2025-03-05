@@ -1,8 +1,8 @@
-'use client'
-
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
+
+import Lock1 from '@core/shared/ui/icons/Lock1'
 
 import { Fallback } from '../../../../../../../components/Fallback'
 
@@ -14,14 +14,15 @@ const getVideosPath = (url: string | null): string => {
   return parts.join('/')
 }
 
-export function VideoViewFallback(): ReactElement {
+export function LockedVideoView(): ReactElement {
   const t = useTranslations()
   const pathname = usePathname()
 
   return (
     <Fallback
-      title={t('Video not found')}
-      subtitle={t('Could not find the video you are looking for')}
+      icon={<Lock1 fontSize="large" />}
+      title={t('Video is locked')}
+      subtitle={t('This video is currently locked to prevent edits')}
       action={{
         href: getVideosPath(pathname),
         label: t('View Videos')
