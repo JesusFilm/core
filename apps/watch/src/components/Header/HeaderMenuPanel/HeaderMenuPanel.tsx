@@ -3,12 +3,8 @@ import Button from '@mui/material/Button'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Image from 'next/image'
-import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
-
-import logo from '../assets/logo.svg'
 
 import { HeaderLinkAccordion } from './HeaderLinkAccordion'
 import { headerLinks } from './headerLinks'
@@ -44,63 +40,43 @@ export function HeaderMenuPanel({
         borderBottomLeftRadius: { xs: 0, sm: 4 }
       }}
     >
-      <Stack
-        spacing={2}
-        direction="row"
+      <Box
         sx={{
-          height: { xs: 100, sm: 159 },
-          px: { xs: 8, xl: 3 },
-          pt: { xs: 0, sm: 10 },
-          alignItems: 'center',
-          justifyContent: { xs: 'space-between', sm: 'flex-end' }
+          height: { xs: 100, lg: 159 },
+          pr: { xs: 20, lg: 20, xxl: 12 },
+          py: 10,
+          pt: { lg: '69px' },
+          pb: { lg: 14 },
+          display: 'flex',
+          justifyContent: 'flex-end',
+          alignItems: 'center'
         }}
       >
-        <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
-          <NextLink href="/watch">
-            <Image
-              src={logo}
-              width="126"
-              height="40"
-              alt="Watch Logo"
-              style={{ cursor: 'pointer', maxWidth: '100%', height: 'auto' }}
-            />
-          </NextLink>
-        </Box>
-        <Stack
-          direction="row"
-          spacing={2}
-          justifyContent="flex-end"
-          alignItems="center"
-          pb={6.5}
-          pr={14}
+        <Button
+          href="https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now-2/?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=https%3A%2F%2Fwww.jesusfilm.org%2Fcontent%2Fjf%2Fus%2Fdevelopment%2Fspecial%2Fthank-you-refer%2Fsocial-share.html"
+          rel="noopener"
+          variant="contained"
+          sx={{
+            height: 34,
+            px: 3.5,
+            borderRadius: 4,
+            '&:hover': {
+              backgroundColor: 'background.paper',
+              color: 'primary.main',
+              border: '1px solid',
+              borderColor: 'primary.main',
+              boxShadow: 'none'
+            }
+          }}
         >
-          <Button
-            href="https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now-2/?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=https%3A%2F%2Fwww.jesusfilm.org%2Fcontent%2Fjf%2Fus%2Fdevelopment%2Fspecial%2Fthank-you-refer%2Fsocial-share.html"
-            rel="noopener"
-            variant="contained"
-            sx={{
-              height: 34,
-              minWidth: 100,
-              px: 4,
-              borderRadius: 4,
-              '&:hover': {
-                backgroundColor: 'background.paper',
-                color: 'primary.main',
-                border: '1px solid',
-                borderColor: 'primary.main',
-                boxShadow: 'none'
-              }
-            }}
+          <Typography
+            variant="h6"
+            sx={{ fontSize: 15, fontWeight: 'bold', lineHeight: 1 }}
           >
-            <Typography
-              variant="h6"
-              sx={{ fontSize: 15, fontWeight: 'bold', lineHeight: 1 }}
-            >
-              {t('Give Now')}
-            </Typography>
-          </Button>
-        </Stack>
-      </Stack>
+            {t('Give Now')}
+          </Typography>
+        </Button>
+      </Box>
       <Stack
         direction="column"
         justifyContent="space-between"
@@ -109,7 +85,7 @@ export function HeaderMenuPanel({
         <Stack
           justifyContent="flex-start"
           direction="column"
-          sx={{ gap: { xs: 2, sm: 1 } }}
+          sx={{ gap: { xs: '8px' } }}
         >
           {headerLinks.map((link) => (
             <HeaderLinkAccordion

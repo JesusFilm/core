@@ -54,8 +54,8 @@ export function LocalAppBar({
               data-testid="WatchLogo"
               sx={{
                 width: { xs: 126, lg: 186 },
-                mt: { xs: 0, lg: 3.5 },
-                mb: { xs: 0, lg: -3.5 }
+                mt: { xs: 1.2, lg: 3.5 },
+                mb: { xs: -1.2, lg: -3.5 }
               }}
             >
               <Image
