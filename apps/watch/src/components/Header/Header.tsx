@@ -96,7 +96,7 @@ export function Header({
           }}
         >
           <Container
-            maxWidth="xl"
+            maxWidth="xxl"
             disableGutters
             sx={{
               minHeight: '100%',

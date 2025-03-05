@@ -40,7 +40,7 @@ export function LocalAppBar({
         ...props.sx
       }}
     >
-      <Container maxWidth="xl" disableGutters>
+      <Container maxWidth="xxl" disableGutters>
         <Toolbar disableGutters>
           <Grid
             container
