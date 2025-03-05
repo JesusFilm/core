@@ -5,6 +5,7 @@ export const VideoVariantCreateInput = builder.inputType(
   {
     fields: (t) => ({
       id: t.string({ required: true }),
+      assetId: t.string({ required: false }),
       videoId: t.string({ required: true }),
       edition: t.string({ required: true }),
       hls: t.string({ required: false }),

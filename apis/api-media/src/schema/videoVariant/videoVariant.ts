@@ -11,6 +11,7 @@ import { VideoVariantUpdateInput } from './inputs/videoVariantUpdate'
 builder.prismaObject('VideoVariant', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    asset: t.relation('asset', { nullable: true }),
     videoId: t.exposeID('videoId'),
     hls: t.exposeString('hls'),
     dash: t.exposeString('dash'),

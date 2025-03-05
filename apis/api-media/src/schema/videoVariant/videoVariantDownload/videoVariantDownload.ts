@@ -8,6 +8,7 @@ import { VideoVariantDownloadUpdateInput } from './inputs/videoVariantDownloadUp
 builder.prismaObject('VideoVariantDownload', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    asset: t.relation('asset', { nullable: true }),
     quality: t.field({
       type: VideoVariantDownloadQuality,
       nullable: false,

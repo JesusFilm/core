@@ -6,6 +6,7 @@ export const VideoVariantDownloadUpdateInput = builder.inputType(
   {
     fields: (t) => ({
       id: t.string({ required: true }),
+      assetId: t.string({ required: false }),
       videoVariantId: t.string({ required: false }),
       quality: t.field({ type: VideoVariantDownloadQuality, required: false }),
       size: t.float({ required: false }),
