@@ -57,7 +57,7 @@ export function LocalAppBar({
                   legacyBehavior
                   href="https://www.jesusfilm.org/"
                 >
-                  <Box sx={{ display: 'flex' }} data-testid="WatchLogo">
+                  <Box data-testid="WatchLogo">
                     <Image
                       src={logo}
                       alt="Watch Logo"
