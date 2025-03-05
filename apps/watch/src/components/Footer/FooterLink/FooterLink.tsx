@@ -1,4 +1,5 @@
 import MuiLink, { LinkProps } from '@mui/material/Link'
+import { SxProps, Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { HTMLAttributeAnchorTarget, ReactElement } from 'react'
@@ -15,6 +16,7 @@ interface FooterLinkProps {
   height?: number
   target?: HTMLAttributeAnchorTarget
   noFollow?: boolean
+  sx?: SxProps<Theme>
 }
 
 export function FooterLink({
@@ -26,7 +28,8 @@ export function FooterLink({
   width,
   height,
   target,
-  noFollow = false
+  noFollow = false,
+  sx
 }: FooterLinkProps): ReactElement {
   return (
     <MuiLink
@@ -36,9 +39,12 @@ export function FooterLink({
       rel={noFollow ? 'nofollow noopener' : 'noopener'}
       color="text.primary"
       data-testid="FooterLink"
+      sx={src != null ? sx : undefined}
     >
       {src == null ? (
-        <Typography variant={variant}>{label}</Typography>
+        <Typography variant={variant} sx={sx}>
+          {label}
+        </Typography>
       ) : (
         <Image
           src={src}
