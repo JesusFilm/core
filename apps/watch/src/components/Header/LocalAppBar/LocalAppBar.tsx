@@ -51,16 +51,13 @@ export function LocalAppBar({
             }}
           >
             <Grid item sx={{ gridRow: 1 }}>
-              <Box
-                sx={{
-                  width: {
-                    xs: 126,
-                    sm: 186
-                  }
-                }}
-              >
-                <NextLink href="/watch">
-                  <Box sx={{ display: 'flex' }}>
+              <Box sx={{ width: { xs: 126, sm: 186 } }}>
+                <NextLink
+                  passHref
+                  legacyBehavior
+                  href="https://www.jesusfilm.org/"
+                >
+                  <Box sx={{ display: 'flex' }} data-testid="WatchLogo">
                     <Image
                       src={logo}
                       alt="Watch Logo"
@@ -75,13 +72,7 @@ export function LocalAppBar({
                 </NextLink>
               </Box>
             </Grid>
-            <Grid
-              item
-              sx={{
-                gridRow: 1,
-                gridColumn: 3
-              }}
-            >
+            <Grid item sx={{ gridRow: 1, gridColumn: 3 }}>
               <Box data-testid="MenuBox">
                 <IconButton
                   color="inherit"
