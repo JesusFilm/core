@@ -15,6 +15,7 @@ import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
 import { VideoProvider } from '../../../../../../libs/VideoProvider'
 
 import { Editions } from './Editions'
+import { LockedVideoView } from './LockedVideoView'
 import { Metadata } from './Metadata'
 import { TabContainer } from './Tabs/TabContainer'
 import { TabLabel } from './Tabs/TabLabel'
@@ -39,6 +40,10 @@ export function VideoView(): ReactElement {
 
   if (data?.adminVideo == null) {
     return <VideoViewFallback />
+  }
+
+  if (data.adminVideo.locked) {
+    return <LockedVideoView />
   }
 
   const video = data.adminVideo
