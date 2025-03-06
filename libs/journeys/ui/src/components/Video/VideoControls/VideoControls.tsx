@@ -13,22 +13,22 @@ import {
   useReducer,
   useState
 } from 'react'
-import Player from 'video.js/dist/types/player'
 
 import { isIOS, isIPhone } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
+import { PlaybackEvent, playbackReducer } from '../utils/playbackReducer'
+import VideoJsPlayer from '../utils/videoJsTypes'
 import { VideoStats } from '../VideoStats'
 
 import { DesktopControls } from './DesktopControls'
 import { MobileControls } from './MobileControls'
 import { PlaybackIcon } from './PlaybackIcon'
-import { PlaybackEvent, playbackReducer } from './utils/playbackReducer'
 
 interface VideoControlProps {
-  player: Player
+  player: VideoJsPlayer
   startAt: number
   endAt: number
   isYoutube?: boolean
@@ -425,6 +425,7 @@ export function VideoControls({
               fullscreen={fullscreen}
               handleFullscreen={handleFullscreen}
               handleToggleStats={handleToggleStats}
+              player={player}
             />
             <DesktopControls
               playing={state.playing}
@@ -445,6 +446,7 @@ export function VideoControls({
               fullscreen={fullscreen}
               handleFullscreen={handleFullscreen}
               handleToggleStats={handleToggleStats}
+              player={player}
             />
           </Container>
         </Fade>

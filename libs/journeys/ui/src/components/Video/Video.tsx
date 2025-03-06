@@ -13,7 +13,6 @@ import {
   useState
 } from 'react'
 import { use100vh } from 'react-div-100vh'
-import Player from 'video.js/dist/types/player'
 
 import { NextImage } from '@core/shared/ui/NextImage'
 
@@ -36,6 +35,7 @@ import { VideoTriggerFields } from '../VideoTrigger/__generated__/VideoTriggerFi
 
 import { VideoFields } from './__generated__/VideoFields'
 import { InitAndPlay } from './InitAndPlay'
+import VideoJsPlayer from './utils/videoJsTypes'
 import { VideoControls } from './VideoControls'
 
 import 'videojs-youtube'
@@ -84,7 +84,7 @@ export function Video({
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const [loading, setLoading] = useState(true)
-  const [player, setPlayer] = useState<Player>()
+  const [player, setPlayer] = useState<VideoJsPlayer>()
   const [showPoster, setShowPoster] = useState(true)
   const [activeStep, setActiveStep] = useState(false)
 

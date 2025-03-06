@@ -11,18 +11,18 @@ import {
 } from '@testing-library/react'
 import fscreen from 'fscreen'
 import videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
 import { JourneyProvider } from '../../../libs/JourneyProvider'
+import VideoJsPlayer from '../utils/videoJsTypes'
 
 import { VideoControls } from './VideoControls'
 
 jest.mock('@mui/material/useMediaQuery', () => jest.fn().mockReturnValue(false))
 
 describe('VideoControls', () => {
-  let player: Player
+  let player: VideoJsPlayer
 
   beforeEach(() => {
     const video = document.createElement('video')
@@ -41,7 +41,7 @@ describe('VideoControls', () => {
       responsive: true,
       muted: false,
       loop: true
-    })
+    }) as VideoJsPlayer
     act(() => {
       player.duration(250)
     })

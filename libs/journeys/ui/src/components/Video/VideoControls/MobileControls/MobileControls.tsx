@@ -8,6 +8,9 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { MouseEvent } from 'react'
 
+import VideoJsPlayer from '../../utils/videoJsTypes'
+import { VideoSettings } from '../VideoSettings'
+
 interface MobileControlsProps {
   showTime: boolean
   displayTime: string
@@ -21,6 +24,7 @@ interface MobileControlsProps {
   fullscreen: boolean
   handleFullscreen: () => void
   handleToggleStats: (event: MouseEvent) => void
+  player: VideoJsPlayer
 }
 
 export function MobileControls({
@@ -35,7 +39,8 @@ export function MobileControls({
   showFullscreenButton,
   fullscreen,
   handleFullscreen,
-  handleToggleStats
+  handleToggleStats,
+  player
 }: MobileControlsProps): JSX.Element {
   return (
     <Container
@@ -65,7 +70,8 @@ export function MobileControls({
             {displayTime} / {duration}
           </Typography>
         )}
-        <Stack direction="row" spacing={1}>
+        {/* <Stack direction="row" spacing={1}> */}
+        <Stack direction="row" alignItems="center">
           <IconButton
             aria-label="Toggle video stats"
             onClick={handleToggleStats}
@@ -73,11 +79,12 @@ export function MobileControls({
           >
             <AssessmentIcon />
           </IconButton>
+          <VideoSettings player={player} />
           {showFullscreenButton && (
             <IconButton
               aria-label="fullscreen"
               onClick={handleFullscreen}
-              sx={{ py: 0, px: 1 }}
+              sx={{ py: 0, px: 2 }}
             >
               {fullscreen ? <FullscreenExitRounded /> : <FullscreenRounded />}
             </IconButton>
