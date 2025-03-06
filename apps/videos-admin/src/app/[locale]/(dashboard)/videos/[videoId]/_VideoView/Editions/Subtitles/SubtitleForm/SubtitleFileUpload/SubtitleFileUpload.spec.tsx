@@ -1,11 +1,12 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useField } from 'formik'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { SubtitleFileUpload } from './SubtitleFileUpload'
 
-const fieldMock = { value: null, name: 'file' }
+const fieldMockVtt = { value: null, name: 'vttFile' }
+const fieldMockSrt = { value: null, name: 'srtFile' }
 const metaMock = {
   value: null,
   error: '',
@@ -24,8 +25,16 @@ jest.mock('formik', () => ({
 const useFieldMock = useField as jest.Mock
 
 describe('SubtitleFileUpload', () => {
-  it('should render', () => {
-    useFieldMock.mockImplementation(() => [fieldMock, metaMock])
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('should render VTT file', async () => {
+    const fileVtt = new File(['test'], 'test.vtt', { type: 'text/vtt' })
+    useFieldMock.mockImplementationOnce(() => [
+      { ...fieldMockVtt, value: fileVtt }
+    ])
+    useFieldMock.mockImplementationOnce(() => [fieldMockSrt])
 
     render(
       <NextIntlClientProvider locale="en">
@@ -33,17 +42,19 @@ describe('SubtitleFileUpload', () => {
       </NextIntlClientProvider>
     )
 
-    expect(
-      screen.getByText('Drag & drop or choose a file to upload')
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('File')).toBeInTheDocument()
+      expect(screen.getByText('test.vtt')).toBeInTheDocument()
+    })
   })
 
-  it('should render file', () => {
-    const file = new File(['test'], 'test.vtt', { type: 'text/vtt' })
-    useFieldMock.mockImplementation(() => [
-      { ...fieldMock, value: file },
-      metaMock,
-      helpersMock
+  it('should render SRT file', async () => {
+    const fileSrt = new File(['test'], 'test.srt', {
+      type: 'application/x-subrip'
+    })
+    useFieldMock.mockImplementationOnce(() => [fieldMockVtt])
+    useFieldMock.mockImplementationOnce(() => [
+      { ...fieldMockSrt, value: fileSrt }
     ])
 
     render(
@@ -52,16 +63,45 @@ describe('SubtitleFileUpload', () => {
       </NextIntlClientProvider>
     )
 
-    expect(screen.getByTestId('File')).toBeInTheDocument()
-    expect(screen.getByText('test.vtt')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('File')).toBeInTheDocument()
+      expect(screen.getByText('test.srt')).toBeInTheDocument()
+    })
   })
 
-  it('should clear file on delete', async () => {
-    const file = new File(['test'], 'test.vtt', { type: 'text/vtt' })
-    useFieldMock.mockImplementation(() => [
-      { ...fieldMock, value: file },
+  it('should clear VTT file on delete', async () => {
+    const fileVtt = new File(['test'], 'test.vtt', { type: 'text/vtt' })
+    useFieldMock.mockImplementationOnce(() => [
+      { ...fieldMockVtt, value: fileVtt },
       metaMock,
-      helpersMock
+      { ...helpersMock }
+    ])
+    useFieldMock.mockImplementationOnce(() => [fieldMockSrt])
+
+    render(
+      <NextIntlClientProvider locale="en">
+        <SubtitleFileUpload />
+      </NextIntlClientProvider>
+    )
+    const user = userEvent.setup()
+
+    const button = screen.getByRole('button', { name: 'delete-file' })
+    expect(button).toBeInTheDocument()
+
+    await user.click(button)
+
+    expect(helpersMock.setValue).toHaveBeenCalledWith(null)
+  })
+
+  it('should clear SRT file on delete', async () => {
+    const fileSrt = new File(['test'], 'test.srt', {
+      type: 'application/x-subrip'
+    })
+    useFieldMock.mockImplementationOnce(() => [fieldMockVtt])
+    useFieldMock.mockImplementationOnce(() => [
+      { ...fieldMockSrt, value: fileSrt },
+      metaMock,
+      { ...helpersMock }
     ])
 
     render(
@@ -79,8 +119,13 @@ describe('SubtitleFileUpload', () => {
     expect(helpersMock.setValue).toHaveBeenCalledWith(null)
   })
 
-  it('should update value on file drop', async () => {
-    useFieldMock.mockImplementation(() => [fieldMock, metaMock, helpersMock])
+  it('should update VTT value on file drop', async () => {
+    useFieldMock.mockImplementationOnce(() => [
+      fieldMockVtt,
+      metaMock,
+      { ...helpersMock }
+    ])
+    useFieldMock.mockImplementationOnce(() => [fieldMockSrt])
 
     render(
       <NextIntlClientProvider locale="en">
@@ -89,11 +134,67 @@ describe('SubtitleFileUpload', () => {
     )
 
     const user = userEvent.setup()
+    const fileVtt = new File(['test'], 'test.vtt', { type: 'text/vtt' })
 
-    const file = new File(['test'], 'test.vtt', { type: 'text/vtt' })
+    await user.upload(screen.getByTestId('DropZone'), fileVtt)
 
-    await user.upload(screen.getByTestId('DropZone'), file)
+    expect(helpersMock.setValue).toHaveBeenCalledWith(fileVtt)
+  })
 
-    expect(helpersMock.setValue).toHaveBeenCalledWith(file)
+  it('should update SRT value on file drop', async () => {
+    useFieldMock.mockImplementationOnce(() => [fieldMockVtt])
+    useFieldMock.mockImplementationOnce(() => [
+      fieldMockSrt,
+      metaMock,
+      { ...helpersMock }
+    ])
+
+    render(
+      <NextIntlClientProvider locale="en">
+        <SubtitleFileUpload />
+      </NextIntlClientProvider>
+    )
+
+    const user = userEvent.setup()
+    const fileSrt = new File(['test'], 'test.srt', {
+      type: 'application/x-subrip'
+    })
+
+    await user.upload(screen.getByTestId('DropZone'), fileSrt)
+
+    expect(helpersMock.setValue).toHaveBeenCalledWith(fileSrt)
+  })
+
+  it('should handle multiple files dropped together', async () => {
+    const vttHelpersMock = { setValue: jest.fn() }
+    const srtHelpersMock = { setValue: jest.fn() }
+
+    useFieldMock.mockImplementationOnce(() => [
+      fieldMockVtt,
+      metaMock,
+      vttHelpersMock
+    ])
+    useFieldMock.mockImplementationOnce(() => [
+      fieldMockSrt,
+      metaMock,
+      srtHelpersMock
+    ])
+
+    render(
+      <NextIntlClientProvider locale="en">
+        <SubtitleFileUpload />
+      </NextIntlClientProvider>
+    )
+
+    const user = userEvent.setup()
+    const fileVtt = new File(['test'], 'test.vtt', { type: 'text/vtt' })
+    const fileSrt = new File(['test'], 'test.srt', {
+      type: 'application/x-subrip'
+    })
+
+    await user.upload(screen.getByTestId('DropZone'), [fileVtt, fileSrt])
+
+    expect(vttHelpersMock.setValue).toHaveBeenCalledWith(fileVtt)
+    expect(srtHelpersMock.setValue).toHaveBeenCalledWith(fileSrt)
   })
 })

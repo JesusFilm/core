@@ -82,7 +82,7 @@ describe('handleVttFile', () => {
         createR2Asset: mockCreateR2Asset,
         uploadAssetFile: mockUploadAssetFile,
         abortController: mockAbortController,
-        errorMessage: 'some error'
+        errorMessage: 'Failed to create r2 asset for VTT file.'
       })
     ).rejects.toThrow('Failed to create r2 asset for VTT file.')
 
