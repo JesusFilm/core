@@ -4,6 +4,8 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import MuiMenu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { useRouter } from 'next/compat/router'
 import NextLink from 'next/link'
@@ -44,12 +46,16 @@ export function HeaderTabButtons(): ReactElement {
     headerItems.find((link) => router?.pathname?.startsWith(link.href))
       ?.label ?? ''
 
+  const buttonIcon = headerItems.find((link) =>
+    router?.pathname?.startsWith(link.href)
+  )?.icon ?? <Play1Icon />
+
   return headerItems.length > 1 ? (
     <>
       <Box
         data-testid="HeaderTabButtons"
         sx={{
-          display: { xs: 'none', lg: 'flex' },
+          display: { xs: 'none', md: 'flex' },
           width: '100%',
           height: '48px',
           justifyContent: 'space-between',
@@ -87,16 +93,16 @@ export function HeaderTabButtons(): ReactElement {
         sx={{
           top: '-10px',
           pr: { md: '20px' },
-          display: { xs: 'flex', lg: 'none' },
+          display: { xs: 'flex', md: 'none' },
           justifyContent: 'center',
           width: '100%'
         }}
       >
         <Button
+          fullWidth
           data-testid="DropDownButton"
           color="inherit"
-          startIcon={<Play1Icon />}
-          endIcon={<ChervonDownIcon />}
+          onClick={handleShowMenu}
           sx={{
             borderRadius: '40px !important',
             borderWidth: '2px',
@@ -104,11 +110,20 @@ export function HeaderTabButtons(): ReactElement {
             borderColor: 'text.disabled',
             backgroundColor: 'background.default',
             '&:hover': { backgroundColor: 'background.default' },
-            height: '48px'
+            height: '48px',
+            position: 'relative'
           }}
-          onClick={handleShowMenu}
         >
-          {buttonLabel}
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            width="100%"
+          >
+            {buttonIcon}
+            <Typography variant="inherit">{buttonLabel}</Typography>
+            <ChervonDownIcon />
+          </Stack>
         </Button>
       </Box>
       <MuiMenu
@@ -124,10 +139,19 @@ export function HeaderTabButtons(): ReactElement {
               onClick={handleCloseMenu}
               selected={router?.pathname?.startsWith(href)}
             >
-              <ListItemIcon>{icon}</ListItemIcon>
-              <ListItemText primaryTypographyProps={{ variant: 'h6' }}>
-                {t(label)}
-              </ListItemText>
+              <Stack direction="row" alignItems="center" width="100%" px={2.5}>
+                <ListItemIcon>{icon}</ListItemIcon>
+                <ListItemText
+                  primary={t(label)}
+                  primaryTypographyProps={{
+                    variant: 'h6',
+                    sx: {
+                      textAlign: 'center'
+                    }
+                  }}
+                />
+                <Box sx={{ width: 30 }} />
+              </Stack>
             </MenuItem>
           </NextLink>
         ))}

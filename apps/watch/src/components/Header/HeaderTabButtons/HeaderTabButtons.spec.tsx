@@ -203,5 +203,23 @@ describe('HeaderTabButtons', () => {
       )
       expect(screen.queryByTestId('DropDownButton')).not.toBeInTheDocument()
     })
+
+    it('should use fallback values when current route does not match any headerItems', () => {
+      jest
+        .spyOn(require('next/compat/router'), 'useRouter')
+        .mockImplementationOnce(() => ({
+          pathname: '/unknown-route'
+        }))
+
+      render(
+        <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>
+          <HeaderTabButtons />
+        </FlagsProvider>
+      )
+
+      const button = screen.getByTestId('DropDownButton')
+      expect(button).toHaveTextContent('')
+      expect(button).toBeInTheDocument()
+    })
   })
 })
