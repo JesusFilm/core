@@ -1,4 +1,3 @@
-import AssessmentIcon from '@mui/icons-material/Assessment'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Fade from '@mui/material/Fade'

@@ -1,4 +1,3 @@
-import AssessmentIcon from '@mui/icons-material/Assessment'
 import FullscreenExitRounded from '@mui/icons-material/FullscreenExitRounded'
 import FullscreenRounded from '@mui/icons-material/FullscreenRounded'
 import PauseRounded from '@mui/icons-material/PauseRounded'
@@ -34,7 +33,7 @@ interface DesktopControlsProps {
   showFullscreenButton: boolean
   fullscreen: boolean
   handleFullscreen: () => void
-  handleToggleStats: (event: MouseEvent) => void
+  handleToggleStats: (event: React.MouseEvent) => void
   player: VideoJsPlayer
 }
 
@@ -174,14 +173,7 @@ export function DesktopControls({
           )}
         </IconButton>
       </Stack>
-      <IconButton
-        aria-label="Toggle video stats"
-        onClick={handleToggleStats}
-        sx={{ p: 0 }}
-      >
-        <AssessmentIcon />
-      </IconButton>
-      <VideoSettings player={player} />
+      <VideoSettings player={player} onToggleStats={handleToggleStats} />
       {showFullscreenButton && (
         <IconButton
           aria-label="fullscreen"

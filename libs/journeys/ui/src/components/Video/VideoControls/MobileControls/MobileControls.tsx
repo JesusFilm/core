@@ -1,4 +1,3 @@
-import AssessmentIcon from '@mui/icons-material/Assessment'
 import FullscreenExitRounded from '@mui/icons-material/FullscreenExitRounded'
 import FullscreenRounded from '@mui/icons-material/FullscreenRounded'
 import Container from '@mui/material/Container'
@@ -23,7 +22,7 @@ interface MobileControlsProps {
   showFullscreenButton: boolean
   fullscreen: boolean
   handleFullscreen: () => void
-  handleToggleStats: (event: MouseEvent) => void
+  handleToggleStats: (event: React.MouseEvent) => void
   player: VideoJsPlayer
 }
 
@@ -72,14 +71,7 @@ export function MobileControls({
         )}
         {/* <Stack direction="row" spacing={1}> */}
         <Stack direction="row" alignItems="center">
-          <IconButton
-            aria-label="Toggle video stats"
-            onClick={handleToggleStats}
-            sx={{ py: 0, px: 1 }}
-          >
-            <AssessmentIcon />
-          </IconButton>
-          <VideoSettings player={player} />
+          <VideoSettings player={player} onToggleStats={handleToggleStats} />
           {showFullscreenButton && (
             <IconButton
               aria-label="fullscreen"
