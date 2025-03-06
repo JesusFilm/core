@@ -107,8 +107,8 @@ export function FileUpload({
             <Upload1Icon fontSize="large" />
             <Typography variant="body2" sx={{ cursor: 'pointer' }}>
               {maxFiles > 1
-                ? t('Drag & drop or choose files to upload (max: {maxFiles})', {
-                    maxFiles
+                ? t('Drag & drop or choose files to upload', {
+                    maxFiles: maxFiles
                   })
                 : t('Drag & drop or choose a file to upload')}
             </Typography>
