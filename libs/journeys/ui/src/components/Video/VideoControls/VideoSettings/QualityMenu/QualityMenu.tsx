@@ -23,6 +23,17 @@ interface QualityMenuProps {
   onQualityChanged: (quality: string) => void
 }
 
+const YOUTUBE_QUALITY_LABELS: Record<string, string> = {
+  hd2160: '4K',
+  hd1440: '2K',
+  hd1080: '1080p',
+  hd720: '720p',
+  large: '480p',
+  medium: '360p',
+  small: '240p',
+  tiny: '144p'
+}
+
 export function QualityMenu({
   anchorEl,
   open,
@@ -37,22 +48,26 @@ export function QualityMenu({
 
   // Sets the quality levels from the player
   useEffect(() => {
-    const qualityLevels = player.qualityLevels()
-    const qualities = Array.from({ length: qualityLevels.length }).reduce<
-      (QualityMenuItem & { height: number })[]
-    >((acc, _, i) => {
-      const index = qualityLevels.length - 1 - i
-      const level = qualityLevels[index]
-      const height = level.height
-      const resolution =
-        height >= 2160 ? '4K' : height >= 1440 ? '2K' : `${height}p`
+    const tech = player.tech({ IWillNotUseThisInPlugins: true })
+    let qualities: QualityMenuItem[] = []
 
-      if (!acc.some((q) => q.height === height)) {
-        acc.push({ resolution, qualityLevel: index, height })
-      }
-      return acc
-    }, [])
+    if (tech?.name_ === 'Html5') {
+      const qualityLevels = player.qualityLevels()
+      qualities = Array.from({ length: qualityLevels.length }).reduce<
+        (QualityMenuItem & { height: number })[]
+      >((acc, _, i) => {
+        const index = qualityLevels.length - 1 - i
+        const level = qualityLevels[index]
+        const height = level.height
+        const resolution =
+          height >= 2160 ? '4K' : height >= 1440 ? '2K' : `${height}p`
 
+        if (!acc.some((q) => q.height === height)) {
+          acc.push({ resolution, qualityLevel: index, height })
+        }
+        return acc
+      }, [])
+    }
     setQualities([
       { resolution: 'Auto', qualityLevel: -1 },
       ...qualities.map(({ resolution, qualityLevel }) => ({
@@ -60,7 +75,7 @@ export function QualityMenu({
         qualityLevel
       }))
     ])
-  }, [player, onQualityChanged])
+  }, [player, onQualityChanged, open])
 
   // Handles the auto quality change
   useEffect(() => {
@@ -68,11 +83,23 @@ export function QualityMenu({
       const qualityLevels = player.qualityLevels()
 
       const handleAutoQualityChange = () => {
-        const activeResolution = qualities.find(
-          (q) => q.qualityLevel === qualityLevels.selectedIndex
-        )?.resolution
-        if (activeResolution) {
-          onQualityChanged(`Auto (${activeResolution})`)
+        const tech = player.tech({ IWillNotUseThisInPlugins: true })
+
+        if (
+          tech?.name_ === 'Youtube' &&
+          tech?.ytPlayer?.getPlaybackQuality != null
+        ) {
+          const currentQuality = tech?.ytPlayer?.getPlaybackQuality() ?? ''
+          const displayQuality =
+            YOUTUBE_QUALITY_LABELS[currentQuality] ?? currentQuality
+          onQualityChanged(`Auto (${displayQuality})`)
+        } else if (tech?.name_ === 'Html5') {
+          const activeResolution = qualities.find(
+            (q) => q.qualityLevel === qualityLevels.selectedIndex
+          )?.resolution
+          if (activeResolution) {
+            onQualityChanged(`Auto (${activeResolution})`)
+          }
         }
       }
 
@@ -87,7 +114,13 @@ export function QualityMenu({
 
   const handleQualityChange = (quality: number): void => {
     const qualityLevels = player.qualityLevels()
-    const tech = player.tech()
+    const tech = player.tech({ IWillNotUseThisInPlugins: true })
+
+    if (tech?.name_ !== 'Html5') {
+      onClose()
+      return
+    }
+
     const currentTime = player.currentTime()
     const wasPlaying = !player.paused()
     player.pause()
