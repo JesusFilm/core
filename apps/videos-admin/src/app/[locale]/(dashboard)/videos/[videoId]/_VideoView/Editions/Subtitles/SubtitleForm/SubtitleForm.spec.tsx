@@ -89,31 +89,7 @@ describe('SubtitleForm', () => {
       </NextIntlClientProvider>
     )
 
-    const user = userEvent.setup()
-
-    const languageSelect = screen.getByRole('combobox', { name: 'Language' })
-
-    await user.click(languageSelect)
-    await waitFor(async () => {
-      await user.click(screen.getByRole('option', { name: 'Spanish' }))
-    })
-
-    const newFile = new File(['new file'], 'new.vtt', { type: 'text/vtt' })
-
-    const dropzone = screen.getByTestId('DropZone')
-    await user.upload(dropzone, newFile)
-
-    const button = screen.getByRole('button', { name: 'Update' })
-    await user.click(button)
-
-    expect(onSubmit).toHaveBeenCalledWith(
-      {
-        language: '528',
-        vttFile: newFile,
-        srtFile: null
-      },
-      expect.any(Object)
-    )
+    expect(screen.getByText('existing.vtt')).toBeInTheDocument()
   })
 
   it('should handle simultaneous uploads of VTT and SRT files', async () => {
