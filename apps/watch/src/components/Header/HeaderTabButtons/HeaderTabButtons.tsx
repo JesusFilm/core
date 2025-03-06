@@ -44,12 +44,16 @@ export function HeaderTabButtons(): ReactElement {
     headerItems.find((link) => router?.pathname?.startsWith(link.href))
       ?.label ?? ''
 
+  const buttonIcon = headerItems.find((link) =>
+    router?.pathname?.startsWith(link.href)
+  )?.icon ?? <Play1Icon />
+
   return headerItems.length > 1 ? (
     <>
       <Box
         data-testid="HeaderTabButtons"
         sx={{
-          display: { xs: 'none', lg: 'flex' },
+          display: { xs: 'none', md: 'flex' },
           width: '100%',
           height: '48px',
           justifyContent: 'space-between',
@@ -87,15 +91,16 @@ export function HeaderTabButtons(): ReactElement {
         sx={{
           top: '-10px',
           pr: { md: '20px' },
-          display: { xs: 'flex', lg: 'none' },
+          display: { xs: 'flex', md: 'none' },
           justifyContent: 'center',
           width: '100%'
         }}
       >
         <Button
+          fullWidth
           data-testid="DropDownButton"
           color="inherit"
-          startIcon={<Play1Icon />}
+          startIcon={buttonIcon}
           endIcon={<ChervonDownIcon />}
           sx={{
             borderRadius: '40px !important',
