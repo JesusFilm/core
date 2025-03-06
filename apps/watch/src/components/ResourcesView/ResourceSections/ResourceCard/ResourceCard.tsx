@@ -127,7 +127,7 @@ export function ResourceCard({
             <Box
               sx={{
                 display: { xs: 'none', md: '-webkit-box' },
-                height: '66px',
+                height: 86,
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 WebkitBoxOrient: 'vertical',
@@ -137,7 +137,7 @@ export function ResourceCard({
               <Typography
                 variant="body1"
                 sx={{
-                  my: 1
+                  py: 1
                 }}
               >
                 {item?.description ?? ''}
@@ -156,7 +156,7 @@ export function ResourceCard({
               <Typography
                 variant="body2"
                 sx={{
-                  my: 1
+                  py: 1
                 }}
               >
                 {item?.description ?? ''}
