@@ -51,13 +51,23 @@ export default interface PrismaTypes {
         Where: Prisma.CloudflareR2WhereInput;
         Create: {};
         Update: {};
-        RelationName: "video";
-        ListRelations: never;
+        RelationName: "video" | "videoVariant" | "videoVariantDownload";
+        ListRelations: "videoVariant" | "videoVariantDownload";
         Relations: {
             video: {
                 Shape: Video | null;
                 Name: "Video";
                 Nullable: true;
+            };
+            videoVariant: {
+                Shape: VideoVariant[];
+                Name: "VideoVariant";
+                Nullable: false;
+            };
+            videoVariantDownload: {
+                Shape: VideoVariantDownload[];
+                Name: "VideoVariantDownload";
+                Nullable: false;
             };
         };
     };
@@ -176,9 +186,14 @@ export default interface PrismaTypes {
         Where: Prisma.VideoVariantDownloadWhereInput;
         Create: {};
         Update: {};
-        RelationName: "videoVariant";
+        RelationName: "asset" | "videoVariant";
         ListRelations: never;
         Relations: {
+            asset: {
+                Shape: CloudflareR2 | null;
+                Name: "CloudflareR2";
+                Nullable: true;
+            };
             videoVariant: {
                 Shape: VideoVariant | null;
                 Name: "VideoVariant";
@@ -196,7 +211,7 @@ export default interface PrismaTypes {
         Where: Prisma.VideoVariantWhereInput;
         Create: {};
         Update: {};
-        RelationName: "downloads" | "videoEdition" | "video" | "muxVideo";
+        RelationName: "downloads" | "videoEdition" | "video" | "asset" | "muxVideo";
         ListRelations: "downloads";
         Relations: {
             downloads: {
@@ -212,6 +227,11 @@ export default interface PrismaTypes {
             video: {
                 Shape: Video | null;
                 Name: "Video";
+                Nullable: true;
+            };
+            asset: {
+                Shape: CloudflareR2 | null;
+                Name: "CloudflareR2";
                 Nullable: true;
             };
             muxVideo: {
