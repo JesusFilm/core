@@ -16,6 +16,13 @@ export default class MyDocument extends Document<{
     const languageName =
       language?.name?.find((name) => name && !name.primary)?.value ?? null
 
+    // Check if the current environment is dev or stg using only Vercel's environment variable
+    const vercelEnv = process.env.NEXT_PUBLIC_VERCEL_ENV || 'development'
+
+    // Only add robots meta tag for development and preview environments
+    const isNonProductionEnv =
+      vercelEnv === 'development' || vercelEnv === 'preview'
+
     return (
       <Html lang={bcp47 ?? undefined}>
         <Head>
@@ -37,6 +44,10 @@ export default class MyDocument extends Document<{
             content="/watch/assets/favicon-180.png"
           />
           {languageName && <meta name="language" content={languageName} />}
+          {/* Add robots meta tag for dev and stg environments */}
+          {isNonProductionEnv && (
+            <meta name="robots" content="noindex,nofollow" />
+          )}
           {/* Inject MUI styles first to match with the prepend: true configuration. */}
           {this.props.emotionStyleTags}
         </Head>

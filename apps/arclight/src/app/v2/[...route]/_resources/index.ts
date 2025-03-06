@@ -434,7 +434,7 @@ resources.openapi(searchRoute, async (c) => {
     const transformedLanguages = languageHits.map((hit) => ({
       languageId: Number(hit.objectID),
       iso3: hit.iso3,
-      bcp47: hit.bcp47,
+      bcp47: hit.bcp47 ?? hit.iso3 ?? '',
       primaryCountryId: hit.primaryCountryId,
       name:
         hit.names.find((n) => n.bcp47 === metadataLanguageTags[0])?.value ??
