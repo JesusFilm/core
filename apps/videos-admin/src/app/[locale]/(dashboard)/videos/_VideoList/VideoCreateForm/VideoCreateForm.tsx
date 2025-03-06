@@ -1,21 +1,15 @@
 import { useMutation } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-import TextField from '@mui/material/TextField'
-import { Form, Formik, useField } from 'formik'
+import { Form, Formik } from 'formik'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { InferType, mixed, object, string } from 'yup'
 
-import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
-import {
-  LanguageAutocomplete,
-  LanguageOption
-} from '@core/shared/ui/LanguageAutocomplete'
-
+import { FormLanguageSelect } from '../../../../../../components/FormLanguageSelect'
 import { FormSelectField } from '../../../../../../components/FormSelectField'
 import { FormTextField } from '../../../../../../components/FormTextField'
 import { videoLabels } from '../../../../../../constants'
@@ -45,40 +39,6 @@ export type CreateVideo = ResultOf<typeof CREATE_VIDEO>
 
 interface VideoCreateFormProps {
   close: () => void
-}
-
-function LanguageSelect({ label }: { label: string }): ReactElement {
-  const { data, loading } = useLanguagesQuery({ languageId: '529' })
-  const [formikProps, meta, helpers] = useField('primaryLanguageId')
-  const [selectedLanguage, setSelectedLanguage] = useState<
-    LanguageOption | undefined
-  >(undefined)
-
-  const handleChange = async (newLanguage: LanguageOption) => {
-    setSelectedLanguage(newLanguage)
-    await helpers.setValue(newLanguage.id)
-  }
-
-  const hasError = meta.error !== undefined && meta.touched
-
-  return (
-    <LanguageAutocomplete
-      value={selectedLanguage}
-      onChange={handleChange}
-      loading={loading}
-      languages={data?.languages}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          onBlur={formikProps.onBlur}
-          label={label}
-          variant="outlined"
-          helperText={hasError ? meta.error : ''}
-          error={hasError}
-        />
-      )}
-    />
-  )
 }
 
 export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
@@ -166,7 +126,10 @@ export function VideoCreateForm({ close }: VideoCreateFormProps): ReactElement {
             options={videoLabels}
             fullWidth
           />
-          <LanguageSelect label={t('Primary Language')} />
+          <FormLanguageSelect
+            name="primaryLanguageId"
+            label={t('Primary Language')}
+          />
           <Stack direction="row" sx={{ gap: 1, mt: 2 }}>
             <Button variant="outlined" onClick={close} fullWidth>
               {t('Cancel')}
