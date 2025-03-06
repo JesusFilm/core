@@ -44,6 +44,10 @@ export function HeaderTabButtons(): ReactElement {
     headerItems.find((link) => router?.pathname?.startsWith(link.href))
       ?.label ?? ''
 
+  const buttonIcon = headerItems.find((link) =>
+    router?.pathname?.startsWith(link.href)
+  )?.icon ?? <Play1Icon />
+
   return headerItems.length > 1 ? (
     <>
       <Box
@@ -96,7 +100,7 @@ export function HeaderTabButtons(): ReactElement {
           fullWidth
           data-testid="DropDownButton"
           color="inherit"
-          startIcon={<Play1Icon />}
+          startIcon={buttonIcon}
           endIcon={<ChervonDownIcon />}
           sx={{
             borderRadius: '40px !important',
