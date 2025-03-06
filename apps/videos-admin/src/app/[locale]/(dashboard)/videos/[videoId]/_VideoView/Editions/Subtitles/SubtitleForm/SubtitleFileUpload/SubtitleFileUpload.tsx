@@ -7,8 +7,7 @@ import { useField } from 'formik'
 import File5 from '@core/shared/ui/icons/File5'
 
 import { File } from '../../../../../../../../../../components/File'
-import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { ArrayElement } from '../../../../../../../../../../types/array-types'
+import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { FileUpload } from '../../../../Metadata/VideoImage/FileUpload'
 
 function LinkFile({ name, link }: { name: string; link: string }) {
@@ -50,14 +49,11 @@ function LinkFile({ name, link }: { name: string; link: string }) {
   )
 }
 
-type Subtitle = ArrayElement<
-  ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>['videoSubtitles']
->
-
 export function SubtitleFileUpload({ subtitle }: { subtitle?: Subtitle }) {
   const [field, meta, helpers] = useField<File | null>('file')
 
   const handleDrop = async (file: File) => {
+    console.log('handleDrop', file)
     await helpers.setValue(file)
   }
 
@@ -72,10 +68,26 @@ export function SubtitleFileUpload({ subtitle }: { subtitle?: Subtitle }) {
     await helpers.setValue(isInitialValue ? null : initialValue)
   }
 
+  // Custom file validator function for subtitle files
+  // SRT files do not have an official MIME type, so we need to check the extension
+  const validateSubtitleFile = (file: File) => {
+    // Get the file extension
+    const extension = file.name.split('.').pop()?.toLowerCase()
+    // Check if the file is a VTT or SRT file based on extension
+    if (extension !== 'vtt' && extension !== 'srt') {
+      return {
+        code: 'file-invalid-type',
+        message: 'File must be a VTT or SRT subtitle file'
+      }
+    }
+    return null
+  }
+
   return (
     <Stack gap={2}>
       <FileUpload
         onDrop={handleDrop}
+        validator={validateSubtitleFile}
         accept={{
           'text/vtt': ['.vtt'],
           'application/x-subrip': ['.srt']

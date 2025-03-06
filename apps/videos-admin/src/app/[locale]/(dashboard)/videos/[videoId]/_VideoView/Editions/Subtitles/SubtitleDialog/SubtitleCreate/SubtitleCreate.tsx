@@ -186,7 +186,6 @@ export function SubtitleCreate({
       if (e.name === 'AbortError' || e.message.includes('aborted')) {
         enqueueSnackbar(t('Subtitle create cancelled.'))
       } else {
-        console.log('here')
         enqueueSnackbar(t('Failed to create subtitle.'), {
           variant: 'error'
         })

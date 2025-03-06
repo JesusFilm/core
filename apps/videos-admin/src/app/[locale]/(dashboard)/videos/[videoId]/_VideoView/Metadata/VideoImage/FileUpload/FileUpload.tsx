@@ -16,6 +16,7 @@ interface FileUploadProps {
   loading?: boolean
   onUploadComplete?: () => void
   noClick?: boolean
+  validator?: (file: File) => { code: string; message: string } | null
 }
 
 export function FileUpload({
@@ -23,7 +24,8 @@ export function FileUpload({
   accept,
   loading,
   onUploadComplete,
-  noClick = true
+  noClick = true,
+  validator
 }: FileUploadProps): ReactElement {
   const t = useTranslations()
   async function onDrop(files: File[]): Promise<void> {
@@ -41,7 +43,8 @@ export function FileUpload({
       noClick,
       multiple: false,
       maxSize: 10000000,
-      accept
+      accept,
+      validator
     })
 
   const noBorder = loading != null && loading
