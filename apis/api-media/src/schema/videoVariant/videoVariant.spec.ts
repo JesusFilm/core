@@ -418,7 +418,8 @@ describe('videoVariant', () => {
           muxVideoId: null,
           masterUrl: 'masterUrl',
           masterWidth: 320,
-          masterHeight: 180
+          masterHeight: 180,
+          assetId: null
         })
         const result = await authClient({
           document: VIDEO_VARIANT_CREATE_MUTATION,
@@ -513,7 +514,8 @@ describe('videoVariant', () => {
           muxVideoId: null,
           masterUrl: 'masterUrl',
           masterWidth: 320,
-          masterHeight: 180
+          masterHeight: 180,
+          assetId: null
         })
         const result = await authClient({
           document: VIDEO_VARIANT_UPDATE_MUTATION,
@@ -607,7 +609,8 @@ describe('videoVariant', () => {
           muxVideoId: null,
           masterUrl: 'masterUrl',
           masterWidth: 320,
-          masterHeight: 180
+          masterHeight: 180,
+          assetId: null
         })
         const result = await authClient({
           document: VIDEO_VARIANT_DELETE_MUTATION,

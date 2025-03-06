@@ -259,7 +259,8 @@ describe('video', () => {
           muxVideoId: 'muxVideoId',
           masterUrl: 'masterUrl',
           masterWidth: 320,
-          masterHeight: 180
+          masterHeight: 180,
+          assetId: null
         },
         {
           id: 'variantId1',
@@ -277,7 +278,8 @@ describe('video', () => {
           muxVideoId: 'muxVideoId1',
           masterUrl: 'masterUrl1',
           masterWidth: 320,
-          masterHeight: 180
+          masterHeight: 180,
+          assetId: null
         }
       ]
     }

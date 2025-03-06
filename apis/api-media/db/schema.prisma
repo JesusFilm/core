@@ -64,17 +64,19 @@ model MuxVideo {
 }
 
 model CloudflareR2 {
-  id            String   @id @default(uuid())
-  fileName      String
-  uploadUrl     String?
-  userId        String
-  publicUrl     String?
-  videoId       String?
-  contentType   String   @default("application/octet-stream")
-  contentLength Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @default(now()) @updatedAt
-  video         Video?   @relation(fields: [videoId], references: [id])
+  id                   String                 @id @default(uuid())
+  fileName             String
+  uploadUrl            String?
+  userId               String
+  publicUrl            String?
+  videoId              String?
+  contentType          String                 @default("application/octet-stream")
+  contentLength        Int                    @default(0)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @default(now()) @updatedAt
+  video                Video?                 @relation(fields: [videoId], references: [id])
+  videoVariant         VideoVariant[]
+  videoVariantDownload VideoVariantDownload[]
 
   @@index(videoId(type: Hash))
   @@index(userId(type: Hash))
@@ -152,6 +154,8 @@ model VideoVariantDownload {
   height         Int?
   width          Int?
   url            String
+  assetId        String?
+  asset          CloudflareR2?               @relation(fields: [assetId], references: [id])
   videoVariantId String?
   videoVariant   VideoVariant?               @relation(fields: [videoVariantId], references: [id], onDelete: Cascade)
 
@@ -178,6 +182,8 @@ model VideoVariant {
   slug                 String                 @unique
   video                Video?                 @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId              String
+  assetId              String?
+  asset                CloudflareR2?          @relation(fields: [assetId], references: [id])
   muxVideoId           String?
   muxVideo             MuxVideo?              @relation(fields: [muxVideoId], references: [id])
 
