@@ -7,7 +7,7 @@ import {
   ParserPreset
 } from '@commitlint/types'
 import { danger, fail, markdown, warn } from 'danger'
-import config from './commitlint.danger'
+import config from './commitlint.config'
 
 export default async () => {
   // merge queues not supported by danger-js
@@ -53,40 +53,11 @@ export default async () => {
     fail('Please assign someone to merge this PR.')
   }
 
-  // check PR has type label
-  if (
-    !danger.github.issue.labels.some((label) => label.name.includes('type:'))
-  ) {
-    fail('Please add type label to this PR.')
-  }
-
-  // check PR has priority label
-  if (
-    !danger.github.issue.labels.some((label) =>
-      label.name.includes('priority:')
-    )
-  ) {
-    fail('Please add priority label to this PR.')
-  }
-
-  // check PR has effort label
-  if (
-    !danger.github.issue.labels.some((label) => label.name.includes('effort:'))
-  ) {
-    fail('Please add effort label to this PR.')
-  }
-
   // pull PR data from GitHub API
   const currentPR = await danger.github.api.pulls.get({
     ...danger.github.thisPR,
     pull_number: danger.github.thisPR.number
   })
-
-  // check PR has milestone
-  // ignore dependabot
-  if (currentPR.data.milestone === null && !isDependabot) {
-    fail('Please add milestone to this PR.')
-  }
 
   // pull reviews for PR from GitHub API
   const reviews = await danger.github.api.pulls.listReviews({
