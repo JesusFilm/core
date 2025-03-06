@@ -8,12 +8,6 @@ import { prismaMock } from '../../../../test/prismaMock'
 
 import { service } from '.'
 
-// Mock uuid to return a predictable value
-jest.mock('uuid', () => ({
-  v4: jest.fn().mockReturnValue('mock-uuid')
-}))
-
-// Mock the S3Client
 jest.mock('@aws-sdk/client-s3', () => {
   const originalModule = jest.requireActual('@aws-sdk/client-s3')
   return {
@@ -24,7 +18,6 @@ jest.mock('@aws-sdk/client-s3', () => {
   }
 })
 
-// Mock fetch
 global.fetch = jest.fn().mockImplementation(() =>
   Promise.resolve({
     ok: true,
@@ -54,7 +47,6 @@ describe('assetUploader/service', () => {
 
   describe('service', () => {
     it('should process videoVariantDownloads without assets', async () => {
-      // Mock the videoVariantDownload data
       const mockDownloads = [
         {
           id: 'download-1',
@@ -86,11 +78,9 @@ describe('assetUploader/service', () => {
         }
       ]
 
-      // Expected filenames based on the actual implementation
       const expectedFileName1 = 'video-1/variants/downloads/variant-1_high.mp4'
       const expectedFileName2 = 'video-2/variants/downloads/variant-2_low.mp4'
 
-      // Mock the created CloudflareR2 assets
       const mockAsset1 = {
         id: 'asset-1',
         fileName: expectedFileName1,
@@ -117,7 +107,6 @@ describe('assetUploader/service', () => {
         updatedAt: new Date()
       }
 
-      // Setup Prisma mocks
       prismaMock.videoVariantDownload.findMany.mockResolvedValue(
         mockDownloads as any
       )
@@ -139,10 +128,8 @@ describe('assetUploader/service', () => {
           url: mockAsset2.publicUrl
         } as any)
 
-      // Call the service
       await service(mockLogger)
 
-      // Verify Prisma calls
       expect(prismaMock.videoVariantDownload.findMany).toHaveBeenCalledWith({
         where: {
           assetId: null,
@@ -158,7 +145,6 @@ describe('assetUploader/service', () => {
         }
       })
 
-      // Verify CloudflareR2 creation
       expect(prismaMock.cloudflareR2.create).toHaveBeenCalledTimes(2)
       expect(prismaMock.cloudflareR2.create).toHaveBeenCalledWith({
         data: {
@@ -179,7 +165,6 @@ describe('assetUploader/service', () => {
         }
       })
 
-      // Verify fetch was called to download the files
       expect(global.fetch).toHaveBeenCalledTimes(2)
       expect(global.fetch).toHaveBeenCalledWith(
         'https://example.com/video1.mp4'
@@ -188,10 +173,8 @@ describe('assetUploader/service', () => {
         'https://example.com/video2.mp4'
       )
 
-      // Verify S3Client was used to upload the files
       expect(S3Client).toHaveBeenCalledTimes(2)
 
-      // Verify CloudflareR2 updates
       expect(prismaMock.cloudflareR2.update).toHaveBeenCalledTimes(2)
       expect(prismaMock.cloudflareR2.update).toHaveBeenCalledWith({
         where: { id: 'asset-1' },
@@ -202,7 +185,6 @@ describe('assetUploader/service', () => {
         data: { publicUrl: `https://test-domain.com/${expectedFileName2}` }
       })
 
-      // Verify videoVariantDownload updates
       expect(prismaMock.videoVariantDownload.update).toHaveBeenCalledTimes(2)
       expect(prismaMock.videoVariantDownload.update).toHaveBeenCalledWith({
         where: { id: 'download-1' },
@@ -219,7 +201,6 @@ describe('assetUploader/service', () => {
         }
       })
 
-      // Verify logger was used
       expect(mockLogger.info).toHaveBeenCalledWith(
         'Starting assetUploader service'
       )
@@ -232,7 +213,6 @@ describe('assetUploader/service', () => {
     })
 
     it('should handle errors when processing downloads', async () => {
-      // Mock a download that will cause an error
       const mockDownloads = [
         {
           id: 'download-error',
@@ -250,20 +230,16 @@ describe('assetUploader/service', () => {
         }
       ]
 
-      // Setup Prisma mocks
       prismaMock.videoVariantDownload.findMany.mockResolvedValue(
         mockDownloads as any
       )
 
-      // Mock fetch to throw an error
       global.fetch = jest.fn().mockImplementation(() => {
         throw new Error('Network error')
       })
 
-      // Call the service
       await service(mockLogger)
 
-      // Verify error was logged
       expect(mockLogger.error).toHaveBeenCalledWith(
         expect.objectContaining({
           error: expect.any(Error),
@@ -272,20 +248,16 @@ describe('assetUploader/service', () => {
         'Error processing download: download-error'
       )
 
-      // Verify service completed despite error
       expect(mockLogger.info).toHaveBeenCalledWith(
         'Completed assetUploader service'
       )
     })
 
     it('should handle empty results', async () => {
-      // Mock empty results
       prismaMock.videoVariantDownload.findMany.mockResolvedValue([])
 
-      // Call the service
       await service(mockLogger)
 
-      // Verify logger messages
       expect(mockLogger.info).toHaveBeenCalledWith(
         'Starting assetUploader service'
       )
@@ -296,7 +268,6 @@ describe('assetUploader/service', () => {
         'Completed assetUploader service'
       )
 
-      // Verify no further processing was done
       expect(prismaMock.cloudflareR2.create).not.toHaveBeenCalled()
       expect(global.fetch).not.toHaveBeenCalled()
     })

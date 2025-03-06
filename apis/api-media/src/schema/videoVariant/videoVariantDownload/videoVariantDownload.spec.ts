@@ -42,7 +42,8 @@ describe('videoVariantDownload', () => {
           size: 1024,
           height: 1024,
           width: 1024,
-          url: 'url'
+          url: 'url',
+          assetId: null
         })
         const result = await authClient({
           document: VIDEO_VARIANT_DOWNLOAD_CREATE_MUTATION,
@@ -117,7 +118,8 @@ describe('videoVariantDownload', () => {
           size: 1024,
           height: 1024,
           width: 1024,
-          url: 'url'
+          url: 'url',
+          assetId: null
         })
         const result = await authClient({
           document: VIDEO_VARIANT_DOWNLOAD_UPDATE_MUTATION,
@@ -190,7 +192,8 @@ describe('videoVariantDownload', () => {
           size: 1024,
           height: 1024,
           width: 1024,
-          url: 'url'
+          url: 'url',
+          assetId: null
         })
         const result = await authClient({
           document: VIDEO_VARIANT_DOWNLOAD_DELETE_MUTATION,

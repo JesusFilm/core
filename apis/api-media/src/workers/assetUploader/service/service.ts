@@ -65,6 +65,7 @@ async function uploadToR2FromUrl(
 
 export async function service(logger?: Logger): Promise<void> {
   logger?.info('Starting assetUploader service')
+
   const downloadsWithoutAssets = await prisma.videoVariantDownload.findMany({
     where: {
       assetId: null,
@@ -106,7 +107,7 @@ export async function service(logger?: Logger): Promise<void> {
       const asset = await prisma.cloudflareR2.create({
         data: {
           fileName,
-          userId: 'system', // Using 'system' as the user ID for automated uploads
+          userId: 'system',
           contentType,
           contentLength: download.size ? Math.floor(download.size) : 0,
           videoId
@@ -115,7 +116,6 @@ export async function service(logger?: Logger): Promise<void> {
 
       logger?.info(`Created CloudflareR2 asset: ${asset.id}`)
 
-      // Upload the file to R2
       const publicUrl = await uploadToR2FromUrl(
         download.url,
         fileName,
@@ -123,13 +123,11 @@ export async function service(logger?: Logger): Promise<void> {
         logger
       )
 
-      // Update the asset with the public URL
       await prisma.cloudflareR2.update({
         where: { id: asset.id },
         data: { publicUrl }
       })
 
-      // Update the videoVariantDownload with the new asset ID and URL
       await prisma.videoVariantDownload.update({
         where: { id: download.id },
         data: {
