@@ -11,29 +11,40 @@ import { Accept, useDropzone } from 'react-dropzone'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
 interface FileUploadProps {
-  onDrop: (file: File) => Promise<void>
+  onDrop?: (file: File) => Promise<void>
+  onDropMultiple?: (files: File[]) => Promise<void>
   accept?: Accept
   loading?: boolean
   onUploadComplete?: () => void
   noClick?: boolean
   validator?: (file: File) => { code: string; message: string } | null
+  maxFiles?: number
 }
 
 export function FileUpload({
   onDrop: onDropCallback,
+  onDropMultiple: onDropCallbackMultiple,
   accept,
   loading,
   onUploadComplete,
   noClick = true,
-  validator
+  validator,
+  maxFiles = 1
 }: FileUploadProps): ReactElement {
   const t = useTranslations()
+
   async function onDrop(files: File[]): Promise<void> {
     if (files.length <= 0) {
       onUploadComplete?.()
       return
     }
-    await onDropCallback(files[0])
+
+    if (maxFiles > 1 && onDropCallbackMultiple) {
+      await onDropCallbackMultiple(files)
+    } else if (onDropCallback) {
+      await onDropCallback(files[0])
+    }
+
     onUploadComplete?.()
   }
 
@@ -41,7 +52,8 @@ export function FileUpload({
     useDropzone({
       onDrop,
       noClick,
-      multiple: false,
+      multiple: maxFiles > 1,
+      maxFiles: maxFiles,
       maxSize: 10000000,
       accept,
       validator
@@ -94,14 +106,18 @@ export function FileUpload({
           <Stack alignItems="center" gap={1}>
             <Upload1Icon fontSize="large" />
             <Typography variant="body2" sx={{ cursor: 'pointer' }}>
-              {t('Drag & drop or choose a file to upload')}
+              {maxFiles > 1
+                ? t('Drag & drop or choose files to upload (max: {maxFiles})', {
+                    maxFiles
+                  })
+                : t('Drag & drop or choose a file to upload')}
             </Typography>
           </Stack>
         )}
       </Box>
       {noClick && (
         <Button variant="outlined" fullWidth onClick={open} disabled={loading}>
-          {t('Upload file')}
+          {maxFiles > 1 ? t('Upload files') : t('Upload file')}
         </Button>
       )}
     </Stack>

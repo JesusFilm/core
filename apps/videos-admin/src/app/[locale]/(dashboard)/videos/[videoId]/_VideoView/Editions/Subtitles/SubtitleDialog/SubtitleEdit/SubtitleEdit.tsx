@@ -11,7 +11,9 @@ import {
 import { useCreateR2AssetMutation } from '../../../../../../../../../../libs/useCreateR2Asset'
 import { useVideo } from '../../../../../../../../../../libs/VideoProvider'
 import { SubtitleForm, SubtitleValidationSchema } from '../../SubtitleForm'
-import { getSubtitleR2Path } from '../getSubtitleR2Path'
+
+import { handleSrtFile } from './handleSrtFile'
+import { handleVttFile } from './handleVttFile'
 
 export const UPDATE_VIDEO_SUBTITLE = graphql(`
   mutation UpdateVideoSubtitle($input: VideoSubtitleUpdateInput!) {
@@ -35,13 +37,6 @@ export type UpdateVideoSubtitleVariables = VariablesOf<
   typeof UPDATE_VIDEO_SUBTITLE
 >
 export type UpdateVideoSubtitle = ResultOf<typeof UPDATE_VIDEO_SUBTITLE>
-
-function extractSubtitleFileName(subtitle: any) {
-  if (subtitle.value == null) return null
-
-  const fileName = subtitle.value.split('/').pop()
-  return fileName
-}
 
 interface SubtitleEditProps {
   edition: Edition
@@ -77,8 +72,13 @@ export function SubtitleEdit({
   }
 
   const handleSubmit = async (values: SubtitleValidationSchema) => {
-    if (edition.name == null) return
+    if (edition == null || edition.name == null) return
+
     setLoading(true)
+    abortController.current = new AbortController()
+
+    const vttFile = values.vttFile as File | null
+    const srtFile = values.srtFile as File | null
 
     const input: UpdateVideoSubtitleVariables['input'] = {
       id: subtitle.id,
@@ -89,48 +89,31 @@ export function SubtitleEdit({
       srtSrc: subtitle.srtSrc ?? null
     }
 
-    const file = values.file as File | null
-    const existingFileName = extractSubtitleFileName(subtitle)
-
     try {
-      if (file != null && file?.name !== existingFileName) {
-        const fileName = getSubtitleR2Path(
+      // Handle VTT file upload
+      if (vttFile != null) {
+        input.vttSrc = await handleVttFile({
+          vttFile,
           video,
           edition,
-          values.language,
-          file
-        )
-
-        const result = await createR2Asset({
-          variables: {
-            input: {
-              videoId: video.id,
-              fileName: fileName,
-              contentType: file.type,
-              contentLength: file.size
-            }
-          },
-          context: {
-            fetchOptions: {
-              signal: abortController.current?.signal
-            }
-          }
+          languageId: subtitle.language.id,
+          createR2Asset,
+          uploadAssetFile,
+          abortController
         })
+      }
 
-        if (result.data?.cloudflareR2Create?.uploadUrl == null) {
-          throw new Error(t('Failed to create r2 asset.'))
-        }
-
-        const uploadUrl = result.data.cloudflareR2Create.uploadUrl
-        const publicUrl = result.data.cloudflareR2Create.publicUrl
-
-        await uploadAssetFile(file, uploadUrl)
-
-        if (file.type === 'text/vtt') {
-          input.vttSrc = publicUrl
-        } else if (file.type === 'application/x-subrip') {
-          input.srtSrc = publicUrl
-        }
+      // Handle SRT file upload
+      if (srtFile != null) {
+        input.srtSrc = await handleSrtFile({
+          srtFile,
+          video,
+          edition,
+          languageId: subtitle.language.id,
+          createR2Asset,
+          uploadAssetFile,
+          abortController
+        })
       }
 
       await updateVideoSubtitle({
@@ -176,7 +159,8 @@ export function SubtitleEdit({
       subtitle={subtitle}
       initialValues={{
         language: subtitle.language.id,
-        file: null // TODO: update this to the existing file, blocked by R2 retrieval yet to be implemented
+        vttFile: null,
+        srtFile: null
       }}
       onSubmit={handleSubmit}
       loading={loading}

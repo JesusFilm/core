@@ -2,13 +2,17 @@ import Box from '@mui/material/Box'
 import Link from '@mui/material/Link'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { useField } from 'formik'
+import { useTranslations } from 'next-intl'
 
 import File5 from '@core/shared/ui/icons/File5'
 
 import { File } from '../../../../../../../../../../components/File'
 import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { FileUpload } from '../../../../Metadata/VideoImage/FileUpload'
+
+import { validateSubtitleFile } from './validateSubtitleFile'
 
 function LinkFile({ name, link }: { name: string; link: string }) {
   return (
@@ -50,62 +54,87 @@ function LinkFile({ name, link }: { name: string; link: string }) {
 }
 
 export function SubtitleFileUpload({ subtitle }: { subtitle?: Subtitle }) {
-  const [field, meta, helpers] = useField<File | null>('file')
+  const t = useTranslations()
+  const [vttField, _vttMeta, vttHelpers] = useField<File | null>('vttFile')
+  const [srtField, _srtMeta, srtHelpers] = useField<File | null>('srtFile')
 
-  const handleDrop = async (file: File) => {
-    console.log('handleDrop', file)
-    await helpers.setValue(file)
-  }
+  const handleDropMultiple = async (files: File[]) => {
+    // Process each file and assign to the appropriate field
+    for (const file of files) {
+      const extension = file.name.split('.').pop()?.toLowerCase()
 
-  const handleDelete = async () => {
-    const currentValue = field.value
-    const initialValue = meta.initialValue ?? null
-    const isInitialValue =
-      currentValue?.name === initialValue?.name &&
-      currentValue?.size === initialValue?.size &&
-      currentValue?.type === initialValue?.type
-
-    await helpers.setValue(isInitialValue ? null : initialValue)
-  }
-
-  // Custom file validator function for subtitle files
-  // SRT files do not have an official MIME type, so we need to check the extension
-  const validateSubtitleFile = (file: File) => {
-    // Get the file extension
-    const extension = file.name.split('.').pop()?.toLowerCase()
-    // Check if the file is a VTT or SRT file based on extension
-    if (extension !== 'vtt' && extension !== 'srt') {
-      return {
-        code: 'file-invalid-type',
-        message: 'File must be a VTT or SRT subtitle file'
+      if (extension === 'vtt') {
+        await vttHelpers.setValue(file)
+      } else if (extension === 'srt') {
+        await srtHelpers.setValue(file)
       }
     }
-    return null
+  }
+
+  const handleDeleteVtt = async () => {
+    await vttHelpers.setValue(null)
+  }
+
+  const handleDeleteSrt = async () => {
+    await srtHelpers.setValue(null)
+  }
+
+  // Use the imported validator function
+  const validateFile = (file: File) => {
+    return validateSubtitleFile(file, vttField, srtField)
   }
 
   return (
     <Stack gap={2}>
+      <Typography variant="subtitle2">{t('Subtitle Files')}</Typography>
+      <Typography variant="body2" color="text.secondary">
+        {t(
+          'You can upload both VTT and SRT files for the same subtitle. Drop files together or one at a time.'
+        )}
+      </Typography>
+
       <FileUpload
-        onDrop={handleDrop}
-        validator={validateSubtitleFile}
+        onDropMultiple={handleDropMultiple}
+        maxFiles={2}
+        validator={validateFile}
         accept={{
           'text/vtt': ['.vtt'],
-          'application/x-subrip': ['.srt']
+          'text/plain': ['.srt'],
+          'application/x-subrip': ['.srt'],
+          'text/srt': ['.srt']
         }}
         loading={false}
       />
-      {field.value ? (
+
+      {vttField.value && (
         <File
-          file={field.value}
+          file={vttField.value}
           type="text"
-          actions={{ onDelete: handleDelete }}
+          actions={{ onDelete: handleDeleteVtt }}
         />
-      ) : subtitle?.value ? (
+      )}
+
+      {srtField.value && (
+        <File
+          file={srtField.value}
+          type="text"
+          actions={{ onDelete: handleDeleteSrt }}
+        />
+      )}
+
+      {vttField.value == null && subtitle?.vttSrc && (
         <LinkFile
-          name={subtitle.value.split('/').pop() ?? ''}
-          link={subtitle.value}
+          name={subtitle.vttSrc.split('/').pop() ?? ''}
+          link={subtitle.vttSrc}
         />
-      ) : null}
+      )}
+
+      {srtField.value == null && subtitle?.srtSrc && (
+        <LinkFile
+          name={subtitle.srtSrc.split('/').pop() ?? ''}
+          link={subtitle.srtSrc}
+        />
+      )}
     </Stack>
   )
 }

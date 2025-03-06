@@ -4,9 +4,8 @@ import Stack from '@mui/material/Stack'
 import { Form, Formik } from 'formik'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useMemo } from 'react'
-import { InferType, boolean, mixed, object, string } from 'yup'
+import { InferType, mixed, object, string } from 'yup'
 
-import { FormCheckbox } from '../../../../../../../../../components/FormCheckbox'
 import { FormLanguageSelect } from '../../../../../../../../../components/FormLanguageSelect'
 import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
@@ -15,7 +14,8 @@ import { SubtitleFileUpload } from './SubtitleFileUpload'
 const createValidationSchema = (t) => {
   return object().shape({
     language: string().required(t('Language is required')),
-    file: mixed().nullable()
+    vttFile: mixed().nullable(),
+    srtFile: mixed().nullable()
   })
 }
 

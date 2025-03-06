@@ -113,7 +113,8 @@ export function SubtitleCreate({
     setLoading(true)
     abortController.current = new AbortController()
 
-    const file = values.file as File | null
+    const vttFile = values.vttFile as File | null
+    const srtFile = values.srtFile as File | null
 
     const input: CreateVideoSubtitleVariables['input'] = {
       videoId: video.id,
@@ -126,12 +127,13 @@ export function SubtitleCreate({
     }
 
     try {
-      if (file != null) {
+      // Handle VTT file upload
+      if (vttFile != null) {
         const fileName = getSubtitleR2Path(
           video,
           edition,
           values.language,
-          file
+          vttFile
         )
 
         const result = await createR2Asset({
@@ -139,8 +141,8 @@ export function SubtitleCreate({
             input: {
               videoId: video.id,
               fileName: fileName,
-              contentType: file.type,
-              contentLength: file.size
+              contentType: vttFile.type,
+              contentLength: vttFile.size
             }
           },
           context: {
@@ -151,19 +153,50 @@ export function SubtitleCreate({
         })
 
         if (result.data?.cloudflareR2Create?.uploadUrl == null) {
-          throw new Error(t('Failed to create r2 asset.'))
+          throw new Error(t('Failed to create r2 asset for VTT file.'))
         }
 
         const uploadUrl = result.data.cloudflareR2Create.uploadUrl
         const publicUrl = result.data.cloudflareR2Create.publicUrl
 
-        await uploadAssetFile(file, uploadUrl)
+        await uploadAssetFile(vttFile, uploadUrl)
+        input.vttSrc = publicUrl
+      }
 
-        if (file.type === 'text/vtt') {
-          input.vttSrc = publicUrl
-        } else if (file.type === 'application/x-subrip') {
-          input.srtSrc = publicUrl
+      // Handle SRT file upload
+      if (srtFile != null) {
+        const fileName = getSubtitleR2Path(
+          video,
+          edition,
+          values.language,
+          srtFile
+        )
+
+        const result = await createR2Asset({
+          variables: {
+            input: {
+              videoId: video.id,
+              fileName: fileName,
+              contentType: srtFile.type,
+              contentLength: srtFile.size
+            }
+          },
+          context: {
+            fetchOptions: {
+              signal: abortController.current?.signal
+            }
+          }
+        })
+
+        if (result.data?.cloudflareR2Create?.uploadUrl == null) {
+          throw new Error(t('Failed to create r2 asset for SRT file.'))
         }
+
+        const uploadUrl = result.data.cloudflareR2Create.uploadUrl
+        const publicUrl = result.data.cloudflareR2Create.publicUrl
+
+        await uploadAssetFile(srtFile, uploadUrl)
+        input.srtSrc = publicUrl
       }
 
       await createVideoSubtitle({
@@ -208,7 +241,7 @@ export function SubtitleCreate({
   return (
     <SubtitleForm
       variant="create"
-      initialValues={{ language: '' }}
+      initialValues={{ language: '', vttFile: null, srtFile: null }}
       onSubmit={handleSubmit}
       loading={loading}
       subtitleLanguagesMap={subtitleLanguagesMap}
