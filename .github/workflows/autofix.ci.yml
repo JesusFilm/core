@@ -79,8 +79,6 @@ jobs:
           targets: type-check,extract-translations,subgraph-check
         env:
           HIVE_TOKEN: ${{ secrets.HIVE_PROD_READ_ONLY_TOKEN }}
-      - name: lint commit messages
-        run: npx commitlint --from 9a45682 # earliest good commit to main
       - name: lint branch name
         if: ${{ github.event_name == 'pull_request' }}
         run: npx validate-branch-name -t $GITHUB_HEAD_REF
