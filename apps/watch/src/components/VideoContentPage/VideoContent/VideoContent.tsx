@@ -121,15 +121,15 @@ export function VideoContent(): ReactElement {
                 <Box
                   sx={{
                     display: 'flex',
-                    minHeight: 38,
-                    minWidth: 38,
+                    minHeight: 42,
+                    minWidth: 42,
                     backgroundColor: '#EDEDED',
                     borderRadius: '50%',
                     alignItems: 'center',
                     justifyContent: 'center'
                   }}
                 >
-                  <Typography variant="h6">{index + 1}</Typography>
+                  <Typography variant="h5">{index + 1}</Typography>
                 </Box>
                 <Typography
                   key={index}
