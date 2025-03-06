@@ -2,13 +2,9 @@ import path from 'path'
 
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { Logger } from 'pino'
-import { v4 as uuidv4 } from 'uuid'
 
 import { prisma } from '../../../lib/prisma'
 
-/**
- * Gets the S3 client for Cloudflare R2
- */
 function getClient(): S3Client {
   if (process.env.CLOUDFLARE_R2_ENDPOINT == null)
     throw new Error('Missing CLOUDFLARE_R2_ENDPOINT')
@@ -27,9 +23,6 @@ function getClient(): S3Client {
   })
 }
 
-/**
- * Uploads a file to Cloudflare R2 from a URL
- */
 async function uploadToR2FromUrl(
   url: string,
   fileName: string,
@@ -70,13 +63,8 @@ async function uploadToR2FromUrl(
   return publicUrl
 }
 
-/**
- * Main service function that processes videoVariantDownloads without assets
- */
 export async function service(logger?: Logger): Promise<void> {
   logger?.info('Starting assetUploader service')
-
-  // Find all videoVariantDownloads without an associated asset
   const downloadsWithoutAssets = await prisma.videoVariantDownload.findMany({
     where: {
       assetId: null,
@@ -97,20 +85,24 @@ export async function service(logger?: Logger): Promise<void> {
   )
 
   for (const download of downloadsWithoutAssets) {
+    if (download.videoVariant == null) {
+      logger?.error(
+        { downloadId: download.id },
+        'Download has no associated video variant'
+      )
+      continue
+    }
+
+    const videoId = download.videoVariant.videoId
+
     try {
-      // Generate a unique filename
       const fileExtension =
         path.extname(new URL(download.url).pathname) || '.mp4'
-      const fileName = `video-download-${uuidv4()}${fileExtension}`
+      const fileName = `${videoId}/variants/downloads/${download.videoVariant.id}_${download.quality}${fileExtension}`
 
-      // Get the content type based on the file extension
       const contentType =
         fileExtension === '.mp4' ? 'video/mp4' : 'application/octet-stream'
 
-      // Get the video ID from the variant or use a placeholder
-      const videoId = download.videoVariant?.videoId || undefined
-
-      // Create a new CloudflareR2 asset
       const asset = await prisma.cloudflareR2.create({
         data: {
           fileName,
