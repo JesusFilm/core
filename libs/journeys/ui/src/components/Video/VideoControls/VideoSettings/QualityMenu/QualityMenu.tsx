@@ -51,7 +51,7 @@ export function QualityMenu({
     const tech = player.tech({ IWillNotUseThisInPlugins: true })
     let qualities: QualityMenuItem[] = []
 
-    if (tech?.name_ === 'Html5') {
+    if (tech != null && 'vhs' in tech) {
       const qualityLevels = player.qualityLevels()
       qualities = Array.from({ length: qualityLevels.length }).reduce<
         (QualityMenuItem & { height: number })[]
@@ -68,7 +68,6 @@ export function QualityMenu({
         return acc
       }, [])
     }
-    console.log('INITIAL QUALITIES', qualities)
     setQualities([
       { resolution: 'Auto', qualityLevel: -1 },
       ...qualities.map(({ resolution, qualityLevel }) => ({
@@ -82,18 +81,16 @@ export function QualityMenu({
   useEffect(() => {
     if (selectedQuality === -1) {
       const qualityLevels = player.qualityLevels()
-      console.log('QUALITY LEVELS', qualityLevels)
 
       const handleAutoQualityChange = () => {
         const tech = player.tech({ IWillNotUseThisInPlugins: true })
-        console.log('TECH', tech)
 
         if (
-          tech?.name_ === 'Youtube' &&
+          tech != null &&
+          'ytPlayer' in tech &&
           tech?.ytPlayer?.getPlaybackQuality != null
         ) {
           const currentQuality = tech?.ytPlayer?.getPlaybackQuality() ?? ''
-          console.log('YT CURRENT QUALITY', currentQuality)
           const displayQuality =
             YOUTUBE_QUALITY_LABELS[currentQuality] ?? currentQuality
           onQualityChanged(`Auto (${displayQuality})`)
@@ -101,7 +98,6 @@ export function QualityMenu({
           const activeResolution = qualities.find(
             (q) => q.qualityLevel === qualityLevels.selectedIndex
           )?.resolution
-          console.log('HTML5 ACTIVE RESOLUTION', activeResolution)
           if (activeResolution) {
             onQualityChanged(`Auto (${activeResolution})`)
           }
@@ -121,7 +117,7 @@ export function QualityMenu({
     const qualityLevels = player.qualityLevels()
     const tech = player.tech({ IWillNotUseThisInPlugins: true })
 
-    if (tech?.name_ !== 'Html5') {
+    if (!(tech != null && 'vhs' in tech)) {
       onClose()
       return
     }

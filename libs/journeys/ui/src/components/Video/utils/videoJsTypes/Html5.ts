@@ -6,7 +6,6 @@ import Tech from 'video.js/dist/types/tech/tech'
 // https://www.npmjs.com/package/@videojs/http-streaming
 
 export interface Html5 extends Tech {
-  name_: 'Html5'
   vhs: {
     playlistController_?: {
       fastQualityChange_?: () => void
