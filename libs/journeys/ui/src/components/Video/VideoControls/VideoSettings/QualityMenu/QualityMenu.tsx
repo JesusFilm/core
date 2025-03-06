@@ -68,6 +68,7 @@ export function QualityMenu({
         return acc
       }, [])
     }
+    console.log('INITIAL QUALITIES', qualities)
     setQualities([
       { resolution: 'Auto', qualityLevel: -1 },
       ...qualities.map(({ resolution, qualityLevel }) => ({
@@ -81,15 +82,18 @@ export function QualityMenu({
   useEffect(() => {
     if (selectedQuality === -1) {
       const qualityLevels = player.qualityLevels()
+      console.log('QUALITY LEVELS', qualityLevels)
 
       const handleAutoQualityChange = () => {
         const tech = player.tech({ IWillNotUseThisInPlugins: true })
+        console.log('TECH', tech)
 
         if (
           tech?.name_ === 'Youtube' &&
           tech?.ytPlayer?.getPlaybackQuality != null
         ) {
           const currentQuality = tech?.ytPlayer?.getPlaybackQuality() ?? ''
+          console.log('YT CURRENT QUALITY', currentQuality)
           const displayQuality =
             YOUTUBE_QUALITY_LABELS[currentQuality] ?? currentQuality
           onQualityChanged(`Auto (${displayQuality})`)
@@ -97,6 +101,7 @@ export function QualityMenu({
           const activeResolution = qualities.find(
             (q) => q.qualityLevel === qualityLevels.selectedIndex
           )?.resolution
+          console.log('HTML5 ACTIVE RESOLUTION', activeResolution)
           if (activeResolution) {
             onQualityChanged(`Auto (${activeResolution})`)
           }
