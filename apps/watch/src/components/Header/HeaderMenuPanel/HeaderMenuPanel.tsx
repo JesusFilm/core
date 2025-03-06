@@ -34,9 +34,16 @@ export function HeaderMenuPanel({
         flexDirection: 'column',
         width: '100%',
         backgroundColor: 'background.default',
-        borderRadius: 0
+        borderRadius: 0,
+        position: 'relative'
       }}
     >
+      <Box
+        sx={{
+          height: { xs: 100, lg: 159 },
+          width: '100%'
+        }}
+      />
       <Box
         sx={{
           height: { xs: 100, lg: 159 },
@@ -46,7 +53,13 @@ export function HeaderMenuPanel({
           pb: { lg: 14 },
           display: 'flex',
           justifyContent: 'flex-end',
-          alignItems: 'center'
+          alignItems: 'center',
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          width: { xs: '100%', lg: 530 },
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          backgroundColor: 'background.default'
         }}
       >
         <Button
