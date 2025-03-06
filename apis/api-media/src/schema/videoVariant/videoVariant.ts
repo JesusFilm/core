@@ -11,7 +11,9 @@ import { VideoVariantUpdateInput } from './inputs/videoVariantUpdate'
 builder.prismaObject('VideoVariant', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
-    asset: t.relation('asset', { nullable: true }),
+    asset: t
+      .withAuth({ isPublisher: true })
+      .relation('asset', { nullable: true, description: 'master video file' }),
     videoId: t.exposeID('videoId'),
     hls: t.exposeString('hls'),
     dash: t.exposeString('dash'),
@@ -72,6 +74,10 @@ builder.prismaObject('VideoVariant', {
     slug: t.exposeString('slug', {
       nullable: false,
       description: 'slug is a permanent link to the video variant.'
+    }),
+    version: t.withAuth({ isPublisher: true }).exposeInt('version', {
+      nullable: false,
+      description: 'version control for master video file'
     })
   })
 })

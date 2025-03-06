@@ -37,7 +37,9 @@ describe('videoSubtitle', () => {
           vttSrc: 'vttSrc',
           srtSrc: 'srtSrc',
           primary: true,
-          languageId: 'languageId'
+          languageId: 'languageId',
+          assetId: null,
+          version: 1
         })
         const result = await authClient({
           document: CREATE_VIDEO_SUBTITLE_MUTATION,
@@ -99,7 +101,9 @@ describe('videoSubtitle', () => {
           vttSrc: 'vttSrc',
           srtSrc: 'srtSrc',
           primary: true,
-          languageId: 'languageId'
+          languageId: 'languageId',
+          assetId: null,
+          version: 1
         })
         const result = await authClient({
           document: DELETE_VIDEO_SUBTITLE_MUTATION,
@@ -148,7 +152,9 @@ describe('videoSubtitle', () => {
           vttSrc: 'vttSrc',
           srtSrc: 'srtSrc',
           primary: true,
-          languageId: 'languageId'
+          languageId: 'languageId',
+          assetId: null,
+          version: 1
         })
         const result = await authClient({
           document: UPDATE_VIDEO_SUBTITLE_MUTATION,

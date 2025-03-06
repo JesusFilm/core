@@ -194,7 +194,9 @@ describe('video', () => {
           vttSrc: null,
           srtSrc: null,
           videoId: 'videoId',
-          primary: true
+          primary: true,
+          assetId: null,
+          version: 1
         },
         {
           id: 'subtitleId1',
@@ -203,7 +205,9 @@ describe('video', () => {
           vttSrc: 'vttSrc',
           srtSrc: null,
           videoId: 'videoId',
-          primary: true
+          primary: true,
+          assetId: null,
+          version: 1
         },
         {
           id: 'subtitleId2',
@@ -212,7 +216,9 @@ describe('video', () => {
           vttSrc: null,
           srtSrc: 'srtSrc',
           videoId: 'videoId',
-          primary: true
+          primary: true,
+          assetId: null,
+          version: 1
         }
       ],
       images: [
@@ -260,7 +266,8 @@ describe('video', () => {
           masterUrl: 'masterUrl',
           masterWidth: 320,
           masterHeight: 180,
-          assetId: null
+          assetId: null,
+          version: 1
         },
         {
           id: 'variantId1',
@@ -279,7 +286,8 @@ describe('video', () => {
           masterUrl: 'masterUrl1',
           masterWidth: 320,
           masterHeight: 180,
-          assetId: null
+          assetId: null,
+          version: 1
         }
       ]
     }

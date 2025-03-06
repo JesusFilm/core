@@ -8,7 +8,9 @@ import { VideoVariantDownloadUpdateInput } from './inputs/videoVariantDownloadUp
 builder.prismaObject('VideoVariantDownload', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
-    asset: t.relation('asset', { nullable: true }),
+    asset: t
+      .withAuth({ isPublisher: true })
+      .relation('asset', { nullable: true, description: 'master video file' }),
     quality: t.field({
       type: VideoVariantDownloadQuality,
       nullable: false,
@@ -17,7 +19,11 @@ builder.prismaObject('VideoVariantDownload', {
     size: t.float({ nullable: false, resolve: ({ size }) => size ?? 0 }),
     height: t.int({ nullable: false, resolve: ({ height }) => height ?? 0 }),
     width: t.int({ nullable: false, resolve: ({ width }) => width ?? 0 }),
-    url: t.exposeString('url', { nullable: false })
+    url: t.exposeString('url', { nullable: false }),
+    version: t.withAuth({ isPublisher: true }).exposeInt('version', {
+      nullable: false,
+      description: 'master video file version'
+    })
   })
 })
 

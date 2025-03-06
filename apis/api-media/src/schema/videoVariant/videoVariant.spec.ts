@@ -109,7 +109,9 @@ describe('videoVariant', () => {
           srtSrc: null,
           primary: false,
           languageId: 'languageId',
-          videoId: 'videoId'
+          videoId: 'videoId',
+          assetId: null,
+          version: 1
         }
       ])
       prismaMock.videoSubtitle.count.mockResolvedValueOnce(123)
@@ -215,7 +217,9 @@ describe('videoVariant', () => {
           primary: false,
           languageId: 'languageId',
           videoId: 'videoId',
-          edition: 'base'
+          edition: 'base',
+          assetId: null,
+          version: 1
         }
       ])
       prismaMock.videoSubtitle.count.mockResolvedValueOnce(123)
@@ -321,7 +325,9 @@ describe('videoVariant', () => {
           srtSrc: null,
           primary: false,
           languageId: 'languageId',
-          videoId: 'videoId'
+          videoId: 'videoId',
+          assetId: null,
+          version: 1
         }
       ])
       prismaMock.videoSubtitle.count.mockResolvedValueOnce(123)
@@ -419,7 +425,8 @@ describe('videoVariant', () => {
           masterUrl: 'masterUrl',
           masterWidth: 320,
           masterHeight: 180,
-          assetId: null
+          assetId: null,
+          version: 1
         })
         const result = await authClient({
           document: VIDEO_VARIANT_CREATE_MUTATION,
@@ -515,7 +522,8 @@ describe('videoVariant', () => {
           masterUrl: 'masterUrl',
           masterWidth: 320,
           masterHeight: 180,
-          assetId: null
+          assetId: null,
+          version: 1
         })
         const result = await authClient({
           document: VIDEO_VARIANT_UPDATE_MUTATION,
@@ -610,7 +618,8 @@ describe('videoVariant', () => {
           masterUrl: 'masterUrl',
           masterWidth: 320,
           masterHeight: 180,
-          assetId: null
+          assetId: null,
+          version: 1
         })
         const result = await authClient({
           document: VIDEO_VARIANT_DELETE_MUTATION,

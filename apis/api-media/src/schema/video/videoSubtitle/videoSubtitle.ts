@@ -8,6 +8,9 @@ import { VideoSubtitleUpdateInput } from './inputs/videoSubtitleUpdate'
 builder.prismaObject('VideoSubtitle', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    asset: t
+      .withAuth({ isPublisher: true })
+      .relation('asset', { nullable: true, description: 'subtitle file' }),
     languageId: t.exposeID('languageId', { nullable: false }),
     primary: t.exposeBoolean('primary', { nullable: false }),
     edition: t.exposeString('edition', { nullable: false }),
@@ -21,6 +24,10 @@ builder.prismaObject('VideoSubtitle', {
       type: Language,
       nullable: false,
       resolve: ({ languageId: id }) => ({ id })
+    }),
+    version: t.withAuth({ isPublisher: true }).exposeInt('version', {
+      nullable: false,
+      description: 'version control for subtitle file'
     }),
     videoEdition: t.relation('videoEdition', { nullable: false })
   })
