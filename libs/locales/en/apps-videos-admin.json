@@ -69,6 +69,7 @@
   "Video description updated": "Video description updated",
   "Failed to update video description": "Failed to update video description",
   "Drag & drop or choose files to upload": "Drag & drop or choose files to upload (max: {maxFiles})",
+  "Drag & drop or choose a file to upload": "Drag & drop or choose a file to upload",
   "Upload files": "Upload files",
   "Upload file": "Upload file",
   "video image": "video image",
