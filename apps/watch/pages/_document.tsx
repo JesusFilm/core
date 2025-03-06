@@ -16,12 +16,14 @@ export default class MyDocument extends Document<{
     const languageName =
       language?.name?.find((name) => name && !name.primary)?.value ?? null
 
-    // Check if the current environment is dev or stg using only Vercel's environment variable
+    // Check if the current environment is production using Vercel's environment variable
     const vercelEnv = process.env.NEXT_PUBLIC_VERCEL_ENV || 'development'
 
-    // Only add robots meta tag for development and preview environments
-    const isNonProductionEnv =
-      vercelEnv === 'development' || vercelEnv === 'preview'
+    // Only exclude robots meta tag for production environment
+    // Account for different production environment naming conventions
+    const isProduction = ['production', 'prod', 'prd'].includes(
+      vercelEnv.toLowerCase()
+    )
 
     return (
       <Html lang={bcp47 ?? undefined}>
@@ -45,9 +47,7 @@ export default class MyDocument extends Document<{
           />
           {languageName && <meta name="language" content={languageName} />}
           {/* Add robots meta tag for dev and stg environments */}
-          {isNonProductionEnv && (
-            <meta name="robots" content="noindex,nofollow" />
-          )}
+          {!isProduction && <meta name="robots" content="noindex,nofollow" />}
           {/* Inject MUI styles first to match with the prepend: true configuration. */}
           {this.props.emotionStyleTags}
         </Head>
