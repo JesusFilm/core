@@ -80,7 +80,7 @@ The commit message should be structured as follows:
 
 Create a pull request to ask collaborators for feedback on your changes. Pull request review is so valuable to us that we require approving review and passing checks before pull requests can be merged. If you want early feedback or advice before you complete your changes, you can mark your pull request as a draft. For more information, see "[Creating a pull request](https://docs.github.com/en/articles/creating-a-pull-request)."
 
-When you create a pull request, include a summary of the changes and what problem they solve. You can include images, links, and tables to help convey this information. The body of the pull request will automatically be populated using our [pull request template](https://github.com/JesusFilm/core/blob/main/.github/pull_request_template.md).
+When you create a pull request, coderabbit.ai will populate a detailed description for you.
 
 [![Example pull request](./pull-request-example.png)](https://github.com/JesusFilm/core/pull/1020)
 
