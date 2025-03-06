@@ -464,5 +464,79 @@ describe('SubtitleEdit', () => {
         expect(subtitleEditWithExistingFileMock.result).toHaveBeenCalled()
       })
     })
+
+    it('should update subtitle with both vtt and srt files simultaneously', async () => {
+      const subtitleEditWithBothFilesMock = getEditSubtitleMock({
+        vttSrc:
+          'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt',
+        srtSrc:
+          'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
+        primary: true
+      })
+
+      render(
+        <NextIntlClientProvider locale="en">
+          <VideoProvider video={mockVideo}>
+            <MockedProvider
+              mocks={[
+                getLanguagesMock,
+                createR2VttAssetMock,
+                createR2SrtAssetMock,
+                subtitleEditWithBothFilesMock
+              ]}
+            >
+              <SubtitleEdit
+                subtitle={{
+                  ...mockSubtitle,
+                  primary: false,
+                  value: null,
+                  vttSrc: null,
+                  srtSrc: null
+                }}
+                edition={mockEdition}
+                subtitleLanguagesMap={mockSubtitleLanguagesMap}
+              />
+            </MockedProvider>
+          </VideoProvider>
+        </NextIntlClientProvider>
+      )
+      const user = userEvent.setup()
+
+      const select = screen.getByRole('combobox', { name: 'Language' })
+      await user.click(select)
+      await waitFor(async () => {
+        await user.click(screen.getByRole('option', { name: 'English' }))
+      })
+
+      const dropzone = screen.getByTestId('DropZone')
+
+      // Upload VTT file
+      await user.upload(
+        dropzone,
+        new File(['subtitle vtt file'], 'subtitle1.vtt', { type: 'text/vtt' })
+      )
+
+      // Upload SRT file
+      await user.upload(
+        dropzone,
+        new File(['subtitle srt file'], 'subtitle1.srt', {
+          type: 'application/x-subrip'
+        })
+      )
+
+      // Both files should be visible in the UI
+      expect(screen.getByText('subtitle1.vtt')).toBeInTheDocument()
+      expect(screen.getByText('subtitle1.srt')).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: 'Update' }))
+
+      await waitFor(() => {
+        expect(createR2VttAssetMock.result).toHaveBeenCalled()
+      })
+      await waitFor(() => {
+        expect(createR2SrtAssetMock.result).toHaveBeenCalled()
+      })
+      expect(subtitleEditWithBothFilesMock.result).toHaveBeenCalled()
+    })
   })
 })

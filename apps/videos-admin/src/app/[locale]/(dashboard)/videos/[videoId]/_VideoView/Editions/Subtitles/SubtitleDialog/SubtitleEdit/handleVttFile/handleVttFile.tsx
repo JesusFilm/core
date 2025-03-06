@@ -1,5 +1,4 @@
 import { MutationFunction } from '@apollo/client'
-import { useTranslations } from 'next-intl'
 
 import {
   GetAdminVideo_AdminVideo_VideoEdition as Edition,
@@ -23,7 +22,8 @@ export async function handleVttFile({
   languageId,
   createR2Asset,
   uploadAssetFile,
-  abortController
+  abortController,
+  errorMessage
 }: {
   vttFile: File
   video: Video
@@ -35,8 +35,8 @@ export async function handleVttFile({
   >
   uploadAssetFile: (file: File, uploadUrl: string) => Promise<void>
   abortController: React.MutableRefObject<AbortController | null>
+  errorMessage: string
 }): Promise<string | null> {
-  const t = useTranslations()
   const fileName = getSubtitleR2Path(video, edition, languageId, vttFile)
 
   const result = await createR2Asset({
@@ -56,7 +56,7 @@ export async function handleVttFile({
   })
 
   if (result.data?.cloudflareR2Create?.uploadUrl == null) {
-    throw new Error(t('Failed to create r2 asset for VTT file.'))
+    throw new Error(errorMessage)
   }
 
   const uploadUrl = result.data.cloudflareR2Create.uploadUrl

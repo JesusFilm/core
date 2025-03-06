@@ -99,7 +99,8 @@ export function SubtitleEdit({
           languageId: subtitle.language.id,
           createR2Asset,
           uploadAssetFile,
-          abortController
+          abortController,
+          errorMessage: t('Failed to create r2 asset for VTT file.')
         })
       }
 
@@ -112,7 +113,8 @@ export function SubtitleEdit({
           languageId: subtitle.language.id,
           createR2Asset,
           uploadAssetFile,
-          abortController
+          abortController,
+          errorMessage: t('Failed to create r2 asset for SRT file.')
         })
       }
 
