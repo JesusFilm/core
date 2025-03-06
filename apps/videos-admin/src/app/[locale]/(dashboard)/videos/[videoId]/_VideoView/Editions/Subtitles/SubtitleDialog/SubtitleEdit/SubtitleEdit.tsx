@@ -84,7 +84,7 @@ export function SubtitleEdit({
       id: subtitle.id,
       edition: edition.name,
       languageId: values.language,
-      primary: values.primary,
+      primary: values.language === '529',
       vttSrc: subtitle.vttSrc ?? null,
       srtSrc: subtitle.srtSrc ?? null
     }
@@ -176,8 +176,7 @@ export function SubtitleEdit({
       subtitle={subtitle}
       initialValues={{
         language: subtitle.language.id,
-        primary: subtitle.primary,
-        file: null // TODO: update this to the existing file
+        file: null // TODO: update this to the existing file, blocked by R2 retrieval yet to be implemented
       }}
       onSubmit={handleSubmit}
       loading={loading}

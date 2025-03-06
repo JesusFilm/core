@@ -208,7 +208,6 @@ describe('SubtitleEdit', () => {
         await waitFor(async () => {
           await user.click(screen.getByRole('option', { name: 'English' }))
         })
-        await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
         await user.click(screen.getByRole('button', { name: 'Update' }))
 
         await waitFor(() => {
@@ -249,7 +248,6 @@ describe('SubtitleEdit', () => {
         await waitFor(async () => {
           await user.click(screen.getByRole('option', { name: 'English' }))
         })
-        await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
 
         const dropzone = screen.getByTestId('DropZone')
         await user.upload(
@@ -303,7 +301,6 @@ describe('SubtitleEdit', () => {
         await waitFor(async () => {
           await user.click(screen.getByRole('option', { name: 'English' }))
         })
-        await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
 
         const dropzone = screen.getByTestId('DropZone')
         await user.upload(
@@ -355,7 +352,6 @@ describe('SubtitleEdit', () => {
         await waitFor(async () => {
           await user.click(screen.getByRole('option', { name: 'English' }))
         })
-        await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
         await user.click(screen.getByRole('button', { name: 'Update' }))
 
         await waitFor(() => {
@@ -396,7 +392,6 @@ describe('SubtitleEdit', () => {
         await waitFor(async () => {
           await user.click(screen.getByRole('option', { name: 'English' }))
         })
-        await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
 
         const dropzone = screen.getByTestId('DropZone')
         await user.upload(
@@ -452,7 +447,6 @@ describe('SubtitleEdit', () => {
         await waitFor(async () => {
           await user.click(screen.getByRole('option', { name: 'English' }))
         })
-        await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
 
         const dropzone = screen.getByTestId('DropZone')
         await user.upload(

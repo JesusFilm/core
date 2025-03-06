@@ -15,7 +15,6 @@ import { SubtitleFileUpload } from './SubtitleFileUpload'
 const createValidationSchema = (t) => {
   return object().shape({
     language: string().required(t('Language is required')),
-    primary: boolean().required(t('Primary is required')),
     file: mixed().nullable()
   })
 }
@@ -68,7 +67,6 @@ export function SubtitleForm({
             existingLanguages={subtitleLanguagesMap}
             parentObjectId={subtitle?.id}
           />
-          <FormCheckbox name="primary" label={t('Primary')} />
           <SubtitleFileUpload subtitle={subtitle} />
           <Button
             variant="contained"

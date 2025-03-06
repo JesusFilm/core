@@ -22,15 +22,20 @@ const unMockedFetch = global.fetch
 
 const mockVideo = useAdminVideoMock['result']?.['data']?.['adminVideo']
 const mockEdition = mockVideo?.['videoEditions'][0]
+const mockEdition2 = mockVideo?.['videoEditions'][1]
 const mockSubtitle = mockEdition.videoSubtitles[0]
-
+const mockSubtitle2 = mockEdition2.videoSubtitles[0]
 const mockSubtitleLanguagesMap = new Map([
   [mockSubtitle.language.id, mockSubtitle]
 ])
 
+const mockSubtitleLanguagesMap2 = new Map([
+  [mockSubtitle2.language.id, mockSubtitle2]
+])
+
 type CreateSubtitleInput = Pick<
   CreateVideoSubtitleVariables['input'],
-  'vttSrc' | 'srtSrc' | 'primary' | 'languageId'
+  'vttSrc' | 'srtSrc' | 'languageId'
 >
 
 const getCreateSubtitleMock = <T extends CreateSubtitleInput>(
@@ -43,7 +48,8 @@ const getCreateSubtitleMock = <T extends CreateSubtitleInput>(
         ...input,
         videoId: mockVideo.id,
         edition: 'base',
-        languageId: input.languageId ?? '529'
+        languageId: input.languageId ?? '529',
+        primary: input.languageId === '529'
       }
     }
   },
@@ -55,7 +61,7 @@ const getCreateSubtitleMock = <T extends CreateSubtitleInput>(
         vttSrc: input.vttSrc ?? null,
         srtSrc: input.srtSrc ?? null,
         value: input.vttSrc ?? input.srtSrc ?? '',
-        primary: input.primary,
+        primary: input.languageId === '529',
         language: {
           id: '529',
           name: [{ value: 'English', primary: true }],
@@ -105,7 +111,7 @@ describe('SubtitleCreate', () => {
     const createSubtitleMock = getCreateSubtitleMock({
       vttSrc: null,
       srtSrc: null,
-      primary: true,
+      primary: false,
       languageId: '528'
     })
 
@@ -130,7 +136,6 @@ describe('SubtitleCreate', () => {
     await waitFor(async () => {
       await user.click(screen.getByRole('option', { name: 'Spanish' }))
     })
-    await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
     await user.click(screen.getByRole('button', { name: 'Create' }))
 
     await waitFor(() => {
@@ -178,7 +183,7 @@ describe('SubtitleCreate', () => {
       vttSrc:
         'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.vtt',
       srtSrc: null,
-      primary: true,
+      primary: false,
       languageId: '528'
     })
     const createR2SubtitleAssetMock = getCreateR2AssetMock({
@@ -216,7 +221,6 @@ describe('SubtitleCreate', () => {
     await waitFor(async () => {
       await user.click(screen.getByRole('option', { name: 'Spanish' }))
     })
-    await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
 
     const dropzone = screen.getByTestId('DropZone')
     await user.upload(
@@ -237,7 +241,7 @@ describe('SubtitleCreate', () => {
       vttSrc: null,
       srtSrc:
         'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.srt',
-      primary: true,
+      primary: false,
       languageId: '528'
     })
     const createR2SubtitleAssetMock = getCreateR2AssetMock({
@@ -275,7 +279,6 @@ describe('SubtitleCreate', () => {
     await waitFor(async () => {
       await user.click(screen.getByRole('option', { name: 'Spanish' }))
     })
-    await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
 
     const dropzone = screen.getByTestId('DropZone')
     await user.upload(
@@ -298,7 +301,7 @@ describe('SubtitleCreate', () => {
       vttSrc: null,
       srtSrc:
         'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.srt',
-      primary: true,
+      primary: false,
       languageId: '528'
     })
 
@@ -350,7 +353,6 @@ describe('SubtitleCreate', () => {
     await waitFor(async () => {
       await user.click(screen.getByRole('option', { name: 'Spanish' }))
     })
-    await user.click(screen.getByRole('checkbox', { name: 'Primary' }))
 
     const dropzone = screen.getByTestId('DropZone')
     await user.upload(
@@ -366,5 +368,41 @@ describe('SubtitleCreate', () => {
       expect(screen.getByText('Failed to create subtitle.')).toBeInTheDocument()
     )
     expect(createSubtitleMock.result).not.toHaveBeenCalled()
+  })
+
+  it('should set primary to true when English language is selected', async () => {
+    const createSubtitleMock = getCreateSubtitleMock({
+      vttSrc: null,
+      srtSrc: null,
+      languageId: '529'
+    })
+
+    render(
+      <NextIntlClientProvider locale="en">
+        <VideoProvider video={mockVideo}>
+          <MockedProvider mocks={[getLanguagesMock, createSubtitleMock]}>
+            <SubtitleCreate
+              edition={mockEdition2}
+              close={jest.fn()}
+              subtitleLanguagesMap={mockSubtitleLanguagesMap2}
+            />
+          </MockedProvider>
+        </VideoProvider>
+      </NextIntlClientProvider>
+    )
+
+    const user = userEvent.setup()
+    const select = screen.getByRole('combobox', { name: 'Language' })
+    await user.click(select)
+    await waitFor(async () => {
+      await user.click(screen.getByRole('option', { name: 'English' }))
+    })
+    await user.click(screen.getByRole('button', { name: 'Create' }))
+    // Verify that primary was set to true in the mutation
+    await waitFor(() => {
+      expect(createSubtitleMock.result).toHaveBeenCalledWith({
+        input: expect.objectContaining({ primary: true })
+      })
+    })
   })
 })

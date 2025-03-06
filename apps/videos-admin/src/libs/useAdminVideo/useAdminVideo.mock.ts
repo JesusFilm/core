@@ -305,6 +305,36 @@ export const useAdminVideoMock: MockedResponse<
                 primary: false
               }
             ]
+          },
+          {
+            id: 'edition.id2',
+            name: 'base',
+            videoSubtitles: [
+              {
+                id: 'subtitle2.id',
+                vttSrc:
+                  'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.vtt',
+                srtSrc:
+                  'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.srt',
+                value:
+                  'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.vtt',
+                language: {
+                  id: '496',
+                  name: [
+                    {
+                      value: 'Français',
+                      primary: true
+                    },
+                    {
+                      value: 'French',
+                      primary: false
+                    }
+                  ],
+                  slug: 'french'
+                },
+                primary: false
+              }
+            ]
           }
         ],
         subtitles: [

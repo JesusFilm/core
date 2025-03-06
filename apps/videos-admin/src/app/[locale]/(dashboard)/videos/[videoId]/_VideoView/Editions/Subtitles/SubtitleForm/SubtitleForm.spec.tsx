@@ -29,7 +29,7 @@ describe('SubtitleForm', () => {
         <MockedProvider mocks={[getLanguagesMock]}>
           <SubtitleForm
             variant="create"
-            initialValues={{ language: '', primary: false, file: null }}
+            initialValues={{ language: '', file: null }}
             onSubmit={onSubmit}
             subtitleLanguagesMap={mockSubtitleLanguagesMap}
           />
@@ -79,7 +79,6 @@ describe('SubtitleForm', () => {
             subtitle={mockSubtitle}
             initialValues={{
               language: mockSubtitle.language.id,
-              primary: true,
               file: existingFile
             }}
             onSubmit={onSubmit}
@@ -124,7 +123,7 @@ describe('SubtitleForm', () => {
         <MockedProvider mocks={[getLanguagesMock]}>
           <SubtitleForm
             variant="create"
-            initialValues={{ language: '', primary: false, file: null }}
+            initialValues={{ language: '', file: null }}
             onSubmit={jest.fn()}
             subtitleLanguagesMap={mockSubtitleLanguagesMap}
           />
@@ -160,7 +159,6 @@ describe('SubtitleForm', () => {
             subtitle={mockSubtitle}
             initialValues={{
               language: mockSubtitle.language.id,
-              primary: true,
               file: null
             }}
             onSubmit={jest.fn()}

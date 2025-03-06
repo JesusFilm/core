@@ -119,7 +119,8 @@ export function SubtitleCreate({
       videoId: video.id,
       edition: edition.name,
       languageId: values.language,
-      primary: values.primary,
+      // English is the default primary subtitle for all videos
+      primary: values.language === '529',
       vttSrc: null,
       srtSrc: null
     }
@@ -207,7 +208,7 @@ export function SubtitleCreate({
   return (
     <SubtitleForm
       variant="create"
-      initialValues={{ language: '', primary: false }}
+      initialValues={{ language: '' }}
       onSubmit={handleSubmit}
       loading={loading}
       subtitleLanguagesMap={subtitleLanguagesMap}
