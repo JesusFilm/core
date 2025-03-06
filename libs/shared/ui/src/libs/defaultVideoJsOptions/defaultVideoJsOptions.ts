@@ -8,7 +8,8 @@ export const defaultVideoJsOptions = {
       limitRenditionByPlayerDimensions: false,
       useBandwidthFromLocalStorage: true,
       useNetworkInformationApi: true,
-      useDevicePixelRatio: true
+      useDevicePixelRatio: true,
+      overrideNative: true
     },
     hls: {
       limitRenditionByPlayerDimensions: false,
