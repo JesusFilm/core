@@ -4,6 +4,8 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import MuiMenu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import compact from 'lodash/compact'
 import { useRouter } from 'next/compat/router'
 import NextLink from 'next/link'
@@ -100,8 +102,7 @@ export function HeaderTabButtons(): ReactElement {
           fullWidth
           data-testid="DropDownButton"
           color="inherit"
-          startIcon={buttonIcon}
-          endIcon={<ChervonDownIcon />}
+          onClick={handleShowMenu}
           sx={{
             borderRadius: '40px !important',
             borderWidth: '2px',
@@ -109,11 +110,20 @@ export function HeaderTabButtons(): ReactElement {
             borderColor: 'text.disabled',
             backgroundColor: 'background.default',
             '&:hover': { backgroundColor: 'background.default' },
-            height: '48px'
+            height: '48px',
+            position: 'relative'
           }}
-          onClick={handleShowMenu}
         >
-          {buttonLabel}
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            width="100%"
+          >
+            {buttonIcon}
+            <Typography variant="inherit">{buttonLabel}</Typography>
+            <ChervonDownIcon />
+          </Stack>
         </Button>
       </Box>
       <MuiMenu
