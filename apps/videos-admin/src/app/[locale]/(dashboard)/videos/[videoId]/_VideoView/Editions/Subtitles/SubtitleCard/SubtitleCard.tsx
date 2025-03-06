@@ -6,11 +6,7 @@ import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { ActionButton } from '../../../../../../../../../components/ActionButton'
-import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { ArrayElement } from '../../../../../../../../../types/array-types'
-
-type Edition = ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
-type Subtitle = ArrayElement<Edition['videoSubtitles']>
+import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 interface SubtitleCardProps {
   subtitle: Subtitle

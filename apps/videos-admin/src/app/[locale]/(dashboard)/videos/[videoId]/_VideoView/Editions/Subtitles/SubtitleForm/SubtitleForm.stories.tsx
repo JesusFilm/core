@@ -24,8 +24,9 @@ type Story = StoryObj<typeof meta>
 export const Create: Story = {
   args: {
     variant: 'create',
-    initialValues: { language: '', primary: false, file: null },
-    onSubmit: noop
+    initialValues: { language: '', vttFile: null, srtFile: null },
+    onSubmit: noop,
+    subtitleLanguagesMap: new Map()
   }
 }
 
@@ -34,9 +35,25 @@ export const Edit: Story = {
     variant: 'edit',
     initialValues: {
       language: 'en',
-      primary: true,
-      file: new File(['test file'], 'test.vtt', { type: 'text/vtt' })
+      vttFile: new File(['test file'], 'test.vtt', { type: 'text/vtt' }),
+      srtFile: null
     },
-    onSubmit: noop
+    onSubmit: noop,
+    subtitleLanguagesMap: new Map()
+  }
+}
+
+export const Complete: Story = {
+  args: {
+    ...Edit.args,
+    initialValues: {
+      language: 'en',
+      vttFile: new File(['test file'], 'test.vtt', { type: 'text/vtt' }),
+      srtFile: new File(['test file'], 'test.srt', {
+        type: 'application/x-subrip'
+      })
+    },
+    onSubmit: noop,
+    subtitleLanguagesMap: new Map()
   }
 }

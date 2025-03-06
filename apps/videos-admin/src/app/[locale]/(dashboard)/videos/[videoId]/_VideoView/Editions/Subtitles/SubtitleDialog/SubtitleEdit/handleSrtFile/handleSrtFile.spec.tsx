@@ -37,7 +37,8 @@ describe('handleSrtFile', () => {
       languageId: mockLanguageId,
       createR2Asset: mockCreateR2Asset,
       uploadAssetFile: mockUploadAssetFile,
-      abortController: mockAbortController
+      abortController: mockAbortController,
+      errorMessage: 'some error'
     })
 
     expect(mockCreateR2Asset).toHaveBeenCalledWith({
@@ -79,7 +80,8 @@ describe('handleSrtFile', () => {
         languageId: mockLanguageId,
         createR2Asset: mockCreateR2Asset,
         uploadAssetFile: mockUploadAssetFile,
-        abortController: mockAbortController
+        abortController: mockAbortController,
+        errorMessage: 'some error'
       })
     ).rejects.toThrow('Failed to create r2 asset for SRT file.')
 

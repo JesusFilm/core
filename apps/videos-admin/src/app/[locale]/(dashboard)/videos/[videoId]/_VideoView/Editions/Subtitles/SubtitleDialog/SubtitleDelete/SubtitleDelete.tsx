@@ -8,8 +8,10 @@ import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { ArrayElement } from '../../../../../../../../../../types/array-types'
+import {
+  GetAdminVideo_AdminVideo_VideoEdition as Edition,
+  GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle
+} from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 export const DELETE_VIDEO_SUBTITLE = graphql(`
   mutation DeleteVideoSubtitle($id: ID!) {
@@ -23,9 +25,6 @@ export type DeleteVideoSubtitleVariables = VariablesOf<
   typeof DELETE_VIDEO_SUBTITLE
 >
 export type DeleteVideoSubtitle = ResultOf<typeof DELETE_VIDEO_SUBTITLE>
-
-type Edition = ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
-type Subtitle = ArrayElement<Edition['videoSubtitles']>
 
 interface SubtitleDeleteProps {
   close: () => void

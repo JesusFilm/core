@@ -6,15 +6,14 @@ import { ReactElement } from 'react'
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
 import { DialogAction } from '../../../../../../../../../components/CrudDialog'
-import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import {
+  GetAdminVideo_AdminVideo_VideoEdition as Edition,
+  GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle
+} from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useCrudState } from '../../../../../../../../../libs/useCrudState'
-import { ArrayElement } from '../../../../../../../../../types/array-types'
 import { Section } from '../../../Section'
 import { SubtitleCard } from '../../Subtitles/SubtitleCard'
 import { SubtitleDialog } from '../../Subtitles/SubtitleDialog'
-
-type Edition = ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
-type Subtitle = ArrayElement<Edition['videoSubtitles']>
 
 interface EditionViewProps {
   edition: Edition

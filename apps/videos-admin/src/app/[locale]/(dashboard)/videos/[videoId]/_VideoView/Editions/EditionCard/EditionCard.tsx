@@ -5,11 +5,10 @@ import { useTranslations } from 'next-intl'
 import { ComponentProps, ReactElement } from 'react'
 
 import { ActionButton } from '../../../../../../../../components/ActionButton'
-import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { ArrayElement } from '../../../../../../../../types/array-types'
+import { GetAdminVideo_AdminVideo_VideoEdition as Edition } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 interface EditionCardProps {
-  edition: ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
+  edition: Edition
   onClick: () => void
   actions: ComponentProps<typeof ActionButton>['actions']
 }

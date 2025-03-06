@@ -4,8 +4,7 @@ import {
   CrudDialog,
   DialogAction
 } from '../../../../../../../../components/CrudDialog'
-import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { ArrayElement } from '../../../../../../../../types/array-types'
+import { GetAdminVideo_AdminVideo_VideoEdition as Edition } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 import { EditionCreate } from './EditionCreate'
 import { EditionDelete } from './EditionDelete'
@@ -15,7 +14,7 @@ import { EditionView } from './EditionView'
 export interface EditionDialogProps {
   action: DialogAction | null
   close: () => void
-  edition: ArrayElement<GetAdminVideo_AdminVideo_VideoEditions> | null
+  edition: Edition | null
 }
 
 export function EditionDialog({
