@@ -12,5 +12,15 @@ export interface Html5 extends Tech {
       fastQualityChange_?: () => void
     }
     mediaSource?: MediaSource
+    stats?: {
+      bandwidth?: number
+      streamBitrate?: number
+      mediaBytesTransferred?: number
+      mediaRequests?: number
+      mediaRequestsAborted?: number
+      mediaTransferDuration?: number
+    }
+    bandwidth?: number
+    streamBitrate?: number
   }
 }

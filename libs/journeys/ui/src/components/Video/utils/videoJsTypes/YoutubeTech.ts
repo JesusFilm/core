@@ -8,5 +8,7 @@ export interface YoutubeTech extends Tech {
   name_: 'Youtube'
   ytPlayer: {
     getPlaybackQuality: () => string
+    getAvailableQualityLevels: () => string[]
+    getVideoLoadedFraction: () => number
   }
 }

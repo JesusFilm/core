@@ -3,10 +3,12 @@ import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useCallback, useEffect, useState } from 'react'
-import Player from 'video.js/dist/types/player'
+
+import VideoJsPlayer from '../utils/videoJsTypes'
+import { Html5 } from '../utils/videoJsTypes/Html5'
+import { YoutubeTech } from '../utils/videoJsTypes/YoutubeTech'
 
 import {
-  Vhs,
   calculateBitrate,
   formatTime,
   formatTimeRanges,
@@ -15,7 +17,7 @@ import {
 } from './utils/videoStatsUtils'
 
 interface VideoStatsProps {
-  player: Player
+  player: VideoJsPlayer
   isHls?: boolean
   isYoutube?: boolean
 }
@@ -36,9 +38,13 @@ interface StatsData {
   }
 }
 
-// Extended tech interface to include vhs property
-interface ExtendedTech {
-  vhs?: Vhs
+// Type guards to make our code cleaner
+function isYoutubeTech(tech: Html5 | YoutubeTech): tech is YoutubeTech {
+  return tech?.name_ === 'Youtube'
+}
+
+function isHtml5Tech(tech: Html5 | YoutubeTech): tech is Html5 {
+  return tech?.name_ === 'Html5'
 }
 
 export function VideoStats({
@@ -64,6 +70,7 @@ export function VideoStats({
   })
 
   const updateStats = useCallback(() => {
+    console.log(player)
     if (!player) return
 
     const basicStats = {
@@ -79,16 +86,17 @@ export function VideoStats({
       currentQuality: '-',
       currentFrameRate: '-'
     }
-    console.log(player.tech())
-    console.log(player.el())
+
+    // Get the tech instance once using the typed method
+    const tech = player.tech({ IWillNotUseThisInPlugins: true })
 
     // Check if this is a YouTube video
-    if (isYoutube && player.tech_ && player.tech_.ytPlayer) {
+    if (isYoutubeTech(tech)) {
       try {
-        const ytPlayer = player.tech_.ytPlayer
+        const ytPlayer = tech.ytPlayer
 
         // Get YouTube video quality
-        const quality = ytPlayer.getPlaybackQuality?.() || '-'
+        const quality = ytPlayer.getPlaybackQuality() || '-'
 
         // Map YouTube quality strings to resolution
         const qualityMap: Record<string, string> = {
@@ -106,15 +114,15 @@ export function VideoStats({
         }
 
         // Get available quality levels
-        const availableQualities = ytPlayer.getAvailableQualityLevels?.() || []
+        const availableQualities = ytPlayer.getAvailableQualityLevels() || []
         const mappedQualities = availableQualities.map(
           (q: string) => qualityMap[q] || q
         )
 
         // Get buffered percentage
-        const bufferedPercent = ytPlayer.getVideoLoadedFraction
-          ? Math.round(ytPlayer.getVideoLoadedFraction() * 100)
-          : 0
+        const bufferedPercent = Math.round(
+          ytPlayer.getVideoLoadedFraction() * 100
+        )
 
         // Use the quality indicator from YouTube
         const displayQuality = qualityMap[quality] || quality
@@ -130,9 +138,8 @@ export function VideoStats({
       } catch (error) {
         console.error('Error getting YouTube stats:', error)
       }
-    } else if (isHls && player.tech) {
-      const tech = player.tech(true) as ExtendedTech
-      const vhs = tech?.vhs
+    } else if (isHtml5Tech(tech)) {
+      const vhs = tech.vhs
 
       if (vhs) {
         // Get bitrate using the utility function
@@ -141,7 +148,7 @@ export function VideoStats({
 
         enhancedStats = {
           measuredBitrate: calculatedBitrate || '-',
-          currentQuality: getCurrentQuality() || '-',
+          currentQuality: getCurrentQuality(player) || '-',
           currentFrameRate: liveFrameRate || '-'
         }
       }
@@ -151,7 +158,7 @@ export function VideoStats({
       basic: basicStats,
       enhanced: enhancedStats
     })
-  }, [player, isHls, isYoutube])
+  }, [player])
 
   useEffect(() => {
     if (!player) return

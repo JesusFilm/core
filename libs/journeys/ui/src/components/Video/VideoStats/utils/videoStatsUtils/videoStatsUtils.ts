@@ -1,17 +1,5 @@
-import Player from 'video.js/dist/types/player'
-
-export interface Vhs {
-  stats?: {
-    bandwidth?: number
-    streamBitrate?: number
-    mediaBytesTransferred?: number
-    mediaRequests?: number
-    mediaRequestsAborted?: number
-    mediaTransferDuration?: number
-  }
-  bandwidth?: number
-  streamBitrate?: number
-}
+import VideoJsPlayer from '../../../utils/videoJsTypes'
+import { Html5 } from '../../../utils/videoJsTypes/Html5'
 
 /**
  * Formats a TimeRanges object into a readable string
@@ -43,10 +31,15 @@ export function formatTime(seconds: number): string {
 
 /**
  * Gets the current video quality as a string in the format "widthxheight"
+ * @param player The video.js player instance
  * @returns The current video quality or an empty string if not available
  */
-export function getCurrentQuality(): string {
-  const videoEl = document.querySelector('video')
+export function getCurrentQuality(player?: VideoJsPlayer): string {
+  // If player is provided, try to get the video element from it
+  const videoEl = player
+    ? player.el().querySelector('video')
+    : document.querySelector('video')
+
   if (!videoEl) return ''
 
   const width = videoEl.videoWidth
@@ -59,7 +52,7 @@ export function getCurrentQuality(): string {
  * @param player The video.js player instance
  * @returns The frame rate as a number or a string message if not available
  */
-export function getLiveFrameRate(player: Player): string | number {
+export function getLiveFrameRate(player: VideoJsPlayer): string | number {
   const videoEl = player.el().querySelector('video')
   if (!videoEl) return 'No video element'
 
@@ -91,7 +84,7 @@ export function getLiveFrameRate(player: Player): string | number {
  * @param vhs The VHS object from the player's tech
  * @returns The calculated bitrate in kbps or 0 if not available
  */
-export function calculateBitrate(vhs: Vhs | undefined): number {
+export function calculateBitrate(vhs: Html5['vhs'] | undefined): number {
   if (!vhs) return 0
 
   // Calculate bitrate from media segments if stats are available
