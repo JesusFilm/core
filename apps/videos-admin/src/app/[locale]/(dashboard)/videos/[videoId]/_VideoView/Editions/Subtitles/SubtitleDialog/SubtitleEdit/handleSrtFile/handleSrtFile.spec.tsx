@@ -81,7 +81,7 @@ describe('handleSrtFile', () => {
         createR2Asset: mockCreateR2Asset,
         uploadAssetFile: mockUploadAssetFile,
         abortController: mockAbortController,
-        errorMessage: 'some error'
+        errorMessage: 'Failed to create r2 asset for SRT file.'
       })
     ).rejects.toThrow('Failed to create r2 asset for SRT file.')
 
