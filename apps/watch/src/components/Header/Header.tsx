@@ -91,7 +91,8 @@ export function Header({
               background: 'transparent',
               boxShadow: 'none',
               overflowX: 'hidden'
-            }
+            },
+            onClick: () => setDrawerOpen(false)
           }}
         >
           <Container
@@ -104,7 +105,10 @@ export function Header({
               position: 'relative'
             }}
           >
-            <Box sx={{ minHeight: '100%', width: { xs: '100%', lg: 530 } }}>
+            <Box
+              sx={{ minHeight: '100%', width: { xs: '100%', lg: 530 } }}
+              onClick={(e) => e.stopPropagation()}
+            >
               <HeaderMenuPanel onClose={() => setDrawerOpen(false)} />
             </Box>
           </Container>
