@@ -34,16 +34,13 @@ export function HeaderMenuPanel({
         flexDirection: 'column',
         width: '100%',
         backgroundColor: 'background.default',
-        borderTopRightRadius: 0,
-        borderBottomRightRadius: 0,
-        borderTopLeftRadius: { xs: 0, sm: 4 },
-        borderBottomLeftRadius: { xs: 0, sm: 4 }
+        borderRadius: 0
       }}
     >
       <Box
         sx={{
           height: { xs: 100, lg: 159 },
-          pr: { xs: 20, lg: 20, xxl: 12 },
+          pr: 20,
           py: 10,
           pt: { lg: '69px' },
           pb: { lg: 14 },
