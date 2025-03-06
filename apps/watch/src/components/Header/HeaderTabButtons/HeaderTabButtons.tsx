@@ -152,8 +152,7 @@ export function HeaderTabButtons(): ReactElement {
                   primaryTypographyProps={{
                     variant: 'h6',
                     sx: {
-                      textAlign: 'center',
-                      mx: 'auto'
+                      textAlign: 'center'
                     }
                   }}
                 />
