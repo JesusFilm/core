@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack'
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
 
 import { ThemeProvider } from '../../ThemeProvider'
-import { defaultJourney } from '../journeyListData'
+import { defaultJourney, fakeDate } from '../journeyListData'
 
 import { JourneyCard } from './JourneyCard'
 
@@ -18,6 +18,15 @@ const mockUseNavigationState = useNavigationState as jest.MockedFunction<
 >
 
 describe('JourneyCard', () => {
+  beforeAll(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date(fakeDate))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   it('should have correct link on title', () => {
     render(
       <SnackbarProvider>
@@ -31,7 +40,7 @@ describe('JourneyCard', () => {
 
     expect(
       screen.getByRole('link', {
-        name: 'Default Journey Heading January 1, 2021'
+        name: 'Default Journey Heading 11 months ago'
       })
     ).toHaveAttribute('href', '/journeys/journey-id')
   })
@@ -50,7 +59,7 @@ describe('JourneyCard', () => {
     )
 
     const link = screen.getByRole('link', {
-      name: 'Default Journey Heading January 1, 2021'
+      name: 'Default Journey Heading 11 months ago'
     })
     expect(link).toHaveClass('Mui-disabled')
   })
