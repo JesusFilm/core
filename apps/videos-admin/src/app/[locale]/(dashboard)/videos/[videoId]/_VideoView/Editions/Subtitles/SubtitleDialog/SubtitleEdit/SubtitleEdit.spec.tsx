@@ -474,24 +474,36 @@ describe('SubtitleEdit', () => {
         primary: true
       })
 
+      const createR2VttAssetMock1 = getCreateR2AssetMock({
+        videoId: '1_jf-0-0',
+        contentType: 'text/vtt',
+        fileName:
+          '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt',
+        contentLength: 17
+      })
+
+      const createR2SrtAssetMock2 = getCreateR2AssetMock({
+        videoId: '1_jf-0-0',
+        contentType: 'application/x-subrip',
+        fileName:
+          '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
+        contentLength: 17
+      })
+
       render(
         <NextIntlClientProvider locale="en">
           <VideoProvider video={mockVideo}>
             <MockedProvider
               mocks={[
                 getLanguagesMock,
-                createR2VttAssetMock,
-                createR2SrtAssetMock,
+                createR2VttAssetMock1,
+                createR2SrtAssetMock2,
                 subtitleEditWithBothFilesMock
               ]}
             >
               <SubtitleEdit
                 subtitle={{
-                  ...mockSubtitle,
-                  primary: false,
-                  value: null,
-                  vttSrc: null,
-                  srtSrc: null
+                  ...mockSubtitle
                 }}
                 edition={mockEdition}
                 subtitleLanguagesMap={mockSubtitleLanguagesMap}
@@ -531,10 +543,10 @@ describe('SubtitleEdit', () => {
       await user.click(screen.getByRole('button', { name: 'Update' }))
 
       await waitFor(() => {
-        expect(createR2VttAssetMock.result).toHaveBeenCalled()
+        expect(createR2VttAssetMock1.result).toHaveBeenCalled()
       })
       await waitFor(() => {
-        expect(createR2SrtAssetMock.result).toHaveBeenCalled()
+        expect(createR2SrtAssetMock2.result).toHaveBeenCalled()
       })
       expect(subtitleEditWithBothFilesMock.result).toHaveBeenCalled()
     })
