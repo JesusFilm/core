@@ -1,2 +1,2 @@
-export const queueName = 'assetUploader'
-export const jobName = 'assetUploader'
+export const queueName = 'api-media-asset-uploader'
+export const jobName = `${queueName}-job`
