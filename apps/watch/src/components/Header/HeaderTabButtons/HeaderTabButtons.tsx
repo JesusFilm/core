@@ -139,10 +139,26 @@ export function HeaderTabButtons(): ReactElement {
               onClick={handleCloseMenu}
               selected={router?.pathname?.startsWith(href)}
             >
-              <ListItemIcon>{icon}</ListItemIcon>
-              <ListItemText primaryTypographyProps={{ variant: 'h6' }}>
-                {t(label)}
-              </ListItemText>
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+                width="100%"
+                px={2.5}
+              >
+                <ListItemIcon>{icon}</ListItemIcon>
+                <ListItemText
+                  primary={t(label)}
+                  primaryTypographyProps={{
+                    variant: 'h6',
+                    sx: {
+                      textAlign: 'center',
+                      mx: 'auto'
+                    }
+                  }}
+                />
+                <Box sx={{ width: 30 }} />
+              </Stack>
             </MenuItem>
           </NextLink>
         ))}
