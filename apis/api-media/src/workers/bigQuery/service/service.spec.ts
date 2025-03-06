@@ -5,6 +5,7 @@ import {
   importKeywords,
   importLanguageSlugs,
   importMasterUrls,
+  importShortLinks,
   importVideoChildren,
   importVideoDescriptions,
   importVideoImageAlts,
@@ -27,6 +28,7 @@ jest.mock('../importers', () => ({
   importKeywords: jest.fn(),
   importLanguageSlugs: jest.fn(),
   importMasterUrls: jest.fn(),
+  importShortLinks: jest.fn(),
   importVideoChildren: jest.fn(),
   importVideoDescriptions: jest.fn(),
   importVideoImages: jest.fn(),
@@ -50,6 +52,7 @@ describe('bigQuery/service', () => {
       expect(importKeywords).toHaveBeenCalled()
       expect(importLanguageSlugs).toHaveBeenCalled()
       expect(importMasterUrls).toHaveBeenCalled()
+      expect(importShortLinks).toHaveBeenCalled()
       expect(importVideoChildren).toHaveBeenCalled()
       expect(importVideoDescriptions).toHaveBeenCalled()
       expect(importVideoImageAlts).toHaveBeenCalled()
