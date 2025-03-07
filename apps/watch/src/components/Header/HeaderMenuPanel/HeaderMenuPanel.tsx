@@ -57,7 +57,16 @@ export function HeaderMenuPanel({
             position: 'fixed',
             width: { xs: '100%', lg: 530 },
             zIndex: (theme) => theme.zIndex.drawer + 1,
-            backgroundColor: 'background.default'
+            backgroundColor: 'background.default',
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: '100%',
+              width: '100vw',
+              backgroundColor: 'background.default'
+            }
           }}
         >
           <Button
