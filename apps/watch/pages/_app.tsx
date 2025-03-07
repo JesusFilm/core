@@ -85,6 +85,15 @@ function WatchApp({
     initialState: initialPageProps.initialApolloState
   })
 
+  // Check if the current environment is production using Vercel's environment variable
+  const vercelEnv = process.env.NEXT_PUBLIC_VERCEL_ENV || 'development'
+
+  // Only exclude robots meta tag for production environment
+  // Account for different production environment naming conventions
+  const isProduction = ['production', 'prod', 'prd'].includes(
+    vercelEnv.toLowerCase()
+  )
+
   return (
     <>
       <style jsx global>{`
@@ -100,6 +109,8 @@ function WatchApp({
               titleTemplate="%s | Jesus Film Project"
               defaultTitle="Watch | Jesus Film Project"
               description="Free Gospel Video Streaming Library. Watch, learn and share the gospel in over 2000 languages."
+              dangerouslySetAllPagesToNoFollow={isProduction === false}
+              dangerouslySetAllPagesToNoIndex={isProduction === false}
             />
             <Head>
               <meta name="theme-color" content="#000" />
