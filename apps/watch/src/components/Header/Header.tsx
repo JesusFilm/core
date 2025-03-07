@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Fade from '@mui/material/Fade'
 import { useTheme } from '@mui/material/styles'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import useMediaQuery from '@mui/material/useMediaQuery'
