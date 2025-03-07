@@ -45,9 +45,7 @@ export function SocialImage({
           placeholder="blur"
           blurDataURL={journey?.primaryImageBlock.blurhash}
           layout="fill"
-          style={{
-            objectFit: 'cover'
-          }}
+          objectFit="cover"
           priority
         />
       ) : journey != null ? (

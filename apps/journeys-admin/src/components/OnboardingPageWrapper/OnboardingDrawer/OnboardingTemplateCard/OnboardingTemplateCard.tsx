@@ -57,7 +57,7 @@ export function OnboardingTemplateCard({
                 placeholder="blur"
                 blurDataURL={data?.journey?.primaryImageBlock.blurhash}
                 layout="fill"
-                style={{ objectFit: 'cover' }}
+                objectFit="cover"
                 priority
               />
             ) : data?.journey != null ? (

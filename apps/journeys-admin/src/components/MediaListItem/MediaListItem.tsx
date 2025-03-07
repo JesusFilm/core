@@ -102,7 +102,7 @@ export function MediaListItem({
                 src={image}
                 alt={title}
                 layout="fill"
-                style={{ objectFit: 'cover' }}
+                objectFit="cover"
               />
             ) : (
               <Box

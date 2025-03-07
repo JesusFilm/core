@@ -11,9 +11,7 @@ describe('NextImage', () => {
         placeholder="blur"
         blurDataURL="https://blurUrl"
         layout="fill"
-        style={{
-          objectFit: 'cover'
-        }}
+        objectFit="cover"
       />
     )
     expect(getByRole('img')).toHaveAttribute('src')
