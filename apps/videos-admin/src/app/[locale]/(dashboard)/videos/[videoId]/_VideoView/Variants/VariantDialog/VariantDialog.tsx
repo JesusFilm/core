@@ -82,8 +82,8 @@ export function VariantDialog({
           <VideoEditionChip editionName={variant.videoEdition.name} />
         )}
         <Box sx={{ width: '100%' }}>
-          <Typography variant="body1" data-testid="VariantLanguageDisplay">
-            {t('Language')}: {languageName}
+          <Typography variant="h2" data-testid="VariantLanguageDisplay">
+            {languageName}
           </Typography>
         </Box>
         <Box
