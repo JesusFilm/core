@@ -48,9 +48,6 @@ export async function createVideoFromUrl(
   maxResolution: ResolutionTier = '1080p',
   downloadable = false
 ): Promise<Mux.Video.Asset> {
-  if (process.env.CLOUDFLARE_ACCOUNT_ID == null)
-    throw new Error('Missing CLOUDFLARE_ACCOUNT_ID')
-
   return await getClient().video.assets.create({
     input: [
       {

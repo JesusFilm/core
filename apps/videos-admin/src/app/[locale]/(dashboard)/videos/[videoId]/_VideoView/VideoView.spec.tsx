@@ -270,4 +270,33 @@ describe('VideoView', () => {
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
     expect(screen.queryByTestId('PublishedChip')).not.toBeInTheDocument()
   })
+
+  it('should show locked ui for locked video', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          locked: true
+        }
+      }
+    })
+
+    render(
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+        <NextIntlClientProvider locale="en">
+          <VideoView />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(screen.getByText('Video is locked')).toBeInTheDocument()
+    expect(
+      screen.getByText('This video is currently locked to prevent edits')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'View Videos' })
+    ).toBeInTheDocument()
+  })
 })

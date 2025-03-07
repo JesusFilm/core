@@ -11,9 +11,8 @@ name = "jf-proxy-stage"
 routes = [
   { pattern = "develop.jesusfilm.org/watch*", zone_name = "jesusfilm.org" },
   { pattern = "develop.jesusfilm.org/journeys*", zone_name = "jesusfilm.org" },
-  { pattern = "develop.jesusfilm.org/calendar", zone_name = "jesusfilm.org" },
-  { pattern = "develop.jesusfilm.org/products", zone_name = "jesusfilm.org" },
   { pattern = "develop.jesusfilm.org/resources", zone_name = "jesusfilm.org" },
+  { pattern = "develop.jesusfilm.org/resources/", zone_name = "jesusfilm.org" },
   { pattern = "develop.jesusfilm.org/bin/*", zone_name = "jesusfilm.org" },
   { pattern = "develop.jesusfilm.org/api/*", zone_name = "jesusfilm.org" },
   { pattern = "develop.jesusfilm.org/_next/*", zone_name = "jesusfilm.org" }
@@ -26,6 +25,9 @@ PROXY_DEST = "c89a34d4-4b06-4219-ad8b-c7289106424d.jesusfilm.org"
 name = "jf-proxy-prod"
 routes = [
   { pattern = "www.jesusfilm.org/watch*", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/journeys*", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/resources", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/resources/", zone_name = "jesusfilm.org" },
   { pattern = "www.jesusfilm.org/bin/*", zone_name = "jesusfilm.org" },
   { pattern = "www.jesusfilm.org/api/*", zone_name = "jesusfilm.org" },
   { pattern = "www.jesusfilm.org/_next/*", zone_name = "jesusfilm.org" }
