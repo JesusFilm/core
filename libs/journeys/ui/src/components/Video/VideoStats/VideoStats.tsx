@@ -5,55 +5,45 @@ import { useTranslation } from 'next-i18next'
 import { useCallback, useEffect, useState } from 'react'
 
 import VideoJsPlayer from '../utils/videoJsTypes'
-import { Html5 } from '../utils/videoJsTypes/Html5'
-import { YoutubeTech } from '../utils/videoJsTypes/YoutubeTech'
-
 import {
-  calculateBitrate,
   formatTime,
   formatTimeRanges,
-  getCurrentQuality,
-  getLiveFrameRate
-} from './utils/videoStatsUtils'
+  getHtml5Stats,
+  getYoutubeStats,
+  isHtml5Tech,
+  isYoutubeTech
+} from '../utils/videoStatsUtils'
 
 interface VideoStatsProps {
   player: VideoJsPlayer
-  isHls?: boolean
-  isYoutube?: boolean
+}
+
+interface BasicStats {
+  currentTime: number
+  duration: number
+  buffered: string
+  seekable: string
+}
+
+interface EnhancedHtml5Stats {
+  measuredBitrate: number | string
+  currentQuality: string
+  currentFrameRate: string | number
+}
+
+interface EnhancedYoutubeStats {
+  currentQuality: string
+  bufferedPercent: number
 }
 
 interface StatsData {
-  basic: {
-    currentTime: number
-    duration: number
-    buffered: string
-    seekable: string
-  }
-  enhanced: {
-    measuredBitrate: number | string
-    currentQuality: string
-    currentFrameRate: string | number
-    availableQualities?: string[]
-    bufferedPercent?: number
-  }
+  basic: BasicStats
+  enhanced: EnhancedHtml5Stats | EnhancedYoutubeStats
+  techType: 'youtube' | 'html5' | 'unknown'
 }
 
-// Type guards to make our code cleaner
-function isYoutubeTech(tech: Html5 | YoutubeTech): tech is YoutubeTech {
-  return tech?.name_ === 'Youtube'
-}
-
-function isHtml5Tech(tech: Html5 | YoutubeTech): tech is Html5 {
-  return tech?.name_ === 'Html5'
-}
-
-export function VideoStats({
-  player,
-  isHls = false,
-  isYoutube = false
-}: VideoStatsProps) {
+export function VideoStats({ player }: VideoStatsProps) {
   const { t } = useTranslation('libs-journeys-ui')
-  const [expandedQualities, setExpandedQualities] = useState(false)
 
   const [stats, setStats] = useState<StatsData>({
     basic: {
@@ -66,25 +56,18 @@ export function VideoStats({
       measuredBitrate: '-',
       currentQuality: '-',
       currentFrameRate: '-'
-    }
+    },
+    techType: 'unknown'
   })
 
   const updateStats = useCallback(() => {
-    console.log(player)
     if (!player) return
 
-    const basicStats = {
+    const basicStats: BasicStats = {
       currentTime: player.currentTime() || 0,
       duration: player.duration() || 0,
       buffered: formatTimeRanges(player.buffered()),
       seekable: formatTimeRanges(player.seekable())
-    }
-
-    // Default enhanced stats with hyphens
-    let enhancedStats: StatsData['enhanced'] = {
-      measuredBitrate: '-' as string | number,
-      currentQuality: '-',
-      currentFrameRate: '-'
     }
 
     // Get the tech instance once using the typed method
@@ -92,72 +75,30 @@ export function VideoStats({
 
     // Check if this is a YouTube video
     if (isYoutubeTech(tech)) {
-      try {
-        const ytPlayer = tech.ytPlayer
-
-        // Get YouTube video quality
-        const quality = ytPlayer.getPlaybackQuality() || '-'
-
-        // Map YouTube quality strings to resolution
-        const qualityMap: Record<string, string> = {
-          tiny: '144p',
-          small: '240p',
-          medium: '360p',
-          large: '480p',
-          hd720: '720p',
-          hd1080: '1080p',
-          hd1440: '1440p',
-          hd2160: '2160p (4K)',
-          highres: '4K+',
-          auto: 'Auto',
-          default: '-'
-        }
-
-        // Get available quality levels
-        const availableQualities = ytPlayer.getAvailableQualityLevels() || []
-        const mappedQualities = availableQualities.map(
-          (q: string) => qualityMap[q] || q
-        )
-
-        // Get buffered percentage
-        const bufferedPercent = Math.round(
-          ytPlayer.getVideoLoadedFraction() * 100
-        )
-
-        // Use the quality indicator from YouTube
-        const displayQuality = qualityMap[quality] || quality
-
-        enhancedStats = {
-          currentQuality: displayQuality,
-          bufferedPercent,
-          availableQualities: mappedQualities,
-          // Keep these properties to maintain interface compatibility
-          measuredBitrate: '-',
-          currentFrameRate: '-'
-        }
-      } catch (error) {
-        console.error('Error getting YouTube stats:', error)
-      }
+      const youtubeStats = getYoutubeStats(tech)
+      setStats({
+        basic: basicStats,
+        enhanced: youtubeStats,
+        techType: 'youtube'
+      })
     } else if (isHtml5Tech(tech)) {
-      const vhs = tech.vhs
-
-      if (vhs) {
-        // Get bitrate using the utility function
-        const calculatedBitrate = calculateBitrate(vhs)
-        const liveFrameRate = getLiveFrameRate(player)
-
-        enhancedStats = {
-          measuredBitrate: calculatedBitrate || '-',
-          currentQuality: getCurrentQuality(player) || '-',
-          currentFrameRate: liveFrameRate || '-'
-        }
-      }
+      const html5Stats = getHtml5Stats(player)
+      setStats({
+        basic: basicStats,
+        enhanced: html5Stats,
+        techType: 'html5'
+      })
+    } else {
+      setStats({
+        basic: basicStats,
+        enhanced: {
+          measuredBitrate: '-',
+          currentQuality: '-',
+          currentFrameRate: '-'
+        },
+        techType: 'unknown'
+      })
     }
-
-    setStats({
-      basic: basicStats,
-      enhanced: enhancedStats
-    })
   }, [player])
 
   useEffect(() => {
@@ -172,11 +113,6 @@ export function VideoStats({
       player.off('timeupdate', updateStats)
     }
   }, [player, updateStats])
-
-  const handleQualitiesClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    setExpandedQualities((prev) => !prev)
-  }
 
   return (
     <Paper
@@ -211,53 +147,18 @@ export function VideoStats({
       </Typography>
       <Box>
         {/* Display different stats based on video source */}
-        {isYoutube ? (
+        {stats.techType === 'youtube' ? (
           <>
-            <Typography variant="body2">{`${t('Current Quality')}: ${stats.enhanced.currentQuality}`}</Typography>
-            <Typography variant="body2">{`${t('Buffered')}: ${stats.enhanced.bufferedPercent}%`}</Typography>
-
-            {stats.enhanced.availableQualities &&
-              stats.enhanced.availableQualities.length > 0 && (
-                <Box>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      cursor: 'pointer',
-                      textDecoration: 'underline',
-                      display: 'inline-block'
-                    }}
-                    onClick={handleQualitiesClick}
-                  >
-                    {expandedQualities
-                      ? t('Hide Available Qualities')
-                      : t('Show Available Qualities')}
-                  </Typography>
-
-                  {expandedQualities && (
-                    <Box sx={{ ml: 2, mt: 0.5 }}>
-                      {stats.enhanced.availableQualities.map(
-                        (quality, index) => (
-                          <Typography
-                            key={index}
-                            variant="body2"
-                            sx={{ fontSize: '0.8rem' }}
-                          >
-                            • {quality}
-                          </Typography>
-                        )
-                      )}
-                    </Box>
-                  )}
-                </Box>
-              )}
+            <Typography variant="body2">{`${t('Current Quality')}: ${(stats.enhanced as EnhancedYoutubeStats).currentQuality}`}</Typography>
+            <Typography variant="body2">{`${t('Buffered')}: ${(stats.enhanced as EnhancedYoutubeStats).bufferedPercent}%`}</Typography>
           </>
         ) : (
           <>
-            <Typography variant="body2">{`${t('Current Quality')}: ${stats.enhanced.currentQuality}`}</Typography>
+            <Typography variant="body2">{`${t('Current Quality')}: ${(stats.enhanced as EnhancedHtml5Stats).currentQuality}`}</Typography>
             <Typography variant="body2">
-              {`${t('Frame Rate')}: ${typeof stats.enhanced.currentFrameRate === 'number' ? `${stats.enhanced.currentFrameRate}${t('fps')}` : stats.enhanced.currentFrameRate}`}
+              {`${t('Frame Rate')}: ${typeof (stats.enhanced as EnhancedHtml5Stats).currentFrameRate === 'number' ? `${(stats.enhanced as EnhancedHtml5Stats).currentFrameRate}${t('fps')}` : (stats.enhanced as EnhancedHtml5Stats).currentFrameRate}`}
             </Typography>
-            <Typography variant="body2">{`${t('Bitrate')}: ${stats.enhanced.measuredBitrate === '-' ? '-' : `${stats.enhanced.measuredBitrate} ${t('kbps')}`}`}</Typography>
+            <Typography variant="body2">{`${t('Bitrate')}: ${(stats.enhanced as EnhancedHtml5Stats).measuredBitrate === '-' ? '-' : `${(stats.enhanced as EnhancedHtml5Stats).measuredBitrate} ${t('kbps')}`}`}</Typography>
           </>
         )}
       </Box>

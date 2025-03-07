@@ -1,6 +1,5 @@
 import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
 import { ThemeProvider, styled, useTheme } from '@mui/material/styles'
 import get from 'lodash/get'
