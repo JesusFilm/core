@@ -66,7 +66,7 @@
     "@hono/swagger-ui": "^0.5.0",
     "@hono/zod-openapi": "^0.18.4",
     "@mailchimp/mailchimp_marketing": "^3.0.80",
-    "@mdx-js/react": "^2.3.0",
+    "@mdx-js/react": "^3.0.0",
     "@mui/base": "^5.0.0-beta.58",
     "@mui/icons-material": "^6.0.1",
     "@mui/lab": "^6.0.0-beta.8",
