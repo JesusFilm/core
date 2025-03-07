@@ -55,20 +55,11 @@ export function Header({
             {!hideSpacer && (
               <Box data-testid="HeaderSpacer" sx={{ height: 80 }} />
             )}
-            <Fade
-              appear={false}
-              in={shouldFade}
-              style={{
-                transitionDelay: shouldFade ? undefined : '2s',
-                transitionDuration: '225ms'
-              }}
-              timeout={{ exit: 2225 }}
-            >
-              <BottomAppBar
-                lightTheme={lightTheme}
-                bottomBarTrigger={bottomBarTrigger}
-              />
-            </Fade>
+            <BottomAppBar
+              lightTheme={lightTheme}
+              bottomBarTrigger={bottomBarTrigger}
+              shouldFade={shouldFade}
+            />
           </Box>
         )}
       </ThemeProvider>
