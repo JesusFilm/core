@@ -31,14 +31,9 @@ export default interface PrismaTypes {
         Where: Prisma.MuxVideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: "asset" | "videoVariants";
+        RelationName: "videoVariants";
         ListRelations: "videoVariants";
         Relations: {
-            asset: {
-                Shape: CloudflareR2 | null;
-                Name: "CloudflareR2";
-                Nullable: true;
-            };
             videoVariants: {
                 Shape: VideoVariant[];
                 Name: "VideoVariant";
@@ -56,14 +51,9 @@ export default interface PrismaTypes {
         Where: Prisma.CloudflareR2WhereInput;
         Create: {};
         Update: {};
-        RelationName: "muxVideo" | "video" | "videoVariant" | "videoVariantDownload" | "videoSubtitleSrt" | "videoSubtitleVtt";
+        RelationName: "video" | "videoVariant" | "videoVariantDownload" | "videoSubtitleSrt" | "videoSubtitleVtt";
         ListRelations: never;
         Relations: {
-            muxVideo: {
-                Shape: MuxVideo | null;
-                Name: "MuxVideo";
-                Nullable: true;
-            };
             video: {
                 Shape: Video | null;
                 Name: "Video";
