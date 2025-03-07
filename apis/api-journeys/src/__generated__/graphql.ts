@@ -4537,10 +4537,18 @@ export type VideoSubtitle = {
   language: Language;
   languageId: Scalars['ID']['output'];
   primary: Scalars['Boolean']['output'];
+  /** subtitle file */
+  srtAsset?: Maybe<CloudflareR2>;
   srtSrc?: Maybe<Scalars['String']['output']>;
+  /** version control for subtitle file */
+  srtVersion: Scalars['Int']['output'];
   value: Scalars['String']['output'];
   videoEdition: VideoEdition;
+  /** subtitle file */
+  vttAsset?: Maybe<CloudflareR2>;
   vttSrc?: Maybe<Scalars['String']['output']>;
+  /** version control for subtitle file */
+  vttVersion: Scalars['Int']['output'];
 };
 
 export type VideoSubtitleCreateInput = {
@@ -4615,6 +4623,8 @@ export type VideoUpdateInput = {
 
 export type VideoVariant = {
   __typename?: 'VideoVariant';
+  /** master video file */
+  asset?: Maybe<CloudflareR2>;
   dash?: Maybe<Scalars['String']['output']>;
   downloadable: Scalars['Boolean']['output'];
   downloads: Array<VideoVariantDownload>;
@@ -4630,6 +4640,8 @@ export type VideoVariant = {
   slug: Scalars['String']['output'];
   subtitle: Array<VideoSubtitle>;
   subtitleCount: Scalars['Int']['output'];
+  /** version control for master video file */
+  version: Scalars['Int']['output'];
   videoEdition: VideoEdition;
   videoId?: Maybe<Scalars['ID']['output']>;
 };
@@ -4641,6 +4653,7 @@ export type VideoVariantSubtitleArgs = {
 };
 
 export type VideoVariantCreateInput = {
+  assetId?: InputMaybe<Scalars['String']['input']>;
   dash?: InputMaybe<Scalars['String']['input']>;
   downloadable: Scalars['Boolean']['input'];
   duration?: InputMaybe<Scalars['Int']['input']>;
@@ -4658,15 +4671,20 @@ export type VideoVariantCreateInput = {
 
 export type VideoVariantDownload = {
   __typename?: 'VideoVariantDownload';
+  /** master video file */
+  asset?: Maybe<CloudflareR2>;
   height: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   quality: VideoVariantDownloadQuality;
   size: Scalars['Float']['output'];
   url: Scalars['String']['output'];
+  /** master video file version */
+  version: Scalars['Int']['output'];
   width: Scalars['Int']['output'];
 };
 
 export type VideoVariantDownloadCreateInput = {
+  assetId?: InputMaybe<Scalars['String']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   quality: VideoVariantDownloadQuality;
@@ -4682,6 +4700,7 @@ export enum VideoVariantDownloadQuality {
 }
 
 export type VideoVariantDownloadUpdateInput = {
+  assetId?: InputMaybe<Scalars['String']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
   id: Scalars['String']['input'];
   quality?: InputMaybe<VideoVariantDownloadQuality>;
@@ -4696,6 +4715,7 @@ export type VideoVariantFilter = {
 };
 
 export type VideoVariantUpdateInput = {
+  assetId?: InputMaybe<Scalars['String']['input']>;
   dash?: InputMaybe<Scalars['String']['input']>;
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
