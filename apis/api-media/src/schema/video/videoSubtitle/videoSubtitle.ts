@@ -11,8 +11,22 @@ builder.prismaObject('VideoSubtitle', {
     languageId: t.exposeID('languageId', { nullable: false }),
     primary: t.exposeBoolean('primary', { nullable: false }),
     edition: t.exposeString('edition', { nullable: false }),
+    vttAsset: t
+      .withAuth({ isPublisher: true })
+      .relation('vttAsset', { nullable: true, description: 'subtitle file' }),
     vttSrc: t.exposeString('vttSrc'),
+    vttVersion: t.withAuth({ isPublisher: true }).exposeInt('vttVersion', {
+      nullable: false,
+      description: 'version control for subtitle file'
+    }),
+    srtAsset: t
+      .withAuth({ isPublisher: true })
+      .relation('srtAsset', { nullable: true, description: 'subtitle file' }),
     srtSrc: t.exposeString('srtSrc'),
+    srtVersion: t.withAuth({ isPublisher: true }).exposeInt('srtVersion', {
+      nullable: false,
+      description: 'version control for subtitle file'
+    }),
     value: t.string({
       nullable: false,
       resolve: ({ vttSrc, srtSrc }) => vttSrc ?? srtSrc ?? ''
@@ -38,7 +52,9 @@ builder.mutationFields((t) => ({
         ...query,
         data: {
           ...input,
-          id: input.id ?? undefined
+          id: input.id ?? undefined,
+          vttVersion: input.vttVersion ?? undefined,
+          srtVersion: input.srtVersion ?? undefined
         }
       })
     }
@@ -56,7 +72,11 @@ builder.mutationFields((t) => ({
         data: {
           edition: input.edition ?? undefined,
           vttSrc: input.vttSrc ?? undefined,
+          vttAssetId: input.vttAssetId ?? undefined,
+          vttVersion: input.vttVersion ?? undefined,
           srtSrc: input.srtSrc ?? undefined,
+          srtAssetId: input.srtAssetId ?? undefined,
+          srtVersion: input.srtVersion ?? undefined,
           primary: input.primary ?? undefined,
           languageId: input.languageId ?? undefined
         }
