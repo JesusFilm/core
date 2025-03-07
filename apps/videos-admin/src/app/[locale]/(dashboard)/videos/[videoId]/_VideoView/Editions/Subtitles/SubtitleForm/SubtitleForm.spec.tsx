@@ -9,6 +9,10 @@ import { useAdminVideoMock } from '../../../../../../../../../libs/useAdminVideo
 
 import { SubtitleForm } from './SubtitleForm'
 
+const originalCreateObjectURL = global.URL.createObjectURL
+
+global.URL.createObjectURL = jest.fn(() => 'mock-url')
+
 const mockVideo = useAdminVideoMock['result']?.['data']?.adminVideo
 const mockEdition = mockVideo.videoEditions[0]
 const mockSubtitle = mockEdition.videoSubtitles[0]
@@ -21,6 +25,14 @@ const mockSubtitleLanguagesMap = new Map([
 ])
 
 describe('SubtitleForm', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  afterAll(() => {
+    global.URL.createObjectURL = originalCreateObjectURL
+  })
+
   it('should render as create form', async () => {
     const onSubmit = jest.fn()
 

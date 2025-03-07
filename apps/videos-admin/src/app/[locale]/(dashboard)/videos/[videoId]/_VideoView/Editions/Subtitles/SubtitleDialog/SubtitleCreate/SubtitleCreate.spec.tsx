@@ -20,6 +20,10 @@ import {
 
 const unMockedFetch = global.fetch
 
+const originalCreateObjectURL = global.URL.createObjectURL
+
+global.URL.createObjectURL = jest.fn(() => 'mock-url')
+
 const mockVideo = useAdminVideoMock['result']?.['data']?.['adminVideo']
 const mockEdition = mockVideo?.['videoEditions'][0]
 const mockEdition2 = mockVideo?.['videoEditions'][1]
@@ -84,6 +88,12 @@ describe('SubtitleCreate', () => {
 
   afterAll(() => {
     global.fetch = unMockedFetch
+    // Restore  original URL.createObjectURL after all tests
+    global.URL.createObjectURL = originalCreateObjectURL
+  })
+
+  beforeEach(() => {
+    jest.clearAllMocks()
   })
 
   it('should render', () => {
@@ -366,7 +376,6 @@ describe('SubtitleCreate', () => {
       })
     )
 
-    // Both files should be visible in the UI
     expect(screen.getByText('subtitle1.vtt')).toBeInTheDocument()
     expect(screen.getByText('subtitle1.srt')).toBeInTheDocument()
 
