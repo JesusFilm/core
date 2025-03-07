@@ -110,8 +110,10 @@ describe('videoVariant', () => {
           primary: false,
           languageId: 'languageId',
           videoId: 'videoId',
-          assetId: null,
-          version: 1
+          vttAssetId: null,
+          vttVersion: 1,
+          srtAssetId: null,
+          srtVersion: 1
         }
       ])
       prismaMock.videoSubtitle.count.mockResolvedValueOnce(123)
@@ -218,8 +220,10 @@ describe('videoVariant', () => {
           languageId: 'languageId',
           videoId: 'videoId',
           edition: 'base',
-          assetId: null,
-          version: 1
+          vttAssetId: null,
+          vttVersion: 1,
+          srtAssetId: null,
+          srtVersion: 1
         }
       ])
       prismaMock.videoSubtitle.count.mockResolvedValueOnce(123)
@@ -326,8 +330,10 @@ describe('videoVariant', () => {
           primary: false,
           languageId: 'languageId',
           videoId: 'videoId',
-          assetId: null,
-          version: 1
+          vttAssetId: null,
+          vttVersion: 1,
+          srtAssetId: null,
+          srtVersion: 1
         }
       ])
       prismaMock.videoSubtitle.count.mockResolvedValueOnce(123)

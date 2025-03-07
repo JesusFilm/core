@@ -2592,8 +2592,24 @@ type VideoSubtitle @join__type(graph: API_MEDIA)  {
   languageId: ID!
   primary: Boolean!
   edition: String!
+  """
+  subtitle file
+  """
+  vttAsset: CloudflareR2
   vttSrc: String
+  """
+  version control for subtitle file
+  """
+  vttVersion: Int!
+  """
+  subtitle file
+  """
+  srtAsset: CloudflareR2
   srtSrc: String
+  """
+  version control for subtitle file
+  """
+  srtVersion: Int!
   value: String!
   language: Language!
   videoEdition: VideoEdition!
@@ -2608,6 +2624,10 @@ type VideoTitle @join__type(graph: API_MEDIA)  {
 
 type VideoVariant @join__type(graph: API_MEDIA)  {
   id: ID!
+  """
+  master video file
+  """
+  asset: CloudflareR2
   videoId: ID
   hls: String
   dash: String
@@ -2626,15 +2646,27 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   slug is a permanent link to the video variant.
   """
   slug: String!
+  """
+  version control for master video file
+  """
+  version: Int!
 }
 
 type VideoVariantDownload @join__type(graph: API_MEDIA)  {
   id: ID!
+  """
+  master video file
+  """
+  asset: CloudflareR2
   quality: VideoVariantDownloadQuality!
   size: Float!
   height: Int!
   width: Int!
   url: String!
+  """
+  master video file version
+  """
+  version: Int!
 }
 
 type Youtube @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
@@ -4306,6 +4338,7 @@ input VideoUpdateInput @join__type(graph: API_MEDIA)  {
 
 input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {
   id: String!
+  assetId: String
   videoId: String!
   edition: String!
   hls: String
@@ -4322,6 +4355,7 @@ input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {
 
 input VideoVariantDownloadCreateInput @join__type(graph: API_MEDIA)  {
   id: String
+  assetId: String
   videoVariantId: String!
   quality: VideoVariantDownloadQuality!
   size: Float
@@ -4332,6 +4366,7 @@ input VideoVariantDownloadCreateInput @join__type(graph: API_MEDIA)  {
 
 input VideoVariantDownloadUpdateInput @join__type(graph: API_MEDIA)  {
   id: String!
+  assetId: String
   videoVariantId: String
   quality: VideoVariantDownloadQuality
   size: Float
@@ -4346,6 +4381,7 @@ input VideoVariantFilter @join__type(graph: API_MEDIA)  {
 
 input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
   id: String!
+  assetId: String
   videoId: String
   edition: String
   hls: String

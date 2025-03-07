@@ -195,8 +195,10 @@ describe('video', () => {
           srtSrc: null,
           videoId: 'videoId',
           primary: true,
-          assetId: null,
-          version: 1
+          vttAssetId: null,
+          vttVersion: 1,
+          srtAssetId: null,
+          srtVersion: 1
         },
         {
           id: 'subtitleId1',
@@ -206,8 +208,10 @@ describe('video', () => {
           srtSrc: null,
           videoId: 'videoId',
           primary: true,
-          assetId: null,
-          version: 1
+          vttAssetId: null,
+          vttVersion: 1,
+          srtAssetId: null,
+          srtVersion: 1
         },
         {
           id: 'subtitleId2',
@@ -217,8 +221,10 @@ describe('video', () => {
           srtSrc: 'srtSrc',
           videoId: 'videoId',
           primary: true,
-          assetId: null,
-          version: 1
+          vttAssetId: null,
+          vttVersion: 1,
+          srtAssetId: null,
+          srtVersion: 1
         }
       ],
       images: [

@@ -8,14 +8,25 @@ import { VideoSubtitleUpdateInput } from './inputs/videoSubtitleUpdate'
 builder.prismaObject('VideoSubtitle', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
-    asset: t
-      .withAuth({ isPublisher: true })
-      .relation('asset', { nullable: true, description: 'subtitle file' }),
     languageId: t.exposeID('languageId', { nullable: false }),
     primary: t.exposeBoolean('primary', { nullable: false }),
     edition: t.exposeString('edition', { nullable: false }),
+    vttAsset: t
+      .withAuth({ isPublisher: true })
+      .relation('vttAsset', { nullable: true, description: 'subtitle file' }),
     vttSrc: t.exposeString('vttSrc'),
+    vttVersion: t.withAuth({ isPublisher: true }).exposeInt('vttVersion', {
+      nullable: false,
+      description: 'version control for subtitle file'
+    }),
+    srtAsset: t
+      .withAuth({ isPublisher: true })
+      .relation('srtAsset', { nullable: true, description: 'subtitle file' }),
     srtSrc: t.exposeString('srtSrc'),
+    srtVersion: t.withAuth({ isPublisher: true }).exposeInt('srtVersion', {
+      nullable: false,
+      description: 'version control for subtitle file'
+    }),
     value: t.string({
       nullable: false,
       resolve: ({ vttSrc, srtSrc }) => vttSrc ?? srtSrc ?? ''
@@ -24,10 +35,6 @@ builder.prismaObject('VideoSubtitle', {
       type: Language,
       nullable: false,
       resolve: ({ languageId: id }) => ({ id })
-    }),
-    version: t.withAuth({ isPublisher: true }).exposeInt('version', {
-      nullable: false,
-      description: 'version control for subtitle file'
     }),
     videoEdition: t.relation('videoEdition', { nullable: false })
   })
