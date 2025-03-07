@@ -51,8 +51,8 @@ export default interface PrismaTypes {
         Where: Prisma.CloudflareR2WhereInput;
         Create: {};
         Update: {};
-        RelationName: "video" | "videoVariant" | "videoVariantDownload";
-        ListRelations: "videoVariant" | "videoVariantDownload";
+        RelationName: "video" | "videoVariant" | "videoVariantDownload" | "videoSubtitleSrt" | "videoSubtitleVtt";
+        ListRelations: never;
         Relations: {
             video: {
                 Shape: Video | null;
@@ -60,14 +60,24 @@ export default interface PrismaTypes {
                 Nullable: true;
             };
             videoVariant: {
-                Shape: VideoVariant[];
+                Shape: VideoVariant | null;
                 Name: "VideoVariant";
-                Nullable: false;
+                Nullable: true;
             };
             videoVariantDownload: {
-                Shape: VideoVariantDownload[];
+                Shape: VideoVariantDownload | null;
                 Name: "VideoVariantDownload";
-                Nullable: false;
+                Nullable: true;
+            };
+            videoSubtitleSrt: {
+                Shape: VideoSubtitle | null;
+                Name: "VideoSubtitle";
+                Nullable: true;
+            };
+            videoSubtitleVtt: {
+                Shape: VideoSubtitle | null;
+                Name: "VideoSubtitle";
+                Nullable: true;
             };
         };
     };
@@ -281,9 +291,19 @@ export default interface PrismaTypes {
         Where: Prisma.VideoSubtitleWhereInput;
         Create: {};
         Update: {};
-        RelationName: "video" | "videoEdition";
+        RelationName: "srtAsset" | "vttAsset" | "video" | "videoEdition";
         ListRelations: never;
         Relations: {
+            srtAsset: {
+                Shape: CloudflareR2 | null;
+                Name: "CloudflareR2";
+                Nullable: true;
+            };
+            vttAsset: {
+                Shape: CloudflareR2 | null;
+                Name: "CloudflareR2";
+                Nullable: true;
+            };
             video: {
                 Shape: Video;
                 Name: "Video";
