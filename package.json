@@ -367,6 +367,8 @@
     "workerDirectory": "./.storybook/static"
   },
   "overrides": {
-    "react": "^19.0.0"
+    "react-use-downloader": {
+      "react": "^19.0.0"
+    }
   }
 }
