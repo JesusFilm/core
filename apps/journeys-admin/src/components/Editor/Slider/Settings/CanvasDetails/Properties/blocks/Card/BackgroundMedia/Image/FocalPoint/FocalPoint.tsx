@@ -117,7 +117,7 @@ export function FocalPoint({
                 src={imageBlock.src}
                 alt={imageBlock?.alt ?? ''}
                 layout="fill"
-                objectFit="cover"
+                style={{ objectFit: 'cover' }}
               />
               <Box
                 sx={{
