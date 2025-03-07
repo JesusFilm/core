@@ -108,7 +108,7 @@ export async function teamRemovedEmail(job: Job<TeamRemoved>): Promise<void> {
   )
     return
 
-  const html = render(
+  const html = await render(
     TeamRemovedEmail({
       teamName: job.data.teamName,
       recipient: data.user
@@ -118,7 +118,7 @@ export async function teamRemovedEmail(job: Job<TeamRemoved>): Promise<void> {
     }
   )
 
-  const text = render(
+  const text = await render(
     TeamRemovedEmail({
       teamName: job.data.teamName,
       recipient: data.user
@@ -159,7 +159,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
   })
 
   if (data.userByEmail == null) {
-    const html = render(
+    const html = await render(
       TeamInviteNoAccountEmail({
         teamName: job.data.team.title,
         inviteLink: url,
@@ -170,7 +170,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
         pretty: true
       }
     )
-    const text = render(
+    const text = await render(
       TeamInviteNoAccountEmail({
         teamName: job.data.team.title,
         inviteLink: url,
@@ -188,7 +188,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
       html
     })
   } else {
-    const html = render(
+    const html = await render(
       TeamInviteEmail({
         teamName: job.data.team.title,
         recipient: data.userByEmail,
@@ -200,7 +200,7 @@ export async function teamInviteEmail(job: Job<TeamInviteJob>): Promise<void> {
       }
     )
 
-    const text = render(
+    const text = await render(
       TeamInviteEmail({
         teamName: job.data.team.title,
         recipient: data.userByEmail,
@@ -261,7 +261,7 @@ export async function teamInviteAcceptedEmail(
     )
       return
 
-    const html = render(
+    const html = await render(
       TeamInviteAcceptedEmail({
         teamName: job.data.team.title,
         inviteLink: url,
@@ -273,7 +273,7 @@ export async function teamInviteAcceptedEmail(
       }
     )
 
-    const text = render(
+    const text = await render(
       TeamInviteAcceptedEmail({
         teamName: job.data.team.title,
         inviteLink: url,
@@ -325,7 +325,7 @@ export async function journeyAccessRequest(
   )
     return
 
-  const html = render(
+  const html = await render(
     JourneyAccessRequestEmail({
       journey: job.data.journey,
       inviteLink: job.data.url,
@@ -336,7 +336,7 @@ export async function journeyAccessRequest(
       pretty: true
     }
   )
-  const text = render(
+  const text = await render(
     JourneyAccessRequestEmail({
       journey: job.data.journey,
       inviteLink: job.data.url,
@@ -379,7 +379,7 @@ export async function journeyRequestApproved(
   )
     return
 
-  const html = render(
+  const html = await render(
     JourneySharedEmail({
       journey: job.data.journey,
       inviteLink: job.data.url,
@@ -391,7 +391,7 @@ export async function journeyRequestApproved(
     }
   )
 
-  const text = render(
+  const text = await render(
     JourneySharedEmail({
       journey: job.data.journey,
       inviteLink: job.data.url,
@@ -433,7 +433,7 @@ export async function journeyEditInvite(
 
   if (data.userByEmail == null) {
     const url = `${process.env.JOURNEYS_ADMIN_URL ?? ''}/`
-    const html = render(
+    const html = await render(
       JourneySharedNoAccountEmail({
         sender: job.data.sender,
         journey: job.data.journey,
@@ -444,7 +444,7 @@ export async function journeyEditInvite(
         pretty: true
       }
     )
-    const text = render(
+    const text = await render(
       JourneySharedNoAccountEmail({
         journey: job.data.journey,
         inviteLink: url,
@@ -462,7 +462,7 @@ export async function journeyEditInvite(
       text
     })
   } else {
-    const html = render(
+    const html = await render(
       JourneySharedEmail({
         sender: job.data.sender,
         journey: job.data.journey,
@@ -473,7 +473,7 @@ export async function journeyEditInvite(
         pretty: true
       }
     )
-    const text = render(
+    const text = await render(
       JourneySharedEmail({
         journey: job.data.journey,
         inviteLink: job.data.url,
