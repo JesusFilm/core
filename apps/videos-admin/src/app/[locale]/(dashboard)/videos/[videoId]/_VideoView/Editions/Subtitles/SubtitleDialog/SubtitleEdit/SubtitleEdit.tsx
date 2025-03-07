@@ -117,7 +117,6 @@ export function SubtitleEdit({
           errorMessage: t('Failed to create r2 asset for SRT file.')
         })
       }
-
       await updateVideoSubtitle({
         variables: {
           input

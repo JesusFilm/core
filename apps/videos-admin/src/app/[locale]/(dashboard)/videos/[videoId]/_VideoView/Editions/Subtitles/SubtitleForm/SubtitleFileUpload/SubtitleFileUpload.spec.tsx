@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { useField } from 'formik'
 import { NextIntlClientProvider } from 'next-intl'
 
+import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+
 import { SubtitleFileUpload } from './SubtitleFileUpload'
 
 const fieldMockVtt = { value: null, name: 'vttFile' }
@@ -22,14 +24,25 @@ jest.mock('formik', () => ({
   useField: jest.fn()
 }))
 
+const originalCreateObjectURL = global.URL.createObjectURL
 const useFieldMock = useField as jest.Mock
 
 describe('SubtitleFileUpload', () => {
   beforeEach(() => {
+    global.URL.createObjectURL = jest.fn(() => 'mock-url')
     jest.clearAllMocks()
   })
 
-  it('should render VTT file', async () => {
+  afterEach(() => {
+    global.URL.createObjectURL = originalCreateObjectURL
+    jest.clearAllMocks()
+  })
+
+  afterAll(() => {
+    global.URL.createObjectURL = originalCreateObjectURL
+  })
+
+  it('should render VTT file uploaded', async () => {
     const fileVtt = new File(['test'], 'test.vtt', { type: 'text/vtt' })
     useFieldMock.mockImplementationOnce(() => [
       { ...fieldMockVtt, value: fileVtt }
@@ -43,12 +56,12 @@ describe('SubtitleFileUpload', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByTestId('File')).toBeInTheDocument()
+      expect(screen.getByTestId('LinkFile')).toBeInTheDocument()
       expect(screen.getByText('test.vtt')).toBeInTheDocument()
     })
   })
 
-  it('should render SRT file', async () => {
+  it('should render SRT file uploaded', async () => {
     const fileSrt = new File(['test'], 'test.srt', {
       type: 'application/x-subrip'
     })
@@ -64,7 +77,7 @@ describe('SubtitleFileUpload', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByTestId('File')).toBeInTheDocument()
+      expect(screen.getByTestId('LinkFile')).toBeInTheDocument()
       expect(screen.getByText('test.srt')).toBeInTheDocument()
     })
   })
@@ -196,5 +209,53 @@ describe('SubtitleFileUpload', () => {
 
     expect(vttHelpersMock.setValue).toHaveBeenCalledWith(fileVtt)
     expect(srtHelpersMock.setValue).toHaveBeenCalledWith(fileSrt)
+  })
+
+  it('should render existing VTT subtitle', async () => {
+    useFieldMock.mockImplementationOnce(() => [fieldMockVtt])
+    useFieldMock.mockImplementationOnce(() => [fieldMockSrt])
+
+    const subtitle = {
+      vttSrc: 'https://example.com/subtitle.vtt'
+    }
+
+    render(
+      <NextIntlClientProvider locale="en">
+        <SubtitleFileUpload subtitle={subtitle as Subtitle} />
+      </NextIntlClientProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('LinkFile')).toBeInTheDocument()
+      expect(screen.getByText('subtitle.vtt')).toBeInTheDocument()
+      expect(screen.getByText('subtitle.vtt')).toHaveAttribute(
+        'href',
+        'https://example.com/subtitle.vtt'
+      )
+    })
+  })
+
+  it('should render existing SRT subtitle', async () => {
+    useFieldMock.mockImplementationOnce(() => [fieldMockVtt])
+    useFieldMock.mockImplementationOnce(() => [fieldMockSrt])
+
+    const subtitle = {
+      srtSrc: 'https://example.com/subtitle.srt'
+    }
+
+    render(
+      <NextIntlClientProvider locale="en">
+        <SubtitleFileUpload subtitle={subtitle as Subtitle} />
+      </NextIntlClientProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('LinkFile')).toBeInTheDocument()
+      expect(screen.getByText('subtitle.srt')).toBeInTheDocument()
+      expect(screen.getByText('subtitle.srt')).toHaveAttribute(
+        'href',
+        'https://example.com/subtitle.srt'
+      )
+    })
   })
 })

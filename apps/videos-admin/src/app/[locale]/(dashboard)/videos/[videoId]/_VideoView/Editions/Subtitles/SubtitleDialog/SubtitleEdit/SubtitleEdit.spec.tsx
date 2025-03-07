@@ -19,6 +19,10 @@ import {
 
 const unMockedFetch = global.fetch
 
+const originalCreateObjectURL = global.URL.createObjectURL
+
+global.URL.createObjectURL = jest.fn(() => 'mock-url')
+
 const mockVideo = useAdminVideoMock['result']?.['data']?.['adminVideo']
 const mockEdition = mockVideo.videoEditions[0]
 const mockSubtitle = mockEdition.videoSubtitles[0]
@@ -81,6 +85,13 @@ const subtitleEditWithFileMock = getEditSubtitleMock({
   primary: true
 })
 
+const subtitleEditWithSrtFileMock = getEditSubtitleMock({
+  vttSrc: null,
+  srtSrc:
+    'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
+  primary: true
+})
+
 const createR2VttAssetMock = getCreateR2AssetMock({
   videoId: '1_jf-0-0',
   contentType: 'text/vtt',
@@ -109,6 +120,11 @@ describe('SubtitleEdit', () => {
 
   afterAll(() => {
     global.fetch = unMockedFetch
+    global.URL.createObjectURL = originalCreateObjectURL
+  })
+
+  beforeEach(() => {
+    jest.clearAllMocks()
   })
 
   it('should render', () => {
@@ -367,7 +383,7 @@ describe('SubtitleEdit', () => {
                 mocks={[
                   getLanguagesMock,
                   createR2SrtAssetMock,
-                  subtitleEditWithFileMock
+                  subtitleEditWithSrtFileMock
                 ]}
               >
                 <SubtitleEdit
@@ -406,11 +422,11 @@ describe('SubtitleEdit', () => {
         await waitFor(() => {
           expect(createR2SrtAssetMock.result).toHaveBeenCalled()
         })
-        expect(subtitleEditWithFileMock.result).toHaveBeenCalled()
+        expect(subtitleEditWithSrtFileMock.result).toHaveBeenCalled()
       })
 
       it('should update subtitle with an existing file', async () => {
-        const subtitleEditWithExistingFileMock = getEditSubtitleMock({
+        const subtitleEditWithExistingSrtFileMock = getEditSubtitleMock({
           vttSrc:
             'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.vtt',
           srtSrc:
@@ -425,7 +441,7 @@ describe('SubtitleEdit', () => {
                 mocks={[
                   getLanguagesMock,
                   createR2SrtAssetMock,
-                  subtitleEditWithExistingFileMock
+                  subtitleEditWithExistingSrtFileMock
                 ]}
               >
                 <SubtitleEdit
@@ -461,7 +477,8 @@ describe('SubtitleEdit', () => {
         await waitFor(() => {
           expect(createR2SrtAssetMock.result).toHaveBeenCalled()
         })
-        expect(subtitleEditWithExistingFileMock.result).toHaveBeenCalled()
+
+        expect(subtitleEditWithExistingSrtFileMock.result).toHaveBeenCalled()
       })
     })
 
