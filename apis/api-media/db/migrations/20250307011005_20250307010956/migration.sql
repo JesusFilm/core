@@ -34,7 +34,7 @@ CREATE UNIQUE INDEX "VideoVariant_assetId_key" ON "VideoVariant"("assetId");
 CREATE UNIQUE INDEX "VideoVariantDownload_assetId_key" ON "VideoVariantDownload"("assetId");
 
 -- AddForeignKey
-ALTER TABLE "MuxVideo" ADD CONSTRAINT "MuxVideo_assetId_fkey" FOREIGN KEY ("assetId") REFERENCES "CloudflareR2"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+-- ALTER TABLE "MuxVideo" ADD CONSTRAINT "MuxVideo_assetId_fkey" FOREIGN KEY ("assetId") REFERENCES "CloudflareR2"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "VideoVariantDownload" ADD CONSTRAINT "VideoVariantDownload_assetId_fkey" FOREIGN KEY ("assetId") REFERENCES "CloudflareR2"("id") ON DELETE SET NULL ON UPDATE CASCADE;

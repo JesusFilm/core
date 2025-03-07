@@ -52,7 +52,6 @@ model MuxVideo {
   assetId       String?        @unique
   userId        String
   name          String?
-  asset         CloudflareR2?  @relation(fields: [assetId], references: [id])
   duration      Int            @default(0)
   downloadable  Boolean        @default(false)
   createdAt     DateTime       @default(now())
@@ -75,7 +74,6 @@ model CloudflareR2 {
   contentLength        Int                   @default(0)
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @default(now()) @updatedAt
-  muxVideo             MuxVideo?
   video                Video?                @relation(fields: [videoId], references: [id])
   videoVariant         VideoVariant?
   videoVariantDownload VideoVariantDownload?
