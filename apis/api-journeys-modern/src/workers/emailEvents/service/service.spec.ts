@@ -30,16 +30,6 @@ jest.mock('@core/yoga/email', () => ({
   })
 }))
 
-jest.mock('@react-email/render', () => ({
-  __esModule: true,
-  render: jest.fn().mockImplementation(async (component, options) => {
-    if (options?.plainText) {
-      return 'Mocked plain text email content'
-    }
-    return '<div>Mocked HTML email content</div>'
-  })
-}))
-
 const userJourneys = [
   {
     id: 'userJourneyId1',
