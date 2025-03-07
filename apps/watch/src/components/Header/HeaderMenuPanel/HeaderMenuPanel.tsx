@@ -43,49 +43,48 @@ export function HeaderMenuPanel({
           height: { xs: 100, lg: 159 },
           width: '100%'
         }}
-      />
-      <Box
-        sx={{
-          height: { xs: 100, lg: 159 },
-          pr: 20,
-          py: 10,
-          pt: { lg: '69px' },
-          pb: { lg: 14 },
-          display: 'flex',
-          justifyContent: 'flex-end',
-          alignItems: 'center',
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          width: { xs: '100%', lg: 530 },
-          zIndex: (theme) => theme.zIndex.drawer + 1,
-          backgroundColor: 'background.default'
-        }}
       >
-        <Button
-          href="https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now-2/?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=https%3A%2F%2Fwww.jesusfilm.org%2Fcontent%2Fjf%2Fus%2Fdevelopment%2Fspecial%2Fthank-you-refer%2Fsocial-share.html"
-          rel="noopener"
-          variant="contained"
+        <Box
           sx={{
-            height: 34,
-            px: 3.5,
-            borderRadius: 4,
-            '&:hover': {
-              backgroundColor: 'background.paper',
-              color: 'primary.main',
-              border: '1px solid',
-              borderColor: 'primary.main',
-              boxShadow: 'none'
-            }
+            height: { xs: 100, lg: 159 },
+            pr: 20,
+            py: 10,
+            pt: { lg: '69px' },
+            pb: { lg: 14 },
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            position: 'fixed',
+            width: { xs: '100%', lg: 530 },
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+            backgroundColor: 'background.default'
           }}
         >
-          <Typography
-            variant="h6"
-            sx={{ fontSize: 15, fontWeight: 'bold', lineHeight: 1 }}
+          <Button
+            href="https://www.jesusfilm.org/how-to-help/ways-to-donate/give-now-2/?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=https%3A%2F%2Fwww.jesusfilm.org%2Fcontent%2Fjf%2Fus%2Fdevelopment%2Fspecial%2Fthank-you-refer%2Fsocial-share.html"
+            rel="noopener"
+            variant="contained"
+            sx={{
+              height: 34,
+              px: 3.5,
+              borderRadius: 4,
+              '&:hover': {
+                backgroundColor: 'background.paper',
+                color: 'primary.main',
+                border: '1px solid',
+                borderColor: 'primary.main',
+                boxShadow: 'none'
+              }
+            }}
           >
-            {t('Give Now')}
-          </Typography>
-        </Button>
+            <Typography
+              variant="h6"
+              sx={{ fontSize: 15, fontWeight: 'bold', lineHeight: 1 }}
+            >
+              {t('Give Now')}
+            </Typography>
+          </Button>
+        </Box>
       </Box>
       <Stack
         direction="column"
