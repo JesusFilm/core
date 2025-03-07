@@ -80,7 +80,8 @@ export function Header({
               width: '100%',
               background: 'transparent',
               boxShadow: 'none',
-              overflowX: 'hidden'
+              overflowX: 'hidden',
+              overscrollBehaviorY: 'none'
             },
             onClick: () => setDrawerOpen(false)
           }}
@@ -96,7 +97,10 @@ export function Header({
             }}
           >
             <Box
-              sx={{ minHeight: '100%', width: { xs: '100%', lg: 530 } }}
+              sx={{
+                minHeight: '100%',
+                width: { xs: '100%', lg: 530 }
+              }}
               onClick={(e) => e.stopPropagation()}
             >
               <HeaderMenuPanel onClose={() => setDrawerOpen(false)} />
