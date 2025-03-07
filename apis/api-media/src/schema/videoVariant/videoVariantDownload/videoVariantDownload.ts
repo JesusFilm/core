@@ -38,7 +38,9 @@ builder.mutationFields((t) => ({
       return await prisma.videoVariantDownload.create({
         data: {
           ...input,
-          id: input.id ?? undefined
+          id: input.id ?? undefined,
+          assetId: input.assetId ?? undefined,
+          version: input.version ?? undefined
         }
       })
     }
@@ -58,7 +60,9 @@ builder.mutationFields((t) => ({
           size: input.size ?? undefined,
           height: input.height ?? undefined,
           width: input.width ?? undefined,
-          url: input.url ?? undefined
+          url: input.url ?? undefined,
+          assetId: input.assetId ?? undefined,
+          version: input.version ?? undefined
         }
       })
     }

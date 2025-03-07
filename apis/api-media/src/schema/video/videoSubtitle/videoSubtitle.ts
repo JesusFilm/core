@@ -52,7 +52,9 @@ builder.mutationFields((t) => ({
         ...query,
         data: {
           ...input,
-          id: input.id ?? undefined
+          id: input.id ?? undefined,
+          vttVersion: input.vttVersion ?? undefined,
+          srtVersion: input.srtVersion ?? undefined
         }
       })
     }
@@ -70,7 +72,11 @@ builder.mutationFields((t) => ({
         data: {
           edition: input.edition ?? undefined,
           vttSrc: input.vttSrc ?? undefined,
+          vttAssetId: input.vttAssetId ?? undefined,
+          vttVersion: input.vttVersion ?? undefined,
           srtSrc: input.srtSrc ?? undefined,
+          srtAssetId: input.srtAssetId ?? undefined,
+          srtVersion: input.srtVersion ?? undefined,
           primary: input.primary ?? undefined,
           languageId: input.languageId ?? undefined
         }

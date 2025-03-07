@@ -12,7 +12,8 @@ export const VideoVariantDownloadUpdateInput = builder.inputType(
       size: t.float({ required: false }),
       height: t.int({ required: false }),
       width: t.int({ required: false }),
-      url: t.string({ required: false })
+      url: t.string({ required: false }),
+      version: t.int({ required: false })
     })
   }
 )

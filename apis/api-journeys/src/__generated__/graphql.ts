@@ -4556,9 +4556,13 @@ export type VideoSubtitleCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   languageId: Scalars['String']['input'];
   primary: Scalars['Boolean']['input'];
+  srtAssetId?: InputMaybe<Scalars['ID']['input']>;
   srtSrc?: InputMaybe<Scalars['String']['input']>;
+  srtVersion?: InputMaybe<Scalars['Int']['input']>;
   videoId: Scalars['String']['input'];
+  vttAssetId?: InputMaybe<Scalars['ID']['input']>;
   vttSrc?: InputMaybe<Scalars['String']['input']>;
+  vttVersion?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type VideoSubtitleUpdateInput = {
@@ -4566,8 +4570,12 @@ export type VideoSubtitleUpdateInput = {
   id: Scalars['ID']['input'];
   languageId?: InputMaybe<Scalars['String']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
+  srtAssetId?: InputMaybe<Scalars['ID']['input']>;
   srtSrc?: InputMaybe<Scalars['String']['input']>;
+  srtVersion?: InputMaybe<Scalars['Int']['input']>;
+  vttAssetId?: InputMaybe<Scalars['ID']['input']>;
   vttSrc?: InputMaybe<Scalars['String']['input']>;
+  vttVersion?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type VideoTitle = {
@@ -4666,6 +4674,7 @@ export type VideoVariantCreateInput = {
   published?: InputMaybe<Scalars['Boolean']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;
   slug: Scalars['String']['input'];
+  version?: InputMaybe<Scalars['Int']['input']>;
   videoId: Scalars['String']['input'];
 };
 
@@ -4690,6 +4699,7 @@ export type VideoVariantDownloadCreateInput = {
   quality: VideoVariantDownloadQuality;
   size?: InputMaybe<Scalars['Float']['input']>;
   url: Scalars['String']['input'];
+  version?: InputMaybe<Scalars['Int']['input']>;
   videoVariantId: Scalars['String']['input'];
   width?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -4706,6 +4716,7 @@ export type VideoVariantDownloadUpdateInput = {
   quality?: InputMaybe<VideoVariantDownloadQuality>;
   size?: InputMaybe<Scalars['Float']['input']>;
   url?: InputMaybe<Scalars['String']['input']>;
+  version?: InputMaybe<Scalars['Int']['input']>;
   videoVariantId?: InputMaybe<Scalars['String']['input']>;
   width?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -4728,6 +4739,7 @@ export type VideoVariantUpdateInput = {
   published?: InputMaybe<Scalars['Boolean']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
+  version?: InputMaybe<Scalars['Int']['input']>;
   videoId?: InputMaybe<Scalars['String']['input']>;
 };
 

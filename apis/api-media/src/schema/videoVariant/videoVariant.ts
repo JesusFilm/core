@@ -129,7 +129,8 @@ builder.mutationFields((t) => ({
         data: {
           ...input,
           muxVideoId: input.muxVideoId ?? undefined,
-          published: input.published ?? true
+          published: input.published ?? true,
+          version: input.version ?? undefined
         }
       })
 
@@ -173,7 +174,9 @@ builder.mutationFields((t) => ({
           edition: input.edition ?? undefined,
           downloadable: input.downloadable ?? undefined,
           published: input.published ?? undefined,
-          muxVideoId: input.muxVideoId ?? undefined
+          muxVideoId: input.muxVideoId ?? undefined,
+          assetId: input.assetId ?? undefined,
+          version: input.version ?? undefined
         }
       })
     }
