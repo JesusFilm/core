@@ -12,6 +12,7 @@ routes = [
   { pattern = "develop.jesusfilm.org/watch*", zone_name = "jesusfilm.org" },
   { pattern = "develop.jesusfilm.org/journeys*", zone_name = "jesusfilm.org" },
   { pattern = "develop.jesusfilm.org/resources", zone_name = "jesusfilm.org" },
+  { pattern = "develop.jesusfilm.org/resources/", zone_name = "jesusfilm.org" },
   { pattern = "develop.jesusfilm.org/bin/*", zone_name = "jesusfilm.org" },
   { pattern = "develop.jesusfilm.org/api/*", zone_name = "jesusfilm.org" },
   { pattern = "develop.jesusfilm.org/_next/*", zone_name = "jesusfilm.org" }
@@ -26,6 +27,7 @@ routes = [
   { pattern = "www.jesusfilm.org/watch*", zone_name = "jesusfilm.org" },
   { pattern = "www.jesusfilm.org/journeys*", zone_name = "jesusfilm.org" },
   { pattern = "www.jesusfilm.org/resources", zone_name = "jesusfilm.org" },
+  { pattern = "www.jesusfilm.org/resources/", zone_name = "jesusfilm.org" },
   { pattern = "www.jesusfilm.org/bin/*", zone_name = "jesusfilm.org" },
   { pattern = "www.jesusfilm.org/api/*", zone_name = "jesusfilm.org" },
   { pattern = "www.jesusfilm.org/_next/*", zone_name = "jesusfilm.org" }
