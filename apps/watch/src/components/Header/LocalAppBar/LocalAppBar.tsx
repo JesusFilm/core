@@ -33,7 +33,6 @@ export function LocalAppBar({
         background: 'transparent',
         color: hideSpacer ? 'background.default' : 'inherit',
         boxShadow: 'none',
-        px: 8,
         py: 10,
         pt: { lg: '69px' },
         pb: { lg: 14 },
@@ -42,7 +41,7 @@ export function LocalAppBar({
         ...props.sx
       }}
     >
-      <Container maxWidth="xxl" disableGutters>
+      <Container maxWidth="xxl" disableGutters sx={{ px: 8 }}>
         <Stack
           direction="row"
           justifyContent="space-between"

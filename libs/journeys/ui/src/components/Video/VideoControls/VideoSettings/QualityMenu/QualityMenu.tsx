@@ -12,6 +12,7 @@ import VideoJsPlayer from '../../../utils/videoJsTypes'
 export interface QualityMenuItem {
   resolution: string
   qualityLevel: number
+  height: number
 }
 
 interface QualityMenuProps {
@@ -51,29 +52,37 @@ export function QualityMenu({
     const tech = player.tech({ IWillNotUseThisInPlugins: true })
     let qualities: QualityMenuItem[] = []
 
-    if (tech?.name_ === 'Html5') {
+    if (tech != null && 'vhs' in tech) {
       const qualityLevels = player.qualityLevels()
       qualities = Array.from({ length: qualityLevels.length }).reduce<
-        (QualityMenuItem & { height: number })[]
+        QualityMenuItem[]
       >((acc, _, i) => {
         const index = qualityLevels.length - 1 - i
         const level = qualityLevels[index]
-        const height = level.height
+        const height = level?.height ?? 0
         const resolution =
           height >= 2160 ? '4K' : height >= 1440 ? '2K' : `${height}p`
 
         if (!acc.some((q) => q.height === height)) {
-          acc.push({ resolution, qualityLevel: index, height })
+          const insertPosition = acc.findIndex((item) => item.height < height)
+
+          if (insertPosition !== -1) {
+            acc.splice(insertPosition, 0, {
+              resolution,
+              qualityLevel: index,
+              height
+            })
+          } else {
+            acc.push({ resolution, qualityLevel: index, height })
+          }
         }
         return acc
       }, [])
     }
+
     setQualities([
-      { resolution: 'Auto', qualityLevel: -1 },
-      ...qualities.map(({ resolution, qualityLevel }) => ({
-        resolution,
-        qualityLevel
-      }))
+      { resolution: 'Auto', qualityLevel: -1, height: Number.MAX_SAFE_INTEGER },
+      ...qualities
     ])
   }, [player, onQualityChanged, open])
 
@@ -86,17 +95,20 @@ export function QualityMenu({
         const tech = player.tech({ IWillNotUseThisInPlugins: true })
 
         if (
-          tech?.name_ === 'Youtube' &&
+          tech != null &&
+          'ytPlayer' in tech &&
           tech?.ytPlayer?.getPlaybackQuality != null
         ) {
           const currentQuality = tech?.ytPlayer?.getPlaybackQuality() ?? ''
           const displayQuality =
             YOUTUBE_QUALITY_LABELS[currentQuality] ?? currentQuality
+
           onQualityChanged(`Auto (${displayQuality})`)
         } else if (tech?.name_ === 'Html5') {
           const activeResolution = qualities.find(
             (q) => q.qualityLevel === qualityLevels.selectedIndex
           )?.resolution
+
           if (activeResolution) {
             onQualityChanged(`Auto (${activeResolution})`)
           }
@@ -116,7 +128,7 @@ export function QualityMenu({
     const qualityLevels = player.qualityLevels()
     const tech = player.tech({ IWillNotUseThisInPlugins: true })
 
-    if (tech?.name_ !== 'Html5') {
+    if (!(tech != null && 'vhs' in tech)) {
       onClose()
       return
     }
@@ -125,7 +137,7 @@ export function QualityMenu({
     const wasPlaying = !player.paused()
     player.pause()
 
-    // Clears buffer
+    // Clears buffer - not supported in Safari
     const sourceBuffers = tech?.vhs?.mediaSource?.activeSourceBuffers
     if (sourceBuffers != null && sourceBuffers.length > 0) {
       const duration = player.duration() ?? 0
