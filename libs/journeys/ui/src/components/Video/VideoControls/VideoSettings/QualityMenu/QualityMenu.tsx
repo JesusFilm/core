@@ -160,7 +160,9 @@ export function QualityMenu({
     const wasPlaying = !player.paused()
     player.pause()
 
-    // Clears buffer - not supported in Safari
+    // Clears buffer
+    // not supported in Safari, and no work arounds
+    // quality may not change immediately
     const sourceBuffers = tech?.vhs?.mediaSource?.activeSourceBuffers
     if (sourceBuffers != null && sourceBuffers.length > 0) {
       const duration = player.duration() ?? 0
