@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 
 import { SettingsMenu } from '.'
 
@@ -13,15 +13,17 @@ describe('SettingsMenu', () => {
   })
 
   it('renders the settings menu when open', () => {
-    render(
-      <SettingsMenu
-        anchorEl={anchorEl}
-        open
-        onClose={handleClose}
-        currentQuality={currentQuality}
-        onQualityClick={handleQualityClick}
-      />
-    )
+    act(() => {
+      render(
+        <SettingsMenu
+          anchorEl={anchorEl}
+          open
+          onClose={handleClose}
+          currentQuality={currentQuality}
+          onQualityClick={handleQualityClick}
+        />
+      )
+    })
 
     expect(screen.getByText('Quality')).toBeInTheDocument()
     expect(screen.getByText(currentQuality)).toBeInTheDocument()
@@ -43,45 +45,54 @@ describe('SettingsMenu', () => {
   })
 
   it('calls onQualityClick when quality menu item is clicked', () => {
-    render(
-      <SettingsMenu
-        anchorEl={anchorEl}
-        open
-        onClose={handleClose}
-        currentQuality={currentQuality}
-        onQualityClick={handleQualityClick}
-      />
-    )
+    act(() => {
+      render(
+        <SettingsMenu
+          anchorEl={anchorEl}
+          open
+          onClose={handleClose}
+          currentQuality={currentQuality}
+          onQualityClick={handleQualityClick}
+        />
+      )
+    })
 
-    fireEvent.click(screen.getByText('Quality'))
+    act(() => {
+      fireEvent.click(screen.getByText('Quality'))
+    })
+
     expect(handleQualityClick).toHaveBeenCalledTimes(1)
   })
 
   it('displays the current quality setting', () => {
     const testQuality = 'High'
-    render(
-      <SettingsMenu
-        anchorEl={anchorEl}
-        open
-        onClose={handleClose}
-        currentQuality={testQuality}
-        onQualityClick={handleQualityClick}
-      />
-    )
+    act(() => {
+      render(
+        <SettingsMenu
+          anchorEl={anchorEl}
+          open
+          onClose={handleClose}
+          currentQuality={testQuality}
+          onQualityClick={handleQualityClick}
+        />
+      )
+    })
 
     expect(screen.getByText(testQuality)).toBeInTheDocument()
   })
 
   it('has the correct menu ID', () => {
-    render(
-      <SettingsMenu
-        anchorEl={anchorEl}
-        open
-        onClose={handleClose}
-        currentQuality={currentQuality}
-        onQualityClick={handleQualityClick}
-      />
-    )
+    act(() => {
+      render(
+        <SettingsMenu
+          anchorEl={anchorEl}
+          open
+          onClose={handleClose}
+          currentQuality={currentQuality}
+          onQualityClick={handleQualityClick}
+        />
+      )
+    })
 
     const menu = document.getElementById('settings-menu')
     expect(menu).toBeInTheDocument()

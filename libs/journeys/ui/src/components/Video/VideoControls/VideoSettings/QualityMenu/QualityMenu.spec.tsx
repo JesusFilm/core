@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import React from 'react'
 
 import { QualityMenu, QualityMenuItem } from '.'
@@ -42,16 +42,18 @@ describe('QualityMenu', () => {
   })
 
   it('renders the quality menu when open', () => {
-    render(
-      <QualityMenu
-        anchorEl={anchorEl}
-        open
-        onClose={handleClose}
-        onBack={handleBack}
-        player={mockPlayer as any}
-        onQualityChanged={handleQualityChanged}
-      />
-    )
+    act(() => {
+      render(
+        <QualityMenu
+          anchorEl={anchorEl}
+          open
+          onClose={handleClose}
+          onBack={handleBack}
+          player={mockPlayer as any}
+          onQualityChanged={handleQualityChanged}
+        />
+      )
+    })
 
     expect(screen.getByText('Quality')).toBeInTheDocument()
     expect(screen.getByText('Auto')).toBeInTheDocument()
@@ -74,18 +76,22 @@ describe('QualityMenu', () => {
   })
 
   it('calls onBack when back button is clicked', () => {
-    render(
-      <QualityMenu
-        anchorEl={anchorEl}
-        open
-        onClose={handleClose}
-        onBack={handleBack}
-        player={mockPlayer as any}
-        onQualityChanged={handleQualityChanged}
-      />
-    )
+    act(() => {
+      render(
+        <QualityMenu
+          anchorEl={anchorEl}
+          open
+          onClose={handleClose}
+          onBack={handleBack}
+          player={mockPlayer as any}
+          onQualityChanged={handleQualityChanged}
+        />
+      )
+    })
 
-    fireEvent.click(screen.getByText('Quality'))
+    act(() => {
+      fireEvent.click(screen.getByText('Quality'))
+    })
     expect(handleBack).toHaveBeenCalledTimes(1)
   })
 
@@ -107,26 +113,28 @@ describe('QualityMenu', () => {
       ])
       .mockImplementationOnce(() => [-1, jest.fn()])
 
-    render(
-      <QualityMenu
-        anchorEl={anchorEl}
-        open
-        onClose={handleClose}
-        onBack={handleBack}
-        player={mockPlayer as any}
-        onQualityChanged={handleQualityChanged}
-      />
-    )
+    act(() => {
+      render(
+        <QualityMenu
+          anchorEl={anchorEl}
+          open
+          onClose={handleClose}
+          onBack={handleBack}
+          player={mockPlayer as any}
+          onQualityChanged={handleQualityChanged}
+        />
+      )
+    })
 
-    fireEvent.click(screen.getByText('720p'))
+    await act(async () => {
+      fireEvent.click(screen.getByText('720p'))
+      // Wait for the timeout in handleQualityChange to complete
+      await new Promise((resolve) => setTimeout(resolve, 200))
+    })
 
     expect(mockPlayer.pause).toHaveBeenCalled()
     expect(mockPlayer.currentTime).toHaveBeenCalled()
-
     expect(handleClose).toHaveBeenCalled()
-
-    await new Promise((resolve) => setTimeout(resolve, 200))
-
     expect(mockPlayer.play).toHaveBeenCalled()
   })
 
@@ -146,18 +154,22 @@ describe('QualityMenu', () => {
       ])
       .mockImplementationOnce(() => [-1, jest.fn()])
 
-    render(
-      <QualityMenu
-        anchorEl={anchorEl}
-        open
-        onClose={handleClose}
-        onBack={handleBack}
-        player={mockPlayer as any}
-        onQualityChanged={handleQualityChanged}
-      />
-    )
+    act(() => {
+      render(
+        <QualityMenu
+          anchorEl={anchorEl}
+          open
+          onClose={handleClose}
+          onBack={handleBack}
+          player={mockPlayer as any}
+          onQualityChanged={handleQualityChanged}
+        />
+      )
+    })
 
-    fireEvent.click(screen.getByText('Auto'))
+    act(() => {
+      fireEvent.click(screen.getByText('Auto'))
+    })
 
     expect(mockPlayer.pause).toHaveBeenCalled()
     expect(handleClose).toHaveBeenCalled()

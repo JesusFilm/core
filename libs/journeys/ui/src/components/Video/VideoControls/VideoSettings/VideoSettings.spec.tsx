@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 
 import { VideoSettings } from '.'
 
@@ -41,25 +41,39 @@ describe('VideoSettings', () => {
     render(<VideoSettings player={mockPlayer as any} />)
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
 
-    fireEvent.click(screen.getByLabelText('video settings'))
+    act(() => {
+      fireEvent.click(screen.getByLabelText('video settings'))
+    })
+
     expect(screen.getByRole('menu')).toBeInTheDocument()
   })
 
   it('closes settings menu on escape key', () => {
     render(<VideoSettings player={mockPlayer as any} />)
 
-    fireEvent.click(screen.getByLabelText('video settings'))
+    act(() => {
+      fireEvent.click(screen.getByLabelText('video settings'))
+    })
+
     expect(screen.getByRole('menu')).toBeInTheDocument()
 
-    fireEvent.keyDown(screen.getByRole('menu'), { key: 'Escape' })
+    act(() => {
+      fireEvent.keyDown(screen.getByRole('menu'), { key: 'Escape' })
+    })
+
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
   it('shows when clicked', () => {
     render(<VideoSettings player={mockPlayer as any} />)
 
-    fireEvent.click(screen.getByLabelText('video settings'))
-    fireEvent.click(screen.getByText('Quality'))
+    act(() => {
+      fireEvent.click(screen.getByLabelText('video settings'))
+    })
+
+    act(() => {
+      fireEvent.click(screen.getByText('Quality'))
+    })
 
     expect(screen.getByTestId('ArrowBackIosNewRoundedIcon')).toBeInTheDocument()
   })
@@ -67,10 +81,17 @@ describe('VideoSettings', () => {
   it('navigates to and from the quality menu', () => {
     render(<VideoSettings player={mockPlayer as any} />)
 
-    fireEvent.click(screen.getByLabelText('video settings'))
-    fireEvent.click(screen.getByText('Quality'))
+    act(() => {
+      fireEvent.click(screen.getByLabelText('video settings'))
+    })
 
-    fireEvent.click(screen.getByTestId('ArrowBackIosNewRoundedIcon'))
+    act(() => {
+      fireEvent.click(screen.getByText('Quality'))
+    })
+
+    act(() => {
+      fireEvent.click(screen.getByTestId('ArrowBackIosNewRoundedIcon'))
+    })
 
     expect(screen.getAllByText('Quality')).toHaveLength(2)
   })
@@ -78,7 +99,9 @@ describe('VideoSettings', () => {
   it('shows default value for video quality', () => {
     render(<VideoSettings player={mockPlayer as any} />)
 
-    fireEvent.click(screen.getByLabelText('video settings'))
+    act(() => {
+      fireEvent.click(screen.getByLabelText('video settings'))
+    })
 
     const menuItem = screen.getByText('Quality').closest('li')
     expect(menuItem).toBeInTheDocument()

@@ -100,7 +100,8 @@ export function QualityMenu({
       },
       ...qualities
     ])
-  }, [t, player, onQualityChanged, open])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [player, onQualityChanged, open])
 
   // Handles the auto quality change
   useEffect(() => {
@@ -138,12 +139,12 @@ export function QualityMenu({
         qualityLevels.off('change', handleAutoQualityChange)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     player,
     selectedQuality,
     onQualityChanged,
     qualities,
-    t,
     YOUTUBE_QUALITY_LABELS
   ])
 
