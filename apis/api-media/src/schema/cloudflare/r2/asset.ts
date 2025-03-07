@@ -44,6 +44,8 @@ export async function getPresignedUrl(
 builder.prismaObject('CloudflareR2', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    contentLength: t.exposeInt('contentLength', { nullable: false }),
+    contentType: t.exposeString('contentType', { nullable: false }),
     fileName: t.exposeString('fileName', { nullable: false }),
     uploadUrl: t.withAuth({ isPublisher: true }).exposeString('uploadUrl'),
     userId: t
@@ -80,7 +82,9 @@ builder.mutationFields((t) => ({
           userId: user.id,
           fileName: input.fileName,
           uploadUrl,
-          publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${input.fileName}`
+          publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${input.fileName}`,
+          contentType: input.contentType,
+          contentLength: input.contentLength
         }
       })
     }

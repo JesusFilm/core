@@ -19,6 +19,7 @@ export const useAdminVideoMock: MockedResponse<
       adminVideo: {
         id: '1_jf-0-0',
         slug: 'jesus',
+        locked: false,
         images: [
           {
             id: '1_jf-0-0.mobileCinematicHigh.jpg',
@@ -146,6 +147,10 @@ export const useAdminVideoMock: MockedResponse<
             id: '1_4334-jf-0-0',
             videoId: '1_jf-0-0',
             slug: 'jesus/munukutuba',
+            videoEdition: {
+              id: 'edition.id',
+              name: 'base'
+            },
             downloads: [
               {
                 id: '529a0228-67ce-4b08-bc78-cecf1b7ec358',
@@ -179,6 +184,10 @@ export const useAdminVideoMock: MockedResponse<
             id: '1_19558-jf-0-0',
             videoId: '1_jf-0-0',
             slug: 'jesus/kom',
+            videoEdition: {
+              id: 'edition.id',
+              name: 'base'
+            },
             downloads: [
               {
                 id: 'fe363739-adb1-4871-be5b-97d3e7871038',
@@ -212,6 +221,10 @@ export const useAdminVideoMock: MockedResponse<
             id: '1_529-jf-0-0',
             videoId: '1_jf-0-0',
             slug: 'jesus/english',
+            videoEdition: {
+              id: 'edition.id',
+              name: 'base'
+            },
             downloads: [
               {
                 id: '5f6dae80-87eb-4db1-9af1-07ddf8d9ca63',
@@ -240,6 +253,56 @@ export const useAdminVideoMock: MockedResponse<
               ],
               slug: 'english'
             }
+          }
+        ],
+        videoEditions: [
+          {
+            id: 'edition.id',
+            name: 'base',
+            videoSubtitles: [
+              {
+                id: 'dc006e9e-3f94-4c88-8442-563bbb2048fa',
+                vttSrc:
+                  'https://d389zwyrhi20m0.cloudfront.net/483/1_jf-0-0/0-0-JL-483-32114.vtt',
+                srtSrc:
+                  'https://d389zwyrhi20m0.cloudfront.net/483/1_jf-0-0/0-0-JL-483-32114.srt',
+                value:
+                  'https://d389zwyrhi20m0.cloudfront.net/483/1_jf-0-0/0-0-JL-483-32114.vtt',
+                language: {
+                  id: '483',
+                  name: [
+                    {
+                      value: 'Ελληνικά'
+                    },
+                    {
+                      value: 'Greek'
+                    }
+                  ],
+                  slug: 'greek'
+                }
+              },
+              {
+                id: '5fec1e4d-ff30-4b44-b4d9-bcd04d187367',
+                vttSrc:
+                  'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.vtt',
+                srtSrc:
+                  'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.srt',
+                value:
+                  'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.vtt',
+                language: {
+                  id: '496',
+                  name: [
+                    {
+                      value: 'Français'
+                    },
+                    {
+                      value: 'French'
+                    }
+                  ],
+                  slug: 'french'
+                }
+              }
+            ]
           }
         ],
         subtitles: [
