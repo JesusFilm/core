@@ -29,9 +29,17 @@ const Template: StoryObj<typeof Header> = {
 }
 
 const WithFlagsTemplate: StoryObj<typeof Header> = {
-  render: () => (
-    <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>
-      <Header themeMode={ThemeMode.light} />
+  render: (args) => (
+    <FlagsProvider
+      flags={{
+        ...trueHeaderItemsFlags
+      }}
+    >
+      <Header
+        themeMode={ThemeMode.light}
+        hideAbsoluteAppBar={args.hideAbsoluteAppBar}
+        hideSpacer={args.hideSpacer}
+      />
     </FlagsProvider>
   )
 }
@@ -48,14 +56,22 @@ export const WithAllButtons = {
         pathname: '/watch'
       }
     }
+  },
+  args: {
+    hideAbsoluteAppBar: false,
+    hideSpacer: false
   }
 }
 
 export const OpenPanel = {
-  ...Template,
+  ...WithFlagsTemplate,
   play: async () => {
-    const menuButton = screen.getAllByTestId('MenuIcon')[0]
+    const menuButton = screen.getByTestId('MenuIcon')
     await userEvent.click(menuButton)
+  },
+  args: {
+    hideAbsoluteAppBar: false,
+    hideSpacer: false
   }
 }
 

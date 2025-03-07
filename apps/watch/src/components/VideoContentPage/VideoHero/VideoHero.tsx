@@ -64,11 +64,11 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
         hideSpacer
         themeMode={ThemeMode.dark}
       />
-      <Div100vh
+      <Box
         css={{
+          height: '100svh',
           marginBottom: isFullscreen ? 0 : -VIDEO_HERO_BOTTOM_SPACING,
-          paddingBottom: isFullscreen ? 0 : VIDEO_HERO_BOTTOM_SPACING,
-          minHeight: 560
+          paddingBottom: isFullscreen ? 0 : VIDEO_HERO_BOTTOM_SPACING
         }}
       >
         <Box
@@ -93,7 +93,7 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
             !isPlaying && <VideoHeroOverlay handlePlay={handlePlay} />
           )}
         </Box>
-      </Div100vh>
+      </Box>
     </>
   )
 }

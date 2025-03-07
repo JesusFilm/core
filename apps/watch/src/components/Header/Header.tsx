@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
-import Fade from '@mui/material/Fade'
 import { useTheme } from '@mui/material/styles'
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -55,20 +54,11 @@ export function Header({
             {!hideSpacer && (
               <Box data-testid="HeaderSpacer" sx={{ height: 80 }} />
             )}
-            <Fade
-              appear={false}
-              in={shouldFade}
-              style={{
-                transitionDelay: shouldFade ? undefined : '2s',
-                transitionDuration: '225ms'
-              }}
-              timeout={{ exit: 2225 }}
-            >
-              <BottomAppBar
-                lightTheme={lightTheme}
-                bottomBarTrigger={bottomBarTrigger}
-              />
-            </Fade>
+            <BottomAppBar
+              lightTheme={lightTheme}
+              bottomBarTrigger={bottomBarTrigger}
+              shouldFade={shouldFade}
+            />
           </Box>
         )}
       </ThemeProvider>
