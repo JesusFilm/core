@@ -184,7 +184,7 @@
     "react-instantsearch": "^7.5.0",
     "react-instantsearch-router-nextjs": "^7.12.3",
     "react-is": "18.3.1",
-    "react-leaflet": "^4.2.1",
+    "react-leaflet": "^5.0.0",
     "react-loading-hook": "^1.1.2",
     "react-simple-timefield": "^3.3.1",
     "react-swipeable": "^7.0.1",
