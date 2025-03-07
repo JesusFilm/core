@@ -40,6 +40,11 @@ export function VideoSettings({
     setCurrentQuality(quality)
   }
 
+  const handleToggleStats = (event: React.MouseEvent): void => {
+    onToggleStats(event)
+    handleClose()
+  }
+
   const open = Boolean(anchorEl)
 
   return (
@@ -56,7 +61,7 @@ export function VideoSettings({
         onClose={handleClose}
         currentQuality={currentQuality}
         onQualityClick={handleQualityClick}
-        onToggleStats={onToggleStats}
+        onToggleStats={handleToggleStats}
       />
       <QualityMenu
         anchorEl={anchorEl}
