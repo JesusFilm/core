@@ -43,7 +43,9 @@ export function Image({
           placeholder="blur"
           blurDataURL={placeholderSrc ?? src}
           layout="responsive"
-          objectFit="cover"
+          style={{
+            objectFit: 'cover'
+          }}
         />
       ) : (
         <Paper

@@ -53,7 +53,9 @@ export function ExpandedCover({
           placeholder="blur"
           blurDataURL={backgroundBlur}
           layout="fill"
-          objectFit="cover"
+          style={{
+            objectFit: 'cover'
+          }}
           objectPosition={`${imageBlock.focalLeft}% ${imageBlock.focalTop}%`}
         />
       )}
