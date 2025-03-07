@@ -30,21 +30,21 @@ export function formatTime(seconds: number): string {
 }
 
 /**
- * Gets the current video quality as a string in the format "widthxheight"
+ * Gets the current video quality as a string
  * @param player The video.js player instance
- * @returns The current video quality or an empty string if not available
+ * @returns The current video quality or '-' if not available
  */
 export function getCurrentQuality(player?: VideoJsPlayer): string {
-  // If player is provided, try to get the video element from it
-  const videoEl = player
-    ? player.el().querySelector('video')
-    : document.querySelector('video')
+  if (!player) return '-'
 
-  if (!videoEl) return ''
+  const qualityLevels = player.qualityLevels()
 
-  const width = videoEl.videoWidth
-  const height = videoEl.videoHeight
-  return width && height ? `${width}x${height}` : ''
+  if (qualityLevels?.length > 0 && qualityLevels.selectedIndex >= 0) {
+    const selectedLevel = qualityLevels[qualityLevels.selectedIndex]
+    return selectedLevel ? `${selectedLevel.height}p` : '-'
+  }
+
+  return '-'
 }
 
 /**
