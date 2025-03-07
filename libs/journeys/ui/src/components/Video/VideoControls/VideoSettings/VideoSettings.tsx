@@ -40,12 +40,7 @@ export function VideoSettings({ player }: VideoSettingsProps): ReactElement {
 
   return (
     <>
-      <SettingsButton
-        onClick={handleClick}
-        aria-controls={open ? 'settings-menu' : undefined}
-        aria-haspopup
-        aria-expanded={open}
-      />
+      <SettingsButton onClick={handleClick} open={open} />
       <SettingsMenu
         anchorEl={anchorEl}
         open={open && !showQualityMenu}

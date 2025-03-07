@@ -4,24 +4,20 @@ import { MouseEvent, ReactElement } from 'react'
 
 interface SettingsButtonProps {
   onClick: (event: MouseEvent<HTMLElement>) => void
-  'aria-controls'?: string
-  'aria-expanded'?: boolean
-  'aria-haspopup'?: boolean
+  open: boolean
 }
 
 export function SettingsButton({
   onClick,
-  'aria-controls': ariaControls,
-  'aria-expanded': ariaExpanded,
-  'aria-haspopup': ariaHasPopup
+  open
 }: SettingsButtonProps): ReactElement {
   return (
     <IconButton
       onClick={onClick}
       aria-label="video settings"
-      aria-controls={ariaControls}
-      aria-expanded={ariaExpanded}
-      aria-haspopup={ariaHasPopup}
+      aria-controls="settings-menu"
+      aria-expanded={open}
+      aria-haspopup={open}
       sx={{
         color: 'common.white',
         '&:hover': {
