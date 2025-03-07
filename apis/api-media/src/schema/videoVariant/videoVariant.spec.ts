@@ -109,7 +109,11 @@ describe('videoVariant', () => {
           srtSrc: null,
           primary: false,
           languageId: 'languageId',
-          videoId: 'videoId'
+          videoId: 'videoId',
+          vttAssetId: null,
+          vttVersion: 1,
+          srtAssetId: null,
+          srtVersion: 1
         }
       ])
       prismaMock.videoSubtitle.count.mockResolvedValueOnce(123)
@@ -215,7 +219,11 @@ describe('videoVariant', () => {
           primary: false,
           languageId: 'languageId',
           videoId: 'videoId',
-          edition: 'base'
+          edition: 'base',
+          vttAssetId: null,
+          vttVersion: 1,
+          srtAssetId: null,
+          srtVersion: 1
         }
       ])
       prismaMock.videoSubtitle.count.mockResolvedValueOnce(123)
@@ -321,7 +329,11 @@ describe('videoVariant', () => {
           srtSrc: null,
           primary: false,
           languageId: 'languageId',
-          videoId: 'videoId'
+          videoId: 'videoId',
+          vttAssetId: null,
+          vttVersion: 1,
+          srtAssetId: null,
+          srtVersion: 1
         }
       ])
       prismaMock.videoSubtitle.count.mockResolvedValueOnce(123)
@@ -418,7 +430,9 @@ describe('videoVariant', () => {
           muxVideoId: null,
           masterUrl: 'masterUrl',
           masterWidth: 320,
-          masterHeight: 180
+          masterHeight: 180,
+          assetId: null,
+          version: 1
         })
         const result = await authClient({
           document: VIDEO_VARIANT_CREATE_MUTATION,
@@ -513,7 +527,9 @@ describe('videoVariant', () => {
           muxVideoId: null,
           masterUrl: 'masterUrl',
           masterWidth: 320,
-          masterHeight: 180
+          masterHeight: 180,
+          assetId: null,
+          version: 1
         })
         const result = await authClient({
           document: VIDEO_VARIANT_UPDATE_MUTATION,
@@ -607,7 +623,9 @@ describe('videoVariant', () => {
           muxVideoId: null,
           masterUrl: 'masterUrl',
           masterWidth: 320,
-          masterHeight: 180
+          masterHeight: 180,
+          assetId: null,
+          version: 1
         })
         const result = await authClient({
           document: VIDEO_VARIANT_DELETE_MUTATION,
