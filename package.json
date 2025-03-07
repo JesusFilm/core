@@ -87,7 +87,7 @@
     "@nestjs/graphql": "^12.0.8",
     "@nestjs/platform-express": "10.4.15",
     "@next/bundle-analyzer": "^13.5.6",
-    "@next/third-parties": "^14.2.12",
+    "@next/third-parties": "^15.1.7",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/exporter-trace-otlp-grpc": "^0.57.0",
     "@opentelemetry/instrumentation": "^0.57.0",
@@ -154,7 +154,7 @@
     "nanoid": "^3.3.7",
     "nestjs-ddtrace": "5.0.0",
     "nestjs-pino": "^4.0.0",
-    "next": "14.2.24",
+    "next": "^15.1.7",
     "next-absolute-url": "^1.2.2",
     "next-firebase-auth": "^1.0.1",
     "next-firebase-auth-edge": "^1.7.0-canary.2",
@@ -171,10 +171,10 @@
     "prism-react-renderer": "^2.0.0",
     "prop-types": "^15.8.1",
     "qrcode.react": "^4.2.0",
-    "react": "18.3.1",
+    "react": "^19.0.0",
     "react-colorful": "^5.5.1",
     "react-div-100vh": "^0.7.0",
-    "react-dom": "18.3.1",
+    "react-dom": "^19.0.0",
     "react-dropzone": "^14.2.3",
     "react-email": "^3.0.0",
     "react-helmet": "^6.1.0",
@@ -183,11 +183,11 @@
     "react-instantsearch": "^7.5.0",
     "react-instantsearch-router-nextjs": "^7.12.3",
     "react-is": "18.3.1",
-    "react-leaflet": "^4.2.1",
+    "react-leaflet": "^5.0.0",
     "react-loading-hook": "^1.1.2",
     "react-simple-timefield": "^3.3.1",
     "react-swipeable": "^7.0.1",
-    "react-use-downloader": "^1.2.4",
+    "react-use-downloader": "^1.2.7",
     "react-window": "^1.8.10",
     "reactflow": "^11.10.1",
     "reflect-metadata": "^0.1.13",
@@ -307,7 +307,7 @@
     "esbuild": "^0.19.2",
     "eslint": "8.57.1",
     "eslint-config-love": "^84.0.0",
-    "eslint-config-next": "14.2.24",
+    "eslint-config-next": "^15.1.7",
     "eslint-config-prettier": "9.1.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-i18next": "^6.0.3",
@@ -365,5 +365,10 @@
   },
   "msw": {
     "workerDirectory": "./.storybook/static"
+  },
+  "overrides": {
+    "react-use-downloader": {
+      "react": "^19.0.0"
+    }
   }
 }
