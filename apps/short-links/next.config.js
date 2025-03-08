@@ -12,7 +12,7 @@ const nextConfig = {
     svgr: false
   },
   eslint: {
-    ignoreDuringBuilds: true
+    ignoreDuringBuilds: process.env.CI === 'true'
   }
 }
 

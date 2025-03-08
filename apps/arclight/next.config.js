@@ -18,7 +18,7 @@ const nextConfig = {
   },
   eslint: {
     // handled by github actions
-    ignoreDuringBuilds: true
+    ignoreDuringBuilds: process.env.CI === 'true'
   },
   experimental: {
     outputFileTracingExcludes: {
