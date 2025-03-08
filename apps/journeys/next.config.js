@@ -1,3 +1,5 @@
+const { truncate } = require('node:fs')
+
 const { composePlugins, withNx } = require('@nx/next')
 const { withPlausibleProxy } = require('next-plausible')
 
@@ -39,7 +41,7 @@ const nextConfig = {
   },
   eslint: {
     // handled by github actions
-    ignoreDuringBuilds: true
+    ignoreDuringBuilds: process.env.CI === 'true'
   },
   transpilePackages: ['journeys-ui'],
   experimental: {
