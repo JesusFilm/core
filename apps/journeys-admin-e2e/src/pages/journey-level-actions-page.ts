@@ -388,6 +388,7 @@ export class JourneyLevelActions {
   }
 
   async sleep(ms: number) {
+    // eslint-ignore-next-line
     return await new Promise((resolve) => setTimeout(resolve, ms))
   }
 }
