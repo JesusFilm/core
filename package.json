@@ -307,9 +307,8 @@
     "esbuild": "^0.19.2",
     "eslint": "9.20.0",
     "eslint-config-love": "^85.0.0",
-    "eslint-config-next": "14.2.24",
+    "eslint-config-next": "^15.0.0",
     "eslint-config-prettier": "9.1.0",
-    "eslint-config-standard": "^17.0.0",
     "eslint-plugin-i18next": "^6.0.3",
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-jest": "^28.2.0",
@@ -365,8 +364,5 @@
   },
   "msw": {
     "workerDirectory": "./.storybook/static"
-  },
-  "overrides": {
-    "eslint": "9.20.0"
   }
 }
