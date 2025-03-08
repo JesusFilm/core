@@ -2,6 +2,7 @@ import VideocamRounded from '@mui/icons-material/VideocamRounded'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import { ThemeProvider, styled, useTheme } from '@mui/material/styles'
+import MuxPlayer from '@mux/mux-player-react'
 import get from 'lodash/get'
 import {
   CSSProperties,
@@ -157,6 +158,9 @@ export function Video({
   const videoControlsStartAt =
     mediaVideo?.__typename === 'MuxVideo' ? 0 : effectiveStartAt
 
+  const isMuxVideo =
+    mediaVideo?.__typename === 'MuxVideo' || source === VideoBlockSource.mux
+
   useEffect(() => {
     setActiveStep(isActiveBlockOrDescendant(blockId))
   }, [blockId, blockHistory])
@@ -187,32 +191,35 @@ export function Video({
         }
       }}
     >
-      <InitAndPlay
-        videoRef={videoRef}
-        player={player}
-        setPlayer={setPlayer}
-        triggerTimes={triggerTimes}
-        videoEndTime={videoEndTime}
-        selectedBlock={selectedBlock}
-        blockId={blockId}
-        muted={muted}
-        startAt={videoControlsStartAt}
-        endAt={effectiveEndAt}
-        autoplay={autoplay}
-        posterBlock={posterBlock}
-        setLoading={setLoading}
-        setShowPoster={setShowPoster}
-        setVideoEndTime={setVideoEndTime}
-        source={source}
-        activeStep={activeStep}
-        title={title}
-        mediaVideo={mediaVideo}
-        videoVariantLanguageId={videoVariantLanguageId}
-      />
+      {!isMuxVideo && (
+        <InitAndPlay
+          videoRef={videoRef}
+          player={player}
+          setPlayer={setPlayer}
+          triggerTimes={triggerTimes}
+          videoEndTime={videoEndTime}
+          selectedBlock={selectedBlock}
+          blockId={blockId}
+          muted={muted}
+          startAt={videoControlsStartAt}
+          endAt={effectiveEndAt}
+          autoplay={autoplay}
+          posterBlock={posterBlock}
+          setLoading={setLoading}
+          setShowPoster={setShowPoster}
+          setVideoEndTime={setVideoEndTime}
+          source={source}
+          activeStep={activeStep}
+          title={title}
+          mediaVideo={mediaVideo}
+          videoVariantLanguageId={videoVariantLanguageId}
+        />
+      )}
       {activeStep &&
         player != null &&
         eventVideoTitle != null &&
-        eventVideoId != null && (
+        eventVideoId != null &&
+        !isMuxVideo && (
           <VideoEvents
             player={player}
             blockId={blockId}
@@ -240,53 +247,86 @@ export function Video({
             position={isFillAndNotYoutube() ? 'absolute' : 'inherit'}
             data-testid="video-container"
           >
-            <StyledVideo
-              ref={videoRef}
-              className="video-js vjs-tech"
-              playsInline
-              preload="auto"
-              sx={{
-                '&.video-js.vjs-youtube.vjs-fill': {
-                  transform: 'scale(1.01)'
-                },
-                '> .vjs-tech': {
+            {isMuxVideo &&
+            mediaVideo?.__typename === 'MuxVideo' &&
+            mediaVideo?.playbackId != null ? (
+              <MuxPlayer
+                streamType="on-demand"
+                playbackId={mediaVideo.playbackId}
+                metadata={{
+                  video_id: mediaVideo.id || videoId || '',
+                  video_title: title || '',
+                  player_name: 'journeys'
+                }}
+                autoPlay={autoplay ?? false}
+                muted={muted ?? false}
+                startTime={effectiveStartAt}
+                style={{
+                  height: '100%',
+                  width: '100%',
                   objectFit: videoFit,
                   transform:
                     objectFit === VideoBlockObjectFit.zoomed
                       ? 'scale(1.33)'
                       : undefined
-                },
-                '> .vjs-poster': {
-                  backgroundColor: VIDEO_BACKGROUND_COLOR,
-                  backgroundSize: 'cover',
-                  transform: 'scale(1.1)'
+                }}
+                onLoadedData={() => {
+                  setLoading(false)
+                  setShowPoster(false)
+                }}
+                onEnded={() => {
+                  if (action != null) {
+                    // Handle action on video end without using triggerAction
+                    // This will be handled by the VideoTrigger component for non-Mux videos
+                  }
+                }}
+                poster={
+                  posterBlock?.src || (videoImage ? videoImage : undefined)
                 }
-              }}
-            >
-              {mediaVideo?.__typename == 'Video' &&
-                mediaVideo?.variant?.hls != null && (
+              />
+            ) : (
+              <StyledVideo
+                ref={videoRef}
+                className="video-js vjs-tech"
+                playsInline
+                preload="auto"
+                sx={{
+                  '&.video-js.vjs-youtube.vjs-fill': {
+                    transform: 'scale(1.01)'
+                  },
+                  '> .vjs-tech': {
+                    objectFit: videoFit,
+                    transform:
+                      objectFit === VideoBlockObjectFit.zoomed
+                        ? 'scale(1.33)'
+                        : undefined
+                  },
+                  '> .vjs-poster': {
+                    backgroundColor: VIDEO_BACKGROUND_COLOR,
+                    backgroundSize: 'cover',
+                    transform: 'scale(1.1)'
+                  }
+                }}
+              >
+                {mediaVideo?.__typename == 'Video' &&
+                  mediaVideo?.variant?.hls != null && (
+                    <source
+                      src={mediaVideo.variant.hls}
+                      type="application/x-mpegURL"
+                    />
+                  )}
+                {source === VideoBlockSource.youTube && (
                   <source
-                    src={mediaVideo.variant.hls}
-                    type="application/x-mpegURL"
+                    src={`https://www.youtube.com/embed/${videoId}?start=${
+                      effectiveStartAt
+                    }&end=${effectiveEndAt}`}
+                    type="video/youtube"
                   />
                 )}
-              {source === VideoBlockSource.youTube && (
-                <source
-                  src={`https://www.youtube.com/embed/${videoId}?start=${
-                    effectiveStartAt
-                  }&end=${effectiveEndAt}`}
-                  type="video/youtube"
-                />
-              )}
-              {mediaVideo?.__typename === 'MuxVideo' && (
-                <source
-                  src={`https://stream.mux.com/${mediaVideo.playbackId}.m3u8?asset_start_time=${effectiveStartAt}&asset_end_time=${effectiveEndAt}`}
-                  type="application/x-mpegURL"
-                />
-              )}
-            </StyledVideo>
+              </StyledVideo>
+            )}
           </Box>
-          {player != null && (
+          {player != null && !isMuxVideo && (
             <ThemeProvider theme={{ ...theme, direction: 'ltr' }}>
               <VideoControls
                 player={player}
@@ -302,7 +342,7 @@ export function Video({
           )}
           {/* TODO: Add back VideoTriggers when we have a way to add them in admin */}
           {/* Default navigate to next card on video end */}
-          {action != null && (
+          {action != null && !isMuxVideo && (
             <VideoTrigger
               blockId={blockId}
               player={player}

@@ -1,4 +1,5 @@
 'use client'
+import MuxPlayer from '@mux/mux-player-react'
 import { useEffect, useRef } from 'react'
 import videojs from 'video.js'
 
@@ -11,12 +12,18 @@ interface VideoPlayerProps {
   hlsUrl: string
   videoTitle: string
   thumbnail?: string | null
+  isMux?: boolean
+  playbackId?: string
+  videoId?: string
 }
 
 export function VideoPlayer({
   hlsUrl,
   videoTitle,
-  thumbnail
+  thumbnail,
+  isMux = false,
+  playbackId,
+  videoId
 }: VideoPlayerProps): JSX.Element {
   const playerRef = useRef<HTMLVideoElement>(null)
 
@@ -54,10 +61,31 @@ export function VideoPlayer({
   }
 
   useEffect(() => {
-    if (playerRef.current != null) {
+    if (playerRef.current != null && !isMux) {
       initPlayer(playerRef)
     }
-  }, [])
+  }, [isMux])
+
+  if (isMux && playbackId) {
+    return (
+      <div className="relative w-full h-full">
+        <MuxPlayer
+          streamType="on-demand"
+          playbackId={playbackId}
+          metadata={{
+            video_id: videoId ?? '',
+            video_title: videoTitle,
+            player_name: 'arclight'
+          }}
+          style={{
+            width: '100%',
+            height: '100%'
+          }}
+          poster={thumbnail ?? undefined}
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="relative w-full h-full">

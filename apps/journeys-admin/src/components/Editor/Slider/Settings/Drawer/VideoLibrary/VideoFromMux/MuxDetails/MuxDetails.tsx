@@ -1,14 +1,9 @@
 import Stack from '@mui/material/Stack'
 import Box from '@mui/system/Box'
-import { ReactElement, useEffect, useRef } from 'react'
-import videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
-
-import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
+import MuxPlayer from '@mux/mux-player-react'
+import { ReactElement } from 'react'
 
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
-
-import 'video.js/dist/video-js.css'
 
 export function MuxDetails({
   open,
@@ -17,25 +12,6 @@ export function MuxDetails({
   VideoDetailsProps,
   'open' | 'activeVideoBlock' | 'onSelect'
 >): ReactElement {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<Player>()
-
-  useEffect(() => {
-    if (
-      open &&
-      videoRef.current != null &&
-      activeVideoBlock?.mediaVideo?.__typename === 'MuxVideo' &&
-      activeVideoBlock?.mediaVideo?.playbackId != null
-    ) {
-      playerRef.current = videojs(videoRef.current, {
-        ...defaultVideoJsOptions,
-        fluid: true,
-        controls: true,
-        poster: `https://image.mux.com/${activeVideoBlock.mediaVideo.playbackId}/thumbnail.png?time=1`
-      })
-    }
-  }, [activeVideoBlock, open, videoRef])
-
   return (
     <Stack spacing={4} sx={{ p: 6 }} data-testid="MuxDetails">
       <Box
@@ -45,19 +21,25 @@ export function MuxDetails({
           overflow: 'hidden'
         }}
       >
-        <video
-          ref={videoRef}
-          className="video-js vjs-big-play-centered"
-          playsInline
-        >
-          {activeVideoBlock?.mediaVideo?.__typename === 'MuxVideo' &&
-            activeVideoBlock?.mediaVideo?.playbackId != null && (
-              <source
-                src={`https://stream.mux.com/${activeVideoBlock?.mediaVideo?.playbackId}.m3u8`}
-                type="application/x-mpegURL"
-              />
-            )}
-        </video>
+        {open &&
+          activeVideoBlock?.mediaVideo?.__typename === 'MuxVideo' &&
+          activeVideoBlock?.mediaVideo?.playbackId != null && (
+            <MuxPlayer
+              streamType="on-demand"
+              playbackId={activeVideoBlock.mediaVideo.playbackId}
+              metadata={{
+                video_id: activeVideoBlock.mediaVideo.id || '',
+                video_title: activeVideoBlock.title || '',
+                player_name: 'journeys-admin'
+              }}
+              style={{
+                width: '100%',
+                height: 'auto',
+                aspectRatio: '16/9'
+              }}
+              poster={`https://image.mux.com/${activeVideoBlock.mediaVideo.playbackId}/thumbnail.png?time=1`}
+            />
+          )}
       </Box>
     </Stack>
   )

@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import {
   VideoBlockObjectFit,
@@ -12,9 +12,23 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
+// Mock MuxPlayer component
+jest.mock('@mux/mux-player-react', () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(({ playbackId, poster }) => (
+    <div
+      data-testid="mux-player"
+      data-playback-id={playbackId}
+      data-poster={poster}
+    >
+      Mux Player
+    </div>
+  ))
+}))
+
 describe('MuxDetails', () => {
   it('should render details of a video', async () => {
-    const { getByRole } = render(
+    render(
       <MuxDetails
         activeVideoBlock={{
           __typename: 'VideoBlock',
@@ -48,16 +62,12 @@ describe('MuxDetails', () => {
         onSelect={jest.fn()}
       />
     )
-    const videoPlayer = getByRole('region', {
-      name: 'Video Player'
-    })
-    const sourceTag = videoPlayer.querySelector('.vjs-tech source')
-    expect(sourceTag?.getAttribute('src')).toBe(
-      'https://stream.mux.com/playbackId.m3u8'
-    )
-    expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
-    const imageTag = videoPlayer.querySelector('.vjs-poster > picture > img')
-    expect(imageTag?.getAttribute('src')).toBe(
+
+    const muxPlayer = screen.getByTestId('mux-player')
+    expect(muxPlayer).toBeInTheDocument()
+    expect(muxPlayer).toHaveAttribute('data-playback-id', 'playbackId')
+    expect(muxPlayer).toHaveAttribute(
+      'data-poster',
       'https://image.mux.com/playbackId/thumbnail.png?time=1'
     )
   })
