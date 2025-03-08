@@ -1,5 +1,3 @@
-const { truncate } = require('node:fs')
-
 const { composePlugins, withNx } = require('@nx/next')
 const { withPlausibleProxy } = require('next-plausible')
 
