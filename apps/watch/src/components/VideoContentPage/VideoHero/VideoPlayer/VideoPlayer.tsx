@@ -1,4 +1,3 @@
-import MuxPlayer from '@mux/mux-player-react'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
@@ -22,10 +21,6 @@ export function VideoPlayer({
   const { variant, title } = useVideo()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<Player>()
-
-  // Since we don't have a direct way to check if it's a Mux video,
-  // we'll assume it's not for now and use the standard video.js player
-  const isMuxVideo = false
 
   useEffect(() => {
     if (videoRef.current != null) {
