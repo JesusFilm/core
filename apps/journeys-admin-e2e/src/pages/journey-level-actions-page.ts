@@ -387,7 +387,7 @@ export class JourneyLevelActions {
     ).toHaveAttribute('value', this.selectedLanguage)
   }
 
-  async sleep(ms) {
+  async sleep(ms: number) {
     return await new Promise((resolve) => setTimeout(resolve, ms))
   }
 }
