@@ -26,6 +26,8 @@ export const CREATE_VIDEO_SUBTITLE = graphql(`
       srtAsset {
         id
       }
+      srtVersion
+      vttVersion
       value
       primary
       edition
@@ -83,6 +85,8 @@ export function SubtitleCreate({
             }
             value
             primary
+            srtVersion
+            vttVersion
             language {
               id
               name {

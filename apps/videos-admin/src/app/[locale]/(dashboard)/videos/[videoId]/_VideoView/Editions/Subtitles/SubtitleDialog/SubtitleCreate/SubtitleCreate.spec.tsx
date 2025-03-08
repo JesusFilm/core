@@ -65,8 +65,8 @@ const getCreateSubtitleMock = <
         primary: input.languageId === '529',
         vttAsset: input.vttSrc ? { id: 'vtt-asset-id' } : null,
         srtAsset: input.srtSrc ? { id: 'srt-asset-id' } : null,
-        vttVersion: input.vttSrc ?? 0,
-        srtVersion: input.srtSrc ?? 0,
+        vttVersion: (input.vttSrc as unknown as number) ?? 0,
+        srtVersion: (input.srtSrc as unknown as number) ?? 0,
         language: {
           id: '529',
           name: [{ value: 'English', primary: true }],
