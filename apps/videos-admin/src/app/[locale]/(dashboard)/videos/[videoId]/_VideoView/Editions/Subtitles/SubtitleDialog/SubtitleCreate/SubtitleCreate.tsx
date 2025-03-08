@@ -20,6 +20,12 @@ export const CREATE_VIDEO_SUBTITLE = graphql(`
       id
       vttSrc
       srtSrc
+      vttAsset {
+        id
+      }
+      srtAsset {
+        id
+      }
       value
       primary
       edition
@@ -69,6 +75,12 @@ export function SubtitleCreate({
             id
             vttSrc
             srtSrc
+            vttAsset {
+              id
+            }
+            srtAsset {
+              id
+            }
             value
             primary
             language {
@@ -123,7 +135,11 @@ export function SubtitleCreate({
       // English is the default primary subtitle for all videos
       primary: values.language === '529',
       vttSrc: null,
-      srtSrc: null
+      srtSrc: null,
+      vttAssetId: null,
+      srtAssetId: null,
+      vttVersion: 0,
+      srtVersion: 0
     }
 
     try {
@@ -161,6 +177,8 @@ export function SubtitleCreate({
 
         await uploadAssetFile(vttFile, uploadUrl)
         input.vttSrc = publicUrl
+        input.vttAssetId = result.data.cloudflareR2Create.id
+        input.vttVersion = 1
       }
 
       // Handle SRT file upload
@@ -197,6 +215,8 @@ export function SubtitleCreate({
 
         await uploadAssetFile(srtFile, uploadUrl)
         input.srtSrc = publicUrl
+        input.srtAssetId = result.data.cloudflareR2Create.id
+        input.srtVersion = 1
       }
 
       await createVideoSubtitle({

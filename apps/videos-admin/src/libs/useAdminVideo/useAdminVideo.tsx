@@ -89,6 +89,14 @@ export const GET_ADMIN_VIDEO = graphql(`
           }
           slug
         }
+        vttAsset {
+          id
+        }
+        srtAsset {
+          id
+        }
+        vttVersion
+        srtVersion
       }
       videoEditions {
         id
@@ -99,6 +107,14 @@ export const GET_ADMIN_VIDEO = graphql(`
           srtSrc
           value
           primary
+          vttAsset {
+            id
+          }
+          srtAsset {
+            id
+          }
+          vttVersion
+          srtVersion
           language {
             id
             name {

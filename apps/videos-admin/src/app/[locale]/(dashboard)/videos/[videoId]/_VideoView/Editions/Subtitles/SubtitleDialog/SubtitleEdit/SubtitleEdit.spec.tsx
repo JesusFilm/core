@@ -66,30 +66,52 @@ const getEditSubtitleMock = <T extends EditSubtitleInput>(
           id: '529',
           name: [{ value: 'English', primary: true }],
           slug: null
-        }
+        },
+        vttAsset: input.vttSrc ? { id: 'vtt-asset-id' } : null,
+        srtAsset: input.srtSrc ? { id: 'srt-asset-id' } : null,
+        vttVersion: 1,
+        srtVersion: 1
       }
     }
   }))
 })
 
 const subtitleEditWithoutFileMock = getEditSubtitleMock({
+  primary: true,
   vttSrc: null,
   srtSrc: null,
-  primary: true
+  vttAssetId: 'vtt-asset-id-1',
+  srtAssetId: 'srt-asset-id-1',
+  vttVersion: 1,
+  srtVersion: 1
 })
 
 const subtitleEditWithFileMock = getEditSubtitleMock({
+  id: 'subtitle1.id',
+  edition: 'base',
+  languageId: '529',
+  primary: true,
   vttSrc:
     'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt',
   srtSrc: null,
-  primary: true
+  vttAssetId: 'r2-asset.id',
+  srtAssetId: 'srt-asset-id-1',
+  vttVersion: 2,
+  srtVersion: 1
 })
 
 const subtitleEditWithSrtFileMock = getEditSubtitleMock({
+  id: 'subtitle1.id',
+  edition: 'base',
+  languageId: '529',
+  primary: true,
   vttSrc: null,
   srtSrc:
     'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
-  primary: true
+  vttAssetId: 'vtt-asset-id-1',
+  srtAssetId: 'r2-asset.id',
+  vttVersion: 1,
+  srtVersion: 2
 })
 
 const createR2VttAssetMock = getCreateR2AssetMock({
@@ -281,11 +303,18 @@ describe('SubtitleEdit', () => {
 
       it('should update subtitle with an existing file', async () => {
         const subtitleEditWithExistingFileMock = getEditSubtitleMock({
+          id: 'subtitle1.id',
+          edition: 'base',
+          languageId: '529',
+          primary: true,
           vttSrc:
             'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt',
           srtSrc:
             'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.srt',
-          primary: true
+          vttAssetId: 'r2-asset.id',
+          srtAssetId: 'srt-asset-id-1',
+          vttVersion: 2,
+          srtVersion: 1
         })
 
         render(
@@ -427,11 +456,18 @@ describe('SubtitleEdit', () => {
 
       it('should update subtitle with an existing file', async () => {
         const subtitleEditWithExistingSrtFileMock = getEditSubtitleMock({
+          id: 'subtitle1.id',
+          edition: 'base',
+          languageId: '529',
+          primary: true,
           vttSrc:
             'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.vtt',
           srtSrc:
             'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
-          primary: true
+          vttAssetId: 'vtt-asset-id-1',
+          srtAssetId: 'r2-asset.id',
+          vttVersion: 1,
+          srtVersion: 2
         })
 
         render(
@@ -484,11 +520,18 @@ describe('SubtitleEdit', () => {
 
     it('should update subtitle with both vtt and srt files simultaneously', async () => {
       const subtitleEditWithBothFilesMock = getEditSubtitleMock({
+        id: 'subtitle1.id',
+        edition: 'base',
+        languageId: '529',
+        primary: true,
         vttSrc:
           'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.vtt',
         srtSrc:
           'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_529.srt',
-        primary: true
+        vttAssetId: 'r2-asset.id',
+        srtAssetId: 'r2-asset.id',
+        vttVersion: 2,
+        srtVersion: 2
       })
 
       const createR2VttAssetMock1 = getCreateR2AssetMock({

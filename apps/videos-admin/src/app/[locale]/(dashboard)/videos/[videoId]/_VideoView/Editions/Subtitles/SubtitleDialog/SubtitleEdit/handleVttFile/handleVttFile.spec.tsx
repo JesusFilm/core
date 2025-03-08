@@ -30,7 +30,7 @@ describe('handleVttFile', () => {
     jest.clearAllMocks()
   })
 
-  it('should upload a VTT file and return the public URL', async () => {
+  it('should upload a VTT file and return the public URL, upload URL, and r2AssetId', async () => {
     const result = await handleVttFile({
       vttFile: mockFile,
       video: mockVideo,
@@ -60,7 +60,11 @@ describe('handleVttFile', () => {
 
     expect(mockUploadAssetFile).toHaveBeenCalledWith(mockFile, mockUploadUrl)
 
-    expect(result).toBe(mockPublicUrl)
+    expect(result).toStrictEqual({
+      publicUrl: 'https://example.com/public/test.vtt',
+      r2AssetId: undefined,
+      uploadUrl: 'https://example.com/upload'
+    })
   })
 
   it('should throw an error if cloudflareR2Create returns no uploadUrl', async () => {

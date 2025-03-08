@@ -21,6 +21,8 @@ export const UPDATE_VIDEO_SUBTITLE = graphql(`
       id
       value
       primary
+      vttSrc
+      srtSrc
       language {
         id
         name {
@@ -29,6 +31,14 @@ export const UPDATE_VIDEO_SUBTITLE = graphql(`
         }
         slug
       }
+      vttAsset {
+        id
+      }
+      srtAsset {
+        id
+      }
+      vttVersion
+      srtVersion
     }
   }
 `)
@@ -65,7 +75,6 @@ export function SubtitleEdit({
       headers: { 'Content-Type': file.type },
       signal: abortController.current?.signal
     })
-
     if (!res.ok) {
       throw new Error(t('Failed to upload subtitle file.'))
     }
@@ -86,13 +95,17 @@ export function SubtitleEdit({
       languageId: values.language,
       primary: values.language === '529',
       vttSrc: subtitle.vttSrc ?? null,
-      srtSrc: subtitle.srtSrc ?? null
+      srtSrc: subtitle.srtSrc ?? null,
+      vttAssetId: subtitle.vttAsset?.id,
+      srtAssetId: subtitle.srtAsset?.id,
+      vttVersion: subtitle.vttVersion,
+      srtVersion: subtitle.srtVersion
     }
 
     try {
       // Handle VTT file upload
       if (vttFile != null) {
-        input.vttSrc = await handleVttFile({
+        const result = await handleVttFile({
           vttFile,
           video,
           edition,
@@ -102,11 +115,14 @@ export function SubtitleEdit({
           abortController,
           errorMessage: t('Failed to create r2 asset for VTT file.')
         })
+        input.vttSrc = result.publicUrl
+        input.vttAssetId = result.r2AssetId
+        input.vttVersion = Number(subtitle.vttVersion) + 1
       }
 
       // Handle SRT file upload
       if (srtFile != null) {
-        input.srtSrc = await handleSrtFile({
+        const result = await handleSrtFile({
           srtFile,
           video,
           edition,
@@ -116,6 +132,9 @@ export function SubtitleEdit({
           abortController,
           errorMessage: t('Failed to create r2 asset for SRT file.')
         })
+        input.srtSrc = result.publicUrl
+        input.srtAssetId = result.r2AssetId
+        input.srtVersion = Number(subtitle.srtVersion) + 1
       }
       await updateVideoSubtitle({
         variables: {

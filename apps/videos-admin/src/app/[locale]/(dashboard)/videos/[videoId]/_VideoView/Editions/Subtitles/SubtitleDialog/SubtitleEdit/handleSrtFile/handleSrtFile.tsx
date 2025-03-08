@@ -36,7 +36,11 @@ export async function handleSrtFile({
   uploadAssetFile: (file: File, uploadUrl: string) => Promise<void>
   abortController: React.MutableRefObject<AbortController | null>
   errorMessage: string
-}): Promise<string | null> {
+}): Promise<{
+  publicUrl: string
+  uploadUrl: string
+  r2AssetId: string
+}> {
   const fileName = getSubtitleR2Path(video, edition, languageId, srtFile)
 
   const result = await createR2Asset({
@@ -60,8 +64,16 @@ export async function handleSrtFile({
   }
 
   const uploadUrl = result.data.cloudflareR2Create.uploadUrl
+  if (uploadUrl == null) throw new Error(errorMessage)
+
   const publicUrl = result.data.cloudflareR2Create.publicUrl
+  if (publicUrl == null) throw new Error(errorMessage)
 
   await uploadAssetFile(srtFile, uploadUrl)
-  return publicUrl
+
+  return {
+    publicUrl,
+    uploadUrl,
+    r2AssetId: result.data.cloudflareR2Create.id
+  }
 }

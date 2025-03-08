@@ -37,12 +37,9 @@ const mockSubtitleLanguagesMap2 = new Map([
   [mockSubtitle2.language.id, mockSubtitle2]
 ])
 
-type CreateSubtitleInput = Pick<
-  CreateVideoSubtitleVariables['input'],
-  'vttSrc' | 'srtSrc' | 'languageId'
->
-
-const getCreateSubtitleMock = <T extends CreateSubtitleInput>(
+const getCreateSubtitleMock = <
+  T extends Partial<CreateVideoSubtitleVariables['input']>
+>(
   input: T
 ): MockedResponse<CreateVideoSubtitle, CreateVideoSubtitleVariables> => ({
   request: {
@@ -66,6 +63,10 @@ const getCreateSubtitleMock = <T extends CreateSubtitleInput>(
         srtSrc: input.srtSrc ?? null,
         value: input.vttSrc ?? input.srtSrc ?? '',
         primary: input.languageId === '529',
+        vttAsset: input.vttSrc ? { id: 'vtt-asset-id' } : null,
+        srtAsset: input.srtSrc ? { id: 'srt-asset-id' } : null,
+        vttVersion: input.vttSrc ?? 0,
+        srtVersion: input.srtSrc ?? 0,
         language: {
           id: '529',
           name: [{ value: 'English', primary: true }],
@@ -119,10 +120,14 @@ describe('SubtitleCreate', () => {
 
   it('should handle subtitle creation without a file', async () => {
     const createSubtitleMock = getCreateSubtitleMock({
+      edition: 'base',
+      languageId: '528',
       vttSrc: null,
       srtSrc: null,
-      primary: false,
-      languageId: '528'
+      vttAssetId: null,
+      srtAssetId: null,
+      vttVersion: 0,
+      srtVersion: 0
     })
 
     render(
@@ -193,7 +198,10 @@ describe('SubtitleCreate', () => {
       vttSrc:
         'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.vtt',
       srtSrc: null,
-      primary: false,
+      vttAssetId: 'r2-asset.id',
+      srtAssetId: null,
+      vttVersion: 1,
+      srtVersion: 0,
       languageId: '528'
     })
     const createR2SubtitleAssetMock = getCreateR2AssetMock({
@@ -248,11 +256,15 @@ describe('SubtitleCreate', () => {
 
   it('should handle subtitle creation with a srt file', async () => {
     const createSubtitleMock = getCreateSubtitleMock({
+      languageId: '528',
+      primary: false,
       vttSrc: null,
       srtSrc:
         'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.srt',
-      primary: false,
-      languageId: '528'
+      vttAssetId: null,
+      srtAssetId: 'r2-asset.id',
+      vttVersion: 0,
+      srtVersion: 1
     })
     const createR2SubtitleAssetMock = getCreateR2AssetMock({
       videoId: mockVideo.id,
@@ -308,11 +320,16 @@ describe('SubtitleCreate', () => {
 
   it('should handle subtitle creation with both vtt and srt files simultaneously', async () => {
     const createSubtitleMock = getCreateSubtitleMock({
+      languageId: '528',
+      primary: false,
       vttSrc:
         'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.vtt',
       srtSrc:
         'https://mock.cloudflare-domain.com/1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.srt',
-      languageId: '528'
+      vttAssetId: 'r2-asset.id',
+      srtAssetId: 'r2-asset.id',
+      vttVersion: 1,
+      srtVersion: 1
     })
 
     const createR2VttAssetMock = getCreateR2AssetMock({
@@ -468,7 +485,11 @@ describe('SubtitleCreate', () => {
     const createSubtitleMock = getCreateSubtitleMock({
       vttSrc: null,
       srtSrc: null,
-      languageId: '529'
+      languageId: '529',
+      vttAssetId: null,
+      srtAssetId: null,
+      vttVersion: 0,
+      srtVersion: 0
     })
 
     render(

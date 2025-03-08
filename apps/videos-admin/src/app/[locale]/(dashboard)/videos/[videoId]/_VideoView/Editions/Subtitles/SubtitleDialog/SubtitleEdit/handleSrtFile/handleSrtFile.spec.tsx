@@ -29,7 +29,7 @@ describe('handleSrtFile', () => {
     jest.clearAllMocks()
   })
 
-  it('should upload an SRT file and return the public URL', async () => {
+  it('should upload an SRT file and return the public URL, upload URL, and r2AssetId', async () => {
     const result = await handleSrtFile({
       srtFile: mockFile,
       video: mockVideo,
@@ -59,7 +59,11 @@ describe('handleSrtFile', () => {
 
     expect(mockUploadAssetFile).toHaveBeenCalledWith(mockFile, mockUploadUrl)
 
-    expect(result).toBe(mockPublicUrl)
+    expect(result).toStrictEqual({
+      publicUrl: 'https://example.com/public/test.srt',
+      r2AssetId: undefined,
+      uploadUrl: 'https://example.com/upload'
+    })
   })
 
   it('should throw an error if cloudflareR2Create returns no uploadUrl', async () => {
