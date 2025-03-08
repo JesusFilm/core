@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import type { Page } from 'playwright-core'
@@ -389,6 +388,7 @@ export class JourneyLevelActions {
   }
 
   async sleep(ms) {
+    // eslint-ignore-next-line
     return await new Promise((resolve) => setTimeout(resolve, ms))
   }
 }
