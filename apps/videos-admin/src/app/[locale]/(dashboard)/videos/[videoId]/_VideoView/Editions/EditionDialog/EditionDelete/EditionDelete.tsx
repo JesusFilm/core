@@ -9,9 +9,8 @@ import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useRef } from 'react'
 
-import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { GetAdminVideo_AdminVideo_VideoEdition as Edition } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useVideo } from '../../../../../../../../../libs/VideoProvider'
-import { ArrayElement } from '../../../../../../../../../types/array-types'
 
 export const DELETE_VIDEO_EDITION = graphql(`
   mutation DeleteVideoEdition($id: ID!) {
@@ -28,7 +27,7 @@ export type DeleteVideoEdition = ResultOf<typeof DELETE_VIDEO_EDITION>
 
 interface EditionDeleteProps {
   close: () => void
-  edition: ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
+  edition: Edition
 }
 
 export function EditionDelete({

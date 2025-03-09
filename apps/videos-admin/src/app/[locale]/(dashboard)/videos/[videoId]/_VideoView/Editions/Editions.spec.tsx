@@ -11,7 +11,7 @@ import { Editions } from './Editions'
 const mockVideo = useAdminVideoMock['result']?.['data']?.['adminVideo']
 
 describe('Editions', () => {
-  it('should render with editions', () => {
+  it('should render with editions', async () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
@@ -24,7 +24,9 @@ describe('Editions', () => {
     expect(
       screen.getByRole('button', { name: 'New Edition' })
     ).toBeInTheDocument()
-    expect(screen.getByText('base')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getAllByText('base')).toHaveLength(2)
+    })
     expect(screen.getByText('2 subtitles')).toBeInTheDocument()
   })
 
@@ -38,7 +40,7 @@ describe('Editions', () => {
     )
 
     expect(screen.getByText('Editions')).toBeInTheDocument()
-    expect(screen.getByText('No editions.')).toBeInTheDocument()
+    expect(screen.getByText('No editions')).toBeInTheDocument()
   })
 
   it('should open create edition dialog', async () => {
@@ -73,7 +75,7 @@ describe('Editions', () => {
 
     const user = userEvent.setup()
 
-    await user.click(screen.getByText('base'))
+    await user.click(screen.getAllByText('base')[0])
 
     await waitFor(() => {
       expect(screen.getByText('View Edition')).toBeInTheDocument()
@@ -91,7 +93,7 @@ describe('Editions', () => {
 
     const user = userEvent.setup()
 
-    await user.click(screen.getByText('base'))
+    await user.click(screen.getAllByText('base')[0])
 
     await waitFor(() => {
       expect(screen.getByText('View Edition')).toBeInTheDocument()
@@ -120,10 +122,12 @@ describe('Editions', () => {
 
     const user = userEvent.setup()
 
-    const menuButton = screen.getByRole('button', { name: 'More options' })
+    const menuButton = screen.getAllByRole('button', {
+      name: /more options/i
+    })[0]
     await user.click(menuButton)
 
-    const editMenuItem = screen.getByRole('menuitem', { name: 'Edit' })
+    const editMenuItem = screen.getAllByRole('menuitem', { name: 'Edit' })[0]
 
     expect(screen.getByRole('menuitem', { name: 'View' })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
@@ -150,10 +154,12 @@ describe('Editions', () => {
 
     const user = userEvent.setup()
 
-    const menuButton = screen.getByRole('button', { name: 'More options' })
+    const menuButton = screen.getAllByRole('button', {
+      name: /more options/i
+    })[0]
     await user.click(menuButton)
 
-    const editMenuItem = screen.getByRole('menuitem', { name: 'Delete' })
+    const editMenuItem = screen.getAllByRole('menuitem', { name: 'Delete' })[0]
 
     expect(screen.getByRole('menuitem', { name: 'View' })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
