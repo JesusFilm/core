@@ -9,7 +9,7 @@ import {
 import { useCreateR2AssetMutation } from '../../../../../../../../../../libs/useCreateR2Asset'
 import {
   UpdateVideoSubtitleVariables,
-  useUpdateVideoSubtitleMutation
+  useUpdateVideoSubtitle
 } from '../../../../../../../../../../libs/useUpdateVideoSubtitle'
 import { useVideo } from '../../../../../../../../../../libs/VideoProvider'
 import { SubtitleForm, SubtitleValidationSchema } from '../../SubtitleForm'
@@ -35,7 +35,7 @@ export function SubtitleEdit({
   const [loading, setLoading] = useState(false)
 
   const [createR2Asset] = useCreateR2AssetMutation()
-  const [updateVideoSubtitle] = useUpdateVideoSubtitleMutation()
+  const [updateVideoSubtitle] = useUpdateVideoSubtitle()
 
   const uploadAssetFile = async (file: File, uploadUrl: string) => {
     const res = await fetch(uploadUrl, {
