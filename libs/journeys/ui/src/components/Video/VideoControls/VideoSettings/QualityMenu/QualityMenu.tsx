@@ -5,9 +5,10 @@ import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import VideoJsPlayer from '../../../utils/videoJsTypes'
+import { getYoutubeQualityMap } from '../../../utils/youtubeQualityMap'
 
 export interface QualityMenuItem {
   resolution: string
@@ -36,20 +37,6 @@ export function QualityMenu({
   const [qualities, setQualities] = useState<QualityMenuItem[]>([])
   const [selectedQuality, setSelectedQuality] = useState<number>(-1)
   const initialQualitiesSet = useRef(false)
-
-  const YOUTUBE_QUALITY_LABELS = useMemo(
-    (): Record<string, string> => ({
-      hd2160: t('4K'),
-      hd1440: t('2K'),
-      hd1080: t('1080p'),
-      hd720: t('720p'),
-      large: t('480p'),
-      medium: t('360p'),
-      small: t('240p'),
-      tiny: t('144p')
-    }),
-    [t]
-  )
 
   // Sets the quality levels from the player
   useEffect(() => {
@@ -118,7 +105,7 @@ export function QualityMenu({
         ) {
           const currentQuality = tech?.ytPlayer?.getPlaybackQuality() ?? ''
           const displayQuality =
-            YOUTUBE_QUALITY_LABELS[currentQuality] ?? currentQuality
+            getYoutubeQualityMap(t)[currentQuality] ?? currentQuality
 
           onQualityChanged(`${t('Auto')} (${displayQuality})`)
         } else if ('vhs' in tech) {
@@ -140,13 +127,7 @@ export function QualityMenu({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    player,
-    selectedQuality,
-    onQualityChanged,
-    qualities,
-    YOUTUBE_QUALITY_LABELS
-  ])
+  }, [player, selectedQuality, onQualityChanged, qualities])
 
   const handleQualityChange = (quality: number): void => {
     const qualityLevels = player.qualityLevels()

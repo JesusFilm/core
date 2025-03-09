@@ -1,6 +1,9 @@
+import { TFunction } from 'next-i18next'
+
 import VideoJsPlayer from '../../utils/videoJsTypes'
 import { Html5 } from '../../utils/videoJsTypes/Html5'
 import { YoutubeTech } from '../../utils/videoJsTypes/YoutubeTech'
+import { getYoutubeQualityMap } from '../youtubeQualityMap'
 
 /**
  * Type guard to check if a tech is YouTube tech
@@ -146,27 +149,16 @@ export function calculateHtml5Bitrate(player: VideoJsPlayer): number {
   return calculatedBitrate
 }
 
-// Map YouTube quality strings to resolution
-export const YOUTUBE_QUALITY_MAP: Record<string, string> = {
-  tiny: '144p',
-  small: '240p',
-  medium: '360p',
-  large: '480p',
-  hd720: '720p',
-  hd1080: '1080p',
-  hd1440: '1440p',
-  hd2160: '2160p (4K)',
-  highres: '4K+',
-  auto: 'Auto',
-  default: '-'
-}
-
 /**
  * Gets YouTube video statistics
  * @param tech The YouTube tech instance
+ * @param t Translation function
  * @returns Object containing YouTube video statistics
  */
-export function getYoutubeStats(tech: YoutubeTech): {
+export function getYoutubeStats(
+  tech: YoutubeTech,
+  t: TFunction
+): {
   currentQuality: string
   bufferedPercent: number
 } {
@@ -179,7 +171,8 @@ export function getYoutubeStats(tech: YoutubeTech): {
   const bufferedPercent = ytPlayer?.getVideoLoadedFraction() || 0
 
   // Use the quality indicator from YouTube
-  const displayQuality = YOUTUBE_QUALITY_MAP[quality] || quality
+  const qualityMap = getYoutubeQualityMap(t)
+  const displayQuality = qualityMap[quality] || quality
 
   return {
     currentQuality: displayQuality || '-',

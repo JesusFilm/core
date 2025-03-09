@@ -7,6 +7,5 @@ export {
   getHtml5FrameRate,
   calculateHtml5Bitrate,
   getYoutubeStats,
-  getHtml5Stats,
-  YOUTUBE_QUALITY_MAP
+  getHtml5Stats
 } from './videoStatsUtils'
