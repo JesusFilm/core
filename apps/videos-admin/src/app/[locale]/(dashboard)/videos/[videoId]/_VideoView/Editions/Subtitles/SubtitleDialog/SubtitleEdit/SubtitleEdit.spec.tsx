@@ -8,14 +8,14 @@ import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguag
 
 import { useAdminVideoMock } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { getCreateR2AssetMock } from '../../../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset.mock'
-import { VideoProvider } from '../../../../../../../../../../libs/VideoProvider'
-
 import {
-  SubtitleEdit,
-  UPDATE_VIDEO_SUBTITLE,
   UpdateVideoSubtitle,
   UpdateVideoSubtitleVariables
-} from './SubtitleEdit'
+} from '../../../../../../../../../../libs/useUpdateVideoSubtitle'
+import { getUpdateVideoSubtitleMock } from '../../../../../../../../../../libs/useUpdateVideoSubtitle/useUpdateVideoSubtitle.mock'
+import { VideoProvider } from '../../../../../../../../../../libs/VideoProvider'
+
+import { SubtitleEdit } from './SubtitleEdit'
 
 const unMockedFetch = global.fetch
 
@@ -41,40 +41,13 @@ type EditSubtitleInput = Pick<
 
 const getEditSubtitleMock = <T extends EditSubtitleInput>(
   input: T
-): MockedResponse<UpdateVideoSubtitle, UpdateVideoSubtitleVariables> => ({
-  request: {
-    query: UPDATE_VIDEO_SUBTITLE,
-    variables: {
-      input: {
-        ...input,
-        id: 'subtitle1.id',
-        edition: 'base',
-        languageId: '529'
-      }
-    }
-  },
-  result: jest.fn(() => ({
-    data: {
-      videoSubtitleUpdate: {
-        id: 'subtitle1.id',
-        edition: 'base',
-        vttSrc: input.vttSrc ?? null,
-        srtSrc: input.srtSrc ?? null,
-        value: input.vttSrc ?? input.srtSrc ?? '',
-        primary: input.primary ?? false,
-        language: {
-          id: '529',
-          name: [{ value: 'English', primary: true }],
-          slug: null
-        },
-        vttAsset: input.vttSrc ? { id: 'vtt-asset-id' } : null,
-        srtAsset: input.srtSrc ? { id: 'srt-asset-id' } : null,
-        vttVersion: 1,
-        srtVersion: 1
-      }
-    }
-  }))
-})
+): MockedResponse<UpdateVideoSubtitle, UpdateVideoSubtitleVariables> =>
+  getUpdateVideoSubtitleMock({
+    ...input,
+    id: 'subtitle1.id',
+    edition: 'base',
+    languageId: '529'
+  })
 
 const subtitleEditWithoutFileMock = getEditSubtitleMock({
   primary: true,
