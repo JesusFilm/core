@@ -36,7 +36,14 @@ export function EditionView({ edition }: EditionViewProps): ReactElement {
         }}
       >
         {edition.videoSubtitles.length > 0 ? (
-          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 2,
+              minHeight: 200
+            }}
+          >
             {edition.videoSubtitles.map((subtitle) => (
               <SubtitleCard
                 key={subtitle.id}
