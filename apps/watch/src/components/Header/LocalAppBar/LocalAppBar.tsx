@@ -72,6 +72,7 @@ export function LocalAppBar({
           </NextLink>
           <Box data-testid="MenuBox">
             <IconButton
+              data-testid="MenuIcon"
               color="inherit"
               aria-label="open header menu"
               edge="start"

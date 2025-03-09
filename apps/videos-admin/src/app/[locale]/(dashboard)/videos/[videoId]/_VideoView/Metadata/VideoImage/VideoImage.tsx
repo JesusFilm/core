@@ -67,7 +67,7 @@ export function VideoImage({ video }: VideoImageProps): ReactElement {
             src={src}
             alt={alt ?? t('video image')}
             layout="fill"
-            objectFit="cover"
+            style={{ objectFit: 'cover' }}
             priority
           />
         ) : (
