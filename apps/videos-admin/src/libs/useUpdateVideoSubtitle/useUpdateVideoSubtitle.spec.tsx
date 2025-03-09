@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { act, renderHook } from '@testing-library/react'
 
-import { useUpdateVideoSubtitleMutation } from './useUpdateVideoSubtitle'
+import { useUpdateVideoSubtitle } from './useUpdateVideoSubtitle'
 import { getUpdateVideoSubtitleMock } from './useUpdateVideoSubtitle.mock'
 
 const updateVideoSubtitleMock = getUpdateVideoSubtitleMock({
@@ -19,7 +19,7 @@ const updateVideoSubtitleMock = getUpdateVideoSubtitleMock({
 
 describe('useUpdateVideoSubtitle', () => {
   it('should update a video subtitle', async () => {
-    const { result } = renderHook(() => useUpdateVideoSubtitleMutation(), {
+    const { result } = renderHook(() => useUpdateVideoSubtitle(), {
       wrapper: ({ children }) => (
         <MockedProvider mocks={[updateVideoSubtitleMock]}>
           {children}
@@ -54,7 +54,7 @@ describe('useUpdateVideoSubtitle', () => {
 
     const { result } = renderHook(
       () =>
-        useUpdateVideoSubtitleMutation({
+        useUpdateVideoSubtitle({
           onCompleted: onCompletedMock
         }),
       {

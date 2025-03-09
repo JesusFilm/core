@@ -34,7 +34,7 @@ export type UpdateVideoSubtitleVariables = VariablesOf<
 >
 export type UpdateVideoSubtitle = ResultOf<typeof UPDATE_VIDEO_SUBTITLE>
 
-export function useUpdateVideoSubtitleMutation(
+export function useUpdateVideoSubtitle(
   options?: MutationHookOptions<
     UpdateVideoSubtitle,
     UpdateVideoSubtitleVariables
