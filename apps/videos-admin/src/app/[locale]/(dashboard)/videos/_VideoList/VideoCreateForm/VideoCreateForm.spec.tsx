@@ -201,7 +201,8 @@ describe('VideoCreateForm', () => {
     })
 
     await user.click(screen.getByRole('button', { name: 'Create' }))
-
-    expect(screen.getByText('Something went wrong.')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Something went wrong.')).toBeInTheDocument()
+    })
   })
 })
