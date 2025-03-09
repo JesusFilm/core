@@ -15,7 +15,7 @@ type StoryArgs = ComponentPropsWithoutRef<typeof EditionCard>
 
 const meta = {
   ...videosAdminConfig,
-  title: 'Videos-Admin/Editions/EditionCard',
+  title: 'Videos-Admin/VideoView/Editions/EditionCard',
   component: EditionCard,
   parameters: {
     tags: ['!autodocs']
