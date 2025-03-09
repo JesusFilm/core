@@ -1,5 +1,3 @@
-import { useMutation } from '@apollo/client'
-import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useRef, useState } from 'react'
@@ -9,44 +7,15 @@ import {
   GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle
 } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useCreateR2AssetMutation } from '../../../../../../../../../../libs/useCreateR2Asset'
+import {
+  UpdateVideoSubtitleVariables,
+  useUpdateVideoSubtitleMutation
+} from '../../../../../../../../../../libs/useUpdateVideoSubtitle'
 import { useVideo } from '../../../../../../../../../../libs/VideoProvider'
 import { SubtitleForm, SubtitleValidationSchema } from '../../SubtitleForm'
 
 import { handleSrtFile } from './handleSrtFile'
 import { handleVttFile } from './handleVttFile'
-
-export const UPDATE_VIDEO_SUBTITLE = graphql(`
-  mutation UpdateVideoSubtitle($input: VideoSubtitleUpdateInput!) {
-    videoSubtitleUpdate(input: $input) {
-      id
-      value
-      primary
-      vttSrc
-      srtSrc
-      language {
-        id
-        name {
-          value
-          primary
-        }
-        slug
-      }
-      vttAsset {
-        id
-      }
-      srtAsset {
-        id
-      }
-      vttVersion
-      srtVersion
-    }
-  }
-`)
-
-export type UpdateVideoSubtitleVariables = VariablesOf<
-  typeof UPDATE_VIDEO_SUBTITLE
->
-export type UpdateVideoSubtitle = ResultOf<typeof UPDATE_VIDEO_SUBTITLE>
 
 interface SubtitleEditProps {
   edition: Edition
@@ -66,7 +35,7 @@ export function SubtitleEdit({
   const [loading, setLoading] = useState(false)
 
   const [createR2Asset] = useCreateR2AssetMutation()
-  const [updateVideoSubtitle] = useMutation(UPDATE_VIDEO_SUBTITLE)
+  const [updateVideoSubtitle] = useUpdateVideoSubtitleMutation()
 
   const uploadAssetFile = async (file: File, uploadUrl: string) => {
     const res = await fetch(uploadUrl, {
