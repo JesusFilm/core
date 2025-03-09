@@ -391,13 +391,20 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Allow current user to update specific allowable fields of their visitor record
   """
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS) 
+  """
+  Transcode an asset. Returns the bullmq job ID.
+  """
+  transcodeAsset(input: TranscodeVideoInput!) : String @join__field(graph: API_MEDIA) 
+  getTranscodeAssetProgress(jobId: String!) : Int @join__field(graph: API_MEDIA) 
   createCloudflareUploadByFile(input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareUploadByUrl(url: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   deleteCloudflareImage(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   cloudflareUploadComplete(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
+  """
+  The endpoint to upload a file to Cloudflare R2
+  """
   cloudflareR2Create(input: CloudflareR2CreateInput!) : CloudflareR2! @join__field(graph: API_MEDIA) 
-  cloudflareR2Update(input: CloudflareR2UpdateInput!) : CloudflareR2! @join__field(graph: API_MEDIA) 
   cloudflareR2Delete(id: ID!) : CloudflareR2! @join__field(graph: API_MEDIA) 
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!) : CloudflareImage! @join__field(graph: API_MEDIA)  @deprecated(reason: "use createCloudflareImageFromPrompt") 
   triggerUnsplashDownload(url: String!) : Boolean! @join__field(graph: API_MEDIA) 
@@ -1213,9 +1220,6 @@ type Language @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @joi
   name(languageId: ID, primary: Boolean) : [LanguageName!]! @join__field(graph: API_LANGUAGES) 
   countryLanguages: [CountryLanguage!]! @join__field(graph: API_LANGUAGES) 
   audioPreview: AudioPreview @join__field(graph: API_LANGUAGES) 
-  seriesCount: Int! @join__field(graph: API_MEDIA) 
-  featureFilmCount: Int! @join__field(graph: API_MEDIA) 
-  shortFilmCount: Int! @join__field(graph: API_MEDIA) 
   labeledVideoCounts: LabeledVideoCounts! @join__field(graph: API_MEDIA) 
 }
 
@@ -2258,6 +2262,8 @@ type CloudflareImage @join__type(graph: API_MEDIA)  {
 
 type CloudflareR2 @join__type(graph: API_MEDIA)  {
   id: ID!
+  contentLength: Int!
+  contentType: String!
   fileName: String!
   uploadUrl: String
   userId: ID!
@@ -2586,8 +2592,24 @@ type VideoSubtitle @join__type(graph: API_MEDIA)  {
   languageId: ID!
   primary: Boolean!
   edition: String!
+  """
+  subtitle file
+  """
+  vttAsset: CloudflareR2
   vttSrc: String
+  """
+  version control for subtitle file
+  """
+  vttVersion: Int!
+  """
+  subtitle file
+  """
+  srtAsset: CloudflareR2
   srtSrc: String
+  """
+  version control for subtitle file
+  """
+  srtVersion: Int!
   value: String!
   language: Language!
   videoEdition: VideoEdition!
@@ -2602,6 +2624,10 @@ type VideoTitle @join__type(graph: API_MEDIA)  {
 
 type VideoVariant @join__type(graph: API_MEDIA)  {
   id: ID!
+  """
+  master video file
+  """
+  asset: CloudflareR2
   videoId: ID
   hls: String
   dash: String
@@ -2620,15 +2646,27 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   slug is a permanent link to the video variant.
   """
   slug: String!
+  """
+  version control for master video file
+  """
+  version: Int!
 }
 
 type VideoVariantDownload @join__type(graph: API_MEDIA)  {
   id: ID!
+  """
+  master video file
+  """
+  asset: CloudflareR2
   quality: VideoVariantDownloadQuality!
   size: Float!
   height: Int!
   width: Int!
   url: String!
+  """
+  master video file version
+  """
+  version: Int!
 }
 
 type Youtube @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
@@ -4128,13 +4166,22 @@ input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
 
 input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   id: String
+  """
+  the size of the file that is being uploaded
+  """
+  contentLength: Int!
+  """
+  the type of file that is being uploaded. e.g. image or video/mp4
+  """
+  contentType: String!
+  """
+  the name of the file that is being uploaded
+  """
   fileName: String!
+  """
+  the id of the Video object this file relates to in the database
+  """
   videoId: String!
-}
-
-input CloudflareR2UpdateInput @join__type(graph: API_MEDIA)  {
-  id: String!
-  fileName: String!
 }
 
 input ImageInput @join__type(graph: API_MEDIA)  {
@@ -4192,6 +4239,14 @@ input MutationShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
   to: String!
 }
 
+input TranscodeVideoInput @join__type(graph: API_MEDIA)  {
+  r2AssetId: String!
+  resolution: String!
+  videoBitrate: String
+  outputFilename: String!
+  outputPath: String!
+}
+
 input VideoCreateInput @join__type(graph: API_MEDIA)  {
   id: String!
   label: VideoLabel!
@@ -4239,19 +4294,27 @@ input VideoStudyQuestionUpdateInput @join__type(graph: API_MEDIA)  {
 
 input VideoSubtitleCreateInput @join__type(graph: API_MEDIA)  {
   id: ID
+  vttAssetId: ID
+  srtAssetId: ID
   videoId: String!
   edition: String!
   vttSrc: String
   srtSrc: String
   primary: Boolean!
   languageId: String!
+  vttVersion: Int
+  srtVersion: Int
 }
 
 input VideoSubtitleUpdateInput @join__type(graph: API_MEDIA)  {
   id: ID!
   edition: String!
   vttSrc: String
+  vttAssetId: ID
+  vttVersion: Int
   srtSrc: String
+  srtAssetId: ID
+  srtVersion: Int
   primary: Boolean
   languageId: String
 }
@@ -4283,6 +4346,7 @@ input VideoUpdateInput @join__type(graph: API_MEDIA)  {
 
 input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {
   id: String!
+  assetId: String
   videoId: String!
   edition: String!
   hls: String
@@ -4295,26 +4359,31 @@ input VideoVariantCreateInput @join__type(graph: API_MEDIA)  {
   downloadable: Boolean!
   published: Boolean = true
   muxVideoId: String
+  version: Int
 }
 
 input VideoVariantDownloadCreateInput @join__type(graph: API_MEDIA)  {
   id: String
+  assetId: String
   videoVariantId: String!
   quality: VideoVariantDownloadQuality!
   size: Float
   height: Int
   width: Int
   url: String!
+  version: Int
 }
 
 input VideoVariantDownloadUpdateInput @join__type(graph: API_MEDIA)  {
   id: String!
+  assetId: String
   videoVariantId: String
   quality: VideoVariantDownloadQuality
   size: Float
   height: Int
   width: Int
   url: String
+  version: Int
 }
 
 input VideoVariantFilter @join__type(graph: API_MEDIA)  {
@@ -4323,6 +4392,7 @@ input VideoVariantFilter @join__type(graph: API_MEDIA)  {
 
 input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
   id: String!
+  assetId: String
   videoId: String
   edition: String
   hls: String
@@ -4335,6 +4405,7 @@ input VideoVariantUpdateInput @join__type(graph: API_MEDIA)  {
   downloadable: Boolean
   published: Boolean
   muxVideoId: String
+  version: Int
 }
 
 input VideosFilter @join__type(graph: API_MEDIA)  {
@@ -4344,6 +4415,7 @@ input VideosFilter @join__type(graph: API_MEDIA)  {
   ids: [ID!]
   subtitleLanguageIds: [ID!]
   published: Boolean
+  locked: Boolean
 }
 
 input CreateVerificationRequestInput @join__type(graph: API_USERS)  {

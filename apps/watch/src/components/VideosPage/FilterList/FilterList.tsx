@@ -155,7 +155,7 @@ export function FilterList({
           <Stack spacing={2}>
             <Stack direction="row" spacing={2}>
               <VolumeUpIcon />
-              <Typography>{t('Languages')}</Typography>
+              <Typography variant="h6">{t('Languages')}</Typography>
             </Stack>
             <LanguagesFilter
               onChange={handleLanguageChange(setFieldValue)}
@@ -167,7 +167,7 @@ export function FilterList({
           <Stack spacing={2}>
             <Stack direction="row" spacing={2}>
               <SubtitlesIcon />
-              <Typography>{t('Subtitles')}</Typography>
+              <Typography variant="h6">{t('Subtitles')}</Typography>
             </Stack>
             <LanguagesFilter
               onChange={handleSubtitleChange(setFieldValue)}
@@ -180,7 +180,7 @@ export function FilterList({
           <Stack spacing={2}>
             <Stack direction="row" spacing={2}>
               <TitleIcon />
-              <Typography>{t('Title')}</Typography>
+              <Typography variant="h6">{t('Title')}</Typography>
             </Stack>
             <TextField
               value={title}

@@ -1,14 +1,11 @@
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { VideoViewFallback } from './VideoViewFallback'
 
-const mockBack = jest.fn()
 jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    back: mockBack
-  })
+  useRouter: jest.fn(),
+  usePathname: () => '/en/videos/123'
 }))
 
 describe('VideoViewFallback', () => {
@@ -24,7 +21,9 @@ describe('VideoViewFallback', () => {
     )
 
     expect(screen.getByText('Video not found')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Go Back' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'View Videos' })
+    ).toBeInTheDocument()
   })
 
   it('should go back when button is clicked', async () => {
@@ -34,9 +33,7 @@ describe('VideoViewFallback', () => {
       </NextIntlClientProvider>
     )
 
-    const user = userEvent.setup()
-    await user.click(screen.getByRole('button', { name: 'Go Back' }))
-
-    expect(mockBack).toHaveBeenCalled()
+    const link = screen.getByRole('link', { name: 'View Videos' })
+    expect(link).toHaveAttribute('href', '/en/videos')
   })
 })
