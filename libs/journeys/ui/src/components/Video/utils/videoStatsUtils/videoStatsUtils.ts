@@ -1,5 +1,3 @@
-import { TFunction } from 'next-i18next'
-
 import VideoJsPlayer from '../../utils/videoJsTypes'
 import { Html5 } from '../../utils/videoJsTypes/Html5'
 import { YoutubeTech } from '../../utils/videoJsTypes/YoutubeTech'
@@ -152,13 +150,9 @@ export function calculateHtml5Bitrate(player: VideoJsPlayer): number {
 /**
  * Gets YouTube video statistics
  * @param tech The YouTube tech instance
- * @param t Translation function
  * @returns Object containing YouTube video statistics
  */
-export function getYoutubeStats(
-  tech: YoutubeTech,
-  t: TFunction
-): {
+export function getYoutubeStats(tech: YoutubeTech): {
   currentQuality: string
   bufferedPercent: number
 } {
@@ -171,7 +165,7 @@ export function getYoutubeStats(
   const bufferedPercent = ytPlayer?.getVideoLoadedFraction() || 0
 
   // Use the quality indicator from YouTube
-  const qualityMap = getYoutubeQualityMap(t)
+  const qualityMap = getYoutubeQualityMap()
   const displayQuality = qualityMap[quality] || quality
 
   return {

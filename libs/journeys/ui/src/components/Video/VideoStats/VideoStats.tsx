@@ -75,7 +75,7 @@ export function VideoStats({ player }: VideoStatsProps) {
 
     // Check if this is a YouTube video
     if (isYoutubeTech(tech)) {
-      const youtubeStats = getYoutubeStats(tech, t)
+      const youtubeStats = getYoutubeStats(tech)
       setStats({
         basic: basicStats,
         enhanced: youtubeStats,
@@ -99,7 +99,7 @@ export function VideoStats({ player }: VideoStatsProps) {
         techType: 'unknown'
       })
     }
-  }, [player, t])
+  }, [player])
 
   useEffect(() => {
     if (!player) return
