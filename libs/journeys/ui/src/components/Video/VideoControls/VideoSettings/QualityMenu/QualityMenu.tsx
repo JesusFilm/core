@@ -121,7 +121,7 @@ export function QualityMenu({
             YOUTUBE_QUALITY_LABELS[currentQuality] ?? currentQuality
 
           onQualityChanged(`${t('Auto')} (${displayQuality})`)
-        } else if ('vhs' in tech) {
+        } else if (tech != null && 'vhs' in tech) {
           const activeResolution = qualities.find(
             (q) => q.qualityLevel === qualityLevels.selectedIndex
           )?.resolution
