@@ -218,6 +218,20 @@ describe('VideoControls', () => {
     )
   })
 
+  it('should show video settings button by default', () => {
+    render(
+      <MockedProvider>
+        <VideoControls player={player} startAt={0} endAt={10} />
+      </MockedProvider>
+    )
+
+    expect(
+      within(screen.getByTestId('desktop-controls')).getByRole('button', {
+        name: 'video settings'
+      })
+    ).toBeInTheDocument()
+  })
+
   describe('fullscreen video', () => {
     it('maximises the video on video region double tap', async () => {
       const fullscreenStub = jest
@@ -300,6 +314,20 @@ describe('VideoControls', () => {
       )
       expect(fullscreenStub).toHaveBeenCalled()
     })
+
+    it('should show video settings button', () => {
+      render(
+        <MockedProvider>
+          <VideoControls player={player} startAt={0} endAt={10} />
+        </MockedProvider>
+      )
+
+      expect(
+        within(screen.getByTestId('desktop-controls')).getByRole('button', {
+          name: 'video settings'
+        })
+      ).toBeInTheDocument()
+    })
   })
 
   describe('fullscreen card', () => {
@@ -368,6 +396,24 @@ describe('VideoControls', () => {
       expect(
         queryByRole('button', { name: 'fullscreen' })
       ).not.toBeInTheDocument()
+    })
+
+    it('should show video settings button', () => {
+      render(
+        <MockedProvider>
+          <div className="step active-card">
+            <div className="card MuiPaper-root">
+              <VideoControls player={player} startAt={0} endAt={10} />
+            </div>
+          </div>
+        </MockedProvider>
+      )
+
+      expect(
+        within(screen.getByTestId('desktop-controls')).getByRole('button', {
+          name: 'video settings'
+        })
+      ).toBeInTheDocument()
     })
   })
 })

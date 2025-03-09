@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 
 import VideoJsPlayer from '../../../utils/videoJsTypes'
 
@@ -24,17 +24,6 @@ interface QualityMenuProps {
   onQualityChanged: (quality: string) => void
 }
 
-const YOUTUBE_QUALITY_LABELS: Record<string, string> = {
-  hd2160: '4K',
-  hd1440: '2K',
-  hd1080: '1080p',
-  hd720: '720p',
-  large: '480p',
-  medium: '360p',
-  small: '240p',
-  tiny: '144p'
-}
-
 export function QualityMenu({
   anchorEl,
   open,
@@ -46,14 +35,32 @@ export function QualityMenu({
   const { t } = useTranslation('libs-journeys-ui')
   const [qualities, setQualities] = useState<QualityMenuItem[]>([])
   const [selectedQuality, setSelectedQuality] = useState<number>(-1)
+  const initialQualitiesSet = useRef(false)
+
+  const YOUTUBE_QUALITY_LABELS = useMemo(
+    (): Record<string, string> => ({
+      hd2160: t('4K'),
+      hd1440: t('2K'),
+      hd1080: t('1080p'),
+      hd720: t('720p'),
+      large: t('480p'),
+      medium: t('360p'),
+      small: t('240p'),
+      tiny: t('144p')
+    }),
+    [t]
+  )
 
   // Sets the quality levels from the player
   useEffect(() => {
+    if (initialQualitiesSet.current) return
+
     const tech = player.tech({ IWillNotUseThisInPlugins: true })
     let qualities: QualityMenuItem[] = []
 
     if (tech != null && 'vhs' in tech) {
       const qualityLevels = player.qualityLevels()
+
       qualities = Array.from({ length: qualityLevels.length }).reduce<
         QualityMenuItem[]
       >((acc, _, i) => {
@@ -61,7 +68,7 @@ export function QualityMenu({
         const level = qualityLevels[index]
         const height = level?.height ?? 0
         const resolution =
-          height >= 2160 ? '4K' : height >= 1440 ? '2K' : `${height}p`
+          height >= 2160 ? t('4K') : height >= 1440 ? t('2K') : `${height}p`
 
         if (!acc.some((q) => q.height === height)) {
           const insertPosition = acc.findIndex((item) => item.height < height)
@@ -78,12 +85,22 @@ export function QualityMenu({
         }
         return acc
       }, [])
+      if (qualities.length > 0) {
+        initialQualitiesSet.current = true
+      }
+    } else if (tech != null && 'ytPlayer' in tech) {
+      initialQualitiesSet.current = true
     }
 
     setQualities([
-      { resolution: 'Auto', qualityLevel: -1, height: Number.MAX_SAFE_INTEGER },
+      {
+        resolution: t('Auto'),
+        qualityLevel: -1,
+        height: Number.MAX_SAFE_INTEGER
+      },
       ...qualities
     ])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player, onQualityChanged, open])
 
   // Handles the auto quality change
@@ -103,14 +120,14 @@ export function QualityMenu({
           const displayQuality =
             YOUTUBE_QUALITY_LABELS[currentQuality] ?? currentQuality
 
-          onQualityChanged(`Auto (${displayQuality})`)
-        } else if (tech?.name_ === 'Html5') {
+          onQualityChanged(`${t('Auto')} (${displayQuality})`)
+        } else if ('vhs' in tech) {
           const activeResolution = qualities.find(
             (q) => q.qualityLevel === qualityLevels.selectedIndex
           )?.resolution
 
           if (activeResolution) {
-            onQualityChanged(`Auto (${activeResolution})`)
+            onQualityChanged(`${t('Auto')} (${activeResolution})`)
           }
         }
       }
@@ -122,7 +139,14 @@ export function QualityMenu({
         qualityLevels.off('change', handleAutoQualityChange)
       }
     }
-  }, [player, selectedQuality, onQualityChanged, qualities])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    player,
+    selectedQuality,
+    onQualityChanged,
+    qualities,
+    YOUTUBE_QUALITY_LABELS
+  ])
 
   const handleQualityChange = (quality: number): void => {
     const qualityLevels = player.qualityLevels()
@@ -137,7 +161,9 @@ export function QualityMenu({
     const wasPlaying = !player.paused()
     player.pause()
 
-    // Clears buffer - not supported in Safari
+    // Clears buffer
+    // not supported in Safari, and no work arounds
+    // quality may not change immediately
     const sourceBuffers = tech?.vhs?.mediaSource?.activeSourceBuffers
     if (sourceBuffers != null && sourceBuffers.length > 0) {
       const duration = player.duration() ?? 0
@@ -174,9 +200,9 @@ export function QualityMenu({
 
     const displayQuality =
       quality === -1 && activeResolution != null
-        ? `Auto (${activeResolution})`
+        ? `${t('Auto')} (${activeResolution})`
         : (qualities.find((q) => q.qualityLevel === quality)?.resolution ??
-          'Auto')
+          t('Auto'))
 
     setSelectedQuality(quality)
     onQualityChanged(displayQuality)
