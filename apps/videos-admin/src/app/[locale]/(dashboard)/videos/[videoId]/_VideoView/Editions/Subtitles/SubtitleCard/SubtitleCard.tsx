@@ -40,7 +40,8 @@ export function SubtitleCard({
         '&:hover': {
           borderColor: 'action.hover',
           cursor: 'pointer'
-        }
+        },
+        maxHeight: 95
       }}
       onClick={onClick}
     >
