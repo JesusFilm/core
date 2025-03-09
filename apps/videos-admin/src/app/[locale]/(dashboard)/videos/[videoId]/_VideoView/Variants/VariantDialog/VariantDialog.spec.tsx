@@ -46,7 +46,7 @@ describe('VariantDialog', () => {
 
     // Check that the language is displayed correctly
     const languageDisplay = screen.getByTestId('VariantLanguageDisplay')
-    expect(languageDisplay).toHaveTextContent('Language: Munukutuba')
+    expect(languageDisplay).toHaveTextContent('Munukutuba')
   })
 
   it('should close variant dialog on click', () => {
