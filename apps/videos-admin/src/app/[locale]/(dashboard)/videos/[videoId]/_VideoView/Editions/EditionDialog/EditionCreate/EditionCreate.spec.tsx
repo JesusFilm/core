@@ -98,7 +98,7 @@ describe('EditionCreate', () => {
     await user.click(screen.getByRole('button', { name: 'Create' }))
 
     await waitFor(() => {
-      expect(screen.getByText('Something went wrong.')).toBeInTheDocument()
+      expect(screen.getByText('Failed to create edition.')).toBeInTheDocument()
     })
   })
 })
