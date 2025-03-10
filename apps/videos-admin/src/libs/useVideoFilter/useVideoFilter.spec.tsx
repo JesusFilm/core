@@ -31,6 +31,7 @@ describe('useVideoFilter', () => {
       },
       paginationModel: { pageSize: 50, page: 0 },
       columnVisibilityModel: {
+        locked: true,
         id: true,
         title: true,
         description: true,
@@ -75,6 +76,7 @@ describe('useVideoFilter', () => {
       },
       paginationModel: { pageSize: 10, page: 2 },
       columnVisibilityModel: {
+        locked: true,
         id: true,
         title: false,
         description: true,
@@ -112,6 +114,7 @@ describe('useVideoFilter', () => {
       paginationModel: { page: 0, pageSize: 50 },
       filterModel: { items: [] },
       columnVisibilityModel: {
+        locked: true,
         id: true,
         title: true,
         description: true,
@@ -139,11 +142,18 @@ describe('useVideoFilter', () => {
       expect(
         reducer(initialState, {
           type: 'ColumnChange',
-          model: { id: false, title: true, description: true, published: true }
+          model: {
+            id: false,
+            locked: true,
+            title: true,
+            description: true,
+            published: true
+          }
         })
       ).toEqual({
         ...initialState,
         columnVisibilityModel: {
+          locked: true,
           id: false,
           title: true,
           description: true,

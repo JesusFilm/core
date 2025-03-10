@@ -1,5 +1,3 @@
-import { error } from 'console'
-
 import {
   DataGridProps,
   GridColumnVisibilityModel,
@@ -54,17 +52,26 @@ export function reducer(state: FilterState, action: FilterAction): FilterState {
 }
 
 const FilterModelSchema = z.object({
-  id: z
+  locked: z
     .object({
-      equals: z.string().optional()
+      is: z.string()
     })
     .optional(),
-  title: z.object({
-    equals: z.string().optional()
-  }),
-  published: z.object({
-    is: z.string().optional()
-  })
+  id: z
+    .object({
+      equals: z.string()
+    })
+    .optional(),
+  title: z
+    .object({
+      equals: z.string()
+    })
+    .optional(),
+  published: z
+    .object({
+      is: z.string()
+    })
+    .optional()
 })
 
 function getFilterModel(params: ParsedQs): GridFilterModel {
@@ -95,7 +102,13 @@ function getColumnVisibilityModel(
   const parseBoolean = (value?: string) =>
     value != null ? value === 'true' : true
 
-  const toggleableColumns = ['id', 'title', 'description', 'published']
+  const toggleableColumns = [
+    'locked',
+    'id',
+    'title',
+    'description',
+    'published'
+  ]
 
   const model = toggleableColumns.reduce((acc, key) => {
     acc[key] = parseBoolean(params?.columns?.[key])
@@ -131,6 +144,13 @@ function getWhereArgs(model: GridFilterModel): VideosWhereFilter {
         item.value != null
       )
         where.published = item.value
+
+      if (
+        item.field === 'locked' &&
+        item.operator === 'is' &&
+        item.value != null
+      )
+        where.locked = item.value
     })
   }
 
