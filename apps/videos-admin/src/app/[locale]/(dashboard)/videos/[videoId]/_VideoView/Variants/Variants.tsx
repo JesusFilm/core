@@ -1,9 +1,11 @@
+import AddIcon from '@mui/icons-material/Add'
 import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { FixedSizeList } from 'react-window'
 
 import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
+import { GetAdminVideo_AdminVideo_VideoEditions as VideoEditions } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { Section } from '../Section'
 
 import { VariantCard } from './VariantCard'
@@ -17,17 +19,29 @@ const VariantDialog = dynamic(
   { ssr: false }
 )
 
+const AddAudioLanguageDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "AddAudioLanguageDialog" */
+      './AddAudioLanguageDialog'
+    ).then((mod) => mod.AddAudioLanguageDialog),
+  { ssr: false }
+)
+
 const ITEM_SIZE = 75
 
 export function Variants({
-  variants
+  variants,
+  editions
 }: {
   variants?: GetAdminVideoVariant[]
+  editions?: VideoEditions
 }): ReactElement {
   const t = useTranslations()
   const [selectedVariant, setSelectedVariant] =
     useState<GetAdminVideoVariant | null>(null)
   const [open, setOpen] = useState<boolean | null>(null)
+  const [openAddDialog, setOpenAddDialog] = useState<boolean | null>(null)
 
   function handleCardClick(variant: GetAdminVideoVariant): void {
     setSelectedVariant(variant)
@@ -36,6 +50,10 @@ export function Variants({
 
   function handleClose(): void {
     setOpen(null)
+  }
+
+  function handleAddClose(): void {
+    setOpenAddDialog(false)
   }
 
   const [size, setSize] = useState<{
@@ -74,6 +92,11 @@ export function Variants({
           // if you change the title, change the element selected in the getVariantSectionDimensions function above
           title={t('Audio Languages')}
           variant="outlined"
+          action={{
+            label: t('Add Audio Language'),
+            startIcon: <AddIcon />,
+            onClick: () => setOpenAddDialog(true)
+          }}
         >
           <FixedSizeList
             width={size.width - 20}
@@ -102,6 +125,14 @@ export function Variants({
           handleClose={handleClose}
           variant={selectedVariant}
           variantLanguagesMap={variantLanguagesMap}
+        />
+      )}
+      {openAddDialog != null && (
+        <AddAudioLanguageDialog
+          open={openAddDialog}
+          handleClose={handleAddClose}
+          variantLanguagesMap={variantLanguagesMap}
+          editions={editions}
         />
       )}
     </>
