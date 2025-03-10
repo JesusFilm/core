@@ -1,11 +1,9 @@
-export {
-  isYoutubeTech,
-  isHtml5Tech,
-  formatTimeRanges,
-  formatTime,
-  getHtml5CurrentQuality,
-  getHtml5FrameRate,
-  calculateHtml5Bitrate,
-  getYoutubeStats,
-  getHtml5Stats
-} from './videoStatsUtils'
+export { isYoutubeTech } from './isYoutubeTech'
+export { isHtml5Tech } from './isHtml5Tech'
+export { formatTimeRanges } from './formatTimeRanges'
+export { formatTime } from './formatTime'
+export { getHtml5CurrentQuality } from './getHtml5CurrentQuality'
+export { getHtml5FrameRate } from './getHtml5FrameRate'
+export { calculateHtml5Bitrate } from './calculateHtml5Bitrate'
+export { getYoutubeStats } from './getYoutubeStats'
+export { getHtml5Stats } from './getHtml5Stats'

@@ -5,14 +5,12 @@ import { useTranslation } from 'next-i18next'
 import { useCallback, useEffect, useState } from 'react'
 
 import VideoJsPlayer from '../utils/videoJsTypes'
-import {
-  formatTime,
-  formatTimeRanges,
-  getHtml5Stats,
-  getYoutubeStats,
-  isHtml5Tech,
-  isYoutubeTech
-} from '../utils/videoStatsUtils'
+import { formatTime } from '../utils/videoStatsUtils/formatTime'
+import { formatTimeRanges } from '../utils/videoStatsUtils/formatTimeRanges'
+import { getHtml5Stats } from '../utils/videoStatsUtils/getHtml5Stats'
+import { getYoutubeStats } from '../utils/videoStatsUtils/getYoutubeStats'
+import { isHtml5Tech } from '../utils/videoStatsUtils/isHtml5Tech'
+import { isYoutubeTech } from '../utils/videoStatsUtils/isYoutubeTech'
 
 interface VideoStatsProps {
   player: VideoJsPlayer
