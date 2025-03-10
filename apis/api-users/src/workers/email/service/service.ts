@@ -53,10 +53,7 @@ export async function service(
       token: job.data.token,
       recipient,
       inviteLink: url
-    }),
-    {
-      pretty: true
-    }
+    })
   )
 
   const text = await render(
