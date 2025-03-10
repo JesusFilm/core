@@ -2,7 +2,6 @@ import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import { CSSProperties, ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
@@ -15,6 +14,9 @@ import { VideoFields } from '../../../Video/__generated__/VideoFields'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
+import VideoJsPlayer from '../../../Video/utils/videoJsTypes'
+
+videojs.log.level('debug')
 
 interface BackgroundVideoProps extends TreeBlock<VideoFields> {
   setLoading: (loading: boolean) => void
@@ -34,13 +36,13 @@ export function BackgroundVideo({
   setLoading
 }: BackgroundVideoProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<Player>()
+  const playerRef = useRef<VideoJsPlayer>()
   const isYouTube = source === VideoBlockSource.youTube
 
   // Initiate Video
   useEffect(() => {
     if (videoRef.current != null) {
-      playerRef.current = videojs(videoRef.current, {
+      const player = videojs(videoRef.current, {
         ...defaultVideoJsOptions,
         autoplay: true,
         controls: false,
@@ -48,16 +50,113 @@ export function BackgroundVideo({
         bigPlayButton: false,
         preload: 'metadata',
         // Make video fill container instead of set aspect ratio
+        debug: true,
         fill: true,
         userActions: {
           hotkeys: false,
           doubleClick: false
         },
         muted: true,
-        loop: true,
+        // loop: true,
         responsive: true
         // Don't use poster prop as image isn't optimised
       })
+
+      let segmentArray = []
+      let hqSegment: number | null = null
+      let lqSegment: number | null = null
+      let retryAttempts = 0
+      const MAX_RETRY_ATTEMPTS = 3
+
+      const setupSegmentMetadataListeners = (segmentMetadataTrack) => {
+        segmentMetadataTrack.on('cuechange', () => {
+          const activeCue = segmentMetadataTrack.activeCues[0]
+
+          if (activeCue != null) {
+            const value = activeCue.value
+
+            const segment = {
+              start: value.start,
+              end: value.end,
+              bandwidth: value.bandwidth,
+              width: value.resolution.width,
+              height: value.resolution.height
+            }
+
+            console.log('segment', segment)
+
+            segmentArray.push(segment)
+
+            if (hqSegment == null) {
+              hqSegment = value.bandwidth
+            }
+
+            if (lqSegment == null) {
+              lqSegment = value.bandwidth
+            }
+
+            if (value.bandwidth > hqSegment!) {
+              hqSegment = value.bandwidth
+            } else if (value.bandwidth < lqSegment!) {
+              lqSegment = value.bandwidth
+            }
+          }
+        })
+      }
+
+      player.on('ready', () => {
+        const tech = player.tech()
+
+        const pc = tech.vhs.playlistController_
+        const segmentMetadataTrack = pc.segmentMetadataTrack_
+
+        if (segmentMetadataTrack == null) {
+          player.on('addtrack', (e) => {
+            if (e.track.label === 'segment-metadata') {
+              setupSegmentMetadataListeners(e.track, player)
+            }
+          })
+        } else {
+          setupSegmentMetadataListeners(segmentMetadataTrack, player)
+        }
+      })
+
+      player.on('ended', async () => {
+        console.log('ended')
+
+        const tech = player.tech()
+        const pc = tech.vhs.playlistController_
+        const sl = pc.mainSegmentLoader_
+
+        // Only attempt to remove lower quality segments if we haven't exceeded max retries
+        if (retryAttempts < MAX_RETRY_ATTEMPTS) {
+          for (let i = 0; i < segmentArray.length; i++) {
+            const segment = segmentArray[i]
+            if (segment.bandwidth < hqSegment) {
+              sl.remove(segment.start, segment.end, () =>
+                console.log(
+                  `removed lq segment at index ${i}`,
+                  segment.bandwidth
+                )
+              )
+            }
+          }
+          retryAttempts++
+          console.log(`Retry attempt ${retryAttempts} of ${MAX_RETRY_ATTEMPTS}`)
+        } else {
+          console.log('Max retry attempts reached, keeping current quality')
+        }
+
+        // Reset tracking arrays
+        segmentArray = []
+        hqSegment = null
+        lqSegment = null
+
+        player.currentTime(0)
+        await player.play()
+      })
+
+      playerRef.current = player
     }
   }, [])
 
