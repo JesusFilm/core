@@ -76,10 +76,6 @@ export function VariantDialog({
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { data, loading } = useLanguagesQuery({ languageId: '529' })
 
-  const videoSrc = variant?.downloads.find(
-    (download) => download.quality === 'low'
-  )?.url
-
   async function handleChange(value: LanguageOption): Promise<void> {
     setSelectedLanguage(value)
   }
@@ -169,7 +165,7 @@ export function VariantDialog({
             overflow: 'hidden'
           }}
         >
-          <VariantVideo videoSrc={videoSrc} />
+          <VariantVideo hlsSrc={variant.hls} />
         </Box>
         <Downloads downloads={variant.downloads} />
       </Stack>
