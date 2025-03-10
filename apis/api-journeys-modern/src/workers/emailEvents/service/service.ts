@@ -94,8 +94,7 @@ async function visitorEventEmails(
           analyticsUrl,
           unsubscribeUrl,
           visitor
-        }),
-        { pretty: true }
+        })
       )
 
       await sendEmail({
