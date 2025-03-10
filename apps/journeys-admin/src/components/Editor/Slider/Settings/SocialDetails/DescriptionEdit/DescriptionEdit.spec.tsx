@@ -4,11 +4,18 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
+import { revalidateJourney } from '../../../../../../libs/revalidateJourney'
 
 import {
   DescriptionEdit,
   JOURNEY_SEO_DESCRIPTION_UPDATE
 } from './DescriptionEdit'
+
+jest.mock('../../../../../../libs/revalidateJourney')
+
+const mockRevalidateJourney = revalidateJourney as jest.MockedFunction<
+  typeof revalidateJourney
+>
 
 describe('DescriptionEdit', () => {
   it('should display suggested description length', () => {
@@ -107,7 +114,10 @@ describe('DescriptionEdit', () => {
       >
         <JourneyProvider
           value={{
-            journey: { id: 'journey.id' } as unknown as Journey,
+            journey: {
+              id: 'journey.id',
+              slug: 'some-slug'
+            } as unknown as Journey,
             variant: 'admin'
           }}
         >
@@ -120,6 +130,10 @@ describe('DescriptionEdit', () => {
     })
     fireEvent.blur(getByRole('textbox'))
     await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockRevalidateJourney).toHaveBeenCalledWith({
+      hostname: undefined,
+      slug: 'some-slug'
+    })
   })
 
   it('should show error text when character limit exeeded', async () => {
@@ -130,7 +144,10 @@ describe('DescriptionEdit', () => {
       <MockedProvider>
         <JourneyProvider
           value={{
-            journey: { id: 'journey.id' } as unknown as Journey,
+            journey: {
+              id: 'journey.id',
+              slug: 'some-slug'
+            } as unknown as Journey,
             variant: 'admin'
           }}
         >
@@ -145,5 +162,9 @@ describe('DescriptionEdit', () => {
     await waitFor(() =>
       expect(getByText('Character limit reached')).toBeInTheDocument()
     )
+    expect(mockRevalidateJourney).toHaveBeenCalledWith({
+      hostname: undefined,
+      slug: 'some-slug'
+    })
   })
 })
