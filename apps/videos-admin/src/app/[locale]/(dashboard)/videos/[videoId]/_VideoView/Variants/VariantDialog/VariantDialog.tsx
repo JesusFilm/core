@@ -58,10 +58,9 @@ export function VariantDialog({
     (download) => download.quality === 'low'
   )?.url
 
-  // Get the language name to display
-  const languageName = variant.language.name.find(
-    ({ primary }) => primary
-  )?.value
+  const languageName =
+    variant.language.name.find(({ primary }) => primary)?.value ??
+    variant.language.name[0].value
 
   return (
     <Dialog
