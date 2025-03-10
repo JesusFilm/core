@@ -10,6 +10,7 @@ import IconButton from '@mui/material/IconButton'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { MouseEvent } from 'react'
 
 import VideoJsPlayer from '../../utils/videoJsTypes'
 import { VideoSettings } from '../VideoSettings'
@@ -32,6 +33,7 @@ interface DesktopControlsProps {
   showFullscreenButton: boolean
   fullscreen: boolean
   handleFullscreen: () => void
+  handleToggleStats: (event: React.MouseEvent) => void
   player: VideoJsPlayer
 }
 
@@ -53,6 +55,7 @@ export function DesktopControls({
   showFullscreenButton,
   fullscreen,
   handleFullscreen,
+  handleToggleStats,
   player
 }: DesktopControlsProps): JSX.Element {
   return (
@@ -170,7 +173,7 @@ export function DesktopControls({
           )}
         </IconButton>
       </Stack>
-      <VideoSettings player={player} />
+      <VideoSettings player={player} onToggleStats={handleToggleStats} />
       {showFullscreenButton && (
         <IconButton
           aria-label="fullscreen"

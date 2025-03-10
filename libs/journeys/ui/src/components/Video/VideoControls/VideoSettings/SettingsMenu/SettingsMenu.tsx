@@ -12,6 +12,7 @@ interface SettingsMenuProps {
   onClose: () => void
   currentQuality: string
   onQualityClick: () => void
+  onToggleStats: (event: React.MouseEvent) => void
 }
 
 export function SettingsMenu({
@@ -19,7 +20,8 @@ export function SettingsMenu({
   open,
   onClose,
   currentQuality,
-  onQualityClick
+  onQualityClick,
+  onToggleStats
 }: SettingsMenuProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
 
@@ -38,6 +40,9 @@ export function SettingsMenu({
         horizontal: 'right'
       }}
     >
+      <MenuItem onClick={onToggleStats} sx={{ minWidth: 220 }}>
+        <Typography>{t('Stats for nerds')}</Typography>
+      </MenuItem>
       <MenuItem onClick={onQualityClick} sx={{ minWidth: 220 }}>
         <Stack
           direction="row"
