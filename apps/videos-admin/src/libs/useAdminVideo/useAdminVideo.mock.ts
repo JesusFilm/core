@@ -19,6 +19,7 @@ export const useAdminVideoMock: MockedResponse<
       adminVideo: {
         id: '1_jf-0-0',
         slug: 'jesus',
+        locked: false,
         images: [
           {
             id: '1_jf-0-0.mobileCinematicHigh.jpg',
@@ -146,6 +147,10 @@ export const useAdminVideoMock: MockedResponse<
             id: '1_4334-jf-0-0',
             videoId: '1_jf-0-0',
             slug: 'jesus/munukutuba',
+            videoEdition: {
+              id: 'edition.id',
+              name: 'base'
+            },
             hls: 'https://arc.gt/hls/munukutuba/master.m3u8',
             downloads: [
               {
@@ -180,6 +185,10 @@ export const useAdminVideoMock: MockedResponse<
             id: '1_19558-jf-0-0',
             videoId: '1_jf-0-0',
             slug: 'jesus/kom',
+            videoEdition: {
+              id: 'edition.id',
+              name: 'base'
+            },
             hls: 'https://arc.gt/hls/kom/master.m3u8',
             downloads: [
               {
@@ -214,6 +223,10 @@ export const useAdminVideoMock: MockedResponse<
             id: '1_529-jf-0-0',
             videoId: '1_jf-0-0',
             slug: 'jesus/english',
+            videoEdition: {
+              id: 'edition.id',
+              name: 'base'
+            },
             hls: 'https://arc.gt/hls/english/master.m3u8',
             downloads: [
               {

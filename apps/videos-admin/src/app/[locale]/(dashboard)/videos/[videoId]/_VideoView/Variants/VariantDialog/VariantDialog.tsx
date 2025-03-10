@@ -22,6 +22,7 @@ import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo
 import { VariantVideo } from '../VariantVideo'
 
 import { Downloads } from './Downloads'
+import { VideoEditionChip } from './VideoEditionChip'
 
 interface VariantDialogProps {
   variant: GetAdminVideoVariant
@@ -116,6 +117,9 @@ export function VariantDialog({
       }}
     >
       <Stack gap={4}>
+        {variant.videoEdition?.name != null && (
+          <VideoEditionChip editionName={variant.videoEdition.name} />
+        )}
         <Stack
           gap={2}
           direction="row"
