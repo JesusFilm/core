@@ -15,6 +15,23 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
+// Mock MuxPlayer component
+jest.mock('@mux/mux-player-react', () => ({
+  __esModule: true,
+  default: jest
+    .fn()
+    .mockImplementation(({ playbackId, startTime, metadata }) => (
+      <div
+        data-testid="mux-player"
+        data-playback-id={playbackId}
+        data-start-time={startTime}
+        data-video-id={metadata?.video_id}
+      >
+        Mux Player
+      </div>
+    ))
+}))
+
 const block: TreeBlock<VideoFields> = {
   __typename: 'VideoBlock',
   id: 'video0.id',
@@ -141,13 +158,12 @@ describe('Video', () => {
         />
       </MockedProvider>
     )
-    const sourceTag = screen
-      .getByTestId('JourneysVideo-video0.id')
-      .querySelector('.vjs-tech source')
-    expect(sourceTag?.getAttribute('src')).toBe(
-      `https://stream.mux.com/videoId.m3u8?asset_start_time=${0}&asset_end_time=${10000}`
-    )
-    expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
+
+    const muxPlayer = screen.getByTestId('mux-player')
+    expect(muxPlayer).toBeInTheDocument()
+    expect(muxPlayer).toHaveAttribute('data-playback-id', 'videoId')
+    expect(muxPlayer).toHaveAttribute('data-start-time', '0')
+    expect(muxPlayer).toHaveAttribute('data-video-id', 'videoId')
   })
 
   it('should render mux video with startAt and endAt', () => {
@@ -171,13 +187,12 @@ describe('Video', () => {
         />
       </MockedProvider>
     )
-    const sourceTag = screen
-      .getByTestId('JourneysVideo-video0.id')
-      .querySelector('.vjs-tech source')
-    expect(sourceTag?.getAttribute('src')).toBe(
-      `https://stream.mux.com/videoId.m3u8?asset_start_time=${block.startAt}&asset_end_time=${endAt}`
-    )
-    expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
+
+    const muxPlayer = screen.getByTestId('mux-player')
+    expect(muxPlayer).toBeInTheDocument()
+    expect(muxPlayer).toHaveAttribute('data-playback-id', 'videoId')
+    expect(muxPlayer).toHaveAttribute('data-start-time', '10')
+    expect(muxPlayer).toHaveAttribute('data-video-id', 'videoId')
   })
 
   it('should render poster block image', () => {
