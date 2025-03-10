@@ -22,7 +22,8 @@ describe('Logo', () => {
         __typename: 'ImageBlock',
         src: 'https://example.com/logo.png',
         alt: 'Logo'
-      }
+      },
+      showLogo: true
     } as unknown as Journey
 
     render(
@@ -41,7 +42,8 @@ describe('Logo', () => {
     const journey = {
       __typename: 'Journey',
       id: 'journeyId',
-      logoImageBlock: null
+      logoImageBlock: null,
+      showLogo: true
     } as unknown as Journey
 
     render(
@@ -83,7 +85,8 @@ describe('Logo', () => {
         __typename: 'ImageBlock',
         src: 'https://example.com/logo.png',
         alt: 'Logo'
-      }
+      },
+      showLogo: true
     } as unknown as Journey
 
     render(
