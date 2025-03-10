@@ -61,7 +61,7 @@ export const headerLinks: HeaderLinkProps[] = [
     subLinks: [
       {
         label: 'Strategies',
-        url: 'https://www.jesusfilm.org/partners/resources/strategies/'
+        url: 'https://www.jesusfilm.org/partners/resources'
       },
       { label: 'Journeys', url: 'https://admin.nextstep.is/templates' },
       { label: 'Videos', url: '/watch' },
