@@ -6,7 +6,10 @@ import { ReactElement, useState } from 'react'
 
 import MoreIcon from '@core/shared/ui/icons/More'
 
-import { GetAdminJourneys } from '../../../../../__generated__/GetAdminJourneys'
+import {
+  GetAdminJourneys,
+  GetAdminJourneys_journeys as Journey
+} from '../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 
 const AccessDialog = dynamic(
@@ -63,6 +66,15 @@ const TrashMenu = dynamic(
   { ssr: false }
 )
 
+const JourneyDetailsDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "JourneyDetailsDialog" */
+      '../../../Editor/Toolbar/JourneyDetails/JourneyDetailsDialog'
+    ).then((mod) => mod.JourneyDetailsDialog),
+  { ssr: false }
+)
+
 export interface JourneyCardMenuProps {
   id: string
   status: JourneyStatus
@@ -70,6 +82,7 @@ export interface JourneyCardMenuProps {
   published: boolean
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  journey?: Journey
 }
 
 export function JourneyCardMenu({
@@ -78,7 +91,8 @@ export function JourneyCardMenu({
   slug,
   published,
   template,
-  refetch
+  refetch,
+  journey
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
@@ -91,6 +105,9 @@ export function JourneyCardMenu({
     boolean | undefined
   >()
   const [openDeleteDialog, setOpenDeleteDialog] = useState<
+    boolean | undefined
+  >()
+  const [openDetailsDialog, setOpenDetailsDialog] = useState<
     boolean | undefined
   >()
 
@@ -147,6 +164,7 @@ export function JourneyCardMenu({
             setOpenAccessDialog={() => setOpenAccessDialog(true)}
             handleCloseMenu={handleCloseMenu}
             setOpenTrashDialog={() => setOpenTrashDialog(true)}
+            setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
             template={template}
             refetch={refetch}
           />
@@ -182,6 +200,13 @@ export function JourneyCardMenu({
           open={openDeleteDialog}
           handleClose={() => setOpenDeleteDialog(false)}
           refetch={refetch}
+        />
+      )}
+      {openDetailsDialog != null && (
+        <JourneyDetailsDialog
+          open={openDetailsDialog}
+          onClose={() => setOpenDetailsDialog(false)}
+          journey={journey}
         />
       )}
     </>

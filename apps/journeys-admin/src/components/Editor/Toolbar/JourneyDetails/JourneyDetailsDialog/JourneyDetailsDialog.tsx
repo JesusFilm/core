@@ -14,11 +14,13 @@ import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
+import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
 import { useJourneyUpdateMutation } from '../../../../../libs/useJourneyUpdateMutation'
 
 interface JourneyDetailsDialogProps {
   open: boolean
   onClose: () => void
+  journey?: Journey
 }
 
 interface JourneyLanguage {
@@ -29,12 +31,14 @@ interface JourneyLanguage {
 
 export function JourneyDetailsDialog({
   open,
-  onClose
+  onClose,
+  journey: journeyProp
 }: JourneyDetailsDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [journeyUpdate] = useJourneyUpdateMutation()
-  const { journey } = useJourney()
+  const { journey: journeyFromContext } = useJourney()
+  const journeyData = journeyProp ?? journeyFromContext
   const { enqueueSnackbar } = useSnackbar()
   const { data, loading } = useLanguagesQuery({ languageId: '529' })
   const titleSchema = object().shape({
@@ -42,22 +46,22 @@ export function JourneyDetailsDialog({
   })
 
   const journeyLanguage: JourneyLanguage | undefined =
-    journey != null
+    journeyData != null
       ? {
-          id: journey.language.id,
-          localName: journey.language.name.find(({ primary }) => !primary)
+          id: journeyData.language.id,
+          localName: journeyData.language.name.find(({ primary }) => !primary)
             ?.value,
-          nativeName: journey.language.name.find(({ primary }) => primary)
+          nativeName: journeyData.language.name.find(({ primary }) => primary)
             ?.value
         }
       : undefined
 
   function handleUpdateJourneyDetails(values: FormikValues): void {
-    if (journey == null) return
+    if (journeyData == null) return
 
     void journeyUpdate({
       variables: {
-        id: journey.id,
+        id: journeyData.id,
         input: {
           title: values.title,
           description: values.description,
@@ -65,8 +69,8 @@ export function JourneyDetailsDialog({
         }
       },
       optimisticResponse: {
-        journeyUpdate: {
-          ...journey,
+        journeySettingsUpdate: {
+          ...journeyData,
           title: values.title,
           description: values.description,
           language: {
@@ -115,8 +119,8 @@ export function JourneyDetailsDialog({
       setTimeout(() =>
         resetForm({
           values: {
-            title: journey?.title,
-            description: journey?.description,
+            title: journeyData?.title,
+            description: journeyData?.description,
             language: journeyLanguage
           }
         })
@@ -126,11 +130,11 @@ export function JourneyDetailsDialog({
 
   return (
     <>
-      {journey != null && (
+      {journeyData != null && (
         <Formik
           initialValues={{
-            title: journey.title,
-            description: journey.description,
+            title: journeyData.title,
+            description: journeyData.description,
             language: journeyLanguage
           }}
           onSubmit={handleUpdateJourneyDetails}

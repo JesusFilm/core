@@ -28,6 +28,7 @@ interface DefaultMenuProps {
   setOpenAccessDialog: () => void
   handleCloseMenu: () => void
   setOpenTrashDialog: () => void
+  setOpenDetailsDialog: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
@@ -41,6 +42,7 @@ export function DefaultMenu({
   setOpenAccessDialog,
   handleCloseMenu,
   setOpenTrashDialog,
+  setOpenDetailsDialog,
   template,
   refetch
 }: DefaultMenuProps): ReactElement {
@@ -53,7 +55,7 @@ export function DefaultMenu({
 
   return (
     <>
-      <NextLink
+      {/* <NextLink
         href={
           template === true
             ? `/templates/${journeyId}`
@@ -62,9 +64,17 @@ export function DefaultMenu({
         passHref
         legacyBehavior
         prefetch={false}
-      >
-        <MenuItem label={t('Edit')} icon={<Edit2Icon color="secondary" />} />
-      </NextLink>
+      > */}
+      <MenuItem
+        label={t('Edit Details')}
+        icon={<Edit2Icon color="secondary" />}
+        onClick={() => {
+          console.log('clicked')
+          setOpenDetailsDialog()
+          handleCloseMenu()
+        }}
+      />
+      {/* </NextLink> */}
       {template !== true && (
         <MenuItem
           label={t('Access')}
