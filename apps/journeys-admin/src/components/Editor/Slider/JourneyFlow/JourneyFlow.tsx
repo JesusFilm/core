@@ -6,18 +6,17 @@ import {
   Background,
   type Edge,
   type Node,
-  type NodeDragHandler,
   type OnConnect,
   type OnConnectEnd,
   type OnConnectStart,
   type OnConnectStartParams,
-  type OnEdgeUpdateFunc,
+  type OnReconnect,
   Panel,
   ReactFlow,
   type ReactFlowInstance,
   type ReactFlowProps,
   SelectionDragHandler,
-  updateEdge as reactFlowUpdateEdge,
+  reconnectEdge,
   useEdgesState,
   useNodesState
 } from '@xyflow/react'
@@ -346,7 +345,11 @@ export function JourneyFlow(): ReactElement {
     return endDragTimeStamp - dragTimeStampRef.current < 150
   }
 
-  const onNodeDragStop: NodeDragHandler = (event, node): void => {
+  const onNodeDragStop = (
+    event: React.MouseEvent,
+    node: Node,
+    nodes: Node[]
+  ): void => {
     if (node.type !== 'StepBlock') return
 
     const step = data?.blocks.find(
@@ -425,24 +428,26 @@ export function JourneyFlow(): ReactElement {
     })
   }
 
-  const onEdgeUpdateStart = useCallback<
-    NonNullable<ReactFlowProps['onEdgeUpdateStart']>
+  const onReconnectStart = useCallback<
+    NonNullable<ReactFlowProps['onReconnectStart']>
   >(() => {
     edgeUpdateSuccessful.current = false
   }, [])
 
-  const onEdgeUpdate = useCallback<OnEdgeUpdateFunc>(
+  const onReconnect = useCallback<OnReconnect>(
     (oldEdge, newConnection) => {
       const { source, sourceHandle, target } = newConnection
-      setEdges((prev) => reactFlowUpdateEdge(oldEdge, newConnection, prev))
+      setEdges(
+        (prev) => reconnectEdge(oldEdge, newConnection, prev) as typeof prev
+      )
       edgeUpdateSuccessful.current = true
       void updateEdge({ source, sourceHandle, target, oldEdge })
     },
     [setEdges, updateEdge]
   )
 
-  const onEdgeUpdateEnd = useCallback<
-    NonNullable<ReactFlowProps['onEdgeUpdateEnd']>
+  const onReconnectEnd = useCallback<
+    NonNullable<ReactFlowProps['onReconnectEnd']>
   >(
     (_, edge) => {
       const { source, sourceHandle } = edge
@@ -477,9 +482,10 @@ export function JourneyFlow(): ReactElement {
   const hideReferrers =
     <T extends Node | Edge>(hidden: boolean) =>
     (nodeOrEdge: T) => {
-      nodeOrEdge.hidden = hidden
-
-      return nodeOrEdge
+      return {
+        ...nodeOrEdge,
+        hidden
+      }
     }
 
   useEffect(() => {
@@ -519,9 +525,9 @@ export function JourneyFlow(): ReactElement {
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
         onSelectionDragStop={onSelectionDragStop}
-        onEdgeUpdate={showAnalytics === true ? undefined : onEdgeUpdate}
-        onEdgeUpdateStart={onEdgeUpdateStart}
-        onEdgeUpdateEnd={onEdgeUpdateEnd}
+        onReconnect={showAnalytics === true ? undefined : onReconnect}
+        onReconnectStart={onReconnectStart}
+        onReconnectEnd={onReconnectEnd}
         onSelectionChange={onSelectionChange}
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}

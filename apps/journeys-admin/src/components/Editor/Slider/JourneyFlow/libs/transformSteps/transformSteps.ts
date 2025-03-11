@@ -136,7 +136,7 @@ export function transformSteps(
         type: 'Link',
         data: {},
         position,
-        parentNode: step.id,
+        parentId: step.id,
         draggable: false
       })
     }
