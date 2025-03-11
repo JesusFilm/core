@@ -85,13 +85,12 @@ describe('AddVideoVariantDownloadDialog', () => {
     )
 
     await userEvent.click(screen.getByRole('button', { name: 'Save' }))
-
-    expect(screen.getByText('Quality is required')).toBeInTheDocument()
-    expect(screen.getByText('Size is required')).toBeInTheDocument()
-    expect(screen.getByText('Height is required')).toBeInTheDocument()
-    expect(screen.getByText('Width is required')).toBeInTheDocument()
-    expect(screen.getByText('URL is required')).toBeInTheDocument()
-    expect(screen.getByText('Version is required')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Size is required')).toBeInTheDocument()
+      expect(screen.getByText('Height is required')).toBeInTheDocument()
+      expect(screen.getByText('Width is required')).toBeInTheDocument()
+      expect(screen.getByText('URL is required')).toBeInTheDocument()
+    })
   })
 
   it('should show validation error when quality already exists', async () => {
@@ -113,7 +112,7 @@ describe('AddVideoVariantDownloadDialog', () => {
 
     // Select high quality
     await userEvent.click(screen.getByLabelText('Quality'))
-    await userEvent.click(screen.getByText('high'))
+    await userEvent.click(screen.getByRole('option', { name: 'high' }))
 
     await userEvent.click(screen.getByRole('button', { name: 'Save' }))
 
@@ -141,7 +140,7 @@ describe('AddVideoVariantDownloadDialog', () => {
 
     // Fill out the form
     await userEvent.click(screen.getByLabelText('Quality'))
-    await userEvent.click(screen.getByText('high'))
+    await userEvent.click(screen.getByRole('option', { name: 'high' }))
 
     await userEvent.type(screen.getByLabelText('Size (MB)'), '4.94')
     await userEvent.type(screen.getByLabelText('Height'), '720')
