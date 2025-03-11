@@ -69,7 +69,6 @@ export function MobileControls({
             {displayTime} / {duration}
           </Typography>
         )}
-        {/* <Stack direction="row" spacing={1}> */}
         <Stack direction="row" alignItems="center">
           <VideoSettings player={player} onToggleStats={handleToggleStats} />
           {showFullscreenButton && (

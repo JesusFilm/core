@@ -35,7 +35,6 @@ interface VideoControlProps {
   autoplay?: boolean
   muted?: boolean
   activeStep?: boolean
-  isHls?: boolean
 }
 
 export function VideoControls({
@@ -45,8 +44,7 @@ export function VideoControls({
   isYoutube = false,
   loading = false,
   muted: initialMuted = false,
-  activeStep = false,
-  isHls = false
+  activeStep = false
 }: VideoControlProps): ReactElement {
   const { variant } = useJourney()
   const [active, setActive] = useState(true)

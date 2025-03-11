@@ -8,11 +8,10 @@ import { formatTime } from '../formatTime'
 export function formatTimeRanges(timeRanges?: TimeRanges | null): string {
   if (!timeRanges || timeRanges.length === 0) return '-'
 
-  const ranges = []
-  for (let i = 0; i < timeRanges.length; i++) {
-    ranges.push(
-      `${formatTime(timeRanges.start(i))}-${formatTime(timeRanges.end(i))}`
+  return Array.from({ length: timeRanges.length }, (_, i) => i)
+    .map(
+      (i) =>
+        `${formatTime(timeRanges.start(i))}-${formatTime(timeRanges.end(i))}`
     )
-  }
-  return ranges.join(', ')
+    .join(', ')
 }

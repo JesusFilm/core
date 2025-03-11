@@ -5,12 +5,19 @@ import { isYoutubeTech } from './isYoutubeTech'
 
 describe('isYoutubeTech', () => {
   it('should return true for Youtube tech', () => {
-    const mockYoutubeTech = { name_: 'Youtube' } as YoutubeTech
+    const mockYoutubeTech = {
+      name_: 'Youtube',
+      ytPlayer: {
+        getPlaybackQuality: () => '',
+        getAvailableQualityLevels: () => [],
+        getVideoLoadedFraction: () => 0
+      }
+    } as unknown as YoutubeTech
     expect(isYoutubeTech(mockYoutubeTech)).toBe(true)
   })
 
   it('should return false for non-Youtube tech', () => {
-    const mockHtml5Tech = { name_: 'Html5' } as Html5
+    const mockHtml5Tech = { name_: 'Html5', vhs: {} } as unknown as Html5
     expect(isYoutubeTech(mockHtml5Tech)).toBe(false)
   })
 

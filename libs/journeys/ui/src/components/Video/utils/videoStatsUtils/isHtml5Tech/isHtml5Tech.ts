@@ -7,5 +7,5 @@ import { YoutubeTech } from '../../../utils/videoJsTypes/YoutubeTech'
  * @returns True if the tech is HTML5 tech
  */
 export function isHtml5Tech(tech: Html5 | YoutubeTech): tech is Html5 {
-  return tech?.name_ === 'Html5'
+  return tech != null && 'vhs' in tech
 }

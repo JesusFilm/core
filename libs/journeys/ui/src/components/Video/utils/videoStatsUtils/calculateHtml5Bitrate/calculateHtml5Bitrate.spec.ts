@@ -5,7 +5,7 @@ import { calculateHtml5Bitrate } from './calculateHtml5Bitrate'
 
 // Mock the isHtml5Tech function
 jest.mock('../isHtml5Tech', () => ({
-  isHtml5Tech: (tech: any) => tech?.name_ === 'Html5'
+  isHtml5Tech: (tech: any) => tech != null && 'vhs' in tech
 }))
 
 describe('calculateHtml5Bitrate', () => {

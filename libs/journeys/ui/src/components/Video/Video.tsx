@@ -162,16 +162,6 @@ export function Video({
     setActiveStep(isActiveBlockOrDescendant(blockId))
   }, [blockId, blockHistory])
 
-  // Check if we're using an HLS source
-  const isHlsSource = useMemo(() => {
-    return (
-      (mediaVideo?.__typename === 'Video' &&
-        mediaVideo?.variant?.hls != null) ||
-      mediaVideo?.__typename === 'MuxVideo' ||
-      (source === VideoBlockSource.internal && videoId?.includes('.m3u8'))
-    )
-  }, [mediaVideo, source, videoId])
-
   return (
     <Box
       data-testid={`JourneysVideo-${blockId}`}
@@ -308,7 +298,6 @@ export function Video({
                 autoplay={autoplay ?? false}
                 muted={muted ?? false}
                 activeStep={activeStep}
-                isHls={isHlsSource}
               />
             </ThemeProvider>
           )}

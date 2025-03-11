@@ -5,7 +5,7 @@ import { isHtml5Tech } from './isHtml5Tech'
 
 describe('isHtml5Tech', () => {
   it('should return true for Html5 tech', () => {
-    const mockHtml5Tech = { name_: 'Html5' } as Html5
+    const mockHtml5Tech = { name_: 'Html5', vhs: {} } as Html5
     expect(isHtml5Tech(mockHtml5Tech)).toBe(true)
   })
 

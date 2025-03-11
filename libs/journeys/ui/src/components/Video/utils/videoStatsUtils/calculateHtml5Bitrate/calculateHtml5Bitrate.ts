@@ -6,7 +6,7 @@ import { isHtml5Tech } from '../isHtml5Tech'
  * @param player The video.js player instance
  * @returns The calculated bitrate in kbps or 0 if not available
  */
-export function calculateHtml5Bitrate(player: VideoJsPlayer): number {
+export function calculateHtml5Bitrate(player?: VideoJsPlayer): number {
   if (!player) return 0
 
   const tech = player.tech({ IWillNotUseThisInPlugins: true })
