@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
-import { Background, ReactFlow } from '@xyflow/react'
 import { ComponentPropsWithoutRef } from 'react'
+import { Background, ReactFlow } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
@@ -36,35 +36,6 @@ const Template: StoryObj<
         </EditorProvider>
       </MockedProvider>
     )
-  }
-}
-
-const defaultFlowProps = {
-  edges: [],
-  edgeTypes: {},
-  onConnectStart: () => undefined,
-  onConnectEnd: () => undefined,
-  fitView: true,
-  proOptions: { hideAttribution: true },
-  nodeTypes: {
-    Link: LinkNode
-  }
-}
-
-export const Default = {
-  ...Template,
-  args: {
-    ...defaultFlowProps,
-    nodes: [
-      {
-        id: 'someStep.id',
-        type: 'Link',
-        position: { x: 100, y: 0 }
-      }
-    ],
-    initialState: {
-      steps: []
-    }
   }
 }
 
@@ -106,6 +77,35 @@ function addActionToStep(action: Action): TreeBlock<StepBlock> {
         ]
       }
     ]
+  }
+}
+
+const defaultFlowProps = {
+  edges: [],
+  edgeTypes: {},
+  onConnectStart: () => undefined,
+  onConnectEnd: () => undefined,
+  fitView: true,
+  proOptions: { hideAttribution: true },
+  nodeTypes: {
+    Link: LinkNode
+  }
+}
+
+export const Default = {
+  ...Template,
+  args: {
+    ...defaultFlowProps,
+    nodes: [
+      {
+        id: 'someStep.id',
+        type: 'Link',
+        position: { x: 100, y: 0 }
+      }
+    ],
+    initialState: {
+      steps: []
+    }
   }
 }
 

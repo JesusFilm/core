@@ -1,25 +1,29 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
-import { ReactFlowProvider } from '@xyflow/react'
+import { ReactFlowProvider } from 'reactflow'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
 import { NewStepButton } from '.'
 
-const meta = {
-  component: NewStepButton,
-  title: 'Journeys-Admin/Editor/Slider/JourneyFlow/NewStepButton',
-  decorators: [
-    (Story) => (
+const NewStepButtonDemo: Meta<typeof NewStepButton> = {
+  ...simpleComponentConfig,
+  title: 'Journeys-Admin/Editor/Slider/JourneyFlow/NewStepButton'
+}
+
+const Template: StoryObj = {
+  render: () => (
+    <MockedProvider>
       <ReactFlowProvider>
-        <Story />
+        <NewStepButton />
       </ReactFlowProvider>
-    )
-  ]
-} satisfies Meta<typeof NewStepButton>
+    </MockedProvider>
+  )
+}
 
-export default meta
+export const Default = {
+  ...Template,
+  args: {}
+}
 
-type Story = StoryObj<typeof meta>
-
-export const Default: Story = {}
+export default NewStepButtonDemo
