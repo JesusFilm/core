@@ -103,13 +103,14 @@ export async function getCurrentTimeStamp(): Promise<string> {
 
 export function parse<T extends ZodSchema>(
   schema: T,
-  row: unknown
+  row: unknown,
+  idFieldName: string = 'id'
 ): z.infer<T> {
   const parser = schema.safeParse(row)
   if (!parser.success) {
     throw new Error(
       `row does not match schema: ${
-        get(row, 'id') ?? 'unknownId'
+        get(row, idFieldName) ?? 'unknownId'
       }\n${JSON.stringify(row, null, 2)}`
     )
   }
@@ -118,7 +119,8 @@ export function parse<T extends ZodSchema>(
 
 export function parseMany<T extends ZodSchema>(
   schema: T,
-  rows: unknown[]
+  rows: unknown[],
+  idFieldName: string = 'id'
 ): { data: Array<z.infer<T>>; inValidRowIds: string[] } {
   const validRows: T[] = []
   const inValidRowIds: string[] = []
@@ -129,7 +131,7 @@ export function parseMany<T extends ZodSchema>(
       validRows.push(data.data)
     } else {
       logger?.error(data.error)
-      inValidRowIds.push(get(row, 'id') ?? 'unknownId')
+      inValidRowIds.push(get(row, idFieldName) ?? 'unknownId')
     }
   }
   return { data: validRows, inValidRowIds }
