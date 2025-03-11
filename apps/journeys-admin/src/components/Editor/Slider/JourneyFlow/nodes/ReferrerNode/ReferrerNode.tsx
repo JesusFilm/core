@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box'
+import type { NodeProps } from '@xyflow/react'
 import { ReactElement } from 'react'
-import type { NodeProps } from 'reactflow'
 
 import type { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '@core/journeys/ui/useJourneyAnalyticsQuery/__generated__/GetJourneyAnalytics'
 

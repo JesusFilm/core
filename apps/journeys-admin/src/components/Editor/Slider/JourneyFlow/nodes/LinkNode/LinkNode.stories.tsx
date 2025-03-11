@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
+import { Background, ReactFlow } from '@xyflow/react'
 import { ComponentPropsWithoutRef } from 'react'
-import { Background, ReactFlow } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
@@ -15,27 +15,37 @@ import {
 
 import { LinkNode } from '.'
 
-const Demo: Meta<typeof LinkNode> = {
-  ...simpleComponentConfig,
+const meta = {
   component: LinkNode,
   title: 'Journeys-Admin/Editor/Slider/JourneyFlow/nodes/LinkNode'
-}
+} satisfies Meta<typeof LinkNode>
 
-const Template: StoryObj<
-  ComponentPropsWithoutRef<typeof LinkNode> & { initialState: EditorState }
-> = {
-  render: ({ initialState, ...args }) => {
-    return (
-      <MockedProvider>
-        <EditorProvider initialState={initialState}>
-          <Box sx={{ height: 400, width: 600 }}>
-            <ReactFlow {...args}>
-              <Background color="#aaa" gap={16} />
-            </ReactFlow>
-          </Box>
-        </EditorProvider>
-      </MockedProvider>
-    )
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {
+  render: (args) => (
+    <ReactFlow {...args}>
+      <Background />
+    </ReactFlow>
+  ),
+  args: {
+    nodes: [
+      {
+        id: 'link-1',
+        type: 'link',
+        position: { x: 0, y: 0 },
+        data: {
+          label: 'Link Node',
+          journeyId: 'journey-id',
+          journeyTitle: 'Journey Title'
+        }
+      }
+    ],
+    nodeTypes: {
+      link: LinkNode
+    }
   }
 }
 
@@ -92,25 +102,8 @@ const defaultFlowProps = {
   }
 }
 
-export const Default = {
-  ...Template,
-  args: {
-    ...defaultFlowProps,
-    nodes: [
-      {
-        id: 'someStep.id',
-        type: 'Link',
-        position: { x: 100, y: 0 }
-      }
-    ],
-    initialState: {
-      steps: []
-    }
-  }
-}
-
 export const Link = {
-  ...Template,
+  ...Default,
   args: {
     ...defaultFlowProps,
     nodes: [
@@ -134,7 +127,7 @@ export const Link = {
 }
 
 export const Bible = {
-  ...Template,
+  ...Default,
   args: {
     ...defaultFlowProps,
     nodes: [
@@ -158,7 +151,7 @@ export const Bible = {
 }
 
 export const Chat = {
-  ...Template,
+  ...Default,
   args: {
     ...defaultFlowProps,
     nodes: [
@@ -182,7 +175,7 @@ export const Chat = {
 }
 
 export const Email = {
-  ...Template,
+  ...Default,
   args: {
     ...defaultFlowProps,
     nodes: [
@@ -206,7 +199,7 @@ export const Email = {
 }
 
 export const Analytics = {
-  ...Template,
+  ...Default,
   args: {
     ...defaultFlowProps,
     nodes: [
@@ -222,5 +215,3 @@ export const Analytics = {
     }
   }
 }
-
-export default Demo

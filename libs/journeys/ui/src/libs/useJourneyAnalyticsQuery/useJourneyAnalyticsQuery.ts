@@ -5,118 +5,23 @@ import {
   gql,
   useQuery
 } from '@apollo/client'
+import { Edge, Node } from '@xyflow/react'
 import { useState } from 'react'
-import { Edge, Node } from 'reactflow'
 
 import {
   GetJourneyAnalytics,
   GetJourneyAnalyticsVariables
 } from './__generated__/GetJourneyAnalytics'
 import { transformJourneyAnalytics } from './transformJourneyAnalytics'
+import { transformReferrers } from './transformReferrers'
 
 export const GET_JOURNEY_ANALYTICS = gql`
-  query GetJourneyAnalytics(
-    $id: ID!
-    $period: String
-    $date: String
-    $interval: String
-    $limit: Int
-    $page: Int
-  ) {
-    journeySteps: journeysPlausibleStatsBreakdown(
-      id: $id
-      idType: databaseId
-      where: {
-        property: "event:page"
-        period: $period
-        date: $date
-        limit: $limit
-        page: $page
-      }
-    ) {
-      property
-      visitors
-      timeOnPage
-    }
-    journeyStepsActions: journeysPlausibleStatsBreakdown(
-      id: $id
-      idType: databaseId
-      where: {
-        property: "event:props:key"
-        period: $period
-        date: $date
-        limit: $limit
-        page: $page
-      }
-    ) {
-      property
-      visitors
-    }
-    journeyReferrer: journeysPlausibleStatsBreakdown(
-      id: $id
-      idType: databaseId
-      where: {
-        property: "visit:referrer"
-        period: $period
-        date: $date
-        limit: $limit
-        page: $page
-        filters: "visit:utm_source!=ns-qr-code"
-      }
-    ) {
-      property
-      visitors
-    }
-    journeyUtmCampaign: journeysPlausibleStatsBreakdown(
-      id: $id
-      idType: databaseId
-      where: {
-        property: "visit:utm_campaign"
-        period: $period
-        date: $date
-        limit: $limit
-        page: $page
-        filters: "visit:utm_source==ns-qr-code"
-      }
-    ) {
-      property
-      visitors
-    }
-    journeyVisitorsPageExits: journeysPlausibleStatsBreakdown(
-      id: $id
-      idType: databaseId
-      where: {
-        property: "visit:exit_page"
-        period: $period
-        date: $date
-        limit: $limit
-        page: $page
-      }
-    ) {
-      property
-      visitors
-    }
-    journeyActionsSums: journeysPlausibleStatsBreakdown(
-      id: $id
-      idType: databaseId
-      where: {
-        property: "event:props:simpleKey"
-        period: $period
-        date: $date
-        limit: $limit
-        page: $page
-      }
-    ) {
-      property
-      visitors
-    }
-    journeyAggregateVisitors: journeysPlausibleStatsAggregate(
-      id: $id
-      idType: databaseId
-      where: { period: $period, date: $date, interval: $interval }
-    ) {
-      visitors {
-        value
+  query GetJourneyAnalytics($id: ID!) {
+    journey(id: $id) {
+      id
+      journeyReferrer {
+        property
+        visitors
       }
     }
   }
@@ -142,32 +47,45 @@ export interface JourneyAnalytics {
   targetMap: SumEventMap
 }
 
-export function useJourneyAnalyticsQuery(
-  options?: Omit<
-    QueryHookOptions<
-      NoInfer<GetJourneyAnalytics>,
-      NoInfer<GetJourneyAnalyticsVariables>
-    >,
-    'onCompleted'
-  > & { onCompleted?: (data: JourneyAnalytics | undefined) => void }
-): Omit<
-  QueryResult<GetJourneyAnalytics, GetJourneyAnalyticsVariables>,
-  'data'
-> & { data: JourneyAnalytics | undefined } {
-  const [data, setData] = useState<JourneyAnalytics | undefined>()
-  const query = useQuery<GetJourneyAnalytics, GetJourneyAnalyticsVariables>(
+export interface JourneyAnalyticsReferrer {
+  id: string
+  stepId: string
+  name: string
+  visitors: number
+}
+
+export function useJourneyAnalyticsQuery(journeyId: string): {
+  loading: boolean
+  error?: Error
+  data?: JourneyAnalytics
+} {
+  const { loading, error, data } = useQuery<GetJourneyAnalytics>(
     GET_JOURNEY_ANALYTICS,
     {
-      ...options,
-      onCompleted: (data) => {
-        const journeyAnalytics = transformJourneyAnalytics(
-          options?.variables?.id,
-          data
-        )
-        setData(journeyAnalytics)
-        options?.onCompleted?.(journeyAnalytics)
-      }
+      variables: { id: journeyId }
     }
   )
-  return { ...query, data }
+
+  if (loading || error != null || data == null) {
+    return { loading, error }
+  }
+
+  const referrers = data.journey?.journeyReferrer ?? []
+  const { nodes, edges } = transformReferrers(
+    referrers.map((referrer) => ({
+      id: referrer.property,
+      stepId: 'SocialPreview',
+      name: referrer.property,
+      visitors: referrer.visitors ?? 0
+    }))
+  )
+
+  return {
+    loading,
+    error,
+    data: {
+      nodes,
+      edges
+    }
+  }
 }

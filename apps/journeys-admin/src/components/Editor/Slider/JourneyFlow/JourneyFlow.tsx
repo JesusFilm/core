@@ -2,16 +2,6 @@ import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import { useTheme } from '@mui/material/styles'
-import { useRouter } from 'next/compat/router'
-import {
-  type MouseEvent,
-  type ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
 import {
   Background,
   type Edge,
@@ -30,7 +20,17 @@ import {
   updateEdge as reactFlowUpdateEdge,
   useEdgesState,
   useNodesState
-} from 'reactflow'
+} from '@xyflow/react'
+import { useRouter } from 'next/compat/router'
+import {
+  type MouseEvent,
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -67,7 +67,7 @@ import { ReferrerNode } from './nodes/ReferrerNode'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
-import 'reactflow/dist/style.css'
+import '@xyflow/react/dist/style.css'
 import { useStepAndBlockSelection } from './utils/useStepAndBlockSelection'
 
 // some styles can only be updated through css after render

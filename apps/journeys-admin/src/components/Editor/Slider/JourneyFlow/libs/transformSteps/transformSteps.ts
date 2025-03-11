@@ -1,6 +1,6 @@
 import { lighten, rgbToHex } from '@mui/system/colorManipulator'
+import { Edge, MarkerType, Node } from '@xyflow/react'
 import findIndex from 'lodash/findIndex'
-import { Edge, MarkerType, Node } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'

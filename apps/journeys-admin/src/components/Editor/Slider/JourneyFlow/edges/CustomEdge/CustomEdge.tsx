@@ -1,12 +1,12 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import { ReactElement, useEffect, useState } from 'react'
 import {
   EdgeLabelRenderer,
   EdgeProps,
   getBezierPath,
   useOnSelectionChange
-} from 'reactflow'
+} from '@xyflow/react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import X3Icon from '@core/shared/ui/icons/X3'

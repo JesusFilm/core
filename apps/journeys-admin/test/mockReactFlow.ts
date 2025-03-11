@@ -12,7 +12,7 @@ class ResizeObserver {
   }
 
   observe(target: Element): void {
-    // @ts-expect-error: provide override for React Flow
+    // @ts-expect-error: provide override for @xyflow/react
     const callbackParam: globalThis.ResizeObserverEntry = { target }
     this.callback([callbackParam], this)
   }
@@ -39,7 +39,7 @@ export const mockReactFlow = (): void => {
 
   global.ResizeObserver = ResizeObserver
 
-  // @ts-expect-error: provide override for React Flow
+  // @ts-expect-error: provide override for @xyflow/react
   global.DOMMatrixReadOnly = DOMMatrixReadOnly
 
   Object.defineProperties(global.HTMLElement.prototype, {

@@ -1,5 +1,5 @@
+import { Edge } from '@xyflow/react'
 import get from 'lodash/get'
-import { Edge } from 'reactflow'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
