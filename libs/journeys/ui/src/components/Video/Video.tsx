@@ -39,7 +39,6 @@ import { VideoControls } from './VideoControls'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
-// HTTP streaming is included in Video.js core since version 7
 
 const VIDEO_BACKGROUND_COLOR = '#000'
 const VIDEO_FOREGROUND_COLOR = '#FFF'
