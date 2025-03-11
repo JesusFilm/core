@@ -2,6 +2,7 @@ import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
+import get from 'lodash/get'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
@@ -44,9 +45,9 @@ export function SourceFromLocal({
     GET_VIDEO_VARIANT_LANGUAGES,
     {
       variables: {
-        id: selectedBlock?.mediaVideo?.id
+        id: get(selectedBlock, 'mediaVideo.id')
       },
-      skip: selectedBlock?.mediaVideo?.id == null
+      skip: get(selectedBlock, 'mediaVideo.id') == null
     }
   )
   const [language, setLanguage] = useState<string | undefined>()
@@ -78,7 +79,7 @@ export function SourceFromLocal({
           selectedBlock={{
             src:
               (selectedBlock?.mediaVideo as VideoFields_mediaVideo_Video)
-                ?.images[0]?.mobileCinematicHigh ?? '',
+                ?.images?.[0]?.mobileCinematicHigh ?? '',
             alt:
               (selectedBlock?.mediaVideo as VideoFields_mediaVideo_Video)
                 ?.title?.[0]?.value ?? ''

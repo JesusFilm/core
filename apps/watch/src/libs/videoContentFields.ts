@@ -38,6 +38,7 @@ export const VIDEO_CONTENT_FIELDS = gql`
           value
           primary
         }
+        bcp47
       }
       slug
       subtitleCount

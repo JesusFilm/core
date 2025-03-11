@@ -16,16 +16,16 @@ What follows is the most up to date Entity Relationship Diagrams ([main branch](
 
 ### API Journeys
 
-![API Journeys ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apps/api-journeys/db/ERD.svg)
+![API Journeys ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apis/api-journeys/db/ERD.svg)
 
 ### API Languages
 
-![API Languages ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apps/api-languages/db/ERD.svg)
+![API Languages ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apis/api-languages/db/ERD.svg)
 
 ### API Media
 
-![API Media ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apps/api-media/db/ERD.svg)
+![API Media ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apis/api-media/db/ERD.svg)
 
 ### API Users
 
-![API Users ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apps/api-users/db/ERD.svg)
+![API Users ERD](https://raw.githubusercontent.com/JesusFilm/core/main/apis/api-users/db/ERD.svg)

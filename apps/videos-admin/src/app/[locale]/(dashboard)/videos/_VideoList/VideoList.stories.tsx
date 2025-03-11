@@ -51,19 +51,22 @@ const mockGetAdminVideosAndCount: MockedResponse<
           id: 'video1.id',
           snippet: [{ value: 'Example snippet', primary: true }],
           title: [{ value: 'Video 1 title', primary: true }],
-          published: true
+          published: true,
+          locked: false
         },
         {
           id: 'video2.id',
           snippet: [{ value: 'Example snippet', primary: true }],
           title: [{ value: 'Video 2 title', primary: true }],
-          published: false
+          published: false,
+          locked: false
         },
         {
           id: 'video3.id',
           snippet: [{ value: 'Example snippet', primary: true }],
           title: [{ value: 'Video 3 title', primary: true }],
-          published: true
+          published: true,
+          locked: false
         }
       ]
     }
@@ -92,7 +95,8 @@ const mockGetAdminVideosAndCount100: MockedResponse<
           id: `example-id-${i}`,
           snippet: [{ value: `Example Snippet ${i}`, primary: true }],
           title: [{ value: `Example title ${i}`, primary: true }],
-          published: i % 2 === 0
+          published: i % 2 === 0,
+          locked: false
         }))
       ]
     }
