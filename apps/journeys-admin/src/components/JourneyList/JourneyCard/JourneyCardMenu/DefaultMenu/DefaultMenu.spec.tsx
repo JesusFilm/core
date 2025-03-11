@@ -48,7 +48,6 @@ const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   }))
 }
 
-// Mock for current user query
 const currentUserMock = {
   request: {
     query: GET_CURRENT_USER
@@ -64,7 +63,6 @@ const currentUserMock = {
   }
 }
 
-// Mock for team with current user as manager
 const teamWithManagerMock = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -101,7 +99,6 @@ const teamWithManagerMock = {
   }
 }
 
-// Mock for team with current user as member
 const teamWithMemberMock = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -138,7 +135,6 @@ const teamWithMemberMock = {
   }
 }
 
-// Mock for user role query with publisher role
 const userRolePublisherMock = {
   request: {
     query: GET_USER_ROLE
@@ -154,7 +150,6 @@ const userRolePublisherMock = {
   }
 }
 
-// Mock for user role query without publisher role
 const userRoleNonPublisherMock = {
   request: {
     query: GET_USER_ROLE
@@ -353,7 +348,6 @@ describe('DefaultMenu', () => {
   })
 
   it('should enable Archive and Trash menu items for journey owners', async () => {
-    // Mock journey data with current user as owner
     const journeyId = 'journey-id'
     const journeyData = {
       __typename: 'Journey',
@@ -371,7 +365,6 @@ describe('DefaultMenu', () => {
       ]
     }
 
-    // Mock for journey query
     const journeyMock = {
       request: {
         query: GET_JOURNEY_WITH_USER_ROLES,
@@ -405,7 +398,6 @@ describe('DefaultMenu', () => {
       </MockedProvider>
     )
 
-    // Wait for the queries to complete
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Archive' })).not.toHaveAttribute(
         'aria-disabled'
@@ -417,7 +409,6 @@ describe('DefaultMenu', () => {
   })
 
   it('should enable Archive and Trash menu items for team managers', async () => {
-    // Mock journey data with current user as editor
     const journeyId = 'journey-id'
     const journeyData = {
       __typename: 'Journey',
@@ -435,7 +426,6 @@ describe('DefaultMenu', () => {
       ]
     }
 
-    // Mock for journey query
     const journeyMock = {
       request: {
         query: GET_JOURNEY_WITH_USER_ROLES,
@@ -469,7 +459,6 @@ describe('DefaultMenu', () => {
       </MockedProvider>
     )
 
-    // Wait for the queries to complete
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Archive' })).not.toHaveAttribute(
         'aria-disabled'
@@ -481,7 +470,6 @@ describe('DefaultMenu', () => {
   })
 
   it('should disable Archive and Trash menu items for journey editors who are not team managers', async () => {
-    // Mock journey data with current user as editor
     const journeyId = 'journey-id'
     const journeyData = {
       __typename: 'Journey',
@@ -499,7 +487,6 @@ describe('DefaultMenu', () => {
       ]
     }
 
-    // Mock for journey query
     const journeyMock = {
       request: {
         query: GET_JOURNEY_WITH_USER_ROLES,
@@ -533,7 +520,6 @@ describe('DefaultMenu', () => {
       </MockedProvider>
     )
 
-    // Wait for the queries to complete
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Archive' })).toHaveAttribute(
         'aria-disabled',
@@ -547,7 +533,6 @@ describe('DefaultMenu', () => {
   })
 
   it('should enable other menu items for journey editors', async () => {
-    // Mock journey data with current user as editor
     const journeyId = 'journey-id'
     const journeyData = {
       __typename: 'Journey',
@@ -565,7 +550,6 @@ describe('DefaultMenu', () => {
       ]
     }
 
-    // Mock for journey query
     const journeyMock = {
       request: {
         query: GET_JOURNEY_WITH_USER_ROLES,
@@ -599,7 +583,6 @@ describe('DefaultMenu', () => {
       </MockedProvider>
     )
 
-    // Wait for the queries to complete and check that other menu items are enabled
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Edit' })).not.toHaveAttribute(
         'aria-disabled'
@@ -614,7 +597,6 @@ describe('DefaultMenu', () => {
   })
 
   it('should enable Archive and Trash for publishers for templates', async () => {
-    // Mock journey data for template
     const templateId = 'template-id'
     const templateData = {
       __typename: 'Journey',
@@ -622,7 +604,6 @@ describe('DefaultMenu', () => {
       userJourneys: []
     }
 
-    // Mock for journey query
     const journeyMock = {
       request: {
         query: GET_JOURNEY_WITH_USER_ROLES,
@@ -666,7 +647,6 @@ describe('DefaultMenu', () => {
   })
 
   it('should disable Archive and Trash for publishers for non-templates', async () => {
-    // Mock journey data for non-template
     const journeyId = 'journey-id'
     const journeyData = {
       __typename: 'Journey',
@@ -674,7 +654,6 @@ describe('DefaultMenu', () => {
       userJourneys: []
     }
 
-    // Mock for journey query
     const journeyMock = {
       request: {
         query: GET_JOURNEY_WITH_USER_ROLES,
@@ -720,7 +699,6 @@ describe('DefaultMenu', () => {
   })
 
   it('should disable Archive and Trash for non-publishers for templates', async () => {
-    // Mock journey data for template
     const templateId = 'template-id'
     const templateData = {
       __typename: 'Journey',
@@ -728,7 +706,6 @@ describe('DefaultMenu', () => {
       userJourneys: []
     }
 
-    // Mock for journey query
     const journeyMock = {
       request: {
         query: GET_JOURNEY_WITH_USER_ROLES,
@@ -774,7 +751,6 @@ describe('DefaultMenu', () => {
   })
 
   it('should enable Archive and Trash for users who are both publishers and journey editors for non-templates', async () => {
-    // Mock journey data with current user as editor
     const journeyId = 'journey-id'
     const journeyData = {
       __typename: 'Journey',
@@ -792,7 +768,6 @@ describe('DefaultMenu', () => {
       ]
     }
 
-    // Mock for journey query
     const journeyMock = {
       request: {
         query: GET_JOURNEY_WITH_USER_ROLES,
@@ -831,7 +806,6 @@ describe('DefaultMenu', () => {
       </MockedProvider>
     )
 
-    // Wait for the queries to complete
     await waitFor(() => {
       // Should be disabled because it's not a template, even though user is a publisher
       expect(getByRole('menuitem', { name: 'Archive' })).toHaveAttribute(
