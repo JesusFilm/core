@@ -9,15 +9,33 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
 import { GetAdminVideoVariant_Downloads as VariantDownloads } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useVideoVariantDownloadDeleteMutation } from '../../../../../../../../../libs/useVideoVariantDownloadDeleteMutation/useVideoVariantDownloadDeleteMutation'
 
-import { AddVideoVariantDownloadDialog } from './AddVideoVariantDownloadDialog'
-import { ConfirmDeleteDialog } from './ConfirmDeleteDialog'
 import { bytesToSize } from './utils/bytesToSize'
+
+// Dynamic imports for dialogs
+const AddVideoVariantDownloadDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "AddVideoVariantDownloadDialog" */
+      './AddVideoVariantDownloadDialog'
+    ).then((mod) => mod.AddVideoVariantDownloadDialog),
+  { ssr: false }
+)
+
+const ConfirmDeleteDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "ConfirmDeleteDialog" */
+      './ConfirmDeleteDialog'
+    ).then((mod) => mod.ConfirmDeleteDialog),
+  { ssr: false }
+)
 
 interface DownloadsProps {
   downloads: VariantDownloads
@@ -30,8 +48,10 @@ export function Downloads({
 }: DownloadsProps): ReactElement {
   const t = useTranslations()
   const [deleteVideoVariantDownload] = useVideoVariantDownloadDeleteMutation()
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState<boolean | null>(null)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean | null>(
+    null
+  )
   const [downloadToDelete, setDownloadToDelete] = useState<string | null>(null)
 
   const existingQualities = downloads.map((download) => download.quality)
@@ -56,16 +76,12 @@ export function Downloads({
 
   const handleDeleteConfirm = async (): Promise<void> => {
     if (downloadToDelete) {
-      try {
-        await deleteVideoVariantDownload({
-          variables: {
-            id: downloadToDelete
-          }
-        })
-        handleCloseDeleteDialog()
-      } catch (error) {
-        // Error is handled by the mutation hook
-      }
+      await deleteVideoVariantDownload({
+        variables: {
+          id: downloadToDelete
+        }
+      })
+      handleCloseDeleteDialog()
     }
   }
 
@@ -122,19 +138,23 @@ export function Downloads({
         )}
       </>
 
-      <AddVideoVariantDownloadDialog
-        open={isAddDialogOpen}
-        handleClose={handleCloseAddDialog}
-        onSuccess={handleAddSuccess}
-        videoVariantId={videoVariantId}
-        existingQualities={existingQualities}
-      />
+      {isAddDialogOpen != null && (
+        <AddVideoVariantDownloadDialog
+          open={isAddDialogOpen}
+          handleClose={handleCloseAddDialog}
+          onSuccess={handleAddSuccess}
+          videoVariantId={videoVariantId}
+          existingQualities={existingQualities}
+        />
+      )}
 
-      <ConfirmDeleteDialog
-        open={isDeleteDialogOpen}
-        handleClose={handleCloseDeleteDialog}
-        handleConfirm={handleDeleteConfirm}
-      />
+      {isDeleteDialogOpen != null && (
+        <ConfirmDeleteDialog
+          open={isDeleteDialogOpen}
+          handleClose={handleCloseDeleteDialog}
+          handleConfirm={handleDeleteConfirm}
+        />
+      )}
     </>
   )
 }

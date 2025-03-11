@@ -37,10 +37,10 @@ export function useVideoVariantDownloadCreateMutation(
 > {
   return useMutation(VIDEO_VARIANT_DOWNLOAD_CREATE, {
     ...options,
-    update: (cache, { data }) => {
+    update: (cache, { data }, { variables }) => {
       if (data?.videoVariantDownloadCreate) {
         const { videoVariantDownloadCreate } = data
-        const videoVariantId = options?.variables?.input.videoVariantId
+        const videoVariantId = variables?.input.videoVariantId
 
         if (videoVariantId) {
           cache.modify({

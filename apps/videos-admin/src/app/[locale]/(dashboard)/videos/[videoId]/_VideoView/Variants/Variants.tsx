@@ -25,12 +25,13 @@ export function Variants({
   variants?: GetAdminVideoVariant[]
 }): ReactElement {
   const t = useTranslations()
-  const [selectedVariant, setSelectedVariant] =
-    useState<GetAdminVideoVariant | null>(null)
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
+    null
+  )
   const [open, setOpen] = useState<boolean | null>(null)
 
   function handleCardClick(variant: GetAdminVideoVariant): void {
-    setSelectedVariant(variant)
+    setSelectedVariantId(variant.id)
     setOpen(true)
   }
 
@@ -96,11 +97,11 @@ export function Variants({
           </FixedSizeList>
         </Section>
       )}
-      {open != null && selectedVariant != null && (
+      {open != null && selectedVariantId != null && (
         <VariantDialog
           open={open}
           handleClose={handleClose}
-          variant={selectedVariant}
+          variantId={selectedVariantId}
           variantLanguagesMap={variantLanguagesMap}
         />
       )}

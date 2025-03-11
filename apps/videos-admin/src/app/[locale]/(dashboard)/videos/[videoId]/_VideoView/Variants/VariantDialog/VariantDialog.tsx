@@ -5,11 +5,12 @@ import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { Dialog } from '@core/shared/ui/Dialog'
@@ -19,13 +20,14 @@ import {
 } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
+import { useVideo } from '../../../../../../../../libs/VideoProvider'
 import { VariantVideo } from '../VariantVideo'
 
 import { Downloads } from './Downloads'
 import { VideoEditionChip } from './VideoEditionChip'
 
 interface VariantDialogProps {
-  variant: GetAdminVideoVariant
+  variantId: string
   handleClose?: () => void
   open?: boolean
   variantLanguagesMap: Map<string, GetAdminVideoVariant>
@@ -54,21 +56,56 @@ export type UpdateVariantLanguageVariables = VariablesOf<
 export type UpdateVariantLanguage = ResultOf<typeof UPDATE_VARIANT_LANGUAGE>
 
 export function VariantDialog({
-  variant,
+  variantId,
   open,
   handleClose,
   variantLanguagesMap
 }: VariantDialogProps): ReactElement | null {
+  const video = useVideo()
   const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
+
+  const variant = useMemo(() => {
+    return video.variants.find((v) => v.id === variantId)
+  }, [video.variants, variantId])
+
+  if (variant == null) {
+    return (
+      <Dialog
+        data-testid="VariantDialog"
+        open={open}
+        onClose={handleClose}
+        dialogTitle={{ title: t('Audio Language'), closeButton: true }}
+        divider
+        sx={{
+          '& .MuiIconButton-root': {
+            border: 'none'
+          }
+        }}
+      >
+        <Stack
+          gap={4}
+          alignItems="center"
+          justifyContent="center"
+          sx={{ minHeight: '200px', p: 4 }}
+        >
+          <Typography variant="h6" color="text.secondary">
+            {t('Variant not found')}
+          </Typography>
+        </Stack>
+      </Dialog>
+    )
+  }
+
   const defaultLanguage = {
     id: variant.language.id,
     localName: variant.language.name.find(({ primary }) => !primary)?.value,
     nativeName: variant.language.name.find(({ primary }) => primary)?.value,
     slug: variant.language.slug
   }
-  const [selectedLanguage, setSelectedLanguage] =
-    useState<LanguageOption>(defaultLanguage)
+  const [selectedLanguage, setSelectedLanguage] = useState<LanguageOption>(
+    defaultLanguage as LanguageOption
+  )
 
   const [updateVariantLanguage, { loading: updateVariantLoading }] =
     useMutation(UPDATE_VARIANT_LANGUAGE)
@@ -85,6 +122,7 @@ export function VariantDialog({
   }
 
   async function handleSubmit(): Promise<void> {
+    if (variant == null) return
     const existingVariant = variantLanguagesMap.get(selectedLanguage.id)
     if (existingVariant != null) return
     await updateVariantLanguage({
