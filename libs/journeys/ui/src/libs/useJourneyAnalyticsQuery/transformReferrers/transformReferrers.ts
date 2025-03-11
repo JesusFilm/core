@@ -1,4 +1,4 @@
-import type { Edge, Node } from 'reactflow'
+import type { Edge, Node } from '@xyflow/react'
 
 import type { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '../__generated__/GetJourneyAnalytics'
 

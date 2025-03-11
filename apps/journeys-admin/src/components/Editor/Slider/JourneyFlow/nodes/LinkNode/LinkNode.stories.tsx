@@ -15,36 +15,55 @@ import {
 
 import { LinkNode } from '.'
 
-const meta = {
+const Demo: Meta<typeof LinkNode> = {
+  ...simpleComponentConfig,
   component: LinkNode,
   title: 'Journeys-Admin/Editor/Slider/JourneyFlow/nodes/LinkNode'
-} satisfies Meta<typeof LinkNode>
+}
 
-export default meta
+const Template: StoryObj<
+  ComponentPropsWithoutRef<typeof LinkNode> & { initialState: EditorState }
+> = {
+  render: ({ initialState, ...args }) => {
+    return (
+      <MockedProvider>
+        <EditorProvider initialState={initialState}>
+          <Box sx={{ height: 400, width: 600 }}>
+            <ReactFlow {...args}>
+              <Background color="#aaa" gap={16} />
+            </ReactFlow>
+          </Box>
+        </EditorProvider>
+      </MockedProvider>
+    )
+  }
+}
 
-type Story = StoryObj<typeof meta>
+const defaultFlowProps = {
+  edges: [],
+  edgeTypes: {},
+  onConnectStart: () => undefined,
+  onConnectEnd: () => undefined,
+  fitView: true,
+  proOptions: { hideAttribution: true },
+  nodeTypes: {
+    Link: LinkNode
+  }
+}
 
-export const Default: Story = {
-  render: (args) => (
-    <ReactFlow {...args}>
-      <Background />
-    </ReactFlow>
-  ),
+export const Default = {
+  ...Template,
   args: {
+    ...defaultFlowProps,
     nodes: [
       {
-        id: 'link-1',
-        type: 'link',
-        position: { x: 0, y: 0 },
-        data: {
-          label: 'Link Node',
-          journeyId: 'journey-id',
-          journeyTitle: 'Journey Title'
-        }
+        id: 'someStep.id',
+        type: 'Link',
+        position: { x: 100, y: 0 }
       }
     ],
-    nodeTypes: {
-      link: LinkNode
+    initialState: {
+      steps: []
     }
   }
 }
@@ -90,20 +109,8 @@ function addActionToStep(action: Action): TreeBlock<StepBlock> {
   }
 }
 
-const defaultFlowProps = {
-  edges: [],
-  edgeTypes: {},
-  onConnectStart: () => undefined,
-  onConnectEnd: () => undefined,
-  fitView: true,
-  proOptions: { hideAttribution: true },
-  nodeTypes: {
-    Link: LinkNode
-  }
-}
-
 export const Link = {
-  ...Default,
+  ...Template,
   args: {
     ...defaultFlowProps,
     nodes: [
@@ -127,7 +134,7 @@ export const Link = {
 }
 
 export const Bible = {
-  ...Default,
+  ...Template,
   args: {
     ...defaultFlowProps,
     nodes: [
@@ -151,7 +158,7 @@ export const Bible = {
 }
 
 export const Chat = {
-  ...Default,
+  ...Template,
   args: {
     ...defaultFlowProps,
     nodes: [
@@ -175,7 +182,7 @@ export const Chat = {
 }
 
 export const Email = {
-  ...Default,
+  ...Template,
   args: {
     ...defaultFlowProps,
     nodes: [
@@ -199,7 +206,7 @@ export const Email = {
 }
 
 export const Analytics = {
-  ...Default,
+  ...Template,
   args: {
     ...defaultFlowProps,
     nodes: [
@@ -215,3 +222,5 @@ export const Analytics = {
     }
   }
 }
+
+export default Demo

@@ -5,8 +5,8 @@ import {
   gql,
   useQuery
 } from '@apollo/client'
+import { Edge, Node } from '@xyflow/react'
 import { useState } from 'react'
-import { Edge, Node } from 'reactflow'
 
 import {
   GetJourneyAnalytics,

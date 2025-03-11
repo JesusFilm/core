@@ -11,84 +11,71 @@ import { defaultEdgeProps } from '../../libs/transformSteps/transformSteps'
 
 import { StartEdge } from '.'
 
-const meta = {
+const Demo: Meta<typeof StartEdge> = {
+  ...simpleComponentConfig,
   component: StartEdge,
   title: 'Journeys-Admin/Editor/Slider/JourneyFlow/edges/StartEdge'
-} satisfies Meta<typeof StartEdge>
+}
 
-export default meta
-
-type Story = StoryObj<typeof meta>
-
-export const Default: Story = {
-  render: (args) => {
-    const nodes: Node[] = [
-      {
-        id: 'button1.id',
-        position: { x: 0, y: 0 },
-        data: { label: 'Button 1' },
-        type: 'input'
-      },
-      {
-        id: 'button2.id',
-        position: { x: 0, y: 100 },
-        data: { label: 'Button 2' },
-        targetPosition: Position.Top,
-        sourcePosition: Position.Bottom
-      }
-    ]
-
-    const edges = [
-      {
-        id: 'button1.id->button2.id',
-        source: 'button1.id',
-        target: 'button2.id',
-        type: 'start'
-      }
-    ]
-
-    const edgeTypes = {
-      start: StartEdge
+const initialNodes: Node[] = [
+  {
+    id: 'button-1',
+    data: { label: 'Button Edge 1' },
+    position: { x: 0, y: 100 },
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
+    style: {
+      opacity: 0
     }
-
-    return (
-      <MockedProvider>
-        <EditorProvider>
-          <Box sx={{ height: 400, width: 400 }}>
-            <ReactFlow {...args}>
-              <Background color="#aaa" gap={16} />
-            </ReactFlow>
-          </Box>
-        </EditorProvider>
-      </MockedProvider>
-    )
   },
-  args: {
-    nodes: [
-      {
-        id: 'button1.id',
-        position: { x: 0, y: 0 },
-        data: { label: 'Button 1' },
-        type: 'input'
-      },
-      {
-        id: 'button2.id',
-        position: { x: 0, y: 100 },
-        data: { label: 'Button 2' },
-        targetPosition: Position.Top,
-        sourcePosition: Position.Bottom
-      }
-    ],
-    edges: [
-      {
-        id: 'button1.id->button2.id',
-        source: 'button1.id',
-        target: 'button2.id',
-        type: 'start'
-      }
-    ],
-    edgeTypes: {
-      start: StartEdge
+  {
+    id: 'button-2',
+    data: { label: 'Button Edge 2' },
+    position: { x: 300, y: 100 },
+    sourcePosition: Position.Right,
+    targetPosition: Position.Left,
+    style: {
+      opacity: 0
     }
   }
+]
+const initialEdges = {
+  id: 'button-1->button-2',
+  source: 'button-1',
+  target: 'button-2',
+  ...defaultEdgeProps,
+  type: 'Start'
 }
+const defaultFlowProps = {
+  nodes: initialNodes,
+  nodeTypes: {},
+  edges: [initialEdges],
+  edgeTypes: { Start: StartEdge },
+  onConnectStart: () => undefined,
+  onConnectEnd: () => undefined,
+  fitView: true,
+  proOptions: { hideAttribution: true }
+}
+
+const Template: StoryObj<ComponentPropsWithoutRef<typeof StartEdge>> = {
+  render: (args) => (
+    <MockedProvider>
+      <EditorProvider>
+        <Box sx={{ height: 400, width: 400 }}>
+          <ReactFlow {...args}>
+            <Background color="#aaa" gap={16} />
+          </ReactFlow>
+        </Box>
+      </EditorProvider>
+    </MockedProvider>
+  )
+}
+
+export const Default = {
+  ...Template,
+  args: {
+    ...defaultFlowProps
+  }
+}
+
+export default Demo

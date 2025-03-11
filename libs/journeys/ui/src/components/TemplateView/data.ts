@@ -4,21 +4,12 @@ import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
-  CardBorderRadius,
-  CardColor,
-  CardJustifyContent,
-  CardPadding,
   IconName,
   IconSize,
-  ImageFit,
-  ImagePadding,
-  TypographyAlign,
-  TypographyColor,
-  TypographyVariant,
-  VideoBlockObjectFit,
   JourneyStatus,
   ThemeMode,
   ThemeName,
+  TypographyVariant,
   UserJourneyRole,
   VideoBlockSource
 } from '../../../__generated__/globalTypes'
@@ -179,7 +170,7 @@ export const publishedJourney: Journey = {
       align: null,
       color: null,
       content:
-        'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don't seem to make sense. ',
+        'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
       variant: null
     },
     {
@@ -258,7 +249,7 @@ export const blocks: Block[] = [
     align: null,
     color: null,
     content:
-      'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don't seem to make sense. ',
+      'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
     variant: null
   },
   {
@@ -455,7 +446,7 @@ export const blocks: Block[] = [
     parentOrder: 0,
     align: null,
     color: null,
-    content: 'if it's true...',
+    content: 'if it’s true...',
     variant: TypographyVariant.h6
   },
   {
