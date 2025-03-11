@@ -26,7 +26,6 @@ import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'
 
-// Query to get journey with user roles
 export const GET_JOURNEY_WITH_USER_ROLES = gql`
   query GetJourneyWithUserRoles($id: ID!) {
     journey(id: $id, idType: databaseId) {
@@ -75,10 +74,8 @@ export function DefaultMenu({
     skip: activeTeam?.id == null
   })
 
-  // Fetch current user data
   const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
 
-  // Fetch journey data with user roles
   const { data: journeyData } = useQuery(GET_JOURNEY_WITH_USER_ROLES, {
     variables: { id: journeyId },
     skip: currentUser?.id == null
@@ -112,12 +109,9 @@ export function DefaultMenu({
     return userTeam?.role
   }, [activeTeam?.userTeams, currentUser?.email])
 
-  // Check if user is a publisher
   const isPublisher =
     userRoleData?.getUserRole?.roles?.includes(Role.publisher) === true
 
-  // Both journey owners and team managers can archive or trash journeys
-  // Publishers can also manage templates anywhere
   const canManageJourney =
     userRole === UserJourneyRole.owner ||
     teamRole === UserTeamRole.manager ||
