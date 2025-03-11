@@ -105,7 +105,7 @@ export function QualityMenu({
         ) {
           const currentQuality = tech?.ytPlayer?.getPlaybackQuality() ?? ''
           const displayQuality =
-            getYoutubeQualityMap()[currentQuality] ?? currentQuality
+            getYoutubeQualityMap(t)[currentQuality] ?? currentQuality
 
           onQualityChanged(`${t('Auto')} (${displayQuality})`)
         } else if (tech != null && 'vhs' in tech) {

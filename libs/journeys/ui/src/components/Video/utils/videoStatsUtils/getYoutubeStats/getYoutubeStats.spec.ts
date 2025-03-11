@@ -1,15 +1,17 @@
+import { TFunction } from 'next-i18next'
+
 import { YoutubeTech } from '../../../utils/videoJsTypes/YoutubeTech'
 
 import { getYoutubeStats } from './getYoutubeStats'
 
 // Mock the youtubeQualityMap module
 jest.mock('../../../utils/youtubeQualityMap', () => ({
-  getYoutubeQualityMap: jest.fn().mockReturnValue({
+  getYoutubeQualityMap: jest.fn().mockImplementation(() => ({
     hd720: '720p',
     hd1080: '1080p',
     medium: '360p',
     small: '240p'
-  })
+  }))
 }))
 
 describe('getYoutubeStats', () => {
@@ -23,7 +25,9 @@ describe('getYoutubeStats', () => {
       ytPlayer: mockYtPlayer
     } as unknown as YoutubeTech
 
-    const result = getYoutubeStats(mockTech)
+    const mockTranslate = jest.fn((key) => key) as unknown as TFunction
+
+    const result = getYoutubeStats(mockTech, mockTranslate)
 
     expect(result).toEqual({
       currentQuality: '720p',
@@ -34,7 +38,9 @@ describe('getYoutubeStats', () => {
   it('should handle missing ytPlayer', () => {
     const mockTech = {} as YoutubeTech
 
-    const result = getYoutubeStats(mockTech)
+    const mockTranslate = jest.fn((key) => key) as unknown as TFunction
+
+    const result = getYoutubeStats(mockTech, mockTranslate)
 
     expect(result).toEqual({
       currentQuality: '-',
@@ -52,7 +58,9 @@ describe('getYoutubeStats', () => {
       ytPlayer: mockYtPlayer
     } as unknown as YoutubeTech
 
-    const result = getYoutubeStats(mockTech)
+    const mockTranslate = jest.fn((key) => key) as unknown as TFunction
+
+    const result = getYoutubeStats(mockTech, mockTranslate)
 
     expect(result).toEqual({
       currentQuality: 'unknown',

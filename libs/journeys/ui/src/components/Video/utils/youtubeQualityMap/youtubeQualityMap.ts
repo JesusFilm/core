@@ -1,19 +1,22 @@
+import { TFunction } from 'next-i18next'
+
 /**
  * Returns a mapping of YouTube quality codes to human-readable quality labels
+ * @param t Translation function
  * @returns Record mapping YouTube quality codes to quality labels
  */
-export function getYoutubeQualityMap(): Record<string, string> {
+export function getYoutubeQualityMap(t: TFunction): Record<string, string> {
   return {
-    tiny: '144p',
-    small: '240p',
-    medium: '360p',
-    large: '480p',
-    hd720: '720p',
-    hd1080: '1080p',
-    hd1440: '1440p',
-    hd2160: '2160p (4K)',
-    highres: '4K+',
-    auto: 'Auto',
+    tiny: t('144p'),
+    small: t('240p'),
+    medium: t('360p'),
+    large: t('480p'),
+    hd720: t('720p'),
+    hd1080: t('1080p'),
+    hd1440: t('1440p'),
+    hd2160: t('2160p (4K)'),
+    highres: t('4K+'),
+    auto: t('Auto'),
     default: '-'
   }
 }

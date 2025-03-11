@@ -73,7 +73,7 @@ export function VideoStats({ player }: VideoStatsProps) {
 
     // Check if this is a YouTube video
     if (isYoutubeTech(tech)) {
-      const youtubeStats = getYoutubeStats(tech)
+      const youtubeStats = getYoutubeStats(tech, t)
       setStats({
         basic: basicStats,
         enhanced: youtubeStats,
@@ -97,6 +97,7 @@ export function VideoStats({ player }: VideoStatsProps) {
         techType: 'unknown'
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [player])
 
   useEffect(() => {
