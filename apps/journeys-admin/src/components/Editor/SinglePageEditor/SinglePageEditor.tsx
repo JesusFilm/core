@@ -67,10 +67,21 @@ export function SinglePageEditor(): ReactElement {
           border: (theme) => `1px solid ${theme.palette.divider}`,
           backgroundColor: '#fff',
           overflow: 'auto',
-          height: '100%'
+          height: '100%',
+          maxHeight: `calc(100vh - ${EDIT_TOOLBAR_HEIGHT}px - 32px)`, // Account for padding
+          display: 'flex',
+          flexDirection: 'column'
         }}
       >
-        <Settings />
+        <Box
+          sx={{
+            flex: 1,
+            overflow: 'auto',
+            maxHeight: '100%'
+          }}
+        >
+          <Settings />
+        </Box>
       </Box>
     </Box>
   )
