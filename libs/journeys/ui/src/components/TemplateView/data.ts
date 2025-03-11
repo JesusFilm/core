@@ -775,7 +775,7 @@ export const blocks: Block[] = [
     align: null,
     color: null,
     content:
-      '"God sent his Son into the world not to judge the world, but to save the world through him."',
+      '“God sent his Son into the world not to judge the world, but to save the world through him.”',
     variant: TypographyVariant.subtitle1
   },
   {
