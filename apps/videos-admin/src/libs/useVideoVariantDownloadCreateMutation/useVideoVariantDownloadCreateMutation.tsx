@@ -1,7 +1,5 @@
 import { MutationHookOptions, useMutation } from '@apollo/client'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
-import { useTranslations } from 'next-intl'
-import { useSnackbar } from 'notistack'
 
 export const VIDEO_VARIANT_DOWNLOAD_CREATE = graphql(`
   mutation VideoVariantDownloadCreate(
@@ -37,18 +35,8 @@ export function useVideoVariantDownloadCreateMutation(
     VideoVariantDownloadCreateVariables
   >
 > {
-  const { enqueueSnackbar } = useSnackbar()
-  const t = useTranslations()
-
   return useMutation(VIDEO_VARIANT_DOWNLOAD_CREATE, {
     ...options,
-    onError: (error, ...rest) => {
-      enqueueSnackbar(error.message, {
-        variant: 'error',
-        preventDuplicate: false
-      })
-      options?.onError?.(error, ...rest)
-    },
     update: (cache, { data }) => {
       if (data?.videoVariantDownloadCreate) {
         const { videoVariantDownloadCreate } = data

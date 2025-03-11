@@ -19,8 +19,7 @@ export const videoVariantDownloadDeleteMock: MockedResponse<
   result: {
     data: {
       videoVariantDownloadDelete: {
-        id: 'download-id',
-        __typename: 'VideoVariantDownload'
+        id: 'download-id'
       }
     }
   }
