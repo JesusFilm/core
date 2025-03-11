@@ -51,6 +51,14 @@ export function QualityMenu({
     [t]
   )
 
+  const isSafari = useMemo(() => {
+    if (typeof window === 'undefined') return false
+    return (
+      navigator.userAgent.includes('Safari') &&
+      !navigator.userAgent.includes('Chrome')
+    )
+  }, [])
+
   // Sets the quality levels from the player
   useEffect(() => {
     if (initialQualitiesSet.current) return
@@ -58,7 +66,11 @@ export function QualityMenu({
     const tech = player.tech({ IWillNotUseThisInPlugins: true })
     let qualities: QualityMenuItem[] = []
 
-    if (tech != null && 'vhs' in tech) {
+    // For Safari, only add the Auto option
+    if (isSafari) {
+      // Still set initialQualitiesSet to true for Safari
+      initialQualitiesSet.current = true
+    } else if (tech != null && 'vhs' in tech) {
       const qualityLevels = player.qualityLevels()
 
       qualities = Array.from({ length: qualityLevels.length }).reduce<
@@ -101,7 +113,7 @@ export function QualityMenu({
       ...qualities
     ])
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [player, onQualityChanged, open])
+  }, [player, onQualityChanged, open, isSafari])
 
   // Handles the auto quality change
   useEffect(() => {
@@ -116,7 +128,7 @@ export function QualityMenu({
           'ytPlayer' in tech &&
           tech?.ytPlayer?.getPlaybackQuality != null
         ) {
-          const currentQuality = tech?.ytPlayer?.getPlaybackQuality() ?? ''
+          const currentQuality = tech.ytPlayer.getPlaybackQuality()
           const displayQuality =
             YOUTUBE_QUALITY_LABELS[currentQuality] ?? currentQuality
 
@@ -126,7 +138,9 @@ export function QualityMenu({
             (q) => q.qualityLevel === qualityLevels.selectedIndex
           )?.resolution
 
-          if (activeResolution) {
+          if (activeResolution == null || activeResolution === 'Auto') {
+            onQualityChanged(`${t('Auto')}`)
+          } else {
             onQualityChanged(`${t('Auto')} (${activeResolution})`)
           }
         }
@@ -145,7 +159,8 @@ export function QualityMenu({
     selectedQuality,
     onQualityChanged,
     qualities,
-    YOUTUBE_QUALITY_LABELS
+    YOUTUBE_QUALITY_LABELS,
+    isSafari
   ])
 
   const handleQualityChange = (quality: number): void => {
@@ -194,9 +209,20 @@ export function QualityMenu({
 
     // Update display quality
     const activeQualityLevel = qualityLevels.selectedIndex
-    const activeResolution = qualities.find(
-      (q) => q.qualityLevel === activeQualityLevel
-    )?.resolution
+    // Get active resolution directly from the qualityLevels array
+    const selectedLevel =
+      activeQualityLevel !== -1 ? qualityLevels[activeQualityLevel] : null
+    const height = selectedLevel?.height ?? 0
+
+    // Format the resolution consistently
+    const activeResolution =
+      height >= 2160
+        ? t('4K')
+        : height >= 1440
+          ? t('2K')
+          : height > 0
+            ? `${height}p`
+            : null
 
     const displayQuality =
       quality === -1 && activeResolution != null
