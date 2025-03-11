@@ -1,9 +1,9 @@
 import { alpha, useTheme } from '@mui/material/styles'
-import { CSSProperties, ReactElement, ReactNode, useState } from 'react'
 import {
   BaseEdge as DefaultBaseEdge,
   useOnSelectionChange
 } from '@xyflow/react'
+import { CSSProperties, ReactElement, ReactNode, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { hasTouchScreen } from '@core/shared/ui/deviceUtils'
