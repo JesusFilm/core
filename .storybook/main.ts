@@ -18,10 +18,10 @@ const storiesForProject = {
     '../apps/watch/src/components/**/*.stories.@(js|jsx|ts|tsx)'
   ],
   'api-journeys-modern': [
-    '../apps/api-journeys-modern/src/emails/stories/*.stories.@(js|jsx|ts|tsx)'
+    '../apis/api-journeys-modern/src/emails/stories/*.stories.@(js|jsx|ts|tsx)'
   ],
   'api-users': [
-    '../apps/api-users/src/emails/stories/*.stories.@(js|jsx|ts|tsx)'
+    '../apis/api-users/src/emails/stories/*.stories.@(js|jsx|ts|tsx)'
   ],
   'videos-admin': ['../apps/videos-admin/src/**/*.stories.@(js|jsx|ts|tsx)']
   // Add new UI projects here and in allStories
@@ -39,13 +39,7 @@ const stories = [
 ]
 
 const config: StorybookConfig = {
-  staticDirs: [
-    './static',
-    {
-      from: '../apps/watch/public/watch/assets/fonts',
-      to: '/watch/assets/fonts'
-    }
-  ],
+  staticDirs: ['./static'],
 
   stories,
 

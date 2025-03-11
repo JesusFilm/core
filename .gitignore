@@ -34,7 +34,7 @@ yarn-error.log
 testem.log
 /typings
 **/public/locales
-apps/api-gateway/router
+apis/api-gateway/router
 /**/tsconfig.tsbuildinfo
 .history/
 /.cache
@@ -46,6 +46,7 @@ Thumbs.db
 # local .env files
 .env
 .env*local
+.dev.vars
 
 # nx generated files
 migrations.json
@@ -84,3 +85,5 @@ terraform.tfstate.backup
 
 # react-email
 .react-email
+
+.cursor/rules/*.dev.mdc

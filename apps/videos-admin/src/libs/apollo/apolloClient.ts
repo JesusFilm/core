@@ -6,13 +6,15 @@ import { authConfig } from '../auth'
 
 import { makeClient } from './makeClient'
 
-export const { getClient: getApolloClient, query } = registerApolloClient(
-  async () => {
-    const token = await getTokens(cookies(), authConfig)
-    return makeClient({
-      headers: {
-        Authorization: token?.token != null ? `JWT ${token?.token}` : ''
-      }
-    })
-  }
-)
+export const {
+  getClient: getApolloClient,
+  query,
+  PreloadQuery
+} = registerApolloClient(async () => {
+  const token = await getTokens(cookies(), authConfig)
+  return makeClient({
+    headers: {
+      Authorization: token?.token != null ? `JWT ${token?.token}` : ''
+    }
+  })
+})

@@ -83,7 +83,7 @@ export function SelectableWrapper({
           top: 0,
           left: 0,
           outlineOffset: '-3px',
-          borderRadius: '20px',
+          borderRadius: '24px',
           my: '0px !important',
           '&:first-child': {
             '& > *': { zIndex: -1 }

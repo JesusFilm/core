@@ -2,7 +2,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import {
   defaultJourney,
-  oldJourney,
+  fakeDate,
   publishedJourney
 } from '../../journeyListData'
 import { JourneyCardVariant } from '../journeyCardVariant'
@@ -10,6 +10,15 @@ import { JourneyCardVariant } from '../journeyCardVariant'
 import { JourneyCardText } from '.'
 
 describe('JourneyCardText', () => {
+  beforeAll(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date(fakeDate))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   it('should show title', () => {
     const { getByText } = render(
       <JourneyCardText
@@ -27,9 +36,7 @@ describe('JourneyCardText', () => {
         variant={JourneyCardVariant.default}
       />
     )
-    expect(
-      getByText('January 1, 2021 - a published journey')
-    ).toBeInTheDocument()
+    expect(getByText('- a published journey')).toBeInTheDocument()
   })
 
   it('should show formatted date', () => {
@@ -39,21 +46,7 @@ describe('JourneyCardText', () => {
         variant={JourneyCardVariant.default}
       />
     )
-    expect(getByText('January 1, 2021')).toBeInTheDocument()
-  })
-
-  it('should show date with year if journey is created before the current year', () => {
-    const { getByText } = render(
-      <JourneyCardText
-        journey={oldJourney}
-        variant={JourneyCardVariant.default}
-      />
-    )
-    expect(
-      getByText(
-        'November 19, 2020 - Journey created before the current year should also show the year in the date'
-      )
-    ).toBeInTheDocument()
+    expect(getByText('11 months ago')).toBeInTheDocument()
   })
 
   it('should show badge for new journey card variant', () => {

@@ -159,4 +159,22 @@ test.describe('GET /v2/media-languages', () => {
     expect(english.languageId).toBe(529)
     expect(english.metadataLanguageTag).toBe('es')
   })
+
+  test('handles string values for numeric parameters', async ({ request }) => {
+    const response = await getMediaLanguages(request, {
+      page: '2',
+      limit: '3'
+    })
+
+    expect(response.ok()).toBeTruthy()
+    const data = await response.json()
+
+    expect(data.page).toBe(2)
+    expect(data.limit).toBe(3)
+    expect(data._embedded.mediaLanguages.length).toBeLessThanOrEqual(3)
+
+    // Verify pagination links are correct
+    expect(data._links).toHaveProperty('previous')
+    expect(data._links.previous.href).toContain('page=1')
+  })
 })

@@ -62,6 +62,10 @@ describe('VariantCard', () => {
           slug: 'munukutuba'
         },
         slug: 'jesus/munukutuba',
+        videoEdition: {
+          id: 'edition.id',
+          name: 'base'
+        },
         videoId: '1_jf-0-0'
       })
     )

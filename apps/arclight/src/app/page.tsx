@@ -12,7 +12,12 @@ export default function Index(): ReactElement {
         margin: '0 auto'
       }}
     >
-      <Image src="/arclight.png" alt="logo" fill objectFit="contain" />
+      <Image
+        src="/arclight.png"
+        alt="logo"
+        fill
+        style={{ objectFit: 'contain' }}
+      />
     </Box>
   )
 }

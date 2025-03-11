@@ -35,10 +35,16 @@ export function Suggestion({
       <ListItemIcon>
         <Globe1Icon />
       </ListItemIcon>
-      <Typography fontWeight="1000">{query}</Typography>
-      <Typography pl={1} noWrap>{`- in ${filtersLabel}`}</Typography>
+      <Typography variant="h6" fontWeight="bold">
+        {query}
+      </Typography>
       <Typography
-        variant="body1"
+        variant="h6"
+        pl={1}
+        noWrap
+      >{`- in ${filtersLabel}`}</Typography>
+      <Typography
+        variant="h6"
         color="text.secondary"
         ml={6}
         sx={{ ml: 'auto', display: { xs: 'none', md: 'block' } }}

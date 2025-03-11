@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [22]
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4
@@ -43,7 +43,7 @@ jobs:
 
       - name: Get affected apps
         run: |
-          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apps/api-*)" >> $GITHUB_OUTPUT
+          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apis/api-*)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
         id: affected-apps
 
@@ -68,7 +68,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
         run: |
           # Build a docker container and push it to ECR 
-          docker build --build-arg SERVICE_VERSION=$IMAGE_TAG -t $ECR_REGISTRY/jfp-api-gateway-prod:$IMAGE_TAG -t $ECR_REGISTRY/jfp-api-gateway-prod:latest . -f apps/api-gateway/Dockerfile
+          docker build --build-arg SERVICE_VERSION=$IMAGE_TAG -t $ECR_REGISTRY/jfp-api-gateway-prod:$IMAGE_TAG -t $ECR_REGISTRY/jfp-api-gateway-prod:latest . -f apis/api-gateway/Dockerfile
           echo "Pushing image to ECR..."
           docker push -a $ECR_REGISTRY/jfp-api-gateway-prod
           echo "image=$ECR_REGISTRY/jfp-api-gateway-prod:$IMAGE_TAG" >> $GITHUB_OUTPUT

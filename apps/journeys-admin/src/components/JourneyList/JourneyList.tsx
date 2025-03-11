@@ -3,8 +3,10 @@ import Container from '@mui/material/Container'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
+import { JourneyStatus } from '../../../__generated__/globalTypes'
+import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { StatusTabPanel } from '../StatusTabPanel'
 
 import { AddJourneyFab } from './AddJourneyFab'
@@ -61,6 +63,23 @@ export function JourneyList({
   const [sortOrder, setSortOrder] = useState<SortOrder>()
   const router = useRouter()
   const [event, setEvent] = useState<JourneyListEvent>()
+  const { refetch } = useAdminJourneysQuery({
+    status: [JourneyStatus.draft, JourneyStatus.published],
+    useLastActiveTeamId: true
+  })
+
+  useEffect(() => {
+    const handleRouteChange = (url: string) => {
+      // for updating journey list cache for shallow loading
+      if (url === '/' || url === '/publisher') {
+        void refetch()
+      }
+    }
+    router.events.on('routeChangeComplete', handleRouteChange)
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange)
+    }
+  }, [refetch, router.events])
 
   const handleClick = (event: JourneyListEvent): void => {
     setEvent(event)

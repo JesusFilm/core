@@ -109,4 +109,17 @@ describe('VideoImage', () => {
       ).not.toBeInTheDocument()
     )
   })
+
+  it('should show fallback if src is null', () => {
+    render(
+      <NextIntlClientProvider locale="en">
+        <MockedProvider>
+          <VideoImage video={{ ...video, images: [] }} />
+        </MockedProvider>
+      </NextIntlClientProvider>
+    )
+
+    expect(screen.getByTestId('Upload1Icon')).toBeInTheDocument()
+    expect(screen.getByText('Upload image')).toBeInTheDocument()
+  })
 })
