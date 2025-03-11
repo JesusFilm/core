@@ -121,8 +121,8 @@ export function AddVideoVariantDownloadDialog({
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ errors, touched, isSubmitting, setFieldValue }) => (
-          <Form>
+        {({ errors, touched, isSubmitting, setFieldValue, handleSubmit }) => (
+          <Form onSubmit={handleSubmit}>
             <DialogContent>
               <FormControl
                 fullWidth
