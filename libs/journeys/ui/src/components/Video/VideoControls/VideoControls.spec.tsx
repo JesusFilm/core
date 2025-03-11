@@ -315,7 +315,7 @@ describe('VideoControls', () => {
       expect(fullscreenStub).toHaveBeenCalled()
     })
 
-    it('should show video settings button', () => {
+    it('should show video settings button in fullscreen video mode', () => {
       render(
         <MockedProvider>
           <VideoControls player={player} startAt={0} endAt={10} />
@@ -340,7 +340,7 @@ describe('VideoControls', () => {
         .mockImplementation(() => jest.fn())
     })
 
-    it('maximises the entire card on fullscreen icon click', async () => {
+    it('should maximize the entire card on fullscreen icon click', async () => {
       render(
         <MockedProvider>
           <div className="step active-card">
@@ -360,7 +360,7 @@ describe('VideoControls', () => {
       await waitFor(() => expect(fscreen.requestFullscreen).toHaveBeenCalled())
     })
 
-    it('minimises the entire card on fullscreen icon click', async () => {
+    it('should minimize the entire card on fullscreen icon click', async () => {
       jest.spyOn(player, 'isFullscreen').mockImplementation(() => true)
       const exitMock = jest
         // @ts-expect-error: jest mock type conflicts with fscreen type
@@ -382,7 +382,7 @@ describe('VideoControls', () => {
       await waitFor(() => expect(exitMock).toHaveBeenCalled())
     })
 
-    it('hides fullscreen on embed', async () => {
+    it('should hide fullscreen button on embed', async () => {
       const { getByRole, queryByRole } = render(
         <MockedProvider>
           <JourneyProvider value={{ variant: 'embed' }}>
@@ -398,7 +398,7 @@ describe('VideoControls', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should show video settings button', () => {
+    it('should show video settings button in fullscreen card mode', () => {
       render(
         <MockedProvider>
           <div className="step active-card">
