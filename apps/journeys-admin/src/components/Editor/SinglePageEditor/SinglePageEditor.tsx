@@ -8,57 +8,44 @@ import { Content } from '../Slider/Content'
 import { JourneyFlow } from '../Slider/JourneyFlow'
 import { Settings } from '../Slider/Settings'
 
-/**
- * SinglePageEditor displays JourneyFlow, Content, and Settings components side by side.
- * Used for desktop (md and above) view.
- */
 export function SinglePageEditor(): ReactElement {
-  // Define fixed widths for components
-  const settingsWidth = DRAWER_WIDTH // From constants
-  const contentWidth = 375 // Increased width for content to fit card better
+  const {
+    state: { activeContent }
+  } = useEditor()
 
-  // Access editor state and dispatch to ensure proper content is shown
-  const { dispatch } = useEditor()
-
-  // Ensure Canvas is shown in Content component
-  useEffect(() => {
-    dispatch({
-      type: 'SetActiveContentAction',
-      activeContent: ActiveContent.Canvas
-    })
-  }, [dispatch])
+  // Determine content width based on activeContent
+  const isCanvasContent = activeContent === ActiveContent.Canvas
+  const contentMinWidth = isCanvasContent ? '370px' : '900px'
 
   return (
     <Box
       sx={{
         display: 'flex',
         width: '100%',
-        height: `calc(100vh - ${EDIT_TOOLBAR_HEIGHT}px)`, // Adjust for toolbar height
+        height: `calc(100vh - ${EDIT_TOOLBAR_HEIGHT}px)`,
         overflow: 'hidden',
         p: 4
       }}
     >
-      {/* JourneyFlow (takes remaining space) */}
       <Box
         sx={{
-          flexGrow: 1, // Takes available space after Content and Settings are sized
+          flexGrow: 1,
           mr: 2,
           borderRadius: 4,
           border: (theme) => `1px solid ${theme.palette.divider}`,
           backgroundColor: '#eff2f5',
           overflow: 'hidden',
-          minWidth: 0, // Allows the box to shrink below its content size
+          minWidth: 0,
           height: '100%'
         }}
       >
         <JourneyFlow />
       </Box>
 
-      {/* Content (fixed width) */}
       <Box
         sx={{
           position: 'relative',
-          width: `${contentWidth}px`, // Increased width
+          minWidth: contentMinWidth,
           height: '100%',
           mr: 2,
           borderRadius: 4,
@@ -73,10 +60,9 @@ export function SinglePageEditor(): ReactElement {
         </Box>
       </Box>
 
-      {/* Settings (fixed width) */}
       <Box
         sx={{
-          width: `${settingsWidth}px`, // Fixed width
+          width: `${DRAWER_WIDTH}px`,
           borderRadius: 4,
           border: (theme) => `1px solid ${theme.palette.divider}`,
           backgroundColor: '#fff',
