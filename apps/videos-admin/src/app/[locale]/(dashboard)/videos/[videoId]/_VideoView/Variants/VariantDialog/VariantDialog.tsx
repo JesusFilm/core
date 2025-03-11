@@ -171,7 +171,7 @@ export function VariantDialog({
         >
           <VariantVideo videoSrc={videoSrc} />
         </Box>
-        <Downloads downloads={variant.downloads} />
+        <Downloads downloads={variant.downloads} videoVariantId={variant.id} />
       </Stack>
     </Dialog>
   )
