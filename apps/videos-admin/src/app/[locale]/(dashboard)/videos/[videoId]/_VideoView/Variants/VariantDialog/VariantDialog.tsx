@@ -89,9 +89,7 @@ export function VariantDialog({
             {languageName}
           </Typography>
           {nativeLanguageName != null && (
-            <Typography variant="caption" data-testid="VariantLanguageDisplay">
-              {nativeLanguageName}
-            </Typography>
+            <Typography variant="caption">{nativeLanguageName}</Typography>
           )}
         </Box>
         <Box
