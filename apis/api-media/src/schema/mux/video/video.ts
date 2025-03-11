@@ -207,6 +207,16 @@ builder.mutationFields((t) => ({
       })
     }
   }),
+  enableMuxDownload: t.withAuth({ isAuthenticated: true }).prismaField({
+    type: 'MuxVideo',
+    nullable: false,
+    args: {
+      id: t.arg({ type: 'ID', required: true })
+    },
+    resolve: async (query, _root, { id }, { user }) => {
+      if (user == null) throw new Error('User not found')
+    }
+  }),
   deleteMuxVideo: t.withAuth({ isAuthenticated: true }).boolean({
     nullable: false,
     args: {

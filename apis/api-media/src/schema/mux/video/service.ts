@@ -72,3 +72,9 @@ export async function getUpload(uploadId: string): Promise<Mux.Video.Upload> {
 export async function deleteVideo(videoId: string): Promise<void> {
   await getClient().video.assets.delete(videoId)
 }
+
+export async function enableDownload(videoId: string): Promise<void> {
+  await getClient().video.assets.update(videoId, {
+    static_renditions: ['1080p']
+  })
+}
