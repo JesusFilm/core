@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 import { HotkeysProvider } from 'react-hotkeys-hook'
@@ -12,6 +13,7 @@ import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney
 
 import { Fab } from './Fab'
 import { Hotkeys } from './Hotkeys'
+import { SinglePageEditor } from './SinglePageEditor/SinglePageEditor'
 import { Slider } from './Slider'
 import { Toolbar } from './Toolbar'
 
@@ -54,7 +56,16 @@ export function Editor({
         <HotkeysProvider>
           <Hotkeys />
           <Toolbar user={user} />
-          <Slider />
+
+          {/* Mobile view - use Slider */}
+          <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+            <Slider />
+          </Box>
+
+          {/* Desktop view - use SinglePageEditor */}
+          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+            <SinglePageEditor />
+          </Box>
           <Fab variant="mobile" />
         </HotkeysProvider>
       </EditorProvider>
