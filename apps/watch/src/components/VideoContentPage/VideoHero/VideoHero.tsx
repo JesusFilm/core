@@ -9,7 +9,6 @@ import {
   useEffect,
   useState
 } from 'react'
-import Div100vh from 'react-div-100vh'
 
 import { ThemeMode } from '@core/shared/ui/themes'
 
@@ -59,11 +58,13 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
 
   return (
     <>
-      <Header
-        hideAbsoluteAppBar={!controlsVisible}
-        hideSpacer
-        themeMode={ThemeMode.dark}
-      />
+      {!isFullscreen && (
+        <Header
+          hideAbsoluteAppBar={!controlsVisible}
+          hideSpacer
+          themeMode={ThemeMode.dark}
+        />
+      )}
       <Box
         css={{
           height: '100svh',
