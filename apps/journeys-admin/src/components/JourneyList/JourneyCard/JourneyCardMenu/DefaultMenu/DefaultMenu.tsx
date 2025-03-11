@@ -117,6 +117,8 @@ export function DefaultMenu({
     teamRole === UserTeamRole.manager ||
     (isPublisher && template === true)
 
+  const cantManageJourney = !canManageJourney
+
   return (
     <>
       <NextLink
@@ -166,7 +168,7 @@ export function DefaultMenu({
         published={published}
         handleClose={handleCloseMenu}
         refetch={refetch}
-        disabled={!canManageJourney}
+        disabled={cantManageJourney}
       />
       <MenuItem
         label={t('Trash')}
@@ -175,7 +177,7 @@ export function DefaultMenu({
           setOpenTrashDialog()
           handleCloseMenu()
         }}
-        disabled={!canManageJourney}
+        disabled={cantManageJourney}
       />
     </>
   )
