@@ -59,8 +59,12 @@ export function VariantDialog({
   )?.url
 
   const languageName =
-    variant.language.name.find(({ primary }) => primary)?.value ??
+    variant.language.name.find(({ primary }) => !primary)?.value ??
     variant.language.name[0].value
+
+  const nativeLanguageName = variant.language.name.find(
+    ({ primary }) => primary
+  )?.value
 
   return (
     <Dialog
@@ -84,6 +88,11 @@ export function VariantDialog({
           <Typography variant="h2" data-testid="VariantLanguageDisplay">
             {languageName}
           </Typography>
+          {nativeLanguageName != null && (
+            <Typography variant="caption" data-testid="VariantLanguageDisplay">
+              {nativeLanguageName}
+            </Typography>
+          )}
         </Box>
         <Box
           sx={{
