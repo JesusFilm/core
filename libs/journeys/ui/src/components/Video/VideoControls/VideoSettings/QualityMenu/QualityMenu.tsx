@@ -53,6 +53,8 @@ export function QualityMenu({
 
   const isSafari = useMemo(() => {
     if (typeof window === 'undefined') return false
+    if (typeof navigator === 'undefined') return false
+    if (typeof navigator.userAgent === 'undefined') return false
     return (
       navigator.userAgent.includes('Safari') &&
       !navigator.userAgent.includes('Chrome')
