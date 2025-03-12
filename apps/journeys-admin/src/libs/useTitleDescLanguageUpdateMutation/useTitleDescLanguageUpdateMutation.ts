@@ -29,7 +29,6 @@ export const TITLE_DESC_LANGUAGE_UPDATE = gql`
   }
 `
 
-// Create the custom hook
 export function useTitleDescLanguageUpdateMutation(
   options?: MutationHookOptions<
     TitleDescLanguageUpdate,
