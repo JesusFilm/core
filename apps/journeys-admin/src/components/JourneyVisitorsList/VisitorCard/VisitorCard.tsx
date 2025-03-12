@@ -16,11 +16,24 @@ interface VisitorCardProps {
   loading: boolean
 }
 
+const formatLocation = (location: string | null | undefined): string => {
+  if (!location) return ''
+
+  const [city, regionCode, country] = location
+    .split(',')
+    .map((part) => part.trim())
+  const parts = [city || '', country || ''].filter(Boolean)
+
+  return parts.join(', ')
+}
+
 export function VisitorCard({
   visitorNode,
   loading
 }: VisitorCardProps): ReactElement {
   const router = useRouter()
+
+  const location = formatLocation(visitorNode?.visitor.countryCode)
 
   const withLink = (block: ReactElement): ReactElement => {
     return (
@@ -46,11 +59,8 @@ export function VisitorCard({
           <VisitorCardHeader
             loading={loading}
             icon={visitorNode?.visitor.status}
-            name={
-              visitorNode?.visitor?.name ??
-              `#${visitorNode?.visitorId.slice(-12) as unknown as string}`
-            }
-            location={visitorNode?.visitor.countryCode}
+            name={visitorNode?.visitor?.name}
+            location={location}
             source={visitorNode?.visitor.referrer}
             createdAt={visitorNode?.createdAt}
             duration={visitorNode?.duration}
