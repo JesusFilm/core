@@ -5,12 +5,6 @@ interface QualityOptimizerOptions {
   maxRetryAttempts?: number
 }
 
-interface QualityHistory {
-  max: number
-  min: number
-  mode: number | null
-}
-
 const Plugin = videojs.getPlugin('plugin')
 
 class QualityOptimizer extends Plugin {
@@ -20,7 +14,7 @@ class QualityOptimizer extends Plugin {
   private retryAttempts = 0
   private readonly maxRetryAttempts: number
 
-  private qualityHistory: QualityHistory[] = []
+  private qualityHistory: number[] = []
 
   constructor(player: VideoJsPlayer, options?: QualityOptimizerOptions) {
     super(player)
@@ -40,6 +34,8 @@ class QualityOptimizer extends Plugin {
           value.resolution.width,
           (this.segmentMap.get(value.resolution.width) ?? 0) + 1
         )
+
+        this.qualityHistory.push(value.resolution.width)
 
         if (
           this.maxQuality == null ||
@@ -93,51 +89,28 @@ class QualityOptimizer extends Plugin {
       if (this.retryAttempts < this.maxRetryAttempts) {
         this.retryAttempts++
 
-        let mode: number | null = null
-        let maxFrequency = 0
-
-        // Find the most frequent quality level(s), preferring higher quality if tied
-        for (const [quality, count] of this.segmentMap) {
-          if (count > maxFrequency) {
-            maxFrequency = count
-            mode = quality
-          } else if (count === maxFrequency && quality > (mode ?? 0)) {
-            mode = quality
-          }
-        }
-
-        this.qualityHistory.push({
-          max: this.maxQuality ?? 0,
-          min: this.minQuality ?? 0,
-          mode: mode
-        })
-
         sl.remove(0, Infinity, () => console.log('removed video buffer'))
 
         if (this.retryAttempts === this.maxRetryAttempts) {
-          const historyModes = this.qualityHistory
-            .map((q) => q.mode)
-            .filter((m) => m != null)
+          const frequencyMap = new Map<number, number>()
+          let maxFrequency = 0
 
-          const f = new Map<number, number>()
-          let maxF = 0
-
-          historyModes.forEach((m) => {
-            const current = f.get(m) ?? 0
+          this.qualityHistory.forEach((quality) => {
+            const current = frequencyMap.get(quality) ?? 0
             const newCount = current + 1
-            f.set(m, newCount)
-            maxF = Math.max(maxF, newCount)
+            frequencyMap.set(quality, newCount)
+            maxFrequency = Math.max(maxFrequency, newCount)
           })
 
-          const modes = Array.from(f.entries())
-            .filter(([_, count]) => count === maxF)
+          const modes = Array.from(frequencyMap.entries())
+            .filter(([_, count]) => count === maxFrequency)
             .map(([quality]) => quality)
 
-          const historyMode = modes.length > 1 ? Math.max(...modes) : modes[0]
+          const mode = modes.length > 1 ? Math.max(...modes) : modes[0]
 
           Array.from({ length: qualityLevels.length }).forEach((_, i) => {
-            qualityLevels[i].enabled = qualityLevels[i].width === historyMode
-            console.log('locking quality to: ', historyMode)
+            qualityLevels[i].enabled = qualityLevels[i].width === mode
+            console.log('locking quality to: ', mode)
           })
         }
 
