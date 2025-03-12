@@ -7,6 +7,35 @@ const mockVariant = {
   id: 'variant-1',
   videoId: 'video-1',
   slug: 'variant-slug',
+  videoEdition: {
+    id: 'edition-1',
+    name: 'base'
+  },
+  videoSubtitles: [
+    {
+      id: 'subtitle-1',
+      language: {
+        id: 'lang-1',
+        name: [
+          {
+            value: 'English',
+            primary: true
+          }
+        ],
+        slug: 'en'
+      },
+      downloads: [
+        {
+          id: 'download-1',
+          quality: 'low' as const,
+          size: 1000,
+          height: 720,
+          width: 1280,
+          url: 'https://example.com/video.mp4'
+        }
+      ]
+    }
+  ],
   language: {
     id: 'lang-1',
     name: [

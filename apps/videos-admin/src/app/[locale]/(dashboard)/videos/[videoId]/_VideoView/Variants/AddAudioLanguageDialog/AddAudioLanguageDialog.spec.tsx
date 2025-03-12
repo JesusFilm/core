@@ -61,7 +61,8 @@ const createVideoVariantMock = {
         slug: 'video123/en',
         downloadable: true,
         published: true,
-        muxVideoId: 'muxVideo1'
+        muxVideoId: 'muxVideo1',
+        hls: 'https://stream.mux.com/playback123.m3u8'
       }
     }
   },
