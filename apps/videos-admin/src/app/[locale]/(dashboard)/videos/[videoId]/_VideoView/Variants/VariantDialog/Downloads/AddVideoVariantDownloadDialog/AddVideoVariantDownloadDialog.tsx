@@ -4,13 +4,13 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import FormControl from '@mui/material/FormControl'
-import FormHelperText from '@mui/material/FormHelperText'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import TextField from '@mui/material/TextField'
-import { Field, Form, Formik } from 'formik'
+import { Field, Form, Formik, FormikValues } from 'formik'
 import { useTranslations } from 'next-intl'
+import { enqueueSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { number, object, string } from 'yup'
 
@@ -18,20 +18,10 @@ import { useVideoVariantDownloadCreateMutation } from '../../../../../../../../.
 
 interface AddVideoVariantDownloadDialogProps {
   open: boolean
-  handleClose: () => void
-  onSuccess: () => void
+  handleClose?: () => void
+  onSuccess?: () => void
   videoVariantId: string
   existingQualities: string[]
-}
-
-interface FormValues {
-  quality: 'high' | 'low'
-  size: number | ''
-  height: number | ''
-  width: number | ''
-  url: string
-  version: number | ''
-  file?: File | null
 }
 
 export function AddVideoVariantDownloadDialog({
@@ -44,14 +34,15 @@ export function AddVideoVariantDownloadDialog({
   const t = useTranslations()
   const [createVideoVariantDownload] = useVideoVariantDownloadCreateMutation()
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
+  const [videoDimensions, setVideoDimensions] = useState<{
+    width: number
+    height: number
+  } | null>(null)
 
-  const initialValues: FormValues = {
+  const initialValues: FormikValues = {
     quality: 'high',
-    size: '',
     height: '',
     width: '',
-    url: '',
-    version: '',
     file: null
   }
 
@@ -63,9 +54,6 @@ export function AddVideoVariantDownloadDialog({
         t('A download with this quality already exists'),
         (value) => !existingQualities.includes(value)
       ),
-    size: number()
-      .required(t('Size is required'))
-      .positive(t('Size must be positive')),
     height: number()
       .required(t('Height is required'))
       .positive(t('Height must be positive'))
@@ -74,35 +62,52 @@ export function AddVideoVariantDownloadDialog({
       .required(t('Width is required'))
       .positive(t('Width must be positive'))
       .integer(t('Width must be an integer')),
-    url: string().required(t('URL is required')),
-    version: number()
-      .required(t('Version is required'))
-      .positive(t('Version must be positive'))
-      .integer(t('Version must be an integer'))
+    url: string().required(t('URL is required'))
   })
 
   const handleUpload = (file: File): void => {
     // This is a stub for file upload functionality
+    if (!file) return
+    const video = document.createElement('video')
+    function cleanup() {
+      URL.revokeObjectURL(video.src)
+      video.remove()
+    }
+    video.onerror = function () {
+      cleanup()
+      enqueueSnackbar(t('Failed to load video'), {
+        variant: 'error'
+      })
+    }
+    video.src = URL.createObjectURL(file)
+    video.onloadedmetadata = () => {
+      setVideoDimensions({ width: video.videoWidth, height: video.videoHeight })
+      cleanup()
+    }
     setUploadedFile(file)
     return
   }
 
-  const handleSubmit = async (values: FormValues): Promise<void> => {
-    await createVideoVariantDownload({
-      variables: {
-        input: {
-          videoVariantId,
-          quality: values.quality,
-          size: values.size as number,
-          height: values.height as number,
-          width: values.width as number,
-          url: values.url,
-          version: values.version as number
+  const handleSubmit = async (values: FormikValues): Promise<void> => {
+    if (uploadedFile == null || videoDimensions == null) return
+    const publicUrl = null
+    if (publicUrl != null) {
+      await createVideoVariantDownload({
+        variables: {
+          input: {
+            videoVariantId,
+            quality: values.quality,
+            size: uploadedFile.size,
+            height: videoDimensions.height,
+            width: videoDimensions.width,
+            url: publicUrl,
+            version: 0
+          }
         }
-      }
-    })
-    onSuccess()
-    handleClose()
+      })
+    }
+    onSuccess?.()
+    handleClose?.()
   }
 
   return (
@@ -135,27 +140,12 @@ export function AddVideoVariantDownloadDialog({
                   name="quality"
                   labelId="quality-label"
                   label={t('Quality')}
+                  helperText={errors.quality}
                 >
                   <MenuItem value="high">{t('high')}</MenuItem>
                   <MenuItem value="low">{t('low')}</MenuItem>
                 </Field>
-                {touched.quality && errors.quality && (
-                  <FormHelperText>{errors.quality}</FormHelperText>
-                )}
               </FormControl>
-
-              <Field
-                as={TextField}
-                fullWidth
-                margin="normal"
-                name="size"
-                label={t('Size (MB)')}
-                type="number"
-                inputProps={{ step: 'any' }}
-                error={touched.size && Boolean(errors.size)}
-                helperText={touched.size && errors.size}
-              />
-
               <Field
                 as={TextField}
                 fullWidth
@@ -166,7 +156,6 @@ export function AddVideoVariantDownloadDialog({
                 error={touched.height && Boolean(errors.height)}
                 helperText={touched.height && errors.height}
               />
-
               <Field
                 as={TextField}
                 fullWidth
@@ -178,27 +167,7 @@ export function AddVideoVariantDownloadDialog({
                 helperText={touched.width && errors.width}
               />
 
-              <Field
-                as={TextField}
-                fullWidth
-                margin="normal"
-                name="url"
-                label={t('URL')}
-                error={touched.url && Boolean(errors.url)}
-                helperText={touched.url && errors.url}
-              />
-
-              <Field
-                as={TextField}
-                fullWidth
-                margin="normal"
-                name="version"
-                label={t('Version')}
-                type="number"
-                error={touched.version && Boolean(errors.version)}
-                helperText={touched.version && errors.version}
-              />
-
+              {/* to do: replace with FileUpload component when subtitles is in. */}
               <TextField
                 fullWidth
                 margin="normal"
