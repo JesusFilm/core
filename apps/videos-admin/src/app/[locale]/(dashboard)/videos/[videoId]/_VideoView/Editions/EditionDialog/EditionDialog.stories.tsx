@@ -1,11 +1,12 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 
+import { DialogAction } from '../../../../../../../../components/CrudDialog'
 import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { VideoProvider } from '../../../../../../../../libs/VideoProvider'
 
-import { DialogAction, EditionDialog } from './EditionDialog'
+import { EditionDialog } from './EditionDialog'
 
 const mockVideo = useAdminVideoMock['result']?.['data']?.['adminVideo']
 const mockEdition = mockVideo?.videoEditions?.[0]
@@ -16,7 +17,7 @@ type StoryArgs = ComponentPropsWithoutRef<typeof EditionDialog>
 
 const meta = {
   ...videosAdminConfig,
-  title: 'Videos-Admin/Editions/EditionDialog',
+  title: 'Videos-Admin/VideoView/Editions/EditionDialog',
   component: EditionDialog,
   parameters: {
     tags: ['!autodocs']

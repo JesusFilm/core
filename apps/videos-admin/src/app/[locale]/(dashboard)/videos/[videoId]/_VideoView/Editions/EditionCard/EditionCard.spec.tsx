@@ -30,7 +30,7 @@ describe('EditionCard', () => {
       screen.getByText(`${mockEdition.videoSubtitles.length} subtitles`)
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: 'More options' })
+      screen.getByRole('button', { name: /more options/i })
     ).toBeInTheDocument()
   })
 
@@ -75,7 +75,7 @@ describe('EditionCard', () => {
     )
 
     const user = userEvent.setup()
-    await user.click(screen.getByRole('button', { name: 'More options' }))
+    await user.click(screen.getByRole('button', { name: /more options/i }))
 
     await user.click(screen.getByRole('menuitem', { name: 'View' }))
     expect(viewFn).toHaveBeenCalled()
@@ -103,7 +103,7 @@ describe('EditionCard', () => {
     )
 
     const user = userEvent.setup()
-    await user.click(screen.getByRole('button', { name: 'More options' }))
+    await user.click(screen.getByRole('button', { name: /more options/i }))
 
     expect(screen.getByRole('menuitem', { name: 'View' })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()

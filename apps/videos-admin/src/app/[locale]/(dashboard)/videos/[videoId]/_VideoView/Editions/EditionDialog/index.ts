@@ -1,1 +1,1 @@
-export { EditionDialog, DialogAction } from './EditionDialog'
+export { EditionDialog } from './EditionDialog'
