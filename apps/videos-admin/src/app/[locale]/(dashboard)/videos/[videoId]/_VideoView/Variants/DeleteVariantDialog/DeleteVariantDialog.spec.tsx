@@ -150,10 +150,8 @@ describe('DeleteVariantDialog', () => {
       </MockedProvider>
     )
 
-    // Click on the Cancel button
     fireEvent.click(screen.getByText('Cancel'))
 
-    // Check if onClose was called
     expect(handleClose).toHaveBeenCalled()
     expect(handleSuccess).not.toHaveBeenCalled()
   })
@@ -162,7 +160,6 @@ describe('DeleteVariantDialog', () => {
     const handleClose = jest.fn()
     const handleSuccess = jest.fn()
 
-    // Create a mock for the delete mutation that we can track
     const deleteMutationMockResult = jest
       .fn()
       .mockResolvedValue(deleteMutationMock.result)
@@ -184,27 +181,22 @@ describe('DeleteVariantDialog', () => {
       </MockedProvider>
     )
 
-    // Click on the Delete button
     fireEvent.click(screen.getByText('Delete'))
 
-    // Check if mutation is called
     await waitFor(() => {
       expect(deleteMutationMockResult).toHaveBeenCalled()
     })
 
-    // Check if success message appears
     await waitFor(() => {
       expect(
         screen.getByText('Audio language deleted successfully')
       ).toBeInTheDocument()
     })
 
-    // Check if onSuccess was called
     await waitFor(() => {
       expect(handleSuccess).toHaveBeenCalled()
     })
 
-    // Check if onClose was called
     expect(handleClose).toHaveBeenCalled()
   })
 
@@ -212,7 +204,6 @@ describe('DeleteVariantDialog', () => {
     const handleClose = jest.fn()
     const handleSuccess = jest.fn()
 
-    // Create a mock that rejects
     const errorMock = {
       ...deleteMutationMock,
       error: new Error('Failed to delete')
@@ -233,20 +224,15 @@ describe('DeleteVariantDialog', () => {
       </MockedProvider>
     )
 
-    // Click on the Delete button
     fireEvent.click(screen.getByText('Delete'))
 
-    // Check if error message appears
     await waitFor(() => {
       expect(
         screen.getByText('Failed to delete audio language')
       ).toBeInTheDocument()
     })
 
-    // Check if onSuccess was not called
     expect(handleSuccess).not.toHaveBeenCalled()
-
-    // Check if onClose was not called
     expect(handleClose).not.toHaveBeenCalled()
   })
 })

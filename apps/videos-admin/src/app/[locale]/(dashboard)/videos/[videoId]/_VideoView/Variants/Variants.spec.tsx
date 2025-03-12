@@ -126,7 +126,6 @@ describe('Variants', () => {
       expect(screen.getByText('Delete Audio Language')).toBeInTheDocument()
     })
 
-    // Click cancel button
     fireEvent.click(screen.getByText('Cancel'))
 
     await waitFor(() => {
@@ -164,7 +163,6 @@ describe('Variants', () => {
 
     await waitFor(() => expect(screen.getByRole('dialog')).toBeInTheDocument())
 
-    // Close dialog
     const backdrop = document.querySelector('.MuiBackdrop-root')
     if (backdrop) {
       fireEvent.click(backdrop)
