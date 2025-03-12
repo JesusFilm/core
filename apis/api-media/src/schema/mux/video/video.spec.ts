@@ -42,7 +42,10 @@ describe('mux/video', () => {
       authorization: 'token'
     },
     context: {
-      currentRoles: ['publisher']
+      currentRoles: ['publisher'],
+      currentUser: {
+        id: 'userId'
+      }
     }
   })
 
