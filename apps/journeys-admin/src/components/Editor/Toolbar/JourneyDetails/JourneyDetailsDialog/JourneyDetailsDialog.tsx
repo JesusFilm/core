@@ -15,7 +15,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../../../__generated__/GetAdminJourneys'
-import { useJourneyUpdateMutation } from '../../../../../libs/useJourneyUpdateMutation'
+import { useTitleDescLanguageUpdateMutation } from '../../../../../libs/useTitleDescLanguageUpdateMutation'
 
 interface JourneyDetailsDialogProps {
   open: boolean
@@ -36,7 +36,7 @@ export function JourneyDetailsDialog({
 }: JourneyDetailsDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
-  const [journeyUpdate] = useJourneyUpdateMutation()
+  const [titleDescLanguageUpdate] = useTitleDescLanguageUpdateMutation()
   const { journey: journeyFromContext } = useJourney()
   const journeyData = journeyProp ?? journeyFromContext
   const { enqueueSnackbar } = useSnackbar()
@@ -44,7 +44,6 @@ export function JourneyDetailsDialog({
   const titleSchema = object().shape({
     title: string().required(t('Required'))
   })
-
   const journeyLanguage: JourneyLanguage | undefined =
     journeyData != null
       ? {
@@ -59,7 +58,7 @@ export function JourneyDetailsDialog({
   function handleUpdateJourneyDetails(values: FormikValues): void {
     if (journeyData == null) return
 
-    void journeyUpdate({
+    void titleDescLanguageUpdate({
       variables: {
         id: journeyData.id,
         input: {
@@ -69,22 +68,23 @@ export function JourneyDetailsDialog({
         }
       },
       optimisticResponse: {
-        journeySettingsUpdate: {
-          ...journeyData,
+        journeyUpdate: {
+          __typename: 'Journey',
+          id: journeyData.id,
           title: values.title,
           description: values.description,
           language: {
+            __typename: 'Language',
             id: values.language.id,
             bcp47: null,
             iso3: null,
             name: [
               {
+                __typename: 'LanguageName',
                 value: values.language.nativeName ?? values.language.localName,
-                primary: values.language.nativeName != null,
-                __typename: 'LanguageName'
+                primary: values.language.nativeName != null
               }
-            ],
-            __typename: 'Language'
+            ]
           }
         }
       },
