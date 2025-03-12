@@ -74,7 +74,7 @@ export async function deleteVideo(videoId: string): Promise<void> {
 }
 
 export async function enableDownload(videoId: string): Promise<void> {
-  await getClient().video.assets.update(videoId, {
-    static_renditions: ['1080p']
+  await getClient().video.assets.updateMP4Support(videoId, {
+    mp4_support: 'capped-1080p'
   })
 }

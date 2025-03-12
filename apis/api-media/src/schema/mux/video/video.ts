@@ -8,6 +8,7 @@ import {
   createVideoByDirectUpload,
   createVideoFromUrl,
   deleteVideo,
+  enableDownload,
   getUpload,
   getVideo
 } from './service'
@@ -207,7 +208,7 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  enableMuxDownload: t.withAuth({ isAuthenticated: true }).prismaField({
+  enableMuxDownload: t.withAuth({ isPublisher: true }).prismaField({
     type: 'MuxVideo',
     nullable: false,
     args: {
@@ -215,6 +216,14 @@ builder.mutationFields((t) => ({
     },
     resolve: async (query, _root, { id }, { user }) => {
       if (user == null) throw new Error('User not found')
+      await enableDownload(id)
+      return await prisma.muxVideo.update({
+        ...query,
+        where: { id },
+        data: {
+          downloadable: true
+        }
+      })
     }
   }),
   deleteMuxVideo: t.withAuth({ isAuthenticated: true }).boolean({
