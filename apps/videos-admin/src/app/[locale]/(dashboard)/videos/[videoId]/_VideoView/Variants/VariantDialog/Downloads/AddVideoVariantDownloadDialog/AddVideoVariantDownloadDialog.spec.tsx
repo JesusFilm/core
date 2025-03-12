@@ -8,12 +8,20 @@ import { videoVariantDownloadCreateMock } from '../../../../../../../../../../li
 
 import { AddVideoVariantDownloadDialog } from './AddVideoVariantDownloadDialog'
 
+const originalURLCreateObjectURL = URL.createObjectURL
+
 describe('AddVideoVariantDownloadDialog', () => {
   const handleClose = jest.fn()
   const onSuccess = jest.fn()
 
   beforeEach(() => {
     jest.clearAllMocks()
+    URL.createObjectURL = jest.fn(() => 'mock-url')
+  })
+
+  afterEach(() => {
+    URL.createObjectURL = originalURLCreateObjectURL
+    jest.restoreAllMocks()
   })
 
   it('should render the dialog', () => {
@@ -36,12 +44,11 @@ describe('AddVideoVariantDownloadDialog', () => {
     expect(
       screen.getByRole('heading', { name: 'Add Download' })
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Choose File' })
+    ).toBeInTheDocument()
     expect(screen.getByLabelText('Quality')).toBeInTheDocument()
-    expect(screen.getByLabelText('Size (MB)')).toBeInTheDocument()
-    expect(screen.getByLabelText('Height')).toBeInTheDocument()
-    expect(screen.getByLabelText('Width')).toBeInTheDocument()
-    expect(screen.getByLabelText('URL')).toBeInTheDocument()
-    expect(screen.getByLabelText('Version')).toBeInTheDocument()
+
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument()
   })
@@ -67,32 +74,6 @@ describe('AddVideoVariantDownloadDialog', () => {
     expect(handleClose).toHaveBeenCalled()
   })
 
-  it('should show validation errors when form is submitted with empty fields', async () => {
-    render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider>
-          <SnackbarProvider>
-            <AddVideoVariantDownloadDialog
-              open
-              handleClose={handleClose}
-              onSuccess={onSuccess}
-              videoVariantId="variant-id"
-              existingQualities={[]}
-            />
-          </SnackbarProvider>
-        </MockedProvider>
-      </NextIntlClientProvider>
-    )
-
-    await userEvent.click(screen.getByRole('button', { name: 'Save' }))
-    await waitFor(() => {
-      expect(screen.getByText('Size is required')).toBeInTheDocument()
-      expect(screen.getByText('Height is required')).toBeInTheDocument()
-      expect(screen.getByText('Width is required')).toBeInTheDocument()
-      expect(screen.getByText('URL is required')).toBeInTheDocument()
-    })
-  })
-
   it('should show validation error when quality already exists', async () => {
     render(
       <NextIntlClientProvider locale="en">
@@ -115,10 +96,11 @@ describe('AddVideoVariantDownloadDialog', () => {
     await userEvent.click(screen.getByRole('option', { name: 'high' }))
 
     await userEvent.click(screen.getByRole('button', { name: 'Save' }))
-
-    expect(
-      screen.getByText('A download with this quality already exists')
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.getByText('A download with this quality already exists')
+      ).toBeInTheDocument()
+    })
   })
 
   it('should submit the form successfully', async () => {
@@ -141,16 +123,6 @@ describe('AddVideoVariantDownloadDialog', () => {
     // Fill out the form
     await userEvent.click(screen.getByLabelText('Quality'))
     await userEvent.click(screen.getByRole('option', { name: 'high' }))
-
-    await userEvent.type(screen.getByLabelText('Size (MB)'), '4.94')
-    await userEvent.type(screen.getByLabelText('Height'), '720')
-    await userEvent.type(screen.getByLabelText('Width'), '1280')
-    await userEvent.type(
-      screen.getByLabelText('URL'),
-      'https://example.com/video.mp4'
-    )
-    await userEvent.type(screen.getByLabelText('Version'), '1')
-
     await userEvent.click(screen.getByRole('button', { name: 'Save' }))
 
     await waitFor(() => {

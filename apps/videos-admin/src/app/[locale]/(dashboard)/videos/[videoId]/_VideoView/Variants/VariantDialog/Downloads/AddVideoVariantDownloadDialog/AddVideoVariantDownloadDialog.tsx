@@ -4,6 +4,7 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import FormControl from '@mui/material/FormControl'
+import FormHelperText from '@mui/material/FormHelperText'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
@@ -41,8 +42,6 @@ export function AddVideoVariantDownloadDialog({
 
   const initialValues: FormikValues = {
     quality: 'high',
-    height: '',
-    width: '',
     file: null
   }
 
@@ -54,15 +53,7 @@ export function AddVideoVariantDownloadDialog({
         t('A download with this quality already exists'),
         (value) => !existingQualities.includes(value)
       ),
-    height: number()
-      .required(t('Height is required'))
-      .positive(t('Height must be positive'))
-      .integer(t('Height must be an integer')),
-    width: number()
-      .required(t('Width is required'))
-      .positive(t('Width must be positive'))
-      .integer(t('Width must be an integer')),
-    url: string().required(t('URL is required'))
+    file: string().required(t('File is required'))
   })
 
   const handleUpload = (file: File): void => {
@@ -103,6 +94,11 @@ export function AddVideoVariantDownloadDialog({
             url: publicUrl,
             version: 0
           }
+        },
+        onError: () => {
+          enqueueSnackbar(t('Failed to create download'), {
+            variant: 'error'
+          })
         }
       })
     }
@@ -126,7 +122,14 @@ export function AddVideoVariantDownloadDialog({
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ errors, touched, isSubmitting, setFieldValue, handleSubmit }) => (
+        {({
+          errors,
+          touched,
+          isSubmitting,
+          setFieldValue,
+          handleSubmit,
+          values
+        }) => (
           <Form onSubmit={handleSubmit}>
             <DialogContent>
               <FormControl
@@ -135,40 +138,27 @@ export function AddVideoVariantDownloadDialog({
                 error={touched.quality && Boolean(errors.quality)}
               >
                 <InputLabel id="quality-label">{t('Quality')}</InputLabel>
-                <Field
-                  as={Select}
+                <Select
                   name="quality"
+                  value={values.quality}
                   labelId="quality-label"
                   label={t('Quality')}
-                  helperText={errors.quality}
+                  error={touched.quality && Boolean(errors.quality)}
                 >
                   <MenuItem value="high">{t('high')}</MenuItem>
                   <MenuItem value="low">{t('low')}</MenuItem>
-                </Field>
+                </Select>
+                <FormHelperText sx={{ minHeight: 20 }}>
+                  {errors.quality != null &&
+                    typeof errors.quality === 'string' &&
+                    errors.quality}
+                </FormHelperText>
               </FormControl>
-              <Field
-                as={TextField}
-                fullWidth
-                margin="normal"
-                name="height"
-                label={t('Height')}
-                type="number"
-                error={touched.height && Boolean(errors.height)}
-                helperText={touched.height && errors.height}
-              />
-              <Field
-                as={TextField}
-                fullWidth
-                margin="normal"
-                name="width"
-                label={t('Width')}
-                type="number"
-                error={touched.width && Boolean(errors.width)}
-                helperText={touched.width && errors.width}
-              />
 
               {/* to do: replace with FileUpload component when subtitles is in. */}
               <TextField
+                name="file"
+                value={values.file}
                 fullWidth
                 margin="normal"
                 type="file"
