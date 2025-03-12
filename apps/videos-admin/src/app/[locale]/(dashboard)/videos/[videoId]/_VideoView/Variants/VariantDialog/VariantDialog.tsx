@@ -54,10 +54,6 @@ export function VariantDialog({
   const t = useTranslations()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
-  const videoSrc = variant?.downloads.find(
-    (download) => download.quality === 'low'
-  )?.url
-
   const languageName =
     variant.language.name.find(({ primary }) => !primary)?.value ??
     variant.language.name[0].value
