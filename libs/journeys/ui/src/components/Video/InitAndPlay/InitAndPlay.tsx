@@ -9,7 +9,6 @@ import {
   useState
 } from 'react'
 import videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
@@ -18,14 +17,15 @@ import { TreeBlock, useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields_mediaVideo } from '../__generated__/VideoFields'
+import { getMuxMetadata } from '../utils/getMuxMetadata'
+import VideoJsPlayer from '../utils/videoJsTypes'
 
-import { getMuxMetadata } from './getMuxMetadata'
 import 'videojs-mux'
 
 interface InitAndPlayProps {
   videoRef: RefObject<HTMLVideoElement>
-  player?: Player
-  setPlayer: Dispatch<SetStateAction<Player | undefined>>
+  player?: VideoJsPlayer
+  setPlayer: Dispatch<SetStateAction<VideoJsPlayer | undefined>>
   triggerTimes: number[]
   videoEndTime: number
   selectedBlock?: TreeBlock
@@ -113,7 +113,7 @@ export function InitAndPlay({
               data: muxMetadata
             }
           }
-        })
+        }) as VideoJsPlayer
       )
       playerInitializedRef.current = true
     }
