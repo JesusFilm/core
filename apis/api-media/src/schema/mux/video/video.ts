@@ -210,11 +210,11 @@ builder.mutationFields((t) => ({
   }),
   enableMuxDownload: t.withAuth({ isPublisher: true }).prismaField({
     type: 'MuxVideo',
-    nullable: false,
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
     resolve: async (query, _root, { id }, { user }) => {
+      console.log('hit')
       if (user == null) throw new Error('User not found')
       await enableDownload(id)
       return await prisma.muxVideo.update({
