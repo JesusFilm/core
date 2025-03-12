@@ -28,17 +28,29 @@ describe('VideoSettings', () => {
     play: jest.fn().mockResolvedValue(undefined)
   }
 
+  const mockOnToggleStats = jest.fn()
+
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
   it('renders correctly settings button', () => {
-    render(<VideoSettings player={mockPlayer as any} />)
+    render(
+      <VideoSettings
+        player={mockPlayer as any}
+        onToggleStats={mockOnToggleStats}
+      />
+    )
     expect(screen.getByLabelText('video settings')).toBeInTheDocument()
   })
 
   it('opens settings menu on button click', () => {
-    render(<VideoSettings player={mockPlayer as any} />)
+    render(
+      <VideoSettings
+        player={mockPlayer as any}
+        onToggleStats={mockOnToggleStats}
+      />
+    )
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
 
     act(() => {
@@ -49,7 +61,12 @@ describe('VideoSettings', () => {
   })
 
   it('closes settings menu on escape key', () => {
-    render(<VideoSettings player={mockPlayer as any} />)
+    render(
+      <VideoSettings
+        player={mockPlayer as any}
+        onToggleStats={mockOnToggleStats}
+      />
+    )
 
     act(() => {
       fireEvent.click(screen.getByLabelText('video settings'))
@@ -65,7 +82,12 @@ describe('VideoSettings', () => {
   })
 
   it('shows when clicked', () => {
-    render(<VideoSettings player={mockPlayer as any} />)
+    render(
+      <VideoSettings
+        player={mockPlayer as any}
+        onToggleStats={mockOnToggleStats}
+      />
+    )
 
     act(() => {
       fireEvent.click(screen.getByLabelText('video settings'))
@@ -79,7 +101,12 @@ describe('VideoSettings', () => {
   })
 
   it('navigates to and from the quality menu', () => {
-    render(<VideoSettings player={mockPlayer as any} />)
+    render(
+      <VideoSettings
+        player={mockPlayer as any}
+        onToggleStats={mockOnToggleStats}
+      />
+    )
 
     act(() => {
       fireEvent.click(screen.getByLabelText('video settings'))
@@ -97,7 +124,12 @@ describe('VideoSettings', () => {
   })
 
   it('shows default value for video quality', () => {
-    render(<VideoSettings player={mockPlayer as any} />)
+    render(
+      <VideoSettings
+        player={mockPlayer as any}
+        onToggleStats={mockOnToggleStats}
+      />
+    )
 
     act(() => {
       fireEvent.click(screen.getByLabelText('video settings'))
@@ -108,5 +140,28 @@ describe('VideoSettings', () => {
 
     const qualityText = within(menuItem as HTMLElement).getByText('Auto')
     expect(qualityText).toBeInTheDocument()
+  })
+
+  it('closes settings menu when "Stats for nerds" is clicked', () => {
+    render(
+      <VideoSettings
+        player={mockPlayer as any}
+        onToggleStats={mockOnToggleStats}
+      />
+    )
+
+    act(() => {
+      fireEvent.click(screen.getByLabelText('video settings'))
+    })
+
+    expect(screen.getByRole('menu')).toBeInTheDocument()
+
+    act(() => {
+      fireEvent.click(screen.getByText('Stats for nerds'))
+    })
+
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+
+    expect(mockOnToggleStats).toHaveBeenCalledTimes(1)
   })
 })

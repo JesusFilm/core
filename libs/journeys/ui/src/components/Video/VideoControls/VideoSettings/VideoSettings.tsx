@@ -2,15 +2,19 @@ import { ReactElement, useState } from 'react'
 
 import VideoJsPlayer from '../../utils/videoJsTypes'
 
-import { QualityMenu } from './QualityMenu/QualityMenu'
+import { QualityMenu } from './QualityMenu'
 import { SettingsButton } from './SettingsButton'
-import { SettingsMenu } from './SettingsMenu/SettingsMenu'
+import { SettingsMenu } from './SettingsMenu'
 
 interface VideoSettingsProps {
   player: VideoJsPlayer
+  onToggleStats: (event: React.MouseEvent) => void
 }
 
-export function VideoSettings({ player }: VideoSettingsProps): ReactElement {
+export function VideoSettings({
+  player,
+  onToggleStats
+}: VideoSettingsProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const [showQualityMenu, setShowQualityMenu] = useState(false)
   const [currentQuality, setCurrentQuality] = useState('Auto')
@@ -36,6 +40,11 @@ export function VideoSettings({ player }: VideoSettingsProps): ReactElement {
     setCurrentQuality(quality)
   }
 
+  const handleToggleStats = (event: React.MouseEvent): void => {
+    onToggleStats(event)
+    handleClose()
+  }
+
   const open = Boolean(anchorEl)
 
   return (
@@ -47,6 +56,7 @@ export function VideoSettings({ player }: VideoSettingsProps): ReactElement {
         onClose={handleClose}
         currentQuality={currentQuality}
         onQualityClick={handleQualityClick}
+        onToggleStats={handleToggleStats}
       />
       <QualityMenu
         anchorEl={anchorEl}
