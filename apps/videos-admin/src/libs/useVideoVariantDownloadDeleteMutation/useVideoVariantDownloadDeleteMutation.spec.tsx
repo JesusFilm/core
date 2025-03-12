@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { useVideoVariantDownloadDeleteMutation } from './useVideoVariantDownloadDeleteMutation'
@@ -18,17 +18,15 @@ describe('useVideoVariantDownloadDeleteMutation', () => {
       }
     )
 
-    const [mutate] = result.current
-    void mutate({
-      variables: {
-        id: 'download-id'
-      }
-    })
-
-    await waitFor(() => {
-      expect(result.current[1].data?.videoVariantDownloadDelete.id).toBe(
-        'download-id'
-      )
+    await act(async () => {
+      await waitFor(async () => {
+        await result.current[0]({
+          variables: {
+            id: 'download-id'
+          }
+        })
+        expect(videoVariantDownloadDeleteMock.result).toHaveBeenCalled()
+      })
     })
   })
 })

@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { useVideoVariantDownloadCreateMutation } from './useVideoVariantDownloadCreateMutation'
@@ -18,25 +18,23 @@ describe('useVideoVariantDownloadCreateMutation', () => {
       }
     )
 
-    const [mutate] = result.current
-    void mutate({
-      variables: {
-        input: {
-          videoVariantId: 'variant-id',
-          quality: 'high',
-          size: 4.94,
-          height: 720,
-          width: 1280,
-          url: 'https://example.com/video.mp4',
-          version: 1
-        }
-      }
-    })
-
-    await waitFor(() => {
-      expect(result.current[1].data?.videoVariantDownloadCreate.id).toBe(
-        'download-id'
-      )
+    await act(async () => {
+      await waitFor(async () => {
+        await result.current[0]({
+          variables: {
+            input: {
+              videoVariantId: 'variant-id',
+              quality: 'high',
+              size: 4.94,
+              height: 720,
+              width: 1280,
+              url: 'https://example.com/video.mp4',
+              version: 1
+            }
+          }
+        })
+        expect(videoVariantDownloadCreateMock.result).toHaveBeenCalled()
+      })
     })
   })
 })
