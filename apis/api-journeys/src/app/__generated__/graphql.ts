@@ -407,6 +407,18 @@ export class SignUpBlockUpdateInput {
     submitLabel?: Nullable<string>;
 }
 
+export class SpacerBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId: string;
+    spacing?: Nullable<number>;
+}
+
+export class SpacerBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    spacing?: Nullable<number>;
+}
+
 export class StepBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -959,6 +971,10 @@ export abstract class IMutation {
 
     abstract signUpBlockUpdate(id: string, input: SignUpBlockUpdateInput, journeyId?: Nullable<string>): Nullable<SignUpBlock> | Promise<Nullable<SignUpBlock>>;
 
+    abstract spacerBlockCreate(input: SpacerBlockCreateInput): SpacerBlock | Promise<SpacerBlock>;
+
+    abstract spacerBlockUpdate(id: string, input: SpacerBlockUpdateInput): SpacerBlock | Promise<SpacerBlock>;
+
     abstract stepBlockCreate(input: StepBlockCreateInput): StepBlock | Promise<StepBlock>;
 
     abstract stepBlockUpdate(id: string, input: StepBlockUpdateInput, journeyId?: Nullable<string>): StepBlock | Promise<StepBlock>;
@@ -1262,7 +1278,7 @@ export class GridContainerBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
-    spacing: number;
+    gap: number;
     direction: GridDirection;
     justifyContent: GridJustifyContent;
     alignItems: GridAlignItems;
@@ -1333,6 +1349,15 @@ export class SignUpBlock implements Block {
     action?: Nullable<Action>;
     submitIconId?: Nullable<string>;
     submitLabel?: Nullable<string>;
+}
+
+export class SpacerBlock implements Block {
+    __typename?: 'SpacerBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    spacing?: Nullable<number>;
 }
 
 export class StepBlock implements Block {
