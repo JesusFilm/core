@@ -12,7 +12,6 @@ import {
   GET_MY_MUX_VIDEO,
   UploadVideoVariantProvider
 } from '../../../../../../../../libs/UploadVideoVariantProvider'
-import { GetAdminVideo_AdminVideo_VideoEditions as VideoEditions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 import { AddAudioLanguageDialog } from './AddAudioLanguageDialog'
 
@@ -171,10 +170,15 @@ describe('AddAudioLanguageDialog', () => {
                         vttSrc: null,
                         srtSrc: null,
                         value: 'English Subtitle',
+                        primary: true,
+                        vttAsset: null,
+                        srtAsset: null,
+                        vttVersion: 0,
+                        srtVersion: 0,
                         language: {
                           id: '529',
                           slug: 'en',
-                          name: [{ value: 'English' }]
+                          name: [{ value: 'English', primary: true }]
                         }
                       }
                     ]
@@ -216,10 +220,15 @@ describe('AddAudioLanguageDialog', () => {
                         vttSrc: null,
                         srtSrc: null,
                         value: 'English Subtitle',
+                        primary: true,
+                        vttAsset: null,
+                        srtAsset: null,
+                        vttVersion: 0,
+                        srtVersion: 0,
                         language: {
                           id: '529',
                           slug: 'en',
-                          name: [{ value: 'English' }]
+                          name: [{ value: 'English', primary: true }]
                         }
                       }
                     ]
@@ -280,10 +289,15 @@ describe('AddAudioLanguageDialog', () => {
                         vttSrc: null,
                         srtSrc: null,
                         value: 'English Subtitle',
+                        primary: true,
+                        vttAsset: null,
+                        srtAsset: null,
+                        vttVersion: 0,
+                        srtVersion: 0,
                         language: {
                           id: '529',
                           slug: 'en',
-                          name: [{ value: 'English' }]
+                          name: [{ value: 'English', primary: true }]
                         }
                       }
                     ]
@@ -382,10 +396,15 @@ describe('AddAudioLanguageDialog', () => {
                         vttSrc: null,
                         srtSrc: null,
                         value: 'English Subtitle',
+                        primary: true,
+                        vttAsset: null,
+                        srtAsset: null,
+                        vttVersion: 0,
+                        srtVersion: 0,
                         language: {
                           id: '529',
                           slug: 'en',
-                          name: [{ value: 'English' }]
+                          name: [{ value: 'English', primary: true }]
                         }
                       }
                     ]

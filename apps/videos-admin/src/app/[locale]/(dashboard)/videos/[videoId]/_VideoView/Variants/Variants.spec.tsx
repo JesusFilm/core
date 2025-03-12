@@ -165,4 +165,18 @@ describe('Variants', () => {
     fireEvent.click(screen.getByText('Add Audio Language'))
     await waitFor(() => expect(screen.getByRole('dialog')).toBeInTheDocument())
   })
+
+  it('should open add audio language dialog when clicking add audio language button', async () => {
+    render(
+      <MockedProvider>
+        <NextIntlClientProvider locale="en">
+          <UploadVideoVariantProvider>
+            <Variants variants={mockVideoVariants} />
+          </UploadVideoVariantProvider>
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByText('Add Audio Language'))
+    await waitFor(() => expect(screen.getByRole('dialog')).toBeInTheDocument())
+  })
 })

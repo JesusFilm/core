@@ -23,6 +23,16 @@ export function VariantCard({
   onClick,
   onDelete
 }: VariantCardProps): ReactElement {
+  const languageName =
+    variant.language.name.find(({ primary }) => !primary)?.value ??
+    variant.language.name[0].value
+
+  const nativeLanguageName = variant.language.name.find(
+    ({ primary }) => primary
+  )?.value
+
+  const primaryText = `${languageName} ${nativeLanguageName != null && languageName !== nativeLanguageName ? `- ${nativeLanguageName}` : ''}`
+
   const handleDeleteClick = (event: MouseEvent<HTMLButtonElement>): void => {
     event.stopPropagation()
     if (onDelete) {
@@ -54,10 +64,7 @@ export function VariantCard({
           justifyContent: 'space-between'
         }}
       >
-        <ListItemText
-          primary={variant.language.name[0].value}
-          secondary={variant.language.id}
-        />
+        <ListItemText primary={primaryText} secondary={variant.language.id} />
         {onDelete && (
           <IconButton
             size="small"

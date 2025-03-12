@@ -115,6 +115,7 @@ const createVideoVariantMock = {
         id: 'language-id_video-id',
         videoId: 'video-id',
         slug: 'video-id/en',
+        hls: 'https://stream.mux.com/playback-id.m3u8',
         language: {
           id: 'language-id',
           name: {
