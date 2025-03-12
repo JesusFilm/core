@@ -9,18 +9,23 @@ import { BaseNode, HandleVariant } from '../BaseNode'
 import { BaseReferrer } from './BaseReferrer'
 import { OtherReferrer } from './OtherReferrer'
 
-interface ReferrerNodeProps extends NodeProps {
-  data:
-    | JourneyReferrer
-    | { property: 'other sources'; referrers: JourneyReferrer[] }
+type ReferrerData =
+  | JourneyReferrer
+  | { property: 'other sources'; referrers: JourneyReferrer[] }
+
+interface ReferrerNodeProps extends Omit<NodeProps, 'data'> {
+  data: ReferrerData
 }
 
-export function ReferrerNode({ data }: ReferrerNodeProps): ReactElement {
+export function ReferrerNode({
+  data,
+  ...props
+}: ReferrerNodeProps): ReactElement {
   return (
     <BaseNode
-      id="referrer"
       sourceHandle={HandleVariant.Disabled}
       isSourceConnected
+      {...props}
     >
       <Box
         sx={{
@@ -31,7 +36,7 @@ export function ReferrerNode({ data }: ReferrerNodeProps): ReactElement {
           overflow: 'hidden'
         }}
       >
-        {'referrers' in data ? (
+        {isOtherReferrer(data) ? (
           <OtherReferrer {...data} />
         ) : (
           <BaseReferrer {...data} />
@@ -39,4 +44,10 @@ export function ReferrerNode({ data }: ReferrerNodeProps): ReactElement {
       </Box>
     </BaseNode>
   )
+}
+
+function isOtherReferrer(
+  data: ReferrerData
+): data is { property: 'other sources'; referrers: JourneyReferrer[] } {
+  return 'referrers' in data
 }

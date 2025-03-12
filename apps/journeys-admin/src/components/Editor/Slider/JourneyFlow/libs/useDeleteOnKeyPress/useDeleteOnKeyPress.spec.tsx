@@ -24,10 +24,10 @@ jest.mock('@xyflow/react', () => {
   return {
     __esModule: true,
     ...originalModule,
-    useKeyPress: jest.fn()
+    useKeyPress: jest.fn(() => false)
   }
 })
-const mockUseKeyPress = useKeyPress
+const mockUseKeyPress = jest.fn(() => false) as jest.MockedFunction<typeof useKeyPress>
 jest.mock('../useDeleteEdge', () => {
   return {
     useDeleteEdge: jest.fn()

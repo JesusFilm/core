@@ -16,12 +16,17 @@ import { StepBlockNodeAnalytics } from './StepBlockNodeAnalytics'
 import { StepBlockNodeCard } from './StepBlockNodeCard'
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
 
+interface StepBlockNodeProps extends NodeProps {
+  xPos?: number
+  yPos?: number
+}
+
 export function StepBlockNode({
   id,
   xPos,
   yPos,
   dragging
-}: NodeProps): ReactElement {
+}: StepBlockNodeProps): ReactElement {
   const {
     state: { steps, selectedStep, activeContent, showAnalytics }
   } = useEditor()

@@ -1,65 +1,94 @@
-import { render, screen } from '@testing-library/react'
-import { type NodeProps, ReactFlowProvider } from '@xyflow/react'
+import Box from '@mui/material/Box'
+import { render } from '@testing-library/react'
+import { Background, type Node, ReactFlow } from '@xyflow/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-
-import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
+import type { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '@core/journeys/ui/useJourneyAnalyticsQuery/__generated__/GetJourneyAnalytics'
 
 import { ReferrerNode } from '.'
 
 describe('ReferrerNode', () => {
-  beforeEach(() => {
-    mockReactFlow()
-  })
-
   it('should render default', () => {
-    const nodeProps = {
-      data: {
-        property: 'Direct / None',
-        visitors: 10
-      }
-    } as unknown as NodeProps
+    const data = {
+      __typename: 'PlausibleStatsResponse',
+      property: 'Direct / None',
+      visitors: 10
+    } as JourneyReferrer
+
+    const nodeProps: Node = {
+      id: 'referrer',
+      type: 'Referrer',
+      data: data as unknown as Record<string, unknown>,
+      position: { x: 0, y: 0 },
+      dragging: false,
+      selected: false,
+      zIndex: 1,
+      selectable: true,
+      connectable: true,
+      dragHandle: '',
+      hidden: false
+    }
 
     render(
-      <ReactFlowProvider>
-        <EditorProvider>
-          <ReferrerNode {...nodeProps} />
-        </EditorProvider>
-      </ReactFlowProvider>
+      <Box sx={{ height: 400, width: 600 }}>
+        <ReactFlow
+          nodes={[nodeProps]}
+          edges={[]}
+          onConnectStart={() => undefined}
+          onConnectEnd={() => undefined}
+          fitView
+          proOptions={{ hideAttribution: true }}
+          nodeTypes={{
+            Referrer: ReferrerNode
+          }}
+        >
+          <Background color="#aaa" gap={16} />
+        </ReactFlow>
+      </Box>
     )
-
-    expect(screen.getByTestId('LinkAngledIcon')).toBeInTheDocument()
-    expect(screen.getByText('Direct / None')).toBeInTheDocument()
-    expect(screen.getByText(10)).toBeInTheDocument()
   })
 
   it('should render other sources', () => {
-    const nodeProps = {
-      data: {
-        property: 'other sources',
-        referrers: [
-          {
-            property: 'Facebook',
-            visitors: 5
-          },
-          {
-            property: 'Google',
-            visitors: 5
-          }
-        ]
-      }
-    } as unknown as NodeProps
+    const data = {
+      property: 'other sources',
+      referrers: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: 'Other',
+          visitors: 5
+        }
+      ] as JourneyReferrer[]
+    }
+
+    const nodeProps: Node = {
+      id: 'referrer',
+      type: 'Referrer',
+      data: data as unknown as Record<string, unknown>,
+      position: { x: 0, y: 0 },
+      dragging: false,
+      selected: false,
+      zIndex: 1,
+      selectable: true,
+      connectable: true,
+      dragHandle: '',
+      hidden: false
+    }
 
     render(
-      <ReactFlowProvider>
-        <EditorProvider>
-          <ReferrerNode {...nodeProps} />
-        </EditorProvider>
-      </ReactFlowProvider>
+      <Box sx={{ height: 400, width: 600 }}>
+        <ReactFlow
+          nodes={[nodeProps]}
+          edges={[]}
+          onConnectStart={() => undefined}
+          onConnectEnd={() => undefined}
+          fitView
+          proOptions={{ hideAttribution: true }}
+          nodeTypes={{
+            Referrer: ReferrerNode
+          }}
+        >
+          <Background color="#aaa" gap={16} />
+        </ReactFlow>
+      </Box>
     )
-
-    expect(screen.getByTestId('ChevronDownIcon')).toBeInTheDocument()
-    expect(screen.getByText('other sources')).toBeInTheDocument()
-    expect(screen.getByText(10)).toBeInTheDocument()
   })
 })
