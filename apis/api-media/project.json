@@ -185,6 +185,12 @@
       "options": {
         "command": "gql.tada generate output --tsconfig apis/api-media/tsconfig.json"
       }
+    },
+    "update-slugs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/updateSlugs.ts"
+      }
     }
   }
 }
