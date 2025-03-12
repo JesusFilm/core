@@ -10,7 +10,7 @@ import {
 } from '../../JourneyList/ActiveJourneyList/ActiveJourneyList'
 import { SortOrder } from '../../JourneyList/JourneySort'
 import { ThemeProvider } from '../../ThemeProvider'
-import { defaultTemplate, oldTemplate } from '../data'
+import { defaultTemplate, fakeDate, oldTemplate } from '../data'
 
 import { ActiveTemplateList } from '.'
 
@@ -45,7 +45,16 @@ const noTemplatesMock = {
 }
 
 describe('ActiveTemplateList', () => {
-  it('should render templates in descending createdAt date by default', async () => {
+  beforeAll(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date(fakeDate))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
+  it('should render templates in descending updatedAt date by default', async () => {
     const { getAllByLabelText } = render(
       <MockedProvider mocks={[ActiveTemplateListMock]}>
         <ThemeProvider>
@@ -57,11 +66,11 @@ describe('ActiveTemplateList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        'January 1'
+        '1 year ago'
       )
     )
     expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      'November 19, 2020'
+      '20 years ago'
     )
   })
 
@@ -99,11 +108,11 @@ describe('ActiveTemplateList', () => {
     )
     await waitFor(() =>
       expect(getAllByLabelText('template-card')[0].textContent).toContain(
-        'a lower case titleJanuary 1, 2021English'
+        'a lower case title20 years agoEnglish'
       )
     )
     expect(getAllByLabelText('template-card')[1].textContent).toContain(
-      'An Old Template HeadingNovember 19, 2020 - Template created before the current year should also show the year in the dateEnglish'
+      'An Old Template Heading1 year ago - Template created before the current year should also show the year in the dateEnglish'
     )
   })
 
