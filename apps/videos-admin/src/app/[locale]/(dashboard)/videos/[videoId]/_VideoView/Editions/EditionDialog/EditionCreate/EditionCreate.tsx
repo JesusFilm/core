@@ -1,25 +1,11 @@
-import { gql, useMutation } from '@apollo/client'
-import { ResultOf, VariablesOf, graphql } from 'gql.tada'
+import { gql } from '@apollo/client'
 import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
+import { useCreateEditionMutation } from '../../../../../../../../../libs/useCreateEdition'
 import { useVideo } from '../../../../../../../../../libs/VideoProvider'
 import { EditionForm, EditionValidationSchema } from '../../EditionForm'
-
-export const CREATE_VIDEO_EDITION = graphql(`
-  mutation CreateVideoEdition($input: VideoEditionCreateInput!) {
-    videoEditionCreate(input: $input) {
-      id
-      name
-    }
-  }
-`)
-
-export type CreateVideoEditionVariables = VariablesOf<
-  typeof CREATE_VIDEO_EDITION
->
-export type CreateVideoEdition = ResultOf<typeof CREATE_VIDEO_EDITION>
 
 interface EditionCreateProps {
   close: () => void
@@ -30,7 +16,7 @@ export function EditionCreate({ close }: EditionCreateProps): ReactElement {
   const { enqueueSnackbar } = useSnackbar()
   const video = useVideo()
 
-  const [createEdition] = useMutation(CREATE_VIDEO_EDITION, {
+  const [createEdition] = useCreateEditionMutation({
     update(cache, { data }) {
       if (data?.videoEditionCreate == null) return
 
@@ -70,7 +56,7 @@ export function EditionCreate({ close }: EditionCreateProps): ReactElement {
         close()
       },
       onError: () => {
-        enqueueSnackbar(t('Something went wrong.'), { variant: 'error' })
+        enqueueSnackbar(t('Failed to create edition.'), { variant: 'error' })
       }
     })
   }

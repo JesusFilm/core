@@ -1,6 +1,7 @@
 import { createServer } from 'node:http'
 
 import { logger } from './logger'
+import { initializeQueue } from './schema/cloudflare/r2/transcode'
 import { yoga } from './yoga'
 
 import './workers/server'
@@ -12,4 +13,5 @@ createServer(yoga).listen(port, () => {
     { module: 'server', port, url: `http://localhost/graphql` },
     'waiting for requests'
   )
+  initializeQueue()
 })

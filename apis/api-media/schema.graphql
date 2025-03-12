@@ -147,6 +147,9 @@ enum MediaRole {
 }
 
 type Mutation {
+  """Transcode an asset. Returns the bullmq job ID."""
+  transcodeAsset(input: TranscodeVideoInput!): String
+  getTranscodeAssetProgress(jobId: String!): Int
   createCloudflareUploadByFile(input: ImageInput): CloudflareImage!
   createCloudflareUploadByUrl(url: String!, input: ImageInput): CloudflareImage!
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
@@ -574,6 +577,14 @@ type TaxonomyName {
   taxonomy: Taxonomy!
 }
 
+input TranscodeVideoInput {
+  r2AssetId: String!
+  resolution: String!
+  videoBitrate: String
+  outputFilename: String!
+  outputPath: String!
+}
+
 enum UnsplashColor {
   black_and_white
   black
@@ -825,8 +836,20 @@ type VideoSubtitle {
   languageId: ID!
   primary: Boolean!
   edition: String!
+
+  """subtitle file"""
+  vttAsset: CloudflareR2
   vttSrc: String
+
+  """version control for subtitle file"""
+  vttVersion: Int!
+
+  """subtitle file"""
+  srtAsset: CloudflareR2
   srtSrc: String
+
+  """version control for subtitle file"""
+  srtVersion: Int!
   value: String!
   language: Language!
   videoEdition: VideoEdition!
@@ -834,19 +857,27 @@ type VideoSubtitle {
 
 input VideoSubtitleCreateInput {
   id: ID
+  vttAssetId: ID
+  srtAssetId: ID
   videoId: String!
   edition: String!
   vttSrc: String
   srtSrc: String
   primary: Boolean!
   languageId: String!
+  vttVersion: Int
+  srtVersion: Int
 }
 
 input VideoSubtitleUpdateInput {
   id: ID!
   edition: String!
   vttSrc: String
+  vttAssetId: ID
+  vttVersion: Int
   srtSrc: String
+  srtAssetId: ID
+  srtVersion: Int
   primary: Boolean
   languageId: String
 }
@@ -885,6 +916,9 @@ input VideoUpdateInput {
 
 type VideoVariant {
   id: ID!
+
+  """master video file"""
+  asset: CloudflareR2
   videoId: ID
   hls: String
   dash: String
@@ -902,10 +936,14 @@ type VideoVariant {
 
   """slug is a permanent link to the video variant."""
   slug: String!
+
+  """version control for master video file"""
+  version: Int!
 }
 
 input VideoVariantCreateInput {
   id: String!
+  assetId: String
   videoId: String!
   edition: String!
   hls: String
@@ -918,25 +956,34 @@ input VideoVariantCreateInput {
   downloadable: Boolean!
   published: Boolean = true
   muxVideoId: String
+  version: Int
 }
 
 type VideoVariantDownload {
   id: ID!
+
+  """master video file"""
+  asset: CloudflareR2
   quality: VideoVariantDownloadQuality!
   size: Float!
   height: Int!
   width: Int!
   url: String!
+
+  """master video file version"""
+  version: Int!
 }
 
 input VideoVariantDownloadCreateInput {
   id: String
+  assetId: String
   videoVariantId: String!
   quality: VideoVariantDownloadQuality!
   size: Float
   height: Int
   width: Int
   url: String!
+  version: Int
 }
 
 enum VideoVariantDownloadQuality {
@@ -946,12 +993,14 @@ enum VideoVariantDownloadQuality {
 
 input VideoVariantDownloadUpdateInput {
   id: String!
+  assetId: String
   videoVariantId: String
   quality: VideoVariantDownloadQuality
   size: Float
   height: Int
   width: Int
   url: String
+  version: Int
 }
 
 input VideoVariantFilter {
@@ -960,6 +1009,7 @@ input VideoVariantFilter {
 
 input VideoVariantUpdateInput {
   id: String!
+  assetId: String
   videoId: String
   edition: String
   hls: String
@@ -972,6 +1022,7 @@ input VideoVariantUpdateInput {
   downloadable: Boolean
   published: Boolean
   muxVideoId: String
+  version: Int
 }
 
 input VideosFilter {

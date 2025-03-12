@@ -8,7 +8,9 @@ export const defaultVideoJsOptions = {
       limitRenditionByPlayerDimensions: false,
       useBandwidthFromLocalStorage: true,
       useNetworkInformationApi: true,
-      useDevicePixelRatio: true
+      useDevicePixelRatio: true,
+      // allows vhs to be used in Safari - will not work for IOS
+      overrideNative: true
     },
     hls: {
       limitRenditionByPlayerDimensions: false,

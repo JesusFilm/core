@@ -12,6 +12,7 @@ export const GET_ADMIN_VIDEO = graphql(`
         id
         value
       }
+      locked
       images(aspectRatio: banner) {
         id
         mobileCinematicHigh
@@ -49,6 +50,10 @@ export const GET_ADMIN_VIDEO = graphql(`
         id
         videoId
         slug
+        videoEdition {
+          id
+          name
+        }
         language {
           id
           name {
@@ -84,6 +89,14 @@ export const GET_ADMIN_VIDEO = graphql(`
           }
           slug
         }
+        vttAsset {
+          id
+        }
+        srtAsset {
+          id
+        }
+        vttVersion
+        srtVersion
       }
       videoEditions {
         id
@@ -93,10 +106,20 @@ export const GET_ADMIN_VIDEO = graphql(`
           vttSrc
           srtSrc
           value
+          primary
+          vttAsset {
+            id
+          }
+          srtAsset {
+            id
+          }
+          vttVersion
+          srtVersion
           language {
             id
             name {
               value
+              primary
             }
             slug
           }
@@ -126,6 +149,14 @@ export type GetAdminVideo_AdminVideo_Children =
   GetAdminVideo['adminVideo']['children']
 export type GetAdminVideo_AdminVideo_VideoEditions =
   GetAdminVideo['adminVideo']['videoEditions']
+export type GetAdminVideo_AdminVideo_VideoEdition =
+  GetAdminVideo['adminVideo']['videoEditions'][number]
+export type GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitles =
+  GetAdminVideo['adminVideo']['videoEditions'][number]['videoSubtitles']
+export type GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle =
+  GetAdminVideo['adminVideo']['videoEditions'][number]['videoSubtitles'][number]
+export type GetAdminVideo_AdminVideo_VideoSubtitles =
+  GetAdminVideo['adminVideo']['subtitles']
 
 export function useAdminVideo(
   options: QueryHookOptions<GetAdminVideo, GetAdminVideoVariables>

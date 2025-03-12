@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
@@ -6,39 +6,17 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { SnackbarProvider } from '../../../../../../../../../libs/SnackbarProvider'
 import { useAdminVideoMock } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { getCreateEditionMock } from '../../../../../../../../../libs/useCreateEdition/useCreateEdition.mock'
 import { VideoProvider } from '../../../../../../../../../libs/VideoProvider'
 
-import {
-  CREATE_VIDEO_EDITION,
-  CreateVideoEdition,
-  CreateVideoEditionVariables,
-  EditionCreate
-} from './EditionCreate'
+import { EditionCreate } from './EditionCreate'
 
 const mockVideo = useAdminVideoMock['result']?.['data']?.['adminVideo']
 
-const createEditionMock: MockedResponse<
-  CreateVideoEdition,
-  CreateVideoEditionVariables
-> = {
-  request: {
-    query: CREATE_VIDEO_EDITION,
-    variables: {
-      input: {
-        videoId: mockVideo.id,
-        name: 'New edition'
-      }
-    }
-  },
-  result: {
-    data: {
-      videoEditionCreate: {
-        id: 'edition.id',
-        name: 'New edition'
-      }
-    }
-  }
-}
+const createEditionMock = getCreateEditionMock({
+  videoId: mockVideo.id,
+  name: 'New edition'
+})
 
 describe('EditionCreate', () => {
   it('should render', () => {
@@ -60,16 +38,11 @@ describe('EditionCreate', () => {
 
   it('should create an edition', async () => {
     const close = jest.fn()
-    const createEditionMockResult = jest
-      .fn()
-      .mockReturnValue(createEditionMock.result)
 
     render(
       <NextIntlClientProvider locale="en">
         <SnackbarProvider>
-          <MockedProvider
-            mocks={[{ ...createEditionMock, result: createEditionMockResult }]}
-          >
+          <MockedProvider mocks={[createEditionMock]}>
             <VideoProvider video={mockVideo}>
               <EditionCreate close={close} />
             </VideoProvider>
@@ -85,7 +58,7 @@ describe('EditionCreate', () => {
     await user.click(screen.getByRole('button', { name: 'Create' }))
 
     await waitFor(() => {
-      expect(createEditionMockResult).toHaveBeenCalled()
+      expect(createEditionMock.result).toHaveBeenCalled()
     })
     expect(
       screen.getByText('Successfully created edition.')
@@ -125,7 +98,7 @@ describe('EditionCreate', () => {
     await user.click(screen.getByRole('button', { name: 'Create' }))
 
     await waitFor(() => {
-      expect(screen.getByText('Something went wrong.')).toBeInTheDocument()
+      expect(screen.getByText('Failed to create edition.')).toBeInTheDocument()
     })
   })
 })
