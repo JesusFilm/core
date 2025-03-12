@@ -31,7 +31,8 @@ export function SocialPreview(): ReactElement {
       {mdUp ? (
         <Stack
           height={736}
-          width={activeSlide === ActiveSlide.JourneyFlow ? 387 : '100%'}
+          width="100%"
+          // width={activeSlide === ActiveSlide.JourneyFlow ? 387 : '100%'}
           data-testid="OuterStack"
           justifyContent="space-between"
           alignSelf="center"
@@ -52,7 +53,8 @@ export function SocialPreview(): ReactElement {
                   activeSlide === ActiveSlide.JourneyFlow
                     ? 'pointer'
                     : undefined,
-                flexGrow: activeSlide === ActiveSlide.Content ? 1 : 0,
+                flexGrow: 1,
+                // flexGrow: activeSlide === ActiveSlide.Content ? 1 : 0,
                 minWidth: 387,
                 transition: (theme) =>
                   theme.transitions.create('flex-grow', { duration: 300 })
@@ -66,7 +68,8 @@ export function SocialPreview(): ReactElement {
               alignItems="center"
               sx={{
                 flexGrow: 1,
-                opacity: activeSlide === ActiveSlide.Content ? 1 : 0,
+                opacity: 1,
+                // opacity: activeSlide === ActiveSlide.Content ? 1 : 0,
                 transition: (theme) =>
                   theme.transitions.create(['flex-grow', 'opacity'], {
                     duration: 300
