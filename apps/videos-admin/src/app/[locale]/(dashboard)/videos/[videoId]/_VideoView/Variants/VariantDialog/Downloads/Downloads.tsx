@@ -105,14 +105,15 @@ export function Downloads({
           <Typography>{t('No downloads available')}</Typography>
         ) : (
           <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 700 }}>
+            <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>{t('Quality')}</TableCell>
                   <TableCell>{t('Size')}</TableCell>
                   <TableCell>{t('Dimensions')}</TableCell>
                   <TableCell>{t('URL')}</TableCell>
-                  <TableCell>{t('Actions')}</TableCell>
+                  <TableCell />
+                  <TableCell />
                 </TableRow>
               </TableHead>
               <TableBody>
