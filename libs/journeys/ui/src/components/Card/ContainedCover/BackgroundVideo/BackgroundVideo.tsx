@@ -2,7 +2,6 @@ import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import { CSSProperties, ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
@@ -15,6 +14,11 @@ import { VideoFields } from '../../../Video/__generated__/VideoFields'
 
 import 'videojs-youtube'
 import 'video.js/dist/video-js.css'
+import '../../../Video/plugins/qualityOptimizer'
+// import '../../../Video/plugins/qualityOptimizerV2'
+import VideoJsPlayer from '../../../Video/utils/videoJsTypes'
+
+videojs.log.level('debug')
 
 interface BackgroundVideoProps extends TreeBlock<VideoFields> {
   setLoading: (loading: boolean) => void
@@ -34,13 +38,13 @@ export function BackgroundVideo({
   setLoading
 }: BackgroundVideoProps): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<Player>()
+  const playerRef = useRef<VideoJsPlayer>()
   const isYouTube = source === VideoBlockSource.youTube
 
   // Initiate Video
   useEffect(() => {
     if (videoRef.current != null) {
-      playerRef.current = videojs(videoRef.current, {
+      const player = videojs(videoRef.current, {
         ...defaultVideoJsOptions,
         autoplay: true,
         controls: false,
@@ -48,16 +52,21 @@ export function BackgroundVideo({
         bigPlayButton: false,
         preload: 'metadata',
         // Make video fill container instead of set aspect ratio
+        debug: true,
         fill: true,
         userActions: {
           hotkeys: false,
           doubleClick: false
         },
         muted: true,
-        loop: true,
+        // loop: true,
         responsive: true
         // Don't use poster prop as image isn't optimised
       })
+
+      player.qualityOptimizer()
+
+      playerRef.current = player
     }
   }, [])
 
