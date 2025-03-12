@@ -15,6 +15,16 @@ export function VariantCard({
   style,
   onClick
 }: VariantCardProps): ReactElement {
+  const languageName =
+    variant.language.name.find(({ primary }) => !primary)?.value ??
+    variant.language.name[0].value
+
+  const nativeLanguageName = variant.language.name.find(
+    ({ primary }) => primary
+  )?.value
+
+  const primaryText = `${languageName} ${nativeLanguageName != null && languageName !== nativeLanguageName ? `- ${nativeLanguageName}` : ''}`
+
   return (
     <>
       <ListItem
@@ -36,10 +46,7 @@ export function VariantCard({
           width: 'calc(100% - 20px)'
         }}
       >
-        <ListItemText
-          primary={variant.language.name[0].value}
-          secondary={variant.language.id}
-        />
+        <ListItemText primary={primaryText} secondary={variant.language.id} />
       </ListItem>
     </>
   )
