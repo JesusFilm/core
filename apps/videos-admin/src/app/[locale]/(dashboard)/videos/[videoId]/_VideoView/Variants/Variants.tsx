@@ -1,13 +1,11 @@
 import AddIcon from '@mui/icons-material/Add'
 import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
-import { useSnackbar } from 'notistack'
 import { MouseEvent, ReactElement, useEffect, useMemo, useState } from 'react'
 import { FixedSizeList } from 'react-window'
 
 import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
 import { GetAdminVideo_AdminVideo_VideoEditions as VideoEditions } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useDeleteVideoVariantMutation } from '../../../../../../../libs/useDeleteVideoVariantMutation/useDeleteVideoVariantMutation'
 import { Section } from '../Section'
 
 import { VariantCard } from './VariantCard'
@@ -55,14 +53,10 @@ export function Variants({
     useState<GetAdminVideoVariant | null>(null)
   const [open, setOpen] = useState<boolean | null>(null)
   const [openAddDialog, setOpenAddDialog] = useState<boolean | null>(null)
-  const { enqueueSnackbar } = useSnackbar()
 
   const [deleteVariant, setDeleteVariant] =
     useState<GetAdminVideoVariant | null>(null)
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean | null>(null)
-
-  const [deleteVariantMutation, { loading: deleteLoading }] =
-    useDeleteVideoVariantMutation()
 
   function handleCardClick(variant: GetAdminVideoVariant): void {
     setSelectedVariant(variant)
@@ -90,27 +84,8 @@ export function Variants({
     setOpenDeleteDialog(false)
   }
 
-  async function handleDeleteConfirm(): Promise<void> {
-    if (!deleteVariant) return
-
-    try {
-      await deleteVariantMutation({
-        variables: {
-          id: deleteVariant.id
-        }
-      })
-
-      enqueueSnackbar(t('Audio language deleted successfully'), {
-        variant: 'success'
-      })
-
-      setOpenDeleteDialog(false)
-      setDeleteVariant(null)
-    } catch (error) {
-      enqueueSnackbar(t('Failed to delete audio language'), {
-        variant: 'error'
-      })
-    }
+  function handleDeleteSuccess(): void {
+    setDeleteVariant(null)
   }
 
   const [size, setSize] = useState<{
@@ -199,9 +174,8 @@ export function Variants({
         <DeleteVariantDialog
           variant={deleteVariant}
           open={openDeleteDialog}
-          loading={deleteLoading}
           onClose={handleDeleteClose}
-          onConfirm={handleDeleteConfirm}
+          onSuccess={handleDeleteSuccess}
         />
       )}
     </>

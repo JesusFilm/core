@@ -91,7 +91,7 @@ describe('Variants', () => {
     expect(section).toBeInTheDocument()
   })
 
-  it('should successfully delete a variant when delete is confirmed', async () => {
+  it('should open and close delete confirmation dialog', async () => {
     const deleteMutationMock = {
       request: {
         query: DELETE_VIDEO_VARIANT,
@@ -109,15 +109,8 @@ describe('Variants', () => {
       }
     }
 
-    // Create a mock for the delete mutation that we can track
-    const deleteMutationMockResult = jest
-      .fn()
-      .mockResolvedValue(deleteMutationMock.result)
-
     render(
-      <MockedProvider
-        mocks={[{ ...deleteMutationMock, result: deleteMutationMockResult }]}
-      >
+      <MockedProvider mocks={[deleteMutationMock]}>
         <NextIntlClientProvider locale="en">
           <SnackbarProvider>
             <Variants variants={mockVideoVariants} />
@@ -133,17 +126,8 @@ describe('Variants', () => {
       expect(screen.getByText('Delete Audio Language')).toBeInTheDocument()
     })
 
-    fireEvent.click(screen.getByText('Delete'))
-
-    await waitFor(() => {
-      expect(deleteMutationMockResult).toHaveBeenCalled()
-    })
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Audio language deleted successfully')
-      ).toBeInTheDocument()
-    })
+    // Click cancel button
+    fireEvent.click(screen.getByText('Cancel'))
 
     await waitFor(() => {
       expect(
@@ -166,7 +150,7 @@ describe('Variants', () => {
     await waitFor(() => expect(screen.getByRole('dialog')).toBeInTheDocument())
   })
 
-  it('should open add audio language dialog when clicking add audio language button', async () => {
+  it('should close add audio language dialog', async () => {
     render(
       <MockedProvider>
         <NextIntlClientProvider locale="en">
@@ -177,6 +161,17 @@ describe('Variants', () => {
       </MockedProvider>
     )
     fireEvent.click(screen.getByText('Add Audio Language'))
+
     await waitFor(() => expect(screen.getByRole('dialog')).toBeInTheDocument())
+
+    // Close dialog
+    const backdrop = document.querySelector('.MuiBackdrop-root')
+    if (backdrop) {
+      fireEvent.click(backdrop)
+    }
+
+    await waitFor(() =>
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    )
   })
 })

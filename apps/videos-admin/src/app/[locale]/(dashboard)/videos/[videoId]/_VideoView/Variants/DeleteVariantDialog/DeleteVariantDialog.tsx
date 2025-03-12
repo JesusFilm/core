@@ -1,72 +1,72 @@
-import Button from '@mui/material/Button'
-import CircularProgress from '@mui/material/CircularProgress'
-import Dialog from '@mui/material/Dialog'
-import DialogActions from '@mui/material/DialogActions'
-import DialogContent from '@mui/material/DialogContent'
-import DialogContentText from '@mui/material/DialogContentText'
-import DialogTitle from '@mui/material/DialogTitle'
 import { useTranslations } from 'next-intl'
+import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
+import { Dialog } from '@core/shared/ui/Dialog'
+
 import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
+import { useDeleteVideoVariantMutation } from '../../../../../../../../libs/useDeleteVideoVariantMutation/useDeleteVideoVariantMutation'
 
 interface DeleteVariantDialogProps {
   variant: GetAdminVideoVariant | null
   open: boolean
-  loading: boolean
-  onClose: () => void
-  onConfirm: () => Promise<void>
+  onClose?: () => void
+  onSuccess?: () => void
 }
 
 export function DeleteVariantDialog({
   variant,
   open,
-  loading,
   onClose,
-  onConfirm
+  onSuccess
 }: DeleteVariantDialogProps): ReactElement {
   const t = useTranslations()
+  const { enqueueSnackbar } = useSnackbar()
+  const [deleteVariantMutation, { loading }] = useDeleteVideoVariantMutation()
 
   const languageName =
     variant?.language.name.find(({ primary }) => primary)?.value ??
     variant?.language.name.find(({ primary }) => !primary)?.value
 
   const handleConfirm = async (): Promise<void> => {
-    await onConfirm()
+    if (variant == null) return
+    await deleteVariantMutation({
+      variables: {
+        id: variant.id
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t('Audio language deleted successfully'), {
+          variant: 'success'
+        })
+        onClose?.()
+        onSuccess?.()
+      },
+      onError: () => {
+        enqueueSnackbar(t('Failed to delete audio language'), {
+          variant: 'error'
+        })
+      }
+    })
   }
 
   return (
     <Dialog
       open={open}
-      onClose={loading ? undefined : onClose}
-      aria-labelledby="delete-variant-dialog-title"
+      onClose={onClose}
+      dialogTitle={{
+        title: t('Delete Audio Language'),
+        closeButton: true
+      }}
+      dialogAction={{
+        onSubmit: handleConfirm,
+        submitLabel: t('Delete'),
+        closeLabel: t('Cancel')
+      }}
+      loading={loading}
     >
-      <DialogTitle id="delete-variant-dialog-title">
-        {t('Delete Audio Language')}
-      </DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          {t('deleteVariantDialog', {
-            language: languageName
-          })}
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} disabled={loading} color="inherit">
-          {t('Cancel')}
-        </Button>
-        <Button
-          onClick={handleConfirm}
-          color="error"
-          variant="contained"
-          disabled={loading}
-          startIcon={
-            loading ? <CircularProgress size={20} color="inherit" /> : null
-          }
-        >
-          {loading ? t('Deleting...') : t('Delete')}
-        </Button>
-      </DialogActions>
+      {t('deleteVariantDialog', {
+        language: languageName
+      })}
     </Dialog>
   )
 }

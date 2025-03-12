@@ -1,5 +1,9 @@
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
+import { SnackbarProvider } from 'notistack'
+
+import { DELETE_VIDEO_VARIANT } from '../../../../../../../../libs/useDeleteVideoVariantMutation'
 
 import { DeleteVariantDialog } from './DeleteVariantDialog'
 
@@ -58,21 +62,41 @@ const mockVariant = {
   ]
 }
 
+const deleteMutationMock = {
+  request: {
+    query: DELETE_VIDEO_VARIANT,
+    variables: {
+      id: mockVariant.id
+    }
+  },
+  result: {
+    data: {
+      videoVariantDelete: {
+        id: mockVariant.id,
+        videoId: mockVariant.videoId
+      }
+    }
+  }
+}
+
 describe('DeleteVariantDialog', () => {
   it('renders dialog with correct content when open', async () => {
     const handleClose = jest.fn()
-    const handleConfirm = jest.fn()
+    const handleSuccess = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
-        <DeleteVariantDialog
-          variant={mockVariant}
-          open
-          loading={false}
-          onClose={handleClose}
-          onConfirm={handleConfirm}
-        />
-      </NextIntlClientProvider>
+      <MockedProvider mocks={[deleteMutationMock]}>
+        <NextIntlClientProvider locale="en">
+          <SnackbarProvider>
+            <DeleteVariantDialog
+              variant={mockVariant}
+              open
+              onClose={handleClose}
+              onSuccess={handleSuccess}
+            />
+          </SnackbarProvider>
+        </NextIntlClientProvider>
+      </MockedProvider>
     )
 
     expect(screen.getByText('Delete Audio Language')).toBeInTheDocument()
@@ -87,18 +111,21 @@ describe('DeleteVariantDialog', () => {
 
   it('does not render dialog when not open', () => {
     const handleClose = jest.fn()
-    const handleConfirm = jest.fn()
+    const handleSuccess = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
-        <DeleteVariantDialog
-          variant={mockVariant}
-          open={false}
-          loading={false}
-          onClose={handleClose}
-          onConfirm={handleConfirm}
-        />
-      </NextIntlClientProvider>
+      <MockedProvider mocks={[deleteMutationMock]}>
+        <NextIntlClientProvider locale="en">
+          <SnackbarProvider>
+            <DeleteVariantDialog
+              variant={mockVariant}
+              open={false}
+              onClose={handleClose}
+              onSuccess={handleSuccess}
+            />
+          </SnackbarProvider>
+        </NextIntlClientProvider>
+      </MockedProvider>
     )
 
     expect(screen.queryByText('Delete Audio Language')).not.toBeInTheDocument()
@@ -106,18 +133,21 @@ describe('DeleteVariantDialog', () => {
 
   it('calls onClose when Cancel button is clicked', () => {
     const handleClose = jest.fn()
-    const handleConfirm = jest.fn()
+    const handleSuccess = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
-        <DeleteVariantDialog
-          variant={mockVariant}
-          open
-          loading={false}
-          onClose={handleClose}
-          onConfirm={handleConfirm}
-        />
-      </NextIntlClientProvider>
+      <MockedProvider mocks={[deleteMutationMock]}>
+        <NextIntlClientProvider locale="en">
+          <SnackbarProvider>
+            <DeleteVariantDialog
+              variant={mockVariant}
+              open
+              onClose={handleClose}
+              onSuccess={handleSuccess}
+            />
+          </SnackbarProvider>
+        </NextIntlClientProvider>
+      </MockedProvider>
     )
 
     // Click on the Cancel button
@@ -125,61 +155,98 @@ describe('DeleteVariantDialog', () => {
 
     // Check if onClose was called
     expect(handleClose).toHaveBeenCalled()
-
-    // Check if onConfirm was not called
-    expect(handleConfirm).not.toHaveBeenCalled()
+    expect(handleSuccess).not.toHaveBeenCalled()
   })
 
-  it('calls onConfirm when Delete button is clicked', async () => {
+  it('calls the mutation and onSuccess when Delete button is clicked', async () => {
     const handleClose = jest.fn()
-    const handleConfirm = jest.fn().mockResolvedValue(undefined)
+    const handleSuccess = jest.fn()
+
+    // Create a mock for the delete mutation that we can track
+    const deleteMutationMockResult = jest
+      .fn()
+      .mockResolvedValue(deleteMutationMock.result)
 
     render(
-      <NextIntlClientProvider locale="en">
-        <DeleteVariantDialog
-          variant={mockVariant}
-          open
-          loading={false}
-          onClose={handleClose}
-          onConfirm={handleConfirm}
-        />
-      </NextIntlClientProvider>
+      <MockedProvider
+        mocks={[{ ...deleteMutationMock, result: deleteMutationMockResult }]}
+      >
+        <NextIntlClientProvider locale="en">
+          <SnackbarProvider>
+            <DeleteVariantDialog
+              variant={mockVariant}
+              open
+              onClose={handleClose}
+              onSuccess={handleSuccess}
+            />
+          </SnackbarProvider>
+        </NextIntlClientProvider>
+      </MockedProvider>
     )
 
     // Click on the Delete button
     fireEvent.click(screen.getByText('Delete'))
 
-    // Check if onConfirm was called
+    // Check if mutation is called
     await waitFor(() => {
-      expect(handleConfirm).toHaveBeenCalled()
+      expect(deleteMutationMockResult).toHaveBeenCalled()
     })
+
+    // Check if success message appears
+    await waitFor(() => {
+      expect(
+        screen.getByText('Audio language deleted successfully')
+      ).toBeInTheDocument()
+    })
+
+    // Check if onSuccess was called
+    await waitFor(() => {
+      expect(handleSuccess).toHaveBeenCalled()
+    })
+
+    // Check if onClose was called
+    expect(handleClose).toHaveBeenCalled()
+  })
+
+  it('shows error snackbar when mutation fails', async () => {
+    const handleClose = jest.fn()
+    const handleSuccess = jest.fn()
+
+    // Create a mock that rejects
+    const errorMock = {
+      ...deleteMutationMock,
+      error: new Error('Failed to delete')
+    }
+
+    render(
+      <MockedProvider mocks={[errorMock]}>
+        <NextIntlClientProvider locale="en">
+          <SnackbarProvider>
+            <DeleteVariantDialog
+              variant={mockVariant}
+              open
+              onClose={handleClose}
+              onSuccess={handleSuccess}
+            />
+          </SnackbarProvider>
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    // Click on the Delete button
+    fireEvent.click(screen.getByText('Delete'))
+
+    // Check if error message appears
+    await waitFor(() => {
+      expect(
+        screen.getByText('Failed to delete audio language')
+      ).toBeInTheDocument()
+    })
+
+    // Check if onSuccess was not called
+    expect(handleSuccess).not.toHaveBeenCalled()
 
     // Check if onClose was not called
     expect(handleClose).not.toHaveBeenCalled()
-  })
-
-  it('disables buttons and shows loading state when loading', () => {
-    const handleClose = jest.fn()
-    const handleConfirm = jest.fn()
-
-    render(
-      <NextIntlClientProvider locale="en">
-        <DeleteVariantDialog
-          variant={mockVariant}
-          open
-          loading
-          onClose={handleClose}
-          onConfirm={handleConfirm}
-        />
-      </NextIntlClientProvider>
-    )
-
-    // Check if Cancel button is disabled
-    const cancelButton = screen.getByText('Cancel')
-    expect(cancelButton).toBeDisabled()
-
-    // Check if Delete button is disabled and shows loading text
-    const deleteButton = screen.getByText('Deleting...')
-    expect(deleteButton).toBeDisabled()
   })
 })
