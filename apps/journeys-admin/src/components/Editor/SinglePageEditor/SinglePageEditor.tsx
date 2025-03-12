@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 
@@ -68,7 +68,7 @@ export function SinglePageEditor(): ReactElement {
           backgroundColor: '#fff',
           overflow: 'auto',
           height: '100%',
-          maxHeight: `calc(100vh - ${EDIT_TOOLBAR_HEIGHT}px - 32px)`, // Account for padding
+          maxHeight: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 32px)`,
           display: 'flex',
           flexDirection: 'column'
         }}
