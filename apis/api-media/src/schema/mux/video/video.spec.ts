@@ -5,7 +5,7 @@ import { MuxVideo } from '.prisma/api-media-client'
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 
-// import { enableDownload } from './service'
+import { enableDownload } from './service'
 
 jest.mock('./service', () => ({
   createVideoByDirectUpload: jest.fn().mockResolvedValue({
@@ -466,8 +466,7 @@ describe('mux/video', () => {
           }
         })
 
-        // expect(prismaMock.userMediaRole.findUnique).toHaveBeenCalled()
-        // expect(enableDownload).toHaveBeenCalledWith('videoId')
+        expect(enableDownload).toHaveBeenCalledWith('videoId')
 
         // Check that the database was updated
         expect(prismaMock.muxVideo.update).toHaveBeenCalledWith({
@@ -491,7 +490,7 @@ describe('mux/video', () => {
             id: 'videoId'
           }
         })
-        expect(result).not.toHaveProperty('data')
+        expect(result).toHaveProperty('data.enableMuxDownload', null)
       })
     })
   })
