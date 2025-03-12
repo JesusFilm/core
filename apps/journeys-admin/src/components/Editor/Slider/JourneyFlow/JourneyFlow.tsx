@@ -438,7 +438,7 @@ export function JourneyFlow(): ReactElement {
     (oldEdge, newConnection) => {
       const { source, sourceHandle, target } = newConnection
       setEdges(
-        (prev) => reconnectEdge(oldEdge, newConnection, prev) as typeof prev
+        (prev) => reconnectEdge(oldEdge, newConnection, prev)
       )
       edgeUpdateSuccessful.current = true
       void updateEdge({ source, sourceHandle, target, oldEdge })
