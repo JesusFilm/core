@@ -164,7 +164,6 @@ export function Variants({
           open={open}
           handleClose={handleClose}
           variant={selectedVariant}
-          variantLanguagesMap={variantLanguagesMap}
         />
       )}
       {openAddDialog != null && (
