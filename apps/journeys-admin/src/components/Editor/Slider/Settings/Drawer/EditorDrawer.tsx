@@ -6,7 +6,7 @@ import { DrawerTitle } from './Drawer'
 
 interface EditorDrawerProps {
   title?: string
-  onClose: () => void
+  onClose?: () => void
   children: ReactNode
 }
 
