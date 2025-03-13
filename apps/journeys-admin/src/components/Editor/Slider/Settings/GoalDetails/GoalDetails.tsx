@@ -9,7 +9,7 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 
-import { Drawer } from '../Drawer'
+import { EditorDrawer } from '../Drawer/EditorDrawer'
 
 import { ActionCards } from './ActionCards'
 import { ActionEditor } from './ActionEditor'
@@ -38,7 +38,7 @@ export function GoalDetails(): ReactElement {
   }
 
   return (
-    <Drawer
+    <EditorDrawer
       data-testid="GoalDetails"
       title={selectedGoalUrl != null ? t('Goal Details') : t('Information')}
       onClose={onClose}
@@ -59,6 +59,6 @@ export function GoalDetails(): ReactElement {
           <ActionInformation />
         )}
       </Box>
-    </Drawer>
+    </EditorDrawer>
   )
 }

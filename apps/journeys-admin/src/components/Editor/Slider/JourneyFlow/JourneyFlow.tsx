@@ -537,28 +537,26 @@ export function JourneyFlow(): ReactElement {
         }}
         elevateEdgesOnSelect
       >
-        {activeSlide === ActiveSlide.JourneyFlow && (
-          <>
-            <Panel position="top-right">
-              {showAnalytics !== true && (
-                <NewStepButton disabled={steps == null || loading} />
-              )}
-            </Panel>
-            {editorAnalytics && (
-              <Panel position="top-left">
-                <>
-                  <AnalyticsOverlaySwitch />
-                  <Fade in={showAnalytics} unmountOnExit>
-                    <Box>
-                      <JourneyAnalyticsCard />
-                    </Box>
-                  </Fade>
-                </>
-              </Panel>
+        <>
+          <Panel position="top-right">
+            {showAnalytics !== true && (
+              <NewStepButton disabled={steps == null || loading} />
             )}
-            <Controls handleReset={allBlockPositionUpdate} />
-          </>
-        )}
+          </Panel>
+          {editorAnalytics && (
+            <Panel position="top-left">
+              <>
+                <AnalyticsOverlaySwitch />
+                <Fade in={showAnalytics} unmountOnExit>
+                  <Box>
+                    <JourneyAnalyticsCard />
+                  </Box>
+                </Fade>
+              </>
+            </Panel>
+          )}
+          <Controls handleReset={allBlockPositionUpdate} />
+        </>
         <Background
           color="#aaa"
           gap={16}

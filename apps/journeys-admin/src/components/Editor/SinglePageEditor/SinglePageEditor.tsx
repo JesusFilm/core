@@ -10,7 +10,7 @@ import { Settings } from '../Slider/Settings'
 
 export function SinglePageEditor(): ReactElement {
   const {
-    state: { activeContent }
+    state: { activeContent, activeSlide }
   } = useEditor()
 
   // Determine content width based on activeContent
@@ -62,7 +62,7 @@ export function SinglePageEditor(): ReactElement {
 
       <Box
         sx={{
-          width: `${DRAWER_WIDTH}px`,
+          width: activeSlide === 1 ? `${DRAWER_WIDTH}px` : '0px',
           borderRadius: 4,
           border: (theme) => `1px solid ${theme.palette.divider}`,
           backgroundColor: '#fff',
@@ -73,15 +73,7 @@ export function SinglePageEditor(): ReactElement {
           flexDirection: 'column'
         }}
       >
-        <Box
-          sx={{
-            flex: 1,
-            overflow: 'auto',
-            maxHeight: '100%'
-          }}
-        >
-          <Settings />
-        </Box>
+        <Settings />
       </Box>
     </Box>
   )

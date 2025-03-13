@@ -121,7 +121,11 @@ export function Drawer({
       <Box
         data-testid="SettingsDrawerContent"
         className="swiper-no-swiping"
-        sx={{ flexGrow: 1, overflow: 'auto', mb: { md: 4 } }}
+        sx={{
+          flexGrow: 1,
+          overflow: 'auto',
+          mb: { md: 4 }
+        }}
       >
         {children}
       </Box>

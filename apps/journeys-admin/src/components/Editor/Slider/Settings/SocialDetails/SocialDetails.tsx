@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 
-import { Drawer } from '../Drawer'
+import { EditorDrawer } from '../Drawer/EditorDrawer'
 import { ImageEdit } from '../Drawer/ImageEdit'
 
 import { DescriptionEdit } from './DescriptionEdit'
@@ -22,7 +22,7 @@ export function SocialDetails(): ReactElement {
     })
   }
   return (
-    <Drawer title={t('Social Share Preview')} onClose={onClose}>
+    <EditorDrawer title={t('Social Share Preview')} onClose={onClose}>
       <Box sx={{ px: 6, py: 4 }} data-testid="SocialShareAppearance">
         <Typography variant="subtitle2" sx={{ pb: 4 }}>
           {t('Social Image')}
@@ -31,6 +31,6 @@ export function SocialDetails(): ReactElement {
         <TitleEdit />
         <DescriptionEdit />
       </Box>
-    </Drawer>
+    </EditorDrawer>
   )
 }
