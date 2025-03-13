@@ -99,7 +99,7 @@ export function VariantDialog({
             overflow: 'hidden'
           }}
         >
-          <VariantVideo videoSrc={videoSrc} />
+          <VariantVideo hlsSrc={variant.hls} />
         </Box>
         <Downloads downloads={variant.downloads} />
       </Stack>
