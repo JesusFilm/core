@@ -184,21 +184,21 @@ describe('transformJourneyAnalytics', () => {
             source: 'Direct / None',
             target: 'SocialPreview',
             type: 'Referrer',
-            updatable: false
+            reconnectable: false
           },
           {
             id: 'tiktok->SocialPreview',
             source: 'tiktok',
             target: 'SocialPreview',
             type: 'Referrer',
-            updatable: false
+            reconnectable: false
           },
           {
             id: 'facebook->SocialPreview',
             source: 'facebook',
             target: 'SocialPreview',
             type: 'Referrer',
-            updatable: false
+            reconnectable: false
           }
         ],
         nodes: [

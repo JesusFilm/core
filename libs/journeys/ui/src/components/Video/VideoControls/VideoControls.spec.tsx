@@ -213,7 +213,7 @@ describe('VideoControls', () => {
     await waitFor(() => expect(muteStub).toHaveBeenCalled())
     await waitFor(() =>
       expect(
-        screen.getByRole('button', { name: 'center-pause-button' })
+        screen.getByRole('button', { name: 'center-unmute-button' })
       ).toBeInTheDocument()
     )
   })
