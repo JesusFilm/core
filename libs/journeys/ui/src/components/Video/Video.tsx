@@ -82,6 +82,7 @@ export function Video({
   const hundredVh = use100vh()
 
   const videoRef = useRef<HTMLVideoElement>(null)
+  const videoContainerRef = useRef<HTMLDivElement>(null)
   const [loading, setLoading] = useState(true)
   const [player, setPlayer] = useState<Player>()
   const [showPoster, setShowPoster] = useState(true)
@@ -161,9 +162,30 @@ export function Video({
   const isMuxVideo =
     mediaVideo?.__typename === 'MuxVideo' || source === VideoBlockSource.mux
 
+  // Update activeStep when block becomes active
   useEffect(() => {
     setActiveStep(isActiveBlockOrDescendant(blockId))
   }, [blockId, blockHistory])
+
+  // Control MuxVideo playback based on activeStep
+  useEffect(() => {
+    if (!videoContainerRef.current || !isMuxVideo) return
+
+    const mediaElement = videoContainerRef.current.querySelector(
+      'mux-player video'
+    ) as HTMLVideoElement | null
+
+    if (mediaElement) {
+      if (activeStep && autoplay) {
+        mediaElement.play().catch(() => {
+          // Autoplay might be blocked by browser policy
+          console.log('Autoplay was prevented by browser policy')
+        })
+      } else if (!activeStep) {
+        mediaElement.pause()
+      }
+    }
+  }, [activeStep, isMuxVideo, autoplay])
 
   return (
     <Box
@@ -236,6 +258,7 @@ export function Video({
         <>
           <StyledVideoGradient />
           <Box
+            ref={videoContainerRef}
             height={{
               xs: isFillAndNotYoutube() ? hundredVh : '100%',
               sm: '100%'
@@ -250,40 +273,46 @@ export function Video({
             {isMuxVideo &&
             mediaVideo?.__typename === 'MuxVideo' &&
             mediaVideo?.playbackId != null ? (
-              <MuxPlayer
-                streamType="on-demand"
-                playbackId={mediaVideo.playbackId}
-                metadata={{
-                  video_id: mediaVideo.id || videoId || '',
-                  video_title: title || '',
-                  player_name: 'journeys'
-                }}
-                autoPlay={autoplay ?? false}
-                muted={muted ?? false}
-                startTime={effectiveStartAt}
-                style={{
-                  height: '100%',
-                  width: '100%',
-                  objectFit: videoFit,
-                  transform:
-                    objectFit === VideoBlockObjectFit.zoomed
-                      ? 'scale(1.33)'
-                      : undefined
-                }}
-                onLoadedData={() => {
-                  setLoading(false)
-                  setShowPoster(false)
-                }}
-                onEnded={() => {
-                  if (action != null) {
-                    // Handle action on video end without using triggerAction
-                    // This will be handled by the VideoTrigger component for non-Mux videos
+              <Box sx={{ width: '100%', height: '100%' }}>
+                <MuxPlayer
+                  streamType="on-demand"
+                  playbackId={mediaVideo.playbackId}
+                  metadata={{
+                    video_id: mediaVideo.id || videoId || '',
+                    video_title: title || '',
+                    player_name: 'journeys'
+                  }}
+                  autoPlay={activeStep && (autoplay ?? false)}
+                  muted={muted ?? false}
+                  playsInline
+                  startTime={effectiveStartAt}
+                  style={{
+                    height: '100%',
+                    width: '100%',
+                    objectFit: videoFit,
+                    transform:
+                      objectFit === VideoBlockObjectFit.zoomed
+                        ? 'scale(1.33)'
+                        : undefined,
+                    // @ts-ignore - CSS variables are valid in style but TypeScript doesn't recognize them
+                    '--controls-backdrop-color': 'rgb(0 0 0 / 60%)'
+                  }}
+                  onLoadedData={() => {
+                    setLoading(false)
+                    setShowPoster(false)
+                  }}
+                  onClick={(event: MouseEvent) => event.stopPropagation()}
+                  onEnded={() => {
+                    if (action != null) {
+                      // Handle action on video end without using triggerAction
+                      // This will be handled by the VideoTrigger component for non-Mux videos
+                    }
+                  }}
+                  poster={
+                    posterBlock?.src || (videoImage ? videoImage : undefined)
                   }
-                }}
-                poster={
-                  posterBlock?.src || (videoImage ? videoImage : undefined)
-                }
-              />
+                />
+              </Box>
             ) : (
               <StyledVideo
                 ref={videoRef}
