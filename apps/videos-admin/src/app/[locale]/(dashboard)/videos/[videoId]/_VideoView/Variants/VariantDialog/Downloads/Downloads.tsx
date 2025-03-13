@@ -40,11 +40,13 @@ const ConfirmDeleteDialog = dynamic(
 interface DownloadsProps {
   downloads: VariantDownloads
   videoVariantId: string
+  languageId: string
 }
 
 export function Downloads({
   downloads,
-  videoVariantId
+  videoVariantId,
+  languageId
 }: DownloadsProps): ReactElement {
   const t = useTranslations()
   const [deleteVideoVariantDownload] = useVideoVariantDownloadDeleteMutation()
@@ -146,6 +148,7 @@ export function Downloads({
           onSuccess={handleAddSuccess}
           videoVariantId={videoVariantId}
           existingQualities={existingQualities}
+          languageId={languageId}
         />
       )}
 

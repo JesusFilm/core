@@ -32,6 +32,7 @@ interface AddVideoVariantDownloadDialogProps {
   onSuccess?: () => void
   videoVariantId: string
   existingQualities: string[]
+  languageId: string
 }
 
 export function AddVideoVariantDownloadDialog({
@@ -39,6 +40,7 @@ export function AddVideoVariantDownloadDialog({
   handleClose,
   onSuccess,
   videoVariantId,
+  languageId,
   existingQualities
 }: AddVideoVariantDownloadDialogProps): ReactElement {
   const params = useParams<{ videoId: string; locale: string }>()
@@ -98,7 +100,7 @@ export function AddVideoVariantDownloadDialog({
       variables: {
         input: {
           videoId: videoId,
-          fileName: `${videoId}/variants/${videoVariantId}/downloads/${videoVariantId}_${values.quality}${extension}`,
+          fileName: `${videoId}/variants/${languageId}/downloads/${videoVariantId}_${values.quality}${extension}`,
           contentType: uploadedFile.type,
           contentLength: uploadedFile.size
         }

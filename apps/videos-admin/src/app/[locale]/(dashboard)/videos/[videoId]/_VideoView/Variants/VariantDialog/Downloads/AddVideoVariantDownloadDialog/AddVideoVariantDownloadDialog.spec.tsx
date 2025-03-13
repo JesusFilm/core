@@ -66,6 +66,7 @@ describe('AddVideoVariantDownloadDialog', () => {
               open={true}
               videoVariantId="variant-123"
               existingQualities={[]}
+              languageId="529"
             />
           </MockedProvider>
         </SnackbarProvider>
@@ -87,6 +88,7 @@ describe('AddVideoVariantDownloadDialog', () => {
               open={true}
               videoVariantId="variant-123"
               existingQualities={['high']}
+              languageId="529"
             />
           </MockedProvider>
         </SnackbarProvider>
@@ -120,6 +122,7 @@ describe('AddVideoVariantDownloadDialog', () => {
               open={true}
               videoVariantId="variant-123"
               existingQualities={[]}
+              languageId="529"
             />
           </MockedProvider>
         </SnackbarProvider>
@@ -159,6 +162,7 @@ describe('AddVideoVariantDownloadDialog', () => {
               open={true}
               videoVariantId="variant-123"
               existingQualities={[]}
+              languageId="529"
             />
           </MockedProvider>
         </SnackbarProvider>
@@ -189,7 +193,7 @@ describe('AddVideoVariantDownloadDialog', () => {
     // Create mocks for the mutations
     const createR2AssetMock = getCreateR2AssetMock({
       videoId,
-      fileName: `${videoId}/variants/${videoVariantId}/downloads/${videoVariantId}_high.mp4`,
+      fileName: `${videoId}/variants/529/downloads/${videoVariantId}_high.mp4`,
       contentType: 'video/mp4',
       contentLength: file.size
     })
@@ -202,7 +206,7 @@ describe('AddVideoVariantDownloadDialog', () => {
       width: 1280,
       url:
         'https://mock.cloudflare-domain.com/' +
-        `${videoId}/variants/${videoVariantId}/downloads/${videoVariantId}_high.mp4`,
+        `${videoId}/variants/529/downloads/${videoVariantId}_high.mp4`,
       version: 0,
       assetId: 'r2-asset.id'
     })
@@ -220,6 +224,7 @@ describe('AddVideoVariantDownloadDialog', () => {
               existingQualities={[]}
               handleClose={handleClose}
               onSuccess={onSuccess}
+              languageId="529"
             />
           </MockedProvider>
         </SnackbarProvider>

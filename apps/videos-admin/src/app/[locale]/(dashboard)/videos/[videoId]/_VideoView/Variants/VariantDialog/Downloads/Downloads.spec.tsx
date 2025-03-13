@@ -27,14 +27,14 @@ const videoVariantDownloadCreateMock = getVideoVariantDownloadCreateMock({
   size: 13,
   height: 720,
   width: 1280,
-  url: 'https://mock.cloudflare-domain.com/video-123/variants/variant-id/downloads/variant-id_high.mp4',
+  url: 'https://mock.cloudflare-domain.com/video-123/variants/529/downloads/variant-id_high.mp4',
   version: 0,
   assetId: 'r2-asset.id'
 })
 
 const createR2AssetMock = getCreateR2AssetMock({
   videoId: 'video-123',
-  fileName: 'video-123/variants/variant-id/downloads/variant-id_high.mp4',
+  fileName: 'video-123/variants/529/downloads/variant-id_high.mp4',
   contentType: 'video/mp4',
   contentLength: 13
 })
@@ -87,6 +87,7 @@ describe('Downloads', () => {
           <Downloads
             downloads={mockVariantDownloads}
             videoVariantId="variant-id"
+            languageId="529"
           />
         </MockedProvider>
       </NextIntlClientProvider>
@@ -119,6 +120,7 @@ describe('Downloads', () => {
           <Downloads
             downloads={mockVariantDownloads}
             videoVariantId="variant-id"
+            languageId="529"
           />
         </MockedProvider>
       </NextIntlClientProvider>
@@ -137,6 +139,7 @@ describe('Downloads', () => {
             <Downloads
               downloads={mockVariantDownloads}
               videoVariantId="variant-id"
+              languageId="529"
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -157,6 +160,7 @@ describe('Downloads', () => {
           <Downloads
             downloads={mockVariantDownloads}
             videoVariantId="variant-id"
+            languageId="529"
           />
         </MockedProvider>
       </NextIntlClientProvider>
@@ -175,6 +179,7 @@ describe('Downloads', () => {
             <Downloads
               downloads={mockVariantDownloads}
               videoVariantId="variant-id"
+              languageId="529"
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -202,6 +207,7 @@ describe('Downloads', () => {
             <Downloads
               downloads={mockVariantDownloads}
               videoVariantId="variant-id"
+              languageId="529"
             />
           </SnackbarProvider>
         </MockedProvider>
@@ -233,7 +239,11 @@ describe('Downloads', () => {
           ]}
         >
           <SnackbarProvider>
-            <Downloads downloads={[]} videoVariantId="variant-id" />
+            <Downloads
+              downloads={[]}
+              videoVariantId="variant-id"
+              languageId="529"
+            />
           </SnackbarProvider>
         </MockedProvider>
       </NextIntlClientProvider>

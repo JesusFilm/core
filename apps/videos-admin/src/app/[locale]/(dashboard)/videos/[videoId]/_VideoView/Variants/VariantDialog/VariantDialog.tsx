@@ -95,7 +95,11 @@ export function VariantDialog({
         >
           <VariantVideo hlsSrc={variant.hls} />
         </Box>
-        <Downloads downloads={variant.downloads} videoVariantId={variant.id} />
+        <Downloads
+          downloads={variant.downloads}
+          videoVariantId={variant.id}
+          languageId={variant.language.id}
+        />
       </Stack>
     </Dialog>
   )
