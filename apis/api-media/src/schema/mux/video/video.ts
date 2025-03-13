@@ -1,3 +1,5 @@
+import { GraphQLError } from 'graphql'
+
 import { Prisma } from '.prisma/api-media-client'
 
 import { prisma } from '../../../lib/prisma'
@@ -8,6 +10,7 @@ import {
   createVideoByDirectUpload,
   createVideoFromUrl,
   deleteVideo,
+  enableDownload,
   getUpload,
   getVideo
 } from './service'
@@ -39,6 +42,7 @@ const MuxVideo = builder.prismaObject('MuxVideo', {
       nullable: false
     }),
     readyToStream: t.exposeBoolean('readyToStream', { nullable: false }),
+    downloadable: t.exposeBoolean('downloadable', { nullable: false }),
     videoVariants: t.relation('videoVariants', { nullable: false })
   })
 })
@@ -52,7 +56,10 @@ builder.queryFields((t) => ({
       limit: t.arg.int({ required: false })
     },
     resolve: async (query, _root, { offset, limit }, { user }) => {
-      if (user == null) throw new Error('User not found')
+      if (user == null)
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
 
       return await prisma.muxVideo.findMany({
         ...query,
@@ -69,7 +76,10 @@ builder.queryFields((t) => ({
       id: t.arg({ type: 'ID', required: true })
     },
     resolve: async (query, _root, { id }, { user }) => {
-      if (user == null) throw new Error('User not found')
+      if (user == null)
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
 
       let video = await prisma.muxVideo.findFirstOrThrow({
         ...query,
@@ -172,7 +182,10 @@ builder.mutationFields((t) => ({
         name: t.arg({ type: 'String', required: true })
       },
       resolve: async (query, _root, { name }, { user }) => {
-        if (user == null) throw new Error('User not found')
+        if (user == null)
+          throw new GraphQLError('User not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
 
         const { id, uploadUrl } = await createVideoByDirectUpload()
 
@@ -194,7 +207,10 @@ builder.mutationFields((t) => ({
       url: t.arg({ type: 'String', required: true })
     },
     resolve: async (query, _root, { url }, { user }) => {
-      if (user == null) throw new Error('User not found')
+      if (user == null)
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
 
       const { id } = await createVideoFromUrl(url)
 
@@ -207,13 +223,36 @@ builder.mutationFields((t) => ({
       })
     }
   }),
+  enableMuxDownload: t.withAuth({ isPublisher: true }).prismaField({
+    type: 'MuxVideo',
+    args: {
+      id: t.arg({ type: 'ID', required: true })
+    },
+    resolve: async (query, _root, { id }, { user }) => {
+      if (user == null)
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      await enableDownload(id)
+      return await prisma.muxVideo.update({
+        ...query,
+        where: { id },
+        data: {
+          downloadable: true
+        }
+      })
+    }
+  }),
   deleteMuxVideo: t.withAuth({ isAuthenticated: true }).boolean({
     nullable: false,
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
     resolve: async (_root, { id }, { user, currentRoles }) => {
-      if (user == null) throw new Error('User not found')
+      if (user == null)
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
 
       const where: Prisma.MuxVideoWhereUniqueInput = { id }
       if (!currentRoles.includes('publisher')) {
