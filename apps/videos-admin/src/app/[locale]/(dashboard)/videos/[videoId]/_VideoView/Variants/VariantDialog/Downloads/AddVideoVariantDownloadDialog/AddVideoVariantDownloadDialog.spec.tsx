@@ -1,111 +1,109 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { NextIntlClientProvider } from 'next-intl'
-import { SnackbarProvider } from 'notistack'
 
+import { SnackbarProvider } from '../../../../../../../../../../libs/SnackbarProvider'
+import { getCreateR2AssetMock } from '../../../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset.mock'
 import { getVideoVariantDownloadCreateMock } from '../../../../../../../../../../libs/useVideoVariantDownloadCreateMutation/useVideoVariantDownloadCreateMutation.mock'
 
 import { AddVideoVariantDownloadDialog } from './AddVideoVariantDownloadDialog'
 
-const originalURLCreateObjectURL = URL.createObjectURL
+jest.mock('next/navigation', () => ({
+  useParams: jest.fn(() => ({ videoId: 'video-123', locale: 'en' }))
+}))
 
-const videoVariantDownloadCreateMock = getVideoVariantDownloadCreateMock({
-  videoVariantId: 'variant-id',
-  quality: 'high',
-  size: 4.94,
-  height: 720,
-  width: 1280,
-  url: 'https://example.com/video.mp4',
-  version: 1
-})
+jest.mock('../../../AddAudioLanguageDialog/utils/getExtension', () => ({
+  getExtension: jest.fn().mockReturnValue('mp4')
+}))
+
+const originalCreateElement = document.createElement
+const originalCreateObjectURL = URL.createObjectURL
+const originalRevokeObjectURL = URL.revokeObjectURL
+
+// Mock video element
+const mockVideoElement = {
+  remove: jest.fn(),
+  videoWidth: 1280,
+  videoHeight: 720,
+  src: '',
+  onloadedmetadata: jest.fn(),
+  onerror: jest.fn()
+}
 
 describe('AddVideoVariantDownloadDialog', () => {
-  const handleClose = jest.fn()
-  const onSuccess = jest.fn()
+  beforeAll(() => {
+    // Mock document.createElement
+    document.createElement = jest.fn().mockImplementation((tagName) => {
+      if (tagName === 'video') {
+        return mockVideoElement
+      }
+      return originalCreateElement.call(document, tagName)
+    })
+
+    // Mock URL methods
+    URL.createObjectURL = jest.fn().mockReturnValue('blob:mock-url')
+    URL.revokeObjectURL = jest.fn()
+  })
+
+  afterAll(() => {
+    // Restore original implementations
+    document.createElement = originalCreateElement
+    URL.createObjectURL = originalCreateObjectURL
+    URL.revokeObjectURL = originalRevokeObjectURL
+  })
 
   beforeEach(() => {
     jest.clearAllMocks()
-    URL.createObjectURL = jest.fn(() => 'mock-url')
-  })
-
-  afterEach(() => {
-    URL.createObjectURL = originalURLCreateObjectURL
-    jest.restoreAllMocks()
   })
 
   it('should render the dialog', () => {
     render(
       <NextIntlClientProvider locale="en">
-        <MockedProvider>
-          <SnackbarProvider>
+        <SnackbarProvider>
+          <MockedProvider mocks={[]}>
             <AddVideoVariantDownloadDialog
-              open
-              handleClose={handleClose}
-              onSuccess={onSuccess}
-              videoVariantId="variant-id"
+              open={true}
+              videoVariantId="variant-123"
               existingQualities={[]}
             />
-          </SnackbarProvider>
-        </MockedProvider>
+          </MockedProvider>
+        </SnackbarProvider>
       </NextIntlClientProvider>
     )
 
-    expect(
-      screen.getByRole('heading', { name: 'Add Download' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Choose File' })
-    ).toBeInTheDocument()
+    expect(screen.getByText('Add Download')).toBeInTheDocument()
     expect(screen.getByLabelText('Quality')).toBeInTheDocument()
-
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
   })
 
-  it('should close the dialog when cancel is clicked', async () => {
+  it('should not allow selecting a quality that already exists', async () => {
     render(
       <NextIntlClientProvider locale="en">
-        <MockedProvider>
-          <SnackbarProvider>
+        <SnackbarProvider>
+          <MockedProvider mocks={[]}>
             <AddVideoVariantDownloadDialog
-              open
-              handleClose={handleClose}
-              onSuccess={onSuccess}
-              videoVariantId="variant-id"
-              existingQualities={[]}
-            />
-          </SnackbarProvider>
-        </MockedProvider>
-      </NextIntlClientProvider>
-    )
-
-    await userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
-    expect(handleClose).toHaveBeenCalled()
-  })
-
-  it('should show validation error when quality already exists', async () => {
-    render(
-      <NextIntlClientProvider locale="en">
-        <MockedProvider>
-          <SnackbarProvider>
-            <AddVideoVariantDownloadDialog
-              open
-              handleClose={handleClose}
-              onSuccess={onSuccess}
-              videoVariantId="variant-id"
+              open={true}
+              videoVariantId="variant-123"
               existingQualities={['high']}
             />
-          </SnackbarProvider>
-        </MockedProvider>
+          </MockedProvider>
+        </SnackbarProvider>
       </NextIntlClientProvider>
     )
 
-    // Select high quality
-    await userEvent.click(screen.getByLabelText('Quality'))
-    await userEvent.click(screen.getByRole('option', { name: 'high' }))
+    const user = userEvent.setup()
+    const select = screen.getByLabelText('Quality')
 
-    await userEvent.click(screen.getByRole('button', { name: 'Save' }))
+    // Select 'high' quality which already exists
+    await user.click(select)
+    await user.click(screen.getByRole('option', { name: 'high' }))
+
+    // Try to submit the form
+    await user.click(screen.getByRole('button', { name: 'Save' }))
+
+    // Should show validation error
     await waitFor(() => {
       expect(
         screen.getByText('A download with this quality already exists')
@@ -113,58 +111,177 @@ describe('AddVideoVariantDownloadDialog', () => {
     })
   })
 
-  it('should submit the form successfully', async () => {
+  it('should handle file upload and set video dimensions', async () => {
     render(
       <NextIntlClientProvider locale="en">
-        <MockedProvider mocks={[videoVariantDownloadCreateMock]}>
-          <SnackbarProvider>
+        <SnackbarProvider>
+          <MockedProvider mocks={[]}>
             <AddVideoVariantDownloadDialog
-              open
-              handleClose={handleClose}
-              onSuccess={onSuccess}
-              videoVariantId="variant-id"
+              open={true}
+              videoVariantId="variant-123"
               existingQualities={[]}
             />
-          </SnackbarProvider>
-        </MockedProvider>
+          </MockedProvider>
+        </SnackbarProvider>
       </NextIntlClientProvider>
     )
 
-    // Fill out the form
-    await userEvent.click(screen.getByLabelText('Quality'))
-    await userEvent.click(screen.getByRole('option', { name: 'high' }))
-    await userEvent.click(screen.getByRole('button', { name: 'Save' }))
+    const user = userEvent.setup()
+    const dropzone = screen.getByTestId('DropZone')
 
-    await waitFor(() => {
-      expect(onSuccess).toHaveBeenCalled()
-      expect(handleClose).toHaveBeenCalled()
+    // Upload a video file
+    const file = new File(['video content'], 'test-video.mp4', {
+      type: 'video/mp4'
     })
+    await user.upload(dropzone, file)
+
+    // Trigger onloadedmetadata event
+    if (mockVideoElement.onloadedmetadata) {
+      mockVideoElement.onloadedmetadata()
+    }
+
+    // File should be displayed
+    await waitFor(() => {
+      expect(screen.getByText('test-video.mp4')).toBeInTheDocument()
+    })
+
+    // URL methods should have been called
+    expect(URL.createObjectURL).toHaveBeenCalledWith(file)
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock-url')
   })
 
-  it('should handle file upload', async () => {
+  it('should handle video loading error', async () => {
     render(
       <NextIntlClientProvider locale="en">
-        <MockedProvider>
-          <SnackbarProvider>
+        <SnackbarProvider>
+          <MockedProvider mocks={[]}>
             <AddVideoVariantDownloadDialog
-              open
-              handleClose={handleClose}
-              onSuccess={onSuccess}
-              videoVariantId="variant-id"
+              open={true}
+              videoVariantId="variant-123"
               existingQualities={[]}
             />
-          </SnackbarProvider>
-        </MockedProvider>
+          </MockedProvider>
+        </SnackbarProvider>
       </NextIntlClientProvider>
     )
 
-    const file = new File(['dummy content'], 'video.mp4', {
+    const user = userEvent.setup()
+    const dropzone = screen.getByTestId('DropZone')
+
+    const file = new File(['video content'], 'test-video.mp4', {
+      type: 'video/mp4'
+    })
+    await user.upload(dropzone, file)
+
+    mockVideoElement.onerror()
+
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock-url')
+    expect(mockVideoElement.remove).toHaveBeenCalled()
+  })
+
+  it('should successfully create a download', async () => {
+    const videoVariantId = 'variant-123'
+    const videoId = 'video-123'
+    const file = new File(['video content'], 'test-video.mp4', {
       type: 'video/mp4'
     })
 
-    const fileInput = screen.getByLabelText('Upload File')
-    await userEvent.upload(fileInput, file)
+    // Create mocks for the mutations
+    const createR2AssetMock = getCreateR2AssetMock({
+      videoId,
+      fileName: `${videoId}/variants/${videoVariantId}/downloads/${videoVariantId}_high.mp4`,
+      contentType: 'video/mp4',
+      contentLength: file.size
+    })
 
-    expect((fileInput as HTMLInputElement).files?.[0]).toBe(file)
+    const createDownloadMock = getVideoVariantDownloadCreateMock({
+      videoVariantId,
+      quality: 'high',
+      size: 13,
+      height: 720,
+      width: 1280,
+      url:
+        'https://mock.cloudflare-domain.com/' +
+        `${videoId}/variants/${videoVariantId}/downloads/${videoVariantId}_high.mp4`,
+      version: 0,
+      assetId: 'r2-asset.id'
+    })
+
+    const handleClose = jest.fn()
+    const onSuccess = jest.fn()
+
+    render(
+      <NextIntlClientProvider locale="en">
+        <SnackbarProvider>
+          <MockedProvider mocks={[createR2AssetMock, createDownloadMock]}>
+            <AddVideoVariantDownloadDialog
+              open={true}
+              videoVariantId={videoVariantId}
+              existingQualities={[]}
+              handleClose={handleClose}
+              onSuccess={onSuccess}
+            />
+          </MockedProvider>
+        </SnackbarProvider>
+      </NextIntlClientProvider>
+    )
+
+    const user = userEvent.setup()
+
+    // Select 'high' quality
+    const select = screen.getByLabelText('Quality')
+    await user.click(select)
+    await user.click(screen.getByRole('option', { name: 'high' }))
+
+    // Upload a video file
+    const dropzone = screen.getByTestId('DropZone')
+    await user.upload(dropzone, file)
+
+    // Trigger onloadedmetadata event to set video dimensions
+    if (mockVideoElement.onloadedmetadata) {
+      mockVideoElement.onloadedmetadata()
+    }
+
+    // Submit the form
+    await user.click(screen.getByRole('button', { name: 'Save' }))
+
+    // Wait for mutations to be called
+    await waitFor(() => {
+      expect(createR2AssetMock.result).toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(createDownloadMock.result).toHaveBeenCalled()
+    })
+
+    // Success callback should be called
+    expect(onSuccess).toHaveBeenCalled()
+
+    // Close callback should be called
+    expect(handleClose).toHaveBeenCalled()
+  })
+
+  it('should handle close button click', async () => {
+    const handleClose = jest.fn()
+
+    render(
+      <NextIntlClientProvider locale="en">
+        <SnackbarProvider>
+          <MockedProvider mocks={[]}>
+            <AddVideoVariantDownloadDialog
+              open={true}
+              videoVariantId="variant-123"
+              existingQualities={[]}
+              handleClose={handleClose}
+            />
+          </MockedProvider>
+        </SnackbarProvider>
+      </NextIntlClientProvider>
+    )
+
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('button', { name: 'Cancel' }))
+
+    expect(handleClose).toHaveBeenCalled()
   })
 })
