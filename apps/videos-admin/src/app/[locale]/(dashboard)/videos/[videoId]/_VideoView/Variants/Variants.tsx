@@ -54,10 +54,16 @@ export function Variants({
   )
   const [open, setOpen] = useState<boolean | null>(null)
   const [openAddDialog, setOpenAddDialog] = useState<boolean | null>(null)
-
   const [deleteVariant, setDeleteVariant] =
     useState<GetAdminVideoVariant | null>(null)
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean | null>(null)
+  const [size, setSize] = useState<{
+    height: number
+    width: number
+  }>({
+    height: 0,
+    width: 0
+  })
 
   function handleCardClick(variant: GetAdminVideoVariant): void {
     setSelectedVariantId(variant.id)
@@ -89,13 +95,6 @@ export function Variants({
     setDeleteVariant(null)
   }
 
-  const [size, setSize] = useState<{
-    height: number
-    width: number
-  }>({
-    height: 0,
-    width: 0
-  })
   function getVariantSectionDimensions(): void {
     const section = document.getElementById('Audio Languages-section')
     if (section == null) return
@@ -114,6 +113,11 @@ export function Variants({
   const variantLanguagesMap: Map<string, GetAdminVideoVariant> = useMemo(() => {
     return new Map(variants?.map((variant) => [variant.language.id, variant]))
   }, [variants])
+
+  const selectedVariant = useMemo(() => {
+    if (!variants || !selectedVariantId) return null
+    return variants.find((variant) => variant.id === selectedVariantId) || null
+  }, [variants, selectedVariantId])
 
   return (
     <>
@@ -155,11 +159,11 @@ export function Variants({
           </FixedSizeList>
         </Section>
       )}
-      {open != null && selectedVariantId != null && (
+      {open != null && selectedVariant != null && (
         <VariantDialog
           open={open}
           handleClose={handleClose}
-          variantId={selectedVariantId}
+          variant={selectedVariant}
           variantLanguagesMap={variantLanguagesMap}
         />
       )}

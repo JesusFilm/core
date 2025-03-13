@@ -52,7 +52,6 @@ export function VariantDialog({
   handleClose,
   variantLanguagesMap
 }: VariantDialogProps): ReactElement | null {
-  const video = useVideo()
   const t = useTranslations()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
