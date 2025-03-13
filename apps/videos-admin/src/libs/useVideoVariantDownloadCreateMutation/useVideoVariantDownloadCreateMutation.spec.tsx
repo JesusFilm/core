@@ -12,7 +12,8 @@ const videoVariantDownloadCreateMock = getVideoVariantDownloadCreateMock({
   height: 720,
   width: 1280,
   url: 'https://example.com/video.mp4',
-  version: 1
+  version: 1,
+  assetId: 'asset-id'
 })
 
 describe('useVideoVariantDownloadCreateMutation', () => {
@@ -39,7 +40,8 @@ describe('useVideoVariantDownloadCreateMutation', () => {
               height: 720,
               width: 1280,
               url: 'https://example.com/video.mp4',
-              version: 1
+              version: 1,
+              assetId: 'asset-id'
             }
           }
         })
