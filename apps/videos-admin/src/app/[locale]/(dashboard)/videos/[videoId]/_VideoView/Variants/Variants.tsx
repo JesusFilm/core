@@ -1,7 +1,7 @@
 import AddIcon from '@mui/icons-material/Add'
 import dynamic from 'next/dynamic'
 import { useTranslations } from 'next-intl'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { MouseEvent, ReactElement, useEffect, useMemo, useState } from 'react'
 import { FixedSizeList } from 'react-window'
 
 import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
@@ -28,6 +28,17 @@ const AddAudioLanguageDialog = dynamic(
   { ssr: false }
 )
 
+const DeleteVariantDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "DeleteVariantDialog" */
+      './DeleteVariantDialog'
+    ).then((mod) => mod.DeleteVariantDialog),
+  {
+    ssr: false
+  }
+)
+
 const ITEM_SIZE = 75
 
 export function Variants({
@@ -43,6 +54,10 @@ export function Variants({
   const [open, setOpen] = useState<boolean | null>(null)
   const [openAddDialog, setOpenAddDialog] = useState<boolean | null>(null)
 
+  const [deleteVariant, setDeleteVariant] =
+    useState<GetAdminVideoVariant | null>(null)
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean | null>(null)
+
   function handleCardClick(variant: GetAdminVideoVariant): void {
     setSelectedVariant(variant)
     setOpen(true)
@@ -54,6 +69,23 @@ export function Variants({
 
   function handleAddClose(): void {
     setOpenAddDialog(false)
+  }
+
+  function handleDeleteClick(
+    variant: GetAdminVideoVariant,
+    event: MouseEvent<HTMLButtonElement>
+  ): void {
+    event.stopPropagation()
+    setDeleteVariant(variant)
+    setOpenDeleteDialog(true)
+  }
+
+  function handleDeleteClose(): void {
+    setOpenDeleteDialog(false)
+  }
+
+  function handleDeleteSuccess(): void {
+    setDeleteVariant(null)
   }
 
   const [size, setSize] = useState<{
@@ -104,16 +136,19 @@ export function Variants({
             itemData={variants}
             itemCount={variants.length}
             itemSize={ITEM_SIZE}
+            itemKey={(index, data) => data[index].id}
             overscanCount={10}
             style={{
               marginTop: 8
             }}
           >
-            {({ index, style, data: items }) => (
+            {({ index, style, data }) => (
               <VariantCard
-                variant={items[index]}
+                key={data[index].id}
+                variant={data[index]}
                 style={style}
                 onClick={handleCardClick}
+                onDelete={handleDeleteClick}
               />
             )}
           </FixedSizeList>
@@ -133,6 +168,14 @@ export function Variants({
           handleClose={handleAddClose}
           variantLanguagesMap={variantLanguagesMap}
           editions={editions}
+        />
+      )}
+      {openDeleteDialog != null && deleteVariant != null && (
+        <DeleteVariantDialog
+          variant={deleteVariant}
+          open={openDeleteDialog}
+          onClose={handleDeleteClose}
+          onSuccess={handleDeleteSuccess}
         />
       )}
     </>

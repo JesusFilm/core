@@ -71,4 +71,51 @@ describe('VariantCard', () => {
       })
     )
   })
+
+  it('renders delete button when onDelete is provided', () => {
+    const handleClick = jest.fn()
+    const handleDelete = jest.fn()
+
+    render(
+      <VariantCard
+        variant={variant}
+        onClick={handleClick}
+        onDelete={handleDelete}
+      />
+    )
+
+    // Check if delete button is rendered
+    const deleteButton = screen.getByLabelText('delete variant')
+    expect(deleteButton).toBeInTheDocument()
+  })
+
+  it('does not render delete button when onDelete is not provided', () => {
+    const handleClick = jest.fn()
+
+    render(<VariantCard variant={variant} onClick={handleClick} />)
+
+    // Check if delete button is not rendered
+    const deleteButton = screen.queryByLabelText('delete variant')
+    expect(deleteButton).not.toBeInTheDocument()
+  })
+
+  it('calls onDelete when delete button is clicked', () => {
+    const handleClick = jest.fn()
+    const handleDelete = jest.fn()
+
+    render(
+      <VariantCard
+        variant={variant}
+        onClick={handleClick}
+        onDelete={handleDelete}
+      />
+    )
+
+    const deleteButton = screen.getByLabelText('delete variant')
+    fireEvent.click(deleteButton)
+
+    expect(handleDelete).toHaveBeenCalled()
+
+    expect(handleClick).not.toHaveBeenCalled()
+  })
 })
