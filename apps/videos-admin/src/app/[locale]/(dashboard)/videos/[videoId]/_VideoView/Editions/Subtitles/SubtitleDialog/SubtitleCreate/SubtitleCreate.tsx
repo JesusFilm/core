@@ -111,15 +111,6 @@ export function SubtitleCreate({
     }
   })
 
-  const uploadAssetFileWithAbort = async (file: File, uploadUrl: string) => {
-    await uploadAssetFile(
-      file,
-      uploadUrl,
-      t('Failed to upload subtitle file.'),
-      abortController.current?.signal
-    )
-  }
-
   const handleSubmit = async (values: SubtitleValidationSchema) => {
     if (edition == null || edition.name == null) return
 
@@ -176,7 +167,8 @@ export function SubtitleCreate({
         const uploadUrl = result.data.cloudflareR2Create.uploadUrl
         const publicUrl = result.data.cloudflareR2Create.publicUrl
 
-        await uploadAssetFileWithAbort(vttFile, uploadUrl)
+        await uploadAssetFile(vttFile, uploadUrl)
+
         input.vttSrc = publicUrl
         input.vttAssetId = result.data.cloudflareR2Create.id
         input.vttVersion = 1
@@ -214,7 +206,8 @@ export function SubtitleCreate({
         const uploadUrl = result.data.cloudflareR2Create.uploadUrl
         const publicUrl = result.data.cloudflareR2Create.publicUrl
 
-        await uploadAssetFileWithAbort(srtFile, uploadUrl)
+        await uploadAssetFile(srtFile, uploadUrl)
+
         input.srtSrc = publicUrl
         input.srtAssetId = result.data.cloudflareR2Create.id
         input.srtVersion = 1

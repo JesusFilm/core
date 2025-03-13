@@ -271,6 +271,7 @@ describe('AddVideoVariantDownloadDialog', () => {
               videoVariantId="variant-123"
               existingQualities={[]}
               handleClose={handleClose}
+              languageId="529"
             />
           </MockedProvider>
         </SnackbarProvider>

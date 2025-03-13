@@ -105,7 +105,11 @@ describe('Downloads', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider mocks={[]}>
-          <Downloads downloads={[]} videoVariantId="variant-id" />
+          <Downloads
+            downloads={[]}
+            videoVariantId="variant-id"
+            languageId="529"
+          />
         </MockedProvider>
       </NextIntlClientProvider>
     )
