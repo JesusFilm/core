@@ -9,6 +9,7 @@ import {
   GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle
 } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useCreateR2AssetMutation } from '../../../../../../../../../../libs/useCreateR2Asset'
+import { uploadAssetFile } from '../../../../../../../../../../libs/useCreateR2Asset/uploadAssetFile/uploadAssetFile'
 import { useVideo } from '../../../../../../../../../../libs/VideoProvider'
 import { SubtitleForm } from '../../SubtitleForm'
 import { SubtitleValidationSchema } from '../../SubtitleForm/SubtitleForm'
@@ -110,17 +111,13 @@ export function SubtitleCreate({
     }
   })
 
-  const uploadAssetFile = async (file: File, uploadUrl: string) => {
-    const res = await fetch(uploadUrl, {
-      method: 'PUT',
-      body: file,
-      headers: { 'Content-Type': file.type },
-      signal: abortController.current?.signal
-    })
-
-    if (!res.ok) {
-      throw new Error(t('Failed to upload subtitle file.'))
-    }
+  const uploadAssetFileWithAbort = async (file: File, uploadUrl: string) => {
+    await uploadAssetFile(
+      file,
+      uploadUrl,
+      t('Failed to upload subtitle file.'),
+      abortController.current?.signal
+    )
   }
 
   const handleSubmit = async (values: SubtitleValidationSchema) => {
@@ -179,7 +176,7 @@ export function SubtitleCreate({
         const uploadUrl = result.data.cloudflareR2Create.uploadUrl
         const publicUrl = result.data.cloudflareR2Create.publicUrl
 
-        await uploadAssetFile(vttFile, uploadUrl)
+        await uploadAssetFileWithAbort(vttFile, uploadUrl)
         input.vttSrc = publicUrl
         input.vttAssetId = result.data.cloudflareR2Create.id
         input.vttVersion = 1
@@ -217,7 +214,7 @@ export function SubtitleCreate({
         const uploadUrl = result.data.cloudflareR2Create.uploadUrl
         const publicUrl = result.data.cloudflareR2Create.publicUrl
 
-        await uploadAssetFile(srtFile, uploadUrl)
+        await uploadAssetFileWithAbort(srtFile, uploadUrl)
         input.srtSrc = publicUrl
         input.srtAssetId = result.data.cloudflareR2Create.id
         input.srtVersion = 1

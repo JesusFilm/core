@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { NextIntlClientProvider } from 'next-intl'
@@ -14,8 +14,10 @@ jest.mock('next/navigation', () => ({
 }))
 
 jest.mock('../../../AddAudioLanguageDialog/utils/getExtension', () => ({
-  getExtension: jest.fn().mockReturnValue('mp4')
+  getExtension: jest.fn().mockReturnValue('.mp4')
 }))
+
+const originalFetch = global.fetch
 
 const originalCreateElement = document.createElement
 const originalCreateObjectURL = URL.createObjectURL
@@ -41,12 +43,14 @@ describe('AddVideoVariantDownloadDialog', () => {
 
     URL.createObjectURL = jest.fn().mockReturnValue('blob:mock-url')
     URL.revokeObjectURL = jest.fn()
+    global.fetch = jest.fn().mockResolvedValue({ ok: true })
   })
 
   afterAll(() => {
     document.createElement = originalCreateElement
     URL.createObjectURL = originalCreateObjectURL
     URL.revokeObjectURL = originalRevokeObjectURL
+    global.fetch = originalFetch
   })
 
   beforeEach(() => {

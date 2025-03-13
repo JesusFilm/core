@@ -18,7 +18,10 @@ import { v4 as uuidv4 } from 'uuid'
 import { object, string } from 'yup'
 
 import { LinkFile } from '../../../../../../../../../../components/LinkFile'
-import { useCreateR2AssetMutation } from '../../../../../../../../../../libs/useCreateR2Asset'
+import {
+  uploadAssetFile,
+  useCreateR2AssetMutation
+} from '../../../../../../../../../../libs/useCreateR2Asset'
 import { useVideoVariantDownloadCreateMutation } from '../../../../../../../../../../libs/useVideoVariantDownloadCreateMutation'
 import { FileUpload } from '../../../../Metadata/VideoImage/FileUpload'
 import { getExtension } from '../../../AddAudioLanguageDialog/utils/getExtension'
@@ -95,13 +98,25 @@ export function AddVideoVariantDownloadDialog({
       variables: {
         input: {
           videoId: videoId,
-          fileName: `${videoId}/variants/${videoVariantId}/downloads/${videoVariantId}_${values.quality}.${extension}`,
+          fileName: `${videoId}/variants/${videoVariantId}/downloads/${videoVariantId}_${values.quality}${extension}`,
           contentType: uploadedFile.type,
           contentLength: uploadedFile.size
         }
       }
     })
+    const uploadUrl = r2Asset.data?.cloudflareR2Create?.uploadUrl
+    try {
+      if (uploadUrl == null) throw new Error('Upload URL is null')
+      await uploadAssetFile(uploadedFile, uploadUrl)
+    } catch (error) {
+      console.log(error)
+      enqueueSnackbar(t('Failed to upload file'), {
+        variant: 'error'
+      })
+      return
+    }
     const publicUrl = r2Asset.data?.cloudflareR2Create?.publicUrl
+
     if (publicUrl != null) {
       await createVideoVariantDownload({
         variables: {

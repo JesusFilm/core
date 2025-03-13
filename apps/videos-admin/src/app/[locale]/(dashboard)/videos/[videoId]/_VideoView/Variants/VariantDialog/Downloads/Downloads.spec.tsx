@@ -40,12 +40,14 @@ const createR2AssetMock = getCreateR2AssetMock({
 })
 
 jest.mock('../../AddAudioLanguageDialog/utils/getExtension', () => ({
-  getExtension: jest.fn().mockReturnValue('mp4')
+  getExtension: jest.fn().mockReturnValue('.mp4')
 }))
 
 jest.mock('next/navigation', () => ({
   useParams: jest.fn(() => ({ videoId: 'video-123', locale: 'en' }))
 }))
+
+const originalFetch = global.fetch
 
 const originalCreateElement = document.createElement
 const originalCreateObjectURL = URL.createObjectURL
@@ -68,12 +70,14 @@ describe('Downloads', () => {
 
     URL.createObjectURL = jest.fn().mockReturnValue('blob:mock-url')
     URL.revokeObjectURL = jest.fn()
+    global.fetch = jest.fn().mockResolvedValue({ ok: true })
   })
 
   afterAll(() => {
     document.createElement = originalCreateElement
     URL.createObjectURL = originalCreateObjectURL
     URL.revokeObjectURL = originalRevokeObjectURL
+    global.fetch = originalFetch
   })
 
   it('should show downloads', () => {
