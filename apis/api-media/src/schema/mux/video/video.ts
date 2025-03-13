@@ -229,7 +229,6 @@ builder.mutationFields((t) => ({
       id: t.arg({ type: 'ID', required: true })
     },
     resolve: async (query, _root, { id }, { user }) => {
-      console.log('hit')
       if (user == null)
         throw new GraphQLError('User not found', {
           extensions: { code: 'NOT_FOUND' }
