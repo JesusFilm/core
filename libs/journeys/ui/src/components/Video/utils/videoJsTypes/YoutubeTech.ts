@@ -7,5 +7,7 @@ import Tech from 'video.js/dist/types/tech/tech'
 export interface YoutubeTech extends Tech {
   ytPlayer: {
     getPlaybackQuality: () => string
+    getAvailableQualityLevels: () => string[]
+    getVideoLoadedFraction: () => number
   }
 }

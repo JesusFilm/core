@@ -6,6 +6,7 @@ describe('SettingsMenu', () => {
   const anchorEl = document.createElement('button')
   const handleClose = jest.fn()
   const handleQualityClick = jest.fn()
+  const handleToggleStats = jest.fn()
   const currentQuality = 'Auto'
 
   beforeEach(() => {
@@ -21,12 +22,14 @@ describe('SettingsMenu', () => {
           onClose={handleClose}
           currentQuality={currentQuality}
           onQualityClick={handleQualityClick}
+          onToggleStats={handleToggleStats}
         />
       )
     })
 
     expect(screen.getByText('Quality')).toBeInTheDocument()
     expect(screen.getByText(currentQuality)).toBeInTheDocument()
+    expect(screen.getByText('Stats for nerds')).toBeInTheDocument()
   })
 
   it('does not render the menu when closed', () => {
@@ -37,6 +40,7 @@ describe('SettingsMenu', () => {
         onClose={handleClose}
         currentQuality={currentQuality}
         onQualityClick={handleQualityClick}
+        onToggleStats={handleToggleStats}
       />
     )
 
@@ -53,6 +57,7 @@ describe('SettingsMenu', () => {
           onClose={handleClose}
           currentQuality={currentQuality}
           onQualityClick={handleQualityClick}
+          onToggleStats={handleToggleStats}
         />
       )
     })
@@ -62,6 +67,27 @@ describe('SettingsMenu', () => {
     })
 
     expect(handleQualityClick).toHaveBeenCalledTimes(1)
+  })
+
+  it('calls onToggleStats when Stats for nerds menu item is clicked', () => {
+    act(() => {
+      render(
+        <SettingsMenu
+          anchorEl={anchorEl}
+          open
+          onClose={handleClose}
+          currentQuality={currentQuality}
+          onQualityClick={handleQualityClick}
+          onToggleStats={handleToggleStats}
+        />
+      )
+    })
+
+    act(() => {
+      fireEvent.click(screen.getByText('Stats for nerds'))
+    })
+
+    expect(handleToggleStats).toHaveBeenCalledTimes(1)
   })
 
   it('displays the current quality setting', () => {
@@ -74,6 +100,7 @@ describe('SettingsMenu', () => {
           onClose={handleClose}
           currentQuality={testQuality}
           onQualityClick={handleQualityClick}
+          onToggleStats={handleToggleStats}
         />
       )
     })
@@ -90,6 +117,7 @@ describe('SettingsMenu', () => {
           onClose={handleClose}
           currentQuality={currentQuality}
           onQualityClick={handleQualityClick}
+          onToggleStats={handleToggleStats}
         />
       )
     })
