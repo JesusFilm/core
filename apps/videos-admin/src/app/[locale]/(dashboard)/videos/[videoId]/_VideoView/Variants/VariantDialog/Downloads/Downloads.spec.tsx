@@ -6,10 +6,20 @@ import { SnackbarProvider } from 'notistack'
 
 import { GetAdminVideoVariant_Downloads as VariantDownloads } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { videoVariantDownloadCreateMock } from '../../../../../../../../../libs/useVideoVariantDownloadCreateMutation/useVideoVariantDownloadCreateMutation.mock'
+import { getVideoVariantDownloadCreateMock } from '../../../../../../../../../libs/useVideoVariantDownloadCreateMutation/useVideoVariantDownloadCreateMutation.mock'
 import { videoVariantDownloadDeleteMock } from '../../../../../../../../../libs/useVideoVariantDownloadDeleteMutation/useVideoVariantDownloadDeleteMutation.mock'
 
 import { Downloads } from './Downloads'
+
+const videoVariantDownloadCreateMock = getVideoVariantDownloadCreateMock({
+  videoVariantId: 'variant-id',
+  quality: 'high',
+  size: 4.94,
+  height: 720,
+  width: 1280,
+  url: 'https://example.com/video.mp4',
+  version: 1
+})
 
 describe('Downloads', () => {
   const mockVariantDownloads: VariantDownloads =
@@ -178,15 +188,6 @@ describe('Downloads', () => {
 
     await userEvent.click(screen.getByLabelText('Quality'))
     await userEvent.click(screen.getByRole('option', { name: 'high' }))
-
-    await userEvent.type(screen.getByLabelText('Size (MB)'), '4.94')
-    await userEvent.type(screen.getByLabelText('Height'), '720')
-    await userEvent.type(screen.getByLabelText('Width'), '1280')
-    await userEvent.type(
-      screen.getByLabelText('URL'),
-      'https://example.com/video.mp4'
-    )
-    await userEvent.type(screen.getByLabelText('Version'), '1')
 
     await userEvent.click(screen.getByRole('button', { name: 'Save' }))
 

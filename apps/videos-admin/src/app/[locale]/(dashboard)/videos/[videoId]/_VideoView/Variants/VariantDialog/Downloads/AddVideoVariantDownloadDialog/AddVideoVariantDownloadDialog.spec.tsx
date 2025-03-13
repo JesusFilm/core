@@ -4,11 +4,21 @@ import userEvent from '@testing-library/user-event'
 import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider } from 'notistack'
 
-import { videoVariantDownloadCreateMock } from '../../../../../../../../../../libs/useVideoVariantDownloadCreateMutation/useVideoVariantDownloadCreateMutation.mock'
+import { getVideoVariantDownloadCreateMock } from '../../../../../../../../../../libs/useVideoVariantDownloadCreateMutation/useVideoVariantDownloadCreateMutation.mock'
 
 import { AddVideoVariantDownloadDialog } from './AddVideoVariantDownloadDialog'
 
 const originalURLCreateObjectURL = URL.createObjectURL
+
+const videoVariantDownloadCreateMock = getVideoVariantDownloadCreateMock({
+  videoVariantId: 'variant-id',
+  quality: 'high',
+  size: 4.94,
+  height: 720,
+  width: 1280,
+  url: 'https://example.com/video.mp4',
+  version: 1
+})
 
 describe('AddVideoVariantDownloadDialog', () => {
   const handleClose = jest.fn()
