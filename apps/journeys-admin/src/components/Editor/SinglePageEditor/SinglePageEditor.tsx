@@ -1,7 +1,11 @@
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
-import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
 
 import { DRAWER_WIDTH, EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { Content } from '../Slider/Content'
@@ -16,6 +20,9 @@ export function SinglePageEditor(): ReactElement {
   // Determine content width based on activeContent
   const isCanvasContent = activeContent === ActiveContent.Canvas
   const contentMinWidth = isCanvasContent ? '370px' : '900px'
+
+  console.log('activeSlide', activeSlide)
+  console.log('activeContent', activeContent)
 
   return (
     <Box
@@ -62,7 +69,8 @@ export function SinglePageEditor(): ReactElement {
 
       <Box
         sx={{
-          width: activeSlide === 1 ? `${DRAWER_WIDTH}px` : '0px',
+          width:
+            activeSlide === ActiveSlide.Content ? `${DRAWER_WIDTH}px` : '0px',
           borderRadius: 4,
           border: (theme) => `1px solid ${theme.palette.divider}`,
           backgroundColor: '#fff',

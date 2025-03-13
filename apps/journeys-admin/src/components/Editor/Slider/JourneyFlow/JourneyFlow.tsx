@@ -98,7 +98,7 @@ export function JourneyFlow(): ReactElement {
   const { editorAnalytics } = useFlags()
   const theme = useTheme()
   const {
-    state: { steps, activeSlide, showAnalytics, analytics },
+    state: { steps, showAnalytics, analytics },
     dispatch
   } = useEditor()
   const { journey } = useJourney()
