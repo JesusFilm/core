@@ -217,7 +217,9 @@ export function AddVideoVariantDownloadDialog({
               </Stack>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose}>{t('Cancel')}</Button>
+              <Button onClick={handleClose} disabled={isSubmitting}>
+                {t('Cancel')}
+              </Button>
               <Button type="submit" color="primary" disabled={isSubmitting}>
                 {t('Save')}
               </Button>
