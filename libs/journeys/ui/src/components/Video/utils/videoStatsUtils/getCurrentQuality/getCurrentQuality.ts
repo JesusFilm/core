@@ -1,7 +1,6 @@
 import { TFunction } from 'next-i18next'
 
 import VideoJsPlayer from '../../../utils/videoJsTypes'
-import { YoutubeTech } from '../../../utils/videoJsTypes/YoutubeTech'
 import { getYoutubeQualityMap } from '../../../utils/youtubeQualityMap'
 import { isHtml5Tech } from '../isHtml5Tech'
 import { isYoutubeTech } from '../isYoutubeTech'
