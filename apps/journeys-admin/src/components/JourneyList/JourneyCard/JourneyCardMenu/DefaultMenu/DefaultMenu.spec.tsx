@@ -54,6 +54,7 @@ describe('DefaultMenu', () => {
               setOpenAccessDialog={noop}
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -81,6 +82,7 @@ describe('DefaultMenu', () => {
             handleCloseMenu={noop}
             template
             setOpenTrashDialog={noop}
+            setOpenDetailsDialog={noop}
           />
         </SnackbarProvider>
       </MockedProvider>
@@ -110,6 +112,7 @@ describe('DefaultMenu', () => {
               setOpenAccessDialog={setOpenAccessDialog}
               handleCloseMenu={handleCloseMenu}
               setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -136,6 +139,7 @@ describe('DefaultMenu', () => {
                 setOpenAccessDialog={noop}
                 handleCloseMenu={noop}
                 setOpenTrashDialog={noop}
+                setOpenDetailsDialog={noop}
               />
             </TeamProvider>
           </MockedProvider>
@@ -173,6 +177,7 @@ describe('DefaultMenu', () => {
                 setOpenAccessDialog={noop}
                 handleCloseMenu={noop}
                 setOpenTrashDialog={noop}
+                setOpenDetailsDialog={noop}
               />
             </TeamProvider>
           </MockedProvider>
@@ -210,6 +215,7 @@ describe('DefaultMenu', () => {
               setOpenAccessDialog={noop}
               handleCloseMenu={handleCloseMenu}
               setOpenTrashDialog={setOpenTrashDialog}
+              setOpenDetailsDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
