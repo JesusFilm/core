@@ -40,7 +40,11 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
 
   useEffect(() => {
     function fullscreenchange(): void {
-      setIsFullscreen(fscreen.fullscreenElement != null)
+      const isFullscreen = fscreen.fullscreenElement != null
+      setIsFullscreen(isFullscreen)
+      if (isFullscreen) {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
     }
 
     fscreen.addEventListener('fullscreenchange', fullscreenchange)
@@ -58,13 +62,12 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
 
   return (
     <>
-      {!isFullscreen && (
-        <Header
-          hideAbsoluteAppBar={!controlsVisible}
-          hideSpacer
-          themeMode={ThemeMode.dark}
-        />
-      )}
+      <Header
+        hideTopAppBar={isFullscreen}
+        hideBottomAppBar={!controlsVisible}
+        hideSpacer
+        themeMode={ThemeMode.dark}
+      />
       <Box
         css={{
           height: '100svh',

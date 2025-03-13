@@ -15,13 +15,15 @@ import { HeaderMenuPanel } from './HeaderMenuPanel'
 import { LocalAppBar } from './LocalAppBar'
 
 interface HeaderProps {
-  hideAbsoluteAppBar?: boolean
+  hideTopAppBar?: boolean
+  hideBottomAppBar?: boolean
   hideSpacer?: boolean
   themeMode?: ThemeMode
 }
 
 export function Header({
-  hideAbsoluteAppBar,
+  hideTopAppBar,
+  hideBottomAppBar,
   hideSpacer,
   themeMode = ThemeMode.light
 }: HeaderProps): ReactElement {
@@ -37,18 +39,20 @@ export function Header({
   })
 
   const shouldShowBottomAppBar = strategies || journeys
-  const shouldFade = hideAbsoluteAppBar !== true || bottomBarTrigger
+  const shouldFade = hideBottomAppBar !== true || bottomBarTrigger
 
   return (
     <>
       <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
-        <Box sx={{ background: 'background.default' }}>
-          <LocalAppBar
-            hideSpacer={hideSpacer}
-            onMenuClick={() => setDrawerOpen((prev) => !prev)}
-            menuOpen={drawerOpen}
-          />
-        </Box>
+        {!hideTopAppBar && (
+          <Box sx={{ background: 'background.default' }}>
+            <LocalAppBar
+              hideSpacer={hideSpacer}
+              onMenuClick={() => setDrawerOpen((prev) => !prev)}
+              menuOpen={drawerOpen}
+            />
+          </Box>
+        )}
         {shouldShowBottomAppBar && (
           <Box sx={{ position: 'relative' }}>
             {!hideSpacer && (
