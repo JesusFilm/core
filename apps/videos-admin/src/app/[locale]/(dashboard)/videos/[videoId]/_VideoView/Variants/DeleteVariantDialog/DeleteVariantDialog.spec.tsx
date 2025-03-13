@@ -1,4 +1,4 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider } from 'notistack'
@@ -11,6 +11,7 @@ const mockVariant = {
   id: 'variant-1',
   videoId: 'video-1',
   slug: 'variant-slug',
+  hls: 'https://example.com/video.m3u8',
   videoEdition: {
     id: 'edition-1',
     name: 'base'
