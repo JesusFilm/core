@@ -6,20 +6,50 @@ import { SnackbarProvider } from 'notistack'
 
 import { GetAdminVideoVariant_Downloads as VariantDownloads } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { getCreateR2AssetMock } from '../../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset.mock'
 import { getVideoVariantDownloadCreateMock } from '../../../../../../../../../libs/useVideoVariantDownloadCreateMutation/useVideoVariantDownloadCreateMutation.mock'
 import { videoVariantDownloadDeleteMock } from '../../../../../../../../../libs/useVideoVariantDownloadDeleteMutation/useVideoVariantDownloadDeleteMutation.mock'
 
 import { Downloads } from './Downloads'
 
+const mockVideoElement = {
+  remove: jest.fn(),
+  videoWidth: 1280,
+  videoHeight: 720,
+  src: '',
+  onloadedmetadata: jest.fn(),
+  onerror: jest.fn()
+}
+
 const videoVariantDownloadCreateMock = getVideoVariantDownloadCreateMock({
   videoVariantId: 'variant-id',
   quality: 'high',
-  size: 4.94,
+  size: 13,
   height: 720,
   width: 1280,
-  url: 'https://example.com/video.mp4',
-  version: 1
+  url: 'https://mock.cloudflare-domain.com/video-123/variants/variant-id/downloads/variant-id_high.mp4',
+  version: 0,
+  assetId: 'r2-asset.id'
 })
+
+const createR2AssetMock = getCreateR2AssetMock({
+  videoId: 'video-123',
+  fileName: 'video-123/variants/variant-id/downloads/variant-id_high.mp4',
+  contentType: 'video/mp4',
+  contentLength: 13
+})
+
+jest.mock('../../AddAudioLanguageDialog/utils/getExtension', () => ({
+  getExtension: jest.fn().mockReturnValue('mp4')
+}))
+
+jest.mock('next/navigation', () => ({
+  useParams: jest.fn(() => ({ videoId: 'video-123', locale: 'en' }))
+}))
+
+const originalCreateElement = document.createElement
+const originalCreateObjectURL = URL.createObjectURL
+const originalRevokeObjectURL = URL.revokeObjectURL
 
 describe('Downloads', () => {
   const mockVariantDownloads: VariantDownloads =
@@ -29,6 +59,21 @@ describe('Downloads', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    document.createElement = jest.fn().mockImplementation((tagName) => {
+      if (tagName === 'video') {
+        return mockVideoElement
+      }
+      return originalCreateElement.call(document, tagName)
+    })
+
+    URL.createObjectURL = jest.fn().mockReturnValue('blob:mock-url')
+    URL.revokeObjectURL = jest.fn()
+  })
+
+  afterAll(() => {
+    document.createElement = originalCreateElement
+    URL.createObjectURL = originalCreateObjectURL
+    URL.revokeObjectURL = originalRevokeObjectURL
   })
 
   it('should show downloads', () => {
@@ -175,7 +220,13 @@ describe('Downloads', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider
-          mocks={[{ ...videoVariantDownloadCreateMock, result: mockResult }]}
+          mocks={[
+            {
+              ...videoVariantDownloadCreateMock,
+              result: mockResult
+            },
+            createR2AssetMock
+          ]}
         >
           <SnackbarProvider>
             <Downloads downloads={[]} videoVariantId="variant-id" />
@@ -189,7 +240,16 @@ describe('Downloads', () => {
     await userEvent.click(screen.getByLabelText('Quality'))
     await userEvent.click(screen.getByRole('option', { name: 'high' }))
 
+    const file = new File(['video content'], 'test-video.mp4', {
+      type: 'video/mp4'
+    })
+    await userEvent.upload(screen.getByTestId('DropZone'), file)
+    mockVideoElement.onloadedmetadata()
     await userEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+    await waitFor(() => {
+      expect(createR2AssetMock.result).toHaveBeenCalled()
+    })
 
     await waitFor(() => {
       expect(mockResult).toHaveBeenCalled()

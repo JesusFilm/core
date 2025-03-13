@@ -21,7 +21,6 @@ const originalCreateElement = document.createElement
 const originalCreateObjectURL = URL.createObjectURL
 const originalRevokeObjectURL = URL.revokeObjectURL
 
-// Mock video element
 const mockVideoElement = {
   remove: jest.fn(),
   videoWidth: 1280,
@@ -33,7 +32,6 @@ const mockVideoElement = {
 
 describe('AddVideoVariantDownloadDialog', () => {
   beforeAll(() => {
-    // Mock document.createElement
     document.createElement = jest.fn().mockImplementation((tagName) => {
       if (tagName === 'video') {
         return mockVideoElement
@@ -41,13 +39,11 @@ describe('AddVideoVariantDownloadDialog', () => {
       return originalCreateElement.call(document, tagName)
     })
 
-    // Mock URL methods
     URL.createObjectURL = jest.fn().mockReturnValue('blob:mock-url')
     URL.revokeObjectURL = jest.fn()
   })
 
   afterAll(() => {
-    // Restore original implementations
     document.createElement = originalCreateElement
     URL.createObjectURL = originalCreateObjectURL
     URL.revokeObjectURL = originalRevokeObjectURL
@@ -228,24 +224,19 @@ describe('AddVideoVariantDownloadDialog', () => {
 
     const user = userEvent.setup()
 
-    // Select 'high' quality
     const select = screen.getByLabelText('Quality')
     await user.click(select)
     await user.click(screen.getByRole('option', { name: 'high' }))
 
-    // Upload a video file
     const dropzone = screen.getByTestId('DropZone')
     await user.upload(dropzone, file)
 
-    // Trigger onloadedmetadata event to set video dimensions
     if (mockVideoElement.onloadedmetadata) {
       mockVideoElement.onloadedmetadata()
     }
 
-    // Submit the form
     await user.click(screen.getByRole('button', { name: 'Save' }))
 
-    // Wait for mutations to be called
     await waitFor(() => {
       expect(createR2AssetMock.result).toHaveBeenCalled()
     })
@@ -254,10 +245,8 @@ describe('AddVideoVariantDownloadDialog', () => {
       expect(createDownloadMock.result).toHaveBeenCalled()
     })
 
-    // Success callback should be called
     expect(onSuccess).toHaveBeenCalled()
 
-    // Close callback should be called
     expect(handleClose).toHaveBeenCalled()
   })
 

@@ -18,13 +18,14 @@ export const getVideoVariantDownloadCreateMock = <
     query: VIDEO_VARIANT_DOWNLOAD_CREATE,
     variables: {
       input: {
-        videoVariantId: 'variant-id',
-        quality: 'high',
-        size: 4.94,
-        height: 720,
-        width: 1280,
-        url: 'https://example.com/video.mp4',
-        version: 1
+        videoVariantId: input.videoVariantId ?? 'variant-id',
+        quality: input.quality ?? 'high',
+        size: input.size ?? 4.94,
+        height: input.height ?? 720,
+        width: input.width ?? 1280,
+        url: input.url ?? 'https://example.com/video.mp4',
+        version: input.version ?? 1,
+        assetId: input.assetId ?? 'asset-id'
       }
     }
   },
