@@ -37,23 +37,30 @@ export const mockReactFlow = (): void => {
   if (init) return
   init = true
 
-  global.ResizeObserver = ResizeObserver
+  // Define ResizeObserver globally
+  if (typeof global.ResizeObserver === 'undefined') {
+    global.ResizeObserver = ResizeObserver
+  }
 
-  // @ts-expect-error: provide override for @xyflow/react
-  global.DOMMatrixReadOnly = DOMMatrixReadOnly
+  // Define DOMMatrixReadOnly globally
+  if (typeof global.DOMMatrixReadOnly === 'undefined') {
+    // @ts-expect-error: provide override for @xyflow/react
+    global.DOMMatrixReadOnly = DOMMatrixReadOnly
+  }
 
   Object.defineProperties(global.HTMLElement.prototype, {
     offsetHeight: {
       get() {
-        return Number.parseFloat(this.style.height as string)
+        return Number.parseFloat(this.style.height as string) || 0
       }
     },
     offsetWidth: {
       get() {
-        return Number.parseFloat(this.style.width as string)
+        return Number.parseFloat(this.style.width as string) || 0
       }
     }
   })
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ;(global.SVGElement as any).prototype.getBBox = () => ({
     x: 0,
@@ -62,3 +69,6 @@ export const mockReactFlow = (): void => {
     height: 0
   })
 }
+
+// Initialize the mock immediately to ensure it's available for all tests
+mockReactFlow()

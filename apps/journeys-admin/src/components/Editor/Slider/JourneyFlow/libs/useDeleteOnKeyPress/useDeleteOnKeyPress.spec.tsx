@@ -1,6 +1,6 @@
 import { MutationResult } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { act, renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook } from '@testing-library/react'
 import { Edge, OnSelectionChangeParams, useKeyPress } from '@xyflow/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -14,37 +14,35 @@ import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { BlockDelete } from '../../../../../../../__generated__/BlockDelete'
 import { StepFields as StepBlock } from '../../../../../../../__generated__/StepFields'
+import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
 import { useDeleteEdge } from '../useDeleteEdge'
 
 import { useDeleteOnKeyPress } from './useDeleteOnKeyPress'
 
+// Mock the useKeyPress hook
 jest.mock('@xyflow/react', () => {
   const originalModule = jest.requireActual('@xyflow/react')
   return {
     __esModule: true,
     ...originalModule,
-    useKeyPress: jest.fn(() => false)
+    useKeyPress: jest.fn()
   }
 })
-const mockUseKeyPress = jest.fn(() => false) as jest.MockedFunction<
-  typeof useKeyPress
->
-jest.mock('../useDeleteEdge', () => {
-  return {
-    useDeleteEdge: jest.fn()
-  }
-})
+const mockUseKeyPress = useKeyPress as jest.MockedFunction<typeof useKeyPress>
+
+// Mock the useDeleteEdge hook
+jest.mock('../useDeleteEdge', () => ({
+  useDeleteEdge: jest.fn()
+}))
 const mockUseDeleteEdge = useDeleteEdge as jest.MockedFunction<
   typeof useDeleteEdge
 >
 
-jest.mock('../../../../../../libs/useBlockDeleteMutation', () => {
-  return {
-    useBlockDeleteMutation: jest.fn()
-  }
-})
-
+// Mock the useBlockDeleteMutation hook
+jest.mock('../../../../../../libs/useBlockDeleteMutation', () => ({
+  useBlockDeleteMutation: jest.fn()
+}))
 const mockUseBlockDeleteMutation =
   useBlockDeleteMutation as jest.MockedFunction<typeof useBlockDeleteMutation>
 
@@ -54,26 +52,37 @@ describe('useDeleteOnKeyPress', () => {
   const deleteResult = {} as unknown as MutationResult<BlockDelete>
 
   beforeEach(() => {
+    mockReactFlow()
     mockUseDeleteEdge.mockReturnValue(deleteEdge)
     mockUseBlockDeleteMutation.mockReturnValue([deleteBlock, deleteResult])
+    mockUseKeyPress.mockReturnValue(false)
+    jest.clearAllMocks()
   })
 
-  it('should delete a edge', async () => {
-    mockUseKeyPress.mockReturnValueOnce(false)
-
+  it('should delete an edge', async () => {
+    // Set up the initial state
     const initialState = {
       selectedBlock: null,
-      activeSlide: ActiveSlide.JourneyFlow
+      activeSlide: ActiveSlide.JourneyFlow,
+      showAnalytics: false
     } as unknown as EditorState
+
+    // Create an edge to be deleted
     const edge = {
+      id: 'edge-1',
       source: 'source',
-      target: 'target'
+      target: 'target',
+      sourceHandle: 'sourceHandle'
     } as unknown as Edge
+
+    // Create selection params with the edge
     const selectionParams = {
-      edges: [edge]
+      edges: [edge],
+      nodes: []
     } as unknown as OnSelectionChangeParams
 
-    const { result } = renderHook(() => useDeleteOnKeyPress(), {
+    // Render the hook
+    const { result, rerender } = renderHook(() => useDeleteOnKeyPress(), {
       wrapper: ({ children }) => (
         <EditorProvider initialState={initialState}>
           <MockedProvider>{children}</MockedProvider>
@@ -81,26 +90,39 @@ describe('useDeleteOnKeyPress', () => {
       )
     })
 
-    mockUseKeyPress.mockReturnValueOnce(true)
-    await act(async () => result.current.onSelectionChange(selectionParams))
+    // Select the edge
+    act(() => {
+      result.current.onSelectionChange(selectionParams)
+    })
 
-    await waitFor(async () => expect(deleteEdge).toHaveBeenCalled())
+    // Trigger the delete key press
+    mockUseKeyPress.mockReturnValue(true)
+    rerender()
+
+    // Verify that deleteEdge was called with the correct parameters
+    expect(deleteEdge).toHaveBeenCalledWith({
+      source: edge.source,
+      sourceHandle: edge.sourceHandle
+    })
   })
 
   it('should delete a node', async () => {
-    mockUseKeyPress.mockReturnValueOnce(false)
+    // Create a step block to be deleted
     const stepBlock = {
       __typename: 'StepBlock',
       id: 'step.id'
     } as unknown as TreeBlock<StepBlock>
+
+    // Set up the initial state with the selected block
     const initialState = {
       selectedBlock: stepBlock,
       activeSlide: ActiveSlide.JourneyFlow,
+      showAnalytics: false,
       steps: [stepBlock]
     } as unknown as EditorState
 
-    mockUseKeyPress.mockReturnValueOnce(true)
-    renderHook(() => useDeleteOnKeyPress(), {
+    // Render the hook
+    const { rerender } = renderHook(() => useDeleteOnKeyPress(), {
       wrapper: ({ children }) => (
         <JourneyProvider value={{ journey: defaultJourney }}>
           <EditorProvider initialState={initialState}>
@@ -109,6 +131,12 @@ describe('useDeleteOnKeyPress', () => {
         </JourneyProvider>
       )
     })
-    await waitFor(async () => expect(deleteBlock).toHaveBeenCalled())
+
+    // Trigger the delete key press
+    mockUseKeyPress.mockReturnValue(true)
+    rerender()
+
+    // Verify that deleteBlock was called
+    expect(deleteBlock).toHaveBeenCalled()
   })
 })

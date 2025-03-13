@@ -4,9 +4,14 @@ import { Background, type Node, ReactFlow } from '@xyflow/react'
 
 import type { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '@core/journeys/ui/useJourneyAnalyticsQuery/__generated__/GetJourneyAnalytics'
 
+import { mockReactFlow } from '../../../../../../../test/mockReactFlow'
 import { ReferrerNode } from '.'
 
 describe('ReferrerNode', () => {
+  beforeEach(() => {
+    mockReactFlow()
+  })
+
   it('should render default', () => {
     const data = {
       __typename: 'PlausibleStatsResponse',
