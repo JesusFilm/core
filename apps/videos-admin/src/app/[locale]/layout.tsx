@@ -1,6 +1,6 @@
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter'
 import { NextIntlClientProvider } from 'next-intl'
-import { getMessages } from 'next-intl/server'
+import { getLocale } from 'next-intl/server'
 import { ReactNode } from 'react'
 
 import { AuthProvider } from '../../libs/auth/AuthProvider'
@@ -17,14 +17,14 @@ export default async function LocaleLayout({
   children: React.ReactNode
   params: { locale: string }
 }): Promise<ReactNode> {
-  const messages = await getMessages()
+  const currentLocale = await getLocale()
   const user = await getUser()
 
   return (
-    <html lang={locale}>
+    <html lang={currentLocale}>
       <body>
         <AuthProvider user={user}>
-          <NextIntlClientProvider messages={messages}>
+          <NextIntlClientProvider>
             <ApolloProvider user={user}>
               <SnackbarProvider
                 anchorOrigin={{
