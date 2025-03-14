@@ -19,7 +19,6 @@ interface VariantDialogProps {
   variant: GetAdminVideoVariant
   handleClose?: () => void
   open?: boolean
-  variantLanguagesMap: Map<string, GetAdminVideoVariant>
 }
 
 // This mutation is kept for potential future use
@@ -48,8 +47,7 @@ export type UpdateVariantLanguage = ResultOf<typeof UPDATE_VARIANT_LANGUAGE>
 export function VariantDialog({
   variant,
   open,
-  handleClose,
-  variantLanguagesMap
+  handleClose
 }: VariantDialogProps): ReactElement | null {
   const t = useTranslations()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
@@ -97,7 +95,11 @@ export function VariantDialog({
         >
           <VariantVideo hlsSrc={variant.hls} />
         </Box>
-        <Downloads downloads={variant.downloads} />
+        <Downloads
+          downloads={variant.downloads}
+          videoVariantId={variant.id}
+          languageId={variant.language.id}
+        />
       </Stack>
     </Dialog>
   )

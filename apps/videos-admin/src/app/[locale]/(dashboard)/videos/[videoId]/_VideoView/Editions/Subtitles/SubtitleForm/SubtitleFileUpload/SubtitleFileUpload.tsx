@@ -58,6 +58,7 @@ export function SubtitleFileUpload({ subtitle }: { subtitle?: Subtitle }) {
           'application/x-subrip': ['.srt'],
           'text/srt': ['.srt']
         }}
+        maxSize={10000000}
         loading={false}
       />
 
