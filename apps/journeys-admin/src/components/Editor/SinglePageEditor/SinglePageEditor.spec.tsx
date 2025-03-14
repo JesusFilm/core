@@ -41,7 +41,7 @@ describe('SinglePageEditor', () => {
       <MockedProvider>
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <EditorProvider initialState={{}}>
-            <SinglePageEditor />
+            <SinglePageEditor flowType="desktop" />
           </EditorProvider>
         </JourneyProvider>
       </MockedProvider>

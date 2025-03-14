@@ -2,7 +2,8 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import { ReactElement, ReactNode } from 'react'
 
-import { DrawerTitle } from './Drawer'
+import { DRAWER_WIDTH } from '../../../../constants'
+import { DrawerTitle } from '../Drawer'
 
 interface EditorDrawerProps {
   title?: string
@@ -21,10 +22,9 @@ export function EditorDrawer({
       elevation={0}
       sx={{
         height: '100%',
-        borderRadius: 3,
-        borderBottomLeftRadius: 0,
-        borderBottomRightRadius: 0,
-        overflow: 'hidden'
+        borderRadius: { xs: 0, md: 3 },
+        overflow: 'hidden',
+        width: { xs: '100%', md: DRAWER_WIDTH }
       }}
       border={1}
       borderColor="divider"
@@ -33,7 +33,6 @@ export function EditorDrawer({
       <DrawerTitle title={title} onClose={onClose} />
       <Stack
         data-testid="SettingsDrawerContent"
-        className="swiper-no-swiping"
         flexGrow={1}
         sx={{ overflow: 'auto' }}
       >

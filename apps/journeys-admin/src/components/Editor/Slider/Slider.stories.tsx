@@ -21,7 +21,7 @@ const SliderDemo = {
 const Template: StoryObj<{ state: EditorState }> = {
   render: ({ state }) => (
     <EditorProvider initialState={state}>
-      <Slider />
+      <Slider flowType="desktop" />
     </EditorProvider>
   )
 }

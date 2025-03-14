@@ -93,7 +93,13 @@ export const GET_STEP_BLOCKS_WITH_POSITION = gql`
   }
 `
 
-export function JourneyFlow(): ReactElement {
+interface JourneyFlowProps {
+  flowType?: 'mobile' | 'desktop'
+}
+
+export function JourneyFlow({
+  flowType = 'desktop'
+}: JourneyFlowProps): ReactElement {
   const router = useRouter()
   const { editorAnalytics } = useFlags()
   const theme = useTheme()
@@ -558,6 +564,7 @@ export function JourneyFlow(): ReactElement {
           <Controls handleReset={allBlockPositionUpdate} />
         </>
         <Background
+          id={flowType}
           color="#aaa"
           gap={16}
           style={

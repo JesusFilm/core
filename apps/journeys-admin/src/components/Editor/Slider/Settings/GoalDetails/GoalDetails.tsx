@@ -26,15 +26,25 @@ export function GoalDetails(): ReactElement {
     dispatch({ type: 'SetSelectedGoalUrlAction', selectedGoalUrl: url })
   }
   function onClose(): void {
-    dispatch({
-      type: 'SetActiveContentAction',
-      activeContent:
-        selectedStep == null ? ActiveContent.Social : ActiveContent.Canvas
-    })
-    dispatch({
-      type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.JourneyFlow
-    })
+    if (selectedStep != null) {
+      dispatch({
+        type: 'SetActiveContentAction',
+        activeContent: ActiveContent.Canvas
+      })
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: ActiveSlide.JourneyFlow
+      })
+    } else {
+      dispatch({
+        type: 'SetActiveContentAction',
+        activeContent: ActiveContent.Social
+      })
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: ActiveSlide.Content
+      })
+    }
   }
 
   return (

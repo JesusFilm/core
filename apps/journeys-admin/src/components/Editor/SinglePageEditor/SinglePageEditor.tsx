@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
 
 import {
@@ -12,24 +13,23 @@ import { Content } from '../Slider/Content'
 import { JourneyFlow } from '../Slider/JourneyFlow'
 import { Settings } from '../Slider/Settings'
 
-export function SinglePageEditor(): ReactElement {
+interface SinglePageEditorProps {
+  flowType: 'mobile' | 'desktop'
+}
+
+export function SinglePageEditor({
+  flowType
+}: SinglePageEditorProps): ReactElement {
   const {
     state: { activeContent, activeSlide }
   } = useEditor()
 
-  // Determine content width based on activeContent
-  const isCanvasContent = activeContent === ActiveContent.Canvas
-  const contentMinWidth = isCanvasContent ? '370px' : '900px'
-
-  console.log('activeSlide', activeSlide)
-  console.log('activeContent', activeContent)
-
   return (
-    <Box
+    <Stack
+      direction="row"
       sx={{
-        display: 'flex',
         width: '100%',
-        height: `calc(100vh - ${EDIT_TOOLBAR_HEIGHT}px)`,
+        height: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px)`,
         overflow: 'hidden',
         p: 4
       }}
@@ -37,52 +37,37 @@ export function SinglePageEditor(): ReactElement {
       <Box
         sx={{
           flexGrow: 1,
+          border: (theme) => `1px solid ${theme.palette.divider}`,
           mr: 2,
           borderRadius: 4,
-          border: (theme) => `1px solid ${theme.palette.divider}`,
-          backgroundColor: '#eff2f5',
           overflow: 'hidden',
-          minWidth: 0,
-          height: '100%'
+          height: '100%',
+          width: '100%'
         }}
       >
-        <JourneyFlow />
+        <JourneyFlow flowType={flowType} />
       </Box>
 
       <Box
         sx={{
-          position: 'relative',
-          minWidth: contentMinWidth,
-          height: '100%',
-          mr: 2,
-          borderRadius: 4,
-          overflow: 'auto',
-          p: 2,
+          minWidth: activeContent === ActiveContent.Canvas ? '370px' : '900px',
+          pt: 2,
           display: 'flex',
           justifyContent: 'center'
         }}
       >
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-          <Content />
-        </Box>
+        <Content />
       </Box>
 
       <Box
         sx={{
           width:
             activeSlide === ActiveSlide.Content ? `${DRAWER_WIDTH}px` : '0px',
-          borderRadius: 4,
-          border: (theme) => `1px solid ${theme.palette.divider}`,
-          backgroundColor: '#fff',
-          overflow: 'auto',
-          height: '100%',
-          maxHeight: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 32px)`,
-          display: 'flex',
-          flexDirection: 'column'
+          maxHeight: `calc(100svh - ${EDIT_TOOLBAR_HEIGHT}px - 32px)`
         }}
       >
         <Settings />
       </Box>
-    </Box>
+    </Stack>
   )
 }
