@@ -14,41 +14,74 @@ import { BottomAppBar } from './BottomAppBar'
 import { HeaderMenuPanel } from './HeaderMenuPanel'
 import { LocalAppBar } from './LocalAppBar'
 
+/**
+ * Props for the Header component.
+ * @interface HeaderProps
+ */
 interface HeaderProps {
-  hideAbsoluteAppBar?: boolean
+  /** Flag to hide the top app bar. */
+  hideTopAppBar?: boolean
+  /** Flag to hide the bottom app bar. */
+  hideBottomAppBar?: boolean
+  /** Flag to hide the spacer element (only needed on /watch). */
   hideSpacer?: boolean
+  /** Theme mode to apply to the header. */
   themeMode?: ThemeMode
 }
 
+/**
+ * Header component for the application.
+ *
+ * Renders a responsive header with top and bottom app bars, and a swipeable drawer
+ * for navigation menu. The component adapts its appearance based on screen size,
+ * scroll position, and feature flags.
+ *
+ * @param {HeaderProps} props - Component props.
+ * @returns {ReactElement} Rendered Header component.
+ */
 export function Header({
-  hideAbsoluteAppBar,
+  hideTopAppBar,
+  hideBottomAppBar,
   hideSpacer,
   themeMode = ThemeMode.light
 }: HeaderProps): ReactElement {
+  /** State to control the drawer open/closed state. */
   const [drawerOpen, setDrawerOpen] = useState(false)
+  /** Current theme from MUI ThemeProvider. */
   const theme = useTheme()
+  /** Boolean indicating if the current viewport is extra small. */
   const isXS = useMediaQuery(theme.breakpoints.only('xs'))
+  /** Boolean indicating if the current theme is light mode. */
   const lightTheme = themeMode === ThemeMode.light
+  /** Feature flags for strategies and journeys. */
   const { strategies, journeys } = useFlags()
 
+  /**
+   * Scroll trigger that activates based on scroll position.
+   * Uses different threshold values based on screen size.
+   */
   const bottomBarTrigger = useScrollTrigger({
     disableHysteresis: true,
     threshold: isXS ? 100 : 159
   })
 
+  /** Determines if the bottom app bar should be displayed based on feature flags. */
   const shouldShowBottomAppBar = strategies || journeys
-  const shouldFade = hideAbsoluteAppBar !== true || bottomBarTrigger
+  /** Determines if the bottom app bar should fade based on props and scroll position. */
+  const shouldFade = hideBottomAppBar !== true || bottomBarTrigger
 
   return (
     <>
       <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
-        <Box sx={{ background: 'background.default' }}>
-          <LocalAppBar
-            hideSpacer={hideSpacer}
-            onMenuClick={() => setDrawerOpen((prev) => !prev)}
-            menuOpen={drawerOpen}
-          />
-        </Box>
+        {!hideTopAppBar && (
+          <Box sx={{ background: 'background.default' }}>
+            <LocalAppBar
+              hideSpacer={hideSpacer}
+              onMenuClick={() => setDrawerOpen((prev) => !prev)}
+              menuOpen={drawerOpen}
+            />
+          </Box>
+        )}
         {shouldShowBottomAppBar && (
           <Box sx={{ position: 'relative' }}>
             {!hideSpacer && (
