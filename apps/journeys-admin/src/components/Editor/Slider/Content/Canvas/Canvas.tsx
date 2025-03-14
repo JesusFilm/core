@@ -155,9 +155,7 @@ export function Canvas(): ReactElement {
         alignItems: 'center',
         alignSelf: 'center',
         justifyContent: 'center',
-        flexGrow: { xs: 1, md: activeSlide === ActiveSlide.Content ? 1 : 0 },
-        transition: (theme) =>
-          theme.transitions.create('flex-grow', { duration: 300 })
+        flexGrow: { xs: 1, md: activeSlide === ActiveSlide.Content ? 1 : 0 }
       }}
     >
       {selectedStep != null && theme != null && (
