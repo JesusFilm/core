@@ -1,5 +1,5 @@
+import { Edge, OnSelectionChangeFunc, useKeyPress } from '@xyflow/react'
 import { useEffect, useState } from 'react'
-import { Edge, OnSelectionChangeFunc, useKeyPress } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -21,7 +21,7 @@ export function useDeleteOnKeyPress(): {
   const deleteEdge = useDeleteEdge()
   const [selected, setSelected] = useState<Edge | TreeBlock | undefined>()
 
-  // Set selected node or edge using selectedBlock and reactflow OnSelectionChange
+  // Set selected node or edge using selectedBlock and @xyflow/react OnSelectionChange
   const onSelectionChange: OnSelectionChangeFunc = ({ edges }) => {
     if (edges.length > 0) {
       setSelected(edges[0])

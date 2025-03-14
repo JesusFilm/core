@@ -1,8 +1,8 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { StoryObj } from '@storybook/react'
+import { Background, ReactFlow } from '@xyflow/react'
 import { SnackbarProvider } from 'notistack'
-import { Background, ReactFlow } from 'reactflow'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -25,7 +25,7 @@ import { STEP_AND_CARD_BLOCK_CREATE } from '../../../../../../libs/useStepAndCar
 
 import { SocialPreviewNode } from './SocialPreviewNode'
 
-import 'reactflow/dist/style.css'
+import '@xyflow/react/dist/style.css'
 
 const SocialPreviewNodeStory = {
   ...simpleComponentConfig,

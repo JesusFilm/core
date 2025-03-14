@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import Tooltip from '@mui/material/Tooltip'
+import { Controls as Control, ControlButton, useReactFlow } from '@xyflow/react'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
-import { Controls as Control, ControlButton, useReactFlow } from 'reactflow'
 
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 import Dash from '@core/shared/ui/icons/Dash'

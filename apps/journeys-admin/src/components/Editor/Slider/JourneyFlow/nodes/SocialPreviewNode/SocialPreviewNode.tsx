@@ -4,10 +4,10 @@ import CardMedia from '@mui/material/CardMedia'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import type { OnConnect } from '@xyflow/react'
 import isEmpty from 'lodash/isEmpty'
 import Image from 'next/image'
 import type { ReactElement } from 'react'
-import type { OnConnect } from 'reactflow'
 
 import {
   ActiveContent,
