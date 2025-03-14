@@ -50,6 +50,42 @@ function run({
   )
 }
 
+// Special function for data import worker which needs job data
+function runDataImport(): void {
+  const queueName = 'api-languages-data-import'
+  const jobName = `${queueName}-job`
+
+  // eslint-disable-next-line no-new
+  new Worker(
+    queueName,
+    async (job) => {
+      if (job.name !== jobName) return
+
+      const childLogger = logger.child({
+        queue: queueName,
+        jobId: job.id
+      })
+
+      logger.info('started data import job')
+
+      const { service } = await import(
+        /* webpackChunkName: "data-import" */
+        './dataImport/service'
+      )
+      const { filePath, clearExistingData } = job.data
+
+      await service(filePath, { clearExistingData }, childLogger)
+
+      logger.info('finished data import job')
+    },
+    {
+      connection
+    }
+  )
+
+  logger.info({ queue: queueName }, 'waiting for data import jobs')
+}
+
 async function main(): Promise<void> {
   run(
     await import(
@@ -57,12 +93,21 @@ async function main(): Promise<void> {
       './algolia'
     )
   )
+  // run(
+  //   await import(
+  //     /* webpackChunkName: "big-query" */
+  //     './bigQuery'
+  //   )
+  // )
   run(
     await import(
-      /* webpackChunkName: "big-query" */
-      './bigQuery'
+      /* webpackChunkName: "data-export" */
+      './dataExport'
     )
   )
+
+  // Run data import worker separately since it needs job data
+  runDataImport()
 }
 
 // avoid running on test environment
