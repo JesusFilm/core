@@ -23,6 +23,8 @@ interface BackgroundVideoProps extends TreeBlock<VideoFields> {
 
 const StyledVideo = styled('video')(() => ({}))
 
+videojs.log.level('debug')
+
 export function BackgroundVideo({
   source,
   children,
@@ -40,9 +42,9 @@ export function BackgroundVideo({
   // Initiate Video
   useEffect(() => {
     if (videoRef.current != null) {
-      playerRef.current = videojs(videoRef.current, {
+      const player = videojs(videoRef.current, {
         ...defaultVideoJsOptions,
-        autoplay: true,
+        // autoplay: true,
         controls: false,
         controlBar: false,
         bigPlayButton: false,
@@ -54,10 +56,33 @@ export function BackgroundVideo({
           doubleClick: false
         },
         muted: true,
-        loop: true,
+        // loop: true,
         responsive: true
         // Don't use poster prop as image isn't optimised
       })
+
+      player.on('error', (e) => console.error('video error', e))
+      player.on('loadstart', () => console.log('loadstart'))
+      player.on('ready', async () => {
+        console.log('ready')
+        // void player.play()
+      })
+      player.on('loadeddata', () => console.log('loadeddata'))
+      player.on('loadedmetadata', () => console.log('loadedmetadata'))
+      player.on('canplay', () => {
+        console.log('canplay')
+        void player.play()
+      })
+      player.on('play', () => console.log('play'))
+      player.on('pause', () => console.log('pause'))
+
+      player.on('ended', () => {
+        player.currentTime(startAt ?? 0)
+        void player.play()
+      })
+
+      console.log('player', player)
+      playerRef.current = player
     }
   }, [])
 
