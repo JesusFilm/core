@@ -43,7 +43,6 @@
     "@apollo/subgraph": "^2.8.0",
     "@aws-sdk/client-ecs": "^3.752.0",
     "@aws-sdk/client-s3": "^3.679.0",
-    "@aws-sdk/lib-storage": "^3.750.0",
     "@aws-sdk/s3-request-presigner": "^3.679.0",
     "@casl/ability": "^6.5.0",
     "@casl/prisma": "^1.4.1",
