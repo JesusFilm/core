@@ -18,7 +18,7 @@
       },
       {
         "name": "gql.tada/ts-plugin",
-        "schema": "../api-gateway/schema.graphql",
+        "schema": "../../apis/api-gateway/schema.graphql",
         "tadaOutputLocation": "./apps/arclight/src/__generated__/graphql-env.d.ts"
       }
     ],

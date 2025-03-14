@@ -1,5 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { NextIntlClientProvider } from 'next-intl'
 
 import {
@@ -34,19 +35,22 @@ describe('VideoList', () => {
             id: 'example-id',
             snippet: [{ value: 'Example snippet', primary: true }],
             title: [{ value: 'Example title', primary: true }],
-            published: true
+            published: true,
+            locked: true
           },
           {
             id: 'example-id',
             snippet: [{ value: 'Example snippet', primary: true }],
             title: [{ value: 'Example title', primary: true }],
-            published: false
+            published: false,
+            locked: false
           },
           {
             id: 'example-id',
             snippet: [{ value: 'Example snippet', primary: true }],
             title: [{ value: 'Example title', primary: true }],
-            published: true
+            published: true,
+            locked: false
           }
         ]
       }
@@ -114,13 +118,21 @@ describe('VideoList', () => {
         </MockedProvider>
       </NextIntlClientProvider>
     )
+    const user = userEvent.setup()
 
     await waitFor(() => expect(result).toHaveBeenCalled())
     // expect(screen.getAllByText('example-id')).toHaveLength(2)
-    fireEvent.click(screen.getByRole('button', { name: 'Show filters' }))
-    fireEvent.change(screen.getByRole('textbox', { name: 'Value' }), {
-      target: { value: 'some-value' }
+    await user.click(screen.getByRole('button', { name: 'Show filters' }))
+
+    await user.click(screen.getByRole('combobox', { name: 'Columns' }))
+    await waitFor(async () => {
+      await user.click(screen.getByRole('option', { name: 'ID' }))
     })
+
+    await user.type(
+      screen.getByRole('textbox', { name: 'Value' }),
+      'some-value'
+    )
     await waitFor(() => expect(result2).toHaveBeenCalled())
   })
 
@@ -185,7 +197,8 @@ describe('VideoList', () => {
               id: 'example-id',
               snippet: [{ value: 'Example snippet', primary: true }],
               title: [{ value: 'Example title', primary: true }],
-              published: true
+              published: true,
+              locked: false
             }
           ]
         }
@@ -240,7 +253,8 @@ describe('VideoList', () => {
               id: 'example-id',
               snippet: [{ value: 'Example snippet', primary: true }],
               title: [{ value: 'Example title', primary: true }],
-              published: true
+              published: true,
+              locked: false
             }
           ]
         }
@@ -295,7 +309,8 @@ describe('VideoList', () => {
               id: 'example-id',
               snippet: [{ value: 'Example snippet', primary: true }],
               title: [{ value: 'Example title', primary: true }],
-              published: true
+              published: true,
+              locked: false
             }
           ]
         }
@@ -322,7 +337,8 @@ describe('VideoList', () => {
               id: 'example-id',
               snippet: [{ value: 'Example snippet', primary: true }],
               title: [{ value: 'Example title', primary: true }],
-              published: true
+              published: true,
+              locked: false
             }
           ]
         }

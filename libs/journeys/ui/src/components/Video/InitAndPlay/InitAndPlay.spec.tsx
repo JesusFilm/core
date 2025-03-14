@@ -1,19 +1,28 @@
 import { act, cleanup, render } from '@testing-library/react'
 import { ComponentProps } from 'react'
 import videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { TreeBlock, blockHistoryVar } from '../../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
+import { JourneyProvider } from '../../../libs/JourneyProvider'
+import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
+import { getMuxMetadata } from '../utils/getMuxMetadata'
+import VideoJsPlayer from '../utils/videoJsTypes'
 
 import { InitAndPlay } from '.'
 
+jest.mock('../utils/getMuxMetadata', () => ({
+  getMuxMetadata: jest.fn()
+}))
+
+const mockGetMuxMetadata = getMuxMetadata
+
 describe('InitAndPlay', () => {
   let defaultProps: ComponentProps<typeof InitAndPlay>
-  let player: Player
+  let player: VideoJsPlayer
 
   const defaultStepBlock = {
     __typename: 'StepBlock',
@@ -37,7 +46,7 @@ describe('InitAndPlay', () => {
         },
         fullscreenToggle: true
       }
-    })
+    }) as VideoJsPlayer
 
     defaultProps = {
       videoRef: { current: video },
@@ -56,7 +65,15 @@ describe('InitAndPlay', () => {
       setLoading: jest.fn(),
       setShowPoster: jest.fn(),
       setVideoEndTime: jest.fn(),
-      source: VideoBlockSource.internal
+      source: VideoBlockSource.internal,
+      title: 'video title',
+      mediaVideo: {
+        __typename: 'MuxVideo',
+        id: 'muxVideoId',
+        assetId: 'muxAssetId',
+        playbackId: 'muxPlaybackId'
+      },
+      videoVariantLanguageId: 'languageId'
     }
   })
 
@@ -67,8 +84,29 @@ describe('InitAndPlay', () => {
   it('should set player', () => {
     blockHistoryVar([defaultStepBlock])
 
-    render(<InitAndPlay {...defaultProps} />)
+    render(
+      <JourneyProvider
+        value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+      >
+        <InitAndPlay {...defaultProps} />
+      </JourneyProvider>
+    )
     expect(defaultProps.setPlayer).toHaveBeenCalled()
+    expect(mockGetMuxMetadata).toHaveBeenCalledWith({
+      journeyId: 'journeyId',
+      videoBlock: {
+        id: 'blockId',
+        title: 'video title',
+        mediaVideo: {
+          __typename: 'MuxVideo',
+          id: 'muxVideoId',
+          assetId: 'muxAssetId',
+          playbackId: 'muxPlaybackId'
+        },
+        endAt: 100,
+        videoVariantLanguageId: 'languageId'
+      }
+    })
   })
 
   it('should listen for player ready', () => {

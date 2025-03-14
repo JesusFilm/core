@@ -19,6 +19,7 @@ export const useAdminVideoMock: MockedResponse<
       adminVideo: {
         id: '1_jf-0-0',
         slug: 'jesus',
+        locked: false,
         images: [
           {
             id: '1_jf-0-0.mobileCinematicHigh.jpg',
@@ -146,9 +147,14 @@ export const useAdminVideoMock: MockedResponse<
             id: '1_4334-jf-0-0',
             videoId: '1_jf-0-0',
             slug: 'jesus/munukutuba',
+            videoEdition: {
+              id: 'edition.id',
+              name: 'base'
+            },
+            hls: 'https://arc.gt/hls/munukutuba/master.m3u8',
             downloads: [
               {
-                id: '529a0228-67ce-4b08-bc78-cecf1b7ec358',
+                id: 'download-id',
                 quality: 'high',
                 size: 2248469346,
                 height: 360,
@@ -179,6 +185,11 @@ export const useAdminVideoMock: MockedResponse<
             id: '1_19558-jf-0-0',
             videoId: '1_jf-0-0',
             slug: 'jesus/kom',
+            videoEdition: {
+              id: 'edition.id',
+              name: 'base'
+            },
+            hls: 'https://arc.gt/hls/kom/master.m3u8',
             downloads: [
               {
                 id: 'fe363739-adb1-4871-be5b-97d3e7871038',
@@ -212,6 +223,11 @@ export const useAdminVideoMock: MockedResponse<
             id: '1_529-jf-0-0',
             videoId: '1_jf-0-0',
             slug: 'jesus/english',
+            videoEdition: {
+              id: 'edition.id',
+              name: 'base'
+            },
+            hls: 'https://arc.gt/hls/english/master.m3u8',
             downloads: [
               {
                 id: '5f6dae80-87eb-4db1-9af1-07ddf8d9ca63',
@@ -242,6 +258,100 @@ export const useAdminVideoMock: MockedResponse<
             }
           }
         ],
+        videoEditions: [
+          {
+            id: 'edition.id',
+            name: 'base',
+            videoSubtitles: [
+              {
+                id: 'subtitle1.id',
+                vttSrc:
+                  'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.vtt',
+                srtSrc:
+                  'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.srt',
+                value:
+                  'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.vtt',
+                vttAsset: { id: 'vtt-asset-id-1' },
+                srtAsset: { id: 'srt-asset-id-1' },
+                vttVersion: 1,
+                srtVersion: 1,
+                language: {
+                  id: '529',
+                  name: [
+                    {
+                      value: 'English',
+                      primary: true
+                    }
+                  ],
+                  slug: 'english'
+                },
+                primary: true
+              },
+              {
+                id: 'subtitle2.id',
+                vttSrc:
+                  'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.vtt',
+                srtSrc:
+                  'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.srt',
+                value:
+                  'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.vtt',
+                vttAsset: { id: 'vtt-asset-id-1' },
+                srtAsset: { id: 'srt-asset-id-1' },
+                vttVersion: 1,
+                srtVersion: 1,
+                language: {
+                  id: '496',
+                  name: [
+                    {
+                      value: 'Français',
+                      primary: true
+                    },
+                    {
+                      value: 'French',
+                      primary: false
+                    }
+                  ],
+                  slug: 'french'
+                },
+                primary: false
+              }
+            ]
+          },
+          {
+            id: 'edition.id2',
+            name: 'base',
+            videoSubtitles: [
+              {
+                id: 'subtitle2.id',
+                vttSrc:
+                  'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.vtt',
+                srtSrc:
+                  'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.srt',
+                value:
+                  'https://d389zwyrhi20m0.cloudfront.net/496/1_jf-0-0/0-0-JL-496-31801.vtt',
+                vttAsset: { id: 'vtt-asset-id-2' },
+                srtAsset: { id: 'srt-asset-id-2' },
+                vttVersion: 1,
+                srtVersion: 1,
+                language: {
+                  id: '496',
+                  name: [
+                    {
+                      value: 'Français',
+                      primary: true
+                    },
+                    {
+                      value: 'French',
+                      primary: false
+                    }
+                  ],
+                  slug: 'french'
+                },
+                primary: false
+              }
+            ]
+          }
+        ],
         subtitles: [
           {
             id: '97c4bc0e-6a2d-4650-9b60-91b99293ba1b',
@@ -252,6 +362,10 @@ export const useAdminVideoMock: MockedResponse<
               'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.srt',
             value:
               'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLtib-529-31474.vtt',
+            vttAsset: { id: 'vtt-asset-id-1' },
+            srtAsset: { id: 'srt-asset-id-1' },
+            vttVersion: 1,
+            srtVersion: 1,
             language: {
               id: '529',
               name: [
@@ -271,6 +385,10 @@ export const useAdminVideoMock: MockedResponse<
               'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLnoCI-529-31474.srt',
             value:
               'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-JLnoCI-529-31474.vtt',
+            vttAsset: { id: 'vtt-asset-id-2' },
+            srtAsset: { id: 'srt-asset-id-2' },
+            vttVersion: 1,
+            srtVersion: 1,
             language: {
               id: '529',
               name: [
@@ -290,6 +408,10 @@ export const useAdminVideoMock: MockedResponse<
               'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-OTwCC-529-31474.srt',
             value:
               'https://d389zwyrhi20m0.cloudfront.net/529/1_jf-0-0/0-0-OTwCC-529-31474.vtt',
+            vttAsset: { id: 'vtt-asset-id-3' },
+            srtAsset: { id: 'srt-asset-id-3' },
+            vttVersion: 1,
+            srtVersion: 1,
             language: {
               id: '529',
               name: [

@@ -1,17 +1,32 @@
 import { render } from '@testing-library/react'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
-import { defaultTemplate, descriptiveTemplate, oldTemplate } from '../data'
+import {
+  defaultTemplate,
+  descriptiveTemplate,
+  fakeDate,
+  oldTemplate
+} from '../data'
 
 import { TemplateListItem } from '.'
 
 describe('TemplateListItem', () => {
+  beforeAll(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date(fakeDate))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   it('should render', () => {
     const { getByText } = render(<TemplateListItem journey={oldTemplate} />)
     expect(getByText('An Old Template Heading')).toBeInTheDocument()
+    expect(getByText('1 year ago')).toBeInTheDocument()
     expect(
       getByText(
-        'November 19, 2020 - Template created before the current year should also show the year in the date'
+        '- Template created before the current year should also show the year in the date'
       )
     ).toBeInTheDocument()
     expect(getByText('English')).toBeInTheDocument()

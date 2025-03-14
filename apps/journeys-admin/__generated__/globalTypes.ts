@@ -526,6 +526,16 @@ export interface MeInput {
   redirect?: string | null;
 }
 
+export interface QrCodeCreateInput {
+  teamId: string;
+  journeyId: string;
+}
+
+export interface QrCodesFilter {
+  journeyId?: string | null;
+  teamId?: string | null;
+}
+
 export interface RadioOptionBlockCreateInput {
   id?: string | null;
   journeyId: string;
@@ -572,6 +582,13 @@ export interface SignUpSubmissionEventCreateInput {
   stepId?: string | null;
   name: string;
   email: string;
+}
+
+export interface SpacerBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  spacing?: number | null;
 }
 
 export interface StepBlockCreateInput {
