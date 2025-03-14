@@ -45,7 +45,6 @@ interface VideoStatsData {
 export function VideoStats({ player, startAt, endAt }: VideoStatsProps) {
   const { t } = useTranslation('libs-journeys-ui')
 
-  // Initialize state with default values
   const [stats, setStats] = useState<VideoStatsData>({
     currentTime: 0,
     duration: 0,
@@ -54,23 +53,15 @@ export function VideoStats({ player, startAt, endAt }: VideoStatsProps) {
     currentQuality: '-'
   })
 
-  /**
-   * Updates the video statistics based on the current player state
-   * Called on timeupdate events and initial component mount
-   */
   const updateStats = useCallback(() => {
     if (!player) return
 
-    // Get raw current time from player
     const rawCurrentTime = player.currentTime() || 0
 
-    // Adjust current time to be relative to startAt
     const adjustedCurrentTime = Math.max(0, rawCurrentTime - startAt)
 
-    // Calculate the duration of our trimmed section
     const duration = Math.max(0, endAt - startAt)
 
-    // Format seekable and buffered ranges to be relative to our trimmed section
     const formattedSeekable = formatTimeRanges(
       player.seekable(),
       startAt,
@@ -83,7 +74,6 @@ export function VideoStats({ player, startAt, endAt }: VideoStatsProps) {
       endAt
     )
 
-    // Update all stats at once
     setStats({
       currentTime: adjustedCurrentTime,
       duration,
@@ -92,19 +82,16 @@ export function VideoStats({ player, startAt, endAt }: VideoStatsProps) {
       currentQuality: getCurrentQuality({ player, t })
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [player, startAt, endAt])
+  }, [player])
 
-  // Set up event listener for timeupdate events
   useEffect(() => {
     if (!player) return
 
-    // Update stats whenever the video time changes
     player.on('timeupdate', updateStats)
 
-    // Initial update when component mounts
+    // Initial update
     updateStats()
 
-    // Clean up event listener when component unmounts
     return () => {
       player.off('timeupdate', updateStats)
     }

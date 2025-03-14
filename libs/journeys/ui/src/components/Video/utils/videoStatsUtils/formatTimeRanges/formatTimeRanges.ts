@@ -11,25 +11,17 @@ import { formatTime } from '../formatTime'
  * For trimmed videos, this function ensures time ranges are relative to the trimmed section.
  * Example: If a 9:00 video is trimmed to 5:00-6:14, ranges will be shown as 0:00-1:14
  * (not 5:00-6:14 or 0:00-9:00). All times are zeroed to the startAt position.
- *
- * This function:
- * 1. Filters out ranges that are completely outside the specified video section
- * 2. Adjusts the start and end times to be relative to startAt
- * 3. Clamps the end times to not exceed the video section's duration
- * 4. Formats each range as a string and joins them with commas
  */
 export function formatTimeRanges(
   timeRanges: TimeRanges | null | undefined,
   startAt: number,
   endAt: number
 ): string {
-  // Return placeholder if no ranges exist
   if (!timeRanges || timeRanges.length === 0) return '-'
 
   // Adjust and filter ranges relative to the specified video section
   return Array.from({ length: timeRanges.length }, (_, i) => i)
     .map((i) => {
-      // Get the raw start and end times from the player
       const rangeStart = timeRanges.start(i)
       const rangeEnd = timeRanges.end(i)
 
@@ -47,5 +39,5 @@ export function formatTimeRanges(
       return `${formatTime(start)}-${formatTime(end)}`
     })
     .filter(Boolean) // Remove null entries (ranges outside our section)
-    .join(', ') // Join multiple ranges with commas
+    .join(', ')
 }
