@@ -1,4 +1,4 @@
-import algoliasearch from 'algoliasearch'
+import { algoliasearch } from 'algoliasearch'
 import type { UiState } from 'instantsearch.js'
 import type { ReactElement, ReactNode } from 'react'
 import { InstantSearch } from 'react-instantsearch'

@@ -64,7 +64,7 @@ describe('VideoView', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(screen.getAllByRole('tab')).toHaveLength(3)
+    expect(screen.getAllByRole('tab')).toHaveLength(4)
     fireEvent.click(screen.getByRole('tab', { name: 'Clips 3' }))
     expect(
       screen.getByRole('heading', { level: 6, name: '1. The Beginning' })
@@ -91,7 +91,7 @@ describe('VideoView', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(screen.getAllByRole('tab')).toHaveLength(2)
+    expect(screen.getAllByRole('tab')).toHaveLength(3)
   })
 
   it('should  show video children if a video label is series', async () => {
@@ -114,7 +114,7 @@ describe('VideoView', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(screen.getAllByRole('tab')).toHaveLength(3)
+    expect(screen.getAllByRole('tab')).toHaveLength(4)
     expect(screen.getByRole('tab', { name: 'Episodes 3' })).toBeInTheDocument()
   })
 
@@ -138,7 +138,7 @@ describe('VideoView', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(screen.getAllByRole('tab')).toHaveLength(3)
+    expect(screen.getAllByRole('tab')).toHaveLength(4)
     expect(screen.getByRole('tab', { name: 'Clips 3' })).toBeInTheDocument()
   })
 
@@ -162,7 +162,7 @@ describe('VideoView', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(screen.getAllByRole('tab')).toHaveLength(3)
+    expect(screen.getAllByRole('tab')).toHaveLength(4)
     expect(screen.getByRole('tab', { name: 'Items 3' })).toBeInTheDocument()
   })
 
@@ -186,7 +186,7 @@ describe('VideoView', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(screen.getAllByRole('tab')).toHaveLength(2)
+    expect(screen.getAllByRole('tab')).toHaveLength(3)
   })
 
   it('should not show video children if a video label is shortFilm', async () => {
@@ -209,7 +209,7 @@ describe('VideoView', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(screen.getAllByRole('tab')).toHaveLength(2)
+    expect(screen.getAllByRole('tab')).toHaveLength(3)
   })
 
   it('should not show video children if a video label is trailer', async () => {
@@ -232,7 +232,7 @@ describe('VideoView', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(screen.getAllByRole('tab')).toHaveLength(2)
+    expect(screen.getAllByRole('tab')).toHaveLength(3)
   })
 
   it('should not show video children if a video label is behindTheScenes', async () => {
@@ -255,7 +255,7 @@ describe('VideoView', () => {
     )
 
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(screen.getAllByRole('tab')).toHaveLength(2)
+    expect(screen.getAllByRole('tab')).toHaveLength(3)
   })
 
   it('should render loading ui', async () => {
@@ -267,7 +267,36 @@ describe('VideoView', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByText('Loading...')).toBeInTheDocument()
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
     expect(screen.queryByTestId('PublishedChip')).not.toBeInTheDocument()
+  })
+
+  it('should show locked ui for locked video', async () => {
+    mockUseParams.mockReturnValue({ videoId: 'someId' })
+    const result = jest.fn().mockReturnValue({
+      data: {
+        adminVideo: {
+          ...useAdminVideoMock.result?.['data']?.['adminVideo'],
+          locked: true
+        }
+      }
+    })
+
+    render(
+      <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
+        <NextIntlClientProvider locale="en">
+          <VideoView />
+        </NextIntlClientProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(screen.getByText('Video is locked')).toBeInTheDocument()
+    expect(
+      screen.getByText('This video is currently locked to prevent edits')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'View Videos' })
+    ).toBeInTheDocument()
   })
 })
