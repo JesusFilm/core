@@ -1,6 +1,7 @@
+import { MockedProvider } from '@apollo/client/testing'
+import videojs from '@mux/videojs-kit'
 import { act, cleanup, render } from '@testing-library/react'
 import { ComponentProps } from 'react'
-import videojs from 'video.js'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
@@ -12,7 +13,7 @@ import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__genera
 import { getMuxMetadata } from '../utils/getMuxMetadata'
 import VideoJsPlayer from '../utils/videoJsTypes'
 
-import { InitAndPlay } from '.'
+import { InitAndPlay } from './InitAndPlay'
 
 jest.mock('../utils/getMuxMetadata', () => ({
   getMuxMetadata: jest.fn()

@@ -1,7 +1,6 @@
-import { render } from '@testing-library/react'
-// eslint-disable-next-line import/no-namespace
-import * as videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
+import videojs from '@mux/videojs-kit'
+import Player from '@mux/videojs-kit/dist/types/player'
+import { render, screen } from '@testing-library/react'
 
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'

@@ -1,6 +1,6 @@
+import videojs from '@mux/videojs-kit'
 import { render, screen } from '@testing-library/react'
-import videojs from 'video.js'
-import 'video.js/dist/video-js.css'
+import '@mux/videojs-kit/dist/index.css'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 

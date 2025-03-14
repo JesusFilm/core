@@ -1,4 +1,4 @@
-import EventTarget from 'video.js/dist/types/event-target'
+import EventTarget from '@mux/videojs-kit/dist/types/event-target'
 
 // Types for `videojs-contrib-quality-levels`
 // Based off `types/videojs-contrib-quality-levels`

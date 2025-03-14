@@ -1,9 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
+import videojs from '@mux/videojs-kit'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { act, cleanup, render, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import { v4 as uuidv4 } from 'uuid'
-import videojs from 'video.js'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 

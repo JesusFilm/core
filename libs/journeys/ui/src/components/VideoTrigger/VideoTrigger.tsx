@@ -1,11 +1,12 @@
+import Player from '@mux/videojs-kit/dist/types/player'
 import fscreen from 'fscreen'
 import { useRouter } from 'next/router'
 import { usePlausible } from 'next-plausible'
-import { ReactElement, useEffect, useState } from 'react'
-import Player from 'video.js/dist/types/player'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { isIPhone } from '@core/shared/ui/deviceUtils'
 
+import { BlockAction } from '../../../__generated__/globalTypes'
 import { handleAction } from '../../libs/action'
 import { type TreeBlock, useBlocks } from '../../libs/block'
 import { getNextStepSlug } from '../../libs/getNextStepSlug'

@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import videojs from '@mux/videojs-kit'
 import {
   act,
   cleanup,
@@ -10,7 +11,6 @@ import {
   within
 } from '@testing-library/react'
 import fscreen from 'fscreen'
-import videojs from 'video.js'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 

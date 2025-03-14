@@ -5,8 +5,6 @@ import videojs from 'video.js'
 import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
 import 'video.js/dist/video-js.css'
 
-import 'videojs-mux'
-
 interface VideoPlayerProps {
   hlsUrl: string
   videoTitle: string

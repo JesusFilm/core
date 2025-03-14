@@ -1,9 +1,9 @@
 import { gql, useMutation } from '@apollo/client'
+import Player from '@mux/videojs-kit/dist/types/player'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { usePlausible } from 'next-plausible'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import Player from 'video.js/dist/types/player'
 
 import {
   VideoBlockSource,

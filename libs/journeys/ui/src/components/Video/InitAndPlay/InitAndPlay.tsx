@@ -8,7 +8,7 @@ import {
   useRef,
   useState
 } from 'react'
-import videojs from 'video.js'
+import videojs from '@mux/videojs-kit'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
@@ -19,8 +19,6 @@ import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields_mediaVideo } from '../__generated__/VideoFields'
 import { getMuxMetadata } from '../utils/getMuxMetadata'
 import VideoJsPlayer from '../utils/videoJsTypes'
-
-import 'videojs-mux'
 
 interface InitAndPlayProps {
   videoRef: RefObject<HTMLVideoElement>

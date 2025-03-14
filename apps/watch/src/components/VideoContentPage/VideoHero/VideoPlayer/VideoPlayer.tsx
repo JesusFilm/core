@@ -5,8 +5,6 @@ import Player from 'video.js/dist/types/player'
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
 
-import 'videojs-mux'
-
 import { useVideo } from '../../../../libs/videoContext'
 
 import { VideoControls } from './VideoControls'

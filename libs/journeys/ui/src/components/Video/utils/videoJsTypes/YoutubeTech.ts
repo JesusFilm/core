@@ -1,4 +1,4 @@
-import Tech from 'video.js/dist/types/tech/tech'
+import Tech from '@mux/videojs-kit/dist/types/tech/tech'
 
 // From `videojs-youtube`
 // extend based of docs as needed

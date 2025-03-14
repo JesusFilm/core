@@ -1,4 +1,4 @@
-import Tech from 'video.js/dist/types/tech/tech'
+import Tech from '@mux/videojs-kit/dist/types/tech/tech'
 
 // From `videojs-http-streaming`
 // included in videoJs 7+ by default, no types given :(

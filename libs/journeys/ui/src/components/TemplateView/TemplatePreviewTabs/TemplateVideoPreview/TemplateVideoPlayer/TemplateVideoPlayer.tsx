@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
+import videojs from '@mux/videojs-kit'
+import Player from '@mux/videojs-kit/dist/types/player'
 import { ReactElement, useEffect, useRef, useState } from 'react'
-import videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
 
 import { VideoBlockSource } from '../../../../../../__generated__/globalTypes'
 import { VideoFields_mediaVideo } from '../../../../Video/__generated__/VideoFields'

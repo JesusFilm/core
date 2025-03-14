@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
+import videojs from '@mux/videojs-kit'
+import Player from '@mux/videojs-kit/dist/types/player'
 import { CSSProperties, ReactElement, useEffect, useRef } from 'react'
-import videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
@@ -14,7 +14,7 @@ import { TreeBlock } from '../../../../libs/block'
 import { VideoFields } from '../../../Video/__generated__/VideoFields'
 
 import 'videojs-youtube'
-import 'video.js/dist/video-js.css'
+import '@mux/videojs-kit/dist/index.css'
 
 interface BackgroundVideoProps extends TreeBlock<VideoFields> {
   setLoading: (loading: boolean) => void

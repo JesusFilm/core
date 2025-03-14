@@ -1,4 +1,4 @@
-import Player from 'video.js/dist/types/player'
+import Player from '@mux/videojs-kit/dist/types/player'
 
 import { Html5 } from './Html5'
 import { QualityLevelList } from './QualityLevelList'

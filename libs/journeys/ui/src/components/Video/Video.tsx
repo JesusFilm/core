@@ -38,7 +38,7 @@ import VideoJsPlayer from './utils/videoJsTypes'
 import { VideoControls } from './VideoControls'
 
 import 'videojs-youtube'
-import 'video.js/dist/video-js.css'
+import '@mux/videojs-kit/dist/index.css'
 
 const VIDEO_BACKGROUND_COLOR = '#000'
 const VIDEO_FOREGROUND_COLOR = '#FFF'
