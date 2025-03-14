@@ -216,72 +216,72 @@ export function CollectionPage(): ReactElement {
 
             <div className="flex flex-col md:space-y-11 py-7 md:py-17">
               {/* <div className="w-full px-6 lg:px-8">
-                <details className="group bg-white/5 rounded-lg mb-6 mt-4">
-                  <summary className="flex justify-between items-center cursor-pointer p-4 font-medium">
-                    <span>Contents</span>
-                    <span className="transition group-open:rotate-180">
-                      <svg
-                        fill="none"
-                        height="24"
-                        width="24"
-                        stroke="currentColor"
+              <details className="group bg-white/5 rounded-lg mb-6 mt-4">
+                <summary className="flex justify-between items-center cursor-pointer p-4 font-medium">
+                  <span>Contents</span>
+                  <span className="transition group-open:rotate-180">
+                    <svg
+                      fill="none"
+                      height="24"
+                      width="24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </span>
+                </summary>
+                <div className="p-4 pt-0 space-y-4">
+                  <ul className="list-disc list-inside space-y-4">
+                    <li>
+                      <a
+                        href="#"
+                        className="font-medium text-red-400 hover:text-primary-500 transition-colors"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </span>
-                  </summary>
-                  <div className="p-4 pt-0 space-y-4">
-                    <ul className="list-disc list-inside space-y-4">
-                      <li>
-                        <a
-                          href="#"
-                          className="font-medium text-red-400 hover:text-primary-500 transition-colors"
-                        >
-                          What is The real story of Easter?
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          className="font-medium text-red-400 hover:text-primary-500 transition-colors"
-                        >
-                          When is Easter Celebrated in 2025?
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          className="font-medium text-red-400 hover:text-primary-500 transition-colors"
-                        >
-                          What is Holy Week?
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          className="font-medium text-red-400 hover:text-primary-500 transition-colors"
-                        >
-                          Why do Easter dates change each year?
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href="#"
-                          className="font-medium text-red-400 hover:text-primary-500 transition-colors"
-                        >
-                          How is Orthodox Easter different?
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </details>
-              </div>
-              */}
+                        What is The real story of Easter?
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="#"
+                        className="font-medium text-red-400 hover:text-primary-500 transition-colors"
+                      >
+                        When is Easter Celebrated in 2025?
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="#"
+                        className="font-medium text-red-400 hover:text-primary-500 transition-colors"
+                      >
+                        What is Holy Week?
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="#"
+                        className="font-medium text-red-400 hover:text-primary-500 transition-colors"
+                      >
+                        Why do Easter dates change each year?
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="#"
+                        className="font-medium text-red-400 hover:text-primary-500 transition-colors"
+                      >
+                        How is Orthodox Easter different?
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </details>
+            </div>
+            */}
               <div className="px-6 lg:px-8 space-y-6 pb-12">
                 <h2 className="text-4xl font-bold mb-0">
                   The real Easter story
@@ -292,9 +292,9 @@ export function CollectionPage(): ReactElement {
                 <p className="text-xl">
                   The Gospels are{' '}
                   <span className="bg-rose-300/20 px-2">shockingly honest</span>{' '}
-                  about the emotions Jesus experienced—His deep anguish, one of
-                  His closest friends denying even to know Him, and other
-                  disciples—disbelief in His resurrection.
+                  about the emotions Jesus experienced&mdash;His deep anguish,
+                  one of His closest friends denying even to know Him, and other
+                  disciples&mdash;disbelief in His resurrection.
                 </p>
                 <p className="text-lg">
                   If you have doubts or want to rediscover the meaning of Easter
@@ -307,11 +307,11 @@ export function CollectionPage(): ReactElement {
                 subtitle="Jesus' Victory Over Sin and Death"
                 title="The True Meaning of Easter"
                 description="Easter is about more than eggs and bunnies—it's about Jesus and
-                  His amazing love for us. He died on the cross for our sins and
-                  rose from the dead, showing His power over sin and death.
-                  Because of Him, we can have forgiveness and the promise of
-                  eternal life. Easter is a time to celebrate this great hope and
-                  God's incredible gift to us."
+                His amazing love for us. He died on the cross for our sins and
+                rose from the dead, showing His power over sin and death.
+                Because of Him, we can have forgiveness and the promise of
+                eternal life. Easter is a time to celebrate this great hope and
+                God's incredible gift to us."
                 questions={[
                   {
                     id: 1,
@@ -655,6 +655,471 @@ export function CollectionPage(): ReactElement {
                   subtitle: 'Free Resources',
                   title:
                     'Want to grow deep in your understanding of the Bible?',
+                  buttonText: 'Join Our Bible study'
+                }}
+                onOpenDialog={handleOpenDialog}
+              />
+
+              <VideoSection
+                contentId="chosen-witness/english"
+                subtitle="Chosen Witness"
+                title="Mary Magdalene: A Life Transformed by Jesus"
+                description="Mary Magdalene's life was dramatically transformed by Jesus, the man who would change the world forever. Once an outcast, she became one of His most devoted followers. In this animated short film, witness the life of Jesus through her eyes—from her redemption to the moment she became the first to witness His resurrection."
+                questions={[
+                  {
+                    id: 1,
+                    question:
+                      'In what ways do you identify with the main character, Mary Magdalene?',
+                    answer: (
+                      <>
+                        <p>
+                          Mary Magdalene's story is one of transformation and
+                          redemption. Like many of us, she carried a past filled
+                          with struggles, but Jesus freed her and gave her a new
+                          purpose. Her story teaches us:
+                        </p>
+                        <ul className="list-disc pl-6 mt-2 space-y-2">
+                          <li>
+                            Jesus offers redemption regardless of our past
+                          </li>
+                          <li>Faith in Christ brings healing and purpose</li>
+                          <li>
+                            God calls the least expected to be His witnesses
+                          </li>
+                          <li>Encountering Jesus changes everything</li>
+                        </ul>
+                      </>
+                    )
+                  },
+                  {
+                    id: 2,
+                    question:
+                      "Why do you think the elders didn't approve of Jesus?",
+                    answer: (
+                      <>
+                        <p>
+                          The religious leaders opposed Jesus because His
+                          teachings challenged their authority and traditions.
+                          Key reasons include:
+                        </p>
+                        <ul className="list-disc pl-6 mt-2 space-y-2">
+                          <li>
+                            He welcomed sinners and outcasts, disrupting social
+                            norms
+                          </li>
+                          <li>
+                            His claim to be the Son of God threatened their
+                            power
+                          </li>
+                          <li>
+                            He emphasized mercy over legalism, angering those
+                            who relied on the law
+                          </li>
+                          <li>
+                            His miracles and growing influence unsettled their
+                            control over the people
+                          </li>
+                        </ul>
+                      </>
+                    )
+                  },
+                  {
+                    id: 3,
+                    question:
+                      'After his resurrection, why do you think Jesus chose to speak first with Mary?',
+                    answer: (
+                      <>
+                        <p>
+                          Jesus' first appearance to Mary Magdalene was deeply
+                          significant. It showed:
+                        </p>
+                        <ul className="list-disc pl-6 mt-2 space-y-2">
+                          <li>His care for those the world overlooked</li>
+                          <li>
+                            The importance of faith and devotion over status
+                          </li>
+                          <li>
+                            That women played a vital role in His ministry and
+                            message
+                          </li>
+                          <li>
+                            How a transformed life can become a powerful
+                            testimony
+                          </li>
+                        </ul>
+                      </>
+                    )
+                  }
+                ]}
+                bibleQuotes={[
+                  {
+                    imageUrl:
+                      'https://images.unsplash.com/photo-1521106581851-da5b6457f674?w=900&auto=format&fit=crop&q=60',
+                    bgColor: '#1A1815',
+                    author: 'Luke 8:2',
+                    text: 'And also some women who had been cured of evil spirits and diseases: Mary (called Magdalene) from whom seven demons had come out.'
+                  },
+                  {
+                    imageUrl:
+                      'https://images.unsplash.com/photo-1522442676585-c751dab71864?w=900&auto=format&fit=crop&q=60',
+                    bgColor: '#A88E78',
+                    author: 'John 20:16',
+                    text: 'Jesus said to her, "Mary." She turned toward him and cried out in Aramaic, "Rabboni!" (which means "Teacher").'
+                  },
+                  {
+                    imageUrl:
+                      'https://images.unsplash.com/photo-1678181896030-11cf0237d704?w=900&auto=format&fit=crop&q=60',
+                    bgColor: '#72593A',
+                    author: 'Mark 16:9',
+                    text: 'Now when Jesus was risen early the first day of the week, he appeared first to Mary Magdalene, out of whom he had cast seven devils.'
+                  }
+                ]}
+                freeResource={{
+                  imageUrl:
+                    'https://images.unsplash.com/photo-1650658720644-e1588bd66de3?w=900&auto=format&fit=crop&q=60',
+                  bgColor: '#5F4C5E',
+                  subtitle: 'Free Resources',
+                  title: "Want to deepen your understanding of Jesus' life?",
+                  buttonText: 'Join Our Bible study'
+                }}
+                onOpenDialog={handleOpenDialog}
+              />
+
+              <div className="relative bg-linear-to-tr from-violet-950/10  via-indigo-500/10 to-cyan-300/50 py-16">
+                <div className="absolute inset-0 bg-[url(./assets/overlay.svg)] bg-repeat mix-blend-multiply"></div>
+                <div className="px-6 lg:px-8 z-2 relative">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-start gap-4">
+                      <div className="flex flex-col gap-1">
+                        <h4 className="text-sm tracking-wider uppercase text-white/50">
+                          Easter Documentary Series
+                        </h4>
+                        <h3 className="text-2xl font-bold text-balance">
+                          Did Jesus Defeat Death?
+                        </h3>
+                      </div>
+                    </div>
+                    <button
+                      onClick={handleOpenDialog}
+                      aria-label="Share Bible quotes"
+                      className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
+                    >
+                      <Icon
+                        name="Play3"
+                        sx={{
+                          width: 16,
+                          height: 16
+                        }}
+                      />
+                      <span>See All</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="px-6 lg:px-8 space-y-6 pt-6 pb-10">
+                  <p className="leading-relaxed text-stone-200/80">
+                    <span className="text-white font-bold">
+                      Go on this adventure
+                    </span>{' '}
+                    to time travel to the 1st century and check out other
+                    theories for Jesus's empty tomb.
+                  </p>
+                </div>
+
+                <VideoBlock
+                  contentId="31-how-did-jesus-die/english"
+                  title="How Did Jesus Die?"
+                />
+
+                <div className="pt-8">
+                  <Swiper
+                    slidesPerView={'auto'}
+                    pagination={{ clickable: true }}
+                    spaceBetween={20}
+                  >
+                    <SwiperSlide className="max-w-[200px] pl-6">
+                      <div className="relative beveled h-[240px] flex flex-col justify-end w-full bg-[#161817] rounded-lg overflow-hidden">
+                        <img
+                          src="https://cdn-std.droplr.net/files/acc_760170/adPZV7"
+                          alt="Finding Light: A Journey Through Depression"
+                          className="absolute top-0 w-full h-[150px] object-cover overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_50%,transparent_100%)] [mask-size:cover]"
+                        />
+                        <div className="p-4">
+                          <span className="text-xs font-medium tracking-wider uppercase text-white/60">
+                            Short Video
+                          </span>
+                          <h3 className="text-base font-bold text-white/90 leading-tight line-clamp-3">
+                            How Did Jesus Die?
+                          </h3>
+                        </div>
+                      </div>
+                    </SwiperSlide>
+
+                    <SwiperSlide className="max-w-[200px]">
+                      <div className="relative beveled h-[240px] flex flex-col justify-end w-full bg-[#000906] rounded-lg overflow-hidden">
+                        <img
+                          src="https://cdn-std.droplr.net/files/acc_760170/DfhTBf"
+                          alt="Finding Light: A Journey Through Depression"
+                          className="absolute top-0 w-full h-[150px] object-cover overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_50%,transparent_100%)] [mask-size:cover]"
+                        />
+                        <div className="p-4">
+                          <span className="text-xs font-medium tracking-wider uppercase text-white/60">
+                            Short Video
+                          </span>
+                          <h3 className="text-base font-bold text-white/90 leading-tight line-clamp-3">
+                            What Happened Next?
+                          </h3>
+                        </div>
+                      </div>
+                    </SwiperSlide>
+
+                    <SwiperSlide className="max-w-[200px] pr-6">
+                      <div className="relative beveled h-[240px] flex flex-col justify-end w-full bg-[#2B2018] rounded-lg overflow-hidden">
+                        <img
+                          src="https://cdn-std.droplr.net/files/acc_760170/6xZccU"
+                          alt="Finding Light: A Journey Through Depression"
+                          className="absolute top-0 w-full h-[150px] object-cover overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_50%,transparent_100%)] [mask-size:cover]"
+                        />
+                        <div className="p-4">
+                          <span className="text-xs font-medium tracking-wider uppercase text-amber-100/60">
+                            Short Video
+                          </span>
+                          <h3 className="text-base font-bold text-white/90 leading-tight line-clamp-3">
+                            Why is Easter celebrated with bunnies?
+                          </h3>
+                        </div>
+                      </div>
+                    </SwiperSlide>
+                  </Swiper>
+                </div>
+              </div>
+
+              <VideoSection
+                contentId="why-did-jesus-have-to-die/english"
+                subtitle="Why Did Jesus Have to Die?"
+                title="The Purpose of Jesus' Sacrifice"
+                description="God created humans to be spiritually and relationally connected with Him, but how can we keep God's commands? How can we live without shame? We can't restore ourselves to honor. It would seem we're doomed, except God doesn't want His creation to die. He is merciful and loving, and wants us to be restored, living with Him in full life."
+                questions={[
+                  {
+                    id: 1,
+                    question: "Why was Jesus' death necessary?",
+                    answer: (
+                      <>
+                        <p>
+                          Jesus' death was necessary to fulfill God's plan of
+                          redemption. Because of sin, humanity was separated
+                          from God, but Jesus' sacrifice provided the way for
+                          reconciliation. Here's why His death was essential:
+                        </p>
+                        <ul className="list-disc pl-6 mt-2 space-y-2">
+                          <li>Sin creates a barrier between us and God</li>
+                          <li>God's justice requires a payment for sin</li>
+                          <li>
+                            Jesus, as the perfect sacrifice, took our place
+                          </li>
+                          <li>
+                            Through His death, we receive forgiveness and
+                            restoration
+                          </li>
+                        </ul>
+                      </>
+                    )
+                  },
+                  {
+                    id: 2,
+                    question:
+                      "If God is loving, why didn't He just forgive sin without Jesus' sacrifice?",
+                    answer: (
+                      <>
+                        <p>
+                          God's love and justice go hand in hand. While He
+                          desires to forgive, He also upholds justice. Jesus'
+                          sacrifice was the ultimate expression of both:
+                        </p>
+                        <ul className="list-disc pl-6 mt-2 space-y-2">
+                          <li>
+                            Forgiveness requires a cost, and Jesus paid that
+                            cost
+                          </li>
+                          <li>
+                            His death satisfied God's justice while showing His
+                            mercy
+                          </li>
+                          <li>
+                            Through Jesus, God demonstrated His love for
+                            humanity
+                          </li>
+                          <li>
+                            His sacrifice allows us to be restored without
+                            compromising divine justice
+                          </li>
+                        </ul>
+                      </>
+                    )
+                  },
+                  {
+                    id: 3,
+                    question:
+                      "How does Jesus' death affect our relationship with God?",
+                    answer: (
+                      <>
+                        <p>
+                          Jesus' death and resurrection opened the way for us to
+                          be reconciled with God. Through Him, we can:
+                        </p>
+                        <ul className="list-disc pl-6 mt-2 space-y-2">
+                          <li>Experience forgiveness and freedom from sin</li>
+                          <li>Have direct access to God through Christ</li>
+                          <li>Receive the gift of eternal life</li>
+                          <li>
+                            Live in restored relationship with our Creator
+                          </li>
+                        </ul>
+                      </>
+                    )
+                  }
+                ]}
+                bibleQuotes={[
+                  {
+                    imageUrl:
+                      'https://images.unsplash.com/photo-1482424917728-d82d29662023?w=1400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fGNocmlzdHxlbnwwfHwwfHx8MA%3D%3D',
+                    bgColor: '#060606',
+                    author: 'Romans 5:8',
+                    text: 'But God demonstrates his own love for us in this: While we were still sinners, Christ died for us.'
+                  },
+                  {
+                    imageUrl:
+                      'https://images.unsplash.com/photo-1658512341640-2db6ae31906b?w=1400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGpvaG4lMjAzJTNBMTZ8ZW58MHx8MHx8fDA%3D',
+                    bgColor: '#050507',
+                    author: 'John 3:16',
+                    text: 'For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.'
+                  },
+                  {
+                    imageUrl:
+                      'https://images.unsplash.com/photo-1586490110711-7e174d0d043f?w=1400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8am9obiUyMDMlM0ExNnxlbnwwfHwwfHx8MA%3D%3D',
+                    bgColor: '#5B5A5C',
+                    author: '1 Peter 2:24',
+                    text: 'He himself bore our sins in his body on the cross, so that we might die to sins and live for righteousness; by his wounds you have been healed.'
+                  }
+                ]}
+                freeResource={{
+                  imageUrl:
+                    'https://images.unsplash.com/photo-1650658720644-e1588bd66de3?w=900&auto=format&fit=crop&q=60',
+                  bgColor: '#5F4C5E',
+                  subtitle: 'Free Resources',
+                  title: "Want to understand more about Jesus' sacrifice?",
+                  buttonText: 'Join Our Bible study'
+                }}
+                onOpenDialog={handleOpenDialog}
+              />
+
+              <VideoSection
+                contentId="did-jesus-come-back-from-the-dead/english"
+                subtitle="Did Jesus Come Back From the Dead?"
+                title="The Truth About Jesus' Resurrection"
+                description="Jesus told people that he would die and then come back to life. This short film explains the details surrounding Jesus' death and resurrection. His closest followers struggled to believe, but eyewitnesses confirmed the truth: He rose again. The news of His resurrection spread across the world, changing lives forever. Because of these witnesses, we can have confidence in the reality of Jesus' resurrection."
+                questions={[
+                  {
+                    id: 1,
+                    question:
+                      'How do we know Jesus really died and rose again?',
+                    answer: (
+                      <>
+                        <p>
+                          There is strong historical and biblical evidence for
+                          Jesus' death and resurrection:
+                        </p>
+                        <ul className="list-disc pl-6 mt-2 space-y-2">
+                          <li>
+                            Roman soldiers confirmed His death before burying
+                            Him
+                          </li>
+                          <li>Jesus' tomb was sealed and guarded</li>
+                          <li>
+                            Hundreds of witnesses saw Jesus alive after His
+                            resurrection
+                          </li>
+                          <li>
+                            His disciples, once afraid, boldly preached and died
+                            for this truth
+                          </li>
+                        </ul>
+                      </>
+                    )
+                  },
+                  {
+                    id: 2,
+                    question: 'Why is the resurrection of Jesus important?',
+                    answer: (
+                      <>
+                        <p>
+                          The resurrection is central to Christian faith
+                          because:
+                        </p>
+                        <ul className="list-disc pl-6 mt-2 space-y-2">
+                          <li>It proves Jesus' victory over sin and death</li>
+                          <li>It fulfills prophecies about the Messiah</li>
+                          <li>It confirms that Jesus is the Son of God</li>
+                          <li>
+                            It gives believers hope of eternal life with Him
+                          </li>
+                        </ul>
+                      </>
+                    )
+                  },
+                  {
+                    id: 3,
+                    question:
+                      "How should we respond to Jesus' death and resurrection?",
+                    answer: (
+                      <>
+                        <p>
+                          Jesus' resurrection calls for a personal response. We
+                          can:
+                        </p>
+                        <ul className="list-disc pl-6 mt-2 space-y-2">
+                          <li>Believe in Him as our Savior and Lord</li>
+                          <li>Repent from sin and follow His teachings</li>
+                          <li>
+                            Share the good news of His resurrection with others
+                          </li>
+                          <li>
+                            Live with hope, knowing that He will return one day
+                          </li>
+                        </ul>
+                      </>
+                    )
+                  }
+                ]}
+                bibleQuotes={[
+                  {
+                    imageUrl:
+                      'https://images.unsplash.com/photo-1616548321600-aaab929899b5?w=1400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjd8fGNocmlzdHxlbnwwfHwwfHx8MA%3D%3D',
+                    bgColor: '#80766A',
+                    author: 'Luke 24:6-7',
+                    text: 'He is not here; He has risen! Remember how He told you, while He was still with you in Galilee: The Son of Man must be delivered over to the hands of sinners, be crucified and on the third day be raised again.'
+                  },
+                  {
+                    imageUrl:
+                      'https://images.unsplash.com/photo-1505009923639-b21de6ff4f78?w=1400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTJ8fGNocmlzdHxlbnwwfHwwfHx8MA%3D%3D',
+                    bgColor: '#2E539A',
+                    author: '1 Corinthians 15:3-4',
+                    text: 'For what I received I passed on to you as of first importance: that Christ died for our sins according to the Scriptures, that he was buried, that he was raised on the third day according to the Scriptures.'
+                  },
+                  {
+                    imageUrl:
+                      'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?w=1400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTM2fHxuZXclMjBsaWZlfGVufDB8fDB8fHww',
+                    bgColor: '#0B1B1E',
+                    author: 'John 11:25',
+                    text: 'Jesus said to her, "I am the resurrection and the life. The one who believes in me will live, even though they die."'
+                  }
+                ]}
+                freeResource={{
+                  imageUrl:
+                    'https://images.unsplash.com/photo-1650658720644-e1588bd66de3?w=900&auto=format&fit=crop&q=60',
+                  bgColor: '#5F4C5E',
+                  subtitle: 'Free Resources',
+                  title: "Want to learn more about Jesus' resurrection?",
                   buttonText: 'Join Our Bible study'
                 }}
                 onOpenDialog={handleOpenDialog}
