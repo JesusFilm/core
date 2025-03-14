@@ -25,7 +25,11 @@ jest.mock('../utils/videoStatsUtils/formatTime', () => ({
 }))
 
 jest.mock('../utils/videoStatsUtils/formatTimeRanges', () => ({
-  formatTimeRanges: () => '0:00-1:00'
+  formatTimeRanges: (
+    timeRanges: TimeRanges | null | undefined,
+    startAt: number,
+    endAt: number
+  ) => '0:00-1:00'
 }))
 
 jest.mock('../utils/videoStatsUtils/getCurrentQuality', () => ({
@@ -74,7 +78,7 @@ describe('VideoStats', () => {
   })
 
   it('should render stats correctly', () => {
-    render(<VideoStats player={player} />)
+    render(<VideoStats player={player} startAt={0} endAt={120} />)
 
     // Check if stats are rendered correctly
     expect(screen.getByText('Player Stats')).toBeInTheDocument()
@@ -86,7 +90,7 @@ describe('VideoStats', () => {
   })
 
   it('should update stats when player time updates', () => {
-    render(<VideoStats player={player} />)
+    render(<VideoStats player={player} startAt={0} endAt={120} />)
 
     // Simulate timeupdate event
     player.trigger('timeupdate')
@@ -100,12 +104,42 @@ describe('VideoStats', () => {
     // Spy on player.off method
     const offSpy = jest.spyOn(player, 'off')
 
-    const { unmount } = render(<VideoStats player={player} />)
+    const { unmount } = render(
+      <VideoStats player={player} startAt={0} endAt={120} />
+    )
 
     // Unmount component
     unmount()
 
     // Verify that event listener is removed
     expect(offSpy).toHaveBeenCalledWith('timeupdate', expect.any(Function))
+  })
+
+  it('should adjust stats for trimmed videos', () => {
+    // Mock formatTimeRanges to return different values based on parameters
+    const formatTimeRangesMock = jest.requireMock(
+      '../utils/videoStatsUtils/formatTimeRanges'
+    )
+    formatTimeRangesMock.formatTimeRanges = jest
+      .fn()
+      .mockImplementation((timeRanges, startAt, endAt) => {
+        if (startAt === 30 && endAt === 90) {
+          return '0:00-0:30' // Adjusted for trimming
+        }
+        return '0:00-1:00' // Default
+      })
+
+    // Render with trimming (startAt=30, endAt=90)
+    render(<VideoStats player={player} startAt={30} endAt={90} />)
+
+    // Current time should be adjusted (30 - 30 = 0)
+    expect(screen.getByText('Current Time: 0:00')).toBeInTheDocument()
+
+    // Duration should be calculated from startAt and endAt (90 - 30 = 60 seconds = 1:00)
+    expect(screen.getByText('Duration: 1:00')).toBeInTheDocument()
+
+    // Buffered and seekable should use the adjusted values from our mock
+    expect(screen.getByText('Buffered: 0:00-0:30')).toBeInTheDocument()
+    expect(screen.getByText('Seekable: 0:00-0:30')).toBeInTheDocument()
   })
 })
