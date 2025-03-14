@@ -4,100 +4,13 @@ import { join } from 'path'
 
 import { Logger } from 'pino'
 
-import { prisma } from '../../../lib/prisma'
-
 import { service } from './service'
-
-// Mock the logger
-const mockLogger = {
-  info: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn(),
-  debug: jest.fn(),
-  child: jest.fn().mockReturnThis()
-} as unknown as Logger
-
-// Mock the prisma client
-jest.mock('../../../lib/prisma', () => ({
-  prisma: {
-    language: {
-      deleteMany: jest.fn().mockResolvedValue(undefined),
-      createMany: jest.fn().mockResolvedValue({ count: 1 }),
-      create: jest.fn().mockResolvedValue({ id: 'test-language' })
-    },
-    languageName: {
-      deleteMany: jest.fn().mockResolvedValue(undefined),
-      createMany: jest.fn().mockResolvedValue({ count: 1 }),
-      create: jest.fn().mockResolvedValue({ id: 'test-language-name' })
-    },
-    country: {
-      deleteMany: jest.fn().mockResolvedValue(undefined),
-      createMany: jest.fn().mockResolvedValue({ count: 1 }),
-      create: jest.fn().mockResolvedValue({ id: 'test-country' })
-    },
-    countryLanguage: {
-      deleteMany: jest.fn().mockResolvedValue(undefined),
-      createMany: jest.fn().mockResolvedValue({ count: 1 }),
-      create: jest.fn().mockResolvedValue({ id: 'test-country-language' })
-    },
-    countryName: {
-      deleteMany: jest.fn().mockResolvedValue(undefined),
-      createMany: jest.fn().mockResolvedValue({ count: 1 }),
-      create: jest.fn().mockResolvedValue({ id: 'test-country-name' })
-    },
-    continent: {
-      deleteMany: jest.fn().mockResolvedValue(undefined),
-      createMany: jest.fn().mockResolvedValue({ count: 1 }),
-      create: jest.fn().mockResolvedValue({ id: 'test-continent' })
-    },
-    continentName: {
-      deleteMany: jest.fn().mockResolvedValue(undefined),
-      createMany: jest.fn().mockResolvedValue({ count: 1 }),
-      create: jest.fn().mockResolvedValue({ id: 'test-continent-name' })
-    },
-    audioPreview: {
-      deleteMany: jest.fn().mockResolvedValue(undefined),
-      createMany: jest.fn().mockResolvedValue({ count: 1 }),
-      create: jest.fn().mockResolvedValue({ id: 'test-audio-preview' })
-    },
-    importTimes: {
-      deleteMany: jest.fn().mockResolvedValue(undefined),
-      createMany: jest.fn().mockResolvedValue({ count: 1 }),
-      create: jest.fn().mockResolvedValue({ id: 'test-import-times' }),
-      upsert: jest
-        .fn()
-        .mockResolvedValue({ modelName: 'dataImport', lastImport: new Date() })
-    }
-  }
-}))
 
 // Mock fs functions
 jest.mock('fs', () => ({
   promises: {
+    stat: jest.fn().mockResolvedValue(true),
     mkdir: jest.fn().mockResolvedValue(undefined),
-    stat: jest.fn().mockResolvedValue({ isFile: () => true }),
-    readFile: jest.fn().mockImplementation((path) => {
-      if (path.includes('manifest.json')) {
-        return Promise.resolve(
-          JSON.stringify({
-            exportDate: '2023-01-01T00:00:00.000Z',
-            models: [
-              'Language',
-              'LanguageName',
-              'Country',
-              'CountryLanguage',
-              'CountryName',
-              'Continent',
-              'ContinentName',
-              'AudioPreview',
-              'ImportTimes'
-            ],
-            version: '1.0.0'
-          })
-        )
-      }
-      return Promise.resolve(JSON.stringify([{ id: 'test' }]))
-    }),
     rm: jest.fn().mockResolvedValue(undefined)
   }
 }))
@@ -123,102 +36,168 @@ jest.mock('child_process', () => ({
   })
 }))
 
-describe('Data Import Service', () => {
+describe('Database Import Service', () => {
+  // Mock environment variables
+  const originalEnv = process.env
+
   beforeEach(() => {
     jest.clearAllMocks()
+    process.env = {
+      ...originalEnv,
+      PG_DATABASE_URL_LANGUAGES:
+        'postgresql://postgres:postgres@localhost:5432/languages?schema=public'
+    }
   })
 
-  it('should import data from a tar.gz archive', async () => {
-    await service('test-file.tar.gz', {}, mockLogger)
+  afterEach(() => {
+    process.env = originalEnv
+  })
 
-    // Verify temp directory was created
-    expect(fs.mkdir).toHaveBeenCalledWith(
-      expect.stringContaining('temp_import'),
-      { recursive: true }
-    )
+  it('should import database using pg_restore', async () => {
+    // Create a mock logger
+    const mockLogger = {
+      info: jest.fn(),
+      debug: jest.fn(),
+      error: jest.fn(),
+      warn: jest.fn(),
+      child: jest.fn().mockReturnThis()
+    } as unknown as Logger
 
-    // Verify file was checked
-    expect(fs.stat).toHaveBeenCalledWith('test-file.tar.gz')
+    const filePath = '/path/to/backup.pgdump'
+    const options = { clearExistingData: false }
 
-    // Verify tar command was called
+    await service(filePath, options, mockLogger)
+
+    // Verify file existence was checked
+    expect(fs.stat).toHaveBeenCalledWith(filePath)
+
+    // Verify pg_restore command was called with correct parameters
     expect(spawn).toHaveBeenCalledWith(
-      'tar',
-      expect.arrayContaining(['-xzf']),
-      expect.any(String)
+      'pg_restore',
+      expect.arrayContaining([
+        '-h',
+        'localhost',
+        '-p',
+        '5432',
+        '-U',
+        'postgres',
+        '-d',
+        'languages',
+        '-v',
+        '--single-transaction',
+        filePath
+      ]),
+      expect.objectContaining({
+        env: expect.objectContaining({
+          PGPASSWORD: 'postgres'
+        })
+      })
     )
-
-    // Verify manifest was read
-    expect(fs.readFile).toHaveBeenCalledWith(
-      expect.stringContaining('manifest.json'),
-      'utf-8'
-    )
-
-    // Verify data was imported
-    expect(prisma.language.createMany).toHaveBeenCalled()
-    expect(prisma.languageName.createMany).toHaveBeenCalled()
-    expect(prisma.country.createMany).toHaveBeenCalled()
-    expect(prisma.countryLanguage.createMany).toHaveBeenCalled()
-    expect(prisma.countryName.createMany).toHaveBeenCalled()
-    expect(prisma.continent.createMany).toHaveBeenCalled()
-    expect(prisma.continentName.createMany).toHaveBeenCalled()
-    expect(prisma.audioPreview.createMany).toHaveBeenCalled()
-    expect(prisma.importTimes.createMany).toHaveBeenCalled()
-
-    // Verify import times were updated
-    expect(prisma.importTimes.upsert).toHaveBeenCalledWith({
-      where: { modelName: 'dataImport' },
-      update: { lastImport: expect.any(Date) },
-      create: { modelName: 'dataImport', lastImport: expect.any(Date) }
-    })
-
-    // Verify cleanup
-    expect(fs.rm).toHaveBeenCalledWith(expect.stringContaining('temp_import'), {
-      recursive: true,
-      force: true
-    })
 
     // Verify logger was used
     expect(mockLogger.info).toHaveBeenCalledWith(
-      expect.objectContaining({ filePath: 'test-file.tar.gz' }),
-      'Starting data import'
+      expect.objectContaining({ filePath }),
+      'Starting database import'
     )
     expect(mockLogger.info).toHaveBeenCalledWith(
-      'Data import completed successfully'
+      'Database import completed successfully'
     )
   })
 
-  it('should clear existing data when requested', async () => {
-    await service('test-file.tar.gz', { clearExistingData: true }, mockLogger)
+  it('should include --clean flag when clearExistingData is true', async () => {
+    // Create a mock logger
+    const mockLogger = {
+      info: jest.fn(),
+      debug: jest.fn(),
+      error: jest.fn(),
+      warn: jest.fn(),
+      child: jest.fn().mockReturnThis()
+    } as unknown as Logger
 
-    // Verify data was cleared
-    expect(prisma.importTimes.deleteMany).toHaveBeenCalled()
-    expect(prisma.audioPreview.deleteMany).toHaveBeenCalled()
-    expect(prisma.continentName.deleteMany).toHaveBeenCalled()
-    expect(prisma.countryName.deleteMany).toHaveBeenCalled()
-    expect(prisma.countryLanguage.deleteMany).toHaveBeenCalled()
-    expect(prisma.languageName.deleteMany).toHaveBeenCalled()
-    expect(prisma.country.deleteMany).toHaveBeenCalled()
-    expect(prisma.continent.deleteMany).toHaveBeenCalled()
-    expect(prisma.language.deleteMany).toHaveBeenCalled()
+    const filePath = '/path/to/backup.pgdump'
+    const options = { clearExistingData: true }
+
+    await service(filePath, options, mockLogger)
+
+    // Verify pg_restore command was called with --clean flag
+    expect(spawn).toHaveBeenCalledWith(
+      'pg_restore',
+      expect.arrayContaining([
+        '-h',
+        'localhost',
+        '-p',
+        '5432',
+        '-U',
+        'postgres',
+        '-d',
+        'languages',
+        '-v',
+        '--clean',
+        '--single-transaction',
+        filePath
+      ]),
+      expect.any(Object)
+    )
   })
 
-  it('should filter models when importModels is specified', async () => {
-    await service(
-      'test-file.tar.gz',
-      { importModels: ['Language', 'Country'] },
-      mockLogger
+  it('should throw an error if file does not exist', async () => {
+    // Mock fs.stat to return false
+    ;(fs.stat as jest.Mock).mockRejectedValueOnce(new Error('File not found'))
+
+    // Create a mock logger
+    const mockLogger = {
+      info: jest.fn(),
+      debug: jest.fn(),
+      error: jest.fn(),
+      warn: jest.fn(),
+      child: jest.fn().mockReturnThis()
+    } as unknown as Logger
+
+    const filePath = '/path/to/nonexistent.pgdump'
+    const options = { clearExistingData: false }
+
+    await expect(service(filePath, options, mockLogger)).rejects.toThrow(
+      'File not found'
     )
+  })
 
-    // Verify only specified models were imported
-    expect(prisma.language.createMany).toHaveBeenCalled()
-    expect(prisma.country.createMany).toHaveBeenCalled()
+  it('should warn if file does not have .pgdump extension', async () => {
+    // Create a mock logger
+    const mockLogger = {
+      info: jest.fn(),
+      debug: jest.fn(),
+      error: jest.fn(),
+      warn: jest.fn(),
+      child: jest.fn().mockReturnThis()
+    } as unknown as Logger
 
-    // Verify other models were not imported
-    expect(prisma.languageName.createMany).not.toHaveBeenCalled()
-    expect(prisma.countryLanguage.createMany).not.toHaveBeenCalled()
-    expect(prisma.countryName.createMany).not.toHaveBeenCalled()
-    expect(prisma.continent.createMany).not.toHaveBeenCalled()
-    expect(prisma.continentName.createMany).not.toHaveBeenCalled()
-    expect(prisma.audioPreview.createMany).not.toHaveBeenCalled()
+    const filePath = '/path/to/backup.txt'
+    const options = { clearExistingData: false }
+
+    await service(filePath, options, mockLogger)
+
+    // Verify warning was logged
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      'File does not have .pgdump extension, but proceeding anyway'
+    )
+  })
+
+  it('should throw an error if database URL is not set', async () => {
+    // Remove database URL from environment
+    delete process.env.PG_DATABASE_URL_LANGUAGES
+
+    // Create a mock logger
+    const mockLogger = {
+      info: jest.fn(),
+      debug: jest.fn(),
+      error: jest.fn(),
+      warn: jest.fn(),
+      child: jest.fn().mockReturnThis()
+    } as unknown as Logger
+
+    const filePath = '/path/to/backup.pgdump'
+    const options = { clearExistingData: false }
+
+    await expect(service(filePath, options, mockLogger)).rejects.toThrow()
   })
 })

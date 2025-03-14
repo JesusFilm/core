@@ -4,66 +4,14 @@ import { join } from 'path'
 
 import { Logger } from 'pino'
 
-import { prisma } from '../../../lib/prisma'
-
 import { service } from './service'
-
-// Mock the prisma client
-jest.mock('../../../lib/prisma', () => ({
-  prisma: {
-    language: {
-      findMany: jest.fn().mockResolvedValue([{ id: 'test-language' }])
-    },
-    languageName: {
-      findMany: jest.fn().mockResolvedValue([{ id: 'test-language-name' }])
-    },
-    country: {
-      findMany: jest.fn().mockResolvedValue([{ id: 'test-country' }])
-    },
-    countryLanguage: {
-      findMany: jest.fn().mockResolvedValue([{ id: 'test-country-language' }])
-    },
-    countryName: {
-      findMany: jest.fn().mockResolvedValue([{ id: 'test-country-name' }])
-    },
-    continent: {
-      findMany: jest.fn().mockResolvedValue([{ id: 'test-continent' }])
-    },
-    continentName: {
-      findMany: jest.fn().mockResolvedValue([{ id: 'test-continent-name' }])
-    },
-    audioPreview: {
-      findMany: jest.fn().mockResolvedValue([{ id: 'test-audio-preview' }])
-    },
-    importTimes: {
-      findMany: jest.fn().mockResolvedValue([{ id: 'test-import-times' }])
-    }
-  }
-}))
 
 // Mock fs functions
 jest.mock('fs', () => ({
   promises: {
     mkdir: jest.fn().mockResolvedValue(undefined),
-    writeFile: jest.fn().mockResolvedValue(undefined),
-    readFile: jest.fn().mockImplementation((path) => {
-      if (path.includes('manifest.json')) {
-        return Promise.resolve(
-          JSON.stringify({
-            exportDate: '2023-01-01T00:00:00.000Z',
-            models: [],
-            version: '1.0.0'
-          })
-        )
-      }
-      return Promise.resolve(JSON.stringify([{ id: 'test' }]))
-    }),
     rm: jest.fn().mockResolvedValue(undefined)
-  },
-  createWriteStream: jest.fn().mockReturnValue({
-    on: jest.fn(),
-    end: jest.fn()
-  })
+  }
 }))
 
 // Mock child_process
@@ -87,12 +35,24 @@ jest.mock('child_process', () => ({
   })
 }))
 
-describe('Data Export Service', () => {
+describe('Database Export Service', () => {
+  // Mock environment variables
+  const originalEnv = process.env
+
   beforeEach(() => {
     jest.clearAllMocks()
+    process.env = {
+      ...originalEnv,
+      PG_DATABASE_URL_LANGUAGES:
+        'postgresql://postgres:postgres@localhost:5432/languages?schema=public'
+    }
   })
 
-  it('should export all models and create a tar.gz archive', async () => {
+  afterEach(() => {
+    process.env = originalEnv
+  })
+
+  it('should export database using pg_dump', async () => {
     // Create a mock logger
     const mockLogger = {
       info: jest.fn(),
@@ -103,43 +63,57 @@ describe('Data Export Service', () => {
 
     await service(mockLogger)
 
-    // Verify temp directory was created
-    expect(fs.mkdir).toHaveBeenCalledWith(
-      expect.stringContaining('temp_export'),
-      { recursive: true }
-    )
-
-    // Verify all models were queried
-    expect(prisma.language.findMany).toHaveBeenCalled()
-    expect(prisma.languageName.findMany).toHaveBeenCalled()
-    expect(prisma.country.findMany).toHaveBeenCalled()
-    expect(prisma.countryLanguage.findMany).toHaveBeenCalled()
-    expect(prisma.countryName.findMany).toHaveBeenCalled()
-    expect(prisma.continent.findMany).toHaveBeenCalled()
-    expect(prisma.continentName.findMany).toHaveBeenCalled()
-    expect(prisma.audioPreview.findMany).toHaveBeenCalled()
-    expect(prisma.importTimes.findMany).toHaveBeenCalled()
-
-    // Verify files were written
-    expect(fs.writeFile).toHaveBeenCalledTimes(10) // 9 models + manifest
-
-    // Verify tar command was called
-    expect(spawn).toHaveBeenCalledWith(
-      'tar',
-      expect.arrayContaining(['-czf']),
-      expect.any(String)
-    )
-
-    // Verify cleanup
-    expect(fs.rm).toHaveBeenCalledWith(expect.stringContaining('temp_export'), {
-      recursive: true,
-      force: true
+    // Verify output directory was created
+    expect(fs.mkdir).toHaveBeenCalledWith(expect.stringContaining('exports'), {
+      recursive: true
     })
 
-    // Verify logger was used
-    expect(mockLogger.info).toHaveBeenCalledWith('Starting data export')
-    expect(mockLogger.info).toHaveBeenCalledWith(
-      expect.stringContaining('Data export completed successfully')
+    // Verify pg_dump command was called with correct parameters
+    expect(spawn).toHaveBeenCalledWith(
+      'pg_dump',
+      expect.arrayContaining([
+        '-h',
+        'localhost',
+        '-p',
+        '5432',
+        '-U',
+        'postgres',
+        '-d',
+        'languages',
+        '-F',
+        'c',
+        '-Z',
+        '9',
+        '-v',
+        '-f',
+        expect.stringContaining('.pgdump')
+      ]),
+      expect.objectContaining({
+        env: expect.objectContaining({
+          PGPASSWORD: 'postgres'
+        })
+      })
     )
+
+    // Verify logger was used
+    expect(mockLogger.info).toHaveBeenCalledWith('Starting database export')
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      expect.stringContaining('Database export completed successfully')
+    )
+  })
+
+  it('should throw an error if database URL is not set', async () => {
+    // Remove database URL from environment
+    delete process.env.PG_DATABASE_URL_LANGUAGES
+
+    // Create a mock logger
+    const mockLogger = {
+      info: jest.fn(),
+      debug: jest.fn(),
+      error: jest.fn(),
+      child: jest.fn().mockReturnThis()
+    } as unknown as Logger
+
+    await expect(service(mockLogger)).rejects.toThrow()
   })
 })

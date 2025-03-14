@@ -54,7 +54,7 @@ export async function cli(argv = process.argv): Promise<void> {
         console.error(chalk.red('Error: Missing file path for data import'))
         console.error(
           chalk.yellow(
-            'Usage: nx run api-languages:cli -- data-import <file-path.tar.gz> [--clear]'
+            'Usage: nx run api-languages:cli -- data-import <file-path.pgdump> [--clear]'
           )
         )
         process.exit(1)
@@ -64,14 +64,12 @@ export async function cli(argv = process.argv): Promise<void> {
       const filePath = argv[3]
 
       // Validate file extension
-      if (!filePath.endsWith('.tar.gz')) {
-        console.error(chalk.red('Error: File must be a .tar.gz archive'))
-        console.error(
+      if (!filePath.endsWith('.pgdump')) {
+        console.warn(
           chalk.yellow(
-            'Usage: nx run api-languages:cli -- data-import <file-path.tar.gz> [--clear]'
+            'Warning: File does not have .pgdump extension, but proceeding anyway'
           )
         )
-        process.exit(1)
       }
 
       const clearExistingData = argv.includes('--clear')
