@@ -24,3 +24,12 @@
   font-style: normal;
   font-display: swap;
 }
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/watch/assets/fonts/Montserrat-VariableFont_wght.ttf')
+    format('woff2-variations');
+  src: url('/watch/assets/fonts/Montserrat-VariableFont_wght.ttf')
+    format('woff2') tech('variations');
+  font-weight: 100 1000;
+}

@@ -1,1 +1,55 @@
 @import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  @keyframes mesh-gradient {
+    0% {
+      background-position: 0% 50%;
+      background-size: 200% 200%;
+    }
+    25% {
+      background-position: 100% 0%;
+      background-size: 100% 100%;
+    }
+    50% {
+      background-position: 100% 50%;
+      background-size: 200% 200%;
+    }
+    75% {
+      background-position: 0% 100%;
+      background-size: 100% 100%;
+    }
+    100% {
+      background-position: 0% 50%;
+      background-size: 200% 200%;
+    }
+  }
+}
+
+@layer utilities {
+  .animate-mesh-gradient {
+    animation: mesh-gradient 6s ease-in-out infinite;
+  }
+
+  .animate-mesh-gradient-fast {
+    animation: mesh-gradient 5s ease-in-out infinite;
+  }
+
+  .beveled {
+    position: relative;
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: var(--radius-lg);
+      z-index: 99;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      box-shadow: inset 0 0 1px rgba(252, 243, 224, 0.5);
+    }
+  }
+}
