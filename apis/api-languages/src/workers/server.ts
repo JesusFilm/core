@@ -72,9 +72,8 @@ function runDataImport(): void {
         /* webpackChunkName: "data-import" */
         './dataImport/service'
       )
-      const { filePath, clearExistingData } = job.data
 
-      await service(filePath, { clearExistingData }, childLogger)
+      await service(childLogger)
 
       logger.info('finished data import job')
     },

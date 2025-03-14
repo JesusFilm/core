@@ -49,31 +49,6 @@ export async function cli(argv = process.argv): Promise<void> {
       jobName = config.jobName
       queue = new Queue(queueName, { connection })
 
-      // Check if a file path was provided
-      if (argv.length < 4) {
-        console.error(chalk.red('Error: Missing file path for data import'))
-        console.error(
-          chalk.yellow(
-            'Usage: nx run api-languages:cli -- data-import <file-path.pgdump> [--clear]'
-          )
-        )
-        process.exit(1)
-      }
-
-      // Add file path to job data
-      const filePath = argv[3]
-
-      // Validate file extension
-      if (!filePath.endsWith('.pgdump')) {
-        console.warn(
-          chalk.yellow(
-            'Warning: File does not have .pgdump extension, but proceeding anyway'
-          )
-        )
-      }
-
-      const clearExistingData = argv.includes('--clear')
-
       const jobs = await queue.getJobs()
       for (const job of jobs) {
         if (
@@ -95,7 +70,7 @@ export async function cli(argv = process.argv): Promise<void> {
 
       const job = await queue.add(
         jobName,
-        { filePath, clearExistingData },
+        {},
         {
           removeOnComplete: { age: ONE_HOUR },
           removeOnFail: { age: ONE_DAY }
