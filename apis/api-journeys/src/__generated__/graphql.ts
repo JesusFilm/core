@@ -1265,6 +1265,7 @@ export type Mutation = {
   customDomainUpdate: CustomDomain;
   deleteCloudflareImage: Scalars['Boolean']['output'];
   deleteMuxVideo: Scalars['Boolean']['output'];
+  enableMuxDownload?: Maybe<MuxVideo>;
   getTranscodeAssetProgress?: Maybe<Scalars['Int']['output']>;
   hostCreate: Host;
   hostDelete: Host;
@@ -1604,6 +1605,11 @@ export type MutationDeleteCloudflareImageArgs = {
 
 
 export type MutationDeleteMuxVideoArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationEnableMuxDownloadArgs = {
   id: Scalars['ID']['input'];
 };
 

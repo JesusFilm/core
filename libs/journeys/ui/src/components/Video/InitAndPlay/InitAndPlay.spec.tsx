@@ -1,7 +1,6 @@
 import { act, cleanup, render } from '@testing-library/react'
 import { ComponentProps } from 'react'
 import videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
@@ -10,22 +9,20 @@ import { TreeBlock, blockHistoryVar } from '../../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
-
-import { getMuxMetadata } from './getMuxMetadata'
+import { getMuxMetadata } from '../utils/getMuxMetadata'
+import VideoJsPlayer from '../utils/videoJsTypes'
 
 import { InitAndPlay } from '.'
 
-jest.mock('./getMuxMetadata', () => ({
+jest.mock('../utils/getMuxMetadata', () => ({
   getMuxMetadata: jest.fn()
 }))
 
-const mockGetMuxMetadata = getMuxMetadata as jest.MockedFunction<
-  typeof getMuxMetadata
->
+const mockGetMuxMetadata = getMuxMetadata
 
 describe('InitAndPlay', () => {
   let defaultProps: ComponentProps<typeof InitAndPlay>
-  let player: Player
+  let player: VideoJsPlayer
 
   const defaultStepBlock = {
     __typename: 'StepBlock',
@@ -49,7 +46,7 @@ describe('InitAndPlay', () => {
         },
         fullscreenToggle: true
       }
-    })
+    }) as VideoJsPlayer
 
     defaultProps = {
       videoRef: { current: video },
