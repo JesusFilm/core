@@ -48,55 +48,7 @@ export async function cli(argv = process.argv): Promise<void> {
       queueName = config.queueName
       jobName = config.jobName
       queue = new Queue(queueName, { connection })
-
-      const jobs = await queue.getJobs()
-      for (const job of jobs) {
-        if (
-          job.name === jobName &&
-          job.id != null &&
-          !(await job.isDelayed())
-        ) {
-          const state = await job.getState()
-          await queue.remove(job.id)
-          console.log(
-            chalk.red(`✗`),
-            `DEL:`,
-            chalk.bold(jobName),
-            chalk.grey(`from ${queueName} queue`)
-          )
-          console.log(chalk.grey(`{ "id": "${job.id}", "state": "${state}" }`))
-        }
-      }
-
-      const job = await queue.add(
-        jobName,
-        {},
-        {
-          removeOnComplete: { age: ONE_HOUR },
-          removeOnFail: { age: ONE_DAY }
-        }
-      )
-
-      console.log(
-        chalk.greenBright('✔'),
-        'ADD:',
-        chalk.bold(`${jobName}`),
-        chalk.grey(`to ${queueName} queue`)
-      )
-      console.log(
-        chalk.grey(`{ "id": "${job.id}", "state": "${await job.getState()}" }`)
-      )
-      console.log(
-        chalk.cyan(
-          'you must start the worker by using',
-          chalk.bold('nx run api-languages:serve'),
-          'or',
-          chalk.bold('nf start')
-        )
-      )
-
-      if (process.env.NODE_ENV !== 'test') process.exit(0)
-      return
+      break
     }
     default:
       throw new Error('unknown queue')
