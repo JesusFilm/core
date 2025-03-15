@@ -87,3 +87,7 @@ terraform.tfstate.backup
 .react-email
 
 .cursor/rules/*.dev.mdc
+
+# ignore exports
+/exports/*
+/imports/*

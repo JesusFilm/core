@@ -30,6 +30,26 @@ export async function cli(argv = process.argv): Promise<void> {
       queue = new Queue(queueName, { connection })
       break
     }
+    case 'data-export': {
+      const config = await import(
+        /* webpackChunkName: "data-export" */
+        './dataExport'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
+    case 'data-import': {
+      const config = await import(
+        /* webpackChunkName: "data-import" */
+        './dataImport'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
     default:
       throw new Error('unknown queue')
   }
