@@ -41,6 +41,8 @@ export const JOURNEY_SETTINGS_UPDATE = gql`
       menuStepBlock {
         ...BlockFields
       }
+      socialNodeX
+      socialNodeY
     }
   }
 `

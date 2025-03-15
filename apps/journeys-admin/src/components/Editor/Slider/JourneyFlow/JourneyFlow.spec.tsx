@@ -30,6 +30,10 @@ import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 
 import { GET_STEP_BLOCKS_WITH_POSITION } from './JourneyFlow'
 import { transformSteps } from './libs/transformSteps'
+import {
+  DEFAULT_SOCIAL_NODE_X,
+  DEFAULT_SOCIAL_NODE_Y
+} from './nodes/SocialPreviewNode/libs/positions'
 
 import { JourneyFlow } from '.'
 
@@ -116,6 +120,7 @@ describe('JourneyFlow', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(screen.getByTestId('JourneyFlow')).toBeInTheDocument()
+    expect(screen.getByTestId('SocialPreviewNode')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Add Step' })).not.toBeDisabled()
     await waitFor(() =>
       expect(screen.getAllByTestId('StepBlockNodeCard')).toHaveLength(7)
@@ -126,6 +131,8 @@ describe('JourneyFlow', () => {
   })
 
   it('should update step positions if any step does not have a position', async () => {
+    // add mocks for journeyupdate
+
     const blocks = blocksWithStepBlockPosition.map((block) => ({
       ...block,
       x: null,
@@ -141,7 +148,15 @@ describe('JourneyFlow', () => {
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <JourneyProvider value={{ journey: defaultJourney }}>
+        <JourneyProvider
+          value={{
+            journey: {
+              ...defaultJourney,
+              socialNodeX: DEFAULT_SOCIAL_NODE_X,
+              socialNodeY: DEFAULT_SOCIAL_NODE_Y
+            }
+          }}
+        >
           <EditorProvider
             initialState={{
               steps,
@@ -198,7 +213,15 @@ describe('JourneyFlow', () => {
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <JourneyProvider value={{ journey: defaultJourney }}>
+        <JourneyProvider
+          value={{
+            journey: {
+              ...defaultJourney,
+              socialNodeX: DEFAULT_SOCIAL_NODE_X,
+              socialNodeY: DEFAULT_SOCIAL_NODE_Y
+            }
+          }}
+        >
           <EditorProvider
             initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
           >
