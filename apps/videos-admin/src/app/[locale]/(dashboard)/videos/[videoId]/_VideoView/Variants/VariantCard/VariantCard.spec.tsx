@@ -40,7 +40,7 @@ describe('VariantCard', () => {
         downloads: [
           {
             height: 360,
-            id: '529a0228-67ce-4b08-bc78-cecf1b7ec358',
+            id: 'download-id',
             quality: 'high',
             size: 2248469346,
             url: 'https://arc.gt/4d9ez',

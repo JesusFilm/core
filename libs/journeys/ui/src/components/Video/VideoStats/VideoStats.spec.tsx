@@ -25,35 +25,20 @@ jest.mock('../utils/videoStatsUtils/formatTime', () => ({
 }))
 
 jest.mock('../utils/videoStatsUtils/formatTimeRanges', () => ({
-  formatTimeRanges: () => '0:00-1:00'
+  formatTimeRanges: (
+    timeRanges: TimeRanges | null | undefined,
+    startAt: number,
+    endAt: number
+  ) => '0:00-1:00'
 }))
 
-jest.mock('../utils/videoStatsUtils/isHtml5Tech', () => ({
-  isHtml5Tech: jest.fn()
-}))
-
-jest.mock('../utils/videoStatsUtils/isYoutubeTech', () => ({
-  isYoutubeTech: jest.fn()
-}))
-
-jest.mock('../utils/videoStatsUtils/getHtml5Stats', () => ({
-  getHtml5Stats: jest.fn()
-}))
-
-jest.mock('../utils/videoStatsUtils/getYoutubeStats', () => ({
-  getYoutubeStats: jest.fn()
+jest.mock('../utils/videoStatsUtils/getCurrentQuality', () => ({
+  getCurrentQuality: jest.fn().mockReturnValue('720p')
 }))
 
 // Import the mocked functions after mocking
-const { isHtml5Tech } = jest.requireMock('../utils/videoStatsUtils/isHtml5Tech')
-const { isYoutubeTech } = jest.requireMock(
-  '../utils/videoStatsUtils/isYoutubeTech'
-)
-const { getHtml5Stats } = jest.requireMock(
-  '../utils/videoStatsUtils/getHtml5Stats'
-)
-const { getYoutubeStats } = jest.requireMock(
-  '../utils/videoStatsUtils/getYoutubeStats'
+const { getCurrentQuality } = jest.requireMock(
+  '../utils/videoStatsUtils/getCurrentQuality'
 )
 
 describe('VideoStats', () => {
@@ -92,99 +77,69 @@ describe('VideoStats', () => {
     player.dispose()
   })
 
-  it('should render basic stats correctly', () => {
-    // Mock tech to return unknown tech type
-    jest.spyOn(player, 'tech').mockReturnValue({
-      name_: 'Unknown'
-    } as any)
+  it('should render stats correctly', () => {
+    render(<VideoStats player={player} startAt={0} endAt={120} />)
 
-    // Set up mocks for tech type checks
-    isHtml5Tech.mockReturnValue(false)
-    isYoutubeTech.mockReturnValue(false)
-
-    render(<VideoStats player={player} />)
-
-    // Check if basic stats are rendered correctly
+    // Check if stats are rendered correctly
     expect(screen.getByText('Player Stats')).toBeInTheDocument()
-    expect(screen.getByText('Basic Info')).toBeInTheDocument()
     expect(screen.getByText('Current Time: 0:30')).toBeInTheDocument()
     expect(screen.getByText('Duration: 2:00')).toBeInTheDocument()
     expect(screen.getByText('Buffered: 0:00-1:00')).toBeInTheDocument()
     expect(screen.getByText('Seekable: 0:00-1:00')).toBeInTheDocument()
-  })
-
-  it('should render HTML5 enhanced stats correctly', () => {
-    // Mock isHtml5Tech to return true
-    isHtml5Tech.mockReturnValue(true)
-    isYoutubeTech.mockReturnValue(false)
-
-    // Mock getHtml5Stats to return test data
-    getHtml5Stats.mockReturnValue({
-      measuredBitrate: 1500,
-      currentQuality: '720p',
-      currentFrameRate: 30
-    })
-
-    render(<VideoStats player={player} />)
-
-    expect(screen.getByText('Enhanced Info')).toBeInTheDocument()
     expect(screen.getByText('Current Quality: 720p')).toBeInTheDocument()
-    expect(screen.getByText('Frame Rate: 30fps')).toBeInTheDocument()
-    expect(screen.getByText('Bitrate: 1500 kbps')).toBeInTheDocument()
-  })
-
-  it('should render YouTube enhanced stats correctly', () => {
-    isYoutubeTech.mockReturnValue(true)
-    isHtml5Tech.mockReturnValue(false)
-
-    jest.spyOn(player, 'tech').mockReturnValue({
-      name_: 'Youtube'
-    } as any)
-
-    getYoutubeStats.mockReturnValue({
-      currentQuality: 'hd720',
-      bufferedPercent: 75
-    })
-
-    render(<VideoStats player={player} />)
-
-    expect(screen.getByText('Enhanced Info')).toBeInTheDocument()
-    expect(screen.getByText('Current Quality: hd720')).toBeInTheDocument()
-    expect(screen.getByText('Buffered: 75%')).toBeInTheDocument()
   })
 
   it('should update stats when player time updates', () => {
-    // Mock isHtml5Tech to return true
-    isHtml5Tech.mockReturnValue(true)
-    isYoutubeTech.mockReturnValue(false)
-
-    // Mock getHtml5Stats to return test data
-    getHtml5Stats.mockReturnValue({
-      measuredBitrate: 1500,
-      currentQuality: '720p',
-      currentFrameRate: 30
-    })
-
-    render(<VideoStats player={player} />)
+    render(<VideoStats player={player} startAt={0} endAt={120} />)
 
     // Simulate timeupdate event
     player.trigger('timeupdate')
 
     // Verify that stats are updated
     expect(screen.getByText('Current Time: 0:30')).toBeInTheDocument()
-    expect(screen.getByText('Current Quality: 720p')).toBeInTheDocument()
+    expect(getCurrentQuality).toHaveBeenCalled()
   })
 
   it('should clean up event listeners on unmount', () => {
     // Spy on player.off method
     const offSpy = jest.spyOn(player, 'off')
 
-    const { unmount } = render(<VideoStats player={player} />)
+    const { unmount } = render(
+      <VideoStats player={player} startAt={0} endAt={120} />
+    )
 
     // Unmount component
     unmount()
 
     // Verify that event listener is removed
     expect(offSpy).toHaveBeenCalledWith('timeupdate', expect.any(Function))
+  })
+
+  it('should adjust stats for trimmed videos', () => {
+    // Mock formatTimeRanges to return different values based on parameters
+    const formatTimeRangesMock = jest.requireMock(
+      '../utils/videoStatsUtils/formatTimeRanges'
+    )
+    formatTimeRangesMock.formatTimeRanges = jest
+      .fn()
+      .mockImplementation((timeRanges, startAt, endAt) => {
+        if (startAt === 30 && endAt === 90) {
+          return '0:00-0:30' // Adjusted for trimming
+        }
+        return '0:00-1:00' // Default
+      })
+
+    // Render with trimming (startAt=30, endAt=90)
+    render(<VideoStats player={player} startAt={30} endAt={90} />)
+
+    // Current time should be adjusted (30 - 30 = 0)
+    expect(screen.getByText('Current Time: 0:00')).toBeInTheDocument()
+
+    // Duration should be calculated from startAt and endAt (90 - 30 = 60 seconds = 1:00)
+    expect(screen.getByText('Duration: 1:00')).toBeInTheDocument()
+
+    // Buffered and seekable should use the adjusted values from our mock
+    expect(screen.getByText('Buffered: 0:00-0:30')).toBeInTheDocument()
+    expect(screen.getByText('Seekable: 0:00-0:30')).toBeInTheDocument()
   })
 })

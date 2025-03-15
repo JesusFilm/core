@@ -19,6 +19,7 @@ interface FileUploadProps {
   noClick?: boolean
   validator?: (file: File) => { code: string; message: string } | null
   maxFiles?: number
+  maxSize?: number
 }
 
 export function FileUpload({
@@ -29,7 +30,8 @@ export function FileUpload({
   onUploadComplete,
   noClick = true,
   validator,
-  maxFiles = 1
+  maxFiles = 1,
+  maxSize
 }: FileUploadProps): ReactElement {
   const t = useTranslations()
 
@@ -54,7 +56,7 @@ export function FileUpload({
       noClick,
       multiple: maxFiles > 1,
       maxFiles: maxFiles,
-      maxSize: 10000000,
+      maxSize,
       accept,
       validator
     })

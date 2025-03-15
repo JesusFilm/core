@@ -15,25 +15,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 const variant: GetAdminVideoVariant =
   useAdminVideoMock?.['result']?.['data']['adminVideo']['variants'][0]
 
-// english variant
-const variant2: GetAdminVideoVariant =
-  useAdminVideoMock?.['result']?.['data']['adminVideo']['variants'][2]
-
-const mockVariantLanguages = new Map([
-  [variant.language.id, variant],
-  [variant2.language.id, variant2]
-])
-
 describe('VariantDialog', () => {
   it('should show variant information', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <VariantDialog
-            variant={variant}
-            open
-            variantLanguagesMap={mockVariantLanguages}
-          />
+          <VariantDialog variant={variant} open />
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -44,7 +31,6 @@ describe('VariantDialog', () => {
     expect(screen.getByText('https://arc.gt/4d9ez')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Play' })).toBeInTheDocument()
 
-    // Check that the language is displayed correctly
     const languageDisplay = screen.getByTestId('VariantLanguageDisplay')
     expect(languageDisplay).toHaveTextContent('Munukutuba')
   })
@@ -55,12 +41,7 @@ describe('VariantDialog', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
-          <VariantDialog
-            variant={variant}
-            open
-            handleClose={handleClose}
-            variantLanguagesMap={mockVariantLanguages}
-          />
+          <VariantDialog variant={variant} open handleClose={handleClose} />
         </MockedProvider>
       </NextIntlClientProvider>
     )
