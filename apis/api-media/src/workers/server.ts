@@ -59,6 +59,12 @@ async function main(): Promise<void> {
   )
   run(
     await import(
+      /* webpackChunkName: "asset-uploader" */
+      './assetUploader'
+    )
+  )
+  run(
+    await import(
       /* webpackChunkName: "big-query" */
       './bigQuery'
     )
