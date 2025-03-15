@@ -57,18 +57,20 @@ async function main(): Promise<void> {
       './algolia'
     )
   )
-  run(
-    await import(
-      /* webpackChunkName: "big-query" */
-      './bigQuery'
+  if (process.env.NODE_ENV === 'production') {
+    run(
+      await import(
+        /* webpackChunkName: "big-query" */
+        './bigQuery'
+      )
     )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "data-export" */
-      './dataExport'
+    run(
+      await import(
+        /* webpackChunkName: "data-export" */
+        './dataExport'
+      )
     )
-  )
+  }
   if (process.env.NODE_ENV !== 'production') {
     run(
       await import(

@@ -1,7 +1,11 @@
 import { spawn } from 'child_process'
-import { promises as fs } from 'fs'
-import { join } from 'path'
+import { promises as fsPromises } from 'fs'
 
+import {
+  CopyObjectCommand,
+  PutObjectCommand,
+  S3Client
+} from '@aws-sdk/client-s3'
 import { Logger } from 'pino'
 
 import { service } from './service'
@@ -10,7 +14,8 @@ import { service } from './service'
 jest.mock('fs', () => ({
   promises: {
     mkdir: jest.fn().mockResolvedValue(undefined),
-    rm: jest.fn().mockResolvedValue(undefined)
+    unlink: jest.fn().mockResolvedValue(undefined),
+    readFile: jest.fn().mockResolvedValue(Buffer.from('test'))
   }
 }))
 
@@ -35,6 +40,35 @@ jest.mock('child_process', () => ({
   })
 }))
 
+// Mock S3Client
+jest.mock('@aws-sdk/client-s3', () => {
+  const mockSend = jest.fn().mockImplementation((command) => {
+    if (command.constructor.name === 'HeadObjectCommand') {
+      // Simulate file not found by default
+      throw new Error('NotFound')
+    }
+    return {}
+  })
+  const MockS3Client = jest.fn().mockImplementation(() => ({
+    send: mockSend
+  }))
+  return {
+    S3Client: MockS3Client,
+    HeadObjectCommand: jest.fn().mockImplementation((params) => ({
+      constructor: { name: 'HeadObjectCommand' },
+      ...params
+    })),
+    CopyObjectCommand: jest.fn().mockImplementation((params) => ({
+      constructor: { name: 'CopyObjectCommand' },
+      ...params
+    })),
+    PutObjectCommand: jest.fn().mockImplementation((params) => ({
+      constructor: { name: 'PutObjectCommand' },
+      ...params
+    }))
+  }
+})
+
 describe('Database Export Service', () => {
   // Mock environment variables
   const originalEnv = process.env
@@ -44,7 +78,11 @@ describe('Database Export Service', () => {
     process.env = {
       ...originalEnv,
       PG_DATABASE_URL_LANGUAGES:
-        'postgresql://postgres:postgres@localhost:5432/languages?schema=public'
+        'postgresql://postgres:postgres@localhost:5432/languages?schema=public',
+      CLOUDFLARE_R2_ENDPOINT: 'https://test.r2.cloudflarestorage.com',
+      CLOUDFLARE_R2_ACCESS_KEY_ID: 'test-key',
+      CLOUDFLARE_R2_SECRET: 'test-secret',
+      CLOUDFLARE_R2_BUCKET: 'test-bucket'
     }
   })
 
@@ -52,8 +90,7 @@ describe('Database Export Service', () => {
     process.env = originalEnv
   })
 
-  it('should export database using pg_dump', async () => {
-    // Create a mock logger
+  it('should export database and upload to R2', async () => {
     const mockLogger = {
       info: jest.fn(),
       debug: jest.fn(),
@@ -64,9 +101,12 @@ describe('Database Export Service', () => {
     await service(mockLogger)
 
     // Verify output directory was created
-    expect(fs.mkdir).toHaveBeenCalledWith(expect.stringContaining('exports'), {
-      recursive: true
-    })
+    expect(fsPromises.mkdir).toHaveBeenCalledWith(
+      expect.stringContaining('exports'),
+      {
+        recursive: true
+      }
+    )
 
     // Verify pg_dump command was called with correct parameters
     expect(spawn).toHaveBeenCalledWith(
@@ -84,9 +124,10 @@ describe('Database Export Service', () => {
         'c',
         '-Z',
         '9',
-        '-v',
+        '--no-owner',
+        '--no-privileges',
         '-f',
-        expect.stringContaining('.pgdump')
+        expect.stringContaining('languages-backup.pgdump')
       ]),
       expect.objectContaining({
         env: expect.objectContaining({
@@ -95,18 +136,84 @@ describe('Database Export Service', () => {
       })
     )
 
+    // Verify S3 client was initialized with correct config
+    expect(S3Client).toHaveBeenCalledWith({
+      region: 'auto',
+      endpoint: process.env.CLOUDFLARE_R2_ENDPOINT,
+      credentials: {
+        accessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID,
+        secretAccessKey: process.env.CLOUDFLARE_R2_SECRET
+      }
+    })
+
+    // Verify file was read and uploaded
+    expect(fsPromises.readFile).toHaveBeenCalledWith(
+      expect.stringContaining('languages-backup.pgdump')
+    )
+    expect(PutObjectCommand).toHaveBeenCalledWith({
+      Bucket: process.env.CLOUDFLARE_R2_BUCKET,
+      Key: 'backups/languages-backup.pgdump',
+      Body: expect.any(Buffer),
+      ContentType: 'application/x-gzip'
+    })
+
+    // Verify file was cleaned up
+    expect(fsPromises.unlink).toHaveBeenCalledWith(
+      expect.stringContaining('languages-backup.pgdump')
+    )
+
     // Verify logger was used
     expect(mockLogger.info).toHaveBeenCalledWith('Starting database export')
     expect(mockLogger.info).toHaveBeenCalledWith(
-      expect.stringContaining('Database export completed successfully')
+      'Checking for existing backup file'
+    )
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'No existing backup file found'
+    )
+    expect(mockLogger.info).toHaveBeenCalledWith('Uploading to R2')
+    expect(mockLogger.info).toHaveBeenCalledWith('Upload to R2 completed')
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'Database export and upload completed successfully'
     )
   })
 
+  it('should create backup of existing file', async () => {
+    // Mock HeadObjectCommand to indicate file exists
+    const mockSend = jest.fn().mockImplementation((command) => {
+      if (command.constructor.name === 'HeadObjectCommand') {
+        return {} // File exists
+      }
+      return {}
+    })
+    ;(S3Client as jest.Mock).mockImplementation(() => ({
+      send: mockSend
+    }))
+
+    const mockLogger = {
+      info: jest.fn(),
+      debug: jest.fn(),
+      error: jest.fn(),
+      child: jest.fn().mockReturnThis()
+    } as unknown as Logger
+
+    await service(mockLogger)
+
+    // Verify backup was created
+    expect(CopyObjectCommand).toHaveBeenCalledWith({
+      Bucket: process.env.CLOUDFLARE_R2_BUCKET,
+      CopySource: `${process.env.CLOUDFLARE_R2_BUCKET}/backups/languages-backup.pgdump`,
+      Key: 'backups/languages-backup.pgdump.bak'
+    })
+
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'Creating backup of existing file'
+    )
+    expect(mockLogger.info).toHaveBeenCalledWith('Backup created successfully')
+  })
+
   it('should throw an error if database URL is not set', async () => {
-    // Remove database URL from environment
     delete process.env.PG_DATABASE_URL_LANGUAGES
 
-    // Create a mock logger
     const mockLogger = {
       info: jest.fn(),
       debug: jest.fn(),
@@ -115,5 +222,37 @@ describe('Database Export Service', () => {
     } as unknown as Logger
 
     await expect(service(mockLogger)).rejects.toThrow()
+  })
+
+  it('should throw an error if R2 credentials are not set', async () => {
+    delete process.env.CLOUDFLARE_R2_ENDPOINT
+    delete process.env.CLOUDFLARE_R2_ACCESS_KEY_ID
+    delete process.env.CLOUDFLARE_R2_SECRET
+
+    const mockLogger = {
+      info: jest.fn(),
+      debug: jest.fn(),
+      error: jest.fn(),
+      child: jest.fn().mockReturnThis()
+    } as unknown as Logger
+
+    await expect(service(mockLogger)).rejects.toThrow(
+      'Missing CLOUDFLARE_R2_ENDPOINT'
+    )
+  })
+
+  it('should throw an error if R2 bucket is not set', async () => {
+    delete process.env.CLOUDFLARE_R2_BUCKET
+
+    const mockLogger = {
+      info: jest.fn(),
+      debug: jest.fn(),
+      error: jest.fn(),
+      child: jest.fn().mockReturnThis()
+    } as unknown as Logger
+
+    await expect(service(mockLogger)).rejects.toThrow(
+      'Missing CLOUDFLARE_R2_BUCKET'
+    )
   })
 })
