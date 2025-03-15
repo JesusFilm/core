@@ -75,6 +75,7 @@ export async function service(logger?: Logger): Promise<void> {
       videoVariant: {
         select: {
           id: true,
+          languageId: true,
           videoId: true
         }
       }
@@ -99,7 +100,7 @@ export async function service(logger?: Logger): Promise<void> {
     try {
       const fileExtension =
         path.extname(new URL(download.url).pathname) || '.mp4'
-      const fileName = `${videoId}/variants/downloads/${download.videoVariant.id}_${download.quality}${fileExtension}`
+      const fileName = `${videoId}/variants/${download.videoVariant.languageId}/downloads/${download.videoVariant.id}_${download.quality}${fileExtension}`
 
       const contentType =
         fileExtension === '.mp4' ? 'video/mp4' : 'application/octet-stream'

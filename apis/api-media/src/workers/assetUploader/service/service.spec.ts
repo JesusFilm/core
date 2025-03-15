@@ -59,7 +59,8 @@ describe('assetUploader/service', () => {
           videoVariantId: 'variant-1',
           videoVariant: {
             id: 'variant-1',
-            videoId: 'video-1'
+            videoId: 'video-1',
+            languageId: 'en'
           }
         },
         {
@@ -73,13 +74,16 @@ describe('assetUploader/service', () => {
           videoVariantId: 'variant-2',
           videoVariant: {
             id: 'variant-2',
-            videoId: 'video-2'
+            videoId: 'video-2',
+            languageId: 'es'
           }
         }
       ]
 
-      const expectedFileName1 = 'video-1/variants/downloads/variant-1_high.mp4'
-      const expectedFileName2 = 'video-2/variants/downloads/variant-2_low.mp4'
+      const expectedFileName1 =
+        'video-1/variants/en/downloads/variant-1_high.mp4'
+      const expectedFileName2 =
+        'video-2/variants/es/downloads/variant-2_low.mp4'
 
       const mockAsset1 = {
         id: 'asset-1',
@@ -139,6 +143,7 @@ describe('assetUploader/service', () => {
           videoVariant: {
             select: {
               id: true,
+              languageId: true,
               videoId: true
             }
           }
@@ -225,7 +230,8 @@ describe('assetUploader/service', () => {
           videoVariantId: 'variant-error',
           videoVariant: {
             id: 'variant-error',
-            videoId: 'video-error'
+            videoId: 'video-error',
+            languageId: 'en'
           }
         }
       ]
