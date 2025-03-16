@@ -146,7 +146,7 @@ describe('Editor', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByTestId('Fab')).toBeInTheDocument()
+    expect(screen.getAllByTestId('Fab')).toHaveLength(2)
   })
 
   it('should set the selected step', async () => {
@@ -218,7 +218,7 @@ describe('Editor', () => {
     )
 
     await waitFor(() =>
-      expect(screen.getByText('Test selected step')).toBeInTheDocument()
+      expect(screen.getAllByText('Test selected step')).toHaveLength(2)
     )
   })
 })

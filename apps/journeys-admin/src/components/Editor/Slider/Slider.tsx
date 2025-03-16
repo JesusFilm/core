@@ -51,7 +51,11 @@ const StyledSwiperSlide = styled(SwiperSlide)(({ theme }) => ({
   boxSizing: 'border-box'
 }))
 
-export function Slider(): ReactElement {
+interface SliderProps {
+  flowType: 'mobile' | 'desktop'
+}
+
+export function Slider({ flowType }: SliderProps): ReactElement {
   const { breakpoints } = useTheme()
   const swiperRef = useRef<SwiperRef>(null)
   const [showBackButtonHelp, setShowBackButtonHelp] = useState<
@@ -269,7 +273,7 @@ export function Slider(): ReactElement {
             overflow: 'hidden'
           }}
         >
-          <JourneyFlow />
+          <JourneyFlow flowType={flowType} />
         </Box>
       </StyledSwiperSlide>
       <StyledSwiperSlide
