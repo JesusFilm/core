@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
@@ -21,7 +21,7 @@ jest.mock('../Slider/Settings', () => ({
 }))
 
 describe('SinglePageEditor', () => {
-  it('renders JourneyFlow, Content, and Settings components', () => {
+  it('renders JourneyFlow and Content components in initial state', () => {
     const journey = {
       __typename: 'Journey',
       id: 'journey-id',
@@ -49,6 +49,25 @@ describe('SinglePageEditor', () => {
 
     expect(screen.getByTestId('JourneyFlow')).toBeInTheDocument()
     expect(screen.getByTestId('Content')).toBeInTheDocument()
+  })
+
+  it('shows Settings when activeSlide is Content', () => {
+    const journey = {
+      __typename: 'Journey',
+      id: 'journey-id',
+      blocks: []
+    } as unknown as Journey
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <EditorProvider initialState={{ activeSlide: ActiveSlide.Content }}>
+            <SinglePageEditor flowType="desktop" />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
     expect(screen.getByTestId('Settings')).toBeInTheDocument()
   })
 })
