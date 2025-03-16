@@ -120,17 +120,6 @@ export function ContainerHero({
       }}
       data-testid="ContainerHero"
     >
-      {/* {images[0]?.mobileCinematicHigh != null && (
-        <Image
-          src={images[0].mobileCinematicHigh}
-          alt="Home Hero"
-          fill
-          sizes="100vw"
-          style={{
-            objectFit: 'cover'
-          }}
-        />
-      )} */}
       <div
         className="fixed top-0 left-0 right-0 w-full"
         style={{
@@ -159,7 +148,6 @@ export function ContainerHero({
           />
         </video>
       </div>
-      {/* <HeroOverlay /> */}
       <Container
         maxWidth="xxl"
         sx={{

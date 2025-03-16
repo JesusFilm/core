@@ -198,90 +198,96 @@ export const VideoSection = ({
 
       <VideoBlock contentId={contentId} title={videoTitle} />
 
-      <div className="title-block px-6 lg:px-8 pt-2">
-        <p className="text-sm tracking-wider uppercase text-stone-400">
-          {subtitle}
-        </p>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-2xl font-bold mb-0">{title}</h2>
-          <div className="flex items-center gap-2">
-            <IconButton
-              aria-label="Download content"
-              sx={{
-                color: 'white',
-                opacity: 0.6,
-                '&:hover': { opacity: 1 }
-              }}
-            >
-              <Icon name="Download2" />
-            </IconButton>
-            <IconButton
-              aria-label="More options"
-              sx={{
-                color: 'white',
-                opacity: 0.6,
-                '&:hover': { opacity: 1 }
-              }}
-            >
-              <Icon name="More" />
-            </IconButton>
-          </div>
-        </div>
-      </div>
-
-      <div className="description-block px-6 lg:px-8">
-        <p className="text-lg mt-2 leading-relaxed text-stone-200/80">
-          <span style={{ fontWeight: 'bold', color: 'white' }}>
-            {description.split(' ').slice(0, 3).join(' ')}
-          </span>
-          {description.slice(
-            description.split(' ').slice(0, 3).join(' ').length
-          )}
-        </p>
-      </div>
-
-      {questions.length > 0 && (
-        <div className="questions-block pt-16">
-          <div className="">
-            <div className="px-6 lg:px-8">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-4">
-                  <h4 className="text-sm font-semibold tracking-wider uppercase text-stone-200">
-                    {questionsTitle}
-                  </h4>
-                </div>
-                <button
-                  onClick={onOpenDialog}
-                  aria-label="Ask a question"
-                  className="inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
+      <div className="block lg:flex lg:gap-4 w-full">
+        <div className="info-block lg:w-3/5">
+          <div className="title-block px-6 lg:px-8 pt-2">
+            <p className="text-sm tracking-wider uppercase text-stone-400">
+              {subtitle}
+            </p>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-2xl font-bold mb-0">{title}</h2>
+              <div className="flex items-center gap-2">
+                <IconButton
+                  aria-label="Download content"
+                  sx={{
+                    color: 'white',
+                    opacity: 0.6,
+                    '&:hover': { opacity: 1 }
+                  }}
                 >
-                  <Icon
-                    name="MessageCircle"
-                    sx={{
-                      width: 16,
-                      height: 16
-                    }}
-                  />
-                  <span>{askButtonText}</span>
-                </button>
+                  <Icon name="Download2" />
+                </IconButton>
+                <IconButton
+                  aria-label="More options"
+                  sx={{
+                    color: 'white',
+                    opacity: 0.6,
+                    '&:hover': { opacity: 1 }
+                  }}
+                >
+                  <Icon name="More" />
+                </IconButton>
               </div>
             </div>
+          </div>
 
-            <div className="relative">
-              {questions.map((q) => (
-                <Question
-                  key={q.id}
-                  question={q.question}
-                  isOpen={openQuestion === q.id}
-                  onToggle={() => handleQuestionToggle(q.id)}
-                >
-                  {q.answer}
-                </Question>
-              ))}
-            </div>
+          <div className="description-block px-6 lg:px-8">
+            <p className="text-lg mt-2 leading-relaxed text-stone-200/80">
+              <span style={{ fontWeight: 'bold', color: 'white' }}>
+                {description.split(' ').slice(0, 3).join(' ')}
+              </span>
+              {description.slice(
+                description.split(' ').slice(0, 3).join(' ').length
+              )}
+            </p>
           </div>
         </div>
-      )}
+
+        {questions.length > 0 && (
+          <div className="lg:w-2/5">
+            <div className="questions-block pt-16 lg:pt-0">
+              <div className="">
+                <div className="px-6 lg:px-8">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                      <h4 className="text-sm font-semibold tracking-wider uppercase text-stone-200">
+                        {questionsTitle}
+                      </h4>
+                    </div>
+                    <button
+                      onClick={onOpenDialog}
+                      aria-label="Ask a question"
+                      className="inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
+                    >
+                      <Icon
+                        name="MessageCircle"
+                        sx={{
+                          width: 16,
+                          height: 16
+                        }}
+                      />
+                      <span>{askButtonText}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  {questions.map((q) => (
+                    <Question
+                      key={q.id}
+                      question={q.question}
+                      isOpen={openQuestion === q.id}
+                      onToggle={() => handleQuestionToggle(q.id)}
+                    >
+                      {q.answer}
+                    </Question>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       {(bibleQuotes.length > 0 || freeResource) && (
         <div className="bible-quotes-block pt-14">
@@ -359,7 +365,7 @@ export const VideoSection = ({
             )}
           </Swiper>
 
-          <div className="w-full px-6 lg:px-8 pt-12">
+          <div className="px-6 lg:px-8 pt-12 mx-auto lg:w-1/2 xl:w-1/3">
             <Box
               component="button"
               onClick={handleOpenQuizModal}
@@ -385,14 +391,16 @@ export const VideoSection = ({
             >
               <Box className="flex justify-between items-center cursor-pointer p-4">
                 <Box className="absolute inset-0 bg-[url(./assets/overlay.svg)] bg-repeat mix-blend-multiply opacity-50"></Box>
-                <Box className="relative z-1 flex items-center justify-between font-semibold leading-[1.2]">
+                <Box className="relative z-1 flex w-full items-center font-semibold leading-[1.2]">
                   <Box
                     component="span"
-                    className="uppercase font-extrabold text-xs border-2 tracking-wider border-white rounded-lg px-2 py-1 mr-4"
+                    className="flex-none uppercase font-extrabold text-xs border-2 tracking-wider border-white rounded-lg px-2 py-1 mr-4"
                   >
                     Quiz
                   </Box>
-                  What's your next step of faith?
+                  <div className="text-center flex-auto">
+                    What's your next step of faith?
+                  </div>
                 </Box>
                 <Box component="span" className="transition">
                   <svg fill="none" height="24" width="24" stroke="currentColor">

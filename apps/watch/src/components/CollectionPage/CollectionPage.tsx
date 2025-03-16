@@ -214,7 +214,7 @@ export function CollectionPage(): ReactElement {
               <EasterDates />
             </div>
 
-            <div className="flex flex-col md:space-y-11 py-7 md:py-17">
+            <div className="flex flex-col py-7 md:py-17">
               {/* <div className="w-full px-6 lg:px-8">
               <details className="group bg-white/5 rounded-lg mb-6 mt-4">
                 <summary className="flex justify-between items-center cursor-pointer p-4 font-medium">
