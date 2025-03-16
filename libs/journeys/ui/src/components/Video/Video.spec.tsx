@@ -117,7 +117,7 @@ describe('Video', () => {
       .getByTestId('JourneysVideo-video0.id')
       .querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toBe(
-      'https://www.youtube.com/embed/videoId?start=10&end=0'
+      'https://www.youtube.com/embed/videoId?start=10&end=10000'
     )
     expect(sourceTag?.getAttribute('type')).toBe('video/youtube')
   })
@@ -130,6 +130,7 @@ describe('Video', () => {
             ...block,
             source: VideoBlockSource.mux,
             videoId: 'videoId',
+            startAt: null,
             mediaVideo: {
               __typename: 'MuxVideo',
               id: 'videoId',
@@ -144,7 +145,37 @@ describe('Video', () => {
       .getByTestId('JourneysVideo-video0.id')
       .querySelector('.vjs-tech source')
     expect(sourceTag?.getAttribute('src')).toBe(
-      'https://stream.mux.com/videoId.m3u8'
+      `https://stream.mux.com/videoId.m3u8?asset_start_time=${0}&asset_end_time=${10000}`
+    )
+    expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
+  })
+
+  it('should render mux video with startAt and endAt', () => {
+    const endAt = 50
+
+    render(
+      <MockedProvider>
+        <Video
+          {...{
+            ...block,
+            source: VideoBlockSource.mux,
+            videoId: 'videoId',
+            endAt,
+            mediaVideo: {
+              __typename: 'MuxVideo',
+              id: 'videoId',
+              assetId: 'videoId',
+              playbackId: 'videoId'
+            }
+          }}
+        />
+      </MockedProvider>
+    )
+    const sourceTag = screen
+      .getByTestId('JourneysVideo-video0.id')
+      .querySelector('.vjs-tech source')
+    expect(sourceTag?.getAttribute('src')).toBe(
+      `https://stream.mux.com/videoId.m3u8?asset_start_time=${block.startAt}&asset_end_time=${endAt}`
     )
     expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
   })

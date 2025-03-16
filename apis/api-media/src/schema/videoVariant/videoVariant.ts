@@ -11,6 +11,9 @@ import { VideoVariantUpdateInput } from './inputs/videoVariantUpdate'
 builder.prismaObject('VideoVariant', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
+    asset: t
+      .withAuth({ isPublisher: true })
+      .relation('asset', { nullable: true, description: 'master video file' }),
     videoId: t.exposeID('videoId'),
     hls: t.exposeString('hls'),
     dash: t.exposeString('dash'),
@@ -30,6 +33,7 @@ builder.prismaObject('VideoVariant', {
       nullable: false,
       resolve: ({ languageId: id }) => ({ id })
     }),
+    muxVideo: t.relation('muxVideo', { nullable: true }),
     published: t.exposeBoolean('published', { nullable: false }),
     videoEdition: t.relation('videoEdition', { nullable: false }),
     subtitle: t.prismaField({
@@ -70,6 +74,10 @@ builder.prismaObject('VideoVariant', {
     slug: t.exposeString('slug', {
       nullable: false,
       description: 'slug is a permanent link to the video variant.'
+    }),
+    version: t.withAuth({ isPublisher: true }).exposeInt('version', {
+      nullable: false,
+      description: 'version control for master video file'
     })
   })
 })
@@ -116,13 +124,32 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoVariantCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      return await prisma.videoVariant.create({
+      const newVariant = await prisma.videoVariant.create({
         ...query,
         data: {
           ...input,
-          published: input.published ?? true
+          muxVideoId: input.muxVideoId ?? undefined,
+          published: input.published ?? true,
+          version: input.version ?? undefined
         }
       })
+
+      const video = await prisma.video.findUnique({
+        where: { id: newVariant.videoId },
+        select: { availableLanguages: true }
+      })
+
+      const currentLanguages = video?.availableLanguages || []
+      const updatedLanguages = Array.from(
+        new Set([...currentLanguages, newVariant.languageId])
+      )
+
+      await prisma.video.update({
+        where: { id: newVariant.videoId },
+        data: { availableLanguages: updatedLanguages }
+      })
+
+      return newVariant
     }
   }),
   videoVariantUpdate: t.withAuth({ isPublisher: true }).prismaField({
@@ -146,7 +173,10 @@ builder.mutationFields((t) => ({
           videoId: input.videoId ?? undefined,
           edition: input.edition ?? undefined,
           downloadable: input.downloadable ?? undefined,
-          published: input.published ?? undefined
+          published: input.published ?? undefined,
+          muxVideoId: input.muxVideoId ?? undefined,
+          assetId: input.assetId ?? undefined,
+          version: input.version ?? undefined
         }
       })
     }

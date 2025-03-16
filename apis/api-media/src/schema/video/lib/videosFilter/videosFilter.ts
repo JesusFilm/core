@@ -9,7 +9,8 @@ export function videosFilter({
   labels,
   ids,
   subtitleLanguageIds,
-  published
+  published,
+  locked
 }: typeof VideosFilter.$inferInput): Prisma.VideoWhereInput {
   return {
     title:
@@ -34,6 +35,7 @@ export function videosFilter({
         : undefined,
     label: labels != null ? { in: labels } : undefined,
     id: ids != null ? { in: ids } : undefined,
-    published: published != null ? published : undefined
+    published: published != null ? published : undefined,
+    locked: locked != null ? locked : undefined
   }
 }

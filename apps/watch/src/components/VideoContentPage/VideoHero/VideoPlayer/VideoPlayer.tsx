@@ -3,6 +3,9 @@ import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
+import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
+
+import 'videojs-mux'
 
 import { useVideo } from '../../../../libs/videoContext'
 
@@ -21,12 +24,20 @@ export function VideoPlayer({
   muted = false,
   showControls = true
 }: VideoPlayerProps): ReactElement {
-  const { variant } = useVideo()
+  const { variant, title } = useVideo()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<Player>()
 
   useEffect(() => {
     if (videoRef.current != null) {
+      // Create Mux metadata for video analytics
+      const muxMetadata: MuxMetadata = {
+        env_key: process.env.NEXT_PUBLIC_MUX_DEFAULT_REPORTING_KEY || '',
+        player_name: 'watch',
+        video_title: title?.[0]?.value ?? '',
+        video_id: variant?.id ?? ''
+      }
+
       setPlayer(
         videojs(videoRef.current, {
           ...defaultVideoJsOptions,
@@ -40,11 +51,17 @@ export function VideoPlayer({
             doubleClick: true
           },
           responsive: true,
-          fill: true
+          fill: true,
+          plugins: {
+            mux: {
+              debug: false,
+              data: muxMetadata
+            }
+          }
         })
       )
     }
-  }, [variant, videoRef, autoplay, muted])
+  }, [variant, videoRef, autoplay, muted, title])
 
   useEffect(() => {
     if (player) {

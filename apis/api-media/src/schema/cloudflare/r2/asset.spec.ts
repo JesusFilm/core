@@ -37,6 +37,8 @@ describe('cloudflare/r2/asset', () => {
             uploadUrl
             userId
             publicUrl
+            contentType
+            contentLength
             createdAt
             updatedAt
           }
@@ -57,7 +59,9 @@ describe('cloudflare/r2/asset', () => {
           publicUrl: 'https://assets.jesusfilm.org/fileName',
           createdAt: new Date(),
           updatedAt: new Date(),
-          videoId: 'videoId'
+          videoId: 'videoId',
+          contentType: 'image/jpeg',
+          contentLength: 0
         })
         const result = await authClient({
           document: VIDEO_CLOUDFLARE_ASSETS_MUTATION,
@@ -65,7 +69,9 @@ describe('cloudflare/r2/asset', () => {
             input: {
               id: 'id',
               fileName: 'fileName',
-              videoId: 'videoId'
+              videoId: 'videoId',
+              contentType: 'image/jpeg',
+              contentLength: 0
             }
           }
         })
@@ -76,7 +82,9 @@ describe('cloudflare/r2/asset', () => {
             uploadUrl: 'presignedUrl',
             userId: 'testUserId',
             publicUrl: 'https://assets.jesusfilm.org/fileName',
-            videoId: 'videoId'
+            videoId: 'videoId',
+            contentType: 'image/jpeg',
+            contentLength: 0
           }
         })
         expect(result).toHaveProperty('data.cloudflareR2Create.id', 'id')
@@ -96,6 +104,14 @@ describe('cloudflare/r2/asset', () => {
           'data.cloudflareR2Create.publicUrl',
           'https://assets.jesusfilm.org/fileName'
         )
+        expect(result).toHaveProperty(
+          'data.cloudflareR2Create.contentType',
+          'image/jpeg'
+        )
+        expect(result).toHaveProperty(
+          'data.cloudflareR2Create.contentLength',
+          0
+        )
       })
 
       it('should fail if not publisher', async () => {
@@ -105,89 +121,9 @@ describe('cloudflare/r2/asset', () => {
             input: {
               id: 'id',
               fileName: 'fileName',
-              videoId: 'videoId'
-            }
-          }
-        })
-        expect(result).toHaveProperty('data', null)
-      })
-    })
-
-    describe('cloudflareR2Update', () => {
-      const VIDEO_CLOUDFLARE_ASSETS_MUTATION = graphql(`
-        mutation VideoCloudflareAssetsUpdate($input: CloudflareR2UpdateInput!) {
-          cloudflareR2Update(input: $input) {
-            id
-            fileName
-            uploadUrl
-            userId
-            publicUrl
-            createdAt
-            updatedAt
-          }
-        }
-      `)
-
-      it('should update a r2 asset', async () => {
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
-          id: 'userId',
-          userId: 'userId',
-          roles: ['publisher']
-        })
-        prismaMock.cloudflareR2.update.mockResolvedValue({
-          id: 'id',
-          fileName: 'fileName',
-          uploadUrl: 'presignedUrl',
-          userId: 'testUserId',
-          publicUrl: 'https://assets.jesusfilm.org/fileName',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          videoId: 'videoId'
-        })
-        const result = await authClient({
-          document: VIDEO_CLOUDFLARE_ASSETS_MUTATION,
-          variables: {
-            input: {
-              id: 'id',
-              fileName: 'fileName'
-            }
-          }
-        })
-        expect(prismaMock.cloudflareR2.update).toHaveBeenCalledWith({
-          where: { id: 'id' },
-          data: {
-            fileName: 'fileName',
-            uploadUrl: 'presignedUrl',
-            userId: 'testUserId',
-            publicUrl: 'https://assets.jesusfilm.org/fileName'
-          }
-        })
-        expect(result).toHaveProperty('data.cloudflareR2Update.id', 'id')
-        expect(result).toHaveProperty(
-          'data.cloudflareR2Update.userId',
-          'testUserId'
-        )
-        expect(result).toHaveProperty(
-          'data.cloudflareR2Update.fileName',
-          'fileName'
-        )
-        expect(result).toHaveProperty(
-          'data.cloudflareR2Update.uploadUrl',
-          'presignedUrl'
-        )
-        expect(result).toHaveProperty(
-          'data.cloudflareR2Update.publicUrl',
-          'https://assets.jesusfilm.org/fileName'
-        )
-      })
-
-      it('should fail if not publisher', async () => {
-        const result = await client({
-          document: VIDEO_CLOUDFLARE_ASSETS_MUTATION,
-          variables: {
-            input: {
-              id: 'id',
-              fileName: 'fileName'
+              videoId: 'videoId',
+              contentType: 'image/jpeg',
+              contentLength: 0
             }
           }
         })
@@ -204,6 +140,8 @@ describe('cloudflare/r2/asset', () => {
             uploadUrl
             userId
             publicUrl
+            contentType
+            contentLength
             createdAt
             updatedAt
           }
@@ -224,7 +162,9 @@ describe('cloudflare/r2/asset', () => {
           publicUrl: 'https://assets.jesusfilm.org/fileName',
           createdAt: new Date(),
           updatedAt: new Date(),
-          videoId: 'videoId'
+          videoId: 'videoId',
+          contentType: 'application/octet-stream',
+          contentLength: 0
         })
         const result = await authClient({
           document: VIDEO_CLOUDFLARE_ASSETS_MUTATION,
@@ -251,6 +191,14 @@ describe('cloudflare/r2/asset', () => {
         expect(result).toHaveProperty(
           'data.cloudflareR2Delete.publicUrl',
           'https://assets.jesusfilm.org/fileName'
+        )
+        expect(result).toHaveProperty(
+          'data.cloudflareR2Delete.contentType',
+          'application/octet-stream'
+        )
+        expect(result).toHaveProperty(
+          'data.cloudflareR2Delete.contentLength',
+          0
         )
       })
 

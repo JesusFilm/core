@@ -1,4 +1,5 @@
 import {
+  MuxVideo,
   VideoEdition,
   VideoVariant,
   VideoVariantDownload
@@ -59,6 +60,9 @@ describe('videoVariant', () => {
             id
             name
           }
+          muxVideo {
+            id
+          }
         }
       }
     `)
@@ -66,6 +70,7 @@ describe('videoVariant', () => {
     type VideoVariantAndIncludes = VideoVariant & {
       downloads: VideoVariantDownload[]
       videoEdition: VideoEdition
+      muxVideo: MuxVideo | null
     }
 
     it('should query videoVariants', async () => {
@@ -92,7 +97,8 @@ describe('videoVariant', () => {
           videoEdition: {
             id: 'videoEditionId',
             name: 'videoEditionName'
-          }
+          },
+          muxVideo: null
         }
       ] as VideoVariantAndIncludes[])
       prismaMock.videoSubtitle.findMany.mockResolvedValueOnce([
@@ -103,7 +109,11 @@ describe('videoVariant', () => {
           srtSrc: null,
           primary: false,
           languageId: 'languageId',
-          videoId: 'videoId'
+          videoId: 'videoId',
+          vttAssetId: null,
+          vttVersion: 1,
+          srtAssetId: null,
+          srtVersion: 1
         }
       ])
       prismaMock.videoSubtitle.count.mockResolvedValueOnce(123)
@@ -116,7 +126,8 @@ describe('videoVariant', () => {
         },
         include: {
           downloads: true,
-          videoEdition: true
+          videoEdition: true,
+          muxVideo: true
         }
       })
       expect(prismaMock.videoSubtitle.findMany).toHaveBeenCalledWith({
@@ -164,7 +175,8 @@ describe('videoVariant', () => {
           ],
           subtitleCount: 123,
           slug: 'videoSlug',
-          published: true
+          published: true,
+          muxVideo: null
         }
       ])
     })
@@ -195,7 +207,8 @@ describe('videoVariant', () => {
           videoEdition: {
             id: 'videoEditionId',
             name: 'videoEditionName'
-          }
+          },
+          muxVideo: null
         }
       ] as VideoVariantAndIncludes[])
       prismaMock.videoSubtitle.findMany.mockResolvedValueOnce([
@@ -206,7 +219,11 @@ describe('videoVariant', () => {
           primary: false,
           languageId: 'languageId',
           videoId: 'videoId',
-          edition: 'base'
+          edition: 'base',
+          vttAssetId: null,
+          vttVersion: 1,
+          srtAssetId: null,
+          srtVersion: 1
         }
       ])
       prismaMock.videoSubtitle.count.mockResolvedValueOnce(123)
@@ -219,7 +236,8 @@ describe('videoVariant', () => {
         },
         include: {
           downloads: true,
-          videoEdition: true
+          videoEdition: true,
+          muxVideo: true
         }
       })
       expect(prismaMock.videoSubtitle.findMany).toHaveBeenCalledWith({
@@ -267,7 +285,8 @@ describe('videoVariant', () => {
           ],
           subtitleCount: 123,
           slug: 'videoSlug',
-          published: true
+          published: true,
+          muxVideo: null
         }
       ])
     })
@@ -298,7 +317,8 @@ describe('videoVariant', () => {
           videoEdition: {
             id: 'videoEditionId',
             name: 'videoEditionName'
-          }
+          },
+          muxVideo: null
         }
       ] as VideoVariantAndIncludes[])
       prismaMock.videoSubtitle.findMany.mockResolvedValueOnce([
@@ -309,7 +329,11 @@ describe('videoVariant', () => {
           srtSrc: null,
           primary: false,
           languageId: 'languageId',
-          videoId: 'videoId'
+          videoId: 'videoId',
+          vttAssetId: null,
+          vttVersion: 1,
+          srtAssetId: null,
+          srtVersion: 1
         }
       ])
       prismaMock.videoSubtitle.count.mockResolvedValueOnce(123)
@@ -329,7 +353,8 @@ describe('videoVariant', () => {
         },
         include: {
           downloads: true,
-          videoEdition: true
+          videoEdition: true,
+          muxVideo: true
         }
       })
       expect(data).toHaveProperty('data.videoVariants', [
@@ -366,7 +391,8 @@ describe('videoVariant', () => {
           ],
           subtitleCount: 123,
           slug: 'videoSlug',
-          published: false
+          published: false,
+          muxVideo: null
         }
       ])
     })
@@ -400,7 +426,13 @@ describe('videoVariant', () => {
           languageId: 'languageId',
           published: true,
           share: 'share',
-          downloadable: true
+          downloadable: true,
+          muxVideoId: null,
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180,
+          assetId: null,
+          version: 1
         })
         const result = await authClient({
           document: VIDEO_VARIANT_CREATE_MUTATION,
@@ -491,7 +523,13 @@ describe('videoVariant', () => {
           languageId: 'languageId',
           published: true,
           share: 'share',
-          downloadable: false
+          downloadable: false,
+          muxVideoId: null,
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180,
+          assetId: null,
+          version: 1
         })
         const result = await authClient({
           document: VIDEO_VARIANT_UPDATE_MUTATION,
@@ -581,7 +619,13 @@ describe('videoVariant', () => {
           languageId: 'languageId',
           published: true,
           share: 'share',
-          downloadable: true
+          downloadable: true,
+          muxVideoId: null,
+          masterUrl: 'masterUrl',
+          masterWidth: 320,
+          masterHeight: 180,
+          assetId: null,
+          version: 1
         })
         const result = await authClient({
           document: VIDEO_VARIANT_DELETE_MUTATION,
