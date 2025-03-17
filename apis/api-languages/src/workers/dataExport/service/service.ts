@@ -109,7 +109,7 @@ async function executePgDump(
 
     const env = {
       ...process.env,
-      PGPASSWORD: databaseUrl.password
+      PGPASSWORD: decodeURIComponent(databaseUrl.password)
     }
 
     const args = [
