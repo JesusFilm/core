@@ -24,6 +24,7 @@ import {
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { StepFields as StepBlock } from '../../../../../__generated__/StepFields'
 import { mockReactFlow } from '../../../../../test/mockReactFlow'
+import { JOURNEY_SETTINGS_UPDATE } from '../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 import { CommandRedoItem } from '../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
@@ -153,8 +154,6 @@ describe('JourneyFlow', () => {
   })
 
   it('should update step positions if any step does not have a position', async () => {
-    // add mocks for journeyupdate
-
     const blocks = blocksWithStepBlockPosition.map((block) => ({
       ...block,
       x: null,
