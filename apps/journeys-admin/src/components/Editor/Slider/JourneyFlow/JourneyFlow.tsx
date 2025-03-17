@@ -170,7 +170,7 @@ export function JourneyFlow(): ReactElement {
         })
       }
 
-      if (stepBlocks) {
+      if (stepBlocks.length > 0) {
         void stepBlockPositionUpdate({
           variables: {
             input: stepBlocks
