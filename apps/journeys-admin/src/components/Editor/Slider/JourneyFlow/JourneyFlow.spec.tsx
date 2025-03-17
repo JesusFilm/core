@@ -93,6 +93,28 @@ describe('JourneyFlow', () => {
     }
   }
 
+  const mockJourneyUpdate: MockedResponse = {
+    request: {
+      query: JOURNEY_SETTINGS_UPDATE,
+      variables: {
+        id: defaultJourney.id,
+        input: {
+          socialNodeX: DEFAULT_SOCIAL_NODE_X,
+          socialNodeY: DEFAULT_SOCIAL_NODE_Y
+        }
+      }
+    },
+    result: {
+      data: {
+        journeyUpdate: {
+          ...defaultJourney,
+          socialNodeX: DEFAULT_SOCIAL_NODE_X,
+          socialNodeY: DEFAULT_SOCIAL_NODE_Y
+        }
+      }
+    }
+  }
+
   const steps = transformer(blocks) as Array<TreeBlock<StepBlock>>
   mockTransformSteps.mockReturnValue({ nodes, edges })
 
@@ -147,7 +169,12 @@ describe('JourneyFlow', () => {
     ])
 
     render(
-      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+      <MockedProvider
+        mocks={[
+          { ...mockGetStepBlocksWithPosition, result },
+          mockJourneyUpdate
+        ]}
+      >
         <JourneyProvider
           value={{
             journey: {
