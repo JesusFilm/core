@@ -63,6 +63,12 @@ async function main(): Promise<void> {
       './bigQuery'
     )
   )
+  run(
+    await import(
+      /* webpackChunkName: "data-export" */
+      './dataExport'
+    )
+  )
 }
 
 // avoid running on test environment
