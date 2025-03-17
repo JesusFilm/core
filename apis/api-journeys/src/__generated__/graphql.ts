@@ -2326,6 +2326,7 @@ export type MuxVideo = {
   __typename?: 'MuxVideo';
   assetId?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Date']['output'];
+  downloadable: Scalars['Boolean']['output'];
   duration?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   name?: Maybe<Scalars['String']['output']>;

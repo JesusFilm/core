@@ -151,7 +151,7 @@ export function BackgroundVideo({
           },
           '> .vjs-loading-spinner': {
             zIndex: 1,
-            display: isYouTube ? 'none' : 'block'
+            display: isYouTube ? 'none' : 'flex'
           },
           pointerEvents: 'none'
         }}
