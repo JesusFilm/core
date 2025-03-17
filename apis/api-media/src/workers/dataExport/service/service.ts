@@ -162,8 +162,6 @@ async function executePgDump(
       'Export filters'
     )
 
-    logger.info('Starting pg_dump process')
-    logger.info({ args }, 'pg_dump args')
     const dump = spawn('pg_dump', args, { env })
 
     dump.stderr.on('data', (data) => {
