@@ -81,6 +81,16 @@ async function main(): Promise<void> {
       './seed'
     )
   )
+
+  // Only run data export in production
+  if (process.env.NODE_ENV === 'production') {
+    run(
+      await import(
+        /* webpackChunkName: "data-export" */
+        './dataExport'
+      )
+    )
+  }
 }
 
 // avoid running on test environment
