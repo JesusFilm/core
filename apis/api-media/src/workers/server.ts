@@ -51,10 +51,31 @@ function run({
 }
 
 async function main(): Promise<void> {
+  if (process.env.NODE_ENV === 'production') {
+    run(
+      await import(
+        /* webpackChunkName: "algolia" */
+        './algolia'
+      )
+    )
+    run(
+      await import(
+        /* webpackChunkName: "crowdin" */
+        './crowdin'
+      )
+    )
+
+    run(
+      await import(
+        /* webpackChunkName: "blocklist" */
+        './blocklist'
+      )
+    )
+  }
   run(
     await import(
-      /* webpackChunkName: "algolia" */
-      './algolia'
+      /* webpackChunkName: "data-export" */
+      './dataExport'
     )
   )
   run(
@@ -63,31 +84,11 @@ async function main(): Promise<void> {
       './bigQuery'
     )
   )
-  run(
-    await import(
-      /* webpackChunkName: "blocklist" */
-      './blocklist'
-    )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "crowdin" */
-      './crowdin'
-    )
-  )
-  run(
-    await import(
-      /* webpackChunkName: "seed" */
-      './seed'
-    )
-  )
-
-  // Only run data export in production
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV !== 'production') {
     run(
       await import(
-        /* webpackChunkName: "data-export" */
-        './dataExport'
+        /* webpackChunkName: "seed" */
+        './seed'
       )
     )
   }
