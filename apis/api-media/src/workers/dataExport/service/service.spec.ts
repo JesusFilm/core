@@ -75,7 +75,7 @@ describe('dataExport service', () => {
     jest.clearAllMocks()
   })
 
-  it('should successfully export database and upload to R2', async () => {
+  it('should successfully export database and upload to R2 (runs automatically daily at midnight)', async () => {
     // Setup spawn mock to simulate successful process
     mockSpawn.mockImplementation(() => {
       const emitter = {
