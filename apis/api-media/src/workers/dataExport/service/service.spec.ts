@@ -123,6 +123,13 @@ describe('dataExport service', () => {
       expect.anything()
     )
 
+    // Verify psql was called with the correct COPY command (without backslash)
+    expect(mockSpawn).toHaveBeenCalledWith(
+      'psql',
+      expect.arrayContaining(['-c', expect.stringContaining('COPY (')]),
+      expect.anything()
+    )
+
     // Verify file cleanup
     expect(fs.unlink).toHaveBeenCalled()
   })

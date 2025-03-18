@@ -225,7 +225,7 @@ async function exportCloudflareImageData(
     logger.info('Exporting CloudflareImage data to CSV')
 
     const exportCmd = `
-      \\COPY (
+      COPY (
         SELECT *
         FROM "CloudflareImage" 
         WHERE "videoId" IS NOT NULL
