@@ -56,6 +56,7 @@ export const CHAT_OPEN_EVENT_CREATE = gql`
 
 export interface ButtonProps extends TreeBlock<ButtonFields> {
   editableLabel?: ReactElement
+  submitEnabled?: boolean
 }
 
 export function Button({
@@ -68,7 +69,8 @@ export function Button({
   endIconId,
   action,
   children,
-  editableLabel
+  editableLabel,
+  submitEnabled
 }: ButtonProps): ReactElement {
   const [buttonClickEventCreate] = useMutation<
     ButtonClickEventCreate,
@@ -233,6 +235,7 @@ export function Button({
       data-testid={`JourneysButton-${blockId}`}
     >
       <MuiButton
+        type={submitEnabled ? 'submit' : 'submit'}
         variant={buttonVariant ?? ButtonVariant.contained}
         color={buttonColor ?? undefined}
         size={size ?? undefined}
