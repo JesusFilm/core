@@ -12,6 +12,7 @@ import {
   VideoBlockSource
 } from '../../../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
+import { BackgroundUploadProvider } from '../../../../../../BackgroundUpload'
 
 import { Card } from '.'
 
@@ -31,11 +32,13 @@ describe('Card', () => {
     }
     render(
       <MockedProvider>
-        <SnackbarProvider>
-          <EditorProvider initialState={{ selectedBlock: card }}>
-            <Card {...card} />
-          </EditorProvider>
-        </SnackbarProvider>
+        <BackgroundUploadProvider>
+          <SnackbarProvider>
+            <EditorProvider initialState={{ selectedBlock: card }}>
+              <Card {...card} />
+            </EditorProvider>
+          </SnackbarProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
 
@@ -70,11 +73,13 @@ describe('Card', () => {
     it('shows background color from prop', () => {
       render(
         <MockedProvider>
-          <SnackbarProvider>
-            <EditorProvider initialState={{ selectedBlock: card }}>
-              <Card {...card} backgroundColor="#00FFCC" />
-            </EditorProvider>
-          </SnackbarProvider>
+          <BackgroundUploadProvider>
+            <SnackbarProvider>
+              <EditorProvider initialState={{ selectedBlock: card }}>
+                <Card {...card} backgroundColor="#00FFCC" />
+              </EditorProvider>
+            </SnackbarProvider>
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
 
@@ -86,15 +91,17 @@ describe('Card', () => {
     it('shows background color from card theme', () => {
       render(
         <MockedProvider>
-          <SnackbarProvider>
-            <EditorProvider initialState={{ selectedBlock: card }}>
-              <Card
-                {...card}
-                themeName={ThemeName.base}
-                themeMode={ThemeMode.light}
-              />
-            </EditorProvider>
-          </SnackbarProvider>
+          <BackgroundUploadProvider>
+            <SnackbarProvider>
+              <EditorProvider initialState={{ selectedBlock: card }}>
+                <Card
+                  {...card}
+                  themeName={ThemeName.base}
+                  themeMode={ThemeMode.light}
+                />
+              </EditorProvider>
+            </SnackbarProvider>
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
 
@@ -106,11 +113,13 @@ describe('Card', () => {
     it('shows background color from journey theme', () => {
       render(
         <MockedProvider>
-          <SnackbarProvider>
-            <EditorProvider initialState={{ selectedBlock: card }}>
-              <Card {...card} />
-            </EditorProvider>
-          </SnackbarProvider>
+          <BackgroundUploadProvider>
+            <SnackbarProvider>
+              <EditorProvider initialState={{ selectedBlock: card }}>
+                <Card {...card} />
+              </EditorProvider>
+            </SnackbarProvider>
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
 
@@ -122,12 +131,14 @@ describe('Card', () => {
     it('opens background color accordion', () => {
       render(
         <MockedProvider>
-          <SnackbarProvider>
-            <EditorProvider initialState={{ selectedBlock: card }}>
-              <Card {...card} backgroundColor="#00FFCC" />
-              <TestEditorState />
-            </EditorProvider>
-          </SnackbarProvider>
+          <BackgroundUploadProvider>
+            <SnackbarProvider>
+              <EditorProvider initialState={{ selectedBlock: card }}>
+                <Card {...card} backgroundColor="#00FFCC" />
+                <TestEditorState />
+              </EditorProvider>
+            </SnackbarProvider>
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
       fireEvent.click(screen.getByText('#00FFCC'))
@@ -169,11 +180,13 @@ describe('Card', () => {
       }
       render(
         <MockedProvider>
-          <SnackbarProvider>
-            <EditorProvider initialState={{ selectedBlock: card }}>
-              <Card {...card} />
-            </EditorProvider>
-          </SnackbarProvider>
+          <BackgroundUploadProvider>
+            <SnackbarProvider>
+              <EditorProvider initialState={{ selectedBlock: card }}>
+                <Card {...card} />
+              </EditorProvider>
+            </SnackbarProvider>
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
 
@@ -248,11 +261,13 @@ describe('Card', () => {
       }
       render(
         <MockedProvider>
-          <SnackbarProvider>
-            <EditorProvider initialState={{ selectedBlock: card }}>
-              <Card {...card} />
-            </EditorProvider>
-          </SnackbarProvider>
+          <BackgroundUploadProvider>
+            <SnackbarProvider>
+              <EditorProvider initialState={{ selectedBlock: card }}>
+                <Card {...card} />
+              </EditorProvider>
+            </SnackbarProvider>
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
       const coverBlockAccordion = screen.getByTestId(
@@ -326,12 +341,14 @@ describe('Card', () => {
       }
       render(
         <MockedProvider>
-          <SnackbarProvider>
-            <EditorProvider initialState={{ selectedBlock: card }}>
-              <Card {...card} />
-              <TestEditorState />
-            </EditorProvider>
-          </SnackbarProvider>
+          <BackgroundUploadProvider>
+            <SnackbarProvider>
+              <EditorProvider initialState={{ selectedBlock: card }}>
+                <Card {...card} />
+                <TestEditorState />
+              </EditorProvider>
+            </SnackbarProvider>
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
       fireEvent.click(screen.getAllByText('FallingPlates')[0])
@@ -357,11 +374,13 @@ describe('Card', () => {
       }
       render(
         <MockedProvider>
-          <SnackbarProvider>
-            <EditorProvider initialState={{ selectedBlock: card }}>
-              <Card {...card} />
-            </EditorProvider>
-          </SnackbarProvider>
+          <BackgroundUploadProvider>
+            <SnackbarProvider>
+              <EditorProvider initialState={{ selectedBlock: card }}>
+                <Card {...card} />
+              </EditorProvider>
+            </SnackbarProvider>
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
       expect(screen.getByText('Light')).toBeInTheDocument()
@@ -382,11 +401,13 @@ describe('Card', () => {
       }
       render(
         <MockedProvider>
-          <SnackbarProvider>
-            <EditorProvider initialState={{ selectedBlock: card }}>
-              <Card {...card} />
-            </EditorProvider>
-          </SnackbarProvider>
+          <BackgroundUploadProvider>
+            <SnackbarProvider>
+              <EditorProvider initialState={{ selectedBlock: card }}>
+                <Card {...card} />
+              </EditorProvider>
+            </SnackbarProvider>
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
       expect(screen.getByText('Dark')).toBeInTheDocument()
@@ -407,12 +428,14 @@ describe('Card', () => {
       }
       render(
         <MockedProvider>
-          <SnackbarProvider>
-            <EditorProvider initialState={{ selectedBlock: card }}>
-              <Card {...card} />
-              <TestEditorState />
-            </EditorProvider>
-          </SnackbarProvider>
+          <BackgroundUploadProvider>
+            <SnackbarProvider>
+              <EditorProvider initialState={{ selectedBlock: card }}>
+                <Card {...card} />
+                <TestEditorState />
+              </EditorProvider>
+            </SnackbarProvider>
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
       fireEvent.click(screen.getByText('Light'))
@@ -438,11 +461,13 @@ describe('Card', () => {
       }
       render(
         <MockedProvider>
-          <SnackbarProvider>
-            <EditorProvider initialState={{ selectedBlock: card }}>
-              <Card {...card} />
-            </EditorProvider>
-          </SnackbarProvider>
+          <BackgroundUploadProvider>
+            <SnackbarProvider>
+              <EditorProvider initialState={{ selectedBlock: card }}>
+                <Card {...card} />
+              </EditorProvider>
+            </SnackbarProvider>
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
       expect(screen.getByText('Expanded')).toBeInTheDocument()
@@ -463,12 +488,14 @@ describe('Card', () => {
       }
       render(
         <MockedProvider>
-          <SnackbarProvider>
-            <EditorProvider initialState={{ selectedBlock: card }}>
-              <Card {...card} />
-              <TestEditorState />
-            </EditorProvider>
-          </SnackbarProvider>
+          <BackgroundUploadProvider>
+            <SnackbarProvider>
+              <EditorProvider initialState={{ selectedBlock: card }}>
+                <Card {...card} />
+                <TestEditorState />
+              </EditorProvider>
+            </SnackbarProvider>
+          </BackgroundUploadProvider>
         </MockedProvider>
       )
       fireEvent.click(screen.getByText('Layout'))
