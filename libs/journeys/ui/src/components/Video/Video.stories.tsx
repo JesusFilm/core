@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
+import { userEvent } from '@storybook/test'
 import { ComponentProps } from 'react'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
@@ -33,7 +34,7 @@ const emptyVideo: Omit<ComponentProps<typeof Video>, 'source'> = {
   description: null,
   duration: null,
   image: null,
-  video: null,
+  mediaVideo: null,
   startAt: null,
   endAt: null,
   posterBlockId: null,
@@ -166,6 +167,103 @@ export const Poster = {
         children: []
       }
     ]
+  }
+}
+
+export const WithSettingsMenuOpen = {
+  ...Template,
+  args: {
+    ...Arclight.args
+  },
+  play: async ({
+    canvasElement,
+    step
+  }: {
+    canvasElement: HTMLElement
+    step: (name: string, play: () => Promise<void>) => Promise<void>
+  }) => {
+    await step('Wait for video player to initialize', async () => {
+      const videoEl = canvasElement.querySelector('.video-js')
+      if (videoEl) {
+        await userEvent.click(videoEl)
+      }
+    })
+
+    await step('Click settings button', async () => {
+      const desktopControls = canvasElement.querySelector(
+        '[data-testid="desktop-controls"]'
+      )
+      if (desktopControls) {
+        const buttons = desktopControls.querySelectorAll('button')
+
+        if (buttons.length >= 2) {
+          const settingsButton = buttons[buttons.length - 2]
+          await userEvent.click(settingsButton)
+          return
+        }
+      }
+    })
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Shows the video with the settings menu open for quality selection.'
+      }
+    }
+  }
+}
+
+export const WithQualityMenuOpen = {
+  ...Template,
+  args: {
+    ...Arclight.args
+  },
+  play: async ({
+    canvasElement,
+    step
+  }: {
+    canvasElement: HTMLElement
+    step: (name: string, play: () => Promise<void>) => Promise<void>
+  }) => {
+    await step('Wait for video player to initialize', async () => {
+      const videoEl = canvasElement.querySelector('.video-js')
+      if (videoEl) {
+        await userEvent.click(videoEl)
+      }
+    })
+
+    await step('Click settings button', async () => {
+      const desktopControls = canvasElement.querySelector(
+        '[data-testid="desktop-controls"]'
+      )
+      if (desktopControls) {
+        const buttons = desktopControls.querySelectorAll('button')
+        if (buttons.length >= 2) {
+          const settingsButton = buttons[buttons.length - 2]
+          await userEvent.click(settingsButton)
+        }
+      }
+    })
+
+    await step('Click on Quality option', async () => {
+      const settingsMenu = document.getElementById('settings-menu')
+      if (settingsMenu) {
+        const menuItems = settingsMenu.querySelectorAll('li')
+
+        if (menuItems.length > 0) {
+          await userEvent.click(menuItems[0])
+        }
+      }
+    })
+  },
+  parameters: {
+    chromatic: { disableSnapshot: false },
+    docs: {
+      description: {
+        story: 'Shows the video with the quality selection menu open.'
+      }
+    }
   }
 }
 

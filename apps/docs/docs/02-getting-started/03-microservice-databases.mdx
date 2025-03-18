@@ -42,7 +42,7 @@ nx run-many --all --target=prisma-migrate
 nx run-many --all --target=prisma-seed
 ```
 
-To ingest data from bigquery, you will need to start the ingest job. In one terminal, run:
+To ingest data from seeds & bigquery, you will need to start the ingest job. In one terminal, run:
 
 ```shell
 nf start
@@ -51,7 +51,7 @@ nf start
 In a separate terminal, run:
 
 ```shell
-nx ingest api-languages
+nx data-import api-languages
 ```
 
 Once that has completed, run:
@@ -75,7 +75,7 @@ nx run-many -t prisma-reset --all
 If prisma generate fails with a error message similar to the one below:
 
 ```shell
-Command failed: "/workspaces/core/node_modules/-bin/mmdc" -i "/tmp/prisma-erd-q0 cpUx/prisma.mmd" -0 "/workspaces/core/apps/api-journeys/db/ERD.svg" -c"/tmp/pri
+Command failed: "/workspaces/core/node_modules/-bin/mmdc" -i "/tmp/prisma-erd-q0 cpUx/prisma.mmd" -0 "/workspaces/core/apis/api-journeys/db/ERD.svg" -c"/tmp/pri
 sma-erd-qOcpUx/config-json" -p"/tmp/prisma-erd-qOcpUx/puppeteerConfig-json"
 ```
 

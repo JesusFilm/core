@@ -1,12 +1,12 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 import testData from '../utils/testData.json'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
+
 export class JourneyLevelActions {
   readonly page: Page
   context
@@ -21,7 +21,7 @@ export class JourneyLevelActions {
     randomNumber =
       dayjs().format('DDMMYY-hhmmss') +
       Math.floor(Math.random() * (100 - 999 + 1) + 999)
-    this.memberEmail = 'playwright' + randomNumber + '@example.com'
+    this.memberEmail = `playwright${randomNumber}@example.com`
   }
 
   async setBrowserContext(context) {
@@ -86,7 +86,9 @@ export class JourneyLevelActions {
 
   async enterTitle() {
     this.renameJourneyName = testData.journey.renameJourneyName + randomNumber
-    await this.page.locator('input#title').click({ delay: 2000 })
+    await this.page
+      .locator('input#title')
+      .click({ delay: 2000, timeout: 30000 })
     await this.page.locator('input#title').clear()
     await this.page.locator('input#title').fill(this.renameJourneyName)
   }
@@ -94,7 +96,7 @@ export class JourneyLevelActions {
   async verifyJourneyRenamedInActiveList() {
     await expect(
       this.page.locator('span[data-testid="new-journey-badge"] div').first()
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
+    ).toBeVisible({ timeout: 300000 })
     await expect(
       this.page.locator('span[data-testid="new-journey-badge"] div', {
         hasText: this.renameJourneyName
@@ -104,7 +106,7 @@ export class JourneyLevelActions {
       this.page.locator('span[data-testid="new-journey-badge"] div', {
         hasText: this.existingJourneyName
       })
-    ).toBeHidden({ timeout: thirtySecondsTimeout })
+    ).toBeHidden({ timeout: 30000 })
   }
 
   async enterTeamMember() {
@@ -120,7 +122,7 @@ export class JourneyLevelActions {
       this.page.locator('div[data-testid="UserListItem"] p', {
         hasText: this.memberEmail
       })
-    ).toBeVisible()
+    ).toBeVisible({ timeout: 20000 })
   }
 
   async clickDiaLogBoxCloseBtn() {
@@ -155,7 +157,6 @@ export class JourneyLevelActions {
     for (let slide = 1; slide < slidesCount; slide++) {
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')
-        // eslint-disable-next-line playwright/no-force-option
         .hover({ force: true })
       await newPage
         .locator('button[data-testid="ConductorNavigationButtonNext"]')
@@ -174,7 +175,7 @@ export class JourneyLevelActions {
   async verifyExistingJourneyDuplicate() {
     await expect(
       this.page.locator('span[data-testid="new-journey-badge"] div', {
-        hasText: this.existingJourneyName + ' copy'
+        hasText: `${this.existingJourneyName} copy`
       })
     ).toBeVisible()
   }
@@ -184,12 +185,12 @@ export class JourneyLevelActions {
       this.page.locator('div[id="notistack-snackbar"]', {
         hasText: snackbarMsg
       })
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
+    ).toBeVisible({ timeout: 30000 })
     await expect(
       this.page.locator('div[id="notistack-snackbar"]', {
         hasText: snackbarMsg
       })
-    ).toBeHidden({ timeout: thirtySecondsTimeout })
+    ).toBeHidden({ timeout: 30000 })
   }
 
   async clickSelectTeamDropDownIcon() {
@@ -211,7 +212,7 @@ export class JourneyLevelActions {
       this.page
         .locator('div[id="menu-teamSelect"] ul[role="listbox"] li')
         .first()
-    ).toBeHidden({ timeout: thirtySecondsTimeout })
+    ).toBeHidden({ timeout: 30000 })
   }
 
   async clickCopyButton() {
@@ -224,7 +225,7 @@ export class JourneyLevelActions {
 
   async verifyCopiedTeamNameUpdatedInTeamSelectDropdown() {
     await expect(this.page.locator('div[aria-haspopup="listbox"]')).toHaveText(
-      this.selectedTeam as string
+      this.selectedTeam
     )
   }
 
@@ -243,12 +244,25 @@ export class JourneyLevelActions {
       .locator('ul[aria-labelledby="edit-journey-actions"] li', {
         hasText: option
       })
-      // eslint-disable-next-line playwright/no-force-option
-      .click({ force: true })
+      .click({ delay: 2000, timeout: 30000 })
+    // After selecting the option from the list, check that the menu items list got closed, if not then again select the same option from the menu items in catch block
+    try {
+      await expect(
+        this.page.locator(
+          'div[id=edit-journey-actions][aria-hidden="true"] ul[aria-labelledby="edit-journey-actions"] li'
+        )
+      ).not.toHaveCount(0)
+    } catch {
+      await this.page
+        .locator('ul[aria-labelledby="edit-journey-actions"] li', {
+          hasText: option
+        })
+        .click({ delay: 2000, timeout: 30000 })
+    }
   }
 
   async enterDescription() {
-    await this.page.locator('textarea#description').clear()
+    await this.page.locator('textarea#description').clear({ timeout: 50000 })
     await this.page.locator('textarea#description').fill(this.descriptionText)
   }
 
@@ -268,18 +282,39 @@ export class JourneyLevelActions {
   async enterLanguage(language: string) {
     const selectedValue = await this.page
       .locator('input[placeholder="Search Language"]')
-      .getAttribute('value', { timeout: thirtySecondsTimeout })
+      .getAttribute('value', { timeout: 30000 })
     this.selectedLanguage = selectedValue === language ? 'Malayalam' : language
     await this.page.locator('input[placeholder="Search Language"]').click()
     await expect(this.page.locator('span[role="progressbar"]')).toBeHidden({
-      timeout: thirtySecondsTimeout
+      timeout: 30000
     })
+    for (let scroll = 0; scroll < 300; scroll++) {
+      if (
+        await this.page
+          .locator("div[class *='MuiAutocomplete-popper'] li", {
+            hasText: this.selectedLanguage
+          })
+          .first()
+          .isVisible()
+      ) {
+        break
+      }
+      expect(scroll !== 299).toBeTruthy()
+      await this.page
+        .locator("div[class *='MuiAutocomplete-popper'] li")
+        .last()
+        .waitFor({ state: 'visible' })
+      await this.page
+        .locator("div[class *='MuiAutocomplete-popper'] li")
+        .last()
+        .scrollIntoViewIfNeeded()
+    }
     await this.page
       .locator("div[class *='MuiAutocomplete-popper'] li", {
         hasText: this.selectedLanguage
       })
       .first()
-      .click({ timeout: thirtySecondsTimeout })
+      .click({ timeout: 30000 })
   }
 
   async verifyLinkIsCopied() {
@@ -330,16 +365,12 @@ export class JourneyLevelActions {
 
   async clickHelpBtn() {
     await expect(
-      this.page
-        .getByTestId('side-header')
-        .getByTestId('HelpScoutBeaconIconButton')
-    ).toBeEnabled({
-      timeout: thirtySecondsTimeout
-    })
+      this.page.getByTestId('side-header').locator('button[aria-label="Help"]')
+    ).toBeEnabled({ timeout: 30000 })
     await this.page
       .getByTestId('side-header')
-      .getByTestId('HelpScoutBeaconIconButton')
-      .click()
+      .locator('button[aria-label="Help"]')
+      .click({ delay: 3000 })
   }
 
   async verifyHelpWindowOpened() {
@@ -354,5 +385,10 @@ export class JourneyLevelActions {
     await expect(
       this.page.locator('input[placeholder="Search Language"]')
     ).toHaveAttribute('value', this.selectedLanguage)
+  }
+
+  async sleep(ms: number) {
+    // eslint-ignore-next-line
+    return await new Promise((resolve) => setTimeout(resolve, ms))
   }
 }

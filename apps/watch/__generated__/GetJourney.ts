@@ -201,6 +201,14 @@ export interface GetJourney_journey_blocks_SignUpBlock {
   action: GetJourney_journey_blocks_SignUpBlock_action | null;
 }
 
+export interface GetJourney_journey_blocks_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
+}
+
 export interface GetJourney_journey_blocks_StepBlock {
   __typename: "StepBlock";
   id: string;
@@ -250,42 +258,56 @@ export interface GetJourney_journey_blocks_TypographyBlock {
   variant: TypographyVariant | null;
 }
 
-export interface GetJourney_journey_blocks_VideoBlock_video_title {
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface GetJourney_journey_blocks_VideoBlock_video_images {
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface GetJourney_journey_blocks_VideoBlock_video_variant {
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface GetJourney_journey_blocks_VideoBlock_video_variantLanguages_name {
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface GetJourney_journey_blocks_VideoBlock_video_variantLanguages {
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: GetJourney_journey_blocks_VideoBlock_video_variantLanguages_name[];
+  name: GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface GetJourney_journey_blocks_VideoBlock_video {
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: GetJourney_journey_blocks_VideoBlock_video_title[];
-  images: GetJourney_journey_blocks_VideoBlock_video_images[];
-  variant: GetJourney_journey_blocks_VideoBlock_video_variant | null;
-  variantLanguages: GetJourney_journey_blocks_VideoBlock_video_variantLanguages[];
+  title: GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_title[];
+  images: GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_images[];
+  variant: GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
+
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  assetId: string | null;
+  playbackId: string | null;
+}
+
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type GetJourney_journey_blocks_VideoBlock_mediaVideo = GetJourney_journey_blocks_VideoBlock_mediaVideo_Video | GetJourney_journey_blocks_VideoBlock_mediaVideo_MuxVideo | GetJourney_journey_blocks_VideoBlock_mediaVideo_YouTube;
 
 export interface GetJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -378,11 +400,7 @@ export interface GetJourney_journey_blocks_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: GetJourney_journey_blocks_VideoBlock_video | null;
+  mediaVideo: GetJourney_journey_blocks_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
@@ -425,7 +443,7 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock {
   triggerAction: GetJourney_journey_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_IconBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TextResponseBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoTriggerBlock;
+export type GetJourney_journey_blocks = GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_IconBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_SpacerBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TextResponseBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoTriggerBlock;
 
 export interface GetJourney_journey_primaryImageBlock {
   __typename: "ImageBlock";

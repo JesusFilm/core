@@ -1,7 +1,8 @@
 'use client'
 
 import { useQuery } from '@apollo/client'
-import Box from '@mui/material/Box'
+import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
 import {
   DataGrid,
   GridCallbackDetails,
@@ -15,6 +16,7 @@ import {
   GridToolbar,
   GridValidRowModel,
   MuiEvent,
+  getGridBooleanOperators,
   getGridStringOperators,
   gridClasses
 } from '@mui/x-data-grid'
@@ -23,7 +25,41 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
+import Lock1 from '@core/shared/ui/icons/Lock1'
+
 import { PublishedChip } from '../../../../../components/PublishedChip'
+
+import { VideoListHeader } from './VideoListHeader'
+
+function LockedCell(
+  params: GridRenderCellParams<GridValidRowModel, boolean>
+): ReactElement | null {
+  return params.value ? (
+    <Stack
+      sx={{
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}
+    >
+      <Paper
+        sx={{
+          border: '1px solid',
+          borderColor: 'divider',
+          height: 28,
+          width: 28,
+          borderRadius: 1,
+          display: 'grid',
+          placeItems: 'center'
+        }}
+      >
+        <Lock1 fontSize="small" />
+      </Paper>
+    </Stack>
+  ) : null
+}
 
 export const GET_ADMIN_VIDEOS_AND_COUNT = graphql(`
   query GetAdminVideosAndCount(
@@ -35,6 +71,7 @@ export const GET_ADMIN_VIDEOS_AND_COUNT = graphql(`
   ) {
     adminVideos(limit: $limit, offset: $offset, where: $where) {
       id
+      locked
       title @include(if: $showTitle) {
         primary
         value
@@ -65,7 +102,8 @@ export function VideoList(): ReactElement {
     useState<GridColumnVisibilityModel>({
       id: true,
       title: true,
-      description: true
+      description: true,
+      locked: true
     })
 
   const [filterModel, setFilterModel] = useState<GridFilterModel>({
@@ -99,11 +137,21 @@ export function VideoList(): ReactElement {
         id: video.id,
         title,
         description,
-        published: video.published
+        published: video.published,
+        locked: video.locked
       }
     }) ?? []
 
   const columns: GridColDef[] = [
+    {
+      field: 'locked',
+      headerName: t('Locked'),
+      width: 68,
+      renderCell: (params) => <LockedCell {...params} />,
+      filterOperators: getGridBooleanOperators().filter(
+        (operator) => operator.value === 'is'
+      )
+    },
     {
       field: 'id',
       headerName: t('ID'),
@@ -123,7 +171,7 @@ export function VideoList(): ReactElement {
     {
       field: 'published',
       headerName: t('Published'),
-      minWidth: 150,
+      width: 112,
       renderCell: (
         params: GridRenderCellParams<GridValidRowModel, boolean>
       ) => <PublishedChip published={params.value ?? false} />
@@ -141,6 +189,8 @@ export function VideoList(): ReactElement {
     _event: MuiEvent,
     _details: GridCallbackDetails
   ): void {
+    if (params.row.locked) return
+
     router.push(`${pathname}/${params.id}`)
   }
 
@@ -172,6 +222,13 @@ export function VideoList(): ReactElement {
         item.value != null
       )
         where.title = item.value === '' ? null : item.value
+
+      if (
+        item.field === 'locked' &&
+        item.operator === 'is' &&
+        item.value != null
+      )
+        where.locked = item.value === '' ? null : item.value
     })
     setFilterModel(model)
     setPaginationModel({
@@ -182,7 +239,8 @@ export function VideoList(): ReactElement {
   }
 
   return (
-    <Box sx={{ height: 'calc(100vh - 90px)', width: '100%' }}>
+    <Stack sx={{ height: 'calc(100vh - 150px)', width: '100%' }} gap={2}>
+      <VideoListHeader />
       <DataGrid
         getRowClassName={(params) =>
           params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
@@ -226,6 +284,6 @@ export function VideoList(): ReactElement {
           }
         }}
       />
-    </Box>
+    </Stack>
   )
 }

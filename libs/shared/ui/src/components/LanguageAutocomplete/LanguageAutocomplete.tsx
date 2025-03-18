@@ -22,6 +22,7 @@ import { OuterElement, OuterElementContext } from './OuterElement'
 export interface Language {
   id: string
   name: Translation[]
+  slug: string | null
 }
 
 export interface Translation {
@@ -33,13 +34,15 @@ export interface LanguageOption {
   id: string
   localName?: string
   nativeName?: string
+  slug?: string | null
 }
 
 export interface LanguageAutocompleteProps {
   onChange: (value?: LanguageOption) => void
   value?: LanguageOption
   languages?: Language[]
-  loading: boolean
+  loading?: boolean
+  disabled?: boolean
   helperText?: string
   renderInput?: (params: AutocompleteRenderInputParams) => ReactNode
   renderOption?: (params: HTMLAttributes<HTMLLIElement>) => ReactNode
@@ -51,6 +54,7 @@ export function LanguageAutocomplete({
   value,
   languages,
   loading,
+  disabled = false,
   renderInput,
   renderOption,
   helperText,
@@ -58,14 +62,15 @@ export function LanguageAutocomplete({
 }: LanguageAutocompleteProps): ReactElement {
   const options = useMemo(() => {
     return (
-      languages?.map(({ id, name }) => {
+      languages?.map(({ id, name, slug }) => {
         const localLanguageName = name.find(({ primary }) => !primary)?.value
         const nativeLanguageName = name.find(({ primary }) => primary)?.value
 
         return {
           id,
           localName: localLanguageName,
-          nativeName: nativeLanguageName
+          nativeName: nativeLanguageName,
+          slug
         }
       }) ?? []
     )
@@ -155,11 +160,13 @@ export function LanguageAutocomplete({
       getOptionLabel={({ localName, nativeName }) =>
         localName ?? nativeName ?? ''
       }
-      onChange={(_event, option) => {
+      onChange={(e, option) => {
+        e.stopPropagation()
         handleChange(option)
       }}
       options={sortedOptions}
       loading={loading}
+      disabled={disabled}
       disablePortal={process.env.NODE_ENV === 'test'}
       renderInput={renderInput != null ? renderInput : defaultRenderInput}
       renderOption={(props, option, state) => {

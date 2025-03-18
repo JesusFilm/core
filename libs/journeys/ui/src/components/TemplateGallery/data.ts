@@ -292,7 +292,8 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
           '53441',
           '1942',
           '5541',
-          '6788'
+          '6788',
+          '3804'
         ]
       }
     }
@@ -303,6 +304,7 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
         {
           __typename: 'Language',
           id: '529',
+          slug: 'english',
           name: [
             {
               value: 'English',
@@ -314,6 +316,7 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
         {
           id: '496',
           __typename: 'Language',
+          slug: 'french',
           name: [
             {
               value: 'Français',
@@ -330,6 +333,7 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
         {
           id: '1106',
           __typename: 'Language',
+          slug: 'german-standard',
           name: [
             {
               value: 'Deutsch',

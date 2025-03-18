@@ -48,6 +48,7 @@ export const GET_VIDEO = gql`
       }
       variantLanguages {
         id
+        slug
         name {
           value
           primary
@@ -253,6 +254,7 @@ export function LocalDetails({
           onClick={handleSelect}
           size="small"
           sx={{ backgroundColor: 'secondary.dark' }}
+          disabled={loading}
         >
           {t('Select')}
         </Button>

@@ -1,13 +1,32 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { useNavigationState } from '@core/journeys/ui/useNavigationState'
+
 import { ThemeProvider } from '../../ThemeProvider'
-import { defaultJourney } from '../journeyListData'
+import { defaultJourney, fakeDate } from '../journeyListData'
 
 import { JourneyCard } from './JourneyCard'
 
+jest.mock('@core/journeys/ui/useNavigationState', () => ({
+  useNavigationState: jest.fn(() => false)
+}))
+
+const mockUseNavigationState = useNavigationState as jest.MockedFunction<
+  typeof useNavigationState
+>
+
 describe('JourneyCard', () => {
+  beforeAll(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date(fakeDate))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   it('should have correct link on title', () => {
     render(
       <SnackbarProvider>
@@ -21,12 +40,14 @@ describe('JourneyCard', () => {
 
     expect(
       screen.getByRole('link', {
-        name: 'Default Journey Heading January 1, 2021'
+        name: 'Default Journey Heading 11 months ago'
       })
     ).toHaveAttribute('href', '/journeys/journey-id')
   })
 
-  it('should disable card interaction after initial click to prevent multiple navigations', async () => {
+  it('should disabled card when navigating', () => {
+    mockUseNavigationState.mockReturnValue(true)
+
     render(
       <SnackbarProvider>
         <MockedProvider>
@@ -38,10 +59,8 @@ describe('JourneyCard', () => {
     )
 
     const link = screen.getByRole('link', {
-      name: 'Default Journey Heading January 1, 2021'
+      name: 'Default Journey Heading 11 months ago'
     })
-    expect(link).not.toHaveClass('Mui-disabled')
-    fireEvent.click(link)
     expect(link).toHaveClass('Mui-disabled')
   })
 })

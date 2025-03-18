@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [22]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -55,10 +55,14 @@ jobs:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
         github-event-name: ['${{ github.event_name }}']
-        node-version: [20]
+        node-version: [22]
         exclude:
           # handled by production job below
           - app: journeys
+            github-ref-name: stage
+            github-event-name: push
+          # handled by production job below
+          - app: short-links
             github-ref-name: stage
             github-event-name: push
           # handled by ecs-frontend-deploy-stage
@@ -104,8 +108,9 @@ jobs:
           DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
           JOURNEYS_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_STAGE_VERCEL_PROJECT_ID }}
           JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
-          WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
+          SHORT_LINKS_VERCEL_PROJECT_ID: ${{ secrets.SHORT_LINKS_STAGE_VERCEL_PROJECT_ID }}
           VIDEOS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.VIDEOS_ADMIN_VERCEL_PROJECT_ID }}
+          WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_VERCEL_ENV: ${{ github.event_name == 'push' && github.ref == 'refs/heads/stage' && 'stage' || 'preview' }}
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
@@ -209,7 +214,7 @@ jobs:
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
-        node-version: [20]
+        node-version: [22]
         exclude:
           # handled by ecs-frontend-deploy-prod
           - app: journeys-admin
@@ -217,6 +222,8 @@ jobs:
           - github-ref-name: stage
         include:
           - app: journeys
+            github-ref-name: stage
+          - app: short-links
             github-ref-name: stage
     runs-on: ubuntu-latest
     permissions:
@@ -256,8 +263,9 @@ jobs:
           DOCS_VERCEL_PROJECT_ID: ${{ secrets.DOCS_VERCEL_PROJECT_ID }}
           JOURNEYS_VERCEL_PROJECT_ID: ${{ github.ref == 'refs/heads/stage' && secrets.JOURNEYS_STAGE_VERCEL_PROJECT_ID || secrets.JOURNEYS_VERCEL_PROJECT_ID }}
           JOURNEYS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.JOURNEYS_ADMIN_VERCEL_PROJECT_ID }}
-          WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
+          SHORT_LINKS_VERCEL_PROJECT_ID: ${{ github.ref == 'refs/heads/stage' && secrets.SHORT_LINKS_STAGE_VERCEL_PROJECT_ID || secrets.SHORT_LINKS_VERCEL_PROJECT_ID }}
           VIDEOS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.VIDEOS_ADMIN_VERCEL_PROJECT_ID }}
+          WATCH_VERCEL_PROJECT_ID: ${{ secrets.WATCH_VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_VERCEL_ENV: prod
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
         # use run-namy to avoid case where deploy command doesn't exist for a project
