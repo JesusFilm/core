@@ -39,6 +39,7 @@ input ButtonBlockCreateInput {
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
+  submitEnabled: Boolean
 }
 
 input ButtonBlockUpdateInput {

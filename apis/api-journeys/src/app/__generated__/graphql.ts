@@ -303,6 +303,7 @@ export class ButtonBlockCreateInput {
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
     size?: Nullable<ButtonSize>;
+    submitEnabled?: Nullable<boolean>;
 }
 
 export class ButtonBlockUpdateInput {
