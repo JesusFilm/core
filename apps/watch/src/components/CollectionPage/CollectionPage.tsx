@@ -1,54 +1,24 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { IconButton } from '@mui/material'
+
 import { Icon } from '@core/shared/ui/icons/Icon'
 import 'swiper/css'
 import { ThemeMode } from '@core/shared/ui/themes'
-import { useVideoChildren } from '../../libs/useVideoChildren'
-import { useVideo } from '../../libs/videoContext'
+
+import { VideoMuteProvider } from '../../libs/videoMuteContext'
 import { EasterDates } from '../EasterDates'
 import { PageWrapper } from '../PageWrapper'
-import { ShareDialog } from '../ShareDialog'
-import { ContainerHero } from './ContainerHero'
 import { VideoBlock } from '../VideoBlock'
 import { VideoSection } from '../VideoSection'
-import { VideoMuteProvider } from '../../libs/videoMuteContext'
 
-// Usually Series or Collection Videos
+import { ContainerHero } from './ContainerHero'
+
 export function CollectionPage(): ReactElement {
-  const { snippet, slug, variant } = useVideo()
-  const { loading, children } = useVideoChildren(variant?.slug)
-  const [shareDialog, setShareDialog] = useState<boolean>(false)
-  const [controlsVisible, setControlsVisible] = useState(false)
-  const [activeVideoId, setActiveVideoId] = useState<string | null>(null)
-  const [openQuestion, setOpenQuestion] = useState<number | null>(null)
-  const realChildren = children.filter((video) => video.variant !== null)
-
-  const handleOpenDialog = (): void => {
-    setShareDialog(true)
-  }
-
-  const handleCloseDialog = (): void => {
-    setShareDialog(false)
-  }
-
-  const handleVideoPlay = (videoId: string): void => {
-    setActiveVideoId(videoId)
-  }
-
-  const handleControlsVisibility = (visible: boolean): void => {
-    setControlsVisible(visible)
-  }
-
-  const handleQuestionToggle = (questionId: number | null): void => {
-    setOpenQuestion(questionId)
-  }
-
   return (
     <VideoMuteProvider initialMuted={true}>
       <div className="bg-stone-900 text-white min-h-screen font-sans">
         <PageWrapper
-          hero={<ContainerHero openDialog={handleOpenDialog} />}
+          hero={<ContainerHero />}
           headerThemeMode={ThemeMode.dark}
           hideHeaderSpacer
         >
@@ -215,73 +185,6 @@ export function CollectionPage(): ReactElement {
             </div>
 
             <div className="flex flex-col py-7 md:py-17">
-              {/* <div className="w-full px-6 lg:px-8">
-              <details className="group bg-white/5 rounded-lg mb-6 mt-4">
-                <summary className="flex justify-between items-center cursor-pointer p-4 font-medium">
-                  <span>Contents</span>
-                  <span className="transition group-open:rotate-180">
-                    <svg
-                      fill="none"
-                      height="24"
-                      width="24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
-                  </span>
-                </summary>
-                <div className="p-4 pt-0 space-y-4">
-                  <ul className="list-disc list-inside space-y-4">
-                    <li>
-                      <a
-                        href="#"
-                        className="font-medium text-red-400 hover:text-primary-500 transition-colors"
-                      >
-                        What is The real story of Easter?
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        className="font-medium text-red-400 hover:text-primary-500 transition-colors"
-                      >
-                        When is Easter Celebrated in 2025?
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        className="font-medium text-red-400 hover:text-primary-500 transition-colors"
-                      >
-                        What is Holy Week?
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        className="font-medium text-red-400 hover:text-primary-500 transition-colors"
-                      >
-                        Why do Easter dates change each year?
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        className="font-medium text-red-400 hover:text-primary-500 transition-colors"
-                      >
-                        How is Orthodox Easter different?
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </details>
-            </div>
-            */}
               <div className="px-6 lg:px-8 space-y-6 pb-12">
                 <h2 className="text-4xl font-bold mb-0">
                   The real Easter story

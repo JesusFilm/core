@@ -116,14 +116,3 @@ export const getStaticProps: GetStaticProps<EasterPageProps> = async (
     throw error
   }
 }
-
-export const getStaticPaths: GetStaticPaths = () => {
-  return {
-    paths: [
-      { params: { lang: [] } }, // Default English version
-      { params: { lang: ['fr'] } },
-      { params: { lang: ['es'] } }
-    ],
-    fallback: 'blocking'
-  }
-}
