@@ -16,18 +16,56 @@ interface LanguageIds {
   fallbackLanguageId: string
 }
 
+// Support legacy locale tags
+const LANGUAGE_MAPPINGS = new Map<string, string>([
+  ['en-US', 'en'],
+  ['ko-KR', 'ko'],
+  ['ar-SA', 'ar'],
+  ['es-MX', 'es'],
+  ['pt-BR', 'pt'],
+  ['tr-TR', 'tr'],
+  ['zh-Hans', 'zh-Hans'],
+  ['fa-IR', 'fa'],
+  ['ur-PK', 'ur'],
+  ['he-IL', 'he'],
+  ['hi-IN', 'hi'],
+  ['fr-FR', 'fr'],
+  ['zh-Hant', 'zh-Hant'],
+  ['ru-RU', 'ru'],
+  ['de-DE', 'de'],
+  ['id-ID', 'id'],
+  ['ja-JP', 'ja'],
+  ['vi-VN', 'vi'],
+  ['th-TH', 'th']
+])
+
+function matchLocales(metadataLanguageTags: string[]): string | undefined {
+  const exactMatch = metadataLanguageTags.find((tag) =>
+    LANGUAGE_MAPPINGS.has(tag)
+  )
+  if (exactMatch) {
+    return LANGUAGE_MAPPINGS.get(exactMatch)
+  }
+
+  return metadataLanguageTags.find((tag) => tag.startsWith('en-'))
+}
+
 export async function getLanguageIdsFromTags(
   metadataLanguageTags: string[]
 ): Promise<LanguageIds | HTTPException> {
   let metadataLanguageId = '529'
   let fallbackLanguageId = ''
 
+  console.log(metadataLanguageTags)
   if (metadataLanguageTags.length > 0) {
+    const metadataLanguageTag = matchLocales(metadataLanguageTags)
+    console.log(metadataLanguageTag)
+
     const { data } = await getApolloClient().query<
       ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
     >({
       query: GET_LANGUAGE_ID_FROM_BCP47,
-      variables: { bcp47: metadataLanguageTags[0] }
+      variables: { bcp47: metadataLanguageTag }
     })
     if (data.language == null) {
       const metadataTagsString = metadataLanguageTags.join(', ')
@@ -43,13 +81,16 @@ export async function getLanguageIdsFromTags(
   }
 
   if (metadataLanguageTags.length > 1) {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
-    >({
-      query: GET_LANGUAGE_ID_FROM_BCP47,
-      variables: { bcp47: metadataLanguageTags[1] }
-    })
-    fallbackLanguageId = data.language?.id ?? ''
+    const fallbackLanguageTag = matchLocales(metadataLanguageTags)
+    if (fallbackLanguageTag) {
+      const { data } = await getApolloClient().query<
+        ResultOf<typeof GET_LANGUAGE_ID_FROM_BCP47>
+      >({
+        query: GET_LANGUAGE_ID_FROM_BCP47,
+        variables: { bcp47: fallbackLanguageTag }
+      })
+      fallbackLanguageId = data.language?.id ?? ''
+    }
   }
 
   return { metadataLanguageId, fallbackLanguageId }
