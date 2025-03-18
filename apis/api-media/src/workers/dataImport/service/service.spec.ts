@@ -14,6 +14,11 @@ jest.mock('fs')
 jest.mock('stream/promises')
 jest.mock('../../../lib/prisma')
 
+/**
+ * Tests for the dataImport service
+ * Note: Unlike dataExport, this service is designed to run ONLY when triggered via CLI.
+ * It does not run automatically on a schedule.
+ */
 describe('dataImport service', () => {
   const mockLogger = {
     info: jest.fn(),
@@ -65,7 +70,7 @@ describe('dataImport service', () => {
       .mockReturnValue('readableStream')
   })
 
-  it('should download, restore database and import CloudflareImage data', async () => {
+  it('should download, restore database and import CloudflareImage data when manually triggered via CLI', async () => {
     // Setup mock for successful process exit
     mockOn.mockImplementation((event, callback) => {
       if (event === 'close') {

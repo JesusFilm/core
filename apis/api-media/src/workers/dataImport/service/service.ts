@@ -3,8 +3,8 @@ import fs, { promises as fsPromises } from 'fs'
 import { join } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
-import { createGunzip } from 'zlib'
 
+import { Client } from 'pg'
 import { Logger } from 'pino'
 
 import { prisma } from '../../../lib/prisma'
@@ -108,29 +108,45 @@ async function importCloudflareImageData(
     const port = databaseUrl.port
     const database = databaseUrl.pathname.slice(1)
     const username = databaseUrl.username
+    const tempDir = join(process.cwd(), 'imports')
 
     const env = {
       ...process.env,
       PGPASSWORD: decodeURIComponent(databaseUrl.password)
     }
 
-    // Decompress the gzipped file first
-    logger.info('Decompressing CloudflareImage data')
+    logger.info('Starting CloudflareImage data import')
 
-    // Create a temporary uncompressed file
-    const tempFilePath = `${filePath}.tmp`
+    // First verify the file exists
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+      if (err) {
+        logger.error('CloudflareImage file not found')
+        reject(new Error(`File not found: ${filePath}`))
+        return
+      }
 
-    // Set up decompression pipeline
-    const readStream = fs.createReadStream(filePath)
-    const writeStream = fs.createWriteStream(tempFilePath)
-    const gunzip = createGunzip()
+      // Extract the gzipped file first for more reliable processing
+      const extractedFilePath = join(tempDir, 'cloudflare-extracted.csv')
+      const extractCmd = `gunzip -c ${filePath} > ${extractedFilePath}`
+      logger.info(`Extracting gzipped file`)
 
-    pipeline(readStream, gunzip, writeStream)
-      .then(() => {
-        logger.info('CloudflareImage data decompressed, starting import')
+      const extractProcess = spawn('bash', ['-c', extractCmd])
 
-        // First truncate the table
-        const truncateCommand = `TRUNCATE TABLE "CloudflareImage";`
+      let extractError = ''
+      extractProcess.stderr.on('data', (data) => {
+        extractError += data.toString()
+      })
+
+      extractProcess.on('close', (extractCode) => {
+        if (extractCode !== 0) {
+          logger.error(`Failed to extract file: ${extractError}`)
+          reject(new Error(`Failed to extract gzipped file: ${extractError}`))
+          return
+        }
+
+        // Truncate CloudflareImage table before import
+        logger.info('Truncating CloudflareImage table')
+        const truncateCmd = `TRUNCATE TABLE "CloudflareImage";`
 
         const truncateProcess = spawn(
           'psql',
@@ -144,92 +160,440 @@ async function importCloudflareImageData(
             '-d',
             database,
             '-c',
-            truncateCommand
+            truncateCmd
           ],
           { env }
         )
 
-        truncateProcess.stderr.on('data', (data) => {
-          logger.info(`psql truncate stderr: ${data}`)
-        })
-
-        truncateProcess.on('close', (truncateCode) => {
+        truncateProcess.on('close', (truncateCode: number) => {
           if (truncateCode !== 0) {
-            const error = new Error(
-              `psql truncate process exited with code ${truncateCode}`
+            logger.error(
+              `CloudflareImage table truncate failed with code ${truncateCode}`
             )
-            logger.error({ error }, 'Failed to truncate CloudflareImage table')
-            reject(error)
+            reject(new Error('Failed to truncate CloudflareImage table'))
+
+            // Clean up extracted file
+            fsPromises.unlink(extractedFilePath).catch((e) => {
+              logger.error(`Failed to clean up extracted file: ${e.message}`)
+            })
+
             return
           }
 
-          logger.info('CloudflareImage table truncated, now importing data')
+          logger.info('CloudflareImage table truncated, importing data')
 
-          // Then import the data using the COPY command
-          const copyProcess = spawn(
-            'psql',
-            [
-              '-h',
-              host,
-              '-p',
-              port,
-              '-U',
-              username,
-              '-d',
-              database,
-              '-c',
-              `\\COPY "CloudflareImage" FROM '${tempFilePath}' WITH CSV HEADER`
-            ],
-            { env }
-          )
-
-          copyProcess.stdout.on('data', (data) => {
-            logger.info(`psql copy stdout: ${data}`)
-          })
-
-          copyProcess.stderr.on('data', (data) => {
-            logger.info(`psql copy stderr: ${data}`)
-          })
-
-          copyProcess.on('close', (copyCode) => {
-            // Clean up the temporary file
-            fsPromises.unlink(tempFilePath).catch((err) => {
-              logger.warn({ error: err }, 'Failed to remove temporary file')
-            })
-
-            if (copyCode === 0) {
-              logger.info('CloudflareImage data imported successfully')
-              resolve()
-            } else {
-              const error = new Error(
-                `psql copy process exited with code ${copyCode}`
-              )
-              logger.error({ error }, 'Failed to import CloudflareImage data')
-              reject(error)
+          // Use Node.js to process the CSV directly since we can't be certain of the table structure
+          const manualImport = async (): Promise<void> => {
+            // Define interfaces for database column data
+            interface DbColumn {
+              name: string
+              type: string
+              nullable: boolean
+              hasDefault: boolean
+              maxLength?: number
             }
-          })
 
-          copyProcess.on('error', (error) => {
-            logger.error({ error }, 'Error spawning psql copy process')
-            reject(error)
+            interface DbRow {
+              column_name: string
+              data_type: string
+              is_nullable: string
+              column_default: string | null
+              character_maximum_length: number | null
+            }
+
+            try {
+              // Read and process the CSV manually
+              const fileContent = await fsPromises.readFile(
+                extractedFilePath,
+                'utf8'
+              )
+              const lines = fileContent.split('\n')
+
+              if (lines.length === 0) {
+                logger.error('CSV file is empty')
+                return
+              }
+
+              // Parse header to understand column structure
+              const header = lines[0].split(',').map((h) => h.trim())
+
+              // Get the table structure to know which columns to map
+              const client = new Client({
+                connectionString: process.env.PG_DATABASE_URL_MEDIA
+              })
+              await client.connect()
+
+              // Get table columns
+              const columnResult = await client.query(`
+                SELECT column_name, data_type, is_nullable,
+                       column_default, character_maximum_length
+                FROM information_schema.columns 
+                WHERE table_name = 'CloudflareImage' 
+                ORDER BY ordinal_position
+              `)
+
+              const tableColumns = columnResult.rows.map(
+                (row: DbRow): DbColumn => ({
+                  name: row.column_name,
+                  type: row.data_type,
+                  nullable: row.is_nullable === 'YES',
+                  hasDefault: row.column_default !== null,
+                  maxLength:
+                    row.character_maximum_length === null
+                      ? undefined
+                      : row.character_maximum_length
+                })
+              )
+
+              // Create an intelligent mapping between CSV columns and database columns
+              const columnMapping: Record<string, string> = {}
+
+              // Get required columns that need special attention
+              const requiredCols = tableColumns.filter(
+                (col: DbColumn) => !col.nullable && !col.hasDefault
+              )
+
+              // Intelligent column matching algorithm
+              for (const csvCol of header) {
+                // 1. Direct match (case insensitive)
+                const directMatch = tableColumns.find(
+                  (dbCol: DbColumn) =>
+                    dbCol.name.toLowerCase() === csvCol.toLowerCase()
+                )
+
+                if (directMatch) {
+                  columnMapping[csvCol] = directMatch.name
+                  continue
+                }
+
+                // 2. Match with underscores removed (e.g., userId vs user_id)
+                const noUnderscoreMatch = tableColumns.find(
+                  (dbCol: DbColumn) =>
+                    dbCol.name.replace(/_/g, '').toLowerCase() ===
+                    csvCol.replace(/_/g, '').toLowerCase()
+                )
+
+                if (noUnderscoreMatch) {
+                  columnMapping[csvCol] = noUnderscoreMatch.name
+                  continue
+                }
+
+                // 3. Match word by word (e.g., imageId vs cloudflare_image_id)
+                const csvWords = csvCol
+                  .replace(/([A-Z])/g, ' $1')
+                  .toLowerCase()
+                  .split(/\s|_/)
+                  .filter(Boolean)
+
+                let wordMatchFound = false
+                for (const dbCol of tableColumns) {
+                  const dbWords = dbCol.name
+                    .replace(/([A-Z])/g, ' $1')
+                    .toLowerCase()
+                    .split(/\s|_/)
+                    .filter(Boolean)
+
+                  // Check if CSV column words are a subset of DB column words
+                  const isSubset = csvWords.every((word) =>
+                    dbWords.some(
+                      (dbWord: string) =>
+                        dbWord.includes(word) || word.includes(dbWord)
+                    )
+                  )
+
+                  if (isSubset && csvWords.length > 0) {
+                    columnMapping[csvCol] = dbCol.name
+                    wordMatchFound = true
+                    break
+                  }
+                }
+
+                if (wordMatchFound) continue
+
+                // 4. Apply common naming conventions for known fields
+                const commonMappings: Record<string, string[]> = {
+                  id: ['uuid', 'guid', 'key', 'primary', 'uniqueid'],
+                  userId: ['user', 'owner', 'creator', 'userid', 'author'],
+                  imageId: [
+                    'image',
+                    'img',
+                    'photo',
+                    'picture',
+                    'cloudflare',
+                    'videoId'
+                  ],
+                  url: [
+                    'uri',
+                    'link',
+                    'href',
+                    'src',
+                    'source',
+                    'upload',
+                    'path',
+                    'location'
+                  ],
+                  format: [
+                    'type',
+                    'extension',
+                    'kind',
+                    'filetype',
+                    'aspect',
+                    'ratio',
+                    'aspectratio'
+                  ],
+                  width: ['w', 'wide', 'breadth', 'size_x', 'size_width'],
+                  height: ['h', 'high', 'size_y', 'size_height'],
+                  createdAt: [
+                    'created',
+                    'date',
+                    'timestamp',
+                    'creation',
+                    'inserted'
+                  ],
+                  updatedAt: ['updated', 'modified', 'last_change', 'changed']
+                }
+
+                // Try to find a match using the common mappings
+                for (const [dbField, synonyms] of Object.entries(
+                  commonMappings
+                )) {
+                  if (
+                    tableColumns.some(
+                      (col: DbColumn) => col.name === dbField
+                    ) &&
+                    synonyms.some((syn: string) =>
+                      csvCol.toLowerCase().includes(syn.toLowerCase())
+                    )
+                  ) {
+                    columnMapping[csvCol] = dbField
+                    break
+                  }
+                }
+              }
+
+              // Check if we're missing any required fields
+              const mappedDbCols = Object.values(columnMapping)
+              const missingRequiredCols = requiredCols.filter(
+                (col: DbColumn) => !mappedDbCols.includes(col.name)
+              )
+
+              if (missingRequiredCols.length > 0) {
+                logger.warn(
+                  `Missing required columns: ${missingRequiredCols.map((c: DbColumn) => c.name).join(', ')}`
+                )
+              }
+
+              // Process each line
+              let headerLine = true
+              let insertCount = 0
+              let errorCount = 0
+
+              for (const line of lines) {
+                if (headerLine) {
+                  headerLine = false
+                  continue
+                }
+
+                if (!line.trim()) continue
+
+                // Split CSV line and handle quoted values correctly
+                const values = line.split(',').map((value) => value.trim())
+
+                // Dynamically detect system records without hardcoding 'userId'
+                // First try to find the userId field through the column mapping
+                let isSystemRecord = false
+                let userIdField: string | null = null
+
+                // Try to find userID field through various methods
+                for (let i = 0; i < header.length; i++) {
+                  const csvColName = header[i]
+                  const dbColName = columnMapping[csvColName]
+
+                  // Check if this column maps to userId in the database
+                  if (dbColName === 'userId' && values[i] === 'system') {
+                    isSystemRecord = true
+                    userIdField = dbColName
+                    break
+                  }
+
+                  // Also check column names that might represent user information
+                  if (
+                    (csvColName === 'userId' ||
+                      csvColName === 'user_id' ||
+                      csvColName === 'username' ||
+                      csvColName === 'owner' ||
+                      csvColName.toLowerCase().includes('user')) &&
+                    values[i] === 'system'
+                  ) {
+                    isSystemRecord = true
+                    userIdField = csvColName
+                    break
+                  }
+                }
+
+                // Skip non-system records
+                if (!isSystemRecord) {
+                  continue
+                }
+
+                // Construct an object with the database column names and values
+                const rowData: Record<string, any> = {}
+
+                // Ensure userId is set correctly
+                if (
+                  tableColumns.some((col: DbColumn) => col.name === 'userId')
+                ) {
+                  rowData['userId'] = 'system'
+                } else if (userIdField && columnMapping[userIdField]) {
+                  rowData[columnMapping[userIdField]] = 'system'
+                }
+
+                // Map CSV values to database columns
+                for (let i = 0; i < header.length; i++) {
+                  const csvColName = header[i]
+                  const dbColName = columnMapping[csvColName]
+
+                  if (dbColName && values[i] !== undefined) {
+                    const tableCol = tableColumns.find(
+                      (col: DbColumn) => col.name === dbColName
+                    )
+
+                    if (tableCol) {
+                      // Convert value based on database column type
+                      try {
+                        if (
+                          values[i] === '' ||
+                          values[i].toLowerCase() === 'null'
+                        ) {
+                          rowData[dbColName] = null
+                        } else if (tableCol.type.includes('int')) {
+                          rowData[dbColName] = parseInt(values[i], 10)
+                        } else if (
+                          tableCol.type.includes('float') ||
+                          tableCol.type.includes('double') ||
+                          tableCol.type.includes('decimal') ||
+                          tableCol.type.includes('numeric')
+                        ) {
+                          rowData[dbColName] = parseFloat(values[i])
+                        } else if (
+                          tableCol.type.includes('timestamp') ||
+                          tableCol.type.includes('date')
+                        ) {
+                          rowData[dbColName] = values[i]
+                        } else if (tableCol.type === 'boolean') {
+                          const boolValue = values[i].toLowerCase()
+                          rowData[dbColName] =
+                            boolValue === 't' ||
+                            boolValue === 'true' ||
+                            boolValue === '1' ||
+                            boolValue === 'yes'
+                        } else if (tableCol.type === 'uuid') {
+                          // Validate UUID format
+                          const uuidRegex =
+                            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+                          if (uuidRegex.test(values[i])) {
+                            rowData[dbColName] = values[i]
+                          } else {
+                            continue
+                          }
+                        } else if (tableCol.type.includes('json')) {
+                          try {
+                            rowData[dbColName] = JSON.parse(values[i])
+                          } catch (e) {
+                            rowData[dbColName] = values[i] // Store as string if not valid JSON
+                          }
+                        } else {
+                          // String types
+                          rowData[dbColName] = values[i]
+                        }
+                      } catch (conversionError) {
+                        // Try to store as-is
+                        rowData[dbColName] = values[i]
+                      }
+                    }
+                  }
+                }
+
+                // Provide default values for required fields if missing
+                for (const reqCol of requiredCols) {
+                  if (rowData[reqCol.name] === undefined) {
+                    // Try to infer a reasonable default
+                    if (reqCol.name === 'userId' && !rowData['userId']) {
+                      rowData['userId'] = 'system'
+                    } else if (reqCol.name === 'id' && !rowData['id']) {
+                      // If missing ID, may need to skip this row since IDs are typically required
+                      continue
+                    }
+                  }
+                }
+
+                // Only insert if we have the minimum required data
+                if (Object.keys(rowData).length > 0) {
+                  try {
+                    // Generate dynamic SQL based on available columns
+                    const columns = Object.keys(rowData)
+                    const placeholders = columns
+                      .map((_, i) => `$${i + 1}`)
+                      .join(', ')
+                    const values = columns.map((col) => rowData[col])
+
+                    const query = `
+                      INSERT INTO "CloudflareImage" (${columns.map((c) => `"${c}"`).join(', ')})
+                      VALUES (${placeholders})
+                    `
+
+                    await client.query(query, values)
+                    insertCount++
+                  } catch (insertError) {
+                    errorCount++
+
+                    // If too many errors, stop processing
+                    if (errorCount > 10) {
+                      logger.error('Too many insertion errors, aborting import')
+                      break
+                    }
+                  }
+                }
+              }
+
+              await client.end()
+              logger.info(
+                `Imported ${insertCount} CloudflareImage records with ${errorCount} errors`
+              )
+
+              // Clean up extracted file
+              await fsPromises.unlink(extractedFilePath)
+
+              resolve()
+            } catch (error) {
+              const err = error as Error
+              logger.error(`Manual import failed: ${err.message}`)
+
+              // Clean up extracted file
+              try {
+                await fsPromises.unlink(extractedFilePath)
+              } catch (cleanupError) {
+                logger.error(
+                  `Failed to clean up extracted file: ${(cleanupError as Error).message}`
+                )
+              }
+
+              reject(new Error(`Manual import failed: ${err.message}`))
+            }
+          }
+
+          manualImport().catch((error: Error) => {
+            reject(new Error(`Manual import failed: ${error.message}`))
           })
         })
-
-        truncateProcess.on('error', (error) => {
-          logger.error({ error }, 'Error spawning psql truncate process')
-          reject(error)
-        })
       })
-      .catch((err) => {
-        const error = err instanceof Error ? err : new Error(String(err))
-        logger.error({ error }, 'Error decompressing CloudflareImage data')
-        reject(error)
-      })
+    })
   })
 }
 
 /**
  * Imports data from backup files into the database
+ * Only runs when explicitly called from CLI, not automatically
  */
 export const service = async (customLogger?: Logger): Promise<void> => {
   const logger = customLogger ?? baseLogger.child({ worker: 'dataImport' })

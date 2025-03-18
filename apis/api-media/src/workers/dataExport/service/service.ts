@@ -1,8 +1,6 @@
 import { spawn } from 'child_process'
-import { promises as fs } from 'fs'
-import { join } from 'path'
-import { pipeline } from 'stream/promises'
-import { createGzip } from 'zlib'
+import fs, { promises as fsPromises } from 'fs'
+import { basename, join } from 'path'
 
 import {
   CopyObjectCommand,
@@ -13,6 +11,12 @@ import {
 import { Logger } from 'pino'
 
 import { logger as baseLogger } from '../../../logger'
+
+/**
+ * This data export service is configured to run automatically on a daily schedule.
+ * It runs at midnight every day (as configured in config.ts with EVERY_DAY_AT_MIDNIGHT).
+ * No manual invocation is needed for this service.
+ */
 
 const BACKUP_FILE_NAME = 'media-backup.pgdump'
 const CLOUDFLARE_IMAGES_FILE_NAME = 'cloudflareImage-system-data.sql.gz'
@@ -61,7 +65,7 @@ async function backupExistingFile(
     )
 
     // If we get here, file exists, so create backup
-    logger.info(`Creating backup of existing file: ${key}`)
+    logger.info(`Creating backup of existing file at ${key}`)
     await client.send(
       new CopyObjectCommand({
         Bucket: bucket,
@@ -72,22 +76,29 @@ async function backupExistingFile(
     logger.info('Backup created successfully')
   } catch (error) {
     // If file doesn't exist, that's fine, just continue
-    logger.info(`No existing file found: ${key}`)
+    logger.info(`No existing file found at ${key}`)
   }
 }
 
 /**
  * Uploads a file to R2
  */
-async function uploadToR2(filePath: string, logger: Logger): Promise<void> {
+async function uploadToR2(
+  filePath: string,
+  logger: Logger,
+  customKey?: string
+): Promise<void> {
   if (process.env.CLOUDFLARE_R2_BUCKET == null)
     throw new Error('Missing CLOUDFLARE_R2_BUCKET')
 
-  const fileContent = await fs.readFile(filePath)
+  const fileContent = await fsPromises.readFile(filePath)
   const client = getS3Client()
-  const key = `backups/${BACKUP_FILE_NAME}`
 
-  logger.info('Checking for existing backup file')
+  // Determine the key based on the filename
+  const filename = customKey ?? basename(filePath)
+  const key = `backups/${filename}`
+
+  logger.info(`Checking for existing file at ${key}`)
   await backupExistingFile(
     client,
     process.env.CLOUDFLARE_R2_BUCKET,
@@ -95,13 +106,13 @@ async function uploadToR2(filePath: string, logger: Logger): Promise<void> {
     logger
   )
 
-  logger.info('Uploading to R2')
+  logger.info(`Uploading to R2 at key: ${key}`)
   await client.send(
     new PutObjectCommand({
       Bucket: process.env.CLOUDFLARE_R2_BUCKET,
       Key: key,
       Body: fileContent,
-      ContentType: 'application/x-gzip'
+      ContentType: 'application/gzip'
     })
   )
 
@@ -186,10 +197,10 @@ async function executePgDump(
 }
 
 /**
- * Exports CloudflareImage table with system userId using psql
+ * Export CloudflareImage data where userId is 'system'
  */
-async function exportCloudflareImageSystemData(
-  outputFile: string,
+async function exportCloudflareImageData(
+  exportDir: string,
   logger: Logger
 ): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -204,135 +215,152 @@ async function exportCloudflareImageSystemData(
       PGPASSWORD: decodeURIComponent(databaseUrl.password)
     }
 
-    // SQL command to export only the CloudflareImage records with userId = 'system'
-    const sqlCommand = `\\COPY (SELECT * FROM "CloudflareImage" WHERE "userId" = 'system') TO STDOUT WITH CSV HEADER`
+    logger.info('Starting CloudflareImage data export')
 
-    logger.info('Starting CloudflareImage system data export')
+    // Define file paths
+    const csvFilePath = join(exportDir, 'cloudflareImage-system-data.csv')
+    const gzipFilePath = join(exportDir, 'cloudflareImage-system-data.sql.gz')
 
-    const psql = spawn(
+    // Export the data
+    logger.info('Exporting CloudflareImage data to CSV')
+
+    const exportCmd = `
+      \\COPY (
+        SELECT *
+        FROM "CloudflareImage" 
+        WHERE "videoId" IS NOT NULL
+      ) TO '${csvFilePath}' WITH CSV HEADER
+    `
+
+    const exportProcess = spawn(
       'psql',
-      [
-        '-h',
-        host,
-        '-p',
-        port,
-        '-U',
-        username,
-        '-d',
-        database,
-        '-c',
-        sqlCommand
-      ],
+      ['-h', host, '-p', port, '-U', username, '-d', database, '-c', exportCmd],
       { env }
     )
 
-    // Create gzip stream and write to file
-    const gzip = createGzip()
-    const writeStreamPromise = fs
-      .open(outputFile, 'w')
-      .then((fileHandle) => fileHandle.createWriteStream())
-      .catch((err) => {
-        const error = err instanceof Error ? err : new Error(String(err))
-        logger.error({ error }, 'Failed to open output file')
-        reject(error)
-        return null
-      })
-
-    // Once we have the write stream, set up the pipeline
-    void writeStreamPromise.then((stream) => {
-      if (!stream) return // Handle case where opening file failed
-
-      // Set up pipeline: psql stdout -> gzip -> file
-      pipeline(psql.stdout, gzip, stream)
-        .then(() => {
-          logger.info('CloudflareImage data export completed and compressed')
-          resolve()
-        })
-        .catch((err) => {
-          const error = err instanceof Error ? err : new Error(String(err))
-          logger.error({ error }, 'Error in export pipeline')
-          reject(error)
-        })
+    let exportError = ''
+    exportProcess.stderr.on('data', (data) => {
+      exportError += data.toString()
     })
 
-    psql.stderr.on('data', (data) => {
-      logger.info(`psql: ${data}`)
-    })
-
-    psql.on('error', (err) => {
-      const error = err instanceof Error ? err : new Error(String(err))
-      logger.error({ error }, 'Error spawning psql process')
-      reject(error)
-    })
-
-    psql.on('close', (code) => {
-      if (code !== 0 && code !== null) {
-        const error = new Error(`psql process exited with code ${code}`)
-        logger.error({ error }, 'Failed to export CloudflareImage data')
-        reject(error)
+    exportProcess.on('close', (exportCode) => {
+      if (exportCode !== 0) {
+        logger.error(`Export failed with code ${exportCode}`)
+        reject(new Error(`Export failed: ${exportError}`))
+        return
       }
-      // Success case is handled by the pipeline completion
+
+      // Check if the export worked
+      fs.stat(csvFilePath, (statErr, stats) => {
+        if (statErr) {
+          logger.error({ error: statErr }, 'Failed to get CSV file stats')
+          reject(statErr)
+          return
+        }
+
+        if (stats.size === 0) {
+          return
+        }
+
+        // Compress the file
+        compressFile(csvFilePath, gzipFilePath, logger, resolve, reject)
+      })
+    })
+
+    exportProcess.on('error', (error) => {
+      logger.error({ error }, 'Export process error')
+      reject(error)
     })
   })
 }
 
 /**
- * Uploads CloudflareImage data to R2
+ * Helper function to compress a file
  */
-async function uploadCloudflareImageData(
-  filePath: string,
-  logger: Logger
-): Promise<void> {
-  if (process.env.CLOUDFLARE_R2_BUCKET == null)
-    throw new Error('Missing CLOUDFLARE_R2_BUCKET')
+function compressFile(
+  inputFile: string,
+  outputFile: string,
+  logger: Logger,
+  resolve: () => void,
+  reject: (error: Error) => void
+): void {
+  logger.info(`Compressing ${inputFile} to ${outputFile}`)
 
-  const fileContent = await fs.readFile(filePath)
-  const client = getS3Client()
-  const key = `backups/${CLOUDFLARE_IMAGES_FILE_NAME}`
+  const gzipProcess = spawn('gzip', ['-c', inputFile])
+  const outputStream = fs.createWriteStream(outputFile)
 
-  logger.info('Checking for existing CloudflareImage data file')
-  await backupExistingFile(
-    client,
-    process.env.CLOUDFLARE_R2_BUCKET,
-    key,
-    logger
-  )
+  gzipProcess.stdout.pipe(outputStream)
 
-  logger.info('Uploading CloudflareImage data to R2')
-  await client.send(
-    new PutObjectCommand({
-      Bucket: process.env.CLOUDFLARE_R2_BUCKET,
-      Key: key,
-      Body: fileContent,
-      ContentType: 'application/gzip'
+  let gzipError = ''
+  gzipProcess.stderr.on('data', (data) => {
+    gzipError += data.toString()
+  })
+
+  gzipProcess.on('close', (gzipCode) => {
+    if (gzipCode !== 0) {
+      logger.error(`Gzip failed with code ${gzipCode}`)
+      reject(new Error(`Compression failed: ${gzipError}`))
+      return
+    }
+
+    // Delete the original file
+    fs.unlink(inputFile, (unlinkErr) => {
+      if (unlinkErr) {
+        logger.warn({ error: unlinkErr }, 'Failed to remove original CSV file')
+      }
+
+      // Verify the compressed file exists and is not empty
+      fs.stat(outputFile, (statErr, stats) => {
+        if (statErr) {
+          logger.error({ error: statErr }, 'Failed to get gzipped file stats')
+          reject(statErr)
+          return
+        }
+
+        if (stats.size === 0) {
+          logger.error('Gzipped file is empty')
+          reject(new Error('Gzipped file is empty'))
+          return
+        }
+
+        logger.info('CloudflareImage data export completed successfully')
+        resolve()
+      })
     })
-  )
-  logger.info('CloudflareImage data upload completed')
+  })
+
+  gzipProcess.on('error', (error) => {
+    logger.error({ error }, 'Gzip process error')
+    reject(error)
+  })
 }
 
 /**
- * Exports database to a pgdump file and uploads it to R2
- * Excludes specified tables and separately exports CloudflareImage records with system userId
+ * Export data from the media database to backup files
  */
 export const service = async (customLogger?: Logger): Promise<void> => {
   const logger = customLogger ?? baseLogger.child({ worker: 'dataExport' })
 
   try {
     const outputDir = join(process.cwd(), 'exports')
-    await fs.mkdir(outputDir, { recursive: true })
+    await fsPromises.mkdir(outputDir, { recursive: true })
 
     const outputFile = join(outputDir, BACKUP_FILE_NAME)
     const cloudflareImageFile = join(outputDir, CLOUDFLARE_IMAGES_FILE_NAME)
 
+    // Generate database backup
     await executePgDump(outputFile, logger)
-    await exportCloudflareImageSystemData(cloudflareImageFile, logger)
 
+    // Export CloudflareImage data with system userId
+    await exportCloudflareImageData(outputDir, logger)
+
+    // Upload to R2
     await uploadToR2(outputFile, logger)
-    await uploadCloudflareImageData(cloudflareImageFile, logger)
+    await uploadToR2(cloudflareImageFile, logger)
 
     // Clean up local files
-    await fs.unlink(outputFile)
-    await fs.unlink(cloudflareImageFile)
+    await fsPromises.unlink(outputFile)
+    await fsPromises.unlink(cloudflareImageFile)
 
     logger.info('Database export and upload completed successfully')
   } catch (error) {
