@@ -18,7 +18,6 @@ export const dynamic = 'force-dynamic'
 const app = new OpenAPIHono().basePath('/v2')
 app.use(etag())
 
-// Add error handling middleware
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
     return c.json(
