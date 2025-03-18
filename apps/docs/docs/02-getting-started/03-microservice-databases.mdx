@@ -31,18 +31,18 @@ title: 3. Microservice Databases
 Microservices typically make use of a variety of database stores. The following command will create the required databases, migrate them to the latest state, and fill them with relevant data.
 
 ```shell
-nx run-many --all --target=prisma-generate --parallel=1
+nx run-many --target=prisma-generate --parallel=1
 ```
 
 ```shell
-nx run-many --all --target=prisma-migrate
+nx run-many --target=prisma-migrate
 ```
 
 ```shell
-nx run-many --all --target=prisma-seed
+nx run-many --target=prisma-seed
 ```
 
-To ingest data from seeds & bigquery, you will need to start the ingest job. In one terminal, run:
+To import data for your development environment, you will need to start the data-import job. In one terminal, run:
 
 ```shell
 nf start
@@ -51,13 +51,7 @@ nf start
 In a separate terminal, run:
 
 ```shell
-nx data-import api-languages
-```
-
-Once that has completed, run:
-
-```shell
-nx queue-ingest api-media
+nx run-many --target=data-import
 ```
 
 ## Common Issues
@@ -67,7 +61,7 @@ nx queue-ingest api-media
 If prisma-generate is failing, try running:
 
 ```shell
-nx run-many -t prisma-reset --all
+nx run-many --target=prisma-reset
 ```
 
 #### command failed because of mmdc

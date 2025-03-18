@@ -191,6 +191,12 @@
       "options": {
         "command": "npm run ts-node apis/api-media/src/workers/cli.ts data-export"
       }
+    },
+    "data-import": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts data-import"
+      }
     }
   }
 }

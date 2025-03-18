@@ -78,6 +78,14 @@ async function main(): Promise<void> {
       './dataExport'
     )
   )
+  if (process.env.DB_SEED_PATH) {
+    run(
+      await import(
+        /* webpackChunkName: "data-import" */
+        './dataImport'
+      )
+    )
+  }
   run(
     await import(
       /* webpackChunkName: "big-query" */
