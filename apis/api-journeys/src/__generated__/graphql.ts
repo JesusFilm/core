@@ -853,6 +853,24 @@ export type JourneyCreateInput = {
   title: Scalars['String']['input'];
 };
 
+export type JourneyEventsExportLog = {
+  __typename?: 'JourneyEventsExportLog';
+  createdAt: Scalars['Date']['output'];
+  dateRangeEnd?: Maybe<Scalars['Date']['output']>;
+  dateRangeStart?: Maybe<Scalars['Date']['output']>;
+  eventsFilter: Array<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  userId: Scalars['ID']['output'];
+};
+
+export type JourneyEventsExportLogInput = {
+  dateRangeEnd?: InputMaybe<Scalars['String']['input']>;
+  dateRangeStart?: InputMaybe<Scalars['String']['input']>;
+  eventsFilter?: InputMaybe<Array<Scalars['String']['input']>>;
+  journeyId: Scalars['ID']['input'];
+};
+
 export enum JourneyMenuButtonIcon {
   ChevronDown = 'chevronDown',
   Ellipsis = 'ellipsis',
@@ -1258,6 +1276,7 @@ export type Mutation = {
   createCloudflareUploadByUrl: CloudflareImage;
   /** @deprecated use createCloudflareImageFromPrompt */
   createImageBySegmindPrompt: CloudflareImage;
+  createJourneyEventsExportLog: JourneyEventsExportLog;
   createMuxVideoUploadByFile: MuxVideo;
   createMuxVideoUploadByUrl: MuxVideo;
   createVerificationRequest?: Maybe<Scalars['Boolean']['output']>;
@@ -1562,6 +1581,11 @@ export type MutationCreateCloudflareUploadByUrlArgs = {
 export type MutationCreateImageBySegmindPromptArgs = {
   model: SegmindModel;
   prompt: Scalars['String']['input'];
+};
+
+
+export type MutationCreateJourneyEventsExportLogArgs = {
+  input: JourneyEventsExportLogInput;
 };
 
 
