@@ -92,6 +92,11 @@ A date string, such as 2007-12-03, compliant with the `full-date` format outline
 """
 scalar Date @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA) 
 
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
+"""
+scalar DateTimeISO @join__type(graph: API_JOURNEYS_MODERN) 
+
 type Error implements BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  @join__implements(graph: API_ANALYTICS, interface: "BaseError")  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
   message: String
 }
@@ -2197,8 +2202,8 @@ type JourneyEventsExportLog @join__type(graph: API_JOURNEYS_MODERN)  {
   userId: ID!
   journeyId: ID!
   eventsFilter: [String!]!
-  dateRangeStart: Date
-  dateRangeEnd: Date
+  dateRangeStart: DateTimeISO
+  dateRangeEnd: DateTimeISO
 }
 
 type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
