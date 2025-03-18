@@ -123,9 +123,9 @@ describe('video', () => {
           osisId: 'Gen',
           bibleBookId: 'bibleBookId',
           chapterStart: 1,
-          chapterEnd: null,
+          chapterEnd: -1,
           verseStart: 1,
-          verseEnd: null,
+          verseEnd: -1,
           videoId: 'videoId',
           order: 0
         }
