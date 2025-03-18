@@ -1,4 +1,5 @@
-import { ReactElement } from 'react'
+import Image from 'next/image'
+import { ReactElement, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
@@ -13,18 +14,28 @@ import { VideoSection } from '../VideoSection'
 
 import { ContainerHero } from './ContainerHero'
 
+// Usually Series or Collection Videos
 export function CollectionPage(): ReactElement {
+  const [shareDialog, setShareDialog] = useState(false)
+
+  const handleOpenDialog = (): void => {
+    setShareDialog(true)
+  }
+
   return (
     <VideoMuteProvider initialMuted={true}>
-      <div className="bg-stone-900 text-white min-h-screen font-sans">
-        <PageWrapper
-          hero={<ContainerHero />}
-          headerThemeMode={ThemeMode.dark}
-          hideHeaderSpacer
+      <PageWrapper
+        hero={<ContainerHero />}
+        headerThemeMode={ThemeMode.dark}
+        hideHeaderSpacer
+      >
+        <div
+          className="bg-stone-900 text-white min-h-screen font-sans"
+          data-testid="CollectionPage"
         >
           <div
             className="max-w-[1920px] mx-auto z-1 border-t border-stone-500/30"
-            data-testid="CollectionPage"
+            data-testid="CollectionPageBlurFilter"
             style={{
               backgroundColor: 'rgba(0, 0, 0, 0.1)',
               backdropFilter: 'brightness(.6) blur(40px)'
@@ -38,7 +49,8 @@ export function CollectionPage(): ReactElement {
               >
                 <SwiperSlide className="max-w-[200px] pl-6">
                   <div className="relative beveled h-[240px] flex flex-col justify-end w-full bg-[#1A1815] rounded-lg overflow-hidden">
-                    <img
+                    <Image
+                      fill
                       src="https://images.unsplash.com/photo-1521106581851-da5b6457f674?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGVhc3RlcnxlbnwwfHwwfHx8MA%3D%3D"
                       alt="Finding Light: A Journey Through Depression"
                       className="absolute top-0 w-full h-[150px] object-cover overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_50%,transparent_100%)] [mask-size:cover]"
@@ -1172,8 +1184,8 @@ export function CollectionPage(): ReactElement {
               />
             </div>
           </div>
-        </PageWrapper>
-      </div>
+        </div>
+      </PageWrapper>
     </VideoMuteProvider>
   )
 }

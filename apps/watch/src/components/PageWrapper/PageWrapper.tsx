@@ -29,7 +29,7 @@ export function PageWrapper({
   headerThemeMode
 }: PageWrapperProps): ReactElement {
   return (
-    <div>
+    <Div100vh>
       {hideHeader !== true && (
         <Header themeMode={headerThemeMode} hideSpacer={hideHeaderSpacer} />
       )}
@@ -47,11 +47,9 @@ export function PageWrapper({
             {hero}
           </ThemeProvider>
         </Container>
-        <Box sx={{ flexGrow: 1 }} className="z-1">
-          {children}
-        </Box>
+        <Box sx={{ flexGrow: 1 }}>{children}</Box>
         <Footer />
       </Stack>
-    </div>
+    </Div100vh>
   )
 }

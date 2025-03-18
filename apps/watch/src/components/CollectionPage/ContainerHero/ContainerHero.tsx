@@ -84,7 +84,8 @@ export function ContainerHero(): ReactElement {
         display: 'flex',
         alignItems: 'flex-end',
         position: 'relative',
-        transition: 'height 0.3s ease-out'
+        transition: 'height 0.3s ease-out',
+        backgroundColor: 'background.default'
       }}
       data-testid="ContainerHero"
     >
@@ -233,7 +234,7 @@ export function ContainerHero(): ReactElement {
               variant="h5"
               sx={{
                 fontSize: '1.125rem',
-                color: 'rgba(248, 113, 113, 0.8)',
+                color: 'primary.main',
                 textWrap: 'balance',
                 zIndex: 2,
                 marginTop: '2rem'
