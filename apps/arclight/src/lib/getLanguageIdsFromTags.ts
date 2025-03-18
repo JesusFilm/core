@@ -77,7 +77,7 @@ export async function getLanguageIdsFromTags(
   if (!metadataLanguageTag) {
     return new HTTPException(400, {
       message: JSON.stringify({
-        message: `Could not find a suitable language tag from the provided tags: ${metadataLanguageTags.join(', ')}`,
+        message: `Not acceptable metadata language tag(s): ${metadataLanguageTags.join(', ')}`,
         logref: 400
       })
     })
