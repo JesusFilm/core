@@ -73,30 +73,15 @@ export async function getLanguageIdsFromTags(
     }
   }
 
-  const metadataLanguageTag = matchLocales(metadataLanguageTags)
-  if (!metadataLanguageTag) {
-    return new HTTPException(400, {
-      message: JSON.stringify({
-        message: `Not acceptable metadata language tag(s): ${metadataLanguageTags.join(', ')}`,
-        logref: 400
-      })
-    })
-  }
+  // Try to find a matching locale, but don't error if none found
+  const metadataLanguageTag =
+    matchLocales(metadataLanguageTags) ?? metadataLanguageTags[0]
 
-  const metadataLanguageId = await fetchLanguageId(metadataLanguageTag)
-  if (!metadataLanguageId) {
-    return new HTTPException(400, {
-      message: JSON.stringify({
-        message: `Parameter "metadataLanguageTags" of value "${metadataLanguageTags.join(', ')}" violated a constraint "Not acceptable metadata language tag(s): ${metadataLanguageTags.join(', ')}"`,
-        logref: 400
-      })
-    })
-  }
+  // Try to get language ID, fallback to default if not found
+  const metadataLanguageId =
+    (await fetchLanguageId(metadataLanguageTag)) || DEFAULT_LANGUAGE_ID
 
-  const fallbackLanguageId =
-    metadataLanguageTags.length > 1
-      ? await fetchLanguageId(metadataLanguageTag)
-      : DEFAULT_LANGUAGE_ID
+  const fallbackLanguageId = DEFAULT_LANGUAGE_ID
 
   return { metadataLanguageId, fallbackLanguageId }
 }
