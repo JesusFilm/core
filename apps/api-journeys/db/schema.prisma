@@ -98,6 +98,7 @@ enum TextResponseType {
   freeForm
   name
   email
+  phone
 }
 
 model ChatButton {
@@ -464,6 +465,8 @@ model Block {
   parentBlockId           String?
   parentOrder             Int?
   label                   String?
+  placeholder             String?
+  required                Boolean?             @default(false)
   variant                 String?
   color                   String?
   size                    String?
