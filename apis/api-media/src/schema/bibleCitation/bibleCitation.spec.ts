@@ -63,9 +63,9 @@ describe('BibleCitation', () => {
           osisId: 'Gen',
           bibleBook: { id: 'bibleBookId' },
           chapterStart: 1,
-          chapterEnd: -1,
+          chapterEnd: null,
           verseStart: 1,
-          verseEnd: -1,
+          verseEnd: null,
           video: { id: 'videoId' }
         }
       ])

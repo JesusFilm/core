@@ -7,9 +7,18 @@ builder.prismaObject('BibleCitation', {
     osisId: t.exposeString('osisId', { nullable: false }),
     bibleBook: t.relation('bibleBook', { nullable: false }),
     chapterStart: t.exposeInt('chapterStart', { nullable: false }),
-    chapterEnd: t.exposeInt('chapterEnd', { nullable: false }),
-    verseStart: t.exposeInt('verseStart', { nullable: false }),
-    verseEnd: t.exposeInt('verseEnd', { nullable: false }),
+    chapterEnd: t.int({
+      nullable: true,
+      resolve: (parent) => (parent.chapterEnd === -1 ? null : parent.chapterEnd)
+    }),
+    verseStart: t.int({
+      nullable: true,
+      resolve: (parent) => (parent.verseStart === -1 ? null : parent.verseStart)
+    }),
+    verseEnd: t.int({
+      nullable: true,
+      resolve: (parent) => (parent.verseEnd === -1 ? null : parent.verseEnd)
+    }),
     video: t.relation('video', { nullable: false })
   })
 })
