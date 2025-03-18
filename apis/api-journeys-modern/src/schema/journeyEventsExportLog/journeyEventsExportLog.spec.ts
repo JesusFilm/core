@@ -1,7 +1,10 @@
+import { Prisma } from '.prisma/api-journeys-modern-client'
+
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
-import { Journey } from '../../workers/email/service/prisma.types'
+
+type Journey = Prisma.JourneyGetPayload<{}>
 
 describe('journeyEventsExportLog', () => {
   const authClient = getClient({
