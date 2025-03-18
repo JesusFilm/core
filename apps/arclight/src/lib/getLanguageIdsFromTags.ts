@@ -73,13 +73,16 @@ export async function getLanguageIdsFromTags(
     }
   }
 
-  // Try to find a matching locale, but don't error if none found
   const metadataLanguageTag =
     matchLocales(metadataLanguageTags) ?? metadataLanguageTags[0]
 
-  // Try to get language ID, fallback to default if not found
-  const metadataLanguageId =
-    (await fetchLanguageId(metadataLanguageTag)) || DEFAULT_LANGUAGE_ID
+  const metadataLanguageId = await fetchLanguageId(metadataLanguageTag)
+
+  if (!metadataLanguageId) {
+    throw new HTTPException(400, {
+      message: `Not acceptable metadata language tag(s): ${metadataLanguageTag}`
+    })
+  }
 
   const fallbackLanguageId = DEFAULT_LANGUAGE_ID
 
