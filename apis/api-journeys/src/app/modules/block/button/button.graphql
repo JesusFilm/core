@@ -28,6 +28,7 @@ type ButtonBlock implements Block {
   startIconId: ID
   endIconId: ID
   action: Action
+  submitEnabled: Boolean
 }
 
 input ButtonBlockCreateInput {
@@ -38,6 +39,7 @@ input ButtonBlockCreateInput {
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
+  submitEnabled: Boolean
 }
 
 input ButtonBlockUpdateInput {
@@ -48,6 +50,7 @@ input ButtonBlockUpdateInput {
   size: ButtonSize
   startIconId: ID
   endIconId: ID
+  submitEnabled: Boolean
 }
 
 extend type Mutation {

@@ -494,6 +494,7 @@ model Block {
   blurhash                String?
   submitIconId            String?
   submitLabel             String?
+  submitEnabled           Boolean?
   nextBlockId             String?
   locked                  Boolean?
   hint                    String?
