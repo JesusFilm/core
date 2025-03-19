@@ -590,6 +590,7 @@ type ButtonBlock implements Block {
   startIconId: ID
   endIconId: ID
   action: Action
+  submitEnabled: Boolean
 }
 
 input ButtonBlockCreateInput {
@@ -610,6 +611,7 @@ input ButtonBlockUpdateInput {
   size: ButtonSize
   startIconId: ID
   endIconId: ID
+  submitEnabled: Boolean
 }
 
 type CardBlock implements Block {
