@@ -1,42 +1,45 @@
 import { spawn } from 'child_process'
-import fs, { promises as fsPromises } from 'fs'
+import fs, { createReadStream, promises as fsPromises } from 'fs'
 import { join } from 'path'
-import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
+import { createGunzip } from 'zlib'
 
 import { Logger } from 'pino'
 
 import { prisma } from '../../../lib/prisma'
 import { logger as baseLogger } from '../../../logger'
 
+const GZIPPED_BACKUP_FILE_NAME = 'languages-backup.sql.gz'
+const BACKUP_FILE_NAME = 'languages-backup.sql'
+
 /**
- * Downloads a file from a URL and saves it locally
+ * Decompresses a gzipped file
  */
-async function downloadFile(
-  url: string,
-  outputPath: string,
+async function decompressFile(
+  inputFile: string,
+  outputFile: string,
   logger: Logger
 ): Promise<void> {
-  logger.info('Downloading database file')
+  logger.info('Decompressing gzipped file')
 
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error(`Failed to download file: ${response.statusText}`)
+  try {
+    const source = fs.createReadStream(inputFile)
+    const gunzip = createGunzip()
+    const destination = fs.createWriteStream(outputFile)
+
+    await pipeline(source, gunzip, destination)
+
+    logger.info('File decompression completed')
+  } catch (error) {
+    logger.error({ error }, 'Error decompressing file')
+    throw error
   }
-
-  const fileStream = fs.createWriteStream(outputPath)
-  await pipeline(Readable.fromWeb(response.body as any), fileStream)
-
-  logger.info('Download completed')
 }
 
 /**
- * Executes pg_restore command to restore a database backup
+ * Executes psql command to restore a database from SQL file
  */
-async function executePgRestore(
-  filePath: string,
-  logger: Logger
-): Promise<void> {
+async function executePsql(filePath: string, logger: Logger): Promise<void> {
   return new Promise((resolve, reject) => {
     const databaseUrl = new URL(process.env.PG_DATABASE_URL_LANGUAGES ?? '')
     const host = databaseUrl.hostname
@@ -46,7 +49,7 @@ async function executePgRestore(
 
     const env = {
       ...process.env,
-      PGPASSWORD: databaseUrl.password
+      PGPASSWORD: decodeURIComponent(databaseUrl.password)
     }
 
     const args = [
@@ -58,57 +61,61 @@ async function executePgRestore(
       username,
       '-d',
       database,
-      '--clean',
-      '--if-exists',
-      '--no-owner',
-      '--no-privileges',
+      '-v',
+      'ON_ERROR_STOP=1',
       '--single-transaction',
+      '-f',
       filePath
     ]
 
-    logger.info('Starting database restore')
+    logger.info('Starting database restore with psql')
 
-    const restore = spawn('pg_restore', args, { env })
+    const psql = spawn('psql', args, { env })
 
-    restore.stderr.on('data', (data) => {
-      logger.info(`pg_restore: ${data}`)
+    psql.stderr.on('data', (data) => {
+      logger.info(`psql: ${data}`)
     })
 
-    restore.on('close', (code) => {
+    psql.on('close', (code) => {
       if (code === 0) {
         resolve()
       } else {
-        const error = new Error(`pg_restore process exited with code ${code}`)
+        const error = new Error(`psql process exited with code ${code}`)
         logger.error({ error }, 'Failed to restore database')
         reject(error)
       }
     })
 
-    restore.on('error', (error) => {
-      logger.error({ error }, 'Error spawning pg_restore process')
+    psql.on('error', (error) => {
+      logger.error({ error }, 'Error spawning psql process')
       reject(error)
     })
   })
 }
 
 /**
- * Imports data from a pgdump file into the database
+ * Imports data from a gzipped SQL file into the database
  */
 export const service = async (customLogger?: Logger): Promise<void> => {
   const logger = customLogger ?? baseLogger.child({ worker: 'dataImport' })
 
   try {
-    if (!process.env.DB_SEED_URL) {
-      throw new Error('DB_SEED_URL environment variable is not set')
+    if (!process.env.DB_SEED_PATH) {
+      throw new Error('DB_SEED_PATH environment variable is not set')
     }
+
+    const seedPath = process.env.DB_SEED_PATH
+    logger.info(`Using SQL backup from path: ${seedPath}`)
 
     const tempDir = join(process.cwd(), 'imports')
     await fsPromises.mkdir(tempDir, { recursive: true })
 
-    const fileToImport = join(tempDir, 'languages-backup.pgdump')
-    await downloadFile(process.env.DB_SEED_URL, fileToImport, logger)
+    // Copy and decompress the SQL file
+    const sqlFile = join(tempDir, BACKUP_FILE_NAME)
+    await decompressFile(seedPath, sqlFile, logger)
 
-    await executePgRestore(fileToImport, logger)
+    // Import the SQL file using psql
+    await executePsql(sqlFile, logger)
 
     // Update import times
     await prisma.importTimes.upsert({
@@ -117,8 +124,8 @@ export const service = async (customLogger?: Logger): Promise<void> => {
       create: { modelName: 'dataImport', lastImport: new Date() }
     })
 
-    // Clean up downloaded file
-    await fsPromises.unlink(fileToImport)
+    // Clean up temporary file
+    await fsPromises.unlink(sqlFile)
 
     logger.info('Database restore completed successfully')
   } catch (error) {
