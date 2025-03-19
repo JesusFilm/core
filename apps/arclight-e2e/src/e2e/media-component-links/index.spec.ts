@@ -14,7 +14,7 @@ const testCases = {
   urduContent: {
     params: {
       ids: ['1_jf-0-0', '2_0-ConsideringChristmas'],
-      metadataLanguageTags: ['ur']
+      metadataLanguageTags: ['ar']
     }
   }
 }
@@ -90,8 +90,7 @@ test.describe('media component links', () => {
     )
   })
 
-  // TODO: Waiting on crowdin translations in stage
-  test.fixme('verify Urdu content filtering', async ({ request }) => {
+  test('verify Urdu content filtering', async ({ request }) => {
     const response = await getMediaComponentLinks(
       request,
       testCases.urduContent
@@ -101,7 +100,7 @@ test.describe('media component links', () => {
     const data = await response.json()
     const links = data._embedded.mediaComponentsLinks
 
-    // Should only return JF content for Urdu
+    // Should only return JF content for Arabic
     expect(links).toHaveLength(1)
     expect(links[0].mediaComponentId).toBe('1_jf-0-0')
   })
