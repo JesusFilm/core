@@ -35,9 +35,9 @@ describe('BibleCitation', () => {
           bibleBookId: 'bibleBookId',
           bibleBook: { id: 'bibleBookId' },
           chapterStart: 1,
-          chapterEnd: null,
+          chapterEnd: -1,
           verseStart: 1,
-          verseEnd: null,
+          verseEnd: -1,
           videoId: 'videoId',
           video: { id: 'videoId' },
           order: 0
