@@ -34,27 +34,27 @@ export const TextResponse = ({
   hint,
   minRows
 }: TextResponseProps): ReactElement => {
-  const [value, setValue] = useState('')
+  // const [value, setValue] = useState('')
 
-  const { values, handleChange, handleBlur, isSubmitting } = useFormikContext<{
-    [key: string]: string
-  }>()
+  // const { values, handleChange, handleBlur, isSubmitting } = useFormikContext<{
+  //   [key: string]: string
+  // }>()
 
   const {
     state: { selectedBlock }
   } = useEditor()
 
-  const currentValue = values?.[blockId] ?? ''
+  // const currentValue = values?.[blockId] ?? ''
 
-  useEffect(() => {
-    if (currentValue !== value) {
-      setValue(currentValue)
-    }
-  }, [currentValue, value])
+  // useEffect(() => {
+  //   if (currentValue !== value) {
+  //     setValue(currentValue)
+  //   }
+  // }, [currentValue, value])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleChange(e)
-    setValue(e.target.value)
+    // handleChange(e)
+    // setValue(e.target.value)
   }
 
   return (
@@ -64,14 +64,14 @@ export const TextResponse = ({
           id={`textResponse-field-${blockId}`}
           name={blockId}
           label={label === '' ? 'Your answer here' : label}
-          value={currentValue}
+          // value={currentValue}
           helperText={hint != null ? hint : ''}
           multiline
-          disabled={isSubmitting}
+          // disabled={isSubmitting}
           minRows={minRows ?? 3}
           onClick={(e) => e.stopPropagation()}
           onChange={handleInputChange}
-          onBlur={handleBlur}
+          // onBlur={handleBlur}
           inputProps={{
             maxLength: 1000,
             readOnly: selectedBlock !== undefined,
