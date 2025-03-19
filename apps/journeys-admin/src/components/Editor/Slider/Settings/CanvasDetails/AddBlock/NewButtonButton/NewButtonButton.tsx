@@ -77,7 +77,8 @@ export function NewButtonButton(): ReactElement {
       parentOrder: card.children.length ?? 0,
       startIconId: uuidv4(),
       endIconId: uuidv4(),
-      action: null
+      action: null,
+      submitEnabled: false
     }
 
     addBlock({
