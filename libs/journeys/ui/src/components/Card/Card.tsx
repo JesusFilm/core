@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client'
+import { ApolloError, gql, useMutation } from '@apollo/client'
 import Paper from '@mui/material/Paper'
 import { useTheme } from '@mui/material/styles'
 import { sendGTMEvent } from '@next/third-parties/google'
@@ -70,6 +70,7 @@ export function Card({
   fullscreen,
   wrappers
 }: CardProps): ReactElement {
+  const { enqueueSnackbar } = useSnackbar()
   const [stepNextEventCreate] = useMutation<
     StepNextEventCreate,
     StepNextEventCreateVariables
@@ -83,7 +84,6 @@ export function Card({
       TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
     )
 
-  const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('journeys-ui')
   const plausible = usePlausible<JourneyPlausibleEvents>()
   const theme = useTheme()
@@ -188,7 +188,12 @@ export function Card({
       })
     })
 
-    await Promise.all(submissionPromises)
+    await Promise.all(submissionPromises).catch((e) => {
+      if (e instanceof ApolloError)
+        enqueueSnackbar(e.message, {
+          variant: 'error'
+        })
+    })
   }
 
   // should always be called with nextActiveBlock()
@@ -355,45 +360,47 @@ export function Card({
       onSubmit={handleFormSubmit}
       enableReinitialize
     >
-      <Form data-testid={`card-form-${id}`}>
-        <Paper
-          data-testid={`JourneysCard-${id}`}
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-end',
-            borderRadius: { xs: 'inherit', lg: 3 },
-            backgroundColor,
-            width: '100%',
-            height: '100%',
-            overflow: 'hidden',
-            transform: 'translateZ(0)' // safari glitch with border radius
-          }}
-          elevation={3}
-          onClick={handleNavigation}
-        >
-          {(coverBlock != null && !fullscreen) || videoBlock != null ? (
-            <ContainedCover
-              backgroundColor={cardColor}
-              backgroundBlur={blurUrl}
-              videoBlock={videoBlock}
-              imageBlock={imageBlock}
-              hasFullscreenVideo={hasFullscreenVideo}
-            >
-              {renderedChildren}
-            </ContainedCover>
-          ) : (
-            <ExpandedCover
-              backgroundColor={cardColor}
-              backgroundBlur={blurUrl}
-              imageBlock={imageBlock}
-              hasFullscreenVideo={hasFullscreenVideo}
-            >
-              {renderedChildren}
-            </ExpandedCover>
-          )}
-        </Paper>
-      </Form>
+      {({ handleSubmit }) => (
+        <Form data-testid={`card-form-${id}`} onSubmit={handleSubmit}>
+          <Paper
+            data-testid={`JourneysCard-${id}`}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-end',
+              borderRadius: { xs: 'inherit', lg: 3 },
+              backgroundColor,
+              width: '100%',
+              height: '100%',
+              overflow: 'hidden',
+              transform: 'translateZ(0)' // safari glitch with border radius
+            }}
+            elevation={3}
+            onClick={handleNavigation}
+          >
+            {(coverBlock != null && !fullscreen) || videoBlock != null ? (
+              <ContainedCover
+                backgroundColor={cardColor}
+                backgroundBlur={blurUrl}
+                videoBlock={videoBlock}
+                imageBlock={imageBlock}
+                hasFullscreenVideo={hasFullscreenVideo}
+              >
+                {renderedChildren}
+              </ContainedCover>
+            ) : (
+              <ExpandedCover
+                backgroundColor={cardColor}
+                backgroundBlur={blurUrl}
+                imageBlock={imageBlock}
+                hasFullscreenVideo={hasFullscreenVideo}
+              >
+                {renderedChildren}
+              </ExpandedCover>
+            )}
+          </Paper>
+        </Form>
+      )}
     </Formik>
   )
 }
