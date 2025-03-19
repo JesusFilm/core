@@ -287,6 +287,7 @@ export interface ButtonBlockUpdateInput {
   size?: ButtonSize | null;
   startIconId?: string | null;
   endIconId?: string | null;
+  submitEnabled?: boolean | null;
 }
 
 export interface ButtonClickEventCreateInput {
