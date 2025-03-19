@@ -25,7 +25,6 @@ import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { StepViewEventCreate } from '../Step/__generated__/StepViewEventCreate'
 import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
-import { TEXT_RESPONSE_SUBMISSION_EVENT_CREATE } from '../TextResponse/TextResponse'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 
 import { StepNextEventCreate } from './__generated__/StepNextEventCreate'
