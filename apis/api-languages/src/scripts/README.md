@@ -16,7 +16,7 @@ nx run api-languages:data-import
 
 The script requires the following environment variables:
 
-- `DATABASE_URL`: The connection string to the PostgreSQL database (required)
+- `PG_DATABASE_URL_LANGUAGES`: The connection string to the PostgreSQL database (required)
 - `DB_SEED_PATH`: The path or URL to the SQL backup file's location (required)
   - Local file: Provide the directory path where the backup is located
   - Remote URL: Provide a base URL where the backup can be downloaded from
@@ -34,7 +34,7 @@ DB_SEED_PATH="https://example.com/backups" nx run api-languages:data-import
 The script will:
 
 1. Check if the required environment variables are set
-2. Look for or download a SQL backup file named `languages.sql.gz`
+2. Look for or download a SQL backup file named `languages-backup.sql.gz`
 3. Decompress the file if needed
 4. Execute the SQL commands using `psql`
 5. Clean up temporary files

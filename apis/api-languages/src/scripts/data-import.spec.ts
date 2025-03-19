@@ -54,16 +54,14 @@ jest.mock('child_process', () => ({
   })
 }))
 
-// Mock prisma
-jest.mock('@prisma/client', () => {
-  return {
-    PrismaClient: jest.fn().mockImplementation(() => ({
-      importTimes: {
-        upsert: jest.fn().mockResolvedValue({ id: 1 })
-      }
-    }))
+// Mock prisma client
+jest.mock('../lib/prisma', () => ({
+  prisma: {
+    importTimes: {
+      upsert: jest.fn().mockResolvedValue({ id: 1 })
+    }
   }
-})
+}))
 
 // Mock fetch
 global.fetch = jest.fn().mockResolvedValue({
@@ -80,6 +78,15 @@ jest.spyOn(console, 'warn').mockImplementation(() => undefined)
 jest
   .spyOn(process, 'exit')
   .mockImplementation(((code?: number | string | null) => undefined) as any)
+
+// Mock stream
+jest.mock('stream', () => ({
+  Readable: {
+    fromWeb: jest.fn().mockReturnValue({
+      pipe: jest.fn().mockReturnThis()
+    })
+  }
+}))
 
 describe('data-import script', () => {
   const originalEnv = process.env
