@@ -1,6 +1,7 @@
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import { etag } from 'hono/etag'
+import { HTTPException } from 'hono/http-exception'
 import { handle } from 'hono/vercel'
 
 import { mediaComponentLinks } from './_media-component-links'
@@ -16,6 +17,26 @@ export const dynamic = 'force-dynamic'
 
 const app = new OpenAPIHono().basePath('/v2')
 app.use(etag())
+
+app.onError((err, c) => {
+  if (err instanceof HTTPException) {
+    return c.json(
+      {
+        message: err.message,
+        logref: err.status
+      },
+      err.status
+    )
+  }
+  console.error('Unexpected error:', err)
+  return c.json(
+    {
+      message: 'Internal server error',
+      logref: 500
+    },
+    500
+  )
+})
 
 app.route('/media-component-links', mediaComponentLinks)
 app.route('/media-components', mediaComponents)

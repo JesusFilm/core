@@ -207,22 +207,6 @@ mediaCountry.openapi(route, async (c) => {
     )
   }
 
-  if (
-    metadataLanguageTags.length > 0 &&
-    country.name[0]?.value == null &&
-    country.fallbackName[0]?.value == null
-  ) {
-    return new Response(
-      JSON.stringify({
-        message: `Unable to generate metadata for media country [${countryId}] acceptable according to metadata language(s) [${metadataLanguageTags.join(
-          ','
-        )}]`,
-        logref: 406
-      }),
-      { status: 400 }
-    )
-  }
-
   const queryObject = c.req.query()
 
   const queryString = new URLSearchParams(queryObject).toString()

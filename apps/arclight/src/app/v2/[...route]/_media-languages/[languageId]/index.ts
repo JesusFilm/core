@@ -242,7 +242,7 @@ mediaLanguage.openapi(route, async (c) => {
     nameNative: language.nameNative.find(({ primary }) => primary)?.value,
     alternateLanguageName: '',
     alternateLanguageNameNative: '',
-    metadataLanguageTag: language.name[0]?.language.bcp47 ?? '',
+    metadataLanguageTag: metadataLanguageTags[0] ?? 'en',
     _links: {
       self: {
         href: `http://api.arclight.org/v2/media-languages/${languageId}?${queryString}`
