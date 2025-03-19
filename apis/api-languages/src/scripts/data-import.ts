@@ -1,5 +1,5 @@
 import { spawn } from 'child_process'
-import fs, { createReadStream, promises as fsPromises } from 'fs'
+import fs, { promises as fsPromises } from 'fs'
 import { join } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'

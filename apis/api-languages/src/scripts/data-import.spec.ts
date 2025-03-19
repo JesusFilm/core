@@ -1,9 +1,6 @@
 import { spawn } from 'child_process'
-import fs, { promises as fsPromises } from 'fs'
-import { pipeline } from 'stream/promises'
+import { promises as fsPromises } from 'fs'
 import { createGunzip } from 'zlib'
-
-import { PrismaClient } from '@prisma/client'
 
 import main from './data-import'
 
