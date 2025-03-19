@@ -34,28 +34,6 @@ const block: TreeBlock<TextResponseFields> = {
   children: []
 }
 
-// const submissionSuccess = {
-//   request: {
-//     query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
-//     variables: {
-//       input: {
-//         id: 'uuid',
-//         blockId: 'textResponse0.id',
-//         stepId: 'step.id',
-//         label: 'Step {{number}}',
-//         value: 'My response'
-//       }
-//     }
-//   },
-//   result: {
-//     data: {
-//       textResponseSubmissionEventCreate: {
-//         id: 'uuid'
-//       }
-//     }
-//   }
-// }
-
 interface TextResponseMockProps {
   values?: FormikValues
   hanldeSubmit?: () => void
