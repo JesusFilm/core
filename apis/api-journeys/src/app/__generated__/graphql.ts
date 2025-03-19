@@ -97,7 +97,8 @@ export enum IconSize {
 export enum TextResponseType {
     freeForm = "freeForm",
     name = "name",
-    email = "email"
+    email = "email",
+    phone = "phone"
 }
 
 export enum TypographyVariant {
@@ -454,6 +455,8 @@ export class TextResponseBlockCreateInput {
 export class TextResponseBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
+    placeholder?: Nullable<string>;
+    required?: Nullable<boolean>;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
     routeId?: Nullable<string>;
@@ -1383,6 +1386,8 @@ export class TextResponseBlock implements Block {
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     label: string;
+    placeholder?: Nullable<string>;
+    required?: Nullable<boolean>;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
     type?: Nullable<TextResponseType>;

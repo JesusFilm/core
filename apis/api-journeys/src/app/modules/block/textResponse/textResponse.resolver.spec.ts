@@ -50,7 +50,9 @@ describe('TextResponseBlockResolver', () => {
     hint: 'Enter your answer above',
     routeId: 'routeId',
     integrationId: 'integrationId',
-    type: TextResponseType.email
+    type: TextResponseType.email,
+    placeholder: 'Your email here!',
+    required: true
   }
 
   beforeEach(async () => {
@@ -182,6 +184,17 @@ describe('TextResponseBlockResolver', () => {
       await expect(
         resolver.textResponseBlockUpdate(ability, 'blockId', blockUpdateInput)
       ).rejects.toThrow('user is not allowed to update block')
+    })
+
+    it('updates a TextResponseBlock with placeholder and required fields', async () => {
+      prismaService.block.findUnique.mockResolvedValueOnce(blockWithUserTeam)
+      const updateInput = {
+        ...blockUpdateInput,
+        placeholder: 'Enter your phone number',
+        required: true
+      }
+      await resolver.textResponseBlockUpdate(ability, 'blockId', updateInput)
+      expect(service.update).toHaveBeenCalledWith('blockId', updateInput)
     })
   })
 })
