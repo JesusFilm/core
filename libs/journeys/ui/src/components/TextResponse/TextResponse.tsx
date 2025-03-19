@@ -61,7 +61,7 @@ export const TextResponse = ({
     <Box sx={{ mb: 4 }} data-testid="JourneysTextResponse">
       <Stack data-testid={`textResponse-${blockId}`}>
         <TextField
-          id={`textResponse-field-${blockId}`}
+          id={`textResponse-field`}
           name={blockId}
           label={label === '' ? 'Your answer here' : label}
           // value={currentValue}
