@@ -1,6 +1,7 @@
 import { spawn } from 'child_process'
 import fs, { promises as fsPromises } from 'fs'
 import { pipeline } from 'stream/promises'
+import { createGunzip } from 'zlib'
 
 import { Logger } from 'pino'
 
@@ -8,11 +9,24 @@ import { service } from './service'
 
 // Mock fs functions
 jest.mock('fs', () => ({
-  createWriteStream: jest.fn(),
+  createReadStream: jest.fn().mockReturnValue({
+    pipe: jest.fn().mockReturnThis()
+  }),
+  createWriteStream: jest.fn().mockReturnValue({
+    write: jest.fn(),
+    end: jest.fn()
+  }),
   promises: {
     mkdir: jest.fn().mockResolvedValue(undefined),
     unlink: jest.fn().mockResolvedValue(undefined)
   }
+}))
+
+// Mock zlib
+jest.mock('zlib', () => ({
+  createGunzip: jest.fn().mockReturnValue({
+    pipe: jest.fn().mockReturnThis()
+  })
 }))
 
 // Mock stream/promises
@@ -41,10 +55,6 @@ jest.mock('child_process', () => ({
   })
 }))
 
-// Mock fetch
-const mockFetch = jest.fn()
-global.fetch = mockFetch
-
 describe('Database Import Service', () => {
   // Mock environment variables
   const originalEnv = process.env
@@ -55,27 +65,15 @@ describe('Database Import Service', () => {
       ...originalEnv,
       PG_DATABASE_URL_LANGUAGES:
         'postgresql://postgres:postgres@localhost:5432/languages?schema=public',
-      DB_SEED_URL: 'https://example.com/backup.pgdump'
+      DB_SEED_PATH: '/path/to/languages-backup.sql.gz'
     }
-
-    // Mock successful fetch response
-    mockFetch.mockResolvedValue({
-      ok: true,
-      body: new ReadableStream()
-    })
-
-    // Mock createWriteStream
-    ;(fs.createWriteStream as jest.Mock).mockReturnValue({
-      write: jest.fn(),
-      end: jest.fn()
-    })
   })
 
   afterEach(() => {
     process.env = originalEnv
   })
 
-  it('should download and import database using pg_restore', async () => {
+  it('should decompress and import database using psql', async () => {
     const mockLogger = {
       info: jest.fn(),
       debug: jest.fn(),
@@ -92,16 +90,17 @@ describe('Database Import Service', () => {
       { recursive: true }
     )
 
-    // Verify file was downloaded
-    expect(mockFetch).toHaveBeenCalledWith(process.env.DB_SEED_URL)
+    // Verify decompression was performed
+    expect(fs.createReadStream).toHaveBeenCalledWith(process.env.DB_SEED_PATH)
     expect(fs.createWriteStream).toHaveBeenCalledWith(
-      expect.stringContaining('languages-backup.pgdump')
+      expect.stringContaining('languages-backup.sql')
     )
+    expect(createGunzip).toHaveBeenCalled()
     expect(pipeline).toHaveBeenCalled()
 
-    // Verify pg_restore command was called with correct parameters
+    // Verify psql command was called with correct parameters
     expect(spawn).toHaveBeenCalledWith(
-      'pg_restore',
+      'psql',
       expect.arrayContaining([
         '-h',
         'localhost',
@@ -111,12 +110,11 @@ describe('Database Import Service', () => {
         'postgres',
         '-d',
         'languages',
-        '--clean',
-        '--if-exists',
-        '--no-owner',
-        '--no-privileges',
+        '-v',
+        'ON_ERROR_STOP=1',
         '--single-transaction',
-        expect.stringContaining('languages-backup.pgdump')
+        '-f',
+        expect.stringContaining('languages-backup.sql')
       ]),
       expect.objectContaining({
         env: expect.objectContaining({
@@ -125,22 +123,27 @@ describe('Database Import Service', () => {
       })
     )
 
-    // Verify downloaded file was cleaned up
+    // Verify temporary file was cleaned up
     expect(fsPromises.unlink).toHaveBeenCalledWith(
-      expect.stringContaining('languages-backup.pgdump')
+      expect.stringContaining('languages-backup.sql')
     )
 
     // Verify logger was used
-    expect(mockLogger.info).toHaveBeenCalledWith('Downloading database file')
-    expect(mockLogger.info).toHaveBeenCalledWith('Download completed')
-    expect(mockLogger.info).toHaveBeenCalledWith('Starting database restore')
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      `Using SQL backup from path: ${process.env.DB_SEED_PATH}`
+    )
+    expect(mockLogger.info).toHaveBeenCalledWith('Decompressing gzipped file')
+    expect(mockLogger.info).toHaveBeenCalledWith('File decompression completed')
+    expect(mockLogger.info).toHaveBeenCalledWith(
+      'Starting database restore with psql'
+    )
     expect(mockLogger.info).toHaveBeenCalledWith(
       'Database restore completed successfully'
     )
   })
 
-  it('should throw an error if DB_SEED_URL is not set', async () => {
-    delete process.env.DB_SEED_URL
+  it('should throw an error if DB_SEED_PATH is not set', async () => {
+    delete process.env.DB_SEED_PATH
 
     const mockLogger = {
       info: jest.fn(),
@@ -151,26 +154,7 @@ describe('Database Import Service', () => {
     } as unknown as Logger
 
     await expect(service(mockLogger)).rejects.toThrow(
-      'DB_SEED_URL environment variable is not set'
-    )
-  })
-
-  it('should throw an error if download fails', async () => {
-    mockFetch.mockResolvedValue({
-      ok: false,
-      statusText: 'Not Found'
-    })
-
-    const mockLogger = {
-      info: jest.fn(),
-      debug: jest.fn(),
-      error: jest.fn(),
-      warn: jest.fn(),
-      child: jest.fn().mockReturnThis()
-    } as unknown as Logger
-
-    await expect(service(mockLogger)).rejects.toThrow(
-      'Failed to download file: Not Found'
+      'DB_SEED_PATH environment variable is not set'
     )
   })
 

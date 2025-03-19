@@ -1,4 +1,4 @@
-FROM node:22-alpine3.19
+FROM node:22-alpine3.20
 
 EXPOSE 4003
 
@@ -9,7 +9,7 @@ ENV PRISMA_LOCATION_LANGUAGES=/app/node_modules/.prisma/api-languages-client
 RUN apk upgrade --update-cache --available && \
     rm -rf /var/cache/apk/*
 
-RUN apk add --no-cache g++ make python3 py3-pip curl-dev postgresql13-client
+RUN apk add --no-cache g++ make python3 py3-pip curl-dev postgresql-client
 
 WORKDIR /app
 COPY ./dist/apps/api-languages .
