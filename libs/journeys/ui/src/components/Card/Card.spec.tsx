@@ -25,6 +25,7 @@ import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { StepViewEventCreate } from '../Step/__generated__/StepViewEventCreate'
 import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
+import { TEXT_RESPONSE_SUBMISSION_EVENT_CREATE } from '../TextResponse/TextResponse'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 
 import { StepNextEventCreate } from './__generated__/StepNextEventCreate'
@@ -671,5 +672,24 @@ describe('CardBlock', () => {
 
     expect(blockHistoryVar()).toHaveLength(1)
     expect(blockHistoryVar()[0].id).toBe('step1.id')
+  })
+
+  it('should have formik context for submissions', async () => {
+    treeBlocksVar([step1, step2, step3])
+    blockHistoryVar([step2])
+
+    const stepViewEventMock = getStepViewEventMock(step2.id)
+
+    const { getByTestId } = render(
+      <MockedProvider mocks={[stepViewEventMock]}>
+        <JourneyProvider value={{ variant: 'default' }}>
+          <Card {...card2} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const cardFormElement = getByTestId(`card-form-${card2.id}`)
+    expect(cardFormElement).toBeInTheDocument()
+    expect(cardFormElement.tagName).toBe('FORM')
   })
 })
