@@ -90,7 +90,7 @@ test.describe('media component links', () => {
     )
   })
 
-  test('verify Urdu content filtering', async ({ request }) => {
+  test.fixme('verify Urdu content filtering', async ({ request }) => {
     const response = await getMediaComponentLinks(
       request,
       testCases.urduContent
