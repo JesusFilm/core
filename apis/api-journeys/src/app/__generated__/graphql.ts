@@ -303,6 +303,7 @@ export class ButtonBlockCreateInput {
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
     size?: Nullable<ButtonSize>;
+    submitEnabled?: Nullable<boolean>;
 }
 
 export class ButtonBlockUpdateInput {
@@ -313,6 +314,7 @@ export class ButtonBlockUpdateInput {
     size?: Nullable<ButtonSize>;
     startIconId?: Nullable<string>;
     endIconId?: Nullable<string>;
+    submitEnabled?: Nullable<boolean>;
 }
 
 export class CardBlockCreateInput {
@@ -1257,6 +1259,7 @@ export class ButtonBlock implements Block {
     startIconId?: Nullable<string>;
     endIconId?: Nullable<string>;
     action?: Nullable<Action>;
+    submitEnabled?: Nullable<boolean>;
 }
 
 export class CardBlock implements Block {
