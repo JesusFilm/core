@@ -134,6 +134,7 @@ export interface MenuBlockCreate_button1 {
   startIconId: string | null;
   endIconId: string | null;
   action: MenuBlockCreate_button1_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface MenuBlockCreate_button2_action_NavigateToBlockAction {
@@ -171,6 +172,7 @@ export interface MenuBlockCreate_button2 {
   startIconId: string | null;
   endIconId: string | null;
   action: MenuBlockCreate_button2_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface MenuBlockCreate_button3_action_NavigateToBlockAction {
@@ -208,6 +210,7 @@ export interface MenuBlockCreate_button3 {
   startIconId: string | null;
   endIconId: string | null;
   action: MenuBlockCreate_button3_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface MenuBlockCreate_journeyUpdate_menuStepBlock {

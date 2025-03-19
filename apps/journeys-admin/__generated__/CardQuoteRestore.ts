@@ -51,6 +51,7 @@ export interface CardQuoteRestore_image_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardQuoteRestore_image_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardQuoteRestore_image_CardBlock {
@@ -473,6 +474,7 @@ export interface CardQuoteRestore_subtitle_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardQuoteRestore_subtitle_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardQuoteRestore_subtitle_CardBlock {
@@ -895,6 +897,7 @@ export interface CardQuoteRestore_title_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardQuoteRestore_title_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardQuoteRestore_title_CardBlock {
@@ -1317,6 +1320,7 @@ export interface CardQuoteRestore_body_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: CardQuoteRestore_body_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface CardQuoteRestore_body_CardBlock {

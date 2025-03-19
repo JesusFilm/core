@@ -51,6 +51,7 @@ export interface BlockFields_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: BlockFields_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface BlockFields_CardBlock {

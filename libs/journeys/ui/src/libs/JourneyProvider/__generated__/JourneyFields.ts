@@ -65,6 +65,7 @@ export interface JourneyFields_blocks_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: JourneyFields_blocks_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface JourneyFields_blocks_CardBlock {
