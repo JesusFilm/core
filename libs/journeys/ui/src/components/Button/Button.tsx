@@ -235,7 +235,7 @@ export function Button({
       data-testid={`JourneysButton-${blockId}`}
     >
       <MuiButton
-        type={submitEnabled ? 'submit' : 'submit'}
+        type={submitEnabled ? 'submit' : 'button'}
         variant={buttonVariant ?? ButtonVariant.contained}
         color={buttonColor ?? undefined}
         size={size ?? undefined}
