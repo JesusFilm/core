@@ -83,6 +83,7 @@ const block: TreeBlock<ButtonFields> = {
   startIconId: null,
   endIconId: null,
   action: null,
+  submitEnabled: false,
   children: []
 }
 
@@ -591,5 +592,58 @@ describe('Button', () => {
     expect(screen.getByRole('button', { name: 'Submit' })).toHaveTextContent(
       'Submit'
     )
+  })
+
+  it('should submit form when submitEnabled is true', () => {
+    const emptyButtonLabelMock = {
+      ...block,
+      label: '',
+      submitEnabled: true
+    }
+    render(
+      <MockedProvider>
+        <Button {...emptyButtonLabelMock} />
+      </MockedProvider>
+    )
+    const submitButton = screen.getByRole('button', { name: 'Submit' })
+    expect(submitButton).toHaveTextContent('Submit')
+    expect(submitButton).toHaveAttribute('type', 'submit')
+  })
+
+  it('should have type="button" when submitEnabled is false', () => {
+    const buttonMock = {
+      ...block,
+      submitEnabled: false
+    }
+    render(
+      <MockedProvider>
+        <Button {...buttonMock} />
+      </MockedProvider>
+    )
+    const button = screen.getByRole('button')
+    expect(button).toHaveAttribute('type', 'button')
+  })
+
+  it('should trigger form submission when clicked in a form context', () => {
+    const handleSubmit = jest.fn((e) => e.preventDefault())
+    const submitButtonMock = {
+      ...block,
+      label: 'Submit Form',
+      submitEnabled: true
+    }
+
+    render(
+      <MockedProvider>
+        <form onSubmit={handleSubmit} data-testid="test-form">
+          <Button {...submitButtonMock} />
+        </form>
+      </MockedProvider>
+    )
+
+    const submitButton = screen.getByRole('button', { name: 'Submit Form' })
+    expect(submitButton).toHaveAttribute('type', 'submit')
+
+    fireEvent.click(submitButton)
+    expect(handleSubmit).toHaveBeenCalledTimes(1)
   })
 })

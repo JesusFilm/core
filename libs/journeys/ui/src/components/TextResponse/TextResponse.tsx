@@ -44,7 +44,7 @@ export const TextResponse = ({
     state: { selectedBlock }
   } = useEditor()
 
-  const currentValue = values[blockId] || ''
+  const currentValue = values?.[blockId] ?? ''
 
   useEffect(() => {
     if (currentValue !== value) {

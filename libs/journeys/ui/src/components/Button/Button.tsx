@@ -56,7 +56,6 @@ export const CHAT_OPEN_EVENT_CREATE = gql`
 
 export interface ButtonProps extends TreeBlock<ButtonFields> {
   editableLabel?: ReactElement
-  submitEnabled?: boolean
 }
 
 export function Button({

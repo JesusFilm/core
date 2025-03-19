@@ -14,6 +14,7 @@ export const BUTTON_FIELDS = gql`
     size
     startIconId
     endIconId
+    submitEnabled
     action {
       ...ActionFields
     }
