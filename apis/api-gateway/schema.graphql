@@ -956,6 +956,8 @@ type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS)  @join_
   parentBlockId: ID
   parentOrder: Int
   label: String!
+  placeholder: String
+  required: Boolean
   hint: String
   minRows: Int
   type: TextResponseType
@@ -2871,6 +2873,7 @@ enum TextResponseType @join__type(graph: API_JOURNEYS)  {
   freeForm @join__enumValue(graph: API_JOURNEYS) 
   name @join__enumValue(graph: API_JOURNEYS) 
   email @join__enumValue(graph: API_JOURNEYS) 
+  phone @join__enumValue(graph: API_JOURNEYS) 
 }
 
 enum TypographyVariant @join__type(graph: API_JOURNEYS)  {
@@ -3337,6 +3340,8 @@ input TextResponseBlockCreateInput @join__type(graph: API_JOURNEYS)  {
 input TextResponseBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   parentBlockId: ID
   label: String
+  placeholder: String
+  required: Boolean
   hint: String
   minRows: Int
   routeId: String
