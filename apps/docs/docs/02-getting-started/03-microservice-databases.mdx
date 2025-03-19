@@ -42,6 +42,12 @@ nx run-many --all --target=prisma-migrate
 nx run-many --all --target=prisma-seed
 ```
 
+Once that has completed, run:
+
+```shell
+nx run-many --target=data-import
+```
+
 To ingest data from seeds & bigquery, you will need to start the ingest job. In one terminal, run:
 
 ```shell
@@ -49,12 +55,6 @@ nf start
 ```
 
 In a separate terminal, run:
-
-```shell
-nx data-import api-languages
-```
-
-Once that has completed, run:
 
 ```shell
 nx queue-ingest api-media
