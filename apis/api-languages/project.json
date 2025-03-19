@@ -160,7 +160,7 @@
     "data-import": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apis/api-languages/src/workers/cli.ts data-import"
+        "command": "npm run ts-node apis/api-languages/src/scripts/data-import.ts"
       }
     }
   }

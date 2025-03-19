@@ -71,14 +71,6 @@ async function main(): Promise<void> {
       )
     )
   }
-  if (process.env.NODE_ENV !== 'production') {
-    run(
-      await import(
-        /* webpackChunkName: "data-import" */
-        './dataImport'
-      )
-    )
-  }
 }
 
 // avoid running on test environment
