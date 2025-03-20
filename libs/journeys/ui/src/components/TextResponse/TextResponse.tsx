@@ -4,7 +4,6 @@ import Stack from '@mui/material/Stack'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { useFormikContext } from 'formik'
 import { ReactElement, useEffect, useState } from 'react'
-import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
@@ -23,7 +22,6 @@ export const TEXT_RESPONSE_SUBMISSION_EVENT_CREATE = gql`
 `
 
 interface TextResponseProps extends TreeBlock<TextResponseFields> {
-  uuid?: () => string
   editableSubmitLabel?: ReactElement
   sx?: SxProps
 }
@@ -46,7 +44,6 @@ interface TextResponseProps extends TreeBlock<TextResponseFields> {
  */
 export const TextResponse = ({
   id: blockId,
-  uuid = uuidv4,
   label,
   hint,
   minRows
