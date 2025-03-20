@@ -42,13 +42,7 @@ nx run-many --target=prisma-migrate
 nx run-many --target=prisma-seed
 ```
 
-To import data for your development environment, you will need to start the data-import job. In one terminal, run:
-
-```shell
-nf start
-```
-
-In a separate terminal, run:
+Once that has completed, run:
 
 ```shell
 nx run-many --target=data-import

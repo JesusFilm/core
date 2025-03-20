@@ -16,8 +16,13 @@ import { Header } from '../../Header'
 
 import { VideoHeroOverlay } from './VideoHeroOverlay'
 
+/** Spacing in pixels to apply at the bottom of the video hero component. */
 const VIDEO_HERO_BOTTOM_SPACING = 150
 
+/**
+ * Dynamically imported VideoPlayer component to improve initial load performance.
+ * Only loads the video player when needed.
+ */
 const DynamicVideoPlayer = dynamic<{
   setControlsVisible: Dispatch<SetStateAction<boolean>>
 }>(
@@ -28,19 +33,50 @@ const DynamicVideoPlayer = dynamic<{
     ).then((mod) => mod.VideoPlayer)
 )
 
+/**
+ * Props for the VideoHero component.
+ * @interface VideoHeroProps
+ */
 interface VideoHeroProps {
+  /** Callback function triggered when the video starts playing. */
   onPlay?: () => void
+  /** Flag indicating whether the video has been played before. */
   hasPlayed?: boolean
 }
 
+/**
+ * VideoHero component for displaying featured video content.
+ *
+ * Renders a full-viewport video player with overlay controls and handles
+ * fullscreen functionality. Integrates with the Header component to adjust
+ * visibility based on player state.
+ *
+ * @param {VideoHeroProps} props - Component props.
+ * @returns {ReactElement} Rendered VideoHero component.
+ */
 export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
+  /** State tracking whether the video is currently playing. */
   const [isPlaying, setIsPlaying] = useState(false)
+  /** State tracking whether the video is in fullscreen mode. */
   const [isFullscreen, setIsFullscreen] = useState(false)
+  /** State tracking whether the video controls are visible. */
   const [controlsVisible, setControlsVisible] = useState(true)
 
+  /**
+   * Effect to handle fullscreen changes.
+   * Adds and removes event listeners for fullscreen state changes.
+   */
   useEffect(() => {
+    /**
+     * Handler for fullscreen change events.
+     * Updates component state and scrolls to top when entering fullscreen.
+     */
     function fullscreenchange(): void {
-      setIsFullscreen(fscreen.fullscreenElement != null)
+      const isFullscreen = fscreen.fullscreenElement != null
+      setIsFullscreen(isFullscreen)
+      if (isFullscreen) {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
     }
 
     fscreen.addEventListener('fullscreenchange', fullscreenchange)
@@ -49,6 +85,10 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
       fscreen.removeEventListener('fullscreenchange', fullscreenchange)
   }, [setIsFullscreen])
 
+  /**
+   * Handles play button click.
+   * Updates playing state and calls the onPlay callback if provided.
+   */
   const handlePlay = useCallback((): void => {
     setIsPlaying(true)
     if (onPlay != null) {
@@ -58,13 +98,12 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
 
   return (
     <>
-      {!isFullscreen && (
-        <Header
-          hideAbsoluteAppBar={!controlsVisible}
-          hideSpacer
-          themeMode={ThemeMode.dark}
-        />
-      )}
+      <Header
+        hideTopAppBar={isFullscreen}
+        hideBottomAppBar={!controlsVisible}
+        hideSpacer
+        themeMode={ThemeMode.dark}
+      />
       <Box
         css={{
           height: '100svh',

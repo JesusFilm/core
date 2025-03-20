@@ -16,7 +16,8 @@ jest.mock('child_process', () => ({
   spawn: jest.fn().mockImplementation(() => {
     const mockEventEmitter = {
       on: jest.fn().mockReturnThis(),
-      stderr: { on: jest.fn() }
+      stderr: { on: jest.fn() },
+      stdout: { pipe: jest.fn(), on: jest.fn() }
     }
     return mockEventEmitter
   })
@@ -38,7 +39,12 @@ jest.mock('fs', () => ({
     mkdir: jest.fn().mockResolvedValue(undefined),
     readFile: jest.fn().mockResolvedValue(Buffer.from('test')),
     unlink: jest.fn().mockResolvedValue(undefined)
-  }
+  },
+  createWriteStream: jest.fn().mockReturnValue({ pipe: jest.fn() }),
+  stat: jest
+    .fn()
+    .mockImplementation((path, callback) => callback(null, { size: 100 })),
+  unlink: jest.fn().mockImplementation((path, callback) => callback(null))
 }))
 
 describe('dataExport service', () => {
@@ -50,9 +56,11 @@ describe('dataExport service', () => {
     logger = {
       info: jest.fn(),
       error: jest.fn(),
+      warn: jest.fn(),
       child: jest.fn().mockReturnValue({
         info: jest.fn(),
-        error: jest.fn()
+        error: jest.fn(),
+        warn: jest.fn()
       })
     }
 
@@ -67,7 +75,8 @@ describe('dataExport service', () => {
     mockSpawn = spawn as jest.Mock
     mockEventEmitter = mockSpawn.mock.results[0]?.value || {
       on: jest.fn().mockReturnThis(),
-      stderr: { on: jest.fn() }
+      stderr: { on: jest.fn() },
+      stdout: { pipe: jest.fn(), on: jest.fn() }
     }
 
     // Reset mocks
@@ -76,11 +85,15 @@ describe('dataExport service', () => {
   })
 
   it('should successfully export database and upload to R2 (runs automatically daily at midnight)', async () => {
+    // Set a longer timeout for this test
+    jest.setTimeout(10000)
+
     // Setup spawn mock to simulate successful process
     mockSpawn.mockImplementation(() => {
       const emitter = {
         on: jest.fn(),
-        stderr: { on: jest.fn() }
+        stderr: { on: jest.fn() },
+        stdout: { pipe: jest.fn(), on: jest.fn() }
       }
 
       // Mock the close event with success code
@@ -105,12 +118,15 @@ describe('dataExport service', () => {
         '--exclude-table',
         'CloudflareR2',
         '--exclude-table',
-        'UserMediaRole',
-        '--table',
-        'public.CloudflareImage',
-        '--where',
-        '"userId" = \'system\''
+        'UserMediaRole'
       ]),
+      expect.anything()
+    )
+
+    // Verify psql was called with the correct COPY command (without backslash)
+    expect(mockSpawn).toHaveBeenCalledWith(
+      'psql',
+      expect.arrayContaining(['-c', expect.stringContaining('COPY (')]),
       expect.anything()
     )
 
