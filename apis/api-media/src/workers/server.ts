@@ -91,6 +91,14 @@ async function main(): Promise<void> {
       './seed'
     )
   )
+  if (process.env.DEPLOYMENT_ENV === 'prod') {
+    run(
+      await import(
+        /* webpackChunkName: "subtitle-uploader" */
+        './subtitleUploader'
+      )
+    )
+  }
 }
 
 // avoid running on test environment
