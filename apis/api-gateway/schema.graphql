@@ -3154,6 +3154,7 @@ input ButtonBlockCreateInput @join__type(graph: API_JOURNEYS)  {
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
+  submitEnabled: Boolean
 }
 
 input ButtonBlockUpdateInput @join__type(graph: API_JOURNEYS)  {

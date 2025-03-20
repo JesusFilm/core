@@ -277,6 +277,7 @@ export interface ButtonBlockCreateInput {
   variant?: ButtonVariant | null;
   color?: ButtonColor | null;
   size?: ButtonSize | null;
+  submitEnabled?: boolean | null;
 }
 
 export interface ButtonBlockUpdateInput {
