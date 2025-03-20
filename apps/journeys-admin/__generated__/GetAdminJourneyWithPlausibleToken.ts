@@ -64,6 +64,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action | null;
 }
 

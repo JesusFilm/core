@@ -37,6 +37,7 @@ describe('CanvasDetails', () => {
     size: ButtonSize.medium,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: null,
     children: []
   }

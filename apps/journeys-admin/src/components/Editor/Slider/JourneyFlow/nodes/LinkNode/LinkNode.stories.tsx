@@ -71,6 +71,7 @@ function addActionToStep(action: Action): TreeBlock<StepBlock> {
             size: null,
             startIconId: null,
             endIconId: null,
+            submitEnabled: null,
             children: [],
             action
           }

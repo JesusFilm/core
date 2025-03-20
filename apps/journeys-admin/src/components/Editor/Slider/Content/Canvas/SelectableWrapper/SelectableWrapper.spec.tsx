@@ -61,6 +61,7 @@ describe('SelectableWrapper', () => {
     size: null,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: {
       __typename: 'LinkAction',
       parentBlockId: 'button.id',

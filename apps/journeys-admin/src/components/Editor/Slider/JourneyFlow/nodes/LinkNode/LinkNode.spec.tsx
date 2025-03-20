@@ -46,6 +46,7 @@ describe('LinkNode', () => {
               size: null,
               startIconId: null,
               endIconId: null,
+              submitEnabled: null,
               action: {
                 __typename: 'LinkAction',
                 parentBlockId: 'button1.id',
@@ -65,6 +66,7 @@ describe('LinkNode', () => {
               size: null,
               startIconId: null,
               endIconId: null,
+              submitEnabled: null,
               action: {
                 __typename: 'EmailAction',
                 parentBlockId: 'button2.id',
