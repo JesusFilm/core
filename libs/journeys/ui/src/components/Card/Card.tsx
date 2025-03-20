@@ -1,6 +1,6 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
 import Paper from '@mui/material/Paper'
-import { useTheme } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { Form, Formik, FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next'
@@ -61,6 +61,8 @@ export const STEP_PREVIOUS_EVENT_CREATE = gql`
 interface CardProps extends TreeBlock<CardFields> {
   wrappers?: WrappersProps
 }
+
+const StyledForm = styled(Form)(() => ({}))
 
 export function Card({
   id,
@@ -164,7 +166,7 @@ export function Card({
       const blockId = block.id
       const responseValue = values[blockId]
 
-      if (!responseValue) return Promise.resolve(null)
+      if (!responseValue || responseValue === '') return Promise.resolve(null)
 
       const id = uuidv4()
       return textResponseSubmissionEventCreate({
@@ -361,26 +363,31 @@ export function Card({
       enableReinitialize
     >
       {({ handleSubmit }) => (
-        <Paper
-          data-testid={`JourneysCard-${id}`}
+        <StyledForm
+          data-testid={`card-form-${id}`}
+          onSubmit={handleSubmit}
           sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-end',
-            borderRadius: { xs: 'inherit', lg: 3 },
-            backgroundColor,
-            width: '100%',
             height: '100%',
+            width: '100%',
             overflow: 'hidden',
-            transform: 'translateZ(0)' // safari glitch with border radius
+            borderRadius: { xs: 'inherit', lg: 3 }
           }}
-          elevation={3}
-          onClick={handleNavigation}
         >
-          <Form
-            data-testid={`card-form-${id}`}
-            onSubmit={handleSubmit}
-            style={{ height: '100%', width: '100%' }}
+          <Paper
+            data-testid={`JourneysCard-${id}`}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-end',
+              borderRadius: { xs: 'inherit', lg: 3 },
+              backgroundColor,
+              width: '100%',
+              height: '100%',
+              overflow: 'hidden',
+              transform: 'translateZ(0)' // safari glitch with border radius
+            }}
+            elevation={3}
+            onClick={handleNavigation}
           >
             {(coverBlock != null && !fullscreen) || videoBlock != null ? (
               <ContainedCover
@@ -402,8 +409,8 @@ export function Card({
                 {renderedChildren}
               </ExpandedCover>
             )}
-          </Form>
-        </Paper>
+          </Paper>
+        </StyledForm>
       )}
     </Formik>
   )
