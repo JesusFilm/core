@@ -63,6 +63,7 @@ describe('dataExport service', () => {
   let logger: Partial<Logger>
   let mockSpawn: jest.Mock
   let mockEventEmitter: any
+  let mockS3Send: jest.Mock
 
   beforeEach(() => {
     logger = {
@@ -90,6 +91,12 @@ describe('dataExport service', () => {
       stderr: { on: jest.fn() },
       stdout: { pipe: jest.fn(), on: jest.fn() }
     }
+
+    // Access the mocked S3 client's send method
+    mockS3Send = jest.fn().mockResolvedValue({})
+    jest.requireMock('@aws-sdk/client-s3').S3Client.mockImplementation(() => ({
+      send: mockS3Send
+    }))
 
     // Reset mocks
     mockSpawn.mockClear()
@@ -206,6 +213,127 @@ describe('dataExport service', () => {
 
     await expect(service(logger as Logger)).rejects.toThrow(
       'pg_dump process exited with code 1'
+    )
+  })
+
+  it('should backup existing files in R2 before uploading new ones', async () => {
+    // Mock successful process execution
+    mockSpawn.mockImplementation(() => {
+      const emitter = {
+        on: jest.fn(),
+        stderr: { on: jest.fn() },
+        stdout: { pipe: jest.fn(), on: jest.fn() }
+      }
+
+      // Mock the close event with success code
+      emitter.on.mockImplementation((event, callback) => {
+        if (event === 'close') {
+          setTimeout(() => callback(0), 10)
+        }
+        return emitter
+      })
+
+      return emitter
+    })
+
+    // Mock HeadObjectCommand to succeed (file exists)
+    mockS3Send.mockImplementation((command) => {
+      if (command instanceof HeadObjectCommand) {
+        return Promise.resolve({ ETag: 'test-etag' }) // Success response means file exists
+      }
+      return Promise.resolve({})
+    })
+
+    await service(logger as Logger)
+
+    // Verify HeadObjectCommand was called to check file existence
+    expect(HeadObjectCommand).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Bucket: 'test-bucket',
+        Key: expect.stringMatching(/^backups\/.*/)
+      })
+    )
+
+    // Verify CopyObjectCommand was called to backup existing files
+    expect(CopyObjectCommand).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Bucket: 'test-bucket',
+        CopySource: expect.stringContaining('test-bucket'),
+        Key: expect.stringMatching(/^backups\/.*\.bak$/)
+      })
+    )
+
+    // Verify PutObjectCommand was called to upload new files
+    expect(PutObjectCommand).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Bucket: 'test-bucket',
+        Key: expect.stringMatching(/^backups\/.*/)
+      })
+    )
+
+    // Verify log messages
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringMatching(/Creating backup of existing file at.*/)
+    )
+    expect(logger.info).toHaveBeenCalledWith('Backup created successfully')
+  })
+
+  it('should handle case when file does not exist in R2', async () => {
+    // Mock successful process execution
+    mockSpawn.mockImplementation(() => {
+      const emitter = {
+        on: jest.fn(),
+        stderr: { on: jest.fn() },
+        stdout: { pipe: jest.fn(), on: jest.fn() }
+      }
+
+      // Mock the close event with success code
+      emitter.on.mockImplementation((event, callback) => {
+        if (event === 'close') {
+          setTimeout(() => callback(0), 10)
+        }
+        return emitter
+      })
+
+      return emitter
+    })
+
+    // Mock HeadObjectCommand to fail (file doesn't exist)
+    mockS3Send.mockImplementation((command) => {
+      if (command instanceof HeadObjectCommand) {
+        return Promise.reject(new Error('NotFound')) // Error response means file doesn't exist
+      }
+      return Promise.resolve({})
+    })
+
+    await service(logger as Logger)
+
+    // Verify HeadObjectCommand was called to check file existence
+    expect(HeadObjectCommand).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Bucket: 'test-bucket',
+        Key: expect.stringMatching(/^backups\/.*/)
+      })
+    )
+
+    // Verify CopyObjectCommand was NOT called (since file doesn't exist)
+    expect(CopyObjectCommand).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        Key: expect.stringMatching(/^backups\/.*\.bak$/)
+      })
+    )
+
+    // Verify PutObjectCommand was called to upload new files
+    expect(PutObjectCommand).toHaveBeenCalledWith(
+      expect.objectContaining({
+        Bucket: 'test-bucket',
+        Key: expect.stringMatching(/^backups\/.*/)
+      })
+    )
+
+    // Verify log messages
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.stringMatching(/No existing file found at.*/)
     )
   })
 })
