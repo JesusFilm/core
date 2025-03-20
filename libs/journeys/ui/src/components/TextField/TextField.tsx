@@ -51,9 +51,10 @@ export function TextField({
     value: formik?.values?.[name] ?? ''
   }
 
+  // dynamically assign to prevent TypeError cannot assing undefined to onChange at runtime
   if (formik?.handleChange != null)
     formikFieldProps.onChange = formik?.handleChange
-
+  // dynamically assign to prevent TypeError cannot assing undefined to onBlur at runtime
   if (formik?.handleBlur != null) formikFieldProps.onBlur = formik?.handleBlur
 
   const hasError =
