@@ -48,7 +48,7 @@ const TextResponseMock = ({
         onSubmit={hanldeSubmit ?? noop}
         isSubmitting={true}
       >
-        <TextResponse {...block} uuid={() => 'uuid'} />
+        <TextResponse {...block} />
       </Formik>
     </SnackbarProvider>
   </JourneyProvider>
@@ -84,7 +84,7 @@ describe('TextResponse', () => {
       <JourneyProvider>
         <SnackbarProvider>
           <Formik initialValues={{}} onSubmit={noop}>
-            <TextResponse {...emptyLabelBlock} uuid={() => 'uuid'} />
+            <TextResponse {...emptyLabelBlock} />
           </Formik>
         </SnackbarProvider>
       </JourneyProvider>
@@ -104,7 +104,7 @@ describe('TextResponse', () => {
             } as FormikContextType<FormikValues>
           }
         >
-          <TextResponse {...block} uuid={() => 'uuid'} />
+          <TextResponse {...block} />
         </FormikProvider>
       </Formik>
     )
@@ -128,9 +128,7 @@ describe('TextResponse', () => {
   })
 
   it('should be able to render without formik context', () => {
-    const { getAllByRole } = render(
-      <TextResponse {...block} uuid={() => 'uuid'} />
-    )
+    const { getAllByRole } = render(<TextResponse {...block} />)
 
     expect(getAllByRole('textbox')[0]).toBeInTheDocument()
   })
