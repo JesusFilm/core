@@ -10,7 +10,6 @@ const props: ComponentProps<typeof TextField> = {
   label: 'Name'
 }
 
-// Mock formik context values
 const formikContextMock = {
   values: { name: '' },
   errors: {},
@@ -30,7 +29,6 @@ describe('TextField', () => {
   })
 
   it('should show error', () => {
-    // Mock formik context with an error
     const errorContextMock = {
       ...formikContextMock,
       errors: { name: 'Required' },
@@ -47,7 +45,6 @@ describe('TextField', () => {
   })
 
   it('should show helper text', () => {
-    // Mock formik context without errors
     const useFormikContextMock = useFormikContext as jest.Mock
     useFormikContextMock.mockReturnValue(formikContextMock)
 
@@ -58,7 +55,6 @@ describe('TextField', () => {
   })
 
   it('should work without Formik context', () => {
-    // Mock formik context as undefined to test fallback behavior
     const useFormikContextMock = useFormikContext as jest.Mock
     useFormikContextMock.mockReturnValue(undefined)
 
