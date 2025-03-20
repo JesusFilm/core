@@ -84,36 +84,6 @@ async function main(): Promise<void> {
     )
   }
 
-  // Register dataImport worker but don't auto-schedule it
-  // Only register the worker if DB_SEED_PATH is defined
-  if (process.env.DB_SEED_PATH) {
-    const dataImportModule = await import(
-      /* webpackChunkName: "data-import" */
-      './dataImport'
-    )
-    // Create a worker without scheduling automatic runs
-    // eslint-disable-next-line no-new
-    new Worker(
-      dataImportModule.queueName,
-      async (job: Job) => {
-        if (job.name !== dataImportModule.jobName) return
-
-        const childLogger = logger.child({
-          queue: dataImportModule.queueName,
-          jobId: job.id
-        })
-
-        childLogger.info('started job')
-        await dataImportModule.service(childLogger)
-        childLogger.info('finished job')
-      },
-      {
-        connection
-      }
-    )
-    logger.info({ queue: dataImportModule.queueName }, 'waiting for jobs')
-  }
-
   if (process.env.NODE_ENV !== 'production') {
     run(
       await import(
