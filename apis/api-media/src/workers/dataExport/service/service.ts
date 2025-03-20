@@ -184,7 +184,6 @@ async function executePgDump(
       dump.stderr.on('data', (data) => {
         const chunk = data.toString()
         stderrData += chunk
-        logger.info(`pg_dump: ${chunk}`)
       })
 
       dump.on('close', (code) => {
@@ -274,7 +273,6 @@ async function exportCloudflareImageData(
     createViewProcess.stderr.on('data', (data) => {
       const chunk = data.toString()
       createViewError += chunk
-      logger.info(`create view: ${chunk}`)
     })
 
     createViewProcess.on('close', (createViewCode) => {
@@ -313,7 +311,6 @@ async function exportCloudflareImageData(
       exportProcess.stderr.on('data', (data) => {
         const chunk = data.toString()
         exportError += chunk
-        logger.info(`pg_dump: ${chunk}`)
       })
 
       exportProcess.on('close', (exportCode) => {
@@ -456,11 +453,6 @@ export const service = async (customLogger?: Logger): Promise<void> => {
     // Upload to R2
     await uploadToR2(gzippedFile, logger)
     await uploadToR2(cloudflareImageFile, logger)
-
-    // Log instructions for how to import
-    logger.info(
-      `To import this backup with psql, use: gunzip -c ${GZIPPED_BACKUP_FILE_NAME} | psql -U username -d database`
-    )
 
     // Clean up local files
     await fsPromises.unlink(sqlFile)
