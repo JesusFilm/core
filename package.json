@@ -262,7 +262,7 @@
     "@testing-library/react": "16.2.0",
     "@testing-library/user-event": "^14.4.3",
     "@types/css-mediaquery": "^0.1.2",
-    "@types/express": "5.0.0",
+    "@types/express": "5.0.1",
     "@types/fluent-ffmpeg": "^2.1.27",
     "@types/fscreen": "^1.0.1",
     "@types/jest": "29.5.14",
