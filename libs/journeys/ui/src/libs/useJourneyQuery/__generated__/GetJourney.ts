@@ -65,6 +65,7 @@ export interface GetJourney_journey_blocks_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: GetJourney_journey_blocks_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface GetJourney_journey_blocks_CardBlock {

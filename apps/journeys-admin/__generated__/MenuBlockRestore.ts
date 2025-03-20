@@ -51,6 +51,7 @@ export interface MenuBlockRestore_stepRestore_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: MenuBlockRestore_stepRestore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface MenuBlockRestore_stepRestore_CardBlock {

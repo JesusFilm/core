@@ -65,6 +65,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_CardBlock {

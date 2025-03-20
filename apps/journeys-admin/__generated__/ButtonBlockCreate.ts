@@ -44,6 +44,7 @@ export interface ButtonBlockCreate_buttonBlockCreate {
   startIconId: string | null;
   endIconId: string | null;
   action: ButtonBlockCreate_buttonBlockCreate_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface ButtonBlockCreate_startIcon {
@@ -101,6 +102,7 @@ export interface ButtonBlockCreate_buttonBlockUpdate {
   startIconId: string | null;
   endIconId: string | null;
   action: ButtonBlockCreate_buttonBlockUpdate_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface ButtonBlockCreate {

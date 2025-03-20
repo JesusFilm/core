@@ -65,6 +65,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_CardBlock {

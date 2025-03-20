@@ -51,6 +51,7 @@ export interface BlockDuplicate_blockDuplicate_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: BlockDuplicate_blockDuplicate_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_CardBlock {

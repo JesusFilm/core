@@ -51,6 +51,7 @@ export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: StepBlockRestoreFromAction_blockRestore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_CardBlock {

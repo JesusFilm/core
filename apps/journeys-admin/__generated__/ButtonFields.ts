@@ -44,4 +44,5 @@ export interface ButtonFields {
   startIconId: string | null;
   endIconId: string | null;
   action: ButtonFields_action | null;
+  submitEnabled: boolean | null;
 }
