@@ -1,11 +1,14 @@
+import { ResultOf } from 'gql.tada'
 import { GraphQLError } from 'graphql'
+import { GraphQLClient } from 'graphql-request'
 import compact from 'lodash/compact'
 import isEmpty from 'lodash/isEmpty'
 import orderBy from 'lodash/orderBy'
 
-import { Prisma } from '.prisma/api-media-client'
+import { Prisma, Video as PrismaVideo } from '.prisma/api-media-client'
 
 import { prisma } from '../../lib/prisma'
+import { logger } from '../../logger'
 import { builder } from '../builder'
 import { ImageAspectRatio } from '../cloudflare/image/enums'
 import { IdType, IdTypeShape } from '../enums/idType'
@@ -17,7 +20,205 @@ import { VideoLabel } from './enums/videoLabel'
 import { VideoCreateInput } from './inputs/videoCreate'
 import { VideosFilter } from './inputs/videosFilter'
 import { VideoUpdateInput } from './inputs/videoUpdate'
+import { GetVideoQuery } from './lib/productionQuery'
 import { videosFilter } from './lib/videosFilter'
+
+const productionClient = new GraphQLClient(
+  process.env.PRODUCTION_GRAPHQL_URL ?? ''
+)
+
+interface VideoFallbackOptions {
+  skipProduction?: boolean
+  context?: any
+}
+
+async function withVideoFallback<T>(
+  videoId: string,
+  localData: T | null,
+  options: VideoFallbackOptions = {}
+): Promise<T | null> {
+  // Skip if we're in production
+  if (process.env.DEPLOYMENT_ENV === 'prod') {
+    return localData
+  }
+
+  // Skip if we have local data
+  if (localData !== null) {
+    return localData
+  }
+
+  // Skip if explicitly requested
+  if (options.skipProduction) {
+    return localData
+  }
+
+  try {
+    const prodData = await productionClient.request(GetVideoQuery, {
+      id: videoId
+    })
+
+    if (!prodData.video) {
+      return null
+    }
+
+    // Store the video and its relations in the local database
+    const video = await prisma.$transaction(async (tx) => {
+      // Create the main video
+      const video = await tx.video.create({
+        data: {
+          id: prodData.video.id,
+          label: prodData.video.label,
+          locked: prodData.video.locked,
+          primaryLanguageId: prodData.video.primaryLanguageId,
+          published: prodData.video.published,
+          availableLanguages: prodData.video.availableLanguages,
+          childIds: [] // Initialize empty as we don't get this from prod
+        }
+      })
+
+      // Create bible citations
+      if (prodData.video.bibleCitations.length > 0) {
+        await tx.bibleCitation.createMany({
+          data: prodData.video.bibleCitations.map((citation) => ({
+            id: citation.id,
+            videoId: video.id,
+            bibleBookId: citation.bibleBookId,
+            osisId: citation.osisId,
+            chapterStart: citation.chapterStart,
+            chapterEnd: citation.chapterEnd,
+            verseStart: citation.verseStart,
+            verseEnd: citation.verseEnd,
+            order: citation.order
+          }))
+        })
+      }
+
+      // Create titles
+      if (prodData.video.title.length > 0) {
+        await tx.videoTitle.createMany({
+          data: prodData.video.title.map((title) => ({
+            id: title.id,
+            videoId: video.id,
+            value: title.value,
+            primary: title.primary,
+            languageId: title.languageId
+          }))
+        })
+      }
+
+      // Create descriptions
+      if (prodData.video.description.length > 0) {
+        await tx.videoDescription.createMany({
+          data: prodData.video.description.map((desc) => ({
+            id: desc.id,
+            videoId: video.id,
+            value: desc.value,
+            primary: desc.primary,
+            languageId: desc.languageId
+          }))
+        })
+      }
+
+      // Create study questions
+      if (prodData.video.studyQuestions.length > 0) {
+        await tx.videoStudyQuestion.createMany({
+          data: prodData.video.studyQuestions.map((question) => ({
+            id: question.id,
+            videoId: video.id,
+            value: question.value,
+            primary: question.primary,
+            languageId: question.languageId,
+            order: question.order,
+            crowdInId: question.crowdInId
+          }))
+        })
+      }
+
+      // Create variants
+      for (const variant of prodData.video.variants) {
+        const createdVariant = await tx.videoVariant.create({
+          data: {
+            id: variant.id,
+            videoId: video.id,
+            slug: variant.slug,
+            duration: variant.duration,
+            hls: variant.hls,
+            languageId: variant.languageId,
+            published: variant.published,
+            edition: variant.edition
+          }
+        })
+
+        // Create variant downloads
+        if (variant.downloads?.length > 0) {
+          await tx.videoVariantDownload.createMany({
+            data: variant.downloads.map((download) => ({
+              id: download.id,
+              videoVariantId: createdVariant.id,
+              quality: download.quality,
+              size: download.size,
+              url: download.url,
+              height: download.height,
+              width: download.width,
+              version: download.version ?? 1
+            }))
+          })
+        }
+      }
+
+      // Create cloudflare assets
+      if (prodData.video.cloudflareAssets.length > 0) {
+        await tx.cloudflareImage.createMany({
+          data: prodData.video.cloudflareAssets.map((asset) => ({
+            id: asset.id,
+            url: asset.url,
+            height: asset.height,
+            width: asset.width,
+            videoId: asset.videoId,
+            aspectRatio: asset.aspectRatio,
+            userId: 'prod', // Required field
+            uploaded: true // Required field
+          }))
+        })
+      }
+
+      // Create video editions
+      if (prodData.video.videoEditions.length > 0) {
+        await tx.videoEdition.createMany({
+          data: prodData.video.videoEditions.map((edition) => ({
+            id: edition.id,
+            name: edition.name,
+            videoId: edition.videoId
+          }))
+        })
+      }
+
+      // Create subtitles
+      if (prodData.video.subtitles.length > 0) {
+        await tx.videoSubtitle.createMany({
+          data: prodData.video.subtitles.map((subtitle) => ({
+            id: subtitle.id,
+            videoId: video.id,
+            edition: subtitle.edition,
+            vttSrc: subtitle.vttSrc,
+            srtSrc: subtitle.srtSrc,
+            primary: subtitle.primary,
+            languageId: subtitle.languageId,
+            vttVersion: subtitle.vttVersion ?? 1,
+            srtVersion: subtitle.srtVersion ?? 1
+          }))
+        })
+      }
+
+      return video
+    })
+
+    return video as T
+  } catch (error) {
+    logger.error('Failed to fetch video from production:', { error, videoId })
+    return null
+  }
+}
 
 interface Info {
   variableValues:
@@ -73,7 +274,11 @@ const Video = builder.prismaObject('Video', {
       })
     }),
     id: t.exposeID('id', { nullable: false }),
-    label: t.expose('label', { type: VideoLabel, nullable: false }),
+    label: t.field({
+      type: VideoLabel,
+      nullable: false,
+      resolve: (video) => video.label as unknown as typeof VideoLabel
+    }),
     locked: t.exposeBoolean('locked', { nullable: false }),
     primaryLanguageId: t.exposeID('primaryLanguageId', { nullable: false }),
     published: t.exposeBoolean('published', { nullable: false }),
@@ -431,15 +636,32 @@ builder.queryFields((t) => ({
     },
     resolve: async (query, _parent, { id, idType }) => {
       try {
-        return idType === IdTypeShape.slug
-          ? await prisma.video.findFirstOrThrow({
-              ...query,
-              where: { variants: { some: { slug: id } }, published: true }
-            })
-          : await prisma.video.findUniqueOrThrow({
-              ...query,
-              where: { id, published: true }
-            })
+        const localVideo =
+          idType === IdTypeShape.slug
+            ? await prisma.video.findFirst({
+                ...query,
+                where: { variants: { some: { slug: id } }, published: true }
+              })
+            : await prisma.video.findUnique({
+                ...query,
+                where: { id, published: true }
+              })
+
+        // If using slug, we need to get the actual video id
+        const videoId =
+          localVideo?.id ?? (idType === IdTypeShape.databaseId ? id : null)
+
+        if (!videoId) {
+          throw new GraphQLError(`Video not found with id ${idType}:${id}`)
+        }
+
+        const result = await withVideoFallback<PrismaVideo>(videoId, localVideo)
+
+        if (!result) {
+          throw new GraphQLError(`Video not found with id ${idType}:${id}`)
+        }
+
+        return result
       } catch (err) {
         if (
           err instanceof Prisma.PrismaClientKnownRequestError &&
@@ -462,12 +684,24 @@ builder.queryFields((t) => ({
     resolve: async (query, _parent, { offset, limit, where }) => {
       const filter = videosFilter(where ?? {})
       filter.published = true
-      return await prisma.video.findMany({
+
+      const localVideos = await prisma.video.findMany({
         ...query,
         where: filter,
         skip: offset ?? 0,
         take: limit ?? 100
       })
+
+      // Only fetch from production if we got no results locally
+      if (localVideos.length === 0) {
+        return (
+          (await withVideoFallback('Video', localVideos, {
+            skipProduction: true
+          })) ?? []
+        )
+      }
+
+      return localVideos
     }
   }),
   videosCount: t.int({
