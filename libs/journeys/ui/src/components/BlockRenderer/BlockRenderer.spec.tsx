@@ -61,6 +61,7 @@ describe('BlockRenderer', () => {
       size: null,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null,
       children: []
     }
@@ -86,6 +87,7 @@ describe('BlockRenderer', () => {
       size: null,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null,
       children: []
     }
@@ -456,6 +458,7 @@ describe('BlockRenderer', () => {
           size: null,
           startIconId: null,
           endIconId: null,
+          submitEnabled: null,
           action: null,
           children: []
         }
@@ -494,6 +497,7 @@ describe('BlockRenderer', () => {
           size: null,
           startIconId: null,
           endIconId: null,
+          submitEnabled: null,
           action: null,
           children: []
         }

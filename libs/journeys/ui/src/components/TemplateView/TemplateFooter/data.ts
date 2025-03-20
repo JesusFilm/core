@@ -72,6 +72,7 @@ export const journey: Journey = {
       size: ButtonSize.medium,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: {
         __typename: 'LinkAction',
         parentBlockId: 'button1.id',
