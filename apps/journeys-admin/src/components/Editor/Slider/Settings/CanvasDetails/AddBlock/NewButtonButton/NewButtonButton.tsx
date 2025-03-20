@@ -12,7 +12,8 @@ import Cursor6Icon from '@core/shared/ui/icons/Cursor6'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
-  BlockFields_CardBlock as CardBlock
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_TextResponseBlock as TextResponseBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import { ButtonBlockCreate } from '../../../../../../../../__generated__/ButtonBlockCreate'
 import {
@@ -66,6 +67,22 @@ export function NewButtonButton(): ReactElement {
     ) as TreeBlock<CardBlock> | undefined
 
     if (card == null || journey == null) return
+
+    // Check for text inputs on the card
+    const hasTextInputs = card.children.some(
+      (block) => block.__typename === 'TextResponseBlock'
+    )
+
+    // Check for existing submit buttons in the card
+    const hasSubmitButton = card.children.some(
+      (block) =>
+        block.__typename === 'ButtonBlock' &&
+        (block as TreeBlock<ButtonBlock>).submitEnabled === true
+    )
+
+    // Set submitEnabled if there are text inputs and no submit buttons
+    const shouldBeSubmitButton = hasTextInputs && !hasSubmitButton
+
     const button: ButtonBlock = {
       id: uuidv4(),
       __typename: 'ButtonBlock',
@@ -78,7 +95,7 @@ export function NewButtonButton(): ReactElement {
       startIconId: uuidv4(),
       endIconId: uuidv4(),
       action: null,
-      submitEnabled: false
+      submitEnabled: shouldBeSubmitButton
     }
 
     addBlock({
@@ -93,7 +110,8 @@ export function NewButtonButton(): ReactElement {
               label: '',
               variant: button.buttonVariant,
               color: button.buttonColor,
-              size: button.size
+              size: button.size,
+              submitEnabled: shouldBeSubmitButton
             },
             iconBlockCreateInput1: {
               id: button.startIconId,
