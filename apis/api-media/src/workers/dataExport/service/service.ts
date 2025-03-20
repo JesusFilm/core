@@ -454,11 +454,6 @@ export const service = async (customLogger?: Logger): Promise<void> => {
     await uploadToR2(gzippedFile, logger)
     await uploadToR2(cloudflareImageFile, logger)
 
-    // Log instructions for how to import
-    logger.info(
-      `To import this backup with psql, use: gunzip -c ${GZIPPED_BACKUP_FILE_NAME} | psql -U username -d database`
-    )
-
     // Clean up local files
     await fsPromises.unlink(sqlFile)
     await fsPromises.unlink(gzippedFile)

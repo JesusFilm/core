@@ -60,16 +60,17 @@ async function main(): Promise<void> {
     )
     run(
       await import(
-        /* webpackChunkName: "big-query" */
-        './bigQuery'
-      )
-    )
-    run(
-      await import(
         /* webpackChunkName: "crowdin" */
         './crowdin'
       )
     )
+    run(
+      await import(
+        /* webpackChunkName: "blocklist" */
+        './blocklist'
+      )
+    )
+
     run(
       await import(
         /* webpackChunkName: "data-export" */
@@ -78,8 +79,8 @@ async function main(): Promise<void> {
     )
     run(
       await import(
-        /* webpackChunkName: "blocklist" */
-        './blocklist'
+        /* webpackChunkName: "big-query" */
+        './bigQuery'
       )
     )
   }
