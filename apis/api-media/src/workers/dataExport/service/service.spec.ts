@@ -144,20 +144,27 @@ describe('dataExport service', () => {
 
     // Verify the creation of the temporary view for CloudflareImage export
     expect(mockSpawn).toHaveBeenCalledWith(
-      'sh',
+      'psql',
       expect.arrayContaining([
         '-c',
-        expect.stringContaining('CREATE OR REPLACE VIEW temp_cloudflare_export')
+        'CREATE OR REPLACE VIEW temp_cloudflare_export AS SELECT * FROM "CloudflareImage" WHERE "videoId" IS NOT NULL;'
       ]),
       expect.anything()
     )
 
     // Verify the pg_dump for the CloudflareImage export
     expect(mockSpawn).toHaveBeenCalledWith(
-      'sh',
+      'pg_dump',
       expect.arrayContaining([
-        '-c',
-        expect.stringContaining('-t "temp_cloudflare_export"')
+        '-t',
+        'temp_cloudflare_export',
+        '-F',
+        'p',
+        '--inserts',
+        '--no-owner',
+        '--no-privileges',
+        '--data-only',
+        '--column-inserts'
       ]),
       expect.anything()
     )
