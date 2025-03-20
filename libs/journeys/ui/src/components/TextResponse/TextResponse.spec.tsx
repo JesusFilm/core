@@ -34,18 +34,18 @@ const block: TreeBlock<TextResponseFields> = {
 
 interface TextResponseMockProps {
   values?: FormikValues
-  hanldeSubmit?: () => void
+  handleSubmit?: () => void
 }
 
 const TextResponseMock = ({
   values,
-  hanldeSubmit
+  handleSubmit
 }: TextResponseMockProps): ReactElement => (
   <JourneyProvider>
     <SnackbarProvider>
       <Formik
         initialValues={{ ...values }}
-        onSubmit={hanldeSubmit ?? noop}
+        onSubmit={handleSubmit ?? noop}
         isSubmitting={true}
       >
         <TextResponse {...block} />
