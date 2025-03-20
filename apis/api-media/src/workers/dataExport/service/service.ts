@@ -1,6 +1,8 @@
 import { spawn } from 'child_process'
 import fs, { promises as fsPromises } from 'fs'
 import { basename, join } from 'path'
+import { pipeline } from 'stream/promises'
+import { createGzip } from 'zlib'
 
 import {
   CopyObjectCommand,
@@ -18,7 +20,8 @@ import { logger as baseLogger } from '../../../logger'
  * No manual invocation is needed for this service.
  */
 
-const BACKUP_FILE_NAME = 'media-backup.pgdump'
+const SQL_BACKUP_FILE_NAME = 'media-backup.sql'
+const GZIPPED_BACKUP_FILE_NAME = 'media-backup.sql.gz'
 const CLOUDFLARE_IMAGES_FILE_NAME = 'cloudflareImage-system-data.sql.gz'
 // Tables to exclude from the export
 const EXCLUDED_TABLES = [
@@ -120,7 +123,8 @@ async function uploadToR2(
 }
 
 /**
- * Executes pg_dump command to create a database backup
+ * Executes pg_dump command to create a SQL dump in PLAIN format
+ * Uses INSERT statements instead of COPY for better portability
  * Excludes specified tables
  */
 async function executePgDump(
@@ -128,81 +132,109 @@ async function executePgDump(
   logger: Logger
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    const databaseUrl = new URL(process.env.PG_DATABASE_URL_MEDIA ?? '')
-    const host = databaseUrl.hostname
-    const port = databaseUrl.port
-    const database = databaseUrl.pathname.slice(1)
-    const username = databaseUrl.username
+    try {
+      const databaseUrl = new URL(process.env.PG_DATABASE_URL_MEDIA ?? '')
+      const host = databaseUrl.hostname
+      const port = databaseUrl.port || '5432'
+      const database = databaseUrl.pathname.slice(1)
+      const username = databaseUrl.username
 
-    const env = {
-      ...process.env,
-      PGPASSWORD: decodeURIComponent(databaseUrl.password)
-    }
-
-    // Generate exclude table arguments
-    const excludeTableArgs = EXCLUDED_TABLES.flatMap((table) => [
-      '--exclude-table',
-      table
-    ])
-
-    const args = [
-      '-h',
-      host,
-      '-p',
-      port,
-      '-U',
-      username,
-      '-d',
-      database,
-      '-F',
-      'c', // Custom format (compressed binary file)
-      '-Z',
-      '9', // Maximum compression level
-      '--no-owner',
-      '--no-privileges',
-      ...excludeTableArgs,
-      '-f',
-      outputFile
-    ]
-
-    logger.info('Starting database export with filters')
-    logger.info(
-      {
-        excludedTables: EXCLUDED_TABLES
-      },
-      'Export filters'
-    )
-
-    const dump = spawn('pg_dump', args, { env })
-
-    dump.stderr.on('data', (data) => {
-      logger.info(`pg_dump: ${data}`)
-    })
-
-    dump.on('close', (code) => {
-      if (code === 0) {
-        resolve()
-      } else {
-        const error = new Error(`pg_dump process exited with code ${code}`)
-        logger.error({ error }, 'Failed to export database')
-        reject(error)
+      const env = {
+        ...process.env,
+        PGPASSWORD: decodeURIComponent(databaseUrl.password)
       }
-    })
 
-    dump.on('error', (error) => {
-      logger.error({ error }, 'Error spawning pg_dump process')
-      reject(error)
-    })
+      // Generate exclude table arguments
+      const excludeTableArgs = EXCLUDED_TABLES.flatMap((table) => [
+        '--exclude-table',
+        table
+      ])
+
+      const args = [
+        '-h',
+        host,
+        '-p',
+        port,
+        '-U',
+        username,
+        '-d',
+        database,
+        '-F',
+        'p', // PLAIN format (SQL statements) for psql compatibility
+        '--inserts', // Use INSERT instead of COPY to avoid permission issues
+        '--no-owner',
+        '--no-privileges',
+        ...excludeTableArgs,
+        '-f',
+        outputFile
+      ]
+
+      logger.info('Starting database export with filters')
+      logger.info(
+        {
+          excludedTables: EXCLUDED_TABLES,
+          format: 'PLAIN SQL with INSERT statements'
+        },
+        'Export filters'
+      )
+
+      const dump = spawn('pg_dump', args, { env })
+
+      let stderrData = ''
+      dump.stderr.on('data', (data) => {
+        const chunk = data.toString()
+        stderrData += chunk
+        logger.info(`pg_dump: ${chunk}`)
+      })
+
+      dump.on('close', (code) => {
+        if (code === 0) {
+          // Verify the SQL file exists and has content
+          fsPromises.stat(outputFile).then(
+            (stats) => {
+              if (stats.size === 0) {
+                logger.error('SQL file is empty')
+                reject(new Error('SQL file is empty'))
+              } else {
+                logger.info(
+                  `Database export completed: ${outputFile} (${stats.size} bytes)`
+                )
+                resolve()
+              }
+            },
+            (error) => {
+              logger.error({ error }, 'Failed to get SQL file stats')
+              reject(error instanceof Error ? error : new Error(String(error)))
+            }
+          )
+        } else {
+          const error = new Error(`pg_dump process exited with code ${code}`)
+          logger.error({ error }, 'Failed to export database')
+          if (stderrData) {
+            logger.error(`pg_dump stderr: ${stderrData}`)
+          }
+          reject(error)
+        }
+      })
+
+      dump.on('error', (error) => {
+        logger.error({ error }, 'Error spawning pg_dump process')
+        reject(error instanceof Error ? error : new Error(String(error)))
+      })
+    } catch (error) {
+      logger.error({ error }, 'Error in pg_dump execution setup')
+      reject(error instanceof Error ? error : new Error(String(error)))
+    }
   })
 }
 
 /**
- * Export CloudflareImage data where userId is 'system'
+ * Export CloudflareImage data where videoId is not null
  */
 async function exportCloudflareImageData(
   exportDir: string,
   logger: Logger
-): Promise<void> {
+): Promise<string> {
   return new Promise((resolve, reject) => {
     const databaseUrl = new URL(process.env.PG_DATABASE_URL_MEDIA ?? '')
     const host = databaseUrl.hostname
@@ -218,121 +250,154 @@ async function exportCloudflareImageData(
     logger.info('Starting CloudflareImage data export')
 
     // Define file paths
-    const csvFilePath = join(exportDir, 'cloudflareImage-system-data.csv')
-    const gzipFilePath = join(exportDir, 'cloudflareImage-system-data.sql.gz')
+    const sqlFilePath = join(exportDir, 'cloudflareImage-system-data.sql')
+    const gzipFilePath = join(exportDir, CLOUDFLARE_IMAGES_FILE_NAME)
 
-    // Export the data
-    logger.info('Exporting CloudflareImage data to CSV')
-
-    const exportCmd = `
-      COPY (
-        SELECT *
-        FROM "CloudflareImage" 
-        WHERE "videoId" IS NOT NULL
-      ) TO '${csvFilePath}' WITH CSV HEADER
+    // Create a temporary SQL file for the export
+    const createViewCmd = `
+      psql -h ${host} -p ${port} -U ${username} -d ${database} -c "CREATE OR REPLACE VIEW temp_cloudflare_export AS SELECT * FROM \\"CloudflareImage\\" WHERE \\"videoId\\" IS NOT NULL;"
     `
 
-    const exportProcess = spawn(
-      'psql',
-      ['-h', host, '-p', port, '-U', username, '-d', database, '-c', exportCmd],
-      { env }
-    )
+    // First create a temporary view for our filtered data
+    const createViewProcess = spawn('sh', ['-c', createViewCmd], { env })
 
-    let exportError = ''
-    exportProcess.stderr.on('data', (data) => {
-      exportError += data.toString()
+    let createViewError = ''
+    createViewProcess.stderr.on('data', (data) => {
+      const chunk = data.toString()
+      createViewError += chunk
+      logger.info(`create view: ${chunk}`)
     })
 
-    exportProcess.on('close', (exportCode) => {
-      if (exportCode !== 0) {
-        logger.error(`Export failed with code ${exportCode}`)
-        reject(new Error(`Export failed: ${exportError}`))
+    createViewProcess.on('close', (createViewCode) => {
+      if (createViewCode !== 0) {
+        logger.error(`Create view failed with code ${createViewCode}`)
+        reject(new Error(`Create view failed: ${createViewError}`))
         return
       }
 
-      // Check if the export worked
-      fs.stat(csvFilePath, (statErr, stats) => {
-        if (statErr) {
-          logger.error({ error: statErr }, 'Failed to get CSV file stats')
-          reject(statErr)
+      // Now export the view data
+      const exportCmd = `
+        pg_dump -h ${host} -p ${port} -U ${username} -d ${database} -t "temp_cloudflare_export" -F p --inserts --no-owner --no-privileges --data-only --column-inserts -f ${sqlFilePath}
+      `
+
+      const exportProcess = spawn('sh', ['-c', exportCmd], { env })
+
+      let exportError = ''
+      exportProcess.stderr.on('data', (data) => {
+        const chunk = data.toString()
+        exportError += chunk
+        logger.info(`pg_dump: ${chunk}`)
+      })
+
+      exportProcess.on('close', (exportCode) => {
+        if (exportCode !== 0) {
+          logger.error(`Export failed with code ${exportCode}`)
+          reject(new Error(`Export failed: ${exportError}`))
           return
         }
 
-        if (stats.size === 0) {
-          return
-        }
+        // Clean up the temporary view
+        const dropViewCmd = `
+          psql -h ${host} -p ${port} -U ${username} -d ${database} -c "DROP VIEW IF EXISTS temp_cloudflare_export;"
+        `
 
-        // Compress the file
-        compressFile(csvFilePath, gzipFilePath, logger, resolve, reject)
+        spawn('sh', ['-c', dropViewCmd], { env })
+
+        // Check if the export worked
+        fs.stat(sqlFilePath, (statErr, stats) => {
+          if (statErr) {
+            logger.error({ error: statErr }, 'Failed to get SQL file stats')
+            reject(
+              statErr instanceof Error ? statErr : new Error(String(statErr))
+            )
+            return
+          }
+
+          if (stats.size === 0) {
+            logger.warn('Generated SQL file is empty')
+            resolve(gzipFilePath) // Return even if empty to continue the process
+            return
+          }
+
+          // Update table name in the SQL file to match the original table
+          const sed = `
+            sed -i 's/temp_cloudflare_export/CloudflareImage/g' ${sqlFilePath}
+          `
+
+          const sedProcess = spawn('sh', ['-c', sed], { env })
+
+          sedProcess.on('close', (sedCode) => {
+            if (sedCode !== 0) {
+              logger.warn('Failed to update table name in SQL file')
+            }
+
+            // Compress the file
+            compressFile(sqlFilePath, gzipFilePath, logger)
+              .then(() => {
+                // Clean up uncompressed file
+                fs.unlink(sqlFilePath, (unlinkErr) => {
+                  if (unlinkErr) {
+                    logger.warn(
+                      { error: unlinkErr },
+                      'Failed to remove uncompressed SQL file'
+                    )
+                  }
+                })
+                resolve(gzipFilePath)
+              })
+              .catch((error) => {
+                logger.error({ error }, 'Failed to compress SQL file')
+                reject(
+                  error instanceof Error ? error : new Error(String(error))
+                )
+              })
+          })
+        })
+      })
+
+      exportProcess.on('error', (error) => {
+        logger.error({ error }, 'Export process error')
+        reject(error instanceof Error ? error : new Error(String(error)))
       })
     })
 
-    exportProcess.on('error', (error) => {
-      logger.error({ error }, 'Export process error')
-      reject(error)
+    createViewProcess.on('error', (error) => {
+      logger.error({ error }, 'Create view process error')
+      reject(error instanceof Error ? error : new Error(String(error)))
     })
   })
 }
 
 /**
- * Helper function to compress a file
+ * Compresses a file using gzip
  */
-function compressFile(
+async function compressFile(
   inputFile: string,
   outputFile: string,
-  logger: Logger,
-  resolve: () => void,
-  reject: (error: Error) => void
-): void {
+  logger: Logger
+): Promise<void> {
   logger.info(`Compressing ${inputFile} to ${outputFile}`)
 
-  const gzipProcess = spawn('gzip', ['-c', inputFile])
-  const outputStream = fs.createWriteStream(outputFile)
+  try {
+    // Create read and write streams
+    const source = fs.createReadStream(inputFile)
+    const gzip = createGzip()
+    const destination = fs.createWriteStream(outputFile)
 
-  gzipProcess.stdout.pipe(outputStream)
+    // Pipe the file through gzip compression
+    await pipeline(source, gzip, destination)
 
-  let gzipError = ''
-  gzipProcess.stderr.on('data', (data) => {
-    gzipError += data.toString()
-  })
-
-  gzipProcess.on('close', (gzipCode) => {
-    if (gzipCode !== 0) {
-      logger.error(`Gzip failed with code ${gzipCode}`)
-      reject(new Error(`Compression failed: ${gzipError}`))
-      return
+    // Verify the compressed file exists and has content
+    const stats = await fsPromises.stat(outputFile)
+    if (stats.size === 0) {
+      throw new Error('Compressed file is empty')
     }
 
-    // Delete the original file
-    fs.unlink(inputFile, (unlinkErr) => {
-      if (unlinkErr) {
-        logger.warn({ error: unlinkErr }, 'Failed to remove original CSV file')
-      }
-
-      // Verify the compressed file exists and is not empty
-      fs.stat(outputFile, (statErr, stats) => {
-        if (statErr) {
-          logger.error({ error: statErr }, 'Failed to get gzipped file stats')
-          reject(statErr)
-          return
-        }
-
-        if (stats.size === 0) {
-          logger.error('Gzipped file is empty')
-          reject(new Error('Gzipped file is empty'))
-          return
-        }
-
-        logger.info('CloudflareImage data export completed successfully')
-        resolve()
-      })
-    })
-  })
-
-  gzipProcess.on('error', (error) => {
-    logger.error({ error }, 'Gzip process error')
-    reject(error)
-  })
+    logger.info(`Compression completed: ${outputFile} (${stats.size} bytes)`)
+  } catch (error) {
+    logger.error({ error }, 'Error compressing file')
+    throw error instanceof Error ? error : new Error(String(error))
+  }
 }
 
 /**
@@ -345,26 +410,39 @@ export const service = async (customLogger?: Logger): Promise<void> => {
     const outputDir = join(process.cwd(), 'exports')
     await fsPromises.mkdir(outputDir, { recursive: true })
 
-    const outputFile = join(outputDir, BACKUP_FILE_NAME)
-    const cloudflareImageFile = join(outputDir, CLOUDFLARE_IMAGES_FILE_NAME)
+    // Define output files
+    const sqlFile = join(outputDir, SQL_BACKUP_FILE_NAME)
+    const gzippedFile = join(outputDir, GZIPPED_BACKUP_FILE_NAME)
 
-    // Generate database backup
-    await executePgDump(outputFile, logger)
+    // Generate database backup in plain SQL format
+    await executePgDump(sqlFile, logger)
 
-    // Export CloudflareImage data with system userId
-    await exportCloudflareImageData(outputDir, logger)
+    // Compress the SQL file
+    await compressFile(sqlFile, gzippedFile, logger)
+
+    // Export CloudflareImage data with videoId not null
+    const cloudflareImageFile = await exportCloudflareImageData(
+      outputDir,
+      logger
+    )
 
     // Upload to R2
-    await uploadToR2(outputFile, logger)
+    await uploadToR2(gzippedFile, logger)
     await uploadToR2(cloudflareImageFile, logger)
 
+    // Log instructions for how to import
+    logger.info(
+      `To import this backup with psql, use: gunzip -c ${GZIPPED_BACKUP_FILE_NAME} | psql -U username -d database`
+    )
+
     // Clean up local files
-    await fsPromises.unlink(outputFile)
+    await fsPromises.unlink(sqlFile)
+    await fsPromises.unlink(gzippedFile)
     await fsPromises.unlink(cloudflareImageFile)
 
     logger.info('Database export and upload completed successfully')
   } catch (error) {
     logger.error({ error }, 'Error during database export')
-    throw error
+    throw error instanceof Error ? error : new Error(String(error))
   }
 }
