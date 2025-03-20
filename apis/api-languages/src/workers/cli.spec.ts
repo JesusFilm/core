@@ -14,10 +14,6 @@ jest.mock('./dataExport/service', () => ({
   service: jest.fn().mockResolvedValue(undefined)
 }))
 
-jest.mock('./dataImport/service', () => ({
-  service: jest.fn().mockResolvedValue(undefined)
-}))
-
 // Mock Queue
 jest.mock('bullmq', () => ({
   Queue: jest.fn().mockImplementation(() => ({
@@ -58,24 +54,6 @@ describe('CLI', () => {
       expect.any(String),
       expect.any(String),
       'api-languages-data-export-job',
-      expect.any(String)
-    )
-    expect(mockConsoleLog).toHaveBeenCalledWith(
-      expect.stringContaining('test-id')
-    )
-    expect(mockConsoleLog).toHaveBeenCalledWith(
-      expect.stringContaining('you must start the worker')
-    )
-    expect(mockExit).toHaveBeenCalledWith(0)
-  })
-
-  it('should run data import when data-import command is provided', async () => {
-    process.argv = ['node', 'cli.js', 'data-import']
-    await cli()
-    expect(mockConsoleLog).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.any(String),
-      'api-languages-data-import-job',
       expect.any(String)
     )
     expect(mockConsoleLog).toHaveBeenCalledWith(
