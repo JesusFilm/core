@@ -30,8 +30,6 @@ export const TEXT_RESPONSE_BLOCK_CREATE = gql`
   }
 `
 
-//
-
 export function NewTextResponseButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [textResponseBlockCreate, { loading }] =
