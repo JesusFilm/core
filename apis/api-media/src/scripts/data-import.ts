@@ -3,6 +3,7 @@ import fs, { promises as fsPromises } from 'fs'
 import { join } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
+import { TransformStream } from 'stream/web'
 import { createGunzip } from 'zlib'
 
 import { prisma } from '../lib/prisma'
@@ -10,12 +11,16 @@ import { prisma } from '../lib/prisma'
 // Constants
 const GZIPPED_BACKUP_FILE_NAME = 'media-backup.sql.gz'
 const BACKUP_FILE_NAME = 'media-backup.sql'
+const CLOUDFLARE_IMAGES_FILE_NAME = 'cloudflareImage-system-data.sql.gz'
+const CLOUDFLARE_IMAGES_SQL_FILE_NAME = 'cloudflareImage-system-data.sql'
 
 /**
  * Downloads a file from a URL and saves it locally
  */
 async function downloadFile(url: string, outputPath: string): Promise<void> {
   console.log(`Downloading file from ${url}`)
+  const startTime = Date.now()
+  const fileName = outputPath.split('/').pop() || outputPath
 
   try {
     const response = await fetch(url, {
@@ -41,8 +46,43 @@ async function downloadFile(url: string, outputPath: string): Promise<void> {
       throw new Error('Response body is null')
     }
 
+    // Get the total size for progress reporting
+    const contentLength = response.headers.get('content-length')
+    const totalBytes = contentLength ? parseInt(contentLength, 10) : 0
+
+    let downloadedBytes = 0
+    const lastProgressUpdate = 0
+
+    const progressInterval = setInterval(() => {
+      if (totalBytes) {
+        const percent = Math.round((downloadedBytes / totalBytes) * 100)
+        console.log(
+          `Downloading ${fileName}: ${percent}% (${(downloadedBytes / 1024 / 1024).toFixed(2)} MB of ${(totalBytes / 1024 / 1024).toFixed(2)} MB)`
+        )
+      } else {
+        console.log(
+          `Downloading ${fileName}: ${(downloadedBytes / 1024 / 1024).toFixed(2)} MB`
+        )
+      }
+    }, 2000)
+
+    // Create a transform stream to track progress
+    const progressStream = new TransformStream({
+      transform(chunk, controller) {
+        downloadedBytes += chunk.length
+        controller.enqueue(chunk)
+      }
+    })
+
     const fileStream = fs.createWriteStream(outputPath)
-    await pipeline(Readable.fromWeb(response.body as any), fileStream)
+
+    // Use the web streams API with progress tracking
+    await pipeline(
+      Readable.fromWeb((response.body as any).pipeThrough(progressStream)),
+      fileStream
+    )
+
+    clearInterval(progressInterval)
 
     // Verify the file was downloaded and has content
     const stats = await fsPromises.stat(outputPath)
@@ -50,7 +90,10 @@ async function downloadFile(url: string, outputPath: string): Promise<void> {
       throw new Error('Downloaded file is empty')
     }
 
-    console.log('Download completed')
+    const duration = ((Date.now() - startTime) / 1000).toFixed(1)
+    console.log(
+      `Download completed: ${fileName} (${(stats.size / 1024 / 1024).toFixed(2)} MB in ${duration}s)`
+    )
   } catch (error) {
     console.error('Error downloading file:', error)
     throw error
@@ -64,31 +107,48 @@ async function decompressFile(
   inputFile: string,
   outputFile: string
 ): Promise<void> {
-  console.log('Decompressing file')
+  const startTime = Date.now()
+  const fileName = outputFile.split('/').pop() || outputFile
+  console.log(`Decompressing to ${fileName}`)
 
   try {
-    // Verify the input file exists
-    try {
-      await fsPromises.access(inputFile)
-    } catch (error) {
-      throw new Error(
-        `Input file does not exist or is not accessible: ${inputFile}`
-      )
-    }
+    // Verify the input file exists and get its size
+    const stats = await fsPromises.stat(inputFile)
+    const inputSize = stats.size
+    console.log(
+      `Decompressing ${(inputSize / 1024 / 1024).toFixed(2)} MB file...`
+    )
 
     const source = fs.createReadStream(inputFile)
     const gunzip = createGunzip()
     const destination = fs.createWriteStream(outputFile)
 
+    let processedBytes = 0
+    const progressInterval = setInterval(() => {
+      console.log(
+        `Decompression in progress: ${(processedBytes / 1024 / 1024).toFixed(2)} MB processed`
+      )
+    }, 2000)
+
+    // Track decompression progress
+    source.on('data', (chunk) => {
+      processedBytes += chunk.length
+    })
+
     await pipeline(source, gunzip, destination)
+    clearInterval(progressInterval)
 
     // Verify the output file exists and has content
-    const stats = await fsPromises.stat(outputFile)
-    if (stats.size === 0) {
+    const outputStats = await fsPromises.stat(outputFile)
+    if (outputStats.size === 0) {
       throw new Error('Decompressed file is empty')
     }
 
-    console.log('File decompression completed')
+    const duration = ((Date.now() - startTime) / 1000).toFixed(1)
+    const ratio = (outputStats.size / inputSize).toFixed(1)
+    console.log(
+      `Decompression completed: ${fileName} (${(outputStats.size / 1024 / 1024).toFixed(2)} MB, ratio ${ratio}x, took ${duration}s)`
+    )
   } catch (error) {
     console.error('Error decompressing file:', error)
     throw error
@@ -98,7 +158,10 @@ async function decompressFile(
 /**
  * Executes psql command to restore a database from SQL file
  */
-async function executePsql(filePath: string): Promise<void> {
+async function executePsql(
+  filePath: string,
+  options: { noReset?: boolean } = {}
+): Promise<void> {
   return new Promise((resolve, reject) => {
     try {
       // Verify the SQL file exists
@@ -112,12 +175,21 @@ async function executePsql(filePath: string): Promise<void> {
           )
           return
         })
-        .then(() => {
+        .then(async () => {
           const databaseUrl = new URL(process.env.PG_DATABASE_URL_MEDIA ?? '')
           const host = databaseUrl.hostname
           const port = databaseUrl.port
           const database = databaseUrl.pathname.slice(1)
           const username = databaseUrl.username
+
+          // Get file size for progress reporting
+          const stats = await fsPromises.stat(filePath)
+          const totalSize = stats.size
+          const fileName = filePath.split('/').pop() || filePath
+
+          console.log(
+            `Starting import of ${fileName} (${(totalSize / 1024 / 1024).toFixed(2)} MB)`
+          )
 
           const env = {
             ...process.env,
@@ -135,27 +207,55 @@ async function executePsql(filePath: string): Promise<void> {
             database,
             '-v',
             'ON_ERROR_STOP=1',
-            '--single-transaction',
-            '-c',
-            'DROP SCHEMA public CASCADE; CREATE SCHEMA public;',
-            '-f',
-            filePath
+            '--single-transaction'
           ]
 
-          console.log(`Starting database restore with psql on ${database}`)
+          // Only include the schema reset for the main database backup
+          if (!options.noReset) {
+            args.push('-c', 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;')
+          }
 
+          args.push('-f', filePath)
+
+          console.log(`Starting database restore with psql on ${database}`)
+          const startTime = Date.now()
           const psql = spawn('psql', args, { env })
 
-          // Collect stderr for error reporting
+          // Set up progress tracking
+          let lastProgressTime = Date.now()
+          const progressInterval = setInterval(() => {
+            const elapsedSeconds = ((Date.now() - startTime) / 1000).toFixed(0)
+            console.log(`Import in progress... (${elapsedSeconds}s elapsed)`)
+          }, 5000) // Update every 5 seconds
+
+          // Collect stderr for error reporting and progress tracking
           let stderrData = ''
           psql.stderr.on('data', (data) => {
             const chunk = data.toString()
             stderrData += chunk
+
+            // Update the last activity time whenever we get output
+            lastProgressTime = Date.now()
+
+            // Only log actual errors, not progress messages
+            if (chunk.toLowerCase().includes('error')) {
+              console.error(`Error during import: ${chunk}`)
+            }
+          })
+
+          // Also monitor stdout for progress indication
+          psql.stdout.on('data', (data) => {
+            lastProgressTime = Date.now()
           })
 
           psql.on('close', (code) => {
+            clearInterval(progressInterval)
+
+            const duration = ((Date.now() - startTime) / 1000).toFixed(1)
             if (code === 0) {
-              console.log('Database restore completed successfully')
+              console.log(
+                `Database restore completed successfully: ${fileName} (took ${duration}s)`
+              )
               resolve()
             } else {
               const error = new Error(`psql process exited with code ${code}`)
@@ -168,6 +268,7 @@ async function executePsql(filePath: string): Promise<void> {
           })
 
           psql.on('error', (error) => {
+            clearInterval(progressInterval)
             console.error('Error spawning psql process:', error)
             reject(error instanceof Error ? error : new Error(String(error)))
           })
@@ -182,8 +283,12 @@ async function executePsql(filePath: string): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  let gzippedFile: string | null = null
-  let sqlFile: string | null = null
+  const files: Record<string, string | null> = {
+    mainGzipped: null,
+    mainSql: null,
+    cloudflareGzipped: null,
+    cloudflareSql: null
+  }
 
   try {
     console.log('Starting data import script')
@@ -199,62 +304,99 @@ async function main(): Promise<void> {
     const baseUrl = process.env.DB_SEED_PATH
     // Ensure the base URL ends with a slash if not already
     const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`
-    const fullUrl = `${normalizedBaseUrl}${GZIPPED_BACKUP_FILE_NAME}`
-
-    console.log(`Using SQL backup from: ${fullUrl}`)
+    const mainBackupUrl = `${normalizedBaseUrl}${GZIPPED_BACKUP_FILE_NAME}`
+    const cloudflareImagesUrl = `${normalizedBaseUrl}${CLOUDFLARE_IMAGES_FILE_NAME}`
 
     try {
       const tempDir = join(process.cwd(), 'imports')
       await fsPromises.mkdir(tempDir, { recursive: true })
 
-      // Download the gzipped SQL file
-      gzippedFile = join(tempDir, GZIPPED_BACKUP_FILE_NAME)
-      await downloadFile(fullUrl, gzippedFile)
+      // Step 1: Download both files
+      console.log('Step 1: Downloading backup files')
 
-      // Decompress the file
-      sqlFile = join(tempDir, BACKUP_FILE_NAME)
-      await decompressFile(gzippedFile, sqlFile)
+      // Download main backup
+      files.mainGzipped = join(tempDir, GZIPPED_BACKUP_FILE_NAME)
+      await downloadFile(mainBackupUrl, files.mainGzipped)
 
-      // Import the SQL file using psql
-      await executePsql(sqlFile)
-
-      // Update import times
+      // Download CloudflareImage data
+      files.cloudflareGzipped = join(tempDir, CLOUDFLARE_IMAGES_FILE_NAME)
       try {
-        await prisma.importTimes.upsert({
-          where: { modelName: 'dataImport' },
-          update: { lastImport: new Date() },
-          create: { modelName: 'dataImport', lastImport: new Date() }
-        })
+        await downloadFile(cloudflareImagesUrl, files.cloudflareGzipped)
       } catch (error) {
-        console.warn('Failed to update import times:', error)
-        // Continue execution even if this fails
+        const typedError =
+          error instanceof Error ? error : new Error(String(error))
+        console.warn(`CloudflareImage data not found: ${typedError.message}`)
+        console.warn('Will continue with main import only')
+        files.cloudflareGzipped = null
       }
+
+      // Step 2: Decompress files
+      console.log('Step 2: Decompressing files')
+
+      // Decompress main backup
+      files.mainSql = join(tempDir, BACKUP_FILE_NAME)
+      await decompressFile(files.mainGzipped, files.mainSql)
+
+      // Decompress CloudflareImage data if available
+      if (files.cloudflareGzipped) {
+        files.cloudflareSql = join(tempDir, CLOUDFLARE_IMAGES_SQL_FILE_NAME)
+        try {
+          await decompressFile(files.cloudflareGzipped, files.cloudflareSql)
+        } catch (error) {
+          const typedError =
+            error instanceof Error ? error : new Error(String(error))
+          console.warn(
+            `Failed to decompress CloudflareImage data: ${typedError.message}`
+          )
+          files.cloudflareSql = null
+        }
+      }
+
+      // Step 3: Import SQL files
+      console.log('Step 3: Importing data')
+
+      // Import main backup (with schema reset)
+      await executePsql(files.mainSql)
+
+      // Import CloudflareImage data if available (without schema reset)
+      if (files.cloudflareSql) {
+        try {
+          await executePsql(files.cloudflareSql, { noReset: true })
+        } catch (error) {
+          const typedError =
+            error instanceof Error ? error : new Error(String(error))
+          console.warn(
+            `Failed to import CloudflareImage data: ${typedError.message}`
+          )
+        }
+      }
+
+      // Step 4: Update import time in database
+      console.log('Step 4: Updating import timestamp')
+      await prisma.importTimes.upsert({
+        where: { modelName: 'dataImport' },
+        update: { lastImport: new Date() },
+        create: { modelName: 'dataImport', lastImport: new Date() }
+      })
 
       console.log('Data import completed successfully')
       process.exit(0)
     } finally {
       // Clean up temporary files
-      try {
-        if (gzippedFile) {
-          await fsPromises
-            .unlink(gzippedFile)
-            .catch((err) =>
-              console.warn(`Failed to delete temp file: ${gzippedFile}`)
-            )
+      console.log('Cleaning up temporary files')
+      const filesToDelete = Object.values(files).filter(Boolean) as string[]
+
+      for (const file of filesToDelete) {
+        try {
+          await fsPromises.unlink(file)
+        } catch (error) {
+          console.warn(`Failed to delete temp file: ${file}`)
         }
-        if (sqlFile) {
-          await fsPromises
-            .unlink(sqlFile)
-            .catch((err) =>
-              console.warn(`Failed to delete temp file: ${sqlFile}`)
-            )
-        }
-      } catch (cleanupError) {
-        console.warn('Error cleaning up temporary files')
       }
     }
   } catch (error) {
-    console.error('Error during database restore:', error)
+    const typedError = error instanceof Error ? error : new Error(String(error))
+    console.error('Error during data import:', typedError)
     process.exit(1)
   }
 }
@@ -262,7 +404,8 @@ async function main(): Promise<void> {
 if (require.main === module) {
   // This script is being run directly
   main().catch((error) => {
-    console.error('Unhandled error:', error)
+    const typedError = error instanceof Error ? error : new Error(String(error))
+    console.error('Unhandled error:', typedError)
     process.exit(1)
   })
 }
