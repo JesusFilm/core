@@ -43,9 +43,7 @@ export function FilterDrawer({
     <Box sx={{ height: '100vh' }} data-testid="FilterDrawer">
       <Box sx={{ display: { sm: 'block', md: 'none' } }}>
         <Stack direction="row" sx={{ px: 6, py: 2 }} alignItems="center">
-          <Typography variant="subtitle1">
-            {t('Filters')} <ClearAllButton handleClearAll={handleClearAll} />
-          </Typography>
+          <Typography variant="subtitle1">{t('Refine Results')}</Typography>
           <IconButton sx={{ ml: 'auto' }}>
             <X2Icon onClick={handleClose} />
           </IconButton>
@@ -54,7 +52,14 @@ export function FilterDrawer({
       </Box>
 
       <Box sx={{ px: 6, py: 5 }}>
-        <Typography variant="subtitle2">{t('Categories')}</Typography>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Typography variant="subtitle2">{t('Filter By')}</Typography>
+          <ClearAllButton handleClearAll={handleClearAll} />
+        </Stack>
         <FormGroup>
           <FormControlLabel
             control={<Checkbox />}
