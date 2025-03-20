@@ -184,7 +184,6 @@ async function executePgDump(
       dump.stderr.on('data', (data) => {
         const chunk = data.toString()
         stderrData += chunk
-        logger.info(`pg_dump: ${chunk}`)
       })
 
       dump.on('close', (code) => {
@@ -253,67 +252,142 @@ async function exportCloudflareImageData(
     const sqlFilePath = join(exportDir, 'cloudflareImage-system-data.sql')
     const gzipFilePath = join(exportDir, CLOUDFLARE_IMAGES_FILE_NAME)
 
-    // Export the data directly as SQL INSERT statements
-    logger.info('Exporting CloudflareImage data with INSERT statements')
+    // Create a temporary SQL file for the export
+    const createViewArgs = [
+      '-h',
+      host,
+      '-p',
+      port,
+      '-U',
+      username,
+      '-d',
+      database,
+      '-c',
+      'CREATE OR REPLACE VIEW temp_cloudflare_export AS SELECT * FROM "CloudflareImage" WHERE "videoId" IS NOT NULL;'
+    ]
 
-    const exportCmd = `
-      pg_dump -h ${host} -p ${port} -U ${username} -d ${database} -t "CloudflareImage" -F p --inserts --no-owner --no-privileges --data-only --column-inserts -f ${sqlFilePath} -w "videoId IS NOT NULL"
-    `
+    // First create a temporary view for our filtered data
+    const createViewProcess = spawn('psql', createViewArgs, { env })
 
-    const exportProcess = spawn('sh', ['-c', exportCmd], { env })
-
-    let exportError = ''
-    exportProcess.stderr.on('data', (data) => {
+    let createViewError = ''
+    createViewProcess.stderr.on('data', (data) => {
       const chunk = data.toString()
-      exportError += chunk
-      logger.info(`pg_dump: ${chunk}`)
+      createViewError += chunk
     })
 
-    exportProcess.on('close', (exportCode) => {
-      if (exportCode !== 0) {
-        logger.error(`Export failed with code ${exportCode}`)
-        reject(new Error(`Export failed: ${exportError}`))
+    createViewProcess.on('close', (createViewCode) => {
+      if (createViewCode !== 0) {
+        logger.error(`Create view failed with code ${createViewCode}`)
+        reject(new Error(`Create view failed: ${createViewError}`))
         return
       }
 
-      // Check if the export worked
-      fs.stat(sqlFilePath, (statErr, stats) => {
-        if (statErr) {
-          logger.error({ error: statErr }, 'Failed to get SQL file stats')
-          reject(statErr)
+      // Now export the view data
+      const exportArgs = [
+        '-h',
+        host,
+        '-p',
+        port,
+        '-U',
+        username,
+        '-d',
+        database,
+        '-t',
+        'temp_cloudflare_export',
+        '-F',
+        'p',
+        '--inserts',
+        '--no-owner',
+        '--no-privileges',
+        '--data-only',
+        '--column-inserts',
+        '-f',
+        sqlFilePath
+      ]
+
+      const exportProcess = spawn('pg_dump', exportArgs, { env })
+
+      let exportError = ''
+      exportProcess.stderr.on('data', (data) => {
+        const chunk = data.toString()
+        exportError += chunk
+      })
+
+      exportProcess.on('close', (exportCode) => {
+        if (exportCode !== 0) {
+          logger.error(`Export failed with code ${exportCode}`)
+          reject(new Error(`Export failed: ${exportError}`))
           return
         }
 
-        if (stats.size === 0) {
-          logger.warn('Generated SQL file is empty')
-          resolve(gzipFilePath) // Return even if empty to continue the process
-          return
-        }
+        // Clean up the temporary view
+        const dropViewCmd = `
+          psql -h ${host} -p ${port} -U ${username} -d ${database} -c "DROP VIEW IF EXISTS temp_cloudflare_export;"
+        `
 
-        // Compress the file
-        compressFile(sqlFilePath, gzipFilePath, logger)
-          .then(() => {
-            // Clean up uncompressed file
-            fs.unlink(sqlFilePath, (unlinkErr) => {
-              if (unlinkErr) {
-                logger.warn(
-                  { error: unlinkErr },
-                  'Failed to remove uncompressed SQL file'
+        spawn('sh', ['-c', dropViewCmd], { env })
+
+        // Check if the export worked
+        fs.stat(sqlFilePath, (statErr, stats) => {
+          if (statErr) {
+            logger.error({ error: statErr }, 'Failed to get SQL file stats')
+            reject(
+              statErr instanceof Error ? statErr : new Error(String(statErr))
+            )
+            return
+          }
+
+          if (stats.size === 0) {
+            logger.warn('Generated SQL file is empty')
+            resolve(gzipFilePath) // Return even if empty to continue the process
+            return
+          }
+
+          // Update table name in the SQL file to match the original table
+          const sed = `
+            sed -i 's/temp_cloudflare_export/CloudflareImage/g' ${sqlFilePath}
+          `
+
+          const sedProcess = spawn('sh', ['-c', sed], { env })
+
+          sedProcess.on('close', (sedCode) => {
+            if (sedCode !== 0) {
+              logger.warn('Failed to update table name in SQL file')
+            }
+
+            // Compress the file
+            compressFile(sqlFilePath, gzipFilePath, logger)
+              .then(() => {
+                // Clean up uncompressed file
+                fs.unlink(sqlFilePath, (unlinkErr) => {
+                  if (unlinkErr) {
+                    logger.warn(
+                      { error: unlinkErr },
+                      'Failed to remove uncompressed SQL file'
+                    )
+                  }
+                })
+                resolve(gzipFilePath)
+              })
+              .catch((error) => {
+                logger.error({ error }, 'Failed to compress SQL file')
+                reject(
+                  error instanceof Error ? error : new Error(String(error))
                 )
-              }
-            })
-            resolve(gzipFilePath)
+              })
           })
-          .catch((error) => {
-            logger.error({ error }, 'Failed to compress SQL file')
-            reject(error instanceof Error ? error : new Error(String(error)))
-          })
+        })
+      })
+
+      exportProcess.on('error', (error) => {
+        logger.error({ error }, 'Export process error')
+        reject(error instanceof Error ? error : new Error(String(error)))
       })
     })
 
-    exportProcess.on('error', (error) => {
-      logger.error({ error }, 'Export process error')
-      reject(error)
+    createViewProcess.on('error', (error) => {
+      logger.error({ error }, 'Create view process error')
+      reject(error instanceof Error ? error : new Error(String(error)))
     })
   })
 }
