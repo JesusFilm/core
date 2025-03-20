@@ -57,12 +57,16 @@ async function main(): Promise<void> {
       './algolia'
     )
   )
-  run(
-    await import(
-      /* webpackChunkName: "asset-uploader" */
-      './assetUploader'
+
+  if (process.env.DEPLOYMENT_ENV === 'prod') {
+    run(
+      await import(
+        /* webpackChunkName: "download-uploader" */
+        './downloadUploader'
+      )
     )
-  )
+  }
+
   run(
     await import(
       /* webpackChunkName: "big-query" */

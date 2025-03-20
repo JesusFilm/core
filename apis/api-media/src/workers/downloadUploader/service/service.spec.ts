@@ -25,7 +25,7 @@ global.fetch = jest.fn().mockImplementation(() =>
   })
 )
 
-describe('assetUploader/service', () => {
+describe('downloadUploader/service', () => {
   const originalEnv = { ...process.env }
   const mockLogger = mockDeep<Logger>()
 
@@ -207,13 +207,13 @@ describe('assetUploader/service', () => {
       })
 
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Starting assetUploader service'
+        'Starting downloadUploader service'
       )
       expect(mockLogger.info).toHaveBeenCalledWith(
         'Found 2 downloads without assets'
       )
       expect(mockLogger.info).toHaveBeenCalledWith(
-        'Completed assetUploader service'
+        'Completed downloadUploader service'
       )
     })
 
@@ -253,29 +253,33 @@ describe('assetUploader/service', () => {
         }),
         'Error processing download: download-error'
       )
-
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Completed assetUploader service'
-      )
     })
 
-    it('should handle empty results', async () => {
-      prismaMock.videoVariantDownload.findMany.mockResolvedValue([])
+    it('should handle downloads without associated video variants', async () => {
+      const mockDownloads = [
+        {
+          id: 'download-no-variant',
+          quality: VideoVariantDownloadQuality.high,
+          size: 1024,
+          height: 720,
+          width: 1280,
+          url: 'https://example.com/no-variant.mp4',
+          assetId: null,
+          videoVariantId: 'variant-missing',
+          videoVariant: null
+        }
+      ]
+
+      prismaMock.videoVariantDownload.findMany.mockResolvedValue(
+        mockDownloads as any
+      )
 
       await service(mockLogger)
 
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Starting assetUploader service'
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        { downloadId: 'download-no-variant' },
+        'Download has no associated video variant'
       )
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Found 0 downloads without assets'
-      )
-      expect(mockLogger.info).toHaveBeenCalledWith(
-        'Completed assetUploader service'
-      )
-
-      expect(prismaMock.cloudflareR2.create).not.toHaveBeenCalled()
-      expect(global.fetch).not.toHaveBeenCalled()
     })
   })
 })

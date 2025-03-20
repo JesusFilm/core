@@ -158,10 +158,10 @@
         "command": "npm run ts-node apis/api-media/src/workers/cli.ts algolia"
       }
     },
-    "queue-asset-uploader": {
+    "queue-download-uploader": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm run ts-node apis/api-media/src/workers/cli.ts assetUploader"
+        "command": "npm run ts-node apis/api-media/src/workers/cli.ts download-uploader"
       }
     },
     "queue-blocklist": {

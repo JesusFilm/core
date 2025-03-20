@@ -20,10 +20,10 @@ export async function cli(argv = process.argv): Promise<void> {
       queue = new Queue(queueName, { connection })
       break
     }
-    case 'asset-uploader': {
+    case 'download-uploader': {
       const config = await import(
-        /* webpackChunkName: "asset-uploader" */
-        './assetUploader'
+        /* webpackChunkName: "download-uploader" */
+        './downloadUploader'
       )
       queueName = config.queueName
       jobName = config.jobName

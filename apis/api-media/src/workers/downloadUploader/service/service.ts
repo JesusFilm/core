@@ -64,7 +64,7 @@ async function uploadToR2FromUrl(
 }
 
 export async function service(logger?: Logger): Promise<void> {
-  logger?.info('Starting assetUploader service')
+  logger?.info('Starting downloadUploader service')
 
   const downloadsWithoutAssets = await prisma.videoVariantDownload.findMany({
     where: {
@@ -146,5 +146,5 @@ export async function service(logger?: Logger): Promise<void> {
     }
   }
 
-  logger?.info('Completed assetUploader service')
+  logger?.info('Completed downloadUploader service')
 }
