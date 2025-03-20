@@ -1,7 +1,7 @@
 import MuiTextField, {
   OutlinedTextFieldProps as MuiTextFieldProps
 } from '@mui/material/TextField'
-import { useField } from 'formik'
+import { FieldInputProps, useFormikContext } from 'formik'
 import { ReactElement } from 'react'
 
 interface TextFieldProps
@@ -13,9 +13,20 @@ export function TextField({
   helperText,
   ...muiFieldProps
 }: TextFieldProps): ReactElement {
-  const [formikFieldProps, meta] = useField(name)
+  const formik = useFormikContext<{
+    [key: string]: string
+  }>()
 
-  const hasError = meta.error !== undefined && meta.touched
+  const formikFieldProps: Partial<FieldInputProps<string>> = {
+    value: formik?.values?.[name] ?? ''
+  }
+
+  formik?.handleChange != null &&
+    (formikFieldProps.onChange = formik?.handleChange)
+  formik?.handleBlur != null && (formikFieldProps.onBlur = formik?.handleBlur)
+
+  const hasError =
+    formik?.errors?.[name] !== undefined && formik?.touched?.[name]
   const hint = helperText != null ? helperText : ' '
 
   return (
@@ -24,10 +35,9 @@ export function TextField({
       {...formikFieldProps}
       fullWidth
       name={name}
-      // TODO: Switch to filled & clarify styling in cooldown
       variant="outlined"
       error={hasError}
-      helperText={hasError ? meta.error : hint}
+      helperText={hasError ? formik?.errors?.[name] : hint}
       data-testid="JourneysTextField"
     />
   )

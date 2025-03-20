@@ -361,22 +361,26 @@ export function Card({
       enableReinitialize
     >
       {({ handleSubmit }) => (
-        <Form data-testid={`card-form-${id}`} onSubmit={handleSubmit}>
-          <Paper
-            data-testid={`JourneysCard-${id}`}
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'flex-end',
-              borderRadius: { xs: 'inherit', lg: 3 },
-              backgroundColor,
-              width: '100%',
-              height: '100%',
-              overflow: 'hidden',
-              transform: 'translateZ(0)' // safari glitch with border radius
-            }}
-            elevation={3}
-            onClick={handleNavigation}
+        <Paper
+          data-testid={`JourneysCard-${id}`}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
+            borderRadius: { xs: 'inherit', lg: 3 },
+            backgroundColor,
+            width: '100%',
+            height: '100%',
+            overflow: 'hidden',
+            transform: 'translateZ(0)' // safari glitch with border radius
+          }}
+          elevation={3}
+          onClick={handleNavigation}
+        >
+          <Form
+            data-testid={`card-form-${id}`}
+            onSubmit={handleSubmit}
+            style={{ height: '100%', width: '100%' }}
           >
             {(coverBlock != null && !fullscreen) || videoBlock != null ? (
               <ContainedCover
@@ -398,8 +402,8 @@ export function Card({
                 {renderedChildren}
               </ExpandedCover>
             )}
-          </Paper>
-        </Form>
+          </Form>
+        </Paper>
       )}
     </Formik>
   )

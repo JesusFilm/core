@@ -34,27 +34,40 @@ export const TextResponse = ({
   hint,
   minRows
 }: TextResponseProps): ReactElement => {
-  // const [value, setValue] = useState('')
+  const [value, setValue] = useState('')
 
-  // const { values, handleChange, handleBlur, isSubmitting } = useFormikContext<{
-  //   [key: string]: string
-  // }>()
+  const formikContext = useFormikContext<{
+    [key: string]: string
+  }>()
 
   const {
     state: { selectedBlock }
   } = useEditor()
 
-  // const currentValue = values?.[blockId] ?? ''
+  const formikValue = formikContext?.values?.[blockId] ?? ''
+  const isSubmitting = formikContext?.isSubmitting ?? false
+  const handleChange = formikContext?.handleChange
+  const handleBlur = formikContext?.handleBlur
 
-  // useEffect(() => {
-  //   if (currentValue !== value) {
-  //     setValue(currentValue)
-  //   }
-  // }, [currentValue, value])
+  const currentValue = formikValue ?? value
+
+  useEffect(() => {
+    if (formikContext != null && formikValue !== value) {
+      setValue(formikValue)
+    }
+  }, [formikContext, formikValue, value])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // handleChange(e)
-    // setValue(e.target.value)
+    if (handleChange != null) {
+      handleChange(e)
+    }
+    setValue(e.target.value)
+  }
+
+  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (handleBlur != null) {
+      handleBlur(e)
+    }
   }
 
   return (
@@ -64,14 +77,14 @@ export const TextResponse = ({
           id={`textResponse-field`}
           name={blockId}
           label={label === '' ? 'Your answer here' : label}
-          // value={currentValue}
+          value={currentValue}
           helperText={hint != null ? hint : ''}
           multiline
-          // disabled={isSubmitting}
+          disabled={isSubmitting}
           minRows={minRows ?? 3}
           onClick={(e) => e.stopPropagation()}
           onChange={handleInputChange}
-          // onBlur={handleBlur}
+          onBlur={handleInputBlur}
           inputProps={{
             maxLength: 1000,
             readOnly: selectedBlock !== undefined,

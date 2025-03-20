@@ -1,11 +1,9 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { Formik, FormikContextType, FormikProvider, FormikValues } from 'formik'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
-import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import type { TreeBlock } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 
@@ -83,15 +81,13 @@ describe('TextResponse', () => {
     }
 
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <JourneyProvider>
-          <SnackbarProvider>
-            <Formik initialValues={{}} onSubmit={noop}>
-              <TextResponse {...emptyLabelBlock} uuid={() => 'uuid'} />
-            </Formik>
-          </SnackbarProvider>
-        </JourneyProvider>
-      </MockedProvider>
+      <JourneyProvider>
+        <SnackbarProvider>
+          <Formik initialValues={{}} onSubmit={noop}>
+            <TextResponse {...emptyLabelBlock} uuid={() => 'uuid'} />
+          </Formik>
+        </SnackbarProvider>
+      </JourneyProvider>
     )
 
     expect(screen.getByLabelText('Your answer here')).toBeInTheDocument()
@@ -99,20 +95,18 @@ describe('TextResponse', () => {
 
   it('should be in a loading state when waiting for response', async () => {
     const { getByRole } = render(
-      <ApolloLoadingProvider>
-        <Formik initialValues={{}} onSubmit={noop}>
-          <FormikProvider
-            value={
-              {
-                values: {},
-                isSubmitting: true
-              } as FormikContextType<FormikValues>
-            }
-          >
-            <TextResponse {...block} uuid={() => 'uuid'} />
-          </FormikProvider>
-        </Formik>
-      </ApolloLoadingProvider>
+      <Formik initialValues={{}} onSubmit={noop}>
+        <FormikProvider
+          value={
+            {
+              values: {},
+              isSubmitting: true
+            } as FormikContextType<FormikValues>
+          }
+        >
+          <TextResponse {...block} uuid={() => 'uuid'} />
+        </FormikProvider>
+      </Formik>
     )
     const textField = getByRole('textbox')
 
@@ -131,5 +125,13 @@ describe('TextResponse', () => {
     const response = getAllByRole('textbox')[0]
     fireEvent.click(response)
     expect(response.matches(':focus')).not.toBeTruthy()
+  })
+
+  it('should be able to render without formik context', () => {
+    const { getAllByRole } = render(
+      <TextResponse {...block} uuid={() => 'uuid'} />
+    )
+
+    expect(getAllByRole('textbox')[0]).toBeInTheDocument()
   })
 })
