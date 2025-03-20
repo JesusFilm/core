@@ -32,6 +32,8 @@ describe('crowdin/service', () => {
 
   describe('pullTranslations', () => {
     it('should throw if no distribution hash', async () => {
+      delete process.env.CROWDIN_DISTRIBUTION_HASH
+
       await expect(service()).rejects.toThrow(
         'crowdin distribution hash not set'
       )
