@@ -21,12 +21,29 @@ export const TEXT_RESPONSE_SUBMISSION_EVENT_CREATE = gql`
     }
   }
 `
+
 interface TextResponseProps extends TreeBlock<TextResponseFields> {
   uuid?: () => string
   editableSubmitLabel?: ReactElement
   sx?: SxProps
 }
 
+/**
+ * TextResponse component - A form field for collecting text responses from users.
+ *
+ * This component integrates with Formik for form state management and validation.
+ * It displays a text field where users can input multi-line responses.
+ * The component handles both controlled and uncontrolled state scenarios.
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.id - Unique identifier for the block (blockId), used as the form field name
+ * @param {Function} [props.uuid=uuidv4] - Function to generate unique identifiers
+ * @param {string} props.label - Label text for the input field, defaults to 'Your answer here' if empty
+ * @param {string} [props.hint] - Optional helper text displayed below the input
+ * @param {number} [props.minRows] - Minimum number of rows for the multiline text field, defaults to 3
+ *
+ * @returns {ReactElement} The rendered TextResponse component
+ */
 export const TextResponse = ({
   id: blockId,
   uuid = uuidv4,

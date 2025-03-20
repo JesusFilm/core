@@ -64,6 +64,29 @@ interface CardProps extends TreeBlock<CardFields> {
 
 const StyledForm = styled(Form)(() => ({}))
 
+/**
+ * Card component - The primary container for content in a Journey.
+ *
+ * This component is responsible for rendering a card with various content blocks,
+ * handling navigation between steps, managing form state for text responses,
+ * and tracking analytics events for user interactions.
+ *
+ * The Card can display content in different layouts based on configuration:
+ * - It can show a cover image or video in contained or expanded mode
+ * - It handles form submission for text responses
+ * - It provides touch/click navigation between steps
+ * - It tracks navigation events and submits them to analytics
+ *
+ * @param {CardProps} props - Component props
+ * @param {string} props.id - Unique identifier for the card
+ * @param {Array<TreeBlock>} props.children - Child blocks to render within the card
+ * @param {string} [props.backgroundColor] - Background color of the card
+ * @param {string} [props.coverBlockId] - ID of the block to use as a cover (image or video)
+ * @param {boolean} [props.fullscreen] - Whether the card should be displayed in fullscreen mode
+ * @param {WrappersProps} [props.wrappers] - Optional wrapper components for blocks rendered inside the card
+ *
+ * @returns {ReactElement} The rendered Card component
+ */
 export function Card({
   id,
   children,
@@ -155,6 +178,13 @@ export function Card({
     [children]
   )
 
+  /**
+   * Handles form submission for text responses within the card.
+   * Submits all text response values to the server and tracks analytics events.
+   *
+   * @param {FormikValues} values - The form values to submit
+   * @returns {Promise<void>} A promise that resolves when all submissions are complete
+   */
   const handleFormSubmit = async (values: FormikValues): Promise<void> => {
     if (variant !== 'default' && variant !== 'embed') return
     const heading =
