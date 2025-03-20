@@ -255,11 +255,16 @@ async function exportCloudflareImageData(
 
     // Create a temporary SQL file for the export
     const createViewArgs = [
-      '-h', host,
-      '-p', port,
-      '-U', username,
-      '-d', database,
-      '-c', 'CREATE OR REPLACE VIEW temp_cloudflare_export AS SELECT * FROM "CloudflareImage" WHERE "videoId" IS NOT NULL;'
+      '-h',
+      host,
+      '-p',
+      port,
+      '-U',
+      username,
+      '-d',
+      database,
+      '-c',
+      'CREATE OR REPLACE VIEW temp_cloudflare_export AS SELECT * FROM "CloudflareImage" WHERE "videoId" IS NOT NULL;'
     ]
 
     // First create a temporary view for our filtered data
@@ -281,18 +286,25 @@ async function exportCloudflareImageData(
 
       // Now export the view data
       const exportArgs = [
-        '-h', host,
-        '-p', port,
-        '-U', username,
-        '-d', database,
-        '-t', 'temp_cloudflare_export',
-        '-F', 'p',
+        '-h',
+        host,
+        '-p',
+        port,
+        '-U',
+        username,
+        '-d',
+        database,
+        '-t',
+        'temp_cloudflare_export',
+        '-F',
+        'p',
         '--inserts',
         '--no-owner',
         '--no-privileges',
         '--data-only',
         '--column-inserts',
-        '-f', sqlFilePath
+        '-f',
+        sqlFilePath
       ]
 
       const exportProcess = spawn('pg_dump', exportArgs, { env })
