@@ -85,6 +85,7 @@ export function Custom404(): ReactElement {
       parentOrder: 2,
       size: ButtonSize.large,
       startIconId: '404-icon-id',
+      submitEnabled: null,
       action: {
         gtmEventName: null,
         parentBlockId: '404-button-id',
