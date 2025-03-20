@@ -9,23 +9,38 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
+import { TYPOGRAPHY_FIELDS } from '@core/journeys/ui/Typography/typographyFields'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import type {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_CardBlock as CardBlock,
-  BlockFields_TextResponseBlock as TextResponseBlock
+  BlockFields_TextResponseBlock as TextResponseBlock,
+  BlockFields_TypographyBlock as TypographyBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import type { ButtonBlockCreate } from '../../../../../../../../__generated__/ButtonBlockCreate'
 import {
   ButtonColor,
   ButtonSize,
-  ButtonVariant
+  ButtonVariant,
+  TypographyVariant
 } from '../../../../../../../../__generated__/globalTypes'
 import type { TextResponseBlockCreate } from '../../../../../../../../__generated__/TextResponseBlockCreate'
+import type { TypographyBlockCreate } from '../../../../../../../../__generated__/TypographyBlockCreate'
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
+
+export const TYPOGRAPHY_BLOCK_CREATE = gql`
+  ${TYPOGRAPHY_FIELDS}
+  mutation TypographyBlockCreate($input: TypographyBlockCreateInput!) {
+    typographyBlockCreate(input: $input) {
+      id
+      parentBlockId
+      ...TypographyFields
+    }
+  }
+`
 
 export const TEXT_RESPONSE_BLOCK_CREATE = gql`
   ${TEXT_RESPONSE_FIELDS}
@@ -67,13 +82,17 @@ export const BUTTON_BLOCK_CREATE = gql`
 
 export function NewTextResponseButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const [typographyBlockCreate] = useMutation<TypographyBlockCreate>(
+    TYPOGRAPHY_BLOCK_CREATE
+  )
   const [textResponseBlockCreate, { loading: textResponseLoading }] =
     useMutation<TextResponseBlockCreate>(TEXT_RESPONSE_BLOCK_CREATE)
   const [buttonBlockCreate, { loading: buttonLoading }] =
     useMutation<ButtonBlockCreate>(BUTTON_BLOCK_CREATE)
   const { journey } = useJourney()
   const {
-    state: { selectedStep }
+    state: { selectedStep },
+    dispatch
   } = useEditor()
   const { addBlock } = useBlockCreateCommand()
 
@@ -91,13 +110,46 @@ export function NewTextResponseButton(): ReactElement {
         (block as TreeBlock<ButtonBlock>).submitEnabled === true
     )
 
-    // Log for debugging
-    console.log('Has submit button:', hasSubmitButton)
-
-    const textResponseBlock: TextResponseBlock = {
+    // Create typography block first
+    const typographyBlock: TypographyBlock = {
       id: uuidv4(),
       parentBlockId: card.id,
       parentOrder: card.children.length ?? 0,
+      align: null,
+      color: null,
+      content: '',
+      variant: TypographyVariant.body2,
+      __typename: 'TypographyBlock'
+    }
+
+    addBlock({
+      block: typographyBlock,
+      execute() {
+        void typographyBlockCreate({
+          variables: {
+            input: {
+              id: typographyBlock.id,
+              journeyId: journey.id,
+              parentBlockId: typographyBlock.parentBlockId,
+              content: typographyBlock.content,
+              variant: typographyBlock.variant
+            }
+          },
+          optimisticResponse: {
+            typographyBlockCreate: typographyBlock
+          },
+          update(cache, { data }) {
+            blockCreateUpdate(cache, journey?.id, data?.typographyBlockCreate)
+          }
+        })
+      }
+    })
+
+    // Create text response block
+    const textResponseBlock: TextResponseBlock = {
+      id: uuidv4(),
+      parentBlockId: card.id,
+      parentOrder: (card.children.length ?? 0) + 1,
       label: t('Your answer here'),
       hint: null,
       minRows: null,
@@ -107,7 +159,6 @@ export function NewTextResponseButton(): ReactElement {
       __typename: 'TextResponseBlock'
     }
 
-    // Add text response block
     addBlock({
       block: textResponseBlock,
       execute() {
@@ -140,7 +191,7 @@ export function NewTextResponseButton(): ReactElement {
         buttonVariant: ButtonVariant.contained,
         buttonColor: ButtonColor.primary,
         size: ButtonSize.medium,
-        parentOrder: (card.children.length ?? 0) + 1,
+        parentOrder: (card.children.length ?? 0) + 2,
         startIconId: uuidv4(),
         endIconId: uuidv4(),
         action: null,
@@ -212,6 +263,12 @@ export function NewTextResponseButton(): ReactElement {
         }
       })
     }
+
+    // set focus to typography block
+    dispatch({
+      type: 'SetSelectedBlockByIdAction',
+      selectedBlockId: typographyBlock.id
+    })
   }
 
   return (
