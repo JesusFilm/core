@@ -1,6 +1,8 @@
 import { spawn } from 'child_process'
 import { promises as fs } from 'fs'
 import { join } from 'path'
+import { pipeline } from 'stream/promises'
+import { createGzip } from 'zlib'
 
 import {
   CopyObjectCommand,
@@ -34,17 +36,27 @@ jest.mock('@aws-sdk/client-s3', () => {
   }
 })
 
+jest.mock('stream/promises', () => ({
+  pipeline: jest.fn().mockResolvedValue(undefined)
+}))
+
 jest.mock('fs', () => ({
   promises: {
     mkdir: jest.fn().mockResolvedValue(undefined),
     readFile: jest.fn().mockResolvedValue(Buffer.from('test')),
-    unlink: jest.fn().mockResolvedValue(undefined)
+    unlink: jest.fn().mockResolvedValue(undefined),
+    stat: jest.fn().mockResolvedValue({ size: 100 })
   },
+  createReadStream: jest.fn().mockReturnValue({ pipe: jest.fn() }),
   createWriteStream: jest.fn().mockReturnValue({ pipe: jest.fn() }),
   stat: jest
     .fn()
     .mockImplementation((path, callback) => callback(null, { size: 100 })),
   unlink: jest.fn().mockImplementation((path, callback) => callback(null))
+}))
+
+jest.mock('zlib', () => ({
+  createGzip: jest.fn().mockReturnValue({ pipe: jest.fn() })
 }))
 
 describe('dataExport service', () => {
@@ -109,10 +121,17 @@ describe('dataExport service', () => {
 
     await service(logger as Logger)
 
-    // Verify pg_dump was called with the right arguments
+    // Verify pg_dump was called with the right arguments for the main backup
     expect(mockSpawn).toHaveBeenCalledWith(
       'pg_dump',
       expect.arrayContaining([
+        '-F',
+        'p', // PLAIN format
+        '--inserts', // Use INSERT statements
+        '--no-owner',
+        '--no-privileges',
+        '--exclude-table',
+        'CloudflareImage',
         '--exclude-table',
         'MuxVideo',
         '--exclude-table',
@@ -123,10 +142,35 @@ describe('dataExport service', () => {
       expect.anything()
     )
 
-    // Verify psql was called with the correct COPY command (without backslash)
+    // Verify the creation of the temporary view for CloudflareImage export
     expect(mockSpawn).toHaveBeenCalledWith(
-      'psql',
-      expect.arrayContaining(['-c', expect.stringContaining('COPY (')]),
+      'sh',
+      expect.arrayContaining([
+        '-c',
+        expect.stringContaining('CREATE OR REPLACE VIEW temp_cloudflare_export')
+      ]),
+      expect.anything()
+    )
+
+    // Verify the pg_dump for the CloudflareImage export
+    expect(mockSpawn).toHaveBeenCalledWith(
+      'sh',
+      expect.arrayContaining([
+        '-c',
+        expect.stringContaining('-t "temp_cloudflare_export"')
+      ]),
+      expect.anything()
+    )
+
+    // Verify the sed command to replace the table name
+    expect(mockSpawn).toHaveBeenCalledWith(
+      'sh',
+      expect.arrayContaining([
+        '-c',
+        expect.stringContaining(
+          "sed -i 's/temp_cloudflare_export/CloudflareImage/g'"
+        )
+      ]),
       expect.anything()
     )
 
