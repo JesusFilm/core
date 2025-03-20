@@ -51,9 +51,10 @@ export function TextField({
     value: formik?.values?.[name] ?? ''
   }
 
-  formik?.handleChange != null &&
-    (formikFieldProps.onChange = formik?.handleChange)
-  formik?.handleBlur != null && (formikFieldProps.onBlur = formik?.handleBlur)
+  if (formik?.handleChange != null)
+    formikFieldProps.onChange = formik?.handleChange
+
+  if (formik?.handleBlur != null) formikFieldProps.onBlur = formik?.handleBlur
 
   const hasError =
     formik?.errors?.[name] !== undefined && formik?.touched?.[name]
