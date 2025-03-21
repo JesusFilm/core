@@ -151,6 +151,8 @@ async function executePgDump(
       database,
       '--no-owner',
       '--no-privileges',
+      '--no-publications',
+      '--no-subscriptions',
       '-f',
       outputFile
     ]

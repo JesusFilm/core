@@ -137,6 +137,8 @@ describe('dataExport service', () => {
         '--inserts', // Use INSERT statements
         '--no-owner',
         '--no-privileges',
+        '--no-publications', // Verify publications are excluded
+        '--no-subscriptions', // Verify subscriptions are excluded
         '--exclude-table',
         'CloudflareImage',
         '--exclude-table',
@@ -154,7 +156,7 @@ describe('dataExport service', () => {
       'psql',
       expect.arrayContaining([
         '-c',
-        'CREATE OR REPLACE VIEW temp_cloudflare_export AS SELECT * FROM "CloudflareImage" WHERE "videoId" IS NOT NULL;'
+        'CREATE OR REPLACE VIEW temp_cloudflare_export AS SELECT ci.* FROM "CloudflareImage" ci JOIN "Video" v ON ci."videoId" = v.id WHERE ci."videoId" IS NOT NULL AND v.published = true;'
       ]),
       expect.anything()
     )
@@ -170,6 +172,8 @@ describe('dataExport service', () => {
         '--inserts',
         '--no-owner',
         '--no-privileges',
+        '--no-publications', // Verify publications are excluded
+        '--no-subscriptions', // Verify subscriptions are excluded
         '--data-only',
         '--column-inserts'
       ]),

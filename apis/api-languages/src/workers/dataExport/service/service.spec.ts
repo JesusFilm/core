@@ -143,6 +143,8 @@ describe('Database Export Service', () => {
         'languages',
         '--no-owner',
         '--no-privileges',
+        '--no-publications',
+        '--no-subscriptions',
         '-f',
         expect.stringContaining('languages-backup.sql')
       ]),
