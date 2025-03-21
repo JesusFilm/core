@@ -162,5 +162,8 @@
   "Failed to get Mux video status": "Failed to get Mux video status",
   "Audio Language Added": "Audio Language Added",
   "Failed to create R2 asset": "Failed to create R2 asset",
-  "Failed to create Mux video": "Failed to create Mux video"
+  "Failed to create Mux video": "Failed to create Mux video",
+  "Delete Study Question": "Delete Study Question",
+  "Are you sure you want to delete this study question? This action cannot be undone.": "Are you sure you want to delete this study question? This action cannot be undone.",
+  "Study question deleted": "Study question deleted"
 }
