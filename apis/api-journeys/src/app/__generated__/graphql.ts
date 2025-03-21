@@ -555,6 +555,12 @@ export class ChatOpenEventCreateInput {
     value?: Nullable<MessagePlatform>;
 }
 
+export class JourneyEventsFilter {
+    eventType?: Nullable<string[]>;
+    periodRangeStart?: Nullable<DateTime>;
+    periodRangeEnd?: Nullable<DateTime>;
+}
+
 export class JourneyViewEventCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -1192,6 +1198,8 @@ export abstract class IQuery {
 
     abstract customDomains(teamId: string): CustomDomain[] | Promise<CustomDomain[]>;
 
+    abstract journeyEventsConnection(journeyId: string, filter?: Nullable<JourneyEventsFilter>, first?: Nullable<number>, after?: Nullable<string>): JourneyEventsConnection | Promise<JourneyEventsConnection>;
+
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
     abstract integrations(teamId: string): Integration[] | Promise<Integration[]>;
@@ -1499,6 +1507,18 @@ export class ChatOpenEvent implements Event {
     label?: Nullable<string>;
     value?: Nullable<string>;
     messagePlatform?: Nullable<MessagePlatform>;
+}
+
+export class JourneyEventsEdge {
+    __typename?: 'JourneyEventsEdge';
+    cursor: string;
+    node: Event;
+}
+
+export class JourneyEventsConnection {
+    __typename?: 'JourneyEventsConnection';
+    edges: JourneyEventsEdge[];
+    pageInfo: PageInfo;
 }
 
 export class JourneyViewEvent implements Event {

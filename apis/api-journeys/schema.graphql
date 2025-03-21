@@ -460,6 +460,7 @@ extend type Query {
   block(id: ID!): Block!
   customDomain(id: ID!): CustomDomain!
   customDomains(teamId: ID!): [CustomDomain!]!
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
   hosts(teamId: ID!): [Host!]!
   integrations(teamId: ID!): [Integration!]!
 
@@ -1548,6 +1549,22 @@ interface Event {
   createdAt: DateTime!
   label: String
   value: String
+}
+
+type JourneyEventsEdge {
+  cursor: String!
+  node: Event!
+}
+
+type JourneyEventsConnection {
+  edges: [JourneyEventsEdge!]!
+  pageInfo: PageInfo!
+}
+
+input JourneyEventsFilter {
+  eventType: [String!]
+  periodRangeStart: DateTime
+  periodRangeEnd: DateTime
 }
 
 input JourneyViewEventCreateInput {

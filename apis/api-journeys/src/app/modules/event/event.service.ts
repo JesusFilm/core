@@ -2,6 +2,8 @@ import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 import { GraphQLError } from 'graphql'
+import isNil from 'lodash/isNil'
+import omitBy from 'lodash/omitBy'
 
 import {
   Block,
@@ -12,6 +14,10 @@ import {
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import { EventsNotificationJob } from '@core/yoga/emailEvents/types'
 
+import {
+  JourneyEventsConnection,
+  JourneyEventsFilter
+} from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
@@ -136,6 +142,69 @@ export class EventService {
       const delayInMilliseconds = (delay ?? 0) * 1000
       const delayTimer = Math.max(delayInMilliseconds, baseDelay)
       await visitorEmailJob.changeDelay(delayTimer)
+    }
+  }
+
+  generateWhere(
+    journeyId: string,
+    filter: JourneyEventsFilter
+  ): Prisma.EventWhereInput {
+    return omitBy(
+      {
+        journeyId
+        // typename:
+        //   filter?.eventType != null
+        //     ? { typename: { in: filter.eventType } }
+        //     : undefined,
+        // createdAt: {
+        //   gte: filter?.periodRangeStart ?? undefined,
+        //   lte: filter?.periodRangeEnd ?? undefined
+        // }
+      },
+      isNil
+    )
+  }
+
+  async getJourneyEvents({
+    journeyId,
+    filter,
+    first,
+    after
+  }: {
+    journeyId: string
+    filter: JourneyEventsFilter
+    first: number
+    after?: string | null
+  }): Promise<JourneyEventsConnection> {
+    const where = this.generateWhere(journeyId, filter)
+
+    const result = await this.prismaService.event.findMany({
+      where,
+      cursor: after != null ? { id: after } : undefined,
+      skip: after == null ? 0 : 1,
+      take: first + 1
+    })
+
+    const sendResult = result.length > first ? result.slice(0, -1) : result
+    return {
+      edges: sendResult.map((event) => ({
+        // node: event,
+        node: {
+          ...event,
+          journeyId: event.journeyId ?? '',
+          createdAt: event.createdAt.toISOString(),
+          buttonAction: event.action ?? null
+        },
+        cursor: event.id
+      })),
+      pageInfo: {
+        hasNextPage: result.length > first,
+        // mocked in place to match sharable PageInfo type
+        hasPreviousPage: false,
+        startCursor: result.length > 0 ? result[0].id : null,
+        endCursor:
+          result.length > 0 ? sendResult[sendResult.length - 1].id : null
+      }
     }
   }
 }
