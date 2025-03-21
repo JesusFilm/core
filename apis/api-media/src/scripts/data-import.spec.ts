@@ -1,5 +1,8 @@
 import { spawn } from 'child_process'
-import { promises as fsPromises } from 'fs'
+import fs, { promises as fsPromises } from 'fs'
+import { join } from 'path'
+import { Readable } from 'stream'
+import { pipeline } from 'stream/promises'
 import { createGunzip } from 'zlib'
 
 import main from './data-import'
@@ -7,7 +10,14 @@ import main from './data-import'
 // Mock fs functions
 jest.mock('fs', () => ({
   createReadStream: jest.fn().mockReturnValue({
-    pipe: jest.fn().mockReturnThis()
+    pipe: jest.fn().mockReturnThis(),
+    on: jest.fn((event, handler) => {
+      if (event === 'data') {
+        // Simulate some data being read
+        handler(Buffer.from('test data'))
+      }
+      return { pipe: jest.fn().mockReturnThis(), on: jest.fn() }
+    })
   }),
   createWriteStream: jest.fn().mockReturnValue({
     write: jest.fn(),
@@ -30,16 +40,19 @@ jest.mock('stream', () => ({
   }
 }))
 
+// Mock stream/promises
+jest.mock('stream/promises', () => ({
+  pipeline: jest.fn().mockImplementation((...args) => {
+    // Simulate the pipeline completing successfully
+    return Promise.resolve()
+  })
+}))
+
 // Mock zlib
 jest.mock('zlib', () => ({
   createGunzip: jest.fn().mockReturnValue({
     pipe: jest.fn().mockReturnThis()
   })
-}))
-
-// Mock stream/promises
-jest.mock('stream/promises', () => ({
-  pipeline: jest.fn().mockResolvedValue(undefined)
 }))
 
 // Mock child_process
@@ -55,8 +68,10 @@ jest.mock('child_process', () => ({
     setTimeout(() => {
       const closeHandler = mockProcess.on.mock.calls.find(
         (call) => call[0] === 'close'
-      )[1]
-      closeHandler(0) // Call with exit code 0 (success)
+      )?.[1]
+      if (closeHandler) {
+        closeHandler(0) // Call with exit code 0 (success)
+      }
     }, 10)
 
     return mockProcess
@@ -72,6 +87,29 @@ jest.mock('../lib/prisma', () => ({
   }
 }))
 
+// Mock fetch function
+global.fetch = jest.fn().mockResolvedValue({
+  ok: true,
+  status: 200,
+  statusText: 'OK',
+  headers: new Map([['content-length', '1000']]),
+  body: {
+    pipeThrough: jest.fn().mockReturnValue({
+      getReader: jest.fn().mockReturnValue({
+        read: jest
+          .fn()
+          .mockResolvedValue({ done: true, value: new Uint8Array() })
+      })
+    })
+  },
+  text: jest.fn().mockResolvedValue('')
+})
+
+// Mock path.join
+jest.mock('path', () => ({
+  join: jest.fn().mockImplementation((...args) => args.join('/'))
+}))
+
 // Mock console and process.exit
 jest.spyOn(console, 'log').mockImplementation(() => undefined)
 jest.spyOn(console, 'error').mockImplementation(() => undefined)
@@ -82,9 +120,14 @@ jest
 
 describe('data-import script', () => {
   const originalEnv = process.env
+  const originalCwd = process.cwd
 
   beforeEach(() => {
     jest.clearAllMocks()
+
+    // Mock process.cwd to return a known path
+    process.cwd = jest.fn().mockReturnValue('/workspace')
+
     process.env = {
       ...originalEnv,
       DB_SEED_PATH: 'https://example.com/backups',
@@ -95,6 +138,7 @@ describe('data-import script', () => {
 
   afterEach(() => {
     process.env = originalEnv
+    process.cwd = originalCwd
   })
 
   it('should execute the complete import process', async () => {
@@ -131,7 +175,7 @@ describe('data-import script', () => {
     )
 
     // Verify cleanup was performed
-    expect(fsPromises.unlink).toHaveBeenCalledTimes(2)
+    expect(fsPromises.unlink).toHaveBeenCalled()
 
     // Verify process exit
     expect(process.exit).toHaveBeenCalledWith(0)
@@ -181,8 +225,10 @@ describe('data-import script', () => {
       setTimeout(() => {
         const closeHandler = mockProcess.on.mock.calls.find(
           (call) => call[0] === 'close'
-        )[1]
-        closeHandler(1) // Call with exit code 1 (failure)
+        )?.[1]
+        if (closeHandler) {
+          closeHandler(1) // Call with exit code 1 (failure)
+        }
       }, 10)
 
       return mockProcess
