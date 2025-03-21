@@ -17,7 +17,11 @@ jest.mock('fs', () => ({
     mkdir: jest.fn().mockResolvedValue(undefined),
     unlink: jest.fn().mockResolvedValue(undefined),
     access: jest.fn().mockResolvedValue(undefined),
-    stat: jest.fn().mockResolvedValue({ size: 1000 })
+    stat: jest.fn().mockResolvedValue({ size: 1000 }),
+    readFile: jest
+      .fn()
+      .mockResolvedValue('CREATE PUBLICATION bq_publication FOR ALL TABLES;'),
+    writeFile: jest.fn().mockResolvedValue(undefined)
   }
 }))
 
@@ -120,7 +124,11 @@ describe('data-import script', () => {
     // Verify decompression was executed
     expect(createGunzip).toHaveBeenCalled()
 
-    // Verify psql command was executed
+    // Verify SQL file was preprocessed
+    expect(fsPromises.readFile).toHaveBeenCalled()
+    expect(fsPromises.writeFile).toHaveBeenCalled()
+
+    // Verify psql command was executed with the preprocessed file
     expect(spawn).toHaveBeenCalledWith(
       'psql',
       expect.arrayContaining([
@@ -139,7 +147,7 @@ describe('data-import script', () => {
     )
 
     // Verify cleanup was performed
-    expect(fsPromises.unlink).toHaveBeenCalledTimes(2)
+    expect(fsPromises.unlink).toHaveBeenCalledTimes(3) // Now cleaning up 3 files (gzipped, sql, and processed sql)
 
     // Verify process exit
     expect(process.exit).toHaveBeenCalledWith(0)
