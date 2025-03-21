@@ -35,7 +35,6 @@ interface TextResponseProps extends TreeBlock<TextResponseFields> {
  *
  * @param {Object} props - Component props
  * @param {string} props.id - Unique identifier for the block (blockId), used as the form field name
- * @param {Function} [props.uuid=uuidv4] - Function to generate unique identifiers
  * @param {string} props.label - Label text for the input field, defaults to 'Your answer here' if empty
  * @param {string} [props.hint] - Optional helper text displayed below the input
  * @param {number} [props.minRows] - Minimum number of rows for the multiline text field, defaults to 3
