@@ -1015,7 +1015,6 @@ type TextResponseBlock implements Block {
   parentBlockId: ID
   parentOrder: Int
   label: String!
-  placeholder: String
   required: Boolean
   hint: String
   minRows: Int
@@ -1041,7 +1040,6 @@ input TextResponseBlockCreateInput {
 input TextResponseBlockUpdateInput {
   parentBlockId: ID
   label: String
-  placeholder: String
   required: Boolean
   hint: String
   minRows: Int

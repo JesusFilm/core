@@ -3601,7 +3601,6 @@ export type TextResponseBlock = Block & {
   minRows?: Maybe<Scalars['Int']['output']>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
-  placeholder?: Maybe<Scalars['String']['output']>;
   required?: Maybe<Scalars['Boolean']['output']>;
   routeId?: Maybe<Scalars['String']['output']>;
   type?: Maybe<TextResponseType>;
@@ -3620,7 +3619,6 @@ export type TextResponseBlockUpdateInput = {
   label?: InputMaybe<Scalars['String']['input']>;
   minRows?: InputMaybe<Scalars['Int']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
-  placeholder?: InputMaybe<Scalars['String']['input']>;
   required?: InputMaybe<Scalars['Boolean']['input']>;
   routeId?: InputMaybe<Scalars['String']['input']>;
   type?: InputMaybe<TextResponseType>;

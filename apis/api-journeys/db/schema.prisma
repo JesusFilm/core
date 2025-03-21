@@ -470,7 +470,6 @@ model Block {
   parentBlockId           String?
   parentOrder             Int?
   label                   String?
-  placeholder             String?
   required                Boolean?             @default(false)
   variant                 String?
   color                   String?
