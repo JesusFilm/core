@@ -149,6 +149,7 @@ export function SubtitleCreate({
             input: {
               videoId: video.id,
               fileName: fileName,
+              originalFilename: vttFile.name,
               contentType: vttFile.type,
               contentLength: vttFile.size
             }
@@ -188,6 +189,7 @@ export function SubtitleCreate({
             input: {
               videoId: video.id,
               fileName: fileName,
+              originalFilename: srtFile.name,
               contentType: srtFile.type,
               contentLength: srtFile.size
             }
