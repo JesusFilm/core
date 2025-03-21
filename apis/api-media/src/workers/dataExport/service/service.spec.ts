@@ -156,7 +156,7 @@ describe('dataExport service', () => {
       'psql',
       expect.arrayContaining([
         '-c',
-        'CREATE OR REPLACE VIEW temp_cloudflare_export AS SELECT ci.* FROM "CloudflareImage" ci JOIN "Video" v ON ci."videoId" = v.id WHERE ci."videoId" IS NOT NULL AND v.published = true;'
+        'CREATE OR REPLACE VIEW temp_cloudflare_export AS SELECT * FROM "CloudflareImage" WHERE "videoId" IS NOT NULL;'
       ]),
       expect.anything()
     )
