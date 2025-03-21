@@ -125,7 +125,6 @@
     "dataloader": "^2.2.2",
     "date-fns": "^4.0.0",
     "dd-trace": "^5.25.0",
-    "elkjs": "^0.9.1",
     "express": "4.21.2",
     "firebase": "^9.16.0",
     "firebase-admin": "^11.11.1",
