@@ -19,7 +19,8 @@ describe('handleVttFile', () => {
     data: {
       cloudflareR2Create: {
         uploadUrl: mockUploadUrl,
-        publicUrl: mockPublicUrl
+        publicUrl: mockPublicUrl,
+        originalFilename: 'test.vtt'
       }
     }
   })

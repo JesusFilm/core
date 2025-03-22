@@ -6,6 +6,7 @@ export const CREATE_CLOUDFLARE_R2_ASSET = graphql(`
     cloudflareR2Create(input: $input) {
       id
       fileName
+      originalFilename
       uploadUrl
       publicUrl
     }

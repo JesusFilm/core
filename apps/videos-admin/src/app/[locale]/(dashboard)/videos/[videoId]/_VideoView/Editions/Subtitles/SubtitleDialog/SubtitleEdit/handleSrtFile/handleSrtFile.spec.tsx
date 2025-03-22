@@ -18,7 +18,8 @@ describe('handleSrtFile', () => {
     data: {
       cloudflareR2Create: {
         uploadUrl: mockUploadUrl,
-        publicUrl: mockPublicUrl
+        publicUrl: mockPublicUrl,
+        originalFilename: 'test.srt'
       }
     }
   })
