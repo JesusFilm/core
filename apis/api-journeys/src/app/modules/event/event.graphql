@@ -5,3 +5,28 @@ interface Event {
   label: String
   value: String
 }
+
+type JourneyEventsEdge {
+  cursor: String!
+  node: Event!
+}
+
+type JourneyEventsConnection {
+  edges: [JourneyEventsEdge!]!
+  pageInfo: PageInfo!
+}
+
+input JourneyEventsFilter {
+  eventType: [String!]
+  periodRangeStart: DateTime
+  periodRangeEnd: DateTime
+}
+
+extend type Query {
+  journeyEventsConnection(
+    journeyId: ID!
+    filter: JourneyEventsFilter
+    first: Int
+    after: String
+  ): JourneyEventsConnection!
+}
