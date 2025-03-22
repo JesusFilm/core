@@ -80,14 +80,22 @@ export function SubtitleFileUpload({ subtitle }: { subtitle?: Subtitle }) {
 
       {vttField.value == null && subtitle?.vttSrc && (
         <LinkFile
-          name={subtitle.vttSrc.split('/').pop() ?? ''}
+          name={
+            subtitle.vttAsset?.originalFilename ??
+            subtitle.vttSrc.split('/').pop() ??
+            ''
+          }
           link={subtitle.vttSrc}
         />
       )}
 
       {srtField.value == null && subtitle?.srtSrc && (
         <LinkFile
-          name={subtitle.srtSrc.split('/').pop() ?? ''}
+          name={
+            subtitle.srtAsset?.originalFilename ??
+            subtitle.srtSrc.split('/').pop() ??
+            ''
+          }
           link={subtitle.srtSrc}
         />
       )}

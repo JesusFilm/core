@@ -89,6 +89,7 @@ const cloudflareR2CreateMock = {
     variables: {
       input: {
         fileName: 'video123/variants/529/videos/uuidv4/529_video123.mp4',
+        originalFilename: 'original-video.mp4',
         contentType: 'video/mp4',
         contentLength: 4,
         videoId: 'video123'
@@ -100,6 +101,7 @@ const cloudflareR2CreateMock = {
       cloudflareR2Create: {
         id: 'r2asset1',
         fileName: 'test.mp4',
+        originalFilename: 'original-video.mp4',
         uploadUrl: 'https://upload.url',
         publicUrl: 'https://public.url'
       }
