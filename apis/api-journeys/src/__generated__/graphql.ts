@@ -327,6 +327,7 @@ export type CloudflareR2 = {
   createdAt: Scalars['Date']['output'];
   fileName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  originalFilename?: Maybe<Scalars['String']['output']>;
   publicUrl?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['Date']['output'];
   uploadUrl?: Maybe<Scalars['String']['output']>;
@@ -341,6 +342,8 @@ export type CloudflareR2CreateInput = {
   /** the name of the file that is being uploaded */
   fileName: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
+  /** the original name of the file before any renaming */
+  originalFilename?: InputMaybe<Scalars['String']['input']>;
   /** the id of the Video object this file relates to in the database */
   videoId: Scalars['String']['input'];
 };

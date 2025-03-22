@@ -66,6 +66,7 @@ model MuxVideo {
 model CloudflareR2 {
   id                   String                @id @default(uuid())
   fileName             String
+  originalFilename     String?
   uploadUrl            String?
   userId               String
   publicUrl            String?
