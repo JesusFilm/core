@@ -39,6 +39,7 @@ const button: TreeBlock<ButtonBlock> = {
   size: null,
   startIconId: null,
   endIconId: null,
+  submitEnabled: null,
   action: null,
   children: []
 }
