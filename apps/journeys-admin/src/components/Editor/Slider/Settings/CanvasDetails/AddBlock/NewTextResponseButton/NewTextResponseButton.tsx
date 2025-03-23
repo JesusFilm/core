@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
@@ -141,7 +141,8 @@ export function NewTextResponseButton(): ReactElement {
 
   const { journey } = useJourney()
   const {
-    state: { selectedStep }
+    state: { selectedStep, selectedBlockId },
+    dispatch
   } = useEditor()
   const { add } = useCommand()
   const { addBlock } = useBlockCreateCommand()
@@ -152,6 +153,9 @@ export function NewTextResponseButton(): ReactElement {
     ) as TreeBlock<CardBlock> | undefined
 
     if (card == null || journey == null) return
+
+    // Store the current selected block ID to restore on undo
+    const previousBlockId = selectedBlockId
 
     // Check for existing submit buttons in the card
     const hasSubmitButton = card.children.some(
@@ -254,8 +258,19 @@ export function NewTextResponseButton(): ReactElement {
       }
 
       add({
-        parameters: { execute: {}, undo: {} },
-        execute() {
+        parameters: {
+          execute: { previousBlockId },
+          undo: { previousBlockId },
+          redo: { textResponseId: textResponseBlock.id }
+        },
+        execute({ previousBlockId }) {
+          // Set focus to the new text response block
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlockId: textResponseBlock.id,
+            activeSlide: ActiveSlide.Content
+          })
+
           void textResponseWithButtonCreate({
             variables: {
               textResponseInput: {
@@ -324,7 +339,14 @@ export function NewTextResponseButton(): ReactElement {
             }
           })
         },
-        undo() {
+        undo({ previousBlockId }) {
+          // Restore focus to the previous block
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlockId: previousBlockId,
+            activeSlide: ActiveSlide.Content
+          })
+
           void textResponseWithButtonDelete({
             variables: {
               textResponseId: textResponseBlock.id,
@@ -355,7 +377,14 @@ export function NewTextResponseButton(): ReactElement {
             }
           })
         },
-        redo() {
+        redo({ textResponseId }) {
+          // Set focus back to the text response block
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedBlockId: textResponseId,
+            activeSlide: ActiveSlide.Content
+          })
+
           void textResponseWithButtonRestore({
             variables: {
               textResponseId: textResponseBlock.id,
