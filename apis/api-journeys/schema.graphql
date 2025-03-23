@@ -1562,7 +1562,7 @@ type JourneyEventsConnection {
 }
 
 input JourneyEventsFilter {
-  eventType: [String!]
+  typenames: [String!]
   periodRangeStart: DateTime
   periodRangeEnd: DateTime
 }

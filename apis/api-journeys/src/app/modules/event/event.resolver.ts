@@ -14,7 +14,7 @@ export class EventResolver {
   @Query()
   async journeyEventsConnection(
     @Args('journeyId') journeyId: string,
-    @Args('where') filter: JourneyEventsFilter,
+    @Args('filter') filter: JourneyEventsFilter,
     @Args('first') first = 50,
     @Args('after') after?: string | null
   ): Promise<JourneyEventsConnection> {

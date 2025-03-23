@@ -151,15 +151,19 @@ export class EventService {
   ): Prisma.EventWhereInput {
     return omitBy(
       {
-        journeyId
-        // typename:
-        //   filter?.eventType != null
-        //     ? { typename: { in: filter.eventType } }
-        //     : undefined,
-        // createdAt: {
-        //   gte: filter?.periodRangeStart ?? undefined,
-        //   lte: filter?.periodRangeEnd ?? undefined
-        // }
+        journeyId,
+        createdAt: {
+          gte: filter?.periodRangeStart ?? undefined,
+          lte: filter?.periodRangeEnd ?? undefined
+        },
+        AND:
+          filter?.typenames != null
+            ? [
+                {
+                  typename: { in: filter.typenames }
+                }
+              ]
+            : undefined
       },
       isNil
     )
@@ -180,6 +184,7 @@ export class EventService {
 
     const result = await this.prismaService.event.findMany({
       where,
+      orderBy: { createdAt: 'desc' },
       cursor: after != null ? { id: after } : undefined,
       skip: after == null ? 0 : 1,
       take: first + 1
@@ -188,7 +193,6 @@ export class EventService {
     const sendResult = result.length > first ? result.slice(0, -1) : result
     return {
       edges: sendResult.map((event) => ({
-        // node: event,
         node: {
           ...event,
           journeyId: event.journeyId ?? '',

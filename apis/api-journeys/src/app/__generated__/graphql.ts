@@ -556,7 +556,7 @@ export class ChatOpenEventCreateInput {
 }
 
 export class JourneyEventsFilter {
-    eventType?: Nullable<string[]>;
+    typenames?: Nullable<string[]>;
     periodRangeStart?: Nullable<DateTime>;
     periodRangeEnd?: Nullable<DateTime>;
 }

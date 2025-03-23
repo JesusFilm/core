@@ -3541,7 +3541,7 @@ input ChatOpenEventCreateInput @join__type(graph: API_JOURNEYS)  {
 }
 
 input JourneyEventsFilter @join__type(graph: API_JOURNEYS)  {
-  eventType: [String!]
+  typenames: [String!]
   periodRangeStart: DateTime
   periodRangeEnd: DateTime
 }
