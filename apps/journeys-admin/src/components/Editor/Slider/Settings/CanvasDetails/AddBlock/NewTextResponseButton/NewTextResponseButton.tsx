@@ -1,4 +1,4 @@
-import { ApolloCache, Reference, gql, useMutation } from '@apollo/client'
+import { Reference, gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -6,7 +6,6 @@ import { v4 as uuidv4 } from 'uuid'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
-import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
@@ -45,7 +44,6 @@ export const TEXT_RESPONSE_WITH_BUTTON_CREATE = gql`
   ${TEXT_RESPONSE_FIELDS}
   ${BUTTON_FIELDS}
   ${ICON_FIELDS}
-  ${CARD_FIELDS}
   mutation TextResponseWithButtonCreate(
     $textResponseInput: TextResponseBlockCreateInput!
     $buttonInput: ButtonBlockCreateInput!
@@ -54,8 +52,6 @@ export const TEXT_RESPONSE_WITH_BUTTON_CREATE = gql`
     $buttonId: ID!
     $journeyId: ID!
     $buttonUpdateInput: ButtonBlockUpdateInput!
-    $cardId: ID!
-    $cardInput: CardBlockUpdateInput!
   ) {
     textResponse: textResponseBlockCreate(input: $textResponseInput) {
       ...TextResponseFields
@@ -76,22 +72,15 @@ export const TEXT_RESPONSE_WITH_BUTTON_CREATE = gql`
     ) {
       ...ButtonFields
     }
-    cardBlockUpdate(id: $cardId, journeyId: $journeyId, input: $cardInput) {
-      ...CardFields
-    }
   }
 `
 
 export const TEXT_RESPONSE_WITH_BUTTON_DELETE = gql`
-  ${CARD_FIELDS}
   mutation TextResponseWithButtonDelete(
     $textResponseId: ID!
     $buttonId: ID!
     $startIconId: ID!
     $endIconId: ID!
-    $cardId: ID!
-    $journeyId: ID!
-    $cardInput: CardBlockUpdateInput!
   ) {
     textResponse: blockDelete(id: $textResponseId) {
       id
@@ -109,23 +98,16 @@ export const TEXT_RESPONSE_WITH_BUTTON_DELETE = gql`
       id
       parentOrder
     }
-    cardBlockUpdate(id: $cardId, journeyId: $journeyId, input: $cardInput) {
-      ...CardFields
-    }
   }
 `
 
 export const TEXT_RESPONSE_WITH_BUTTON_RESTORE = gql`
   ${BLOCK_FIELDS}
-  ${CARD_FIELDS}
   mutation TextResponseWithButtonRestore(
     $textResponseId: ID!
     $buttonId: ID!
     $startIconId: ID!
     $endIconId: ID!
-    $cardId: ID!
-    $journeyId: ID!
-    $cardInput: CardBlockUpdateInput!
   ) {
     textResponse: blockRestore(id: $textResponseId) {
       ...BlockFields
@@ -138,9 +120,6 @@ export const TEXT_RESPONSE_WITH_BUTTON_RESTORE = gql`
     }
     endIcon: blockRestore(id: $endIconId) {
       ...BlockFields
-    }
-    cardBlockUpdate(id: $cardId, journeyId: $journeyId, input: $cardInput) {
-      ...CardFields
     }
   }
 `
@@ -216,19 +195,6 @@ export function NewTextResponseButton(): ReactElement {
 
       const createdBlocks = [textResponseBlock, buttonBlock]
 
-      // Create a copy of the card with a property we can toggle for optimistic updates
-      const cardBlock = {
-        id: card.id,
-        __typename: 'CardBlock',
-        parentBlockId: card.parentBlockId,
-        parentOrder: card.parentOrder,
-        backgroundColor: card.backgroundColor,
-        coverBlockId: card.coverBlockId,
-        themeMode: card.themeMode,
-        themeName: card.themeName,
-        fullscreen: card.fullscreen ?? false
-      }
-
       const buttonOptimisticResponse = {
         textResponse: textResponseBlock,
         button: buttonBlock,
@@ -250,8 +216,7 @@ export function NewTextResponseButton(): ReactElement {
           iconColor: null,
           __typename: 'IconBlock'
         },
-        buttonUpdate: buttonBlock,
-        cardBlockUpdate: cardBlock
+        buttonUpdate: buttonBlock
       }
 
       add({
@@ -303,9 +268,7 @@ export function NewTextResponseButton(): ReactElement {
               buttonUpdateInput: {
                 startIconId: buttonBlock.startIconId,
                 endIconId: buttonBlock.endIconId
-              },
-              cardId: cardBlock.id,
-              cardInput: { fullscreen: cardBlock.fullscreen }
+              }
             },
             optimisticResponse: buttonOptimisticResponse,
             update(cache, { data }) {
@@ -320,8 +283,7 @@ export function NewTextResponseButton(): ReactElement {
                         }
                       `
                       const keys = Object.keys(data).filter(
-                        (key) =>
-                          key !== 'buttonUpdate' && key !== 'cardBlockUpdate'
+                        (key) => key !== 'buttonUpdate'
                       )
                       return [
                         ...existingBlockRefs,
@@ -352,20 +314,13 @@ export function NewTextResponseButton(): ReactElement {
               textResponseId: textResponseBlock.id,
               buttonId: buttonBlock.id,
               startIconId: buttonBlock.startIconId,
-              endIconId: buttonBlock.endIconId,
-              cardId: cardBlock.id,
-              journeyId: journey.id,
-              cardInput: { fullscreen: !cardBlock.fullscreen }
+              endIconId: buttonBlock.endIconId
             },
             optimisticResponse: {
               textResponse: [],
               button: [],
               startIcon: [],
-              endIcon: [],
-              cardBlockUpdate: {
-                ...cardBlock,
-                fullscreen: !cardBlock.fullscreen
-              }
+              endIcon: []
             },
             update(cache, { data }) {
               if (data == null) return
@@ -404,24 +359,11 @@ export function NewTextResponseButton(): ReactElement {
               textResponseId: textResponseBlock.id,
               buttonId: buttonBlock.id,
               startIconId: buttonBlock.startIconId,
-              endIconId: buttonBlock.endIconId,
-              cardId: cardBlock.id,
-              journeyId: journey.id,
-              cardInput: { fullscreen: cardBlock.fullscreen }
+              endIconId: buttonBlock.endIconId
             },
             optimisticResponse: {
-              textResponse: [
-                {
-                  ...textResponseBlock,
-                  parentOrder: textResponseBlock.parentOrder
-                }
-              ],
-              button: [
-                {
-                  ...buttonBlock,
-                  parentOrder: buttonBlock.parentOrder
-                }
-              ],
+              textResponse: [textResponseBlock],
+              button: [buttonBlock],
               startIcon: [
                 {
                   id: buttonBlock.startIconId,
@@ -443,8 +385,7 @@ export function NewTextResponseButton(): ReactElement {
                   iconColor: null,
                   __typename: 'IconBlock'
                 }
-              ],
-              cardBlockUpdate: cardBlock
+              ]
             },
             update(cache, { data }) {
               if (data == null) return

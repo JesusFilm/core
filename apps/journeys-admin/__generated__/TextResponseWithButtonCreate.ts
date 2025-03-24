@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TextResponseBlockCreateInput, ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, CardBlockUpdateInput, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
+import { TextResponseBlockCreateInput, ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: TextResponseWithButtonCreate
@@ -118,46 +118,12 @@ export interface TextResponseWithButtonCreate_buttonUpdate {
   submitEnabled: boolean | null;
 }
 
-export interface TextResponseWithButtonCreate_cardBlockUpdate {
-  __typename: "CardBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  /**
-   * backgroundColor should be a HEX color value e.g #FFFFFF for white.
-   */
-  backgroundColor: string | null;
-  /**
-   * coverBlockId is present if a child block should be used as a cover.
-   * This child block should not be rendered normally, instead it should be used
-   * as a background. Blocks are often of type ImageBlock or VideoBlock.
-   */
-  coverBlockId: string | null;
-  /**
-   * themeMode can override journey themeMode. If nothing is set then use
-   * themeMode from journey
-   */
-  themeMode: ThemeMode | null;
-  /**
-   * themeName can override journey themeName. If nothing is set then use
-   * themeName from journey
-   */
-  themeName: ThemeName | null;
-  /**
-   * fullscreen should control how the coverBlock is displayed. When fullscreen
-   * is set to true the coverBlock Image should be displayed as a blur in the
-   * background.
-   */
-  fullscreen: boolean;
-}
-
 export interface TextResponseWithButtonCreate {
   textResponse: TextResponseWithButtonCreate_textResponse;
   button: TextResponseWithButtonCreate_button;
   startIcon: TextResponseWithButtonCreate_startIcon;
   endIcon: TextResponseWithButtonCreate_endIcon;
   buttonUpdate: TextResponseWithButtonCreate_buttonUpdate | null;
-  cardBlockUpdate: TextResponseWithButtonCreate_cardBlockUpdate;
 }
 
 export interface TextResponseWithButtonCreateVariables {
@@ -168,6 +134,4 @@ export interface TextResponseWithButtonCreateVariables {
   buttonId: string;
   journeyId: string;
   buttonUpdateInput: ButtonBlockUpdateInput;
-  cardId: string;
-  cardInput: CardBlockUpdateInput;
 }
