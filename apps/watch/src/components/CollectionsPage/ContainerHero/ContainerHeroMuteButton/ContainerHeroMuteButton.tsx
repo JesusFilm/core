@@ -17,6 +17,7 @@ export function ContainerHeroMuteButton({
     >
       {isMuted ? (
         <svg
+          data-testid="UnmuteIcon"
           xmlns="http://www.w3.org/2000/svg"
           width="32"
           height="32"
@@ -34,6 +35,7 @@ export function ContainerHeroMuteButton({
         </svg>
       ) : (
         <svg
+          data-testid="MuteIcon"
           xmlns="http://www.w3.org/2000/svg"
           width="32"
           height="32"

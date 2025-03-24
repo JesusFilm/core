@@ -59,19 +59,20 @@ export function ContainerHeroVideo({
 
     return () => {
       if (playerRef.current) {
-        try {
-          playerRef.current.dispose()
-        } catch (e) {
-          console.error('Error disposing video player:', e)
-        }
+        playerRef.current.dispose()
+
         playerRef.current = null
       }
     }
   }, [onMutedChange, onPlayerReady])
 
   return (
-    <div className="fixed top-0 left-0 right-0 w-full h-[75%]">
+    <div
+      className="fixed top-0 left-0 right-0 w-full h-[75%]"
+      data-testid="ContainerHeroVideo"
+    >
       <video
+        data-testid="ContainerHeroVideoApplication"
         ref={videoRef}
         className="video-js"
         style={{
@@ -87,6 +88,7 @@ export function ContainerHeroVideo({
         <source
           src="https://stream.mux.com/OWsElOe7FF8fR8lwFVY4uqGFc01xgKwQZIIcrIgu4aKc.m3u8"
           type="application/x-mpegURL"
+          data-testid="ContainerHeroVideoSource"
         />
       </video>
     </div>
