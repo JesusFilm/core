@@ -1,6 +1,7 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { Form, Formik } from 'formik'
@@ -67,6 +68,8 @@ export const TextResponse = ({
 
   const initialValues: TextResponseFormValues = { response: '' }
 
+  const placeholder = 'Placeholder'
+
   const onSubmitHandler = async (
     values: TextResponseFormValues
   ): Promise<void> => {
@@ -112,11 +115,14 @@ export const TextResponse = ({
       <Formik initialValues={initialValues} onSubmit={noop} enableReinitialize>
         {({ values, handleChange, handleBlur }) => (
           <Form data-testid={`textResponse-${blockId}`}>
-            <Stack>
+            <Stack flexDirection="column" spacing={1}>
+              <Typography id="textResponse-label" variant="subtitle2">
+                {label === '' ? 'Label' : label}
+              </Typography>
               <TextField
                 id="textResponse-field"
                 name="response"
-                label={label === '' ? 'Your answer here' : label}
+                placeholder={placeholder}
                 value={values.response}
                 helperText={hint != null ? hint : ''}
                 multiline
@@ -131,11 +137,22 @@ export const TextResponse = ({
                     await onSubmitHandler(values)
                   }
                 }}
-                inputProps={{
-                  maxLength: 1000,
-                  readOnly: selectedBlock !== undefined,
-                  sx: {
-                    pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+                slotProps={{
+                  htmlInput: {
+                    'aria-labelledby': 'textResponse-label',
+                    maxLength: 1000,
+                    readOnly: selectedBlock !== undefined,
+                    sx: {
+                      pointerEvents:
+                        selectedBlock !== undefined ? 'none' : 'auto',
+                      pt: 2,
+                      pb: 1
+                    }
+                  },
+                  input: {
+                    sx: {
+                      pt: 0
+                    }
                   }
                 }}
                 sx={{

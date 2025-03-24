@@ -51,7 +51,7 @@ export function NewTextResponseButton(): ReactElement {
       id: uuidv4(),
       parentBlockId: card.id,
       parentOrder: card.children.length ?? 0,
-      label: t('Your answer here'),
+      label: t('Label'),
       hint: null,
       minRows: null,
       type: null,
