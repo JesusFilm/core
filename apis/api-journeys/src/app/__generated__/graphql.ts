@@ -1509,10 +1509,32 @@ export class ChatOpenEvent implements Event {
     messagePlatform?: Nullable<MessagePlatform>;
 }
 
+export class JourneyEvent implements Event {
+    __typename?: 'JourneyEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    journey?: Nullable<Journey>;
+    visitor?: Nullable<Visitor>;
+    journeyVisitor?: Nullable<JourneyVisitor>;
+    typename?: Nullable<string>;
+    action?: Nullable<ButtonAction>;
+    actionValue?: Nullable<string>;
+    messagePlatform?: Nullable<MessagePlatform>;
+    language?: Nullable<Language>;
+    email?: Nullable<string>;
+    blockId?: Nullable<string>;
+    position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
+    progress?: Nullable<number>;
+}
+
 export class JourneyEventsEdge {
     __typename?: 'JourneyEventsEdge';
     cursor: string;
-    node: Event;
+    node: JourneyEvent;
 }
 
 export class JourneyEventsConnection {

@@ -7,6 +7,7 @@ import omitBy from 'lodash/omitBy'
 
 import {
   Block,
+  Journey,
   JourneyVisitor,
   Prisma,
   Visitor
@@ -15,8 +16,11 @@ import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import { EventsNotificationJob } from '@core/yoga/emailEvents/types'
 
 import {
+  ButtonAction,
   JourneyEventsConnection,
-  JourneyEventsFilter
+  JourneyEventsFilter,
+  MessagePlatform,
+  VideoBlockSource
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
@@ -163,8 +167,8 @@ export class EventService {
             ? {
                 typename: { in: filter.typenames }
               }
-            : null
-        ]
+            : undefined
+        ].filter((element) => element)
       },
       isNil
     )
@@ -197,10 +201,26 @@ export class EventService {
     return {
       edges: sendResult.map((event) => ({
         node: {
-          ...event,
+          // event fields
+          id: event.id,
           journeyId: event.journeyId ?? '',
           createdAt: event.createdAt.toISOString(),
-          buttonAction: event.action ?? null
+          label: event.label,
+          value: event.value,
+          // db fields
+          typename: event.typename,
+          // button fields
+          action: event.action as unknown as ButtonAction,
+          actionValue: event.actionValue,
+          messagePlatform: event.messagePlatform as unknown as MessagePlatform,
+          // signup fields
+          email: event.email,
+          // step fields
+          blockId: event.blockId,
+          // video fields
+          position: event.position,
+          source: event.source as unknown as VideoBlockSource,
+          progress: event.progress
         },
         cursor: event.id
       })),
