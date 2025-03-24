@@ -4,6 +4,7 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 
+import type { GetLanguagesWithBcp47 } from '../../../__generated__/GetLanguagesWithBcp47'
 import type {
   GetVideoContent,
   GetVideoContentVariables
@@ -14,17 +15,8 @@ import { CollectionsPage } from '../../../src/components/CollectionsPage'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { getFlags } from '../../../src/libs/getFlags'
 import { LanguageProvider } from '../../../src/libs/languageContext/LanguageContext'
-import { VIDEO_CONTENT_FIELDS } from '../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../src/libs/videoContext'
-
-const GET_VIDEO_CONTENT = gql`
-  ${VIDEO_CONTENT_FIELDS}
-  query GetVideoContent($id: ID!, $languageId: ID) {
-    content: video(id: $id, idType: slug) {
-      ...VideoContentFields
-    }
-  }
-`
+import { GET_VIDEO_CONTENT } from '../[part1]/[part2]'
 
 const GET_LANGUAGES_WITH_BCP47 = gql`
   query GetLanguagesWithBcp47 {
@@ -65,7 +57,7 @@ export const getStaticProps: GetStaticProps<EasterPageProps> = async (
   const client = createApolloClient()
 
   try {
-    const { data: languageData } = await client.query({
+    const { data: languageData } = await client.query<GetLanguagesWithBcp47>({
       query: GET_LANGUAGES_WITH_BCP47
     })
 
