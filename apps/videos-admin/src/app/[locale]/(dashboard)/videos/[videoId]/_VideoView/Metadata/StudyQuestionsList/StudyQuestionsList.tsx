@@ -10,6 +10,9 @@ import { OrderedItem } from '../../../../../../../../components/OrderedList/Orde
 import { GetAdminVideo_AdminVideo_StudyQuestions as StudyQuestions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { Section } from '../../Section'
 
+import { StudyQuestionCreate } from './StudyQuestionCreate'
+import { StudyQuestionDialog } from './StudyQuestionDialog'
+
 export const UPDATE_STUDY_QUESTION_ORDER = graphql(`
   mutation UpdateStudyQuestionOrder($input: VideoStudyQuestionUpdateInput!) {
     videoStudyQuestionUpdate(input: $input) {
@@ -36,6 +39,10 @@ export function StudyQuestionsList({
   const t = useTranslations()
   const [studyQuestionItems, setStudyQuestionItems] = useState(studyQuestions)
   const [updateStudyQuestionOrder] = useMutation(UPDATE_STUDY_QUESTION_ORDER)
+  const [selectedQuestion, setSelectedQuestion] = useState<{
+    id: string
+    value: string
+  } | null>(null)
 
   async function updateOrderOnDrag(e: DragEndEvent): Promise<void> {
     const { active, over } = e
@@ -58,28 +65,51 @@ export function StudyQuestionsList({
     }
   }
 
+  const handleEdit = (question: { id: string; value: string }) => {
+    setSelectedQuestion(question)
+  }
+
+  const handleCloseDialog = () => {
+    setSelectedQuestion(null)
+  }
+
   const totalQuestions = studyQuestionItems?.length ?? 0
 
   return (
-    <Section title={t('Study Questions')} variant="outlined">
-      {totalQuestions > 0 ? (
-        <OrderedList
-          onOrderUpdate={updateOrderOnDrag}
-          items={studyQuestionItems}
-        >
-          {studyQuestionItems?.map(({ id, value }, idx) => (
-            <OrderedItem
-              key={id}
-              id={id}
-              label={value}
-              idx={idx}
-              menuActions={[{ label: t('Edit'), handler: () => null }]}
-            />
-          ))}
-        </OrderedList>
-      ) : (
-        <Section.Fallback>{t('No study questions')}</Section.Fallback>
+    <>
+      <Section title={t('Study Questions')} variant="outlined">
+        {totalQuestions > 0 ? (
+          <OrderedList
+            onOrderUpdate={updateOrderOnDrag}
+            items={studyQuestionItems}
+          >
+            {studyQuestionItems?.map(({ id, value }, idx) => (
+              <OrderedItem
+                key={id}
+                id={id}
+                label={value}
+                idx={idx}
+                menuActions={[
+                  {
+                    label: t('Edit'),
+                    handler: () => handleEdit({ id, value })
+                  }
+                ]}
+              />
+            ))}
+          </OrderedList>
+        ) : (
+          <Section.Fallback>{t('No study questions')}</Section.Fallback>
+        )}
+        <StudyQuestionCreate />
+      </Section>
+      {selectedQuestion != null && (
+        <StudyQuestionDialog
+          open={true}
+          onClose={handleCloseDialog}
+          studyQuestion={selectedQuestion}
+        />
       )}
-    </Section>
+    </>
   )
 }
