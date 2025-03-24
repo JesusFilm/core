@@ -9,20 +9,29 @@ export function CollectionsPage(): ReactElement {
   const { t } = useTranslation('apps-watch')
   return (
     <PageWrapper hero={<ContainerHero />} hideHeader hideFooter>
-      {/* <div className="container mx-auto py-16 px-4">
-        <h2 className="text-3xl md:text-4xl font-bold mb-8">
-          {t('collections')}
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          <div className="bg-background-paper rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow duration-300">
-            <div className="aspect-video bg-gray-200 rounded-md mb-4"></div>
-            <h3 className="font-bold text-lg mb-1">{t('collectionTitle')}</h3>
-            <p className="text-sm text-secondary-contrast opacity-70">
-              {t('sampleDescription')}
-            </p>
+      <div
+        className="bg-stone-900 text-white min-h-screen font-sans"
+        data-testid="CollectionPage"
+      >
+        <div
+          className="w-full mx-auto z-1 border-t border-stone-500/30"
+          data-testid="CollectionPageBlurFilter"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+            backdropFilter: 'brightness(.6) blur(40px)'
+          }}
+        >
+          <div
+            className="pt-7 w-full max-w-[1920px]"
+            data-testid="CollectionPageContainer"
+          >
+            <div
+              className="h-[10000px]"
+              data-testid="CollectionPageContent"
+            ></div>
           </div>
         </div>
-      </div> */}
+      </div>
     </PageWrapper>
   )
 }
