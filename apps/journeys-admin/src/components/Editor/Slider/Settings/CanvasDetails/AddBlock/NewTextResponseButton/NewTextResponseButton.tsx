@@ -410,8 +410,18 @@ export function NewTextResponseButton(): ReactElement {
               cardInput: { fullscreen: cardBlock.fullscreen }
             },
             optimisticResponse: {
-              textResponse: [textResponseBlock],
-              button: [buttonBlock],
+              textResponse: [
+                {
+                  ...textResponseBlock,
+                  parentOrder: textResponseBlock.parentOrder
+                }
+              ],
+              button: [
+                {
+                  ...buttonBlock,
+                  parentOrder: buttonBlock.parentOrder
+                }
+              ],
               startIcon: [
                 {
                   id: buttonBlock.startIconId,
@@ -453,6 +463,8 @@ export function NewTextResponseButton(): ReactElement {
                         const NEW_BLOCK_FRAGMENT = gql`
                           fragment NewBlock on Block {
                             id
+                            parentOrder
+                            parentBlockId
                           }
                         `
                         if (
@@ -462,10 +474,25 @@ export function NewTextResponseButton(): ReactElement {
                         ) {
                           return existingBlockRefs
                         }
+
+                        // Use original parentOrder values for known blocks
+                        let blockData = block
+                        if (block.id === textResponseBlock.id) {
+                          blockData = {
+                            ...block,
+                            parentOrder: textResponseBlock.parentOrder
+                          }
+                        } else if (block.id === buttonBlock.id) {
+                          blockData = {
+                            ...block,
+                            parentOrder: buttonBlock.parentOrder
+                          }
+                        }
+
                         return [
                           ...existingBlockRefs,
                           cache.writeFragment({
-                            data: block,
+                            data: blockData,
                             fragment: NEW_BLOCK_FRAGMENT
                           })
                         ]
