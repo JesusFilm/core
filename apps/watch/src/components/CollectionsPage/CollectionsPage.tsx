@@ -8,7 +8,7 @@ import { ContainerHero } from './ContainerHero'
 export function CollectionsPage(): ReactElement {
   const { t } = useTranslation('apps-watch')
   return (
-    <PageWrapper hideHeader hero={<ContainerHero />}>
+    <PageWrapper hero={<ContainerHero />} hideHeader hideFooter>
       {/* <div className="container mx-auto py-16 px-4">
         <h2 className="text-3xl md:text-4xl font-bold mb-8">
           {t('collections')}

@@ -50,7 +50,7 @@ export function PageWrapper({
           </ThemeProvider>
         </Container>
         <Box sx={{ flexGrow: 1 }}>{children}</Box>
-        {hideFooter && <Footer />}
+        {hideFooter !== true && <Footer />}
       </Stack>
     </Div100vh>
   )
