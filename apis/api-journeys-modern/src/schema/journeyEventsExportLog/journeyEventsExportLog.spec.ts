@@ -48,7 +48,7 @@ describe('journeyEventsExportLog', () => {
           journeyId: 'journey.id',
           dateRangeStart: currentTimeSubMonth,
           dateRangeEnd: currentTime,
-          eventsFilter: ['eventFilter'],
+          eventsFilter: ['StepViewEvent'],
           createdAt: currentTime
         })
 
@@ -59,7 +59,7 @@ describe('journeyEventsExportLog', () => {
               journeyId: 'journey.id',
               dateRangeStart: currentTimeSubMonth,
               dateRangeEnd: currentTime,
-              eventsFilter: ['eventFilter']
+              eventsFilter: ['StepViewEvent']
             }
           }
         })
@@ -71,7 +71,7 @@ describe('journeyEventsExportLog', () => {
               journeyId: 'journey.id',
               dateRangeStart: currentTimeSubMonth.toISOString(),
               dateRangeEnd: currentTime.toISOString(),
-              eventsFilter: ['eventFilter']
+              eventsFilter: ['StepViewEvent']
             }
           }
         })
@@ -82,7 +82,7 @@ describe('journeyEventsExportLog', () => {
             journeyId: 'journey.id',
             dateRangeStart: currentTimeSubMonth.toISOString(),
             dateRangeEnd: currentTime.toISOString(),
-            eventsFilter: ['eventFilter']
+            eventsFilter: ['StepViewEvent']
           }
         })
       })
@@ -93,7 +93,7 @@ describe('journeyEventsExportLog', () => {
         const result = await authClient({
           document: CREATE_JOURNEY_EVENTS_EXPORT_LOG_MUTATION,
           variables: {
-            input: { journeyId: 'journey.id', eventsFilter: ['eventFilter'] }
+            input: { journeyId: 'journey.id', eventsFilter: ['StepViewEvent'] }
           }
         })
 
