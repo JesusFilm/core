@@ -226,6 +226,7 @@ export interface CardCtaRestore_imageRestore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -648,6 +649,7 @@ export interface CardCtaRestore_subtitleRestore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -1070,6 +1072,7 @@ export interface CardCtaRestore_titleRestore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -1492,6 +1495,7 @@ export interface CardCtaRestore_button1Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -1914,6 +1918,7 @@ export interface CardCtaRestore_startIcon1Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -2336,6 +2341,7 @@ export interface CardCtaRestore_endIcon1Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -2758,6 +2764,7 @@ export interface CardCtaRestore_button2Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -3180,6 +3187,7 @@ export interface CardCtaRestore_startIcon2Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -3602,6 +3610,7 @@ export interface CardCtaRestore_endIcon2Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -4024,6 +4033,7 @@ export interface CardCtaRestore_button3Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -4446,6 +4456,7 @@ export interface CardCtaRestore_startIcon3Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -4868,6 +4879,7 @@ export interface CardCtaRestore_endIcon3Restore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;

@@ -11,23 +11,23 @@ import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
-import { TEXT_RESPONSE_LABEL_UPDATE } from './Label'
+import { TEXT_RESPONSE_PLACEHOLDER_UPDATE } from './Placeholder'
 
-import { Label } from '.'
+import { Placeholder } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-describe('Edit Label field', () => {
+describe('Edit Placeholder field', () => {
   const block: TreeBlock<TextResponseBlock> = {
     __typename: 'TextResponseBlock',
     id: 'textResponse0.id',
     parentBlockId: '0',
     parentOrder: 0,
     label: 'Your answer here',
-    placeholder: null,
+    placeholder: 'Your placeholder here',
     hint: null,
     minRows: null,
     integrationId: null,
@@ -36,55 +36,55 @@ describe('Edit Label field', () => {
     children: []
   }
 
-  const mockLabelUpdate1 = {
+  const mockPlaceholderUpdate1 = {
     request: {
-      query: TEXT_RESPONSE_LABEL_UPDATE,
+      query: TEXT_RESPONSE_PLACEHOLDER_UPDATE,
       variables: {
         id: block.id,
-        label: 'Your answer here more'
+        placeholder: 'Your placeholder here more'
       }
     },
     result: jest.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          label: 'Your answer here more'
+          placeholder: 'Your placeholder here more'
         }
       }
     }))
   }
 
-  const mockLabelUpdate2 = {
+  const mockPlaceholderUpdate2 = {
     request: {
-      query: TEXT_RESPONSE_LABEL_UPDATE,
+      query: TEXT_RESPONSE_PLACEHOLDER_UPDATE,
       variables: {
         id: block.id,
-        label: 'Your answer here'
+        placeholder: 'Your placeholder here'
       }
     },
     result: jest.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          label: 'Your answer here'
+          placeholder: 'Your placeholder here'
         }
       }
     }))
   }
 
-  const mockLabelUpdate3 = {
+  const mockPlaceholderUpdate3 = {
     request: {
-      query: TEXT_RESPONSE_LABEL_UPDATE,
+      query: TEXT_RESPONSE_PLACEHOLDER_UPDATE,
       variables: {
         id: block.id,
-        label: 'Your answer here more'
+        placeholder: 'Your placeholder here more'
       }
     },
     result: jest.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          label: 'Your answer here more'
+          placeholder: 'Your placeholder here more'
         }
       }
     }))
@@ -92,78 +92,88 @@ describe('Edit Label field', () => {
 
   beforeEach(() => jest.clearAllMocks())
 
-  it('should display label value', () => {
+  it('should display placeholder value', () => {
     render(
-      <MockedProvider mocks={[mockLabelUpdate1]} addTypename={false}>
+      <MockedProvider mocks={[mockPlaceholderUpdate1]} addTypename={false}>
         <EditorProvider initialState={{ selectedBlock: block }}>
-          <Label />
+          <Placeholder />
         </EditorProvider>
       </MockedProvider>
     )
 
-    const field = screen.getByRole('textbox', { name: 'Label' })
-    expect(field).toHaveValue('Your answer here')
+    const field = screen.getByRole('textbox', { name: 'Placeholder' })
+    expect(field).toHaveValue('Your placeholder here')
   })
 
   it('should not be able to type beyond max character limit', () => {
     render(
-      <MockedProvider mocks={[mockLabelUpdate1]} addTypename={false}>
+      <MockedProvider mocks={[mockPlaceholderUpdate1]} addTypename={false}>
         <EditorProvider initialState={{ selectedBlock: block }}>
-          <Label />
+          <Placeholder />
         </EditorProvider>
       </MockedProvider>
     )
 
-    const field = screen.getByRole('textbox', { name: 'Label' })
+    const field = screen.getByRole('textbox', { name: 'Placeholder' })
     expect(field).toHaveAttribute('maxlength', '250')
   })
 
-  it('should change the label', async () => {
+  it('should change the placeholder', async () => {
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([mockLabelUpdate1])
+      new MockLink([mockPlaceholderUpdate1])
     ])
 
     render(
       <MockedProvider link={link} addTypename={false}>
         <EditorProvider initialState={{ selectedBlock: block }}>
-          <Label />
+          <Placeholder />
         </EditorProvider>
       </MockedProvider>
     )
 
-    const field = screen.getByRole('textbox', { name: 'Label' })
+    const field = screen.getByRole('textbox', { name: 'Placeholder' })
     await userEvent.type(field, ' more')
-    await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockPlaceholderUpdate1.result).toHaveBeenCalled()
+    )
   })
 
-  it('should undo the label change', async () => {
+  it('should undo the placeholder change', async () => {
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([mockLabelUpdate1, mockLabelUpdate2])
+      new MockLink([mockPlaceholderUpdate1, mockPlaceholderUpdate2])
     ])
 
     render(
       <MockedProvider link={link} addTypename={false}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <CommandUndoItem variant="button" />
-          <Label />
+          <Placeholder />
         </EditorProvider>
       </MockedProvider>
     )
 
-    const field = screen.getByRole('textbox', { name: 'Label' })
+    const field = screen.getByRole('textbox', { name: 'Placeholder' })
     await userEvent.type(field, ' more')
-    await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockPlaceholderUpdate1.result).toHaveBeenCalled()
+    )
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(mockLabelUpdate2.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockPlaceholderUpdate2.result).toHaveBeenCalled()
+    )
   })
 
-  it('should redo the change to label that was undone', async () => {
+  it('should redo the change to placeholder that was undone', async () => {
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([mockLabelUpdate1, mockLabelUpdate2, mockLabelUpdate3])
+      new MockLink([
+        mockPlaceholderUpdate1,
+        mockPlaceholderUpdate2,
+        mockPlaceholderUpdate3
+      ])
     ])
 
     render(
@@ -171,38 +181,46 @@ describe('Edit Label field', () => {
         <EditorProvider initialState={{ selectedBlock: block }}>
           <CommandUndoItem variant="button" />
           <CommandRedoItem variant="button" />
-          <Label />
+          <Placeholder />
         </EditorProvider>
       </MockedProvider>
     )
 
-    const field = screen.getByRole('textbox', { name: 'Label' })
+    const field = screen.getByRole('textbox', { name: 'Placeholder' })
     await userEvent.type(field, ' more')
-    await waitFor(() => expect(mockLabelUpdate1.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockPlaceholderUpdate1.result).toHaveBeenCalled()
+    )
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(mockLabelUpdate2.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockPlaceholderUpdate2.result).toHaveBeenCalled()
+    )
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-    await waitFor(() => expect(mockLabelUpdate3.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockPlaceholderUpdate3.result).toHaveBeenCalled()
+    )
   })
 
   it('should not call mutation if not selectedBlock', async () => {
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([mockLabelUpdate1])
+      new MockLink([mockPlaceholderUpdate1])
     ])
 
     render(
       <MockedProvider link={link} addTypename={false}>
         <EditorProvider initialState={{}}>
-          <Label />
+          <Placeholder />
         </EditorProvider>
       </MockedProvider>
     )
 
-    const field = screen.getByRole('textbox', { name: 'Label' })
-    await userEvent.type(field, ' more')
-    await waitFor(() => expect(mockLabelUpdate1.result).not.toHaveBeenCalled())
+    const field = screen.getByRole('textbox', { name: 'Placeholder' })
+    await userEvent.type(field, ' here')
+    await waitFor(() =>
+      expect(mockPlaceholderUpdate1.result).not.toHaveBeenCalled()
+    )
   })
 })

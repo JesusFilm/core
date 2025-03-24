@@ -53,6 +53,7 @@ export const Complete = {
   args: {
     block: {
       label: 'Label limit 1234',
+      placeholder: 'Placeholder text here',
       hint: 'Hint limit 12345678910',
       minRows: 4
     }

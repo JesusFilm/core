@@ -226,6 +226,7 @@ export interface CardQuoteRestore_image_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -648,6 +649,7 @@ export interface CardQuoteRestore_subtitle_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -1070,6 +1072,7 @@ export interface CardQuoteRestore_title_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -1492,6 +1495,7 @@ export interface CardQuoteRestore_body_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
