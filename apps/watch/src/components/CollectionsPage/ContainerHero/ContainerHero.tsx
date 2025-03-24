@@ -49,7 +49,10 @@ export function ContainerHero(): ReactElement {
         onPlayerReady={handlePlayerReady}
       />
 
-      <div className="w-full pt-[200px] pb-4 sm:pb-11 relative flex flex-col sm:flex-row">
+      <div
+        data-testid="ContainerHeroTitleContainer"
+        className="w-full pt-[200px] pb-4 sm:pb-11 relative flex flex-col sm:flex-row"
+      >
         <div
           className="absolute top-0 left-0 right-0 h-full w-full pointer-events-none z-[1]"
           style={{
@@ -57,7 +60,10 @@ export function ContainerHero(): ReactElement {
             mask: 'linear-gradient(0deg, rgba(2,0,36,1) 46%, rgba(2,0,36,1) 53%, rgba(0,0,0,0) 100%)'
           }}
         />
-        <div className="container mx-auto flex max-w-[1536px] px-4">
+        <div
+          data-testid="ContainerHeroTitle"
+          className="container mx-auto flex max-w-[1536px] px-4"
+        >
           <div className="pb-4 sm:pb-0 w-full relative z-[2] flex flex-col">
             <div className="flex items-center justify-between w-full z-[2]">
               <h2 className="text-[3.75rem] font-bold text-white opacity-90 mix-blend-screen mb-1 flex-grow">
@@ -71,7 +77,10 @@ export function ContainerHero(): ReactElement {
             <p className="text-secondary-contrast opacity-50 mix-blend-screen z-[2] uppercase tracking-widest font-montserrat text-white">
               {`${label} \u2022 ${childCountLabel.toLowerCase()}`}
             </p>
-            <p className="text-[1.125rem] text-primary mt-8 z-[2] text-balance font-apercu">
+            <p
+              className="text-[1.125rem] text-primary mt-8 z-[2] text-balance font-apercu"
+              data-testid="ContainerHeroDescription"
+            >
               {t(
                 'Easter {{year}} videos & resources about Lent, Holy Week, Resurrection',
                 {
