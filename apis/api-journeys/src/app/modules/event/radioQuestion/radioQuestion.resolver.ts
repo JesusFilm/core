@@ -44,7 +44,7 @@ export class RadioQuestionSubmissionEventResolver {
         typename: 'RadioQuestionSubmissionEvent',
         visitor: { connect: { id: visitor.id } },
         stepId: input.stepId ?? undefined,
-        journeyId
+        journey: { connect: { id: journeyId } }
       }),
       this.prismaService.visitor.update({ where: { id: visitor.id }, data }),
       this.prismaService.journeyVisitor.update({

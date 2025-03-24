@@ -147,7 +147,8 @@ export class EventService {
 
   generateWhere(
     journeyId: string,
-    filter: JourneyEventsFilter
+    filter: JourneyEventsFilter,
+    accessibleEvent: Prisma.EventWhereInput
   ): Prisma.EventWhereInput {
     return omitBy(
       {
@@ -156,14 +157,14 @@ export class EventService {
           gte: filter?.periodRangeStart ?? undefined,
           lte: filter?.periodRangeEnd ?? undefined
         },
-        AND:
+        AND: [
+          accessibleEvent,
           filter?.typenames != null
-            ? [
-                {
-                  typename: { in: filter.typenames }
-                }
-              ]
-            : undefined
+            ? {
+                typename: { in: filter.typenames }
+              }
+            : null
+        ]
       },
       isNil
     )
@@ -171,16 +172,18 @@ export class EventService {
 
   async getJourneyEvents({
     journeyId,
+    accessibleEvent,
     filter,
     first,
     after
   }: {
     journeyId: string
+    accessibleEvent: Prisma.EventWhereInput
     filter: JourneyEventsFilter
     first: number
     after?: string | null
   }): Promise<JourneyEventsConnection> {
-    const where = this.generateWhere(journeyId, filter)
+    const where = this.generateWhere(journeyId, filter, accessibleEvent)
 
     const result = await this.prismaService.event.findMany({
       where,

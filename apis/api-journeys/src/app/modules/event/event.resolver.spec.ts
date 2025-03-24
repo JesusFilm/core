@@ -1,17 +1,33 @@
+import { Reflector } from '@nestjs/core'
 import { Test, TestingModule } from '@nestjs/testing'
+
+import { Prisma } from '.prisma/api-journeys-client'
+import { CaslFactory } from '@core/nest/common/CaslAuthModule'
 
 import {
   JourneyEventsConnection,
   JourneyEventsFilter
 } from '../../__generated__/graphql'
+import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
 import { EventResolver } from './event.resolver'
 import { EventService } from './event.service'
 
+// Create a mock class for the abstract CaslFactory
+class MockCaslFactory extends CaslFactory {
+  createAbility = jest.fn().mockResolvedValue({
+    can: jest.fn().mockReturnValue(true)
+  })
+}
+
 describe('EventResolver', () => {
   let resolver: EventResolver
   let eventService: EventService
+
+  const mockEventService = {
+    getJourneyEvents: jest.fn()
+  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -19,11 +35,36 @@ describe('EventResolver', () => {
         EventResolver,
         {
           provide: EventService,
+          useValue: mockEventService
+        },
+        {
+          provide: PrismaService,
           useValue: {
-            getJourneyEvents: jest.fn()
+            event: {
+              findMany: jest.fn(),
+              create: jest.fn()
+            },
+            userRole: {
+              upsert: jest.fn().mockResolvedValue({ roles: ['user'] })
+            }
           }
         },
-        PrismaService
+        {
+          provide: Reflector,
+          useValue: {
+            get: jest.fn().mockReturnValue([])
+          }
+        },
+        {
+          provide: CaslFactory,
+          useClass: MockCaslFactory
+        },
+        {
+          provide: AppCaslGuard,
+          useValue: {
+            canActivate: jest.fn().mockResolvedValue(true)
+          }
+        }
       ]
     }).compile()
 
@@ -52,6 +93,7 @@ describe('EventResolver', () => {
 
   describe('journeyEventsConnection', () => {
     it('calls getJourneyEvents and returns the result', async () => {
+      const accessibleEvent: Prisma.EventWhereInput = {}
       const journeyId = 'journey-id'
       const filter: JourneyEventsFilter = {
         typenames: ['TextResponseSubmissionEvent'],
@@ -87,6 +129,7 @@ describe('EventResolver', () => {
         .mockResolvedValue(mockResponse)
 
       const result = await resolver.journeyEventsConnection(
+        accessibleEvent,
         journeyId,
         filter,
         first,
@@ -95,6 +138,7 @@ describe('EventResolver', () => {
 
       expect(eventService.getJourneyEvents).toHaveBeenCalledWith({
         journeyId,
+        accessibleEvent,
         filter,
         first,
         after
@@ -103,6 +147,7 @@ describe('EventResolver', () => {
     })
 
     it('uses default values when not all parameters are provided', async () => {
+      const accessibleEvent: Prisma.EventWhereInput = {}
       const journeyId = 'journey-id'
       const filter: JourneyEventsFilter = {
         typenames: ['TextResponseSubmissionEvent']
@@ -122,10 +167,11 @@ describe('EventResolver', () => {
         .spyOn(eventService, 'getJourneyEvents')
         .mockResolvedValue(mockResponse)
 
-      await resolver.journeyEventsConnection(journeyId, filter)
+      await resolver.journeyEventsConnection(accessibleEvent, journeyId, filter)
 
       expect(eventService.getJourneyEvents).toHaveBeenCalledWith({
         journeyId,
+        accessibleEvent,
         filter,
         first: 50,
         after: undefined

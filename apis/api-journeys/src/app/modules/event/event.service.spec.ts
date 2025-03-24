@@ -1,6 +1,8 @@
 import { getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
 
+import { Prisma } from '.prisma/api-journeys-client'
+
 import { JourneyEventsFilter } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
@@ -227,24 +229,26 @@ describe('EventService', () => {
 
   describe('generateWhere', () => {
     const journeyId = 'journey-id'
+    const accessibleEvent: Prisma.EventWhereInput = {}
 
-    it('should return where clause with journeyId only when filter is empty', () => {
+    it('generates where clause with journeyId, accessibleEvent when filter is empty', () => {
       const filter: JourneyEventsFilter = {}
-      const where = service.generateWhere(journeyId, filter)
+      const where = service.generateWhere(journeyId, filter, accessibleEvent)
       expect(where).toEqual({
         journeyId,
         createdAt: {
           gte: undefined,
           lte: undefined
-        }
+        },
+        AND: [accessibleEvent, null]
       })
     })
 
-    it('should include typenames in where clause when provided', () => {
+    it('should include typenames and accessibleEvent in where clause when provided', () => {
       const filter: JourneyEventsFilter = {
         typenames: ['TextResponseSubmissionEvent', 'ButtonClickEvent']
       }
-      const where = service.generateWhere(journeyId, filter)
+      const where = service.generateWhere(journeyId, filter, accessibleEvent)
       expect(where).toEqual({
         journeyId,
         createdAt: {
@@ -252,6 +256,7 @@ describe('EventService', () => {
           lte: undefined
         },
         AND: [
+          accessibleEvent,
           {
             typename: {
               in: ['TextResponseSubmissionEvent', 'ButtonClickEvent']
@@ -261,28 +266,29 @@ describe('EventService', () => {
       })
     })
 
-    it('should include date range in where clause when provided', () => {
+    it('generates where with date range and accessibleEvent when provided', () => {
       const filter: JourneyEventsFilter = {
         periodRangeStart: '2023-01-01',
         periodRangeEnd: '2023-01-31'
       }
-      const where = service.generateWhere(journeyId, filter)
+      const where = service.generateWhere(journeyId, filter, accessibleEvent)
       expect(where).toEqual({
         journeyId,
         createdAt: {
           gte: '2023-01-01',
           lte: '2023-01-31'
-        }
+        },
+        AND: [accessibleEvent, null]
       })
     })
 
-    it('should combine all filters when provided', () => {
+    it('should combine all filters with accessibleEvent when provided', () => {
       const filter: JourneyEventsFilter = {
         typenames: ['TextResponseSubmissionEvent'],
         periodRangeStart: '2023-01-01',
         periodRangeEnd: '2023-01-31'
       }
-      const where = service.generateWhere(journeyId, filter)
+      const where = service.generateWhere(journeyId, filter, accessibleEvent)
       expect(where).toEqual({
         journeyId,
         createdAt: {
@@ -290,6 +296,7 @@ describe('EventService', () => {
           lte: '2023-01-31'
         },
         AND: [
+          accessibleEvent,
           {
             typename: { in: ['TextResponseSubmissionEvent'] }
           }
@@ -300,8 +307,9 @@ describe('EventService', () => {
 
   describe('getJourneyEvents method', () => {
     const journeyId = 'journey-id'
+    const accessibleEvent: Prisma.EventWhereInput = {}
 
-    it('should transform events to connection format correctly', async () => {
+    it('should transform events with accessibleEvent to connection format correctly', async () => {
       // Create mock for findMany that returns the data we expect
       const mockEvents = [
         {
@@ -332,6 +340,7 @@ describe('EventService', () => {
       }
       const result = await service.getJourneyEvents({
         journeyId,
+        accessibleEvent,
         filter,
         first: 10
       })
@@ -360,7 +369,10 @@ describe('EventService', () => {
             gte: undefined,
             lte: undefined
           },
-          AND: [{ typename: { in: ['TextResponseSubmissionEvent'] } }]
+          AND: [
+            accessibleEvent,
+            { typename: { in: ['TextResponseSubmissionEvent'] } }
+          ]
         },
         orderBy: { createdAt: 'desc' },
         cursor: undefined,
@@ -375,6 +387,7 @@ describe('EventService', () => {
       const filter: JourneyEventsFilter = {}
       const result = await service.getJourneyEvents({
         journeyId,
+        accessibleEvent,
         filter,
         first: 10
       })
@@ -412,6 +425,7 @@ describe('EventService', () => {
       const filter: JourneyEventsFilter = {}
       const result = await service.getJourneyEvents({
         journeyId,
+        accessibleEvent,
         filter,
         first: 2
       })

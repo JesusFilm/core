@@ -43,7 +43,7 @@ export class StepViewEventResolver {
         id: input.id ?? undefined,
         typename: 'StepViewEvent',
         visitor: { connect: { id: visitor.id } },
-        journeyId,
+        journey: { connect: { id: journeyId } },
         stepId: input.blockId ?? undefined
       }),
 
@@ -108,7 +108,7 @@ export class StepNextEventResolver {
       typename: 'StepNextEvent',
       visitor: { connect: { id: visitor.id } },
       createdAt: new Date().toISOString(),
-      journeyId
+      journey: { connect: { id: journeyId } }
     })
 
     return stepNextEvent as StepNextEvent
@@ -137,7 +137,7 @@ export class StepPreviousEventResolver {
       typename: 'StepPreviousEvent',
       visitor: { connect: { id: visitor.id } },
       createdAt: new Date().toISOString(),
-      journeyId
+      journey: { connect: { id: journeyId } }
     })
 
     return stepPreviousEvent as StepPreviousEvent

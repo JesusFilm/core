@@ -54,7 +54,7 @@ export class TextResponseSubmissionEventResolver {
         typename: 'TextResponseSubmissionEvent',
         visitor: { connect: { id: visitor.id } },
         createdAt: new Date().toISOString(),
-        journeyId,
+        journey: { connect: { id: journeyId } },
         stepId: input.stepId ?? undefined
       }),
       this.prismaService.visitor.update({

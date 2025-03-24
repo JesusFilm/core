@@ -40,7 +40,7 @@ export class SignUpSubmissionEventResolver {
         typename: 'SignUpSubmissionEvent',
         visitor: { connect: { id: visitor.id } },
         createdAt: new Date().toISOString(),
-        journeyId,
+        journey: { connect: { id: journeyId } },
         stepId: input.stepId ?? undefined,
         label: null,
         value: input.name,
