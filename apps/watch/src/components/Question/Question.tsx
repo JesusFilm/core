@@ -17,11 +17,11 @@ export function Question({
     <>
       <button
         onClick={onToggle}
-        className="w-full text-left group hover:bg-white/5 px-6 py-3  transition-colors cursor-pointer"
+        className="w-full text-left group hover:bg-white/5 px-6 xl:px-0 py-3 transition-colors cursor-pointer padded"
       >
         <div className="w-full">
           <div className="flex items-top justify-between">
-            <p className="text-md font-semibold text-stone-100 pr-4 text-balance leading-[1.6] flex ">
+            <p className="text-md xl:text-lg font-semibold text-stone-100 pr-4 text-balance leading-[1.6] flex ">
               <Icon
                 name="HelpSquareContained"
                 sx={{

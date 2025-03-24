@@ -198,14 +198,16 @@ export const VideoSection = ({
 
       <VideoBlock contentId={contentId} title={videoTitle} />
 
-      <div className="block lg:flex lg:gap-4 w-full">
-        <div className="info-block lg:w-3/5">
-          <div className="title-block px-6 lg:px-8 pt-2">
-            <p className="text-sm tracking-wider uppercase text-stone-400">
+      <div className="block xl:flex w-full">
+        <div className="info-block xl:w-3/5 padded 2xl:pr-2xl">
+          <div className="title-block pt-2 2xl:pt-4">
+            <p className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-stone-200/70 xl:mb-1">
               {subtitle}
             </p>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-2xl font-bold mb-0">{title}</h2>
+              <h2 className="text-2xl xl:text-3xl 2xl:text-4xl font-bold mb-0">
+                {title}
+              </h2>
               <div className="flex items-center gap-2">
                 <IconButton
                   aria-label="Download content"
@@ -231,8 +233,8 @@ export const VideoSection = ({
             </div>
           </div>
 
-          <div className="description-block px-6 lg:px-8">
-            <p className="text-lg mt-2 leading-relaxed text-stone-200/80">
+          <div className="description-block">
+            <p className="text-lg xl:text-xl mt-2 leading-relaxed text-stone-200/80">
               <span style={{ fontWeight: 'bold', color: 'white' }}>
                 {description.split(' ').slice(0, 3).join(' ')}
               </span>
@@ -244,45 +246,41 @@ export const VideoSection = ({
         </div>
 
         {questions.length > 0 && (
-          <div className="lg:w-2/5">
-            <div className="questions-block pt-16 lg:pt-0">
-              <div className="">
-                <div className="px-6 lg:px-8">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                      <h4 className="text-sm font-semibold tracking-wider uppercase text-stone-200">
-                        {questionsTitle}
-                      </h4>
-                    </div>
-                    <button
-                      onClick={onOpenDialog}
-                      aria-label="Ask a question"
-                      className="inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
-                    >
-                      <Icon
-                        name="MessageCircle"
-                        sx={{
-                          width: 16,
-                          height: 16
-                        }}
-                      />
-                      <span>{askButtonText}</span>
-                    </button>
-                  </div>
+          <div className="xl:w-2/5">
+            <div className="questions-block pt-16 xl:pt-4">
+              <div className="flex items-center justify-between mb-6 padded">
+                <div className="flex items-center gap-4">
+                  <h4 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-stone-200/70">
+                    {questionsTitle}
+                  </h4>
                 </div>
+                <button
+                  onClick={onOpenDialog}
+                  aria-label="Ask a question"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
+                >
+                  <Icon
+                    name="MessageCircle"
+                    sx={{
+                      width: 16,
+                      height: 16
+                    }}
+                  />
+                  <span>{askButtonText}</span>
+                </button>
+              </div>
 
-                <div className="relative">
-                  {questions.map((q) => (
-                    <Question
-                      key={q.id}
-                      question={q.question}
-                      isOpen={openQuestion === q.id}
-                      onToggle={() => handleQuestionToggle(q.id)}
-                    >
-                      {q.answer}
-                    </Question>
-                  ))}
-                </div>
+              <div className="relative">
+                {questions.map((q) => (
+                  <Question
+                    key={q.id}
+                    question={q.question}
+                    isOpen={openQuestion === q.id}
+                    onToggle={() => handleQuestionToggle(q.id)}
+                  >
+                    {q.answer}
+                  </Question>
+                ))}
               </div>
             </div>
           </div>
@@ -291,10 +289,10 @@ export const VideoSection = ({
 
       {(bibleQuotes.length > 0 || freeResource) && (
         <div className="bible-quotes-block pt-14">
-          <div className="px-6 lg:px-8">
+          <div className="padded">
             <div className="flex items-center justify-between pb-8">
               <div className="flex items-start gap-4">
-                <h3 className="text-sm font-semibold tracking-wider uppercase text-stone-200">
+                <h3 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-stone-200/70">
                   {bibleQuotesTitle}
                 </h3>
               </div>
@@ -320,7 +318,10 @@ export const VideoSection = ({
             spaceBetween={0}
           >
             {bibleQuotes.map((quote, index) => (
-              <SwiperSlide key={index} className="max-w-[400px] pl-6">
+              <SwiperSlide
+                key={index}
+                className={`max-w-[400px] pl-6 ${index === 0 ? '2xl:pl-20' : ''} xl:pl-12`}
+              >
                 <BibleQuote imageUrl={quote.imageUrl} bgColor={quote.bgColor}>
                   {quote.author && (
                     <span className="text-xs font-medium tracking-wider uppercase text-amber-100/60">
@@ -335,7 +336,7 @@ export const VideoSection = ({
             ))}
 
             {freeResource && (
-              <SwiperSlide className="max-w-[400px] pl-6 pr-10">
+              <SwiperSlide className="max-w-[400px] pl-6 pr-10 xl:pl-12">
                 <BibleQuote
                   imageUrl={freeResource.imageUrl}
                   bgColor={freeResource.bgColor}

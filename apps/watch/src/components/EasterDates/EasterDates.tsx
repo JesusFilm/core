@@ -96,12 +96,9 @@ export const EasterDates = (): ReactElement => {
               }
             }}
           >
-            <Typography
-              variant="h4"
-              sx={{ fontWeight: 600, color: 'rgba(255, 255, 255, 0.9)' }}
-            >
+            <h4 className="font-bold text-white text-3xl text-opacity-90">
               When is Easter celebrated in {currentYear}?
-            </Typography>
+            </h4>
           </AccordionSummary>
           <AccordionDetails sx={{ padding: '0 1.5rem 1.5rem' }}>
             <div className="space-y-4">

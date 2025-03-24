@@ -94,7 +94,6 @@ export function ContainerHero(): ReactElement {
           position: 'fixed',
           top: 0,
           left: 0,
-          right: 0,
           width: '100%',
           height: '75%'
         }}
@@ -106,8 +105,10 @@ export function ContainerHero(): ReactElement {
           style={{
             position: 'absolute',
             top: 0,
-            left: 0,
+            left: '50%',
+            transform: 'translateX(-50%)',
             width: '100%',
+            maxWidth: '1800px',
             height: '100%',
             objectFit: 'cover'
           }}
@@ -144,45 +145,13 @@ export function ContainerHero(): ReactElement {
             mask: 'linear-gradient(0deg, rgba(2,0,36,1) 46%, rgba(2,0,36,1) 53%, rgba(0,0,0,0) 100%)'
           }}
         />
-        <Container
-          maxWidth="xxl"
-          sx={{
-            display: 'flex'
-          }}
-        >
-          <Stack
-            direction="column"
-            sx={{
-              pb: { xs: 4, sm: 0 },
-              width: '100%',
-              position: 'relative',
-              zIndex: 2
-            }}
-          >
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: '100%',
-                zIndex: 2
-              }}
-            >
-              <Typography
-                variant="h2"
-                sx={{
-                  fontSize: '3.75rem',
-                  fontWeight: 700,
-                  color: 'white',
-                  opacity: 0.9,
-                  mixBlendMode: 'screen',
-                  marginBottom: '0.25rem',
-                  flexGrow: 1
-                }}
-              >
+        <div className="w-full padded">
+          <div className="flex flex-col pb-4 sm:pb-0 w-full relative z-10">
+            <div className="flex items-center justify-between w-full relative z-10">
+              <h2 className="text-6xl font-bold text-white opacity-90 mb-1 flex-grow">
                 {title[0].value}
-              </Typography>
-              <IconButton
+              </h2>
+              <button
                 onClick={() => {
                   if (playerRef.current) {
                     const newMutedState = !isMuted
@@ -197,19 +166,7 @@ export function ContainerHero(): ReactElement {
                     }
                   }
                 }}
-                sx={{
-                  padding: '0.75rem',
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                  color: 'white',
-                  marginLeft: '1rem',
-                  marginBottom: '-0.75rem',
-                  marginRight: '0.25rem',
-                  transition: 'background-color 0.3s',
-                  '&:hover': {
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)'
-                  }
-                }}
+                className="p-2 rounded-full bg-black bg-opacity-50 text-white ml-4 mb-1 mr-1 transition duration-300 hover:bg-opacity-70"
                 aria-label={isMuted ? 'Unmute' : 'Mute'}
               >
                 {isMuted ? (
@@ -217,38 +174,21 @@ export function ContainerHero(): ReactElement {
                 ) : (
                   <VolumeUpOutlined sx={{ fontSize: 32 }} />
                 )}
-              </IconButton>
-            </Box>
-            <Typography
-              variant="overline1"
-              color="secondary.contrastText"
-              sx={{
-                opacity: 0.5,
-                mixBlendMode: 'screen',
-                zIndex: 2
-              }}
-            >
+              </button>
+            </div>
+            <p className="text-sm text-secondary-contrast opacity-50 relative z-10">
               {`${label} \u2022 ${childCountLabel.toLowerCase()}`}
-            </Typography>
-            <Typography
-              variant="h5"
-              sx={{
-                fontSize: '1.125rem',
-                color: 'primary.main',
-                textWrap: 'balance',
-                zIndex: 2,
-                marginTop: '2rem'
-              }}
-            >
+            </p>
+            <p className="text-2xl text-red-500/80 relative z-10 mt-8">
               {t(
                 'Easter {{year}} videos & resources about Lent, Holy Week, Resurrection',
                 {
                   year: new Date().getFullYear()
                 }
               )}
-            </Typography>
-          </Stack>
-        </Container>
+            </p>
+          </div>
+        </div>
       </Stack>
     </Box>
   )

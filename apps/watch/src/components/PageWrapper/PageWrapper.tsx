@@ -18,6 +18,7 @@ interface PageWrapperProps {
   hideHeaderSpacer?: boolean
   testId?: string
   headerThemeMode?: ThemeMode
+  hideFooter?: boolean
 }
 
 export function PageWrapper({
@@ -26,18 +27,15 @@ export function PageWrapper({
   hideHeader,
   hideHeaderSpacer,
   testId,
-  headerThemeMode
+  headerThemeMode,
+  hideFooter = false
 }: PageWrapperProps): ReactElement {
   return (
-    <Div100vh>
+    <div className="min-h-screen max-w-[1800px] mx-auto">
       {hideHeader !== true && (
         <Header themeMode={headerThemeMode} hideSpacer={hideHeaderSpacer} />
       )}
-      <Stack
-        justifyContent="space-between"
-        sx={{ width: '100%', height: '100%', overflowX: 'clip' }}
-        data-testid={testId}
-      >
+      <Stack justifyContent="space-between" data-testid={testId}>
         <Container maxWidth={false} disableGutters>
           <ThemeProvider
             nested
@@ -47,9 +45,9 @@ export function PageWrapper({
             {hero}
           </ThemeProvider>
         </Container>
-        <Box sx={{ flexGrow: 1 }}>{children}</Box>
-        <Footer />
+        <div className="flex-grow relative">{children}</div>
+        {hideFooter !== true && <Footer />}
       </Stack>
-    </Div100vh>
+    </div>
   )
 }

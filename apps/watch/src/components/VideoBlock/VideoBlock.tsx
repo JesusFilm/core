@@ -290,7 +290,7 @@ export function VideoBlock({
 
   return (
     <div
-      className="relative mb-4 px-6 lg:px-8"
+      className="relative mb-4 padded"
       ref={containerRef}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
