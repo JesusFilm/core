@@ -41,7 +41,7 @@ export function ContainerHero(): ReactElement {
 
   return (
     <div
-      className="h-[70vh] w-full flex items-end relative transition-height duration-300 ease-out bg-background"
+      className="h-[70vh] w-full flex items-end relative transition-height duration-300 ease-out bg-stone-900"
       data-testid="ContainerHero"
     >
       <ContainerHeroVideo
