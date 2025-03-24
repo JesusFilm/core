@@ -4,7 +4,9 @@ import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
+import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
@@ -43,6 +45,7 @@ export const TEXT_RESPONSE_WITH_BUTTON_CREATE = gql`
   ${TEXT_RESPONSE_FIELDS}
   ${BUTTON_FIELDS}
   ${ICON_FIELDS}
+  ${CARD_FIELDS}
   mutation TextResponseWithButtonCreate(
     $textResponseInput: TextResponseBlockCreateInput!
     $buttonInput: ButtonBlockCreateInput!
@@ -51,6 +54,8 @@ export const TEXT_RESPONSE_WITH_BUTTON_CREATE = gql`
     $buttonId: ID!
     $journeyId: ID!
     $buttonUpdateInput: ButtonBlockUpdateInput!
+    $cardId: ID!
+    $cardInput: CardBlockUpdateInput!
   ) {
     textResponse: textResponseBlockCreate(input: $textResponseInput) {
       ...TextResponseFields
@@ -71,15 +76,22 @@ export const TEXT_RESPONSE_WITH_BUTTON_CREATE = gql`
     ) {
       ...ButtonFields
     }
+    cardBlockUpdate(id: $cardId, journeyId: $journeyId, input: $cardInput) {
+      ...CardFields
+    }
   }
 `
 
 export const TEXT_RESPONSE_WITH_BUTTON_DELETE = gql`
+  ${CARD_FIELDS}
   mutation TextResponseWithButtonDelete(
     $textResponseId: ID!
     $buttonId: ID!
     $startIconId: ID!
     $endIconId: ID!
+    $cardId: ID!
+    $journeyId: ID!
+    $cardInput: CardBlockUpdateInput!
   ) {
     textResponse: blockDelete(id: $textResponseId) {
       id
@@ -97,30 +109,38 @@ export const TEXT_RESPONSE_WITH_BUTTON_DELETE = gql`
       id
       parentOrder
     }
+    cardBlockUpdate(id: $cardId, journeyId: $journeyId, input: $cardInput) {
+      ...CardFields
+    }
   }
 `
 
 export const TEXT_RESPONSE_WITH_BUTTON_RESTORE = gql`
-  ${TEXT_RESPONSE_FIELDS}
-  ${BUTTON_FIELDS}
-  ${ICON_FIELDS}
+  ${BLOCK_FIELDS}
+  ${CARD_FIELDS}
   mutation TextResponseWithButtonRestore(
     $textResponseId: ID!
     $buttonId: ID!
     $startIconId: ID!
     $endIconId: ID!
+    $cardId: ID!
+    $journeyId: ID!
+    $cardInput: CardBlockUpdateInput!
   ) {
     textResponse: blockRestore(id: $textResponseId) {
-      ...TextResponseFields
+      ...BlockFields
     }
     button: blockRestore(id: $buttonId) {
-      ...ButtonFields
+      ...BlockFields
     }
     startIcon: blockRestore(id: $startIconId) {
-      ...IconFields
+      ...BlockFields
     }
     endIcon: blockRestore(id: $endIconId) {
-      ...IconFields
+      ...BlockFields
+    }
+    cardBlockUpdate(id: $cardId, journeyId: $journeyId, input: $cardInput) {
+      ...CardFields
     }
   }
 `
@@ -196,33 +216,22 @@ export function NewTextResponseButton(): ReactElement {
 
       const createdBlocks = [textResponseBlock, buttonBlock]
 
+      // Create a copy of the card with a property we can toggle for optimistic updates
+      const cardBlock = {
+        id: card.id,
+        __typename: 'CardBlock',
+        parentBlockId: card.parentBlockId,
+        parentOrder: card.parentOrder,
+        backgroundColor: card.backgroundColor,
+        coverBlockId: card.coverBlockId,
+        themeMode: card.themeMode,
+        themeName: card.themeName,
+        fullscreen: card.fullscreen ?? false
+      }
+
       const buttonOptimisticResponse = {
-        textResponse: {
-          id: textResponseBlock.id,
-          parentBlockId: textResponseBlock.parentBlockId,
-          parentOrder: textResponseBlock.parentOrder,
-          label: textResponseBlock.label,
-          hint: null,
-          minRows: null,
-          type: null,
-          routeId: null,
-          integrationId: null,
-          __typename: 'TextResponseBlock'
-        },
-        button: {
-          id: buttonBlock.id,
-          parentBlockId: buttonBlock.parentBlockId,
-          parentOrder: buttonBlock.parentOrder,
-          label: buttonBlock.label,
-          buttonVariant: buttonBlock.buttonVariant,
-          buttonColor: buttonBlock.buttonColor,
-          size: buttonBlock.size,
-          startIconId: buttonBlock.startIconId,
-          endIconId: buttonBlock.endIconId,
-          submitEnabled: buttonBlock.submitEnabled,
-          action: null,
-          __typename: 'ButtonBlock'
-        },
+        textResponse: textResponseBlock,
+        button: buttonBlock,
         startIcon: {
           id: buttonBlock.startIconId,
           parentBlockId: buttonBlock.id,
@@ -241,20 +250,8 @@ export function NewTextResponseButton(): ReactElement {
           iconColor: null,
           __typename: 'IconBlock'
         },
-        buttonUpdate: {
-          id: buttonBlock.id,
-          parentBlockId: buttonBlock.parentBlockId,
-          parentOrder: buttonBlock.parentOrder,
-          label: buttonBlock.label,
-          buttonVariant: buttonBlock.buttonVariant,
-          buttonColor: buttonBlock.buttonColor,
-          size: buttonBlock.size,
-          startIconId: buttonBlock.startIconId,
-          endIconId: buttonBlock.endIconId,
-          submitEnabled: buttonBlock.submitEnabled,
-          action: null,
-          __typename: 'ButtonBlock'
-        }
+        buttonUpdate: buttonBlock,
+        cardBlockUpdate: cardBlock
       }
 
       add({
@@ -306,7 +303,9 @@ export function NewTextResponseButton(): ReactElement {
               buttonUpdateInput: {
                 startIconId: buttonBlock.startIconId,
                 endIconId: buttonBlock.endIconId
-              }
+              },
+              cardId: cardBlock.id,
+              cardInput: { fullscreen: cardBlock.fullscreen }
             },
             optimisticResponse: buttonOptimisticResponse,
             update(cache, { data }) {
@@ -321,7 +320,8 @@ export function NewTextResponseButton(): ReactElement {
                         }
                       `
                       const keys = Object.keys(data).filter(
-                        (key) => key !== 'buttonUpdate'
+                        (key) =>
+                          key !== 'buttonUpdate' && key !== 'cardBlockUpdate'
                       )
                       return [
                         ...existingBlockRefs,
@@ -352,9 +352,23 @@ export function NewTextResponseButton(): ReactElement {
               textResponseId: textResponseBlock.id,
               buttonId: buttonBlock.id,
               startIconId: buttonBlock.startIconId,
-              endIconId: buttonBlock.endIconId
+              endIconId: buttonBlock.endIconId,
+              cardId: cardBlock.id,
+              journeyId: journey.id,
+              cardInput: { fullscreen: !cardBlock.fullscreen }
+            },
+            optimisticResponse: {
+              textResponse: [],
+              button: [],
+              startIcon: [],
+              endIcon: [],
+              cardBlockUpdate: {
+                ...cardBlock,
+                fullscreen: !cardBlock.fullscreen
+              }
             },
             update(cache, { data }) {
+              if (data == null) return
               createdBlocks.forEach((block) => {
                 cache.modify({
                   id: cache.identify({ __typename: 'Journey', id: journey.id }),
@@ -390,17 +404,45 @@ export function NewTextResponseButton(): ReactElement {
               textResponseId: textResponseBlock.id,
               buttonId: buttonBlock.id,
               startIconId: buttonBlock.startIconId,
-              endIconId: buttonBlock.endIconId
+              endIconId: buttonBlock.endIconId,
+              cardId: cardBlock.id,
+              journeyId: journey.id,
+              cardInput: { fullscreen: cardBlock.fullscreen }
             },
             optimisticResponse: {
-              textResponse: buttonOptimisticResponse.textResponse,
-              button: buttonOptimisticResponse.button,
-              startIcon: buttonOptimisticResponse.startIcon,
-              endIcon: buttonOptimisticResponse.endIcon
+              textResponse: [textResponseBlock],
+              button: [buttonBlock],
+              startIcon: [
+                {
+                  id: buttonBlock.startIconId,
+                  parentBlockId: buttonBlock.id,
+                  parentOrder: null,
+                  iconName: null,
+                  iconSize: null,
+                  iconColor: null,
+                  __typename: 'IconBlock'
+                }
+              ],
+              endIcon: [
+                {
+                  id: buttonBlock.endIconId,
+                  parentBlockId: buttonBlock.id,
+                  parentOrder: null,
+                  iconName: null,
+                  iconSize: null,
+                  iconColor: null,
+                  __typename: 'IconBlock'
+                }
+              ],
+              cardBlockUpdate: cardBlock
             },
             update(cache, { data }) {
-              if (data != null) {
-                Object.keys(data).forEach((key) => {
+              if (data == null) return
+              const keys = Object.keys(data).filter(
+                (key) => key !== 'cardBlockUpdate'
+              )
+              keys.forEach((key) => {
+                data[key].forEach((block) => {
                   cache.modify({
                     id: cache.identify({
                       __typename: 'Journey',
@@ -415,7 +457,7 @@ export function NewTextResponseButton(): ReactElement {
                         `
                         if (
                           existingBlockRefs.some(
-                            (ref) => readField('id', ref) === data[key].id
+                            (ref) => readField('id', ref) === block.id
                           )
                         ) {
                           return existingBlockRefs
@@ -423,7 +465,7 @@ export function NewTextResponseButton(): ReactElement {
                         return [
                           ...existingBlockRefs,
                           cache.writeFragment({
-                            data: data[key],
+                            data: block,
                             fragment: NEW_BLOCK_FRAGMENT
                           })
                         ]
@@ -431,7 +473,7 @@ export function NewTextResponseButton(): ReactElement {
                     }
                   })
                 })
-              }
+              })
             }
           })
         }
