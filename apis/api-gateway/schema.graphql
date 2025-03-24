@@ -956,6 +956,7 @@ type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS)  @join_
   parentBlockId: ID
   parentOrder: Int
   label: String!
+  placeholder: String
   required: Boolean
   hint: String
   minRows: Int
