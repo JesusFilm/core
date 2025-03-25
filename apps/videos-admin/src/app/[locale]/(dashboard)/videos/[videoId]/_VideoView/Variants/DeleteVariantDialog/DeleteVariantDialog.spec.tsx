@@ -7,6 +7,18 @@ import { DELETE_VIDEO_VARIANT } from '../../../../../../../../libs/useDeleteVide
 
 import { DeleteVariantDialog } from './DeleteVariantDialog'
 
+// Add a messages object with all required translations
+const messages = {
+  'Delete Audio Language': 'Delete Audio Language',
+  deleteVariantDialog: 'deleteVariantDialog',
+  Cancel: 'Cancel',
+  Delete: 'Delete',
+  'Are you sure?': 'Are you sure?',
+  'This action cannot be undone': 'This action cannot be undone',
+  'Audio language deleted successfully': 'Audio language deleted successfully',
+  'Failed to delete audio language': 'Failed to delete audio language'
+}
+
 const mockVariant = {
   id: 'variant-1',
   videoId: 'video-1',
@@ -88,7 +100,7 @@ describe('DeleteVariantDialog', () => {
 
     render(
       <MockedProvider mocks={[deleteMutationMock]}>
-        <NextIntlClientProvider locale="en">
+        <NextIntlClientProvider locale="en" messages={messages}>
           <SnackbarProvider>
             <DeleteVariantDialog
               variant={mockVariant}
@@ -117,7 +129,7 @@ describe('DeleteVariantDialog', () => {
 
     render(
       <MockedProvider mocks={[deleteMutationMock]}>
-        <NextIntlClientProvider locale="en">
+        <NextIntlClientProvider locale="en" messages={messages}>
           <SnackbarProvider>
             <DeleteVariantDialog
               variant={mockVariant}
@@ -139,7 +151,7 @@ describe('DeleteVariantDialog', () => {
 
     render(
       <MockedProvider mocks={[deleteMutationMock]}>
-        <NextIntlClientProvider locale="en">
+        <NextIntlClientProvider locale="en" messages={messages}>
           <SnackbarProvider>
             <DeleteVariantDialog
               variant={mockVariant}
@@ -170,7 +182,7 @@ describe('DeleteVariantDialog', () => {
       <MockedProvider
         mocks={[{ ...deleteMutationMock, result: deleteMutationMockResult }]}
       >
-        <NextIntlClientProvider locale="en">
+        <NextIntlClientProvider locale="en" messages={messages}>
           <SnackbarProvider>
             <DeleteVariantDialog
               variant={mockVariant}
@@ -213,7 +225,7 @@ describe('DeleteVariantDialog', () => {
 
     render(
       <MockedProvider mocks={[errorMock]}>
-        <NextIntlClientProvider locale="en">
+        <NextIntlClientProvider locale="en" messages={messages}>
           <SnackbarProvider>
             <DeleteVariantDialog
               variant={mockVariant}

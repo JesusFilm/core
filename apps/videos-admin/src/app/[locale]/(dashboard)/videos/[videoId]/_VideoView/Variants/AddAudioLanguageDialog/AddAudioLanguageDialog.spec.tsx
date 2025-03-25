@@ -182,6 +182,32 @@ const getMuxVideoMock = {
   }
 }
 
+// Mock translations
+const messages = {
+  'Add Audio Language': 'Add Audio Language',
+  Edition: 'Edition',
+  Language: 'Language',
+  Published: 'Published',
+  Draft: 'Draft',
+  Add: 'Add',
+  Uploading: 'Uploading',
+  'Uploading...': 'Uploading...',
+  Processing: 'Processing',
+  'Processing...': 'Processing...',
+  'Upload Failed!': 'Upload Failed!',
+  'Change file': 'Change file',
+  'Upload file': 'Upload file',
+  'Drop a video here': 'Drop a video here',
+  'Something went wrong, try again': 'Something went wrong, try again',
+  'Failed to create R2 asset': 'Failed to create R2 asset',
+  Quality: 'Quality',
+  Size: 'Size',
+  Dimensions: 'Dimensions',
+  URL: 'URL',
+  Delete: 'Delete',
+  'Audio Language Added': 'Audio Language Added'
+}
+
 describe('AddAudioLanguageDialog', () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -191,7 +217,7 @@ describe('AddAudioLanguageDialog', () => {
     render(
       <MockedProvider mocks={[getLanguagesMock]}>
         <SnackbarProvider>
-          <NextIntlClientProvider locale="en" messages={{}}>
+          <NextIntlClientProvider locale="en" messages={messages}>
             <UploadVideoVariantProvider>
               <AddAudioLanguageDialog
                 open
@@ -243,7 +269,7 @@ describe('AddAudioLanguageDialog', () => {
         mocks={[{ ...getLanguagesMock, result: getLanguagesMockResult }]}
       >
         <SnackbarProvider>
-          <NextIntlClientProvider locale="en" messages={{}}>
+          <NextIntlClientProvider locale="en" messages={messages}>
             <UploadVideoVariantProvider>
               <AddAudioLanguageDialog
                 open
@@ -312,7 +338,7 @@ describe('AddAudioLanguageDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <NextIntlClientProvider locale="en" messages={{}}>
+          <NextIntlClientProvider locale="en" messages={messages}>
             <UploadVideoVariantProvider>
               <AddAudioLanguageDialog
                 open
@@ -405,7 +431,7 @@ describe('AddAudioLanguageDialog', () => {
         ]}
       >
         <SnackbarProvider>
-          <NextIntlClientProvider locale="en" messages={{}}>
+          <NextIntlClientProvider locale="en" messages={messages}>
             <UploadVideoVariantProvider>
               <AddAudioLanguageDialog
                 open
@@ -446,22 +472,38 @@ describe('AddAudioLanguageDialog', () => {
 
     // Select edition
     fireEvent.mouseDown(screen.getByTestId('EditionSelect'))
-    fireEvent.click(screen.getByText('base'))
+
+    // Wait for the dropdown to open and click on the option
+    await waitFor(() => {
+      // Directly find the select option by its text
+      const baseOption = screen.getByText('base')
+      fireEvent.click(baseOption)
+    })
 
     // Select language
     fireEvent.mouseDown(screen.getByLabelText('Language'))
-    fireEvent.click(screen.getByText('English'))
+
+    // Wait for language dropdown options
+    await waitFor(() => {
+      // Use getByText to find the English option
+      const englishOption = screen.getByText(/English/i)
+      fireEvent.click(englishOption)
+    })
 
     // Toggle published state
     fireEvent.click(screen.getByLabelText('Published'))
 
     // Create a test file
     const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
-    const fileInput = screen.getByTestId('file-input')
-    fireEvent.change(fileInput, { target: { files: [file] } })
+    const input = screen.getByTestId('DropZone')
+    Object.defineProperty(input, 'files', { value: [file] })
+    fireEvent.drop(input)
 
     // Submit form
-    fireEvent.click(screen.getByText('Add'))
+    await waitFor(() => expect(screen.getByText('Add')).not.toBeDisabled())
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+    )
 
     await waitFor(() => {
       expect(handleClose).toHaveBeenCalled()
@@ -499,7 +541,7 @@ describe('AddAudioLanguageDialog', () => {
         mocks={[getLanguagesMock, { ...cloudflareR2CreateMock, result }]}
       >
         <SnackbarProvider>
-          <NextIntlClientProvider locale="en" messages={{}}>
+          <NextIntlClientProvider locale="en" messages={messages}>
             <UploadVideoVariantProvider>
               <AddAudioLanguageDialog
                 open

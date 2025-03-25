@@ -12,6 +12,23 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
+// Mock translations
+const messages = {
+  'Audio Language': 'Audio Language',
+  Status: 'Status',
+  Save: 'Save',
+  Published: 'Published',
+  Draft: 'Draft',
+  Downloads: 'Downloads',
+  Edition: 'Edition',
+  'Add Download': 'Add Download',
+  Quality: 'Quality',
+  Size: 'Size',
+  Dimensions: 'Dimensions',
+  URL: 'URL',
+  Delete: 'Delete'
+}
+
 const variant: GetAdminVideoVariant = {
   ...useAdminVideoMock?.['result']?.['data']['adminVideo']['variants'][0],
   published: true
@@ -40,7 +57,7 @@ const updateVariantMock = {
 describe('VariantDialog', () => {
   it('should show variant information', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider locale="en" messages={messages}>
         <MockedProvider>
           <VariantDialog variant={variant} open />
         </MockedProvider>
@@ -65,7 +82,7 @@ describe('VariantDialog', () => {
     const handleClose = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider locale="en" messages={messages}>
         <MockedProvider>
           <VariantDialog variant={variant} open handleClose={handleClose} />
         </MockedProvider>
@@ -78,7 +95,7 @@ describe('VariantDialog', () => {
 
   it('should update published state when dropdown changed and save clicked', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider locale="en" messages={messages}>
         <MockedProvider mocks={[updateVariantMock]}>
           <VariantDialog variant={variant} open />
         </MockedProvider>

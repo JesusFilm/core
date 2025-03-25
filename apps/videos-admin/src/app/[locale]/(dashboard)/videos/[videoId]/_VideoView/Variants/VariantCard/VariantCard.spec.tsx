@@ -11,6 +11,12 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
+// Mock translations
+const messages = {
+  Published: 'Published',
+  Draft: 'Draft'
+}
+
 const variant: GetAdminVideoVariant = {
   ...useAdminVideoMock?.['result']?.['data']['adminVideo']['variants'][0],
   published: true
@@ -25,7 +31,7 @@ describe('VariantCard', () => {
   it('should display language and languageId of variant', () => {
     const onClick = jest.fn()
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider locale="en" messages={messages}>
         <VariantCard variant={variant} onClick={onClick} />
       </NextIntlClientProvider>
     )
@@ -37,7 +43,7 @@ describe('VariantCard', () => {
   it('should display draft state when variant is unpublished', () => {
     const onClick = jest.fn()
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider locale="en" messages={messages}>
         <VariantCard variant={unpublishedVariant} onClick={onClick} />
       </NextIntlClientProvider>
     )
@@ -48,7 +54,7 @@ describe('VariantCard', () => {
   it('should handle card click', async () => {
     const onClick = jest.fn()
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider locale="en" messages={messages}>
         <VariantCard variant={variant} onClick={onClick} />
       </NextIntlClientProvider>
     )
@@ -97,11 +103,13 @@ describe('VariantCard', () => {
     const handleDelete = jest.fn()
 
     render(
-      <VariantCard
-        variant={variant}
-        onClick={handleClick}
-        onDelete={handleDelete}
-      />
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <VariantCard
+          variant={variant}
+          onClick={handleClick}
+          onDelete={handleDelete}
+        />
+      </NextIntlClientProvider>
     )
 
     // Check if delete button is rendered
@@ -112,7 +120,11 @@ describe('VariantCard', () => {
   it('does not render delete button when onDelete is not provided', () => {
     const handleClick = jest.fn()
 
-    render(<VariantCard variant={variant} onClick={handleClick} />)
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <VariantCard variant={variant} onClick={handleClick} />
+      </NextIntlClientProvider>
+    )
 
     // Check if delete button is not rendered
     const deleteButton = screen.queryByLabelText('delete variant')
@@ -124,11 +136,13 @@ describe('VariantCard', () => {
     const handleDelete = jest.fn()
 
     render(
-      <VariantCard
-        variant={variant}
-        onClick={handleClick}
-        onDelete={handleDelete}
-      />
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <VariantCard
+          variant={variant}
+          onClick={handleClick}
+          onDelete={handleDelete}
+        />
+      </NextIntlClientProvider>
     )
 
     const deleteButton = screen.getByLabelText('delete variant')
