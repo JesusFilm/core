@@ -28,6 +28,12 @@ import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
 
+import {
+  addBlocksToCache,
+  removeBlocksFromCache,
+  restoreBlocksToCache
+} from './utils/cacheUtils'
+
 export const TEXT_RESPONSE_BLOCK_CREATE = gql`
   ${TEXT_RESPONSE_FIELDS}
   mutation TextResponseBlockCreate($input: TextResponseBlockCreateInput!) {
@@ -153,10 +159,8 @@ export function NewTextResponseButton(): ReactElement {
 
     if (card == null || journey == null) return
 
-    // Store the current selected block ID to restore on undo
     const previousBlockId = selectedBlockId
 
-    // Check for existing submit buttons in the card
     const hasSubmitButton = card.children.some(
       (block) =>
         block.__typename === 'ButtonBlock' &&
@@ -176,7 +180,6 @@ export function NewTextResponseButton(): ReactElement {
       __typename: 'TextResponseBlock'
     }
 
-    // If there's no submit button already, create one along with the text response
     if (!hasSubmitButton) {
       const buttonBlock = {
         id: uuidv4(),
@@ -195,30 +198,6 @@ export function NewTextResponseButton(): ReactElement {
 
       const createdBlocks = [textResponseBlock, buttonBlock]
 
-      const buttonOptimisticResponse = {
-        textResponse: textResponseBlock,
-        button: buttonBlock,
-        startIcon: {
-          id: buttonBlock.startIconId,
-          parentBlockId: buttonBlock.id,
-          parentOrder: null,
-          iconName: null,
-          iconSize: null,
-          iconColor: null,
-          __typename: 'IconBlock'
-        },
-        endIcon: {
-          id: buttonBlock.endIconId,
-          parentBlockId: buttonBlock.id,
-          parentOrder: null,
-          iconName: null,
-          iconSize: null,
-          iconColor: null,
-          __typename: 'IconBlock'
-        },
-        buttonUpdate: buttonBlock
-      }
-
       add({
         parameters: {
           execute: { previousBlockId },
@@ -226,7 +205,6 @@ export function NewTextResponseButton(): ReactElement {
           redo: { textResponseId: textResponseBlock.id }
         },
         execute({ previousBlockId }) {
-          // Set focus to the new text response block
           dispatch({
             type: 'SetEditorFocusAction',
             selectedBlockId: textResponseBlock.id,
@@ -270,39 +248,37 @@ export function NewTextResponseButton(): ReactElement {
                 endIconId: buttonBlock.endIconId
               }
             },
-            optimisticResponse: buttonOptimisticResponse,
+            optimisticResponse: {
+              textResponse: textResponseBlock,
+              button: buttonBlock,
+              startIcon: {
+                id: buttonBlock.startIconId,
+                parentBlockId: buttonBlock.id,
+                parentOrder: null,
+                iconName: null,
+                iconSize: null,
+                iconColor: null,
+                __typename: 'IconBlock'
+              },
+              endIcon: {
+                id: buttonBlock.endIconId,
+                parentBlockId: buttonBlock.id,
+                parentOrder: null,
+                iconName: null,
+                iconSize: null,
+                iconColor: null,
+                __typename: 'IconBlock'
+              },
+              buttonUpdate: buttonBlock
+            },
             update(cache, { data }) {
               if (data != null) {
-                cache.modify({
-                  id: cache.identify({ __typename: 'Journey', id: journey.id }),
-                  fields: {
-                    blocks(existingBlockRefs = []) {
-                      const NEW_BLOCK_FRAGMENT = gql`
-                        fragment NewBlock on Block {
-                          id
-                        }
-                      `
-                      const keys = Object.keys(data).filter(
-                        (key) => key !== 'buttonUpdate'
-                      )
-                      return [
-                        ...existingBlockRefs,
-                        ...keys.map((key) => {
-                          return cache.writeFragment({
-                            data: data[key],
-                            fragment: NEW_BLOCK_FRAGMENT
-                          })
-                        })
-                      ]
-                    }
-                  }
-                })
+                addBlocksToCache(cache, journey.id, data)
               }
             }
           })
         },
         undo({ previousBlockId }) {
-          // Restore focus to the previous block
           dispatch({
             type: 'SetEditorFocusAction',
             selectedBlockId: previousBlockId,
@@ -324,30 +300,11 @@ export function NewTextResponseButton(): ReactElement {
             },
             update(cache, { data }) {
               if (data == null) return
-              createdBlocks.forEach((block) => {
-                cache.modify({
-                  id: cache.identify({ __typename: 'Journey', id: journey.id }),
-                  fields: {
-                    blocks(existingBlockRefs: Reference[], { readField }) {
-                      return existingBlockRefs.filter(
-                        (ref) => readField('id', ref) !== block.id
-                      )
-                    }
-                  }
-                })
-                cache.evict({
-                  id: cache.identify({
-                    __typename: block.__typename,
-                    id: block.id
-                  })
-                })
-                cache.gc()
-              })
+              removeBlocksFromCache(cache, journey.id, createdBlocks)
             }
           })
         },
         redo({ textResponseId }) {
-          // Set focus back to the text response block
           dispatch({
             type: 'SetEditorFocusAction',
             selectedBlockId: textResponseId,
@@ -388,49 +345,14 @@ export function NewTextResponseButton(): ReactElement {
               ]
             },
             update(cache, { data }) {
-              if (data == null) return
-              const keys = Object.keys(data).filter(
-                (key) => key !== 'cardBlockUpdate'
-              )
-              keys.forEach((key) => {
-                data[key].forEach((block) => {
-                  cache.modify({
-                    id: cache.identify({
-                      __typename: 'Journey',
-                      id: journey.id
-                    }),
-                    fields: {
-                      blocks(existingBlockRefs: Reference[], { readField }) {
-                        const NEW_BLOCK_FRAGMENT = gql`
-                          fragment NewBlock on Block {
-                            id
-                          }
-                        `
-                        if (
-                          existingBlockRefs.some(
-                            (ref) => readField('id', ref) === block.id
-                          )
-                        ) {
-                          return existingBlockRefs
-                        }
-                        return [
-                          ...existingBlockRefs,
-                          cache.writeFragment({
-                            data: block,
-                            fragment: NEW_BLOCK_FRAGMENT
-                          })
-                        ]
-                      }
-                    }
-                  })
-                })
-              })
+              if (data != null) {
+                restoreBlocksToCache(cache, journey.id, data)
+              }
             }
           })
         }
       })
     } else {
-      // If there's already a submit button, just create the text response block (original behavior)
       addBlock({
         block: textResponseBlock,
         execute() {
