@@ -150,6 +150,18 @@
       "options": {
         "command": "gql.tada generate output --tsconfig apis/api-languages/tsconfig.json"
       }
+    },
+    "data-export": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-languages/src/workers/cli.ts data-export"
+      }
+    },
+    "data-import": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run ts-node apis/api-languages/src/scripts/data-import.ts"
+      }
     }
   }
 }

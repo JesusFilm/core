@@ -7,6 +7,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
 
 import { SnackbarProvider } from '../../../../../../libs/SnackbarProvider'
+import { getCreateEditionMock } from '../../../../../../libs/useCreateEdition/useCreateEdition.mock'
 
 import {
   CREATE_VIDEO,
@@ -43,14 +44,18 @@ const createVideoMock: MockedResponse<CreateVideo, CreateVideoVariables> = {
       }
     }
   },
-  result: {
+  result: jest.fn(() => ({
     data: {
       videoCreate: {
         id: 'test_video'
       }
     }
-  }
+  }))
 }
+const createEditionMock = getCreateEditionMock({
+  videoId: 'test_video',
+  name: 'base'
+})
 
 describe('VideoCreateForm', () => {
   const mockCancel = jest.fn()
@@ -113,16 +118,14 @@ describe('VideoCreateForm', () => {
     const getLanguagesMockResult = jest
       .fn()
       .mockReturnValue(getLanguagesMock.result)
-    const createVideoMockResult = jest
-      .fn()
-      .mockReturnValue(createVideoMock.result)
 
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider
           mocks={[
             { ...getLanguagesMock, result: getLanguagesMockResult },
-            { ...createVideoMock, result: createVideoMockResult }
+            createVideoMock,
+            createEditionMock
           ]}
         >
           <VideoCreateForm close={mockCancel} />
@@ -150,7 +153,10 @@ describe('VideoCreateForm', () => {
 
     await user.click(screen.getByRole('button', { name: 'Create' }))
 
-    expect(createVideoMockResult).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(createVideoMock.result).toHaveBeenCalled()
+    })
+    expect(createEditionMock.result).toHaveBeenCalled()
     expect(mockUseRouter).toHaveBeenCalledWith('/en/videos/test_video')
   })
 
@@ -196,6 +202,8 @@ describe('VideoCreateForm', () => {
 
     await user.click(screen.getByRole('button', { name: 'Create' }))
 
-    expect(screen.getByText('Something went wrong.')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Something went wrong.')).toBeInTheDocument()
+    })
   })
 })

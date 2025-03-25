@@ -127,6 +127,7 @@ export type ButtonBlock = Block & {
   parentOrder?: Maybe<Scalars['Int']['output']>;
   size?: Maybe<ButtonSize>;
   startIconId?: Maybe<Scalars['ID']['output']>;
+  submitEnabled?: Maybe<Scalars['Boolean']['output']>;
   variant?: Maybe<ButtonVariant>;
 };
 
@@ -137,6 +138,7 @@ export type ButtonBlockCreateInput = {
   label: Scalars['String']['input'];
   parentBlockId: Scalars['ID']['input'];
   size?: InputMaybe<ButtonSize>;
+  submitEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   variant?: InputMaybe<ButtonVariant>;
 };
 
@@ -147,6 +149,7 @@ export type ButtonBlockUpdateInput = {
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   size?: InputMaybe<ButtonSize>;
   startIconId?: InputMaybe<Scalars['ID']['input']>;
+  submitEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   variant?: InputMaybe<ButtonVariant>;
 };
 
@@ -319,9 +322,12 @@ export type CloudflareImage = {
 
 export type CloudflareR2 = {
   __typename?: 'CloudflareR2';
+  contentLength: Scalars['Int']['output'];
+  contentType: Scalars['String']['output'];
   createdAt: Scalars['Date']['output'];
   fileName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  originalFilename?: Maybe<Scalars['String']['output']>;
   publicUrl?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['Date']['output'];
   uploadUrl?: Maybe<Scalars['String']['output']>;
@@ -329,11 +335,15 @@ export type CloudflareR2 = {
 };
 
 export type CloudflareR2CreateInput = {
+  /** the size of the file that is being uploaded */
+  contentLength: Scalars['Int']['input'];
   /** the type of file that is being uploaded. e.g. image or video/mp4 */
   contentType: Scalars['String']['input'];
   /** the name of the file that is being uploaded */
   fileName: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
+  /** the original name of the file before any renaming */
+  originalFilename?: InputMaybe<Scalars['String']['input']>;
   /** the id of the Video object this file relates to in the database */
   videoId: Scalars['String']['input'];
 };
@@ -1121,13 +1131,10 @@ export type Language = {
   audioPreview?: Maybe<AudioPreview>;
   bcp47?: Maybe<Scalars['String']['output']>;
   countryLanguages: Array<CountryLanguage>;
-  featureFilmCount: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   iso3?: Maybe<Scalars['String']['output']>;
   labeledVideoCounts: LabeledVideoCounts;
   name: Array<LanguageName>;
-  seriesCount: Scalars['Int']['output'];
-  shortFilmCount: Scalars['Int']['output'];
   slug?: Maybe<Scalars['String']['output']>;
 };
 
@@ -1264,6 +1271,8 @@ export type Mutation = {
   customDomainUpdate: CustomDomain;
   deleteCloudflareImage: Scalars['Boolean']['output'];
   deleteMuxVideo: Scalars['Boolean']['output'];
+  enableMuxDownload?: Maybe<MuxVideo>;
+  getTranscodeAssetProgress?: Maybe<Scalars['Int']['output']>;
   hostCreate: Host;
   hostDelete: Host;
   hostUpdate: Host;
@@ -1340,6 +1349,8 @@ export type Mutation = {
   textResponseBlockCreate: TextResponseBlock;
   textResponseBlockUpdate?: Maybe<TextResponseBlock>;
   textResponseSubmissionEventCreate: TextResponseSubmissionEvent;
+  /** Transcode an asset. Returns the bullmq job ID. */
+  transcodeAsset?: Maybe<Scalars['String']['output']>;
   triggerUnsplashDownload: Scalars['Boolean']['output'];
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
@@ -1601,6 +1612,16 @@ export type MutationDeleteCloudflareImageArgs = {
 
 export type MutationDeleteMuxVideoArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationEnableMuxDownloadArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationGetTranscodeAssetProgressArgs = {
+  jobId: Scalars['String']['input'];
 };
 
 
@@ -1914,6 +1935,11 @@ export type MutationTextResponseBlockUpdateArgs = {
 
 export type MutationTextResponseSubmissionEventCreateArgs = {
   input: TextResponseSubmissionEventCreateInput;
+};
+
+
+export type MutationTranscodeAssetArgs = {
+  input: TranscodeVideoInput;
 };
 
 
@@ -2302,6 +2328,7 @@ export type MuxVideo = {
   __typename?: 'MuxVideo';
   assetId?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Date']['output'];
+  downloadable: Scalars['Boolean']['output'];
   duration?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   name?: Maybe<Scalars['String']['output']>;
@@ -3573,6 +3600,8 @@ export type TextResponseBlock = Block & {
   minRows?: Maybe<Scalars['Int']['output']>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  placeholder?: Maybe<Scalars['String']['output']>;
+  required?: Maybe<Scalars['Boolean']['output']>;
   routeId?: Maybe<Scalars['String']['output']>;
   type?: Maybe<TextResponseType>;
 };
@@ -3590,6 +3619,7 @@ export type TextResponseBlockUpdateInput = {
   label?: InputMaybe<Scalars['String']['input']>;
   minRows?: InputMaybe<Scalars['Int']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  required?: InputMaybe<Scalars['Boolean']['input']>;
   routeId?: InputMaybe<Scalars['String']['input']>;
   type?: InputMaybe<TextResponseType>;
 };
@@ -3624,7 +3654,8 @@ export type TextResponseSubmissionEventCreateInput = {
 export enum TextResponseType {
   Email = 'email',
   FreeForm = 'freeForm',
-  Name = 'name'
+  Name = 'name',
+  Phone = 'phone'
 }
 
 export enum ThemeMode {
@@ -3635,6 +3666,14 @@ export enum ThemeMode {
 export enum ThemeName {
   Base = 'base'
 }
+
+export type TranscodeVideoInput = {
+  outputFilename: Scalars['String']['input'];
+  outputPath: Scalars['String']['input'];
+  r2AssetId: Scalars['String']['input'];
+  resolution: Scalars['String']['input'];
+  videoBitrate?: InputMaybe<Scalars['String']['input']>;
+};
 
 export type Translation = {
   __typename?: 'Translation';
@@ -4515,10 +4554,18 @@ export type VideoSubtitle = {
   language: Language;
   languageId: Scalars['ID']['output'];
   primary: Scalars['Boolean']['output'];
+  /** subtitle file */
+  srtAsset?: Maybe<CloudflareR2>;
   srtSrc?: Maybe<Scalars['String']['output']>;
+  /** version control for subtitle file */
+  srtVersion: Scalars['Int']['output'];
   value: Scalars['String']['output'];
   videoEdition: VideoEdition;
+  /** subtitle file */
+  vttAsset?: Maybe<CloudflareR2>;
   vttSrc?: Maybe<Scalars['String']['output']>;
+  /** version control for subtitle file */
+  vttVersion: Scalars['Int']['output'];
 };
 
 export type VideoSubtitleCreateInput = {
@@ -4526,9 +4573,13 @@ export type VideoSubtitleCreateInput = {
   id?: InputMaybe<Scalars['ID']['input']>;
   languageId: Scalars['String']['input'];
   primary: Scalars['Boolean']['input'];
+  srtAssetId?: InputMaybe<Scalars['ID']['input']>;
   srtSrc?: InputMaybe<Scalars['String']['input']>;
+  srtVersion?: InputMaybe<Scalars['Int']['input']>;
   videoId: Scalars['String']['input'];
+  vttAssetId?: InputMaybe<Scalars['ID']['input']>;
   vttSrc?: InputMaybe<Scalars['String']['input']>;
+  vttVersion?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type VideoSubtitleUpdateInput = {
@@ -4536,8 +4587,12 @@ export type VideoSubtitleUpdateInput = {
   id: Scalars['ID']['input'];
   languageId?: InputMaybe<Scalars['String']['input']>;
   primary?: InputMaybe<Scalars['Boolean']['input']>;
+  srtAssetId?: InputMaybe<Scalars['ID']['input']>;
   srtSrc?: InputMaybe<Scalars['String']['input']>;
+  srtVersion?: InputMaybe<Scalars['Int']['input']>;
+  vttAssetId?: InputMaybe<Scalars['ID']['input']>;
   vttSrc?: InputMaybe<Scalars['String']['input']>;
+  vttVersion?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type VideoTitle = {
@@ -4593,6 +4648,8 @@ export type VideoUpdateInput = {
 
 export type VideoVariant = {
   __typename?: 'VideoVariant';
+  /** master video file */
+  asset?: Maybe<CloudflareR2>;
   dash?: Maybe<Scalars['String']['output']>;
   downloadable: Scalars['Boolean']['output'];
   downloads: Array<VideoVariantDownload>;
@@ -4608,6 +4665,8 @@ export type VideoVariant = {
   slug: Scalars['String']['output'];
   subtitle: Array<VideoSubtitle>;
   subtitleCount: Scalars['Int']['output'];
+  /** version control for master video file */
+  version: Scalars['Int']['output'];
   videoEdition: VideoEdition;
   videoId?: Maybe<Scalars['ID']['output']>;
 };
@@ -4619,6 +4678,7 @@ export type VideoVariantSubtitleArgs = {
 };
 
 export type VideoVariantCreateInput = {
+  assetId?: InputMaybe<Scalars['String']['input']>;
   dash?: InputMaybe<Scalars['String']['input']>;
   downloadable: Scalars['Boolean']['input'];
   duration?: InputMaybe<Scalars['Int']['input']>;
@@ -4631,25 +4691,32 @@ export type VideoVariantCreateInput = {
   published?: InputMaybe<Scalars['Boolean']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;
   slug: Scalars['String']['input'];
+  version?: InputMaybe<Scalars['Int']['input']>;
   videoId: Scalars['String']['input'];
 };
 
 export type VideoVariantDownload = {
   __typename?: 'VideoVariantDownload';
+  /** master video file */
+  asset?: Maybe<CloudflareR2>;
   height: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   quality: VideoVariantDownloadQuality;
   size: Scalars['Float']['output'];
   url: Scalars['String']['output'];
+  /** master video file version */
+  version: Scalars['Int']['output'];
   width: Scalars['Int']['output'];
 };
 
 export type VideoVariantDownloadCreateInput = {
+  assetId?: InputMaybe<Scalars['String']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   quality: VideoVariantDownloadQuality;
   size?: InputMaybe<Scalars['Float']['input']>;
   url: Scalars['String']['input'];
+  version?: InputMaybe<Scalars['Int']['input']>;
   videoVariantId: Scalars['String']['input'];
   width?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -4660,11 +4727,13 @@ export enum VideoVariantDownloadQuality {
 }
 
 export type VideoVariantDownloadUpdateInput = {
+  assetId?: InputMaybe<Scalars['String']['input']>;
   height?: InputMaybe<Scalars['Int']['input']>;
   id: Scalars['String']['input'];
   quality?: InputMaybe<VideoVariantDownloadQuality>;
   size?: InputMaybe<Scalars['Float']['input']>;
   url?: InputMaybe<Scalars['String']['input']>;
+  version?: InputMaybe<Scalars['Int']['input']>;
   videoVariantId?: InputMaybe<Scalars['String']['input']>;
   width?: InputMaybe<Scalars['Int']['input']>;
 };
@@ -4674,6 +4743,7 @@ export type VideoVariantFilter = {
 };
 
 export type VideoVariantUpdateInput = {
+  assetId?: InputMaybe<Scalars['String']['input']>;
   dash?: InputMaybe<Scalars['String']['input']>;
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
@@ -4686,6 +4756,7 @@ export type VideoVariantUpdateInput = {
   published?: InputMaybe<Scalars['Boolean']['input']>;
   share?: InputMaybe<Scalars['String']['input']>;
   slug?: InputMaybe<Scalars['String']['input']>;
+  version?: InputMaybe<Scalars['Int']['input']>;
   videoId?: InputMaybe<Scalars['String']['input']>;
 };
 

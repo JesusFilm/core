@@ -1,0 +1,1 @@
+export { DeleteVariantDialog } from './DeleteVariantDialog'

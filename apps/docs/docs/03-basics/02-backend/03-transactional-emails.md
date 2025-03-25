@@ -198,7 +198,7 @@ export type ApiJourneysJob =
 ```
 
 - from here you will need to assemble and arrange all the data you need to put into the email.
-- Once you are ready, you can call the `render(<EmailTemplateName>, { pretty: true } )` from react-email to generate the raw html and `render(<EmailTemplateName>, { plainText: true } )` to genereate the text for the email which can be put into the `sendEmail` function.
+- Once you are ready, you can call the `await render(<EmailTemplateName>)` from react-email to generate the raw html and `await render(<EmailTemplateName>, { plainText: true } )` to genereate the text for the email which can be put into the `sendEmail` function.
 
 it should look something like this:
 
@@ -210,16 +210,13 @@ import { render } from '@react-email/render'
   async someEmailJob(job: Job<SomeEmailJob>): Promise<void> {
       /* ..arrange all the data needed for the email ...*/
 
-      const html = render(
+      const html = await render(
         SomeJobTemplate({
           email: job.data.email,
           someData: job.data.someData,
-        }),
-        {
-          pretty: true
-        }
+        })
       )
-      const text = render(
+      const text = await render(
         SomeJobTemplate({
           email: job.data.email,
           someData: job.data.someData,

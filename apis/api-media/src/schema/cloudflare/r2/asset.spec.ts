@@ -34,9 +34,12 @@ describe('cloudflare/r2/asset', () => {
           cloudflareR2Create(input: $input) {
             id
             fileName
+            originalFilename
             uploadUrl
             userId
             publicUrl
+            contentType
+            contentLength
             createdAt
             updatedAt
           }
@@ -52,12 +55,15 @@ describe('cloudflare/r2/asset', () => {
         prismaMock.cloudflareR2.create.mockResolvedValue({
           id: 'id',
           fileName: 'fileName',
+          originalFilename: 'originalFilename.jpg',
           uploadUrl: 'presignedUrl',
           userId: 'testUserId',
           publicUrl: 'https://assets.jesusfilm.org/fileName',
           createdAt: new Date(),
           updatedAt: new Date(),
-          videoId: 'videoId'
+          videoId: 'videoId',
+          contentType: 'image/jpeg',
+          contentLength: 0
         })
         const result = await authClient({
           document: VIDEO_CLOUDFLARE_ASSETS_MUTATION,
@@ -65,8 +71,10 @@ describe('cloudflare/r2/asset', () => {
             input: {
               id: 'id',
               fileName: 'fileName',
+              originalFilename: 'originalFilename.jpg',
               videoId: 'videoId',
-              contentType: 'image/jpeg'
+              contentType: 'image/jpeg',
+              contentLength: 0
             }
           }
         })
@@ -74,10 +82,13 @@ describe('cloudflare/r2/asset', () => {
           data: {
             id: 'id',
             fileName: 'fileName',
+            originalFilename: 'originalFilename.jpg',
             uploadUrl: 'presignedUrl',
             userId: 'testUserId',
             publicUrl: 'https://assets.jesusfilm.org/fileName',
-            videoId: 'videoId'
+            videoId: 'videoId',
+            contentType: 'image/jpeg',
+            contentLength: 0
           }
         })
         expect(result).toHaveProperty('data.cloudflareR2Create.id', 'id')
@@ -90,12 +101,24 @@ describe('cloudflare/r2/asset', () => {
           'fileName'
         )
         expect(result).toHaveProperty(
+          'data.cloudflareR2Create.originalFilename',
+          'originalFilename.jpg'
+        )
+        expect(result).toHaveProperty(
           'data.cloudflareR2Create.uploadUrl',
           'presignedUrl'
         )
         expect(result).toHaveProperty(
           'data.cloudflareR2Create.publicUrl',
           'https://assets.jesusfilm.org/fileName'
+        )
+        expect(result).toHaveProperty(
+          'data.cloudflareR2Create.contentType',
+          'image/jpeg'
+        )
+        expect(result).toHaveProperty(
+          'data.cloudflareR2Create.contentLength',
+          0
         )
       })
 
@@ -106,8 +129,10 @@ describe('cloudflare/r2/asset', () => {
             input: {
               id: 'id',
               fileName: 'fileName',
+              originalFilename: 'originalFilename.jpg',
               videoId: 'videoId',
-              contentType: 'image/jpeg'
+              contentType: 'image/jpeg',
+              contentLength: 0
             }
           }
         })
@@ -121,9 +146,12 @@ describe('cloudflare/r2/asset', () => {
           cloudflareR2Delete(id: $id) {
             id
             fileName
+            originalFilename
             uploadUrl
             userId
             publicUrl
+            contentType
+            contentLength
             createdAt
             updatedAt
           }
@@ -139,12 +167,15 @@ describe('cloudflare/r2/asset', () => {
         prismaMock.cloudflareR2.delete.mockResolvedValue({
           id: 'id',
           fileName: 'fileName',
+          originalFilename: 'originalFilename.jpg',
           uploadUrl: 'presignedUrl',
           userId: 'testUserId',
           publicUrl: 'https://assets.jesusfilm.org/fileName',
           createdAt: new Date(),
           updatedAt: new Date(),
-          videoId: 'videoId'
+          videoId: 'videoId',
+          contentType: 'application/octet-stream',
+          contentLength: 0
         })
         const result = await authClient({
           document: VIDEO_CLOUDFLARE_ASSETS_MUTATION,
@@ -165,12 +196,24 @@ describe('cloudflare/r2/asset', () => {
           'fileName'
         )
         expect(result).toHaveProperty(
+          'data.cloudflareR2Delete.originalFilename',
+          'originalFilename.jpg'
+        )
+        expect(result).toHaveProperty(
           'data.cloudflareR2Delete.uploadUrl',
           'presignedUrl'
         )
         expect(result).toHaveProperty(
           'data.cloudflareR2Delete.publicUrl',
           'https://assets.jesusfilm.org/fileName'
+        )
+        expect(result).toHaveProperty(
+          'data.cloudflareR2Delete.contentType',
+          'application/octet-stream'
+        )
+        expect(result).toHaveProperty(
+          'data.cloudflareR2Delete.contentLength',
+          0
         )
       })
 
