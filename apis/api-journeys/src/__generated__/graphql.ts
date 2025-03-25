@@ -874,7 +874,6 @@ export type JourneyEvent = Event & {
   /** Related fields queried from relevant ids in the events table */
   journey?: Maybe<Journey>;
   journeyId: Scalars['ID']['output'];
-  journeyVisitor?: Maybe<JourneyVisitor>;
   label?: Maybe<Scalars['String']['output']>;
   language?: Maybe<Language>;
   messagePlatform?: Maybe<MessagePlatform>;
@@ -885,6 +884,7 @@ export type JourneyEvent = Event & {
   typename?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
   visitor?: Maybe<Visitor>;
+  visitorId?: Maybe<Scalars['String']['output']>;
 };
 
 export type JourneyEventEdge = {
