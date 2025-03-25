@@ -47,7 +47,9 @@ export function ShareDialog({
 
     // Cleanup function to remove the listener when component unmounts or currentParam changes
     return () => {
-      router.events.off('routeChangeComplete', handleRouteChange)
+      if (typeof router.events.off === 'function') {
+        router.events.off('routeChangeComplete', handleRouteChange)
+      }
     }
   }, [currentParam, router.events])
 
