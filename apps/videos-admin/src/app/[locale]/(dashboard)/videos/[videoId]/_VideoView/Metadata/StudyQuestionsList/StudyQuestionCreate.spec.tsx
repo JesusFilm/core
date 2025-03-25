@@ -10,9 +10,46 @@ import {
   StudyQuestionCreate
 } from './StudyQuestionCreate'
 
+// Define the enum locally for testing purposes
+enum VideoLabel {
+  collection = 'collection',
+  episode = 'episode',
+  featureFilm = 'featureFilm',
+  segment = 'segment',
+  series = 'series',
+  shortFilm = 'shortFilm',
+  trailer = 'trailer',
+  behindTheScenes = 'behindTheScenes'
+}
+
+const messages = {
+  'Study Question': 'Study Question',
+  'Enter study question': 'Enter study question',
+  'Add Study Question': 'Add Study Question',
+  Add: 'Add',
+  'Study question is required': 'Study question is required',
+  'Failed to create': 'Failed to create',
+  'Study question created': 'Study question created'
+}
+
 const video = {
   id: 'video-1',
-  title: [{ value: 'Test Video', primary: true }]
+  slug: 'test-video',
+  label: VideoLabel.featureFilm,
+  published: true,
+  title: [{ id: '1', value: 'Test Video' }],
+  locked: false,
+  images: [],
+  imageAlt: [],
+  noIndex: false,
+  description: [],
+  snippet: [],
+  children: [],
+  variants: [],
+  studyQuestions: [],
+  variantLanguagesCount: 0,
+  subtitles: [],
+  videoEditions: []
 }
 
 const mockStudyQuestions = [
@@ -25,10 +62,10 @@ describe('StudyQuestionCreate', () => {
 
   it('should render create button', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider locale="en" messages={messages}>
         <MockedProvider>
           <SnackbarProvider>
-            <VideoProvider value={video}>
+            <VideoProvider video={video}>
               <StudyQuestionCreate
                 studyQuestions={mockStudyQuestions}
                 onQuestionCreated={handleQuestionCreated}
@@ -44,10 +81,10 @@ describe('StudyQuestionCreate', () => {
 
   it('should open dialog on button click', () => {
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider locale="en" messages={messages}>
         <MockedProvider>
           <SnackbarProvider>
-            <VideoProvider value={video}>
+            <VideoProvider video={video}>
               <StudyQuestionCreate
                 studyQuestions={mockStudyQuestions}
                 onQuestionCreated={handleQuestionCreated}
@@ -90,10 +127,10 @@ describe('StudyQuestionCreate', () => {
     ]
 
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider locale="en" messages={messages}>
         <MockedProvider mocks={mocks} addTypename={false}>
           <SnackbarProvider>
-            <VideoProvider value={video}>
+            <VideoProvider video={video}>
               <StudyQuestionCreate
                 studyQuestions={mockStudyQuestions}
                 onQuestionCreated={handleQuestionCreated}
@@ -105,7 +142,7 @@ describe('StudyQuestionCreate', () => {
     )
 
     fireEvent.click(screen.getByText('Add'))
-    fireEvent.change(screen.getByLabelText('Study Question'), {
+    fireEvent.change(screen.getByPlaceholderText('Enter study question'), {
       target: { value: 'New question' }
     })
     fireEvent.click(screen.getByRole('button', { name: 'Add' }))
@@ -113,7 +150,12 @@ describe('StudyQuestionCreate', () => {
     await waitFor(() => {
       expect(screen.getByText('Study question created')).toBeInTheDocument()
     })
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    await waitFor(
+      () => {
+        expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      },
+      { timeout: 3000 }
+    )
     expect(handleQuestionCreated).toHaveBeenCalledWith({
       id: '3',
       value: 'New question'
@@ -140,10 +182,10 @@ describe('StudyQuestionCreate', () => {
     ]
 
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider locale="en" messages={messages}>
         <MockedProvider mocks={mocks} addTypename={false}>
           <SnackbarProvider>
-            <VideoProvider value={video}>
+            <VideoProvider video={video}>
               <StudyQuestionCreate
                 studyQuestions={mockStudyQuestions}
                 onQuestionCreated={handleQuestionCreated}
@@ -155,7 +197,7 @@ describe('StudyQuestionCreate', () => {
     )
 
     fireEvent.click(screen.getByText('Add'))
-    fireEvent.change(screen.getByLabelText('Study Question'), {
+    fireEvent.change(screen.getByPlaceholderText('Enter study question'), {
       target: { value: 'New question' }
     })
     fireEvent.click(screen.getByRole('button', { name: 'Add' }))
