@@ -20,7 +20,7 @@ export function ContainerHeroVideo({
   const pauseVideoOnScrollAway = useCallback((): void => {
     const scrollY = window.scrollY
     if (playerRef.current) {
-      if (scrollY > 500) {
+      if (scrollY > 100) {
         playerRef.current.pause()
       } else if (scrollY === 0) {
         void playerRef.current.play()
