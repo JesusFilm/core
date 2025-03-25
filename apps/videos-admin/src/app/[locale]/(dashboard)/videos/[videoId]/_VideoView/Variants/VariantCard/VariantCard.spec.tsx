@@ -40,7 +40,7 @@ describe('VariantCard', () => {
         downloads: [
           {
             height: 360,
-            id: '529a0228-67ce-4b08-bc78-cecf1b7ec358',
+            id: 'download-id',
             quality: 'high',
             size: 2248469346,
             url: 'https://arc.gt/4d9ez',
@@ -62,6 +62,7 @@ describe('VariantCard', () => {
           slug: 'munukutuba'
         },
         slug: 'jesus/munukutuba',
+        hls: 'https://arc.gt/hls/munukutuba/master.m3u8',
         videoEdition: {
           id: 'edition.id',
           name: 'base'
@@ -69,5 +70,52 @@ describe('VariantCard', () => {
         videoId: '1_jf-0-0'
       })
     )
+  })
+
+  it('renders delete button when onDelete is provided', () => {
+    const handleClick = jest.fn()
+    const handleDelete = jest.fn()
+
+    render(
+      <VariantCard
+        variant={variant}
+        onClick={handleClick}
+        onDelete={handleDelete}
+      />
+    )
+
+    // Check if delete button is rendered
+    const deleteButton = screen.getByLabelText('delete variant')
+    expect(deleteButton).toBeInTheDocument()
+  })
+
+  it('does not render delete button when onDelete is not provided', () => {
+    const handleClick = jest.fn()
+
+    render(<VariantCard variant={variant} onClick={handleClick} />)
+
+    // Check if delete button is not rendered
+    const deleteButton = screen.queryByLabelText('delete variant')
+    expect(deleteButton).not.toBeInTheDocument()
+  })
+
+  it('calls onDelete when delete button is clicked', () => {
+    const handleClick = jest.fn()
+    const handleDelete = jest.fn()
+
+    render(
+      <VariantCard
+        variant={variant}
+        onClick={handleClick}
+        onDelete={handleDelete}
+      />
+    )
+
+    const deleteButton = screen.getByLabelText('delete variant')
+    fireEvent.click(deleteButton)
+
+    expect(handleDelete).toHaveBeenCalled()
+
+    expect(handleClick).not.toHaveBeenCalled()
   })
 })

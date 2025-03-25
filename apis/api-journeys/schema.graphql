@@ -588,6 +588,7 @@ type ButtonBlock implements Block {
   startIconId: ID
   endIconId: ID
   action: Action
+  submitEnabled: Boolean
 }
 
 input ButtonBlockCreateInput {
@@ -598,6 +599,7 @@ input ButtonBlockCreateInput {
   variant: ButtonVariant
   color: ButtonColor
   size: ButtonSize
+  submitEnabled: Boolean
 }
 
 input ButtonBlockUpdateInput {
@@ -608,6 +610,7 @@ input ButtonBlockUpdateInput {
   size: ButtonSize
   startIconId: ID
   endIconId: ID
+  submitEnabled: Boolean
 }
 
 type CardBlock implements Block {
@@ -1010,6 +1013,8 @@ type TextResponseBlock implements Block {
   parentBlockId: ID
   parentOrder: Int
   label: String!
+  placeholder: String
+  required: Boolean
   hint: String
   minRows: Int
   type: TextResponseType
@@ -1021,6 +1026,7 @@ enum TextResponseType {
   freeForm
   name
   email
+  phone
 }
 
 input TextResponseBlockCreateInput {
@@ -1033,6 +1039,7 @@ input TextResponseBlockCreateInput {
 input TextResponseBlockUpdateInput {
   parentBlockId: ID
   label: String
+  required: Boolean
   hint: String
   minRows: Int
   routeId: String

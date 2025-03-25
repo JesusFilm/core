@@ -127,6 +127,7 @@ export type ButtonBlock = Block & {
   parentOrder?: Maybe<Scalars['Int']['output']>;
   size?: Maybe<ButtonSize>;
   startIconId?: Maybe<Scalars['ID']['output']>;
+  submitEnabled?: Maybe<Scalars['Boolean']['output']>;
   variant?: Maybe<ButtonVariant>;
 };
 
@@ -137,6 +138,7 @@ export type ButtonBlockCreateInput = {
   label: Scalars['String']['input'];
   parentBlockId: Scalars['ID']['input'];
   size?: InputMaybe<ButtonSize>;
+  submitEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   variant?: InputMaybe<ButtonVariant>;
 };
 
@@ -147,6 +149,7 @@ export type ButtonBlockUpdateInput = {
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   size?: InputMaybe<ButtonSize>;
   startIconId?: InputMaybe<Scalars['ID']['input']>;
+  submitEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   variant?: InputMaybe<ButtonVariant>;
 };
 
@@ -324,6 +327,7 @@ export type CloudflareR2 = {
   createdAt: Scalars['Date']['output'];
   fileName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  originalFilename?: Maybe<Scalars['String']['output']>;
   publicUrl?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['Date']['output'];
   uploadUrl?: Maybe<Scalars['String']['output']>;
@@ -338,6 +342,8 @@ export type CloudflareR2CreateInput = {
   /** the name of the file that is being uploaded */
   fileName: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
+  /** the original name of the file before any renaming */
+  originalFilename?: InputMaybe<Scalars['String']['input']>;
   /** the id of the Video object this file relates to in the database */
   videoId: Scalars['String']['input'];
 };
@@ -1265,6 +1271,7 @@ export type Mutation = {
   customDomainUpdate: CustomDomain;
   deleteCloudflareImage: Scalars['Boolean']['output'];
   deleteMuxVideo: Scalars['Boolean']['output'];
+  enableMuxDownload?: Maybe<MuxVideo>;
   getTranscodeAssetProgress?: Maybe<Scalars['Int']['output']>;
   hostCreate: Host;
   hostDelete: Host;
@@ -1604,6 +1611,11 @@ export type MutationDeleteCloudflareImageArgs = {
 
 
 export type MutationDeleteMuxVideoArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationEnableMuxDownloadArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -2316,6 +2328,7 @@ export type MuxVideo = {
   __typename?: 'MuxVideo';
   assetId?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Date']['output'];
+  downloadable: Scalars['Boolean']['output'];
   duration?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   name?: Maybe<Scalars['String']['output']>;
@@ -3587,6 +3600,8 @@ export type TextResponseBlock = Block & {
   minRows?: Maybe<Scalars['Int']['output']>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  placeholder?: Maybe<Scalars['String']['output']>;
+  required?: Maybe<Scalars['Boolean']['output']>;
   routeId?: Maybe<Scalars['String']['output']>;
   type?: Maybe<TextResponseType>;
 };
@@ -3604,6 +3619,7 @@ export type TextResponseBlockUpdateInput = {
   label?: InputMaybe<Scalars['String']['input']>;
   minRows?: InputMaybe<Scalars['Int']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  required?: InputMaybe<Scalars['Boolean']['input']>;
   routeId?: InputMaybe<Scalars['String']['input']>;
   type?: InputMaybe<TextResponseType>;
 };
@@ -3638,7 +3654,8 @@ export type TextResponseSubmissionEventCreateInput = {
 export enum TextResponseType {
   Email = 'email',
   FreeForm = 'freeForm',
-  Name = 'name'
+  Name = 'name',
+  Phone = 'phone'
 }
 
 export enum ThemeMode {

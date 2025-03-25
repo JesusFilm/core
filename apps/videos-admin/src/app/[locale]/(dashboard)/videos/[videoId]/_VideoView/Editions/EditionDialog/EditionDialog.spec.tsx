@@ -2,16 +2,17 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
+import { DialogAction } from '../../../../../../../../components/CrudDialog'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import { VideoProvider } from '../../../../../../../../libs/VideoProvider'
 
-import { DialogAction, EditionDialog } from './EditionDialog'
+import { EditionDialog } from './EditionDialog'
 
 const mockVideo = useAdminVideoMock['result']?.['data']?.['adminVideo']
 const mockEdition = mockVideo.videoEditions[0]
 
 describe('EditionDialog', () => {
-  it('should render closed', () => {
+  it('should not render when action is null', () => {
     render(
       <NextIntlClientProvider locale="en">
         <EditionDialog edition={mockEdition} action={null} close={jest.fn()} />

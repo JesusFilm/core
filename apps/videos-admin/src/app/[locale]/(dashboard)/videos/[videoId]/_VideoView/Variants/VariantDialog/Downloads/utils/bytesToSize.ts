@@ -1,11 +1,22 @@
-export function bytesToSize(bytes: number): string {
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
-  if (bytes === 0) return 'n/a'
-  const i = Math.min(
-    parseInt(Math.floor(Math.log(bytes) / Math.log(1024)).toString(), 10),
-    sizes.length - 1
-  )
+export function bytesToSize(
+  bytes: number,
+  binary = true,
+  decimals = 2
+): string {
+  if (bytes === 0) return '0 Bytes'
 
-  if (i === 0) return `${bytes} ${sizes[i]}`
-  return `${(bytes / 1024 ** i).toFixed(1)} ${sizes[i]}`
+  const base = binary ? 1024 : 1000
+  const units = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+
+  if (bytes < base) {
+    return `${bytes} ${bytes === 1 ? 'Byte' : 'Bytes'}`
+  }
+
+  const exp = Math.floor(Math.log(bytes) / Math.log(base))
+  const value = bytes / base ** exp
+  const formattedValue = value.toFixed(decimals)
+
+  const cleanValue = parseFloat(formattedValue)
+
+  return `${cleanValue} ${units[exp]}`
 }

@@ -8,9 +8,18 @@ import {
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
 
-import { JourneyStatus } from '../../../../../../__generated__/globalTypes'
+import {
+  JourneyStatus,
+  Role,
+  UserJourneyRole,
+  UserTeamRole
+} from '../../../../../../__generated__/globalTypes'
+import { GET_CURRENT_USER } from '../../../../../libs/useCurrentUserLazyQuery'
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+
+import { GET_JOURNEY_WITH_USER_ROLES } from './DefaultMenu'
 
 import { DefaultMenu } from '.'
 
@@ -37,6 +46,123 @@ const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
       }
     }
   }))
+}
+
+const currentUserMock = {
+  request: {
+    query: GET_CURRENT_USER
+  },
+  result: {
+    data: {
+      me: {
+        __typename: 'User',
+        id: 'current-user-id',
+        email: 'current@example.com'
+      }
+    }
+  }
+}
+
+const teamWithManagerMock = {
+  request: {
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+  },
+  result: {
+    data: {
+      teams: [
+        {
+          id: 'teamId',
+          title: 'Team Title',
+          publicTitle: null,
+          __typename: 'Team',
+          userTeams: [
+            {
+              id: 'userTeamId',
+              role: UserTeamRole.manager,
+              user: {
+                id: 'userId',
+                email: 'current@example.com',
+                __typename: 'User'
+              },
+              __typename: 'UserTeam'
+            }
+          ],
+          customDomains: []
+        }
+      ],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        id: 'journeyProfileId',
+        lastActiveTeamId: 'teamId'
+      }
+    }
+  }
+}
+
+const teamWithMemberMock = {
+  request: {
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+  },
+  result: {
+    data: {
+      teams: [
+        {
+          id: 'teamId',
+          title: 'Team Title',
+          publicTitle: null,
+          __typename: 'Team',
+          userTeams: [
+            {
+              id: 'userTeamId',
+              role: UserTeamRole.member,
+              user: {
+                id: 'userId',
+                email: 'current@example.com',
+                __typename: 'User'
+              },
+              __typename: 'UserTeam'
+            }
+          ],
+          customDomains: []
+        }
+      ],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        id: 'journeyProfileId',
+        lastActiveTeamId: 'teamId'
+      }
+    }
+  }
+}
+
+const userRolePublisherMock = {
+  request: {
+    query: GET_USER_ROLE
+  },
+  result: {
+    data: {
+      getUserRole: {
+        __typename: 'UserRole',
+        id: 'user-role-id',
+        roles: [Role.publisher]
+      }
+    }
+  }
+}
+
+const userRoleNonPublisherMock = {
+  request: {
+    query: GET_USER_ROLE
+  },
+  result: {
+    data: {
+      getUserRole: {
+        __typename: 'UserRole',
+        id: 'user-role-id',
+        roles: []
+      }
+    }
+  }
 }
 
 describe('DefaultMenu', () => {
@@ -225,5 +351,477 @@ describe('DefaultMenu', () => {
     fireEvent.click(getByRole('menuitem', { name: 'Trash' }))
     expect(setOpenTrashDialog).toHaveBeenCalled()
     expect(handleCloseMenu).toHaveBeenCalled()
+  })
+
+  it('should enable Archive and Trash menu items for journey owners', async () => {
+    const journeyId = 'journey-id'
+    const journeyData = {
+      __typename: 'Journey',
+      id: journeyId,
+      userJourneys: [
+        {
+          __typename: 'UserJourney',
+          id: 'userJourney1.id',
+          role: UserJourneyRole.owner,
+          user: {
+            __typename: 'User',
+            id: 'current-user-id'
+          }
+        }
+      ]
+    }
+
+    const journeyMock = {
+      request: {
+        query: GET_JOURNEY_WITH_USER_ROLES,
+        variables: { id: journeyId }
+      },
+      result: {
+        data: {
+          journey: journeyData
+        }
+      }
+    }
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[currentUserMock, journeyMock, teamWithMemberMock]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByRole('menuitem', { name: 'Archive' })).not.toHaveAttribute(
+        'aria-disabled'
+      )
+      expect(getByRole('menuitem', { name: 'Trash' })).not.toHaveAttribute(
+        'aria-disabled'
+      )
+    })
+  })
+
+  it('should enable Archive and Trash menu items for team managers', async () => {
+    const journeyId = 'journey-id'
+    const journeyData = {
+      __typename: 'Journey',
+      id: journeyId,
+      userJourneys: [
+        {
+          __typename: 'UserJourney',
+          id: 'userJourney1.id',
+          role: UserJourneyRole.editor,
+          user: {
+            __typename: 'User',
+            id: 'current-user-id'
+          }
+        }
+      ]
+    }
+
+    const journeyMock = {
+      request: {
+        query: GET_JOURNEY_WITH_USER_ROLES,
+        variables: { id: journeyId }
+      },
+      result: {
+        data: {
+          journey: journeyData
+        }
+      }
+    }
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[currentUserMock, journeyMock, teamWithManagerMock]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByRole('menuitem', { name: 'Archive' })).not.toHaveAttribute(
+        'aria-disabled'
+      )
+      expect(getByRole('menuitem', { name: 'Trash' })).not.toHaveAttribute(
+        'aria-disabled'
+      )
+    })
+  })
+
+  it('should disable Archive and Trash menu items for journey editors who are not team managers', async () => {
+    const journeyId = 'journey-id'
+    const journeyData = {
+      __typename: 'Journey',
+      id: journeyId,
+      userJourneys: [
+        {
+          __typename: 'UserJourney',
+          id: 'userJourney1.id',
+          role: UserJourneyRole.editor,
+          user: {
+            __typename: 'User',
+            id: 'current-user-id'
+          }
+        }
+      ]
+    }
+
+    const journeyMock = {
+      request: {
+        query: GET_JOURNEY_WITH_USER_ROLES,
+        variables: { id: journeyId }
+      },
+      result: {
+        data: {
+          journey: journeyData
+        }
+      }
+    }
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[currentUserMock, journeyMock, teamWithMemberMock]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByRole('menuitem', { name: 'Archive' })).toHaveAttribute(
+        'aria-disabled',
+        'true'
+      )
+      expect(getByRole('menuitem', { name: 'Trash' })).toHaveAttribute(
+        'aria-disabled',
+        'true'
+      )
+    })
+  })
+
+  it('should enable other menu items for journey editors', async () => {
+    const journeyId = 'journey-id'
+    const journeyData = {
+      __typename: 'Journey',
+      id: journeyId,
+      userJourneys: [
+        {
+          __typename: 'UserJourney',
+          id: 'userJourney1.id',
+          role: UserJourneyRole.editor,
+          user: {
+            __typename: 'User',
+            id: 'current-user-id'
+          }
+        }
+      ]
+    }
+
+    const journeyMock = {
+      request: {
+        query: GET_JOURNEY_WITH_USER_ROLES,
+        variables: { id: journeyId }
+      },
+      result: {
+        data: {
+          journey: journeyData
+        }
+      }
+    }
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[currentUserMock, journeyMock, teamWithMemberMock]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByRole('menuitem', { name: 'Edit' })).not.toHaveAttribute(
+        'aria-disabled'
+      )
+      expect(getByRole('menuitem', { name: 'Access' })).not.toHaveAttribute(
+        'aria-disabled'
+      )
+      expect(getByRole('menuitem', { name: 'Preview' })).not.toHaveAttribute(
+        'aria-disabled'
+      )
+    })
+  })
+
+  it('should enable Archive and Trash for publishers for templates', async () => {
+    const templateId = 'template-id'
+    const templateData = {
+      __typename: 'Journey',
+      id: templateId,
+      userJourneys: []
+    }
+
+    const journeyMock = {
+      request: {
+        query: GET_JOURNEY_WITH_USER_ROLES,
+        variables: { id: templateId }
+      },
+      result: {
+        data: {
+          journey: templateData
+        }
+      }
+    }
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[userRolePublisherMock, journeyMock, currentUserMock]}
+      >
+        <SnackbarProvider>
+          <DefaultMenu
+            id="template-id"
+            slug="template-slug"
+            status={JourneyStatus.published}
+            journeyId="template-id"
+            published
+            setOpenAccessDialog={noop}
+            handleCloseMenu={noop}
+            template
+            setOpenTrashDialog={noop}
+          />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByRole('menuitem', { name: 'Archive' })).not.toHaveAttribute(
+        'aria-disabled'
+      )
+      expect(getByRole('menuitem', { name: 'Trash' })).not.toHaveAttribute(
+        'aria-disabled'
+      )
+    })
+  })
+
+  it('should disable Archive and Trash for publishers for non-templates', async () => {
+    const journeyId = 'journey-id'
+    const journeyData = {
+      __typename: 'Journey',
+      id: journeyId,
+      userJourneys: []
+    }
+
+    const journeyMock = {
+      request: {
+        query: GET_JOURNEY_WITH_USER_ROLES,
+        variables: { id: journeyId }
+      },
+      result: {
+        data: {
+          journey: journeyData
+        }
+      }
+    }
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[userRolePublisherMock, journeyMock, currentUserMock]}
+      >
+        <SnackbarProvider>
+          <DefaultMenu
+            id="journey-id"
+            slug="journey-slug"
+            status={JourneyStatus.published}
+            journeyId="journey-id"
+            published
+            setOpenAccessDialog={noop}
+            handleCloseMenu={noop}
+            template={false}
+            setOpenTrashDialog={noop}
+          />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByRole('menuitem', { name: 'Archive' })).toHaveAttribute(
+        'aria-disabled',
+        'true'
+      )
+      expect(getByRole('menuitem', { name: 'Trash' })).toHaveAttribute(
+        'aria-disabled',
+        'true'
+      )
+    })
+  })
+
+  it('should disable Archive and Trash for non-publishers for templates', async () => {
+    const templateId = 'template-id'
+    const templateData = {
+      __typename: 'Journey',
+      id: templateId,
+      userJourneys: []
+    }
+
+    const journeyMock = {
+      request: {
+        query: GET_JOURNEY_WITH_USER_ROLES,
+        variables: { id: templateId }
+      },
+      result: {
+        data: {
+          journey: templateData
+        }
+      }
+    }
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[userRoleNonPublisherMock, journeyMock, currentUserMock]}
+      >
+        <SnackbarProvider>
+          <DefaultMenu
+            id="template-id"
+            slug="template-slug"
+            status={JourneyStatus.published}
+            journeyId="template-id"
+            published
+            setOpenAccessDialog={noop}
+            handleCloseMenu={noop}
+            template
+            setOpenTrashDialog={noop}
+          />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByRole('menuitem', { name: 'Archive' })).toHaveAttribute(
+        'aria-disabled',
+        'true'
+      )
+      expect(getByRole('menuitem', { name: 'Trash' })).toHaveAttribute(
+        'aria-disabled',
+        'true'
+      )
+    })
+  })
+
+  it('should enable Archive and Trash for users who are both publishers and journey editors for non-templates', async () => {
+    const journeyId = 'journey-id'
+    const journeyData = {
+      __typename: 'Journey',
+      id: journeyId,
+      userJourneys: [
+        {
+          __typename: 'UserJourney',
+          id: 'userJourney1.id',
+          role: UserJourneyRole.editor,
+          user: {
+            __typename: 'User',
+            id: 'current-user-id'
+          }
+        }
+      ]
+    }
+
+    const journeyMock = {
+      request: {
+        query: GET_JOURNEY_WITH_USER_ROLES,
+        variables: { id: journeyId }
+      },
+      result: {
+        data: {
+          journey: journeyData
+        }
+      }
+    }
+
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          currentUserMock,
+          journeyMock,
+          teamWithMemberMock,
+          userRolePublisherMock
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      // Should be disabled because it's not a template, even though user is a publisher
+      expect(getByRole('menuitem', { name: 'Archive' })).toHaveAttribute(
+        'aria-disabled',
+        'true'
+      )
+      expect(getByRole('menuitem', { name: 'Trash' })).toHaveAttribute(
+        'aria-disabled',
+        'true'
+      )
+    })
   })
 })

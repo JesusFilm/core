@@ -66,6 +66,7 @@ model MuxVideo {
 model CloudflareR2 {
   id                   String                @id @default(uuid())
   fileName             String
+  originalFilename     String?
   uploadUrl            String?
   userId               String
   publicUrl            String?
@@ -301,13 +302,16 @@ model BibleCitation {
   bibleBookId  String
   osisId       String
   chapterStart Int
-  chapterEnd   Int?
-  verseStart   Int?
-  verseEnd     Int?
+  chapterEnd   Int
+  verseStart   Int
+  verseEnd     Int
   videoId      String
   order        Int
   video        Video     @relation(fields: [videoId], references: [id])
   bibleBook    BibleBook @relation(fields: [bibleBookId], references: [id])
+
+  @@unique([videoId, bibleBookId, chapterStart, chapterEnd, verseStart, verseEnd])
+  @@index([order])
 }
 
 model BibleBook {

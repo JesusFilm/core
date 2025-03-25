@@ -97,7 +97,8 @@ export enum IconSize {
 export enum TextResponseType {
     freeForm = "freeForm",
     name = "name",
-    email = "email"
+    email = "email",
+    phone = "phone"
 }
 
 export enum TypographyVariant {
@@ -303,6 +304,7 @@ export class ButtonBlockCreateInput {
     variant?: Nullable<ButtonVariant>;
     color?: Nullable<ButtonColor>;
     size?: Nullable<ButtonSize>;
+    submitEnabled?: Nullable<boolean>;
 }
 
 export class ButtonBlockUpdateInput {
@@ -313,6 +315,7 @@ export class ButtonBlockUpdateInput {
     size?: Nullable<ButtonSize>;
     startIconId?: Nullable<string>;
     endIconId?: Nullable<string>;
+    submitEnabled?: Nullable<boolean>;
 }
 
 export class CardBlockCreateInput {
@@ -407,6 +410,18 @@ export class SignUpBlockUpdateInput {
     submitLabel?: Nullable<string>;
 }
 
+export class SpacerBlockCreateInput {
+    id?: Nullable<string>;
+    journeyId: string;
+    parentBlockId: string;
+    spacing?: Nullable<number>;
+}
+
+export class SpacerBlockUpdateInput {
+    parentBlockId?: Nullable<string>;
+    spacing?: Nullable<number>;
+}
+
 export class StepBlockCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -440,6 +455,7 @@ export class TextResponseBlockCreateInput {
 export class TextResponseBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
+    required?: Nullable<boolean>;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
     routeId?: Nullable<string>;
@@ -959,6 +975,10 @@ export abstract class IMutation {
 
     abstract signUpBlockUpdate(id: string, input: SignUpBlockUpdateInput, journeyId?: Nullable<string>): Nullable<SignUpBlock> | Promise<Nullable<SignUpBlock>>;
 
+    abstract spacerBlockCreate(input: SpacerBlockCreateInput): SpacerBlock | Promise<SpacerBlock>;
+
+    abstract spacerBlockUpdate(id: string, input: SpacerBlockUpdateInput): SpacerBlock | Promise<SpacerBlock>;
+
     abstract stepBlockCreate(input: StepBlockCreateInput): StepBlock | Promise<StepBlock>;
 
     abstract stepBlockUpdate(id: string, input: StepBlockUpdateInput, journeyId?: Nullable<string>): StepBlock | Promise<StepBlock>;
@@ -1241,6 +1261,7 @@ export class ButtonBlock implements Block {
     startIconId?: Nullable<string>;
     endIconId?: Nullable<string>;
     action?: Nullable<Action>;
+    submitEnabled?: Nullable<boolean>;
 }
 
 export class CardBlock implements Block {
@@ -1262,7 +1283,7 @@ export class GridContainerBlock implements Block {
     journeyId: string;
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
-    spacing: number;
+    gap: number;
     direction: GridDirection;
     justifyContent: GridJustifyContent;
     alignItems: GridAlignItems;
@@ -1335,6 +1356,15 @@ export class SignUpBlock implements Block {
     submitLabel?: Nullable<string>;
 }
 
+export class SpacerBlock implements Block {
+    __typename?: 'SpacerBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    spacing?: Nullable<number>;
+}
+
 export class StepBlock implements Block {
     __typename?: 'StepBlock';
     id: string;
@@ -1355,6 +1385,7 @@ export class TextResponseBlock implements Block {
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     label: string;
+    required?: Nullable<boolean>;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
     type?: Nullable<TextResponseType>;
