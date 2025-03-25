@@ -45,7 +45,6 @@ export function ShareDialog({
 
     router.events.on('routeChangeComplete', handleRouteChange)
 
-    // Cleanup function to remove the listener when component unmounts or currentParam changes
     return () => {
       if (typeof router.events.off === 'function') {
         router.events.off('routeChangeComplete', handleRouteChange)
@@ -63,7 +62,6 @@ export function ShareDialog({
     [router]
   )
 
-  // Always use default URL if hostname is not available
   const shareUrl =
     journey?.slug != null
       ? `${
@@ -71,10 +69,9 @@ export function ShareDialog({
             ? `https://${hostname}`
             : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
               'https://your.nextstep.is')
-        }/${journey.slug}`
+        }/${journey.slug}`.replace(/([^:]\/)\/+/g, '$1')
       : undefined
 
-  // Set the buttonsDisabled state based on journey availability
   const buttonsDisabled = journey == null
 
   return (
@@ -84,7 +81,11 @@ export function ShareDialog({
           {t('Share This Journey')}
         </Typography>
         <CopyTextField value={shareUrl} />
-        <Stack direction="row" spacing={6}>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={{ xs: 2, sm: 6 }}
+          sx={{ width: '100%' }}
+        >
           <Button
             onClick={() => {
               onSlugDialogOpen()
