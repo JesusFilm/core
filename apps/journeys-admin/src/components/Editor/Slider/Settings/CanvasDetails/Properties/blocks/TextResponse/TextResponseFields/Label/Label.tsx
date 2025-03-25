@@ -125,7 +125,11 @@ export function Label(): ReactElement {
         label={t('Label')}
         placeholder={t('Your label here')}
         fullWidth
-        inputProps={{ maxLength: 250 }}
+        slotProps={{
+          htmlInput: {
+            maxLength: 250
+          }
+        }}
         value={value}
         onFocus={resetCommandInput}
         onChange={(e) => {
