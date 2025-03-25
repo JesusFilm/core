@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -33,33 +33,33 @@ export function ShareDialog({
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const router = useRouter()
+  const [currentParam, setCurrentParam] = useState<string | null>(null)
 
-  // Debug the props and journey context
+  // Handle route change with proper cleanup
   useEffect(() => {
-    console.log('ShareDialog - Props:', { open, hostname })
-    console.log('ShareDialog - Journey from context:', journey)
-    console.log('ShareDialog - Journey slug:', journey?.slug)
-    console.log(
-      'ShareDialog - URL to be displayed:',
-      journey?.slug != null
-        ? `${
-            hostname != null
-              ? `https://${hostname}`
-              : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                'https://your.nextstep.is')
-          }/${journey.slug}`
-        : undefined
-    )
-  }, [open, hostname, journey])
+    if (currentParam == null) return
 
-  function setRoute(param: string): void {
-    void router.push({ query: { ...router.query, param } }, undefined, {
-      shallow: true
-    })
-    router.events.on('routeChangeComplete', () => {
-      setBeaconPageViewed(param)
-    })
-  }
+    const handleRouteChange = (): void => {
+      setBeaconPageViewed(currentParam)
+    }
+
+    router.events.on('routeChangeComplete', handleRouteChange)
+
+    // Cleanup function to remove the listener when component unmounts or currentParam changes
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange)
+    }
+  }, [currentParam, router.events])
+
+  const setRoute = useCallback(
+    (param: string): void => {
+      setCurrentParam(param)
+      void router.push({ query: { ...router.query, param } }, undefined, {
+        shallow: true
+      })
+    },
+    [router]
+  )
 
   // Always use default URL if hostname is not available
   const shareUrl =
