@@ -11,6 +11,19 @@ import { Item } from '../Item/Item'
 
 import { ShareDialog } from './ShareDialog'
 
+// Define team type to match GraphQL schema
+interface CustomDomain {
+  id: string
+  name: string
+  apexName: string
+  routeAllTeamJourneys: boolean
+}
+
+interface Team {
+  id: string
+  customDomains?: CustomDomain[]
+}
+
 const EmbedJourneyDialog = dynamic(
   async () =>
     await import(
@@ -69,10 +82,8 @@ export function ShareItem({
     : (data?.journey ?? contextJourney)
   const qrCode = data?.qrCodes?.[0]
 
-  // Cast team to the Team type that includes customDomains
-  const team = sharedJourney?.team as {
-    customDomains?: Array<{ id: string; name: string; apexName: string }>
-  } | null
+  // Access team and custom domain data
+  const team = sharedJourney?.team as Team | null
   const customDomain = team?.customDomains?.[0]
   const hostname = customDomain?.name
 

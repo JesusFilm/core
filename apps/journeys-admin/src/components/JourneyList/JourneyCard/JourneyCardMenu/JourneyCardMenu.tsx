@@ -1,9 +1,4 @@
-import {
-  ApolloQueryResult,
-  gql,
-  useApolloClient,
-  useQuery
-} from '@apollo/client'
+import { ApolloQueryResult, gql, useQuery } from '@apollo/client'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import dynamic from 'next/dynamic'
@@ -158,8 +153,6 @@ export function JourneyCardMenu({
   const [openQrCodeDialog, setOpenQrCodeDialog] = useState<
     boolean | undefined
   >()
-
-  const client = useApolloClient()
 
   // Query to fetch journey with blocks when opening embed dialog
   const { data: journeyWithBlocksData } = useQuery<

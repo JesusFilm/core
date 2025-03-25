@@ -12,9 +12,45 @@ import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/Ge
 import { Role } from '../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+import { SHARE_DATA_QUERY } from '../../../../../libs/useShareDataQuery/useShareDataQuery'
 
 import { ShareDialog } from './ShareDialog'
 import { ShareItem } from './ShareItem'
+
+// Mock for ShareDataQuery used in the failing test
+const shareDataQueryMock: MockedResponse = {
+  request: {
+    query: SHARE_DATA_QUERY,
+    variables: {
+      id: 'journey-id',
+      qrCodeWhere: { journeyId: 'journey-id' }
+    }
+  },
+  result: {
+    data: {
+      journey: {
+        id: 'journey-id',
+        slug: 'default',
+        title: 'Journey Heading',
+        team: {
+          id: 'teamId',
+          customDomains: [
+            {
+              id: 'customDomainId',
+              name: 'example.com',
+              apexName: 'example.com',
+              routeAllTeamJourneys: false,
+              __typename: 'CustomDomain'
+            }
+          ],
+          __typename: 'Team'
+        },
+        __typename: 'Journey'
+      },
+      qrCodes: []
+    }
+  }
+}
 
 // Mock the ShareDialog component to simplify testing
 jest.mock('./ShareDialog', () => ({
@@ -195,9 +231,8 @@ describe('ShareItem', () => {
   })
 
   it('should pass custom domain hostname to ShareDialog', async () => {
-    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
     render(
-      <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
+      <MockedProvider mocks={[shareDataQueryMock]}>
         <JourneyProvider
           value={{
             journey: {
@@ -217,10 +252,12 @@ describe('ShareItem', () => {
       </MockedProvider>
     )
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
-    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
-
-    expect(screen.getByText('Hostname: example.com')).toBeInTheDocument()
+    // Wait for the query to be executed
+    await waitFor(() => {
+      fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+      // The custom domain's name is "example.com" as defined in the mock
+      expect(screen.getByText('Hostname: example.com')).toBeInTheDocument()
+    })
   })
 
   it('should call closeMenu when dialog is closed', () => {
