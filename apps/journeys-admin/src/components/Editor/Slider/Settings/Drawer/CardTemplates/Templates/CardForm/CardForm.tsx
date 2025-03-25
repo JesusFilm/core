@@ -42,6 +42,10 @@ import {
 
 import cardFormImage from './cardForm.svg'
 
+/**
+ * GraphQL mutation for creating a card form template with multiple blocks.
+ * Creates an image, subtitle, title, text response, and body blocks within a card.
+ */
 export const CARD_FORM_CREATE = gql`
   ${IMAGE_FIELDS}
   ${TYPOGRAPHY_FIELDS}
@@ -78,6 +82,9 @@ export const CARD_FORM_CREATE = gql`
   }
 `
 
+/**
+ * GraphQL mutation for deleting all blocks in a card form template.
+ */
 export const CARD_FORM_DELETE = gql`
   ${CARD_FIELDS}
   mutation CardFormDelete(
@@ -116,6 +123,9 @@ export const CARD_FORM_DELETE = gql`
   }
 `
 
+/**
+ * GraphQL mutation for restoring all blocks in a card form template.
+ */
 export const CARD_FORM_RESTORE = gql`
   ${BLOCK_FIELDS}
   mutation CardFormRestore(
@@ -149,6 +159,12 @@ export const CARD_FORM_RESTORE = gql`
   }
 `
 
+/**
+ * A component that renders a button with a card form template image.
+ * When clicked, creates a predefined form card layout with text response input.
+ *
+ * @returns {ReactElement} The CardForm component.
+ */
 export function CardForm(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
@@ -171,6 +187,13 @@ export function CardForm(): ReactElement {
     CardFormRestoreVariables
   >(CARD_FORM_RESTORE)
 
+  /**
+   * Handles click on the template button.
+   * Creates a new card form template with predefined blocks and adds it to the journey.
+   * Includes undo/redo functionality via command pattern.
+   *
+   * @returns {void}
+   */
   function handleClick(): void {
     const cardId = selectedStep?.children[0].id
     if (journey == null || cardId == null || selectedStep == null) return
@@ -255,6 +278,9 @@ export function CardForm(): ReactElement {
 
     add({
       parameters: { execute: {}, undo: {} },
+      /**
+       * Executes the creation of a card form template.
+       */
       execute() {
         void cardFormCreate({
           variables: {
@@ -330,6 +356,9 @@ export function CardForm(): ReactElement {
           }
         })
       },
+      /**
+       * Undoes the creation of a card form template by deleting all created blocks.
+       */
       undo() {
         void cardFormDelete({
           variables: {
@@ -374,6 +403,9 @@ export function CardForm(): ReactElement {
           }
         })
       },
+      /**
+       * Redoes the creation of a card form template by restoring all previously deleted blocks.
+       */
       redo() {
         void cardFormRestore({
           variables: {
