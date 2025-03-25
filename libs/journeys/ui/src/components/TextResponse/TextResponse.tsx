@@ -33,27 +33,12 @@ export const TEXT_RESPONSE_SUBMISSION_EVENT_CREATE = gql`
     }
   }
 `
-
-/**
- * Props for the TextResponse component.
- * @interface TextResponseProps
- * @extends {TreeBlock<TextResponseFields>}
- */
 interface TextResponseProps extends TreeBlock<TextResponseFields> {
-  /** Function to generate a UUID, defaults to uuidv4. */
   uuid?: () => string
-  /** Custom element for the submit label. */
   editableSubmitLabel?: ReactElement
-  /** MUI system props for styling the component. */
   sx?: SxProps
 }
-
-/**
- * Form values for the TextResponse component.
- * @interface TextResponseFormValues
- */
 interface TextResponseFormValues {
-  /** User's text response. */
   response: string
 }
 
@@ -99,13 +84,6 @@ export const TextResponse = ({
 
   const initialValues: TextResponseFormValues = { response: '' }
 
-  /**
-   * Handles submission of text response.
-   * Sends data to backend and triggers GTM event if response is not empty.
-   *
-   * @param {TextResponseFormValues} values - Form values containing the user's response.
-   * @returns {Promise<void>}
-   */
   const onSubmitHandler = async (
     values: TextResponseFormValues
   ): Promise<void> => {

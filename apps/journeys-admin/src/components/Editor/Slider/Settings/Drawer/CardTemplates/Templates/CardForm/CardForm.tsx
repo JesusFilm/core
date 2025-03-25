@@ -187,13 +187,6 @@ export function CardForm(): ReactElement {
     CardFormRestoreVariables
   >(CARD_FORM_RESTORE)
 
-  /**
-   * Handles click on the template button.
-   * Creates a new card form template with predefined blocks and adds it to the journey.
-   * Includes undo/redo functionality via command pattern.
-   *
-   * @returns {void}
-   */
   function handleClick(): void {
     const cardId = selectedStep?.children[0].id
     if (journey == null || cardId == null || selectedStep == null) return
@@ -278,9 +271,6 @@ export function CardForm(): ReactElement {
 
     add({
       parameters: { execute: {}, undo: {} },
-      /**
-       * Executes the creation of a card form template.
-       */
       execute() {
         void cardFormCreate({
           variables: {
@@ -356,9 +346,6 @@ export function CardForm(): ReactElement {
           }
         })
       },
-      /**
-       * Undoes the creation of a card form template by deleting all created blocks.
-       */
       undo() {
         void cardFormDelete({
           variables: {
@@ -403,9 +390,6 @@ export function CardForm(): ReactElement {
           }
         })
       },
-      /**
-       * Redoes the creation of a card form template by restoring all previously deleted blocks.
-       */
       redo() {
         void cardFormRestore({
           variables: {
