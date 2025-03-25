@@ -51,36 +51,20 @@ export function Label(): ReactElement {
   const [value, setValue] = useState(selectedBlock?.label ?? '')
   const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
 
-  /**
-   * Effect to reset command input when undo action is triggered.
-   */
   useEffect(() => {
     if (undo == null || undo.id === commandInput.id) return
     resetCommandInput()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [undo?.id])
 
-  /**
-   * Effect to update local state when the selected block changes.
-   */
   useEffect(() => {
     setValue(selectedBlock?.label ?? '')
   }, [selectedBlock?.label])
 
-  /**
-   * Resets the command input with a new UUID and current value.
-   */
   function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })
   }
 
-  /**
-   * Handles the submission of a new label value.
-   * Creates a command for undo/redo functionality and updates the block.
-   *
-   * @param {string} value - The new label text value.
-   * @returns {void}
-   */
   function handleSubmit(value: string): void {
     if (selectedBlock == null) return
     add({
