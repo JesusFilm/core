@@ -5,7 +5,9 @@ import { z } from 'zod'
 
 import { prisma } from '../../../lib/prisma'
 
-const xliff12ToJs = require('xliff')
+const xliff = require('xliff')
+
+const xliff12ToJs = xliff.xliff12ToJs
 
 type CrowdinFileName =
   | '/Arclight/collection_title.csv'
