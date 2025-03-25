@@ -216,7 +216,7 @@ export function CardForm(): ReactElement {
       id: uuidv4(),
       parentBlockId: cardId,
       parentOrder: 2,
-      label: t('Your answer here'),
+      label: t('My Prayer'),
       placeholder: null,
       hint: null,
       minRows: null,

@@ -127,7 +127,7 @@ export const TextResponse = ({
               <TextField
                 id="textResponse-field"
                 name="response"
-                placeholder={placeholder ?? ''}
+                placeholder={placeholder != null ? placeholder : ''}
                 value={values.response}
                 helperText={hint != null ? hint : ''}
                 multiline
