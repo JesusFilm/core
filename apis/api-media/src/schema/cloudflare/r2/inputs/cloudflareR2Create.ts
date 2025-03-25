@@ -18,6 +18,10 @@ export const CloudflareR2CreateInput = builder.inputType(
         required: true,
         description: 'the name of the file that is being uploaded'
       }),
+      originalFilename: t.string({
+        required: false,
+        description: 'the original name of the file before any renaming'
+      }),
       videoId: t.string({
         required: true,
         description:
