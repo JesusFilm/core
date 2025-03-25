@@ -4,6 +4,10 @@ import { expect, test } from '@playwright/test'
 NS Admin: Monitoring
 https://www.checklyhq.com/docs/cli/
 */
+
+// Set a longer timeout for this monitoring test
+test.setTimeout(100000);
+
 test('NS Admin Monitoring: Check user can login and create a journey via template', async ({
   page
 }) => {
@@ -16,6 +20,13 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
   const email = process.env.PLAYWRIGHT_EMAIL
   const password = process.env.PLAYWRIGHT_PASSWORD
 
+  const defaultTimeout = 30000;
+  const navigationTimeout = 60000;
+
+  // Configure longer timeouts for navigation
+  page.setDefaultTimeout(defaultTimeout);
+  page.setDefaultNavigationTimeout(navigationTimeout);
+
   await page.goto('https://admin.nextstep.is/')
   const startTime = Date.now();
   let stepTiming: { [key: string]: number } = {};
@@ -25,7 +36,7 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     const loginStart = Date.now();
     await page.goto('https://admin.nextstep.is/', {
       waitUntil: 'networkidle',
-      timeout: 60000
+      timeout: navigationTimeout
     });
     stepTiming['navigation'] = Date.now() - loginStart;
     
@@ -41,7 +52,7 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     
     // Step 3: Wait for and verify dashboard load
     const dashboardStart = Date.now();
-    await expect(page.getByTestId('NavigationListItemTemplates')).toBeVisible({ timeout: 60000 });
+    await expect(page.getByTestId('NavigationListItemTemplates')).toBeVisible({ timeout: defaultTimeout });
     // Take checkpoint screenshot after login
     await page.screenshot({ fullPage: true });
     stepTiming['dashboard_load'] = Date.now() - dashboardStart;
@@ -49,7 +60,7 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     // Step 4: Template selection
     const templateStart = Date.now();
     await page.getByTestId('NavigationListItemTemplates').click();
-    await expect(page.getByTestId('love-template-gallery-carousel').getByTestId('journey-0605d097-9da9-4da3-b23b-eec66553ec1e').getByTestId('templateGalleryCard')).toBeVisible({ timeout: 60000 });
+    await expect(page.getByTestId('love-template-gallery-carousel').getByTestId('journey-0605d097-9da9-4da3-b23b-eec66553ec1e').getByTestId('templateGalleryCard')).toBeVisible({ timeout: defaultTimeout });
     await page.getByTestId('love-template-gallery-carousel').getByTestId('journey-0605d097-9da9-4da3-b23b-eec66553ec1e').getByTestId('templateGalleryCard').click();
     // Take checkpoint screenshot after template selection
     await page.screenshot({ fullPage: true });
@@ -65,12 +76,23 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
 
     // Step 6: Journey editing
     const editStart = Date.now();
-    // Wait for iframe to be present
-    const frameLocator = page.frameLocator('[data-testid="CanvasContainer"] iframe');
-    await frameLocator.getByRole('button', { name: 'Watch the story' }).click();
-    await frameLocator.getByPlaceholder('Edit text...').click();
-    await frameLocator.getByPlaceholder('Edit text...').fill('Changed Button Text');
+    
+    // Wait for the iframe to be present with explicit timeout
+    await page.waitForSelector('[data-testid="CanvasContainer"] iframe', { timeout: defaultTimeout });
+    
+    // Use frameLocator to handle the iframe
+    const frame = page.frameLocator('[data-testid="CanvasContainer"] iframe').first();
+    
+    // Wait for and verify the button exists
+    await expect(frame.getByRole('button', { name: 'Watch the story' }))
+      .toBeVisible({ timeout: defaultTimeout });
+    
+    // Perform the interactions
+    await frame.getByRole('button', { name: 'Watch the story' }).click();
+    await frame.getByPlaceholder('Edit text...').click();
+    await frame.getByPlaceholder('Edit text...').fill('Changed Button Text');
     await page.getByTestId('EditorCanvas').click();
+    
     // Take checkpoint screenshot after editing
     await page.screenshot({ fullPage: true });
     stepTiming['journey_editing'] = Date.now() - editStart;
@@ -80,14 +102,14 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     await page.getByTestId('Fab').click();
     await page.getByRole('link', { name: 'Preview' }).click();
     
-    const previewPage = await page.waitForEvent('popup', { timeout: 60000 });
-    await previewPage.waitForLoadState('networkidle');
+    const previewPage = await page.waitForEvent('popup', { timeout: defaultTimeout });
+    await previewPage.waitForLoadState('networkidle', { timeout: navigationTimeout });
     
     const overlayContainer = previewPage.getByTestId('CardOverlayContentContainer');
-    await expect(overlayContainer).toBeVisible({ timeout: 60000 });
+    await expect(overlayContainer).toBeVisible({ timeout: defaultTimeout });
     
-    await expect(overlayContainer.getByRole('heading', { name: 'Are you happy?' })).toBeVisible({ timeout: 60000 });
-    await expect(overlayContainer.getByRole('button', { name: 'Changed Button Text' })).toBeVisible({ timeout: 60000 });
+    await expect(overlayContainer.getByRole('heading', { name: 'Are you happy?' })).toBeVisible({ timeout: defaultTimeout });
+    await expect(overlayContainer.getByRole('button', { name: 'Changed Button Text' })).toBeVisible({ timeout: defaultTimeout });
     // Take checkpoint screenshot of preview
     await previewPage.screenshot({ fullPage: true });
     stepTiming['preview_load'] = Date.now() - previewStart;
