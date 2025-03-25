@@ -24,6 +24,7 @@ describe('EventService', () => {
       })
     })
   }
+
   const visitorService = {
     provide: VisitorService,
     useFactory: () => ({
@@ -37,18 +38,22 @@ describe('EventService', () => {
       })
     })
   }
+
   const block = {
     id: 'block.id',
     journeyId: 'journey.id'
   }
+
   const step = {
     id: 'step.id',
     journeyId: 'journey.id'
   }
+
   const visitor = {
     id: 'visitor.id',
     userId: 'user.id'
   }
+
   const journeyVisitor = {
     journeyId: 'journey.id',
     visitorId: 'visitor.id'
@@ -60,6 +65,7 @@ describe('EventService', () => {
       getJob: jest.fn(),
       remove: jest.fn()
     }
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         EventService,
