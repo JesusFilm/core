@@ -134,7 +134,7 @@ async function uploadToR2(
 /**
  * Executes pg_dump command to create a SQL dump in PLAIN format
  * Uses INSERT statements instead of COPY for better portability
- * Excludes specified tables
+ * Excludes specified tables and their data
  */
 async function executePgDump(
   outputFile: string,
@@ -153,8 +153,11 @@ async function executePgDump(
         PGPASSWORD: decodeURIComponent(databaseUrl.password)
       }
 
-      // Generate exclude table arguments with proper pattern
+      // Generate exclude table arguments - use both exclude-table and exclude-table-data
+      // to ensure both schema and data are properly excluded
       const excludeTableArgs = EXCLUDED_TABLES.flatMap((table) => [
+        '--exclude-table-data',
+        getExcludeTablePattern(table),
         '--exclude-table',
         getExcludeTablePattern(table)
       ])

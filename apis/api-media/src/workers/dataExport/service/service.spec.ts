@@ -139,12 +139,20 @@ describe('dataExport service', () => {
         '--no-privileges',
         '--no-publications', // Verify publications are excluded
         '--no-subscriptions', // Verify subscriptions are excluded
-        '--exclude-table',
+        '--exclude-table-data',
         '*."CloudflareImage"',
         '--exclude-table',
+        '*."CloudflareImage"',
+        '--exclude-table-data',
         '*."MuxVideo"',
         '--exclude-table',
+        '*."MuxVideo"',
+        '--exclude-table-data',
         '*."CloudflareR2"',
+        '--exclude-table',
+        '*."CloudflareR2"',
+        '--exclude-table-data',
+        '*."UserMediaRole"',
         '--exclude-table',
         '*."UserMediaRole"'
       ]),
