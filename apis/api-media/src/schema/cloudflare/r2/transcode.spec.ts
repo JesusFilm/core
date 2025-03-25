@@ -86,6 +86,7 @@ describe('cloudflare/r2/transcode', () => {
         prismaMock.cloudflareR2.findUnique.mockResolvedValue({
           id: 'assetId',
           fileName: 'input.mp4',
+          originalFilename: null,
           publicUrl: 'https://assets.jesusfilm.org/input.mp4',
           userId: 'userId',
           contentType: 'video/mp4',

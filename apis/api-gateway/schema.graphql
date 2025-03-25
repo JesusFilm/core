@@ -956,6 +956,7 @@ type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS)  @join_
   parentBlockId: ID
   parentOrder: Int
   label: String!
+  placeholder: String
   required: Boolean
   hint: String
   minRows: Int
@@ -2269,6 +2270,7 @@ type CloudflareR2 @join__type(graph: API_MEDIA)  {
   contentLength: Int!
   contentType: String!
   fileName: String!
+  originalFilename: String
   uploadUrl: String
   userId: ID!
   publicUrl: String
@@ -4186,6 +4188,10 @@ input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   the name of the file that is being uploaded
   """
   fileName: String!
+  """
+  the original name of the file before any renaming
+  """
+  originalFilename: String
   """
   the id of the Video object this file relates to in the database
   """
