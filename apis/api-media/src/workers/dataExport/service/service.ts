@@ -164,6 +164,8 @@ async function executePgDump(
         '--inserts', // Use INSERT instead of COPY to avoid permission issues
         '--no-owner',
         '--no-privileges',
+        '--no-publications', // Exclude publications from export
+        '--no-subscriptions', // Exclude subscriptions from export
         ...excludeTableArgs,
         '-f',
         outputFile
@@ -299,6 +301,8 @@ async function exportCloudflareImageData(
         '--inserts',
         '--no-owner',
         '--no-privileges',
+        '--no-publications', // Exclude publications from export
+        '--no-subscriptions', // Exclude subscriptions from export
         '--data-only',
         '--column-inserts',
         '-f',

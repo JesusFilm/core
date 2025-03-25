@@ -11,8 +11,11 @@ import { prisma } from '../lib/prisma'
 // Constants
 const GZIPPED_BACKUP_FILE_NAME = 'media-backup.sql.gz'
 const BACKUP_FILE_NAME = 'media-backup.sql'
+const PROCESSED_BACKUP_FILE_NAME = 'media-backup-processed.sql'
 const CLOUDFLARE_IMAGES_FILE_NAME = 'cloudflareImage-system-data.sql.gz'
 const CLOUDFLARE_IMAGES_SQL_FILE_NAME = 'cloudflareImage-system-data.sql'
+const PROCESSED_CLOUDFLARE_IMAGES_SQL_FILE_NAME =
+  'cloudflareImage-system-data-processed.sql'
 
 /**
  * Downloads a file from a URL and saves it locally
@@ -156,6 +159,32 @@ async function decompressFile(
 }
 
 /**
+ * Preprocesses the SQL file to ensure compatibility with existing database
+ */
+async function preprocessSqlFile(
+  inputFile: string,
+  outputFile: string
+): Promise<void> {
+  console.log('Preprocessing SQL file for compatibility')
+
+  try {
+    const sqlContent = await fsPromises.readFile(inputFile, 'utf8')
+
+    // Remove all CREATE PUBLICATION statements completely
+    const processedContent = sqlContent.replace(
+      /CREATE PUBLICATION .* FOR .*;(\r?\n)?/g,
+      ''
+    )
+
+    await fsPromises.writeFile(outputFile, processedContent)
+    console.log('SQL file preprocessing completed')
+  } catch (error) {
+    console.error('Error preprocessing SQL file:', error)
+    throw error
+  }
+}
+
+/**
  * Executes psql command to restore a database from SQL file
  */
 async function executePsql(
@@ -286,8 +315,10 @@ async function main(): Promise<void> {
   const files: Record<string, string | null> = {
     mainGzipped: null,
     mainSql: null,
+    processedMainSql: null,
     cloudflareGzipped: null,
-    cloudflareSql: null
+    cloudflareSql: null,
+    processedCloudflareSql: null
   }
 
   try {
@@ -352,16 +383,44 @@ async function main(): Promise<void> {
         }
       }
 
+      // Step 2.5: Preprocess SQL files to remove publications
+      console.log('Step 2.5: Preprocessing SQL files')
+
+      // Preprocess main backup
+      files.processedMainSql = join(tempDir, PROCESSED_BACKUP_FILE_NAME)
+      await preprocessSqlFile(files.mainSql, files.processedMainSql)
+
+      // Preprocess CloudflareImage data if available
+      if (files.cloudflareSql) {
+        files.processedCloudflareSql = join(
+          tempDir,
+          PROCESSED_CLOUDFLARE_IMAGES_SQL_FILE_NAME
+        )
+        try {
+          await preprocessSqlFile(
+            files.cloudflareSql,
+            files.processedCloudflareSql
+          )
+        } catch (error) {
+          const typedError =
+            error instanceof Error ? error : new Error(String(error))
+          console.warn(
+            `Failed to preprocess CloudflareImage data: ${typedError.message}`
+          )
+          files.processedCloudflareSql = null
+        }
+      }
+
       // Step 3: Import SQL files
       console.log('Step 3: Importing data')
 
       // Import main backup (with schema reset)
-      await executePsql(files.mainSql)
+      await executePsql(files.processedMainSql)
 
       // Import CloudflareImage data if available (without schema reset)
-      if (files.cloudflareSql) {
+      if (files.processedCloudflareSql) {
         try {
-          await executePsql(files.cloudflareSql, { noReset: true })
+          await executePsql(files.processedCloudflareSql, { noReset: true })
         } catch (error) {
           const typedError =
             error instanceof Error ? error : new Error(String(error))

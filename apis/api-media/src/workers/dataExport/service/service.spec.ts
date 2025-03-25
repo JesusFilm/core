@@ -137,6 +137,8 @@ describe('dataExport service', () => {
         '--inserts', // Use INSERT statements
         '--no-owner',
         '--no-privileges',
+        '--no-publications', // Verify publications are excluded
+        '--no-subscriptions', // Verify subscriptions are excluded
         '--exclude-table',
         'CloudflareImage',
         '--exclude-table',
@@ -170,6 +172,8 @@ describe('dataExport service', () => {
         '--inserts',
         '--no-owner',
         '--no-privileges',
+        '--no-publications', // Verify publications are excluded
+        '--no-subscriptions', // Verify subscriptions are excluded
         '--data-only',
         '--column-inserts'
       ]),

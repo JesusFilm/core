@@ -455,7 +455,6 @@ export class TextResponseBlockCreateInput {
 export class TextResponseBlockUpdateInput {
     parentBlockId?: Nullable<string>;
     label?: Nullable<string>;
-    placeholder?: Nullable<string>;
     required?: Nullable<boolean>;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
@@ -1386,7 +1385,6 @@ export class TextResponseBlock implements Block {
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     label: string;
-    placeholder?: Nullable<string>;
     required?: Nullable<boolean>;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
