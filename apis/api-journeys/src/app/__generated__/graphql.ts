@@ -554,12 +554,6 @@ export class ChatOpenEventCreateInput {
     value?: Nullable<MessagePlatform>;
 }
 
-export class JourneyEventsFilter {
-    typenames?: Nullable<string[]>;
-    periodRangeStart?: Nullable<DateTime>;
-    periodRangeEnd?: Nullable<DateTime>;
-}
-
 export class JourneyViewEventCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -774,6 +768,12 @@ export class JourneyCollectionCreateInput {
 export class JourneyCollectionUpdateInput {
     title?: Nullable<string>;
     journeyIds?: Nullable<string[]>;
+}
+
+export class JourneyEventsFilter {
+    typenames?: Nullable<string[]>;
+    periodRangeStart?: Nullable<DateTime>;
+    periodRangeEnd?: Nullable<DateTime>;
 }
 
 export class JourneyNotificationUpdateInput {
@@ -1197,8 +1197,6 @@ export abstract class IQuery {
 
     abstract customDomains(teamId: string): CustomDomain[] | Promise<CustomDomain[]>;
 
-    abstract journeyEventsConnection(journeyId: string, filter?: Nullable<JourneyEventsFilter>, first?: Nullable<number>, after?: Nullable<string>): JourneyEventsConnection | Promise<JourneyEventsConnection>;
-
     abstract hosts(teamId: string): Host[] | Promise<Host[]>;
 
     abstract integrations(teamId: string): Integration[] | Promise<Integration[]>;
@@ -1216,6 +1214,8 @@ export abstract class IQuery {
     abstract journeyCollection(id: string): JourneyCollection | Promise<JourneyCollection>;
 
     abstract journeyCollections(teamId: string): Nullable<JourneyCollection>[] | Promise<Nullable<JourneyCollection>[]>;
+
+    abstract journeyEventsConnection(journeyId: string, filter?: Nullable<JourneyEventsFilter>, first?: Nullable<number>, after?: Nullable<string>): JourneyEventsConnection | Promise<JourneyEventsConnection>;
 
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
@@ -1393,6 +1393,7 @@ export class TextResponseBlock implements Block {
     parentBlockId?: Nullable<string>;
     parentOrder?: Nullable<number>;
     label: string;
+    placeholder?: Nullable<string>;
     required?: Nullable<boolean>;
     hint?: Nullable<string>;
     minRows?: Nullable<number>;
@@ -1505,40 +1506,6 @@ export class ChatOpenEvent implements Event {
     label?: Nullable<string>;
     value?: Nullable<string>;
     messagePlatform?: Nullable<MessagePlatform>;
-}
-
-export class JourneyEvent implements Event {
-    __typename?: 'JourneyEvent';
-    id: string;
-    journeyId: string;
-    createdAt: DateTime;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-    journey?: Nullable<Journey>;
-    visitor?: Nullable<Visitor>;
-    journeyVisitor?: Nullable<JourneyVisitor>;
-    typename?: Nullable<string>;
-    action?: Nullable<ButtonAction>;
-    actionValue?: Nullable<string>;
-    messagePlatform?: Nullable<MessagePlatform>;
-    language?: Nullable<Language>;
-    email?: Nullable<string>;
-    blockId?: Nullable<string>;
-    position?: Nullable<number>;
-    source?: Nullable<VideoBlockSource>;
-    progress?: Nullable<number>;
-}
-
-export class JourneyEventsEdge {
-    __typename?: 'JourneyEventsEdge';
-    cursor: string;
-    node: JourneyEvent;
-}
-
-export class JourneyEventsConnection {
-    __typename?: 'JourneyEventsConnection';
-    edges: JourneyEventsEdge[];
-    pageInfo: PageInfo;
 }
 
 export class JourneyViewEvent implements Event {
@@ -1739,6 +1706,40 @@ export class JourneyCollection {
     title?: Nullable<string>;
     customDomains?: Nullable<CustomDomain[]>;
     journeys?: Nullable<Journey[]>;
+}
+
+export class JourneyEvent implements Event {
+    __typename?: 'JourneyEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    action?: Nullable<ButtonAction>;
+    actionValue?: Nullable<string>;
+    messagePlatform?: Nullable<MessagePlatform>;
+    language?: Nullable<Language>;
+    email?: Nullable<string>;
+    blockId?: Nullable<string>;
+    position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
+    progress?: Nullable<number>;
+    typename?: Nullable<string>;
+    visitorId?: Nullable<string>;
+    journey?: Nullable<Journey>;
+    visitor?: Nullable<Visitor>;
+}
+
+export class JourneyEventEdge {
+    __typename?: 'JourneyEventEdge';
+    cursor: string;
+    node: JourneyEvent;
+}
+
+export class JourneyEventsConnection {
+    __typename?: 'JourneyEventsConnection';
+    edges: JourneyEventEdge[];
+    pageInfo: PageInfo;
 }
 
 export class JourneyNotification {

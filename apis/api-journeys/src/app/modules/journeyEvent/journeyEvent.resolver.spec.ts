@@ -1,13 +1,7 @@
 import { Reflector } from '@nestjs/core'
 import { Test, TestingModule } from '@nestjs/testing'
 
-import {
-  Journey,
-  JourneyVisitor,
-  MessagePlatform,
-  Prisma,
-  Visitor
-} from '.prisma/api-journeys-client'
+import { Journey, Prisma, Visitor } from '.prisma/api-journeys-client'
 import { CaslFactory } from '@core/nest/common/CaslAuthModule'
 
 import {
@@ -20,7 +14,6 @@ import { PrismaService } from '../../lib/prisma.service'
 import { JourneyEventResolver } from './journeyEvent.resolver'
 import { JourneyEventService } from './journeyEvent.service'
 
-// Create a mock class for the abstract CaslFactory
 class MockCaslFactory extends CaslFactory {
   createAbility = jest.fn().mockResolvedValue({
     can: jest.fn().mockReturnValue(true)
@@ -232,59 +225,6 @@ describe('JourneyEventResolver', () => {
         }
       )
       expect(result).toEqual(mockVisitor)
-    })
-  })
-
-  describe('journeyVisitor field resolver', () => {
-    it('returns null when journeyVisitor IDs are missing', async () => {
-      const event = {
-        journeyVisitorJourneyId: null,
-        journeyVisitorVisitorId: null
-      }
-
-      const result = await resolver.journeyVisitor(event)
-      expect(result).toBeNull()
-    })
-
-    it('fetches journeyVisitor by composite key', async () => {
-      const event = {
-        journeyVisitorJourneyId: 'journey-1',
-        journeyVisitorVisitorId: 'visitor-1'
-      }
-      const mockJourneyVisitor = {
-        id: 'journey-visitor-1',
-        journeyId: 'journey-1',
-        visitorId: 'visitor-1',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        duration: 0,
-        lastChatStartedAt: null,
-        lastChatPlatform: null as MessagePlatform | null,
-        lastStepViewedAt: null,
-        lastLinkAction: null,
-        lastTextResponse: null,
-        lastRadioQuestion: null,
-        lastRadioOptionSubmission: null,
-        activityCount: 0
-      } as JourneyVisitor
-
-      jest
-        .spyOn(resolver['prismaService'].journeyVisitor, 'findUnique')
-        .mockResolvedValue(mockJourneyVisitor)
-
-      const result = await resolver.journeyVisitor(event)
-
-      expect(
-        resolver['prismaService'].journeyVisitor.findUnique
-      ).toHaveBeenCalledWith({
-        where: {
-          journeyId_visitorId: {
-            journeyId: 'journey-1',
-            visitorId: 'visitor-1'
-          }
-        }
-      })
-      expect(result).toEqual(mockJourneyVisitor)
     })
   })
 })

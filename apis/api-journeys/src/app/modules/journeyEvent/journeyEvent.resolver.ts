@@ -1,12 +1,7 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
 
-import {
-  Journey,
-  JourneyVisitor,
-  Prisma,
-  Visitor
-} from '.prisma/api-journeys-client'
+import { Journey, Prisma, Visitor } from '.prisma/api-journeys-client'
 import { CaslAccessible } from '@core/nest/common/CaslAuthModule'
 
 import {
@@ -49,32 +44,17 @@ export class JourneyEventResolver {
     return obj.__typename ?? obj.typename
   }
 
-  @ResolveField('journey')
+  @ResolveField()
   async journey(@Parent() event): Promise<Journey | null> {
     return this.prismaService.journey.findUnique({
       where: { id: event.journeyId }
     })
   }
 
-  @ResolveField('visitor')
-  async visitor(@Parent() event): Promise<Visitor | null> {
-    return this.prismaService.visitor.findUnique({
-      where: { id: event.visitorId }
-    })
-  }
-
-  @ResolveField('journeyVisitor')
-  async journeyVisitor(@Parent() event): Promise<JourneyVisitor | null> {
-    if (!event.journeyVisitorJourneyId || !event.journeyVisitorVisitorId) {
-      return null
-    }
-    return this.prismaService.journeyVisitor.findUnique({
-      where: {
-        journeyId_visitorId: {
-          journeyId: event.journeyVisitorJourneyId,
-          visitorId: event.journeyVisitorVisitorId
-        }
-      }
+  @ResolveField()
+  async visitor(@Parent() journeyEvent): Promise<Visitor | null> {
+    return await this.prismaService.visitor.findUnique({
+      where: { id: journeyEvent.visitorId }
     })
   }
 }

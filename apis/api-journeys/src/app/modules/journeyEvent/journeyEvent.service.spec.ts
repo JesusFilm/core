@@ -238,7 +238,8 @@ describe('JourneyEventService', () => {
               blockId: 'block-1',
               position: 30,
               source: VideoBlockSource.internal,
-              progress: 0.5
+              progress: 0.5,
+              visitorId: 'visitor-1'
             },
             cursor: 'event-2'
           },
@@ -257,7 +258,8 @@ describe('JourneyEventService', () => {
               blockId: null,
               position: null,
               source: null,
-              progress: null
+              progress: null,
+              visitorId: 'visitor-1'
             },
             cursor: 'event-3'
           }
@@ -341,13 +343,13 @@ describe('JourneyEventService', () => {
           nextStepId: null,
           previousStepId: null,
           userId: 'user-1',
-          journeyVisitorJourneyId: 'journey-1',
-          journeyVisitorVisitorId: 'visitor-1',
           languageId: 'en',
           radioOptionBlockId: null,
           position: null,
           source: null,
-          progress: null
+          progress: null,
+          journeyVisitorJourneyId: 'journey-1',
+          journeyVisitorVisitorId: 'visitor-1'
         },
         {
           id: 'event-2',
@@ -367,13 +369,13 @@ describe('JourneyEventService', () => {
           nextStepId: null,
           previousStepId: null,
           userId: 'user-1',
-          journeyVisitorJourneyId: 'journey-1',
-          journeyVisitorVisitorId: 'visitor-1',
           languageId: 'en',
           radioOptionBlockId: null,
           position: null,
           source: null,
-          progress: null
+          progress: null,
+          journeyVisitorJourneyId: 'journey-1',
+          journeyVisitorVisitorId: 'visitor-1'
         }
       ]
 

@@ -75,6 +75,7 @@ export class JourneyEventService {
           label: event.label,
           value: event.value,
           typename: event.typename,
+          visitorId: event.visitorId,
           action: event.action as ButtonAction,
           actionValue: event.actionValue,
           messagePlatform: event.messagePlatform as MessagePlatform,
