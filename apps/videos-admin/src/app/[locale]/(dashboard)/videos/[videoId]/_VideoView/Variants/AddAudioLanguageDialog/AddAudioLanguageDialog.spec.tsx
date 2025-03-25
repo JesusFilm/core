@@ -71,6 +71,43 @@ const createVideoVariantMock = {
         id: 'variant1',
         videoId: 'video123',
         slug: 'video123/en',
+        published: true,
+        language: {
+          id: 'lang1',
+          name: [
+            { value: 'English', primary: true },
+            { value: 'English', primary: false }
+          ]
+        }
+      }
+    }
+  }
+}
+
+const createUnpublishedVideoVariantMock = {
+  request: {
+    query: CREATE_VIDEO_VARIANT,
+    variables: {
+      input: {
+        id: '529_video123',
+        videoId: 'video123',
+        edition: 'base',
+        languageId: '529',
+        slug: 'video123/en',
+        downloadable: true,
+        published: false,
+        muxVideoId: 'muxVideo1',
+        hls: 'https://stream.mux.com/playback123.m3u8'
+      }
+    }
+  },
+  result: {
+    data: {
+      videoVariantCreate: {
+        id: 'variant1',
+        videoId: 'video123',
+        slug: 'video123/en',
+        published: false,
         language: {
           id: 'lang1',
           name: [
@@ -150,7 +187,7 @@ describe('AddAudioLanguageDialog', () => {
     jest.clearAllMocks()
   })
 
-  it('should render dialog with edition and language inputs', async () => {
+  it('should render dialog with edition, language, and published inputs', async () => {
     render(
       <MockedProvider mocks={[getLanguagesMock]}>
         <SnackbarProvider>
@@ -193,6 +230,8 @@ describe('AddAudioLanguageDialog', () => {
     expect(screen.getByText('Add Audio Language')).toBeInTheDocument()
     expect(screen.getByTestId('EditionSelect')).toBeInTheDocument()
     expect(screen.getByLabelText('Language')).toBeInTheDocument()
+    expect(screen.getByLabelText('Published')).toBeInTheDocument()
+    expect(screen.getByLabelText('Published')).toBeChecked()
   })
 
   it('should disable add button when no language selected', async () => {
@@ -244,7 +283,7 @@ describe('AddAudioLanguageDialog', () => {
     expect(screen.getByText('Add')).toBeDisabled()
   })
 
-  it('should handle complete upload and variant creation flow', async () => {
+  it('should handle complete upload and variant creation flow with published state', async () => {
     const handleClose = jest.fn()
     const getLanguagesMockResult = jest
       .fn()
@@ -347,6 +386,86 @@ describe('AddAudioLanguageDialog', () => {
       expect(createVideoVariantMockResult).toHaveBeenCalled()
     })
     expect(handleClose).toHaveBeenCalled()
+  })
+
+  it('should handle complete upload and variant creation flow with unpublished state', async () => {
+    const handleClose = jest.fn()
+    const getLanguagesMockResult = jest
+      .fn()
+      .mockReturnValue(getLanguagesMock.result)
+
+    render(
+      <MockedProvider
+        mocks={[
+          { ...getLanguagesMock, result: getLanguagesMockResult },
+          cloudflareR2CreateMock,
+          createMuxVideoMock,
+          getMuxVideoMock,
+          createUnpublishedVideoVariantMock
+        ]}
+      >
+        <SnackbarProvider>
+          <NextIntlClientProvider locale="en" messages={{}}>
+            <UploadVideoVariantProvider>
+              <AddAudioLanguageDialog
+                open
+                handleClose={handleClose}
+                variantLanguagesMap={new Map()}
+                editions={[
+                  {
+                    id: 'edition1',
+                    name: 'base',
+                    videoSubtitles: [
+                      {
+                        id: 'subtitle1',
+                        vttSrc: null,
+                        srtSrc: null,
+                        value: 'English Subtitle',
+                        primary: true,
+                        vttAsset: null,
+                        srtAsset: null,
+                        vttVersion: 0,
+                        srtVersion: 0,
+                        language: {
+                          id: '529',
+                          slug: 'en',
+                          name: [{ value: 'English', primary: true }]
+                        }
+                      }
+                    ]
+                  }
+                ]}
+              />
+            </UploadVideoVariantProvider>
+          </NextIntlClientProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(getLanguagesMockResult).toHaveBeenCalled())
+
+    // Select edition
+    fireEvent.mouseDown(screen.getByTestId('EditionSelect'))
+    fireEvent.click(screen.getByText('base'))
+
+    // Select language
+    fireEvent.mouseDown(screen.getByLabelText('Language'))
+    fireEvent.click(screen.getByText('English'))
+
+    // Toggle published state
+    fireEvent.click(screen.getByLabelText('Published'))
+
+    // Create a test file
+    const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
+    const fileInput = screen.getByTestId('file-input')
+    fireEvent.change(fileInput, { target: { files: [file] } })
+
+    // Submit form
+    fireEvent.click(screen.getByText('Add'))
+
+    await waitFor(() => {
+      expect(handleClose).toHaveBeenCalled()
+    })
   })
 
   it('should show error when R2 upload fails', async () => {

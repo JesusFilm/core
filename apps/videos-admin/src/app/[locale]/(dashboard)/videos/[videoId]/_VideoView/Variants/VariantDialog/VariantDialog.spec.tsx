@@ -1,19 +1,41 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
 import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
-import { VariantDialog } from './VariantDialog'
+import { UPDATE_VARIANT, VariantDialog } from './VariantDialog'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-const variant: GetAdminVideoVariant =
-  useAdminVideoMock?.['result']?.['data']['adminVideo']['variants'][0]
+const variant: GetAdminVideoVariant = {
+  ...useAdminVideoMock?.['result']?.['data']['adminVideo']['variants'][0],
+  published: true
+}
+
+const updateVariantMock = {
+  request: {
+    query: UPDATE_VARIANT,
+    variables: {
+      input: {
+        id: variant.id,
+        published: false
+      }
+    }
+  },
+  result: {
+    data: {
+      videoVariantUpdate: {
+        ...variant,
+        published: false
+      }
+    }
+  }
+}
 
 describe('VariantDialog', () => {
   it('should show variant information', () => {
@@ -33,6 +55,7 @@ describe('VariantDialog', () => {
 
     const languageDisplay = screen.getByTestId('VariantLanguageDisplay')
     expect(languageDisplay).toHaveTextContent('Munukutuba')
+    expect(screen.getByText('Published')).toBeInTheDocument()
   })
 
   it('should close variant dialog on click', () => {
@@ -48,5 +71,22 @@ describe('VariantDialog', () => {
 
     fireEvent.click(screen.getByTestId('dialog-close-button'))
     expect(handleClose).toHaveBeenCalled()
+  })
+
+  it('should toggle published state', async () => {
+    render(
+      <NextIntlClientProvider locale="en">
+        <MockedProvider mocks={[updateVariantMock]}>
+          <VariantDialog variant={variant} open />
+        </MockedProvider>
+      </NextIntlClientProvider>
+    )
+
+    const publishedChip = screen.getByText('Published')
+    fireEvent.click(publishedChip)
+
+    await waitFor(() => {
+      expect(screen.getByText('Draft')).toBeInTheDocument()
+    })
   })
 })

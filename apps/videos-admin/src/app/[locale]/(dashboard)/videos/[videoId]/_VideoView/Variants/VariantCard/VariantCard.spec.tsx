@@ -11,8 +11,15 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-const variant: GetAdminVideoVariant =
-  useAdminVideoMock?.['result']?.['data']['adminVideo']['variants'][0]
+const variant: GetAdminVideoVariant = {
+  ...useAdminVideoMock?.['result']?.['data']['adminVideo']['variants'][0],
+  published: true
+}
+
+const unpublishedVariant: GetAdminVideoVariant = {
+  ...useAdminVideoMock?.['result']?.['data']['adminVideo']['variants'][0],
+  published: false
+}
 
 describe('VariantCard', () => {
   it('should display language and languageId of variant', () => {
@@ -24,6 +31,18 @@ describe('VariantCard', () => {
     )
 
     expect(screen.getByText('Munukutuba')).toBeInTheDocument()
+    expect(screen.getByText('Published')).toBeInTheDocument()
+  })
+
+  it('should display draft state when variant is unpublished', () => {
+    const onClick = jest.fn()
+    render(
+      <NextIntlClientProvider locale="en">
+        <VariantCard variant={unpublishedVariant} onClick={onClick} />
+      </NextIntlClientProvider>
+    )
+
+    expect(screen.getByText('Draft')).toBeInTheDocument()
   })
 
   it('should handle card click', async () => {
@@ -67,7 +86,8 @@ describe('VariantCard', () => {
           id: 'edition.id',
           name: 'base'
         },
-        videoId: '1_jf-0-0'
+        videoId: '1_jf-0-0',
+        published: true
       })
     )
   })

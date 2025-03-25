@@ -1,11 +1,13 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import FormHelperText from '@mui/material/FormHelperText'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
+import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
 import { useParams } from 'next/navigation'
@@ -41,7 +43,8 @@ const validationSchema = object().shape({
 const initialValues: FormikValues = {
   edition: '',
   language: null,
-  file: null
+  file: null,
+  published: true
 }
 
 export function AddAudioLanguageDialog({
@@ -77,7 +80,8 @@ export function AddAudioLanguageDialog({
       values.language.id,
       values.language.slug,
       values.edition,
-      handleClose
+      handleClose,
+      values.published
     )
   }
 
@@ -173,6 +177,18 @@ export function AddAudioLanguageDialog({
                     )}
                   />
                 </Box>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={values.published}
+                      onChange={async (event) => {
+                        await setFieldValue('published', event.target.checked)
+                      }}
+                      disabled={isUploadInProgress}
+                    />
+                  }
+                  label={t('Published')}
+                />
                 <AudioLanguageFileUpload
                   disabled={isUploadInProgress}
                   onFileSelect={async (file) => {

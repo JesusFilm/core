@@ -9,6 +9,7 @@ import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
+import { PublishedChip } from '../../../../../../../../components/PublishedChip'
 import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
 import { VariantVideo } from '../VariantVideo'
 
@@ -21,13 +22,13 @@ interface VariantDialogProps {
   open?: boolean
 }
 
-// This mutation is kept for potential future use
-export const UPDATE_VARIANT_LANGUAGE = graphql(`
-  mutation UpdateVariantLanguage($input: VideoVariantUpdateInput!) {
+export const UPDATE_VARIANT = graphql(`
+  mutation UpdateVariant($input: VideoVariantUpdateInput!) {
     videoVariantUpdate(input: $input) {
       id
       videoId
       slug
+      published
       language {
         id
         name {
@@ -39,10 +40,8 @@ export const UPDATE_VARIANT_LANGUAGE = graphql(`
   }
 `)
 
-export type UpdateVariantLanguageVariables = VariablesOf<
-  typeof UPDATE_VARIANT_LANGUAGE
->
-export type UpdateVariantLanguage = ResultOf<typeof UPDATE_VARIANT_LANGUAGE>
+export type UpdateVariantVariables = VariablesOf<typeof UPDATE_VARIANT>
+export type UpdateVariant = ResultOf<typeof UPDATE_VARIANT>
 
 export function VariantDialog({
   variant,
@@ -51,6 +50,7 @@ export function VariantDialog({
 }: VariantDialogProps): ReactElement | null {
   const t = useTranslations()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const [updateVariant] = useMutation(UPDATE_VARIANT)
 
   const languageName =
     variant.language.name.find(({ primary }) => !primary)?.value ??
@@ -59,6 +59,23 @@ export function VariantDialog({
   const nativeLanguageName = variant.language.name.find(
     ({ primary }) => primary
   )?.value
+
+  const handlePublishedClick = async (): Promise<void> => {
+    await updateVariant({
+      variables: {
+        input: {
+          id: variant.id,
+          published: !variant.published
+        }
+      },
+      optimisticResponse: {
+        videoVariantUpdate: {
+          ...variant,
+          published: !variant.published
+        }
+      }
+    })
+  }
 
   return (
     <Dialog
@@ -78,13 +95,25 @@ export function VariantDialog({
         {variant.videoEdition?.name != null && (
           <VideoEditionChip editionName={variant.videoEdition.name} />
         )}
-        <Box sx={{ width: '100%' }}>
-          <Typography variant="h2" data-testid="VariantLanguageDisplay">
-            {languageName}
-          </Typography>
-          {nativeLanguageName != null && (
-            <Typography variant="caption">{nativeLanguageName}</Typography>
-          )}
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        >
+          <Box>
+            <Typography variant="h2" data-testid="VariantLanguageDisplay">
+              {languageName}
+            </Typography>
+            {nativeLanguageName != null && (
+              <Typography variant="caption">{nativeLanguageName}</Typography>
+            )}
+          </Box>
+          <Box onClick={handlePublishedClick} sx={{ cursor: 'pointer' }}>
+            <PublishedChip published={variant.published} />
+          </Box>
         </Box>
         <Box
           sx={{
