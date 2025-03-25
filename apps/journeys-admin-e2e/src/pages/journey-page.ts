@@ -2,6 +2,8 @@
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import type { Page } from 'playwright-core'
+import path from 'path'
+import fs from 'fs'
 
 import testData from '../utils/testData.json'
 
@@ -9,6 +11,8 @@ let journeyName = ''
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
 const sixtySecondsTimeout = 60000
+// eslint-disable-next-line no-undef
+const downloadFolderPath = path.join(__dirname, '../utils/download/')
 
 export class JourneyPage {
   existingJourneyName = ''
@@ -1096,5 +1100,36 @@ export class JourneyPage {
       .locator(textareaPath)
       .first()
       .fill(journeyName)
+  }
+
+  async validateCopiedValues(actualValue: string) {
+    const clipboardText = await this.page.evaluate(() =>
+      navigator.clipboard.readText()
+    )
+    expect(clipboardText).toBe(actualValue)
+  }
+
+  async validateCopiedValueContainsExpectedValue(expectedValue: string) {
+    const clipboardText = await this.page.evaluate(() =>
+      navigator.clipboard.readText()
+    )
+    expect(clipboardText).toContain(expectedValue)
+  }
+
+  async clickShareButtonInJourneyPage() {
+    await this.page.locator('button[data-testid="ShareButton"]').click()
+  }
+
+  async clickCopyIconInShareDialog() {
+    await this.page
+      .locator('button[data-testid="ShareDialog-CopyButton"]')
+      .click()
+  }
+
+  async validateUrlFieldInShareDialog(expectedValue: string) {
+    const urlFieldValue = await this.page
+      .locator('input[data-testid="ShareDialog-UrlField"]')
+      .inputValue()
+    expect(urlFieldValue).toContain(expectedValue)
   }
 }
