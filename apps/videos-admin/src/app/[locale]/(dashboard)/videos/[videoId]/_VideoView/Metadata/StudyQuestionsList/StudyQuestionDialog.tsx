@@ -7,8 +7,6 @@ import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import { useVideo } from '../../../../../../../../libs/VideoProvider'
-
 import { StudyQuestionForm } from './StudyQuestionForm'
 
 export const UPDATE_STUDY_QUESTION = graphql(`
@@ -41,7 +39,6 @@ export function StudyQuestionDialog({
 }: StudyQuestionDialogProps): ReactElement {
   const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
-  const video = useVideo()
 
   const [updateStudyQuestion, { loading }] = useMutation<
     UpdateStudyQuestion,

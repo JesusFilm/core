@@ -7,7 +7,8 @@ const messages = {
   'Study Question': 'Study Question',
   Add: 'Add',
   Update: 'Update',
-  'Study question is required': 'Study question is required'
+  'Study question is required': 'Study question is required',
+  'Enter study question': 'Enter study question'
 }
 
 describe('StudyQuestionForm', () => {
@@ -24,10 +25,12 @@ describe('StudyQuestionForm', () => {
       </NextIntlClientProvider>
     )
 
-    expect(screen.getByLabelText('Study Question')).toBeInTheDocument()
+    expect(
+      screen.getByPlaceholderText('Enter study question')
+    ).toBeInTheDocument()
     const addButton = screen.getByRole('button', { name: 'Add' })
     expect(addButton).toBeInTheDocument()
-    expect(addButton).toHaveAttribute('color', 'secondary')
+    expect(addButton).toHaveClass('MuiButton-colorSecondary')
     expect(addButton).toHaveClass('MuiButton-outlined')
   })
 
@@ -44,10 +47,12 @@ describe('StudyQuestionForm', () => {
       </NextIntlClientProvider>
     )
 
-    expect(screen.getByLabelText('Study Question')).toHaveValue('Test question')
+    expect(screen.getByPlaceholderText('Enter study question')).toHaveValue(
+      'Test question'
+    )
     const updateButton = screen.getByRole('button', { name: 'Update' })
     expect(updateButton).toBeInTheDocument()
-    expect(updateButton).toHaveAttribute('color', 'secondary')
+    expect(updateButton).toHaveClass('MuiButton-colorSecondary')
     expect(updateButton).toHaveClass('MuiButton-outlined')
   })
 
@@ -83,7 +88,7 @@ describe('StudyQuestionForm', () => {
       </NextIntlClientProvider>
     )
 
-    fireEvent.change(screen.getByLabelText('Study Question'), {
+    fireEvent.change(screen.getByPlaceholderText('Enter study question'), {
       target: { value: 'New question' }
     })
     fireEvent.submit(screen.getByRole('button'))
