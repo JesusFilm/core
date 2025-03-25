@@ -6,7 +6,8 @@ import {
   Box,
   AppBar,
   Toolbar,
-  Typography
+  Typography,
+  CircularProgress
 } from '@mui/material'
 import { Icon } from '@core/shared/ui/icons/Icon'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -159,9 +160,14 @@ export const VideoSection = ({
     >
       <div className="w-full h-[100vh] flex justify-center items-center px-1 sm:px-2 overflow-hidden bg-black/80 backdrop-blur-lg">
         <div className="w-full h-full -mt-6 flex justify-center items-center shadow-3 rounded-md overflow-hidden">
+          <div className="absolute inset-0 flex -z-1 items-center justify-center">
+            <div className="scale-200">
+              <CircularProgress color="secondary" />
+            </div>
+          </div>
           <iframe
             src="https://your.nextstep.is/embed/jf-videos-quizz?expand=false"
-            className="border-0 w-full h-full"
+            className="border-0 w-full h-full z-1"
             title="Next Step of Faith Quiz"
           />
         </div>
@@ -181,7 +187,8 @@ export const VideoSection = ({
             position: 'absolute',
             top: 30,
             left: 40,
-            color: 'white'
+            color: 'white',
+            zIndex: 1000
           }}
         >
           <CloseIcon />
@@ -366,22 +373,10 @@ export const VideoSection = ({
             )}
           </Swiper>
 
-          <div className="px-6 lg:px-8 pt-12 mx-auto lg:w-1/2 xl:w-1/3">
-            <Box
-              component="button"
+          <div className="px-6 lg:px-8 pt-12 mx-auto lg:w-1/2 xl:w-1/2 2xl:w-2xl">
+            <button
               onClick={handleOpenQuizModal}
-              className="relative w-full overflow-hidden bg-gradient-to-tr from-yellow-500 via-amber-500 to-red-700 bg-blend-multiply animate-mesh-gradient hover:animate-mesh-gradient-fast rounded-lg shadow-lg group"
-              sx={{
-                cursor: 'pointer',
-                border: 'none',
-                textAlign: 'left',
-                p: 0,
-                width: '100%',
-                '&:hover': {
-                  transform: 'translateY(-2px)',
-                  transition: 'transform 0.2s ease-in-out'
-                }
-              }}
+              className="relative w-full overflow-hidden bg-gradient-to-tr from-yellow-500 via-amber-500 to-red-700 bg-blend-multiply animate-mesh-gradient hover:animate-mesh-gradient-fast rounded-lg shadow-lg group hover:bg-orange-500"
               aria-label="Open faith quiz"
               tabIndex={0}
               onKeyDown={(e) => {
@@ -390,20 +385,17 @@ export const VideoSection = ({
                 }
               }}
             >
-              <Box className="flex justify-between items-center cursor-pointer p-4">
-                <Box className="absolute inset-0 bg-[url(./assets/overlay.svg)] bg-repeat mix-blend-multiply opacity-50"></Box>
-                <Box className="relative z-1 flex w-full items-center font-semibold leading-[1.2]">
-                  <Box
-                    component="span"
-                    className="flex-none uppercase font-extrabold text-xs border-2 tracking-wider border-white rounded-lg px-2 py-1 mr-4"
-                  >
+              <div className="flex justify-between items-center cursor-pointer p-4 xl:p-6">
+                <div className="absolute inset-0 bg-[url(./assets/overlay.svg)] bg-repeat mix-blend-multiply opacity-50"></div>
+                <div className="relative z-1 flex w-full items-center font-semibold leading-[1.2] md:text-xl xl:text-2xl">
+                  <span className="flex-none uppercase font-extrabold text-xs border-2 tracking-wider border-white rounded-lg px-2 py-1 mr-4">
                     Quiz
-                  </Box>
+                  </span>
                   <div className="text-center flex-auto">
                     What's your next step of faith?
                   </div>
-                </Box>
-                <Box component="span" className="transition">
+                </div>
+                <span className="transition">
                   <svg fill="none" height="24" width="24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
@@ -412,9 +404,9 @@ export const VideoSection = ({
                       d="M13 5l7 7m0 0l-7 7m7-7H6"
                     />
                   </svg>
-                </Box>
-              </Box>
-            </Box>
+                </span>
+              </div>
+            </button>
           </div>
 
           {/* Render the quiz modal */}
