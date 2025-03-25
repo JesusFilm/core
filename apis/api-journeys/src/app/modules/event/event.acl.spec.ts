@@ -82,29 +82,29 @@ describe('eventAcl', () => {
     }
   } as unknown as Event)
 
-  describe('manage', () => {
+  describe('read', () => {
     it('allow when user is team manager', () => {
-      expect(ability.can(Action.Manage, eventUserTeamManager)).toBe(true)
+      expect(ability.can(Action.Read, eventUserTeamManager)).toBe(true)
     })
 
     it('allow when user is team member', () => {
-      expect(ability.can(Action.Manage, eventUserTeamMember)).toBe(true)
+      expect(ability.can(Action.Read, eventUserTeamMember)).toBe(true)
     })
 
     it('deny when user has no team role', () => {
-      expect(ability.can(Action.Manage, eventNoTeamRole)).toBe(false)
+      expect(ability.can(Action.Read, eventNoTeamRole)).toBe(false)
     })
 
     it('allow when user is journey owner', () => {
-      expect(ability.can(Action.Manage, eventJourneyOwner)).toBe(true)
+      expect(ability.can(Action.Read, eventJourneyOwner)).toBe(true)
     })
 
     it('deny when user is journey editor', () => {
-      expect(ability.can(Action.Manage, eventJourneyEditor)).toBe(false)
+      expect(ability.can(Action.Read, eventJourneyEditor)).toBe(false)
     })
 
     it('deny when user has no userTeam or relevant journey', () => {
-      expect(ability.can(Action.Manage, eventEmpty)).toBe(false)
+      expect(ability.can(Action.Read, eventEmpty)).toBe(false)
     })
   })
 })

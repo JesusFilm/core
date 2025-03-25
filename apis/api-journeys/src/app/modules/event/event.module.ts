@@ -14,7 +14,7 @@ import {
   ButtonClickEventResolver,
   ChatOpenEventResolver
 } from './button/button.resolver'
-import { EventResolver, JourneyEventResolver } from './event.resolver'
+import { EventResolver } from './event.resolver'
 import { EventService } from './event.service'
 import { JourneyViewEventResolver } from './journey/journey.resolver'
 import { RadioQuestionSubmissionEventResolver } from './radioQuestion/radioQuestion.resolver'
@@ -47,7 +47,6 @@ import {
     ChatOpenEventResolver,
     EventService,
     EventResolver,
-    JourneyEventResolver,
     IntegrationGrowthSpacesService,
     JourneyViewEventResolver,
     PrismaService,

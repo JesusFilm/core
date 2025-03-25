@@ -1,0 +1,53 @@
+type JourneyEvent implements Event {
+  # event fields
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  # button event fields
+  action: ButtonAction
+  actionValue: String
+  messagePlatform: MessagePlatform
+  # journey event fields
+  language: Language
+  # signup event fields
+  email: String
+  # step event fields
+  blockId: String
+  # video event fields
+  position: Float
+  source: VideoBlockSource
+  progress: Int
+  # db fields
+  typename: String
+  # relationship fields
+  journey: Journey
+  visitor: Visitor
+  journeyVisitor: JourneyVisitor
+}
+
+type JourneyEventEdge {
+  cursor: String!
+  node: JourneyEvent!
+}
+
+type JourneyEventsConnection {
+  edges: [JourneyEventEdge!]!
+  pageInfo: PageInfo!
+}
+
+input JourneyEventsFilter {
+  typenames: [String!]
+  periodRangeStart: DateTime
+  periodRangeEnd: DateTime
+}
+
+extend type Query {
+  journeyEventsConnection(
+    journeyId: ID!
+    filter: JourneyEventsFilter
+    first: Int
+    after: String
+  ): JourneyEventsConnection!
+}

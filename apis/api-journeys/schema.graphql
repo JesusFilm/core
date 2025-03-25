@@ -460,7 +460,6 @@ extend type Query {
   block(id: ID!): Block!
   customDomain(id: ID!): CustomDomain!
   customDomains(teamId: ID!): [CustomDomain!]!
-  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
   hosts(teamId: ID!): [Host!]!
   integrations(teamId: ID!): [Integration!]!
 
@@ -484,6 +483,7 @@ extend type Query {
   journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
   journeyCollection(id: ID!): JourneyCollection!
   journeyCollections(teamId: ID!): [JourneyCollection]!
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
   getJourneyProfile: JourneyProfile
 
   """Get a list of Visitor Information by Journey"""
@@ -1550,43 +1550,6 @@ interface Event {
   value: String
 }
 
-type JourneyEvent implements Event {
-  id: ID!
-  journeyId: ID!
-  createdAt: DateTime!
-  label: String
-  value: String
-  journey: Journey
-  visitor: Visitor
-  journeyVisitor: JourneyVisitor
-  typename: String
-  action: ButtonAction
-  actionValue: String
-  messagePlatform: MessagePlatform
-  language: Language
-  email: String
-  blockId: String
-  position: Float
-  source: VideoBlockSource
-  progress: Int
-}
-
-type JourneyEventsEdge {
-  cursor: String!
-  node: JourneyEvent!
-}
-
-type JourneyEventsConnection {
-  edges: [JourneyEventsEdge!]!
-  pageInfo: PageInfo!
-}
-
-input JourneyEventsFilter {
-  typenames: [String!]
-  periodRangeStart: DateTime
-  periodRangeEnd: DateTime
-}
-
 input JourneyViewEventCreateInput {
   """
   ID should be unique Event UUID (Provided for optimistic mutation result matching)
@@ -2368,6 +2331,43 @@ input JourneyCollectionCreateInput {
 input JourneyCollectionUpdateInput {
   title: String
   journeyIds: [String!]
+}
+
+type JourneyEvent implements Event {
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  action: ButtonAction
+  actionValue: String
+  messagePlatform: MessagePlatform
+  language: Language
+  email: String
+  blockId: String
+  position: Float
+  source: VideoBlockSource
+  progress: Int
+  typename: String
+  journey: Journey
+  visitor: Visitor
+  journeyVisitor: JourneyVisitor
+}
+
+type JourneyEventEdge {
+  cursor: String!
+  node: JourneyEvent!
+}
+
+type JourneyEventsConnection {
+  edges: [JourneyEventEdge!]!
+  pageInfo: PageInfo!
+}
+
+input JourneyEventsFilter {
+  typenames: [String!]
+  periodRangeStart: DateTime
+  periodRangeEnd: DateTime
 }
 
 type JourneyNotification {

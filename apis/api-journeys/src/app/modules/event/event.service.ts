@@ -2,12 +2,9 @@ import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 import { GraphQLError } from 'graphql'
-import isNil from 'lodash/isNil'
-import omitBy from 'lodash/omitBy'
 
 import {
   Block,
-  Journey,
   JourneyVisitor,
   Prisma,
   Visitor
@@ -15,13 +12,6 @@ import {
 import { FromPostgresql } from '@core/nest/decorators/FromPostgresql'
 import { EventsNotificationJob } from '@core/yoga/emailEvents/types'
 
-import {
-  ButtonAction,
-  JourneyEventsConnection,
-  JourneyEventsFilter,
-  MessagePlatform,
-  VideoBlockSource
-} from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { VisitorService } from '../visitor/visitor.service'
@@ -146,92 +136,6 @@ export class EventService {
       const delayInMilliseconds = (delay ?? 0) * 1000
       const delayTimer = Math.max(delayInMilliseconds, baseDelay)
       await visitorEmailJob.changeDelay(delayTimer)
-    }
-  }
-
-  generateWhere(
-    journeyId: string,
-    filter: JourneyEventsFilter,
-    accessibleEvent: Prisma.EventWhereInput
-  ): Prisma.EventWhereInput {
-    return omitBy(
-      {
-        journeyId,
-        createdAt: {
-          gte: filter?.periodRangeStart ?? undefined,
-          lte: filter?.periodRangeEnd ?? undefined
-        },
-        AND: [
-          accessibleEvent,
-          filter?.typenames != null
-            ? {
-                typename: { in: filter.typenames }
-              }
-            : undefined
-        ].filter((element) => element)
-      },
-      isNil
-    )
-  }
-
-  async getJourneyEvents({
-    journeyId,
-    accessibleEvent,
-    filter,
-    first,
-    after
-  }: {
-    journeyId: string
-    accessibleEvent: Prisma.EventWhereInput
-    filter: JourneyEventsFilter
-    first: number
-    after?: string | null
-  }): Promise<JourneyEventsConnection> {
-    const where = this.generateWhere(journeyId, filter, accessibleEvent)
-
-    const result = await this.prismaService.event.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      cursor: after != null ? { id: after } : undefined,
-      skip: after == null ? 0 : 1,
-      take: first + 1
-    })
-
-    const sendResult = result.length > first ? result.slice(0, -1) : result
-    return {
-      edges: sendResult.map((event) => ({
-        node: {
-          // event fields
-          id: event.id,
-          journeyId: event.journeyId ?? '',
-          createdAt: event.createdAt.toISOString(),
-          label: event.label,
-          value: event.value,
-          // db fields
-          typename: event.typename,
-          // button fields
-          action: event.action as unknown as ButtonAction,
-          actionValue: event.actionValue,
-          messagePlatform: event.messagePlatform as unknown as MessagePlatform,
-          // signup fields
-          email: event.email,
-          // step fields
-          blockId: event.blockId,
-          // video fields
-          position: event.position,
-          source: event.source as unknown as VideoBlockSource,
-          progress: event.progress
-        },
-        cursor: event.id
-      })),
-      pageInfo: {
-        hasNextPage: result.length > first,
-        // mocked in place to match sharable PageInfo type
-        hasPreviousPage: false,
-        startCursor: result.length > 0 ? result[0].id : null,
-        endCursor:
-          result.length > 0 ? sendResult[sendResult.length - 1].id : null
-      }
     }
   }
 }

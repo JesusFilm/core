@@ -3,8 +3,8 @@ import { UserJourneyRole, UserTeamRole } from '.prisma/api-journeys-client'
 import { Action, AppAclFn, AppAclParameters } from '../../lib/casl/caslFactory'
 
 export const eventAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
-  // manage event as a team member
-  can(Action.Manage, 'Event', {
+  // read event as a team member
+  can(Action.Read, 'Event', {
     visitor: {
       is: {
         team: {
@@ -22,8 +22,8 @@ export const eventAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
       }
     }
   })
-  // manage event as a journey owner
-  can(Action.Manage, 'Event', {
+  // read event as a journey owner
+  can(Action.Read, 'Event', {
     journey: {
       is: {
         userJourneys: {
