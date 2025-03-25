@@ -50,7 +50,7 @@ export function Question({
       </button>
 
       {isOpen && (
-        <div className="px-6 py-6 pb-12 text-stone-200/80 border-b border-stone-500/20">
+        <div className="px-6 py-6 pb-12 text-orange-200/80 border-b border-stone-500/20">
           {children}
         </div>
       )}

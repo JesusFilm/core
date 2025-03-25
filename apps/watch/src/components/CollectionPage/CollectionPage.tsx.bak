@@ -443,7 +443,7 @@ export function CollectionPage(): ReactElement {
                 </div>
 
                 <div className="px-6 lg:px-8 space-y-6">
-                  <p className="text-lg mt-4 leading-relaxed text-stone-200/80">
+                  <p className="text-lg mt-4 leading-relaxed text-orange-200/80">
                     <span className="text-white font-bold">Our mission</span> is
                     to introduce introduce people to the Bible through films and
                     videos that faithfully bring the Gospels to life. By visually
@@ -729,7 +729,7 @@ export function CollectionPage(): ReactElement {
                 </div>
 
                 <div className="px-6 lg:px-8 space-y-6 pt-6 pb-10">
-                  <p className="leading-relaxed text-stone-200/80">
+                  <p className="leading-relaxed text-orange-200/80">
                     <span className="text-white font-bold">
                       Go on this adventure
                     </span>{' '}

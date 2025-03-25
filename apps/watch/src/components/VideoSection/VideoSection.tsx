@@ -201,7 +201,7 @@ export const VideoSection = ({
       <div className="block xl:flex w-full">
         <div className="info-block xl:w-3/5 padded 2xl:pr-2xl">
           <div className="title-block pt-2 2xl:pt-4">
-            <p className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-stone-200/70 xl:mb-1">
+            <p className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70 xl:mb-1">
               {subtitle}
             </p>
             <div className="flex items-center justify-between mb-3">
@@ -250,7 +250,7 @@ export const VideoSection = ({
             <div className="questions-block pt-16 xl:pt-4">
               <div className="flex items-center justify-between mb-6 padded">
                 <div className="flex items-center gap-4">
-                  <h4 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-stone-200/70">
+                  <h4 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
                     {questionsTitle}
                   </h4>
                 </div>
@@ -292,7 +292,7 @@ export const VideoSection = ({
           <div className="padded">
             <div className="flex items-center justify-between pb-8">
               <div className="flex items-start gap-4">
-                <h3 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-stone-200/70">
+                <h3 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
                   {bibleQuotesTitle}
                 </h3>
               </div>
