@@ -18,7 +18,10 @@ describe('StudyQuestionForm', () => {
     )
 
     expect(screen.getByLabelText('Study Question')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument()
+    const addButton = screen.getByRole('button', { name: 'Add' })
+    expect(addButton).toBeInTheDocument()
+    expect(addButton).toHaveAttribute('color', 'secondary')
+    expect(addButton).toHaveClass('MuiButton-outlined')
   })
 
   it('should render edit form', () => {
@@ -35,7 +38,10 @@ describe('StudyQuestionForm', () => {
     )
 
     expect(screen.getByLabelText('Study Question')).toHaveValue('Test question')
-    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument()
+    const updateButton = screen.getByRole('button', { name: 'Update' })
+    expect(updateButton).toBeInTheDocument()
+    expect(updateButton).toHaveAttribute('color', 'secondary')
+    expect(updateButton).toHaveClass('MuiButton-outlined')
   })
 
   it('should validate required field', async () => {

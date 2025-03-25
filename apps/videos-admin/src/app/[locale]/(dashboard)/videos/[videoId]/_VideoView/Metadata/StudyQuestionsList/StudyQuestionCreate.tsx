@@ -3,11 +3,13 @@ import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
+import Stack from '@mui/material/Stack'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+import { GetAdminVideo_AdminVideo_StudyQuestions as StudyQuestions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { useVideo } from '../../../../../../../../libs/VideoProvider'
 
 import { StudyQuestionForm } from './StudyQuestionForm'
@@ -26,7 +28,15 @@ export type CreateStudyQuestionVariables = VariablesOf<
   typeof CREATE_STUDY_QUESTION
 >
 
-export function StudyQuestionCreate(): ReactElement {
+interface StudyQuestionCreateProps {
+  studyQuestions: StudyQuestions
+  onQuestionCreated: (question: { id: string; value: string }) => void
+}
+
+export function StudyQuestionCreate({
+  studyQuestions,
+  onQuestionCreated
+}: StudyQuestionCreateProps): ReactElement {
   const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
   const video = useVideo()
@@ -36,7 +46,11 @@ export function StudyQuestionCreate(): ReactElement {
     CreateStudyQuestion,
     CreateStudyQuestionVariables
   >(CREATE_STUDY_QUESTION, {
-    onCompleted: () => {
+    onCompleted: (data) => {
+      onQuestionCreated({
+        id: data.videoStudyQuestionCreate.id,
+        value: data.videoStudyQuestionCreate.value
+      })
       enqueueSnackbar(t('Study question created'), { variant: 'success' })
       handleClose()
     },
@@ -46,11 +60,15 @@ export function StudyQuestionCreate(): ReactElement {
   })
 
   const handleSubmit = async (values: { value: string }): Promise<void> => {
+    const nextOrder = studyQuestions.length + 1
     await createStudyQuestion({
       variables: {
         input: {
           videoId: video.id,
-          value: values.value
+          value: values.value,
+          languageId: '529',
+          primary: true,
+          order: nextOrder
         }
       }
     })
@@ -66,16 +84,32 @@ export function StudyQuestionCreate(): ReactElement {
 
   return (
     <>
-      <Button
-        variant="contained"
-        onClick={handleOpen}
-        sx={{ alignSelf: 'flex-start' }}
+      <Stack direction="row" justifyContent="flex-end">
+        <Button
+          variant="outlined"
+          onClick={handleOpen}
+          size="small"
+          color="secondary"
+        >
+          {t('Add')}
+        </Button>
+      </Stack>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            '& .MuiDialogTitle-root': {
+              borderBottom: '1px solid',
+              borderColor: 'divider'
+            }
+          }
+        }}
       >
-        {t('Add Study Question')}
-      </Button>
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>{t('Add Study Question')}</DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ mt: 2 }}>
           <StudyQuestionForm
             variant="create"
             initialValues={{ value: '' }}

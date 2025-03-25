@@ -73,6 +73,13 @@ export function StudyQuestionsList({
     setSelectedQuestion(null)
   }
 
+  const handleQuestionCreated = (newQuestion: {
+    id: string
+    value: string
+  }) => {
+    setStudyQuestionItems((items) => [...items, newQuestion])
+  }
+
   const totalQuestions = studyQuestionItems?.length ?? 0
 
   return (
@@ -101,7 +108,10 @@ export function StudyQuestionsList({
         ) : (
           <Section.Fallback>{t('No study questions')}</Section.Fallback>
         )}
-        <StudyQuestionCreate />
+        <StudyQuestionCreate
+          studyQuestions={studyQuestionItems}
+          onQuestionCreated={handleQuestionCreated}
+        />
       </Section>
       {selectedQuestion != null && (
         <StudyQuestionDialog

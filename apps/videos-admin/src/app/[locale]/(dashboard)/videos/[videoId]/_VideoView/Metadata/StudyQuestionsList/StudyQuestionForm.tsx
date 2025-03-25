@@ -55,13 +55,16 @@ export function StudyQuestionForm({
                 }
               }}
             />
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={!isValid || !dirty || isSubmitting || loading}
-            >
-              {variant === 'create' ? t('Add') : t('Save')}
-            </Button>
+            <Stack direction="row" gap={2} justifyContent="flex-end">
+              <Button
+                type="submit"
+                variant="outlined"
+                color="secondary"
+                disabled={!isValid || !dirty || isSubmitting || loading}
+              >
+                {variant === 'create' ? t('Add') : t('Update')}
+              </Button>
+            </Stack>
           </Stack>
         </Form>
       )}

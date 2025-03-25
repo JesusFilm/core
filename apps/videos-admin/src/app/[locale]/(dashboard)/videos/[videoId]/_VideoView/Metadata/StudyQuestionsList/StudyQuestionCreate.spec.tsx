@@ -15,21 +15,31 @@ const video = {
   title: [{ value: 'Test Video', primary: true }]
 }
 
+const mockStudyQuestions = [
+  { id: '1', value: 'Question 1' },
+  { id: '2', value: 'Question 2' }
+]
+
 describe('StudyQuestionCreate', () => {
+  const handleQuestionCreated = jest.fn()
+
   it('should render create button', () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider>
           <SnackbarProvider>
             <VideoProvider value={video}>
-              <StudyQuestionCreate />
+              <StudyQuestionCreate
+                studyQuestions={mockStudyQuestions}
+                onQuestionCreated={handleQuestionCreated}
+              />
             </VideoProvider>
           </SnackbarProvider>
         </MockedProvider>
       </NextIntlClientProvider>
     )
 
-    expect(screen.getByText('Add Study Question')).toBeInTheDocument()
+    expect(screen.getByText('Add')).toBeInTheDocument()
   })
 
   it('should open dialog on button click', () => {
@@ -38,18 +48,22 @@ describe('StudyQuestionCreate', () => {
         <MockedProvider>
           <SnackbarProvider>
             <VideoProvider value={video}>
-              <StudyQuestionCreate />
+              <StudyQuestionCreate
+                studyQuestions={mockStudyQuestions}
+                onQuestionCreated={handleQuestionCreated}
+              />
             </VideoProvider>
           </SnackbarProvider>
         </MockedProvider>
       </NextIntlClientProvider>
     )
 
-    fireEvent.click(screen.getByText('Add Study Question'))
+    fireEvent.click(screen.getByText('Add'))
     expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
 
-  it('should create study question', async () => {
+  it('should create study question with correct order', async () => {
+    const nextOrder = mockStudyQuestions.length + 1
     const mocks = [
       {
         request: {
@@ -57,14 +71,17 @@ describe('StudyQuestionCreate', () => {
           variables: {
             input: {
               videoId: 'video-1',
-              value: 'New question'
+              value: 'New question',
+              languageId: '529',
+              primary: true,
+              order: nextOrder
             }
           }
         },
         result: {
           data: {
             videoStudyQuestionCreate: {
-              id: '1',
+              id: '3',
               value: 'New question'
             }
           }
@@ -77,14 +94,17 @@ describe('StudyQuestionCreate', () => {
         <MockedProvider mocks={mocks} addTypename={false}>
           <SnackbarProvider>
             <VideoProvider value={video}>
-              <StudyQuestionCreate />
+              <StudyQuestionCreate
+                studyQuestions={mockStudyQuestions}
+                onQuestionCreated={handleQuestionCreated}
+              />
             </VideoProvider>
           </SnackbarProvider>
         </MockedProvider>
       </NextIntlClientProvider>
     )
 
-    fireEvent.click(screen.getByText('Add Study Question'))
+    fireEvent.click(screen.getByText('Add'))
     fireEvent.change(screen.getByLabelText('Study Question'), {
       target: { value: 'New question' }
     })
@@ -94,6 +114,10 @@ describe('StudyQuestionCreate', () => {
       expect(screen.getByText('Study question created')).toBeInTheDocument()
     })
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(handleQuestionCreated).toHaveBeenCalledWith({
+      id: '3',
+      value: 'New question'
+    })
   })
 
   it('should handle error', async () => {
@@ -104,7 +128,10 @@ describe('StudyQuestionCreate', () => {
           variables: {
             input: {
               videoId: 'video-1',
-              value: 'New question'
+              value: 'New question',
+              languageId: '529',
+              primary: true,
+              order: mockStudyQuestions.length + 1
             }
           }
         },
@@ -117,14 +144,17 @@ describe('StudyQuestionCreate', () => {
         <MockedProvider mocks={mocks} addTypename={false}>
           <SnackbarProvider>
             <VideoProvider value={video}>
-              <StudyQuestionCreate />
+              <StudyQuestionCreate
+                studyQuestions={mockStudyQuestions}
+                onQuestionCreated={handleQuestionCreated}
+              />
             </VideoProvider>
           </SnackbarProvider>
         </MockedProvider>
       </NextIntlClientProvider>
     )
 
-    fireEvent.click(screen.getByText('Add Study Question'))
+    fireEvent.click(screen.getByText('Add'))
     fireEvent.change(screen.getByLabelText('Study Question'), {
       target: { value: 'New question' }
     })
