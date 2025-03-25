@@ -217,6 +217,7 @@ export function CardForm(): ReactElement {
       parentBlockId: cardId,
       parentOrder: 2,
       label: t('Your answer here'),
+      placeholder: null,
       hint: null,
       minRows: null,
       type: null,
@@ -274,6 +275,7 @@ export function CardForm(): ReactElement {
               ...omit(textResponseBlock, [
                 '__typename',
                 'parentOrder',
+                'placeholder',
                 'hint',
                 'minRows',
                 'type',

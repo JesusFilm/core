@@ -115,7 +115,7 @@ export function Label(): ReactElement {
         name="label"
         variant="filled"
         label={t('Label')}
-        placeholder={t('Your answer here')}
+        placeholder={t('Your label here')}
         fullWidth
         inputProps={{ maxLength: 250 }}
         value={value}
