@@ -404,8 +404,6 @@ export function NewTextResponseButton(): ReactElement {
                         const NEW_BLOCK_FRAGMENT = gql`
                           fragment NewBlock on Block {
                             id
-                            parentOrder
-                            parentBlockId
                           }
                         `
                         if (
@@ -415,25 +413,10 @@ export function NewTextResponseButton(): ReactElement {
                         ) {
                           return existingBlockRefs
                         }
-
-                        // Use original parentOrder values for known blocks
-                        let blockData = block
-                        if (block.id === textResponseBlock.id) {
-                          blockData = {
-                            ...block,
-                            parentOrder: textResponseBlock.parentOrder
-                          }
-                        } else if (block.id === buttonBlock.id) {
-                          blockData = {
-                            ...block,
-                            parentOrder: buttonBlock.parentOrder
-                          }
-                        }
-
                         return [
                           ...existingBlockRefs,
                           cache.writeFragment({
-                            data: blockData,
+                            data: block,
                             fragment: NEW_BLOCK_FRAGMENT
                           })
                         ]
