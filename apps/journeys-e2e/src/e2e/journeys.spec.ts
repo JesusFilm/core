@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 /* 
 Test a journey by following the journey's selection buttons
 */
-test.fixme('journeys', async ({ page }) => {
+test('journeys', async ({ page }) => {
   await page.goto('/')
   // fact or fiction page - click on on fact or fiction
   await page.click('a[href="/fact-or-fiction"]')
@@ -26,7 +26,7 @@ test.fixme('journeys', async ({ page }) => {
   //   animations: 'disabled',
   //   fullPage: true
   // })
-  await page.getByText('Yes, it’s a true story 👍').click()
+  await page.getByText("Yes, it's a true story 👍").click()
   // Test Video Screen
   await page.getByTestId('JourneysVideoControls').click()
   await page.getByTestId('ConductorNavigationButtonNext').click()

@@ -828,6 +828,15 @@ export class CardLevelActionPage {
       .click()
   }
 
+  async clickPropertiesDropDown(feedBackProperty: string) {
+    await this.page
+      .locator(
+        'div[data-testid="SignUpProperties"] div[data-testid="AccordionSummary"]',
+        { hasText: feedBackProperty }
+      )
+      .click()
+  }
+
   async clickSubscribePropertiesDropDown(feedBackProperty: string) {
     await this.page
       .locator(
@@ -1227,5 +1236,120 @@ export class CardLevelActionPage {
     await expect(
       this.page.frameLocator(this.journeyCardFrame).locator(textAreaPath)
     ).not.toHaveAttribute('style', textAeaStyleBefore, { timeout: 30000 })
+  }
+
+  async verifyButtonAddedToCard() {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator('button[data-testid="button-block"]')
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
+  }
+
+  async verifyButtonRemovedFromCard() {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator('button[data-testid="button-block"]')
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
+  }
+
+  async enterButtonNameInCard(buttonName: string) {
+    await this.page
+      .frameLocator(this.journeyCardFrame)
+      .locator('button[data-testid="button-block"]')
+      .fill(buttonName)
+  }
+
+  async clickButtonPropertyDropdown(propertyName: string) {
+    await this.page
+      .locator('div[data-testid="button-properties"] button', {
+        hasText: propertyName
+      })
+      .click()
+  }
+
+  async chooseButtonColor(buttonColor: string) {
+    await this.page
+      .locator('div[role="listbox"] li', { hasText: buttonColor })
+      .click()
+  }
+
+  async chooseButtonSize(buttonSize: string) {
+    await this.page
+      .locator('div[role="listbox"] li', { hasText: buttonSize })
+      .click()
+  }
+
+  async chooseButtonVariant(buttonVariant: string) {
+    await this.page
+      .locator('div[role="listbox"] li', { hasText: buttonVariant })
+      .click()
+  }
+
+  async clickIconDropdown() {
+    await this.page
+      .locator('div[data-testid="icon-dropdown"]')
+      .click()
+  }
+
+  async chooseIconFromList(iconName: string) {
+    await this.page
+      .locator('div[role="listbox"] li', { hasText: iconName })
+      .click()
+  }
+
+  async chooseColorForIcon(iconColor: string) {
+    await this.page
+      .locator('div[role="listbox"] li', { hasText: iconColor })
+      .click()
+  }
+
+  async verifyButtonPropertyUpdatedInCard(buttonName: string) {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator('button[data-testid="button-block"]', { hasText: buttonName })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
+  }
+
+  async selectEmailOptionInPropertiesOptions() {
+    await this.page
+      .locator('div[role="listbox"] li', { hasText: 'Email' })
+      .click()
+  }
+
+  async verifySpacerAddedToCard() {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator('div[data-testid="spacer-block"]')
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
+  }
+
+  async verifySpacerRemovedFromCard() {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator('div[data-testid="spacer-block"]')
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
+  }
+
+  async getSpacerHeightPixelBeforeChange() {
+    return await this.page
+      .frameLocator(this.journeyCardFrame)
+      .locator('div[data-testid="spacer-block"]')
+      .getAttribute('height')
+  }
+
+  async validateSpacerHeightPixelGotChange(pixelHeightBeforeChange: any) {
+    const currentHeight = await this.getSpacerHeightPixelBeforeChange()
+    expect(currentHeight).not.toBe(pixelHeightBeforeChange)
+  }
+
+  async moveSpacerHeightTo() {
+    await this.page
+      .locator('input[type="range"]')
+      .fill('50')
   }
 }
