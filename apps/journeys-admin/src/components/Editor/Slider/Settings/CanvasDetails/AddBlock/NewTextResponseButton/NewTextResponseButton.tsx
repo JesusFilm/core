@@ -82,11 +82,11 @@ export const TEXT_RESPONSE_WITH_BUTTON_DELETE = gql`
     $startIconId: ID!
     $endIconId: ID!
   ) {
-    startIcon: blockDelete(id: $startIconId) {
+    endIcon: blockDelete(id: $endIconId) {
       id
       parentOrder
     }
-    endIcon: blockDelete(id: $endIconId) {
+    startIcon: blockDelete(id: $startIconId) {
       id
       parentOrder
     }

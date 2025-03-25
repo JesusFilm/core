@@ -7,13 +7,7 @@
 // GraphQL mutation operation: TextResponseWithButtonDelete
 // ====================================================
 
-export interface TextResponseWithButtonDelete_textResponse {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
-  id: string;
-  parentOrder: number | null;
-}
-
-export interface TextResponseWithButtonDelete_button {
+export interface TextResponseWithButtonDelete_endIcon {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
@@ -25,7 +19,13 @@ export interface TextResponseWithButtonDelete_startIcon {
   parentOrder: number | null;
 }
 
-export interface TextResponseWithButtonDelete_endIcon {
+export interface TextResponseWithButtonDelete_button {
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  id: string;
+  parentOrder: number | null;
+}
+
+export interface TextResponseWithButtonDelete_textResponse {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "VideoBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
   parentOrder: number | null;
@@ -35,11 +35,7 @@ export interface TextResponseWithButtonDelete {
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  textResponse: TextResponseWithButtonDelete_textResponse[];
-  /**
-   * blockDelete returns the updated sibling blocks on successful delete
-   */
-  button: TextResponseWithButtonDelete_button[];
+  endIcon: TextResponseWithButtonDelete_endIcon[];
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
@@ -47,7 +43,11 @@ export interface TextResponseWithButtonDelete {
   /**
    * blockDelete returns the updated sibling blocks on successful delete
    */
-  endIcon: TextResponseWithButtonDelete_endIcon[];
+  button: TextResponseWithButtonDelete_button[];
+  /**
+   * blockDelete returns the updated sibling blocks on successful delete
+   */
+  textResponse: TextResponseWithButtonDelete_textResponse[];
 }
 
 export interface TextResponseWithButtonDeleteVariables {
