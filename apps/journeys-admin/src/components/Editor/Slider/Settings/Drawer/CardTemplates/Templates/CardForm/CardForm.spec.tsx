@@ -115,7 +115,7 @@ describe('CardForm', () => {
           id: 'textResponseId',
           journeyId: 'journeyId',
           parentBlockId: 'cardId',
-          label: 'My Prayer'
+          label: 'My Prayer:'
         },
         bodyInput: {
           id: 'bodyId',
@@ -174,7 +174,7 @@ describe('CardForm', () => {
           id: 'textResponseId',
           parentBlockId: 'cardId',
           parentOrder: 2,
-          label: 'My Prayer',
+          label: 'My Prayer:',
           placeholder: null,
           hint: null,
           minRows: null,
