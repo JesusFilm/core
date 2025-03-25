@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -34,6 +34,24 @@ export function ShareDialog({
   const { journey } = useJourney()
   const router = useRouter()
 
+  // Debug the props and journey context
+  useEffect(() => {
+    console.log('ShareDialog - Props:', { open, hostname })
+    console.log('ShareDialog - Journey from context:', journey)
+    console.log('ShareDialog - Journey slug:', journey?.slug)
+    console.log(
+      'ShareDialog - URL to be displayed:',
+      journey?.slug != null
+        ? `${
+            hostname != null
+              ? `https://${hostname}`
+              : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+                'https://your.nextstep.is')
+          }/${journey.slug}`
+        : undefined
+    )
+  }, [open, hostname, journey])
+
   function setRoute(param: string): void {
     void router.push({ query: { ...router.query, param } }, undefined, {
       shallow: true
@@ -43,24 +61,27 @@ export function ShareDialog({
     })
   }
 
+  // Always use default URL if hostname is not available
+  const shareUrl =
+    journey?.slug != null
+      ? `${
+          hostname != null
+            ? `https://${hostname}`
+            : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
+              'https://your.nextstep.is')
+        }/${journey.slug}`
+      : undefined
+
+  // Set the buttonsDisabled state based on journey availability
+  const buttonsDisabled = journey == null
+
   return (
     <Dialog open={open} onClose={onClose}>
       <Stack direction="column" spacing={4}>
         <Typography variant="subtitle2" gutterBottom>
           {t('Share This Journey')}
         </Typography>
-        <CopyTextField
-          value={
-            journey?.slug != null
-              ? `${
-                  hostname != null
-                    ? `https://${hostname}`
-                    : (process.env.NEXT_PUBLIC_JOURNEYS_URL ??
-                      'https://your.nextstep.is')
-                }/${journey.slug}`
-              : undefined
-          }
-        />
+        <CopyTextField value={shareUrl} />
         <Stack direction="row" spacing={6}>
           <Button
             onClick={() => {
@@ -69,7 +90,7 @@ export function ShareDialog({
             }}
             size="small"
             startIcon={<Edit2Icon />}
-            disabled={journey == null}
+            disabled={buttonsDisabled}
             style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
           >
             {t('Edit URL')}
@@ -81,7 +102,7 @@ export function ShareDialog({
             }}
             size="small"
             startIcon={<Code1Icon />}
-            disabled={journey == null}
+            disabled={buttonsDisabled}
             style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
           >
             {t('Embed Journey')}
@@ -93,7 +114,7 @@ export function ShareDialog({
             }}
             size="small"
             startIcon={<TransformIcon />}
-            disabled={journey == null}
+            disabled={buttonsDisabled}
             style={{ whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
           >
             {t('QR Code')}

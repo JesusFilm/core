@@ -6,7 +6,7 @@ import { ComponentProps, MouseEvent, ReactElement, useState } from 'react'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ShareIcon from '@core/shared/ui/icons/Share'
 
-import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
+import { useShareDataQuery } from '../../../../../libs/useShareDataQuery'
 import { Item } from '../Item/Item'
 
 import { ShareDialog } from './ShareDialog'
@@ -47,15 +47,34 @@ export function ShareItem({
   closeMenu
 }: ShareItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { journey } = useJourney()
-  const { hostname } = useCustomDomainsQuery({
-    variables: { teamId: journey?.team?.id ?? '' },
-    skip: journey?.team?.id == null
-  })
+  const { journey: contextJourney } = useJourney()
   const [showSlugDialog, setShowSlugDialog] = useState<boolean | undefined>()
   const [showEmbedDialog, setShowEmbedDialog] = useState<boolean | undefined>()
   const [showQrCodeDialog, setShowQrCodeDialog] = useState<boolean>(false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+
+  // Use our query to fetch all share-related data
+  const { data, loading } = useShareDataQuery({
+    variables: {
+      id: contextJourney?.id ?? '',
+      qrCodeWhere: { journeyId: contextJourney?.id }
+    },
+    skip: contextJourney?.id == null,
+    fetchPolicy: 'network-only'
+  })
+
+  // Use data from query, fallback to context if query fails or is loading
+  const sharedJourney = loading
+    ? contextJourney
+    : (data?.journey ?? contextJourney)
+  const qrCode = data?.qrCodes?.[0]
+
+  // Cast team to the Team type that includes customDomains
+  const team = sharedJourney?.team as {
+    customDomains?: Array<{ id: string; name: string; apexName: string }>
+  } | null
+  const customDomain = team?.customDomains?.[0]
+  const hostname = customDomain?.name
 
   function handleShowMenu(event: MouseEvent<HTMLElement>): void {
     setAnchorEl(event.currentTarget)
@@ -63,7 +82,7 @@ export function ShareItem({
 
   function handleCloseMenu(): void {
     setAnchorEl(null)
-    closeMenu?.() // test e2e
+    closeMenu?.()
   }
 
   function handleSlugDialogOpen(): void {
@@ -100,18 +119,23 @@ export function ShareItem({
           open={showSlugDialog}
           onClose={() => setShowSlugDialog(false)}
           hostname={hostname}
+          journey={sharedJourney}
         />
       )}
       {showEmbedDialog != null && (
         <EmbedJourneyDialog
           open={showEmbedDialog}
           onClose={() => setShowEmbedDialog(false)}
+          journey={sharedJourney}
+          hostname={hostname}
         />
       )}
       {showQrCodeDialog != null && (
         <QrCodeDialog
           open={showQrCodeDialog}
           onClose={() => setShowQrCodeDialog(false)}
+          qrCode={qrCode}
+          journey={sharedJourney}
         />
       )}
     </Box>
