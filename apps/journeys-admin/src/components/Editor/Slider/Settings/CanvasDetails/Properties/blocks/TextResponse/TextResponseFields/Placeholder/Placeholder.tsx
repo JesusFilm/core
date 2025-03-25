@@ -125,7 +125,11 @@ export function Placeholder(): ReactElement {
         label={t('Placeholder')}
         placeholder={t('Your placeholder here')}
         fullWidth
-        inputProps={{ maxLength: 250 }}
+        slotProps={{
+          htmlInput: {
+            maxLength: 250
+          }
+        }}
         value={value}
         onFocus={resetCommandInput}
         onChange={(e) => {
