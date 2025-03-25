@@ -140,13 +140,13 @@ describe('dataExport service', () => {
         '--no-publications', // Verify publications are excluded
         '--no-subscriptions', // Verify subscriptions are excluded
         '--exclude-table',
-        'CloudflareImage',
+        '*."CloudflareImage"',
         '--exclude-table',
-        'MuxVideo',
+        '*."MuxVideo"',
         '--exclude-table',
-        'CloudflareR2',
+        '*."CloudflareR2"',
         '--exclude-table',
-        'UserMediaRole'
+        '*."UserMediaRole"'
       ]),
       expect.anything()
     )

@@ -31,6 +31,15 @@ const EXCLUDED_TABLES = [
   'UserMediaRole'
 ]
 
+/**
+ * Formats a table name into the pg_dump exclude pattern
+ * @param tableName The name of the table to exclude
+ * @returns The formatted pattern for pg_dump --exclude-table
+ */
+function getExcludeTablePattern(tableName: string): string {
+  return `*."${tableName}"`
+}
+
 function getS3Client(): S3Client {
   if (process.env.CLOUDFLARE_R2_ENDPOINT == null)
     throw new Error('Missing CLOUDFLARE_R2_ENDPOINT')
@@ -144,10 +153,10 @@ async function executePgDump(
         PGPASSWORD: decodeURIComponent(databaseUrl.password)
       }
 
-      // Generate exclude table arguments
+      // Generate exclude table arguments with proper pattern
       const excludeTableArgs = EXCLUDED_TABLES.flatMap((table) => [
         '--exclude-table',
-        table
+        getExcludeTablePattern(table)
       ])
 
       const args = [
