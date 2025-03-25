@@ -7,6 +7,7 @@ import { ReactElement } from 'react'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import ShareIcon from '@core/shared/ui/icons/Share'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
@@ -29,6 +30,7 @@ interface DefaultMenuProps {
   handleCloseMenu: () => void
   setOpenTrashDialog: () => void
   setOpenDetailsDialog: () => void
+  setOpenShareDialog: () => void
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
 }
@@ -43,6 +45,7 @@ export function DefaultMenu({
   handleCloseMenu,
   setOpenTrashDialog,
   setOpenDetailsDialog,
+  setOpenShareDialog,
   template,
   refetch
 }: DefaultMenuProps): ReactElement {
@@ -74,6 +77,7 @@ export function DefaultMenu({
           handleCloseMenu()
         }}
       />
+      <Divider />
       {/* </NextLink> */}
       {template !== true && (
         <MenuItem
@@ -99,10 +103,18 @@ export function DefaultMenu({
           openInNew
         />
       </NextLink>
+      <MenuItem
+        label={t('Share')}
+        icon={<ShareIcon color="secondary" />}
+        onClick={() => {
+          setOpenShareDialog()
+          handleCloseMenu()
+        }}
+      />
+      <Divider />
       {template !== true && (
         <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       )}
-      <Divider />
       <CopyToTeamMenuItem id={id} handleCloseMenu={handleCloseMenu} />
       <ArchiveJourney
         status={status}

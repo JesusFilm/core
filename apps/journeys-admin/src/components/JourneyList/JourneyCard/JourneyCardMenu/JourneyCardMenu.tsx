@@ -11,6 +11,7 @@ import {
   GetAdminJourneys_journeys as Journey
 } from '../../../../../__generated__/GetAdminJourneys'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import { ShareDialog } from '../../../Editor/Toolbar/Items/ShareItem/ShareDialog/ShareDialog'
 
 const AccessDialog = dynamic(
   async () =>
@@ -110,6 +111,12 @@ export function JourneyCardMenu({
   const [openDetailsDialog, setOpenDetailsDialog] = useState<
     boolean | undefined
   >()
+  const [openShareDialog, setOpenShareDialog] = useState<boolean | undefined>()
+  const [openSlugDialog, setOpenSlugDialog] = useState<boolean | undefined>()
+  const [openEmbedDialog, setOpenEmbedDialog] = useState<boolean | undefined>()
+  const [openQrCodeDialog, setOpenQrCodeDialog] = useState<
+    boolean | undefined
+  >()
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -165,6 +172,7 @@ export function JourneyCardMenu({
             handleCloseMenu={handleCloseMenu}
             setOpenTrashDialog={() => setOpenTrashDialog(true)}
             setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
+            setOpenShareDialog={() => setOpenShareDialog(true)}
             template={template}
             refetch={refetch}
           />
@@ -207,6 +215,15 @@ export function JourneyCardMenu({
           open={openDetailsDialog}
           onClose={() => setOpenDetailsDialog(false)}
           journey={journey}
+        />
+      )}
+      {openShareDialog != null && (
+        <ShareDialog
+          open={openShareDialog}
+          onClose={() => setOpenShareDialog(false)}
+          onSlugDialogOpen={() => setOpenSlugDialog(true)}
+          onEmbedDialogOpen={() => setOpenEmbedDialog(true)}
+          onQrCodeDialogOpen={() => setOpenQrCodeDialog(true)}
         />
       )}
     </>

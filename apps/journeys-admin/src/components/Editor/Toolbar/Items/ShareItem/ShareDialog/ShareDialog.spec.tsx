@@ -23,6 +23,12 @@ describe('ShareDialog', () => {
   const push = jest.fn()
   const on = jest.fn()
 
+  // Mock clipboard API
+  const originalClipboard = { ...global.navigator.clipboard }
+  const mockClipboard = {
+    writeText: jest.fn()
+  }
+
   beforeEach(() => {
     jest.clearAllMocks()
     mockedUseRouter.mockReturnValue({
@@ -30,6 +36,18 @@ describe('ShareDialog', () => {
       push,
       events: { on }
     } as unknown as NextRouter)
+
+    // Setup clipboard mock
+    Object.assign(navigator, {
+      clipboard: mockClipboard
+    })
+  })
+
+  afterEach(() => {
+    // Restore clipboard
+    Object.assign(navigator, {
+      clipboard: originalClipboard
+    })
   })
 
   const Component = ({
@@ -73,19 +91,60 @@ describe('ShareDialog', () => {
     ).toBeInTheDocument()
   })
 
-  it.skip('should display the journey URL with default domain when hostname is undefined', () => {
+  it('should copy the URL to clipboard when copy button is clicked', async () => {
+    render(<Component />)
+
+    // Find the copy button and click it
+    const copyButton = screen.getByRole('button', { name: 'Copy' })
+    fireEvent.click(copyButton)
+
+    // Verify the clipboard API was called with the correct URL
+    expect(mockClipboard.writeText).toHaveBeenCalledWith(
+      'https://my.custom.domain/default'
+    )
+  })
+
+  describe('with default domain', () => {
+    // Save the original environment variable
     const originalEnv = process.env.NEXT_PUBLIC_JOURNEYS_URL
-    process.env.NEXT_PUBLIC_JOURNEYS_URL = 'https://test.nextstep.is'
 
-    const { rerender } = render(<Component hostname={undefined} />)
+    beforeEach(() => {
+      // Set the environment variable for this test suite
+      process.env.NEXT_PUBLIC_JOURNEYS_URL = 'https://test.nextstep.is'
+    })
 
-    rerender(<Component hostname={undefined} />)
+    afterEach(() => {
+      // Restore the original environment variable after each test
+      process.env.NEXT_PUBLIC_JOURNEYS_URL = originalEnv
+    })
 
-    expect(
-      screen.getByDisplayValue('https://test.nextstep.is/default')
-    ).toBeInTheDocument()
+    it('should copy the URL with default domain when hostname is undefined', async () => {
+      render(
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
+          >
+            <ShareDialog
+              open
+              onClose={handleClose}
+              hostname={undefined}
+              onSlugDialogOpen={handleSlugDialogOpen}
+              onEmbedDialogOpen={handleEmbedDialogOpen}
+              onQrCodeDialogOpen={handleQrCodeDialogOpen}
+            />
+          </JourneyProvider>
+        </SnackbarProvider>
+      )
 
-    process.env.NEXT_PUBLIC_JOURNEYS_URL = originalEnv
+      // Find the copy button and click it
+      const copyButton = screen.getByRole('button', { name: 'Copy' })
+      fireEvent.click(copyButton)
+
+      // Verify the clipboard API was called with the correct URL using the default domain
+      expect(mockClipboard.writeText).toHaveBeenCalledWith(
+        'https://test.nextstep.is/default'
+      )
+    })
   })
 
   it('should call onSlugDialogOpen and set route when Edit URL button is clicked', () => {
@@ -148,5 +207,29 @@ describe('ShareDialog', () => {
     expect(screen.getByRole('button', { name: 'Edit URL' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Embed Journey' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'QR Code' })).toBeDisabled()
+  })
+
+  it('should disable the copy button when journey is undefined', () => {
+    render(
+      <SnackbarProvider>
+        <JourneyProvider value={{ journey: undefined, variant: 'admin' }}>
+          <ShareDialog
+            open
+            onClose={handleClose}
+            hostname={undefined}
+            onSlugDialogOpen={handleSlugDialogOpen}
+            onEmbedDialogOpen={handleEmbedDialogOpen}
+            onQrCodeDialogOpen={handleQrCodeDialogOpen}
+          />
+        </JourneyProvider>
+      </SnackbarProvider>
+    )
+
+    const copyButton = screen.getByRole('button', { name: 'Copy' })
+    expect(copyButton).toBeDisabled()
+
+    // Verify clicking the disabled button doesn't call clipboard API
+    fireEvent.click(copyButton)
+    expect(mockClipboard.writeText).not.toHaveBeenCalled()
   })
 })
