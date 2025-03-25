@@ -11,6 +11,7 @@ const mockVariant = {
   id: 'variant-1',
   videoId: 'video-1',
   slug: 'variant-slug',
+  published: true,
   hls: 'https://example.com/video.m3u8',
   videoEdition: {
     id: 'edition-1',

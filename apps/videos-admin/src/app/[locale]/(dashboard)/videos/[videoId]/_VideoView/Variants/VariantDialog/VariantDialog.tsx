@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
-import Select from '@mui/material/Select'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -56,7 +56,9 @@ export function VariantDialog({
   const t = useTranslations()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const [updateVariant] = useMutation(UPDATE_VARIANT)
-  const [publishedStatus, setPublishedStatus] = useState(variant.published)
+  const [publishedStatus, setPublishedStatus] = useState<
+    'published' | 'unpublished'
+  >(variant.published ? 'published' : 'unpublished')
   const [hasChanges, setHasChanges] = useState(false)
 
   const languageName =
@@ -67,9 +69,14 @@ export function VariantDialog({
     ({ primary }) => primary
   )?.value
 
-  const handlePublishedChange = (newValue: boolean): void => {
+  const handlePublishedChange = (
+    event: SelectChangeEvent<'published' | 'unpublished'>
+  ): void => {
+    const newValue = event.target.value as 'published' | 'unpublished'
     setPublishedStatus(newValue)
-    setHasChanges(newValue !== variant.published)
+    setHasChanges(
+      newValue !== (variant.published ? 'published' : 'unpublished')
+    )
   }
 
   const handleSave = async (): Promise<void> => {
@@ -77,13 +84,13 @@ export function VariantDialog({
       variables: {
         input: {
           id: variant.id,
-          published: publishedStatus
+          published: publishedStatus === 'published'
         }
       },
       optimisticResponse: {
         videoVariantUpdate: {
           ...variant,
-          published: publishedStatus
+          published: publishedStatus === 'published'
         }
       }
     })
@@ -134,10 +141,8 @@ export function VariantDialog({
             </Typography>
             <FormControl variant="filled" size="small" sx={{ minWidth: 120 }}>
               <Select
-                value={publishedStatus ? 'published' : 'unpublished'}
-                onChange={(e) =>
-                  handlePublishedChange(e.target.value === 'published')
-                }
+                value={publishedStatus}
+                onChange={handlePublishedChange}
                 sx={{
                   '& .MuiSelect-select': {
                     py: 1.2

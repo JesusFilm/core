@@ -147,6 +147,7 @@ export const useAdminVideoMock: MockedResponse<
             id: '1_4334-jf-0-0',
             videoId: '1_jf-0-0',
             slug: 'jesus/munukutuba',
+            published: true,
             videoEdition: {
               id: 'edition.id',
               name: 'base'
@@ -185,6 +186,7 @@ export const useAdminVideoMock: MockedResponse<
             id: '1_19558-jf-0-0',
             videoId: '1_jf-0-0',
             slug: 'jesus/kom',
+            published: true,
             videoEdition: {
               id: 'edition.id',
               name: 'base'
@@ -223,6 +225,7 @@ export const useAdminVideoMock: MockedResponse<
             id: '1_529-jf-0-0',
             videoId: '1_jf-0-0',
             slug: 'jesus/english',
+            published: true,
             videoEdition: {
               id: 'edition.id',
               name: 'base'

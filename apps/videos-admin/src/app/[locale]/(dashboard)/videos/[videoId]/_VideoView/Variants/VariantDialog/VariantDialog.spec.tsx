@@ -55,7 +55,10 @@ describe('VariantDialog', () => {
 
     const languageDisplay = screen.getByTestId('VariantLanguageDisplay')
     expect(languageDisplay).toHaveTextContent('Munukutuba')
-    expect(screen.getByText('Published')).toBeInTheDocument()
+
+    // Check for status dropdown showing "Published"
+    expect(screen.getByText('Status')).toBeInTheDocument()
+    expect(screen.getByRole('combobox')).toHaveTextContent('Published')
   })
 
   it('should close variant dialog on click', () => {
@@ -73,7 +76,7 @@ describe('VariantDialog', () => {
     expect(handleClose).toHaveBeenCalled()
   })
 
-  it('should toggle published state', async () => {
+  it('should update published state when dropdown changed and save clicked', async () => {
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider mocks={[updateVariantMock]}>
@@ -82,11 +85,24 @@ describe('VariantDialog', () => {
       </NextIntlClientProvider>
     )
 
-    const publishedChip = screen.getByText('Published')
-    fireEvent.click(publishedChip)
+    // Open the dropdown
+    const selectElement = screen.getByRole('combobox')
+    fireEvent.mouseDown(selectElement)
 
+    // Wait for dropdown menu to be visible and click "Draft" option
+    const draftOption = await waitFor(() => screen.getByText('Draft'))
+    fireEvent.click(draftOption)
+
+    // Save button should now be enabled
+    const saveButton = screen.getByRole('button', { name: 'Save' })
+    expect(saveButton).not.toBeDisabled()
+
+    // Click save button
+    fireEvent.click(saveButton)
+
+    // Verify mutation was called and save button is disabled again
     await waitFor(() => {
-      expect(screen.getByText('Draft')).toBeInTheDocument()
+      expect(saveButton).toBeDisabled()
     })
   })
 })
