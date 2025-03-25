@@ -69,25 +69,19 @@ export class JourneyEventService {
     return {
       edges: sendResult.map((event) => ({
         node: {
-          // event fields
           id: event.id,
           journeyId: event.journeyId ?? '',
           createdAt: event.createdAt.toISOString(),
           label: event.label,
           value: event.value,
-          // db fields
           typename: event.typename,
-          // button fields
-          action: event.action as unknown as ButtonAction,
+          action: event.action as ButtonAction,
           actionValue: event.actionValue,
-          messagePlatform: event.messagePlatform as unknown as MessagePlatform,
-          // signup fields
+          messagePlatform: event.messagePlatform as MessagePlatform,
           email: event.email,
-          // step fields
           blockId: event.blockId,
-          // video fields
           position: event.position,
-          source: event.source as unknown as VideoBlockSource,
+          source: event.source as VideoBlockSource,
           progress: event.progress
         },
         cursor: event.id
