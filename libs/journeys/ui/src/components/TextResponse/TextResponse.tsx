@@ -44,6 +44,7 @@ export const TextResponse = ({
   id: blockId,
   uuid = uuidv4,
   label,
+  placeholder,
   hint,
   minRows
 }: TextResponseProps): ReactElement => {
@@ -67,8 +68,6 @@ export const TextResponse = ({
     )
 
   const initialValues: TextResponseFormValues = { response: '' }
-
-  const placeholder = 'Placeholder'
 
   const onSubmitHandler = async (
     values: TextResponseFormValues
@@ -116,13 +115,19 @@ export const TextResponse = ({
         {({ values, handleChange, handleBlur }) => (
           <Form data-testid={`textResponse-${blockId}`}>
             <Stack flexDirection="column" spacing={1}>
-              <Typography id="textResponse-label" variant="subtitle2">
+              <Typography
+                id="textResponse-label"
+                variant="subtitle2"
+                sx={{
+                  fontsize: 14
+                }}
+              >
                 {label === '' ? 'Label' : label}
               </Typography>
               <TextField
                 id="textResponse-field"
                 name="response"
-                placeholder={placeholder}
+                placeholder={placeholder ?? ''}
                 value={values.response}
                 helperText={hint != null ? hint : ''}
                 multiline
