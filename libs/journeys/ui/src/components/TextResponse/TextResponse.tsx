@@ -21,6 +21,9 @@ import { TextField } from '../TextField'
 import { TextResponseFields } from './__generated__/TextResponseFields'
 import { TextResponseSubmissionEventCreate } from './__generated__/TextResponseSubmissionEventCreate'
 
+/**
+ * GraphQL mutation for creating a text response submission event.
+ */
 export const TEXT_RESPONSE_SUBMISSION_EVENT_CREATE = gql`
   mutation TextResponseSubmissionEventCreate(
     $input: TextResponseSubmissionEventCreateInput!
@@ -30,16 +33,43 @@ export const TEXT_RESPONSE_SUBMISSION_EVENT_CREATE = gql`
     }
   }
 `
+
+/**
+ * Props for the TextResponse component.
+ * @interface TextResponseProps
+ * @extends {TreeBlock<TextResponseFields>}
+ */
 interface TextResponseProps extends TreeBlock<TextResponseFields> {
+  /** Function to generate a UUID, defaults to uuidv4. */
   uuid?: () => string
+  /** Custom element for the submit label. */
   editableSubmitLabel?: ReactElement
+  /** MUI system props for styling the component. */
   sx?: SxProps
 }
 
+/**
+ * Form values for the TextResponse component.
+ * @interface TextResponseFormValues
+ */
 interface TextResponseFormValues {
+  /** User's text response. */
   response: string
 }
 
+/**
+ * A component that renders a text input field for user responses.
+ * Captures and submits user's text input, sending data to the backend and triggering GTM events.
+ *
+ * @param {TextResponseProps} props - The component props.
+ * @param {string} props.id - Block ID.
+ * @param {() => string} [props.uuid=uuidv4] - Function to generate a UUID.
+ * @param {string} props.label - Label for the text input.
+ * @param {string} [props.placeholder] - Placeholder text.
+ * @param {string} [props.hint] - Helper text displayed below the input.
+ * @param {number} [props.minRows] - Minimum number of rows for the text area.
+ * @returns {ReactElement} The TextResponse component.
+ */
 export const TextResponse = ({
   id: blockId,
   uuid = uuidv4,
@@ -69,6 +99,13 @@ export const TextResponse = ({
 
   const initialValues: TextResponseFormValues = { response: '' }
 
+  /**
+   * Handles submission of text response.
+   * Sends data to backend and triggers GTM event if response is not empty.
+   *
+   * @param {TextResponseFormValues} values - Form values containing the user's response.
+   * @returns {Promise<void>}
+   */
   const onSubmitHandler = async (
     values: TextResponseFormValues
   ): Promise<void> => {
