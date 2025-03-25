@@ -47,6 +47,7 @@ builder.prismaObject('CloudflareR2', {
     contentLength: t.exposeInt('contentLength', { nullable: false }),
     contentType: t.exposeString('contentType', { nullable: false }),
     fileName: t.exposeString('fileName', { nullable: false }),
+    originalFilename: t.exposeString('originalFilename'),
     uploadUrl: t.withAuth({ isPublisher: true }).exposeString('uploadUrl'),
     userId: t
       .withAuth({ isPublisher: true })
@@ -81,6 +82,7 @@ builder.mutationFields((t) => ({
           videoId: input.videoId,
           userId: user.id,
           fileName: input.fileName,
+          originalFilename: input.originalFilename,
           uploadUrl,
           publicUrl: `${process.env.CLOUDFLARE_R2_CUSTOM_DOMAIN}/${input.fileName}`,
           contentType: input.contentType,
