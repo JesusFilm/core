@@ -41,7 +41,7 @@ export function ContainerHero(): ReactElement {
 
   return (
     <div
-      className="h-[70vh] w-full flex items-end relative transition-height duration-300 ease-out bg-stone-900"
+      className="h-[70vh] w-full flex items-end relative transition-height duration-300 ease-out bg-stone-900 "
       data-testid="ContainerHero"
     >
       <ContainerHeroVideo
@@ -51,7 +51,7 @@ export function ContainerHero(): ReactElement {
 
       <div
         data-testid="ContainerHeroTitleContainer"
-        className="w-full pt-[200px] pb-4 sm:pb-11 relative flex flex-col sm:flex-row"
+        className="w-full relative flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"
       >
         <div
           className="absolute top-0 left-0 right-0 h-full w-full pointer-events-none z-[1]"
@@ -62,7 +62,7 @@ export function ContainerHero(): ReactElement {
         />
         <div
           data-testid="ContainerHeroTitle"
-          className="container mx-auto flex max-w-[1536px] px-4"
+          className="container mx-auto flex max-w-[1536px] px-4 pb-4"
         >
           <div className="pb-4 sm:pb-0 w-full relative z-[2] flex flex-col">
             <div className="flex items-center justify-between w-full z-[2]">

@@ -13,7 +13,7 @@ export function CollectionsPageContent({
       data-testid="CollectionPage"
     >
       <div
-        className="w-full mx-auto z-1 "
+        className="max-w-[1920px] mx-auto z-1 "
         data-testid="CollectionPageBlurFilter"
         style={{
           backgroundColor: 'rgba(0, 0, 0, 0.1)',

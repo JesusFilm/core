@@ -68,7 +68,7 @@ export function ContainerHeroVideo({
 
   return (
     <div
-      className="fixed top-0 left-0 right-0 w-full h-[55%] sm:h-[75%] md:h-[85%]"
+      className="fixed top-0 left-0 right-0  h-[75%] md:h-[85%] max-w-[1920px] mx-auto"
       data-testid="ContainerHeroVideo"
     >
       <video
