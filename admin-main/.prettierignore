@@ -1,0 +1,3 @@
+.prettierignore
+playwright-report/
+node_modules
