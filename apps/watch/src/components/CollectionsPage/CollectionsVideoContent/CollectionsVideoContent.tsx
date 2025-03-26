@@ -64,45 +64,43 @@ export const CollectionsVideoContent = ({
 }: VideoSectionProps): ReactElement => {
   return (
     <>
-      <div className="pb-18 px-4">
-        {showDivider && (
-          <hr className="mb-18 border-t-2 border-t-black/70 border-b-1 border-b-white/5 inset-shadow-sm" />
-        )}
-        <CollectionVideoPlayer
-          contentId={contentId}
-          title={videoTitle}
-          mutePage={mutePage}
-          setMutePage={setMutePage}
+      {showDivider && (
+        <hr className="mb-18 border-t-2 border-t-black/70 border-b-1 border-b-white/5 inset-shadow-sm" />
+      )}
+      <CollectionVideoPlayer
+        contentId={contentId}
+        title={videoTitle}
+        mutePage={mutePage}
+        setMutePage={setMutePage}
+      />
+      <div className="block xl:flex w-full">
+        <CollectionVideoContentDescription
+          subtitle={subtitle}
+          title={title}
+          description={description}
         />
-        <div className="block xl:flex w-full gap-10">
-          <CollectionVideoContentDescription
-            subtitle={subtitle}
-            title={title}
-            description={description}
+
+        {questions.length > 0 && (
+          <Questions
+            questions={questions}
+            questionsTitle={questionsTitle}
+            askButtonText={askButtonText}
+            onOpenDialog={onOpenDialog}
           />
-
-          {questions.length > 0 && (
-            <Questions
-              questions={questions}
-              questionsTitle={questionsTitle}
-              askButtonText={askButtonText}
-              onOpenDialog={onOpenDialog}
-            />
-          )}
-        </div>
-
-        {(bibleQuotes.length > 0 || freeResource) && (
-          <>
-            <BibleQuotesCarousel
-              bibleQuotes={bibleQuotes}
-              bibleQuotesTitle={bibleQuotesTitle}
-              freeResource={freeResource}
-              onOpenDialog={onOpenDialog}
-            />
-            <QuizButton />
-          </>
         )}
       </div>
+
+      {(bibleQuotes.length > 0 || freeResource) && (
+        <>
+          <BibleQuotesCarousel
+            bibleQuotes={bibleQuotes}
+            bibleQuotesTitle={bibleQuotesTitle}
+            freeResource={freeResource}
+            onOpenDialog={onOpenDialog}
+          />
+          <QuizButton />
+        </>
+      )}
     </>
   )
 }

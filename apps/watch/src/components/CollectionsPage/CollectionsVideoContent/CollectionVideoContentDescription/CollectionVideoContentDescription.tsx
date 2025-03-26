@@ -14,7 +14,7 @@ export const CollectionVideoContentDescription = ({
   return (
     <div className="info-block xl:w-3/5 padded 2xl:pr-2xl">
       <div className="title-block pt-2 2xl:pt-4">
-        <p className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-stone-200/70 xl:mb-1">
+        <p className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70 xl:mb-1">
           {subtitle}
         </p>
         <div className="flex items-center justify-between mb-3">

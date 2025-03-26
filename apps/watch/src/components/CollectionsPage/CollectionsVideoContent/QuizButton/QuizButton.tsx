@@ -20,16 +20,16 @@ export const QuizButton = (): ReactElement => {
 
   return (
     <>
-      <div className="px-6 lg:px-8 pt-12 mx-auto lg:w-1/2 xl:w-1/3">
+      <div className="px-6 lg:px-8 pt-12 mx-auto lg:w-1/2 xl:w-1/2 2xl:w-2xl">
         <button
           onClick={() => setQuizModalOpen(true)}
-          className="relative w-full overflow-hidden bg-gradient-to-tr from-yellow-500 via-amber-500 to-red-700 bg-blend-multiply animate-mesh-gradient hover:animate-mesh-gradient-fast rounded-lg shadow-lg group cursor-pointer border-none text-left p-0 hover:translate-y-[-2px] transition-transform duration-200 ease-in-out"
+          className="relative w-full overflow-hidden bg-gradient-to-tr from-yellow-500 via-amber-500 to-red-700 bg-blend-multiply animate-mesh-gradient hover:animate-mesh-gradient-fast rounded-lg shadow-lg group hover:bg-orange-500"
           aria-label="Open faith quiz"
           tabIndex={0}
         >
-          <div className="flex justify-between items-center cursor-pointer p-4">
-            <div className="absolute inset-0 overlay-texture"></div>
-            <div className="relative z-1 flex w-full items-center font-semibold leading-[1.2]">
+          <div className="flex justify-between items-center cursor-pointer p-4 xl:p-6">
+            <div className="absolute inset-0 bg-[url(./assets/overlay.svg)] bg-repeat mix-blend-multiply opacity-50"></div>
+            <div className="relative z-1 flex w-full items-center font-semibold leading-[1.2] md:text-xl xl:text-2xl">
               <span className="flex-none uppercase font-extrabold text-xs border-2 tracking-wider border-white rounded-lg px-2 py-1 mr-4">
                 {t('Quiz')}
               </span>
@@ -50,6 +50,7 @@ export const QuizButton = (): ReactElement => {
           </div>
         </button>
       </div>
+
       {quizModalOpen != null && (
         <QuizModal
           open={quizModalOpen}
