@@ -64,7 +64,7 @@ export const CollectionsVideoContent = ({
 }: VideoSectionProps): ReactElement => {
   return (
     <>
-      <div className="pb-18">
+      <div className="pb-18 px-4">
         {showDivider && (
           <hr className="mb-18 border-t-2 border-t-black/70 border-b-1 border-b-white/5 inset-shadow-sm" />
         )}

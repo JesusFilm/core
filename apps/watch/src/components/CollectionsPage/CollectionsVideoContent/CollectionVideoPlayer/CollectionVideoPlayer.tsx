@@ -187,13 +187,6 @@ export function CollectionVideoPlayer({
       })
 
       setPlayer(newPlayer)
-
-      return () => {
-        setIsPlayerReady(false)
-        if (newPlayer) {
-          newPlayer.dispose()
-        }
-      }
     }
   }, [videoData, contentId])
 

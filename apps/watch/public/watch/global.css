@@ -90,4 +90,8 @@
     mix-blend-mode: multiply;
     opacity: 0.5;
   }
+
+  .overlay-texture-image {
+    background-image: url('../../src/components/HeroOverlay/assets/overlay.svg');
+  }
 }

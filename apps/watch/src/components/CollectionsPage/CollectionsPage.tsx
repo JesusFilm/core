@@ -5,6 +5,7 @@ import { PageWrapper } from '../PageWrapper'
 
 import { CollectionsPageContent } from './CollectionsPageContent'
 import { CollectionsVideoContent } from './CollectionsVideoContent'
+import { CollectionVideoContentCarousel } from './CollectionVideoContentCarousel'
 import { ContainerHero } from './ContainerHero'
 
 export function CollectionsPage(): ReactElement {
@@ -298,6 +299,41 @@ export function CollectionsPage(): ReactElement {
             title: t('Want to grow deep in your understanding of the Bible?'),
             buttonText: t('Join Our Bible study')
           }}
+        />
+
+        <CollectionVideoContentCarousel
+          subtitle={t('Easter Documentary Series')}
+          title={t('Did Jesus Defeat Death?')}
+          description={t(
+            "Go on this adventure to time travel to the 1st century and check out other theories for Jesus's empty tomb."
+          )}
+          contentId="31-how-did-jesus-die/english"
+          videoTitle={t('How Did Jesus Die?')}
+          mutePage={mutePage}
+          setMutePage={setMutePage}
+          slides={[
+            {
+              contentId: '31-how-did-jesus-die/english',
+              imageUrl:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/7_0-nfs0301.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+              backgroundColor: '#161817',
+              title: t('How Did Jesus Die?')
+            },
+            {
+              contentId: '32-what-happened-next/english',
+              imageUrl:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/7_0-nfs0302.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+              backgroundColor: '#000906',
+              title: t('What Happened Next?')
+            },
+            {
+              contentId: '33-do-the-facts-stack-up/english',
+              imageUrl:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/7_0-nfs0303.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
+              backgroundColor: '#2B2018',
+              title: t('Why is Easter celebrated with bunnies?')
+            }
+          ]}
         />
         <CollectionsVideoContent
           contentId="why-did-jesus-have-to-die/english"
