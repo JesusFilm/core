@@ -43,6 +43,8 @@ export function CollectionVideoPlayer({
 
   const isVisible = useIsInViewport(containerRef)
 
+  // const videoSlugWithoutLanguageSl = useMemo(() => contentId.split('/')[0], [])
+
   const {
     data: videoData,
     loading: videoLoading,
@@ -166,6 +168,7 @@ export function CollectionVideoPlayer({
     ) {
       const newPlayer = videojs(videoRef.current, {
         ...defaultVideoJsOptions,
+        autoplay: false,
         muted: true,
         controls: false,
         controlBar: false,
@@ -192,7 +195,12 @@ export function CollectionVideoPlayer({
       setPlayer(newPlayer)
     }
     // If player exists and contentId changes, update the source
-    else if (player && isPlayerReady && videoData?.content != null) {
+    else if (
+      player &&
+      isPlayerReady &&
+      videoData?.content != null &&
+      isVisible
+    ) {
       player.poster(videoData.content.images?.[0]?.mobileCinematicHigh ?? '')
       if (videoData.content.variant?.hls) {
         player.src({
@@ -200,7 +208,6 @@ export function CollectionVideoPlayer({
           type: 'application/x-mpegURL'
         })
       }
-
       // Reset progress
       setProgress(0)
       void player.play()
