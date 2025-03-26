@@ -24,16 +24,12 @@ const SQL_BACKUP_FILE_NAME = 'media-backup.sql'
 const GZIPPED_BACKUP_FILE_NAME = 'media-backup.sql.gz'
 const CLOUDFLARE_IMAGES_FILE_NAME = 'cloudflareImage-system-data.sql.gz'
 // Tables to exclude from the export
-const EXCLUDED_TABLES = ['CloudflareImage', 'UserMediaRole']
-
-/**
- * Formats a table name into the pg_dump exclude pattern
- * @param tableName The name of the table to exclude
- * @returns The formatted pattern for pg_dump --exclude-table
- */
-function getExcludeTablePattern(tableName: string): string {
-  return `*."${tableName}"`
-}
+const EXCLUDED_TABLES = [
+  'CloudflareImage',
+  'MuxVideo',
+  'CloudflareR2',
+  'UserMediaRole'
+]
 
 function getS3Client(): S3Client {
   if (process.env.CLOUDFLARE_R2_ENDPOINT == null)
@@ -129,7 +125,7 @@ async function uploadToR2(
 /**
  * Executes pg_dump command to create a SQL dump in PLAIN format
  * Uses INSERT statements instead of COPY for better portability
- * Excludes specified tables and their data
+ * Excludes specified tables
  */
 async function executePgDump(
   outputFile: string,
@@ -148,13 +144,10 @@ async function executePgDump(
         PGPASSWORD: decodeURIComponent(databaseUrl.password)
       }
 
-      // Generate exclude table arguments - use both exclude-table and exclude-table-data
-      // to ensure both schema and data are properly excluded
+      // Generate exclude table arguments
       const excludeTableArgs = EXCLUDED_TABLES.flatMap((table) => [
-        '--exclude-table-data',
-        getExcludeTablePattern(table),
         '--exclude-table',
-        getExcludeTablePattern(table)
+        table
       ])
 
       const args = [
@@ -173,7 +166,6 @@ async function executePgDump(
         '--no-privileges',
         '--no-publications', // Exclude publications from export
         '--no-subscriptions', // Exclude subscriptions from export
-        '--no-comments', // Exclude comments that might include table references
         ...excludeTableArgs,
         '-f',
         outputFile
@@ -200,7 +192,7 @@ async function executePgDump(
         if (code === 0) {
           // Verify the SQL file exists and has content
           fsPromises.stat(outputFile).then(
-            async (stats) => {
+            (stats) => {
               if (stats.size === 0) {
                 logger.error('SQL file is empty')
                 reject(new Error('SQL file is empty'))
@@ -208,20 +200,7 @@ async function executePgDump(
                 logger.info(
                   `Database export completed: ${outputFile} (${stats.size} bytes)`
                 )
-
-                // Post-process the SQL file to remove foreign key constraints to excluded tables
-                try {
-                  logger.info(
-                    'Post-processing SQL file to remove foreign key constraints to excluded tables'
-                  )
-                  await postProcessSqlFile(outputFile, logger)
-                  resolve()
-                } catch (error) {
-                  logger.error({ error }, 'Failed to post-process SQL file')
-                  reject(
-                    error instanceof Error ? error : new Error(String(error))
-                  )
-                }
+                resolve()
               }
             },
             (error) => {
@@ -248,48 +227,6 @@ async function executePgDump(
       reject(error instanceof Error ? error : new Error(String(error)))
     }
   })
-}
-
-/**
- * Post-processes the SQL file to remove foreign key constraints to excluded tables
- */
-async function postProcessSqlFile(
-  sqlFilePath: string,
-  logger: Logger
-): Promise<void> {
-  try {
-    // Read the SQL file
-    let sqlContent = await fsPromises.readFile(sqlFilePath, 'utf8')
-
-    // Create patterns to match foreign key constraints to excluded tables
-    const patterns = EXCLUDED_TABLES.map((table) => {
-      return new RegExp(
-        `ADD CONSTRAINT [^;]+ FOREIGN KEY [^;]+ REFERENCES [^.]+\\.?"${table}"[^;]+;`,
-        'g'
-      )
-    })
-
-    // Replace the patterns with empty strings
-    for (const pattern of patterns) {
-      sqlContent = sqlContent.replace(pattern, '')
-    }
-
-    // Also remove any ALTER TABLE statements that might reference the excluded tables
-    for (const table of EXCLUDED_TABLES) {
-      const alterPattern = new RegExp(
-        `ALTER TABLE [^.]+\\.?"${table}"[^;]+;`,
-        'g'
-      )
-      sqlContent = sqlContent.replace(alterPattern, '')
-    }
-
-    // Write the updated content back to the file
-    await fsPromises.writeFile(sqlFilePath, sqlContent, 'utf8')
-    logger.info('Successfully post-processed SQL file')
-  } catch (error) {
-    logger.error({ error }, 'Error post-processing SQL file')
-    throw error instanceof Error ? error : new Error(String(error))
-  }
 }
 
 /**

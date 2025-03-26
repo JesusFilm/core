@@ -1,10 +1,14 @@
 import { spawn } from 'child_process'
 import { promises as fs } from 'fs'
+import { join } from 'path'
+import { pipeline } from 'stream/promises'
+import { createGzip } from 'zlib'
 
 import {
   CopyObjectCommand,
   HeadObjectCommand,
-  PutObjectCommand
+  PutObjectCommand,
+  S3Client
 } from '@aws-sdk/client-s3'
 import { Logger } from 'pino'
 
@@ -39,15 +43,9 @@ jest.mock('stream/promises', () => ({
 jest.mock('fs', () => ({
   promises: {
     mkdir: jest.fn().mockResolvedValue(undefined),
-    readFile: jest.fn().mockImplementation((path, encoding) => {
-      if (encoding === 'utf8') {
-        return Promise.resolve('mock sql content')
-      }
-      return Promise.resolve(Buffer.from('test'))
-    }),
+    readFile: jest.fn().mockResolvedValue(Buffer.from('test')),
     unlink: jest.fn().mockResolvedValue(undefined),
-    stat: jest.fn().mockResolvedValue({ size: 100 }),
-    writeFile: jest.fn().mockResolvedValue(undefined)
+    stat: jest.fn().mockResolvedValue({ size: 100 })
   },
   createReadStream: jest.fn().mockReturnValue({ pipe: jest.fn() }),
   createWriteStream: jest.fn().mockReturnValue({ pipe: jest.fn() }),
@@ -64,6 +62,7 @@ jest.mock('zlib', () => ({
 describe('dataExport service', () => {
   let logger: Partial<Logger>
   let mockSpawn: jest.Mock
+  let mockEventEmitter: any
   let mockS3Send: jest.Mock
 
   beforeEach(() => {
@@ -87,6 +86,11 @@ describe('dataExport service', () => {
       'postgres://user:pass@localhost:5432/media'
 
     mockSpawn = spawn as jest.Mock
+    mockEventEmitter = mockSpawn.mock.results[0]?.value || {
+      on: jest.fn().mockReturnThis(),
+      stderr: { on: jest.fn() },
+      stdout: { pipe: jest.fn(), on: jest.fn() }
+    }
 
     // Access the mocked S3 client's send method
     mockS3Send = jest.fn().mockResolvedValue({})
@@ -135,15 +139,14 @@ describe('dataExport service', () => {
         '--no-privileges',
         '--no-publications', // Verify publications are excluded
         '--no-subscriptions', // Verify subscriptions are excluded
-        '--no-comments', // Verify comments are excluded
-        '--exclude-table-data',
-        '*."CloudflareImage"',
         '--exclude-table',
-        '*."CloudflareImage"',
-        '--exclude-table-data',
-        '*."UserMediaRole"',
+        'CloudflareImage',
         '--exclude-table',
-        '*."UserMediaRole"'
+        'MuxVideo',
+        '--exclude-table',
+        'CloudflareR2',
+        '--exclude-table',
+        'UserMediaRole'
       ]),
       expect.anything()
     )
