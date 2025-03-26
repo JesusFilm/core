@@ -139,6 +139,7 @@ describe('dataExport service', () => {
         '--no-privileges',
         '--no-publications', // Verify publications are excluded
         '--no-subscriptions', // Verify subscriptions are excluded
+        '--no-comments', // Verify comments are excluded
         '--exclude-table-data',
         '*."CloudflareImage"',
         '--exclude-table',

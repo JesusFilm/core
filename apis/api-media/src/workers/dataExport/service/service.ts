@@ -178,6 +178,7 @@ async function executePgDump(
         '--no-privileges',
         '--no-publications', // Exclude publications from export
         '--no-subscriptions', // Exclude subscriptions from export
+        '--no-comments', // Exclude comments that might include table references
         ...excludeTableArgs,
         '-f',
         outputFile
@@ -204,7 +205,7 @@ async function executePgDump(
         if (code === 0) {
           // Verify the SQL file exists and has content
           fsPromises.stat(outputFile).then(
-            (stats) => {
+            async (stats) => {
               if (stats.size === 0) {
                 logger.error('SQL file is empty')
                 reject(new Error('SQL file is empty'))
@@ -212,7 +213,20 @@ async function executePgDump(
                 logger.info(
                   `Database export completed: ${outputFile} (${stats.size} bytes)`
                 )
-                resolve()
+
+                // Post-process the SQL file to remove foreign key constraints to excluded tables
+                try {
+                  logger.info(
+                    'Post-processing SQL file to remove foreign key constraints to excluded tables'
+                  )
+                  await postProcessSqlFile(outputFile, logger)
+                  resolve()
+                } catch (error) {
+                  logger.error({ error }, 'Failed to post-process SQL file')
+                  reject(
+                    error instanceof Error ? error : new Error(String(error))
+                  )
+                }
               }
             },
             (error) => {
@@ -239,6 +253,48 @@ async function executePgDump(
       reject(error instanceof Error ? error : new Error(String(error)))
     }
   })
+}
+
+/**
+ * Post-processes the SQL file to remove foreign key constraints to excluded tables
+ */
+async function postProcessSqlFile(
+  sqlFilePath: string,
+  logger: Logger
+): Promise<void> {
+  try {
+    // Read the SQL file
+    let sqlContent = await fsPromises.readFile(sqlFilePath, 'utf8')
+
+    // Create patterns to match foreign key constraints to excluded tables
+    const patterns = EXCLUDED_TABLES.map((table) => {
+      return new RegExp(
+        `ADD CONSTRAINT [^;]+ FOREIGN KEY [^;]+ REFERENCES [^.]+\\.?"${table}"[^;]+;`,
+        'g'
+      )
+    })
+
+    // Replace the patterns with empty strings
+    for (const pattern of patterns) {
+      sqlContent = sqlContent.replace(pattern, '')
+    }
+
+    // Also remove any ALTER TABLE statements that might reference the excluded tables
+    for (const table of EXCLUDED_TABLES) {
+      const alterPattern = new RegExp(
+        `ALTER TABLE [^.]+\\.?"${table}"[^;]+;`,
+        'g'
+      )
+      sqlContent = sqlContent.replace(alterPattern, '')
+    }
+
+    // Write the updated content back to the file
+    await fsPromises.writeFile(sqlFilePath, sqlContent, 'utf8')
+    logger.info('Successfully post-processed SQL file')
+  } catch (error) {
+    logger.error({ error }, 'Error post-processing SQL file')
+    throw error instanceof Error ? error : new Error(String(error))
+  }
 }
 
 /**
