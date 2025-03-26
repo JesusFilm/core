@@ -27,7 +27,6 @@ interface VideoPlayerProps {
 
 export function CollectionVideoPlayer({
   contentId,
-  title,
   mutePage,
   setMutePage
 }: VideoPlayerProps): ReactElement {
@@ -160,7 +159,11 @@ export function CollectionVideoPlayer({
 
   // Initialize player
   useEffect(() => {
-    if (videoRef.current != null && videoData?.content != null) {
+    if (
+      videoRef.current != null &&
+      player == null &&
+      videoData?.content != null
+    ) {
       const newPlayer = videojs(videoRef.current, {
         ...defaultVideoJsOptions,
         muted: true,
@@ -188,7 +191,21 @@ export function CollectionVideoPlayer({
 
       setPlayer(newPlayer)
     }
-  }, [videoData, contentId])
+    // If player exists and contentId changes, update the source
+    else if (player && isPlayerReady && videoData?.content != null) {
+      player.poster(videoData.content.images?.[0]?.mobileCinematicHigh ?? '')
+      if (videoData.content.variant?.hls) {
+        player.src({
+          src: videoData.content.variant.hls,
+          type: 'application/x-mpegURL'
+        })
+      }
+
+      // Reset progress
+      setProgress(0)
+      void player.play()
+    }
+  }, [videoData, contentId, player, isPlayerReady])
 
   return (
     <div
@@ -315,9 +332,6 @@ export function CollectionVideoPlayer({
           </div>
         )}
       </div>
-      <h6 className="text-lg font-medium mt-2 text-white">
-        {title || videoData?.content?.title?.[0]?.value || t('Loading...')}
-      </h6>
     </div>
   )
 }

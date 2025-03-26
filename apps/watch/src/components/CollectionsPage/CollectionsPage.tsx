@@ -342,6 +342,7 @@ export function CollectionsPage(): ReactElement {
           description={t(
             "God created humans to be spiritually and relationally connected with Him, but how can we keep God's commands? How can we live without shame? We can't restore ourselves to honor. It would seem we're doomed, except God doesn't want His creation to die. He is merciful and loving, and wants us to be restored, living with Him in full life."
           )}
+          showDivider={true}
           mutePage={mutePage}
           setMutePage={setMutePage}
           questions={[
@@ -468,7 +469,6 @@ export function CollectionsPage(): ReactElement {
             title: t("Want to understand more about Jesus' sacrifice?"),
             buttonText: t('Join Our Bible study')
           }}
-          showDivider={false}
         />
         <CollectionsVideoContent
           contentId="did-jesus-come-back-from-the-dead/english"
