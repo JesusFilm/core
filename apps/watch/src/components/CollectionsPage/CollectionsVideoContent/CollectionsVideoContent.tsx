@@ -73,7 +73,7 @@ export const CollectionsVideoContent = ({
         mutePage={mutePage}
         setMutePage={setMutePage}
       />
-      <div className="block xl:flex w-full">
+      <div className="xl:flex w-full z-1 relative">
         <CollectionVideoContentDescription
           subtitle={subtitle}
           title={title}
