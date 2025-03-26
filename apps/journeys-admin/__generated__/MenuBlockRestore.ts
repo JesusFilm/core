@@ -50,6 +50,7 @@ export interface MenuBlockRestore_stepRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: MenuBlockRestore_stepRestore_ButtonBlock_action | null;
 }
 
