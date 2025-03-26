@@ -194,6 +194,20 @@ describe('FilterDrawer', () => {
       ).toBeInTheDocument()
     })
 
+    it('should not render the export button if journey is not provided', async () => {
+      const { journey, ...rest } = props
+
+      render(
+        <MockedProvider>
+          <FilterDrawer {...rest} />
+        </MockedProvider>
+      )
+
+      expect(
+        screen.queryByRole('button', { name: 'Export data' })
+      ).not.toBeInTheDocument()
+    })
+
     it('should fetch data when export button is clicked', async () => {
       render(
         <MockedProvider
