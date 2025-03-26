@@ -2,6 +2,9 @@ import { BullModule } from '@nestjs/bullmq'
 import { CacheModule } from '@nestjs/cache-manager'
 import { Module } from '@nestjs/common'
 
+import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
+
+import { AppCaslFactory } from '../../lib/casl/caslFactory'
 import { PrismaService } from '../../lib/prisma.service'
 import { BlockService } from '../block/block.service'
 import { IntegrationGrowthSpacesService } from '../integration/growthSpaces/growthSpaces.service'
@@ -35,7 +38,8 @@ import {
 @Module({
   imports: [
     CacheModule.register(),
-    BullModule.registerQueue({ name: 'api-journeys-events-email' })
+    BullModule.registerQueue({ name: 'api-journeys-events-email' }),
+    CaslAuthModule.register(AppCaslFactory)
   ],
   providers: [
     BlockService,
