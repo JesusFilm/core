@@ -45,7 +45,7 @@ locals {
     container_port = local.port
     host_port      = local.port
     cpu            = 1024
-    memory         = 2048
+    memory         = 4096
     desired_count  = 1
     zone_id        = var.ecs_config.zone_id
     alb_target_group = merge(var.ecs_config.alb_target_group, {
