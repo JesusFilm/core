@@ -17,6 +17,8 @@ export type Scalars = {
   /** A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   Date: { input: any; output: any; }
   DateTime: { input: any; output: any; }
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format. */
+  DateTimeISO: { input: any; output: any; }
   Json: { input: any; output: any; }
   join__FieldSet: { input: any; output: any; }
   link__Import: { input: any; output: any; }
@@ -902,8 +904,8 @@ export type JourneyEventsConnection = {
 export type JourneyEventsExportLog = {
   __typename?: 'JourneyEventsExportLog';
   createdAt: Scalars['Date']['output'];
-  dateRangeEnd?: Maybe<Scalars['Date']['output']>;
-  dateRangeStart?: Maybe<Scalars['Date']['output']>;
+  dateRangeEnd?: Maybe<Scalars['DateTimeISO']['output']>;
+  dateRangeStart?: Maybe<Scalars['DateTimeISO']['output']>;
   eventsFilter: Array<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   journeyId: Scalars['ID']['output'];
