@@ -1,4 +1,6 @@
+import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -8,14 +10,45 @@ import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { stringify } from 'csv-stringify/sync'
+import { format } from 'date-fns'
 import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
 import X2Icon from '@core/shared/ui/icons/X2'
 
+import type { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+
 import { ClearAllButton } from './ClearAllButton'
 
+const EVENT_CSV_OPTIONS = {
+  header: true,
+  columns: [
+    'id',
+    'journeyId',
+    'createdAt',
+    'label',
+    'value',
+    'typename',
+    // 'blockId',
+    'action',
+    'actionValue',
+    'messagePlatform',
+    'languageId',
+    'email',
+    'position',
+    'source',
+    'progress',
+    'updatedAt',
+    'journeyName',
+    'visitorId',
+    'visitorName'
+  ]
+}
+
 interface FilterDrawerProps {
+  journey: Journey
   handleClose?: () => void
   handleChange?: (e) => void
   sortSetting?: 'date' | 'duration'
@@ -27,7 +60,121 @@ interface FilterDrawerProps {
   handleClearAll?: () => void
 }
 
+export const GET_JOURNEY_EVENTS_EXPORT = gql`
+  query GetJourneyEvents(
+    $journeyId: ID!
+    $filter: JourneyEventsFilter
+    $first: Int
+    $after: String
+  ) {
+    journeyEventsConnection(
+      journeyId: $journeyId
+      filter: $filter
+      first: $first
+      after: $after
+    ) {
+      edges {
+        node {
+          id
+          journeyId
+          createdAt
+          label
+          value
+          action
+          actionValue
+          messagePlatform
+          language {
+            id
+            name(primary: true) {
+              value
+            }
+          }
+          email
+          blockId
+          position
+          source
+          progress
+          typename
+          visitorId
+          # May not be needed since we have access to journey?
+          # journey {
+          #   title
+          # }
+          visitor {
+            name
+            email
+          }
+          # ... on ButtonClickEvent {
+          #   action
+          #   actionValue
+          # }
+          # ... on JourneyViewEvent {
+          #   language {
+          #     id
+          #     name(primary: true) {
+          #       value
+          #     }
+          #   }
+          # }
+          # ... on SignUpSubmissionEvent {
+          #   email
+          # }
+          # ... on VideoStartEvent {
+          #   source
+          # }
+          # ... on VideoCompleteEvent {
+          #   source
+          # }
+          # ... on ChatOpenEvent {
+          #   messagePlatform
+          # }
+          # ... on VideoCollapseEvent {
+          #   position
+          #   source
+          # }
+          # ... on VideoExpandEvent {
+          #   position
+          #   source
+          # }
+          # ... on VideoPauseEvent {
+          #   position
+          #   source
+          # }
+          # ... on VideoPlayEvent {
+          #   position
+          #   source
+          # }
+          # ... on VideoStartEvent {
+          #   position
+          #   source
+          # }
+          # ... on VideoProgressEvent {
+          #   position
+          #   source
+          #   progress
+          # }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        hasPreviousPage
+        startCursor
+        endCursor
+      }
+    }
+  }
+`
+
+export const CREATE_EVENTS_EXPORT_LOG = gql`
+  mutation CreateEventsExportLog($input: JourneyEventsExportLogInput!) {
+    createJourneyEventsExportLog(input: $input) {
+      id
+    }
+  }
+`
+
 export function FilterDrawer({
+  journey,
   handleClose,
   handleChange,
   sortSetting,
@@ -39,8 +186,86 @@ export function FilterDrawer({
   handleClearAll
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const [getJourneyEvents] = useLazyQuery(GET_JOURNEY_EVENTS_EXPORT)
+  const [createEventsExportLog] = useMutation(CREATE_EVENTS_EXPORT_LOG)
+  const { enqueueSnackbar } = useSnackbar()
+
+  const handleExport = async (): Promise<void> => {
+    if (journey == null) return
+
+    const events: any[] = []
+    let cursor: string | null = null
+    let hasNextPage = false
+
+    try {
+      do {
+        const { data } = await getJourneyEvents({
+          variables: {
+            journeyId: journey.id,
+            first: 50,
+            after: cursor
+          }
+        })
+
+        if (data?.journeyEventsConnection == null) {
+          throw new Error(t('Failed to retrieve data for export.'))
+        }
+
+        const edges = data?.journeyEventsConnection.edges ?? []
+        events.push(...edges)
+
+        cursor = data?.journeyEventsConnection.pageInfo.endCursor
+        hasNextPage = data?.journeyEventsConnection.pageInfo.hasNextPage
+      } while (hasNextPage)
+
+      const eventData = events.map((edge) => {
+        return {
+          ...edge.node,
+          journeyName: journey?.title,
+          visitorName: edge.node.visitor?.name ?? ''
+        }
+      })
+
+      const csv = stringify(eventData, EVENT_CSV_OPTIONS)
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+
+      const url = window.URL.createObjectURL(blob)
+
+      const today = format(new Date(), 'yyyy-MM-dd')
+      const fileName = `[${today}] ${journey?.slug}.csv`
+
+      const link = document.createElement('a')
+      link.target = '_blank'
+      link.href = url
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link)
+
+      link.click()
+
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+
+      await createEventsExportLog({
+        variables: {
+          input: {
+            journeyId: journey.id,
+            eventsFilter: []
+            // eventsFilter: ['JourneyViewEvent', 'ButtonClickEvent'],
+            // preiodRangeStart: '2025-03-01T00:00:00Z',
+            // periodRangeEnd: '2025-03-25T00:00:00Z'
+          }
+        }
+      })
+    } catch (error) {
+      enqueueSnackbar(error.message, {
+        variant: 'error'
+      })
+    }
+  }
+
   return (
-    <Box sx={{ height: '100vh' }} data-testid="FilterDrawer">
+    <Stack sx={{ height: '100vh' }} data-testid="FilterDrawer">
       <Box sx={{ display: { sm: 'block', md: 'none' } }}>
         <Stack direction="row" sx={{ px: 6, py: 2 }} alignItems="center">
           <Typography variant="subtitle1">{t('Refine Results')}</Typography>
@@ -124,6 +349,17 @@ export function FilterDrawer({
           />
         </RadioGroup>
       </Box>
-    </Box>
+
+      <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ width: '100%' }}
+          onClick={handleExport}
+        >
+          {t('Export data')}
+        </Button>
+      </Box>
+    </Stack>
   )
 }
