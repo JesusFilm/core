@@ -18,7 +18,7 @@ export function BibleQuotesCarouselHeader({
     <div className="padded">
       <div className="flex items-center justify-between pb-8">
         <div className="flex items-start gap-4">
-          <h3 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-stone-200/70">
+          <h3 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
             {bibleQuotesTitle}
           </h3>
         </div>

@@ -209,7 +209,7 @@ export function CollectionVideoPlayer({
 
   return (
     <div
-      className="relative cursor-pointer"
+      className="relative mb-4 padded cursor-pointer"
       ref={containerRef}
       onClick={handlePlayPause}
     >

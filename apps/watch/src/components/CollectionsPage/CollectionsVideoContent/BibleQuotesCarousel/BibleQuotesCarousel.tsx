@@ -68,9 +68,6 @@ export function BibleQuotesCarousel({
             data-testid="BibleQuotesSwiperSlide"
             key={index}
             className={`max-w-[400px] pl-6 ${index === 0 ? '2xl:pl-20' : ''} xl:pl-12`}
-            style={{
-              width: 'unset !important'
-            }}
           >
             <BibleQuote imageUrl={quote.imageUrl} bgColor={quote.bgColor}>
               {quote.author && (
