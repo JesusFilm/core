@@ -191,9 +191,9 @@ const messages = {
   Draft: 'Draft',
   Add: 'Add',
   Uploading: 'Uploading',
-  'Uploading...': 'Uploading...',
+  UploadingProgress: 'Uploading...',
   Processing: 'Processing',
-  'Processing...': 'Processing...',
+  ProcessingProgress: 'Processing...',
   'Upload Failed!': 'Upload Failed!',
   'Change file': 'Change file',
   'Upload file': 'Upload file',
@@ -479,9 +479,9 @@ describe('AddAudioLanguageDialog', () => {
 
     // Wait for language dropdown options
     await waitFor(() => {
-      // Use getByText to find the English option
-      const englishOption = screen.getByText(/English/i)
-      fireEvent.click(englishOption)
+      // Use getAllByText to find the English options and select the first one
+      const englishOptions = screen.getAllByText(/English/i)
+      fireEvent.click(englishOptions[0])
     })
 
     // Toggle published state
