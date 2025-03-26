@@ -63,7 +63,7 @@ export const CollectionsVideoContent = ({
   onOpenDialog
 }: VideoSectionProps): ReactElement => {
   return (
-    <>
+    <div className="px-4 pb-8">
       {showDivider && (
         <hr className="mb-18 border-t-2 border-t-black/70 border-b-1 border-b-white/5 inset-shadow-sm" />
       )}
@@ -101,6 +101,6 @@ export const CollectionsVideoContent = ({
           <QuizButton />
         </>
       )}
-    </>
+    </div>
   )
 }
