@@ -22,7 +22,7 @@ export function CollectionsPageContent({
       >
         <div className="pt-7 w-full" data-testid="CollectionPageContainer">
           <div
-            className="max-w-[1920px] mx-auto px-4"
+            className="max-w-[1920px] mx-auto "
             data-testid="CollectionPageContent"
           >
             {children}
