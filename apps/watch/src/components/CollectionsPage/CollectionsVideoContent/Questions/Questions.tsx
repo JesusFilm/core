@@ -33,19 +33,15 @@ export const Questions = ({
   }
 
   return (
-    <Box className="xl:w-2/5">
-      <Box className="questions-block pt-16 xl:pt-4">
-        <Box className="flex items-center justify-between mb-6 padded">
-          <Box className="flex items-center gap-4">
-            <Box
-              component="h4"
-              className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-stone-200/70"
-            >
+    <div className="xl:w-2/5">
+      <div className="questions-block pt-16 xl:pt-4">
+        <div className="flex items-center justify-between mb-6 padded">
+          <div className="flex items-center gap-4">
+            <h4 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
               {questionsTitle}
-            </Box>
-          </Box>
-          <Box
-            component="button"
+            </h4>
+          </div>
+          <button
             onClick={onOpenDialog}
             aria-label="Ask a question"
             tabIndex={0}
@@ -63,11 +59,11 @@ export const Questions = ({
                 height: 16
               }}
             />
-            <Box component="span">{askButtonText}</Box>
-          </Box>
-        </Box>
+            <span>{askButtonText}</span>
+          </button>
+        </div>
 
-        <Box className="relative">
+        <div className="relative">
           {questions.map((q) => (
             <Question
               key={q.id}
@@ -78,8 +74,8 @@ export const Questions = ({
               {q.answer}
             </Question>
           ))}
-        </Box>
-      </Box>
-    </Box>
+        </div>
+      </div>
+    </div>
   )
 }
