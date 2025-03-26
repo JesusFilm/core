@@ -62,14 +62,16 @@ export const CollectionVideoContentCarousel = ({
   return (
     <div className="relative bg-linear-to-tr from-violet-950/10 via-indigo-500/10 to-cyan-300/50 py-16 px-4">
       <div className="absolute inset-0 overlay-texture-image bg-repeat mix-blend-multiply"></div>
-      <div className="z-2 relative">
+      <div className="padded z-2 relative">
         <div className="flex items-center justify-between">
           <div className="flex items-start gap-4">
             <div className="flex flex-col gap-1">
-              <h4 className="text-sm tracking-wider uppercase text-white/50">
+              <h4 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70 xl:mb-1 mb-0">
                 {subtitle}
               </h4>
-              <h3 className="text-2xl font-bold text-balance">{title}</h3>
+              <h3 className="text-2xl xl:text-3xl 2xl:text-4xl font-bold mb-0 text-balance">
+                {title}
+              </h3>
             </div>
           </div>
           <button
@@ -90,8 +92,8 @@ export const CollectionVideoContentCarousel = ({
         </div>
       </div>
 
-      <div className="space-y-6 pt-6 pb-10">
-        <p className="leading-relaxed text-stone-200/80">
+      <div className="padded space-y-6 pt-6 pb-10">
+        <p className="text-lg xl:text-xl mt-2 leading-relaxed text-stone-200/80">
           <span style={{ fontWeight: 'bold', color: 'white' }}>
             {firstFourWords}
           </span>
@@ -116,7 +118,7 @@ export const CollectionVideoContentCarousel = ({
           {slides.map((slide, index) => (
             <SwiperSlide
               key={slide.contentId}
-              className={`max-w-[200px] ${index === 0 ? 'pl-6' : ''} ${index === slides.length - 1 ? 'pr-6' : ''} cursor-pointer`}
+              className={`max-w-[200px] ${index === 0 ? 'pl-6 2xl:pl-20 xl:pl-12' : ''} ${index === slides.length - 1 ? 'pr-6' : ''} cursor-pointer`}
             >
               <div
                 onClick={() => handleSlideClick(slide.contentId, slide.title)}
@@ -125,7 +127,8 @@ export const CollectionVideoContentCarousel = ({
                 data-testid="CollectionVideoContentCarouselSlides"
               >
                 <Image
-                  fill
+                  width={200}
+                  height={240}
                   src={slide.imageUrl}
                   alt={slide.title}
                   className="absolute top-0 w-full h-[150px] object-cover overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_50%,transparent_100%)] [mask-size:cover]"
