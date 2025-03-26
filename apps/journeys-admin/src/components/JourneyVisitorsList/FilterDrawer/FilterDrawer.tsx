@@ -48,7 +48,6 @@ const EVENT_CSV_OPTIONS = {
 }
 
 interface FilterDrawerProps {
-  journey: Journey
   handleClose?: () => void
   handleChange?: (e) => void
   sortSetting?: 'date' | 'duration'
@@ -58,6 +57,7 @@ interface FilterDrawerProps {
   withIcon: boolean
   hideInteractive: boolean
   handleClearAll?: () => void
+  journey?: Journey
 }
 
 export const GET_JOURNEY_EVENTS_EXPORT = gql`
@@ -350,16 +350,18 @@ export function FilterDrawer({
         </RadioGroup>
       </Box>
 
-      <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ width: '100%' }}
-          onClick={handleExport}
-        >
-          {t('Export data')}
-        </Button>
-      </Box>
+      {journey != null && (
+        <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ width: '100%' }}
+            onClick={handleExport}
+          >
+            {t('Export data')}
+          </Button>
+        </Box>
+      )}
     </Stack>
   )
 }
