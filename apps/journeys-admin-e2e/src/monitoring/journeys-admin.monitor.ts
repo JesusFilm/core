@@ -27,9 +27,8 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
   page.setDefaultTimeout(defaultTimeout);
   page.setDefaultNavigationTimeout(navigationTimeout);
 
-  await page.goto('https://admin.nextstep.is/')
   const startTime = Date.now();
-  let stepTiming: { [key: string]: number } = {};
+  const stepTiming: { [key: string]: number } = {};
 
   try {
     // Step 1: Navigate to login page
