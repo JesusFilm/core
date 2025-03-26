@@ -18,7 +18,7 @@ describe('Type', () => {
     id: 'textResponse0.id',
     parentBlockId: '0',
     parentOrder: 0,
-    label: 'Your answer here',
+    label: 'Label',
     placeholder: null,
     hint: null,
     minRows: null,
@@ -59,7 +59,7 @@ describe('Type', () => {
       variables: {
         id: selectedBlock.id,
         input: {
-          label: 'Your answer here',
+          label: 'Label',
           type: TextResponseType.freeForm,
           integrationId: null,
           routeId: null
@@ -71,7 +71,7 @@ describe('Type', () => {
         textResponseBlockUpdate: {
           __typename: 'TextResponseBlock',
           id: selectedBlock.id,
-          label: 'Your answer here',
+          label: 'Label',
           type: TextResponseType.freeForm,
           integrationId: null,
           routeId: null
