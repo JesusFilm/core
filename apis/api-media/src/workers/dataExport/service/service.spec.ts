@@ -48,7 +48,13 @@ jest.mock('fs', () => ({
       .mockResolvedValue(
         'CREATE TABLE "User" (...);\n' +
           'ALTER TABLE "Photo" ADD CONSTRAINT "Photo_r2Id_fkey" FOREIGN KEY ("r2Id") REFERENCES public."CloudflareR2"("id");\n' +
-          'ALTER TABLE "Video" ADD CONSTRAINT "Video_cloudflareR2Id_fkey" FOREIGN KEY ("cloudflareR2Id") REFERENCES public."CloudflareR2"("id");\n'
+          'ALTER TABLE "Video" ADD CONSTRAINT "Video_cloudflareR2Id_fkey" FOREIGN KEY ("cloudflareR2Id") REFERENCES public."CloudflareR2"("id");\n' +
+          'CREATE TABLE public."CloudflareR2" ("id" UUID NOT NULL, "filename" TEXT, PRIMARY KEY("id"));\n' +
+          'CREATE INDEX "CloudflareR2_userId_idx" ON public."CloudflareR2"("userId");\n' +
+          'ALTER TABLE ONLY public."CloudflareR2" ADD CONSTRAINT "CloudflareR2_videoId_fkey" FOREIGN KEY ("videoId") REFERENCES "Video"("id");\n' +
+          "INSERT INTO public.\"CloudflareR2\" VALUES ('00000000-0000-0000-0000-000000000000', 'test.mp4');\n" +
+          'COPY public."CloudflareR2" FROM stdin;\n\\.\n\n' +
+          'SELECT * FROM "MuxVideo" WHERE id = REFERENCES public."CloudflareR2"("id");\n'
       ),
     writeFile: jest.fn().mockResolvedValue(undefined),
     unlink: jest.fn().mockResolvedValue(undefined),
@@ -162,16 +168,40 @@ describe('dataExport service', () => {
     expect(fs.readFile).toHaveBeenCalled()
     expect(fs.writeFile).toHaveBeenCalled()
 
-    // Verify that any CloudflareR2 foreign key constraints are removed
+    // Verify that all types of references to CloudflareR2 are removed
     const writeFileCalls = (fs.writeFile as jest.Mock).mock.calls
     if (writeFileCalls.length > 0) {
       const content = writeFileCalls[0][1]
       // Make sure content is a string before testing
       if (typeof content === 'string') {
+        // Check that foreign key constraints are removed
         expect(content).not.toContain('REFERENCES public."CloudflareR2"')
         expect(content).toContain(
           '-- Removed foreign key constraint referencing CloudflareR2'
         )
+
+        // Check that CREATE TABLE statements are removed
+        expect(content).not.toContain('CREATE TABLE public."CloudflareR2"')
+        expect(content).toContain('-- Removed CREATE TABLE for CloudflareR2')
+
+        // Check that CREATE INDEX statements are removed
+        expect(content).not.toContain('CREATE INDEX "CloudflareR2_userId_idx"')
+        expect(content).toContain('-- Removed CREATE INDEX on CloudflareR2')
+
+        // Check that ALTER TABLE statements for the excluded table are removed
+        expect(content).not.toContain('ALTER TABLE ONLY public."CloudflareR2"')
+        expect(content).toContain('-- Removed ALTER TABLE on CloudflareR2')
+
+        // Check that INSERT statements are removed
+        expect(content).not.toContain('INSERT INTO public."CloudflareR2"')
+        expect(content).toContain('-- Removed INSERT INTO CloudflareR2')
+
+        // Check that COPY statements are removed
+        expect(content).not.toContain('COPY public."CloudflareR2"')
+        expect(content).toContain('-- Removed COPY statement for CloudflareR2')
+
+        // Check that other references to the excluded table are replaced
+        expect(content).toContain('REFERENCES null_table(id)')
       }
     }
 

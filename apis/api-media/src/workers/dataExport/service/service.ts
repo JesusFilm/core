@@ -445,28 +445,114 @@ async function postProcessSqlDump(
 
     // Process each excluded table to remove references to it
     for (const excludedTable of EXCLUDED_TABLES) {
-      logger.info(
-        `Removing foreign key constraints referencing ${excludedTable}`
-      )
+      logger.info(`Processing references to ${excludedTable}`)
 
-      // Pattern to match ALTER TABLE statements that add foreign key constraints to excluded tables
+      // Multiple patterns to handle various types of references to excluded tables
+
+      // 1. Foreign key constraints
       const foreignKeyPattern = new RegExp(
-        `ALTER TABLE [^;]+ ADD CONSTRAINT [^;]+ FOREIGN KEY \\([^)]+\\) REFERENCES (public\\.)?"?${excludedTable}"?[^;]*;`,
+        `ALTER TABLE [^;]+ ADD CONSTRAINT [^;]+ FOREIGN KEY \\([^)]+\\) REFERENCES (public\\.)?["']?${excludedTable}["']?[^;]*;`,
         'g'
       )
 
-      // Remove foreign key constraints
-      const originalContent = content
+      // 2. Any other REFERENCES to the excluded table
+      const tableReferencePattern = new RegExp(
+        `REFERENCES (public\\.)?["']?${excludedTable}["']?\\([^)]*\\)`,
+        'g'
+      )
+
+      // 3. CREATE TABLE statements for the excluded table
+      const createTablePattern = new RegExp(
+        `CREATE TABLE (public\\.)?["']?${excludedTable}["']?[\\s\\S]*?;(\\n\\n|\\n)`,
+        'g'
+      )
+
+      // 4. INSERT statements for the excluded table
+      const insertPattern = new RegExp(
+        `INSERT INTO (public\\.)?["']?${excludedTable}["']?[^;]*;(\\n)?`,
+        'g'
+      )
+
+      // 5. COPY statements for the excluded table (might span multiple lines)
+      const copyPattern = new RegExp(
+        `COPY (public\\.)?["']?${excludedTable}["']?[\\s\\S]*?\\\\.\\n`,
+        'g'
+      )
+
+      // 6. CREATE INDEX statements for the excluded table
+      const indexPattern = new RegExp(
+        `CREATE INDEX [^;]+ ON (public\\.)?["']?${excludedTable}["']?[^;]*;(\\n)?`,
+        'g'
+      )
+
+      // 7. ALTER TABLE statements that modify the excluded table directly
+      const alterTablePattern = new RegExp(
+        `ALTER TABLE (ONLY )?(public\\.)?["']?${excludedTable}["']?[^;]*;(\\n)?`,
+        'g'
+      )
+
+      // Apply replacements, keeping track of counts
+      let replacementCount = 0
+
+      // Apply foreign key constraint replacements
+      const foreignKeyMatches = content.match(foreignKeyPattern) || []
+      replacementCount += foreignKeyMatches.length
       content = content.replace(
         foreignKeyPattern,
         `-- Removed foreign key constraint referencing ${excludedTable}\n`
       )
 
-      const replacementCount = (originalContent.match(foreignKeyPattern) || [])
-        .length
+      // Apply other reference replacements
+      const referenceMatches = content.match(tableReferencePattern) || []
+      replacementCount += referenceMatches.length
+      content = content.replace(
+        tableReferencePattern,
+        `REFERENCES null_table(id) /* Removed reference to ${excludedTable} */`
+      )
+
+      // Apply CREATE TABLE replacements
+      const createTableMatches = content.match(createTablePattern) || []
+      replacementCount += createTableMatches.length
+      content = content.replace(
+        createTablePattern,
+        `-- Removed CREATE TABLE for ${excludedTable}\n\n`
+      )
+
+      // Apply INSERT replacements
+      const insertMatches = content.match(insertPattern) || []
+      replacementCount += insertMatches.length
+      content = content.replace(
+        insertPattern,
+        `-- Removed INSERT INTO ${excludedTable}\n`
+      )
+
+      // Apply COPY replacements
+      const copyMatches = content.match(copyPattern) || []
+      replacementCount += copyMatches.length
+      content = content.replace(
+        copyPattern,
+        `-- Removed COPY statement for ${excludedTable}\n`
+      )
+
+      // Apply CREATE INDEX replacements
+      const indexMatches = content.match(indexPattern) || []
+      replacementCount += indexMatches.length
+      content = content.replace(
+        indexPattern,
+        `-- Removed CREATE INDEX on ${excludedTable}\n`
+      )
+
+      // Apply ALTER TABLE replacements
+      const alterTableMatches = content.match(alterTablePattern) || []
+      replacementCount += alterTableMatches.length
+      content = content.replace(
+        alterTablePattern,
+        `-- Removed ALTER TABLE on ${excludedTable}\n`
+      )
+
       if (replacementCount > 0) {
         logger.info(
-          `Removed ${replacementCount} foreign key constraints referencing ${excludedTable}`
+          `Removed ${replacementCount} references to ${excludedTable}`
         )
       }
     }
