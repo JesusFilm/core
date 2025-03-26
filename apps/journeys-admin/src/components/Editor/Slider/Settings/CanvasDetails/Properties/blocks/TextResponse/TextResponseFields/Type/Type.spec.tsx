@@ -131,7 +131,7 @@ describe('Type', () => {
         </EditorProvider>
       </MockedProvider>
     )
-  
+
     fireEvent.click(screen.getByRole('button', { name: 'Phone' }))
     await waitFor(() => expect(mockPhoneUpdate.result).toHaveBeenCalled())
   })
