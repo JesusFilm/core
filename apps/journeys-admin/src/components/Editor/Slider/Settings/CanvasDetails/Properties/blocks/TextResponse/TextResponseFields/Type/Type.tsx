@@ -64,6 +64,9 @@ export function Type(): ReactElement {
       case TextResponseType.name:
         input.label = t('Name')
         break
+      case TextResponseType.phone:
+        input.label = t('Phone')
+        break
       default:
         input.label = t('Your answer here')
     }
@@ -126,6 +129,10 @@ export function Type(): ReactElement {
     {
       value: TextResponseType.email,
       label: t('Email')
+    },
+    {
+      value: TextResponseType.phone,
+      label: t('Phone')
     }
   ]
 

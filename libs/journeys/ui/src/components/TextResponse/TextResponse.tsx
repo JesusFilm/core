@@ -44,7 +44,8 @@ export const TextResponse = ({
   uuid = uuidv4,
   label,
   hint,
-  minRows
+  minRows,
+  type
 }: TextResponseProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
 
@@ -134,6 +135,7 @@ export const TextResponse = ({
                 inputProps={{
                   maxLength: 1000,
                   readOnly: selectedBlock !== undefined,
+                  inputMode: type === 'phone' ? 'tel' : 'text',
                   sx: {
                     pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
                   }
