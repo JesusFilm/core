@@ -8,6 +8,13 @@ https://www.checklyhq.com/docs/cli/
 // Set a longer timeout for this monitoring test
 test.setTimeout(100000);
 
+/**
+ * @check
+ * @name NS Admin Monitoring
+ * @retries 8 // Will retry the test 8 times
+ * @retryInterval 10
+ * @maxRetryTime 600
+ */
 test('NS Admin Monitoring: Check user can login and create a journey via template', async ({
   page
 }) => {
