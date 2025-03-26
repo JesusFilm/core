@@ -10,13 +10,16 @@ import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { GetPlausibleJourneyFlowViewed } from '../../../../__generated__/GetPlausibleJourneyFlowViewed'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { JourneyStatus, Role } from '../../../../__generated__/globalTypes'
 import {
   UpdatePlausibleJourneyFlowViewed,
   UpdatePlausibleJourneyFlowViewedVariables
 } from '../../../../__generated__/UpdatePlausibleJourneyFlowViewed'
 import { TestEditorState } from '../../../libs/TestEditorState'
+import { SHARE_DATA_QUERY } from '../../../libs/useShareDataQuery'
 
+import { GET_JOURNEY_QR_CODES } from './Items/ShareItem/QrCodeDialog/QrCodeDialog'
+import { GET_ROLE } from './Menu/Menu'
 import {
   GET_PLAUSIBLE_JOURNEY_FLOW_VIEWED,
   UPDATE_PLAUSIBLE_JOURNEY_FLOW_VIEWED
@@ -128,6 +131,60 @@ describe('Toolbar', () => {
     variant: 'admin'
   }
 
+  const getUserRoleMock = {
+    request: {
+      query: GET_ROLE
+    },
+    result: {
+      data: {
+        getUserRole: {
+          __typename: 'UserRole',
+          id: 'user-role-id',
+          userId: 'current-user-id',
+          roles: [Role.publisher]
+        }
+      }
+    }
+  }
+
+  const getJourneyQrCodesMock = {
+    request: {
+      query: GET_JOURNEY_QR_CODES,
+      variables: { where: { journeyId: 'journeyId' } }
+    },
+    result: {
+      data: {
+        qrCodes: []
+      }
+    }
+  }
+
+  const shareDataQueryMock = {
+    request: {
+      query: SHARE_DATA_QUERY,
+      variables: {
+        id: 'journeyId',
+        qrCodeWhere: { journeyId: 'journeyId' }
+      }
+    },
+    result: {
+      data: {
+        journey: {
+          id: 'journeyId',
+          slug: 'journey-slug',
+          title: 'My Awesome Journey Title',
+          team: {
+            id: 'teamId',
+            customDomains: [],
+            __typename: 'Team'
+          },
+          __typename: 'Journey'
+        },
+        qrCodes: []
+      }
+    }
+  }
+
   beforeEach(() => {
     window.Beacon = jest.fn()
   })
@@ -223,7 +280,13 @@ describe('Toolbar', () => {
   })
 
   it('should open the social preview when the image is clicked', () => {
-    render(toolbar(socialImageJourney))
+    render(
+      <MockedProvider
+        mocks={[getUserRoleMock, getJourneyQrCodesMock, shareDataQueryMock]}
+      >
+        <SnackbarProvider>{toolbar(socialImageJourney)}</SnackbarProvider>
+      </MockedProvider>
+    )
 
     expect(screen.getByText('activeSlide: 0')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('ToolbarSocialImage'))
