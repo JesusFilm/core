@@ -70,6 +70,13 @@ export const defaultJourney: Journey = {
       }
     ]
   },
+  team: {
+    __typename: 'Team',
+    id: 'teamId',
+    title: 'Team Title',
+    publicTitle: null,
+    customDomains: []
+  },
   updatedAt: '2020-02-01T00:00:00Z',
   createdAt: '2020-02-01T00:00:00Z',
   publishedAt: null,
