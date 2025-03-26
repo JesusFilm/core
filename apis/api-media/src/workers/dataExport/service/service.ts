@@ -429,43 +429,105 @@ async function compressFile(
 }
 
 /**
+ * Post-processes the SQL dump to remove foreign key constraints
+ * that reference excluded tables
+ */
+async function postProcessSqlDump(
+  sqlFilePath: string,
+  logger: Logger
+): Promise<void> {
+  logger.info(
+    'Post-processing SQL dump to remove references to excluded tables'
+  )
+
+  try {
+    let content = await fsPromises.readFile(sqlFilePath, 'utf8')
+
+    // Process each excluded table to remove references to it
+    for (const excludedTable of EXCLUDED_TABLES) {
+      logger.info(
+        `Removing foreign key constraints referencing ${excludedTable}`
+      )
+
+      // Pattern to match ALTER TABLE statements that add foreign key constraints to excluded tables
+      const foreignKeyPattern = new RegExp(
+        `ALTER TABLE [^;]+ ADD CONSTRAINT [^;]+ FOREIGN KEY \\([^)]+\\) REFERENCES (public\\.)?"?${excludedTable}"?[^;]*;`,
+        'g'
+      )
+
+      // Remove foreign key constraints
+      const originalContent = content
+      content = content.replace(
+        foreignKeyPattern,
+        `-- Removed foreign key constraint referencing ${excludedTable}\n`
+      )
+
+      const replacementCount = (originalContent.match(foreignKeyPattern) || [])
+        .length
+      if (replacementCount > 0) {
+        logger.info(
+          `Removed ${replacementCount} foreign key constraints referencing ${excludedTable}`
+        )
+      }
+    }
+
+    await fsPromises.writeFile(sqlFilePath, content)
+    logger.info('SQL dump post-processing completed')
+  } catch (error) {
+    logger.error({ error }, 'Error post-processing SQL dump')
+    throw error instanceof Error ? error : new Error(String(error))
+  }
+}
+
+/**
  * Export data from the media database to backup files
  */
 export const service = async (customLogger?: Logger): Promise<void> => {
-  const logger = customLogger ?? baseLogger.child({ worker: 'dataExport' })
+  const logger = customLogger ?? baseLogger.child({ worker: 'data-export' })
+  logger.info('Starting data export worker')
 
   try {
-    const outputDir = join(process.cwd(), 'exports')
-    await fsPromises.mkdir(outputDir, { recursive: true })
+    if (!process.env.PG_DATABASE_URL_MEDIA) {
+      throw new Error('Database URL is not configured')
+    }
 
-    // Define output files
-    const sqlFile = join(outputDir, SQL_BACKUP_FILE_NAME)
-    const gzippedFile = join(outputDir, GZIPPED_BACKUP_FILE_NAME)
+    // Directory for temporary files
+    const exportDir = join(process.cwd(), 'exports')
+    await fsPromises.mkdir(exportDir, { recursive: true })
+    logger.info(`Created export directory: ${exportDir}`)
 
-    // Generate database backup in plain SQL format
+    // Full paths to output files
+    const sqlFile = join(exportDir, SQL_BACKUP_FILE_NAME)
+    const gzippedFile = join(exportDir, GZIPPED_BACKUP_FILE_NAME)
+
+    // Execute the database export with pg_dump
     await executePgDump(sqlFile, logger)
+
+    // Post-process the SQL dump to remove foreign key constraints to excluded tables
+    await postProcessSqlDump(sqlFile, logger)
 
     // Compress the SQL file
     await compressFile(sqlFile, gzippedFile, logger)
 
-    // Export CloudflareImage data with videoId not null
-    const cloudflareImageFile = await exportCloudflareImageData(
-      outputDir,
-      logger
-    )
-
     // Upload to R2
     await uploadToR2(gzippedFile, logger)
-    await uploadToR2(cloudflareImageFile, logger)
 
-    // Clean up local files
+    // Export CloudflareImage data (for video thumbnails)
+    const cloudflareImagesFile = await exportCloudflareImageData(
+      exportDir,
+      logger
+    )
+    await uploadToR2(cloudflareImagesFile, logger, CLOUDFLARE_IMAGES_FILE_NAME)
+
+    // Clean up temporary files
+    logger.info('Cleaning up temporary files')
     await fsPromises.unlink(sqlFile)
     await fsPromises.unlink(gzippedFile)
-    await fsPromises.unlink(cloudflareImageFile)
+    await fsPromises.unlink(cloudflareImagesFile)
 
-    logger.info('Database export and upload completed successfully')
+    logger.info('Data export completed successfully')
   } catch (error) {
-    logger.error({ error }, 'Error during database export')
+    logger.error({ error }, 'Error during data export')
     throw error instanceof Error ? error : new Error(String(error))
   }
 }

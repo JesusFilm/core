@@ -43,7 +43,14 @@ jest.mock('stream/promises', () => ({
 jest.mock('fs', () => ({
   promises: {
     mkdir: jest.fn().mockResolvedValue(undefined),
-    readFile: jest.fn().mockResolvedValue(Buffer.from('test')),
+    readFile: jest
+      .fn()
+      .mockResolvedValue(
+        'CREATE TABLE "User" (...);\n' +
+          'ALTER TABLE "Photo" ADD CONSTRAINT "Photo_r2Id_fkey" FOREIGN KEY ("r2Id") REFERENCES public."CloudflareR2"("id");\n' +
+          'ALTER TABLE "Video" ADD CONSTRAINT "Video_cloudflareR2Id_fkey" FOREIGN KEY ("cloudflareR2Id") REFERENCES public."CloudflareR2"("id");\n'
+      ),
+    writeFile: jest.fn().mockResolvedValue(undefined),
     unlink: jest.fn().mockResolvedValue(undefined),
     stat: jest.fn().mockResolvedValue({ size: 100 })
   },
@@ -150,6 +157,23 @@ describe('dataExport service', () => {
       ]),
       expect.anything()
     )
+
+    // Verify SQL post-processing is performed
+    expect(fs.readFile).toHaveBeenCalled()
+    expect(fs.writeFile).toHaveBeenCalled()
+
+    // Verify that any CloudflareR2 foreign key constraints are removed
+    const writeFileCalls = (fs.writeFile as jest.Mock).mock.calls
+    if (writeFileCalls.length > 0) {
+      const content = writeFileCalls[0][1]
+      // Make sure content is a string before testing
+      if (typeof content === 'string') {
+        expect(content).not.toContain('REFERENCES public."CloudflareR2"')
+        expect(content).toContain(
+          '-- Removed foreign key constraint referencing CloudflareR2'
+        )
+      }
+    }
 
     // Verify the creation of the temporary view for CloudflareImage export
     expect(mockSpawn).toHaveBeenCalledWith(
