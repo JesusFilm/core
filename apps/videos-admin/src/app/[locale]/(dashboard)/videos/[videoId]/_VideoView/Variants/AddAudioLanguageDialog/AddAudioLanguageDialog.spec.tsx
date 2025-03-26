@@ -471,14 +471,8 @@ describe('AddAudioLanguageDialog', () => {
     await waitFor(() => expect(getLanguagesMockResult).toHaveBeenCalled())
 
     // Select edition
-    fireEvent.mouseDown(screen.getByTestId('EditionSelect'))
-
-    // Wait for the dropdown to open and click on the option
-    await waitFor(() => {
-      // Directly find the select option by its text
-      const baseOption = screen.getByText('base')
-      fireEvent.click(baseOption)
-    })
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Edition' }))
+    fireEvent.click(screen.getByRole('option', { name: 'base' }))
 
     // Select language
     fireEvent.mouseDown(screen.getByLabelText('Language'))
