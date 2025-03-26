@@ -8,7 +8,7 @@ jest.mock('next-i18next', () => ({
   })
 }))
 
-jest.mock('../Question', () => ({
+jest.mock('./Question', () => ({
   Question: ({ children, question, isOpen, onToggle }: any) => (
     <div data-testid="question-component">
       <div data-testid="question-text">{question}</div>

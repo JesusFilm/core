@@ -117,10 +117,11 @@ export const getStaticProps: GetStaticProps<EasterPageProps> = async (
           message?.startsWith('Video not found')
       )
     )
-      return {
-        revalidate: 1,
-        notFound: true
-      }
+      console.error(error)
+    return {
+      revalidate: 1,
+      notFound: true
+    }
     throw error
   }
 }
