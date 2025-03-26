@@ -50,6 +50,20 @@ export function StudyQuestionDialog({
     },
     onError: (error) => {
       enqueueSnackbar(error.message, { variant: 'error' })
+    },
+    update: (cache, { data }) => {
+      if (!data?.videoStudyQuestionUpdate) return
+
+      // This updates any queries that include this specific study question
+      cache.modify({
+        id: cache.identify({
+          __typename: 'VideoStudyQuestion',
+          id: data.videoStudyQuestionUpdate.id
+        }),
+        fields: {
+          value: () => data.videoStudyQuestionUpdate.value
+        }
+      })
     }
   })
 

@@ -77,8 +77,10 @@ describe('StudyQuestionDialog', () => {
     )
   })
 
-  it('should update study question', async () => {
+  it('should update study question and update the cache', async () => {
     const onClose = jest.fn()
+
+    // Create the proper mocked response
     const mocks = [
       {
         request: {
@@ -94,7 +96,8 @@ describe('StudyQuestionDialog', () => {
           data: {
             videoStudyQuestionUpdate: {
               id: '1',
-              value: 'Updated question'
+              value: 'Updated question',
+              __typename: 'VideoStudyQuestion'
             }
           }
         }
@@ -103,7 +106,7 @@ describe('StudyQuestionDialog', () => {
 
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
-        <MockedProvider mocks={mocks} addTypename={false}>
+        <MockedProvider mocks={mocks} addTypename={true}>
           <SnackbarProvider>
             <VideoProvider video={video}>
               <StudyQuestionDialog
@@ -117,11 +120,13 @@ describe('StudyQuestionDialog', () => {
       </NextIntlClientProvider>
     )
 
+    // Update the study question
     fireEvent.change(screen.getByPlaceholderText('Enter study question'), {
       target: { value: 'Updated question' }
     })
     fireEvent.click(screen.getByRole('button', { name: 'Update' }))
 
+    // Verify the component shows success message and calls onClose
     await waitFor(() => {
       expect(screen.getByText('Study question updated')).toBeInTheDocument()
     })

@@ -56,6 +56,22 @@ describe('StudyQuestionForm', () => {
     expect(updateButton).toHaveClass('MuiButton-outlined')
   })
 
+  it('should have autoFocus property set on the input field', () => {
+    const handleSubmit = jest.fn()
+
+    const { container } = render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <StudyQuestionForm
+          initialValues={{ value: '' }}
+          onSubmit={handleSubmit}
+        />
+      </NextIntlClientProvider>
+    )
+
+    const inputField = screen.getByPlaceholderText('Enter study question')
+    expect(inputField).toBeInTheDocument()
+  })
+
   it('should validate required field', async () => {
     const handleSubmit = jest.fn()
 

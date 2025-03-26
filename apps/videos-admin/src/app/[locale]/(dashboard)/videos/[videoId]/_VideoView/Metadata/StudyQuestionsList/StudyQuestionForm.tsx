@@ -49,6 +49,7 @@ export function StudyQuestionForm({
               error={Boolean(errors.value)}
               onChange={handleChange}
               helperText={errors.value}
+              autoFocus
               sx={{
                 '& .MuiInputBase-root': {
                   height: 'auto'

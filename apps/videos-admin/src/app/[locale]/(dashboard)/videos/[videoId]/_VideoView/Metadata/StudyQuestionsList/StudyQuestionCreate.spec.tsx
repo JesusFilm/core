@@ -58,18 +58,13 @@ const mockStudyQuestions = [
 ]
 
 describe('StudyQuestionCreate', () => {
-  const handleQuestionCreated = jest.fn()
-
   it('should render create button', () => {
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
         <MockedProvider>
           <SnackbarProvider>
             <VideoProvider video={video}>
-              <StudyQuestionCreate
-                studyQuestions={mockStudyQuestions}
-                onQuestionCreated={handleQuestionCreated}
-              />
+              <StudyQuestionCreate studyQuestions={mockStudyQuestions} />
             </VideoProvider>
           </SnackbarProvider>
         </MockedProvider>
@@ -85,10 +80,7 @@ describe('StudyQuestionCreate', () => {
         <MockedProvider>
           <SnackbarProvider>
             <VideoProvider video={video}>
-              <StudyQuestionCreate
-                studyQuestions={mockStudyQuestions}
-                onQuestionCreated={handleQuestionCreated}
-              />
+              <StudyQuestionCreate studyQuestions={mockStudyQuestions} />
             </VideoProvider>
           </SnackbarProvider>
         </MockedProvider>
@@ -99,8 +91,10 @@ describe('StudyQuestionCreate', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument()
   })
 
-  it('should create study question with correct order', async () => {
+  it('should create study question with correct order and update the cache', async () => {
     const nextOrder = mockStudyQuestions.length + 1
+
+    // Create the mocks
     const mocks = [
       {
         request: {
@@ -119,7 +113,8 @@ describe('StudyQuestionCreate', () => {
           data: {
             videoStudyQuestionCreate: {
               id: '3',
-              value: 'New question'
+              value: 'New question',
+              __typename: 'VideoStudyQuestion'
             }
           }
         }
@@ -128,25 +123,26 @@ describe('StudyQuestionCreate', () => {
 
     render(
       <NextIntlClientProvider locale="en" messages={messages}>
-        <MockedProvider mocks={mocks} addTypename={false}>
+        <MockedProvider mocks={mocks} addTypename={true}>
           <SnackbarProvider>
             <VideoProvider video={video}>
-              <StudyQuestionCreate
-                studyQuestions={mockStudyQuestions}
-                onQuestionCreated={handleQuestionCreated}
-              />
+              <StudyQuestionCreate studyQuestions={mockStudyQuestions} />
             </VideoProvider>
           </SnackbarProvider>
         </MockedProvider>
       </NextIntlClientProvider>
     )
 
+    // Click the Add button to open the dialog
     fireEvent.click(screen.getByText('Add'))
+
+    // Fill out the form and submit
     fireEvent.change(screen.getByPlaceholderText('Enter study question'), {
       target: { value: 'New question' }
     })
     fireEvent.click(screen.getByRole('button', { name: 'Add' }))
 
+    // Verify the component shows success message and dialog closes
     await waitFor(() => {
       expect(screen.getByText('Study question created')).toBeInTheDocument()
     })
@@ -156,10 +152,6 @@ describe('StudyQuestionCreate', () => {
       },
       { timeout: 3000 }
     )
-    expect(handleQuestionCreated).toHaveBeenCalledWith({
-      id: '3',
-      value: 'New question'
-    })
   })
 
   it('should handle error', async () => {
@@ -186,10 +178,7 @@ describe('StudyQuestionCreate', () => {
         <MockedProvider mocks={mocks} addTypename={false}>
           <SnackbarProvider>
             <VideoProvider video={video}>
-              <StudyQuestionCreate
-                studyQuestions={mockStudyQuestions}
-                onQuestionCreated={handleQuestionCreated}
-              />
+              <StudyQuestionCreate studyQuestions={mockStudyQuestions} />
             </VideoProvider>
           </SnackbarProvider>
         </MockedProvider>

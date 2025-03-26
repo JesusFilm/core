@@ -30,12 +30,10 @@ export type CreateStudyQuestionVariables = VariablesOf<
 
 interface StudyQuestionCreateProps {
   studyQuestions: StudyQuestions
-  onQuestionCreated: (question: { id: string; value: string }) => void
 }
 
 export function StudyQuestionCreate({
-  studyQuestions,
-  onQuestionCreated
+  studyQuestions
 }: StudyQuestionCreateProps): ReactElement {
   const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
@@ -46,16 +44,47 @@ export function StudyQuestionCreate({
     CreateStudyQuestion,
     CreateStudyQuestionVariables
   >(CREATE_STUDY_QUESTION, {
-    onCompleted: (data) => {
-      onQuestionCreated({
-        id: data.videoStudyQuestionCreate.id,
-        value: data.videoStudyQuestionCreate.value
-      })
+    onCompleted: () => {
       enqueueSnackbar(t('Study question created'), { variant: 'success' })
       handleClose()
     },
     onError: (error) => {
       enqueueSnackbar(error.message, { variant: 'error' })
+    },
+    update: (cache, { data }) => {
+      if (!data?.videoStudyQuestionCreate) return
+
+      try {
+        // Find the cached video object
+        const videoId = cache.identify({
+          __typename: 'AdminVideo',
+          id: video.id
+        })
+
+        if (videoId) {
+          // Modify the studyQuestions field to include the new question
+          cache.modify({
+            id: videoId,
+            fields: {
+              studyQuestions: (existingStudyQuestions = []) => {
+                // Create a new study question reference
+                const newQuestionRef = cache.writeFragment({
+                  data: data.videoStudyQuestionCreate,
+                  fragment: graphql(`
+                    fragment NewStudyQuestion on VideoStudyQuestion {
+                      id
+                      value
+                    }
+                  `)
+                })
+                return [...existingStudyQuestions, newQuestionRef]
+              }
+            }
+          })
+        }
+      } catch (e) {
+        console.error('Error updating cache:', e)
+      }
     }
   })
 
