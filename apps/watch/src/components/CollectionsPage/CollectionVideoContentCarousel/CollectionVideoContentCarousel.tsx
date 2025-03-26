@@ -56,8 +56,8 @@ export const CollectionVideoContentCarousel = ({
     setSelectedVideoTitle(title)
   }
 
-  const firstThreeWords = description.split(' ').slice(0, 4).join(' ')
-  const remainingText = description.slice(firstThreeWords.length)
+  const firstFourWords = description.split(' ').slice(0, 4).join(' ')
+  const remainingText = description.slice(firstFourWords.length)
 
   return (
     <div className="relative bg-linear-to-tr from-violet-950/10 via-indigo-500/10 to-cyan-300/50 py-16 px-4">
@@ -93,7 +93,7 @@ export const CollectionVideoContentCarousel = ({
       <div className="space-y-6 pt-6 pb-10">
         <p className="leading-relaxed text-stone-200/80">
           <span style={{ fontWeight: 'bold', color: 'white' }}>
-            {firstThreeWords}
+            {firstFourWords}
           </span>
           {remainingText}
         </p>
@@ -108,19 +108,21 @@ export const CollectionVideoContentCarousel = ({
 
       <div className="pt-8">
         <Swiper
+          data-testid="CollectionVideoContentCarousel"
           slidesPerView={'auto'}
           pagination={{ clickable: true }}
           spaceBetween={20}
         >
           {slides.map((slide, index) => (
             <SwiperSlide
-              onClick={() => handleSlideClick(slide.contentId, slide.title)}
               key={slide.contentId}
               className={`max-w-[200px] ${index === 0 ? 'pl-6' : ''} ${index === slides.length - 1 ? 'pr-6' : ''} cursor-pointer`}
             >
               <div
+                onClick={() => handleSlideClick(slide.contentId, slide.title)}
                 className="relative beveled h-[240px] flex flex-col justify-end w-full rounded-lg overflow-hidden"
                 style={{ backgroundColor: slide.backgroundColor }}
+                data-testid="CollectionVideoContentCarouselSlides"
               >
                 <Image
                   fill
