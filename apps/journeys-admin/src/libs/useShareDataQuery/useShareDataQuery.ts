@@ -22,11 +22,8 @@ export const SHARE_DATA_QUERY = gql`
           name
           apexName
           routeAllTeamJourneys
-          __typename
         }
-        __typename
       }
-      __typename
     }
     qrCodes(where: $qrCodeWhere) {
       id
@@ -37,11 +34,8 @@ export const SHARE_DATA_QUERY = gql`
         to
         domain {
           hostname
-          __typename
         }
-        __typename
       }
-      __typename
     }
   }
 `
