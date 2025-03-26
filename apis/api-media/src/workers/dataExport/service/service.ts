@@ -24,12 +24,7 @@ const SQL_BACKUP_FILE_NAME = 'media-backup.sql'
 const GZIPPED_BACKUP_FILE_NAME = 'media-backup.sql.gz'
 const CLOUDFLARE_IMAGES_FILE_NAME = 'cloudflareImage-system-data.sql.gz'
 // Tables to exclude from the export
-const EXCLUDED_TABLES = [
-  'CloudflareImage',
-  'MuxVideo',
-  'CloudflareR2',
-  'UserMediaRole'
-]
+const EXCLUDED_TABLES = ['CloudflareImage', 'UserMediaRole']
 
 /**
  * Formats a table name into the pg_dump exclude pattern
