@@ -108,7 +108,6 @@ test('NS Admin Monitoring: Check user can login and create a journey via templat
     await page.getByRole('link', { name: 'Preview' }).click();
     
     const previewPage = await page.waitForEvent('popup', { timeout: defaultTimeout });
-    await previewPage.waitForLoadState('networkidle', { timeout: navigationTimeout });
     
     const overlayContainer = previewPage.getByTestId('CardOverlayContentContainer');
     await expect(overlayContainer).toBeVisible({ timeout: defaultTimeout });
