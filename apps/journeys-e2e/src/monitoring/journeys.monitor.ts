@@ -7,7 +7,9 @@ import { expect, test } from '@playwright/test'
  * @retryInterval 10 // Will wait 10 seconds between retries
  * @maxRetryTime 600 // Will stop retrying after 10 minutes
  */
-test('NS Journey Monitoring: Check if Fact or Fiction journey is displayed', async ({ page }) => {
+test('NS Journey Monitoring: Check if Fact or Fiction journey is displayed', async ({
+  page
+}) => {
   const response = await page.goto('https://your.nextstep.is/')
   expect(response?.status()).toEqual(200)
   await expect(page).toHaveTitle(/Next Steps/)
