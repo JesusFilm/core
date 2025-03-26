@@ -52,6 +52,33 @@ describe('Type', () => {
     }))
   }
 
+  const mockPhoneUpdate: MockedResponse<TextResponseTypeUpdate> = {
+    request: {
+      query: TEXT_RESPONSE_TYPE_UPDATE,
+      variables: {
+        id: selectedBlock.id,
+        input: {
+          label: 'Phone',
+          type: TextResponseType.phone,
+          integrationId: null,
+          routeId: null
+        }
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          __typename: 'TextResponseBlock',
+          id: selectedBlock.id,
+          label: 'Phone',
+          type: TextResponseType.phone,
+          integrationId: null,
+          routeId: null
+        }
+      }
+    }))
+  }
+
   const mockFreeformUpdate: MockedResponse<TextResponseTypeUpdate> = {
     request: {
       query: TEXT_RESPONSE_TYPE_UPDATE,
@@ -94,6 +121,19 @@ describe('Type', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Email' }))
     await waitFor(() => expect(mockEmailUpdate.result).toHaveBeenCalled())
+  })
+
+  it('should change type to phone', async () => {
+    render(
+      <MockedProvider mocks={[mockPhoneUpdate]}>
+        <EditorProvider initialState={{ selectedBlock }}>
+          <Type />
+        </EditorProvider>
+      </MockedProvider>
+    )
+  
+    fireEvent.click(screen.getByRole('button', { name: 'Phone' }))
+    await waitFor(() => expect(mockPhoneUpdate.result).toHaveBeenCalled())
   })
 
   it('should reset integrationId and routeId to null if type is freeform', async () => {
