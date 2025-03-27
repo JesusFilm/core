@@ -75,7 +75,7 @@ export function VideoControls({
   const [progress, setProgress] = useState(0)
   const [progressPercentNotYetEmitted, setProgressPercentNotYetEmitted] =
     useState([10, 25, 50, 75, 90])
-  const [volume, setVolume] = useState(0)
+  const [volume, setVolume] = useState(100)
   const [mute, setMute] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
   const [openSubtitleDialog, setOpenSubtitleDialog] = useState(false)
@@ -94,150 +94,187 @@ export function VideoControls({
   }, [play, active, loading, onVisibleChanged])
 
   useEffect(() => {
-    if ((progress / durationSeconds) * 100 > progressPercentNotYetEmitted[0]) {
-      eventToDataLayer(
-        `video_time_update_${progressPercentNotYetEmitted[0]}`,
-        id,
-        variant?.language.id,
-        title[0].value,
-        variant?.language?.name.find(({ primary }) => !primary)?.value ??
-          variant?.language?.name[0]?.value,
-        Math.round(player.currentTime() ?? 0),
-        Math.round((progress / durationSeconds) * 100)
-      )
-      const [, ...rest] = progressPercentNotYetEmitted
-      setProgressPercentNotYetEmitted(rest)
+    // Initialize volume only when player is ready
+    const initializeVolume = (): void => {
+      try {
+        if (player.isReady_) {
+          const playerVolume = player.volume()
+          if (playerVolume != null) {
+            setVolume(playerVolume * 100)
+          }
+        }
+      } catch (error) {
+        console.warn('Error initializing volume:', error)
+      }
     }
-  }, [
-    id,
-    progress,
-    durationSeconds,
-    progressPercentNotYetEmitted,
-    title,
-    variant,
-    player
-  ])
 
-  useEffect(() => {
-    setVolume((player.volume() ?? 1) * 100)
-    player.on('play', () => {
-      if ((player.currentTime() ?? 0) < 0.02) {
-        eventToDataLayer(
-          'video_start',
-          id,
-          variant?.language.id,
-          title[0].value,
-          variant?.language?.name.find(({ primary }) => !primary)?.value ??
-            variant?.language?.name[0]?.value,
-          Math.round(player.currentTime() ?? 0),
-          Math.round(
-            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
-          )
-        )
-      } else {
-        eventToDataLayer(
-          'video_play',
-          id,
-          variant?.language.id,
-          title[0].value,
-          variant?.language?.name.find(({ primary }) => !primary)?.value ??
-            variant?.language?.name[0]?.value,
-          Math.round(player.currentTime() ?? 0),
-          Math.round(
-            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
-          )
-        )
+    // Handle volume changes
+    const handleVolumeChange = (_: unknown, data: unknown): void => {
+      try {
+        if (player.isReady_) {
+          const playerVolume = player.volume()
+          if (playerVolume != null) {
+            setVolume(playerVolume * 100)
+          }
+          setMute(player.muted() ?? false)
+        }
+      } catch (error) {
+        console.warn('Error handling volume change:', error)
       }
-      setPlay(true)
-    })
-    player.on('pause', () => {
-      if ((player.currentTime() ?? 0) > 0.02) {
-        eventToDataLayer(
-          'video_pause',
-          id,
-          variant?.language.id,
-          title[0].value,
-          variant?.language?.name.find(({ primary }) => !primary)?.value ??
-            variant?.language?.name[0]?.value,
-          Math.round(player.currentTime() ?? 0),
-          Math.round(
-            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+    }
+
+    // Set up event listeners
+    const setupEventListeners = (): void => {
+      try {
+        player.on('play', () => {
+          if ((player.currentTime() ?? 0) < 0.02) {
+            eventToDataLayer(
+              'video_start',
+              id,
+              variant?.language.id,
+              title[0].value,
+              variant?.language?.name.find(({ primary }) => !primary)?.value ??
+                variant?.language?.name[0]?.value,
+              Math.round(player.currentTime() ?? 0),
+              Math.round(
+                ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+              )
+            )
+          } else {
+            eventToDataLayer(
+              'video_play',
+              id,
+              variant?.language.id,
+              title[0].value,
+              variant?.language?.name.find(({ primary }) => !primary)?.value ??
+                variant?.language?.name[0]?.value,
+              Math.round(player.currentTime() ?? 0),
+              Math.round(
+                ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+              )
+            )
+          }
+          setPlay(true)
+        })
+        player.on('pause', () => {
+          if ((player.currentTime() ?? 0) > 0.02) {
+            eventToDataLayer(
+              'video_pause',
+              id,
+              variant?.language.id,
+              title[0].value,
+              variant?.language?.name.find(({ primary }) => !primary)?.value ??
+                variant?.language?.name[0]?.value,
+              Math.round(player.currentTime() ?? 0),
+              Math.round(
+                ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+              )
+            )
+          }
+          setPlay(false)
+        })
+        player.on('timeupdate', () => {
+          setCurrentTime(
+            secondsToTimeFormat(player.currentTime() ?? 0, { trimZeroes: true })
           )
-        )
+          setProgress(Math.round(player.currentTime() ?? 0))
+        })
+        player.on('volumechange', handleVolumeChange)
+        player.on('fullscreenchange', () => {
+          setFullscreen(player.isFullscreen() ?? false)
+        })
+        player.on('useractive', () => setActive(true))
+        player.on('userinactive', () => setActive(false))
+        player.on('waiting', () => setLoading(true))
+        player.on('playing', () => setLoading(false))
+        player.on('ended', () => {
+          setLoading(false)
+          eventToDataLayer(
+            'video_ended',
+            id,
+            variant?.language.id,
+            title[0].value,
+            variant?.language?.name.find(({ primary }) => !primary)?.value ??
+              variant?.language?.name[0]?.value,
+            Math.round(player.currentTime() ?? 0),
+            Math.round(
+              ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+            )
+          )
+        })
+        player.on('canplay', () => setLoading(false))
+        player.on('canplaythrough', () => setLoading(false))
+        fscreen.addEventListener('fullscreenchange', () => {
+          if (fscreen.fullscreenElement != null) {
+            eventToDataLayer(
+              'video_enter_full_screen',
+              id,
+              variant?.language.id,
+              title[0].value,
+              variant?.language?.name.find(({ primary }) => !primary)?.value ??
+                variant?.language?.name[0]?.value,
+              Math.round(player.currentTime() ?? 0),
+              Math.round(
+                ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+              )
+            )
+          } else {
+            eventToDataLayer(
+              'video_exit_full_screen',
+              id,
+              variant?.language.id,
+              title[0].value,
+              variant?.language?.name.find(({ primary }) => !primary)?.value ??
+                variant?.language?.name[0]?.value,
+              Math.round(player.currentTime() ?? 0),
+              Math.round(
+                ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
+              )
+            )
+          }
+          setFullscreen(fscreen.fullscreenElement != null)
+        })
+      } catch (error) {
+        console.warn('Error setting up event listeners:', error)
       }
-      setPlay(false)
-    })
-    player.on('timeupdate', () => {
-      setCurrentTime(
-        secondsToTimeFormat(player.currentTime() ?? 0, { trimZeroes: true })
-      )
-      setProgress(Math.round(player.currentTime() ?? 0))
-    })
-    player.on('volumechange', () => {
-      setMute(player.muted() ?? false)
-      setVolume((player.volume() ?? 1) * 100)
-    })
-    player.on('fullscreenchange', () => {
-      setFullscreen(player.isFullscreen() ?? false)
-    })
-    player.on('useractive', () => setActive(true))
-    player.on('userinactive', () => setActive(false))
-    player.on('waiting', () => setLoading(true))
-    player.on('playing', () => setLoading(false))
-    player.on('ended', () => {
-      setLoading(false)
-      eventToDataLayer(
-        'video_ended',
-        id,
-        variant?.language.id,
-        title[0].value,
-        variant?.language?.name.find(({ primary }) => !primary)?.value ??
-          variant?.language?.name[0]?.value,
-        Math.round(player.currentTime() ?? 0),
-        Math.round(
-          ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
-        )
-      )
-    })
-    player.on('canplay', () => setLoading(false))
-    player.on('canplaythrough', () => setLoading(false))
-    fscreen.addEventListener('fullscreenchange', () => {
-      if (fscreen.fullscreenElement != null) {
-        eventToDataLayer(
-          'video_enter_full_screen',
-          id,
-          variant?.language.id,
-          title[0].value,
-          variant?.language?.name.find(({ primary }) => !primary)?.value ??
-            variant?.language?.name[0]?.value,
-          Math.round(player.currentTime() ?? 0),
-          Math.round(
-            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
-          )
-        )
-      } else {
-        eventToDataLayer(
-          'video_exit_full_screen',
-          id,
-          variant?.language.id,
-          title[0].value,
-          variant?.language?.name.find(({ primary }) => !primary)?.value ??
-            variant?.language?.name[0]?.value,
-          Math.round(player.currentTime() ?? 0),
-          Math.round(
-            ((player.currentTime() ?? 0) / (player.duration() ?? 1)) * 100
-          )
-        )
-      }
-      setFullscreen(fscreen.fullscreenElement != null)
-    })
+    }
+
+    initializeVolume()
+    setupEventListeners()
+
+    return () => {
+      player.off('play')
+      player.off('pause')
+      player.off('timeupdate')
+      player.off('volumechange')
+      player.off('fullscreenchange')
+      player.off('useractive')
+      player.off('userinactive')
+      player.off('waiting')
+      player.off('playing')
+      player.off('ended')
+      player.off('canplay')
+      player.off('canplaythrough')
+      fscreen.removeEventListener('fullscreenchange')
+    }
   }, [id, player, setFullscreen, loading, title, variant])
 
   function handlePlay(): void {
-    if (!play) {
-      void player.play()
-    } else {
-      void player.pause()
+    if (!player?.isReady_) return
+
+    try {
+      if (!play && typeof player.play === 'function') {
+        const playPromise = player.play()
+        if (playPromise !== undefined) {
+          void playPromise.catch((error) => {
+            console.warn('Failed to play video:', error)
+          })
+        }
+      } else if (typeof player.pause === 'function') {
+        player.pause()
+      }
+    } catch (error) {
+      console.warn('Error handling play/pause:', error)
     }
   }
 

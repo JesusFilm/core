@@ -13,10 +13,16 @@ import { VideoControls } from './VideoControls'
 
 interface VideoPlayerProps {
   setControlsVisible: (visible: boolean) => void
+  autoplay?: boolean
+  muted?: boolean
+  showControls?: boolean
 }
 
 export function VideoPlayer({
-  setControlsVisible
+  setControlsVisible,
+  autoplay = false,
+  muted = false,
+  showControls = true
 }: VideoPlayerProps): ReactElement {
   const { variant, title } = useVideo()
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -35,7 +41,8 @@ export function VideoPlayer({
       setPlayer(
         videojs(videoRef.current, {
           ...defaultVideoJsOptions,
-          autoplay: true,
+          autoplay: autoplay,
+          muted: muted,
           controls: false,
           controlBar: false,
           bigPlayButton: false,
@@ -44,6 +51,7 @@ export function VideoPlayer({
             doubleClick: true
           },
           responsive: true,
+          fill: true,
           plugins: {
             mux: {
               debug: false,
@@ -53,21 +61,31 @@ export function VideoPlayer({
         })
       )
     }
-  }, [variant, videoRef, title])
+  }, [variant, videoRef, autoplay, muted, title])
 
   useEffect(() => {
-    player?.src({
-      src: variant?.hls ?? '',
-      type: 'application/x-mpegURL'
-    })
-  }, [player, variant?.hls])
+    if (player) {
+      player.src({
+        src: variant?.hls ?? '',
+        type: 'application/x-mpegURL'
+      })
+
+      // Update player state when autoplay or muted changes
+      player.autoplay(autoplay)
+      player.muted(muted)
+    }
+  }, [player, variant?.hls, autoplay, muted])
 
   return (
-    <>
+    <div className="absolute inset-0">
       {variant?.hls != null && (
-        <video className="vjs" ref={videoRef} playsInline />
+        <video
+          className="vjs w-full h-full object-cover"
+          ref={videoRef}
+          playsInline
+        />
       )}
-      {player != null && (
+      {player != null && showControls && !muted && (
         <VideoControls
           player={player}
           onVisibleChanged={(controlsVisible) =>
@@ -75,6 +93,6 @@ export function VideoPlayer({
           }
         />
       )}
-    </>
+    </div>
   )
 }
