@@ -5,6 +5,8 @@
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import type { Page } from 'playwright-core'
+import * as path from 'path'
+import * as fs from 'fs'
 
 import testData from '../utils/testData.json'
 
@@ -210,9 +212,17 @@ export class CardLevelActionPage {
   }
 
   async uploadImageInCustomTab() {
+    const imagePath = path.resolve(__dirname, '..', 'utils', 'testResource', 'Flower.jpg')
+    
+    // Check if file exists
+    if (!fs.existsSync(imagePath)) {
+      throw new Error(`Test image not found at ${imagePath}. Make sure the test resources are properly included.`)
+    }
+    
     await this.page
       .locator('div[data-testid="ImageUpload"] input')
-      .setInputFiles(testData.cardLevelAction.imgUploadPath)
+      .setInputFiles(imagePath)
+    
     await expect(
       this.page.locator(
         'div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]'
@@ -299,9 +309,17 @@ export class CardLevelActionPage {
   }
 
   async uploadVideoInUploadTabOfVideoLibrary() {
+    const videoPath = path.resolve(__dirname, '..', 'utils', 'testResource', 'SampleVideo.mp4')
+    
+    // Check if file exists
+    if (!fs.existsSync(videoPath)) {
+      throw new Error(`Test video not found at ${videoPath}. Make sure the test resources are properly included.`)
+    }
+    
     await this.page
       .locator('div[data-testid="VideoFromMux"] input')
-      .setInputFiles(testData.cardLevelAction.videoUploadPath)
+      .setInputFiles(videoPath)
+    
     await expect(
       this.page.locator(
         'div[data-testid="VideoFromMux"] span[role="progressbar"]'
@@ -310,6 +328,25 @@ export class CardLevelActionPage {
     await expect(
       this.page.locator(
         'div[data-testid="VideoFromMux"] span[role="progressbar"]'
+      )
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
+  }
+
+  async uploadVideoInCustomTab() {
+    const videoPath = path.resolve(__dirname, '..', 'utils', 'testResource', 'SampleVideo.mp4')
+    
+    // Check if file exists
+    if (!fs.existsSync(videoPath)) {
+      throw new Error(`Test video not found at ${videoPath}. Make sure the test resources are properly included.`)
+    }
+    
+    await this.page
+      .locator('div[data-testid="VideoUpload"] input')
+      .setInputFiles(videoPath)
+    
+    await expect(
+      this.page.locator(
+        'div[data-testid="VideoBlockHeader"] div[data-testid="VideoBlockThumbnail"] span[role="progressbar"]'
       )
     ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
