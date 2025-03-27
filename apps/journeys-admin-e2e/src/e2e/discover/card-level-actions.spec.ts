@@ -67,43 +67,31 @@ test.describe('verify card level actions', () => {
   // Image - create, update & delete
   test('Image - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
-    await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
-    await cardLevelActionPage.clickBtnInAddBlockDrawer('Image') // clicking on image button in add block drawer
-    await cardLevelActionPage.clickSelectImageBtn() // clicking on select image buttom in image properties drawer
-    await cardLevelActionPage.clickImageSelectionTab('Custom') // clicking on custom tab in image drawer tab list
-    await cardLevelActionPage.getImageSrc() // getting current image source
-    await cardLevelActionPage.uploadImageInCustomTab() // uploading image in the custom tab
-    await cardLevelActionPage.verifyImageGotChanged() // verifying the image is updated in the custom tab
-    await cardLevelActionPage.clickImageSelectionTab('Gallery') // clicking on Gallery tab in image drawer tab list
-    await cardLevelActionPage.getImageSrc() // getting current image source
-    await cardLevelActionPage.clickImgFromFeatureOfGalleryTab() // selecting an image of Gallery tab in the image drawer
-    await cardLevelActionPage.verifyImageGotChanged() // verifying the seleted image is updated in the image drawer
-    await cardLevelActionPage.clickImgDeleteBtn() // deleting the selected image
-    await cardLevelActionPage.verifyImageIsDeleted() // verifying the image is deleted from the image drawer
+    const journeyPage = new JourneyPage(page)
+    await journeyPage.createCustomJourney()
+    await cardLevelActionPage.clickAddBlockBtn()
+    await cardLevelActionPage.clickBtnInAddBlockDrawer('Image')
+    await cardLevelActionPage.clickSelectImageBtn()
+    await cardLevelActionPage.clickImageSelectionTab('Custom')
+    await cardLevelActionPage.getImageSrc()
+    await cardLevelActionPage.uploadImageInCustomTab()
+    await cardLevelActionPage.verifyImageGotChanged()
+    await cardLevelActionPage.clickDoneBtn()
+    await cardLevelActionPage.clickDeleteBtnInToolTipBar()
+    await cardLevelActionPage.verifyImageIsDeleted()
   })
 
   // Video - create, update & delete
   test('Video - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
-    await cardLevelActionPage.deleteAllAddedCardProperties() // deleting all the added properties in the card
-    await cardLevelActionPage.clickOnVideoJourneyCard() // clicking on the journey card
-    await cardLevelActionPage.clickOnVideoJourneyCard() // clicking on the journey card
-    await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
-    await cardLevelActionPage.clickBtnInAddBlockDrawer('Video') // clicking on video button in add block drawer
-    await cardLevelActionPage.clickSelectVideoBtn() // clicking on select video  buttom in video properties drawer
-    await cardLevelActionPage.selectVideoTab('Upload') // clicking on upload tab in video Libarary tab list
-    await cardLevelActionPage.uploadVideoInUploadTabOfVideoLibrary() // upload video in upload tab
-    await cardLevelActionPage.verifyUploadVideoInJourney('created') // below the video source property, verifying video is uploaded
-    await cardLevelActionPage.clickVideoEditPenIcon() // clicking on pen icon for update the video
-    await cardLevelActionPage.closeIconOfVideoDetails() // clicking the x icon in video details page at top of the right corner
-    await cardLevelActionPage.selectVideoTab('Library') // clicking on the Library tab in video Libarary tab list
-    await cardLevelActionPage.getVideoNameVideoFromLibraryTabOfVideoLibraryPage() // getting a video file name of video Library Page video
-    await cardLevelActionPage.selectVideoFromLibraryTabOfVideoLibararyPage() // selecting a video from the Library tab's videos
-    await cardLevelActionPage.clickSelectBtnAfrerSelectingVideo() // clicking the select button after selecting the video from Library tab
-    await cardLevelActionPage.verifyUploadVideoInJourney('updated') // below the video source property, verify selected video is updated
-    await cardLevelActionPage.clickVideoEditPenIcon() // clicking on pen icon for delete the video
-    await cardLevelActionPage.clickVideoDeleteIconInDrawer() // clicking the delete icon beside the change video button in the video details page
-    await cardLevelActionPage.verifyVideoDeletedFromDrawer() // verifying video deleted from the video source property
+    await cardLevelActionPage.clickAddBlockBtn()
+    await cardLevelActionPage.clickBtnInAddBlockDrawer('Video')
+    await cardLevelActionPage.clickSelectVideoBtn()
+    await cardLevelActionPage.selectVideoTab('Upload')
+    await cardLevelActionPage.uploadVideoInUploadTabOfVideoLibrary()
+    await cardLevelActionPage.verifyUploadVideoInJourney('created')
+    await cardLevelActionPage.clickDoneBtn()
+    await cardLevelActionPage.clickDeleteBtnInToolTipBar()
   })
 
   // Poll - create, update & delete
