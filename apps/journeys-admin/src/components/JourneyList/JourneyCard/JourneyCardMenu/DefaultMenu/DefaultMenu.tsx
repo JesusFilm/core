@@ -126,16 +126,6 @@ export function DefaultMenu({
 
   return (
     <>
-      {/* <NextLink
-        href={
-          template === true
-            ? `/templates/${journeyId}`
-            : `/journeys/${journeyId}`
-        }
-        passHref
-        legacyBehavior
-        prefetch={false}
-      > */}
       <MenuItem
         label={t('Edit Details')}
         icon={<Edit2Icon color="secondary" />}
@@ -146,7 +136,6 @@ export function DefaultMenu({
         }}
       />
       <Divider />
-      {/* </NextLink> */}
       {template !== true && (
         <MenuItem
           label={t('Access')}
