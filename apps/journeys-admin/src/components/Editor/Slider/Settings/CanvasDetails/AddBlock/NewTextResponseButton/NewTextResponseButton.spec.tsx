@@ -39,7 +39,7 @@ describe('NewTextResponseButton', () => {
         id: 'textResponseBlock.id',
         journeyId: 'journey.id',
         parentBlockId: 'card.id',
-        label: 'Your answer here'
+        label: 'Label'
       }
     }
   }
@@ -51,7 +51,8 @@ describe('NewTextResponseButton', () => {
         id: 'textResponseBlock.id',
         parentBlockId: 'card.id',
         parentOrder: 0,
-        label: 'Your answer here',
+        label: 'Label',
+        placeholder: null,
         hint: null,
         minRows: null
       }

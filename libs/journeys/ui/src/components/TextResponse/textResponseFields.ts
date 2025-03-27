@@ -6,6 +6,7 @@ export const TEXT_RESPONSE_FIELDS = gql`
     parentBlockId
     parentOrder
     label
+    placeholder
     hint
     minRows
     type
