@@ -80,8 +80,8 @@ describe('journeyEventsExportLog', () => {
           data: {
             userId: 'testUserId',
             journeyId: 'journey.id',
-            dateRangeStart: currentTimeSubMonth.toISOString(),
-            dateRangeEnd: currentTime.toISOString(),
+            dateRangeStart: currentTimeSubMonth,
+            dateRangeEnd: currentTime,
             eventsFilter: ['StepViewEvent']
           }
         })
