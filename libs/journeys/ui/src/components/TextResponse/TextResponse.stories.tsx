@@ -47,6 +47,7 @@ const textResponseProps: ComponentProps<typeof TextResponse> = {
   parentBlockId: null,
   parentOrder: 0,
   label: 'Your answer here',
+  placeholder: null,
   hint: null,
   minRows: null,
   integrationId: null,
@@ -104,6 +105,7 @@ export const Complete = {
     hint: 'Optional Hint text',
     minRows: 4,
     label: 'Custom label',
+    placeholder: 'Placeholder text',
     submitIconId: 'icon',
     submitLabel: 'Custom label',
     children: [

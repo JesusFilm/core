@@ -23,6 +23,7 @@ const selectedBlock: TreeBlock<TextResponseBlock> = {
   parentBlockId: null,
   parentOrder: null,
   label: 'Your answer here',
+  placeholder: null,
   hint: null,
   minRows: 3,
   integrationId: null,
