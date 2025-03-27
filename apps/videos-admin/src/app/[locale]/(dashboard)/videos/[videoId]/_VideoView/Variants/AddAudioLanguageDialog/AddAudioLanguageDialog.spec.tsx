@@ -89,7 +89,7 @@ const cloudflareR2CreateMock = {
     variables: {
       input: {
         fileName: 'video123/variants/529/videos/uuidv4/529_video123.mp4',
-        originalFilename: 'original-video.mp4',
+        originalFilename: 'test.mp4',
         contentType: 'video/mp4',
         contentLength: 4,
         videoId: 'video123'
@@ -101,7 +101,7 @@ const cloudflareR2CreateMock = {
       cloudflareR2Create: {
         id: 'r2asset1',
         fileName: 'test.mp4',
-        originalFilename: 'original-video.mp4',
+        originalFilename: 'test.mp4',
         uploadUrl: 'https://upload.url',
         publicUrl: 'https://public.url'
       }
@@ -264,14 +264,35 @@ describe('AddAudioLanguageDialog', () => {
       .fn()
       .mockReturnValue(createVideoVariantMock.result)
 
+    const mockCloudflareR2CreateMock = {
+      ...cloudflareR2CreateMock,
+      result: cloudflareR2CreateMockResult
+    }
+    const mockCreateMuxVideoMock = {
+      ...createMuxVideoMock,
+      result: createMuxVideoMockResult
+    }
+    const mockGetMuxVideoMock = {
+      ...getMuxVideoMock,
+      result: getMuxVideoMockResult
+    }
+    const mockCreateVideoVariantMock = {
+      ...createVideoVariantMock,
+      result: createVideoVariantMockResult
+    }
+    const mockGetLanguagesMock = {
+      ...getLanguagesMock,
+      result: getLanguagesMockResult
+    }
+
     render(
       <MockedProvider
         mocks={[
-          { ...getLanguagesMock, result: getLanguagesMockResult },
-          { ...cloudflareR2CreateMock, result: cloudflareR2CreateMockResult },
-          { ...createMuxVideoMock, result: createMuxVideoMockResult },
-          { ...getMuxVideoMock, result: getMuxVideoMockResult },
-          { ...createVideoVariantMock, result: createVideoVariantMockResult }
+          mockGetLanguagesMock,
+          mockCloudflareR2CreateMock,
+          mockCreateMuxVideoMock,
+          mockGetMuxVideoMock,
+          mockCreateVideoVariantMock
         ]}
       >
         <SnackbarProvider>
@@ -352,12 +373,13 @@ describe('AddAudioLanguageDialog', () => {
   })
 
   it('should show error when R2 upload fails', async () => {
-    const cloudflareR2CreateMock = {
+    const cloudflareR2CreateErrorMock = {
       request: {
         query: CLOUDFLARE_R2_CREATE,
         variables: {
           input: {
             fileName: 'video123/variants/529/videos/uuidv4/529_video123.mp4',
+            originalFilename: 'test.mp4',
             contentType: 'video/mp4',
             contentLength: 4,
             videoId: 'video123'
@@ -369,17 +391,24 @@ describe('AddAudioLanguageDialog', () => {
           cloudflareR2Create: {
             id: 'r2asset1',
             fileName: 'test.mp4',
+            originalFilename: 'test.mp4',
             uploadUrl: null,
             publicUrl: null
           }
         }
       }
     }
-    const result = jest.fn().mockReturnValue(cloudflareR2CreateMock.result)
+    const cloudflareR2CreateErrorMockResult = jest
+      .fn()
+      .mockReturnValue(cloudflareR2CreateErrorMock.result)
+    const mockCloudflareR2CreateErrorMock = {
+      ...cloudflareR2CreateErrorMock,
+      result: cloudflareR2CreateErrorMockResult
+    }
 
     render(
       <MockedProvider
-        mocks={[getLanguagesMock, { ...cloudflareR2CreateMock, result }]}
+        mocks={[getLanguagesMock, mockCloudflareR2CreateErrorMock]}
       >
         <SnackbarProvider>
           <NextIntlClientProvider locale="en" messages={{}}>

@@ -209,6 +209,7 @@ describe('SubtitleCreate', () => {
       contentType: 'text/vtt',
       fileName:
         '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.vtt',
+      originalFilename: 'subtitle1.vtt',
       contentLength: 13
     })
 
@@ -271,6 +272,7 @@ describe('SubtitleCreate', () => {
       contentType: 'application/x-subrip',
       fileName:
         '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.srt',
+      originalFilename: 'subtitle1.srt',
       contentLength: 13
     })
 
@@ -337,6 +339,7 @@ describe('SubtitleCreate', () => {
       contentType: 'text/vtt',
       fileName:
         '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.vtt',
+      originalFilename: 'subtitle1.vtt',
       contentLength: 17
     })
 
@@ -345,6 +348,7 @@ describe('SubtitleCreate', () => {
       contentType: 'application/x-subrip',
       fileName:
         '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.srt',
+      originalFilename: 'subtitle1.srt',
       contentLength: 17
     })
 
@@ -421,6 +425,7 @@ describe('SubtitleCreate', () => {
       contentType: 'application/x-subrip',
       fileName:
         '1_jf-0-0/editions/edition.id/subtitles/1_jf-0-0_edition.id_528.srt',
+      originalFilename: 'subtitle1.srt',
       contentLength: 13
     })
 

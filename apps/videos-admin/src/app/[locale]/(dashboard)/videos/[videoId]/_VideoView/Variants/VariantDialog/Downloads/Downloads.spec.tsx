@@ -35,6 +35,7 @@ const videoVariantDownloadCreateMock = getVideoVariantDownloadCreateMock({
 const createR2AssetMock = getCreateR2AssetMock({
   videoId: 'video-123',
   fileName: 'video-123/variants/529/downloads/variant-id_high.mp4',
+  originalFilename: 'test-video.mp4',
   contentType: 'video/mp4',
   contentLength: 13
 })
@@ -227,20 +228,53 @@ describe('Downloads', () => {
   })
 
   it('should add download when form is submitted', async () => {
-    const mockResult = jest
+    const videoVariantDownloadCreateMockResult = jest
       .fn()
       .mockReturnValue(videoVariantDownloadCreateMock.result)
+
+    const mockVideoVariantDownloadCreateMock = {
+      ...videoVariantDownloadCreateMock,
+      result: videoVariantDownloadCreateMockResult
+    }
+
+    const createR2AssetMockResultFn = jest.fn(() => ({
+      data: {
+        cloudflareR2Create: {
+          id: 'r2-asset.id',
+          fileName: 'video-123/variants/529/downloads/variant-id_high.mp4',
+          originalFilename: 'test-video.mp4',
+          uploadUrl:
+            'https://mock.cloudflare-domain.com/video-123/variants/529/downloads/variant-id_high.mp4',
+          publicUrl:
+            'https://mock.cloudflare-domain.com/video-123/variants/529/downloads/variant-id_high.mp4'
+        }
+      }
+    }))
+
+    const createR2AssetMockResult = jest
+      .fn()
+      .mockReturnValue(createR2AssetMockResultFn)
+
+    const mockCreateR2AssetMock = {
+      request: {
+        query: createR2AssetMock.request.query,
+        variables: {
+          input: {
+            videoId: 'video-123',
+            fileName: 'video-123/variants/529/downloads/variant-id_high.mp4',
+            originalFilename: 'test-video.mp4',
+            contentType: 'video/mp4',
+            contentLength: 13
+          }
+        }
+      },
+      result: createR2AssetMockResult
+    }
 
     render(
       <NextIntlClientProvider locale="en">
         <MockedProvider
-          mocks={[
-            {
-              ...videoVariantDownloadCreateMock,
-              result: mockResult
-            },
-            createR2AssetMock
-          ]}
+          mocks={[mockVideoVariantDownloadCreateMock, mockCreateR2AssetMock]}
         >
           <SnackbarProvider>
             <Downloads
@@ -266,11 +300,11 @@ describe('Downloads', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Save' }))
 
     await waitFor(() => {
-      expect(createR2AssetMock.result).toHaveBeenCalled()
+      expect(createR2AssetMockResult).toHaveBeenCalled()
     })
 
     await waitFor(() => {
-      expect(mockResult).toHaveBeenCalled()
+      expect(videoVariantDownloadCreateMockResult).toHaveBeenCalled()
     })
   })
 })
