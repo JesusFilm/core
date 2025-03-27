@@ -1,7 +1,7 @@
 import {
   GetVisitorEvents_visitor_events_ButtonClickEvent as ButtonClickEvent,
   GetVisitorEvents_visitor_events_ChatOpenEvent as ChatOpenEvent,
-  GetVisitorEvents_visitor_events_RadioQuestionSubmissionEvent as Event,
+  GetVisitorEvents_visitor_events_JourneyEvent as Event,
   GetVisitorEvents_visitor_events_JourneyViewEvent as JourneyViewEvent,
   GetVisitorEvents_visitor_events_SignUpSubmissionEvent as SignUpEvent,
   GetVisitorEvents_visitor_events_VideoCollapseEvent as VideoCollapseEvent,
