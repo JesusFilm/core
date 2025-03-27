@@ -6,7 +6,7 @@ CREATE TABLE "JourneyEventsExportLog" (
     "journeyId" TEXT NOT NULL,
     "eventsFilter" TEXT[],
     "dateRangeStart" TIMESTAMP(3),
-    "dateRangeEnd" TIMESTAMP(3),
+    "dateRangeEnd" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "JourneyEventsExportLog_pkey" PRIMARY KEY ("id")
 );
