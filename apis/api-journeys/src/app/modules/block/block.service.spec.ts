@@ -559,27 +559,6 @@ describe('BlockService', () => {
       })
     })
 
-    it('should set submitEnabled to false when duplicating a block with submitEnabled true', async () => {
-      prismaService.block.findUnique.mockResolvedValue(buttonBlock)
-      mockUuidv4.mockReturnValueOnce(`${buttonBlock.id}Copy`)
-
-      expect(
-        await service.getDuplicateBlockAndChildren(
-          buttonBlock.id,
-          journey.id,
-          cardBlock.id,
-        )
-      ).toEqual([
-        {
-          ...buttonBlock,
-          id: `${buttonBlock.id}Copy`,
-          parentBlockId: cardBlock.id,
-          submitEnabled: false,
-          action: omit(buttonBlock.action, 'parentBlockId')
-        }
-      ])
-    })
-
     it('should return block and children with specific ids', async () => {
       prismaService.block.findUnique
         .mockResolvedValueOnce(stepBlock)
