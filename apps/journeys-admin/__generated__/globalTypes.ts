@@ -432,6 +432,12 @@ export interface JourneyCollectionUpdateInput {
   journeyIds?: string[] | null;
 }
 
+export interface JourneyEventsFilter {
+  typenames?: string[] | null;
+  periodRangeStart?: any | null;
+  periodRangeEnd?: any | null;
+}
+
 export interface JourneyNotificationUpdateInput {
   journeyId: string;
   visitorInteractionEmail: boolean;
