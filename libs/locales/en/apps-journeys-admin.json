@@ -801,5 +801,6 @@
   "Last Active": "Last Active",
   "User Data": "User Data",
   "Polls": "Polls",
-  "{{ name }}'s Team": "{{ name }}'s Team"
+  "{{ name }}'s Team": "{{ name }}'s Team",
+  "Failed to retrieve data for export.": "Failed to retrieve data for export."
 }
