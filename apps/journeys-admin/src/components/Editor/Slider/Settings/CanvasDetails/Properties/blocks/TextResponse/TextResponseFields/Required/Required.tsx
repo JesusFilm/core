@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -64,12 +65,12 @@ export function Required(): ReactElement {
   }
 
   return (
-    <ToggleOption
-      heading={t('Required')}
-      description={t('Make this field required for users to continue')}
-      checked={selectedBlock?.required ?? false}
-      handleChange={handleChange}
-      data-testid="Required"
-    />
+    <Box sx={{ px: 4 }} data-testid="Required">
+      <ToggleOption
+        heading={t('Required')}
+        checked={selectedBlock?.required ?? false}
+        handleChange={handleChange}
+      />
+    </Box>
   )
 }
