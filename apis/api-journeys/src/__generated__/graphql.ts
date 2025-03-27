@@ -512,6 +512,25 @@ export type Event = {
   value?: Maybe<Scalars['String']['output']>;
 };
 
+export enum EventType {
+  ButtonClickEvent = 'ButtonClickEvent',
+  ChatOpenEvent = 'ChatOpenEvent',
+  JourneyViewEvent = 'JourneyViewEvent',
+  RadioQuestionSubmissionEvent = 'RadioQuestionSubmissionEvent',
+  SignUpSubmissionEvent = 'SignUpSubmissionEvent',
+  StepNextEvent = 'StepNextEvent',
+  StepPreviousEvent = 'StepPreviousEvent',
+  StepViewEvent = 'StepViewEvent',
+  TextResponseSubmissionEvent = 'TextResponseSubmissionEvent',
+  VideoCollapseEvent = 'VideoCollapseEvent',
+  VideoCompleteEvent = 'VideoCompleteEvent',
+  VideoExpandEvent = 'VideoExpandEvent',
+  VideoPauseEvent = 'VideoPauseEvent',
+  VideoPlayEvent = 'VideoPlayEvent',
+  VideoProgressEvent = 'VideoProgressEvent',
+  VideoStartEvent = 'VideoStartEvent'
+}
+
 export type ForeignKeyConstraintError = BaseError & {
   __typename?: 'ForeignKeyConstraintError';
   /** The arguments that caused the foriegn key constraint violation */
@@ -903,7 +922,7 @@ export type JourneyEventsConnection = {
 
 export type JourneyEventsExportLog = {
   __typename?: 'JourneyEventsExportLog';
-  createdAt: Scalars['Date']['output'];
+  createdAt: Scalars['DateTimeISO']['output'];
   dateRangeEnd?: Maybe<Scalars['DateTimeISO']['output']>;
   dateRangeStart?: Maybe<Scalars['DateTimeISO']['output']>;
   eventsFilter: Array<Scalars['String']['output']>;
@@ -913,9 +932,9 @@ export type JourneyEventsExportLog = {
 };
 
 export type JourneyEventsExportLogInput = {
-  dateRangeEnd?: InputMaybe<Scalars['String']['input']>;
-  dateRangeStart?: InputMaybe<Scalars['String']['input']>;
-  eventsFilter?: InputMaybe<Array<Scalars['String']['input']>>;
+  dateRangeEnd?: InputMaybe<Scalars['DateTimeISO']['input']>;
+  dateRangeStart?: InputMaybe<Scalars['DateTimeISO']['input']>;
+  eventsFilter: Array<EventType>;
   journeyId: Scalars['ID']['input'];
 };
 
