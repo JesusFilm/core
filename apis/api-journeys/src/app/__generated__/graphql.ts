@@ -878,6 +878,7 @@ export class VisitorUpdateInput {
     status?: Nullable<VisitorStatus>;
     countryCode?: Nullable<string>;
     referrer?: Nullable<string>;
+    phone?: Nullable<string>;
 }
 
 export interface Action {

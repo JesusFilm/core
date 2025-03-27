@@ -4975,6 +4975,8 @@ export type VisitorUpdateInput = {
    * and only accessible by team members.
    */
   notes?: InputMaybe<Scalars['String']['input']>;
+  /** The phone number of the visitor */
+  phone?: InputMaybe<Scalars['String']['input']>;
   /** The referring url of the visitor */
   referrer?: InputMaybe<Scalars['String']['input']>;
   /** Status of the visitor. */
