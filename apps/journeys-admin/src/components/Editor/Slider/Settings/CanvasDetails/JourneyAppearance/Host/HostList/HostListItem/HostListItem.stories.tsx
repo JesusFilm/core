@@ -62,7 +62,7 @@ export const TwoAvatars = {
   args: {
     ...WithLocation.args,
     title: 'John G  & Siyang C',
-    src2: 'https://tinyurl.com/3bxusmyb'
+    src2: 'https://tinyurl.com/2s36m97s'
   }
 }
 

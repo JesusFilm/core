@@ -73,19 +73,21 @@ export function StepHeader({
                 alignItems: 'center'
               }}
             >
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  zIndex: 1,
-                  // Always dark mode on lg breakpoint
-                  color: { xs: 'primary.main', lg: 'white' },
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}
-              >
-                {journey?.displayTitle ?? journey?.seoTitle}
-              </Typography>
+              {journey?.showDisplayTitle === true && (
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    zIndex: 1,
+                    // Always dark mode on lg breakpoint
+                    color: { xs: 'primary.main', lg: 'white' },
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}
+                >
+                  {journey?.displayTitle ?? journey?.seoTitle}
+                </Typography>
+              )}
             </Stack>
             <StepHeaderMenu />
           </Stack>
