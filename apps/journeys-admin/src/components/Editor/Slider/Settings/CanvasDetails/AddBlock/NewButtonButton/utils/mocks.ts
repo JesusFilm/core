@@ -4,6 +4,8 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 
 import type {
   BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_StepBlock as StepBlock,
   BlockFields_TextResponseBlock as TextResponseBlock
 } from '../../../../../../../../../__generated__/BlockFields'
 import {
@@ -50,7 +52,9 @@ export const submitButtonBlock: TreeBlock<ButtonBlock> = {
 }
 
 // Helper functions
-export const createCardBlock = (children: TreeBlock[]) => ({
+export const createCardBlock = (
+  children: TreeBlock[]
+): TreeBlock<CardBlock> => ({
   id: 'cardId',
   __typename: 'CardBlock',
   parentBlockId: 'stepId',
@@ -63,7 +67,9 @@ export const createCardBlock = (children: TreeBlock[]) => ({
   children
 })
 
-export const createStepBlock = (cardChildren: TreeBlock[]) => ({
+export const createStepBlock = (
+  cardChildren: TreeBlock[]
+): TreeBlock<StepBlock> => ({
   __typename: 'StepBlock',
   id: 'stepId',
   parentBlockId: null,
