@@ -771,6 +771,12 @@ export class JourneyCollectionUpdateInput {
     journeyIds?: Nullable<string[]>;
 }
 
+export class JourneyEventsFilter {
+    typenames?: Nullable<string[]>;
+    periodRangeStart?: Nullable<DateTime>;
+    periodRangeEnd?: Nullable<DateTime>;
+}
+
 export class JourneyNotificationUpdateInput {
     journeyId: string;
     visitorInteractionEmail: boolean;
@@ -1209,6 +1215,8 @@ export abstract class IQuery {
     abstract journeyCollection(id: string): JourneyCollection | Promise<JourneyCollection>;
 
     abstract journeyCollections(teamId: string): Nullable<JourneyCollection>[] | Promise<Nullable<JourneyCollection>[]>;
+
+    abstract journeyEventsConnection(journeyId: string, filter?: Nullable<JourneyEventsFilter>, first?: Nullable<number>, after?: Nullable<string>): JourneyEventsConnection | Promise<JourneyEventsConnection>;
 
     abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
 
@@ -1699,6 +1707,40 @@ export class JourneyCollection {
     title?: Nullable<string>;
     customDomains?: Nullable<CustomDomain[]>;
     journeys?: Nullable<Journey[]>;
+}
+
+export class JourneyEvent implements Event {
+    __typename?: 'JourneyEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+    action?: Nullable<ButtonAction>;
+    actionValue?: Nullable<string>;
+    messagePlatform?: Nullable<MessagePlatform>;
+    language?: Nullable<Language>;
+    email?: Nullable<string>;
+    blockId?: Nullable<string>;
+    position?: Nullable<number>;
+    source?: Nullable<VideoBlockSource>;
+    progress?: Nullable<number>;
+    typename?: Nullable<string>;
+    visitorId?: Nullable<string>;
+    journey?: Nullable<Journey>;
+    visitor?: Nullable<Visitor>;
+}
+
+export class JourneyEventEdge {
+    __typename?: 'JourneyEventEdge';
+    cursor: string;
+    node: JourneyEvent;
+}
+
+export class JourneyEventsConnection {
+    __typename?: 'JourneyEventsConnection';
+    edges: JourneyEventEdge[];
+    pageInfo: PageInfo;
 }
 
 export class JourneyNotification {
