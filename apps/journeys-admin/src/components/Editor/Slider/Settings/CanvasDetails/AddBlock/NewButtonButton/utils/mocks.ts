@@ -160,34 +160,53 @@ export const buttonBlockCreateMock: MockedResponse<
   }
 }
 
-export const submitButtonCreateMock: MockedResponse<ButtonBlockCreate> = {
-  ...buttonBlockCreateMock,
+export const submitButtonCreateMock: MockedResponse<
+  ButtonBlockCreate,
+  ButtonBlockCreateVariables
+> = {
   request: {
     query: BUTTON_BLOCK_CREATE,
     variables: {
       input: {
-        ...buttonBlockCreateMock.request.variables?.input,
+        id: 'submitButtonBlockId',
+        journeyId: 'journeyId',
+        parentBlockId: 'cardId',
+        label: '',
+        variant: ButtonVariant.contained,
+        color: ButtonColor.primary,
+        size: ButtonSize.medium,
         submitEnabled: true
       },
-      iconBlockCreateInput1:
-        buttonBlockCreateMock.request.variables?.iconBlockCreateInput1,
-      iconBlockCreateInput2:
-        buttonBlockCreateMock.request.variables?.iconBlockCreateInput2,
-      id: buttonBlockCreateMock.request.variables?.id,
-      journeyId: buttonBlockCreateMock.request.variables?.journeyId,
-      updateInput: buttonBlockCreateMock.request.variables?.updateInput
+      iconBlockCreateInput1: {
+        id: 'submitStartIconId',
+        journeyId: 'journeyId',
+        parentBlockId: 'submitButtonBlockId',
+        name: null
+      },
+      iconBlockCreateInput2: {
+        id: 'submitEndIconId',
+        journeyId: 'journeyId',
+        parentBlockId: 'submitButtonBlockId',
+        name: null
+      },
+      id: 'submitButtonBlockId',
+      journeyId: 'journeyId',
+      updateInput: {
+        startIconId: 'submitStartIconId',
+        endIconId: 'submitEndIconId'
+      }
     }
   },
   result: {
     data: {
       buttonBlockCreate: {
         __typename: 'ButtonBlock',
-        id: 'buttonBlockId'
+        id: 'submitButtonBlockId'
       },
       startIcon: {
         __typename: 'IconBlock',
-        id: 'startIconId',
-        parentBlockId: 'buttonBlockId',
+        id: 'submitStartIconId',
+        parentBlockId: 'submitButtonBlockId',
         parentOrder: null,
         iconName: null,
         iconColor: null,
@@ -195,8 +214,8 @@ export const submitButtonCreateMock: MockedResponse<ButtonBlockCreate> = {
       },
       endIcon: {
         __typename: 'IconBlock',
-        id: 'endIconId',
-        parentBlockId: 'buttonBlockId',
+        id: 'submitEndIconId',
+        parentBlockId: 'submitButtonBlockId',
         parentOrder: null,
         iconName: null,
         iconColor: null,
@@ -204,15 +223,15 @@ export const submitButtonCreateMock: MockedResponse<ButtonBlockCreate> = {
       },
       buttonBlockUpdate: {
         __typename: 'ButtonBlock',
-        id: 'buttonBlockId',
+        id: 'submitButtonBlockId',
         parentBlockId: 'cardId',
         parentOrder: 0,
         label: '',
         buttonVariant: ButtonVariant.contained,
         buttonColor: ButtonColor.primary,
         size: ButtonSize.medium,
-        startIconId: 'startIconId',
-        endIconId: 'endIconId',
+        startIconId: 'submitStartIconId',
+        endIconId: 'submitEndIconId',
         action: null,
         submitEnabled: true
       }
