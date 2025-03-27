@@ -67,7 +67,8 @@ export class JourneyViewEventResolver {
           ...input,
           id: input.id ?? undefined,
           typename: 'JourneyViewEvent',
-          visitor: { connect: { id: visitor.id } }
+          visitor: { connect: { id: visitor.id } },
+          journey: { connect: { id: input.journeyId } }
         })
       ]
 
