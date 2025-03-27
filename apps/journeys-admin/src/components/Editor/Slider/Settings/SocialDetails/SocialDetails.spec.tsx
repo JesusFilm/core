@@ -21,7 +21,7 @@ describe('SocialDetails', () => {
   beforeEach(() => (useMediaQuery as jest.Mock).mockImplementation(() => true))
 
   it('should render SocialDetails', () => {
-    const { getByText, getByRole } = render(
+    render(
       <MockedProvider>
         <JourneyProvider
           value={{
@@ -33,10 +33,14 @@ describe('SocialDetails', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByText('Social Image')).toBeInTheDocument()
-    expect(getByText('Change')).toBeInTheDocument()
-    expect(getByRole('textbox', { name: 'Title' })).toBeInTheDocument()
-    expect(getByRole('textbox', { name: 'Description' })).toBeInTheDocument()
+    expect(screen.getByText('Social Image')).toBeInTheDocument()
+    expect(screen.getByTestId('Edit2Icon')).toBeInTheDocument()
+    expect(
+      screen.getByRole('textbox', { name: 'Headline' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('textbox', { name: 'Secondary Text' })
+    ).toBeInTheDocument()
   })
 
   it('should navigate to journey map when close icon is clicked', async () => {
