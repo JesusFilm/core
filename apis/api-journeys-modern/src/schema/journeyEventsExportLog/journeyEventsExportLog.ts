@@ -8,7 +8,7 @@ import { JourneyEventsExportLogInput } from './inputs'
 builder.prismaObject('JourneyEventsExportLog', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
-    createdAt: t.expose('createdAt', { type: 'Date', nullable: false }),
+    createdAt: t.expose('createdAt', { type: 'DateTimeISO', nullable: false }),
     userId: t.exposeID('userId', { nullable: false }),
     journeyId: t.exposeID('journeyId', { nullable: false }),
     eventsFilter: t.exposeStringList('eventsFilter', { nullable: false }),
@@ -41,23 +41,15 @@ builder.mutationField('createJourneyEventsExportLog', (t) =>
         })
       }
 
-      const data = {
-        userId: user.id,
-        journeyId: input.journeyId,
-        eventsFilter: input.eventsFilter ?? [],
-        dateRangeStart:
-          input.dateRangeStart != null
-            ? new Date(input.dateRangeStart).toISOString()
-            : undefined,
-        dateRangeEnd:
-          input.dateRangeEnd != null
-            ? new Date(input.dateRangeEnd).toISOString()
-            : undefined
-      }
-
       const res = await prisma.journeyEventsExportLog.create({
         ...query,
-        data
+        data: {
+          userId: user.id,
+          journeyId: input.journeyId,
+          eventsFilter: input.eventsFilter,
+          dateRangeStart: input.dateRangeStart,
+          dateRangeEnd: input.dateRangeEnd
+        }
       })
 
       return res

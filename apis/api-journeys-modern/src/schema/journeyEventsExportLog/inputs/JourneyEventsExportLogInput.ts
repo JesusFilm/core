@@ -10,8 +10,8 @@ export const JourneyEventsExportLogInput = builder.inputType(
         type: [EventType],
         required: true
       }),
-      dateRangeStart: t.string(),
-      dateRangeEnd: t.string()
+      dateRangeStart: t.field({ type: 'DateTimeISO', required: false }),
+      dateRangeEnd: t.field({ type: 'DateTimeISO', required: false })
     })
   }
 )
