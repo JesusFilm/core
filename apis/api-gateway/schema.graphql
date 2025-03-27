@@ -606,6 +606,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   journey(id: ID!, idType: IdType, options: JourneysQueryOptions) : Journey! @join__field(graph: API_JOURNEYS) 
   journeyCollection(id: ID!) : JourneyCollection! @join__field(graph: API_JOURNEYS) 
   journeyCollections(teamId: ID!) : [JourneyCollection]! @join__field(graph: API_JOURNEYS) 
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String) : JourneyEventsConnection! @join__field(graph: API_JOURNEYS) 
   getJourneyProfile: JourneyProfile @join__field(graph: API_JOURNEYS) 
   """
   Get a list of Visitor Information by Journey
@@ -956,6 +957,7 @@ type TextResponseBlock implements Block @join__type(graph: API_JOURNEYS)  @join_
   parentBlockId: ID
   parentOrder: Int
   label: String!
+  placeholder: String
   required: Boolean
   hint: String
   minRows: Int
@@ -1651,6 +1653,53 @@ type JourneyCollection @join__type(graph: API_JOURNEYS)  {
   title: String
   customDomains: [CustomDomain!]
   journeys: [Journey!]
+}
+
+"""
+JourneyEvent aggregates all event types. For detailed event type definitions,
+see the specific event files in the event module
+"""
+type JourneyEvent implements Event @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Event")  {
+  """
+  Base event fields from Event interface
+  """
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+  """
+  Additional specific event fields
+  """
+  action: ButtonAction
+  actionValue: String
+  messagePlatform: MessagePlatform
+  language: Language
+  email: String
+  blockId: String
+  position: Float
+  source: VideoBlockSource
+  progress: Int
+  """
+  database fields from table, not explicitly surfaced from any other types
+  """
+  typename: String
+  visitorId: String
+  """
+  Related fields queried from relevant ids in the events table
+  """
+  journey: Journey
+  visitor: Visitor
+}
+
+type JourneyEventEdge @join__type(graph: API_JOURNEYS)  {
+  cursor: String!
+  node: JourneyEvent!
+}
+
+type JourneyEventsConnection @join__type(graph: API_JOURNEYS)  {
+  edges: [JourneyEventEdge!]!
+  pageInfo: PageInfo!
 }
 
 type JourneyNotification @join__type(graph: API_JOURNEYS)  {
@@ -3958,6 +4007,12 @@ input JourneyCollectionCreateInput @join__type(graph: API_JOURNEYS)  {
 input JourneyCollectionUpdateInput @join__type(graph: API_JOURNEYS)  {
   title: String
   journeyIds: [String!]
+}
+
+input JourneyEventsFilter @join__type(graph: API_JOURNEYS)  {
+  typenames: [String!]
+  periodRangeStart: DateTime
+  periodRangeEnd: DateTime
 }
 
 input JourneyNotificationUpdateInput @join__type(graph: API_JOURNEYS)  {
