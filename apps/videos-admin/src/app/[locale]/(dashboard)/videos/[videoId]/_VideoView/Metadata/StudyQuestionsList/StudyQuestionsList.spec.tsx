@@ -39,8 +39,14 @@ const messages = {
   'Study question is required': 'Study question is required',
   'Failed to create': 'Failed to create',
   'Study question created': 'Study question created',
+  'Study question deleted': 'Study question deleted',
   Edit: 'Edit',
-  'Edit Study Question': 'Edit Study Question'
+  'Edit Study Question': 'Edit Study Question',
+  Delete: 'Delete',
+  Cancel: 'Cancel',
+  'Delete Study Question': 'Delete Study Question',
+  delete_confirmation:
+    'Are you sure you want to delete this study question? This action cannot be undone.'
 }
 
 const video = {
@@ -80,9 +86,53 @@ const mockStudyQuestions = [
 
 // Mock notistack
 jest.mock('notistack', () => ({
+  ...jest.requireActual('notistack'),
   useSnackbar: () => ({
     enqueueSnackbar: jest.fn()
   })
+}))
+
+// Mock the VideoProvider module
+jest.mock('../../../../../../../../libs/VideoProvider', () => {
+  const originalModule = jest.requireActual(
+    '../../../../../../../../libs/VideoProvider'
+  )
+  return {
+    ...originalModule,
+    useVideo: jest.fn().mockReturnValue({
+      id: 'video-1',
+      slug: 'test-video',
+      label: 'featureFilm',
+      published: true,
+      title: [{ id: '1', value: 'Test Video' }],
+      locked: false,
+      images: [],
+      imageAlt: [],
+      noIndex: false,
+      description: [],
+      snippet: [],
+      children: [],
+      variants: [],
+      studyQuestions: [],
+      variantLanguagesCount: 0,
+      subtitles: [],
+      videoEditions: []
+    })
+  }
+})
+
+// Mock the translations
+jest.mock('next-intl', () => ({
+  ...jest.requireActual('next-intl'),
+  useTranslations: () => (key: string) => {
+    if (
+      key ===
+      'Are you sure you want to delete this study question? This action cannot be undone.'
+    ) {
+      return messages['delete_confirmation']
+    }
+    return messages[key] || key
+  }
 }))
 
 describe('StudyQuestions', () => {
@@ -248,16 +298,20 @@ describe('StudyQuestions', () => {
 
   it('should open delete dialog when delete action is clicked', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider locale="en" messages={messages}>
         <MockedProvider>
-          <StudyQuestionsList
-            studyQuestions={[
-              {
-                id: 'studyQuestion.1',
-                value: 'Study question 1 text'
-              }
-            ]}
-          />
+          <SnackbarProvider>
+            <VideoProvider video={video}>
+              <StudyQuestionsList
+                studyQuestions={[
+                  {
+                    id: 'studyQuestion.1',
+                    value: 'Study question 1 text'
+                  }
+                ]}
+              />
+            </VideoProvider>
+          </SnackbarProvider>
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -281,16 +335,20 @@ describe('StudyQuestions', () => {
 
   it('should close delete dialog when cancel is clicked', async () => {
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider locale="en" messages={messages}>
         <MockedProvider>
-          <StudyQuestionsList
-            studyQuestions={[
-              {
-                id: 'studyQuestion.1',
-                value: 'Study question 1 text'
-              }
-            ]}
-          />
+          <SnackbarProvider>
+            <VideoProvider video={video}>
+              <StudyQuestionsList
+                studyQuestions={[
+                  {
+                    id: 'studyQuestion.1',
+                    value: 'Study question 1 text'
+                  }
+                ]}
+              />
+            </VideoProvider>
+          </SnackbarProvider>
         </MockedProvider>
       </NextIntlClientProvider>
     )
@@ -303,11 +361,11 @@ describe('StudyQuestions', () => {
     const deleteAction = screen.getByText('Delete')
     fireEvent.click(deleteAction)
 
-    // Click cancel
+    // Click the cancel button
     const cancelButton = screen.getByText('Cancel')
     fireEvent.click(cancelButton)
 
-    // The dialog should be closed
+    // Dialog should close
     await waitFor(() => {
       expect(
         screen.queryByText('Delete Study Question')
@@ -320,7 +378,9 @@ describe('StudyQuestions', () => {
       {
         request: {
           query: DELETE_STUDY_QUESTION,
-          variables: { id: 'studyQuestion.1' }
+          variables: {
+            id: 'studyQuestion.1'
+          }
         },
         result: {
           data: {
@@ -333,16 +393,20 @@ describe('StudyQuestions', () => {
     ]
 
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider locale="en" messages={messages}>
         <MockedProvider mocks={mocks} addTypename={false}>
-          <StudyQuestionsList
-            studyQuestions={[
-              {
-                id: 'studyQuestion.1',
-                value: 'Study question 1 text'
-              }
-            ]}
-          />
+          <SnackbarProvider>
+            <VideoProvider video={video}>
+              <StudyQuestionsList
+                studyQuestions={[
+                  {
+                    id: 'studyQuestion.1',
+                    value: 'Study question 1 text'
+                  }
+                ]}
+              />
+            </VideoProvider>
+          </SnackbarProvider>
         </MockedProvider>
       </NextIntlClientProvider>
     )
