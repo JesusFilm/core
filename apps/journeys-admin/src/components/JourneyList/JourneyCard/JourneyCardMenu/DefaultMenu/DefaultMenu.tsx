@@ -50,7 +50,9 @@ interface DefaultMenuProps {
   published: boolean
   setOpenAccessDialog: () => void
   handleCloseMenu: () => void
+  /** Function to open the details dialog for editing journey details */
   setOpenTrashDialog: () => void
+  /** Function to open the share dialog for sharing journey options */
   setOpenDetailsDialog: () => void
   setOpenShareDialog: () => void
   template?: boolean
@@ -130,7 +132,6 @@ export function DefaultMenu({
         label={t('Edit Details')}
         icon={<Edit2Icon color="secondary" />}
         onClick={() => {
-          console.log('clicked')
           setOpenDetailsDialog()
           handleCloseMenu()
         }}
