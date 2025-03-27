@@ -1,7 +1,7 @@
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { NodeProps, useUpdateNodeInternals } from 'reactflow'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
@@ -26,6 +26,7 @@ export function StepBlockNode({
     state: { steps, selectedStep, activeContent, showAnalytics }
   } = useEditor()
   const { journey } = useJourney()
+  const [hovered, setHovered] = useState(false)
 
   const updateNodeInternals = useUpdateNodeInternals()
 
@@ -44,6 +45,9 @@ export function StepBlockNode({
       ? HandleVariant.Disabled
       : HandleVariant.Shown
 
+  const handleMouseEnter = () => setHovered(true)
+  const handleMouseLeave = () => setHovered(false)
+
   return step != null ? (
     <Stack sx={{ position: 'relative' }}>
       <Fade in={showAnalytics === true}>
@@ -51,18 +55,11 @@ export function StepBlockNode({
           <StepBlockNodeAnalytics stepId={step.id} />
         </div>
       </Fade>
-      {showAnalytics !== true && (
-        <StepBlockNodeMenu
-          in={isSelected}
-          className="fab"
-          step={step}
-          xPos={xPos}
-          yPos={yPos}
-        />
-      )}
       <Stack
         data-testid={`StepBlockNode-${step.id}`}
         direction="column"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         sx={{
           background: (theme) =>
             isSelected
@@ -72,9 +69,19 @@ export function StepBlockNode({
             `2px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
           borderRadius: 3,
           maxWidth: STEP_NODE_WIDTH,
-          transition: (theme) => theme.transitions.create('background')
+          transition: (theme) => theme.transitions.create('background'),
+          position: 'relative'
         }}
       >
+        {showAnalytics !== true && (
+          <StepBlockNodeMenu
+            in={isSelected || hovered}
+            className="fab"
+            step={step}
+            xPos={xPos}
+            yPos={yPos}
+          />
+        )}
         <BaseNode
           id={step.id}
           targetHandle={targetHandleVariant}
