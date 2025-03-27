@@ -1,16 +1,12 @@
-import { Reference, gql, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
-import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
-import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import type {
@@ -28,31 +24,15 @@ import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
 
-import {
-  addBlocksToCache,
-  removeBlocksFromCache,
-  restoreBlocksToCache
-} from './utils/cacheUtils'
-import {
-  TEXT_RESPONSE_BLOCK_CREATE,
-  TEXT_RESPONSE_WITH_BUTTON_CREATE,
-  TEXT_RESPONSE_WITH_BUTTON_DELETE,
-  TEXT_RESPONSE_WITH_BUTTON_RESTORE
-} from './utils/mutations'
+import { useTextResponseWithButtonMutation } from './hooks/useTextResponseWithButtonMutation'
+import { TEXT_RESPONSE_BLOCK_CREATE } from './utils/mutations'
 
 export function NewTextResponseButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [textResponseBlockCreate, { loading: textResponseLoading }] =
     useMutation<TextResponseBlockCreate>(TEXT_RESPONSE_BLOCK_CREATE)
-  const [textResponseWithButtonCreate] = useMutation(
-    TEXT_RESPONSE_WITH_BUTTON_CREATE
-  )
-  const [textResponseWithButtonDelete] = useMutation(
-    TEXT_RESPONSE_WITH_BUTTON_DELETE
-  )
-  const [textResponseWithButtonRestore] = useMutation(
-    TEXT_RESPONSE_WITH_BUTTON_RESTORE
-  )
+  const [create, remove, restore, { loading: textResponseWithButtonLoading }] =
+    useTextResponseWithButtonMutation()
 
   const { journey } = useJourney()
   const {
@@ -87,13 +67,13 @@ export function NewTextResponseButton(): ReactElement {
       type: null,
       routeId: null,
       integrationId: null,
-      __typename: 'TextResponseBlock'
+      __typename: 'TextResponseBlock' as const
     }
 
     if (!hasSubmitButton) {
-      const buttonBlock = {
+      const buttonBlock: ButtonBlock = {
         id: uuidv4(),
-        __typename: 'ButtonBlock',
+        __typename: 'ButtonBlock' as const,
         parentBlockId: card.id,
         label: t('Submit'),
         buttonVariant: ButtonVariant.contained,
@@ -106,87 +86,21 @@ export function NewTextResponseButton(): ReactElement {
         submitEnabled: true
       }
 
-      const createdBlocks = [textResponseBlock, buttonBlock]
+      const blocks = { textResponseBlock, buttonBlock }
 
       add({
         parameters: {
-          execute: { previousBlockId },
+          execute: {},
           undo: { previousBlockId },
           redo: { textResponseId: textResponseBlock.id }
         },
-        execute({ previousBlockId }) {
+        execute() {
           dispatch({
             type: 'SetEditorFocusAction',
             selectedBlockId: textResponseBlock.id,
             activeSlide: ActiveSlide.Content
           })
-
-          void textResponseWithButtonCreate({
-            variables: {
-              textResponseInput: {
-                id: textResponseBlock.id,
-                journeyId: journey.id,
-                parentBlockId: textResponseBlock.parentBlockId,
-                label: textResponseBlock.label
-              },
-              buttonInput: {
-                id: buttonBlock.id,
-                journeyId: journey.id,
-                parentBlockId: buttonBlock.parentBlockId,
-                label: buttonBlock.label,
-                variant: buttonBlock.buttonVariant,
-                color: buttonBlock.buttonColor,
-                size: buttonBlock.size,
-                submitEnabled: true
-              },
-              iconInput1: {
-                id: buttonBlock.startIconId,
-                journeyId: journey.id,
-                parentBlockId: buttonBlock.id,
-                name: null
-              },
-              iconInput2: {
-                id: buttonBlock.endIconId,
-                journeyId: journey.id,
-                parentBlockId: buttonBlock.id,
-                name: null
-              },
-              buttonId: buttonBlock.id,
-              journeyId: journey.id,
-              buttonUpdateInput: {
-                startIconId: buttonBlock.startIconId,
-                endIconId: buttonBlock.endIconId
-              }
-            },
-            optimisticResponse: {
-              textResponse: textResponseBlock,
-              button: buttonBlock,
-              startIcon: {
-                id: buttonBlock.startIconId,
-                parentBlockId: buttonBlock.id,
-                parentOrder: null,
-                iconName: null,
-                iconSize: null,
-                iconColor: null,
-                __typename: 'IconBlock'
-              },
-              endIcon: {
-                id: buttonBlock.endIconId,
-                parentBlockId: buttonBlock.id,
-                parentOrder: null,
-                iconName: null,
-                iconSize: null,
-                iconColor: null,
-                __typename: 'IconBlock'
-              },
-              buttonUpdate: buttonBlock
-            },
-            update(cache, { data }) {
-              if (data != null) {
-                addBlocksToCache(cache, journey.id, data)
-              }
-            }
-          })
+          create(blocks, journey)
         },
         undo({ previousBlockId }) {
           dispatch({
@@ -194,25 +108,7 @@ export function NewTextResponseButton(): ReactElement {
             selectedBlockId: previousBlockId,
             activeSlide: ActiveSlide.Content
           })
-
-          void textResponseWithButtonDelete({
-            variables: {
-              textResponseId: textResponseBlock.id,
-              buttonId: buttonBlock.id,
-              startIconId: buttonBlock.startIconId,
-              endIconId: buttonBlock.endIconId
-            },
-            optimisticResponse: {
-              textResponse: [],
-              button: [],
-              startIcon: [],
-              endIcon: []
-            },
-            update(cache, { data }) {
-              if (data == null) return
-              removeBlocksFromCache(cache, journey.id, createdBlocks)
-            }
-          })
+          remove(blocks, journey.id)
         },
         redo({ textResponseId }) {
           dispatch({
@@ -220,46 +116,7 @@ export function NewTextResponseButton(): ReactElement {
             selectedBlockId: textResponseId,
             activeSlide: ActiveSlide.Content
           })
-
-          void textResponseWithButtonRestore({
-            variables: {
-              textResponseId: textResponseBlock.id,
-              buttonId: buttonBlock.id,
-              startIconId: buttonBlock.startIconId,
-              endIconId: buttonBlock.endIconId
-            },
-            optimisticResponse: {
-              textResponse: [textResponseBlock],
-              button: [buttonBlock],
-              startIcon: [
-                {
-                  id: buttonBlock.startIconId,
-                  parentBlockId: buttonBlock.id,
-                  parentOrder: null,
-                  iconName: null,
-                  iconSize: null,
-                  iconColor: null,
-                  __typename: 'IconBlock'
-                }
-              ],
-              endIcon: [
-                {
-                  id: buttonBlock.endIconId,
-                  parentBlockId: buttonBlock.id,
-                  parentOrder: null,
-                  iconName: null,
-                  iconSize: null,
-                  iconColor: null,
-                  __typename: 'IconBlock'
-                }
-              ]
-            },
-            update(cache, { data }) {
-              if (data != null) {
-                restoreBlocksToCache(cache, journey.id, data)
-              }
-            }
-          })
+          restore(blocks, journey)
         }
       })
     } else {
@@ -297,7 +154,7 @@ export function NewTextResponseButton(): ReactElement {
       value={t('Text Input')}
       onClick={handleClick}
       testId="NewTextResponseButton"
-      disabled={textResponseLoading}
+      disabled={textResponseLoading || textResponseWithButtonLoading}
     />
   )
 }
