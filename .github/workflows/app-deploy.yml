@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   affected:
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
         node-version: [22]
@@ -69,7 +69,7 @@ jobs:
           - app: journeys-admin
             github-ref-name: stage
             github-event-name: push
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
     permissions:
@@ -190,7 +190,7 @@ jobs:
             playwright-report/
           retention-days: 30
   deploy-status:
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     needs: [affected, deploy-preview]
     if: ${{ always() && github.event_name == 'pull_request' }}
     steps:
@@ -225,7 +225,7 @@ jobs:
             github-ref-name: stage
           - app: short-links
             github-ref-name: stage
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     permissions:
       deployments: write
       contents: write
