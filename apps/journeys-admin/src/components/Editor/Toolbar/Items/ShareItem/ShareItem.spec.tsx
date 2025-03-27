@@ -159,9 +159,11 @@ describe('ShareItem', () => {
     await act(async () => {
       render(
         <MockedProvider>
-          <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
-          <ShareItem variant="button" />
-        </JourneyProvider>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
+          >
+            <ShareItem variant="button" />
+          </JourneyProvider>
         </MockedProvider>
       )
     })
@@ -174,11 +176,13 @@ describe('ShareItem', () => {
 
   it('should close the ShareDialog when onClose is called', async () => {
     await act(async () => {
-        render(
+      render(
         <MockedProvider>
-          <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
+          >
             <ShareItem variant="button" />
-        </JourneyProvider>
+          </JourneyProvider>
         </MockedProvider>
       )
     })
@@ -195,9 +199,11 @@ describe('ShareItem', () => {
     await act(async () => {
       render(
         <MockedProvider>
-          <JourneyProvider value={{ journey: defaultJourney, variant: 'admin' }}>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
+          >
             <ShareItem variant="button" />
-        </JourneyProvider>
+          </JourneyProvider>
         </MockedProvider>
       )
     })
