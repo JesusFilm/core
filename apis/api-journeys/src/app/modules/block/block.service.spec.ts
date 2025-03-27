@@ -131,6 +131,7 @@ describe('BlockService', () => {
     parentBlockId: cardBlock.id,
     startIconId: null,
     endIconId: 'icon',
+    submitEnabled: true,
     action: { parentBlockId: 'ButtonBlock', blockId: 'step' }
   } as unknown as BlockWithAction
   const iconBlock = {
@@ -558,6 +559,27 @@ describe('BlockService', () => {
       })
     })
 
+    it('should set submitEnabled to false when duplicating a block with submitEnabled true', async () => {
+      prismaService.block.findUnique.mockResolvedValue(buttonBlock)
+      mockUuidv4.mockReturnValueOnce(`${buttonBlock.id}Copy`)
+
+      expect(
+        await service.getDuplicateBlockAndChildren(
+          buttonBlock.id,
+          journey.id,
+          cardBlock.id,
+        )
+      ).toEqual([
+        {
+          ...buttonBlock,
+          id: `${buttonBlock.id}Copy`,
+          parentBlockId: cardBlock.id,
+          submitEnabled: false,
+          action: omit(buttonBlock.action, 'parentBlockId')
+        }
+      ])
+    })
+
     it('should return block and children with specific ids', async () => {
       prismaService.block.findUnique
         .mockResolvedValueOnce(stepBlock)
@@ -618,6 +640,7 @@ describe('BlockService', () => {
           id: 'specificButtonId',
           parentBlockId: 'specificCardId',
           endIconId: 'specificIconId',
+          submitEnabled: false,
           action: omit(buttonBlock.action, 'parentBlockId')
         },
         {
