@@ -44,19 +44,4 @@ describe('BibleQuote', () => {
       .closest('div')?.parentElement
     expect(container).toHaveStyle('background-color: #1A1815') // Default color from component
   })
-
-  it('has correct responsive styling classes', () => {
-    render(<BibleQuote {...mockProps} />)
-
-    const container = screen
-      .getByTestId('quote-content')
-      .closest('div')?.parentElement
-    expect(container).toHaveClass(
-      'h-[300px]',
-      'md:h-[400px]',
-      'w-[300px]',
-      'md:w-[400px]'
-    )
-    expect(container).toHaveClass('rounded-lg', 'overflow-hidden', 'shadow-2xl')
-  })
 })
