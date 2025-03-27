@@ -188,6 +188,7 @@ const messages = {
   Edition: 'Edition',
   Language: 'Language',
   Published: 'Published',
+  Status: 'Status',
   Draft: 'Draft',
   Add: 'Add',
   Uploading: 'Uploading',
@@ -256,8 +257,8 @@ describe('AddAudioLanguageDialog', () => {
     expect(screen.getByText('Add Audio Language')).toBeInTheDocument()
     expect(screen.getByTestId('EditionSelect')).toBeInTheDocument()
     expect(screen.getByLabelText('Language')).toBeInTheDocument()
-    expect(screen.getByLabelText('Published')).toBeInTheDocument()
-    expect(screen.getByLabelText('Published')).toBeChecked()
+    expect(screen.getByLabelText('Status')).toBeInTheDocument()
+    expect(screen.getByText('Published')).toBeInTheDocument()
   })
 
   it('should disable add button when no language selected', async () => {
@@ -484,8 +485,9 @@ describe('AddAudioLanguageDialog', () => {
       fireEvent.click(englishOptions[0])
     })
 
-    // Toggle published state
-    fireEvent.click(screen.getByLabelText('Published'))
+    // Change published state to unpublished (Draft)
+    fireEvent.mouseDown(screen.getByLabelText('Status'))
+    fireEvent.click(screen.getByRole('option', { name: 'Draft' }))
 
     // Create a test file
     const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })

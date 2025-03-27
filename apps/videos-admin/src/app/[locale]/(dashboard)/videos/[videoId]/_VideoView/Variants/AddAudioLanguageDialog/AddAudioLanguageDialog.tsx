@@ -1,13 +1,11 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import FormHelperText from '@mui/material/FormHelperText'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
-import Switch from '@mui/material/Switch'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
 import { useParams } from 'next/navigation'
@@ -19,6 +17,7 @@ import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete/LanguageAutocomplete'
 
+import { videoStatuses } from '../../../../../../../../constants'
 import { useUploadVideoVariant } from '../../../../../../../../libs/UploadVideoVariantProvider'
 import {
   GetAdminVideoVariant,
@@ -44,7 +43,7 @@ const initialValues: FormikValues = {
   edition: '',
   language: null,
   file: null,
-  published: true
+  published: 'published'
 }
 
 export function AddAudioLanguageDialog({
@@ -81,7 +80,7 @@ export function AddAudioLanguageDialog({
       values.language.slug,
       values.edition,
       handleClose,
-      values.published
+      values.published === 'published'
     )
   }
 
@@ -177,18 +176,28 @@ export function AddAudioLanguageDialog({
                     )}
                   />
                 </Box>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={values.published}
-                      onChange={async (event) => {
-                        await setFieldValue('published', event.target.checked)
-                      }}
-                      disabled={isUploadInProgress}
-                    />
-                  }
-                  label={t('Published')}
-                />
+                <FormControl variant="standard">
+                  <InputLabel id="status-select-label">
+                    {t('Status')}
+                  </InputLabel>
+                  <Select
+                    labelId="status-select-label"
+                    id="status"
+                    name="published"
+                    label={t('Status')}
+                    value={values.published}
+                    onChange={async (event) => {
+                      await setFieldValue('published', event.target.value)
+                    }}
+                    disabled={isUploadInProgress}
+                  >
+                    {videoStatuses.map(({ label, value }) => (
+                      <MenuItem key={value} value={value}>
+                        {label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
                 <AudioLanguageFileUpload
                   disabled={isUploadInProgress}
                   onFileSelect={async (file) => {
