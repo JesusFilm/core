@@ -60,7 +60,7 @@ const nextConfig = {
     // Limit concurrency for static page generation to avoid API rate limits
     staticPageGenerationTimeout: 180,
     // Reduce concurrency of page generation to minimize API rate limiting
-    staticPageGenerationConcurrency: 5,
+    staticPageGenerationConcurrency: 2,
     staticGenerationRetryCount: 3,
     outputFileTracingExcludes: {
       '*': [
