@@ -239,6 +239,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_TextResponseBl
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
   placeholder: string | null;
   hint: string | null;

@@ -4,13 +4,15 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { sendGTMEvent } from '@next/third-parties/google'
-import { Form, Formik } from 'formik'
+import { Form, Formik, FormikErrors } from 'formik'
 import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
+import { object, string } from 'yup'
 
+import { TextResponseType } from '../../../__generated__/globalTypes'
 import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
@@ -53,6 +55,7 @@ interface TextResponseFormValues {
  * @param {string} [props.placeholder] - Placeholder text.
  * @param {string} [props.hint] - Helper text displayed below the input.
  * @param {number} [props.minRows] - Minimum number of rows for the text area.
+ * @param {boolean} [props.required] - Indicates if the field is required.
  * @returns {ReactElement} The TextResponse component.
  */
 export const TextResponse = ({
@@ -61,7 +64,9 @@ export const TextResponse = ({
   label,
   placeholder,
   hint,
-  minRows
+  minRows,
+  required,
+  type
 }: TextResponseProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
 
@@ -84,9 +89,30 @@ export const TextResponse = ({
 
   const initialValues: TextResponseFormValues = { response: '' }
 
+  const validationSchema = object().shape({
+    response: (() => {
+      let schema = string()
+      if (required === true) {
+        schema = schema.required(t('Required'))
+      }
+      if (type === TextResponseType.name) {
+        schema = schema
+          .min(2, t('Name must be 2 characters or more'))
+          .max(50, t('Name must be 50 characters or less'))
+      }
+      if (type === TextResponseType.email) {
+        schema = schema.email(t('Please enter a valid email address'))
+      }
+      return schema
+    })()
+  })
+
   const onSubmitHandler = async (
-    values: TextResponseFormValues
+    values: TextResponseFormValues,
+    errors: FormikErrors<TextResponseFormValues>
   ): Promise<void> => {
+    if (errors.response) return
+
     if (variant === 'default' || variant === 'embed') {
       const id = uuid()
       if (values.response.trim() !== '') {
@@ -126,8 +152,16 @@ export const TextResponse = ({
 
   return (
     <Box sx={{ mb: 4 }} data-testid="JourneysTextResponse">
-      <Formik initialValues={initialValues} onSubmit={noop} enableReinitialize>
-        {({ values, handleChange, handleBlur }) => (
+      <Formik
+        initialValues={initialValues}
+        onSubmit={noop}
+        enableReinitialize
+        validationSchema={
+          selectedBlock !== undefined ? undefined : validationSchema
+        }
+        validateOnBlur
+      >
+        {({ values, errors, handleChange, handleBlur }) => (
           <Form data-testid={`textResponse-${blockId}`}>
             <Stack flexDirection="column" spacing={1}>
               <Typography
@@ -138,13 +172,20 @@ export const TextResponse = ({
                 }}
               >
                 {label === '' ? 'Label' : label}
+                {(required ?? false) ? '*' : ''}
               </Typography>
               <TextField
                 id="textResponse-field"
                 name="response"
                 placeholder={placeholder != null ? placeholder : ''}
                 value={values.response}
-                helperText={hint != null ? hint : ''}
+                helperText={
+                  errors.response !== null
+                    ? (errors.response as string)
+                    : hint != null
+                      ? hint
+                      : ''
+                }
                 multiline
                 disabled={loading}
                 minRows={minRows ?? 3}
@@ -154,7 +195,7 @@ export const TextResponse = ({
                   handleBlur(e)
                   if (values.response !== value) {
                     setValue(values.response)
-                    await onSubmitHandler(values)
+                    await onSubmitHandler(values, errors)
                   }
                 }}
                 slotProps={{
