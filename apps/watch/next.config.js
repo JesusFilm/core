@@ -57,6 +57,11 @@ const nextConfig = {
   },
   transpilePackages: ['shared-ui'],
   experimental: {
+    // Limit concurrency for static page generation to avoid API rate limits
+    staticPageGenerationTimeout: 180,
+    // Reduce concurrency of page generation to minimize API rate limiting
+    staticPageGenerationConcurrency: 5,
+    staticGenerationRetryCount: 3,
     outputFileTracingExcludes: {
       '*': [
         'node_modules/@swc/core-linux-x64-gnu',
