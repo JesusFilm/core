@@ -131,6 +131,7 @@ describe('BlockService', () => {
     parentBlockId: cardBlock.id,
     startIconId: null,
     endIconId: 'icon',
+    submitEnabled: true,
     action: { parentBlockId: 'ButtonBlock', blockId: 'step' }
   } as unknown as BlockWithAction
   const iconBlock = {
@@ -618,6 +619,7 @@ describe('BlockService', () => {
           id: 'specificButtonId',
           parentBlockId: 'specificCardId',
           endIconId: 'specificIconId',
+          submitEnabled: false,
           action: omit(buttonBlock.action, 'parentBlockId')
         },
         {

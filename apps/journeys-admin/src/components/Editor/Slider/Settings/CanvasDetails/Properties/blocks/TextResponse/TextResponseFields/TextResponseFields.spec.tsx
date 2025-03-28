@@ -23,6 +23,7 @@ describe('TextResponseFields', () => {
       </MockedProvider>
     )
     expect(getByRole('textbox', { name: 'Label' })).toBeInTheDocument()
+    expect(getByRole('textbox', { name: 'Placeholder' })).toBeInTheDocument()
     expect(getByRole('textbox', { name: 'Hint' })).toBeInTheDocument()
     expect(getByText('Minimum Size')).toBeInTheDocument()
   })
