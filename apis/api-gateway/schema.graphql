@@ -391,11 +391,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Allow current user to update specific allowable fields of their visitor record
   """
   visitorUpdateForCurrentUser(input: VisitorUpdateInput!) : Visitor! @join__field(graph: API_JOURNEYS) 
-  """
-  Transcode an asset. Returns the bullmq job ID.
-  """
-  transcodeAsset(input: TranscodeVideoInput!) : String @join__field(graph: API_MEDIA) 
-  getTranscodeAssetProgress(jobId: String!) : Int @join__field(graph: API_MEDIA) 
   createCloudflareUploadByFile(input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareUploadByUrl(url: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
@@ -406,6 +401,11 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   cloudflareR2Create(input: CloudflareR2CreateInput!) : CloudflareR2! @join__field(graph: API_MEDIA) 
   cloudflareR2Delete(id: ID!) : CloudflareR2! @join__field(graph: API_MEDIA) 
+  """
+  Transcode an asset. Returns the bullmq job ID.
+  """
+  transcodeAsset(input: TranscodeVideoInput!) : String @join__field(graph: API_MEDIA) 
+  getTranscodeAssetProgress(jobId: String!) : Int @join__field(graph: API_MEDIA) 
   createImageBySegmindPrompt(prompt: String!, model: SegmindModel!) : CloudflareImage! @join__field(graph: API_MEDIA)  @deprecated(reason: "use createCloudflareImageFromPrompt") 
   triggerUnsplashDownload(url: String!) : Boolean! @join__field(graph: API_MEDIA) 
   createMuxVideoUploadByFile(name: String!) : MuxVideo! @join__field(graph: API_MEDIA) 
