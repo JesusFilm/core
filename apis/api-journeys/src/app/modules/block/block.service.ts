@@ -138,7 +138,6 @@ export class BlockService {
       duplicateBlockId,
       idMap
     )
-    console.log(blockAndChildrenData)
     await this.saveAll(
       blockAndChildrenData.map((block) => ({
         ...omit(block, [
