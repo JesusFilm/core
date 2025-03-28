@@ -4,7 +4,11 @@ import { screen, userEvent } from '@storybook/test'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps, ReactElement } from 'react'
 
-import { IconName, TypographyVariant } from '../../../__generated__/globalTypes'
+import {
+  IconName,
+  TextResponseType,
+  TypographyVariant
+} from '../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
@@ -147,6 +151,71 @@ export const Required = {
         children: []
       }
     ]
+  }
+}
+
+export const RequiredValidation = {
+  ...Template,
+  args: {
+    ...Default.args,
+    hint: 'Optional Hint text',
+    minRows: 4,
+    label: 'Custom label',
+    placeholder: 'Placeholder text',
+    submitIconId: 'icon',
+    submitLabel: 'Custom label',
+    required: true,
+    children: [
+      {
+        id: 'icon',
+        __typename: 'IconBlock',
+        parentBlockId: 'parent',
+        parentOrder: 0,
+        iconName: IconName.SendRounded,
+        iconSize: null,
+        iconColor: null,
+        children: []
+      }
+    ]
+  },
+  play: async () => {
+    await userEvent.click(screen.getAllByRole('textbox')[0])
+    await userEvent.click(screen.getAllByText('Some block below')[0])
+    await userEvent.click(screen.getAllByRole('textbox')[1])
+    await userEvent.click(screen.getAllByText('Some block below')[1])
+  }
+}
+
+export const EmailValidation = {
+  ...Template,
+  args: {
+    ...Default.args,
+    hint: 'Optional Hint text',
+    minRows: 4,
+    label: 'Custom label',
+    placeholder: 'Placeholder text',
+    submitIconId: 'icon',
+    submitLabel: 'Custom label',
+    required: true,
+    type: TextResponseType.email,
+    children: [
+      {
+        id: 'icon',
+        __typename: 'IconBlock',
+        parentBlockId: 'parent',
+        parentOrder: 0,
+        iconName: IconName.SendRounded,
+        iconSize: null,
+        iconColor: null,
+        children: []
+      }
+    ]
+  },
+  play: async () => {
+    await userEvent.type(screen.getAllByRole('textbox')[0], 'Answer')
+    await userEvent.click(screen.getAllByText('Some block below')[0])
+    await userEvent.type(screen.getAllByRole('textbox')[1], 'Answer')
+    await userEvent.click(screen.getAllByText('Some block below')[1])
   }
 }
 

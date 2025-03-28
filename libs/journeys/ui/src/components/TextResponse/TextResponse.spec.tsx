@@ -4,6 +4,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
+import { TextResponseType } from '../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import type { TreeBlock } from '../../libs/block'
 import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
@@ -91,11 +92,9 @@ const TextResponseMock = ({
 
 describe('TextResponse', () => {
   it('should have 1000 character max length', async () => {
-    const { getByLabelText } = render(
-      <TextResponseMock mocks={[submissionSuccess]} />
-    )
+    render(<TextResponseMock mocks={[submissionSuccess]} />)
 
-    const responseField = getByLabelText('Your answer here')
+    const responseField = screen.getByRole('textbox')
 
     await waitFor(() => {
       expect(responseField).toHaveAttribute('maxlength', '1000')
@@ -129,19 +128,18 @@ describe('TextResponse', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByLabelText('Label')).toBeInTheDocument()
+    expect(screen.getByText('Label')).toBeInTheDocument()
   })
 
   it('should be in a loading state when waiting for response', async () => {
-    const { getByRole, getByLabelText } = render(
+    render(
       <ApolloLoadingProvider>
         <TextResponseMock mocks={[submissionSuccess]} />
       </ApolloLoadingProvider>
     )
-    const responseField = getByLabelText('Your answer here')
-    const textField = getByRole('textbox')
+    const textField = screen.getByRole('textbox')
 
-    fireEvent.change(responseField, { target: { value: 'My response' } })
+    fireEvent.change(textField, { target: { value: 'My response' } })
 
     expect(textField).not.toBeDisabled()
 
@@ -158,14 +156,11 @@ describe('TextResponse', () => {
         }
       }
     }))
-    const { getByLabelText, getByRole } = render(
-      <TextResponseMock mocks={[{ ...submissionSuccess, result }]} />
-    )
+    render(<TextResponseMock mocks={[{ ...submissionSuccess, result }]} />)
 
-    const responseField = getByLabelText('Your answer here')
-    const textField = getByRole('textbox')
+    const textField = screen.getByRole('textbox')
 
-    fireEvent.change(responseField, { target: { value: ' ' } })
+    fireEvent.change(textField, { target: { value: ' ' } })
     fireEvent.blur(textField)
 
     await waitFor(() => {
@@ -185,14 +180,11 @@ describe('TextResponse', () => {
       }
     }))
 
-    const { getByLabelText, getByRole } = render(
-      <TextResponseMock mocks={[{ ...submissionSuccess, result }]} />
-    )
+    render(<TextResponseMock mocks={[{ ...submissionSuccess, result }]} />)
 
-    const responseField = getByLabelText('Your answer here')
-    const textField = getByRole('textbox')
+    const textField = screen.getByRole('textbox')
 
-    fireEvent.change(responseField, { target: { value: 'My response' } })
+    fireEvent.change(textField, { target: { value: 'My response' } })
     fireEvent.blur(textField)
 
     await waitFor(() => {
@@ -209,14 +201,11 @@ describe('TextResponse', () => {
       }
     }))
 
-    const { getByLabelText, getByRole } = render(
-      <TextResponseMock mocks={[{ ...submissionSuccess, result }]} />
-    )
+    render(<TextResponseMock mocks={[{ ...submissionSuccess, result }]} />)
 
-    const responseField = getByLabelText('Your answer here')
-    const textField = getByRole('textbox')
+    const textField = screen.getByRole('textbox')
 
-    fireEvent.change(responseField, { target: { value: 'Your answer here' } })
+    fireEvent.change(textField, { target: { value: 'Your answer here' } })
     fireEvent.blur(textField)
 
     await waitFor(() => {
@@ -228,14 +217,11 @@ describe('TextResponse', () => {
     blockHistoryVar([activeBlock])
     treeBlocksVar([activeBlock])
 
-    const { getByLabelText, getByRole } = render(
-      <TextResponseMock mocks={[submissionSuccess]} />
-    )
+    render(<TextResponseMock mocks={[submissionSuccess]} />)
 
-    const responseField = getByLabelText('Your answer here')
-    const textField = getByRole('textbox')
+    const textField = screen.getByRole('textbox')
 
-    fireEvent.change(responseField, { target: { value: 'My response' } })
+    fireEvent.change(textField, { target: { value: 'My response' } })
     fireEvent.blur(textField)
 
     await waitFor(() => {
@@ -254,18 +240,15 @@ describe('TextResponse', () => {
       error: new Error()
     }
 
-    const { getByRole, getByLabelText, getByText } = render(
-      <TextResponseMock mocks={[submissionError]} />
-    )
-    const responseField = getByLabelText('Your answer here')
-    const textField = getByRole('textbox')
+    render(<TextResponseMock mocks={[submissionError]} />)
+    const textField = screen.getByRole('textbox')
 
-    fireEvent.change(responseField, { target: { value: 'My response' } })
+    fireEvent.change(textField, { target: { value: 'My response' } })
     fireEvent.blur(textField)
 
     expect(
       await waitFor(() =>
-        getByText('Could not send response, please try again.')
+        screen.getByText('Could not send response, please try again.')
       )
     ).toBeInTheDocument()
   })
@@ -293,7 +276,7 @@ describe('TextResponse', () => {
   })
 
   it('should not allow selection in editor', () => {
-    const { getAllByRole } = render(
+    render(
       <JourneyProvider>
         <SnackbarProvider>
           <TextResponseMock />
@@ -301,7 +284,7 @@ describe('TextResponse', () => {
       </JourneyProvider>
     )
 
-    const response = getAllByRole('textbox')[0]
+    const response = screen.getByRole('textbox')
     fireEvent.click(response)
     expect(response.matches(':focus')).not.toBeTruthy()
   })
@@ -351,5 +334,131 @@ describe('TextResponse', () => {
 
     expect(screen.queryByText('Your answer here*')).not.toBeInTheDocument()
     expect(screen.getByText('Your answer here')).toBeInTheDocument()
+  })
+
+  it('should show "Required" error message if field is required and left empty', async () => {
+    const requiredBlock: TreeBlock<TextResponseFields> = {
+      ...block,
+      required: true
+    }
+
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <JourneyProvider>
+          <SnackbarProvider>
+            <TextResponse {...requiredBlock} uuid={() => 'uuid'} />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.blur(screen.getByRole('textbox'))
+
+    await waitFor(() => {
+      expect(screen.getByText('Required')).toBeInTheDocument()
+    })
+  })
+
+  it('should show email validation error for invalid email', async () => {
+    const emailBlock: TreeBlock<TextResponseFields> = {
+      ...block,
+      type: TextResponseType.email
+    }
+
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <JourneyProvider>
+          <SnackbarProvider>
+            <TextResponse {...emailBlock} uuid={() => 'uuid'} />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'invalid-email' }
+    })
+    fireEvent.blur(screen.getByRole('textbox'))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Please enter a valid email address')
+      ).toBeInTheDocument()
+    })
+  })
+
+  it('should not submit if required validation fails', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        textResponseSubmissionEventCreate: {
+          id: 'uuid'
+        }
+      }
+    }))
+
+    const requiredBlock: TreeBlock<TextResponseFields> = {
+      ...block,
+      required: true
+    }
+
+    render(
+      <MockedProvider
+        mocks={[{ ...submissionSuccess, result }]}
+        addTypename={false}
+      >
+        <JourneyProvider>
+          <SnackbarProvider>
+            <TextResponse {...requiredBlock} uuid={() => 'uuid'} />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.blur(screen.getByRole('textbox'))
+
+    await waitFor(() => {
+      expect(screen.getByText('Required')).toBeInTheDocument()
+      expect(result).not.toHaveBeenCalled()
+    })
+  })
+
+  it('should not submit if email validation fails', async () => {
+    const result = jest.fn(() => ({
+      data: {
+        textResponseSubmissionEventCreate: {
+          id: 'uuid'
+        }
+      }
+    }))
+
+    const emailBlock: TreeBlock<TextResponseFields> = {
+      ...block,
+      type: TextResponseType.email
+    }
+
+    render(
+      <MockedProvider
+        mocks={[{ ...submissionSuccess, result }]}
+        addTypename={false}
+      >
+        <JourneyProvider>
+          <SnackbarProvider>
+            <TextResponse {...emailBlock} uuid={() => 'uuid'} />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'invalid-email' }
+    })
+    fireEvent.blur(screen.getByRole('textbox'))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Please enter a valid email address')
+      ).toBeInTheDocument()
+      expect(result).not.toHaveBeenCalled()
+    })
   })
 })
