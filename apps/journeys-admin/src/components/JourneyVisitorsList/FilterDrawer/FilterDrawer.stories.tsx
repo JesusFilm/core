@@ -3,10 +3,16 @@ import { Meta, StoryObj } from '@storybook/react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
+import type { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 import { PageWrapper } from '../../PageWrapper'
 
 import { ClearAllButton } from './ClearAllButton'
 import { FilterDrawer } from './FilterDrawer'
+
+const journey = {
+  id: '123',
+  slug: 'test-journey'
+} as Journey
 
 const FilterDrawerStory: Meta<typeof FilterDrawer> = {
   ...journeysAdminConfig,
@@ -39,6 +45,7 @@ export const Default = {
     titleAction: <ClearAllButton />,
     sidePanelChildren: (
       <FilterDrawer
+        journey={journey}
         sortSetting="date"
         chatStarted={false}
         withPollAnswers={false}
@@ -56,6 +63,7 @@ export const Complete = {
     ...Default.args,
     sidePanelChildren: (
       <FilterDrawer
+        journey={journey}
         sortSetting="date"
         chatStarted
         withPollAnswers
