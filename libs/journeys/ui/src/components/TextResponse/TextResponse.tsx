@@ -156,7 +156,7 @@ export const TextResponse = ({
         }
         validateOnBlur
       >
-        {({ values, errors, touched, handleChange, handleBlur }) => (
+        {({ values, errors, handleChange, handleBlur }) => (
           <Form data-testid={`textResponse-${blockId}`}>
             <Stack flexDirection="column" spacing={1}>
               <Typography
@@ -175,7 +175,7 @@ export const TextResponse = ({
                 placeholder={placeholder != null ? placeholder : ''}
                 value={values.response}
                 helperText={
-                  touched.response && errors.response
+                  errors.response !== null
                     ? errors.response
                     : hint != null
                       ? hint
