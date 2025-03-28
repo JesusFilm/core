@@ -23,6 +23,7 @@ const buttonBase = {
   size: ButtonSize.large,
   startIconId: null,
   endIconId: null,
+  submitEnabled: null,
   action: null
 }
 

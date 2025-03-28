@@ -467,6 +467,7 @@ export const imageBlocks: TreeBlock[] = [
             size: ButtonSize.large,
             startIconId: 'icon',
             endIconId: null,
+            submitEnabled: null,
             action: null,
             children: [
               {
@@ -553,6 +554,7 @@ export const imageBlocks: TreeBlock[] = [
             size: ButtonSize.large,
             startIconId: 'icon',
             endIconId: null,
+            submitEnabled: null,
             action: null,
             children: [
               {
@@ -828,6 +830,7 @@ export const imageBlocks: TreeBlock[] = [
             size: ButtonSize.large,
             startIconId: 'icon',
             endIconId: null,
+            submitEnabled: null,
             action: {
               __typename: 'NavigateToBlockAction',
               parentBlockId: 'button',
@@ -1730,6 +1733,7 @@ export const videoLoop: TreeBlock[] = [
             size: ButtonSize.large,
             startIconId: 'icon',
             endIconId: null,
+            submitEnabled: null,
             action: null,
             children: [
               {

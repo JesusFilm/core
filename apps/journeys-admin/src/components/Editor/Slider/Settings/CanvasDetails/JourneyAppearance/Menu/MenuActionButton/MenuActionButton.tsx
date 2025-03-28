@@ -115,6 +115,7 @@ export function MenuActionButton(): ReactElement {
       size: ButtonSize.large,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null
     } satisfies ButtonBlock
 
@@ -129,6 +130,7 @@ export function MenuActionButton(): ReactElement {
       size: ButtonSize.large,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null
     } satisfies ButtonBlock
 
@@ -143,6 +145,7 @@ export function MenuActionButton(): ReactElement {
       size: ButtonSize.large,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null
     } satisfies ButtonBlock
 
