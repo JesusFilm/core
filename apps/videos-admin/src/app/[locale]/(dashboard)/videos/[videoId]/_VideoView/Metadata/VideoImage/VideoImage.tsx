@@ -106,7 +106,7 @@ export function VideoImage({ video }: VideoImageProps): ReactElement {
           '& .MuiPaper-root': { maxWidth: 400 }
         }}
       >
-        <Typography color="error">
+        <Typography color="error" sx={{ mb: 2 }}>
           {t('Warning: this change will apply immediately')}
         </Typography>
         <VideoImageUpload video={video} onUploadComplete={handleClose} />

@@ -27,6 +27,7 @@ describe('Edit Hint field', () => {
     parentBlockId: '0',
     parentOrder: 0,
     label: 'Your answer here',
+    placeholder: null,
     hint: 'A hint message',
     minRows: null,
     integrationId: null,

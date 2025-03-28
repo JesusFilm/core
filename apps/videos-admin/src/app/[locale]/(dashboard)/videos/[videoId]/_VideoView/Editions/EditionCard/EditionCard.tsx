@@ -1,60 +1,16 @@
 import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslations } from 'next-intl'
-import { ReactElement, useState } from 'react'
+import { ComponentProps, ReactElement } from 'react'
 
-import More from '@core/shared/ui/icons/More'
-
-import { GetAdminVideo_AdminVideo_VideoEditions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { ArrayElement } from '../../../../../../../../types/array-types'
-
-interface MenuActions {
-  view?: () => void
-  edit?: () => void
-  delete?: () => void
-}
-
-function MenuButton({ actions }: { actions: MenuActions }): ReactElement {
-  const t = useTranslations()
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
-
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
-
-  return (
-    <div onClick={(e) => e.stopPropagation()}>
-      <IconButton size="small" onClick={handleClick} aria-label="More options">
-        <More fontSize="small" />
-      </IconButton>
-      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        {actions.view != null && (
-          <MenuItem onClick={actions.view}>{t('View')}</MenuItem>
-        )}
-        {actions.edit != null && (
-          <MenuItem onClick={actions.edit}>{t('Edit')}</MenuItem>
-        )}
-        {actions.delete != null && (
-          <MenuItem onClick={actions.delete}>{t('Delete')}</MenuItem>
-        )}
-      </Menu>
-    </div>
-  )
-}
+import { ActionButton } from '../../../../../../../../components/ActionButton'
+import { GetAdminVideo_AdminVideo_VideoEdition as Edition } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 interface EditionCardProps {
-  edition: ArrayElement<GetAdminVideo_AdminVideo_VideoEditions>
+  edition: Edition
   onClick: () => void
-  actions: MenuActions
+  actions: ComponentProps<typeof ActionButton>['actions']
 }
 
 export function EditionCard({
@@ -95,7 +51,7 @@ export function EditionCard({
         <Typography variant="h4" sx={{ ml: 1 }}>
           {edition.name}
         </Typography>
-        <MenuButton actions={menuActions} />
+        <ActionButton actions={menuActions} />
       </Stack>
       <Box sx={{ p: 2 }}>
         <Typography sx={{ color: 'text.secondary' }}>

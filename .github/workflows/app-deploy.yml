@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   affected:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     strategy:
       matrix:
         node-version: [22]
@@ -21,13 +21,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
-        uses: actions/cache@v4
+        uses: useblacksmith/cache@v5
         with:
           path: node_modules
           key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
@@ -69,7 +69,7 @@ jobs:
           - app: journeys-admin
             github-ref-name: stage
             github-event-name: push
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
     permissions:
@@ -86,13 +86,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
-        uses: actions/cache@v4
+        uses: useblacksmith/cache@v5
         with:
           path: node_modules
           key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
@@ -165,7 +165,7 @@ jobs:
           echo "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" >> $GITHUB_ENV
       - name: Cache Playwright Browsers for Playwright's Version
         id: cache-playwright-browsers
-        uses: actions/cache@v4
+        uses: useblacksmith/cache@v5
         with:
           path: ~/.cache/ms-playwright
           key: playwright-browsers-${{ env.PLAYWRIGHT_VERSION }}
@@ -190,7 +190,7 @@ jobs:
             playwright-report/
           retention-days: 30
   deploy-status:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     needs: [affected, deploy-preview]
     if: ${{ always() && github.event_name == 'pull_request' }}
     steps:
@@ -225,7 +225,7 @@ jobs:
             github-ref-name: stage
           - app: short-links
             github-ref-name: stage
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     permissions:
       deployments: write
       contents: write
@@ -241,13 +241,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - name: Cache Node Modules
         id: cache-node-modules
-        uses: actions/cache@v4
+        uses: useblacksmith/cache@v5
         with:
           path: node_modules
           key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}

@@ -56,7 +56,7 @@ export function EditionCreate({ close }: EditionCreateProps): ReactElement {
         close()
       },
       onError: () => {
-        enqueueSnackbar(t('Something went wrong.'), { variant: 'error' })
+        enqueueSnackbar(t('Failed to create edition.'), { variant: 'error' })
       }
     })
   }
