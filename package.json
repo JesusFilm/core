@@ -117,6 +117,7 @@
     "clsx": "^2.0.0",
     "cors": "^2.8.5",
     "cross-fetch": "^4.0.0",
+    "csv-stringify": "^6.5.2",
     "dataloader": "^2.2.2",
     "date-fns": "^4.0.0",
     "dd-trace": "^5.25.0",
