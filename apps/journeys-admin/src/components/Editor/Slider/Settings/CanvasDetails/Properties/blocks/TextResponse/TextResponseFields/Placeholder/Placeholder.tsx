@@ -11,34 +11,34 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import {
-  TextResponseLabelUpdate,
-  TextResponseLabelUpdateVariables
-} from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
+  TextResponsePlaceholderUpdate,
+  TextResponsePlaceholderUpdateVariables
+} from '../../../../../../../../../../../__generated__/TextResponsePlaceholderUpdate'
 
 /**
- * GraphQL mutation for updating the label text in a TextResponse block.
+ * GraphQL mutation for updating the placeholder text in a TextResponse block.
  */
-export const TEXT_RESPONSE_LABEL_UPDATE = gql`
-  mutation TextResponseLabelUpdate($id: ID!, $label: String!) {
-    textResponseBlockUpdate(id: $id, input: { label: $label }) {
+export const TEXT_RESPONSE_PLACEHOLDER_UPDATE = gql`
+  mutation TextResponsePlaceholderUpdate($id: ID!, $placeholder: String!) {
+    textResponseBlockUpdate(id: $id, input: { placeholder: $placeholder }) {
       id
-      label
+      placeholder
     }
   }
 `
 
 /**
- * A component that renders a text field for editing the label text of a TextResponse block.
+ * A component that renders a text field for editing the placeholder text of a TextResponse block.
  * Manages state updates and command history for undo/redo functionality.
  *
- * @returns {ReactElement} The Label component.
+ * @returns {ReactElement} The Placeholder component.
  */
-export function Label(): ReactElement {
+export function Placeholder(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [textResponseLabelUpdate] = useMutation<
-    TextResponseLabelUpdate,
-    TextResponseLabelUpdateVariables
-  >(TEXT_RESPONSE_LABEL_UPDATE)
+  const [textResponsePlaceholderUpdate] = useMutation<
+    TextResponsePlaceholderUpdate,
+    TextResponsePlaceholderUpdateVariables
+  >(TEXT_RESPONSE_PLACEHOLDER_UPDATE)
   const { state, dispatch } = useEditor()
   const {
     add,
@@ -48,7 +48,7 @@ export function Label(): ReactElement {
   const selectedBlock = state.selectedBlock as
     | TreeBlock<TextResponseBlock>
     | undefined
-  const [value, setValue] = useState(selectedBlock?.label ?? '')
+  const [value, setValue] = useState(selectedBlock?.placeholder ?? '')
   const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
 
   useEffect(() => {
@@ -58,8 +58,8 @@ export function Label(): ReactElement {
   }, [undo?.id])
 
   useEffect(() => {
-    setValue(selectedBlock?.label ?? '')
-  }, [selectedBlock?.label])
+    setValue(selectedBlock?.placeholder ?? '')
+  }, [selectedBlock?.placeholder])
 
   function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })
@@ -71,22 +71,22 @@ export function Label(): ReactElement {
       id: commandInput.id,
       parameters: {
         execute: {
-          label: value,
+          placeholder: value,
           context: {},
           runDispatch: false
         },
         undo: {
-          label: commandInput.value,
+          placeholder: commandInput.value,
           context: { debounceTimeout: 1 },
           runDispatch: true
         },
         redo: {
-          label: value,
+          placeholder: value,
           context: { debounceTimeout: 1 },
           runDispatch: true
         }
       },
-      execute({ label, context, runDispatch }) {
+      execute({ placeholder, context, runDispatch }) {
         if (runDispatch)
           dispatch({
             type: 'SetEditorFocusAction',
@@ -95,15 +95,15 @@ export function Label(): ReactElement {
             selectedAttributeId: state.selectedAttributeId
           })
 
-        void textResponseLabelUpdate({
+        void textResponsePlaceholderUpdate({
           variables: {
             id: selectedBlock.id,
-            label
+            placeholder
           },
           optimisticResponse: {
             textResponseBlockUpdate: {
               id: selectedBlock.id,
-              label,
+              placeholder,
               __typename: 'TextResponseBlock'
             }
           },
@@ -117,13 +117,13 @@ export function Label(): ReactElement {
   }
 
   return (
-    <Box sx={{ p: 4, pt: 0 }} data-testid="Label">
+    <Box sx={{ p: 4, pt: 0 }} data-testid="Placeholder">
       <TextField
-        id="label"
-        name="label"
+        id="placeholder"
+        name="placeholder"
         variant="filled"
-        label={t('Label')}
-        placeholder={t('Your label here')}
+        label={t('Placeholder')}
+        placeholder={t('Your placeholder here')}
         fullWidth
         slotProps={{
           htmlInput: {
