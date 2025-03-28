@@ -181,4 +181,67 @@ export class TeamsPage {
       .locator('div[data-testid="member-dialog-open-avatar"]')
       .click()
   }
+
+  // Custom Domain option in Three dot menu
+  async enterCustomDomainName(domainName: string) {
+    await this.page
+      .locator('div.MuiDialogContent-root input#name')
+      .fill(domainName)
+  }
+
+  async clickConnectBtn() {
+    await this.page
+      .locator('div.MuiDialogContent-root')
+      .getByRole('button', { name: 'Connect' })
+      .click()
+  }
+
+  async searchJourneyNameAndChooseFirstSuggestion(journeyNamePartial: string) {
+    await this.page
+      .locator('div.MuiDialogContent-root input#name')
+      .fill(journeyNamePartial)
+    await this.page
+      .locator('div.MuiDialogContent-root ul[role="listbox"] li')
+      .first()
+      .click()
+  }
+
+  async getDnsContentAndCopy() {
+    const dnsContent = await this.page
+      .locator('div.MuiDialogContent-root table')
+      .textContent()
+    await this.page
+      .locator('div.MuiDialogContent-root button[aria-label="copy"]')
+      .click()
+    return dnsContent
+  }
+
+  async clickCustomDomainDialogCloseIcon() {
+    await this.page.locator('button[data-testid="dialog-close-button"]').click()
+  }
+
+  // Integrations option in Three dot menu
+  async clickAddIntegrationButton() {
+    await this.page.locator('button[aria-label="add integration"]').click()
+  }
+
+  async clickGrowthSpaceIntegration() {
+    await this.page
+      .locator('div[role="button"]', { hasText: 'Growth Space' })
+      .click()
+  }
+
+  async enterAccessId(accessId: string) {
+    await this.page.locator('input#accessId').fill(accessId)
+  }
+
+  async enterAccessSecret(accessSecret: string) {
+    await this.page.locator('input#accessSecret').fill(accessSecret)
+  }
+
+  async clickSaveBtnForintegration() {
+    await this.page
+      .locator('div[data-testid="dialog-action"] button', { hasText: 'Save' })
+      .click()
+  }
 }

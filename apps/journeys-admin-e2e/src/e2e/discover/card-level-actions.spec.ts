@@ -1,3 +1,4 @@
+/* eslint-disable playwright/no-skipped-test */
 /* eslint-disable playwright/expect-expect */
 import { test } from '@playwright/test'
 
@@ -64,7 +65,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Image - create, update & delete
-  test.fixme('Image - create, update & delete', async ({ page }) => {
+  test('Image - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Image') // clicking on image button in add block drawer
@@ -72,7 +73,6 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.clickImageSelectionTab('Custom') // clicking on custom tab in image drawer tab list
     await cardLevelActionPage.getImageSrc() // getting current image source
     await cardLevelActionPage.uploadImageInCustomTab() // uploading image in the custom tab
-    //  await cardLevelActionPage.verifyImgUploadedSuccessMsg() // verifying the 'Upload successful' message
     await cardLevelActionPage.verifyImageGotChanged() // verifying the image is updated in the custom tab
     await cardLevelActionPage.clickImageSelectionTab('Gallery') // clicking on Gallery tab in image drawer tab list
     await cardLevelActionPage.getImageSrc() // getting current image source
@@ -83,7 +83,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Video - create, update & delete
-  test.fixme('Video - create, update & delete', async ({ page }) => {
+  test('Video - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.deleteAllAddedCardProperties() // deleting all the added properties in the card
     await cardLevelActionPage.clickOnVideoJourneyCard() // clicking on the journey card
@@ -148,8 +148,8 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Subscribe') // clicking on subscribe button in add block drawer
     await cardLevelActionPage.verifySubscribeAddedToCard() // verify subscribe section is added to the card
     await cardLevelActionPage.clickActionOfFeedBackProperties() // clicking the action property dropdown in the subscribe properties drawer
-    await cardLevelActionPage.selectEmailOptionInPrepertiesOptions() // selecting the 'Selected card' option in 'navigate to' options and below the selecting the card for navigation
-    await cardLevelActionPage.clickSubscribePropertiesDropDown('Button Icon') // clicking the 'button icon' property dropdown in the subscribe properties drawer
+    await cardLevelActionPage.selectEmailOptionInPropertiesOptions() // selecting the 'Email' option in Subscribe action property and enter the email address
+    await cardLevelActionPage.clickPropertiesDropDown('Button Icon') // clicking the 'button icon' property dropdown in the subscribe properties drawer
     await cardLevelActionPage.selectIconForProperties() // seleting an icon for the subscribe button section
     await cardLevelActionPage.verifySelecetdIconInCardBelowSubscribe() // veriying the Selected icon is updated in the subscribe section of the card
     await cardLevelActionPage.selectWholeSubscribeSectionInCard() // selecting the whole subscribe section
@@ -158,21 +158,46 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifySubscribeDeletedFromCard() //  verifying the subscribe section is deleted from the card
   })
 
-  // Footer properties - Hosted By & Chat Widget
-  test('Footer properties - create, update & delete', async ({ page }) => {
+  // Button - create, update & delete
+  test('Button - create, update & delete', async ({ page }) => {
+    const buttonName = 'Playwright'
     const cardLevelActionPage = new CardLevelActionPage(page)
-    await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Fotter section
-    await cardLevelActionPage.expandJourneyAppearance('Hosted By') // clicking on the 'Chat Widget' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.clicSelectHostBtn() // clicking the 'select a host' button below the 'Hosted by' tab in the footer properties drawer
-    await cardLevelActionPage.clickCreateNewBtn() // clicking the 'create new' button below the 'Hosted by' tab in the footer properties drawer
-    await cardLevelActionPage.enterHostName() // entering host name in the host field in the footer properties drawer
-    await cardLevelActionPage.enterLocation() // entering location in the location field in the footer properties drawer
-    await cardLevelActionPage.clickOnJourneyCard() // clickng on the journey card
-    await cardLevelActionPage.verifyHostNameAddedInCard() // verifying the added host name and location are updated in the footer section at bottom of the card
-    await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Fotter section
-    await cardLevelActionPage.expandJourneyAppearance('Chat Widget') // clicking on the 'Chat Widget' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.clickMessangerDropDown('WhatsApp') // clicking the whatsapp dropdown check box
-    await cardLevelActionPage.enterWhatsAppLink() // entering link value on the URL field
-    await cardLevelActionPage.verifyChatWidgetAddedToCard() // verifying the selected messager icon is updated in the footer section at bottom of the card
+    await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
+    await cardLevelActionPage.clickBtnInAddBlockDrawer('Button') // clicking on subscribe button in add block drawer
+    await cardLevelActionPage.verifyButtonAddedToCard() // verify Button is added to the card
+    await cardLevelActionPage.clickActionOfFeedBackProperties() // clicking the action property dropdown in the Button properties drawer
+    await cardLevelActionPage.selectEmailOptionInPropertiesOptions() // selecting the 'Email' option in Button action property and enter the email address
+    await cardLevelActionPage.clickButtonPropertyDropdown('Color') // clicking the 'Color' property dropdown in the Button properties drawer
+    await cardLevelActionPage.chooseButtonColor('Primary') //Select Button Color as 'Primary Color'
+    await cardLevelActionPage.clickButtonPropertyDropdown('Button Size') // clicking the 'Button Size' property dropdown in the Button properties drawer
+    await cardLevelActionPage.chooseButtonSize('Small') // Select Button Size as 'Small'
+    await cardLevelActionPage.clickButtonPropertyDropdown('Variant') // clicking the 'Variant' property dropdown in the Button properties drawer
+    await cardLevelActionPage.chooseButtonVariant('Text') // select Button Vairant as 'Text'
+    await cardLevelActionPage.clickButtonPropertyDropdown('Leading Icon') //Clicking the 'Variant' property dropdown in the Button properties drawer
+    await cardLevelActionPage.clickIconDropdown() //Clicking Icon dropdown for 'Leading Icon' property
+    await cardLevelActionPage.chooseIconFromList('Arrow Right') //Choose "Arrow Right" icon option from the list for Leading Icon property
+    await cardLevelActionPage.chooseColorForIcon('Primary') //Leading Icon propety - Choose color for selected Icon as 'Primary'
+    await cardLevelActionPage.clickButtonPropertyDropdown('Trailing Icon') //Clicking the 'Variant' property dropdown in the Button properties drawer
+    await cardLevelActionPage.clickIconDropdown() //Clicking Icon dropdown for 'Leading Icon' property
+    await cardLevelActionPage.chooseIconFromList('Chat Bubble') //Choose "Arrow Right" icon option from the list for Leading Icon property
+    await cardLevelActionPage.chooseColorForIcon('Error') //Leading Icon propety - Choose color for selected Icon as 'Primary'
+    await cardLevelActionPage.enterButtonNameInCard(buttonName) //Enter Button name in the card
+    await cardLevelActionPage.verifyButtonPropertyUpdatedInCard(buttonName) //Button Name To validate in Card along with above selected properties
+    await cardLevelActionPage.clickDeleteBtnInToolTipBar() //Clicking delete button in the tooltip bar to delete the Button from the card
+    await cardLevelActionPage.verifyButtonRemovedFromCard() //Verifying the Button section is deleted from the card
+  })
+
+  // Spacer - create & delete
+  test('Spacer - create & delete', async ({ page }) => {
+    const cardLevelActionPage = new CardLevelActionPage(page)
+    await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
+    await cardLevelActionPage.clickBtnInAddBlockDrawer('Spacer') // clicking on subscribe button in add block drawer
+    await cardLevelActionPage.verifySpacerAddedToCard() // verify Spacer is added to the card
+    const beforeChange =
+      await cardLevelActionPage.getSpacerHeightPixelBeforeChange() //Get Spacer Height pixels before moving the slider
+    await cardLevelActionPage.moveSpacerHeightTo() //Move Slider thumb to 50% of the Slider size
+    await cardLevelActionPage.validateSpacerHeightPixelGotChange(beforeChange) // validate that space height pixels got increased
+    await cardLevelActionPage.clickDeleteBtnInToolTipBar() //Clicking delete button in the tooltip bar to delete the Spacer from the card
+    await cardLevelActionPage.verifySpacerRemovedFromCard() //Verifying the Spacer section is deleted from the card
   })
 })

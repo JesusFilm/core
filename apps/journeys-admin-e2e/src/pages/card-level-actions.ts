@@ -5,6 +5,8 @@
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
 import type { Page } from 'playwright-core'
+import * as path from 'path'
+import * as fs from 'fs'
 
 import testData from '../utils/testData.json'
 
@@ -210,9 +212,17 @@ export class CardLevelActionPage {
   }
 
   async uploadImageInCustomTab() {
+    const imagePath = path.resolve(__dirname, '..', 'utils', 'testResource', 'Flower.jpg')
+    
+    // Check if file exists
+    if (!fs.existsSync(imagePath)) {
+      throw new Error(`Test image not found at ${imagePath}. Make sure the test resources are properly included.`)
+    }
+    
     await this.page
       .locator('div[data-testid="ImageUpload"] input')
-      .setInputFiles(testData.cardLevelAction.imgUploadPath)
+      .setInputFiles(imagePath)
+    
     await expect(
       this.page.locator(
         'div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]'
@@ -299,9 +309,17 @@ export class CardLevelActionPage {
   }
 
   async uploadVideoInUploadTabOfVideoLibrary() {
+    const videoPath = path.resolve(__dirname, '..', 'utils', 'testResource', 'SampleVideo.mp4')
+    
+    // Check if file exists
+    if (!fs.existsSync(videoPath)) {
+      throw new Error(`Test video not found at ${videoPath}. Make sure the test resources are properly included.`)
+    }
+    
     await this.page
       .locator('div[data-testid="VideoFromMux"] input')
-      .setInputFiles(testData.cardLevelAction.videoUploadPath)
+      .setInputFiles(videoPath)
+    
     await expect(
       this.page.locator(
         'div[data-testid="VideoFromMux"] span[role="progressbar"]'
@@ -310,6 +328,25 @@ export class CardLevelActionPage {
     await expect(
       this.page.locator(
         'div[data-testid="VideoFromMux"] span[role="progressbar"]'
+      )
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
+  }
+
+  async uploadVideoInCustomTab() {
+    const videoPath = path.resolve(__dirname, '..', 'utils', 'testResource', 'SampleVideo.mp4')
+    
+    // Check if file exists
+    if (!fs.existsSync(videoPath)) {
+      throw new Error(`Test video not found at ${videoPath}. Make sure the test resources are properly included.`)
+    }
+    
+    await this.page
+      .locator('div[data-testid="VideoUpload"] input')
+      .setInputFiles(videoPath)
+    
+    await expect(
+      this.page.locator(
+        'div[data-testid="VideoBlockHeader"] div[data-testid="VideoBlockThumbnail"] span[role="progressbar"]'
       )
     ).toBeHidden({ timeout: sixtySecondsTimeout })
   }
@@ -828,6 +865,15 @@ export class CardLevelActionPage {
       .click()
   }
 
+  async clickPropertiesDropDown(feedBackProperty: string) {
+    await this.page
+      .locator(
+        'div[data-testid="SignUpProperties"] div[data-testid="AccordionSummary"]',
+        { hasText: feedBackProperty }
+      )
+      .click()
+  }
+
   async clickSubscribePropertiesDropDown(feedBackProperty: string) {
     await this.page
       .locator(
@@ -1227,5 +1273,120 @@ export class CardLevelActionPage {
     await expect(
       this.page.frameLocator(this.journeyCardFrame).locator(textAreaPath)
     ).not.toHaveAttribute('style', textAeaStyleBefore, { timeout: 30000 })
+  }
+
+  async verifyButtonAddedToCard() {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator('button[data-testid="button-block"]')
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
+  }
+
+  async verifyButtonRemovedFromCard() {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator('button[data-testid="button-block"]')
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
+  }
+
+  async enterButtonNameInCard(buttonName: string) {
+    await this.page
+      .frameLocator(this.journeyCardFrame)
+      .locator('button[data-testid="button-block"]')
+      .fill(buttonName)
+  }
+
+  async clickButtonPropertyDropdown(propertyName: string) {
+    await this.page
+      .locator('div[data-testid="button-properties"] button', {
+        hasText: propertyName
+      })
+      .click()
+  }
+
+  async chooseButtonColor(buttonColor: string) {
+    await this.page
+      .locator('div[role="listbox"] li', { hasText: buttonColor })
+      .click()
+  }
+
+  async chooseButtonSize(buttonSize: string) {
+    await this.page
+      .locator('div[role="listbox"] li', { hasText: buttonSize })
+      .click()
+  }
+
+  async chooseButtonVariant(buttonVariant: string) {
+    await this.page
+      .locator('div[role="listbox"] li', { hasText: buttonVariant })
+      .click()
+  }
+
+  async clickIconDropdown() {
+    await this.page
+      .locator('div[data-testid="icon-dropdown"]')
+      .click()
+  }
+
+  async chooseIconFromList(iconName: string) {
+    await this.page
+      .locator('div[role="listbox"] li', { hasText: iconName })
+      .click()
+  }
+
+  async chooseColorForIcon(iconColor: string) {
+    await this.page
+      .locator('div[role="listbox"] li', { hasText: iconColor })
+      .click()
+  }
+
+  async verifyButtonPropertyUpdatedInCard(buttonName: string) {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator('button[data-testid="button-block"]', { hasText: buttonName })
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
+  }
+
+  async selectEmailOptionInPropertiesOptions() {
+    await this.page
+      .locator('div[role="listbox"] li', { hasText: 'Email' })
+      .click()
+  }
+
+  async verifySpacerAddedToCard() {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator('div[data-testid="spacer-block"]')
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
+  }
+
+  async verifySpacerRemovedFromCard() {
+    await expect(
+      this.page
+        .frameLocator(this.journeyCardFrame)
+        .locator('div[data-testid="spacer-block"]')
+    ).toBeHidden({ timeout: sixtySecondsTimeout })
+  }
+
+  async getSpacerHeightPixelBeforeChange() {
+    return await this.page
+      .frameLocator(this.journeyCardFrame)
+      .locator('div[data-testid="spacer-block"]')
+      .getAttribute('height')
+  }
+
+  async validateSpacerHeightPixelGotChange(pixelHeightBeforeChange: any) {
+    const currentHeight = await this.getSpacerHeightPixelBeforeChange()
+    expect(currentHeight).not.toBe(pixelHeightBeforeChange)
+  }
+
+  async moveSpacerHeightTo() {
+    await this.page
+      .locator('input[type="range"]')
+      .fill('50')
   }
 }
