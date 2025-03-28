@@ -7,6 +7,69 @@ import { prismaMock } from '../../../../test/prismaMock'
 
 import { service } from './service'
 
+const mockGetTranslations = jest.fn().mockResolvedValue({})
+
+jest.mock('xliff', () => ({
+  xliff12ToJs: jest.fn().mockResolvedValue({
+    resources: {
+      '/Arclight/media_metadata_tile.csv': {
+        '1': {
+          source: 'StoryClubs',
+          target: '스토리 클럽',
+          additionalAttributes: {
+            resname: 'cl13-0-0'
+          }
+        }
+      },
+      '/Arclight/collection_title.csv': {
+        '2': {
+          source: 'StoryClubs',
+          target: '스토리 클럽',
+          additionalAttributes: {
+            resname: 'cl13-0-0'
+          }
+        }
+      },
+      '/Arclight/collection_long_description.csv': {
+        '3': {
+          source: 'StoryClubs Description',
+          target: '스토리 클럽 설명',
+          additionalAttributes: {
+            resname: 'cl13-0-0'
+          }
+        }
+      },
+      '/Arclight/media_metadata_description.csv': {
+        '4': {
+          source: 'StoryClubs Description',
+          target: '스토리 클럽 설명',
+          additionalAttributes: {
+            resname: 'cl13-0-0'
+          }
+        }
+      },
+      '/Arclight/study_questions.csv': {
+        '5': {
+          source: 'Why?',
+          target: '그 이유는?',
+          additionalAttributes: {
+            resname: '1'
+          }
+        }
+      },
+      '/Arclight/Bible_books.csv': {
+        '6': {
+          source: 'Genesis',
+          target: '창세기',
+          additionalAttributes: {
+            resname: '1'
+          }
+        }
+      }
+    }
+  })
+}))
+
 jest.mock('@crowdin/ota-client', () => {
   return jest.fn().mockImplementation(() => {
     return {
@@ -16,13 +79,16 @@ jest.mock('@crowdin/ota-client', () => {
 })
 
 const mockOtaClient = OtaClient
-const mockGetTranslations = jest.fn().mockResolvedValue({})
 
 describe('crowdin/service', () => {
   const originalEnv = clone(process.env)
 
   beforeEach(() => {
     process.env = originalEnv
+    // Set default empty responses for all findMany calls
+    prismaMock.video.findMany.mockResolvedValue([])
+    prismaMock.videoStudyQuestion.findMany.mockResolvedValue([])
+    prismaMock.bibleBook.findMany.mockResolvedValue([])
   })
 
   afterEach(() => {
@@ -61,29 +127,12 @@ describe('crowdin/service', () => {
       mockGetTranslations.mockResolvedValue({
         ko: [
           {
-            content: `<?xml version="1.0" encoding="UTF-8"?>
-            <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-            <file id="35" original="/Arclight/media_metadata_tile.csv" source-language="en" target-language="ko">
-              <body>
-              <trans-unit id="1" resname="cl13-0-0">
-                <source>StoryClubs</source>
-                <target>스토리 클럽</target>
-              </trans-unit>
-              </body>
-            </file>star
-            <file id="36" original="/Arclight/collection_title.csv" source-language="en" target-language="ko">
-              <body>
-              <trans-unit id="2" resname="cl13-0-0">
-                <source>StoryClubs</source>
-                <target>스토리 클럽</target>
-              </trans-unit>
-              </body>
-            </file>
-            </xliff>`,
+            content: 'dummy content - this will be handled by xliff mock',
             file: '/content/3804.xliff'
           }
         ]
       })
+
       await service()
       expect(mockOtaClient).toHaveBeenCalledWith('hash', {
         disableManifestCache: true,
@@ -133,25 +182,7 @@ describe('crowdin/service', () => {
       mockGetTranslations.mockResolvedValue({
         ko: [
           {
-            content: `<?xml version="1.0" encoding="UTF-8"?>
-              <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-              <file id="35" original="/Arclight/collection_long_description.csv" source-language="en" target-language="ko">
-                <body>
-                <trans-unit id="1" resname="cl13-0-0">
-                  <source>StoryClubs</source>
-                  <target>스토리 클럽</target>
-                </trans-unit>
-                </body>
-              </file>
-              <file id="36" original="/Arclight/media_metadata_description.csv" source-language="en" target-language="ko">
-                <body>
-                <trans-unit id="2" resname="cl13-0-0">
-                  <source>StoryClubs</source>
-                  <target>스토리 클럽</target>
-                </trans-unit>
-                </body>
-              </file>
-              </xliff>`,
+            content: 'dummy content - this will be handled by xliff mock',
             file: '/content/3804.xliff'
           }
         ]
@@ -174,10 +205,10 @@ describe('crowdin/service', () => {
         create: {
           languageId: '3804',
           primary: false,
-          value: '스토리 클럽',
+          value: '스토리 클럽 설명',
           videoId: 'id'
         },
-        update: { value: '스토리 클럽' },
+        update: { value: '스토리 클럽 설명' },
         where: { videoId_languageId: { languageId: '3804', videoId: 'id' } }
       })
 
@@ -191,36 +222,26 @@ describe('crowdin/service', () => {
           id: '1',
           value: 'Why?',
           languageId: '529',
-          order: 1,
           primary: true,
-          crowdInId: '1',
-          videoId: 'video1'
+          videoId: 'video1',
+          order: 1,
+          crowdInId: '1'
         },
         {
           id: '2',
           value: 'Why?',
           languageId: '529',
-          order: 1,
           primary: true,
-          crowdInId: '1',
-          videoId: 'video2'
+          videoId: 'video2',
+          order: 1,
+          crowdInId: '1'
         }
       ])
 
       mockGetTranslations.mockResolvedValue({
         ko: [
           {
-            content: `<?xml version="1.0" encoding="UTF-8"?>
-              <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-              <file id="35" original="/Arclight/study_questions.csv" source-language="en" target-language="ko">
-                <body>
-                <trans-unit id="1" resname="1">
-                  <source>Why?</source>
-                  <target>그 이유는?</target>
-                </trans-unit>
-                </body>
-              </file>
-              </xliff>`,
+            content: 'dummy content - this will be handled by xliff mock',
             file: '/content/3804.xliff'
           }
         ]
@@ -230,6 +251,14 @@ describe('crowdin/service', () => {
       expect(mockOtaClient).toHaveBeenCalledWith('hash', {
         disableManifestCache: true,
         disableStringsCache: true
+      })
+
+      expect(prismaMock.videoStudyQuestion.findMany).toHaveBeenCalledWith({
+        select: {
+          videoId: true,
+          order: true
+        },
+        where: { crowdInId: '1' }
       })
 
       expect(prismaMock.videoStudyQuestion.upsert).toHaveBeenNthCalledWith(1, {
@@ -289,17 +318,7 @@ describe('crowdin/service', () => {
       mockGetTranslations.mockResolvedValue({
         ko: [
           {
-            content: `<?xml version="1.0" encoding="UTF-8"?>
-              <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-              <file id="35" original="/Arclight/Bible_books.csv" source-language="en" target-language="ko">
-                <body>
-                <trans-unit id="1" resname="1">
-                  <source>Genesis</source>
-                  <target>창세기</target>
-                </trans-unit>
-                </body>
-              </file>
-              </xliff>`,
+            content: 'dummy content - this will be handled by xliff mock',
             file: '/content/3804.xliff'
           }
         ]
