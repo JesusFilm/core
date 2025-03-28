@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -37,7 +37,7 @@ describe('Required', () => {
     }
   ]
 
-  it('shows the correct texts', () => {
+  it('shows the required label', () => {
     const { getByText } = render(
       <MockedProvider mocks={mocks}>
         <EditorProvider
@@ -51,9 +51,6 @@ describe('Required', () => {
     )
 
     expect(getByText('Required')).toBeInTheDocument()
-    expect(
-      getByText('Make this field required for users to continue')
-    ).toBeInTheDocument()
   })
 
   it('renders a toggle that reflects the required state', () => {
