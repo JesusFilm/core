@@ -1040,6 +1040,7 @@ input TextResponseBlockCreateInput {
 input TextResponseBlockUpdateInput {
   parentBlockId: ID
   label: String
+  placeholder: String
   required: Boolean
   hint: String
   minRows: Int
