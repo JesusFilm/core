@@ -4,7 +4,9 @@ import userEvent from '@testing-library/user-event'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { SnackbarProvider } from '../../../../../../../../../../libs/SnackbarProvider'
+import { CREATE_CLOUDFLARE_R2_ASSET } from '../../../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset'
 import { getCreateR2AssetMock } from '../../../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset.mock'
+import { VIDEO_VARIANT_DOWNLOAD_CREATE } from '../../../../../../../../../../libs/useVideoVariantDownloadCreateMutation/useVideoVariantDownloadCreateMutation'
 import { getVideoVariantDownloadCreateMock } from '../../../../../../../../../../libs/useVideoVariantDownloadCreateMutation/useVideoVariantDownloadCreateMutation.mock'
 
 import { AddVideoVariantDownloadDialog } from './AddVideoVariantDownloadDialog'
@@ -183,47 +185,73 @@ describe('AddVideoVariantDownloadDialog', () => {
     expect(mockVideoElement.remove).toHaveBeenCalled()
   })
 
-  it('should successfully create a download', async () => {
-    const videoVariantId = 'variant-123'
-    const videoId = 'video-123'
-    const file = new File(['video content'], 'test-video.mp4', {
-      type: 'video/mp4'
+  it('should create a download with correct values', async () => {
+    window.URL.createObjectURL = jest.fn()
+
+    const createR2AssetMockFn = jest.fn().mockReturnValue({
+      data: {
+        createCloudflareR2Asset: {
+          id: '1',
+          fileName: 'fileName',
+          originalFilename: 'someFile.mp4',
+          uploadUrl: 'uploadUrl',
+          publicUrl: 'publicUrl'
+        }
+      }
     })
 
-    // Create mocks for the mutations
-    const createR2AssetMock = getCreateR2AssetMock({
-      videoId,
-      fileName: `${videoId}/variants/529/downloads/${videoVariantId}_high.mp4`,
-      contentType: 'video/mp4',
-      contentLength: file.size
+    const videoVariantDownloadCreateMockFn = jest.fn().mockReturnValue({
+      data: {
+        videoVariantDownloadCreate: {
+          id: '1'
+        }
+      }
     })
 
-    const createDownloadMock = getVideoVariantDownloadCreateMock({
-      videoVariantId,
-      quality: 'high',
-      size: 13,
-      height: 720,
-      width: 1280,
-      url:
-        'https://mock.cloudflare-domain.com/' +
-        `${videoId}/variants/529/downloads/${videoVariantId}_high.mp4`,
-      version: 0,
-      assetId: 'r2-asset.id'
-    })
+    const createR2AssetMock = {
+      request: {
+        query: CREATE_CLOUDFLARE_R2_ASSET,
+        variables: {
+          input: {
+            fileName: expect.any(String),
+            fileCategory: 'VIDEO',
+            originalFilename: 'test-video.mp4',
+            contentType: 'video/mp4',
+            contentLength: expect.any(Number),
+            videoId: 'video-123'
+          }
+        }
+      },
+      result: createR2AssetMockFn
+    }
+
+    const videoVariantDownloadCreateMock = {
+      request: {
+        query: VIDEO_VARIANT_DOWNLOAD_CREATE,
+        variables: {
+          input: {
+            cloudflareR2AssetId: '1',
+            videoVariantId: '1',
+            quality: 'SD'
+          }
+        }
+      },
+      result: videoVariantDownloadCreateMockFn
+    }
 
     const handleClose = jest.fn()
-    const onSuccess = jest.fn()
 
     render(
-      <NextIntlClientProvider locale="en">
+      <NextIntlClientProvider locale="en" messages={{}}>
         <SnackbarProvider>
-          <MockedProvider mocks={[createR2AssetMock, createDownloadMock]}>
+          <MockedProvider
+            mocks={[createR2AssetMock, videoVariantDownloadCreateMock]}
+          >
             <AddVideoVariantDownloadDialog
               open={true}
-              videoVariantId={videoVariantId}
-              existingQualities={[]}
               handleClose={handleClose}
-              onSuccess={onSuccess}
+              videoVariantId="1"
+              existingQualities={[]}
               languageId="529"
             />
           </MockedProvider>
@@ -235,10 +263,15 @@ describe('AddVideoVariantDownloadDialog', () => {
 
     const select = screen.getByLabelText('Quality')
     await user.click(select)
-    await user.click(screen.getByRole('option', { name: 'high' }))
+    await user.click(screen.getByRole('option', { name: 'SD' }))
 
     const dropzone = screen.getByTestId('DropZone')
-    await user.upload(dropzone, file)
+    await user.upload(
+      dropzone,
+      new File(['video content'], 'test-video.mp4', {
+        type: 'video/mp4'
+      })
+    )
 
     if (mockVideoElement.onloadedmetadata) {
       mockVideoElement.onloadedmetadata()
@@ -247,14 +280,9 @@ describe('AddVideoVariantDownloadDialog', () => {
     await user.click(screen.getByRole('button', { name: 'Save' }))
 
     await waitFor(() => {
-      expect(createR2AssetMock.result).toHaveBeenCalled()
+      expect(createR2AssetMockFn).toHaveBeenCalledTimes(1)
+      expect(videoVariantDownloadCreateMockFn).toHaveBeenCalledTimes(1)
     })
-
-    await waitFor(() => {
-      expect(createDownloadMock.result).toHaveBeenCalled()
-    })
-
-    expect(onSuccess).toHaveBeenCalled()
 
     expect(handleClose).toHaveBeenCalled()
   })
