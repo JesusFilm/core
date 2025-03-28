@@ -40,35 +40,35 @@ jest.mock('uuid', () => ({
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
 describe('NewButtonButton', () => {
+  const selectedStep: TreeBlock<StepBlock> = {
+    __typename: 'StepBlock',
+    id: 'stepId',
+    parentBlockId: null,
+    parentOrder: 0,
+    locked: true,
+    nextBlockId: null,
+    slug: null,
+    children: [
+      {
+        id: 'cardId',
+        __typename: 'CardBlock',
+        parentBlockId: 'stepId',
+        parentOrder: 0,
+        coverBlockId: null,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        children: []
+      } as TreeBlock<CardBlock>
+    ]
+  }
+
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
   describe('regular button logic', () => {
-    const selectedStep: TreeBlock<StepBlock> = {
-      __typename: 'StepBlock',
-      id: 'stepId',
-      parentBlockId: null,
-      parentOrder: 0,
-      locked: true,
-      nextBlockId: null,
-      slug: null,
-      children: [
-        {
-          id: 'cardId',
-          __typename: 'CardBlock',
-          parentBlockId: 'stepId',
-          parentOrder: 0,
-          coverBlockId: null,
-          backgroundColor: null,
-          themeMode: null,
-          themeName: null,
-          fullscreen: false,
-          children: []
-        } as TreeBlock<CardBlock>
-      ]
-    }
-
     const result = jest.fn(() => ({ ...buttonBlockCreateMock.result }))
 
     it('should check if the mutation gets called', async () => {
@@ -258,32 +258,13 @@ describe('NewButtonButton', () => {
         { __ref: 'ButtonBlock:buttonBlockId' }
       ])
     })
-
-    it('should disable when loading', async () => {
-      const { getByRole } = render(
-        <MockedProvider>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider initialState={{ selectedStep }}>
-              <NewButtonButton />
-            </EditorProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      fireEvent.click(getByRole('button'))
-      expect(getByRole('button')).toBeDisabled()
-    })
   })
 
   describe('submit button logic', () => {
     it('should create button with submitEnabled when card has text input but no submit button', async () => {
-      mockUuidv4.mockReturnValueOnce('buttonBlockId')
-      mockUuidv4.mockReturnValueOnce('startIconId')
-      mockUuidv4.mockReturnValueOnce('endIconId')
+      mockUuidv4.mockReturnValueOnce('submitButtonBlockId')
+      mockUuidv4.mockReturnValueOnce('submitStartIconId')
+      mockUuidv4.mockReturnValueOnce('submitEndIconId')
 
       const submitResult = jest.fn(() => ({ ...submitButtonCreateMock.result }))
       const regularResult = jest.fn(() => ({ ...buttonBlockCreateMock.result }))
@@ -369,6 +350,27 @@ describe('NewButtonButton', () => {
         expect(regularResult).toHaveBeenCalled()
         expect(submitResult).not.toHaveBeenCalled()
       })
+    })
+  })
+
+  describe('loading state', () => {
+    it('should disable when loading', async () => {
+      const { getByRole } = render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={{ selectedStep }}>
+              <NewButtonButton />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      )
+      fireEvent.click(getByRole('button'))
+      expect(getByRole('button')).toBeDisabled()
     })
   })
 })

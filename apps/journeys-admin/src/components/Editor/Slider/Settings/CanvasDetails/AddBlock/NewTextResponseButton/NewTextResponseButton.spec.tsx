@@ -212,33 +212,11 @@ describe('NewTextResponseButton', () => {
         ])
       )
     })
-
-    it('should disable when loading', async () => {
-      const { getByRole } = render(
-        <MockedProvider>
-          <JourneyProvider
-            value={{
-              journey: { id: 'journeyId' } as unknown as Journey,
-              variant: 'admin'
-            }}
-          >
-            <EditorProvider
-              initialState={{ selectedStep: stepWithSubmitButton }}
-            >
-              <NewTextResponseButton />
-            </EditorProvider>
-          </JourneyProvider>
-        </MockedProvider>
-      )
-      fireEvent.click(getByRole('button', { name: 'Text Input' }))
-      expect(getByRole('button', { name: 'Text Input' })).toBeDisabled()
-    })
   })
 
   describe('TextResponseWithButton', () => {
     beforeEach(() => {
       jest.clearAllMocks()
-      jest.resetAllMocks()
     })
 
     it('should create text response with button and update cache', async () => {
@@ -390,9 +368,31 @@ describe('NewTextResponseButton', () => {
       fireEvent.click(getByRole('button', { name: 'Redo' }))
       await waitFor(() => expect(redoResult).toHaveBeenCalled())
     })
+  })
 
-    // TODO: change behaviour of loading state on newTextResponseButton when adding a textresponseblock and buttonblock
-    it('should disable when loading', async () => {
+  describe('loading state', () => {
+    it('textResponseBlock: should disable when loading', async () => {
+      const { getByRole } = render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{
+              journey: { id: 'journeyId' } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider
+              initialState={{ selectedStep: stepWithSubmitButton }}
+            >
+              <NewTextResponseButton />
+            </EditorProvider>
+          </JourneyProvider>
+        </MockedProvider>
+      )
+      fireEvent.click(getByRole('button', { name: 'Text Input' }))
+      expect(getByRole('button', { name: 'Text Input' })).toBeDisabled()
+    })
+
+    it('textResponseWithButton: should disable when loading', async () => {
       const { getByRole } = render(
         <MockedProvider>
           <JourneyProvider
