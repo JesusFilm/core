@@ -28,6 +28,7 @@ import { VideoBlockSource } from '../../../../../../../../../../__generated__/gl
 import { COVER_BLOCK_DELETE } from '../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
 import { COVER_BLOCK_RESTORE } from '../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
+import { BackgroundUploadProvider } from '../../../../../../../BackgroundUpload'
 import { CommandRedoItem } from '../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -235,15 +236,17 @@ describe('BackgroundMedia', () => {
   it('shows Video selected on null cover', () => {
     render(
       <MockedProvider>
-        <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <EditorProvider initialState={{ selectedBlock: card }}>
-              <SnackbarProvider>
-                <BackgroundMedia />
-              </SnackbarProvider>
-            </EditorProvider>
-          </JourneyProvider>
-        </ThemeProvider>
+        <BackgroundUploadProvider>
+          <ThemeProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <EditorProvider initialState={{ selectedBlock: card }}>
+                <SnackbarProvider>
+                  <BackgroundMedia />
+                </SnackbarProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
     expect(
@@ -275,27 +278,29 @@ describe('BackgroundMedia', () => {
           coverVideoBlockDeleteMock
         ]}
       >
-        <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <EditorProvider
-              initialState={{
-                selectedBlock: {
-                  ...card,
-                  coverBlockId: video.id,
-                  children: [video]
-                }
-              }}
-            >
-              <SnackbarProvider>
-                <CommandProvider>
-                  <BackgroundMedia />
-                  <CommandUndoItem variant="button" />
-                  <CommandRedoItem variant="button" />
-                </CommandProvider>
-              </SnackbarProvider>
-            </EditorProvider>
-          </JourneyProvider>
-        </ThemeProvider>
+        <BackgroundUploadProvider>
+          <ThemeProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <EditorProvider
+                initialState={{
+                  selectedBlock: {
+                    ...card,
+                    coverBlockId: video.id,
+                    children: [video]
+                  }
+                }}
+              >
+                <SnackbarProvider>
+                  <CommandProvider>
+                    <BackgroundMedia />
+                    <CommandUndoItem variant="button" />
+                    <CommandRedoItem variant="button" />
+                  </CommandProvider>
+                </SnackbarProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
     expect(
@@ -355,19 +360,21 @@ describe('BackgroundMedia', () => {
           coverImageBlockDeleteMock
         ]}
       >
-        <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <EditorProvider initialState={{ selectedBlock: step }}>
-              <SnackbarProvider>
-                <CommandProvider>
-                  <BackgroundMedia />
-                  <CommandUndoItem variant="button" />
-                  <CommandRedoItem variant="button" />
-                </CommandProvider>
-              </SnackbarProvider>
-            </EditorProvider>
-          </JourneyProvider>
-        </ThemeProvider>
+        <BackgroundUploadProvider>
+          <ThemeProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <EditorProvider initialState={{ selectedBlock: step }}>
+                <SnackbarProvider>
+                  <CommandProvider>
+                    <BackgroundMedia />
+                    <CommandUndoItem variant="button" />
+                    <CommandRedoItem variant="button" />
+                  </CommandProvider>
+                </SnackbarProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
     expect(
@@ -410,15 +417,17 @@ describe('BackgroundMedia', () => {
 
     render(
       <MockedProvider>
-        <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
-            <EditorProvider initialState={{ selectedBlock: card }}>
-              <SnackbarProvider>
-                <BackgroundMedia />
-              </SnackbarProvider>
-            </EditorProvider>
-          </JourneyProvider>
-        </ThemeProvider>
+        <BackgroundUploadProvider>
+          <ThemeProvider>
+            <JourneyProvider value={{ journey, variant: 'admin' }}>
+              <EditorProvider initialState={{ selectedBlock: card }}>
+                <SnackbarProvider>
+                  <BackgroundMedia />
+                </SnackbarProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </BackgroundUploadProvider>
       </MockedProvider>
     )
     expect(
