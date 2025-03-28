@@ -181,7 +181,7 @@ export const TextResponse = ({
                 value={values.response}
                 helperText={
                   errors.response !== null
-                    ? errors.response
+                    ? (errors.response as string)
                     : hint != null
                       ? hint
                       : ''
