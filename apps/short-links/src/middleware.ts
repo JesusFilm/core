@@ -15,9 +15,8 @@ export const config = {
 }
 
 export function middleware(request: NextRequest) {
-  const url = new URL(
-    `/${request.nextUrl.hostname}${request.nextUrl.pathname}`,
-    request.url
-  )
+  const { hostname, pathname } = request.nextUrl
+  const headerHostname = request.headers.get('host')?.split(':')[0]
+  const url = new URL(`/${headerHostname ?? hostname}${pathname}`, request.url)
   return NextResponse.rewrite(url)
 }
