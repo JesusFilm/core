@@ -3125,6 +3125,9 @@ input VisitorUpdateInput {
 
   """The referring url of the visitor"""
   referrer: String
+
+  """The phone number of the visitor"""
+  phone: String
 }
 
 type Translation {

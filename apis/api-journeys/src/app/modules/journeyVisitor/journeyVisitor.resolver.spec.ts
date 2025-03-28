@@ -41,6 +41,7 @@ describe('JourneyVisitorResolver', () => {
     messagePlatform: MessagePlatform.whatsApp,
     name: 'Bob Smith',
     notes: 'Bob called this afternoon to arrange a meet-up.',
+    phone: '555-000000',
     status: 'star',
     teamId: 'teamId',
     userAgent: null,
