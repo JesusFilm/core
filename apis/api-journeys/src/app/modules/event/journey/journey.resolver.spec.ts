@@ -96,7 +96,8 @@ describe('JourneyViewEventResolver', () => {
         typename: 'JourneyViewEvent',
         visitor: {
           connect: { id: visitorWithId.id }
-        }
+        },
+        journey: { connect: { id: input.journeyId } }
       })
     })
 

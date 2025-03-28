@@ -65,7 +65,7 @@ export function Type(): ReactElement {
         input.label = t('Name')
         break
       default:
-        input.label = t('Your answer here')
+        input.label = t('Label')
     }
 
     add({

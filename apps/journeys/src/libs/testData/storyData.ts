@@ -634,6 +634,7 @@ export const imageBlocks: TreeBlock[] = [
             parentBlockId: 'card2.id',
             parentOrder: 2,
             label: 'Your answer here',
+            placeholder: null,
             hint: null,
             minRows: null,
             integrationId: null,

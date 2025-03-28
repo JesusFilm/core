@@ -24,21 +24,21 @@ export const qrCodeAcl: AppAclFn = ({ can, user }: AppAclParameters) => {
         userTeams: {
           some: {
             userId: user.id,
-            role: { in: [UserTeamRole.manager] }
+            role: { in: [UserTeamRole.manager, UserTeamRole.member] }
           }
         }
       }
     }
   })
 
-  // read and update journey as a journey owner
-  can([Action.Read, Action.Update], 'QrCode', {
+  // manage QrCode as a journey owner
+  can([Action.Manage], 'QrCode', {
     journey: {
       is: {
         userJourneys: {
           some: {
             userId: user.id,
-            role: UserJourneyRole.owner
+            role: { in: [UserJourneyRole.owner, UserJourneyRole.editor] }
           }
         }
       }

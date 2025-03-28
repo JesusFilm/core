@@ -109,7 +109,7 @@ describe('SignUpEventResolver', () => {
           connect: { id: 'visitor.id' }
         },
         createdAt: new Date().toISOString(),
-        journeyId: 'journey.id',
+        journey: { connect: { id: 'journey.id' } },
         stepId: input.stepId,
         label: null,
         value: input.name,

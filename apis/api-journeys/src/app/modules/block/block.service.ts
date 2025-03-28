@@ -299,6 +299,10 @@ export class BlockService {
               }
             : action
       }
+      // Ensure submit button duplication creates a non-submit button
+      if (key === 'submitEnabled' && block[key] === true) {
+        updatedBlockProps[key] = false
+      }
     })
     const defaultDuplicateBlock = {
       id: duplicateBlockId,

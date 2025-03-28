@@ -483,6 +483,7 @@ extend type Query {
   journey(id: ID!, idType: IdType, options: JourneysQueryOptions): Journey!
   journeyCollection(id: ID!): JourneyCollection!
   journeyCollections(teamId: ID!): [JourneyCollection]!
+  journeyEventsConnection(journeyId: ID!, filter: JourneyEventsFilter, first: Int, after: String): JourneyEventsConnection!
   getJourneyProfile: JourneyProfile
 
   """Get a list of Visitor Information by Journey"""
@@ -1039,6 +1040,7 @@ input TextResponseBlockCreateInput {
 input TextResponseBlockUpdateInput {
   parentBlockId: ID
   label: String
+  placeholder: String
   required: Boolean
   hint: String
   minRows: Int
@@ -2330,6 +2332,56 @@ input JourneyCollectionCreateInput {
 input JourneyCollectionUpdateInput {
   title: String
   journeyIds: [String!]
+}
+
+"""
+JourneyEvent aggregates all event types. For detailed event type definitions,
+see the specific event files in the event module
+"""
+type JourneyEvent implements Event {
+  """Base event fields from Event interface"""
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+
+  """Additional specific event fields"""
+  action: ButtonAction
+  actionValue: String
+  messagePlatform: MessagePlatform
+  language: Language
+  email: String
+  blockId: String
+  position: Float
+  source: VideoBlockSource
+  progress: Int
+
+  """
+  database fields from table, not explicitly surfaced from any other types
+  """
+  typename: String
+  visitorId: String
+
+  """Related fields queried from relevant ids in the events table"""
+  journey: Journey
+  visitor: Visitor
+}
+
+type JourneyEventEdge {
+  cursor: String!
+  node: JourneyEvent!
+}
+
+type JourneyEventsConnection {
+  edges: [JourneyEventEdge!]!
+  pageInfo: PageInfo!
+}
+
+input JourneyEventsFilter {
+  typenames: [String!]
+  periodRangeStart: DateTime
+  periodRangeEnd: DateTime
 }
 
 type JourneyNotification {
