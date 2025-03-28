@@ -92,9 +92,11 @@ export const GET_ADMIN_VIDEO = graphql(`
         }
         vttAsset {
           id
+          originalFilename
         }
         srtAsset {
           id
+          originalFilename
         }
         vttVersion
         srtVersion
@@ -110,9 +112,11 @@ export const GET_ADMIN_VIDEO = graphql(`
           primary
           vttAsset {
             id
+            originalFilename
           }
           srtAsset {
             id
+            originalFilename
           }
           vttVersion
           srtVersion
