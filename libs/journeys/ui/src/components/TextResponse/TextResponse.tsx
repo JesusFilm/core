@@ -53,6 +53,7 @@ interface TextResponseFormValues {
  * @param {string} [props.placeholder] - Placeholder text.
  * @param {string} [props.hint] - Helper text displayed below the input.
  * @param {number} [props.minRows] - Minimum number of rows for the text area.
+ * @param {boolean} [props.required] - Indicates if the field is required.
  * @returns {ReactElement} The TextResponse component.
  */
 export const TextResponse = ({
@@ -61,7 +62,8 @@ export const TextResponse = ({
   label,
   placeholder,
   hint,
-  minRows
+  minRows,
+  required
 }: TextResponseProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
 
@@ -138,6 +140,7 @@ export const TextResponse = ({
                 }}
               >
                 {label === '' ? 'Label' : label}
+                {(required ?? false) ? '*' : ''}
               </Typography>
               <TextField
                 id="textResponse-field"
