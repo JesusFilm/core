@@ -62,7 +62,7 @@ const nextConfig = {
     // Reduce concurrency of page generation to minimize API rate limiting
     staticPageGenerationConcurrency: 1,
     staticGenerationRetryCount: 3,
-    workerThreads: 1,
+    workerThreads: false,
     cpus: 1,
     outputFileTracingExcludes: {
       '*': [
