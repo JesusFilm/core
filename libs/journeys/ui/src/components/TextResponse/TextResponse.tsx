@@ -95,6 +95,11 @@ export const TextResponse = ({
       if (required === true) {
         schema = schema.required(t('Required'))
       }
+      if (type === TextResponseType.name) {
+        schema = schema
+          .min(2, t('Name must be 2 characters or more'))
+          .max(50, t('Name must be 50 characters or less'))
+      }
       if (type === TextResponseType.email) {
         schema = schema.email(t('Please enter a valid email address'))
       }
