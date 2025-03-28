@@ -51,6 +51,7 @@ export interface BlockRestore_blockRestore_ButtonBlock {
   startIconId: string | null;
   endIconId: string | null;
   action: BlockRestore_blockRestore_ButtonBlock_action | null;
+  submitEnabled: boolean | null;
 }
 
 export interface BlockRestore_blockRestore_CardBlock {

@@ -97,6 +97,7 @@ const block: TreeBlock<Block> = {
           size: ButtonSize.large,
           startIconId: 'icon',
           endIconId: null,
+          submitEnabled: null,
           action: null,
           children: [
             {
