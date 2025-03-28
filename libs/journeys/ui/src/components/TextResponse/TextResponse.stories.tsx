@@ -51,6 +51,7 @@ const textResponseProps: ComponentProps<typeof TextResponse> = {
   hint: null,
   minRows: null,
   integrationId: null,
+  required: null,
   type: null,
   routeId: null,
   children: []
@@ -108,6 +109,32 @@ export const Complete = {
     placeholder: 'Placeholder text',
     submitIconId: 'icon',
     submitLabel: 'Custom label',
+    children: [
+      {
+        id: 'icon',
+        __typename: 'IconBlock',
+        parentBlockId: 'parent',
+        parentOrder: 0,
+        iconName: IconName.SendRounded,
+        iconSize: null,
+        iconColor: null,
+        children: []
+      }
+    ]
+  }
+}
+
+export const Required = {
+  ...Template,
+  args: {
+    ...Default.args,
+    hint: 'Optional Hint text',
+    minRows: 4,
+    label: 'Custom label',
+    placeholder: 'Placeholder text',
+    submitIconId: 'icon',
+    submitLabel: 'Custom label',
+    required: true,
     children: [
       {
         id: 'icon',
