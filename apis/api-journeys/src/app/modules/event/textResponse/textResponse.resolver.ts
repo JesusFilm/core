@@ -47,6 +47,10 @@ export class TextResponseSubmissionEventResolver {
       visitorDataUpdate.email = input.value
     }
 
+    if (block.type === TextResponseType.phone) {
+      visitorDataUpdate.phone = input.value
+    }
+
     const [textResponseSubmissionEvent, updatedVisitor] = await Promise.all([
       this.eventService.save({
         ...input,

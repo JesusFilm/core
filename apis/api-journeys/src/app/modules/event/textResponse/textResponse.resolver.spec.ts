@@ -153,6 +153,27 @@ describe('TextResponseEventResolver', () => {
       })
     })
 
+    it('should update visitor phone if TextResponse block type is phone', async () => {
+      const textResponseBlockType = {
+        ...block,
+        type: TextResponseType.phone
+      }
+      eventService.validateBlockEvent.mockResolvedValue({
+        ...response,
+        block: textResponseBlockType
+      })
+      await resolver.textResponseSubmissionEventCreate('userId', input)
+      expect(prismaService.visitor.update).toHaveBeenCalledWith({
+        data: {
+          lastTextResponse: 'My response',
+          phone: 'My response'
+        },
+        where: {
+          id: 'visitor.id'
+        }
+      })
+    })
+
     it('should update add subscriber to GrowthSpaces integration', async () => {
       const textResponseBlockType = {
         ...block,
