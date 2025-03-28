@@ -65,6 +65,17 @@ export const GET_ADMIN_JOURNEYS = gql`
         height
         blurhash
       }
+      team {
+        id
+        title
+        publicTitle
+        customDomains {
+          id
+          name
+          apexName
+          routeAllTeamJourneys
+        }
+      }
     }
   }
 `

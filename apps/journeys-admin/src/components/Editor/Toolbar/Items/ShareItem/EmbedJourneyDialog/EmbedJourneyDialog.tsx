@@ -23,19 +23,34 @@ import { EmbedCardPreview } from './EmbedCardPreview'
 interface EmbedJourneyDialogProps {
   open: boolean
   onClose: () => void
+  hostname?: string
+  journey?: {
+    id: string
+    slug?: string | null
+    team?: {
+      id: string
+    } | null
+  }
 }
 
 export function EmbedJourneyDialog({
   open,
-  onClose
+  onClose,
+  hostname: hostnameProp,
+  journey: journeyProp
 }: EmbedJourneyDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { journey } = useJourney()
-  const { hostname } = useCustomDomainsQuery({
+  const { journey: journeyContext } = useJourney()
+  const journey = journeyProp ?? journeyContext
+
+  // Only query for hostname if not provided via props
+  const { hostname: hostnameQuery } = useCustomDomainsQuery({
     variables: { teamId: journey?.team?.id ?? '' },
-    skip: journey?.team?.id == null
+    skip: journey?.team?.id == null || hostnameProp != null
   })
+
+  const hostname = hostnameProp ?? hostnameQuery
 
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 

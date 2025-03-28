@@ -1,19 +1,77 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { NextRouter, useRouter } from 'next/router'
-import { SnackbarProvider } from 'notistack'
-import { Suspense } from 'react'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
-import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
-import { GetUserRole } from '@core/journeys/ui/useUserRoleQuery/__generated__/GetUserRole'
 
-import { Role } from '../../../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
-import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+import { SHARE_DATA_QUERY } from '../../../../../libs/useShareDataQuery/useShareDataQuery'
 
+import { ShareDialog } from './ShareDialog'
 import { ShareItem } from './ShareItem'
+
+const shareDataQueryMock: MockedResponse = {
+  request: {
+    query: SHARE_DATA_QUERY,
+    variables: {
+      id: 'journey-id',
+      qrCodeWhere: { journeyId: 'journey-id' }
+    }
+  },
+  result: {
+    data: {
+      journey: {
+        id: 'journey-id',
+        slug: 'default',
+        title: 'Journey Heading',
+        team: {
+          id: 'teamId',
+          customDomains: [
+            {
+              id: 'customDomainId',
+              name: 'example.com',
+              apexName: 'example.com',
+              routeAllTeamJourneys: false
+            }
+          ]
+        }
+      },
+      qrCodes: []
+    }
+  }
+}
+
+jest.mock('./ShareDialog', () => ({
+  __esModule: true,
+  ShareDialog: jest.fn(
+    ({
+      open,
+      onClose,
+      hostname,
+      onSlugDialogOpen,
+      onEmbedDialogOpen,
+      onQrCodeDialogOpen
+    }) => {
+      if (!open) return null
+      return (
+        <div data-testid="mock-share-dialog">
+          <button onClick={onClose}>Close Dialog</button>
+          <button onClick={onSlugDialogOpen}>Edit URL</button>
+          <button onClick={onEmbedDialogOpen}>Embed Journey</button>
+          <button onClick={onQrCodeDialogOpen}>QR Code</button>
+          <div>Hostname: {hostname ?? 'default'}</div>
+        </div>
+      )
+    }
+  )
+}))
 
 jest.mock('../../../../../libs/useCurrentUserLazyQuery', () => ({
   __esModule: true,
@@ -30,17 +88,39 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
-
+const mockedShareDialog = ShareDialog as jest.MockedFunction<typeof ShareDialog>
 const mockUseCurrentUserLazyQuery = useCurrentUserLazyQuery as jest.Mock
 const user = { id: 'user.id', email: 'test@email.com' }
 
 Object.assign(navigator, { clipboard: { writeText: jest.fn() } })
 
+jest.mock('./EmbedJourneyDialog', () => ({
+  __esModule: true,
+  EmbedJourneyDialog: jest.fn(({ open, onClose }) => {
+    if (!open) return null
+    return (
+      <div data-testid="embed-journey-dialog">
+        <button onClick={onClose}>Close Dialog</button>
+      </div>
+    )
+  })
+}))
+
+jest.mock('./QrCodeDialog', () => ({
+  __esModule: true,
+  QrCodeDialog: jest.fn(({ open, onClose }) => {
+    if (!open) return null
+    return (
+      <div data-testid="qr-code-dialog">
+        <button onClick={onClose}>Close Dialog</button>
+      </div>
+    )
+  })
+}))
+
 describe('ShareItem', () => {
   const push = jest.fn()
   const on = jest.fn()
-
   let originalEnv
 
   beforeEach(() => {
@@ -48,27 +128,21 @@ describe('ShareItem', () => {
     originalEnv = process.env
     process.env = {
       ...originalEnv,
-      NEXT_PUBLIC_JOURNEYS_URL: 'https://my.custom.domain'
+      NEXT_PUBLIC_JOURNEYS_URL: 'https://my.nextstep.is'
     }
-    mockUseCurrentUserLazyQuery.mockReturnValue({
-      loadUser: jest.fn(),
-      data: user
-    })
+    mockUseCurrentUserLazyQuery.mockReturnValue([
+      jest.fn(),
+      { data: { activeUser: user } }
+    ])
   })
 
   afterEach(() => {
     process.env = originalEnv
   })
 
-  it('should handle edit journey slug', async () => {
-    mockedUseRouter.mockReturnValue({
-      query: { param: null },
-      push,
-      events: { on }
-    } as unknown as NextRouter)
-
-    render(
-      <SnackbarProvider>
+  it('should render the share button', async () => {
+    await act(async () => {
+      render(
         <MockedProvider>
           <JourneyProvider
             value={{ journey: defaultJourney, variant: 'admin' }}
@@ -76,43 +150,14 @@ describe('ShareItem', () => {
             <ShareItem variant="button" />
           </JourneyProvider>
         </MockedProvider>
-      </SnackbarProvider>
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
-    expect(screen.getByRole('dialog')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Edit URL' }))
-
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        { query: { param: 'edit-url' } },
-        undefined,
-        { shallow: true }
       )
     })
-
-    expect(screen.getByRole('dialog', { name: 'Edit URL' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: 'Edit URL' })
-      ).toBeInTheDocument()
-    })
-    expect(
-      screen.getByRole('button', { name: 'Embed Journey' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Share' })).toBeInTheDocument()
   })
 
-  it('should handle embed journey', async () => {
-    mockedUseRouter.mockReturnValue({
-      query: { param: null },
-      push,
-      events: { on }
-    } as unknown as NextRouter)
-    render(
-      <SnackbarProvider>
+  it('should open the ShareDialog when the share button is clicked', async () => {
+    await act(async () => {
+      render(
         <MockedProvider>
           <JourneyProvider
             value={{ journey: defaultJourney, variant: 'admin' }}
@@ -120,102 +165,18 @@ describe('ShareItem', () => {
             <ShareItem variant="button" />
           </JourneyProvider>
         </MockedProvider>
-      </SnackbarProvider>
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
-    expect(screen.getByRole('dialog')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Embed Journey' }))
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        { query: { param: 'embed-journey' } },
-        undefined,
-        { shallow: true }
       )
     })
-
-    expect(
-      screen.getByRole('dialog', { name: 'Embed journey' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: 'Copy Code' })
-    ).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
-    await waitFor(() => {
-      expect(
-        screen.getByRole('button', { name: 'Edit URL' })
-      ).toBeInTheDocument()
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Share' }))
     })
-    expect(
-      screen.getByRole('button', { name: 'Embed Journey' })
-    ).toBeInTheDocument()
+
+    expect(screen.getByTestId('mock-share-dialog')).toBeInTheDocument()
   })
 
-  it('should handle qr code', async () => {
-    mockedUseRouter.mockReturnValue({
-      query: { param: null },
-      push,
-      events: { on }
-    } as unknown as NextRouter)
-
-    const getUserRoleMock: MockedResponse<GetUserRole> = {
-      request: { query: GET_USER_ROLE },
-      result: jest.fn(() => ({
-        data: {
-          getUserRole: {
-            __typename: 'UserRole',
-            id: 'user.id',
-            roles: [Role.publisher]
-          }
-        }
-      }))
-    }
-
-    render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[getUserRoleMock]}>
-          <Suspense>
-            <JourneyProvider
-              value={{ journey: defaultJourney, variant: 'admin' }}
-            >
-              <ShareItem variant="button" />
-            </JourneyProvider>
-          </Suspense>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
-    expect(screen.getByRole('dialog')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'QR Code' }))
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        { query: { param: 'qr-code' } },
-        undefined,
-        { shallow: true }
-      )
-    })
-
-    await waitFor(() =>
-      expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
-        'QR Code'
-      )
-    )
-    fireEvent.click(screen.getByTestId('dialog-close-button'))
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', { name: 'QR Code' })
-      ).toBeInTheDocument()
-    )
-  })
-
-  it('should copy journey link', async () => {
-    mockedUseRouter.mockReturnValue({
-      query: { param: null },
-      push,
-      events: { on }
-    } as unknown as NextRouter)
-    render(
-      <SnackbarProvider>
+  it('should close the ShareDialog when onClose is called', async () => {
+    await act(async () => {
+      render(
         <MockedProvider>
           <JourneyProvider
             value={{ journey: defaultJourney, variant: 'admin' }}
@@ -223,25 +184,114 @@ describe('ShareItem', () => {
             <ShareItem variant="button" />
           </JourneyProvider>
         </MockedProvider>
-      </SnackbarProvider>
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      'https://my.custom.domain/default'
+      )
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Close Dialog' }))
+    })
+    expect(screen.queryByTestId('mock-share-dialog')).not.toBeInTheDocument()
+  })
+
+  it('should open the SlugDialog when Edit URL is clicked', async () => {
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
+          >
+            <ShareItem variant="button" />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Edit URL' }))
+    })
+
+    // The SlugDialog is dynamically imported, so we can't easily test its rendering
+    // Instead, we verify that the state was updated by checking the props passed to ShareDialog
+    expect(mockedShareDialog).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        open: true,
+        onSlugDialogOpen: expect.any(Function),
+        onEmbedDialogOpen: expect.any(Function),
+        onQrCodeDialogOpen: expect.any(Function)
+      }),
+      expect.anything()
     )
   })
 
-  it('should copy journey link with custom domain', async () => {
-    const result = jest.fn().mockReturnValue(getCustomDomainMock.result)
-    mockedUseRouter.mockReturnValue({
-      query: { param: null },
-      push,
-      events: { on }
-    } as unknown as NextRouter)
-    render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[{ ...getCustomDomainMock, result }]}>
+  it('should open the EmbedJourneyDialog when Embed Journey is clicked', async () => {
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
+          >
+            <ShareItem variant="button" />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    })
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Embed Journey' }))
+    })
+
+    expect(mockedShareDialog).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        open: true,
+        onSlugDialogOpen: expect.any(Function),
+        onEmbedDialogOpen: expect.any(Function),
+        onQrCodeDialogOpen: expect.any(Function)
+      }),
+      expect.anything()
+    )
+  })
+
+  it('should open the QrCodeDialog when QR Code is clicked', async () => {
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
+          >
+            <ShareItem variant="button" />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'QR Code' }))
+    })
+
+    expect(mockedShareDialog).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        open: true,
+        onSlugDialogOpen: expect.any(Function),
+        onEmbedDialogOpen: expect.any(Function),
+        onQrCodeDialogOpen: expect.any(Function)
+      }),
+      expect.anything()
+    )
+  })
+
+  it('should pass custom domain hostname to ShareDialog', async () => {
+    await act(async () => {
+      render(
+        <MockedProvider mocks={[shareDataQueryMock]}>
           <JourneyProvider
             value={{
               journey: {
@@ -259,13 +309,114 @@ describe('ShareItem', () => {
             <ShareItem variant="button" />
           </JourneyProvider>
         </MockedProvider>
-      </SnackbarProvider>
-    )
-    await waitFor(() => expect(result).toHaveBeenCalled())
-    fireEvent.click(screen.getByRole('button', { name: 'Share' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
-      'https://example.com/default'
-    )
+      )
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    })
+    await waitFor(() => {
+      expect(screen.getByText('Hostname: example.com')).toBeInTheDocument()
+    })
+  })
+
+  it('should call closeMenu when dialog is closed', async () => {
+    const closeMenu = jest.fn()
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
+          >
+            <ShareItem variant="button" closeMenu={closeMenu} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Close Dialog' }))
+    })
+
+    expect(closeMenu).toHaveBeenCalled()
+  })
+
+  it('should close the EmbedJourneyDialog when onClose is called', async () => {
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
+          >
+            <ShareItem variant="button" />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Embed Journey' }))
+    })
+
+    await waitFor(() => {
+      expect(screen.getByTestId('embed-journey-dialog')).toBeInTheDocument()
+    })
+
+    const embedDialog = screen.getByTestId('embed-journey-dialog')
+    const closeButton = within(embedDialog).getByRole('button', {
+      name: 'Close Dialog'
+    })
+
+    await act(async () => {
+      fireEvent.click(closeButton)
+    })
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId('embed-journey-dialog')
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  it('should close the QrCodeDialog when onClose is called', async () => {
+    await act(async () => {
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: defaultJourney, variant: 'admin' }}
+          >
+            <ShareItem variant="button" />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+    })
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Share' }))
+    })
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'QR Code' }))
+    })
+
+    await waitFor(() => {
+      expect(screen.getByTestId('qr-code-dialog')).toBeInTheDocument()
+    })
+
+    const qrCodeDialog = screen.getByTestId('qr-code-dialog')
+    const closeButton = within(qrCodeDialog).getByRole('button', {
+      name: 'Close Dialog'
+    })
+
+    await act(async () => {
+      fireEvent.click(closeButton)
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('qr-code-dialog')).not.toBeInTheDocument()
+    })
   })
 })

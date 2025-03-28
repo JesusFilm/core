@@ -180,12 +180,14 @@ describe('DefaultMenu', () => {
               setOpenAccessDialog={noop}
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenShareDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Access' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
@@ -207,11 +209,13 @@ describe('DefaultMenu', () => {
             handleCloseMenu={noop}
             template
             setOpenTrashDialog={noop}
+            setOpenDetailsDialog={noop}
+            setOpenShareDialog={noop}
           />
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(getByRole('menuitem', { name: 'Edit' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
@@ -236,6 +240,8 @@ describe('DefaultMenu', () => {
               setOpenAccessDialog={setOpenAccessDialog}
               handleCloseMenu={handleCloseMenu}
               setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenShareDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -245,6 +251,42 @@ describe('DefaultMenu', () => {
     fireEvent.click(getByRole('menuitem', { name: 'Access' }))
     expect(setOpenAccessDialog).toHaveBeenCalled()
     expect(handleCloseMenu).toHaveBeenCalled()
+  })
+
+  it('should handle opening and closing Access dialog', async () => {
+    const setOpenAccessDialog = jest.fn()
+    const handleCloseMenu = jest.fn()
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={setOpenAccessDialog}
+              handleCloseMenu={handleCloseMenu}
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenShareDialog={noop}
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    // Test opening dialog
+    fireEvent.click(getByRole('menuitem', { name: 'Access' }))
+    expect(setOpenAccessDialog).toHaveBeenCalledTimes(1)
+    expect(handleCloseMenu).toHaveBeenCalledTimes(1)
+
+    // Verify both functions were called in the correct order
+    expect(setOpenAccessDialog.mock.invocationCallOrder[0]).toBeLessThan(
+      handleCloseMenu.mock.invocationCallOrder[0]
+    )
   })
 
   it('should redirect to preview', async () => {
@@ -262,6 +304,8 @@ describe('DefaultMenu', () => {
                 setOpenAccessDialog={noop}
                 handleCloseMenu={noop}
                 setOpenTrashDialog={noop}
+                setOpenDetailsDialog={noop}
+                setOpenShareDialog={noop}
               />
             </TeamProvider>
           </MockedProvider>
@@ -299,6 +343,8 @@ describe('DefaultMenu', () => {
                 setOpenAccessDialog={noop}
                 handleCloseMenu={noop}
                 setOpenTrashDialog={noop}
+                setOpenDetailsDialog={noop}
+                setOpenShareDialog={noop}
               />
             </TeamProvider>
           </MockedProvider>
@@ -336,6 +382,8 @@ describe('DefaultMenu', () => {
               setOpenAccessDialog={noop}
               handleCloseMenu={handleCloseMenu}
               setOpenTrashDialog={setOpenTrashDialog}
+              setOpenDetailsDialog={noop}
+              setOpenShareDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -345,6 +393,42 @@ describe('DefaultMenu', () => {
     fireEvent.click(getByRole('menuitem', { name: 'Trash' }))
     expect(setOpenTrashDialog).toHaveBeenCalled()
     expect(handleCloseMenu).toHaveBeenCalled()
+  })
+
+  it('should handle opening and closing Trash dialog', async () => {
+    const handleCloseMenu = jest.fn()
+    const setOpenTrashDialog = jest.fn()
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={handleCloseMenu}
+              setOpenTrashDialog={setOpenTrashDialog}
+              setOpenDetailsDialog={noop}
+              setOpenShareDialog={noop}
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    // Test opening dialog
+    fireEvent.click(getByRole('menuitem', { name: 'Trash' }))
+    expect(setOpenTrashDialog).toHaveBeenCalledTimes(1)
+    expect(handleCloseMenu).toHaveBeenCalledTimes(1)
+
+    // Verify both functions were called in the correct order
+    expect(setOpenTrashDialog.mock.invocationCallOrder[0]).toBeLessThan(
+      handleCloseMenu.mock.invocationCallOrder[0]
+    )
   })
 
   it('should enable Archive and Trash menu items for journey owners', async () => {
@@ -392,6 +476,8 @@ describe('DefaultMenu', () => {
               setOpenAccessDialog={noop}
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenShareDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -453,6 +539,8 @@ describe('DefaultMenu', () => {
               setOpenAccessDialog={noop}
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenShareDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -514,6 +602,8 @@ describe('DefaultMenu', () => {
               setOpenAccessDialog={noop}
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenShareDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -577,6 +667,8 @@ describe('DefaultMenu', () => {
               setOpenAccessDialog={noop}
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenShareDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>
@@ -584,13 +676,19 @@ describe('DefaultMenu', () => {
     )
 
     await waitFor(() => {
-      expect(getByRole('menuitem', { name: 'Edit' })).not.toHaveAttribute(
-        'aria-disabled'
-      )
+      expect(
+        getByRole('menuitem', { name: 'Edit Details' })
+      ).not.toHaveAttribute('aria-disabled')
       expect(getByRole('menuitem', { name: 'Access' })).not.toHaveAttribute(
         'aria-disabled'
       )
       expect(getByRole('menuitem', { name: 'Preview' })).not.toHaveAttribute(
+        'aria-disabled'
+      )
+      expect(
+        getByRole('menuitem', { name: 'Copy to ...' })
+      ).not.toHaveAttribute('aria-disabled')
+      expect(getByRole('menuitem', { name: 'Share' })).not.toHaveAttribute(
         'aria-disabled'
       )
     })
@@ -631,6 +729,8 @@ describe('DefaultMenu', () => {
             handleCloseMenu={noop}
             template
             setOpenTrashDialog={noop}
+            setOpenDetailsDialog={noop}
+            setOpenShareDialog={noop}
           />
         </SnackbarProvider>
       </MockedProvider>
@@ -681,6 +781,8 @@ describe('DefaultMenu', () => {
             handleCloseMenu={noop}
             template={false}
             setOpenTrashDialog={noop}
+            setOpenDetailsDialog={noop}
+            setOpenShareDialog={noop}
           />
         </SnackbarProvider>
       </MockedProvider>
@@ -733,6 +835,8 @@ describe('DefaultMenu', () => {
             handleCloseMenu={noop}
             template
             setOpenTrashDialog={noop}
+            setOpenDetailsDialog={noop}
+            setOpenShareDialog={noop}
           />
         </SnackbarProvider>
       </MockedProvider>
@@ -800,6 +904,8 @@ describe('DefaultMenu', () => {
               setOpenAccessDialog={noop}
               handleCloseMenu={noop}
               setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenShareDialog={noop}
             />
           </TeamProvider>
         </SnackbarProvider>

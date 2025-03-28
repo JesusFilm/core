@@ -52,6 +52,13 @@ export const defaultTemplate: Journey = {
       }
     ]
   },
+  team: {
+    __typename: 'Team',
+    id: 'teamId',
+    title: 'Team Title',
+    publicTitle: null,
+    customDomains: []
+  },
   primaryImageBlock: null,
   trashedAt: null
 }

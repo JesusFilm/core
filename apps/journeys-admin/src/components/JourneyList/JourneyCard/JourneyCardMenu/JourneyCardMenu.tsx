@@ -1,13 +1,25 @@
-import { ApolloQueryResult } from '@apollo/client'
+import { ApolloQueryResult, gql, useQuery } from '@apollo/client'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import dynamic from 'next/dynamic'
 import { ReactElement, useState } from 'react'
 
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 import MoreIcon from '@core/shared/ui/icons/More'
 
-import { GetAdminJourneys } from '../../../../../__generated__/GetAdminJourneys'
+import {
+  GetAdminJourneys,
+  GetAdminJourneys_journeys as Journey
+} from '../../../../../__generated__/GetAdminJourneys'
+import {
+  GetJourneyWithBlocks,
+  GetJourneyWithBlocksVariables
+} from '../../../../../__generated__/GetJourneyWithBlocks'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+
+import { DefaultMenu } from './DefaultMenu'
+import { TrashMenu } from './TrashMenu'
 
 const AccessDialog = dynamic(
   async () =>
@@ -45,23 +57,60 @@ const TrashJourneyDialog = dynamic(
   { ssr: false }
 )
 
-const DefaultMenu = dynamic(
+const JourneyDetailsDialog = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "DefaultMenu" */
-      './DefaultMenu'
-    ).then((mod) => mod.DefaultMenu),
+      /* webpackChunkName: "JourneyDetailsDialog" */
+      '../../../Editor/Toolbar/JourneyDetails/JourneyDetailsDialog'
+    ).then((mod) => mod.JourneyDetailsDialog),
   { ssr: false }
 )
 
-const TrashMenu = dynamic(
+const SlugDialog = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "TrashMenu" */
-      './TrashMenu'
-    ).then((mod) => mod.TrashMenu),
+      /* webpackChunkName: "SlugDialog" */
+      '../../../Editor/Toolbar/Items/ShareItem/SlugDialog'
+    ).then((mod) => mod.SlugDialog),
   { ssr: false }
 )
+
+const EmbedJourneyDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "EmbedJourneyDialog" */
+      '../../../Editor/Toolbar/Items/ShareItem/EmbedJourneyDialog'
+    ).then((mod) => mod.EmbedJourneyDialog),
+  { ssr: false }
+)
+
+const QrCodeDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "QrCodeDialog" */
+      '../../../Editor/Toolbar/Items/ShareItem/QrCodeDialog'
+    ).then((mod) => mod.QrCodeDialog),
+  { ssr: false }
+)
+
+const ShareDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "ShareDialog" */
+      '../../../Editor/Toolbar/Items/ShareItem/ShareDialog'
+    ).then((mod) => mod.ShareDialog),
+  { ssr: false }
+)
+
+// Query for fetching journey with blocks for previews
+export const GET_JOURNEY_WITH_BLOCKS = gql`
+  ${JOURNEY_FIELDS}
+  query GetJourneyWithBlocks($id: ID!) {
+    journey: adminJourney(id: $id, idType: databaseId) {
+      ...JourneyFields
+    }
+  }
+`
 
 export interface JourneyCardMenuProps {
   id: string
@@ -70,6 +119,7 @@ export interface JourneyCardMenuProps {
   published: boolean
   template?: boolean
   refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  journey?: Journey
 }
 
 export function JourneyCardMenu({
@@ -78,7 +128,8 @@ export function JourneyCardMenu({
   slug,
   published,
   template,
-  refetch
+  refetch,
+  journey
 }: JourneyCardMenuProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const open = Boolean(anchorEl)
@@ -93,6 +144,28 @@ export function JourneyCardMenu({
   const [openDeleteDialog, setOpenDeleteDialog] = useState<
     boolean | undefined
   >()
+  const [openDetailsDialog, setOpenDetailsDialog] = useState<
+    boolean | undefined
+  >()
+  const [openShareDialog, setOpenShareDialog] = useState<boolean | undefined>()
+  const [openSlugDialog, setOpenSlugDialog] = useState<boolean | undefined>()
+  const [openEmbedDialog, setOpenEmbedDialog] = useState<boolean | undefined>()
+  const [openQrCodeDialog, setOpenQrCodeDialog] = useState<
+    boolean | undefined
+  >()
+
+  // Query to fetch journey with blocks when opening embed dialog
+  const { data: journeyWithBlocksData } = useQuery<
+    GetJourneyWithBlocks,
+    GetJourneyWithBlocksVariables
+  >(GET_JOURNEY_WITH_BLOCKS, {
+    variables: { id },
+    skip:
+      !openEmbedDialog &&
+      !openShareDialog &&
+      !openSlugDialog &&
+      !openQrCodeDialog
+  })
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -100,6 +173,8 @@ export function JourneyCardMenu({
   const handleCloseMenu = (): void => {
     setAnchorEl(null)
   }
+
+  const journeyWithBlocks = journeyWithBlocksData?.journey
 
   return (
     <>
@@ -147,6 +222,8 @@ export function JourneyCardMenu({
             setOpenAccessDialog={() => setOpenAccessDialog(true)}
             handleCloseMenu={handleCloseMenu}
             setOpenTrashDialog={() => setOpenTrashDialog(true)}
+            setOpenDetailsDialog={() => setOpenDetailsDialog(true)}
+            setOpenShareDialog={() => setOpenShareDialog(true)}
             template={template}
             refetch={refetch}
           />
@@ -183,6 +260,45 @@ export function JourneyCardMenu({
           handleClose={() => setOpenDeleteDialog(false)}
           refetch={refetch}
         />
+      )}
+      {openDetailsDialog != null && (
+        <JourneyDetailsDialog
+          open={openDetailsDialog}
+          onClose={() => setOpenDetailsDialog(false)}
+          journey={journey}
+        />
+      )}
+      {openShareDialog != null && journeyWithBlocks != null && (
+        <JourneyProvider value={{ journey: journeyWithBlocks }}>
+          <ShareDialog
+            open={openShareDialog}
+            onClose={() => setOpenShareDialog(false)}
+            onSlugDialogOpen={() => setOpenSlugDialog(true)}
+            onEmbedDialogOpen={() => setOpenEmbedDialog(true)}
+            onQrCodeDialogOpen={() => setOpenQrCodeDialog(true)}
+          />
+          {openSlugDialog != null && (
+            <SlugDialog
+              open={openSlugDialog}
+              onClose={() => setOpenSlugDialog(false)}
+              journey={journeyWithBlocks}
+            />
+          )}
+          {openEmbedDialog != null && (
+            <EmbedJourneyDialog
+              open={openEmbedDialog}
+              onClose={() => setOpenEmbedDialog(false)}
+              journey={journeyWithBlocks}
+            />
+          )}
+          {openQrCodeDialog != null && (
+            <QrCodeDialog
+              open={openQrCodeDialog}
+              onClose={() => setOpenQrCodeDialog(false)}
+              journey={journeyWithBlocks}
+            />
+          )}
+        </JourneyProvider>
       )}
     </>
   )
