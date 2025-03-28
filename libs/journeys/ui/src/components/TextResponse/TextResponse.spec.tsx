@@ -33,6 +33,7 @@ const block: TreeBlock<TextResponseFields> = {
   placeholder: null,
   hint: null,
   minRows: null,
+  required: null,
   integrationId: null,
   type: null,
   routeId: null,
@@ -111,6 +112,7 @@ describe('TextResponse', () => {
       placeholder: null,
       hint: null,
       minRows: null,
+      required: null,
       integrationId: null,
       type: null,
       routeId: null,
@@ -310,5 +312,44 @@ describe('TextResponse', () => {
       'aria-labelledby',
       'textResponse-label'
     )
+  })
+
+  it('should show asterisk if required', () => {
+    const requiredBlock: TreeBlock<TextResponseFields> = {
+      ...block,
+      required: true
+    }
+
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <JourneyProvider>
+          <SnackbarProvider>
+            <TextResponse {...requiredBlock} uuid={() => 'uuid'} />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Your answer here*')).toBeInTheDocument()
+  })
+
+  it('should not show asterisk if not required', () => {
+    const notRequiredBlock: TreeBlock<TextResponseFields> = {
+      ...block,
+      required: false
+    }
+
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <JourneyProvider>
+          <SnackbarProvider>
+            <TextResponse {...notRequiredBlock} uuid={() => 'uuid'} />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.queryByText('Your answer here*')).not.toBeInTheDocument()
+    expect(screen.getByText('Your answer here')).toBeInTheDocument()
   })
 })
