@@ -51,7 +51,8 @@ export default function EasterPage({ content }: EasterPageProps): ReactElement {
 export const getStaticProps: GetStaticProps<EasterPageProps> = async (
   context
 ) => {
-  const languageParam = context.params?.language?.[0] ?? 'en'
+  // Use the URL language parameter, or context.locale from Next.js, or default to English
+  const languageParam = context.params?.language?.[0] ?? context.locale ?? 'en'
   const contentId = 'easter'
 
   const client = createApolloClient()
@@ -67,6 +68,14 @@ export const getStaticProps: GetStaticProps<EasterPageProps> = async (
     bcp47ToSlugMap['en'] = 'english'
     bcp47ToSlugMap['fr'] = 'french'
     bcp47ToSlugMap['es'] = 'spanish-latin-american'
+    bcp47ToSlugMap['id'] = 'indonesian'
+    bcp47ToSlugMap['th'] = 'thai'
+    bcp47ToSlugMap['ja'] = 'japanese'
+    bcp47ToSlugMap['ko'] = 'korean'
+    bcp47ToSlugMap['ru'] = 'russian'
+    bcp47ToSlugMap['tr'] = 'turkish'
+    bcp47ToSlugMap['zh'] = 'chinese-simplified'
+    bcp47ToSlugMap['zh-Hans-CN'] = 'chinese-simplified'
 
     if (languageData?.languages) {
       languageData.languages.forEach((language) => {
@@ -78,7 +87,8 @@ export const getStaticProps: GetStaticProps<EasterPageProps> = async (
       })
     }
 
-    const languageSlug = bcp47ToSlugMap[languageParam.toLowerCase()]
+    const languageSlug =
+      bcp47ToSlugMap[languageParam.toLowerCase()] || 'english'
 
     const { data } = await client.query<
       GetVideoContent,
@@ -102,7 +112,7 @@ export const getStaticProps: GetStaticProps<EasterPageProps> = async (
         flags: await getFlags(),
         content: data.content,
         ...(await serverSideTranslations(
-          context.locale ?? 'en',
+          context.locale ?? languageParam ?? 'en',
           ['apps-watch'],
           i18nConfig
         ))
@@ -127,12 +137,41 @@ export const getStaticProps: GetStaticProps<EasterPageProps> = async (
 }
 
 export const getStaticPaths: GetStaticPaths = () => {
+  // Get list of supported locales from next-i18next config
+  const locales = [
+    'en',
+    'es',
+    'fr',
+    'id',
+    'th',
+    'ja',
+    'ko',
+    'ru',
+    'tr',
+    'zh',
+    'zh-Hans-CN'
+  ]
+
+  // Create paths for all supported locales
+  const paths: { params: { language: string[] }; locale: string }[] = []
+
+  // Add default path with no language param
+  paths.push({
+    params: { language: [] },
+    locale: 'en'
+  })
+
+  // Add paths for each locale
+  locales.forEach((locale) => {
+    // Create paths with the language parameter for each locale
+    paths.push({
+      params: { language: [locale] },
+      locale
+    })
+  })
+
   return {
-    paths: [
-      { params: { language: [] } }, // Default English version
-      { params: { language: ['fr'] } },
-      { params: { language: ['es'] } }
-    ],
-    fallback: 'blocking'
+    paths,
+    fallback: 'blocking' // Generate pages on-demand if not pre-rendered
   }
 }
