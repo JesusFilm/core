@@ -237,6 +237,7 @@ export interface StepBlockRestoreFromStep_blockRestore_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;

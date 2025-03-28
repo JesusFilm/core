@@ -327,6 +327,7 @@ export type CloudflareR2 = {
   createdAt: Scalars['Date']['output'];
   fileName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  originalFilename?: Maybe<Scalars['String']['output']>;
   publicUrl?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['Date']['output'];
   uploadUrl?: Maybe<Scalars['String']['output']>;
@@ -341,6 +342,8 @@ export type CloudflareR2CreateInput = {
   /** the name of the file that is being uploaded */
   fileName: Scalars['String']['input'];
   id?: InputMaybe<Scalars['String']['input']>;
+  /** the original name of the file before any renaming */
+  originalFilename?: InputMaybe<Scalars['String']['input']>;
   /** the id of the Video object this file relates to in the database */
   videoId: Scalars['String']['input'];
 };
@@ -852,6 +855,54 @@ export type JourneyCreateInput = {
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
   title: Scalars['String']['input'];
+};
+
+/**
+ * JourneyEvent aggregates all event types. For detailed event type definitions,
+ * see the specific event files in the event module
+ */
+export type JourneyEvent = Event & {
+  __typename?: 'JourneyEvent';
+  /** Additional specific event fields */
+  action?: Maybe<ButtonAction>;
+  actionValue?: Maybe<Scalars['String']['output']>;
+  blockId?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  email?: Maybe<Scalars['String']['output']>;
+  /** Base event fields from Event interface */
+  id: Scalars['ID']['output'];
+  /** Related fields queried from relevant ids in the events table */
+  journey?: Maybe<Journey>;
+  journeyId: Scalars['ID']['output'];
+  label?: Maybe<Scalars['String']['output']>;
+  language?: Maybe<Language>;
+  messagePlatform?: Maybe<MessagePlatform>;
+  position?: Maybe<Scalars['Float']['output']>;
+  progress?: Maybe<Scalars['Int']['output']>;
+  source?: Maybe<VideoBlockSource>;
+  /** database fields from table, not explicitly surfaced from any other types */
+  typename?: Maybe<Scalars['String']['output']>;
+  value?: Maybe<Scalars['String']['output']>;
+  visitor?: Maybe<Visitor>;
+  visitorId?: Maybe<Scalars['String']['output']>;
+};
+
+export type JourneyEventEdge = {
+  __typename?: 'JourneyEventEdge';
+  cursor: Scalars['String']['output'];
+  node: JourneyEvent;
+};
+
+export type JourneyEventsConnection = {
+  __typename?: 'JourneyEventsConnection';
+  edges: Array<JourneyEventEdge>;
+  pageInfo: PageInfo;
+};
+
+export type JourneyEventsFilter = {
+  periodRangeEnd?: InputMaybe<Scalars['DateTime']['input']>;
+  periodRangeStart?: InputMaybe<Scalars['DateTime']['input']>;
+  typenames?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 export enum JourneyMenuButtonIcon {
@@ -2653,6 +2704,7 @@ export type Query = {
   journey: Journey;
   journeyCollection: JourneyCollection;
   journeyCollections: Array<Maybe<JourneyCollection>>;
+  journeyEventsConnection: JourneyEventsConnection;
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];
   /** Get a list of Visitor Information by Journey */
@@ -2848,6 +2900,14 @@ export type QueryJourneyCollectionArgs = {
 
 export type QueryJourneyCollectionsArgs = {
   teamId: Scalars['ID']['input'];
+};
+
+
+export type QueryJourneyEventsConnectionArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<JourneyEventsFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  journeyId: Scalars['ID']['input'];
 };
 
 
@@ -3597,6 +3657,7 @@ export type TextResponseBlock = Block & {
   minRows?: Maybe<Scalars['Int']['output']>;
   parentBlockId?: Maybe<Scalars['ID']['output']>;
   parentOrder?: Maybe<Scalars['Int']['output']>;
+  placeholder?: Maybe<Scalars['String']['output']>;
   required?: Maybe<Scalars['Boolean']['output']>;
   routeId?: Maybe<Scalars['String']['output']>;
   type?: Maybe<TextResponseType>;
@@ -3615,6 +3676,7 @@ export type TextResponseBlockUpdateInput = {
   label?: InputMaybe<Scalars['String']['input']>;
   minRows?: InputMaybe<Scalars['Int']['input']>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+  placeholder?: InputMaybe<Scalars['String']['input']>;
   required?: InputMaybe<Scalars['Boolean']['input']>;
   routeId?: InputMaybe<Scalars['String']['input']>;
   type?: InputMaybe<TextResponseType>;

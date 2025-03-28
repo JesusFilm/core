@@ -227,6 +227,7 @@ export interface TextResponseWithButtonRestore_textResponse_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -650,6 +651,7 @@ export interface TextResponseWithButtonRestore_button_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -1073,6 +1075,7 @@ export interface TextResponseWithButtonRestore_startIcon_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
@@ -1496,6 +1499,7 @@ export interface TextResponseWithButtonRestore_endIcon_TextResponseBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;

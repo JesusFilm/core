@@ -105,7 +105,7 @@ export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate
           id: 'textResponseBlock.id',
           journeyId: 'journey.id',
           parentBlockId: 'card.id',
-          label: 'Your answer here'
+          label: 'Label'
         }
       }
     },
@@ -116,12 +116,13 @@ export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate
           id: 'textResponseBlock.id',
           parentBlockId: 'card.id',
           parentOrder: 0,
-          label: 'Your answer here',
+          label: 'Label',
           hint: null,
           minRows: null,
           type: null,
           routeId: null,
-          integrationId: null
+          integrationId: null,
+          placeholder: null
         }
       }
     }
@@ -138,7 +139,7 @@ export const textResponseWithButtonCreateMock: MockedResponse<
         id: 'textResponse.id',
         journeyId: 'journey.id',
         parentBlockId: 'card.id',
-        label: 'Your answer here'
+        label: 'Label'
       },
       buttonInput: {
         id: 'button.id',
@@ -176,12 +177,13 @@ export const textResponseWithButtonCreateMock: MockedResponse<
         id: 'textResponse.id',
         parentBlockId: 'card.id',
         parentOrder: 0,
-        label: 'Your answer here',
+        label: 'Label',
         hint: null,
         minRows: null,
         type: null,
         routeId: null,
         integrationId: null,
+        placeholder: null,
         __typename: 'TextResponseBlock'
       },
       button: {
@@ -301,12 +303,13 @@ export const textResponseWithButtonRestoreMock: MockedResponse<
           id: 'textResponse.id',
           parentBlockId: 'card.id',
           parentOrder: 0,
-          label: 'Your answer here',
+          label: 'Label',
           hint: null,
           minRows: null,
           type: null,
           routeId: null,
           integrationId: null,
+          placeholder: null,
           __typename: 'TextResponseBlock'
         }
       ],
