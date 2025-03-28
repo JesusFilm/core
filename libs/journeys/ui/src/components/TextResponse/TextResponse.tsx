@@ -61,7 +61,8 @@ export const TextResponse = ({
   label,
   placeholder,
   hint,
-  minRows
+  minRows,
+  type
 }: TextResponseProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
 
@@ -162,6 +163,7 @@ export const TextResponse = ({
                     'aria-labelledby': 'textResponse-label',
                     maxLength: 1000,
                     readOnly: selectedBlock !== undefined,
+                    inputMode: type === 'phone' ? 'tel' : 'text',
                     sx: {
                       pointerEvents:
                         selectedBlock !== undefined ? 'none' : 'auto',
