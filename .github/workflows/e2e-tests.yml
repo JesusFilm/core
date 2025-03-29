@@ -52,6 +52,7 @@ jobs:
         uses: useblacksmith/stickydisk@v1
         with:
           key: ${{ github.repository }}-playwright-cache
+          path: ~/.cache/ms-playwright
       - name: Install dependencies
         run: npm install --silent
       - name: Install Playwright Browsers
