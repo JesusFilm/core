@@ -88,7 +88,11 @@ jobs:
         with:
           key: ${{ github.repository }}-nx-cache
           path: ./.nx/cache
-
+      - name: Mount next cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ inputs.name }}-next-cache
+          path: ./apps/${{ inputs.name }}/.next
       - name: NPM Install
         run: npm install --silent
 

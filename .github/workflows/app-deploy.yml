@@ -281,6 +281,11 @@ jobs:
         with:
           key: ${{ github.repository }}-nx-cache
           path: ./.nx/cache
+      - name: Mount next cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-${{ matrix.app }}-next-cache
+          path: ./apps/${{ matrix.app }}/.next
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v4
