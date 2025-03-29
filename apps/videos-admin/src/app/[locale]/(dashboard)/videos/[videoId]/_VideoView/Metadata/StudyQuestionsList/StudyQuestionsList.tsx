@@ -1,6 +1,5 @@
 import { useMutation } from '@apollo/client'
 import { DragEndEvent } from '@dnd-kit/core'
-import { arrayMove } from '@dnd-kit/sortable'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Dialog from '@mui/material/Dialog'
@@ -17,6 +16,9 @@ import { OrderedList } from '../../../../../../../../components/OrderedList'
 import { OrderedItem } from '../../../../../../../../components/OrderedList/OrderedItem'
 import { GetAdminVideo_AdminVideo_StudyQuestions as StudyQuestions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { Section } from '../../Section'
+
+import { StudyQuestionCreate } from './StudyQuestionCreate'
+import { StudyQuestionDialog } from './StudyQuestionDialog'
 
 export const UPDATE_STUDY_QUESTION_ORDER = graphql(`
   mutation UpdateStudyQuestionOrder($input: VideoStudyQuestionUpdateInput!) {
@@ -55,9 +57,23 @@ export function StudyQuestionsList({
   studyQuestions
 }: StudyQuestionsListProps): ReactElement | null {
   const t = useTranslations()
+
+  const [selectedQuestion, setSelectedQuestion] = useState<{
+    id: string
+    value: string
+  } | null>(null)
+
+  const [updateStudyQuestionOrder] = useMutation<
+    UpdateStudyQuestionOrder,
+    UpdateStudyQuestionOrderVariables
+  >(UPDATE_STUDY_QUESTION_ORDER, {
+    update: (cache, { data }) => {
+      if (!data?.videoStudyQuestionUpdate) return
+    }
+  })
+
   const { enqueueSnackbar } = useSnackbar()
   const [studyQuestionItems, setStudyQuestionItems] = useState(studyQuestions)
-  const [updateStudyQuestionOrder] = useMutation(UPDATE_STUDY_QUESTION_ORDER)
   const [deleteStudyQuestion, { loading: deleteLoading }] = useMutation(
     DELETE_STUDY_QUESTION
   )
@@ -68,21 +84,25 @@ export function StudyQuestionsList({
     const { active, over } = e
     if (over == null) return
     if (e.active.id !== over.id) {
-      const oldIndex = studyQuestionItems.findIndex(
-        (item) => item.id === active.id
-      )
-      const newIndex = studyQuestionItems.findIndex(
-        (item) => item.id === over.id
-      )
-      setStudyQuestionItems((items) => {
-        return arrayMove(items, oldIndex, newIndex)
-      })
+      const newIndex = studyQuestions.findIndex((item) => item.id === over.id)
+
+      const questionToMove = studyQuestions.find((q) => q.id === active.id)
+      if (!questionToMove) return
+
       await updateStudyQuestionOrder({
         variables: {
           input: { id: active.id.toString(), order: newIndex + 1 }
         }
       })
     }
+  }
+
+  const handleEdit = (question: { id: string; value: string }) => {
+    setSelectedQuestion(question)
+  }
+
+  const handleCloseDialog = () => {
+    setSelectedQuestion(null)
   }
 
   const handleOpenDeleteDialog = (id: string): void => {
@@ -129,18 +149,18 @@ export function StudyQuestionsList({
     <>
       <Section title={t('Study Questions')} variant="outlined">
         {totalQuestions > 0 ? (
-          <OrderedList
-            onOrderUpdate={updateOrderOnDrag}
-            items={studyQuestionItems}
-          >
-            {studyQuestionItems?.map(({ id, value }, idx) => (
+          <OrderedList onOrderUpdate={updateOrderOnDrag} items={studyQuestions}>
+            {studyQuestions?.map(({ id, value }, idx) => (
               <OrderedItem
                 key={id}
                 id={id}
                 label={value}
                 idx={idx}
                 menuActions={[
-                  { label: t('Edit'), handler: () => null },
+                  {
+                    label: t('Edit'),
+                    handler: () => handleEdit({ id, value })
+                  },
                   {
                     label: t('Delete'),
                     handler: () => handleOpenDeleteDialog(id)
@@ -152,8 +172,15 @@ export function StudyQuestionsList({
         ) : (
           <Section.Fallback>{t('No study questions')}</Section.Fallback>
         )}
+        <StudyQuestionCreate studyQuestions={studyQuestions} />
       </Section>
-
+      {selectedQuestion != null && (
+        <StudyQuestionDialog
+          open={true}
+          onClose={handleCloseDialog}
+          studyQuestion={selectedQuestion}
+        />
+      )}
       <Dialog
         open={deleteDialogOpen}
         onClose={handleCloseDeleteDialog}
