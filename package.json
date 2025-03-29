@@ -324,7 +324,7 @@
     "prettier": "3.5.3",
     "prisma": "^6.0.0",
     "prisma-erd-generator": "^2.0.0",
-    "react-refresh": "^0.16.0",
+    "react-refresh": "^0.17.0",
     "source-map-loader": "^5.0.0",
     "storybook-addon-apollo-client": "^8.0.0",
     "terser-webpack-plugin": "^5.1.1",
