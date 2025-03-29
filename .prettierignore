@@ -10,7 +10,6 @@ schema.graphql
 .docusaurus/
 .storybook/static/mockServiceWorker.js
 /.nx/cache
-/home/runner/_work/core/core/.nx/cache
 /.nx/workspace-data
 .next/
 .terraform/

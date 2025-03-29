@@ -74,7 +74,7 @@ jobs:
           targets: codegen
           all: true
       - name: Run Prettier
-        run: npm run prettier:fix
+        run: npm run prettier:fix --ignore-path ./.prettierignore
       - name: Run ESLint
         uses: mansagroup/nrwl-nx-action@v3
         with:
