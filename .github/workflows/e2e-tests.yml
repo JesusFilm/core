@@ -43,6 +43,11 @@ jobs:
         with:
           key: ${{ github.repository }}-node-modules
           path: ./node_modules
+      - name: Mount nx cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-nx-cache
+          path: ./.nx/cache
       - name: Install dependencies
         run: npm install --silent
       - name: Install Playwright Browsers

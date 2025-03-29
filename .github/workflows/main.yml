@@ -48,6 +48,11 @@ jobs:
         with:
           key: ${{ github.repository }}-node-modules
           path: ./node_modules
+      - name: Mount nx cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-nx-cache
+          path: ./.nx/cache
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
@@ -126,6 +131,11 @@ jobs:
         with:
           key: ${{ github.repository }}-node-modules
           path: ./node_modules
+      - name: Mount nx cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-nx-cache
+          path: ./.nx/cache
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
