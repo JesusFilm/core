@@ -9,7 +9,7 @@ schema.graphql
 .prettierignore
 .docusaurus/
 .storybook/static/mockServiceWorker.js
-.nx/**/*
+.nx/
 .next/
 .terraform/
 playwright-report/
