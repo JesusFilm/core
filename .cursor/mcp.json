@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "nx-mcp": {
+      "command": "npx nx-mcp"
+    }
+  }
+}
