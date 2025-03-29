@@ -49,9 +49,8 @@ jobs:
       - name: Setup Cache
         uses: useblacksmith/cache@v5
         with:
-          path: .cache
-          key: lint-cache-${{ matrix.node-version }}-${{ hashFiles('**/.eslintrc.json', '**/tsconfig.json') }}
-          restore-keys: lint-cache-${{ matrix.node-version }}-
+          key: ${{ github.repository }}-node-modules
+          path: ./node_modules
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
