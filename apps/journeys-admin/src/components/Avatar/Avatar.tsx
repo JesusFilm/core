@@ -19,7 +19,7 @@ export function Avatar({
   sx
 }: AvatarProps): ReactElement {
   const displayName = compact([apiUser.firstName, apiUser.lastName]).join(' ')
-
+  //
   return (
     <Tooltip title={displayName} data-testid="JourneysAdminAvatar">
       <Badge
