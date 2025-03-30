@@ -156,7 +156,7 @@ const Template: StoryObj<typeof SocialPreviewNode> = {
     <MockedProvider mocks={[stepAndCardBlockCreateMock]}>
       <SnackbarProvider>
         <JourneyProvider value={{ journey: args.journey }}>
-          <EditorProvider>
+          <EditorProvider initialState={args.editorState}>
             <Box sx={{ height: 400, width: 600 }}>
               <ReactFlow
                 onConnectStart={() => undefined}
@@ -191,14 +191,26 @@ const Template: StoryObj<typeof SocialPreviewNode> = {
 export const Default = {
   ...Template,
   args: {
-    journey: blankSeoJourney
+    journey: blankSeoJourney,
+    editorState: {}
   }
 }
 
 export const Filled = {
   ...Template,
   args: {
-    journey: defaultJourney
+    journey: defaultJourney,
+    editorState: {}
+  }
+}
+
+export const Analytics = {
+  ...Template,
+  args: {
+    journey: blankSeoJourney,
+    editorState: {
+      showAnalytics: true
+    }
   }
 }
 
