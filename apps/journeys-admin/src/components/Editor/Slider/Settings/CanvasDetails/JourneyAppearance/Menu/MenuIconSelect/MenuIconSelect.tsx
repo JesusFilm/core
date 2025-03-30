@@ -123,10 +123,13 @@ export function MenuIconSelect(): ReactElement {
           value={journey?.menuButtonIcon ?? ''}
           onChange={handleChange}
           displayEmpty
+          autoWidth
           IconComponent={ChevronDown}
           sx={{
-            width: '100%',
+            width: 'min-content',
             borderRadius: 2,
+            minWidth: 100,
+            minHeight: 80,
             '& .MuiSelect-icon': {
               color: 'primary.main',
               mr: 1.5
@@ -146,7 +149,8 @@ export function MenuIconSelect(): ReactElement {
           inputProps={{
             sx: {
               py: 2,
-              pl: 2
+              pl: 2,
+              mr: 4
             }
           }}
         >
@@ -156,6 +160,7 @@ export function MenuIconSelect(): ReactElement {
                 height: 56,
                 width: 56,
                 borderRadius: 2,
+                boxSizing: 'border-box',
                 border: ({ palette }) =>
                   `3px dashed ${palette.background.default}`,
                 display: 'grid',
