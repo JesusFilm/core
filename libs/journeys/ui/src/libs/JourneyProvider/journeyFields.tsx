@@ -99,5 +99,7 @@ export const JOURNEY_FIELDS = gql`
     menuStepBlock {
       ...StepFields
     }
+    socialNodeX
+    socialNodeY
   }
 `
