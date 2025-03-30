@@ -16,7 +16,7 @@ export default async function handler(
     await res.revalidate(
       `/${req.query.hostname?.toString() ?? 'home'}/${req.query.slug as string}`
     )
-    return res.json({ revalidated: true })
+    return res.status(200).json({ revalidated: true })
   } catch (err) {
     // If there was an error, Next.js will continue
     // to show the last successfully generated page
