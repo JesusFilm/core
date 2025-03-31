@@ -28,15 +28,17 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
 
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: useblacksmith/cache@v5
+      - name: Mount NPM Cache
+        uses: useblacksmith/stickydisk@v1
         with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
+          key: ${{ github.repository }}-npm-cache
+          path: ~/.npm
+      - name: Mount node_modules
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-node-modules
+          path: ./node_modules
 
       - name: nx Install
         run: npm install -g nx --silent
