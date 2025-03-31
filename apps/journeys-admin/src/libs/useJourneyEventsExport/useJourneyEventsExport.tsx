@@ -145,6 +145,16 @@ export function useJourneyEventsExport(): {
     const events: JourneyEventEdge[] = []
     let cursor: string | null = null
     let hasNextPage = false
+    const filterTypenames = filter?.typenames ?? []
+    const typenames =
+      filterTypenames.length > 0
+        ? FILTERED_EVENTS.filter((event) => {
+            if (filterTypenames.includes(event)) {
+              return true
+            }
+            return false
+          })
+        : FILTERED_EVENTS
 
     try {
       do {
@@ -153,7 +163,7 @@ export function useJourneyEventsExport(): {
             journeyId,
             filter: {
               ...filter,
-              typenames: FILTERED_EVENTS
+              typenames
             },
             first: 1000,
             after: cursor
@@ -182,6 +192,8 @@ export function useJourneyEventsExport(): {
       const journeySlug = events[0]?.node.journey?.slug ?? ''
       handleCsvProcessing(eventData, journeySlug)
       // TODO: Update exportHistory
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       throw new Error(t('Failed to retrieve data for export.'))
     }
