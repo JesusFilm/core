@@ -19,11 +19,11 @@ export function Question({
     <>
       <button
         onClick={onToggle}
-        className="w-full text-left group hover:bg-white/5 px-6 xl:px-0 py-3 transition-colors cursor-pointer padded"
+        className="w-full text-left group hover:bg-white/5 py-3 transition-colors cursor-pointer padded rounded-lg"
       >
         <div className="w-full">
           <div className="flex items-top justify-between">
-            <p className="text-md xl:text-lg font-semibold text-stone-100 pr-4 text-balance leading-[1.6] flex ">
+            <p className="text-md md:text-lg font-semibold text-stone-100 sm:pr-4 md:text-balance leading-[1.6] flex ">
               <Icon
                 name="HelpSquareContained"
                 sx={{
@@ -34,7 +34,7 @@ export function Question({
               />{' '}
               {question}
             </p>
-            <div className="p-2 text-stone-400 group-hover:text-white transition-colors flex ">
+            <div className="p-2 text-stone-400 group-hover:text-white transition-colors flex hidden sm:block">
               <svg
                 className={`w-6 h-6 transform transition-transform ${
                   isOpen ? 'rotate-180' : ''
@@ -52,7 +52,7 @@ export function Question({
       </button>
 
       {isOpen && (
-        <div className="px-6 py-6 pb-12 text-stone-200/80 border-b border-stone-500/20">
+        <div className="padded py-6 pb-12 text-stone-200/80 border-b border-stone-500/20">
           {children}
         </div>
       )}
