@@ -1,3 +1,5 @@
+import { Readable } from 'stream'
+
 import crowdin, {
   Credentials,
   CrowdinError,
@@ -6,29 +8,29 @@ import crowdin, {
 import { LanguagesModel } from '@crowdin/crowdin-api-client/out/languages'
 import { SourceStringsModel } from '@crowdin/crowdin-api-client/out/sourceStrings'
 import { StringTranslationsModel } from '@crowdin/crowdin-api-client/out/stringTranslations'
-
+import { parse } from '@fast-csv/parse'
 import { prisma } from '../../../lib/prisma'
 
-// const CROWDIN_LANGUAGE_CODE_TO_ID = {
-//   ko: 3804,
-//   ar: 139485,
-//   'es-MX': 21028,
-//   'pt-BR': 584,
-//   tr: 1942,
-//   'zh-CN': 21754,
-//   fa: 6788,
-//   'ur-PK': 407,
-//   he: 6930,
-//   hi: 6464,
-//   fr: 496,
-//   'zh-TW': 21753,
-//   ru: 3934,
-//   de: 1106,
-//   id: 16639,
-//   ja: 7083,
-//   vi: 3887,
-//   th: 13169
-// }
+const CROWDIN_LANGUAGE_CODE_TO_ID = {
+  ko: '3804',
+  ar: '139485',
+  'es-MX': '21028',
+  'pt-BR': '584',
+  tr: '1942',
+  'zh-CN': '21754',
+  fa: '6788',
+  'ur-PK': '407',
+  he: '6930',
+  hi: '6464',
+  fr: '496',
+  'zh-TW': '21753',
+  ru: '3934',
+  de: '1106',
+  id: '16639',
+  ja: '7083',
+  vi: '3887',
+  th: '13169'
+}
 
 const ARCLIGHT_FILES = {
   collection_title: {
@@ -69,11 +71,12 @@ const ARCLIGHT_FILES = {
   }
 } as const
 
-// Currently used files for video titles
 const TITLE_FILES = [
   ARCLIGHT_FILES.collection_title,
   ARCLIGHT_FILES.media_metadata_tile
 ]
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export async function service(): Promise<void> {
   console.log('🚀 Starting Crowdin translation import...')
@@ -87,195 +90,61 @@ export async function service(): Promise<void> {
   }
 
   try {
-    const { stringTranslationsApi, sourceStringsApi, languagesApi } =
-      new crowdin(credentials)
-    const projectId = 47654 // JFM - Arclight project
-    const targetLanguageCode = 'ru' // Russian language code
+    const { sourceFilesApi, translationStatusApi } = new crowdin(credentials)
+    const projectId = 47654
 
-    // Get all supported languages
-    console.log('\n🌐 Getting language information...')
-    let allLanguages: { data: LanguagesModel.Language }[] = []
-    let offset = 0
-    const limit = 500
-
-    while (true) {
-      const response = await languagesApi.listSupportedLanguages({
-        limit,
-        offset
-      })
-      allLanguages = allLanguages.concat(response.data)
-
-      if (response.data.length < limit) {
-        break
-      }
-      offset += limit
-    }
-
-    // Sort languages by name
-    allLanguages.sort((a, b) => a.data.name.localeCompare(b.data.name))
-
-    // Find Russian language
-    const targetLanguage = allLanguages[0]
-
-    if (!targetLanguage) {
-      console.log('\n❌ Language not found. Available codes:')
-      allLanguages.forEach((lang) => {
-        console.log(
-          `   ${lang.data.id} - ${lang.data.name} (${lang.data.locale})`
-        )
-      })
-      throw new Error(
-        `Language code ${targetLanguageCode} not found. Please use one of the codes above.`
-      )
-    }
-
-    console.log('\n📋 Russian Language Details:')
-    console.log(JSON.stringify(targetLanguage.data, null, 2))
-    console.log(
-      `\n✅ Found language: ${targetLanguage.data.name} (${targetLanguage.data.locale})`
-    )
-
-    // Get strings from each file
-    let allSourceStrings: { data: SourceStringsModel.String }[] = []
-
+    // Process each file
     for (const file of TITLE_FILES) {
-      console.log(`\n📥 Fetching strings from ${file.name}...`)
-      let fileStrings: { data: SourceStringsModel.String }[] = []
-      let offset = 0
-      const limit = 500
+      console.log(`\n📥 Processing file: ${file.name}`)
 
-      while (true) {
-        const response = await sourceStringsApi.listProjectStrings(projectId, {
-          fileId: file.id,
-          limit,
-          offset
-        })
-
-        fileStrings = fileStrings.concat(response.data)
-        console.log(
-          `   Fetched ${response.data.length} strings (offset: ${offset})`
-        )
-
-        if (response.data.length < limit) {
-          break // No more strings to fetch
-        }
-
-        offset += limit
-      }
-
-      console.log(`   Total strings in ${file.name}: ${fileStrings.length}`)
-      allSourceStrings = allSourceStrings.concat(fileStrings)
-    }
-
-    console.log(
-      `\n📝 Found ${allSourceStrings.length} total video title strings`
-    )
-
-    if (allSourceStrings.length === 0) {
-      console.log('❌ No video title strings found')
-      return
-    }
-
-    // Group strings by file for better logging
-    const stringsByFile = allSourceStrings.reduce(
-      (acc, str) => {
-        const filePath = str.data.identifier?.split('/')[2] || 'unknown'
-        acc[filePath] = acc[filePath] || []
-        acc[filePath].push(str)
-        return acc
-      },
-      {} as Record<string, typeof allSourceStrings>
-    )
-
-    // Log summary of strings found in each file
-    console.log('\n📊 Strings by file:')
-    Object.entries(stringsByFile).forEach(([file, strings]) => {
-      console.log(`   ${file}: ${strings.length} strings`)
-    })
-
-    // Log sample strings from each file
-    console.log('\n📋 Sample strings from each file:')
-    Object.entries(stringsByFile).forEach(([file, strings]) => {
-      console.log(`\n   ${file}:`)
-      strings.slice(0, 2).forEach((str, index) => {
-        const text =
-          typeof str.data.text === 'string'
-            ? str.data.text
-            : JSON.stringify(str.data.text)
-        console.log(
-          `     ${index + 1}. ID: ${str.data.id}\n        Text: ${text}`
-        )
-      })
-    })
-
-    // Take the first title string as a test case
-    const titleSourceString = allSourceStrings[0]
-
-    // Get Russian translation for this string
-    const translations = await stringTranslationsApi.listLanguageTranslations(
-      projectId,
-      targetLanguage.data.id,
-      {
-        stringIds: titleSourceString.data.id.toString()
-      }
-    )
-
-    if (translations.data.length === 0) {
-      console.log('❌ No Russian translation found for this title')
-      return
-    }
-
-    // Log complete translation object
-    console.log('\n📝 Translation Details:')
-    console.log(JSON.stringify(translations.data[0].data, null, 2))
-
-    const translation = translations.data[0]
-    const translatedText = getTranslationText(translation.data)
-
-    if (!translatedText) {
-      console.log('❌ Could not extract translation text')
-      return
-    }
-
-    console.log(`\n🔄 Russian translation text: "${translatedText}"`)
-
-    // Extract video ID from the identifier
-    const identifier = titleSourceString.data.identifier
-    const videoId = identifier?.split('/')[0]
-
-    if (!videoId) {
-      console.log('❌ Could not extract video ID from identifier')
-      return
-    }
-
-    // Create or update VideoTitle in database
-    try {
-      const videoTitle = await prisma.videoTitle.upsert({
-        where: {
-          videoId_languageId: {
-            videoId,
-            languageId: targetLanguage.data.id
-          }
-        },
-        update: {
-          value: translatedText,
-          primary: true // Making it primary for testing
-        },
-        create: {
-          videoId,
-          value: translatedText,
-          languageId: targetLanguage.data.id,
-          primary: true // Making it primary for testing
-        }
-      })
-      console.log(
-        `\n✅ ${videoTitle.id ? 'Updated' : 'Created'} VideoTitle: ${JSON.stringify(videoTitle, null, 2)}`
+      // Download the file with translations
+      const downloadResponse = await sourceFilesApi.downloadFile(
+        projectId,
+        file.id
       )
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error('\n❌ Failed to create VideoTitle:', error.message)
+      console.log('Downloading translations...')
+
+      // Get the file content using the download URL
+      const response = await fetch(downloadResponse.data.url)
+      const fileContent = await response.arrayBuffer()
+      const translations = await processTranslationFile(
+        Buffer.from(fileContent)
+      )
+
+      // Batch update database
+      console.log(
+        `Updating database with ${translations.length} translations...`
+      )
+      let successCount = 0
+      const batchSize = 100
+
+      for (let i = 0; i < translations.length; i += batchSize) {
+        const batch = translations.slice(i, i + batchSize)
+        try {
+          await prisma.$transaction(
+            batch.map(({ videoId, languageId, value }) =>
+              prisma.videoTitle.upsert({
+                where: {
+                  videoId_languageId: { videoId, languageId }
+                },
+                update: { value, primary: true },
+                create: { videoId, languageId, value, primary: true }
+              })
+            )
+          )
+          successCount += batch.length
+          console.log(
+            `Processed ${successCount}/${translations.length} translations`
+          )
+        } catch (error) {
+          console.error(
+            `Failed to process batch:`,
+            error instanceof Error ? error.message : error
+          )
+        }
       }
-      throw error
+
+      console.log(`✅ Completed processing ${file.name}`)
     }
   } catch (error: unknown) {
     if (error instanceof CrowdinValidationError) {
@@ -291,17 +160,38 @@ export async function service(): Promise<void> {
   }
 }
 
-function getTranslationText(
-  translation:
-    | StringTranslationsModel.PlainLanguageTranslation
-    | StringTranslationsModel.PluralLanguageTranslation
-    | StringTranslationsModel.IcuLanguageTranslation
-): string | undefined {
-  if ('text' in translation && typeof translation.text === 'string') {
-    return translation.text
-  } else if ('one' in translation && typeof translation.one === 'string') {
-    // For plural translations, return the 'one' form
-    return translation.one
-  }
-  return undefined
+interface Translation {
+  videoId: string
+  languageId: string
+  value: string
+}
+
+async function processTranslationFile(
+  fileData: Buffer
+): Promise<Translation[]> {
+  return new Promise((resolve, reject) => {
+    const translations: Translation[] = []
+    const parser = parse({
+      headers: true,
+      ignoreEmpty: true
+    })
+
+    Readable.from(fileData)
+      .pipe(parser)
+      .on('data', (row: any) => {
+        const videoId = row.identifier?.split('/')[0]
+        if (!videoId) return
+
+        Object.entries(CROWDIN_LANGUAGE_CODE_TO_ID).forEach(
+          ([, languageId]) => {
+            const value = row[languageId]
+            if (value) {
+              translations.push({ videoId, languageId, value })
+            }
+          }
+        )
+      })
+      .on('end', () => resolve(translations))
+      .on('error', reject)
+  })
 }
