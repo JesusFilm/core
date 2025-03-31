@@ -1,8 +1,9 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-sans:
+    'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
   /* Light Mode Colors */
   --color-primary: #cb333b;
@@ -61,6 +62,23 @@
 
   .animate-mesh-gradient-fast {
     animation: mesh-gradient 5s ease-in-out infinite;
+  }
+
+  .responsive-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+
+    @media (min-width: 1280px) {
+      /* xl breakpoint */
+      padding-left: 3rem;
+      padding-right: 3rem;
+    }
+
+    @media (min-width: 1536px) {
+      /* 2xl breakpoint */
+      padding-left: 5rem;
+      padding-right: 5rem;
+    }
   }
 
   .beveled {

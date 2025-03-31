@@ -43,11 +43,6 @@ jobs:
         with:
           key: ${{ github.repository }}-node-modules
           path: ./node_modules
-      - name: Mount nx cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-nx-cache
-          path: ./.nx/cache
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:

@@ -2,6 +2,7 @@ import { ReactElement, useState } from 'react'
 
 import { PageWrapper } from '../../PageWrapper'
 
+import { CollectionIntroText } from './CollectionIntroText'
 import { CollectionNavigationCarousel } from './CollectionNavigationCarousel'
 import { CollectionsPageContent } from './CollectionsPageContent'
 import { CollectionsVideoContent } from './CollectionsVideoContent'
@@ -15,6 +16,7 @@ export function CollectionsPage(): ReactElement {
     <PageWrapper hero={<ContainerHero />} hideHeader hideFooter>
       <CollectionsPageContent>
         <CollectionNavigationCarousel />
+        <CollectionIntroText />
         <CollectionsVideoContent
           contentId="easter-explained/russian"
           subtitle={'Победа Иисуса над грехом и смертью'}
