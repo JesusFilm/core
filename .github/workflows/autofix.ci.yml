@@ -45,6 +45,11 @@ jobs:
         with:
           key: ${{ github.repository }}-node-modules
           path: ./node_modules
+      - name: Mount lint cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-lint
+          path: ./.cache
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
