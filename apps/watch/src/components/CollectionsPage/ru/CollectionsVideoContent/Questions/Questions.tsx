@@ -39,6 +39,7 @@ export const Questions = ({
             </h4>
           </div>
           <button
+            data-testid="AskQuestionButton"
             onClick={onOpenDialog}
             aria-label="Задать вопрос"
             tabIndex={0}

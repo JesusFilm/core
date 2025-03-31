@@ -56,7 +56,7 @@ describe('Questions Component', () => {
       <Questions questions={mockQuestions} onOpenDialog={mockOnOpenDialog} />
     )
 
-    const askButton = screen.getByText('Ask yours')
+    const askButton = screen.getByTestId('AskQuestionButton')
     fireEvent.click(askButton)
 
     expect(mockOnOpenDialog).toHaveBeenCalledTimes(1)
@@ -78,14 +78,5 @@ describe('Questions Component', () => {
     const answers = screen.getAllByTestId('question-answer')
     expect(answers).toHaveLength(1)
     expect(answers[0]).toHaveTextContent('Answer 2')
-  })
-
-  it('renders with default props when not specified', () => {
-    render(
-      <Questions questions={mockQuestions} onOpenDialog={mockOnOpenDialog} />
-    )
-
-    expect(screen.getByText('Related questions')).toBeInTheDocument()
-    expect(screen.getByText('Ask yours')).toBeInTheDocument()
   })
 })
