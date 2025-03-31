@@ -304,7 +304,12 @@ export class BlockService {
               }
             : action
       }
-      if (key === 'submitEnabled' && block[key] === true && duplicateJourneyId == null && !isStepBlock) {
+      if (
+        key === 'submitEnabled' &&
+        block[key] === true &&
+        duplicateJourneyId == null &&
+        !isStepBlock
+      ) {
         updatedBlockProps[key] = false
       }
     })
