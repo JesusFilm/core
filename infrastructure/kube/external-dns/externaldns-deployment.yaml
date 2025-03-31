@@ -1,4 +1,3 @@
-# comment out sa if it was previously created
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -33,7 +32,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: external-dns
-    namespace: default # change to desired namespace: externaldns, kube-addons
+    namespace: default
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -59,23 +58,23 @@ spec:
           args:
             - --source=service
             - --source=ingress
-            - --domain-filter=stage.central.jesusfilm.org # will make ExternalDNS see only the hosted zones matching provided domain, omit to process all available hosted zones
+            - --domain-filter=stage.central.jesusfilm.org
             - --provider=aws
-            - --policy=upsert-only # would prevent ExternalDNS from deleting any records, omit to enable full synchronization
-            - --aws-zone-type=public # only look at public hosted zones (valid values are public, private or no value for both)
+            - --policy=upsert-only
+            - --aws-zone-type=public
             - --registry=txt
             - --txt-owner-id=external-dns
           env:
             - name: AWS_DEFAULT_REGION
-              value: us-east-2 # change to region where EKS is installed
-      # # Uncommend below if using static credentials
-      #        - name: AWS_SHARED_CREDENTIALS_FILE
-      #          value: /.aws/credentials
-      #      volumeMounts:
-      #        - name: aws-credentials
-      #          mountPath: /.aws
-      #          readOnly: true
-      #  volumes:
-      #    - name: aws-credentials
-      #      secret:
-      #        secretName: external-dns
+              value: us-east-2
+            # Use AWS credentials from the Doppler-managed secret
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: externaldns-aws-credentials
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: externaldns-aws-credentials
+                  key: AWS_SECRET_ACCESS_KEY

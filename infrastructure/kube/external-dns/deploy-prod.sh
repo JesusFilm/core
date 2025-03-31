@@ -28,8 +28,8 @@ if ! kubectl cluster-info &> /dev/null; then
 fi
 
 # First, apply the Doppler Secret configuration
-print_info "Applying Doppler Secret configuration from consolidated secrets-stage.yaml..."
-kubectl apply -f ../doppler/secrets-stage.yaml
+print_info "Applying Doppler Secret configuration from consolidated secrets.yaml..."
+kubectl apply -f ../doppler/secrets.yaml
 
 # Wait for the Doppler Secret to be processed
 print_info "Waiting for Doppler Secret to be processed (10 seconds)..."
@@ -47,9 +47,9 @@ if ! kubectl get secret externaldns-aws-credentials -n default &> /dev/null; the
     print_info "Proceeding with deployment anyway. The external-dns deployment will wait for the secret."
 fi
 
-# Apply the external-dns deployment
-print_info "Applying external-dns deployment..."
-kubectl apply -f externaldns-deployment.yaml
+# Apply the external-dns deployment for production
+print_info "Applying external-dns deployment for production..."
+kubectl apply -f externaldns-deployment-prod.yaml
 
 # Restart the external-dns deployment if it exists
 if kubectl get deployment external-dns -n default &> /dev/null; then
@@ -69,6 +69,6 @@ else
     print_info "The external-dns deployment was not found. It has been applied and should start shortly."
 fi
 
-print_info "External-DNS deployment with Doppler integration completed."
-print_info "The DNS record for analytics.stage.central.jesusfilm.org should be updated within a few minutes."
-print_info "You can verify the logs with: kubectl logs -l app.kubernetes.io/name=external-dns -n default"
+print_info "External-DNS production deployment with Doppler integration completed."
+print_info "The DNS records for production domains should be updated within a few minutes."
+print_info "You can verify the logs with: kubectl logs -l app.kubernetes.io/name=external-dns -n default" 

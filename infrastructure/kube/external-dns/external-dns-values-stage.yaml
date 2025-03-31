@@ -1,0 +1,37 @@
+## Configuration for external-dns
+sources:
+  - service
+  - ingress
+
+provider: aws
+
+aws:
+  region: 'us-east-2'
+  # Credentials will be provided through Doppler's created secret
+  credentials:
+    secretName: 'externaldns-aws-credentials'
+    secretNamespace: 'default'
+    accessKey: 'AWS_ACCESS_KEY_ID'
+    secretKey: 'AWS_SECRET_ACCESS_KEY'
+  # Only look at public hosted zones
+  zoneType: 'public'
+
+# Processing only specific domains
+domainFilters:
+  - 'stage.central.jesusfilm.org'
+
+policy: 'upsert-only'
+registry: 'txt'
+txtOwnerId: 'external-dns'
+
+# Annotations on pods to identify this instance
+podAnnotations:
+  environment: 'stage'
+
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+  name: 'external-dns'
+  automountServiceAccountToken: true

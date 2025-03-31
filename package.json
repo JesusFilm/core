@@ -312,6 +312,7 @@
     "jest-fixed-jsdom": "^0.0.9",
     "jest-mock-extended": "^3.0.5",
     "lighthouse": "^9.6.0",
+    "mcp-server-kubernetes": "^1.1.0",
     "mini-css-extract-plugin": "^2.6.1",
     "moxios": "^0.4.0",
     "msw": "^2.3.1",
