@@ -241,6 +241,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_TextResponseBl
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;

@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { useFormikContext } from 'formik'
 import { ReactElement, useEffect, useState } from 'react'
@@ -11,6 +12,9 @@ import { TextField } from '../TextField'
 
 import { TextResponseFields } from './__generated__/TextResponseFields'
 
+/**
+ * GraphQL mutation for creating a text response submission event.
+ */
 export const TEXT_RESPONSE_SUBMISSION_EVENT_CREATE = gql`
   mutation TextResponseSubmissionEventCreate(
     $input: TextResponseSubmissionEventCreateInput!
@@ -44,6 +48,7 @@ interface TextResponseProps extends TreeBlock<TextResponseFields> {
 export const TextResponse = ({
   id: blockId,
   label,
+  placeholder,
   hint,
   minRows
 }: TextResponseProps): ReactElement => {
@@ -85,11 +90,24 @@ export const TextResponse = ({
 
   return (
     <Box sx={{ mb: 4 }} data-testid="JourneysTextResponse">
-      <Stack data-testid={`textResponse-${blockId}`}>
+      <Stack
+        data-testid={`textResponse-${blockId}`}
+        flexDirection="column"
+        spacing={1}
+      >
+        <Typography
+          id="textResponse-label"
+          variant="subtitle2"
+          sx={{
+            fontsize: 14
+          }}
+        >
+          {label === '' ? 'Label' : label}
+        </Typography>
         <TextField
           id={`textResponse-field`}
           name={blockId}
-          label={label === '' ? 'Your answer here' : label}
+          placeholder={placeholder != null ? placeholder : ''}
           value={currentValue}
           helperText={hint != null ? hint : ''}
           multiline
@@ -98,11 +116,21 @@ export const TextResponse = ({
           onClick={(e) => e.stopPropagation()}
           onChange={handleInputChange}
           onBlur={handleInputBlur}
-          inputProps={{
-            maxLength: 1000,
-            readOnly: selectedBlock !== undefined,
-            sx: {
-              pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+          slotProps={{
+            htmlInput: {
+              'aria-labelledby': 'textResponse-label',
+              maxLength: 1000,
+              readOnly: selectedBlock !== undefined,
+              sx: {
+                pointerEvents: selectedBlock !== undefined ? 'none' : 'auto',
+                pt: 2,
+                pb: 1
+              }
+            },
+            input: {
+              sx: {
+                pt: 0
+              }
             }
           }}
           sx={{

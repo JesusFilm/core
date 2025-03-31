@@ -139,6 +139,7 @@ model Event {
   updatedAt               DateTime          @default(now()) @updatedAt
   visitor                 Visitor           @relation(fields: [visitorId], references: [id], onDelete: Cascade)
   journeyVisitor          JourneyVisitor?   @relation(fields: [journeyVisitorJourneyId, journeyVisitorVisitorId], references: [journeyId, visitorId])
+  journey                 Journey?          @relation(fields: [journeyId], references: [id])
 
   @@index(journeyId)
   @@index(visitorId)
@@ -165,6 +166,7 @@ model Visitor {
   messagePlatformId         String?
   name                      String?
   notes                     String?
+  phone                     String?
   status                    VisitorStatus?
   referrer                  String?
   teamId                    String
@@ -413,6 +415,7 @@ model Journey {
   menuStepBlock             Block?                      @relation("MenuStepBlock", fields: [menuStepBlockId], references: [id], onDelete: SetNull)
   menuButtonIcon            JourneyMenuButtonIcon?
   qrCode                    QrCode[]
+  Event                     Event[]
 
   @@index(title)
 }

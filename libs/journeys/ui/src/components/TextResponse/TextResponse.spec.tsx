@@ -24,6 +24,7 @@ const block: TreeBlock<TextResponseFields> = {
   parentBlockId: '0',
   parentOrder: 0,
   label: 'Your answer here',
+  placeholder: null,
   hint: null,
   minRows: null,
   integrationId: null,
@@ -65,13 +66,14 @@ describe('TextResponse', () => {
     })
   })
 
-  it('should show your answer here if label is empty', async () => {
+  it('should show default text if label is empty', async () => {
     const emptyLabelBlock: TreeBlock<TextResponseFields> = {
       __typename: 'TextResponseBlock',
       id: 'textResponse0.id',
       parentBlockId: '0',
       parentOrder: 0,
       label: '',
+      placeholder: null,
       hint: null,
       minRows: null,
       integrationId: null,
@@ -90,7 +92,7 @@ describe('TextResponse', () => {
       </JourneyProvider>
     )
 
-    expect(screen.getByLabelText('Your answer here')).toBeInTheDocument()
+    expect(screen.getByLabelText('Label')).toBeInTheDocument()
   })
 
   it('should be in a loading state when waiting for response', async () => {
@@ -131,5 +133,13 @@ describe('TextResponse', () => {
     const { getAllByRole } = render(<TextResponse {...block} />)
 
     expect(getAllByRole('textbox')[0]).toBeInTheDocument()
+  })
+
+  it('should have correct aria-labelledby attribute', () => {
+    render(<TextResponseMock />)
+    expect(screen.getByRole('textbox')).toHaveAttribute(
+      'aria-labelledby',
+      'textResponse-label'
+    )
   })
 })
