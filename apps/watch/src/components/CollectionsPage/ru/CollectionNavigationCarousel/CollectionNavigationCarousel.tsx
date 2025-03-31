@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { ReactElement } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
-// Define a type for our content items
+// Определяем тип для элементов контента
 interface ContentItem {
   contentId: string
   title: string
@@ -13,52 +13,52 @@ interface ContentItem {
 }
 
 export function CollectionNavigationCarousel(): ReactElement {
-  // Content items data with contentId that will match the CollectionsVideoContent IDs
+  // Данные элементов контента с contentId, соответствующими ID в CollectionsVideoContent
   const contentItems: ContentItem[] = [
     {
-      contentId: 'easter-explained/english',
-      title: 'The True Meaning of Easter',
-      category: 'Short Video',
+      contentId: 'easter-explained/russian',
+      title: 'Истинное значение Пасхи',
+      category: 'Короткое видео',
       image:
         'https://images.unsplash.com/photo-1521106581851-da5b6457f674?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGVhc3RlcnxlbnwwfHwwfHx8MA%3D%3D',
       bgColor: '#1A1815'
     },
     {
-      contentId: 'my-last-day/english',
-      title: "Last hour of Jesus' life from criminal's point of view",
-      category: 'Short Video',
+      contentId: 'my-last-day/russian',
+      title: 'Последний час жизни Иисуса с точки зрения преступника',
+      category: 'Короткое видео',
       image:
         'https://images.unsplash.com/photo-1522442676585-c751dab71864?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dG9yYWh8ZW58MHx8MHx8fDA%3D',
       bgColor: '#A88E78'
     },
     {
-      contentId: 'why-did-jesus-have-to-die/english',
-      title: "The Purpose of Jesus' Sacrifice",
-      category: 'Short Video',
+      contentId: 'why-did-jesus-have-to-die/russian',
+      title: 'Цель жертвы Иисуса',
+      category: 'Короткое видео',
       image:
         'https://images.unsplash.com/photo-1591561582301-7ce6588cc286?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YnVubnl8ZW58MHx8MHx8fDA%3D',
       bgColor: '#62884C'
     },
     {
-      contentId: 'did-jesus-come-back-from-the-dead/english',
-      title: "The Truth About Jesus' Resurrection",
-      category: 'Short Video',
+      contentId: 'did-jesus-come-back-from-the-dead/russian',
+      title: 'Правда о воскресении Иисуса',
+      category: 'Короткое видео',
       image:
         'https://images.unsplash.com/photo-1650658720644-e1588bd66de3?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cHJvcGhlY2llc3xlbnwwfHwwfHx8MA%3D%3D',
       bgColor: '#5F4C5E'
     },
     {
-      contentId: 'the-story-short-film/english',
-      title: 'The Story: How It All Began and How It Will Never End',
-      category: 'Short Video',
+      contentId: 'the-story-short-film/russian',
+      title: 'История: Как всё началось и как никогда не закончится',
+      category: 'Короткое видео',
       image:
         'https://images.unsplash.com/photo-1678181896030-11cf0237d704?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fGplc3VzJTIwcmlzZW58ZW58MHx8MHx8fDA%3D',
       bgColor: '#72593A'
     },
     {
-      contentId: 'chosen-witness/english',
-      title: 'Mary Magdalene: A Life Transformed by Jesus',
-      category: 'Short Video',
+      contentId: 'chosen-witness/russian',
+      title: 'Мария Магдалина: Жизнь, преображенная Иисусом',
+      category: 'Короткое видео',
       image:
         'https://images.unsplash.com/photo-1606876538216-0c70a143dd77?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8amVzdXMlMjBjcm9zc3xlbnwwfHwwfHx8MA%3D%3D',
       bgColor: '#1C160B'
@@ -96,7 +96,7 @@ export function CollectionNavigationCarousel(): ReactElement {
               }
               tabIndex={0}
               role="button"
-              aria-label={`Navigate to ${item.title}`}
+              aria-label={`Перейти к ${item.title}`}
               data-testid={`CarouselItem-${item.contentId.split('/')[0]}`}
             >
               {index === 0 ? (
