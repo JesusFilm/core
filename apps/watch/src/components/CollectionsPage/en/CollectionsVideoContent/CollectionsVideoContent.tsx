@@ -1,8 +1,9 @@
 import { ReactElement } from 'react'
 
+import { CollectionVideoPlayer } from '../../CollectionVideoPlayer'
+
 import { BibleQuotesCarousel } from './BibleQuotesCarousel'
 import { CollectionVideoContentDescription } from './CollectionVideoContentDescription'
-import { CollectionVideoPlayer } from '../../CollectionVideoPlayer'
 import { Questions } from './Questions'
 import { QuizButton } from './QuizButton'
 
