@@ -35,12 +35,11 @@ export const Questions = ({
   return (
     <div className="xl:w-2/5">
       <div className="questions-block pt-16 xl:pt-4">
-        <div className="flex items-center justify-between mb-6 padded">
-          <div className="flex items-center gap-4">
-            <h4 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
-              {questionsTitle}
-            </h4>
-          </div>
+        <div className="flex flex-wrap items-center justify-between mb-6 padded">
+          <h4 className="flex items-center gap-4 text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70 flex-shrink-0 py-4">
+            {questionsTitle}
+          </h4>
+
           <button
             data-testid="AskQuestionButton"
             onClick={onOpenDialog}
@@ -51,7 +50,7 @@ export const Questions = ({
                 onOpenDialog?.()
               }
             }}
-            className="inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer flex-shrink-0"
           >
             <Icon
               name="MessageCircle"
