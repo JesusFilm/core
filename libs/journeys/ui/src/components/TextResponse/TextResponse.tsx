@@ -10,6 +10,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { TextResponseType } from "../../../__generated__/globalTypes";
 import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
@@ -135,7 +136,7 @@ export const TextResponse = ({
                 inputProps={{
                   maxLength: 1000,
                   readOnly: selectedBlock !== undefined,
-                  inputMode: type === 'phone' ? 'tel' : 'text',
+                  inputMode: type === TextResponseType.phone ? 'tel' : 'text',
                   sx: {
                     pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
                   }
