@@ -11,7 +11,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { TextResponseType } from "../../../__generated__/globalTypes";
+import { TextResponseType } from '../../../__generated__/globalTypes'
 import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
