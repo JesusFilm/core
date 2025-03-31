@@ -16,8 +16,6 @@ jobs:
         node-version: [22]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-    env:
-      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,7 +23,6 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
       - name: Mount NPM Cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -36,11 +33,6 @@ jobs:
         with:
           key: ${{ github.repository }}-node-modules
           path: ./node_modules
-      - name: Mount nx cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-nx-cache
-          path: ./.nx/cache
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v4
@@ -64,8 +56,6 @@ jobs:
         github-ref-name: ['${{ github.ref_name }}']
         node-version: [22]
     runs-on: blacksmith-2vcpu-ubuntu-2204
-    env:
-      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
     steps:
       - uses: actions/checkout@v4
         with:
@@ -73,7 +63,6 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
       - name: Mount NPM Cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -84,11 +73,6 @@ jobs:
         with:
           key: ${{ github.repository }}-node-modules
           path: ./node_modules
-      - name: Mount nx cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-nx-cache
-          path: ./.nx/cache
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v4
@@ -112,8 +96,6 @@ jobs:
         github-ref-name: ['${{ github.ref_name }}']
         node-version: [22]
     runs-on: blacksmith-2vcpu-ubuntu-2204
-    env:
-      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
     steps:
       - uses: actions/checkout@v4
         with:
@@ -121,7 +103,6 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
       - name: Mount NPM Cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -132,11 +113,6 @@ jobs:
         with:
           key: ${{ github.repository }}-node-modules
           path: ./node_modules
-      - name: Mount nx cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-nx-cache
-          path: ./.nx/cache
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v4

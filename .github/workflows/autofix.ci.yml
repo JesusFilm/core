@@ -25,8 +25,6 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-    env:
-      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,7 +35,6 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
       - name: Mount NPM Cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -48,11 +45,11 @@ jobs:
         with:
           key: ${{ github.repository }}-node-modules
           path: ./node_modules
-      - name: Mount nx cache
+      - name: Mount lint cache
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-nx-cache
-          path: ./.nx/cache
+          key: ${{ github.repository }}-lint
+          path: ./.cache
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
@@ -71,7 +68,7 @@ jobs:
           targets: codegen
           all: true
       - name: Run Prettier
-        run: npm run prettier:fix --check '!./.nx'
+        run: npm run prettier:fix --check '!./.cache'
       - name: Run ESLint
         uses: mansagroup/nrwl-nx-action@v3
         with:
