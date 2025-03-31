@@ -27,8 +27,6 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-    env:
-      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,7 +37,6 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
       - name: Mount NPM Cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -50,11 +47,6 @@ jobs:
         with:
           key: ${{ github.repository }}-node-modules
           path: ./node_modules
-      - name: Mount nx cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-nx-cache
-          path: ./.nx/cache
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
@@ -112,8 +104,6 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-    env:
-      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
     steps:
       - uses: actions/checkout@v4
         with:
@@ -124,7 +114,6 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
       - name: Mount NPM Cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -135,11 +124,6 @@ jobs:
         with:
           key: ${{ github.repository }}-node-modules
           path: ./node_modules
-      - name: Mount nx cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-nx-cache
-          path: ./.nx/cache
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports

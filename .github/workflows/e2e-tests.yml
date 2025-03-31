@@ -28,8 +28,6 @@ jobs:
   E2E_Tests:
     timeout-minutes: 60
     runs-on: blacksmith-2vcpu-ubuntu-2204
-    env:
-      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
     steps:
       - uses: actions/checkout@v4
       - uses: useblacksmith/setup-node@v5
@@ -45,11 +43,6 @@ jobs:
         with:
           key: ${{ github.repository }}-node-modules
           path: ./node_modules
-      - name: Mount nx cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-nx-cache
-          path: ./.nx/cache
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:

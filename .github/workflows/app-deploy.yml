@@ -17,8 +17,6 @@ jobs:
         node-version: [22]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-    env:
-      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,7 +24,6 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
       - name: Mount NPM Cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -37,11 +34,6 @@ jobs:
         with:
           key: ${{ github.repository }}-node-modules
           path: ./node_modules
-      - name: Mount nx cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-nx-cache
-          path: ./.nx/cache
       - name: NPM Install
         run: npm install --silent
       - uses: nrwl/nx-set-shas@v4
@@ -82,8 +74,6 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
-    env:
-      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
     permissions:
       pull-requests: write
       deployments: write
@@ -101,7 +91,6 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
       - name: Mount NPM Cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -112,16 +101,6 @@ jobs:
         with:
           key: ${{ github.repository }}-node-modules
           path: ./node_modules
-      - name: Mount nx cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-nx-cache
-          path: ./.nx/cache
-      - name: Mount nx cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-nx-cache
-          path: ./.nx/cache
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -247,8 +226,6 @@ jobs:
       contents: write
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
-    env:
-      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
     steps:
       - name: start deployment
         uses: chrnorm/deployment-action@v2
@@ -262,7 +239,6 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
       - name: Mount NPM Cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -273,11 +249,6 @@ jobs:
         with:
           key: ${{ github.repository }}-node-modules
           path: ./node_modules
-      - name: Mount nx cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-nx-cache
-          path: ./.nx/cache
       - name: Mount next cache
         uses: useblacksmith/stickydisk@v1
         with:
