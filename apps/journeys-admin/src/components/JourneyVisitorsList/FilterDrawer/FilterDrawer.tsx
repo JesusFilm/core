@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -13,6 +14,8 @@ import { ReactElement } from 'react'
 
 import X2Icon from '@core/shared/ui/icons/X2'
 
+import { useJourneyEventsExport } from '../../../libs/useJourneyEventsExport'
+
 import { ClearAllButton } from './ClearAllButton'
 
 interface FilterDrawerProps {
@@ -25,6 +28,7 @@ interface FilterDrawerProps {
   withIcon: boolean
   hideInteractive: boolean
   handleClearAll?: () => void
+  journeyId?: string
 }
 
 export function FilterDrawer({
@@ -36,9 +40,11 @@ export function FilterDrawer({
   withSubmittedText,
   withIcon,
   hideInteractive,
-  handleClearAll
+  handleClearAll,
+  journeyId
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { exportJourneyEvents } = useJourneyEventsExport()
   return (
     <Box sx={{ height: '100vh' }} data-testid="FilterDrawer">
       <Box sx={{ display: { sm: 'block', md: 'none' } }}>
@@ -124,6 +130,11 @@ export function FilterDrawer({
           />
         </RadioGroup>
       </Box>
+      {journeyId != null && (
+        <Button onClick={async () => await exportJourneyEvents({ journeyId })}>
+          {t('Export')}
+        </Button>
+      )}
     </Box>
   )
 }
