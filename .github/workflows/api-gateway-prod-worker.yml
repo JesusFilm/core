@@ -15,7 +15,6 @@ jobs:
     environment: Production
     env:
       IMAGE_TAG: ${{ github.sha }}
-      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
     runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
@@ -41,11 +40,6 @@ jobs:
         with:
           key: ${{ github.repository }}-node-modules
           path: ./node_modules
-      - name: Mount nx cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-nx-cache
-          path: ./.nx/cache
 
       - name: nx Install
         run: npm install -g nx --silent

@@ -58,7 +58,6 @@ jobs:
       ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
       DOPPLER_CONFIG: ${{ inputs.env == 'prod' && 'prd' || 'stg' }}
-      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
     runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
@@ -84,11 +83,6 @@ jobs:
         with:
           key: ${{ github.repository }}-node-modules
           path: ./node_modules
-      - name: Mount nx cache
-        uses: useblacksmith/stickydisk@v1
-        with:
-          key: ${{ github.repository }}-nx-cache
-          path: ./.nx/cache
       - name: Mount next cache
         uses: useblacksmith/stickydisk@v1
         with:
