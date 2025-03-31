@@ -20,7 +20,7 @@ describe('QuizModal', () => {
   test('should render iframe with correct source', () => {
     render(<QuizModal open={true} onClose={mockOnClose} />)
 
-    const iframe = screen.getByTitle('Next Step of Faith Quiz')
+    const iframe = screen.getByTestId('QuizIframe')
     expect(iframe).toBeInTheDocument()
     expect(iframe).toHaveAttribute(
       'src',
@@ -32,7 +32,7 @@ describe('QuizModal', () => {
   test('should call onClose when close button is clicked', () => {
     render(<QuizModal open={true} onClose={mockOnClose} />)
 
-    const closeButton = screen.getByLabelText('close quiz')
+    const closeButton = screen.getByTestId('CloseQuizButton')
     fireEvent.click(closeButton)
 
     expect(mockOnClose).toHaveBeenCalledTimes(1)

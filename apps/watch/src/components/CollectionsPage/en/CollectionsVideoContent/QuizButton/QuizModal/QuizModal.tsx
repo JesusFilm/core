@@ -47,12 +47,14 @@ export function QuizModal({ open, onClose }: QuizModalProps): ReactElement {
             </div>
           </div>
           <iframe
+            data-testid="QuizIframe"
             src="https://your.nextstep.is/embed/jf-videos-quizz?expand=false"
             className="border-0 w-full h-full z-1"
             title="Next Step of Faith Quiz"
           />
         </div>
         <IconButton
+          data-testid="CloseQuizButton"
           edge="start"
           color="inherit"
           onClick={handleClose}
