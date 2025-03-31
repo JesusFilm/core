@@ -1,0 +1,1 @@
+export { CollectionNavigationCarousel } from './CollectionNavigationCarousel'
