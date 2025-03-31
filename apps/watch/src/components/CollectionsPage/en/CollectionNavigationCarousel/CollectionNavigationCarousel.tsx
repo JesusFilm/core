@@ -89,7 +89,10 @@ export function CollectionNavigationCarousel(): ReactElement {
             data-testid={`CarouselSlide-${item.contentId.split('/')[0]}`}
           >
             <div
-              className={`relative beveled h-[240px] flex flex-col justify-end w-full bg-[${item.bgColor}] rounded-lg overflow-hidden cursor-pointer`}
+              className={`relative beveled h-[240px] flex flex-col justify-end w-full rounded-lg overflow-hidden cursor-pointer`}
+              style={{
+                backgroundColor: item.bgColor
+              }}
               onClick={() => handleNavigationClick(item.contentId)}
               onKeyDown={(e) =>
                 e.key === 'Enter' && handleNavigationClick(item.contentId)
