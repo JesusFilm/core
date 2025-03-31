@@ -30,6 +30,7 @@ const block: TreeBlock<TextResponseFields> = {
   parentBlockId: '0',
   parentOrder: 0,
   label: 'Your answer here',
+  placeholder: null,
   hint: null,
   minRows: null,
   integrationId: null,
@@ -100,13 +101,14 @@ describe('TextResponse', () => {
     })
   })
 
-  it('should show your answer here if label is empty', async () => {
+  it('should show default text if label is empty', async () => {
     const emptyLabelBlock: TreeBlock<TextResponseFields> = {
       __typename: 'TextResponseBlock',
       id: 'textResponse0.id',
       parentBlockId: '0',
       parentOrder: 0,
       label: '',
+      placeholder: null,
       hint: null,
       minRows: null,
       integrationId: null,
@@ -125,7 +127,7 @@ describe('TextResponse', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByLabelText('Your answer here')).toBeInTheDocument()
+    expect(screen.getByLabelText('Label')).toBeInTheDocument()
   })
 
   it('should be in a loading state when waiting for response', async () => {
@@ -266,6 +268,28 @@ describe('TextResponse', () => {
     ).toBeInTheDocument()
   })
 
+  it('should show placeholder text to guide user input', () => {
+    const blockWithPlaceholder: TreeBlock<TextResponseFields> = {
+      ...block,
+      placeholder: 'Enter your thoughts here'
+    }
+
+    render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <JourneyProvider>
+          <SnackbarProvider>
+            <TextResponse {...blockWithPlaceholder} uuid={() => 'uuid'} />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('textbox')).toHaveAttribute(
+      'placeholder',
+      'Enter your thoughts here'
+    )
+  })
+
   it('should not allow selection in editor', () => {
     const { getAllByRole } = render(
       <JourneyProvider>
@@ -278,5 +302,13 @@ describe('TextResponse', () => {
     const response = getAllByRole('textbox')[0]
     fireEvent.click(response)
     expect(response.matches(':focus')).not.toBeTruthy()
+  })
+
+  it('should have correct aria-labelledby attribute', () => {
+    render(<TextResponseMock />)
+    expect(screen.getByRole('textbox')).toHaveAttribute(
+      'aria-labelledby',
+      'textResponse-label'
+    )
   })
 })

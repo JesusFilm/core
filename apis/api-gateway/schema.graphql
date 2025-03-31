@@ -3390,6 +3390,7 @@ input TextResponseBlockCreateInput @join__type(graph: API_JOURNEYS)  {
 input TextResponseBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   parentBlockId: ID
   label: String
+  placeholder: String
   required: Boolean
   hint: String
   minRows: Int
@@ -4220,6 +4221,10 @@ input VisitorUpdateInput @join__type(graph: API_JOURNEYS)  {
   The referring url of the visitor
   """
   referrer: String
+  """
+  The phone number of the visitor
+  """
+  phone: String
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
