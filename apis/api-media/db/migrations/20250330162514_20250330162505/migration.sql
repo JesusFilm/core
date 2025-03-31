@@ -17,7 +17,7 @@ ALTER COLUMN "verseEnd" SET NOT NULL,
 ALTER COLUMN "verseEnd" SET DEFAULT -1;
 
 -- CreateIndex
-CREATE INDEX "BibleCitation_order_idx" ON "BibleCitation"("order");
+CREATE INDEX IF NOT EXISTS "BibleCitation_order_idx" ON "BibleCitation"("order");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "BibleCitation_videoId_bibleBookId_chapterStart_chapterEnd_v_key" ON "BibleCitation"("videoId", "bibleBookId", "chapterStart", "chapterEnd", "verseStart", "verseEnd");
+CREATE UNIQUE INDEX IF NOT EXISTS "BibleCitation_videoId_bibleBookId_chapterStart_chapterEnd_v_key" ON "BibleCitation"("videoId", "bibleBookId", "chapterStart", "chapterEnd", "verseStart", "verseEnd");
