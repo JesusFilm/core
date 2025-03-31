@@ -11,24 +11,24 @@ import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
-import { TEXT_RESPONSE_HINT_UPDATE } from './Hint'
+import { TEXT_RESPONSE_PLACEHOLDER_UPDATE } from './Placeholder'
 
-import { Hint } from '.'
+import { Placeholder } from '.'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
 }))
 
-describe('Edit Hint field', () => {
+describe('Edit Placeholder field', () => {
   const block: TreeBlock<TextResponseBlock> = {
     __typename: 'TextResponseBlock',
     id: 'textResponse0.id',
     parentBlockId: '0',
     parentOrder: 0,
     label: 'Your answer here',
-    placeholder: null,
-    hint: 'A hint message',
+    placeholder: 'Your placeholder here',
+    hint: null,
     minRows: null,
     integrationId: null,
     type: null,
@@ -36,59 +36,55 @@ describe('Edit Hint field', () => {
     children: []
   }
 
-  const initialState = {
-    selectedBlock: block
-  }
-
-  const mockHintUpdate1 = {
+  const mockPlaceholderUpdate1 = {
     request: {
-      query: TEXT_RESPONSE_HINT_UPDATE,
+      query: TEXT_RESPONSE_PLACEHOLDER_UPDATE,
       variables: {
         id: block.id,
-        hint: 'A hint message more'
+        placeholder: 'Your placeholder here more'
       }
     },
     result: jest.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          hint: 'A hint message more'
+          placeholder: 'Your placeholder here more'
         }
       }
     }))
   }
 
-  const mockHintUpdate2 = {
+  const mockPlaceholderUpdate2 = {
     request: {
-      query: TEXT_RESPONSE_HINT_UPDATE,
+      query: TEXT_RESPONSE_PLACEHOLDER_UPDATE,
       variables: {
         id: block.id,
-        hint: 'A hint message'
+        placeholder: 'Your placeholder here'
       }
     },
     result: jest.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          hint: 'A hint message'
+          placeholder: 'Your placeholder here'
         }
       }
     }))
   }
 
-  const mockHintUpdate3 = {
+  const mockPlaceholderUpdate3 = {
     request: {
-      query: TEXT_RESPONSE_HINT_UPDATE,
+      query: TEXT_RESPONSE_PLACEHOLDER_UPDATE,
       variables: {
         id: block.id,
-        hint: 'A hint message more'
+        placeholder: 'Your placeholder here more'
       }
     },
     result: jest.fn(() => ({
       data: {
         textResponseBlockUpdate: {
           id: block.id,
-          hint: 'A hint message more'
+          placeholder: 'Your placeholder here more'
         }
       }
     }))
@@ -96,117 +92,135 @@ describe('Edit Hint field', () => {
 
   beforeEach(() => jest.clearAllMocks())
 
-  it('should display hint value', () => {
+  it('should display placeholder value', () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <EditorProvider initialState={initialState}>
-          <Hint />
+      <MockedProvider mocks={[mockPlaceholderUpdate1]} addTypename={false}>
+        <EditorProvider initialState={{ selectedBlock: block }}>
+          <Placeholder />
         </EditorProvider>
       </MockedProvider>
     )
 
-    const field = screen.getByRole('textbox', { name: 'Hint' })
-    expect(field).toHaveValue('A hint message')
+    const field = screen.getByRole('textbox', { name: 'Placeholder' })
+    expect(field).toHaveValue('Your placeholder here')
   })
 
   it('should not be able to type beyond max character limit', () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <EditorProvider initialState={initialState}>
-          <Hint />
+      <MockedProvider mocks={[mockPlaceholderUpdate1]} addTypename={false}>
+        <EditorProvider initialState={{ selectedBlock: block }}>
+          <Placeholder />
         </EditorProvider>
       </MockedProvider>
     )
 
-    const field = screen.getByRole('textbox', { name: 'Hint' })
+    const field = screen.getByRole('textbox', { name: 'Placeholder' })
     expect(field).toHaveAttribute('maxlength', '250')
   })
 
-  it('should update the hint', async () => {
+  it('should change the placeholder', async () => {
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([mockHintUpdate1])
+      new MockLink([mockPlaceholderUpdate1])
     ])
 
     render(
       <MockedProvider link={link} addTypename={false}>
-        <EditorProvider initialState={initialState}>
-          <Hint />
+        <EditorProvider initialState={{ selectedBlock: block }}>
+          <Placeholder />
         </EditorProvider>
       </MockedProvider>
     )
 
-    const field = screen.getByRole('textbox', { name: 'Hint' })
+    const field = screen.getByRole('textbox', { name: 'Placeholder' })
     await userEvent.type(field, ' more')
-    await waitFor(() => expect(mockHintUpdate1.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockPlaceholderUpdate1.result).toHaveBeenCalled()
+    )
   })
 
-  it('should undo hint change', async () => {
+  it('should undo the placeholder change', async () => {
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([mockHintUpdate1, mockHintUpdate2])
+      new MockLink([mockPlaceholderUpdate1, mockPlaceholderUpdate2])
     ])
 
     render(
       <MockedProvider link={link} addTypename={false}>
-        <EditorProvider initialState={initialState}>
+        <EditorProvider initialState={{ selectedBlock: block }}>
           <CommandUndoItem variant="button" />
-          <Hint />
+          <Placeholder />
         </EditorProvider>
       </MockedProvider>
     )
 
-    const field = screen.getByRole('textbox', { name: 'Hint' })
+    const field = screen.getByRole('textbox', { name: 'Placeholder' })
     await userEvent.type(field, ' more')
-    await waitFor(() => expect(mockHintUpdate1.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockPlaceholderUpdate1.result).toHaveBeenCalled()
+    )
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(mockHintUpdate2.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockPlaceholderUpdate2.result).toHaveBeenCalled()
+    )
   })
 
-  it('should redo the change to hint that was undone', async () => {
+  it('should redo the change to placeholder that was undone', async () => {
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([mockHintUpdate1, mockHintUpdate2, mockHintUpdate3])
+      new MockLink([
+        mockPlaceholderUpdate1,
+        mockPlaceholderUpdate2,
+        mockPlaceholderUpdate3
+      ])
     ])
 
     render(
       <MockedProvider link={link} addTypename={false}>
-        <EditorProvider initialState={initialState}>
+        <EditorProvider initialState={{ selectedBlock: block }}>
           <CommandUndoItem variant="button" />
           <CommandRedoItem variant="button" />
-          <Hint />
+          <Placeholder />
         </EditorProvider>
       </MockedProvider>
     )
 
-    const field = screen.getByRole('textbox', { name: 'Hint' })
+    const field = screen.getByRole('textbox', { name: 'Placeholder' })
     await userEvent.type(field, ' more')
-    await waitFor(() => expect(mockHintUpdate1.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockPlaceholderUpdate1.result).toHaveBeenCalled()
+    )
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-    await waitFor(() => expect(mockHintUpdate2.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockPlaceholderUpdate2.result).toHaveBeenCalled()
+    )
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-    await waitFor(() => expect(mockHintUpdate3.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(mockPlaceholderUpdate3.result).toHaveBeenCalled()
+    )
   })
 
   it('should not call mutation if not selectedBlock', async () => {
     const link = ApolloLink.from([
       new DebounceLink(500),
-      new MockLink([mockHintUpdate1])
+      new MockLink([mockPlaceholderUpdate1])
     ])
 
     render(
       <MockedProvider link={link} addTypename={false}>
         <EditorProvider initialState={{}}>
-          <Hint />
+          <Placeholder />
         </EditorProvider>
       </MockedProvider>
     )
 
-    const field = screen.getByRole('textbox', { name: 'Hint' })
-    await userEvent.type(field, ' more')
-    await waitFor(() => expect(mockHintUpdate1.result).not.toHaveBeenCalled())
+    const field = screen.getByRole('textbox', { name: 'Placeholder' })
+    await userEvent.type(field, ' here')
+    await waitFor(() =>
+      expect(mockPlaceholderUpdate1.result).not.toHaveBeenCalled()
+    )
   })
 })
