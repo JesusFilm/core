@@ -320,6 +320,7 @@
     "next-compose-plugins": "^2.2.1",
     "next-router-mock": "^0.9.10",
     "nx": "20.6.4",
+    "nx-mcp": "^0.0.8",
     "pino-pretty": "^13.0.0",
     "playwright-lighthouse": "^2.2.2",
     "postcss": "^8.5.3",
