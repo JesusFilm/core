@@ -1,4 +1,3 @@
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
@@ -12,8 +11,6 @@ export function BibleQuotesCarouselHeader({
   bibleQuotesTitle,
   onOpenDialog
 }: BibleQuotesCarouselHeaderProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
-
   return (
     <div className="padded">
       <div className="flex items-center justify-between pb-8">
@@ -40,7 +37,7 @@ export function BibleQuotesCarouselHeader({
               height: 16
             }}
           />
-          <span>{t('Share')}</span>
+          <span>{'Share'}</span>
         </button>
       </div>
     </div>

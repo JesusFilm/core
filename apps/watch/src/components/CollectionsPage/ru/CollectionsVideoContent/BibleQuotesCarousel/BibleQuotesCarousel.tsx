@@ -1,4 +1,3 @@
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -37,8 +36,6 @@ export function BibleQuotesCarousel({
   freeResource,
   onOpenDialog
 }: BibleQuotesCarouselProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
-
   return (
     <div
       className="bible-quotes-block pt-14"

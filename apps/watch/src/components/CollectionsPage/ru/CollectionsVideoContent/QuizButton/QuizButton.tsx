@@ -1,5 +1,4 @@
 import dynamic from 'next/dynamic'
-import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 const QuizModal = dynamic(
@@ -14,8 +13,6 @@ const QuizModal = dynamic(
 )
 
 export const QuizButton = (): ReactElement => {
-  const { t } = useTranslation('apps-watch')
-
   const [quizModalOpen, setQuizModalOpen] = useState<boolean | null>(null)
 
   return (
@@ -31,10 +28,10 @@ export const QuizButton = (): ReactElement => {
             <div className="absolute inset-0 bg-[url(./assets/overlay.svg)] bg-repeat mix-blend-multiply opacity-50"></div>
             <div className="relative z-1 flex w-full items-center font-semibold leading-[1.2] md:text-xl xl:text-2xl">
               <span className="flex-none uppercase font-extrabold text-xs border-2 tracking-wider border-white rounded-lg px-2 py-1 mr-4">
-                {t('Тест')}
+                {'Тест'}
               </span>
               <div className="text-center flex-auto">
-                {t('Какой ваш следующий шаг веры?')}
+                {'Какой ваш следующий шаг веры?'}
               </div>
             </div>
             <span className="transition">

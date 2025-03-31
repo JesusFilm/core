@@ -1,6 +1,5 @@
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
@@ -37,7 +36,6 @@ export const CollectionVideoContentCarousel = ({
   mutePage,
   setMutePage
 }: CollectionVideoContentCarouselProps): ReactElement => {
-  const { t } = useTranslation('apps-watch')
   const router = useRouter()
   const [selectedContentId, setSelectedContentId] = useState<string>(contentId)
   const [selectedVideoTitle, setSelectedVideoTitle] =
@@ -87,7 +85,7 @@ export const CollectionVideoContentCarousel = ({
                 height: 16
               }}
             />
-            <span>{t('See All')}</span>
+            <span>{'See All'}</span>
           </button>
         </div>
       </div>
@@ -135,7 +133,7 @@ export const CollectionVideoContentCarousel = ({
                 />
                 <div className="p-4">
                   <span className="text-xs font-medium tracking-wider uppercase text-white/60">
-                    {slide.type || t('Короткое видео')}
+                    {slide.type || 'Короткое видео'}
                   </span>
                   <h3 className="text-base font-bold text-white/90 leading-tight line-clamp-3">
                     {slide.title}

@@ -1,5 +1,3 @@
-import Box from '@mui/material/Box'
-import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
@@ -26,7 +24,6 @@ export const Questions = ({
   onOpenDialog
 }: QuestionsProps): ReactElement => {
   const [openQuestion, setOpenQuestion] = useState<number | null>(null)
-  const { t } = useTranslation('apps-watch')
 
   const handleQuestionToggle = (id: number): void => {
     setOpenQuestion(openQuestion === id ? null : id)

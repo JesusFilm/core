@@ -1,4 +1,3 @@
-import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
@@ -6,7 +5,6 @@ import { ContainerHeroMuteButton } from '../../ContainerHeroMuteButton'
 import { ContainerHeroVideo } from '../../ContainerHeroVideo'
 
 export function ContainerHero(): ReactElement {
-  const { t } = useTranslation('apps-watch')
   const [playerRef, setPlayerRef] = useState<Player | null>(null)
   const [isMuted, setIsMuted] = useState(true)
   const [hasUnmutedOnce, setHasUnmutedOnce] = useState(false)
@@ -62,7 +60,7 @@ export function ContainerHero(): ReactElement {
           <div className="pb-4 sm:pb-0 w-full relative z-[2] flex flex-col">
             <div className="flex items-center justify-between w-full z-[2]">
               <h2 className="text-[3.75rem] font-bold text-white opacity-90 mix-blend-screen mb-1 flex-grow font-montserrat">
-                {t('Пасха')}
+                {'Пасха'}
               </h2>
               <ContainerHeroMuteButton
                 isMuted={isMuted}
@@ -76,12 +74,7 @@ export function ContainerHero(): ReactElement {
               className="text-[1.125rem] text-primary mt-8 z-[2] text-balance font-apercu"
               data-testid="ContainerHeroDescription"
             >
-              {t(
-                'Пасха {{year}} видео и ресурсы о Великом посте, Страстной неделе, Воскресении',
-                {
-                  year: new Date().getFullYear()
-                }
-              )}
+              {`Пасха ${new Date().getFullYear()} видео и ресурсы о Великом посте, Страстной неделе, Воскресении`}
             </p>
           </div>
         </div>
