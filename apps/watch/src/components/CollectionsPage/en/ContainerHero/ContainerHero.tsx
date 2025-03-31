@@ -36,7 +36,7 @@ export function ContainerHero(): ReactElement {
 
   return (
     <div
-      className="h-[70vh] w-full flex items-end relative transition-height duration-300 ease-out bg-stone-900 "
+      className="h-[70vh] w-full flex items-end relative transition-height duration-300 ease-out bg-stone-900 font-sans"
       data-testid="ContainerHero"
     >
       <ContainerHeroVideo
@@ -57,11 +57,11 @@ export function ContainerHero(): ReactElement {
         />
         <div
           data-testid="ContainerHeroTitle"
-          className="container mx-auto flex max-w-[1536px] px-4 pb-4"
+          className="w-full flex padded pb-4"
         >
           <div className="pb-4 sm:pb-0 w-full relative z-[2] flex flex-col">
             <div className="flex items-center justify-between w-full z-[2]">
-              <h2 className="text-[3.75rem] font-bold text-white opacity-90 mix-blend-screen mb-1 flex-grow font-montserrat">
+              <h2 className="text-[3.75rem] font-bold text-white opacity-90 mix-blend-screen mb-1 flex-grow">
                 {'Easter'}
               </h2>
               <ContainerHeroMuteButton
@@ -69,11 +69,11 @@ export function ContainerHero(): ReactElement {
                 onClick={handleToggleMute}
               />
             </div>
-            <p className="text-secondary-contrast opacity-50 mix-blend-screen z-[2] uppercase tracking-widest font-montserrat text-white">
-              {`Collections \u2022 26 items`}
+            <p className="text-secondary-contrast opacity-50 mix-blend-screen z-[2] uppercase tracking-widest text-white">
+              {`Collection \u2022 26 Videos`}
             </p>
-            <p
-              className="text-[1.125rem] text-primary mt-8 z-[2] text-balance font-apercu"
+            <h1
+              className="text-xl md:text-2xl text-primary mt-8 z-[2] text-balance"
               data-testid="ContainerHeroDescription"
             >
               {t(
@@ -82,7 +82,7 @@ export function ContainerHero(): ReactElement {
                   year: new Date().getFullYear()
                 }
               )}
-            </p>
+            </h1>
           </div>
         </div>
       </div>
