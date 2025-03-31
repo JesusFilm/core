@@ -17,6 +17,8 @@ jobs:
         node-version: [22]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+    env:
+      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
     steps:
       - uses: actions/checkout@v4
         with:
@@ -80,6 +82,8 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
+    env:
+      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
     permissions:
       pull-requests: write
       deployments: write
@@ -243,6 +247,8 @@ jobs:
       contents: write
     outputs:
       url: ${{ steps.deployment-url.outputs.deployment-url }}
+    env:
+      NX_REJECT_UNKNOWN_LOCAL_CACHE: 0
     steps:
       - name: start deployment
         uses: chrnorm/deployment-action@v2
