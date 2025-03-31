@@ -82,7 +82,7 @@ export class BlockResolver {
         ...INCLUDE_JOURNEY_ACL
       }
     })
-    const isStepBlock = block?.typename === "StepBlock"
+    const isStepBlock = block?.typename === 'StepBlock'
 
     if (block == null)
       throw new GraphQLError('block not found', {
