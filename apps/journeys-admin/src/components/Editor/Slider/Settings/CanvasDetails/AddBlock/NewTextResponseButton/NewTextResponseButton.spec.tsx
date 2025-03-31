@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -8,19 +8,19 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { TextResponseType } from '../../../../../../../../__generated__/globalTypes'
 import { JourneyFields as Journey } from '../../../../../../../../__generated__/JourneyFields'
+import { TextResponseBlockCreate } from '../../../../../../../../__generated__/TextResponseBlockCreate'
 import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
+import { stepWithSubmitButton, stepWithoutSubmitButton } from './data'
+import { TEXT_RESPONSE_BLOCK_CREATE } from './NewTextResponseButton'
 import {
-  stepWithSubmitButton,
-  stepWithoutSubmitButton,
-  textResponseBlockCreateMock,
   textResponseWithButtonCreateMock,
   textResponseWithButtonDeleteMock,
   textResponseWithButtonRestoreMock
-} from './utils/mocks'
+} from './useTextResponseWithButtonMutation/useTextResponseWithButtonMutation.mock'
 
 import { NewTextResponseButton } from '.'
 
@@ -35,6 +35,38 @@ jest.mock('uuid', () => ({
 }))
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
+
+export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate> =
+  {
+    request: {
+      query: TEXT_RESPONSE_BLOCK_CREATE,
+      variables: {
+        input: {
+          id: 'textResponseBlock.id',
+          journeyId: 'journey.id',
+          parentBlockId: 'card.id',
+          label: 'Label'
+        }
+      }
+    },
+    result: {
+      data: {
+        textResponseBlockCreate: {
+          __typename: 'TextResponseBlock',
+          id: 'textResponseBlock.id',
+          parentBlockId: 'card.id',
+          parentOrder: 0,
+          label: 'Label',
+          hint: null,
+          minRows: null,
+          type: null,
+          routeId: null,
+          integrationId: null,
+          placeholder: null
+        }
+      }
+    }
+  }
 
 describe('NewTextResponseButton', () => {
   beforeEach(() => jest.clearAllMocks())
@@ -312,6 +344,7 @@ describe('NewTextResponseButton', () => {
 
       fireEvent.click(getByRole('button', { name: 'Text Input' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
+      // instead of result, do mock...
 
       fireEvent.click(getByRole('button', { name: 'Undo' }))
       await waitFor(() => expect(undoResult).toHaveBeenCalled())

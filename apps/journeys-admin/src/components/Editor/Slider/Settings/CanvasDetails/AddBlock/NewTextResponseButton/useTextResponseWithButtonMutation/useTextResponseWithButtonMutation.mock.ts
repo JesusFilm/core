@@ -1,17 +1,10 @@
 import { MockedResponse } from '@apollo/client/testing'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
-
-import type {
-  BlockFields_ButtonBlock as ButtonBlock,
-  BlockFields_StepBlock as StepBlock
-} from '../../../../../../../../../__generated__/BlockFields'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant
 } from '../../../../../../../../../__generated__/globalTypes'
-import { TextResponseBlockCreate } from '../../../../../../../../../__generated__/TextResponseBlockCreate'
 import {
   TextResponseWithButtonCreate,
   TextResponseWithButtonCreateVariables
@@ -26,107 +19,10 @@ import {
 } from '../../../../../../../../../__generated__/TextResponseWithButtonRestore'
 
 import {
-  TEXT_RESPONSE_BLOCK_CREATE,
   TEXT_RESPONSE_WITH_BUTTON_CREATE,
   TEXT_RESPONSE_WITH_BUTTON_DELETE,
   TEXT_RESPONSE_WITH_BUTTON_RESTORE
-} from './mutations'
-
-export const submitButton: TreeBlock<ButtonBlock> = {
-  id: 'submitButton.id',
-  __typename: 'ButtonBlock',
-  parentBlockId: 'card.id',
-  parentOrder: 0,
-  label: 'Submit',
-  buttonVariant: ButtonVariant.contained,
-  buttonColor: ButtonColor.primary,
-  size: ButtonSize.medium,
-  startIconId: null,
-  endIconId: null,
-  action: null,
-  submitEnabled: true,
-  children: []
-}
-
-export const stepWithSubmitButton: TreeBlock<StepBlock> = {
-  id: 'step.id',
-  __typename: 'StepBlock',
-  parentBlockId: null,
-  parentOrder: null,
-  locked: false,
-  nextBlockId: null,
-  slug: null,
-  children: [
-    {
-      id: 'card.id',
-      __typename: 'CardBlock',
-      parentBlockId: 'step.id',
-      coverBlockId: null,
-      parentOrder: 0,
-      backgroundColor: null,
-      themeMode: null,
-      themeName: null,
-      fullscreen: false,
-      children: [submitButton]
-    }
-  ]
-}
-
-export const stepWithoutSubmitButton: TreeBlock<StepBlock> = {
-  id: 'step.id',
-  __typename: 'StepBlock',
-  parentBlockId: null,
-  parentOrder: null,
-  locked: false,
-  nextBlockId: null,
-  slug: null,
-  children: [
-    {
-      id: 'card.id',
-      __typename: 'CardBlock',
-      parentBlockId: 'step.id',
-      coverBlockId: null,
-      parentOrder: 0,
-      backgroundColor: null,
-      themeMode: null,
-      themeName: null,
-      fullscreen: false,
-      children: []
-    }
-  ]
-}
-
-export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate> =
-  {
-    request: {
-      query: TEXT_RESPONSE_BLOCK_CREATE,
-      variables: {
-        input: {
-          id: 'textResponseBlock.id',
-          journeyId: 'journey.id',
-          parentBlockId: 'card.id',
-          label: 'Label'
-        }
-      }
-    },
-    result: {
-      data: {
-        textResponseBlockCreate: {
-          __typename: 'TextResponseBlock',
-          id: 'textResponseBlock.id',
-          parentBlockId: 'card.id',
-          parentOrder: 0,
-          label: 'Label',
-          hint: null,
-          minRows: null,
-          type: null,
-          routeId: null,
-          integrationId: null,
-          placeholder: null
-        }
-      }
-    }
-  }
+} from './useTextResponseWithButtonMutation'
 
 export const textResponseWithButtonCreateMock: MockedResponse<
   TextResponseWithButtonCreate,

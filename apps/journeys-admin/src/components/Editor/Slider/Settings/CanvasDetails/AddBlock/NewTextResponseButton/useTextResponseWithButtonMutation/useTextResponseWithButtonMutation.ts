@@ -1,21 +1,113 @@
-import { MutationResult, useMutation } from '@apollo/client'
+import { MutationResult, Reference, gql, useMutation } from '@apollo/client'
 
-import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
+import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
+import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
+import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_TextResponseBlock as TextResponseBlock
 } from '../../../../../../../../../__generated__/BlockFields'
-import {
-  addBlocksToCache,
-  removeBlocksFromCache,
-  restoreBlocksToCache
-} from '../utils/cacheUtils'
-import {
-  TEXT_RESPONSE_WITH_BUTTON_CREATE,
-  TEXT_RESPONSE_WITH_BUTTON_DELETE,
-  TEXT_RESPONSE_WITH_BUTTON_RESTORE
-} from '../utils/mutations'
+
+const NEW_BLOCK_FRAGMENT = gql`
+  fragment NewBlock on Block {
+    id
+  }
+`
+
+/**
+ * Mutation to create a text response block with an associated submit button
+ */
+export const TEXT_RESPONSE_WITH_BUTTON_CREATE = gql`
+  ${TEXT_RESPONSE_FIELDS}
+  ${BUTTON_FIELDS}
+  ${ICON_FIELDS}
+  mutation TextResponseWithButtonCreate(
+    $textResponseInput: TextResponseBlockCreateInput!
+    $buttonInput: ButtonBlockCreateInput!
+    $iconInput1: IconBlockCreateInput!
+    $iconInput2: IconBlockCreateInput!
+    $buttonId: ID!
+    $journeyId: ID!
+    $buttonUpdateInput: ButtonBlockUpdateInput!
+  ) {
+    textResponse: textResponseBlockCreate(input: $textResponseInput) {
+      ...TextResponseFields
+    }
+    button: buttonBlockCreate(input: $buttonInput) {
+      ...ButtonFields
+    }
+    startIcon: iconBlockCreate(input: $iconInput1) {
+      ...IconFields
+    }
+    endIcon: iconBlockCreate(input: $iconInput2) {
+      ...IconFields
+    }
+    buttonUpdate: buttonBlockUpdate(
+      id: $buttonId
+      journeyId: $journeyId
+      input: $buttonUpdateInput
+    ) {
+      ...ButtonFields
+    }
+  }
+`
+
+/**
+ * Mutation to delete a text response block and its associated button
+ */
+export const TEXT_RESPONSE_WITH_BUTTON_DELETE = gql`
+  mutation TextResponseWithButtonDelete(
+    $textResponseId: ID!
+    $buttonId: ID!
+    $startIconId: ID!
+    $endIconId: ID!
+  ) {
+    endIcon: blockDelete(id: $endIconId) {
+      id
+      parentOrder
+    }
+    startIcon: blockDelete(id: $startIconId) {
+      id
+      parentOrder
+    }
+    button: blockDelete(id: $buttonId) {
+      id
+      parentOrder
+    }
+    textResponse: blockDelete(id: $textResponseId) {
+      id
+      parentOrder
+    }
+  }
+`
+
+/**
+ * Mutation to restore a previously deleted text response block and its associated button
+ */
+export const TEXT_RESPONSE_WITH_BUTTON_RESTORE = gql`
+  ${BLOCK_FIELDS}
+  mutation TextResponseWithButtonRestore(
+    $textResponseId: ID!
+    $buttonId: ID!
+    $startIconId: ID!
+    $endIconId: ID!
+  ) {
+    textResponse: blockRestore(id: $textResponseId) {
+      ...BlockFields
+    }
+    button: blockRestore(id: $buttonId) {
+      ...BlockFields
+    }
+    startIcon: blockRestore(id: $startIconId) {
+      ...BlockFields
+    }
+    endIcon: blockRestore(id: $endIconId) {
+      ...BlockFields
+    }
+  }
+`
 
 interface TextResponseWithButtonBlocks {
   textResponseBlock: TextResponseBlock
@@ -106,9 +198,27 @@ export function useTextResponseWithButtonMutation(): TextResponseWithButtonMutat
         buttonUpdate: buttonBlock
       },
       update(cache, { data }) {
-        if (data != null) {
-          addBlocksToCache(cache, journeyId, data)
-        }
+        if (data == null) return
+
+        cache.modify({
+          id: cache.identify({ __typename: 'Journey', id: journeyId }),
+          fields: {
+            blocks(existingBlockRefs = []) {
+              const keys = Object.keys(data).filter(
+                (key) => key !== 'buttonUpdate'
+              )
+              return [
+                ...existingBlockRefs,
+                ...keys.map((key) =>
+                  cache.writeFragment({
+                    data: data[key],
+                    fragment: NEW_BLOCK_FRAGMENT
+                  })
+                )
+              ]
+            }
+          }
+        })
       }
     })
   }
@@ -133,9 +243,27 @@ export function useTextResponseWithButtonMutation(): TextResponseWithButtonMutat
         endIcon: []
       },
       update(cache, { data }) {
-        if (data != null) {
-          removeBlocksFromCache(cache, journeyId, createdBlocks)
-        }
+        if (data == null) return
+
+        createdBlocks.forEach((block) => {
+          cache.modify({
+            id: cache.identify({ __typename: 'Journey', id: journeyId }),
+            fields: {
+              blocks(existingBlockRefs: Reference[], { readField }) {
+                return existingBlockRefs.filter(
+                  (ref) => readField('id', ref) !== block.id
+                )
+              }
+            }
+          })
+          cache.evict({
+            id: cache.identify({
+              __typename: block.__typename,
+              id: block.id
+            })
+          })
+          cache.gc()
+        })
       }
     })
   }
@@ -179,9 +307,34 @@ export function useTextResponseWithButtonMutation(): TextResponseWithButtonMutat
         ]
       },
       update(cache, { data }) {
-        if (data != null) {
-          restoreBlocksToCache(cache, journeyId, data)
-        }
+        if (data == null) return
+
+        const keys = Object.keys(data)
+        keys.forEach((key) => {
+          data[key].forEach((block: any) => {
+            cache.modify({
+              id: cache.identify({ __typename: 'Journey', id: journeyId }),
+              fields: {
+                blocks(existingBlockRefs: Reference[], { readField }) {
+                  if (
+                    existingBlockRefs.some(
+                      (ref) => readField('id', ref) === block.id
+                    )
+                  ) {
+                    return existingBlockRefs
+                  }
+                  return [
+                    ...existingBlockRefs,
+                    cache.writeFragment({
+                      data: block,
+                      fragment: NEW_BLOCK_FRAGMENT
+                    })
+                  ]
+                }
+              }
+            })
+          })
+        })
       }
     })
   }

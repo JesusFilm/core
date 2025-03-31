@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -7,6 +7,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { TEXT_RESPONSE_FIELDS } from '@core/journeys/ui/TextResponse/textResponseFields'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import type {
@@ -24,8 +25,19 @@ import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
 
-import { useTextResponseWithButtonMutation } from './hooks/useTextResponseWithButtonMutation'
-import { TEXT_RESPONSE_BLOCK_CREATE } from './utils/mutations'
+import { useTextResponseWithButtonMutation } from './useTextResponseWithButtonMutation/useTextResponseWithButtonMutation'
+
+export const TEXT_RESPONSE_BLOCK_CREATE = gql`
+  ${TEXT_RESPONSE_FIELDS}
+  mutation TextResponseBlockCreate($input: TextResponseBlockCreateInput!) {
+    textResponseBlockCreate(input: $input) {
+      id
+      parentBlockId
+      parentOrder
+      ...TextResponseFields
+    }
+  }
+`
 
 export function NewTextResponseButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
