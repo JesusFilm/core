@@ -1,16 +1,12 @@
-import {
-  MutationHookOptions,
-  gql,
-  useLazyQuery
-  // useMutation
-} from '@apollo/client'
+import { gql, useLazyQuery } from '@apollo/client'
 import { stringify } from 'csv-stringify/sync'
 import { format } from 'date-fns'
 import { useTranslation } from 'next-i18next'
 
 import {
-  GetJourneyEvents,
-  GetJourneyEventsVariables
+  GetJourneyEventsVariables,
+  GetJourneyEvents_journeyEventsConnection_edges as JourneyEventEdge,
+  GetJourneyEvents_journeyEventsConnection_edges_node as JourneyEventNode
 } from '../../../__generated__/GetJourneyEvents'
 
 export const GET_JOURNEY_EVENTS_EXPORT = gql`
@@ -30,6 +26,7 @@ export const GET_JOURNEY_EVENTS_EXPORT = gql`
         cursor
         node {
           journeyId
+          visitorId
           label
           value
           typename
@@ -90,7 +87,7 @@ const ALL_EVENT_TYPES = [
   'VideoProgressEvent'
 ]
 
-const FILTERED_EVENTS = ALL_EVENT_TYPES.filter((event) => {
+export const FILTERED_EVENTS = ALL_EVENT_TYPES.filter((event) => {
   if (
     event === 'StepViewEvent' ||
     event === 'StepNextEvent' ||
@@ -100,9 +97,16 @@ const FILTERED_EVENTS = ALL_EVENT_TYPES.filter((event) => {
   ) {
     return false
   } else {
-    return event
+    return true
   }
 })
+
+interface JourneyEvent
+  extends Omit<JourneyEventNode, '__typename' | 'journey' | 'visitor'> {
+  slug?: string | null
+  name?: string | null
+  email?: string | null
+}
 
 export function useJourneyEventsExport(): {
   exportJourneyEvents: ({
@@ -113,9 +117,10 @@ export function useJourneyEventsExport(): {
   const { t } = useTranslation('apps-journeys-admin')
   const [getJourneyEvents] = useLazyQuery(GET_JOURNEY_EVENTS_EXPORT)
 
-  function handleCsvProcessing(eventData: any[]): void {
-    const journeySlug = eventData[0]?.journey?.slug
-
+  function handleCsvProcessing(
+    eventData: JourneyEvent[],
+    journeySlug: string
+  ): void {
     const csv = stringify(eventData, EVENT_CSV_OPTIONS)
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     const url = window.URL.createObjectURL(blob)
@@ -137,7 +142,7 @@ export function useJourneyEventsExport(): {
     journeyId,
     filter
   }: Pick<GetJourneyEventsVariables, 'journeyId' | 'filter'>): Promise<void> {
-    const events: any[] = []
+    const events: JourneyEventEdge[] = []
     let cursor: string | null = null
     let hasNextPage = false
 
@@ -166,7 +171,7 @@ export function useJourneyEventsExport(): {
         hasNextPage = data?.journeyEventsConnection.pageInfo.hasNextPage
       } while (hasNextPage)
 
-      const eventData = events.map((edge) => {
+      const eventData: JourneyEvent[] = events.map((edge) => {
         return {
           ...edge.node,
           slug: edge.node.journey?.slug,
@@ -174,8 +179,8 @@ export function useJourneyEventsExport(): {
           email: edge.node.visitor?.email
         }
       })
-
-      handleCsvProcessing(eventData)
+      const journeySlug = events[0]?.node.journey?.slug ?? ''
+      handleCsvProcessing(eventData, journeySlug)
       // TODO: Update exportHistory
     } catch (e) {
       throw new Error(t('Failed to retrieve data for export.'))

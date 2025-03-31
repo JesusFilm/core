@@ -31,6 +31,7 @@ export interface GetJourneyEvents_journeyEventsConnection_edges_node_visitor {
 export interface GetJourneyEvents_journeyEventsConnection_edges_node {
   __typename: "JourneyEvent";
   journeyId: string;
+  visitorId: string | null;
   label: string | null;
   value: string | null;
   /**
