@@ -17,30 +17,19 @@ import {
   TEXT_RESPONSE_WITH_BUTTON_RESTORE
 } from '../utils/mutations'
 
-export function useTextResponseWithButtonMutation(): [
-  (
-    blocks: {
-      textResponseBlock: TextResponseBlock
-      buttonBlock: ButtonBlock
-    },
-    journey: Journey
-  ) => void,
-  (
-    blocks: {
-      textResponseBlock: TextResponseBlock
-      buttonBlock: ButtonBlock
-    },
-    journeyId: string
-  ) => void,
-  (
-    blocks: {
-      textResponseBlock: TextResponseBlock
-      buttonBlock: ButtonBlock
-    },
-    journey: Journey
-  ) => void,
-  MutationResult
-] {
+interface TextResponseWithButtonBlocks {
+  textResponseBlock: TextResponseBlock
+  buttonBlock: ButtonBlock
+}
+
+interface TextResponseWithButtonMutationResult {
+  create: (blocks: TextResponseWithButtonBlocks, journeyId: string) => void
+  remove: (blocks: TextResponseWithButtonBlocks, journeyId: string) => void
+  restore: (blocks: TextResponseWithButtonBlocks, journeyId: string) => void
+  result: MutationResult
+}
+
+export function useTextResponseWithButtonMutation(): TextResponseWithButtonMutationResult {
   const [textResponseWithButtonCreate, createResult] = useMutation(
     TEXT_RESPONSE_WITH_BUTTON_CREATE
   )
@@ -52,27 +41,21 @@ export function useTextResponseWithButtonMutation(): [
   )
 
   /** Creates a new text response block with an associated submit button and updates the cache optimistically */
-  function wrappedTextResponseWithButtonCreate(
-    {
-      textResponseBlock,
-      buttonBlock
-    }: {
-      textResponseBlock: TextResponseBlock
-      buttonBlock: ButtonBlock
-    },
-    journey: Journey
+  function createTextResponseWithButton(
+    { textResponseBlock, buttonBlock }: TextResponseWithButtonBlocks,
+    journeyId: string
   ): void {
     void textResponseWithButtonCreate({
       variables: {
         textResponseInput: {
           id: textResponseBlock.id,
-          journeyId: journey.id,
+          journeyId,
           parentBlockId: textResponseBlock.parentBlockId,
           label: textResponseBlock.label
         },
         buttonInput: {
           id: buttonBlock.id,
-          journeyId: journey.id,
+          journeyId,
           parentBlockId: buttonBlock.parentBlockId,
           label: buttonBlock.label,
           variant: buttonBlock.buttonVariant,
@@ -82,18 +65,18 @@ export function useTextResponseWithButtonMutation(): [
         },
         iconInput1: {
           id: buttonBlock.startIconId,
-          journeyId: journey.id,
+          journeyId,
           parentBlockId: buttonBlock.id,
           name: null
         },
         iconInput2: {
           id: buttonBlock.endIconId,
-          journeyId: journey.id,
+          journeyId,
           parentBlockId: buttonBlock.id,
           name: null
         },
         buttonId: buttonBlock.id,
-        journeyId: journey.id,
+        journeyId,
         buttonUpdateInput: {
           startIconId: buttonBlock.startIconId,
           endIconId: buttonBlock.endIconId
@@ -124,21 +107,15 @@ export function useTextResponseWithButtonMutation(): [
       },
       update(cache, { data }) {
         if (data != null) {
-          addBlocksToCache(cache, journey.id, data)
+          addBlocksToCache(cache, journeyId, data)
         }
       }
     })
   }
 
   /** Removes a text response block and its associated submit button from the card */
-  function wrappedTextResponseWithButtonDelete(
-    {
-      textResponseBlock,
-      buttonBlock
-    }: {
-      textResponseBlock: TextResponseBlock
-      buttonBlock: ButtonBlock
-    },
+  function deleteTextResponseWithButton(
+    { textResponseBlock, buttonBlock }: TextResponseWithButtonBlocks,
     journeyId: string
   ): void {
     const createdBlocks = [textResponseBlock, buttonBlock]
@@ -164,15 +141,9 @@ export function useTextResponseWithButtonMutation(): [
   }
 
   /** Restores a previously deleted text response block and its associated submit button to the card */
-  function wrappedTextResponseWithButtonRestore(
-    {
-      textResponseBlock,
-      buttonBlock
-    }: {
-      textResponseBlock: TextResponseBlock
-      buttonBlock: ButtonBlock
-    },
-    journey: Journey
+  function restoreTextResponseWithButton(
+    { textResponseBlock, buttonBlock }: TextResponseWithButtonBlocks,
+    journeyId: string
   ): void {
     void textResponseWithButtonRestore({
       variables: {
@@ -209,16 +180,16 @@ export function useTextResponseWithButtonMutation(): [
       },
       update(cache, { data }) {
         if (data != null) {
-          restoreBlocksToCache(cache, journey.id, data)
+          restoreBlocksToCache(cache, journeyId, data)
         }
       }
     })
   }
 
-  return [
-    wrappedTextResponseWithButtonCreate,
-    wrappedTextResponseWithButtonDelete,
-    wrappedTextResponseWithButtonRestore,
-    createResult
-  ]
+  return {
+    create: createTextResponseWithButton,
+    remove: deleteTextResponseWithButton,
+    restore: restoreTextResponseWithButton,
+    result: createResult
+  }
 }

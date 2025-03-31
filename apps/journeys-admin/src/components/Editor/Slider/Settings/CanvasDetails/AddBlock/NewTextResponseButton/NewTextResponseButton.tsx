@@ -31,8 +31,13 @@ export function NewTextResponseButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [textResponseBlockCreate, { loading: textResponseLoading }] =
     useMutation<TextResponseBlockCreate>(TEXT_RESPONSE_BLOCK_CREATE)
-  const [create, remove, restore, { loading: textResponseWithButtonLoading }] =
-    useTextResponseWithButtonMutation()
+
+  const {
+    create,
+    remove,
+    restore,
+    result: { loading: textResponseWithButtonLoading }
+  } = useTextResponseWithButtonMutation()
 
   const { journey } = useJourney()
   const {
@@ -101,7 +106,7 @@ export function NewTextResponseButton(): ReactElement {
             selectedBlockId: textResponseBlock.id,
             activeSlide: ActiveSlide.Content
           })
-          create(blocks, journey)
+          create(blocks, journey.id)
         },
         undo({ previousBlockId }) {
           dispatch({
@@ -117,7 +122,7 @@ export function NewTextResponseButton(): ReactElement {
             selectedBlockId: textResponseId,
             activeSlide: ActiveSlide.Content
           })
-          restore(blocks, journey)
+          restore(blocks, journey.id)
         }
       })
     } else {
