@@ -35,20 +35,21 @@ jobs:
       - uses: useblacksmith/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: useblacksmith/cache@v5
+      - name: Mount NPM Cache
+        uses: useblacksmith/stickydisk@v1
         with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
-      - name: Setup Cache
-        uses: useblacksmith/cache@v5
+          key: ${{ github.repository }}-npm-cache
+          path: ~/.npm
+      - name: Mount node_modules
+        uses: useblacksmith/stickydisk@v1
         with:
-          path: .cache
-          key: lint-cache-${{ matrix.node-version }}-${{ hashFiles('**/.eslintrc.json', '**/tsconfig.json') }}
-          restore-keys: lint-cache-${{ matrix.node-version }}-
+          key: ${{ github.repository }}-node-modules
+          path: ./node_modules
+      - name: Mount lint cache
+        uses: useblacksmith/stickydisk@v1
+        with:
+          key: ${{ github.repository }}-lint
+          path: ./.cache
       - name: NPM Install
         run: npm install --silent
       - name: generate prisma imports
@@ -67,7 +68,7 @@ jobs:
           targets: codegen
           all: true
       - name: Run Prettier
-        run: npm run prettier:fix
+        run: npm run prettier:fix --check '!./.cache'
       - name: Run ESLint
         uses: mansagroup/nrwl-nx-action@v3
         with:

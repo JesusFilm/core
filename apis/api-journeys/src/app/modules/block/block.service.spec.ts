@@ -619,7 +619,7 @@ describe('BlockService', () => {
           id: 'specificButtonId',
           parentBlockId: 'specificCardId',
           endIconId: 'specificIconId',
-          submitEnabled: false,
+          submitEnabled: true,
           action: omit(buttonBlock.action, 'parentBlockId')
         },
         {
