@@ -40,8 +40,6 @@ export const CollectionVideoContentCarousel = ({
   const { t } = useTranslation('apps-watch')
   const router = useRouter()
   const [selectedContentId, setSelectedContentId] = useState<string>(contentId)
-  const [selectedVideoTitle, setSelectedVideoTitle] =
-    useState<string>(videoTitle)
 
   const handleSeeAllClick = () => {
     void router.push(`/watch`)
@@ -53,7 +51,6 @@ export const CollectionVideoContentCarousel = ({
     }
 
     setSelectedContentId(contentId)
-    setSelectedVideoTitle(title)
   }
 
   const firstFourWords = description.split(' ').slice(0, 4).join(' ')
@@ -103,12 +100,19 @@ export const CollectionVideoContentCarousel = ({
         </p>
       </div>
 
-      <CollectionVideoPlayer
-        contentId={selectedContentId}
-        title={selectedVideoTitle}
-        mutePage={mutePage}
-        setMutePage={setMutePage}
-      />
+      {slides.map((slide) => {
+        if (slide.contentId === selectedContentId) {
+          return (
+            <CollectionVideoPlayer
+              key={slide.contentId}
+              contentId={slide.contentId}
+              title={slide.title}
+              mutePage={mutePage}
+              setMutePage={setMutePage}
+            />
+          )
+        }
+      })}
 
       <div className="pt-8">
         <Swiper

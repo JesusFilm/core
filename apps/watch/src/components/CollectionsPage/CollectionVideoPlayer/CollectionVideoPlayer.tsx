@@ -194,24 +194,6 @@ export function CollectionVideoPlayer({
 
       setPlayer(newPlayer)
     }
-    // If player exists and contentId changes, update the source
-    else if (
-      player &&
-      isPlayerReady &&
-      videoData?.content != null &&
-      isVisible
-    ) {
-      player.poster(videoData.content.images?.[0]?.mobileCinematicHigh ?? '')
-      if (videoData.content.variant?.hls) {
-        player.src({
-          src: videoData.content.variant.hls,
-          type: 'application/x-mpegURL'
-        })
-      }
-      // Reset progress
-      setProgress(0)
-      void player.play()
-    }
   }, [videoData, contentId, player, isPlayerReady])
 
   return (

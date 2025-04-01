@@ -1,11 +1,12 @@
 import Image from 'next/image'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import Play3 from '@core/shared/ui/icons/Play3'
 
-import { CollectionVideoPlayer } from '../../CollectionVideoPlayer'
+import { CollectionVideoPlayer } from '../../CollectionVideoPlayer/CollectionVideoPlayer'
 
 interface SlideData {
   contentId: string
@@ -36,10 +37,9 @@ export const CollectionVideoContentCarousel = ({
   mutePage,
   setMutePage
 }: CollectionVideoContentCarouselProps): ReactElement => {
+  const { t } = useTranslation('apps-watch')
   const router = useRouter()
   const [selectedContentId, setSelectedContentId] = useState<string>(contentId)
-  const [selectedVideoTitle, setSelectedVideoTitle] =
-    useState<string>(videoTitle)
 
   const handleSeeAllClick = () => {
     void router.push(`/watch`)
@@ -51,14 +51,15 @@ export const CollectionVideoContentCarousel = ({
     }
 
     setSelectedContentId(contentId)
-    setSelectedVideoTitle(title)
   }
 
   const firstFourWords = description.split(' ').slice(0, 4).join(' ')
   const remainingText = description.slice(firstFourWords.length)
 
   return (
-    <div className="relative bg-linear-to-tr from-violet-950/10 via-indigo-500/10 to-cyan-300/50 py-16 px-6 xl:px-12 2xl:px-20 ">
+    <div className="relative bg-linear-to-tr from-violet-950/10 via-indigo-500/10 to-cyan-300/50 py-16">
+      <hr className="section-divider" />
+
       <div className="absolute inset-0 overlay-texture-image bg-repeat mix-blend-multiply"></div>
       <div className="padded z-2 relative">
         <div className="flex items-center justify-between">
@@ -85,7 +86,7 @@ export const CollectionVideoContentCarousel = ({
                 height: 16
               }}
             />
-            <span>{'See All'}</span>
+            <span>{t('See All')}</span>
           </button>
         </div>
       </div>
@@ -99,12 +100,19 @@ export const CollectionVideoContentCarousel = ({
         </p>
       </div>
 
-      <CollectionVideoPlayer
-        contentId={selectedContentId}
-        title={selectedVideoTitle}
-        mutePage={mutePage}
-        setMutePage={setMutePage}
-      />
+      {slides.map((slide) => {
+        if (slide.contentId === selectedContentId) {
+          return (
+            <CollectionVideoPlayer
+              key={slide.contentId}
+              contentId={slide.contentId}
+              title={slide.title}
+              mutePage={mutePage}
+              setMutePage={setMutePage}
+            />
+          )
+        }
+      })}
 
       <div className="pt-8">
         <Swiper
@@ -133,7 +141,7 @@ export const CollectionVideoContentCarousel = ({
                 />
                 <div className="p-4">
                   <span className="text-xs font-medium tracking-wider uppercase text-white/60">
-                    {slide.type || 'Короткое видео'}
+                    {slide.type || t('Short Video')}
                   </span>
                   <h3 className="text-base font-bold text-white/90 leading-tight line-clamp-3">
                     {slide.title}
