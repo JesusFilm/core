@@ -8,6 +8,7 @@ import pluginName from '@pothos/plugin-prisma'
 import ScopeAuthPlugin from '@pothos/plugin-scope-auth'
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing'
 import { createOpenTelemetryWrapper } from '@pothos/tracing-opentelemetry'
+import { DateResolver, DateTimeISOResolver } from 'graphql-scalars'
 
 import { Prisma, Role } from '.prisma/api-journeys-modern-client'
 import { User } from '@core/yoga/firebaseClient'
@@ -56,6 +57,8 @@ export const builder = new SchemaBuilder<{
   }
   PrismaTypes: PrismaTypes
   Scalars: {
+    Date: { Input: Date; Output: Date }
+    DateTimeISO: { Input: Date; Output: Date }
     ID: { Input: string; Output: number | string }
   }
 }>({
@@ -102,3 +105,6 @@ export const builder = new SchemaBuilder<{
 })
 
 builder.queryType({})
+builder.mutationType({})
+builder.addScalarType('Date', DateResolver)
+builder.addScalarType('DateTimeISO', DateTimeISOResolver)
