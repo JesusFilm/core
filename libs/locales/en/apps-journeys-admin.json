@@ -620,7 +620,7 @@
   "Hide Inactive": "Hide Inactive",
   "Date": "Date",
   "Duration": "Duration",
-  "Export data": "Export data",
+  "Export Data": "Export Data",
   "Showing {{ shownVisitors }} visitors out of {{ visitorsCount }}": "Showing {{ shownVisitors }} visitors out of {{ visitorsCount }}",
   "0 min": "0 min",
   "sec": "sec",

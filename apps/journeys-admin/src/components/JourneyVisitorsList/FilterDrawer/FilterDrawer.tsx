@@ -354,11 +354,11 @@ export function FilterDrawer({
         <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
           <Button
             variant="contained"
-            color="primary"
-            sx={{ width: '100%' }}
+            color="secondary"
+            fullWidth
             onClick={handleExport}
           >
-            {t('Export data')}
+            {t('Export Data')}
           </Button>
         </Box>
       )}
