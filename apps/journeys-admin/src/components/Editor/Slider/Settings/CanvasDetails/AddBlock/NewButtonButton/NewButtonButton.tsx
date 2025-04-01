@@ -12,8 +12,7 @@ import Cursor6Icon from '@core/shared/ui/icons/Cursor6'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
-  BlockFields_CardBlock as CardBlock,
-  BlockFields_TextResponseBlock as TextResponseBlock
+  BlockFields_CardBlock as CardBlock
 } from '../../../../../../../../__generated__/BlockFields'
 import { ButtonBlockCreate } from '../../../../../../../../__generated__/ButtonBlockCreate'
 import {
