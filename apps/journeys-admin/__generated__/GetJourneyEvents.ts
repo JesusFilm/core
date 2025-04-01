@@ -20,6 +20,15 @@ export interface GetJourneyEvents_journeyEventsConnection_edges_node_language {
   name: GetJourneyEvents_journeyEventsConnection_edges_node_language_name[];
 }
 
+export interface GetJourneyEvents_journeyEventsConnection_edges_node_journey {
+  __typename: "Journey";
+  /**
+   * private title for creators
+   */
+  title: string;
+  slug: string;
+}
+
 export interface GetJourneyEvents_journeyEventsConnection_edges_node_visitor {
   __typename: "Visitor";
   /**
@@ -61,6 +70,10 @@ export interface GetJourneyEvents_journeyEventsConnection_edges_node {
    */
   typename: string | null;
   visitorId: string | null;
+  /**
+   * Related fields queried from relevant ids in the events table
+   */
+  journey: GetJourneyEvents_journeyEventsConnection_edges_node_journey | null;
   visitor: GetJourneyEvents_journeyEventsConnection_edges_node_visitor | null;
 }
 
