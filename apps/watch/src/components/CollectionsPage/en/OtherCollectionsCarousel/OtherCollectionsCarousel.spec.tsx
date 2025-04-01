@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { OtherCollectionsCarousel } from './OtherCollectionsCarousel'
 
 jest.mock('next/router', () => ({
+  __esModule: true,
   useRouter: jest.fn()
 }))
 
