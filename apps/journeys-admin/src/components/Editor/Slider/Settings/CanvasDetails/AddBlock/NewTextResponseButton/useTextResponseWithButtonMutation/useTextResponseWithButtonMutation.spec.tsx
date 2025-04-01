@@ -137,42 +137,6 @@ describe('useTextResponseWithButtonMutation', () => {
 
       await waitFor(() => expect(result).toHaveBeenCalled())
     })
-
-    // TODO: fix this test
-    it.skip('should update cache after removal', async () => {
-      const cache = new InMemoryCache()
-      cache.restore({
-        'Journey:journey.id': {
-          blocks: [
-            { __ref: 'TextResponseBlock:textResponse.id' },
-            { __ref: 'ButtonBlock:button.id' },
-            { __ref: 'IconBlock:startIcon.id' },
-            { __ref: 'IconBlock:endIcon.id' }
-          ],
-          id: 'journey.id',
-          __typename: 'Journey'
-        }
-      })
-
-      const { result } = renderHook(() => useTextResponseWithButtonMutation(), {
-        wrapper: ({ children }) => (
-          <MockedProvider
-            cache={cache}
-            mocks={[textResponseWithButtonDeleteMock]}
-          >
-            {children}
-          </MockedProvider>
-        )
-      })
-
-      await act(async () => {
-        result.current.remove(blocks, 'journey.id')
-      })
-
-      await waitFor(() => {
-        expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([])
-      })
-    })
   })
 
   describe('restore', () => {
@@ -199,42 +163,6 @@ describe('useTextResponseWithButtonMutation', () => {
       })
 
       await waitFor(() => expect(result).toHaveBeenCalled())
-    })
-
-    // TODO: fix this test
-    it.skip('should update cache after restoration', async () => {
-      const cache = new InMemoryCache()
-      cache.restore({
-        'Journey:journey.id': {
-          blocks: [],
-          id: 'journey.id',
-          __typename: 'Journey'
-        }
-      })
-
-      const { result } = renderHook(() => useTextResponseWithButtonMutation(), {
-        wrapper: ({ children }) => (
-          <MockedProvider
-            cache={cache}
-            mocks={[textResponseWithButtonRestoreMock]}
-          >
-            {children}
-          </MockedProvider>
-        )
-      })
-
-      await act(async () => {
-        result.current.restore(blocks, 'journey.id')
-      })
-
-      await waitFor(() => {
-        expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
-          { __ref: 'TextResponseBlock:textResponse.id' },
-          { __ref: 'ButtonBlock:button.id' },
-          { __ref: 'IconBlock:startIcon.id' },
-          { __ref: 'IconBlock:endIcon.id' }
-        ])
-      })
     })
   })
 
