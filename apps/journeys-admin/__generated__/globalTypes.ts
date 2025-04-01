@@ -477,6 +477,8 @@ export interface JourneyUpdateInput {
   menuButtonIcon?: JourneyMenuButtonIcon | null;
   menuStepBlockId?: string | null;
   logoImageBlockId?: string | null;
+  socialNodeX?: number | null;
+  socialNodeY?: number | null;
 }
 
 export interface JourneyVisitorFilter {
