@@ -67,9 +67,9 @@ for resource in clusterroles clusterrolebindings roles rolebindings; do
   kubectl get $resource -l "app.kubernetes.io/name=external-dns" -o name 2>/dev/null | xargs -r kubectl delete --ignore-not-found || true
 done
 
-# Apply the Doppler Secret configuration for production
-print_info "Applying Doppler Secret configuration from consolidated secrets.yaml..."
-kubectl apply -f ${SCRIPT_DIR}/../doppler/secrets.yaml
+# Apply the Doppler Secret configuration for staging
+print_info "Applying Doppler Secret configuration from consolidated secrets-stage.yaml..."
+kubectl apply -f ${SCRIPT_DIR}/../doppler/secrets-stage.yaml
 
 # Wait for the Doppler Secret to be processed
 print_info "Waiting for Doppler Secret to be processed (20 seconds)..."
@@ -77,11 +77,11 @@ sleep 20
 
 # Check Doppler secret status to ensure it's working correctly
 print_info "Checking Doppler secret status..."
-SECRET_STATUS=$(kubectl get dopplersecret -n doppler-operator-system externaldns-aws-credentials-prod -o jsonpath='{.status.conditions[?(@.type=="secrets.doppler.com/SecretSyncReady")].status}' 2>/dev/null || echo "NotFound")
+SECRET_STATUS=$(kubectl get dopplersecret -n doppler-operator-system externaldns-aws-credentials -o jsonpath='{.status.conditions[?(@.type=="secrets.doppler.com/SecretSyncReady")].status}' 2>/dev/null || echo "NotFound")
 
 if [ "$SECRET_STATUS" != "True" ]; then
     print_warning "Doppler secret sync is not ready. Checking for errors..."
-    ERROR_MESSAGE=$(kubectl get dopplersecret -n doppler-operator-system externaldns-aws-credentials-prod -o jsonpath='{.status.conditions[?(@.type=="secrets.doppler.com/SecretSyncReady")].message}' 2>/dev/null || echo "Unknown error")
+    ERROR_MESSAGE=$(kubectl get dopplersecret -n doppler-operator-system externaldns-aws-credentials -o jsonpath='{.status.conditions[?(@.type=="secrets.doppler.com/SecretSyncReady")].message}' 2>/dev/null || echo "Unknown error")
     print_warning "Error: $ERROR_MESSAGE"
     
     if [[ "$ERROR_MESSAGE" == *"does not have access to requested project"* ]]; then
@@ -97,7 +97,7 @@ if ! kubectl get secret externaldns-aws-credentials -n default &> /dev/null; the
     print_warning "Checking Doppler operator status..."
     kubectl get pods -n doppler-operator-system
     print_warning "Checking DopplerSecret status:"
-    kubectl describe dopplersecret -n doppler-operator-system externaldns-aws-credentials-prod
+    kubectl describe dopplersecret -n doppler-operator-system externaldns-aws-credentials
     
     print_error "Doppler secret was not created. Please fix the Doppler configuration and try again."
     exit 1
@@ -130,13 +130,13 @@ print_info "Updating helm repositories..."
 helm repo update
 
 # Deploy external-dns using Helm with force flag to overwrite resources
-print_info "Deploying external-dns for production environment using Helm..."
+print_info "Deploying external-dns for staging environment using Helm..."
 print_info "This may take a few minutes..."
 
 # Deploy with an increased timeout (10 minutes)
 if ! helm upgrade --install external-dns external-dns/external-dns \
     --namespace external-dns \
-    --values "${SCRIPT_DIR}/external-dns-values-prod.yaml" \
+    --values "${SCRIPT_DIR}/external-dns-values-stage.yaml" \
     --force \
     --timeout 10m0s; then
     
@@ -177,6 +177,6 @@ POD_NAME=$(kubectl get pods -n external-dns -l app.kubernetes.io/name=external-d
 sleep 5
 kubectl logs $POD_NAME -n external-dns | grep -i "error" || true
 
-print_info "External-DNS deployment with Helm completed for production environment."
-print_info "The DNS record for analytics.central.jesusfilm.org should be updated within a few minutes."
+print_info "External-DNS deployment with Helm completed for staging environment."
+print_info "The DNS record for analytics.stage.central.jesusfilm.org should be updated within a few minutes."
 print_info "You can verify the logs with: kubectl logs -l app.kubernetes.io/name=external-dns -n external-dns" 

@@ -13,11 +13,11 @@ External-DNS automatically manages DNS records in AWS Route53 based on Kubernete
 - AWS credentials stored in Doppler for both environments:
   - Staging: project: `kubernetes`, config: `stage`
   - Production: project: `kubernetes`, config: `prod`
-- Helm (for Helm-based deployment)
+- Helm
 
 ## Deployment
 
-### Option 1: Helm-based Deployment (Recommended)
+### Helm-based Deployment
 
 This setup uses Helm to deploy the official External-DNS chart with Doppler Kubernetes Operator for managing secrets.
 
@@ -47,34 +47,6 @@ The production script follows the same pattern but uses:
 
 1. The `secrets.yaml` file with production configurations
 2. The production-specific values file `external-dns-values-prod.yaml`
-
-### Option 2: YAML-based Deployment
-
-#### Staging Environment
-
-```bash
-# Run the staging deployment script
-./deploy.sh
-```
-
-The script will:
-
-1. Apply the Doppler Secret configuration from the consolidated `secrets-stage.yaml`
-2. Deploy the External-DNS resources for staging
-3. Restart the External-DNS deployment (if it exists)
-4. Verify that everything is working correctly
-
-#### Production Environment
-
-```bash
-# Run the production deployment script
-./deploy-prod.sh
-```
-
-The production script follows the same pattern but uses:
-
-1. The `secrets.yaml` file with production configurations
-2. The production-specific deployment configuration in `externaldns-deployment-prod.yaml`
 
 ## Configuration
 
@@ -122,34 +94,36 @@ spec:
 
 ### External-DNS Configuration
 
-#### Helm-based Configuration
-
 The Helm values files (`external-dns-values-stage.yaml` and `external-dns-values-prod.yaml`) contain all the necessary configuration for the External-DNS deployment, including:
 
 - AWS provider and region settings
 - Credentials configuration using secrets
 - Domain filters
+- Zone ID filters
+- Ingress class configuration
 - Policy settings
 - Registry configurations
 - RBAC settings
 
-#### YAML-based Configuration
-
-##### Staging Environment
+#### Staging Environment
 
 The staging External-DNS deployment is configured with:
 
 - **Domain Filter**: `stage.central.jesusfilm.org` (only manages records for this domain)
+- **Zone ID Filter**: `Z09188583TUYV562FI49B` (specific Route53 hosted zone ID)
+- **Ingress Class**: `nginx` (only manages ingress resources with this class)
 - **AWS Region**: `us-east-2`
 - **Policy**: `upsert-only` (prevents deletion of existing records)
 - **Zone Type**: `public` (only manages public hosted zones)
 - **TXT Owner ID**: `external-dns`
 
-##### Production Environment
+#### Production Environment
 
 The production External-DNS deployment is configured with:
 
 - **Domain Filter**: `central.jesusfilm.org` (only manages records for this domain)
+- **Zone ID Filter**: `Z06687872LMUIKS0Y291P` (specific Route53 hosted zone ID)
+- **Ingress Class**: `nginx` (only manages ingress resources with this class)
 - **AWS Region**: `us-east-2`
 - **Policy**: `upsert-only` (prevents deletion of existing records)
 - **Zone Type**: `public` (only manages public hosted zones)
@@ -171,21 +145,26 @@ If DNS records are not being updated, check:
    kubectl get secret externaldns-aws-credentials -n default
    ```
 
-3. External-DNS pod logs (for Helm-based deployment):
+3. External-DNS pod logs:
 
    ```bash
    kubectl logs -l app.kubernetes.io/name=external-dns -n external-dns
    ```
 
-   For YAML-based deployment:
-
-   ```bash
-   kubectl logs -l app.kubernetes.io/name=external-dns -n default
-   ```
-
 4. Check ingress resources:
+
    ```bash
    kubectl get ingress --all-namespaces
+   ```
+
+5. Verify DNS records in Route53:
+
+   ```bash
+   # For staging
+   aws route53 list-resource-record-sets --hosted-zone-id Z09188583TUYV562FI49B
+
+   # For production
+   aws route53 list-resource-record-sets --hosted-zone-id Z06687872LMUIKS0Y291P
    ```
 
 ## Required AWS Permissions

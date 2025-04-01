@@ -3,22 +3,50 @@ sources:
   - service
   - ingress
 
-provider: aws
+# Set provider name to aws
+provider:
+  name: aws
 
+# Environment variables will be used for AWS credentials
+env:
+  - name: AWS_ACCESS_KEY_ID
+    valueFrom:
+      secretKeyRef:
+        name: externaldns-aws-credentials
+        key: AWS_ACCESS_KEY_ID
+  - name: AWS_SECRET_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        name: externaldns-aws-credentials
+        key: AWS_SECRET_ACCESS_KEY
+  - name: AWS_REGION
+    value: 'us-east-2'
+  - name: AWS_DEFAULT_REGION
+    value: 'us-east-2'
+
+# Set log level to debug
+logLevel: debug
+
+# AWS specific configuration
 aws:
   region: 'us-east-2'
-  # Credentials will be provided through Doppler's created secret
-  credentials:
-    secretName: 'externaldns-aws-credentials'
-    secretNamespace: 'default'
-    accessKey: 'AWS_ACCESS_KEY_ID'
-    secretKey: 'AWS_SECRET_ACCESS_KEY'
-  # Only look at public hosted zones
   zoneType: 'public'
+  batchChangeSize: 1000
+  preferCNAME: true
+  evaluateTargetHealth: true
+  assumeRole:
+    enabled: false
 
 # Processing only specific domains
 domainFilters:
-  - 'stage.central.jesusfilm.org'
+  - stage.central.jesusfilm.org
+
+# Define args to pass to external-dns
+extraArgs:
+  - --ingress-class=nginx
+  - --txt-prefix=external-dns-
+  - --zone-id-filter=Z09188583TUYV562FI49B
+  - --domain-filter=stage.central.jesusfilm.org
 
 policy: 'upsert-only'
 registry: 'txt'
@@ -28,10 +56,10 @@ txtOwnerId: 'external-dns'
 podAnnotations:
   environment: 'stage'
 
+# RBAC configuration
 rbac:
   create: true
 
+# Service account configuration
 serviceAccount:
   create: true
-  name: 'external-dns'
-  automountServiceAccountToken: true
