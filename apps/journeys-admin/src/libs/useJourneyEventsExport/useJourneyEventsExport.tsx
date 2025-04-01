@@ -165,7 +165,7 @@ export function useJourneyEventsExport(): {
               ...filter,
               typenames
             },
-            first: 1000,
+            first: 10000,
             after: cursor
           }
         })
