@@ -47,7 +47,7 @@ export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate
         }
       }
     },
-    result: {
+    result: jest.fn(() => ({
       data: {
         textResponseBlockCreate: {
           __typename: 'TextResponseBlock',
@@ -63,7 +63,7 @@ export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate
           placeholder: null
         }
       }
-    }
+    }))
   }
 
 describe('NewTextResponseButton', () => {
@@ -92,7 +92,7 @@ describe('NewTextResponseButton', () => {
 
       fireEvent.click(getByRole('button', { name: 'Text Input' }))
       await waitFor(() =>
-        expect(textResponseBlockCreateMock.result).toBeDefined()
+        expect(textResponseBlockCreateMock.result).toHaveBeenCalled()
       )
     })
 
@@ -133,7 +133,7 @@ describe('NewTextResponseButton', () => {
 
       fireEvent.click(getByRole('button', { name: 'Text Input' }))
       await waitFor(() =>
-        expect(textResponseBlockCreateMock.result).toBeDefined()
+        expect(textResponseBlockCreateMock.result).toHaveBeenCalled()
       )
       fireEvent.click(getByRole('button', { name: 'Undo' }))
       await waitFor(() => expect(deleteResult).toHaveBeenCalled())
@@ -195,7 +195,7 @@ describe('NewTextResponseButton', () => {
 
       fireEvent.click(getByRole('button', { name: 'Text Input' }))
       await waitFor(() =>
-        expect(textResponseBlockCreateMock.result).toBeDefined()
+        expect(textResponseBlockCreateMock.result).toHaveBeenCalled()
       )
       fireEvent.click(getByRole('button', { name: 'Undo' }))
       await waitFor(() => expect(deleteResult).toHaveBeenCalled())
@@ -234,7 +234,7 @@ describe('NewTextResponseButton', () => {
 
       fireEvent.click(getByRole('button', { name: 'Text Input' }))
       await waitFor(() =>
-        expect(textResponseBlockCreateMock.result).toBeDefined()
+        expect(textResponseBlockCreateMock.result).toHaveBeenCalled()
       )
       await waitFor(() =>
         expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
@@ -290,7 +290,6 @@ describe('NewTextResponseButton', () => {
 
       fireEvent.click(getByRole('button', { name: 'Text Input' }))
 
-      // Verify blocks are added in correct order
       await waitFor(() => {
         expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
           { __ref: 'StepBlock:step.id' },
