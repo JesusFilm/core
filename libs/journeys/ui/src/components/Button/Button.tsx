@@ -68,6 +68,7 @@ export function Button({
   endIconId,
   action,
   children,
+  submitEnabled,
   editableLabel
 }: ButtonProps): ReactElement {
   const [buttonClickEventCreate] = useMutation<
@@ -258,7 +259,9 @@ export function Button({
             ? editableLabel
             : label !== ''
               ? label
-              : t('Submit')}
+              : submitEnabled
+                ? t('Submit')
+                : t('Button')}
         </span>
       </MuiButton>
     </Box>
