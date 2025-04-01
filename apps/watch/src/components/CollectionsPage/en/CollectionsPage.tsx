@@ -9,6 +9,7 @@ import { CollectionsPageContent } from './CollectionsPageContent'
 import { CollectionsVideoContent } from './CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from './CollectionVideoContentCarousel'
 import { ContainerHero } from './ContainerHero'
+import { OtherCollectionsCarousel } from './OtherCollectionsCarousel'
 
 export function CollectionsPage(): ReactElement {
   const [mutePage, setMutePage] = useState(true)
@@ -143,6 +144,7 @@ export function CollectionsPage(): ReactElement {
           }}
           showDivider={false}
         />
+        <OtherCollectionsCarousel />
         <CollectionsVideoContent
           contentId="my-last-day/english"
           subtitle={'My Last Day'}
