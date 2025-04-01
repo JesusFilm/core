@@ -1,4 +1,4 @@
-import { MutationResult, Reference, gql, useMutation } from '@apollo/client'
+import { MutationResult, gql, useMutation } from '@apollo/client'
 
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
