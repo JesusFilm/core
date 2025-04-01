@@ -12,10 +12,7 @@ import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement, useState } from 'react'
 
-import {
-  GetAdminJourney,
-  GetAdminJourney_journey as Journey
-} from '../../../../__generated__/GetAdminJourney'
+import { GetAdminJourney } from '../../../../__generated__/GetAdminJourney'
 import {
   GetJourneyVisitors,
   GetJourneyVisitors_visitors_edges as VisitorEdge
@@ -23,7 +20,6 @@ import {
 import { UserJourneyOpen } from '../../../../__generated__/UserJourneyOpen'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { JourneyVisitorsList } from '../../../../src/components/JourneyVisitorsList'
-import { ClearAllButton } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/ClearAllButton'
 import { FilterDrawer } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
@@ -83,7 +79,7 @@ export const GET_JOURNEY_VISITORS_COUNT = gql`
   }
 `
 
-function JourneyVisitorsPage({ journey }: { journey: Journey }): ReactElement {
+function JourneyVisitorsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
   const router = useRouter()
@@ -232,7 +228,7 @@ function JourneyVisitorsPage({ journey }: { journey: Journey }): ReactElement {
         }
         sidePanelChildren={
           <FilterDrawer
-            journey={journey}
+            journeyId={journeyId}
             handleChange={handleChange}
             sortSetting={sortSetting}
             chatStarted={chatStarted}
@@ -269,17 +265,13 @@ export const getServerSideProps = withUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
-  let journey: Journey | null = null
-
   try {
-    const { data } = await apolloClient.query<GetAdminJourney>({
+    await apolloClient.query<GetAdminJourney>({
       query: GET_ADMIN_JOURNEY,
       variables: {
         id: query?.journeyId
       }
     })
-
-    journey = data?.journey
   } catch (_) {
     return {
       redirect: {
@@ -296,8 +288,7 @@ export const getServerSideProps = withUserTokenSSR({
 
   return {
     props: {
-      ...translations,
-      journey
+      ...translations
     }
   }
 })

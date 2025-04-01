@@ -8,7 +8,6 @@ import {
   CreateEventsExportLog,
   CreateEventsExportLogVariables
 } from '../../../../__generated__/CreateEventsExportLog'
-import { GetJourney_journey } from '../../../../__generated__/GetJourney'
 import {
   GetJourneyEvents,
   GetJourneyEventsVariables
@@ -58,7 +57,13 @@ const getJourneyEventsMock: MockedResponse<
               progress: null,
               typename: 'StepViewEvent',
               visitorId: 'visitor.id',
-              visitor: null
+              visitor: null,
+              journey: {
+                __typename: 'Journey',
+                id: '123',
+                title: 'Test Journey',
+                slug: 'test-journey'
+              }
             }
           },
           {
@@ -81,7 +86,13 @@ const getJourneyEventsMock: MockedResponse<
               progress: null,
               typename: 'StepViewEvent',
               visitorId: 'visitor.id',
-              visitor: null
+              visitor: null,
+              journey: {
+                __typename: 'Journey',
+                id: '123',
+                title: 'Test Journey',
+                slug: 'test-journey'
+              }
             }
           }
         ],
@@ -120,10 +131,7 @@ const createEventsExportLogMock: MockedResponse<
   }))
 }
 const props = {
-  journey: {
-    id: '123',
-    slug: 'test-journey'
-  } as GetJourney_journey,
+  journeyId: '123',
   chatStarted: false,
   withPollAnswers: false,
   withSubmittedText: false,
@@ -194,8 +202,8 @@ describe('FilterDrawer', () => {
       ).toBeInTheDocument()
     })
 
-    it('should not render the export button if journey is not provided', async () => {
-      const { journey, ...rest } = props
+    it('should not render the export button if journeyId is not provided', async () => {
+      const { journeyId, ...rest } = props
 
       render(
         <MockedProvider>

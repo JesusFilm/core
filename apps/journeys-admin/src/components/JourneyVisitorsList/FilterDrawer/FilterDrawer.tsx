@@ -18,8 +18,6 @@ import { ReactElement } from 'react'
 
 import X2Icon from '@core/shared/ui/icons/X2'
 
-import type { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
-
 import { ClearAllButton } from './ClearAllButton'
 
 const EVENT_CSV_OPTIONS = {
@@ -57,7 +55,7 @@ interface FilterDrawerProps {
   withIcon: boolean
   hideInteractive: boolean
   handleClearAll?: () => void
-  journey?: Journey
+  journeyId?: string
 }
 
 export const GET_JOURNEY_EVENTS_EXPORT = gql`
@@ -96,63 +94,14 @@ export const GET_JOURNEY_EVENTS_EXPORT = gql`
           progress
           typename
           visitorId
-          # May not be needed since we have access to journey?
-          # journey {
-          #   title
-          # }
+          journey {
+            title
+            slug
+          }
           visitor {
             name
             email
           }
-          # ... on ButtonClickEvent {
-          #   action
-          #   actionValue
-          # }
-          # ... on JourneyViewEvent {
-          #   language {
-          #     id
-          #     name(primary: true) {
-          #       value
-          #     }
-          #   }
-          # }
-          # ... on SignUpSubmissionEvent {
-          #   email
-          # }
-          # ... on VideoStartEvent {
-          #   source
-          # }
-          # ... on VideoCompleteEvent {
-          #   source
-          # }
-          # ... on ChatOpenEvent {
-          #   messagePlatform
-          # }
-          # ... on VideoCollapseEvent {
-          #   position
-          #   source
-          # }
-          # ... on VideoExpandEvent {
-          #   position
-          #   source
-          # }
-          # ... on VideoPauseEvent {
-          #   position
-          #   source
-          # }
-          # ... on VideoPlayEvent {
-          #   position
-          #   source
-          # }
-          # ... on VideoStartEvent {
-          #   position
-          #   source
-          # }
-          # ... on VideoProgressEvent {
-          #   position
-          #   source
-          #   progress
-          # }
         }
       }
       pageInfo {
@@ -174,7 +123,7 @@ export const CREATE_EVENTS_EXPORT_LOG = gql`
 `
 
 export function FilterDrawer({
-  journey,
+  journeyId,
   handleClose,
   handleChange,
   sortSetting,
@@ -191,7 +140,7 @@ export function FilterDrawer({
   const { enqueueSnackbar } = useSnackbar()
 
   const handleExport = async (): Promise<void> => {
-    if (journey == null) return
+    if (journeyId == null) return
 
     const events: any[] = []
     let cursor: string | null = null
@@ -201,7 +150,7 @@ export function FilterDrawer({
       do {
         const { data } = await getJourneyEvents({
           variables: {
-            journeyId: journey.id,
+            journeyId,
             first: 50,
             after: cursor
           }
@@ -218,13 +167,17 @@ export function FilterDrawer({
         hasNextPage = data?.journeyEventsConnection.pageInfo.hasNextPage
       } while (hasNextPage)
 
+      if (events.length === 0) return
+
       const eventData = events.map((edge) => {
         return {
           ...edge.node,
-          journeyName: journey?.title,
+          journeyName: edge.node.journey.title,
           visitorName: edge.node.visitor?.name ?? ''
         }
       })
+
+      const journey = events[0].node.journey
 
       const csv = stringify(eventData, EVENT_CSV_OPTIONS)
 
@@ -233,7 +186,7 @@ export function FilterDrawer({
       const url = window.URL.createObjectURL(blob)
 
       const today = format(new Date(), 'yyyy-MM-dd')
-      const fileName = `[${today}] ${journey?.slug}.csv`
+      const fileName = `[${today}] ${journey.slug}.csv`
 
       const link = document.createElement('a')
       link.target = '_blank'
@@ -249,7 +202,7 @@ export function FilterDrawer({
       await createEventsExportLog({
         variables: {
           input: {
-            journeyId: journey.id,
+            journeyId,
             eventsFilter: []
             // eventsFilter: ['JourneyViewEvent', 'ButtonClickEvent'],
             // preiodRangeStart: '2025-03-01T00:00:00Z',
@@ -350,7 +303,7 @@ export function FilterDrawer({
         </RadioGroup>
       </Box>
 
-      {journey != null && (
+      {journeyId != null && (
         <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
           <Button
             variant="contained"
