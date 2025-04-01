@@ -8,30 +8,41 @@ import { StringTranslationsModel } from '@crowdin/crowdin-api-client/out/stringT
 
 import { prisma } from '../../../lib/prisma'
 
-const CROWDIN_LANGUAGE_CODE_TO_ID = {
-  ru: '3934'
-} as const
+// Cache for video IDs to avoid repeated database queries
+let videoIds: string[] = []
 
-// const CROWDIN_LANGUAGE_CODE_TO_ID = {
-//   ko: '3804',
-//   ar: '139485',
-//   'es-MX': '21028',
-//   'pt-BR': '584',
-//   tr: '1942',
-//   'zh-CN': '21754',
-//   fa: '6788',
-//   'ur-PK': '407',
-//   he: '6930',
-//   hi: '6464',
-//   fr: '496',
-//   'zh-TW': '21753',
-//   ru: '3934',
-//   de: '1106',
-//   id: '16639',
-//   ja: '7083',
-//   vi: '3887',
-//   th: '13169'
-// } as const
+function setValidVideoIds(videos: Array<{ id: string }>): void {
+  videoIds = videos.map(({ id }) => id)
+}
+
+function getValidVideoIds(): string[] {
+  return videoIds
+}
+
+function isValidVideoId(id: string): boolean {
+  return videoIds.includes(id)
+}
+
+const CROWDIN_LANGUAGE_CODE_TO_ID = {
+  ko: '3804',
+  ar: '139485',
+  'es-MX': '21028',
+  'pt-BR': '584',
+  tr: '1942',
+  'zh-CN': '21754',
+  fa: '6788',
+  'ur-PK': '407',
+  he: '6930',
+  hi: '6464',
+  fr: '496',
+  'zh-TW': '21753',
+  ru: '3934',
+  de: '1106',
+  id: '16639',
+  ja: '7083',
+  vi: '3887',
+  th: '13169'
+} as const
 
 const ARCLIGHT_FILES = {
   collection_title: {
@@ -79,11 +90,18 @@ export async function service(): Promise<void> {
     throw new Error('Crowdin API key not set')
   }
 
-  const credentials: Credentials = {
-    token: process.env.CROWDIN_API_KEY
-  }
-
   try {
+    // Initialize video IDs cache
+    const videos = await prisma.video.findMany({
+      select: { id: true }
+    })
+    setValidVideoIds(videos)
+    console.log(`\n📊 Found ${videos.length} existing videos`)
+
+    const credentials: Credentials = {
+      token: process.env.CROWDIN_API_KEY
+    }
+
     const { stringTranslationsApi, sourceStringsApi } = new crowdin(credentials)
     const projectId = 47654
     const file = ARCLIGHT_FILES.collection_title
@@ -119,13 +137,6 @@ export async function service(): Promise<void> {
     const sourceStringMap = new Map(
       allSourceStrings.map(({ data }) => [data.id, data])
     )
-
-    // Get all existing video IDs from the database
-    const existingVideos = await prisma.video.findMany({
-      select: { id: true }
-    })
-    const existingVideoIds = new Set(existingVideos.map((v) => v.id))
-    console.log(`\n📊 Found ${existingVideoIds.size} existing videos`)
 
     for (const languageCode in CROWDIN_LANGUAGE_CODE_TO_ID) {
       console.log(`\n🔍 Fetching translations for ${languageCode}`)
@@ -172,26 +183,20 @@ export async function service(): Promise<void> {
 
           const upsertData = allTranslations
             .map((translation) => {
-              // Get the corresponding source string
               const sourceString = sourceStringMap.get(
                 translation.data.stringId
               )
-              console.log('sourceString', Boolean(sourceString?.id))
               if (!sourceString) return null
 
-              // Extract video ID from the source string's identifier
               const videoId = sourceString.identifier
-              console.log('videoId', videoId)
-              if (!videoId || !existingVideoIds.has(videoId)) {
+              if (!videoId || !isValidVideoId(videoId)) {
                 console.log(
                   `   ⚠️  Video ${videoId} does not exist in database`
                 )
                 return null
               }
 
-              // Get the translation text
               const text = getTranslationText(translation.data)
-              console.log('text', text)
               if (!text) return null
 
               return {
@@ -209,7 +214,6 @@ export async function service(): Promise<void> {
           console.log(
             `   Found ${upsertData.length} valid translations to upsert:`
           )
-          console.log(upsertData)
 
           if (upsertData.length > 0) {
             const result = await prisma.$transaction(
@@ -255,6 +259,9 @@ export async function service(): Promise<void> {
       console.error('\n❌ Unexpected error:', error)
     }
     throw error
+  } finally {
+    // Clear the cache when we're done
+    setValidVideoIds([])
   }
 }
 
