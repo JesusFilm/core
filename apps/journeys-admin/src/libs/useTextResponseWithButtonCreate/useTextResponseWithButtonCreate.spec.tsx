@@ -29,7 +29,7 @@ describe('useTextResponseWithButtonCreate', () => {
       integrationId: null,
       placeholder: null,
       __typename: 'TextResponseBlock' as const
-    } as TextResponseBlock,
+    } satisfies TextResponseBlock,
     buttonBlock: {
       id: 'button.id',
       parentBlockId: 'card.id',
@@ -43,7 +43,7 @@ describe('useTextResponseWithButtonCreate', () => {
       action: null,
       submitEnabled: true,
       __typename: 'ButtonBlock' as const
-    } as ButtonBlock
+    } satisfies ButtonBlock
   }
 
   it('should create text response with button', async () => {

@@ -28,7 +28,7 @@ describe('useTextResponseWithButtonDelete', () => {
       integrationId: null,
       placeholder: null,
       __typename: 'TextResponseBlock' as const
-    } as TextResponseBlock,
+    } satisfies TextResponseBlock,
     buttonBlock: {
       id: 'button.id',
       parentBlockId: 'card.id',
@@ -42,7 +42,7 @@ describe('useTextResponseWithButtonDelete', () => {
       action: null,
       submitEnabled: true,
       __typename: 'ButtonBlock' as const
-    } as ButtonBlock
+    } satisfies ButtonBlock
   }
 
   it('should delete text response with button', async () => {
