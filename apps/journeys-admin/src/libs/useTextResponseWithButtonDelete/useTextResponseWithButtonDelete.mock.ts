@@ -20,7 +20,7 @@ export const textResponseWithButtonDeleteMock: MockedResponse<
       endIconId: 'endIcon.id'
     }
   },
-  result: {
+  result: jest.fn(() => ({
     data: {
       textResponse: [
         {
@@ -51,5 +51,5 @@ export const textResponseWithButtonDeleteMock: MockedResponse<
         }
       ]
     }
-  }
+  }))
 }

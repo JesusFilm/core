@@ -28,7 +28,7 @@ describe('useTextResponseWithButtonDelete', () => {
       integrationId: null,
       placeholder: null,
       __typename: 'TextResponseBlock' as const
-    } as TextResponseBlock,
+    } satisfies TextResponseBlock,
     buttonBlock: {
       id: 'button.id',
       parentBlockId: 'card.id',
@@ -42,21 +42,15 @@ describe('useTextResponseWithButtonDelete', () => {
       action: null,
       submitEnabled: true,
       __typename: 'ButtonBlock' as const
-    } as ButtonBlock
+    } satisfies ButtonBlock
   }
 
   it('should delete text response with button', async () => {
-    const result = jest
-      .fn()
-      .mockReturnValue(textResponseWithButtonDeleteMock.result)
-
     const { result: hookResult } = renderHook(
       () => useTextResponseWithButtonDelete(),
       {
         wrapper: ({ children }) => (
-          <MockedProvider
-            mocks={[{ ...textResponseWithButtonDeleteMock, result }]}
-          >
+          <MockedProvider mocks={[textResponseWithButtonDeleteMock]}>
             {children}
           </MockedProvider>
         )
@@ -67,6 +61,8 @@ describe('useTextResponseWithButtonDelete', () => {
       hookResult.current[0](blocks, 'journey.id')
     })
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(textResponseWithButtonDeleteMock.result).toHaveBeenCalled()
+    )
   })
 })

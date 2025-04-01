@@ -29,7 +29,7 @@ describe('useTextResponseWithButtonCreate', () => {
       integrationId: null,
       placeholder: null,
       __typename: 'TextResponseBlock' as const
-    } as TextResponseBlock,
+    } satisfies TextResponseBlock,
     buttonBlock: {
       id: 'button.id',
       parentBlockId: 'card.id',
@@ -43,21 +43,15 @@ describe('useTextResponseWithButtonCreate', () => {
       action: null,
       submitEnabled: true,
       __typename: 'ButtonBlock' as const
-    } as ButtonBlock
+    } satisfies ButtonBlock
   }
 
   it('should create text response with button', async () => {
-    const result = jest
-      .fn()
-      .mockReturnValue(textResponseWithButtonCreateMock.result)
-
     const { result: hookResult } = renderHook(
       () => useTextResponseWithButtonCreate(),
       {
         wrapper: ({ children }) => (
-          <MockedProvider
-            mocks={[{ ...textResponseWithButtonCreateMock, result }]}
-          >
+          <MockedProvider mocks={[textResponseWithButtonCreateMock]}>
             {children}
           </MockedProvider>
         )
@@ -68,7 +62,9 @@ describe('useTextResponseWithButtonCreate', () => {
       hookResult.current[0](blocks, 'journey.id')
     })
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(textResponseWithButtonCreateMock.result).toHaveBeenCalled()
+    )
   })
 
   it('should update cache after creation', async () => {

@@ -47,7 +47,7 @@ export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate
         }
       }
     },
-    result: {
+    result: jest.fn(() => ({
       data: {
         textResponseBlockCreate: {
           __typename: 'TextResponseBlock',
@@ -63,7 +63,7 @@ export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate
           placeholder: null
         }
       }
-    }
+    }))
   }
 
 describe('NewTextResponseButton', () => {
@@ -92,7 +92,7 @@ describe('NewTextResponseButton', () => {
 
       fireEvent.click(getByRole('button', { name: 'Text Input' }))
       await waitFor(() =>
-        expect(textResponseBlockCreateMock.result).toBeDefined()
+        expect(textResponseBlockCreateMock.result).toHaveBeenCalled()
       )
     })
 
@@ -133,7 +133,7 @@ describe('NewTextResponseButton', () => {
 
       fireEvent.click(getByRole('button', { name: 'Text Input' }))
       await waitFor(() =>
-        expect(textResponseBlockCreateMock.result).toBeDefined()
+        expect(textResponseBlockCreateMock.result).toHaveBeenCalled()
       )
       fireEvent.click(getByRole('button', { name: 'Undo' }))
       await waitFor(() => expect(deleteResult).toHaveBeenCalled())
@@ -195,7 +195,7 @@ describe('NewTextResponseButton', () => {
 
       fireEvent.click(getByRole('button', { name: 'Text Input' }))
       await waitFor(() =>
-        expect(textResponseBlockCreateMock.result).toBeDefined()
+        expect(textResponseBlockCreateMock.result).toHaveBeenCalled()
       )
       fireEvent.click(getByRole('button', { name: 'Undo' }))
       await waitFor(() => expect(deleteResult).toHaveBeenCalled())
@@ -234,7 +234,7 @@ describe('NewTextResponseButton', () => {
 
       fireEvent.click(getByRole('button', { name: 'Text Input' }))
       await waitFor(() =>
-        expect(textResponseBlockCreateMock.result).toBeDefined()
+        expect(textResponseBlockCreateMock.result).toHaveBeenCalled()
       )
       await waitFor(() =>
         expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
@@ -290,7 +290,6 @@ describe('NewTextResponseButton', () => {
 
       fireEvent.click(getByRole('button', { name: 'Text Input' }))
 
-      // Verify blocks are added in correct order
       await waitFor(() => {
         expect(cache.extract()['Journey:journey.id']?.blocks).toEqual([
           { __ref: 'StepBlock:step.id' },
@@ -310,18 +309,11 @@ describe('NewTextResponseButton', () => {
         .mockReturnValueOnce('startIcon.id')
         .mockReturnValueOnce('endIcon.id')
 
-      const result = jest
-        .fn()
-        .mockResolvedValue(textResponseWithButtonCreateMock.result)
-      const undoResult = jest
-        .fn()
-        .mockResolvedValue(textResponseWithButtonDeleteMock.result)
-
       const { getByRole } = render(
         <MockedProvider
           mocks={[
-            { ...textResponseWithButtonCreateMock, result },
-            { ...textResponseWithButtonDeleteMock, result: undoResult }
+            textResponseWithButtonCreateMock,
+            textResponseWithButtonDeleteMock
           ]}
         >
           <JourneyProvider
@@ -341,11 +333,14 @@ describe('NewTextResponseButton', () => {
       )
 
       fireEvent.click(getByRole('button', { name: 'Text Input' }))
-      await waitFor(() => expect(result).toHaveBeenCalled())
-      // instead of result, do mock...
+      await waitFor(() =>
+        expect(textResponseWithButtonCreateMock.result).toHaveBeenCalled()
+      )
 
       fireEvent.click(getByRole('button', { name: 'Undo' }))
-      await waitFor(() => expect(undoResult).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(textResponseWithButtonDeleteMock.result).toHaveBeenCalled()
+      )
     })
 
     it('should redo text response with button creation', async () => {
@@ -355,22 +350,12 @@ describe('NewTextResponseButton', () => {
         .mockReturnValueOnce('startIcon.id')
         .mockReturnValueOnce('endIcon.id')
 
-      const result = jest
-        .fn()
-        .mockResolvedValue(textResponseWithButtonCreateMock.result)
-      const undoResult = jest
-        .fn()
-        .mockResolvedValue(textResponseWithButtonDeleteMock.result)
-      const redoResult = jest
-        .fn()
-        .mockResolvedValue(textResponseWithButtonRestoreMock.result)
-
       const { getByRole } = render(
         <MockedProvider
           mocks={[
-            { ...textResponseWithButtonCreateMock, result },
-            { ...textResponseWithButtonDeleteMock, result: undoResult },
-            { ...textResponseWithButtonRestoreMock, result: redoResult }
+            textResponseWithButtonCreateMock,
+            textResponseWithButtonDeleteMock,
+            textResponseWithButtonRestoreMock
           ]}
         >
           <JourneyProvider
@@ -391,13 +376,19 @@ describe('NewTextResponseButton', () => {
       )
 
       fireEvent.click(getByRole('button', { name: 'Text Input' }))
-      await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(textResponseWithButtonCreateMock.result).toHaveBeenCalled()
+      )
 
       fireEvent.click(getByRole('button', { name: 'Undo' }))
-      await waitFor(() => expect(undoResult).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(textResponseWithButtonDeleteMock.result).toHaveBeenCalled()
+      )
 
       fireEvent.click(getByRole('button', { name: 'Redo' }))
-      await waitFor(() => expect(redoResult).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(textResponseWithButtonRestoreMock.result).toHaveBeenCalled()
+      )
     })
   })
 

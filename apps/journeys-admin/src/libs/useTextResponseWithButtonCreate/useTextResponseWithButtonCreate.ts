@@ -62,6 +62,9 @@ interface TextResponseWithButtonBlocks {
   buttonBlock: ButtonBlock
 }
 
+/**
+ * Hook that provides a function to create a text response block with its associated submit button.
+ */
 export function useTextResponseWithButtonCreate(): [
   (blocks: TextResponseWithButtonBlocks, journeyId: string) => void,
   MutationResult<TextResponseWithButtonCreate>

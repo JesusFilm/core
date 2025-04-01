@@ -42,6 +42,10 @@ interface TextResponseWithButtonBlocks {
   buttonBlock: ButtonBlock
 }
 
+/**
+ * Hook that provides a function to restore a text response block with its associated submit button.
+ * Used in the redo function of newTextResponseButton.tsx
+ */
 export function useTextResponseWithButtonRestore(): [
   (blocks: TextResponseWithButtonBlocks, journeyId: string) => void
 ] {

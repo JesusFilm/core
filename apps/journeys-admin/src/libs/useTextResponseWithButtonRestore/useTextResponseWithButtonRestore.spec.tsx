@@ -28,7 +28,7 @@ describe('useTextResponseWithButtonRestore', () => {
       integrationId: null,
       placeholder: null,
       __typename: 'TextResponseBlock' as const
-    } as TextResponseBlock,
+    } satisfies TextResponseBlock,
     buttonBlock: {
       id: 'button.id',
       parentBlockId: 'card.id',
@@ -42,21 +42,15 @@ describe('useTextResponseWithButtonRestore', () => {
       action: null,
       submitEnabled: true,
       __typename: 'ButtonBlock' as const
-    } as ButtonBlock
+    } satisfies ButtonBlock
   }
 
   it('should restore text response with button', async () => {
-    const result = jest
-      .fn()
-      .mockReturnValue(textResponseWithButtonRestoreMock.result)
-
     const { result: hookResult } = renderHook(
       () => useTextResponseWithButtonRestore(),
       {
         wrapper: ({ children }) => (
-          <MockedProvider
-            mocks={[{ ...textResponseWithButtonRestoreMock, result }]}
-          >
+          <MockedProvider mocks={[textResponseWithButtonRestoreMock]}>
             {children}
           </MockedProvider>
         )
@@ -67,6 +61,8 @@ describe('useTextResponseWithButtonRestore', () => {
       hookResult.current[0](blocks, 'journey.id')
     })
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(textResponseWithButtonRestoreMock.result).toHaveBeenCalled()
+    )
   })
 })

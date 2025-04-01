@@ -45,10 +45,12 @@ export function NewTextResponseButton(): ReactElement {
   const [textResponseBlockCreate, { loading: textResponseLoading }] =
     useMutation<TextResponseBlockCreate>(TEXT_RESPONSE_BLOCK_CREATE)
 
-  const [create, { loading: textResponseWithButtonLoading }] =
-    useTextResponseWithButtonCreate()
-  const [remove] = useTextResponseWithButtonDelete()
-  const [restore] = useTextResponseWithButtonRestore()
+  const [
+    createTextResponseWithButton,
+    { loading: textResponseWithButtonLoading }
+  ] = useTextResponseWithButtonCreate()
+  const [removeTextResponseWithButton] = useTextResponseWithButtonDelete()
+  const [restoreTextResponseWithButton] = useTextResponseWithButtonRestore()
 
   const { journey } = useJourney()
   const {
@@ -84,13 +86,13 @@ export function NewTextResponseButton(): ReactElement {
       type: null,
       routeId: null,
       integrationId: null,
-      __typename: 'TextResponseBlock' as const
+      __typename: 'TextResponseBlock'
     }
 
     if (!hasSubmitButton) {
       const buttonBlock: ButtonBlock = {
         id: uuidv4(),
-        __typename: 'ButtonBlock' as const,
+        __typename: 'ButtonBlock',
         parentBlockId: card.id,
         label: t('Submit'),
         buttonVariant: ButtonVariant.contained,
@@ -117,7 +119,7 @@ export function NewTextResponseButton(): ReactElement {
             selectedBlockId: textResponseBlock.id,
             activeSlide: ActiveSlide.Content
           })
-          create(blocks, journey.id)
+          createTextResponseWithButton(blocks, journey.id)
         },
         undo({ previousBlockId }) {
           dispatch({
@@ -125,7 +127,7 @@ export function NewTextResponseButton(): ReactElement {
             selectedBlockId: previousBlockId,
             activeSlide: ActiveSlide.Content
           })
-          remove(blocks, journey.id)
+          removeTextResponseWithButton(blocks, journey.id)
         },
         redo({ textResponseId }) {
           dispatch({
@@ -133,7 +135,7 @@ export function NewTextResponseButton(): ReactElement {
             selectedBlockId: textResponseId,
             activeSlide: ActiveSlide.Content
           })
-          restore(blocks, journey.id)
+          restoreTextResponseWithButton(blocks, journey.id)
         }
       })
     } else {

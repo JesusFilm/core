@@ -55,7 +55,7 @@ export const textResponseWithButtonCreateMock: MockedResponse<
       }
     }
   },
-  result: {
+  result: jest.fn(() => ({
     data: {
       textResponse: {
         id: 'textResponse.id',
@@ -117,5 +117,5 @@ export const textResponseWithButtonCreateMock: MockedResponse<
         __typename: 'ButtonBlock'
       }
     }
-  }
+  }))
 }
