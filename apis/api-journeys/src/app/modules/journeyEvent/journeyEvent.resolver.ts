@@ -1,7 +1,7 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
 
-import { Journey, Prisma, Visitor } from '.prisma/api-journeys-client'
+import { Event, Journey, Prisma, Visitor } from '.prisma/api-journeys-client'
 import { CaslAccessible } from '@core/nest/common/CaslAuthModule'
 
 import {
@@ -39,22 +39,31 @@ export class JourneyEventResolver {
     })
   }
 
-  @ResolveField()
-  __resolveType(obj: { __typename?: string; typename: string }): string {
-    return obj.__typename ?? obj.typename
-  }
+  // @ResolveField()
+  // __resolveType(obj: { __typename?: string; typename: string }): string {
+  //   return obj.__typename ?? obj.typename
+  // }
 
-  @ResolveField()
-  async journey(@Parent() event): Promise<Journey | null> {
-    return this.prismaService.journey.findUnique({
-      where: { id: event.journeyId }
-    })
-  }
+  // @ResolveField()
+  // async journey(@Parent() journeyEvent): Promise<Journey | null> {
+  //   // console.log('journeyEvent', journeyEvent)
+  //   if (journeyEvent.journey == null) {
+  //     console.log('------------------ JOURNEY ------------------')
+  //     return this.prismaService.journey.findUnique({
+  //       where: { id: journeyEvent.journeyId }
+  //     })
+  //   }
+  //   return journeyEvent.journey
+  // }
 
-  @ResolveField()
-  async visitor(@Parent() journeyEvent): Promise<Visitor | null> {
-    return await this.prismaService.visitor.findUnique({
-      where: { id: journeyEvent.visitorId }
-    })
-  }
+  // @ResolveField()
+  // async visitor(@Parent() journeyEvent): Promise<Visitor | null> {
+  //   if (journeyEvent.visitor == null) {
+  //     console.log('------------------ VISITOR ------------------')
+  //     return await this.prismaService.visitor.findUnique({
+  //       where: { id: journeyEvent.visitorId }
+  //     })
+  //   }
+  //   return journeyEvent.visitor
+  // }
 }

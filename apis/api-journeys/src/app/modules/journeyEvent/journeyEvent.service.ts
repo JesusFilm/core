@@ -6,10 +6,12 @@ import { Prisma } from '.prisma/api-journeys-client'
 
 import {
   ButtonAction,
+  Journey,
   JourneyEventsConnection,
   JourneyEventsFilter,
   MessagePlatform,
-  VideoBlockSource
+  VideoBlockSource,
+  Visitor
 } from '../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -59,6 +61,10 @@ export class JourneyEventService {
 
     const result = await this.prismaService.event.findMany({
       where,
+      include: {
+        journey: true,
+        visitor: true
+      },
       orderBy: { createdAt: 'desc' },
       cursor: after != null ? { id: after } : undefined,
       skip: after == null ? 0 : 1,
@@ -83,7 +89,9 @@ export class JourneyEventService {
           blockId: event.blockId,
           position: event.position,
           source: event.source as VideoBlockSource,
-          progress: event.progress
+          progress: event.progress,
+          journey: event.journey as unknown as Journey,
+          visitor: event.visitor as unknown as Visitor
         },
         cursor: event.id
       })),
