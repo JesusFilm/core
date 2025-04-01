@@ -21,11 +21,12 @@ import {
   ButtonVariant
 } from '../../../../../../../../__generated__/globalTypes'
 import { TextResponseBlockCreate } from '../../../../../../../../__generated__/TextResponseBlockCreate'
+import { useTextResponseWithButtonCreate } from '../../../../../../../libs/useTextResponseWithButtonCreate'
+import { useTextResponseWithButtonDelete } from '../../../../../../../libs/useTextResponseWithButtonDelete'
+import { useTextResponseWithButtonRestore } from '../../../../../../../libs/useTextResponseWithButtonRestore'
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand/useBlockCreateCommand'
 import { Button } from '../Button'
-
-import { useTextResponseWithButtonMutation } from './useTextResponseWithButtonMutation/useTextResponseWithButtonMutation'
 
 export const TEXT_RESPONSE_BLOCK_CREATE = gql`
   ${TEXT_RESPONSE_FIELDS}
@@ -44,12 +45,10 @@ export function NewTextResponseButton(): ReactElement {
   const [textResponseBlockCreate, { loading: textResponseLoading }] =
     useMutation<TextResponseBlockCreate>(TEXT_RESPONSE_BLOCK_CREATE)
 
-  const {
-    create,
-    remove,
-    restore,
-    result: { loading: textResponseWithButtonLoading }
-  } = useTextResponseWithButtonMutation()
+  const [create, { loading: textResponseWithButtonLoading }] =
+    useTextResponseWithButtonCreate()
+  const [remove] = useTextResponseWithButtonDelete()
+  const [restore] = useTextResponseWithButtonRestore()
 
   const { journey } = useJourney()
   const {
