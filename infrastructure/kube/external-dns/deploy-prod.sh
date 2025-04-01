@@ -36,37 +36,6 @@ if ! kubectl cluster-info &> /dev/null; then
     exit 1
 fi
 
-# Clean up any existing external-dns resources that might conflict with Helm
-print_info "Cleaning up any existing external-dns resources that might conflict with Helm..."
-
-# First, check if there are any existing external-dns helm releases
-if helm list -n external-dns | grep -q "external-dns"; then
-    print_info "Found existing external-dns Helm release. Deleting it..."
-    helm uninstall external-dns -n external-dns || true
-    
-    # Wait a moment for resources to be cleaned up
-    print_info "Waiting for resources to be cleaned up..."
-    sleep 10
-fi
-
-# Delete any existing resources that might conflict
-print_info "Deleting any conflicting ClusterRoles and ClusterRoleBindings..."
-kubectl delete clusterrole external-dns --ignore-not-found
-kubectl delete clusterrolebinding external-dns --ignore-not-found
-kubectl delete clusterrolebinding external-dns-viewer --ignore-not-found
-
-print_info "Deleting any conflicting ServiceAccounts and Deployments..."
-kubectl delete serviceaccount external-dns -n default --ignore-not-found
-kubectl delete serviceaccount external-dns -n external-dns --ignore-not-found
-kubectl delete deployment external-dns -n default --ignore-not-found
-kubectl delete deployment external-dns -n external-dns --ignore-not-found
-
-# Find and delete any other resources with external-dns labels
-print_info "Looking for any other resources with external-dns labels..."
-for resource in clusterroles clusterrolebindings roles rolebindings; do
-  kubectl get $resource -l "app.kubernetes.io/name=external-dns" -o name 2>/dev/null | xargs -r kubectl delete --ignore-not-found || true
-done
-
 # Apply the Doppler Secret configuration for production
 print_info "Applying Doppler Secret configuration from consolidated secrets.yaml..."
 kubectl apply -f ${SCRIPT_DIR}/../doppler/secrets.yaml
