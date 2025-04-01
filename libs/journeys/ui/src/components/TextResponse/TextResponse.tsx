@@ -3,7 +3,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/system/styleFunctionSx'
-import {useFormikContext } from 'formik'
+import { useFormikContext } from 'formik'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { TextResponseType } from '../../../__generated__/globalTypes'
