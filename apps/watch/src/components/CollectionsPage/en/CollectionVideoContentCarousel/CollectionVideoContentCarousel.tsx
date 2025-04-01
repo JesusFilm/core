@@ -61,6 +61,8 @@ export const CollectionVideoContentCarousel = ({
 
   return (
     <div className="relative bg-linear-to-tr from-violet-950/10 via-indigo-500/10 to-cyan-300/50 py-16">
+      <hr className="section-divider" />
+
       <div className="absolute inset-0 overlay-texture-image bg-repeat mix-blend-multiply"></div>
       <div className="padded z-2 relative">
         <div className="flex items-center justify-between">

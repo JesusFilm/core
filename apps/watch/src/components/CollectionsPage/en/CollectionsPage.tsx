@@ -28,6 +28,7 @@ export function CollectionsPage(): ReactElement {
           }
           mutePage={mutePage}
           setMutePage={setMutePage}
+          showDivider={false}
           questions={[
             {
               id: 1,
@@ -142,7 +143,6 @@ export function CollectionsPage(): ReactElement {
             title: 'Want to grow deep in your understanding of the Bible?',
             buttonText: 'Join Our Bible study'
           }}
-          showDivider={false}
         />
         <OtherCollectionsCarousel />
         <CollectionsVideoContent
@@ -315,7 +315,6 @@ export function CollectionsPage(): ReactElement {
           description={
             "God created humans to be spiritually and relationally connected with Him, but how can we keep God's commands? How can we live without shame? We can't restore ourselves to honor. It would seem we're doomed, except God doesn't want His creation to die. He is merciful and loving, and wants us to be restored, living with Him in full life."
           }
-          showDivider={true}
           mutePage={mutePage}
           setMutePage={setMutePage}
           questions={[
@@ -538,7 +537,6 @@ export function CollectionsPage(): ReactElement {
             title: 'Want to understand more about the resurrection?',
             buttonText: 'Join Our Bible study'
           }}
-          showDivider={false}
         />
         <CollectionsVideoContent
           contentId="the-story-short-film/english"
@@ -681,7 +679,6 @@ export function CollectionsPage(): ReactElement {
             title: "Want to explore life's biggest questions?",
             buttonText: 'Join Our Bible study'
           }}
-          showDivider={false}
         />
         <CollectionsVideoContent
           contentId="chosen-witness/english"
@@ -808,7 +805,6 @@ export function CollectionsPage(): ReactElement {
             title: "Want to deepen your understanding of Jesus' life?",
             buttonText: 'Join Our Bible study'
           }}
-          showDivider={false}
         />
       </CollectionsPageContent>
     </PageWrapper>

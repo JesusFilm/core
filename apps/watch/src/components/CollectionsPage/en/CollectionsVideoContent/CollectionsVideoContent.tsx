@@ -64,10 +64,8 @@ export const CollectionsVideoContent = ({
   onOpenDialog
 }: VideoSectionProps): ReactElement => {
   return (
-    <div id={contentId}>
-      {showDivider && (
-        <hr className="mb-18 border-t-2 border-t-black/70 border-b-1 border-b-white/5 inset-shadow-sm" />
-      )}
+    <div id={contentId} className="py-16 relative">
+      {showDivider && <hr className="section-divider" />}
       <CollectionVideoPlayer
         contentId={contentId}
         title={videoTitle}
@@ -90,7 +88,6 @@ export const CollectionsVideoContent = ({
           />
         )}
       </div>
-
       {(bibleQuotes.length > 0 || freeResource) && (
         <>
           <BibleQuotesCarousel
