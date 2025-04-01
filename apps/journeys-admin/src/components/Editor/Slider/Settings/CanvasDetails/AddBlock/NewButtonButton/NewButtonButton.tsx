@@ -68,19 +68,16 @@ export function NewButtonButton(): ReactElement {
 
     if (card == null || journey == null) return
 
-    // Check for text inputs on the card
     const hasTextInputs = card.children.some(
       (block) => block.__typename === 'TextResponseBlock'
     )
 
-    // Check for existing submit buttons in the card
     const hasSubmitButton = card.children.some(
       (block) =>
         block.__typename === 'ButtonBlock' &&
         (block as TreeBlock<ButtonBlock>).submitEnabled === true
     )
 
-    // Set submitEnabled if there are text inputs and no submit buttons
     const shouldBeSubmitButton = hasTextInputs && !hasSubmitButton
 
     const button: ButtonBlock = {

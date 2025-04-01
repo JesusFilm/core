@@ -84,13 +84,13 @@ export function NewTextResponseButton(): ReactElement {
       type: null,
       routeId: null,
       integrationId: null,
-      __typename: 'TextResponseBlock' as const
+      __typename: 'TextResponseBlock'
     }
 
     if (!hasSubmitButton) {
       const buttonBlock: ButtonBlock = {
         id: uuidv4(),
-        __typename: 'ButtonBlock' as const,
+        __typename: 'ButtonBlock',
         parentBlockId: card.id,
         label: t('Submit'),
         buttonVariant: ButtonVariant.contained,

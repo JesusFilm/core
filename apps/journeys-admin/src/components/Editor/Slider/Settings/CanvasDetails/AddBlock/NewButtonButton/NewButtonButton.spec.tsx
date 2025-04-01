@@ -69,22 +69,13 @@ describe('NewButtonButton', () => {
   })
 
   describe('regular button logic', () => {
-    const result = jest.fn(() => ({ ...buttonBlockCreateMock.result }))
-
     it('should check if the mutation gets called', async () => {
       mockUuidv4.mockReturnValueOnce('buttonBlockId')
       mockUuidv4.mockReturnValueOnce('startIconId')
       mockUuidv4.mockReturnValueOnce('endIconId')
 
       const { getByRole } = render(
-        <MockedProvider
-          mocks={[
-            {
-              ...buttonBlockCreateMock,
-              result
-            }
-          ]}
-        >
+        <MockedProvider mocks={[buttonBlockCreateMock]}>
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
@@ -98,7 +89,9 @@ describe('NewButtonButton', () => {
         </MockedProvider>
       )
       fireEvent.click(getByRole('button'))
-      await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(buttonBlockCreateMock.result).toHaveBeenCalled()
+      )
     })
 
     it('should remove block if undo clicked', async () => {
@@ -121,15 +114,7 @@ describe('NewButtonButton', () => {
       }
 
       const { getByRole } = render(
-        <MockedProvider
-          mocks={[
-            {
-              ...buttonBlockCreateMock,
-              result
-            },
-            deleteBlockMock
-          ]}
-        >
+        <MockedProvider mocks={[buttonBlockCreateMock, deleteBlockMock]}>
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
@@ -144,7 +129,9 @@ describe('NewButtonButton', () => {
         </MockedProvider>
       )
       fireEvent.click(getByRole('button', { name: 'Button' }))
-      await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(buttonBlockCreateMock.result).toHaveBeenCalled()
+      )
       fireEvent.click(getByRole('button', { name: 'Undo' }))
       await waitFor(() => expect(deleteResult).toHaveBeenCalled())
     })
@@ -182,14 +169,7 @@ describe('NewButtonButton', () => {
 
       const { getByRole } = render(
         <MockedProvider
-          mocks={[
-            {
-              ...buttonBlockCreateMock,
-              result
-            },
-            deleteBlockMock,
-            blockRestoreMock
-          ]}
+          mocks={[buttonBlockCreateMock, deleteBlockMock, blockRestoreMock]}
         >
           <JourneyProvider
             value={{
@@ -206,7 +186,9 @@ describe('NewButtonButton', () => {
         </MockedProvider>
       )
       fireEvent.click(getByRole('button', { name: 'Button' }))
-      await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(buttonBlockCreateMock.result).toHaveBeenCalled()
+      )
       fireEvent.click(getByRole('button', { name: 'Undo' }))
       await waitFor(() => expect(deleteResult).toHaveBeenCalled())
       fireEvent.click(getByRole('button', { name: 'Redo' }))
@@ -228,15 +210,7 @@ describe('NewButtonButton', () => {
       })
 
       const { getByRole } = render(
-        <MockedProvider
-          cache={cache}
-          mocks={[
-            {
-              ...buttonBlockCreateMock,
-              result
-            }
-          ]}
-        >
+        <MockedProvider cache={cache} mocks={[buttonBlockCreateMock]}>
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
@@ -250,7 +224,9 @@ describe('NewButtonButton', () => {
         </MockedProvider>
       )
       fireEvent.click(getByRole('button'))
-      await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(buttonBlockCreateMock.result).toHaveBeenCalled()
+      )
       expect(cache.extract()['Journey:journeyId']?.blocks).toEqual([
         { __ref: 'TypographyBlock:typographyBlockId' },
         { __ref: 'IconBlock:startIconId' },
@@ -266,22 +242,8 @@ describe('NewButtonButton', () => {
       mockUuidv4.mockReturnValueOnce('submitStartIconId')
       mockUuidv4.mockReturnValueOnce('submitEndIconId')
 
-      const submitResult = jest.fn(() => ({ ...submitButtonCreateMock.result }))
-      const regularResult = jest.fn(() => ({ ...buttonBlockCreateMock.result }))
-
       const { getByRole } = render(
-        <MockedProvider
-          mocks={[
-            {
-              ...submitButtonCreateMock,
-              result: submitResult
-            },
-            {
-              ...buttonBlockCreateMock,
-              result: regularResult
-            }
-          ]}
-        >
+        <MockedProvider mocks={[submitButtonCreateMock, buttonBlockCreateMock]}>
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
@@ -300,8 +262,8 @@ describe('NewButtonButton', () => {
       )
       fireEvent.click(getByRole('button'))
       await waitFor(() => {
-        expect(submitResult).toHaveBeenCalled()
-        expect(regularResult).not.toHaveBeenCalled()
+        expect(submitButtonCreateMock.result).toHaveBeenCalled()
+        expect(buttonBlockCreateMock.result).not.toHaveBeenCalled()
       })
     })
 
@@ -310,22 +272,8 @@ describe('NewButtonButton', () => {
       mockUuidv4.mockReturnValueOnce('startIconId')
       mockUuidv4.mockReturnValueOnce('endIconId')
 
-      const submitResult = jest.fn(() => ({ ...submitButtonCreateMock.result }))
-      const regularResult = jest.fn(() => ({ ...buttonBlockCreateMock.result }))
-
       const { getByRole } = render(
-        <MockedProvider
-          mocks={[
-            {
-              ...submitButtonCreateMock,
-              result: submitResult
-            },
-            {
-              ...buttonBlockCreateMock,
-              result: regularResult
-            }
-          ]}
-        >
+        <MockedProvider mocks={[submitButtonCreateMock, buttonBlockCreateMock]}>
           <JourneyProvider
             value={{
               journey: { id: 'journeyId' } as unknown as Journey,
@@ -347,8 +295,8 @@ describe('NewButtonButton', () => {
       )
       fireEvent.click(getByRole('button'))
       await waitFor(() => {
-        expect(regularResult).toHaveBeenCalled()
-        expect(submitResult).not.toHaveBeenCalled()
+        expect(buttonBlockCreateMock.result).toHaveBeenCalled()
+        expect(submitButtonCreateMock.result).not.toHaveBeenCalled()
       })
     })
   })

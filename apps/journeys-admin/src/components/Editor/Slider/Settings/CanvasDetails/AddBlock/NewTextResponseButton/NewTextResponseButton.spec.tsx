@@ -310,18 +310,11 @@ describe('NewTextResponseButton', () => {
         .mockReturnValueOnce('startIcon.id')
         .mockReturnValueOnce('endIcon.id')
 
-      const result = jest
-        .fn()
-        .mockResolvedValue(textResponseWithButtonCreateMock.result)
-      const undoResult = jest
-        .fn()
-        .mockResolvedValue(textResponseWithButtonDeleteMock.result)
-
       const { getByRole } = render(
         <MockedProvider
           mocks={[
-            { ...textResponseWithButtonCreateMock, result },
-            { ...textResponseWithButtonDeleteMock, result: undoResult }
+            textResponseWithButtonCreateMock,
+            textResponseWithButtonDeleteMock
           ]}
         >
           <JourneyProvider
@@ -341,11 +334,14 @@ describe('NewTextResponseButton', () => {
       )
 
       fireEvent.click(getByRole('button', { name: 'Text Input' }))
-      await waitFor(() => expect(result).toHaveBeenCalled())
-      // instead of result, do mock...
+      await waitFor(() =>
+        expect(textResponseWithButtonCreateMock.result).toHaveBeenCalled()
+      )
 
       fireEvent.click(getByRole('button', { name: 'Undo' }))
-      await waitFor(() => expect(undoResult).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(textResponseWithButtonDeleteMock.result).toHaveBeenCalled()
+      )
     })
 
     it('should redo text response with button creation', async () => {
@@ -355,22 +351,12 @@ describe('NewTextResponseButton', () => {
         .mockReturnValueOnce('startIcon.id')
         .mockReturnValueOnce('endIcon.id')
 
-      const result = jest
-        .fn()
-        .mockResolvedValue(textResponseWithButtonCreateMock.result)
-      const undoResult = jest
-        .fn()
-        .mockResolvedValue(textResponseWithButtonDeleteMock.result)
-      const redoResult = jest
-        .fn()
-        .mockResolvedValue(textResponseWithButtonRestoreMock.result)
-
       const { getByRole } = render(
         <MockedProvider
           mocks={[
-            { ...textResponseWithButtonCreateMock, result },
-            { ...textResponseWithButtonDeleteMock, result: undoResult },
-            { ...textResponseWithButtonRestoreMock, result: redoResult }
+            textResponseWithButtonCreateMock,
+            textResponseWithButtonDeleteMock,
+            textResponseWithButtonRestoreMock
           ]}
         >
           <JourneyProvider
@@ -391,13 +377,19 @@ describe('NewTextResponseButton', () => {
       )
 
       fireEvent.click(getByRole('button', { name: 'Text Input' }))
-      await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(textResponseWithButtonCreateMock.result).toHaveBeenCalled()
+      )
 
       fireEvent.click(getByRole('button', { name: 'Undo' }))
-      await waitFor(() => expect(undoResult).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(textResponseWithButtonDeleteMock.result).toHaveBeenCalled()
+      )
 
       fireEvent.click(getByRole('button', { name: 'Redo' }))
-      await waitFor(() => expect(redoResult).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(textResponseWithButtonRestoreMock.result).toHaveBeenCalled()
+      )
     })
   })
 

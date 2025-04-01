@@ -46,17 +46,11 @@ describe('useTextResponseWithButtonDelete', () => {
   }
 
   it('should delete text response with button', async () => {
-    const result = jest
-      .fn()
-      .mockReturnValue(textResponseWithButtonDeleteMock.result)
-
     const { result: hookResult } = renderHook(
       () => useTextResponseWithButtonDelete(),
       {
         wrapper: ({ children }) => (
-          <MockedProvider
-            mocks={[{ ...textResponseWithButtonDeleteMock, result }]}
-          >
+          <MockedProvider mocks={[textResponseWithButtonDeleteMock]}>
             {children}
           </MockedProvider>
         )
@@ -67,6 +61,8 @@ describe('useTextResponseWithButtonDelete', () => {
       hookResult.current[0](blocks, 'journey.id')
     })
 
-    await waitFor(() => expect(result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(textResponseWithButtonDeleteMock.result).toHaveBeenCalled()
+    )
   })
 })

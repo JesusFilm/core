@@ -43,6 +43,10 @@ interface TextResponseWithButtonBlocks {
   buttonBlock: ButtonBlock
 }
 
+/**
+ * Hook that provides a function to delete a text response block with its associated submit button.
+ * Used in the undo function of newTextResponseButton.tsx
+ */
 export function useTextResponseWithButtonDelete(): [
   (blocks: TextResponseWithButtonBlocks, journeyId: string) => void
 ] {

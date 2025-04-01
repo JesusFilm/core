@@ -20,7 +20,6 @@ import {
 } from '../../../../../../../../../__generated__/globalTypes'
 import { BUTTON_BLOCK_CREATE } from '../NewButtonButton'
 
-// Reusable block fixtures
 export const textResponseBlock: TreeBlock<TextResponseBlock> = {
   __typename: 'TextResponseBlock',
   id: 'textResponseId',
@@ -52,7 +51,6 @@ export const submitButtonBlock: TreeBlock<ButtonBlock> = {
   children: []
 }
 
-// Helper functions
 export const createCardBlock = (
   children: TreeBlock[]
 ): TreeBlock<CardBlock> => ({
@@ -81,7 +79,6 @@ export const createStepBlock = (
   children: [createCardBlock(cardChildren)]
 })
 
-// Mutation mocks
 export const buttonBlockCreateMock: MockedResponse<
   ButtonBlockCreate,
   ButtonBlockCreateVariables
@@ -119,7 +116,7 @@ export const buttonBlockCreateMock: MockedResponse<
       }
     }
   },
-  result: {
+  result: jest.fn(() => ({
     data: {
       buttonBlockCreate: {
         __typename: 'ButtonBlock',
@@ -158,7 +155,7 @@ export const buttonBlockCreateMock: MockedResponse<
         submitEnabled: false
       }
     } as ButtonBlockCreate
-  }
+  }))
 }
 
 export const submitButtonCreateMock: MockedResponse<
@@ -198,7 +195,7 @@ export const submitButtonCreateMock: MockedResponse<
       }
     }
   },
-  result: {
+  result: jest.fn(() => ({
     data: {
       buttonBlockCreate: {
         __typename: 'ButtonBlock',
@@ -237,5 +234,5 @@ export const submitButtonCreateMock: MockedResponse<
         submitEnabled: true
       }
     } as ButtonBlockCreate
-  }
+  }))
 }
