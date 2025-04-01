@@ -6,6 +6,15 @@ import { SxProps } from '@mui/system/styleFunctionSx'
 import { useFormikContext } from 'formik'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { sendGTMEvent } from '@next/third-parties/google'
+import { Form, Formik } from 'formik'
+import noop from 'lodash/noop'
+import { useTranslation } from 'next-i18next'
+import { useSnackbar } from 'notistack'
+import { v4 as uuidv4 } from 'uuid'
+
+import { TextResponseType } from '../../../__generated__/globalTypes'
+import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
 import { TextField } from '../TextField'
@@ -50,7 +59,8 @@ export const TextResponse = ({
   label,
   placeholder,
   hint,
-  minRows
+  minRows,
+  type
 }: TextResponseProps): ReactElement => {
   const [value, setValue] = useState('')
 
@@ -121,6 +131,7 @@ export const TextResponse = ({
               'aria-labelledby': 'textResponse-label',
               maxLength: 1000,
               readOnly: selectedBlock !== undefined,
+              inputMode: type === TextResponseType.phone ? 'tel' : 'text',
               sx: {
                 pointerEvents: selectedBlock !== undefined ? 'none' : 'auto',
                 pt: 2,
