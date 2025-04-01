@@ -14,13 +14,15 @@ import { stringify } from 'csv-stringify/sync'
 import { format } from 'date-fns'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import X2Icon from '@core/shared/ui/icons/X2'
 
 import type { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
+import { EventType } from '../../../../__generated__/globalTypes'
 
 import { ClearAllButton } from './ClearAllButton'
+import { ExportDialog } from './ExportDialog'
 
 const EVENT_CSV_OPTIONS = {
   header: true,
@@ -189,8 +191,9 @@ export function FilterDrawer({
   const [getJourneyEvents] = useLazyQuery(GET_JOURNEY_EVENTS_EXPORT)
   const [createEventsExportLog] = useMutation(CREATE_EVENTS_EXPORT_LOG)
   const { enqueueSnackbar } = useSnackbar()
+  const [showExportDialog, setShowExportDialog] = useState(false)
 
-  const handleExport = async (): Promise<void> => {
+  const handleExport = async (selectedEvents: EventType[]): Promise<void> => {
     if (journey == null) return
 
     const events: any[] = []
@@ -202,6 +205,9 @@ export function FilterDrawer({
         const { data } = await getJourneyEvents({
           variables: {
             journeyId: journey.id,
+            filter: {
+              typenames: selectedEvents
+            },
             first: 50,
             after: cursor
           }
@@ -250,13 +256,12 @@ export function FilterDrawer({
         variables: {
           input: {
             journeyId: journey.id,
-            eventsFilter: []
-            // eventsFilter: ['JourneyViewEvent', 'ButtonClickEvent'],
-            // preiodRangeStart: '2025-03-01T00:00:00Z',
-            // periodRangeEnd: '2025-03-25T00:00:00Z'
+            eventsFilter: selectedEvents
           }
         }
       })
+
+      setShowExportDialog(false)
     } catch (error) {
       enqueueSnackbar(error.message, {
         variant: 'error'
@@ -351,12 +356,18 @@ export function FilterDrawer({
             variant="contained"
             color="primary"
             sx={{ width: '100%' }}
-            onClick={handleExport}
+            onClick={() => setShowExportDialog(true)}
           >
             {t('Export data')}
           </Button>
         </Box>
       )}
+
+      <ExportDialog
+        open={showExportDialog}
+        onClose={() => setShowExportDialog(false)}
+        onExport={handleExport}
+      />
     </Stack>
   )
 }
