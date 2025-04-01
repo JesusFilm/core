@@ -1,7 +1,57 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
+"""
+scalar DateTimeISO
+
+enum EventType {
+  ButtonClickEvent
+  ChatOpenEvent
+  JourneyViewEvent
+  RadioQuestionSubmissionEvent
+  SignUpSubmissionEvent
+  StepViewEvent
+  StepNextEvent
+  StepPreviousEvent
+  TextResponseSubmissionEvent
+  VideoStartEvent
+  VideoPlayEvent
+  VideoPauseEvent
+  VideoCompleteEvent
+  VideoExpandEvent
+  VideoCollapseEvent
+  VideoProgressEvent
+}
+
+type JourneyEventsExportLog {
+  id: ID!
+  createdAt: DateTimeISO!
+  userId: ID!
+  journeyId: ID!
+  eventsFilter: [String!]!
+  dateRangeStart: DateTimeISO
+  dateRangeEnd: DateTimeISO
+}
+
+input JourneyEventsExportLogInput {
+  journeyId: ID!
+  eventsFilter: [EventType!]!
+  dateRangeStart: DateTimeISO
+  dateRangeEnd: DateTimeISO
+}
+
 union MediaVideo = MuxVideo | Video | YouTube
+
+type Mutation {
+  createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
+}
 
 type MuxVideo
   @key(fields: "id primaryLanguageId")

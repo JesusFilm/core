@@ -416,6 +416,7 @@ model Journey {
   menuButtonIcon            JourneyMenuButtonIcon?
   qrCode                    QrCode[]
   Event                     Event[]
+  journeyEventsExportLogs   JourneyEventsExportLog[]
 
   @@index(title)
 }
@@ -638,4 +639,18 @@ model QrCode {
   backgroundColor String? @default("#FFFFFF")
   team            Team    @relation(fields: [teamId], references: [id])
   journey         Journey @relation(fields: [journeyId], references: [id])
+}
+
+model JourneyEventsExportLog {
+  id             String    @id @default(uuid())
+  createdAt      DateTime  @default(now())
+  userId         String
+  journeyId      String
+  eventsFilter   String[]
+  dateRangeStart DateTime?
+  dateRangeEnd   DateTime?
+  journey        Journey   @relation(fields: [journeyId], references: [id])
+
+  @@index(journeyId)
+  @@index(createdAt)
 }
