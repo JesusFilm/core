@@ -7,12 +7,14 @@ import VolumeOff from '@mui/icons-material/VolumeOff'
 import VolumeUp from '@mui/icons-material/VolumeUp'
 import IconButton from '@mui/material/IconButton'
 import Slider from '@mui/material/Slider'
+import fscreen from 'fscreen'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
+import { isIOS } from '@core/shared/ui/deviceUtils'
 
 import { GET_VIDEO_CONTENT } from '../../../../pages/watch/[part1]/[part2]'
 
@@ -37,7 +39,9 @@ export function CollectionVideoPlayer({
   const [player, setPlayer] = useState<Player>()
   const [isMuted, setIsMuted] = useState(mutePage)
   const [progress, setProgress] = useState(0)
-  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(
+    fscreen?.fullscreenElement != null
+  )
   const [isPlayerReady, setIsPlayerReady] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
 
@@ -82,23 +86,81 @@ export function CollectionVideoPlayer({
     }
   }
 
-  // Handle fullscreen
-  const handleFullscreen = () => {
-    if (containerRef.current && player && isPlayerReady) {
-      if (!isFullscreen) {
-        if (containerRef.current.requestFullscreen) {
-          void containerRef.current.requestFullscreen()
-          if (isMuted && player?.muted != null) {
-            player.muted(false)
-            setIsMuted(false)
-          }
-        }
-      } else {
-        if (document.exitFullscreen) {
-          void document.exitFullscreen()
+  // Handle fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = (): void => {
+      const fullscreen =
+        fscreen.fullscreenElement != null || (player?.isFullscreen() ?? false)
+      setIsFullscreen(fullscreen)
+
+      // For iOS devices, handle fullscreen exit specially
+      if (!fullscreen && isIOS()) {
+        // iOS often needs special handling when exiting fullscreen
+        if (isPlaying) {
+          // Keep playing if it was playing before
+          void player?.play()
+        } else {
+          // Make sure it's paused if it wasn't playing
+          player?.pause()
         }
       }
-      setIsFullscreen(!isFullscreen)
+
+      // Auto unmute in fullscreen if it was muted
+      if (fullscreen && isMuted && player) {
+        player.muted(false)
+        setIsMuted(false)
+        setMutePage?.(false)
+      }
+    }
+
+    if (fscreen.fullscreenEnabled) {
+      fscreen.addEventListener('fullscreenchange', handleFullscreenChange)
+    } else if (player) {
+      player.on('fullscreenchange', handleFullscreenChange)
+    }
+
+    return () => {
+      if (fscreen.fullscreenEnabled) {
+        fscreen.removeEventListener('fullscreenchange', handleFullscreenChange)
+      } else if (player) {
+        player.off('fullscreenchange', handleFullscreenChange)
+      }
+    }
+  }, [player, isPlaying, isMuted, setMutePage])
+
+  // Handle fullscreen
+  const handleFullscreen = (e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation() // Prevent the click from triggering play/pause
+    }
+
+    if (containerRef.current && player && isPlayerReady) {
+      if (!isFullscreen) {
+        if (fscreen.fullscreenEnabled) {
+          void fscreen.requestFullscreen(containerRef.current)
+        } else {
+          void player.requestFullscreen()
+        }
+
+        // Auto-unmute when entering fullscreen
+        if (isMuted && player?.muted != null) {
+          player.muted(false)
+          setIsMuted(false)
+          setMutePage?.(false)
+        }
+
+        // Auto-play when entering fullscreen (if not already playing)
+        if (!isPlaying) {
+          void player.play()
+          setIsPlaying(true)
+        }
+      } else {
+        if (fscreen.fullscreenEnabled) {
+          void fscreen.exitFullscreen()
+        } else {
+          void player.exitFullscreen()
+        }
+      }
     }
   }
 
@@ -146,6 +208,7 @@ export function CollectionVideoPlayer({
     }
   }, [isVisible, player, isPlayerReady, mutePage, contentId])
 
+  // control video playback
   useEffect(() => {
     if (player && isPlayerReady) {
       const handlePlay = () => {
@@ -180,9 +243,13 @@ export function CollectionVideoPlayer({
         poster: videoData.content.images?.[0]?.mobileCinematicHigh ?? undefined
       })
 
-      // Wait for player to be ready
       newPlayer.ready(() => {
         setIsPlayerReady(true)
+
+        setIsFullscreen(
+          fscreen.fullscreenElement != null ||
+            (newPlayer.isFullscreen() ?? false)
+        )
 
         if (videoData.content.variant?.hls) {
           newPlayer.src({
