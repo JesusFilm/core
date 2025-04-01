@@ -190,7 +190,7 @@ describe('FilterDrawer', () => {
       )
 
       expect(
-        screen.getByRole('button', { name: 'Export data' })
+        screen.getByRole('button', { name: 'Export Data' })
       ).toBeInTheDocument()
     })
 
@@ -204,7 +204,7 @@ describe('FilterDrawer', () => {
       )
 
       expect(
-        screen.queryByRole('button', { name: 'Export data' })
+        screen.queryByRole('button', { name: 'Export Data' })
       ).not.toBeInTheDocument()
     })
 
@@ -219,7 +219,7 @@ describe('FilterDrawer', () => {
 
       const user = userEvent.setup()
 
-      await user.click(screen.getByRole('button', { name: 'Export data' }))
+      await user.click(screen.getByRole('button', { name: 'Export Data' }))
 
       await waitFor(() => {
         expect(getJourneyEventsMock.result).toHaveBeenCalled()
@@ -244,7 +244,7 @@ describe('FilterDrawer', () => {
       )
 
       const user = userEvent.setup()
-      await user.click(screen.getByRole('button', { name: 'Export data' }))
+      await user.click(screen.getByRole('button', { name: 'Export Data' }))
 
       expect(createElementSpy).toHaveBeenCalledWith('a')
       expect(setAttributeSpy).toHaveBeenCalledWith(
@@ -277,7 +277,7 @@ describe('FilterDrawer', () => {
       )
 
       const user = userEvent.setup()
-      await user.click(screen.getByRole('button', { name: 'Export data' }))
+      await user.click(screen.getByRole('button', { name: 'Export Data' }))
 
       expect(getJourneyEventsErrorMock.result).toHaveBeenCalled()
       expect(
