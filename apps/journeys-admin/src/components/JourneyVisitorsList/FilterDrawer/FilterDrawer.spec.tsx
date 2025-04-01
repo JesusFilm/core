@@ -8,6 +8,11 @@ import {
   CreateEventsExportLog,
   CreateEventsExportLogVariables
 } from '../../../../__generated__/CreateEventsExportLog'
+import { GetJourney_journey } from '../../../../__generated__/GetJourney'
+import {
+  GetJourneyEvents,
+  GetJourneyEventsVariables
+} from '../../../../__generated__/GetJourneyEvents'
 import { ButtonAction } from '../../../../__generated__/globalTypes'
 
 import {
@@ -15,11 +20,6 @@ import {
   FilterDrawer,
   GET_JOURNEY_EVENTS_EXPORT
 } from './FilterDrawer'
-import {
-  GetJourneyEvents,
-  GetJourneyEventsVariables
-} from '../../../../__generated__/GetJourneyEvents'
-import { GetJourney_journey } from '../../../../__generated__/GetJourney'
 
 const getJourneyEventsMock: MockedResponse<
   GetJourneyEvents,
