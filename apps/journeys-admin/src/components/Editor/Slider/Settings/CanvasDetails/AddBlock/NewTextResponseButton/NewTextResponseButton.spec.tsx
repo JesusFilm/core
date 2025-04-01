@@ -11,16 +11,14 @@ import { JourneyFields as Journey } from '../../../../../../../../__generated__/
 import { TextResponseBlockCreate } from '../../../../../../../../__generated__/TextResponseBlockCreate'
 import { deleteBlockMock as deleteBlock } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 import { useBlockRestoreMutationMock as blockRestore } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
+import { textResponseWithButtonCreateMock } from '../../../../../../../libs/useTextResponseWithButtonCreate/useTextResponseWithButtonCreate.mock'
+import { textResponseWithButtonDeleteMock } from '../../../../../../../libs/useTextResponseWithButtonDelete/useTextResponseWithButtonDelete.mock'
+import { textResponseWithButtonRestoreMock } from '../../../../../../../libs/useTextResponseWithButtonRestore/useTextResponseWithButtonRestore.mock'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { stepWithSubmitButton, stepWithoutSubmitButton } from './data'
 import { TEXT_RESPONSE_BLOCK_CREATE } from './NewTextResponseButton'
-import {
-  textResponseWithButtonCreateMock,
-  textResponseWithButtonDeleteMock,
-  textResponseWithButtonRestoreMock
-} from './useTextResponseWithButtonMutation/useTextResponseWithButtonMutation.mock'
 
 import { NewTextResponseButton } from '.'
 
