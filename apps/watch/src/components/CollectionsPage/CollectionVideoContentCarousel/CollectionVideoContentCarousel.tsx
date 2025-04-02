@@ -132,7 +132,7 @@ export const CollectionVideoContentCarousel = ({
             >
               <div
                 onClick={() => handleSlideClick(slide.contentId, slide.title)}
-                className="relative beveled h-[240px] flex flex-col justify-end w-full rounded-lg overflow-hidden"
+                className={`group relative beveled h-[240px] flex flex-col justify-end w-full rounded-lg overflow-hidden m-1 ${selectedContentId === slide.contentId ? 'outline-4 outline-white' : ''} `}
                 style={{ backgroundColor: slide.backgroundColor }}
                 data-testid="CollectionVideoContentCarouselSlides"
               >
@@ -143,6 +143,16 @@ export const CollectionVideoContentCarousel = ({
                   alt={slide.title}
                   className="absolute top-0 w-full h-[150px] object-cover overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_50%,transparent_100%)] [mask-size:cover]"
                 />
+                <div className="hidden group-hover:flex absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full bg-stone-900/60 items-center justify-center hover:bg-red-500">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-20 w-20"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
                 <div className="p-4">
                   <span className="text-xs font-medium tracking-wider uppercase text-white/60">
                     {slide.type || shortVideoText}
