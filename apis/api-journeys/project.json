@@ -128,6 +128,14 @@
         }
       }
     },
+    "prisma-resolve-squash": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx prisma migrate resolve --schema apis/api-journeys/db/schema.prisma --applied 000000000000_squashed_migrations"
+        ]
+      }
+    },
     "prisma-reset": {
       "executor": "nx:run-commands",
       "options": {
