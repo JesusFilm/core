@@ -1,6 +1,8 @@
-import { gql, useLazyQuery } from '@apollo/client'
+import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import { stringify } from 'csv-stringify/sync'
 import { format } from 'date-fns'
+import isNil from 'lodash/isNil'
+import omitBy from 'lodash/omitBy'
 import { useTranslation } from 'next-i18next'
 
 import {
@@ -47,6 +49,14 @@ export const GET_JOURNEY_EVENTS_EXPORT = gql`
         hasPreviousPage
         startCursor
       }
+    }
+  }
+`
+
+export const CREATE_EVENTS_EXPORT_LOG = gql`
+  mutation CreateEventsExportLog($input: JourneyEventsExportLogInput!) {
+    createJourneyEventsExportLog(input: $input) {
+      id
     }
   }
 `
@@ -116,6 +126,7 @@ export function useJourneyEventsExport(): {
 } {
   const { t } = useTranslation('apps-journeys-admin')
   const [getJourneyEvents] = useLazyQuery(GET_JOURNEY_EVENTS_EXPORT)
+  const [createEventsExportLog] = useMutation(CREATE_EVENTS_EXPORT_LOG)
 
   function handleCsvProcessing(
     eventData: JourneyEvent[],
@@ -162,8 +173,14 @@ export function useJourneyEventsExport(): {
           variables: {
             journeyId,
             filter: {
-              ...filter,
-              typenames
+              typenames,
+              ...omitBy(
+                {
+                  periodRangeStart: filter?.periodRangeStart,
+                  periodRangeEnd: filter?.periodRangeEnd
+                },
+                isNil
+              )
             },
             first: 20000,
             after: cursor
@@ -189,10 +206,20 @@ export function useJourneyEventsExport(): {
           email: edge.node.visitor?.email
         }
       })
+
       const journeySlug = events[0]?.node.journey?.slug ?? ''
       handleCsvProcessing(eventData, journeySlug)
-      // TODO: Update exportHistory
 
+      void createEventsExportLog({
+        variables: {
+          input: {
+            journeyId,
+            eventsFilter: filter?.typenames ?? [],
+            dateRangeStart: filter?.periodRangeStart,
+            dateRangeEnd: filter?.periodRangeEnd
+          }
+        }
+      })
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       throw new Error(t('Failed to retrieve data for export.'))

@@ -1,4 +1,3 @@
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
@@ -10,40 +9,16 @@ import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { stringify } from 'csv-stringify/sync'
-import { format } from 'date-fns'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
 import X2Icon from '@core/shared/ui/icons/X2'
 
-import { ClearAllButton } from './ClearAllButton'
+import { GetJourneyEventsVariables } from '../../../../__generated__/GetJourneyEvents'
+import { useJourneyEventsExport } from '../../../libs/useJourneyEventsExport'
 
-const EVENT_CSV_OPTIONS = {
-  header: true,
-  columns: [
-    'id',
-    'journeyId',
-    'createdAt',
-    'label',
-    'value',
-    'typename',
-    // 'blockId',
-    'action',
-    'actionValue',
-    'messagePlatform',
-    'languageId',
-    'email',
-    'position',
-    'source',
-    'progress',
-    'updatedAt',
-    'journeyName',
-    'visitorId',
-    'visitorName'
-  ]
-}
+import { ClearAllButton } from './ClearAllButton'
 
 interface FilterDrawerProps {
   handleClose?: () => void
@@ -58,70 +33,6 @@ interface FilterDrawerProps {
   journeyId?: string
 }
 
-// export const GET_JOURNEY_EVENTS_EXPORT = gql`
-//   query GetJourneyEvents(
-//     $journeyId: ID!
-//     $filter: JourneyEventsFilter
-//     $first: Int
-//     $after: String
-//   ) {
-//     journeyEventsConnection(
-//       journeyId: $journeyId
-//       filter: $filter
-//       first: $first
-//       after: $after
-//     ) {
-//       edges {
-//         node {
-//           id
-//           journeyId
-//           createdAt
-//           label
-//           value
-//           action
-//           actionValue
-//           messagePlatform
-//           language {
-//             id
-//             name(primary: true) {
-//               value
-//             }
-//           }
-//           email
-//           blockId
-//           position
-//           source
-//           progress
-//           typename
-//           visitorId
-//           journey {
-//             title
-//             slug
-//           }
-//           visitor {
-//             name
-//             email
-//           }
-//         }
-//       }
-//       pageInfo {
-//         hasNextPage
-//         hasPreviousPage
-//         startCursor
-//         endCursor
-//       }
-//     }
-//   }
-// `
-
-export const CREATE_EVENTS_EXPORT_LOG = gql`
-  mutation CreateEventsExportLog($input: JourneyEventsExportLogInput!) {
-    createJourneyEventsExportLog(input: $input) {
-      id
-    }
-  }
-`
-
 export function FilterDrawer({
   journeyId,
   handleClose,
@@ -135,81 +46,14 @@ export function FilterDrawer({
   handleClearAll
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [getJourneyEvents] = useLazyQuery(GET_JOURNEY_EVENTS_EXPORT)
-  const [createEventsExportLog] = useMutation(CREATE_EVENTS_EXPORT_LOG)
   const { enqueueSnackbar } = useSnackbar()
+  const { exportJourneyEvents } = useJourneyEventsExport()
 
-  const handleExport = async (): Promise<void> => {
-    if (journeyId == null) return
-
-    const events: any[] = []
-    let cursor: string | null = null
-    let hasNextPage = false
-
+  const handleExport = async (
+    input: Pick<GetJourneyEventsVariables, 'journeyId' | 'filter'>
+  ): Promise<void> => {
     try {
-      do {
-        const { data } = await getJourneyEvents({
-          variables: {
-            journeyId,
-            first: 50,
-            after: cursor
-          }
-        })
-
-        if (data?.journeyEventsConnection == null) {
-          throw new Error(t('Failed to retrieve data for export.'))
-        }
-
-        const edges = data?.journeyEventsConnection.edges ?? []
-        events.push(...edges)
-
-        cursor = data?.journeyEventsConnection.pageInfo.endCursor
-        hasNextPage = data?.journeyEventsConnection.pageInfo.hasNextPage
-      } while (hasNextPage)
-
-      if (events.length === 0) return
-
-      const eventData = events.map((edge) => {
-        return {
-          ...edge.node,
-          journeyName: edge.node.journey.title,
-          visitorName: edge.node.visitor?.name ?? ''
-        }
-      })
-
-      const journey = events[0].node.journey
-
-      const csv = stringify(eventData, EVENT_CSV_OPTIONS)
-
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-
-      const url = window.URL.createObjectURL(blob)
-
-      const today = format(new Date(), 'yyyy-MM-dd')
-      const fileName = `[${today}] ${journey.slug}.csv`
-
-      const link = document.createElement('a')
-      link.target = '_blank'
-      link.href = url
-      link.setAttribute('download', fileName)
-      document.body.appendChild(link)
-
-      link.click()
-
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(url)
-
-      await createEventsExportLog({
-        variables: {
-          input: {
-            journeyId,
-            eventsFilter: []
-            // eventsFilter: ['JourneyViewEvent', 'ButtonClickEvent'],
-            // preiodRangeStart: '2025-03-01T00:00:00Z',
-            // periodRangeEnd: '2025-03-25T00:00:00Z'
-          }
-        }
-      })
+      await exportJourneyEvents(input)
     } catch (error) {
       enqueueSnackbar(error.message, {
         variant: 'error'
@@ -309,7 +153,7 @@ export function FilterDrawer({
             variant="contained"
             color="secondary"
             fullWidth
-            onClick={handleExport}
+            onClick={() => handleExport({ journeyId })}
           >
             {t('Export Data')}
           </Button>
