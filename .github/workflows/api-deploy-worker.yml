@@ -40,7 +40,7 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
-        node-version: [22.14.0]
+        node-version: [22]
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4
@@ -51,15 +51,19 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Get Node Version
+        id: node-version
+        run: echo "version=$(node -v)" >> $GITHUB_OUTPUT
+
       - name: Mount NPM Cache
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-npm-cache
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-npm-cache
           path: ~/.npm
       - name: Mount node_modules
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-${{ matrix.node-version }}-node-modules
+          key: ${{ github.repository }}-${{ steps.node-version.outputs.version }}-node-modules
           path: ./node_modules
       - name: NPM Install
         run: npm install --silent
