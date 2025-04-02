@@ -2198,7 +2198,7 @@ type Translation @join__type(graph: API_JOURNEYS)  {
 
 type JourneyEventsExportLog @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
-  createdAt: Date!
+  createdAt: DateTimeISO!
   userId: ID!
   journeyId: ID!
   eventsFilter: [String!]!
@@ -3093,6 +3093,25 @@ enum VisitorStatus @join__type(graph: API_JOURNEYS)  {
   redQuestionMark @join__enumValue(graph: API_JOURNEYS) 
 }
 
+enum EventType @join__type(graph: API_JOURNEYS_MODERN)  {
+  ButtonClickEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  ChatOpenEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  JourneyViewEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  RadioQuestionSubmissionEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  SignUpSubmissionEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  StepViewEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  StepNextEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  StepPreviousEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  TextResponseSubmissionEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  VideoStartEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  VideoPlayEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  VideoPauseEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  VideoCompleteEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  VideoExpandEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  VideoCollapseEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  VideoProgressEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
 enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
   databaseId @join__enumValue(graph: API_LANGUAGES) 
   bcp47 @join__enumValue(graph: API_LANGUAGES) 
@@ -3406,6 +3425,7 @@ input TextResponseBlockCreateInput @join__type(graph: API_JOURNEYS)  {
 input TextResponseBlockUpdateInput @join__type(graph: API_JOURNEYS)  {
   parentBlockId: ID
   label: String
+  placeholder: String
   required: Boolean
   hint: String
   minRows: Int
@@ -4236,13 +4256,17 @@ input VisitorUpdateInput @join__type(graph: API_JOURNEYS)  {
   The referring url of the visitor
   """
   referrer: String
+  """
+  The phone number of the visitor
+  """
+  phone: String
 }
 
 input JourneyEventsExportLogInput @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyId: ID!
-  eventsFilter: [String!]
-  dateRangeStart: String
-  dateRangeEnd: String
+  eventsFilter: [EventType!]!
+  dateRangeStart: DateTimeISO
+  dateRangeEnd: DateTimeISO
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {

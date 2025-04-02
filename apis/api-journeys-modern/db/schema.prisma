@@ -645,7 +645,7 @@ model JourneyEventsExportLog {
   journeyId      String
   eventsFilter   String[]
   dateRangeStart DateTime?
-  dateRangeEnd   DateTime  @default(now())
+  dateRangeEnd   DateTime?
   journey        Journey   @relation(fields: [journeyId], references: [id])
 
   @@index(journeyId)

@@ -221,16 +221,13 @@ function JourneyVisitorsPage({ journey }: { journey: Journey }): ReactElement {
         }
         sidePanelTitle={
           <>
-            <Typography variant="subtitle1">{t('Filters')}</Typography>
-            <Stack direction="row" gap={3} alignItems="center">
-              <ClearAllButton handleClearAll={handleClearAll} />
-              <HelpScoutBeacon
-                userInfo={{
-                  name: user?.displayName ?? '',
-                  email: user?.email ?? ''
-                }}
-              />
-            </Stack>
+            <Typography variant="subtitle1">{t('Refine Results')}</Typography>
+            <HelpScoutBeacon
+              userInfo={{
+                name: user?.displayName ?? '',
+                email: user?.email ?? ''
+              }}
+            />
           </>
         }
         sidePanelChildren={
