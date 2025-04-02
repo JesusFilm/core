@@ -232,8 +232,14 @@ export class BaseTranslation {
   ): string | undefined {
     if ('text' in translation && typeof translation.text === 'string') {
       return translation.text
-    } else if ('one' in translation && typeof translation.one === 'string') {
-      return translation.one
+    } else if (
+      'plurals' in translation &&
+      translation.plurals &&
+      typeof translation.plurals === 'object' &&
+      'one' in translation.plurals &&
+      typeof translation.plurals.one === 'string'
+    ) {
+      return translation.plurals.one
     }
     return undefined
   }

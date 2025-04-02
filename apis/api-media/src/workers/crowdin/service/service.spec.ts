@@ -85,6 +85,7 @@ describe('crowdin/service', () => {
 
   beforeEach(() => {
     process.env = originalEnv
+    process.env.CROWDIN_API_KEY = 'test-api-key'
     // Set default empty responses for all findMany calls
     prismaMock.video.findMany.mockResolvedValue([])
     prismaMock.videoStudyQuestion.findMany.mockResolvedValue([])
