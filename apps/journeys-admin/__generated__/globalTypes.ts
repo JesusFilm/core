@@ -175,6 +175,7 @@ export enum TextResponseType {
   email = "email",
   freeForm = "freeForm",
   name = "name",
+  phone = "phone",
 }
 
 export enum ThemeMode {
@@ -276,6 +277,7 @@ export interface ButtonBlockCreateInput {
   variant?: ButtonVariant | null;
   color?: ButtonColor | null;
   size?: ButtonSize | null;
+  submitEnabled?: boolean | null;
 }
 
 export interface ButtonBlockUpdateInput {
@@ -286,6 +288,7 @@ export interface ButtonBlockUpdateInput {
   size?: ButtonSize | null;
   startIconId?: string | null;
   endIconId?: string | null;
+  submitEnabled?: boolean | null;
 }
 
 export interface ButtonClickEventCreateInput {
@@ -654,6 +657,8 @@ export interface TextResponseBlockCreateInput {
 export interface TextResponseBlockUpdateInput {
   parentBlockId?: string | null;
   label?: string | null;
+  placeholder?: string | null;
+  required?: boolean | null;
   hint?: string | null;
   minRows?: number | null;
   routeId?: string | null;
@@ -812,6 +817,7 @@ export interface VisitorUpdateInput {
   status?: VisitorStatus | null;
   countryCode?: string | null;
   referrer?: string | null;
+  phone?: string | null;
 }
 
 //==============================================================

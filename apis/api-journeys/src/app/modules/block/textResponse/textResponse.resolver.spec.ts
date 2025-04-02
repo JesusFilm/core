@@ -50,7 +50,8 @@ describe('TextResponseBlockResolver', () => {
     hint: 'Enter your answer above',
     routeId: 'routeId',
     integrationId: 'integrationId',
-    type: TextResponseType.email
+    type: TextResponseType.email,
+    required: true
   }
 
   beforeEach(async () => {

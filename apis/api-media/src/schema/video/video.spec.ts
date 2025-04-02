@@ -123,9 +123,9 @@ describe('video', () => {
           osisId: 'Gen',
           bibleBookId: 'bibleBookId',
           chapterStart: 1,
-          chapterEnd: null,
+          chapterEnd: -1,
           verseStart: 1,
-          verseEnd: null,
+          verseEnd: -1,
           videoId: 'videoId',
           order: 0
         }
@@ -250,7 +250,8 @@ describe('video', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           contentType: 'application/octet-stream',
-          contentLength: 0
+          contentLength: 0,
+          originalFilename: null
         }
       ],
       videoEditions: [{ id: 'edition', name: 'base', videoId: 'videoId' }],

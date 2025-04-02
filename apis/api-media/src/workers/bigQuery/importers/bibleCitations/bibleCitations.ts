@@ -24,7 +24,10 @@ const bibleCitationSchema = z
   .transform((data) => ({
     ...omit(data, ['position', 'datastream_metadata']),
     id: data.datastream_metadata.uuid,
-    order: data.position
+    order: data.position,
+    chapterEnd: data.chapterEnd ?? -1,
+    verseStart: data.verseStart ?? -1,
+    verseEnd: data.verseEnd ?? -1
   }))
 
 export async function importBibleCitations(logger?: Logger): Promise<void> {

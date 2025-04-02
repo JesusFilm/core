@@ -236,6 +236,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_TextResponseBloc
   parentBlockId: string | null;
   parentOrder: number | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;

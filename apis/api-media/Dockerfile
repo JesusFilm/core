@@ -7,7 +7,7 @@ ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
 ENV PRISMA_LOCATION_MEDIA=/app/node_modules/.prisma/api-media-client
 
 RUN apk upgrade --update-cache --available && \
-    apk add g++ make python3 py3-pip curl-dev && \
+    apk add g++ make python3 py3-pip curl-dev postgresql-client && \
     rm -rf /var/cache/apk/*
 
 WORKDIR /app
