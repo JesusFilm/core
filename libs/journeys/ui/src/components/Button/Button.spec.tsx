@@ -603,20 +603,6 @@ describe('Button', () => {
       expect(screen.getByRole('button')).toHaveTextContent('Submit')
     })
 
-    it('should display "Submit" when submitEnabled is null and no label is provided', () => {
-      const submitButton = {
-        ...block,
-        label: '',
-        submitEnabled: null
-      }
-      render(
-        <MockedProvider>
-          <Button {...submitButton} />
-        </MockedProvider>
-      )
-      expect(screen.getByRole('button')).toHaveTextContent('Submit')
-    })
-
     it('should display "Button" when submitEnabled is false and no label is provided', () => {
       const regularButton = {
         ...block,
