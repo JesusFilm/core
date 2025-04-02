@@ -51,17 +51,17 @@ function run({
 }
 
 async function main(): Promise<void> {
-  run(
-    await import(
-      /* webpackChunkName: "crowdin" */
-      './crowdin'
-    )
-  )
   if (process.env.NODE_ENV === 'production') {
     run(
       await import(
         /* webpackChunkName: "algolia" */
         './algolia'
+      )
+    )
+    run(
+      await import(
+        /* webpackChunkName: "crowdin" */
+        './crowdin'
       )
     )
     run(
