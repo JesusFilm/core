@@ -187,15 +187,14 @@ export function Card({
    */
   const handleFormSubmit = async (values: FormikValues): Promise<void> => {
     if (variant !== 'default' && variant !== 'embed') return
-    const heading =
-      activeBlock != null
-        ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
-        : t('None')
 
     const submissionPromises = textResponseBlocks.map((block) => {
       const blockId = block.id
       const responseValue = values[blockId]
-
+      const heading =
+      activeBlock != null
+        ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t, blockId)
+        : t('None')
       if (!responseValue || responseValue === '') return Promise.resolve(null)
 
       const id = uuidv4()

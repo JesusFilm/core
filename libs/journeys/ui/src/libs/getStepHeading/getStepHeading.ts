@@ -59,9 +59,17 @@ export function getStepHeading(
   stepId: string,
   children: TreeBlock[],
   steps: TreeBlock[],
-  t: (str: string, options?: TOptions) => string
+  t: (str: string, options?: TOptions) => string,
+  blockId?: string
 ): string {
   const descendants = flatten(children)
+
+  if (blockId != null) {
+    const matchingBlock = descendants.find(block => block.id === blockId)
+    if (matchingBlock != null && 'label' in matchingBlock) {
+      return matchingBlock.label
+    }
+  }
 
   const heading =
     descendants.length > 0
