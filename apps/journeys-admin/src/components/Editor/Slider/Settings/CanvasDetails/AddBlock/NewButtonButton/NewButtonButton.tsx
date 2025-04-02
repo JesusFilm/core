@@ -83,7 +83,7 @@ export function NewButtonButton(): ReactElement {
       id: uuidv4(),
       __typename: 'ButtonBlock',
       parentBlockId: card.id,
-      label: shouldBeSubmitButton ? 'Submit' : 'Button',
+      label: '',
       buttonVariant: ButtonVariant.contained,
       buttonColor: ButtonColor.primary,
       size: ButtonSize.medium,
