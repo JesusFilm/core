@@ -13,7 +13,7 @@ jobs:
     runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
-        node-version: [22]
+        node-version: [22.14.0]
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -31,7 +31,7 @@ jobs:
       - name: Mount node_modules
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-node-modules
+          key: ${{ github.repository }}-${{ matrix.node-version }}-node-modules
           path: ./node_modules
       - name: NPM Install
         run: npm install --silent
@@ -54,7 +54,7 @@ jobs:
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
-        node-version: [22]
+        node-version: [22.14.0]
     runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
@@ -71,7 +71,7 @@ jobs:
       - name: Mount node_modules
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-node-modules
+          key: ${{ github.repository }}-${{ matrix.node-version }}-node-modules
           path: ./node_modules
       - name: NPM Install
         run: npm install --silent
@@ -94,7 +94,7 @@ jobs:
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
-        node-version: [22]
+        node-version: [22.14.0]
     runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
@@ -111,7 +111,7 @@ jobs:
       - name: Mount node_modules
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-node-modules
+          key: ${{ github.repository }}-${{ matrix.node-version }}-node-modules
           path: ./node_modules
       - name: NPM Install
         run: npm install --silent

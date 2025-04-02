@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: useblacksmith/setup-node@v5
         with:
-          node-version: 22
+          node-version: 22.14.0
       - name: Mount NPM Cache
         uses: useblacksmith/stickydisk@v1
         with:
@@ -41,7 +41,7 @@ jobs:
       - name: Mount node_modules
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-node-modules
+          key: ${{ github.repository }}-22.14.0-node-modules
           path: ./node_modules
       - name: Mount playwright cache
         uses: useblacksmith/stickydisk@v1

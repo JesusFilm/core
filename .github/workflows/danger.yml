@@ -24,7 +24,7 @@ jobs:
       repository-projects: write
     strategy:
       matrix:
-        node-version: [22]
+        node-version: [22.14.0]
     steps:
       - uses: actions/checkout@v4
       - uses: useblacksmith/setup-node@v5
@@ -38,7 +38,7 @@ jobs:
       - name: Mount node_modules
         uses: useblacksmith/stickydisk@v1
         with:
-          key: ${{ github.repository }}-node-modules
+          key: ${{ github.repository }}-${{ matrix.node-version }}-node-modules
           path: ./node_modules
       - name: NPM Install
         run: npm install --silent
