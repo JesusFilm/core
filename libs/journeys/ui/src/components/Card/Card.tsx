@@ -41,6 +41,7 @@ import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
 import { getFormInitialValues } from './utils/getFormInitialValues'
 import { getTextResponseBlocks } from './utils/getTextResponseBlocks'
+import { getValidationSchema } from './utils/getValidationSchema'
 
 export const STEP_NEXT_EVENT_CREATE = gql`
   mutation StepNextEventCreate($input: StepNextEventCreateInput!) {
@@ -171,6 +172,11 @@ export function Card({
   const formikInitialValues = useMemo(
     () => getFormInitialValues(children),
     [children]
+  )
+
+  const validationSchema = useMemo(
+    () => getValidationSchema(children, t),
+    [children, t]
   )
 
   const textResponseBlocks = useMemo(
@@ -390,6 +396,7 @@ export function Card({
     <Formik
       initialValues={formikInitialValues}
       onSubmit={handleFormSubmit}
+      validationSchema={validationSchema}
       enableReinitialize
     >
       {({ handleSubmit }) => (

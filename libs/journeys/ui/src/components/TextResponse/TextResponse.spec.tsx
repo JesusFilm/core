@@ -153,13 +153,11 @@ describe('TextResponse', () => {
     }
 
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <JourneyProvider>
-          <SnackbarProvider>
-            <TextResponse {...requiredBlock} uuid={() => 'uuid'} />
-          </SnackbarProvider>
-        </JourneyProvider>
-      </MockedProvider>
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...requiredBlock} />
+        </SnackbarProvider>
+      </JourneyProvider>
     )
 
     expect(screen.getByText('Your answer here*')).toBeInTheDocument()
@@ -172,13 +170,11 @@ describe('TextResponse', () => {
     }
 
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <JourneyProvider>
-          <SnackbarProvider>
-            <TextResponse {...notRequiredBlock} uuid={() => 'uuid'} />
-          </SnackbarProvider>
-        </JourneyProvider>
-      </MockedProvider>
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...notRequiredBlock} />
+        </SnackbarProvider>
+      </JourneyProvider>
     )
 
     expect(screen.queryByText('Your answer here*')).not.toBeInTheDocument()
@@ -192,13 +188,11 @@ describe('TextResponse', () => {
     }
 
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <JourneyProvider>
-          <SnackbarProvider>
-            <TextResponse {...requiredBlock} uuid={() => 'uuid'} />
-          </SnackbarProvider>
-        </JourneyProvider>
-      </MockedProvider>
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...requiredBlock} />
+        </SnackbarProvider>
+      </JourneyProvider>
     )
 
     fireEvent.blur(screen.getByRole('textbox'))
@@ -215,13 +209,11 @@ describe('TextResponse', () => {
     }
 
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <JourneyProvider>
-          <SnackbarProvider>
-            <TextResponse {...emailBlock} uuid={() => 'uuid'} />
-          </SnackbarProvider>
-        </JourneyProvider>
-      </MockedProvider>
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...emailBlock} />
+        </SnackbarProvider>
+      </JourneyProvider>
     )
 
     fireEvent.change(screen.getByRole('textbox'), {
@@ -251,16 +243,11 @@ describe('TextResponse', () => {
     }
 
     render(
-      <MockedProvider
-        mocks={[{ ...submissionSuccess, result }]}
-        addTypename={false}
-      >
-        <JourneyProvider>
-          <SnackbarProvider>
-            <TextResponse {...requiredBlock} uuid={() => 'uuid'} />
-          </SnackbarProvider>
-        </JourneyProvider>
-      </MockedProvider>
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...requiredBlock} />
+        </SnackbarProvider>
+      </JourneyProvider>
     )
 
     fireEvent.blur(screen.getByRole('textbox'))
@@ -286,16 +273,11 @@ describe('TextResponse', () => {
     }
 
     render(
-      <MockedProvider
-        mocks={[{ ...submissionSuccess, result }]}
-        addTypename={false}
-      >
-        <JourneyProvider>
-          <SnackbarProvider>
-            <TextResponse {...emailBlock} uuid={() => 'uuid'} />
-          </SnackbarProvider>
-        </JourneyProvider>
-      </MockedProvider>
+      <JourneyProvider>
+        <SnackbarProvider>
+          <TextResponse {...emailBlock} />
+        </SnackbarProvider>
+      </JourneyProvider>
     )
 
     fireEvent.change(screen.getByRole('textbox'), {

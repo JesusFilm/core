@@ -52,7 +52,8 @@ export const TextResponse = ({
   placeholder,
   hint,
   minRows,
-  type
+  type,
+  required
 }: TextResponseProps): ReactElement => {
   const [value, setValue] = useState('')
 
@@ -105,6 +106,7 @@ export const TextResponse = ({
           }}
         >
           {label === '' ? 'Label' : label}
+          {(required ?? false) ? '*' : ''}
         </Typography>
         <TextField
           id={`textResponse-field`}
