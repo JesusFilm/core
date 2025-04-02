@@ -192,9 +192,15 @@ export function Card({
       const blockId = block.id
       const responseValue = values[blockId]
       const heading =
-      activeBlock != null
-        ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t, blockId)
-        : t('None')
+        activeBlock != null
+          ? getStepHeading(
+              activeBlock.id,
+              activeBlock.children,
+              treeBlocks,
+              t,
+              blockId
+            )
+          : t('None')
       if (!responseValue || responseValue === '') return Promise.resolve(null)
 
       const id = uuidv4()

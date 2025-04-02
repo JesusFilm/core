@@ -65,7 +65,7 @@ export function getStepHeading(
   const descendants = flatten(children)
 
   if (blockId != null) {
-    const matchingBlock = descendants.find(block => block.id === blockId)
+    const matchingBlock = descendants.find((block) => block.id === blockId)
     if (matchingBlock != null && 'label' in matchingBlock) {
       return matchingBlock.label
     }
