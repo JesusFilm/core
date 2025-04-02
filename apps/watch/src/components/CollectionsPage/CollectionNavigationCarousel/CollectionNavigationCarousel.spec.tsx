@@ -5,6 +5,52 @@ import { CollectionNavigationCarousel } from './CollectionNavigationCarousel'
 const originalScrollIntoView = window.HTMLElement.prototype.scrollIntoView
 const scrollIntoViewMock = jest.fn()
 
+// Mock content items for testing
+const mockContentItems = [
+  {
+    contentId: 'easter-explained',
+    title: 'Easter Explained',
+    category: 'Holiday',
+    image: '/images/easter.jpg',
+    bgColor: '#f3f4f6'
+  },
+  {
+    contentId: 'my-last-day',
+    title: 'My Last Day',
+    category: 'Story',
+    image: '/images/last-day.jpg',
+    bgColor: '#e5e7eb'
+  },
+  {
+    contentId: 'why-did-jesus-have-to-die',
+    title: 'Why Did Jesus Have to Die',
+    category: 'Teaching',
+    image: '/images/teaching.jpg',
+    bgColor: '#d1d5db'
+  },
+  {
+    contentId: 'john-316',
+    title: 'John 3:16',
+    category: 'Scripture',
+    image: '/images/john.jpg',
+    bgColor: '#9ca3af'
+  },
+  {
+    contentId: 'resurrection',
+    title: 'The Resurrection',
+    category: 'Story',
+    image: '/images/resurrection.jpg',
+    bgColor: '#6b7280'
+  },
+  {
+    contentId: 'ascension',
+    title: 'The Ascension',
+    category: 'Story',
+    image: '/images/ascension.jpg',
+    bgColor: '#4b5563'
+  }
+]
+
 describe('CollectionNavigationCarousel', () => {
   beforeEach(() => {
     window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock
@@ -26,7 +72,7 @@ describe('CollectionNavigationCarousel', () => {
   })
 
   it('renders the carousel with content items', () => {
-    render(<CollectionNavigationCarousel />)
+    render(<CollectionNavigationCarousel contentItems={mockContentItems} />)
 
     expect(screen.getByTestId('NavigationCarousel')).toBeInTheDocument()
     expect(
@@ -41,7 +87,7 @@ describe('CollectionNavigationCarousel', () => {
   })
 
   it('calls scrollIntoView when a carousel item is clicked', () => {
-    render(<CollectionNavigationCarousel />)
+    render(<CollectionNavigationCarousel contentItems={mockContentItems} />)
 
     const firstCarouselItem = screen.getByTestId(
       'CarouselItem-easter-explained'
@@ -56,7 +102,7 @@ describe('CollectionNavigationCarousel', () => {
   })
 
   it('handles keyboard navigation with Enter key', () => {
-    render(<CollectionNavigationCarousel />)
+    render(<CollectionNavigationCarousel contentItems={mockContentItems} />)
 
     const firstCarouselItem = screen.getByTestId(
       'CarouselItem-easter-explained'
@@ -67,7 +113,7 @@ describe('CollectionNavigationCarousel', () => {
   })
 
   it('does not scroll on other key presses', () => {
-    render(<CollectionNavigationCarousel />)
+    render(<CollectionNavigationCarousel contentItems={mockContentItems} />)
 
     const firstCarouselItem = screen.getByTestId(
       'CarouselItem-easter-explained'
@@ -78,7 +124,7 @@ describe('CollectionNavigationCarousel', () => {
   })
 
   it('renders all carousel items with correct accessibility attributes', () => {
-    render(<CollectionNavigationCarousel />)
+    render(<CollectionNavigationCarousel contentItems={mockContentItems} />)
 
     const carouselItems = screen.getAllByTestId(/^CarouselItem-/)
 

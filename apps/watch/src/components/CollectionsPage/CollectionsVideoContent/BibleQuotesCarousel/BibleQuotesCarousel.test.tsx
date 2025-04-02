@@ -2,7 +2,6 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 import { BibleQuotesCarousel } from './BibleQuotesCarousel'
 
-// Mock dependencies
 jest.mock('next-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => (key === 'Share' ? 'Share' : key)
@@ -44,6 +43,7 @@ describe('BibleQuotesCarousel', () => {
         bibleQuotes={mockBibleQuotes}
         bibleQuotesTitle="Bible Quotes"
         onOpenDialog={mockOpenDialog}
+        shareButtonText="Share"
       />
     )
 
@@ -63,6 +63,7 @@ describe('BibleQuotesCarousel', () => {
         bibleQuotesTitle="Bible Quotes"
         freeResource={mockFreeResource}
         onOpenDialog={mockOpenDialog}
+        shareButtonText="Share"
       />
     )
 
@@ -77,6 +78,7 @@ describe('BibleQuotesCarousel', () => {
         bibleQuotes={mockBibleQuotes}
         bibleQuotesTitle="Bible Quotes"
         onOpenDialog={mockOpenDialog}
+        shareButtonText="Share"
       />
     )
 
@@ -95,6 +97,7 @@ describe('BibleQuotesCarousel', () => {
         bibleQuotesTitle="Bible Quotes"
         freeResource={mockFreeResource}
         onOpenDialog={mockOpenDialog}
+        shareButtonText="Share"
       />
     )
 

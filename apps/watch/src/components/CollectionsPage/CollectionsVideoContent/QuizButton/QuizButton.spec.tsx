@@ -17,7 +17,7 @@ describe('QuizButton', () => {
   })
 
   it('renders the quiz button correctly', () => {
-    render(<QuizButton />)
+    render(<QuizButton buttonText="What's your next step of faith?" />)
 
     expect(screen.getByText('Quiz')).toBeInTheDocument()
     expect(
@@ -29,7 +29,7 @@ describe('QuizButton', () => {
   })
 
   it('opens the quiz modal when clicked', async () => {
-    render(<QuizButton />)
+    render(<QuizButton buttonText="What's your next step of faith?" />)
 
     const button = screen.getByRole('button', { name: 'Open faith quiz' })
     fireEvent.click(button)
@@ -40,7 +40,7 @@ describe('QuizButton', () => {
   })
 
   it('closes the quiz modal when the close button is clicked', async () => {
-    render(<QuizButton />)
+    render(<QuizButton buttonText="What's your next step of faith?" />)
 
     const button = screen.getByRole('button', { name: 'Open faith quiz' })
     fireEvent.click(button)

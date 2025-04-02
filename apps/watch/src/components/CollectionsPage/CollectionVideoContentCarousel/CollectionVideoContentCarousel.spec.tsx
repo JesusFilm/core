@@ -13,7 +13,7 @@ jest.mock('next-i18next', () => ({
   })
 }))
 
-jest.mock('../../CollectionVideoPlayer/CollectionVideoPlayer', () => ({
+jest.mock('../CollectionVideoPlayer/CollectionVideoPlayer', () => ({
   CollectionVideoPlayer: ({
     contentId,
     title,
@@ -75,7 +75,9 @@ describe('CollectionVideoContentCarousel', () => {
       }
     ],
     mutePage: false,
-    setMutePage: jest.fn()
+    setMutePage: jest.fn(),
+    seeAllText: 'See All',
+    shortVideoText: 'Short'
   }
 
   beforeEach(() => {
@@ -176,7 +178,7 @@ describe('CollectionVideoContentCarousel', () => {
     expect(setMutePageMock).toHaveBeenCalledWith(false)
   })
 
-  it('formats description with first three words bold', () => {
+  it('formats description with first four words bold', () => {
     const propsWithLongDescription = {
       ...defaultProps,
       description: 'These are the first four words followed by more text.'
