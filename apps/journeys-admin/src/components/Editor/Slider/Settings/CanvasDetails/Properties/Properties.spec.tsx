@@ -211,11 +211,33 @@ describe('Properties', () => {
     expect(screen.getByText('Button Properties')).toBeInTheDocument()
   })
 
-  it('should return properties for Submit Button block', async () => {
+  it('should return properties for Submit Button block when submitEnabled is true', async () => {
     const block = {
       __typename: 'ButtonBlock',
       id: 'block.id',
       submitEnabled: true,
+      children: []
+    } as unknown as TreeBlock
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <Properties block={block} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('ButtonProperties')).toBeInTheDocument()
+    )
+    expect(screen.getByText('Submit Button Properties')).toBeInTheDocument()
+  })
+
+  it('should return properties for Submit Button block when submitEnabled is null', async () => {
+    const block = {
+      __typename: 'ButtonBlock',
+      id: 'block.id',
+      submitEnabled: null,
       children: []
     } as unknown as TreeBlock
 

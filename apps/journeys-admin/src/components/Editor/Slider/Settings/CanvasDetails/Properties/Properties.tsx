@@ -140,7 +140,8 @@ export function Properties({ block, step }: PropertiesProps): ReactElement {
       break
     case 'ButtonBlock':
       title =
-        selectedBlock.submitEnabled === true
+        selectedBlock.submitEnabled === true ||
+        selectedBlock.submitEnabled === null // add null check to account for old journeys where submitEnabled is not set
           ? t('Submit Button Properties')
           : t('Button Properties')
       component = <Button {...selectedBlock} />

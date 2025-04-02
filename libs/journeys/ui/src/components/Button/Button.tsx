@@ -259,7 +259,7 @@ export function Button({
             ? editableLabel
             : label !== ''
               ? label
-              : submitEnabled
+              : submitEnabled === true || submitEnabled === null // add null check to account for old journeys where submitEnabled is not set
                 ? t('Submit')
                 : t('Button')}
         </span>
