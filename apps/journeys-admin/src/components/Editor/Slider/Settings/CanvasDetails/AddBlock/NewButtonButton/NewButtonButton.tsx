@@ -103,7 +103,7 @@ export function NewButtonButton(): ReactElement {
               id: button.id,
               journeyId: journey.id,
               parentBlockId: button.parentBlockId,
-              label: '',
+              label: button.label,
               variant: button.buttonVariant,
               color: button.buttonColor,
               size: button.size,
