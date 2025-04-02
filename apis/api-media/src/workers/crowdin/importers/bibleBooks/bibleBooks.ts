@@ -2,17 +2,17 @@ import { SourceStrings, StringTranslations } from '@crowdin/crowdin-api-client'
 import { Logger } from 'pino'
 
 import { prisma } from '../../../../lib/prisma'
-import { ARCLIGHT_FILES } from '../../shared/arclight-files'
+import {
+  ARCLIGHT_FILES,
+  BaseTranslation,
+  CROWDIN_LANGUAGE_CODE_TO_ID,
+  TranslationData
+} from '../../importer'
 import {
   clearBibleBooks,
   hasBook,
   initializeBibleBooks
-} from '../../utils/bible-books-cache'
-import {
-  BaseTranslation,
-  CROWDIN_LANGUAGE_CODE_TO_ID,
-  TranslationData
-} from '../shared/base-translation'
+} from '../../utils/bibleBooksCache'
 
 export async function importBibleBooks(
   sourceStringsApi: SourceStrings,

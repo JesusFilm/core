@@ -1,4 +1,4 @@
-import { importStudyQuestions } from './study-questions'
+import { importStudyQuestions } from './studyQuestions'
 
 describe('importStudyQuestions', () => {
   it('should be implemented', () => {

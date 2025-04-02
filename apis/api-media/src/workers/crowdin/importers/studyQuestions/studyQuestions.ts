@@ -2,12 +2,12 @@ import { SourceStrings, StringTranslations } from '@crowdin/crowdin-api-client'
 import { Logger } from 'pino'
 
 import { prisma } from '../../../../lib/prisma'
-import { ARCLIGHT_FILES } from '../../shared/arclight-files'
 import {
+  ARCLIGHT_FILES,
   BaseTranslation,
   CROWDIN_LANGUAGE_CODE_TO_ID,
   TranslationData
-} from '../shared/base-translation'
+} from '../../importer'
 
 const questionMap = new Map<string, Array<{ videoId: string; order: number }>>()
 

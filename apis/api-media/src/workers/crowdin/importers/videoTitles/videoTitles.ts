@@ -2,27 +2,27 @@ import { SourceStrings, StringTranslations } from '@crowdin/crowdin-api-client'
 import { Logger } from 'pino'
 
 import { prisma } from '../../../../lib/prisma'
-import { ARCLIGHT_FILES } from '../../shared/arclight-files'
+import {
+  ARCLIGHT_FILES,
+  BaseTranslation,
+  CROWDIN_LANGUAGE_CODE_TO_ID,
+  TranslationData
+} from '../../importer'
 import {
   clearVideoCache,
   getFullVideoId,
   initializeVideoCache,
   isValidVideoId
-} from '../../utils/video-cache'
-import {
-  BaseTranslation,
-  CROWDIN_LANGUAGE_CODE_TO_ID,
-  TranslationData
-} from '../shared/base-translation'
+} from '../../utils/videoCache'
 
-export async function importVideoDescriptions(
+export async function importVideoTitles(
   sourceStringsApi: SourceStrings,
   stringTranslationsApi: StringTranslations,
   logger?: Logger
 ): Promise<() => void> {
   await initializeVideoCache(logger)
 
-  const translator = new VideoDescriptionsTranslator(
+  const translator = new VideoTitlesTranslator(
     sourceStringsApi,
     stringTranslationsApi,
     logger
@@ -31,7 +31,7 @@ export async function importVideoDescriptions(
   const upsertTranslation = translator.upsertTranslation.bind(translator)
 
   await translator.processFile(
-    ARCLIGHT_FILES.media_metadata_description,
+    ARCLIGHT_FILES.media_metadata_tile,
     validateData,
     upsertTranslation
   )
@@ -39,7 +39,7 @@ export async function importVideoDescriptions(
   return () => clearVideoCache()
 }
 
-class VideoDescriptionsTranslator extends BaseTranslation {
+class VideoTitlesTranslator extends BaseTranslation {
   private missingVideos = new Set<string>()
 
   validateData(data: TranslationData): boolean {
@@ -86,7 +86,7 @@ class VideoDescriptionsTranslator extends BaseTranslation {
     const databaseId = getFullVideoId(crowdinId)
     if (!databaseId) return
 
-    await prisma.videoDescription.upsert({
+    await prisma.videoTitle.upsert({
       where: {
         videoId_languageId: {
           videoId: databaseId,

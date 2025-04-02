@@ -1,4 +1,4 @@
-import { importVideoDescriptions } from './video-descriptions'
+import { importVideoDescriptions } from './videoDescriptions'
 
 describe('importVideoDescriptions', () => {
   it('should be implemented', () => {

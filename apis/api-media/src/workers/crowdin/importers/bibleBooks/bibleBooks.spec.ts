@@ -1,4 +1,4 @@
-import { importBibleBooks } from './bible-books'
+import { importBibleBooks } from './bibleBooks'
 
 describe('importBibleBooks', () => {
   it('should be implemented', () => {

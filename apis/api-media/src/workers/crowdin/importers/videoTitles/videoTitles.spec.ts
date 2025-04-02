@@ -1,4 +1,4 @@
-import { importVideoTitles } from './video-titles'
+import { importVideoTitles } from './videoTitles'
 
 describe('importVideoTitles', () => {
   it('should be implemented', () => {
