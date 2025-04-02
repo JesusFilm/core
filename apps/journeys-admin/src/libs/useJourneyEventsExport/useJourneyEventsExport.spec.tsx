@@ -82,7 +82,7 @@ describe('useJourneyEventsExport', () => {
             periodRangeStart: '2023-01-15T12:00:00Z',
             periodRangeEnd: '2024-01-15T12:00:00Z'
           },
-          first: 1000,
+          first: 20000,
           after: null
         }
       },
@@ -140,7 +140,7 @@ describe('useJourneyEventsExport', () => {
             periodRangeStart: '2023-01-15T12:00:00Z',
             periodRangeEnd: '2024-01-15T12:00:00Z'
           },
-          first: 1000,
+          first: 20000,
           after: 'cursor1'
         }
       },
@@ -230,7 +230,7 @@ describe('useJourneyEventsExport', () => {
                   filter: {
                     typenames: FILTERED_EVENTS
                   },
-                  first: 1000,
+                  first: 20000,
                   after: null
                 }
               },

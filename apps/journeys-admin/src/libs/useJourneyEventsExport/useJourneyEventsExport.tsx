@@ -184,13 +184,11 @@ export function useJourneyEventsExport(): {
       const eventData: JourneyEvent[] = events.map((edge) => {
         return {
           ...edge.node,
-          // slug: 'test',
           slug: edge.node.journey?.slug,
           name: edge.node.visitor?.name,
           email: edge.node.visitor?.email
         }
       })
-      // const journeySlug = 'test'
       const journeySlug = events[0]?.node.journey?.slug ?? ''
       handleCsvProcessing(eventData, journeySlug)
       // TODO: Update exportHistory

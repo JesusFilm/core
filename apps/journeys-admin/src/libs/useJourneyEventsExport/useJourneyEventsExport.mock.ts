@@ -21,7 +21,7 @@ export const mockJourneyEventsQuery: MockedResponse<
       filter: {
         typenames: FILTERED_EVENTS
       },
-      first: 1000,
+      first: 20000,
       after: null
     }
   },
