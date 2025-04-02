@@ -1,1 +1,0 @@
-export { CollectionIntroText } from './CollectionIntroText'

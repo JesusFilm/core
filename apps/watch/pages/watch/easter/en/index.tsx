@@ -4,7 +4,7 @@ import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 
 import i18nConfig from '../../../../next-i18next.config'
-import { CollectionsPage } from '../../../../src/components/CollectionsPage/en'
+import { CollectionsPage } from '../../../../src/components/CollectionsPage/languages/en'
 import { getFlags } from '../../../../src/libs/getFlags'
 import { LanguageProvider } from '../../../../src/libs/languageContext/LanguageContext'
 

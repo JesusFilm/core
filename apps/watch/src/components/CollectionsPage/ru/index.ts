@@ -1,1 +1,0 @@
-export { CollectionsPage } from './CollectionsPage'

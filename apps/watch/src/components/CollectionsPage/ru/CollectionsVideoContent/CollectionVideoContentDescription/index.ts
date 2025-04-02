@@ -1,1 +1,0 @@
-export { CollectionVideoContentDescription } from './CollectionVideoContentDescription'
