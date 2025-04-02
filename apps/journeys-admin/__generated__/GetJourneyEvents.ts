@@ -9,11 +9,6 @@ import { JourneyEventsFilter, MessagePlatform } from "./globalTypes";
 // GraphQL query operation: GetJourneyEvents
 // ====================================================
 
-export interface GetJourneyEvents_journeyEventsConnection_edges_node_journey {
-  __typename: "Journey";
-  slug: string;
-}
-
 export interface GetJourneyEvents_journeyEventsConnection_edges_node_visitor {
   __typename: "Visitor";
   /**
@@ -40,10 +35,6 @@ export interface GetJourneyEvents_journeyEventsConnection_edges_node {
   typename: string | null;
   progress: number | null;
   messagePlatform: MessagePlatform | null;
-  /**
-   * Related fields queried from relevant ids in the events table
-   */
-  journey: GetJourneyEvents_journeyEventsConnection_edges_node_journey | null;
   visitor: GetJourneyEvents_journeyEventsConnection_edges_node_visitor | null;
 }
 
