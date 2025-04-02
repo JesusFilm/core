@@ -88,7 +88,7 @@ const Template: StoryObj<typeof TextResponse> = {
         <SnackbarProvider>
           <StoryCard>
             <Typography {...typographyProps} />
-            <TextResponse {...args} uuid={() => 'uuid'} />
+            <TextResponse {...args} />
             <Typography
               {...typographyProps}
               content="Some block below"
@@ -237,7 +237,7 @@ const LoadingTemplate: StoryObj<typeof TextResponse> = {
       <JourneyProvider>
         <SnackbarProvider>
           <StoryCard>
-            <TextResponse {...args} uuid={() => 'uuid'} />
+            <TextResponse {...args} />
           </StoryCard>
         </SnackbarProvider>
       </JourneyProvider>

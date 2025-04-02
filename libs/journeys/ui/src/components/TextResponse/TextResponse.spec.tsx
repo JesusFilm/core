@@ -1,33 +1,27 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { Formik, FormikContextType, FormikProvider, FormikValues } from 'formik'
+import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
 import { TextResponseType } from '../../../__generated__/globalTypes'
-import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import type { TreeBlock } from '../../libs/block'
-import { blockHistoryVar, treeBlocksVar } from '../../libs/block'
-import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 
 import { TextResponseFields } from './__generated__/TextResponseFields'
-import {
-  TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
-  TextResponse
-} from './TextResponse'
+import { TextResponse } from './TextResponse'
 
-jest.mock('@next/third-parties/google', () => ({
-  sendGTMEvent: jest.fn()
+jest.mock('formik', () => ({
+  ...jest.requireActual('formik'),
+  useField: jest.fn().mockReturnValue([
+    { value: 'test', onChange: jest.fn(), onBlur: jest.fn() },
+    { error: 'test', touched: true }
+  ])
 }))
-
-const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
-  typeof sendGTMEvent
->
 
 const block: TreeBlock<TextResponseFields> = {
   __typename: 'TextResponseBlock',
-  id: 'textResponse0.id',
+  id: 'textResponse0id',
   parentBlockId: '0',
   parentOrder: 0,
   label: 'Your answer here',
@@ -41,58 +35,31 @@ const block: TreeBlock<TextResponseFields> = {
   children: []
 }
 
-const activeBlock: TreeBlock<StepBlock> = {
-  __typename: 'StepBlock',
-  id: 'step.id',
-  parentBlockId: null,
-  parentOrder: 0,
-  locked: true,
-  nextBlockId: null,
-  slug: null,
-  children: []
-}
-
-const submissionSuccess = {
-  request: {
-    query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
-    variables: {
-      input: {
-        id: 'uuid',
-        blockId: 'textResponse0.id',
-        stepId: 'step.id',
-        label: 'Step {{number}}',
-        value: 'My response'
-      }
-    }
-  },
-  result: {
-    data: {
-      textResponseSubmissionEventCreate: {
-        id: 'uuid'
-      }
-    }
-  }
-}
-
 interface TextResponseMockProps {
-  mocks?: Array<MockedResponse<Record<string, unknown>>>
+  values?: FormikValues
+  handleSubmit?: () => void
 }
 
 const TextResponseMock = ({
-  mocks = []
+  values,
+  handleSubmit
 }: TextResponseMockProps): ReactElement => (
-  <MockedProvider mocks={mocks} addTypename={false}>
-    <JourneyProvider>
-      <SnackbarProvider>
-        <TextResponse {...block} uuid={() => 'uuid'} />
-      </SnackbarProvider>
-    </JourneyProvider>
-  </MockedProvider>
+  <JourneyProvider>
+    <SnackbarProvider>
+      <Formik
+        initialValues={{ ...values }}
+        onSubmit={handleSubmit ?? noop}
+        isSubmitting={true}
+      >
+        <TextResponse {...block} />
+      </Formik>
+    </SnackbarProvider>
+  </JourneyProvider>
 )
 
 describe('TextResponse', () => {
   it('should have 1000 character max length', async () => {
-    render(<TextResponseMock mocks={[submissionSuccess]} />)
+    const { getByLabelText } = render(<TextResponseMock />)
 
     const responseField = screen.getByRole('textbox')
 
@@ -119,160 +86,36 @@ describe('TextResponse', () => {
     }
 
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <JourneyProvider>
-          <SnackbarProvider>
-            <TextResponse {...emptyLabelBlock} uuid={() => 'uuid'} />
-          </SnackbarProvider>
-        </JourneyProvider>
-      </MockedProvider>
+      <JourneyProvider>
+        <SnackbarProvider>
+          <Formik initialValues={{}} onSubmit={noop}>
+            <TextResponse {...emptyLabelBlock} />
+          </Formik>
+        </SnackbarProvider>
+      </JourneyProvider>
     )
 
     expect(screen.getByText('Label')).toBeInTheDocument()
   })
 
   it('should be in a loading state when waiting for response', async () => {
-    render(
-      <ApolloLoadingProvider>
-        <TextResponseMock mocks={[submissionSuccess]} />
-      </ApolloLoadingProvider>
+    const { getByRole } = render(
+      <Formik initialValues={{}} onSubmit={noop}>
+        <FormikProvider
+          value={
+            {
+              values: {},
+              isSubmitting: true
+            } as FormikContextType<FormikValues>
+          }
+        >
+          <TextResponse {...block} />
+        </FormikProvider>
+      </Formik>
     )
-    const textField = screen.getByRole('textbox')
-
-    fireEvent.change(textField, { target: { value: 'My response' } })
-
-    expect(textField).not.toBeDisabled()
-
-    fireEvent.blur(textField)
+    const textField = getByRole('textbox')
 
     await waitFor(() => expect(textField).toBeDisabled())
-  })
-
-  it('should not create submission event if input is empty', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        textResponseSubmissionEventCreate: {
-          id: 'uuid'
-        }
-      }
-    }))
-    render(<TextResponseMock mocks={[{ ...submissionSuccess, result }]} />)
-
-    const textField = screen.getByRole('textbox')
-
-    fireEvent.change(textField, { target: { value: ' ' } })
-    fireEvent.blur(textField)
-
-    await waitFor(() => {
-      expect(result).not.toHaveBeenCalled()
-    })
-  })
-
-  it('should create submission event on blur', async () => {
-    blockHistoryVar([activeBlock])
-    treeBlocksVar([activeBlock])
-
-    const result = jest.fn(() => ({
-      data: {
-        textResponseSubmissionEventCreate: {
-          id: 'uuid'
-        }
-      }
-    }))
-
-    render(<TextResponseMock mocks={[{ ...submissionSuccess, result }]} />)
-
-    const textField = screen.getByRole('textbox')
-
-    fireEvent.change(textField, { target: { value: 'My response' } })
-    fireEvent.blur(textField)
-
-    await waitFor(() => {
-      expect(result).toHaveBeenCalled()
-    })
-  })
-
-  it('should not create a submission event if the values dont change', async () => {
-    const result = jest.fn(() => ({
-      data: {
-        textResponseSubmissionEventCreate: {
-          id: 'uuid'
-        }
-      }
-    }))
-
-    render(<TextResponseMock mocks={[{ ...submissionSuccess, result }]} />)
-
-    const textField = screen.getByRole('textbox')
-
-    fireEvent.change(textField, { target: { value: 'Your answer here' } })
-    fireEvent.blur(textField)
-
-    await waitFor(() => {
-      expect(result).not.toHaveBeenCalled()
-    })
-  })
-
-  it('should add submission event to dataLayer', async () => {
-    blockHistoryVar([activeBlock])
-    treeBlocksVar([activeBlock])
-
-    render(<TextResponseMock mocks={[submissionSuccess]} />)
-
-    const textField = screen.getByRole('textbox')
-
-    fireEvent.change(textField, { target: { value: 'My response' } })
-    fireEvent.blur(textField)
-
-    await waitFor(() => {
-      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
-        event: 'text_response_submission',
-        eventId: 'uuid',
-        blockId: 'textResponse0.id',
-        stepName: 'Step {{number}}'
-      })
-    })
-  })
-
-  it('should show error when submit fails', async () => {
-    const submissionError = {
-      ...submissionSuccess,
-      error: new Error()
-    }
-
-    render(<TextResponseMock mocks={[submissionError]} />)
-    const textField = screen.getByRole('textbox')
-
-    fireEvent.change(textField, { target: { value: 'My response' } })
-    fireEvent.blur(textField)
-
-    expect(
-      await waitFor(() =>
-        screen.getByText('Could not send response, please try again.')
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should show placeholder text to guide user input', () => {
-    const blockWithPlaceholder: TreeBlock<TextResponseFields> = {
-      ...block,
-      placeholder: 'Enter your thoughts here'
-    }
-
-    render(
-      <MockedProvider mocks={[]} addTypename={false}>
-        <JourneyProvider>
-          <SnackbarProvider>
-            <TextResponse {...blockWithPlaceholder} uuid={() => 'uuid'} />
-          </SnackbarProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByRole('textbox')).toHaveAttribute(
-      'placeholder',
-      'Enter your thoughts here'
-    )
   })
 
   it('should not allow selection in editor', () => {
@@ -287,6 +130,12 @@ describe('TextResponse', () => {
     const response = screen.getByRole('textbox')
     fireEvent.click(response)
     expect(response.matches(':focus')).not.toBeTruthy()
+  })
+
+  it('should be able to render without formik context', () => {
+    const { getAllByRole } = render(<TextResponse {...block} />)
+
+    expect(getAllByRole('textbox')[0]).toBeInTheDocument()
   })
 
   it('should have correct aria-labelledby attribute', () => {

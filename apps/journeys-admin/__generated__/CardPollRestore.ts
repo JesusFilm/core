@@ -50,6 +50,7 @@ export interface CardPollRestore_imageRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_imageRestore_ButtonBlock_action | null;
 }
 
@@ -474,6 +475,7 @@ export interface CardPollRestore_subtitleRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_subtitleRestore_ButtonBlock_action | null;
 }
 
@@ -898,6 +900,7 @@ export interface CardPollRestore_titleRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_titleRestore_ButtonBlock_action | null;
 }
 
@@ -1322,6 +1325,7 @@ export interface CardPollRestore_radioQuestionRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_radioQuestionRestore_ButtonBlock_action | null;
 }
 
@@ -1746,6 +1750,7 @@ export interface CardPollRestore_radioOption1Restore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_radioOption1Restore_ButtonBlock_action | null;
 }
 
@@ -2170,6 +2175,7 @@ export interface CardPollRestore_radioOption2Restore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_radioOption2Restore_ButtonBlock_action | null;
 }
 
@@ -2594,6 +2600,7 @@ export interface CardPollRestore_radioOption3Restore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_radioOption3Restore_ButtonBlock_action | null;
 }
 
@@ -3018,6 +3025,7 @@ export interface CardPollRestore_radioOption4Restore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_radioOption4Restore_ButtonBlock_action | null;
 }
 
@@ -3442,6 +3450,7 @@ export interface CardPollRestore_bodyRestore_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardPollRestore_bodyRestore_ButtonBlock_action | null;
 }
 

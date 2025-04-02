@@ -1,9 +1,11 @@
-import { gql, useMutation } from '@apollo/client'
+import { ApolloError, gql, useMutation } from '@apollo/client'
 import Paper from '@mui/material/Paper'
-import { useTheme } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import { sendGTMEvent } from '@next/third-parties/google'
+import { Form, Formik, FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
+import { useSnackbar } from 'notistack'
 import { MouseEvent, ReactElement, useEffect, useMemo } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -22,6 +24,8 @@ import { getJourneyRTL } from '../../libs/rtl'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { StepFields } from '../Step/__generated__/StepFields'
+import { TextResponseSubmissionEventCreate } from '../TextResponse/__generated__/TextResponseSubmissionEventCreate'
+import { TEXT_RESPONSE_SUBMISSION_EVENT_CREATE } from '../TextResponse/TextResponse'
 import { VideoFields } from '../Video/__generated__/VideoFields'
 
 import { CardFields } from './__generated__/CardFields'
@@ -35,6 +39,8 @@ import {
 } from './__generated__/StepPreviousEventCreate'
 import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
+import { getFormInitialValues } from './utils/getFormInitialValues'
+import { getTextResponseBlocks } from './utils/getTextResponseBlocks'
 
 export const STEP_NEXT_EVENT_CREATE = gql`
   mutation StepNextEventCreate($input: StepNextEventCreateInput!) {
@@ -56,6 +62,31 @@ interface CardProps extends TreeBlock<CardFields> {
   wrappers?: WrappersProps
 }
 
+const StyledForm = styled(Form)(() => ({}))
+
+/**
+ * Card component - The primary container for content in a Journey.
+ *
+ * This component is responsible for rendering a card with various content blocks,
+ * handling navigation between steps, managing form state for text responses,
+ * and tracking analytics events for user interactions.
+ *
+ * The Card can display content in different layouts based on configuration:
+ * - It can show a cover image or video in contained or expanded mode
+ * - It handles form submission for text responses
+ * - It provides touch/click navigation between steps
+ * - It tracks navigation events and submits them to analytics
+ *
+ * @param {CardProps} props - Component props
+ * @param {string} props.id - Unique identifier for the card
+ * @param {Array<TreeBlock>} props.children - Child blocks to render within the card
+ * @param {string} [props.backgroundColor] - Background color of the card
+ * @param {string} [props.coverBlockId] - ID of the block to use as a cover (image or video)
+ * @param {boolean} [props.fullscreen] - Whether the card should be displayed in fullscreen mode
+ * @param {WrappersProps} [props.wrappers] - Optional wrapper components for blocks rendered inside the card
+ *
+ * @returns {ReactElement} The rendered Card component
+ */
 export function Card({
   id,
   children,
@@ -64,6 +95,7 @@ export function Card({
   fullscreen,
   wrappers
 }: CardProps): ReactElement {
+  const { enqueueSnackbar } = useSnackbar()
   const [stepNextEventCreate] = useMutation<
     StepNextEventCreate,
     StepNextEventCreateVariables
@@ -72,6 +104,10 @@ export function Card({
     StepPreviousEventCreate,
     StepPreviousEventCreateVariables
   >(STEP_PREVIOUS_EVENT_CREATE)
+  const [textResponseSubmissionEventCreate] =
+    useMutation<TextResponseSubmissionEventCreate>(
+      TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
+    )
 
   const { t } = useTranslation('journeys-ui')
   const plausible = usePlausible<JourneyPlausibleEvents>()
@@ -131,6 +167,66 @@ export function Card({
     children.find(
       (child) => child.__typename === 'VideoBlock' && child.id !== coverBlockId
     ) != null
+
+  const formikInitialValues = useMemo(
+    () => getFormInitialValues(children),
+    [children]
+  )
+
+  const textResponseBlocks = useMemo(
+    () => getTextResponseBlocks(children),
+    [children]
+  )
+
+  /**
+   * Handles form submission for text responses within the card.
+   * Submits all text response values to the server and tracks analytics events.
+   *
+   * @param {FormikValues} values - The form values to submit
+   * @returns {Promise<void>} A promise that resolves when all submissions are complete
+   */
+  const handleFormSubmit = async (values: FormikValues): Promise<void> => {
+    if (variant !== 'default' && variant !== 'embed') return
+    const heading =
+      activeBlock != null
+        ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
+        : t('None')
+
+    const submissionPromises = textResponseBlocks.map((block) => {
+      const blockId = block.id
+      const responseValue = values[blockId]
+
+      if (!responseValue || responseValue === '') return Promise.resolve(null)
+
+      const id = uuidv4()
+      return textResponseSubmissionEventCreate({
+        variables: {
+          input: {
+            id,
+            blockId,
+            stepId: activeBlock?.id,
+            label: heading,
+            value: responseValue
+          }
+        }
+      }).then(() => {
+        sendGTMEvent({
+          event: 'text_response_submission',
+          eventId: id,
+          blockId,
+          stepName: heading
+        })
+        return id
+      })
+    })
+
+    await Promise.all(submissionPromises).catch((e) => {
+      if (e instanceof ApolloError)
+        enqueueSnackbar(e.message, {
+          variant: 'error'
+        })
+    })
+  }
 
   // should always be called with nextActiveBlock()
   // should match with other handleNextNavigationEventCreate functions
@@ -289,43 +385,63 @@ export function Card({
       }
     }
   }
+
   return (
-    <Paper
-      data-testid={`JourneysCard-${id}`}
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-end',
-        borderRadius: { xs: 'inherit', lg: 3 },
-        backgroundColor,
-        width: '100%',
-        height: '100%',
-        overflow: 'hidden',
-        transform: 'translateZ(0)' // safari glitch with border radius
-      }}
-      elevation={3}
-      onClick={handleNavigation}
+    <Formik
+      initialValues={formikInitialValues}
+      onSubmit={handleFormSubmit}
+      enableReinitialize
     >
-      {(coverBlock != null && !fullscreen) || videoBlock != null ? (
-        <ContainedCover
-          backgroundColor={cardColor}
-          backgroundBlur={blurUrl}
-          videoBlock={videoBlock}
-          imageBlock={imageBlock}
-          hasFullscreenVideo={hasFullscreenVideo}
+      {({ handleSubmit }) => (
+        <StyledForm
+          data-testid={`card-form-${id}`}
+          onSubmit={handleSubmit}
+          sx={{
+            height: '100%',
+            width: '100%',
+            overflow: 'hidden',
+            borderRadius: { xs: 'inherit', lg: 3 }
+          }}
         >
-          {renderedChildren}
-        </ContainedCover>
-      ) : (
-        <ExpandedCover
-          backgroundColor={cardColor}
-          backgroundBlur={blurUrl}
-          imageBlock={imageBlock}
-          hasFullscreenVideo={hasFullscreenVideo}
-        >
-          {renderedChildren}
-        </ExpandedCover>
+          <Paper
+            data-testid={`JourneysCard-${id}`}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'flex-end',
+              borderRadius: { xs: 'inherit', lg: 3 },
+              backgroundColor,
+              width: '100%',
+              height: '100%',
+              overflow: 'hidden',
+              transform: 'translateZ(0)' // safari glitch with border radius
+            }}
+            elevation={3}
+            onClick={handleNavigation}
+          >
+            {(coverBlock != null && !fullscreen) || videoBlock != null ? (
+              <ContainedCover
+                backgroundColor={cardColor}
+                backgroundBlur={blurUrl}
+                videoBlock={videoBlock}
+                imageBlock={imageBlock}
+                hasFullscreenVideo={hasFullscreenVideo}
+              >
+                {renderedChildren}
+              </ContainedCover>
+            ) : (
+              <ExpandedCover
+                backgroundColor={cardColor}
+                backgroundBlur={blurUrl}
+                imageBlock={imageBlock}
+                hasFullscreenVideo={hasFullscreenVideo}
+              >
+                {renderedChildren}
+              </ExpandedCover>
+            )}
+          </Paper>
+        </StyledForm>
       )}
-    </Paper>
+    </Formik>
   )
 }
