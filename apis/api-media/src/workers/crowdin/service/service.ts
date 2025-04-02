@@ -18,6 +18,8 @@ export async function service(logger?: Logger): Promise<void> {
     throw new Error('Crowdin API key not set')
   }
 
+  const cleanup: Array<() => void> = []
+
   try {
     const credentials = {
       token: process.env.CROWDIN_API_KEY
@@ -25,22 +27,27 @@ export async function service(logger?: Logger): Promise<void> {
 
     const { stringTranslationsApi, sourceStringsApi } = new crowdin(credentials)
 
-    const cleanup = [
-      await importVideoTitles(sourceStringsApi, stringTranslationsApi, logger),
+    // Execute imports sequentially and collect cleanup functions
+    cleanup.push(
+      await importVideoTitles(sourceStringsApi, stringTranslationsApi, logger)
+    )
+    cleanup.push(
       await importVideoDescriptions(
         sourceStringsApi,
         stringTranslationsApi,
         logger
-      ),
+      )
+    )
+    cleanup.push(
       await importStudyQuestions(
         sourceStringsApi,
         stringTranslationsApi,
         logger
-      ),
+      )
+    )
+    cleanup.push(
       await importBibleBooks(sourceStringsApi, stringTranslationsApi, logger)
-    ]
-
-    cleanup.forEach((fn) => fn())
+    )
   } catch (error: unknown) {
     if (error instanceof CrowdinValidationError) {
       logger?.error({ error: error.message }, 'Validation error')
@@ -55,5 +62,14 @@ export async function service(logger?: Logger): Promise<void> {
       logger?.error({ error }, 'Unexpected error')
     }
     throw error
+  } finally {
+    logger?.info('Running cleanup functions...')
+    for (let i = cleanup.length - 1; i >= 0; i--) {
+      try {
+        cleanup[i]()
+      } catch (cleanupError) {
+        logger?.error({ error: cleanupError }, `Error during cleanup step ${i}`)
+      }
+    }
   }
 }
