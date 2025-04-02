@@ -1,5 +1,7 @@
 import type { GetStaticProps } from 'next'
+import Head from 'next/head'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { NextSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 
@@ -10,11 +12,34 @@ import { LanguageProvider } from '../../../src/libs/languageContext/LanguageCont
 
 export default function EasterPage(): ReactElement {
   return (
-    <SnackbarProvider>
-      <LanguageProvider>
-        <CollectionsPage />
-      </LanguageProvider>
-    </SnackbarProvider>
+    <>
+      <NextSeo
+        titleTemplate="%s | Jesus Film Project"
+        defaultTitle="Easter 2025 videos & resources about Lent, Holy Week, Resurrection | Jesus Film Project"
+        description="Explore the other side of Easter — one filled with betrayal, hope, and a claim that changed the world."
+        nofollow
+        noindex
+        openGraph={{
+          title:
+            'What If Everything You Thought About Easter Is Only Half the Story?',
+          description:
+            'Explore the other side of Easter — one filled with betrayal, hope, and a claim that changed the world.',
+          url: 'https://watch.jesusfilm.org/watch/easter',
+          images: [
+            {
+              url: 'https://images.unsplash.com/photo-1482424917728-d82d29662023?w=1400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fGNocmlzdHxlbnwwfHwwfHx8MA%3D%3D',
+              width: 1400,
+              alt: 'Easter - Jesus Film Project'
+            }
+          ]
+        }}
+      />
+      <SnackbarProvider>
+        <LanguageProvider>
+          <CollectionsPage />
+        </LanguageProvider>
+      </SnackbarProvider>
+    </>
   )
 }
 
