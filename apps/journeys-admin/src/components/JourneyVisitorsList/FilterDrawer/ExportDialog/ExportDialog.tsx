@@ -8,13 +8,52 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3'
+import { DateField } from '@mui/x-date-pickers/DateField'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { EventType } from '../../../../../__generated__/globalTypes'
+
+interface DateRangePickerProps {
+  startDate: Date | null
+  endDate: Date | null
+  onStartDateChange: (date: Date | null) => void
+  onEndDateChange: (date: Date | null) => void
+}
+
+function DateRangePicker({
+  startDate,
+  endDate,
+  onStartDateChange,
+  onEndDateChange
+}: DateRangePickerProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <Stack direction="row" spacing={2}>
+        <DateField
+          label={t('Start Date')}
+          value={startDate}
+          onChange={onStartDateChange}
+          format="dd-MM-yyyy"
+        />
+        <DateField
+          label={t('End Date')}
+          value={endDate}
+          onChange={onEndDateChange}
+          format="dd-MM-yyyy"
+        />
+      </Stack>
+    </LocalizationProvider>
+  )
+}
 
 interface ExportDialogProps {
   open: boolean
@@ -50,6 +89,10 @@ export function ExportDialog({
     complete: true,
     progress: true
   })
+
+  // Date range state
+  const [startDate, setStartDate] = useState<Date | null>(null)
+  const [endDate, setEndDate] = useState<Date | null>(null)
 
   // All checkbox state
   const [selectAll, setSelectAll] = useState(true)
@@ -158,9 +201,22 @@ export function ExportDialog({
       }}
       divider
     >
+      <Box sx={{ px: 4 }}>
+        <Box sx={{ pb: 2 }}>
+          <Typography variant="subtitle2" gutterBottom>
+            {t('Select date range')}
+          </Typography>
+        </Box>
+        <DateRangePicker
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={setStartDate}
+          onEndDateChange={setEndDate}
+        />
+      </Box>
       <Box sx={{ p: 4 }}>
         <Typography variant="subtitle2" gutterBottom>
-          {t('Select the visitors actions you need to export')}
+          {t('Select visitors actions')}
         </Typography>
         <Stack spacing={2}>
           <FormGroup>
