@@ -23,7 +23,7 @@ import {
   submitButtonBlock,
   submitButtonCreateMock,
   textResponseBlock
-} from './utils/mocks'
+} from './NewButtonButton.mock'
 
 import { NewButtonButton } from '.'
 

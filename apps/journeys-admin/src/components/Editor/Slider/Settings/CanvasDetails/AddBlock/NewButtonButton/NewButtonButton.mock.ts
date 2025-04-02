@@ -7,18 +7,19 @@ import type {
   BlockFields_CardBlock as CardBlock,
   BlockFields_StepBlock as StepBlock,
   BlockFields_TextResponseBlock as TextResponseBlock
-} from '../../../../../../../../../__generated__/BlockFields'
+} from '../../../../../../../../__generated__/BlockFields'
 import {
   ButtonBlockCreate,
   ButtonBlockCreateVariables
-} from '../../../../../../../../../__generated__/ButtonBlockCreate'
+} from '../../../../../../../../__generated__/ButtonBlockCreate'
 import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
   TextResponseType
-} from '../../../../../../../../../__generated__/globalTypes'
-import { BUTTON_BLOCK_CREATE } from '../NewButtonButton'
+} from '../../../../../../../../__generated__/globalTypes'
+
+import { BUTTON_BLOCK_CREATE } from './NewButtonButton'
 
 export const textResponseBlock: TreeBlock<TextResponseBlock> = {
   __typename: 'TextResponseBlock',
