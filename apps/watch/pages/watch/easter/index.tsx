@@ -1,5 +1,4 @@
 import type { GetStaticProps } from 'next'
-import Head from 'next/head'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
