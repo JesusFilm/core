@@ -67,9 +67,9 @@ export function Label(): ReactElement {
 
   function handleSubmit(value: string): void {
     const trimmedValue = value.trim()
-    if (value.length > 0 && trimmedValue === "" || 
-      selectedBlock == null) return
-    
+    if ((value.length > 0 && trimmedValue === '') || selectedBlock == null)
+      return
+
     add({
       id: commandInput.id,
       parameters: {

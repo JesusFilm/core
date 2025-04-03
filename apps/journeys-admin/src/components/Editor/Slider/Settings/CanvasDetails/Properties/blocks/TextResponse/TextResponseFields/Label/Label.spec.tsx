@@ -241,7 +241,7 @@ describe('Edit Label field', () => {
     const field = screen.getByRole('textbox', { name: 'Label' })
     await userEvent.clear(field)
     await userEvent.type(field, ' ')
-  
+
     await waitFor(() => {
       expect(mockLabelUpdateWhitespace.result).not.toHaveBeenCalled()
     })
