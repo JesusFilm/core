@@ -1,14 +1,13 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
-import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
-import { DialogAction } from '../../../../../../../components/CrudDialog'
-import { GetAdminVideo_AdminVideo_VideoEdition as Edition } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useCrudState } from '../../../../../../../libs/useCrudState'
+import { DialogAction } from '../../../../../../components/CrudDialog'
+import { GetAdminVideo_AdminVideo_VideoEdition as Edition } from '../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useCrudState } from '../../../../../../libs/useCrudState'
 import { Section } from '../Section'
 
 import { EditionCard } from './EditionCard'
@@ -27,15 +26,13 @@ interface EditionsProps {
 }
 
 export function Editions({ editions }: EditionsProps): ReactElement {
-  const t = useTranslations()
-
   const { selectedItem, action, dispatch } = useCrudState<Edition>(editions)
 
   return (
     <Section
-      title={t('Editions')}
+      title="Editions"
       action={{
-        label: t('New Edition'),
+        label: 'New Edition',
         onClick: () => dispatch({ type: DialogAction.CREATE }),
         startIcon: <Plus2 />
       }}
@@ -68,7 +65,7 @@ export function Editions({ editions }: EditionsProps): ReactElement {
         </Box>
       ) : (
         <Box sx={{ display: 'grid', placeItems: 'center', height: 200 }}>
-          <Typography>{t('No editions')}</Typography>
+          <Typography>No editions</Typography>
         </Box>
       )}
       <EditionDialog

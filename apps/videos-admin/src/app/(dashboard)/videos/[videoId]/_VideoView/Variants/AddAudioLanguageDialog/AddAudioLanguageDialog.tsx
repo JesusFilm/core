@@ -9,7 +9,6 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'
 import { useParams } from 'next/navigation'
-import { useTranslations } from 'next-intl'
 import { ReactElement, useRef } from 'react'
 import { mixed, object, string } from 'yup'
 
@@ -17,11 +16,11 @@ import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { Dialog } from '@core/shared/ui/Dialog'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete/LanguageAutocomplete'
 
-import { useUploadVideoVariant } from '../../../../../../../../libs/UploadVideoVariantProvider'
+import { useUploadVideoVariant } from '../../../../../../../libs/UploadVideoVariantProvider'
 import {
   GetAdminVideoVariant,
   GetAdminVideo_AdminVideo_VideoEditions as VideoEditions
-} from '../../../../../../../../libs/useAdminVideo'
+} from '../../../../../../../libs/useAdminVideo'
 
 import { AudioLanguageFileUpload } from './AudioLanguageFileUpload/AudioLanguageFileUpload'
 
@@ -50,7 +49,6 @@ export function AddAudioLanguageDialog({
   variantLanguagesMap,
   editions
 }: AddAudioLanguageDialogProps): ReactElement {
-  const t = useTranslations()
   const params = useParams<{ videoId: string }>()
   const { uploadState, startUpload } = useUploadVideoVariant()
 
@@ -96,7 +94,7 @@ export function AddAudioLanguageDialog({
       open={open ?? false}
       onClose={handleDialogClose}
       dialogTitle={{
-        title: t('Add Audio Language'),
+        title: 'Add Audio Language',
         closeButton: true
       }}
       divider
@@ -120,13 +118,13 @@ export function AddAudioLanguageDialog({
                   fullWidth
                   error={touched.edition && errors.edition != null}
                 >
-                  <InputLabel id="edition-label">{t('Edition')}</InputLabel>
+                  <InputLabel id="edition-label">Edition</InputLabel>
                   <Select
                     labelId="edition-label"
                     data-testid="EditionSelect"
                     id="edition"
                     name="edition"
-                    label={t('Edition')}
+                    label="Edition"
                     error={touched.edition && errors.edition != null}
                     value={values.edition}
                     onChange={async (event) => {
@@ -161,7 +159,7 @@ export function AddAudioLanguageDialog({
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        label={t('Language')}
+                        label="Language"
                         variant="outlined"
                         error={touched.language && errors.language != null}
                         helperText={
@@ -200,7 +198,7 @@ export function AddAudioLanguageDialog({
                       values.file == null
                     }
                   >
-                    {t('Add')}
+                    Add
                   </Button>
                 </Box>
               </Stack>

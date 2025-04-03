@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/react'
 import { Formik } from 'formik'
 import { ComponentPropsWithoutRef } from 'react'
 
-import { videosAdminConfig } from '../../../../../../../../../../libs/storybookConfig'
+import { videosAdminConfig } from '../../../../../../../../../libs/storybookConfig'
 
 import { SubtitleFileUpload } from './SubtitleFileUpload'
 

@@ -3,9 +3,9 @@ import { screen, userEvent } from '@storybook/test'
 import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
-import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
-import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { videosAdminConfig } from '../../../../../../../libs/storybookConfig'
+import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 import { VideoSnippet } from './VideoSnippet'
 

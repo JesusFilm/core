@@ -1,16 +1,15 @@
 import { gql, useMutation } from '@apollo/client'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
-import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import {
   GetAdminVideo_AdminVideo_VideoEdition as Edition,
   GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle
-} from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useCreateR2AssetMutation } from '../../../../../../../../../../libs/useCreateR2Asset'
-import { uploadAssetFile } from '../../../../../../../../../../libs/useCreateR2Asset/uploadAssetFile/uploadAssetFile'
-import { useVideo } from '../../../../../../../../../../libs/VideoProvider'
+} from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useCreateR2AssetMutation } from '../../../../../../../../../libs/useCreateR2Asset'
+import { uploadAssetFile } from '../../../../../../../../../libs/useCreateR2Asset/uploadAssetFile/uploadAssetFile'
+import { useVideo } from '../../../../../../../../../libs/VideoProvider'
 import { SubtitleForm } from '../../SubtitleForm'
 import { SubtitleValidationSchema } from '../../SubtitleForm/SubtitleForm'
 import { getSubtitleR2Path } from '../getSubtitleR2Path'
@@ -61,7 +60,6 @@ export function SubtitleCreate({
   subtitleLanguagesMap
 }: SubtitleCreateProps): ReactElement {
   const video = useVideo()
-  const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
   const abortController = useRef<AbortController | null>(null)
   const [loading, setLoading] = useState(false)
@@ -161,7 +159,7 @@ export function SubtitleCreate({
         })
 
         if (result.data?.cloudflareR2Create?.uploadUrl == null) {
-          throw new Error(t('Failed to create r2 asset for VTT file.'))
+          throw new Error('Failed to create r2 asset for VTT file.')
         }
 
         const uploadUrl = result.data.cloudflareR2Create.uploadUrl
@@ -200,7 +198,7 @@ export function SubtitleCreate({
         })
 
         if (result.data?.cloudflareR2Create?.uploadUrl == null) {
-          throw new Error(t('Failed to create r2 asset for SRT file.'))
+          throw new Error('Failed to create r2 asset for SRT file.')
         }
 
         const uploadUrl = result.data.cloudflareR2Create.uploadUrl
@@ -218,7 +216,7 @@ export function SubtitleCreate({
           input
         },
         onCompleted: () => {
-          enqueueSnackbar(t('Successfully created subtitle.'), {
+          enqueueSnackbar('Successfully created subtitle.', {
             variant: 'success'
           })
         },
@@ -232,9 +230,9 @@ export function SubtitleCreate({
       close()
     } catch (e) {
       if (e.name === 'AbortError' || e.message.includes('aborted')) {
-        enqueueSnackbar(t('Subtitle create cancelled.'))
+        enqueueSnackbar('Subtitle create cancelled.')
       } else {
-        enqueueSnackbar(t('Failed to create subtitle.'), {
+        enqueueSnackbar('Failed to create subtitle.', {
           variant: 'error'
         })
       }

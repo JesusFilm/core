@@ -1,11 +1,10 @@
-import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
-import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
-import { useDeleteVideoVariantMutation } from '../../../../../../../../libs/useDeleteVideoVariantMutation/useDeleteVideoVariantMutation'
+import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
+import { useDeleteVideoVariantMutation } from '../../../../../../../libs/useDeleteVideoVariantMutation/useDeleteVideoVariantMutation'
 
 interface DeleteVariantDialogProps {
   variant: GetAdminVideoVariant | null
@@ -20,7 +19,6 @@ export function DeleteVariantDialog({
   onClose,
   onSuccess
 }: DeleteVariantDialogProps): ReactElement {
-  const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
   const [deleteVariantMutation, { loading }] = useDeleteVideoVariantMutation()
 
@@ -35,14 +33,14 @@ export function DeleteVariantDialog({
         id: variant.id
       },
       onCompleted: () => {
-        enqueueSnackbar(t('Audio language deleted successfully'), {
+        enqueueSnackbar('Audio language deleted successfully', {
           variant: 'success'
         })
         onClose?.()
         onSuccess?.()
       },
       onError: () => {
-        enqueueSnackbar(t('Failed to delete audio language'), {
+        enqueueSnackbar('Failed to delete audio language', {
           variant: 'error'
         })
       }
@@ -54,19 +52,17 @@ export function DeleteVariantDialog({
       open={open}
       onClose={onClose}
       dialogTitle={{
-        title: t('Delete Audio Language'),
+        title: 'Delete Audio Language',
         closeButton: true
       }}
       dialogAction={{
         onSubmit: handleConfirm,
-        submitLabel: t('Delete'),
-        closeLabel: t('Cancel')
+        submitLabel: 'Delete',
+        closeLabel: 'Cancel'
       }}
       loading={loading}
     >
-      {t('deleteVariantDialog', {
-        language: languageName
-      })}
+      {`Are you sure you want to delete the ${languageName} audio language? This action cannot be undone.`}
     </Dialog>
   )
 }

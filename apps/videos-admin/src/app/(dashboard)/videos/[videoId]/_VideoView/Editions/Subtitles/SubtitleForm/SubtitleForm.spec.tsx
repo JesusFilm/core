@@ -5,7 +5,7 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
 
-import { useAdminVideoMock } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 import { SubtitleForm } from './SubtitleForm'
 

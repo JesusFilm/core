@@ -1,8 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 
-import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
-import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { videosAdminConfig } from '../../../../../../../libs/storybookConfig'
+import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 import { EditionCard } from './EditionCard'
 

@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
-import { videosAdminConfig } from '../../../../../../libs/storybookConfig'
-import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { videosAdminConfig } from '../../../../../libs/storybookConfig'
+import { useAdminVideoMock } from '../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 import { VideoView } from './VideoView'
 

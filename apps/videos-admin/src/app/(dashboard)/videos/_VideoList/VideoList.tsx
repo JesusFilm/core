@@ -22,13 +22,12 @@ import {
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import omitBy from 'lodash/omitBy'
 import { usePathname, useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import Lock1 from '@core/shared/ui/icons/Lock1'
 
-import { PublishedChip } from '../../../../../components/PublishedChip'
-import { useVideoFilter } from '../../../../../libs/useVideoFilter'
+import { PublishedChip } from '../../../../components/PublishedChip'
+import { useVideoFilter } from '../../../../libs/useVideoFilter'
 
 import { VideoListHeader } from './VideoListHeader'
 
@@ -93,7 +92,6 @@ export type GetAdminVideosAndCountVariables = VariablesOf<
 >
 
 export function VideoList(): ReactElement {
-  const t = useTranslations()
   const router = useRouter()
   const pathname = usePathname()
 
@@ -125,7 +123,7 @@ export function VideoList(): ReactElement {
   const columns: GridColDef[] = [
     {
       field: 'locked',
-      headerName: t('Locked'),
+      headerName: 'Locked',
       width: 68,
       renderCell: (params) => <LockedCell {...params} />,
       filterOperators: getGridBooleanOperators().filter(
@@ -134,7 +132,7 @@ export function VideoList(): ReactElement {
     },
     {
       field: 'id',
-      headerName: t('ID'),
+      headerName: 'ID',
       minWidth: 150,
       filterOperators: getGridStringOperators().filter(
         (operator) => operator.value === 'equals'
@@ -142,7 +140,7 @@ export function VideoList(): ReactElement {
     },
     {
       field: 'title',
-      headerName: t('Title'),
+      headerName: 'Title',
       minWidth: 200,
       filterOperators: getGridStringOperators().filter(
         (operator) => operator.value === 'equals'
@@ -150,7 +148,7 @@ export function VideoList(): ReactElement {
     },
     {
       field: 'published',
-      headerName: t('Published'),
+      headerName: 'Published',
       width: 112,
       filterOperators: getGridBooleanOperators().filter(
         (operator) => operator.value === 'is'
@@ -161,7 +159,7 @@ export function VideoList(): ReactElement {
     },
     {
       field: 'description',
-      headerName: t('Description'),
+      headerName: 'Description',
       flex: 1,
       filterable: false
     }

@@ -3,8 +3,8 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { VideoProvider } from '../../../../../../../libs/VideoProvider'
+import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { VideoProvider } from '../../../../../../libs/VideoProvider'
 
 import { Editions } from './Editions'
 

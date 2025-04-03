@@ -11,18 +11,16 @@ import Select from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikValues } from 'formik'
 import { useParams } from 'next/navigation'
-import { useTranslations } from 'next-intl'
 import { enqueueSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
-import { v4 as uuidv4 } from 'uuid'
 import { object, string } from 'yup'
 
-import { LinkFile } from '../../../../../../../../../../components/LinkFile'
+import { LinkFile } from '../../../../../../../../../components/LinkFile'
 import {
   uploadAssetFile,
   useCreateR2AssetMutation
-} from '../../../../../../../../../../libs/useCreateR2Asset'
-import { useVideoVariantDownloadCreateMutation } from '../../../../../../../../../../libs/useVideoVariantDownloadCreateMutation'
+} from '../../../../../../../../../libs/useCreateR2Asset'
+import { useVideoVariantDownloadCreateMutation } from '../../../../../../../../../libs/useVideoVariantDownloadCreateMutation'
 import { FileUpload } from '../../../../Metadata/VideoImage/FileUpload'
 import { getExtension } from '../../../AddAudioLanguageDialog/utils/getExtension'
 
@@ -45,7 +43,6 @@ export function AddVideoVariantDownloadDialog({
 }: AddVideoVariantDownloadDialogProps): ReactElement {
   const params = useParams<{ videoId: string; locale: string }>()
   const videoId = params?.videoId
-  const t = useTranslations()
   const [createVideoVariantDownload] = useVideoVariantDownloadCreateMutation()
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [createR2Asset] = useCreateR2AssetMutation()
@@ -63,7 +60,7 @@ export function AddVideoVariantDownloadDialog({
     }
     video.onerror = function () {
       cleanup()
-      enqueueSnackbar(t('Failed to load video'), {
+      enqueueSnackbar('Failed to load video', {
         variant: 'error'
       })
     }
@@ -83,13 +80,13 @@ export function AddVideoVariantDownloadDialog({
 
   const validationSchema = object({
     quality: string()
-      .required(t('Quality is required'))
+      .required('Quality is required')
       .test(
         'unique-quality',
-        t('A download with this quality already exists'),
+        'A download with this quality already exists',
         (value) => !existingQualities.includes(value)
       ),
-    file: string().required(t('File is required'))
+    file: string().required('File is required')
   })
 
   const handleSubmit = async (values: FormikValues): Promise<void> => {
@@ -112,7 +109,7 @@ export function AddVideoVariantDownloadDialog({
       await uploadAssetFile(uploadedFile, uploadUrl)
     } catch (error) {
       console.log(error)
-      enqueueSnackbar(t('Failed to upload file'), {
+      enqueueSnackbar('Failed to upload file', {
         variant: 'error'
       })
       return
@@ -134,12 +131,12 @@ export function AddVideoVariantDownloadDialog({
           }
         },
         onError: () => {
-          enqueueSnackbar(t('Failed to create download'), {
+          enqueueSnackbar('Failed to create download', {
             variant: 'error'
           })
         },
         onCompleted: () => {
-          enqueueSnackbar(t('Download created'), {
+          enqueueSnackbar('Download created', {
             variant: 'success'
           })
           onSuccess?.()
@@ -157,9 +154,7 @@ export function AddVideoVariantDownloadDialog({
       maxWidth="sm"
       fullWidth
     >
-      <DialogTitle id="add-download-dialog-title">
-        {t('Add Download')}
-      </DialogTitle>
+      <DialogTitle id="add-download-dialog-title">Add Download</DialogTitle>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -182,17 +177,17 @@ export function AddVideoVariantDownloadDialog({
                   margin="normal"
                   error={touched.quality && Boolean(errors.quality)}
                 >
-                  <InputLabel id="quality-label">{t('Quality')}</InputLabel>
+                  <InputLabel id="quality-label">Quality</InputLabel>
                   <Select
                     name="quality"
                     value={values.quality}
                     labelId="quality-label"
-                    label={t('Quality')}
+                    label="Quality"
                     error={touched.quality && Boolean(errors.quality)}
                     onChange={handleChange}
                   >
-                    <MenuItem value="high">{t('high')}</MenuItem>
-                    <MenuItem value="low">{t('low')}</MenuItem>
+                    <MenuItem value="high">high</MenuItem>
+                    <MenuItem value="low">low</MenuItem>
                   </Select>
                   <FormHelperText sx={{ minHeight: 20 }}>
                     {errors.quality != null &&
@@ -200,16 +195,16 @@ export function AddVideoVariantDownloadDialog({
                       errors.quality}
                   </FormHelperText>
                 </FormControl>
+
                 <FileUpload
-                  accept={{
-                    'video/*': []
-                  }}
+                  accept={{ 'video/*': [] }}
                   loading={false}
                   onDrop={async (file) => {
                     await setFieldValue('file', file)
                     await handleUpload(file)
                   }}
                 />
+
                 {uploadedFile != null && (
                   <LinkFile
                     name={uploadedFile.name}
@@ -219,11 +214,9 @@ export function AddVideoVariantDownloadDialog({
               </Stack>
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose} disabled={isSubmitting}>
-                {t('Cancel')}
-              </Button>
-              <Button type="submit" color="primary" disabled={isSubmitting}>
-                {t('Save')}
+              <Button onClick={handleClose}>Cancel</Button>
+              <Button type="submit" disabled={isSubmitting} variant="contained">
+                Add
               </Button>
             </DialogActions>
           </Form>

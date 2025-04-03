@@ -13,8 +13,8 @@ import {
 } from '@apollo/experimental-nextjs-app-support'
 import { PropsWithChildren, ReactNode } from 'react'
 
-import { cache } from '../../../libs/apollo/cache'
-import { User } from '../../../libs/auth/authContext'
+import { cache } from '../../libs/apollo/cache'
+import { User } from '../../libs/auth/authContext'
 
 function UpdateAuth({
   token,

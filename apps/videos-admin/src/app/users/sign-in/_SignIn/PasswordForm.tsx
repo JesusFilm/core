@@ -6,7 +6,6 @@ import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
 import FormLabel from '@mui/material/FormLabel'
 import TextField from '@mui/material/TextField'
-import { useTranslations } from 'next-intl'
 import { FormEvent, ReactElement, ReactNode, useState } from 'react'
 
 export interface PasswordFormValue {
@@ -28,7 +27,6 @@ export function PasswordForm({
   error,
   onSubmit
 }: PasswordFormProps): ReactElement {
-  const t = useTranslations()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -54,7 +52,7 @@ export function PasswordForm({
       }}
     >
       <FormControl>
-        <FormLabel htmlFor="email">{t('Email')}</FormLabel>
+        <FormLabel htmlFor="email">Email</FormLabel>
         <TextField
           required
           value={email}
@@ -73,7 +71,7 @@ export function PasswordForm({
         />
       </FormControl>
       <FormControl>
-        <FormLabel htmlFor="password">{t('Password')}</FormLabel>
+        <FormLabel htmlFor="password">Password</FormLabel>
         <TextField
           name="password"
           placeholder="••••••"
@@ -98,9 +96,9 @@ export function PasswordForm({
         fullWidth
         loadingIndicator={<CircularProgress size={16} />}
       >
-        {t('Sign in')}
+        Sign in
       </LoadingButton>
-      <Divider>{t('or')}</Divider>
+      <Divider>or</Divider>
       {children}
     </Box>
   )

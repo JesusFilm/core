@@ -1,11 +1,10 @@
 import AddIcon from '@mui/icons-material/Add'
 import dynamic from 'next/dynamic'
-import { useTranslations } from 'next-intl'
 import { MouseEvent, ReactElement, useEffect, useMemo, useState } from 'react'
 import { FixedSizeList } from 'react-window'
 
-import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
-import { GetAdminVideo_AdminVideo_VideoEditions as VideoEditions } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { GetAdminVideoVariant } from '../../../../../../libs/useAdminVideo'
+import { GetAdminVideo_AdminVideo_VideoEditions as VideoEditions } from '../../../../../../libs/useAdminVideo/useAdminVideo'
 import { Section } from '../Section'
 
 import { VariantCard } from './VariantCard'
@@ -48,7 +47,6 @@ export function Variants({
   variants?: GetAdminVideoVariant[]
   editions?: VideoEditions
 }): ReactElement {
-  const t = useTranslations()
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
     null
   )
@@ -127,10 +125,10 @@ export function Variants({
             sx: { p: 2, height: 'calc(100vh - 400px)' }
           }}
           // if you change the title, change the element selected in the getVariantSectionDimensions function above
-          title={t('Audio Languages')}
+          title="Audio Languages"
           variant="outlined"
           action={{
-            label: t('Add Audio Language'),
+            label: 'Add Audio Language',
             startIcon: <AddIcon />,
             onClick: () => setOpenAddDialog(true)
           }}

@@ -4,12 +4,11 @@ import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
-import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
-import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
+import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
 import { VariantVideo } from '../VariantVideo'
 
 import { Downloads } from './Downloads'
@@ -49,7 +48,6 @@ export function VariantDialog({
   open,
   handleClose
 }: VariantDialogProps): ReactElement | null {
-  const t = useTranslations()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
 
   const languageName =
@@ -66,7 +64,7 @@ export function VariantDialog({
       open={open}
       onClose={handleClose}
       fullscreen={!smUp}
-      dialogTitle={{ title: t('Audio Language'), closeButton: true }}
+      dialogTitle={{ title: 'Audio Language', closeButton: true }}
       divider
       sx={{
         '& .MuiIconButton-root': {

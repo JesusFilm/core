@@ -3,8 +3,8 @@ import { ReactElement } from 'react'
 import {
   CrudDialog,
   DialogAction
-} from '../../../../../../../../components/CrudDialog'
-import { GetAdminVideo_AdminVideo_VideoEdition as Edition } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+} from '../../../../../../../components/CrudDialog'
+import { GetAdminVideo_AdminVideo_VideoEdition as Edition } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 import { EditionCreate } from './EditionCreate'
 import { EditionDelete } from './EditionDelete'

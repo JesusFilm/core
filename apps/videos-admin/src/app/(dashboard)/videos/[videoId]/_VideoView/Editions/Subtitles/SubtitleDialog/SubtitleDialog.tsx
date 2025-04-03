@@ -3,11 +3,11 @@ import { useMemo } from 'react'
 import {
   CrudDialog,
   DialogAction
-} from '../../../../../../../../../components/CrudDialog'
+} from '../../../../../../../../components/CrudDialog'
 import {
   GetAdminVideo_AdminVideo_VideoEdition as Edition,
   GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle
-} from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+} from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 import { SubtitleCreate } from './SubtitleCreate'
 import { SubtitleDelete } from './SubtitleDelete'

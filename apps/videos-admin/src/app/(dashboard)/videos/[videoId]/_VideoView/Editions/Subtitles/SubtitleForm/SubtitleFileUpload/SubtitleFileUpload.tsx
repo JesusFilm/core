@@ -1,16 +1,14 @@
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useField } from 'formik'
-import { useTranslations } from 'next-intl'
 
-import { LinkFile } from '../../../../../../../../../../components/LinkFile'
-import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { LinkFile } from '../../../../../../../../../components/LinkFile'
+import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { FileUpload } from '../../../../Metadata/VideoImage/FileUpload'
 
 import { validateSubtitleFile } from './validateSubtitleFile'
 
 export function SubtitleFileUpload({ subtitle }: { subtitle?: Subtitle }) {
-  const t = useTranslations()
   const [vttField, _vttMeta, vttHelpers] = useField<File | null>('vttFile')
   const [srtField, _srtMeta, srtHelpers] = useField<File | null>('srtFile')
 
@@ -41,11 +39,10 @@ export function SubtitleFileUpload({ subtitle }: { subtitle?: Subtitle }) {
 
   return (
     <Stack gap={2}>
-      <Typography variant="subtitle2">{t('Subtitle Files')}</Typography>
+      <Typography variant="subtitle2">Subtitle Files</Typography>
       <Typography variant="body2" color="text.secondary">
-        {t(
-          'You can upload both VTT and SRT files for the same subtitle. Drop files together or one at a time.'
-        )}
+        You can upload both VTT and SRT files for the same subtitle. Drop files
+        together or one at a time.
       </Typography>
 
       <FileUpload

@@ -1,7 +1,6 @@
 'use client'
 
 import Box from '@mui/material/Box'
-import { useTranslations } from 'next-intl'
 import { ReactElement, useCallback, useRef } from 'react'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
@@ -16,7 +15,6 @@ export function VariantVideo({
 }): ReactElement {
   const playerRef = useRef<Player>()
   const hasHls = hlsSrc != null && hlsSrc !== ''
-  const t = useTranslations()
 
   const videoRef = useCallback((node: HTMLVideoElement | null) => {
     if (node == null) return
@@ -52,7 +50,7 @@ export function VariantVideo({
             borderRadius: 1
           }}
         >
-          {t('HLS stream not available')}
+          HLS stream not available
         </Box>
       )}
     </Box>

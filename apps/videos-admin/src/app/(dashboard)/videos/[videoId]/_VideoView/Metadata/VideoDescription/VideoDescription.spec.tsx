@@ -4,9 +4,9 @@ import userEvent from '@testing-library/user-event'
 import _unescape from 'lodash/unescape'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { GetAdminVideo_AdminVideo_VideoDescriptions as VideoDescriptions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { VideoProvider } from '../../../../../../../../libs/VideoProvider'
+import { GetAdminVideo_AdminVideo_VideoDescriptions as VideoDescriptions } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { VideoProvider } from '../../../../../../../libs/VideoProvider'
 
 import {
   CREATE_VIDEO_DESCRIPTION,

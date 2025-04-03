@@ -1,8 +1,8 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
-import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 import { VariantCard } from './VariantCard'
 

@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { NextIntlClientProvider } from 'next-intl'
 import type { ComponentProps } from 'react'
 
-import { videosAdminConfig } from '../../../../../../../../../libs/storybookConfig'
-import { GetAdminVideoVariant_Downloads as VariantDownloads } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useAdminVideoMock } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
+import { GetAdminVideoVariant_Downloads as VariantDownloads } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 import { Downloads } from './Downloads'
 

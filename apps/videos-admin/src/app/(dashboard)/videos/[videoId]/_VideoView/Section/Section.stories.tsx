@@ -4,7 +4,7 @@ import { ComponentPropsWithoutRef } from 'react'
 
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
-import { videosAdminConfig } from '../../../../../../../libs/storybookConfig'
+import { videosAdminConfig } from '../../../../../../libs/storybookConfig'
 
 import { Section } from './Section'
 

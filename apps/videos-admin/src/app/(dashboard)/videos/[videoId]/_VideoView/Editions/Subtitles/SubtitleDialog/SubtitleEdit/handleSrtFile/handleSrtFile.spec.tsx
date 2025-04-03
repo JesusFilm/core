@@ -1,9 +1,5 @@
 import { handleSrtFile } from './handleSrtFile'
 
-jest.mock('next-intl', () => ({
-  useTranslations: () => (key: string) => key
-}))
-
 describe('handleSrtFile', () => {
   const mockVideo = { id: 'video-123' } as any
   const mockEdition = { name: 'edition-name' } as any

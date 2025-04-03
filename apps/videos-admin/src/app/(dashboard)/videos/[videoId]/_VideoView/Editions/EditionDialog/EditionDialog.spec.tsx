@@ -2,9 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { DialogAction } from '../../../../../../../../components/CrudDialog'
-import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { VideoProvider } from '../../../../../../../../libs/VideoProvider'
+import { DialogAction } from '../../../../../../../components/CrudDialog'
+import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { VideoProvider } from '../../../../../../../libs/VideoProvider'
 
 import { EditionDialog } from './EditionDialog'
 

@@ -3,9 +3,9 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { DialogAction } from '../../../../../../../../../components/CrudDialog'
-import { useAdminVideoMock } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { VideoProvider } from '../../../../../../../../../libs/VideoProvider'
+import { DialogAction } from '../../../../../../../../components/CrudDialog'
+import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { VideoProvider } from '../../../../../../../../libs/VideoProvider'
 
 import { SubtitleDialog } from './SubtitleDialog'
 

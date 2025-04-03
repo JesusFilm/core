@@ -1,11 +1,10 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslations } from 'next-intl'
 import { ComponentProps, ReactElement } from 'react'
 
-import { ActionButton } from '../../../../../../../../components/ActionButton'
-import { GetAdminVideo_AdminVideo_VideoEdition as Edition } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { ActionButton } from '../../../../../../../components/ActionButton'
+import { GetAdminVideo_AdminVideo_VideoEdition as Edition } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 interface EditionCardProps {
   edition: Edition
@@ -18,8 +17,6 @@ export function EditionCard({
   onClick,
   actions
 }: EditionCardProps): ReactElement {
-  const t = useTranslations()
-
   const menuActions = {
     ...actions,
     delete: edition.videoSubtitles.length === 0 ? actions.delete : undefined
@@ -55,7 +52,7 @@ export function EditionCard({
       </Stack>
       <Box sx={{ p: 2 }}>
         <Typography sx={{ color: 'text.secondary' }}>
-          {edition.videoSubtitles.length} {t('subtitles')}
+          {edition.videoSubtitles.length} subtitles
         </Typography>
       </Box>
     </Box>

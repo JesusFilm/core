@@ -3,10 +3,10 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider } from 'notistack'
 
-import { UploadVideoVariantProvider } from '../../../../../../../libs/UploadVideoVariantProvider'
-import { GetAdminVideoVariant as VideoVariants } from '../../../../../../../libs/useAdminVideo'
-import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { DELETE_VIDEO_VARIANT } from '../../../../../../../libs/useDeleteVideoVariantMutation'
+import { UploadVideoVariantProvider } from '../../../../../../libs/UploadVideoVariantProvider'
+import { GetAdminVideoVariant as VideoVariants } from '../../../../../../libs/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { DELETE_VIDEO_VARIANT } from '../../../../../../libs/useDeleteVideoVariantMutation'
 
 import { Variants } from './Variants'
 

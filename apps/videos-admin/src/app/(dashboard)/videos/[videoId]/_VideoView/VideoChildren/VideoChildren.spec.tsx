@@ -4,8 +4,8 @@ import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.share
 import { usePathname, useRouter } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { GetAdminVideo_AdminVideo_Children as AdminVideoChildren } from '../../../../../../../libs/useAdminVideo'
-import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { GetAdminVideo_AdminVideo_Children as AdminVideoChildren } from '../../../../../../libs/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 import { VideoChildren } from './VideoChildren'
 

@@ -3,11 +3,11 @@ import { MutationFunction } from '@apollo/client'
 import {
   GetAdminVideo_AdminVideo_VideoEdition as Edition,
   GetAdminVideo_AdminVideo as Video
-} from '../../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+} from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import {
   CreateCloudflareR2Asset,
   CreateCloudflareR2AssetVariables
-} from '../../../../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset'
+} from '../../../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset'
 import { getSubtitleR2Path } from '../../getSubtitleR2Path'
 
 /**

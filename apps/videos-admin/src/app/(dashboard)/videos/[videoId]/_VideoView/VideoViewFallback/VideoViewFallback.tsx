@@ -1,13 +1,12 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
-import { Fallback } from '../../../../../../../components/Fallback'
+import { Fallback } from '../../../../../../components/Fallback'
 
 const getVideosPath = (url: string | null): string => {
-  if (!url) return '/en/videos'
+  if (!url) return '/videos'
 
   const parts = url.split('/')
   parts.pop()
@@ -15,16 +14,16 @@ const getVideosPath = (url: string | null): string => {
 }
 
 export function VideoViewFallback(): ReactElement {
-  const t = useTranslations()
   const pathname = usePathname()
+  const backLink = getVideosPath(pathname)
 
   return (
     <Fallback
-      title={t('Video not found')}
-      subtitle={t('Could not find the video you are looking for')}
+      title="Video not found"
+      subtitle="The video you're looking for could not be found."
       action={{
-        href: getVideosPath(pathname),
-        label: t('View Videos')
+        href: backLink,
+        label: 'Back to videos'
       }}
     />
   )

@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { videosAdminConfig } from '../../../../../../../libs/storybookConfig'
-import { GetAdminVideo_AdminVideo_Children as AdminVideoChildren } from '../../../../../../../libs/useAdminVideo'
-import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { videosAdminConfig } from '../../../../../../libs/storybookConfig'
+import { GetAdminVideo_AdminVideo_Children as AdminVideoChildren } from '../../../../../../libs/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 import { VideoChildren } from './VideoChildren'
 

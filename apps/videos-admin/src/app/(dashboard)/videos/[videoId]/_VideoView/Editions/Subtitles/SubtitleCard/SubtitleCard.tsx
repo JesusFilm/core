@@ -2,11 +2,10 @@ import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
-import { ActionButton } from '../../../../../../../../../components/ActionButton'
-import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { ActionButton } from '../../../../../../../../components/ActionButton'
+import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 interface SubtitleCardProps {
   subtitle: Subtitle
@@ -19,8 +18,6 @@ export function SubtitleCard({
   onClick,
   actions
 }: SubtitleCardProps): ReactElement {
-  const t = useTranslations()
-
   const localName = subtitle?.language?.name?.find(
     ({ primary }) => !primary
   )?.value
@@ -57,7 +54,7 @@ export function SubtitleCard({
       </Stack>
       <Stack direction="row" alignItems="center" gap={1}>
         {subtitle.primary && (
-          <Chip label={t('Primary')} color="success" variant="filled" />
+          <Chip label="Primary" color="success" variant="filled" />
         )}
       </Stack>
     </Box>

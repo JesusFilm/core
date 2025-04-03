@@ -4,16 +4,15 @@ import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikValues } from 'formik'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
 import _unescape from 'lodash/unescape'
-import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import { CancelButton } from '../../../../../../../../components/CancelButton'
-import { ResizableTextField } from '../../../../../../../../components/ResizableTextField'
-import { SaveButton } from '../../../../../../../../components/SaveButton'
-import { GetAdminVideo_AdminVideo_VideoDescriptions as VideoDescriptions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useVideo } from '../../../../../../../../libs/VideoProvider'
+import { CancelButton } from '../../../../../../../components/CancelButton'
+import { ResizableTextField } from '../../../../../../../components/ResizableTextField'
+import { SaveButton } from '../../../../../../../components/SaveButton'
+import { GetAdminVideo_AdminVideo_VideoDescriptions as VideoDescriptions } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useVideo } from '../../../../../../../libs/VideoProvider'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 export const CREATE_VIDEO_DESCRIPTION = graphql(`
@@ -46,7 +45,6 @@ interface VideoDescriptionProps {
 export function VideoDescription({
   videoDescriptions
 }: VideoDescriptionProps): ReactElement {
-  const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
   const video = useVideo()
   const [createVideoDescription] = useMutation(CREATE_VIDEO_DESCRIPTION, {
@@ -75,7 +73,7 @@ export function VideoDescription({
   const [updateVideoDescription] = useMutation(UPDATE_VIDEO_DESCRIPTION)
 
   const validationSchema = object().shape({
-    description: string().required(t('Description is required'))
+    description: string().required('Description is required')
   })
 
   async function handleUpdateVideoDescription(
@@ -92,12 +90,12 @@ export function VideoDescription({
           }
         },
         onCompleted: () => {
-          enqueueSnackbar(t('Video description created'), {
+          enqueueSnackbar('Video description created', {
             variant: 'success'
           })
         },
         onError: () => {
-          enqueueSnackbar(t('Failed to create video description'), {
+          enqueueSnackbar('Failed to create video description', {
             variant: 'error'
           })
         }
@@ -111,12 +109,12 @@ export function VideoDescription({
           }
         },
         onCompleted: () => {
-          enqueueSnackbar(t('Video description updated'), {
+          enqueueSnackbar('Video description updated', {
             variant: 'success'
           })
         },
         onError: () => {
-          enqueueSnackbar(t('Failed to update video description'), {
+          enqueueSnackbar('Failed to update video description', {
             variant: 'error'
           })
         }

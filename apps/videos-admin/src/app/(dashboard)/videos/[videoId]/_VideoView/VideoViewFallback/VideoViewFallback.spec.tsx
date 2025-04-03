@@ -1,39 +1,19 @@
 import { render, screen } from '@testing-library/react'
-import { NextIntlClientProvider } from 'next-intl'
 
 import { VideoViewFallback } from './VideoViewFallback'
 
 jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(),
-  usePathname: () => '/en/videos/123'
+  usePathname: () => '/videos/123'
 }))
 
 describe('VideoViewFallback', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
-  })
-
-  it('should render', () => {
-    render(
-      <NextIntlClientProvider locale="en">
-        <VideoViewFallback />
-      </NextIntlClientProvider>
-    )
+  it('renders the fallback component', () => {
+    render(<VideoViewFallback />)
 
     expect(screen.getByText('Video not found')).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: 'View Videos' })
+      screen.getByText("The video you're looking for could not be found.")
     ).toBeInTheDocument()
-  })
-
-  it('should go back when button is clicked', async () => {
-    render(
-      <NextIntlClientProvider locale="en">
-        <VideoViewFallback />
-      </NextIntlClientProvider>
-    )
-
-    const link = screen.getByRole('link', { name: 'View Videos' })
-    expect(link).toHaveAttribute('href', '/en/videos')
+    expect(screen.getByText('Back to videos')).toBeInTheDocument()
   })
 })

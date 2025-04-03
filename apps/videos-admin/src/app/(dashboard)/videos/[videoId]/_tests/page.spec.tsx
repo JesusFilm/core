@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { useParams } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { useAdminVideoMock } from '../../../../../libs/useAdminVideo/useAdminVideo.mock'
 import VideoViewPage from '../page'
 
 jest.mock('next/navigation', () => ({

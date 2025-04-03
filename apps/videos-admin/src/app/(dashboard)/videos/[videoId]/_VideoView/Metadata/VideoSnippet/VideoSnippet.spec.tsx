@@ -3,10 +3,10 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { SnackbarProvider } from '../../../../../../../../libs/SnackbarProvider'
-import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { VideoProvider } from '../../../../../../../../libs/VideoProvider'
+import { SnackbarProvider } from '../../../../../../../libs/SnackbarProvider'
+import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { VideoProvider } from '../../../../../../../libs/VideoProvider'
 
 import {
   CREATE_VIDEO_SNIPPET,

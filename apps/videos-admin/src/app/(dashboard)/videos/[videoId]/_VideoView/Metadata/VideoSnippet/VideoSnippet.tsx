@@ -4,16 +4,15 @@ import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
 import _unescape from 'lodash/unescape'
-import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import { CancelButton } from '../../../../../../../../components/CancelButton'
-import { ResizableTextField } from '../../../../../../../../components/ResizableTextField'
-import { SaveButton } from '../../../../../../../../components/SaveButton'
-import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useVideo } from '../../../../../../../../libs/VideoProvider'
+import { CancelButton } from '../../../../../../../components/CancelButton'
+import { ResizableTextField } from '../../../../../../../components/ResizableTextField'
+import { SaveButton } from '../../../../../../../components/SaveButton'
+import { GetAdminVideo_AdminVideo_VideoSnippets as VideoSnippets } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useVideo } from '../../../../../../../libs/VideoProvider'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 export const CREATE_VIDEO_SNIPPET = graphql(`
@@ -41,7 +40,6 @@ interface VideoSnippetProps {
 export function VideoSnippet({
   videoSnippets
 }: VideoSnippetProps): ReactElement {
-  const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
   const [createVideoSnippet] = useMutation(CREATE_VIDEO_SNIPPET, {
     update(cache, { data }) {
@@ -71,7 +69,7 @@ export function VideoSnippet({
   const video = useVideo()
 
   const validationSchema = object().shape({
-    snippet: string().required(t('Snippet is required'))
+    snippet: string().required('Snippet is required')
   })
 
   async function handleUpdateVideoSnippet(values: FormikValues): Promise<void> {
@@ -86,12 +84,12 @@ export function VideoSnippet({
           }
         },
         onCompleted: () => {
-          enqueueSnackbar(t('Video short description created'), {
+          enqueueSnackbar('Video short description created', {
             variant: 'success'
           })
         },
         onError: () => {
-          enqueueSnackbar(t('Failed to create video short description'), {
+          enqueueSnackbar('Failed to create video short description', {
             variant: 'error'
           })
         }
@@ -105,12 +103,12 @@ export function VideoSnippet({
           }
         },
         onCompleted: () => {
-          enqueueSnackbar(t('Video short description updated'), {
+          enqueueSnackbar('Video short description updated', {
             variant: 'success'
           })
         },
         onError: () => {
-          enqueueSnackbar(t('Failed to update video short description'), {
+          enqueueSnackbar('Failed to update video short description', {
             variant: 'error'
           })
         }

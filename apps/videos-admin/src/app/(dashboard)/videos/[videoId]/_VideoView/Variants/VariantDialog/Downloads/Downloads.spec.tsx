@@ -4,11 +4,11 @@ import userEvent from '@testing-library/user-event'
 import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider } from 'notistack'
 
-import { GetAdminVideoVariant_Downloads as VariantDownloads } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useAdminVideoMock } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { getCreateR2AssetMock } from '../../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset.mock'
-import { getVideoVariantDownloadCreateMock } from '../../../../../../../../../libs/useVideoVariantDownloadCreateMutation/useVideoVariantDownloadCreateMutation.mock'
-import { videoVariantDownloadDeleteMock } from '../../../../../../../../../libs/useVideoVariantDownloadDeleteMutation/useVideoVariantDownloadDeleteMutation.mock'
+import { GetAdminVideoVariant_Downloads as VariantDownloads } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { getCreateR2AssetMock } from '../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset.mock'
+import { getVideoVariantDownloadCreateMock } from '../../../../../../../../libs/useVideoVariantDownloadCreateMutation/useVideoVariantDownloadCreateMutation.mock'
+import { videoVariantDownloadDeleteMock } from '../../../../../../../../libs/useVideoVariantDownloadDeleteMutation/useVideoVariantDownloadDeleteMutation.mock'
 
 import { Downloads } from './Downloads'
 

@@ -7,12 +7,11 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
 import { useParams } from 'next/navigation'
-import { useTranslations } from 'next-intl'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 
-import { PublishedChip } from '../../../../../../components/PublishedChip'
-import { useAdminVideo } from '../../../../../../libs/useAdminVideo'
-import { VideoProvider } from '../../../../../../libs/VideoProvider'
+import { PublishedChip } from '../../../../../components/PublishedChip'
+import { useAdminVideo } from '../../../../../libs/useAdminVideo'
+import { VideoProvider } from '../../../../../libs/VideoProvider'
 
 import { Editions } from './Editions'
 import { LockedVideoView } from './LockedVideoView'
@@ -26,8 +25,7 @@ import { VideoViewFallback } from './VideoViewFallback'
 import { VideoViewLoading } from './VideoViewLoading'
 
 export function VideoView(): ReactElement {
-  const t = useTranslations()
-  const params = useParams<{ videoId: string; locale: string }>()
+  const params = useParams<{ videoId: string }>()
   const [tabValue, setTabValue] = useState(0)
 
   const { data, loading } = useAdminVideo({
@@ -104,7 +102,7 @@ export function VideoView(): ReactElement {
                 value={2}
                 label={
                   <TabLabel
-                    label={t('Audio Languages')}
+                    label="Audio Languages"
                     count={video.variants?.length}
                   />
                 }
@@ -113,7 +111,7 @@ export function VideoView(): ReactElement {
                 value={3}
                 label={
                   <TabLabel
-                    label={t('Editions')}
+                    label="Editions"
                     count={video.videoEditions?.length}
                   />
                 }

@@ -4,12 +4,11 @@ import { arrayMove } from '@dnd-kit/sortable'
 import Typography from '@mui/material/Typography'
 import { graphql } from 'gql.tada'
 import { usePathname, useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
-import { OrderedList } from '../../../../../../../components/OrderedList'
-import { OrderedItem } from '../../../../../../../components/OrderedList/OrderedItem'
-import { GetAdminVideo_AdminVideo_Children as AdminVideoChildren } from '../../../../../../../libs/useAdminVideo'
+import { OrderedList } from '../../../../../../components/OrderedList'
+import { OrderedItem } from '../../../../../../components/OrderedList/OrderedItem'
+import { GetAdminVideo_AdminVideo_Children as AdminVideoChildren } from '../../../../../../libs/useAdminVideo'
 import { Section } from '../Section'
 
 interface ChildrenProps {
@@ -36,14 +35,13 @@ export function VideoChildren({
 }: ChildrenProps): ReactElement {
   const pathname = usePathname()
   const router = useRouter()
-  const t = useTranslations()
 
   const [videos, setVideos] = useState(childVideos)
 
   const [updateVideoChildrenOrder] = useMutation(VIDEO_CHILDREN_ORDER_UPDATE)
 
   if (childVideos.length === 0) {
-    return <Typography>{t('No children to show')}</Typography>
+    return <Typography>No children to show</Typography>
   }
 
   function handleClick(id: string): void {
@@ -100,7 +98,7 @@ export function VideoChildren({
           ))}
         </OrderedList>
       ) : (
-        <Section.Fallback>{t('No children to show')}</Section.Fallback>
+        <Section.Fallback>No children to show</Section.Fallback>
       )}
     </Section>
   )

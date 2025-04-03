@@ -4,7 +4,6 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 export default function VideoViewError({
@@ -13,7 +12,6 @@ export default function VideoViewError({
   error: Error
 }): ReactElement {
   console.error(error)
-  const t = useTranslations()
   const router = useRouter()
 
   return (
@@ -26,9 +24,9 @@ export default function VideoViewError({
         gap: 2
       }}
     >
-      <Typography variant="h4">{t('Video not found')}</Typography>
+      <Typography variant="h4">Video not found</Typography>
       <Button variant="contained" color="primary" onClick={() => router.back()}>
-        {t('Go Back')}
+        Go Back
       </Button>
     </Stack>
   )

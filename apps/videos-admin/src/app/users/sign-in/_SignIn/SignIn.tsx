@@ -5,24 +5,22 @@ import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
 import { UserCredential, signInWithEmailAndPassword } from 'firebase/auth'
 import Image from 'next/image'
-import { useTranslations } from 'next-intl'
 import { ReactElement, useCallback, useState } from 'react'
 import { useLoadingCallback } from 'react-loading-hook'
 
 import minimalLogo from '../../../../../assets/minimal-logo.png'
-import { CenterPage } from '../../../../../components/CenterPage'
+import { CenterPage } from '../../../../components/CenterPage'
 import {
   getFirebaseAuth,
   loginWithGoogle
-} from '../../../../../libs/auth/firebase'
-import { useRedirectAfterLogin } from '../../../../../libs/auth/useRedirectAfterLogin'
-import { loginWithCredential } from '../../../../api'
+} from '../../../../libs/auth/firebase'
+import { useRedirectAfterLogin } from '../../../../libs/auth/useRedirectAfterLogin'
+import { loginWithCredential } from '../../../api'
 
 import { GoogleIcon } from './GoogleIcon'
 import { PasswordForm, PasswordFormValue } from './PasswordForm'
 
 export function SignIn(): ReactElement {
-  const t = useTranslations()
   const [hasLogged, setHasLogged] = useState(false)
   const redirectAfterLogin = useRedirectAfterLogin()
 
@@ -58,7 +56,7 @@ export function SignIn(): ReactElement {
     <CenterPage>
       <Image
         src={minimalLogo}
-        alt={t('Jesus Film Project')}
+        alt="Jesus Film Project"
         width={70}
         height={70}
       />
@@ -86,7 +84,7 @@ export function SignIn(): ReactElement {
             startIcon={<GoogleIcon />}
             fullWidth
           >
-            {t('Sign in with Google')}
+            Sign in with Google
           </LoadingButton>
         </PasswordForm>
       )}

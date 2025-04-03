@@ -1,15 +1,14 @@
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { Form, Formik } from 'formik'
-import { useTranslations } from 'next-intl'
 import { ReactElement, useMemo } from 'react'
 import { InferType, object, string } from 'yup'
 
-import { FormTextField } from '../../../../../../../../components/FormTextField'
+import { FormTextField } from '../../../../../../../components/FormTextField'
 
-const createValidationSchema = (t) => {
+const createValidationSchema = () => {
   return object().shape({
-    name: string().required(t('Name is required'))
+    name: string().required('Name is required')
   })
 }
 
@@ -28,9 +27,7 @@ export function EditionForm({
   initialValues,
   onSubmit
 }: EditionFormProps): ReactElement {
-  const t = useTranslations()
-
-  const validationSchema = useMemo(() => createValidationSchema(t), [t])
+  const validationSchema = useMemo(() => createValidationSchema(), [])
 
   return (
     <Formik
@@ -40,10 +37,10 @@ export function EditionForm({
     >
       <Form data-testId="EditionForm">
         <Stack gap={2}>
-          <FormTextField name="name" label={t('Name')} fullWidth />
+          <FormTextField name="name" label="Name" fullWidth />
           <Stack direction="row" gap={1}>
             <Button variant="contained" type="submit" fullWidth>
-              {variant === 'create' ? t('Create') : t('Update')}
+              {variant === 'create' ? 'Create' : 'Update'}
             </Button>
           </Stack>
         </Stack>

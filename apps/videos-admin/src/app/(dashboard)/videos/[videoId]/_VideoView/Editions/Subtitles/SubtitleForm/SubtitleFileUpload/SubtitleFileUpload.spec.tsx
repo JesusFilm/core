@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { useField } from 'formik'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 import { SubtitleFileUpload } from './SubtitleFileUpload'
 

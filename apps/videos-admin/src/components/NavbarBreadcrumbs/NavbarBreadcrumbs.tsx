@@ -8,7 +8,6 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
-import { useTranslations } from 'next-intl'
 import { ReactElement, ReactNode } from 'react'
 
 const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
@@ -28,7 +27,6 @@ interface Label {
 }
 
 export function NavbarBreadcrumbs(): ReactElement {
-  const t = useTranslations()
   const paths = usePathname()
   const pathNames = paths?.split('/').filter((path) => path) ?? []
   const params = useParams()
@@ -36,15 +34,15 @@ export function NavbarBreadcrumbs(): ReactElement {
   const labels: { [key: string]: Label } = {
     [params?.locale?.toString() ?? 'en']: {
       icon: <HomeRoundedIcon fontSize="inherit" />,
-      value: t('Dashboard')
+      value: 'Dashboard'
     },
     videos: {
       icon: <VideoLibraryRoundedIcon fontSize="inherit" />,
-      value: t('Video Library')
+      value: 'Video Library'
     },
     settings: {
       icon: <SettingsRoundedIcon fontSize="inherit" />,
-      value: t('Settings')
+      value: 'Settings'
     }
   }
 

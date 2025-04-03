@@ -5,7 +5,6 @@ import Button from '@mui/material/Button'
 import LinearProgress from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 import { FileRejection, useDropzone } from 'react-dropzone'
 
@@ -30,7 +29,6 @@ export function AudioLanguageFileUpload({
   selectedFile,
   uploadProgress = 0
 }: AudioLanguageFileUploadProps): ReactElement {
-  const t = useTranslations()
   const [fileRejected, setFileRejected] = useState(false)
   const [fileInvalidType, setFileInvalidType] = useState(false)
 
@@ -110,15 +108,15 @@ export function AudioLanguageFileUpload({
           }
           sx={{ pb: uploading || processing ? 2 : 4, textAlign: 'center' }}
         >
-          {uploading && t('Uploading...')}
-          {processing && t('Processing...')}
-          {(error != null || fileRejected) && t('Upload Failed!')}
+          {uploading && 'Uploading...'}
+          {processing && 'Processing...'}
+          {(error != null || fileRejected) && 'Upload Failed!'}
           {!uploading &&
             !processing &&
             !fileRejected &&
             error == null &&
             selectedFile == null &&
-            t('Drop a video here')}
+            'Drop a video here'}
           {!uploading &&
             !processing &&
             !fileRejected &&
@@ -157,11 +155,11 @@ export function AudioLanguageFileUpload({
         />
         {error != null ? (
           <Typography variant="caption">
-            {t('Something went wrong, try again')}
+            Something went wrong, try again
           </Typography>
         ) : fileRejected ? (
           <Typography variant="caption">
-            {fileInvalidType && t('Invalid file type. ')}
+            {fileInvalidType && 'Invalid file type. '}
           </Typography>
         ) : null}
       </Stack>
@@ -185,7 +183,7 @@ export function AudioLanguageFileUpload({
           fontSize={14}
           sx={{ color: 'secondary.light' }}
         >
-          {selectedFile != null ? t('Change file') : t('Upload file')}
+          {selectedFile != null ? 'Change file' : 'Upload file'}
         </Typography>
       </Button>
     </Stack>

@@ -11,7 +11,7 @@ import {
   CREATE_VIDEO_VARIANT,
   GET_MY_MUX_VIDEO,
   UploadVideoVariantProvider
-} from '../../../../../../../../libs/UploadVideoVariantProvider'
+} from '../../../../../../../libs/UploadVideoVariantProvider'
 
 import { AddAudioLanguageDialog } from './AddAudioLanguageDialog'
 

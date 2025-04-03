@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
-import { videosAdminConfig } from '../../../../../libs/storybookConfig'
+import { videosAdminConfig } from '../../../../libs/storybookConfig'
 
 import {
   GET_ADMIN_VIDEOS_AND_COUNT,

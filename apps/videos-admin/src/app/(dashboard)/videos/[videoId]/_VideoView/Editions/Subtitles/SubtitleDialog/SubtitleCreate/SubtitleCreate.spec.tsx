@@ -6,10 +6,10 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
 
-import { SnackbarProvider } from '../../../../../../../../../../libs/SnackbarProvider'
-import { useAdminVideoMock } from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { getCreateR2AssetMock } from '../../../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset.mock'
-import { VideoProvider } from '../../../../../../../../../../libs/VideoProvider'
+import { SnackbarProvider } from '../../../../../../../../../libs/SnackbarProvider'
+import { useAdminVideoMock } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { getCreateR2AssetMock } from '../../../../../../../../../libs/useCreateR2Asset/useCreateR2Asset.mock'
+import { VideoProvider } from '../../../../../../../../../libs/VideoProvider'
 
 import {
   CREATE_VIDEO_SUBTITLE,

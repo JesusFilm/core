@@ -2,7 +2,7 @@ import Typography from '@mui/material/Typography'
 import type { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
-import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
+import { videosAdminConfig } from '../../../../../../../libs/storybookConfig'
 
 import { TabContainer } from './TabContainer'
 

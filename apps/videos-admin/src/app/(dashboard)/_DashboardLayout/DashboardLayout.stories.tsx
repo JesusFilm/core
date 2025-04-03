@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { NextIntlClientProvider } from 'next-intl'
 import { ComponentProps } from 'react'
 
-import { AuthProvider } from '../../../../libs/auth/AuthProvider'
-import { videosAdminConfig } from '../../../../libs/storybookConfig'
+import { AuthProvider } from '../../../libs/auth/AuthProvider'
+import { videosAdminConfig } from '../../../libs/storybookConfig'
 
 import { DashboardLayout } from './DashboardLayout'
 

@@ -1,10 +1,9 @@
 import { useMutation } from '@apollo/client'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
-import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
-import { GetAdminVideo_AdminVideo_VideoEdition as Edition } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { GetAdminVideo_AdminVideo_VideoEdition as Edition } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { EditionForm, EditionValidationSchema } from '../../EditionForm'
 
 export const UPDATE_VIDEO_EDITION = graphql(`
@@ -30,7 +29,6 @@ export function EditionEdit({
   edition,
   close
 }: EditionEditProps): ReactElement {
-  const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
 
   const [updateEdition] = useMutation(UPDATE_VIDEO_EDITION)
@@ -44,13 +42,13 @@ export function EditionEdit({
         }
       },
       onCompleted: () => {
-        enqueueSnackbar(t('Edition updated successfully.'), {
+        enqueueSnackbar('Edition updated successfully.', {
           variant: 'success'
         })
         close()
       },
       onError: () => {
-        enqueueSnackbar(t('Something went wrong.'), { variant: 'error' })
+        enqueueSnackbar('Something went wrong.', { variant: 'error' })
       }
     })
   }

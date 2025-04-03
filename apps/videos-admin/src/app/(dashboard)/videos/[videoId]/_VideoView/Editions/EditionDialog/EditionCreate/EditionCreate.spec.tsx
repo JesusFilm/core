@@ -4,10 +4,10 @@ import userEvent from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { SnackbarProvider } from '../../../../../../../../../libs/SnackbarProvider'
-import { useAdminVideoMock } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { getCreateEditionMock } from '../../../../../../../../../libs/useCreateEdition/useCreateEdition.mock'
-import { VideoProvider } from '../../../../../../../../../libs/VideoProvider'
+import { SnackbarProvider } from '../../../../../../../../libs/SnackbarProvider'
+import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { getCreateEditionMock } from '../../../../../../../../libs/useCreateEdition/useCreateEdition.mock'
+import { VideoProvider } from '../../../../../../../../libs/VideoProvider'
 
 import { EditionCreate } from './EditionCreate'
 

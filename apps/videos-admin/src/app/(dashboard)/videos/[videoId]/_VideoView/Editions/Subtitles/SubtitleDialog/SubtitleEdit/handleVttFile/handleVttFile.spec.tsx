@@ -1,9 +1,5 @@
 import { handleVttFile } from './handleVttFile'
 
-jest.mock('next-intl', () => ({
-  useTranslations: () => (key: string) => key
-}))
-
 describe('handleVttFile', () => {
   // Mock dependencies
   const mockVideo = { id: 'video-123' } as any

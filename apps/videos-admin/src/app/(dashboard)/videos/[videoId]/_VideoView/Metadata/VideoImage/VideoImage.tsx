@@ -4,14 +4,13 @@ import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
-import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import Edit2 from '@core/shared/ui/icons/Edit2'
 import Upload1 from '@core/shared/ui/icons/Upload1'
 
-import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 import { VideoImageUpload } from './VideoImageUpload'
 
@@ -37,7 +36,6 @@ interface VideoImageProps {
 }
 
 export function VideoImage({ video }: VideoImageProps): ReactElement {
-  const t = useTranslations()
   const [show, setShow] = useState(false)
 
   function handleOpen(): void {
@@ -65,7 +63,7 @@ export function VideoImage({ video }: VideoImageProps): ReactElement {
         {src != null ? (
           <Image
             src={src}
-            alt={alt ?? t('video image')}
+            alt={alt ?? 'video image'}
             layout="fill"
             style={{ objectFit: 'cover' }}
             priority
@@ -82,11 +80,11 @@ export function VideoImage({ video }: VideoImageProps): ReactElement {
           >
             <Upload1 />
             <Typography variant="subtitle2" fontSize={14}>
-              {t('Upload image')}
+              Upload image
             </Typography>
           </Stack>
         )}
-        <Tooltip title={t('Change image')}>
+        <Tooltip title="Change image">
           <IconButton
             onClick={handleOpen}
             size="small"
@@ -100,14 +98,14 @@ export function VideoImage({ video }: VideoImageProps): ReactElement {
         testId="VideoImageUploadDialog"
         open={show}
         onClose={handleClose}
-        dialogTitle={{ title: t('Change Image'), closeButton: true }}
+        dialogTitle={{ title: 'Change Image', closeButton: true }}
         slotProps={{ titleButton: { size: 'small' } }}
         sx={{
           '& .MuiPaper-root': { maxWidth: 400 }
         }}
       >
         <Typography color="error" sx={{ mb: 2 }}>
-          {t('Warning: this change will apply immediately')}
+          Warning: this change will apply immediately
         </Typography>
         <VideoImageUpload video={video} onUploadComplete={handleClose} />
       </Dialog>

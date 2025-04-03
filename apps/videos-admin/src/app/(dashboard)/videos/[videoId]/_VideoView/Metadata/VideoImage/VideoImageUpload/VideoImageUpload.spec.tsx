@@ -5,8 +5,8 @@ import { NextIntlClientProvider } from 'next-intl'
 import fetch, { Response } from 'node-fetch'
 import { SnackbarProvider } from 'notistack'
 
-import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useAdminVideoMock } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 import {
   CLOUDFLARE_UPLOAD_COMPLETE,

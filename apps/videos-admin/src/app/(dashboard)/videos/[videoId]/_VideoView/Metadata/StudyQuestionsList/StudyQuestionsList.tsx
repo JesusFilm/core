@@ -9,13 +9,12 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
-import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
-import { OrderedList } from '../../../../../../../../components/OrderedList'
-import { OrderedItem } from '../../../../../../../../components/OrderedList/OrderedItem'
-import { GetAdminVideo_AdminVideo_StudyQuestions as StudyQuestions } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { OrderedList } from '../../../../../../../components/OrderedList'
+import { OrderedItem } from '../../../../../../../components/OrderedList/OrderedItem'
+import { GetAdminVideo_AdminVideo_StudyQuestions as StudyQuestions } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { Section } from '../../Section'
 
 export const UPDATE_STUDY_QUESTION_ORDER = graphql(`
@@ -54,7 +53,6 @@ interface StudyQuestionsListProps {
 export function StudyQuestionsList({
   studyQuestions
 }: StudyQuestionsListProps): ReactElement | null {
-  const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
   const [studyQuestionItems, setStudyQuestionItems] = useState(studyQuestions)
   const [updateStudyQuestionOrder] = useMutation(UPDATE_STUDY_QUESTION_ORDER)
@@ -109,7 +107,7 @@ export function StudyQuestionsList({
         items.filter((item) => item.id !== questionToDelete)
       )
 
-      enqueueSnackbar(t('Study question deleted'), {
+      enqueueSnackbar('Study question deleted', {
         variant: 'success'
       })
 
@@ -127,7 +125,7 @@ export function StudyQuestionsList({
 
   return (
     <>
-      <Section title={t('Study Questions')} variant="outlined">
+      <Section title="Study Questions" variant="outlined">
         {totalQuestions > 0 ? (
           <OrderedList
             onOrderUpdate={updateOrderOnDrag}
@@ -140,9 +138,9 @@ export function StudyQuestionsList({
                 label={value}
                 idx={idx}
                 menuActions={[
-                  { label: t('Edit'), handler: () => null },
+                  { label: 'Edit', handler: () => null },
                   {
-                    label: t('Delete'),
+                    label: 'Delete',
                     handler: () => handleOpenDeleteDialog(id)
                   }
                 ]}
@@ -150,7 +148,7 @@ export function StudyQuestionsList({
             ))}
           </OrderedList>
         ) : (
-          <Section.Fallback>{t('No study questions')}</Section.Fallback>
+          <Section.Fallback>No study questions</Section.Fallback>
         )}
       </Section>
 
@@ -160,18 +158,17 @@ export function StudyQuestionsList({
         aria-labelledby="delete-study-question-dialog-title"
       >
         <DialogTitle id="delete-study-question-dialog-title">
-          {t('Delete Study Question')}
+          Delete Study Question
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {t(
-              'Are you sure you want to delete this study question? This action cannot be undone.'
-            )}
+            Are you sure you want to delete this study question? This action
+            cannot be undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDeleteDialog} disabled={deleteLoading}>
-            {t('Cancel')}
+            Cancel
           </Button>
           <Button
             onClick={handleDeleteQuestion}
@@ -179,7 +176,7 @@ export function StudyQuestionsList({
             disabled={deleteLoading}
             autoFocus
           >
-            {deleteLoading ? <CircularProgress size={20} /> : t('Delete')}
+            {deleteLoading ? <CircularProgress size={20} /> : 'Delete'}
           </Button>
         </DialogActions>
       </Dialog>

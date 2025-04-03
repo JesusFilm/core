@@ -2,8 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 
-import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
-import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 import { VariantDialog } from './VariantDialog'
 

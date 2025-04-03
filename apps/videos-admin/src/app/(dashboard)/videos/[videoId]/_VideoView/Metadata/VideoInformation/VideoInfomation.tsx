@@ -10,14 +10,13 @@ import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
-import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import { CancelButton } from '../../../../../../../../components/CancelButton'
-import { SaveButton } from '../../../../../../../../components/SaveButton'
-import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { CancelButton } from '../../../../../../../components/CancelButton'
+import { SaveButton } from '../../../../../../../components/SaveButton'
+import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 const videoStatuses = [
@@ -70,7 +69,6 @@ interface VideoInformationProps {
 export function VideoInformation({
   video
 }: VideoInformationProps): ReactElement {
-  const t = useTranslations()
   const [updateVideoInformation] = useMutation(UPDATE_VIDEO_INFORMATION)
   const [createVideoTitle] = useMutation(CREATE_VIDEO_TITLE, {
     update(cache, { data }) {
@@ -100,10 +98,10 @@ export function VideoInformation({
   const { enqueueSnackbar } = useSnackbar()
 
   const validationSchema = object().shape({
-    title: string().trim().required(t('Title is required')),
-    url: string().trim().required(t('Url is required')),
-    published: string().required(t('Published is required')),
-    label: string().required(t('Label is required'))
+    title: string().trim().required('Title is required'),
+    url: string().trim().required('Url is required'),
+    published: string().required('Published is required'),
+    label: string().required('Label is required')
   })
 
   async function handleUpdateVideoInformation(
@@ -122,14 +120,14 @@ export function VideoInformation({
           }
         },
         onError: () => {
-          enqueueSnackbar(t('Failed to create video title'), {
+          enqueueSnackbar('Failed to create video title', {
             variant: 'error'
           })
         }
       })
 
       if (res?.data?.videoTitleCreate == null) {
-        enqueueSnackbar(t('Failed to create video title'), {
+        enqueueSnackbar('Failed to create video title', {
           variant: 'error'
         })
         return
@@ -152,12 +150,12 @@ export function VideoInformation({
         }
       },
       onCompleted: () => {
-        enqueueSnackbar(t('Successfully updated video information'), {
+        enqueueSnackbar('Successfully updated video information', {
           variant: 'success'
         })
       },
       onError: () => {
-        enqueueSnackbar(t('Failed to update video information'), {
+        enqueueSnackbar('Failed to update video information', {
           variant: 'error'
         })
       }
@@ -196,7 +194,7 @@ export function VideoInformation({
               <TextField
                 id="title"
                 name="title"
-                label={t('Title')}
+                label="Title"
                 fullWidth
                 value={values.title}
                 variant="outlined"
@@ -208,7 +206,7 @@ export function VideoInformation({
               <TextField
                 id="url"
                 name="url"
-                label={t('Video URL')}
+                label="Video URL"
                 fullWidth
                 value={values.url}
                 variant="outlined"
@@ -252,12 +250,12 @@ export function VideoInformation({
               }}
             >
               <FormControl variant="standard">
-                <InputLabel id="status-select-label">{t('Status')}</InputLabel>
+                <InputLabel id="status-select-label">Status</InputLabel>
                 <Select
                   labelId="status-select-label"
                   id="status"
                   name="published"
-                  label={t('Status')}
+                  label="Status"
                   value={values.published}
                   onChange={handleChange}
                 >
@@ -269,12 +267,12 @@ export function VideoInformation({
                 </Select>
               </FormControl>
               <FormControl variant="standard">
-                <InputLabel id="label-select-label">{t('Label')}</InputLabel>
+                <InputLabel id="label-select-label">Label</InputLabel>
                 <Select
                   labelId="label-select-label"
                   id="label"
                   name="label"
-                  label={t('Label')}
+                  label="Label"
                   value={values.label}
                   onChange={handleChange}
                 >

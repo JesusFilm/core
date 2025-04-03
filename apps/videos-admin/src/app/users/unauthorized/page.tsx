@@ -10,9 +10,9 @@ import { getTranslations } from 'next-intl/server'
 import { ReactNode } from 'react'
 
 import minimalLogo from '../../../../assets/minimal-logo.png'
-import { CenterPage } from '../../../../components/CenterPage'
-import { makeClient } from '../../../../libs/apollo/makeClient'
-import { getUser } from '../../../../libs/auth/getUser'
+import { CenterPage } from '../../../components/CenterPage'
+import { makeClient } from '../../../libs/apollo/makeClient'
+import { getUser } from '../../../libs/auth/getUser'
 
 import { Logout } from './_Logout'
 

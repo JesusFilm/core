@@ -4,7 +4,6 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
-import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 interface ConfirmDeleteDialogProps {
@@ -18,8 +17,6 @@ export function ConfirmDeleteDialog({
   handleClose,
   handleConfirm
 }: ConfirmDeleteDialogProps): ReactElement {
-  const t = useTranslations()
-
   return (
     <Dialog
       open={open}
@@ -27,19 +24,19 @@ export function ConfirmDeleteDialog({
       aria-labelledby="confirm-delete-dialog-title"
     >
       <DialogTitle id="confirm-delete-dialog-title">
-        {t('Delete Download')}
+        Delete Download
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {t('Are you sure you want to delete this download?')}
+          Are you sure you want to delete this download?
         </DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} color="primary">
-          {t('Cancel')}
+          Cancel
         </Button>
         <Button onClick={handleConfirm} color="error" autoFocus>
-          {t('Confirm')}
+          Confirm
         </Button>
       </DialogActions>
     </Dialog>

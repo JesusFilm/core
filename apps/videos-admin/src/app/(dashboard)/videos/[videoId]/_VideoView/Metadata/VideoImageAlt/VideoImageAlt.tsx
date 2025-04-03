@@ -4,15 +4,14 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { Form, Formik, FormikValues } from 'formik'
 import { graphql } from 'gql.tada'
-import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 import { object, string } from 'yup'
 
-import { CancelButton } from '../../../../../../../../components/CancelButton'
-import { SaveButton } from '../../../../../../../../components/SaveButton'
-import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useVideo } from '../../../../../../../../libs/VideoProvider'
+import { CancelButton } from '../../../../../../../components/CancelButton'
+import { SaveButton } from '../../../../../../../components/SaveButton'
+import { GetAdminVideo_AdminVideo_VideoImageAlts as VideoImageAlts } from '../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useVideo } from '../../../../../../../libs/VideoProvider'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 export const CREATE_VIDEO_IMAGE_ALT = graphql(`
@@ -40,7 +39,6 @@ interface VideoImageAltProps {
 export function VideoImageAlt({
   videoImageAlts
 }: VideoImageAltProps): ReactElement {
-  const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
   const video = useVideo()
 
@@ -70,7 +68,7 @@ export function VideoImageAlt({
   const [updateVideoImageAlt] = useMutation(UPDATE_VIDEO_IMAGE_ALT)
 
   const validationSchema = object().shape({
-    imageAlt: string().trim().required(t('Image Alt is required'))
+    imageAlt: string().trim().required('Image Alt is required')
   })
 
   async function handleUpdateVideoImageAlt(
@@ -87,12 +85,12 @@ export function VideoImageAlt({
           }
         },
         onCompleted: () => {
-          enqueueSnackbar(t('Video image alt created'), {
+          enqueueSnackbar('Video image alt created', {
             variant: 'success'
           })
         },
         onError: () => {
-          enqueueSnackbar(t('Failed to create video image alt'), {
+          enqueueSnackbar('Failed to create video image alt', {
             variant: 'error'
           })
         }
@@ -106,12 +104,12 @@ export function VideoImageAlt({
           }
         },
         onCompleted: () => {
-          enqueueSnackbar(t('Video image alt updated'), {
+          enqueueSnackbar('Video image alt updated', {
             variant: 'success'
           })
         },
         onError: () => {
-          enqueueSnackbar(t('Failed to update video image alt'), {
+          enqueueSnackbar('Failed to update video image alt', {
             variant: 'error'
           })
         }
@@ -143,7 +141,7 @@ export function VideoImageAlt({
               <TextField
                 id="imageAlt"
                 name="imageAlt"
-                label={t('Image Alt')}
+                label="Image Alt"
                 fullWidth
                 value={values.imageAlt}
                 variant="outlined"

@@ -2,18 +2,17 @@ import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import { Form, Formik } from 'formik'
-import { useTranslations } from 'next-intl'
 import { ReactElement, useMemo } from 'react'
 import { InferType, mixed, object, string } from 'yup'
 
-import { FormLanguageSelect } from '../../../../../../../../../components/FormLanguageSelect'
-import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { FormLanguageSelect } from '../../../../../../../../components/FormLanguageSelect'
+import { GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
 
 import { SubtitleFileUpload } from './SubtitleFileUpload'
 
-const createValidationSchema = (t) => {
+const createValidationSchema = () => {
   return object().shape({
-    language: string().required(t('Language is required')),
+    language: string().required('Language is required'),
     vttFile: mixed().nullable(),
     srtFile: mixed().nullable()
   })
@@ -40,8 +39,7 @@ export function SubtitleForm({
   loading,
   subtitleLanguagesMap
 }: SubtitleFormProps): ReactElement {
-  const t = useTranslations()
-  const validationSchema = useMemo(() => createValidationSchema(t), [t])
+  const validationSchema = useMemo(() => createValidationSchema(), [])
 
   const initialLanguage = {
     id: subtitle?.language?.id ?? '529',
@@ -50,7 +48,7 @@ export function SubtitleForm({
     slug: subtitle?.language?.slug
   }
 
-  const buttonText = variant === 'create' ? t('Create') : t('Update')
+  const buttonText = variant === 'create' ? 'Create' : 'Update'
 
   return (
     <Formik
@@ -62,7 +60,7 @@ export function SubtitleForm({
         <Stack gap={2}>
           <FormLanguageSelect
             name="language"
-            label={t('Language')}
+            label="Language"
             initialLanguage={initialLanguage}
             existingLanguages={subtitleLanguagesMap}
             parentObjectId={subtitle?.id}

@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 
-import { DialogAction } from '../../../../../../../../components/CrudDialog'
-import { videosAdminConfig } from '../../../../../../../../libs/storybookConfig'
-import { useAdminVideoMock } from '../../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { VideoProvider } from '../../../../../../../../libs/VideoProvider'
+import { DialogAction } from '../../../../../../../components/CrudDialog'
+import { videosAdminConfig } from '../../../../../../../libs/storybookConfig'
+import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { VideoProvider } from '../../../../../../../libs/VideoProvider'
 
 import { EditionDialog } from './EditionDialog'
 

@@ -5,10 +5,10 @@ import Stack from '@mui/material/Stack'
 import { ThemeProvider, alpha } from '@mui/material/styles'
 import { ReactElement, ReactNode } from 'react'
 
-import { AppNavbar } from '../../../../components/AppNavbar'
-import { Header } from '../../../../components/Header'
-import { SideMenu } from '../../../../components/SideMenu'
-import { theme } from '../../../../theme'
+import { AppNavbar } from '../../../components/AppNavbar'
+import { Header } from '../../../components/Header'
+import { SideMenu } from '../../../components/SideMenu'
+import { theme } from '../../../theme'
 
 interface DashboardLayoutProps {
   children?: ReactNode

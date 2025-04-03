@@ -1,17 +1,16 @@
-import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import {
   GetAdminVideo_AdminVideo_VideoEdition as Edition,
   GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle
-} from '../../../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useCreateR2AssetMutation } from '../../../../../../../../../../libs/useCreateR2Asset'
+} from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useCreateR2AssetMutation } from '../../../../../../../../../libs/useCreateR2Asset'
 import {
   UpdateVideoSubtitleVariables,
   useUpdateVideoSubtitle
-} from '../../../../../../../../../../libs/useUpdateVideoSubtitle'
-import { useVideo } from '../../../../../../../../../../libs/VideoProvider'
+} from '../../../../../../../../../libs/useUpdateVideoSubtitle'
+import { useVideo } from '../../../../../../../../../libs/VideoProvider'
 import { SubtitleForm, SubtitleValidationSchema } from '../../SubtitleForm'
 
 import { handleSrtFile } from './handleSrtFile'
@@ -29,7 +28,6 @@ export function SubtitleEdit({
   subtitleLanguagesMap
 }: SubtitleEditProps): ReactElement {
   const video = useVideo()
-  const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
   const abortController = useRef<AbortController | null>(null)
   const [loading, setLoading] = useState(false)
@@ -45,7 +43,7 @@ export function SubtitleEdit({
       signal: abortController.current?.signal
     })
     if (!res.ok) {
-      throw new Error(t('Failed to upload subtitle file.'))
+      throw new Error('Failed to upload subtitle file.')
     }
   }
 
@@ -82,7 +80,7 @@ export function SubtitleEdit({
           createR2Asset,
           uploadAssetFile,
           abortController,
-          errorMessage: t('Failed to create r2 asset for VTT file.')
+          errorMessage: 'Failed to create r2 asset for VTT file.'
         })
         input.vttSrc = result.publicUrl
         input.vttAssetId = result.r2AssetId
@@ -99,7 +97,7 @@ export function SubtitleEdit({
           createR2Asset,
           uploadAssetFile,
           abortController,
-          errorMessage: t('Failed to create r2 asset for SRT file.')
+          errorMessage: 'Failed to create r2 asset for SRT file.'
         })
         input.srtSrc = result.publicUrl
         input.srtAssetId = result.r2AssetId
@@ -110,7 +108,7 @@ export function SubtitleEdit({
           input
         },
         onCompleted: () => {
-          enqueueSnackbar(t('Successfully updated subtitle.'), {
+          enqueueSnackbar('Successfully updated subtitle.', {
             variant: 'success'
           })
         },
@@ -122,9 +120,9 @@ export function SubtitleEdit({
       })
     } catch (e) {
       if (e.name === 'AbortError' || e.message.includes('aborted')) {
-        enqueueSnackbar(t('Subtitle update cancelled.'))
+        enqueueSnackbar('Subtitle update cancelled.')
       } else {
-        enqueueSnackbar(t('Failed to update subtitle.'), {
+        enqueueSnackbar('Failed to update subtitle.', {
           variant: 'error'
         })
       }

@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextIntlClientProvider } from 'next-intl'
 import { SnackbarProvider } from 'notistack'
 
-import { DELETE_VIDEO_VARIANT } from '../../../../../../../../libs/useDeleteVideoVariantMutation'
+import { DELETE_VIDEO_VARIANT } from '../../../../../../../libs/useDeleteVideoVariantMutation'
 
 import { DeleteVariantDialog } from './DeleteVariantDialog'
 

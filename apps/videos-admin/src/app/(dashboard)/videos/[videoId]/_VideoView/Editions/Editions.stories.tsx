@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 
-import { videosAdminConfig } from '../../../../../../../libs/storybookConfig'
-import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../../libs/useAdminVideo'
-import { useAdminVideoMock } from '../../../../../../../libs/useAdminVideo/useAdminVideo.mock'
-import { VideoProvider } from '../../../../../../../libs/VideoProvider'
+import { videosAdminConfig } from '../../../../../../libs/storybookConfig'
+import { GetAdminVideo_AdminVideo as AdminVideo } from '../../../../../../libs/useAdminVideo'
+import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { VideoProvider } from '../../../../../../libs/VideoProvider'
 
 import { Editions } from './Editions'
 

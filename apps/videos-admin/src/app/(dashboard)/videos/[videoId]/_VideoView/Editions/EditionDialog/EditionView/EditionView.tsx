@@ -1,16 +1,15 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 
 import Plus2 from '@core/shared/ui/icons/Plus2'
 
-import { DialogAction } from '../../../../../../../../../components/CrudDialog'
+import { DialogAction } from '../../../../../../../../components/CrudDialog'
 import {
   GetAdminVideo_AdminVideo_VideoEdition as Edition,
   GetAdminVideo_AdminVideo_VideoEdition_VideoSubtitle as Subtitle
-} from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useCrudState } from '../../../../../../../../../libs/useCrudState'
+} from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useCrudState } from '../../../../../../../../libs/useCrudState'
 import { Section } from '../../../Section'
 import { SubtitleCard } from '../../Subtitles/SubtitleCard'
 import { SubtitleDialog } from '../../Subtitles/SubtitleDialog'
@@ -20,7 +19,6 @@ interface EditionViewProps {
 }
 
 export function EditionView({ edition }: EditionViewProps): ReactElement {
-  const t = useTranslations()
   const { selectedItem, action, dispatch } = useCrudState<Subtitle>(
     edition.videoSubtitles
   )
@@ -28,9 +26,9 @@ export function EditionView({ edition }: EditionViewProps): ReactElement {
   return (
     <Box>
       <Section
-        title={t('Subtitles')}
+        title="Subtitles"
         action={{
-          label: t('New Subtitle'),
+          label: 'New Subtitle',
           onClick: () => dispatch({ type: DialogAction.CREATE }),
           startIcon: <Plus2 />
         }}
@@ -62,7 +60,7 @@ export function EditionView({ edition }: EditionViewProps): ReactElement {
           </Box>
         ) : (
           <Box sx={{ display: 'grid', placeItems: 'center', height: 200 }}>
-            <Typography>{t('No subtitles')}</Typography>
+            <Typography>No subtitles</Typography>
           </Box>
         )}
       </Section>

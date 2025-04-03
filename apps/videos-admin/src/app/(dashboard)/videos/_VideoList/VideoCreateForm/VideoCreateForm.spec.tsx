@@ -6,8 +6,8 @@ import { NextIntlClientProvider } from 'next-intl'
 
 import { getLanguagesMock } from '@core/journeys/ui/useLanguagesQuery/useLanguagesQuery.mock'
 
-import { SnackbarProvider } from '../../../../../../libs/SnackbarProvider'
-import { getCreateEditionMock } from '../../../../../../libs/useCreateEdition/useCreateEdition.mock'
+import { SnackbarProvider } from '../../../../../libs/SnackbarProvider'
+import { getCreateEditionMock } from '../../../../../libs/useCreateEdition/useCreateEdition.mock'
 
 import {
   CREATE_VIDEO,

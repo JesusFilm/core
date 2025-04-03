@@ -5,7 +5,7 @@ import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import { CSSProperties, MouseEvent, ReactElement } from 'react'
 
-import { GetAdminVideoVariant } from '../../../../../../../../libs/useAdminVideo'
+import { GetAdminVideoVariant } from '../../../../../../../libs/useAdminVideo'
 
 export interface VariantCardProps {
   variant: GetAdminVideoVariant

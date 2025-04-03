@@ -5,12 +5,11 @@ import DialogActions from '@mui/material/DialogActions'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
-import { useTranslations } from 'next-intl'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useRef } from 'react'
 
-import { GetAdminVideo_AdminVideo_VideoEdition as Edition } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useVideo } from '../../../../../../../../../libs/VideoProvider'
+import { GetAdminVideo_AdminVideo_VideoEdition as Edition } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useVideo } from '../../../../../../../../libs/VideoProvider'
 
 export const DELETE_VIDEO_EDITION = graphql(`
   mutation DeleteVideoEdition($id: ID!) {
@@ -34,7 +33,6 @@ export function EditionDelete({
   close,
   edition
 }: EditionDeleteProps): ReactElement {
-  const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
   const video = useVideo()
   const abortController = useRef<AbortController | null>(null)
@@ -64,16 +62,16 @@ export function EditionDelete({
         id: edition.id
       },
       onCompleted: () => {
-        enqueueSnackbar(t('Edition deleted successfully.'), {
+        enqueueSnackbar('Edition deleted successfully.', {
           variant: 'success'
         })
         close()
       },
       onError: (e) => {
         if (e.message.includes('aborted')) {
-          enqueueSnackbar(t('Edition delete cancelled.'))
+          enqueueSnackbar('Edition delete cancelled.')
         } else {
-          enqueueSnackbar(t('Something went wrong.'), { variant: 'error' })
+          enqueueSnackbar('Something went wrong.', { variant: 'error' })
         }
       },
       context: {
@@ -104,15 +102,13 @@ export function EditionDelete({
     <Stack gap={4}>
       <div>
         <Typography variant="h6">
-          {t('Are you sure you want to delete this edition?')}
+          Are you sure you want to delete this edition?
         </Typography>
-        <Typography variant="body2">
-          {t('This action cannot be undone.')}
-        </Typography>
+        <Typography variant="body2">This action cannot be undone.</Typography>
       </div>
       <DialogActions sx={{ gap: 1, justifyContent: 'flex-end' }}>
         <Button variant="outlined" onClick={handleCancel}>
-          {t('Cancel')}
+          Cancel
         </Button>
         <Button
           variant="contained"
@@ -120,7 +116,7 @@ export function EditionDelete({
           onClick={handleDelete}
           disabled={loading}
         >
-          {loading ? <CircularProgress size={20} /> : t('Delete')}
+          {loading ? <CircularProgress size={20} /> : 'Delete'}
         </Button>
       </DialogActions>
     </Stack>

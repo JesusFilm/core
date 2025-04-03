@@ -1,9 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useParams } from 'next/navigation'
-import { NextIntlClientProvider } from 'next-intl'
 
-import { useAdminVideoMock } from '../../../../../../libs/useAdminVideo/useAdminVideo.mock'
+import { useAdminVideoMock } from '../../../../../libs/useAdminVideo/useAdminVideo.mock'
 
 import { VideoView } from './VideoView'
 
@@ -22,9 +21,7 @@ describe('VideoView', () => {
 
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
-        <NextIntlClientProvider locale="en">
-          <VideoView />
-        </NextIntlClientProvider>
+        <VideoView />
       </MockedProvider>
     )
 
@@ -57,9 +54,7 @@ describe('VideoView', () => {
 
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
-        <NextIntlClientProvider locale="en">
-          <VideoView />
-        </NextIntlClientProvider>
+        <VideoView />
       </MockedProvider>
     )
 
@@ -84,9 +79,7 @@ describe('VideoView', () => {
 
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
-        <NextIntlClientProvider locale="en">
-          <VideoView />
-        </NextIntlClientProvider>
+        <VideoView />
       </MockedProvider>
     )
 
@@ -107,9 +100,7 @@ describe('VideoView', () => {
 
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
-        <NextIntlClientProvider locale="en">
-          <VideoView />
-        </NextIntlClientProvider>
+        <VideoView />
       </MockedProvider>
     )
 
@@ -131,9 +122,7 @@ describe('VideoView', () => {
 
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
-        <NextIntlClientProvider locale="en">
-          <VideoView />
-        </NextIntlClientProvider>
+        <VideoView />
       </MockedProvider>
     )
 
@@ -155,9 +144,7 @@ describe('VideoView', () => {
 
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
-        <NextIntlClientProvider locale="en">
-          <VideoView />
-        </NextIntlClientProvider>
+        <VideoView />
       </MockedProvider>
     )
 
@@ -179,9 +166,7 @@ describe('VideoView', () => {
 
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
-        <NextIntlClientProvider locale="en">
-          <VideoView />
-        </NextIntlClientProvider>
+        <VideoView />
       </MockedProvider>
     )
 
@@ -202,9 +187,7 @@ describe('VideoView', () => {
 
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
-        <NextIntlClientProvider locale="en">
-          <VideoView />
-        </NextIntlClientProvider>
+        <VideoView />
       </MockedProvider>
     )
 
@@ -225,9 +208,7 @@ describe('VideoView', () => {
 
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
-        <NextIntlClientProvider locale="en">
-          <VideoView />
-        </NextIntlClientProvider>
+        <VideoView />
       </MockedProvider>
     )
 
@@ -248,9 +229,7 @@ describe('VideoView', () => {
 
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
-        <NextIntlClientProvider locale="en">
-          <VideoView />
-        </NextIntlClientProvider>
+        <VideoView />
       </MockedProvider>
     )
 
@@ -261,9 +240,7 @@ describe('VideoView', () => {
   it('should render loading ui', async () => {
     render(
       <MockedProvider mocks={[]}>
-        <NextIntlClientProvider locale="en">
-          <VideoView />
-        </NextIntlClientProvider>
+        <VideoView />
       </MockedProvider>
     )
 
@@ -284,9 +261,7 @@ describe('VideoView', () => {
 
     render(
       <MockedProvider mocks={[{ ...useAdminVideoMock, result }]}>
-        <NextIntlClientProvider locale="en">
-          <VideoView />
-        </NextIntlClientProvider>
+        <VideoView />
       </MockedProvider>
     )
 
@@ -296,7 +271,7 @@ describe('VideoView', () => {
       screen.getByText('This video is currently locked to prevent edits')
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: 'View Videos' })
+      screen.getByRole('button', { name: 'Back to videos' })
     ).toBeInTheDocument()
   })
 })

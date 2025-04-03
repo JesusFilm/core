@@ -10,11 +10,10 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
-import { useTranslations } from 'next-intl'
 import { ReactElement, useState } from 'react'
 
-import { GetAdminVideoVariant_Downloads as VariantDownloads } from '../../../../../../../../../libs/useAdminVideo/useAdminVideo'
-import { useVideoVariantDownloadDeleteMutation } from '../../../../../../../../../libs/useVideoVariantDownloadDeleteMutation/useVideoVariantDownloadDeleteMutation'
+import { GetAdminVideoVariant_Downloads as VariantDownloads } from '../../../../../../../../libs/useAdminVideo/useAdminVideo'
+import { useVideoVariantDownloadDeleteMutation } from '../../../../../../../../libs/useVideoVariantDownloadDeleteMutation/useVideoVariantDownloadDeleteMutation'
 
 import { bytesToSize } from './utils/bytesToSize'
 
@@ -48,7 +47,6 @@ export function Downloads({
   videoVariantId,
   languageId
 }: DownloadsProps): ReactElement {
-  const t = useTranslations()
   const [deleteVideoVariantDownload] = useVideoVariantDownloadDeleteMutation()
   const [isAddDialogOpen, setIsAddDialogOpen] = useState<boolean | null>(null)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean | null>(
@@ -93,27 +91,27 @@ export function Downloads({
 
   return (
     <>
-      <Typography variant="h4">{t('Downloads')}</Typography>
+      <Typography variant="h4">Downloads</Typography>
       <Button
         variant="contained"
         color="primary"
         onClick={handleOpenAddDialog}
         sx={{ my: 2 }}
       >
-        {t('Add Download')}
+        Add Download
       </Button>
       <>
         {downloads.length === 0 ? (
-          <Typography>{t('No downloads available')}</Typography>
+          <Typography>No downloads available</Typography>
         ) : (
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>{t('Quality')}</TableCell>
-                  <TableCell>{t('Size')}</TableCell>
-                  <TableCell>{t('Dimensions')}</TableCell>
-                  <TableCell>{t('URL')}</TableCell>
+                  <TableCell>Quality</TableCell>
+                  <TableCell>Size</TableCell>
+                  <TableCell>Dimensions</TableCell>
+                  <TableCell>URL</TableCell>
                   <TableCell />
                   <TableCell />
                 </TableRow>
@@ -127,7 +125,7 @@ export function Downloads({
                     <TableCell>{url}</TableCell>
                     <TableCell>
                       <IconButton
-                        aria-label={t('Delete')}
+                        aria-label="Delete"
                         onClick={() => handleOpenDeleteDialog(id)}
                       >
                         <DeleteIcon />

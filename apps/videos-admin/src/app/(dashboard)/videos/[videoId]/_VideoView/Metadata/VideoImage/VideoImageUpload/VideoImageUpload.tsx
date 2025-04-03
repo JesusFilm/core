@@ -1,12 +1,11 @@
 import { gql, useApolloClient, useMutation } from '@apollo/client'
 import type FormDataType from 'form-data'
 import { ResultOf, VariablesOf, graphql } from 'gql.tada'
-import { useTranslations } from 'next-intl'
 import fetch from 'node-fetch'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
-import { GetAdminVideo } from '../../../../../../../../../libs/useAdminVideo'
+import { GetAdminVideo } from '../../../../../../../../libs/useAdminVideo'
 import { FileUpload } from '../FileUpload'
 
 export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = graphql(`
@@ -63,7 +62,6 @@ export function VideoImageUpload({
   video,
   onUploadComplete
 }: VideoImageUpload): ReactElement {
-  const t = useTranslations()
   const { enqueueSnackbar } = useSnackbar()
   const [loading, setLoading] = useState(false)
   const { cache } = useApolloClient()
@@ -92,7 +90,7 @@ export function VideoImageUpload({
 
     if (data?.createCloudflareUploadByFile == null) {
       setLoading(false)
-      enqueueSnackbar(t('Uploading failed, please try again'), {
+      enqueueSnackbar('Uploading failed, please try again', {
         variant: 'error',
         preventDuplicate: false
       })
@@ -113,7 +111,7 @@ export function VideoImageUpload({
         ).json()
 
         if (response.errors.length !== 0)
-          throw new Error(t('Uploading failed, please try again'))
+          throw new Error('Uploading failed, please try again')
 
         await uploadComplete({
           variables: {
@@ -158,13 +156,13 @@ export function VideoImageUpload({
               }
             }
           })
-          enqueueSnackbar(t('Image uploaded successfully'), {
+          enqueueSnackbar('Image uploaded successfully', {
             variant: 'success',
             preventDuplicate: false
           })
         }
       } catch {
-        enqueueSnackbar(t('Uploading failed, please try again'), {
+        enqueueSnackbar('Uploading failed, please try again', {
           variant: 'error',
           preventDuplicate: false
         })

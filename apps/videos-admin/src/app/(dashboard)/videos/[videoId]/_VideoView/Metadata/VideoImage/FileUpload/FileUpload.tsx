@@ -4,7 +4,6 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { useTranslations } from 'next-intl'
 import { ReactElement } from 'react'
 import { Accept, useDropzone } from 'react-dropzone'
 
@@ -33,8 +32,6 @@ export function FileUpload({
   maxFiles = 1,
   maxSize
 }: FileUploadProps): ReactElement {
-  const t = useTranslations()
-
   async function onDrop(files: File[]): Promise<void> {
     if (files.length <= 0) {
       onUploadComplete?.()
@@ -109,17 +106,15 @@ export function FileUpload({
             <Upload1Icon fontSize="large" />
             <Typography variant="body2" sx={{ cursor: 'pointer' }}>
               {maxFiles > 1
-                ? t('Drag & drop or choose files to upload', {
-                    maxFiles: maxFiles
-                  })
-                : t('Drag & drop or choose a file to upload')}
+                ? `Drag & drop or choose files to upload (max ${maxFiles})`
+                : 'Drag & drop or choose a file to upload'}
             </Typography>
           </Stack>
         )}
       </Box>
       {noClick && (
         <Button variant="outlined" fullWidth onClick={open} disabled={loading}>
-          {maxFiles > 1 ? t('Upload files') : t('Upload file')}
+          {maxFiles > 1 ? 'Upload files' : 'Upload file'}
         </Button>
       )}
     </Stack>
