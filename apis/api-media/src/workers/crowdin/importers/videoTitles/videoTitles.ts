@@ -26,6 +26,14 @@ const videoTitleSchema = z
 
 const missingVideos = new Set<string>()
 
+export async function importVideoTitles(): Promise<() => void> {
+  await processFile(
+    CROWDIN_CONFIG.files.media_metadata_tile,
+    upsertVideoTitleTranslation
+  )
+  return () => missingVideos.clear()
+}
+
 function validateVideoTitleData(data: TranslationData): boolean {
   const identifier = data.sourceString.identifier
   if (!identifier || !isValidVideoId(identifier)) {
@@ -91,11 +99,4 @@ async function upsertVideoTitleTranslation(
     update: result,
     create: result
   })
-}
-
-export async function importVideoTitles(): Promise<void> {
-  await processFile(
-    CROWDIN_CONFIG.files.media_metadata_tile,
-    upsertVideoTitleTranslation
-  )
 }

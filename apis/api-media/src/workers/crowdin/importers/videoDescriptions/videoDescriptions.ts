@@ -26,6 +26,14 @@ const videoDescriptionSchema = z
 
 const missingVideos = new Set<string>()
 
+export async function importVideoDescriptions(): Promise<() => void> {
+  await processFile(
+    CROWDIN_CONFIG.files.media_metadata_description,
+    upsertVideoDescriptionTranslation
+  )
+  return () => missingVideos.clear()
+}
+
 function validateVideoDescriptionData(data: TranslationData): boolean {
   const identifier = data.sourceString.identifier
   if (!identifier || !isValidVideoId(identifier)) {
@@ -90,11 +98,4 @@ async function upsertVideoDescriptionTranslation(
     update: result,
     create: result
   })
-}
-
-export async function importVideoDescriptions(): Promise<void> {
-  await processFile(
-    CROWDIN_CONFIG.files.media_metadata_description,
-    upsertVideoDescriptionTranslation
-  )
 }

@@ -18,27 +18,16 @@ const bibleBookSchema = z
     primary: false
   }))
 
-function validateBibleBookData(data: TranslationData): boolean {
-  if (!data.translation.text) {
-    return false
-  }
-
-  const languageId =
-    CROWDIN_CONFIG.languageCodes[
-      data.languageCode as keyof typeof CROWDIN_CONFIG.languageCodes
-    ]
-  if (!languageId) {
-    return false
-  }
-
-  return true
+export async function importBibleBooks(): Promise<void> {
+  await processFile(
+    CROWDIN_CONFIG.files.bible_books,
+    upsertBibleBookTranslation
+  )
 }
 
 async function upsertBibleBookTranslation(
   data: TranslationData
 ): Promise<void> {
-  if (!validateBibleBookData(data)) return
-
   const result = bibleBookSchema.parse({
     identifier: data.sourceString.identifier,
     text: data.translation.text,
@@ -58,11 +47,4 @@ async function upsertBibleBookTranslation(
     update: result,
     create: result
   })
-}
-
-export async function importBibleBooks(): Promise<void> {
-  await processFile(
-    CROWDIN_CONFIG.files.bible_books,
-    upsertBibleBookTranslation
-  )
 }

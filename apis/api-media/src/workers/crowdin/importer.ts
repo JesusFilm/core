@@ -28,6 +28,93 @@ const credentials = {
 
 const { stringTranslationsApi, sourceStringsApi } = new crowdin(credentials)
 
+export async function processFile(
+  file: ArclightFile,
+  importOne: (data: TranslationData) => Promise<void>,
+  parentLogger?: Logger
+): Promise<void> {
+  const logger = parentLogger?.child({
+    file: file.name.replace('.csv', '')
+  })
+
+  logger?.info('file import started')
+  const errors: CrowdinError[] = []
+
+  try {
+    const sourceStrings = await fetchSourceStrings(
+      file.id,
+      sourceStringsApi,
+      logger
+    )
+    if (sourceStrings.length === 0) return
+
+    const sourceStringMap = new Map(sourceStrings.map((str) => [str.id, str]))
+    let page = 0
+
+    for (const languageCode of Object.keys(CROWDIN_CONFIG.languageCodes)) {
+      try {
+        const translations = await fetchTranslations(
+          languageCode,
+          file.id,
+          stringTranslationsApi,
+          logger
+        )
+
+        if (translations.length === 0) continue
+
+        page++
+        logger?.info({ page, rows: translations.length }, 'importing page')
+
+        const validTranslations = processTranslations(
+          translations,
+          sourceStringMap,
+          languageCode,
+          () => true
+        )
+
+        if (validTranslations.length > 0) {
+          try {
+            for (const data of validTranslations) {
+              await importOne(data)
+            }
+          } catch (error) {
+            errors.push({
+              fileId: file.id,
+              languageCode,
+              message: error instanceof Error ? error.message : 'Unknown error'
+            })
+          }
+        }
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          'code' in error &&
+          (error as any).code === 404
+        ) {
+          continue // Skip 404 errors (language not configured)
+        }
+        errors.push({
+          fileId: file.id,
+          languageCode,
+          message: error instanceof Error ? error.message : 'Unknown error'
+        })
+      }
+    }
+
+    if (errors.length > 0) {
+      logger?.error({ errors }, 'file import finished with errors')
+    } else {
+      logger?.info('file import finished')
+    }
+  } catch (error) {
+    logger?.error(
+      { error: error instanceof Error ? error.message : 'Unknown error' },
+      'file import failed'
+    )
+    throw error
+  }
+}
+
 async function fetchPaginatedData<T>(
   fetchPage: (
     offset: number,
@@ -183,93 +270,6 @@ export async function processLanguage(
       (error as any).code === 404
     )
       return
-    throw error
-  }
-}
-
-export async function processFile(
-  file: ArclightFile,
-  importOne: (data: TranslationData) => Promise<void>,
-  parentLogger?: Logger
-): Promise<void> {
-  const logger = parentLogger?.child({
-    file: file.name.replace('.csv', '')
-  })
-
-  logger?.info('file import started')
-  const errors: CrowdinError[] = []
-
-  try {
-    const sourceStrings = await fetchSourceStrings(
-      file.id,
-      sourceStringsApi,
-      logger
-    )
-    if (sourceStrings.length === 0) return
-
-    const sourceStringMap = new Map(sourceStrings.map((str) => [str.id, str]))
-    let page = 0
-
-    for (const languageCode of Object.keys(CROWDIN_CONFIG.languageCodes)) {
-      try {
-        const translations = await fetchTranslations(
-          languageCode,
-          file.id,
-          stringTranslationsApi,
-          logger
-        )
-
-        if (translations.length === 0) continue
-
-        page++
-        logger?.info({ page, rows: translations.length }, 'importing page')
-
-        const validTranslations = processTranslations(
-          translations,
-          sourceStringMap,
-          languageCode,
-          () => true
-        )
-
-        if (validTranslations.length > 0) {
-          try {
-            for (const data of validTranslations) {
-              await importOne(data)
-            }
-          } catch (error) {
-            errors.push({
-              fileId: file.id,
-              languageCode,
-              message: error instanceof Error ? error.message : 'Unknown error'
-            })
-          }
-        }
-      } catch (error) {
-        if (
-          error instanceof Error &&
-          'code' in error &&
-          (error as any).code === 404
-        ) {
-          continue // Skip 404 errors (language not configured)
-        }
-        errors.push({
-          fileId: file.id,
-          languageCode,
-          message: error instanceof Error ? error.message : 'Unknown error'
-        })
-      }
-    }
-
-    if (errors.length > 0) {
-      logger?.error({ errors }, 'file import finished with errors')
-    } else {
-      logger?.info('file import finished')
-    }
-  } catch (error) {
-    logger?.error(
-      { error: error instanceof Error ? error.message : 'Unknown error' },
-      'file import failed'
-    )
     throw error
   }
 }

@@ -35,6 +35,20 @@ const studyQuestionSchema = z
     }))
   })
 
+export async function importStudyQuestions(): Promise<() => void> {
+  await initializeQuestionMap()
+
+  await processFile(
+    CROWDIN_CONFIG.files.study_questions,
+    upsertStudyQuestionTranslation
+  )
+
+  return () => {
+    questionMap.clear()
+    missingQuestions.clear()
+  }
+}
+
 function getQuestionData(
   questionId: string
 ): Array<{ videoId: string; order: number }> | undefined {
@@ -43,11 +57,6 @@ function getQuestionData(
 
 function hasQuestion(questionId: string): boolean {
   return questionMap.has(questionId)
-}
-
-function clearState(): void {
-  questionMap.clear()
-  missingQuestions.clear()
 }
 
 async function initializeQuestionMap(): Promise<void> {
@@ -138,15 +147,4 @@ async function upsertStudyQuestionTranslation(
       })
     )
   )
-}
-
-export async function importStudyQuestions(): Promise<void> {
-  await initializeQuestionMap()
-
-  await processFile(
-    CROWDIN_CONFIG.files.study_questions,
-    upsertStudyQuestionTranslation
-  )
-
-  clearState()
 }
